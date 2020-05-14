@@ -1,7 +1,7 @@
 lane :test do
+cocoapods
 run_tests(
-  project: "BlockchainSdk.xcworkspace",
+  workspace: "BlockchainSdk.xcworkspace",
   clean: true
 )
 end
-
