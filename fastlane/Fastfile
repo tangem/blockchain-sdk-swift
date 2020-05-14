@@ -1,0 +1,7 @@
+lane :test do
+run_tests(
+  project: "BlockchainSdk.xcworkspace",
+  clean: true
+)
+end
+
