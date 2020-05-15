@@ -17,10 +17,11 @@ target 'BlockchainSdk' do
     #pod 'web3swift', :path => '/Users/alexander.osokin/repos/tangem/web3swift'
     pod 'web3swift', :git => 'https://bitbucket.org/tangem/web3swift.git', :tag => '2.2.3'
     pod 'AnyCodable-FlightSchool'
-    pod 'TangemSdk', :path => '/Users/alexander.osokin/repos/tangem/tangem-ios/TangemSdk'
+   # pod 'TangemSdk', :path => '/Users/alexander.osokin/repos/tangem/tangem-ios/TangemSdk'
+    pod 'TangemSdk', :git => 'git@bitbucket.org:tangem/card-sdk-swift.git', :branch => 'master'
     pod 'stellar-ios-mac-sdk'
 end
 
 target 'BlockchainSdkTests' do
-  pod 'TangemSdk', :path => '/Users/alexander.osokin/repos/tangem/tangem-ios/TangemSdk'
+    pod 'TangemSdk', :git => 'git@bitbucket.org:tangem/card-sdk-swift.git', :branch => 'master'
 end
