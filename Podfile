@@ -1,6 +1,6 @@
 platform :ios, '11.0'
 use_frameworks!
-
+inhibit_all_warnings!
 
 target 'BlockchainSdk' do
     pod 'BigInt', '~> 4.0'
@@ -19,4 +19,8 @@ target 'BlockchainSdk' do
     pod 'AnyCodable-FlightSchool'
     pod 'TangemSdk', :path => '/Users/alexander.osokin/repos/tangem/tangem-ios/TangemSdk'
     pod 'stellar-ios-mac-sdk'
+end
+
+target 'BlockchainSdkTests' do
+  pod 'TangemSdk', :path => '/Users/alexander.osokin/repos/tangem/tangem-ios/TangemSdk'
 end

@@ -60,6 +60,8 @@ extension TransactionsService {
                     promise(.success(submitResponse))
                 case .failure(let error):
                     promise(.failure(error.parseError()))
+                case .destinationRequiresMemo(destinationAccountId: let destinationAccountId):
+                    promise(.failure("requires memo"))
                 }
             })
         }
