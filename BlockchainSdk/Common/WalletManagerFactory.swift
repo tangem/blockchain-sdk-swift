@@ -78,7 +78,7 @@ public class WalletManagerFactory {
         case .binance(let testnet):
             return BinanceWalletManager(cardId: cardId, wallet: wallet).then {
                 $0.txBuilder = BinanceTransactionBuilder(walletPublicKey: walletPublicKey, isTestnet: testnet)
-                $0.networkService = BinanceNetworkService(address: address, isTestNet: testnet)
+                $0.networkService = BinanceNetworkService(address: address, assetCode: token?.contractAddress ,isTestNet: testnet)
             }
             
         case .cardano:

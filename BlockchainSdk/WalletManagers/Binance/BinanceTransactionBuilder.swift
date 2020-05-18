@@ -26,9 +26,15 @@ class BinanceTransactionBuilder {
         }
     }
     
-    func buildForSign(amount: Decimal, targetAddress: String) -> Message {
-        message = Message.transfer(symbol: "BNB", amount: Double("\(amount)")!, to: targetAddress, wallet: binanceWallet)
-       return message!
+    func buildForSign(transaction: Transaction) -> Message? {
+        let amount = transaction.amount.value
+        let targetAddress = transaction.destinationAddress
+        guard let symbol = transaction.amount.type == .coin ?  transaction.amount.currencySymbol : transaction.contractAddress else {
+            return nil
+        }
+        
+        message = Message.transfer(symbol: symbol, amount: Double("\(amount)")!, to: targetAddress, wallet: binanceWallet)
+        return message!
     }
     
     func buildForSend(signature: Data, hash: Data) -> Message? {
@@ -36,7 +42,7 @@ class BinanceTransactionBuilder {
             secp256k1Signature: signature,
             hash: hash,
             publicKey: walletPublicKey) else {
-            return nil
+                return nil
         }
         
         guard let message = message else {
