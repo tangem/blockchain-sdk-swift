@@ -22,6 +22,9 @@ enum BitcoinError: Error {
 class BitcoinWalletManager: WalletManager {
     var txBuilder: BitcoinTransactionBuilder!
     var networkService: BitcoinNetworkProvider!
+    var relayFee: Decimal? {
+        return nil
+    }
     
     override func update(completion: @escaping (Result<Wallet, Error>)-> Void)  {
         requestDisposable = networkService.getInfo()
@@ -46,9 +49,16 @@ class BitcoinWalletManager: WalletManager {
                     throw BitcoinError.failedToCalculateTxSize
                 }
                 
-                let minFee = (minPerByte * estimatedTxSize)
-                let normalFee = (normalPerByte * estimatedTxSize)
-                let maxFee = (maxPerByte * estimatedTxSize)
+                var minFee = (minPerByte * estimatedTxSize)
+                var normalFee = (normalPerByte * estimatedTxSize)
+                var maxFee = (maxPerByte * estimatedTxSize)
+                
+                if let relayFee = self.relayFee {
+                    minFee = max(minFee, relayFee)
+                    normalFee = max(normalFee, relayFee)
+                    maxFee = max(maxFee, relayFee)
+                }
+                
                 return [
                     Amount(with: self.wallet.blockchain, address: source, value: minFee),
                     Amount(with: self.wallet.blockchain, address: source, value: normalFee),
