@@ -167,7 +167,7 @@ public enum Blockchain {
         case "ltc": return .litecoin
         case "rsk", "rsktoken": return .rsk
         case "bch": return .bitcoinCash(testnet: isTestnet)
-        case "binance": return .binance(testnet: isTestnet)
+        case "binance", "binanceasset": return .binance(testnet: isTestnet)
         case "cardano": return .cardano
         case "xrp": return .xrp(curve: curve)
         case "duc": return .ducatus

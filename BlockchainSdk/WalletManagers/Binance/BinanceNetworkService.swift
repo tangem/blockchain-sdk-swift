@@ -15,20 +15,22 @@ class BinanceNetworkService {
     let binance: BinanceChain
     let address: String
     let testnet: Bool
+    let assetCode: String?
     
-    init(address: String, isTestNet:Bool) {
+    init(address: String, assetCode: String?, isTestNet:Bool) {
         self.address = address
         self.testnet = isTestNet
+        self.assetCode = assetCode
         binance = isTestNet ? BinanceChain(endpoint: BinanceChain.Endpoint.testnet):
             BinanceChain(endpoint: BinanceChain.Endpoint.mainnet)
     }
     
     func getInfo() -> Single<BinanceInfoResponse> {
-        return getAccountDetails(address: address)
+        return getAccountDetails(address: address, assetCode: assetCode)
         .asSingle()
     }
         
-    private func getAccountDetails(address: String) -> Observable<BinanceInfoResponse> {
+    private func getAccountDetails(address: String, assetCode: String?) -> Observable<BinanceInfoResponse> {
         return Observable.create {[unowned self] observer -> Disposable in
             self.binance.account(address: self.address) { response in
                 guard let bnbBalance = response.account.balances.first(where: { $0.symbol == "BNB" }) else {
@@ -36,9 +38,10 @@ class BinanceNetworkService {
                     return
                 }
                 
+                let assetBalance = response.account.balances.first(where: { $0.symbol == assetCode})
                 let accountNumber = response.account.accountNumber
                 let sequence = response.sequence
-                let info = BinanceInfoResponse(balance: bnbBalance.free, accountNumber: accountNumber, sequence: sequence)
+                let info = BinanceInfoResponse(balance: bnbBalance.free, assetBalance: assetBalance?.free, accountNumber: accountNumber, sequence: sequence)
                 observer.onNext(info)
             }
             return Disposables.create()
@@ -84,6 +87,7 @@ class BinanceNetworkService {
 
 struct BinanceInfoResponse {
     let balance: Double
+    let assetBalance: Double?
     let accountNumber: Int
     let sequence: Int
 }

@@ -28,6 +28,9 @@ class BinanceWalletManager: WalletManager {
     
     private func updateWallet(with response: BinanceInfoResponse) {
         wallet.add(coinValue: Decimal(response.balance))
+        if let assetBalance = response.assetBalance {
+            wallet.add(tokenValue: Decimal(assetBalance))
+        }
         txBuilder.binanceWallet.sequence = response.sequence
         txBuilder.binanceWallet.accountNumber = response.accountNumber
         
@@ -43,7 +46,10 @@ class BinanceWalletManager: WalletManager {
 @available(iOS 13.0, *)
 extension BinanceWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error> {
-        let msg = txBuilder.buildForSign(amount: transaction.amount.value, targetAddress: transaction.destinationAddress)
+        guard let msg = txBuilder.buildForSign(transaction: transaction) else {
+            return Fail(error: "Failed to build tx. Missing token contract address").eraseToAnyPublisher()
+        }
+        
         let hash = msg.encodeForSignature()
         return signer.sign(hashes: [hash], cardId: cardId)
             .tryMap {[unowned self] response in
