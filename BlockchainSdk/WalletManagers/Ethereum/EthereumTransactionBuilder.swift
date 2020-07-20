@@ -12,6 +12,17 @@ import web3swift
 import TangemSdk
 
 class EthereumTransactionBuilder {
+    enum GasLimit: Int {
+        case `default` = 21000
+        case erc20 = 60000
+        case medium = 150000
+        case high = 300000
+        
+        var value: BigUInt {
+            return BigUInt(self.rawValue)
+        }
+    }
+    
     private let walletPublicKey: Data
     private let network: EthereumNetwork
     init(walletPublicKey: Data, network: EthereumNetwork) {
@@ -68,14 +79,18 @@ class EthereumTransactionBuilder {
     
     func getGasLimit(for amount: Amount) -> BigUInt {
         if amount.type == .coin {
-            return 21000
+            return GasLimit.default.value
         }
         
         if amount.currencySymbol == "DGX" {
-            return 300000
+            return GasLimit.high.value
         }
         
-        return 60000
+        if amount.currencySymbol == "AWG" {
+            return GasLimit.medium.value
+        }
+        
+        return GasLimit.erc20.value
     }
     
     private func getData(for amount: Amount, targetAddress: String) -> Data? {
