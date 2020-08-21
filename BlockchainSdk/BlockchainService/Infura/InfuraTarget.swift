@@ -47,27 +47,27 @@ enum InfuraTarget: TargetType {
                                                     "method": "eth_getBalance",
                                                     "params": [address, "latest"],
                                                     "id": 67],
-                                       encoding: URLEncoding.default)
+                                       encoding: JSONEncoding.default)
             
         case .transactions(let address, _):
             return .requestParameters(parameters: ["jsonrpc": "2.0",
                                                    "method": "eth_getTransactionCount",
                                                    "params": [address, "latest"],
                                                    "id": 67],
-                                      encoding: URLEncoding.default)
+                                      encoding: JSONEncoding.default)
             
         case .pending(let address, _):
             return .requestParameters(parameters: ["jsonrpc": "2.0",
                                                    "method": "eth_getTransactionCount",
                                                    "params": [address, "pending"],
                                                    "id": 67],
-                                      encoding: URLEncoding.default)
+                                      encoding: JSONEncoding.default)
             
         case .send(let transaction, _):
             return .requestParameters(parameters: ["jsonrpc": "2.0",
                                                    "method": "eth_sendRawTransaction",
                                                    "params": [transaction], "id": 67],
-                                      encoding: URLEncoding.default)
+                                      encoding: JSONEncoding.default)
             
         case .tokenBalance(let address, let contractAddress, _):
             let rawAddress = address[address.index((address.startIndex), offsetBy: 2)...]
@@ -75,7 +75,7 @@ enum InfuraTarget: TargetType {
             return .requestParameters(parameters: ["method": "eth_call",
                                                    "params": [dataValue, "latest"],
                                                    "id": 03],
-                                      encoding: URLEncoding.default)
+                                      encoding: JSONEncoding.default)
             
         }
     }

@@ -12,6 +12,7 @@ import web3swift
 import Combine
 import RxSwift
 import TangemSdk
+import Moya
 
 class EthereumWalletManager: WalletManager {
     var txBuilder: EthereumTransactionBuilder!

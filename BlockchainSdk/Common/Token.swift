@@ -9,7 +9,8 @@
 import Foundation
 
 public struct Token {
-    let currencySymbol: String
-    let contractAddress: String
-    let decimalCount: Int
+    public let currencySymbol: String
+    public let contractAddress: String
+    public let decimalCount: Int
+    public let displayName: String
 }

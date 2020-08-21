@@ -20,12 +20,11 @@ public class WalletManagerFactory {
             let blockchain = Blockchain.from(blockchainName: blockchainName, curve: curve),
             let walletPublicKey = card.walletPublicKey,
             let cardId = card.cardId else {
-                assertionFailure()
                 return nil
         }
         
         let address = blockchain.makeAddress(from: walletPublicKey)
-        let token = getToken(from: card)
+        let token = getToken(from: card, blockchain: blockchain)
         let wallet = Wallet(blockchain: blockchain, address: address, token: token)
         
         switch blockchain {
@@ -95,11 +94,26 @@ public class WalletManagerFactory {
         }
     }
     
-    private func getToken(from card: Card) -> Token? {
+    private func getToken(from card: Card, blockchain: Blockchain) -> Token? {
         if let symbol = card.cardData?.tokenSymbol,
             let contractAddress = card.cardData?.tokenContractAddress,
             let decimals = card.cardData?.tokenDecimal {
-            return Token(currencySymbol: symbol, contractAddress: contractAddress, decimalCount: decimals)
+            
+            var displayName: String
+            switch blockchain {
+            case .stellar:
+                displayName = "Stellar Asset"
+            case .ethereum:
+                displayName = "Ethereum smart contract token"
+            case .binance:
+                displayName = "Binance Asset"
+            case .rsk:
+                displayName = "Rootstock"
+            default:
+                fatalError("Unsupported blockchain")
+            }
+            
+            return Token(currencySymbol: symbol, contractAddress: contractAddress, decimalCount: decimals, displayName: displayName)
         }
         return nil
     }

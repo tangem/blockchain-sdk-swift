@@ -16,7 +16,7 @@ import BigInt
 
 class EthereumNetworkService {
     let network: EthereumNetwork
-    let provider = MoyaProvider<InfuraTarget>()
+    let provider = MoyaProvider<InfuraTarget>(plugins: [NetworkLoggerPlugin()])
     
     init(network: EthereumNetwork) {
         self.network = network

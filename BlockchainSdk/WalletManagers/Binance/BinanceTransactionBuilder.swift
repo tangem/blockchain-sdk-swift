@@ -8,7 +8,7 @@
 
 import Foundation
 import BinanceChain
-import TangemSdk
+import class TangemSdk.Secp256k1Utils
 
 class BinanceTransactionBuilder {
     var binanceWallet: BinanceWallet!
