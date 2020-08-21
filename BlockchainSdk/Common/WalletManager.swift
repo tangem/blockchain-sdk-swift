@@ -11,9 +11,11 @@ import TangemSdk
 import Combine
 import RxSwift
 
+
 public class WalletManager {
     public let cardId: String
-    public var wallet: Wallet
+    
+    @Published public var wallet: Wallet
     
     var requestDisposable: Disposable? = nil
     

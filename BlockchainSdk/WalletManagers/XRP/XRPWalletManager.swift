@@ -27,8 +27,8 @@ class XRPWalletManager: WalletManager {
     }
     
     private func updateWallet(with response: XrpInfoResponse) {
-        wallet.add(coinValue: response.balance/Decimal(1000000))
-        wallet.add(reserveValue: (response.balance - response.reserve)/Decimal(1000000))
+        wallet.add(reserveValue: response.reserve/Decimal(1000000))
+        wallet.add(coinValue: (response.balance - response.reserve)/Decimal(1000000))
         
         txBuilder.account = wallet.address
         txBuilder.sequence = response.sequence

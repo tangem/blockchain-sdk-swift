@@ -92,8 +92,13 @@ public enum Blockchain {
         switch self {
         case .bitcoinCash:
             return "Bitcoin Cash"
+        case .xrp:
+            return "XRP Ledger"
         default:
-            let name = "\(self)".capitalizingFirstLetter()
+            var name = "\(self)".capitalizingFirstLetter()
+            if let index = name.firstIndex(of: "(") {
+                name = String(name.prefix(upTo: index))
+            }
             return isTestnet ?  name + " test" : name
         }
     }
