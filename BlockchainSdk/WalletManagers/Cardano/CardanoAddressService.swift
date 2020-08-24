@@ -11,7 +11,7 @@ import Sodium
 import SwiftCBOR
 import CryptoSwift
 
-public class CardanoAddressService: AddressService {
+public class CardanoAddressService: AddressService, CardanoAddressDecoder {
     public func makeAddress(from walletPublicKey: Data) -> String {
         let hexPublicKeyExtended = walletPublicKey + Data(repeating: 0, count: 32)
         let forSha3 = ([0, [0, CBOR.byteString(hexPublicKeyExtended.toBytes)], [:]] as CBOR).encode()
@@ -52,5 +52,9 @@ public class CardanoAddressService: AddressService {
         
         let calculatedChecksum = UInt64(addressBytes.crc32())
         return calculatedChecksum == checksum
+    }
+    
+    public func decode(_ address: String) -> Data? {
+        return address.base58DecodedData
     }
 }

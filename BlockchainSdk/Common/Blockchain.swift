@@ -17,7 +17,7 @@ public enum Blockchain {
     case rsk
     case bitcoinCash(testnet: Bool)
     case binance(testnet: Bool)
-    case cardano
+    case cardano(shelley: Bool)
     case xrp(curve: EllipticCurve)
     case ducatus
     
@@ -173,7 +173,8 @@ public enum Blockchain {
         case "rsk", "rsktoken": return .rsk
         case "bch": return .bitcoinCash(testnet: isTestnet)
         case "binance", "binanceasset": return .binance(testnet: isTestnet)
-        case "cardano": return .cardano
+        case "cardano": return .cardano(shelley: false)
+        case "cardano-s": return .cardano(shelley: true)
         case "xrp": return .xrp(curve: curve)
         case "duc": return .ducatus
         default: return nil
@@ -196,8 +197,8 @@ public enum Blockchain {
             return BinanceAddressService(testnet: testnet)
         case .ducatus:
             return DucatusAddressService(testnet: false)
-        case .cardano:
-            return CardanoAddressService()
+        case .cardano(let shelley):
+            return shelley ? CardanoShelleyAddressService() : CardanoAddressService()
         case .xrp(let curve):
             return XRPAddressService(curve: curve)
         }

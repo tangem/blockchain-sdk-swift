@@ -10,8 +10,8 @@ import Foundation
 import Moya
 
 enum AdaliteUrl: String {
-    case url1 = "https://explorer3.adalite.io"
-    case url2 = "https://nodes.southeastasia.cloudapp.azure.com"
+    case url1 = "https://explorer2.adalite.io"
+    //case url2 = "https://nodes.southeastasia.cloudapp.azure.com"
 }
 
 enum AdaliteTarget: TargetType {

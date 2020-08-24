@@ -80,9 +80,9 @@ public class WalletManagerFactory {
                 $0.networkService = BinanceNetworkService(address: address, assetCode: token?.contractAddress ,isTestNet: testnet)
             }
             
-        case .cardano:
+        case .cardano(let shelley):
             return CardanoWalletManager(cardId: cardId, wallet: wallet).then {
-                $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: walletPublicKey)
+                $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: walletPublicKey, shelleyCard: shelley)
                 $0.networkService = CardanoNetworkService()
             }
             

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct Amount: CustomStringConvertible {
+public struct Amount: CustomStringConvertible, Equatable {
     public enum AmountType {
         case coin
         case token
@@ -43,5 +43,13 @@ public struct Amount: CustomStringConvertible {
         currencySymbol = amount.currencySymbol
         decimals = amount.decimals
         self.value = value
+    }
+    
+    public static func ==(lhs: Amount, rhs: Amount) -> Bool {
+        if lhs.type != rhs.type {
+            return false
+        }
+        
+        return lhs.value == rhs.value
     }
 }
