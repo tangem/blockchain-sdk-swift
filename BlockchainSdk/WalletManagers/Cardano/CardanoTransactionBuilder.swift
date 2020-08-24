@@ -16,67 +16,63 @@ class CardanoTransactionBuilder {
     var unspentOutputs: [AdaliteUnspentOutput]? = nil
     let kDecimalNumber: Int16 = 6
     let kProtocolMagic: UInt64 = 764824073
+    let shelleyCard: Bool
     
-    internal init(walletPublicKey: Data) {
+    
+    internal init(walletPublicKey: Data, shelleyCard: Bool) {
         self.walletPublicKey = walletPublicKey
+        self.shelleyCard = shelleyCard
     }
     
-    public func buildForSign(transaction: Transaction, walletAmount: Decimal) -> Data? {
-        guard let transactionBody = buildTransactionBody(from: transaction, walletAmount: walletAmount) else {
-             assertionFailure()
-            return nil
-        }
-
-        guard let transactionHash = Sodium().genericHash.hash(message: transactionBody.toBytes, outputLength: 32) else {
-            assertionFailure()
-            return nil
-        }
+    public func buildForSign(transaction: Transaction, walletAmount: Decimal) -> Result<Data, Error> {
+        let txBodyResult = buildTransactionBody(from: transaction, walletAmount: walletAmount)
         
-        let magic = CBOR.unsignedInt(kProtocolMagic).encode()
-        var dataToSign = Data()
-        dataToSign.append(UInt8(0x01))
-        dataToSign.append(contentsOf: magic)
-        dataToSign.append(contentsOf: [0x58, 0x20])
-        dataToSign.append(contentsOf: transactionHash)
-        return dataToSign
+        switch txBodyResult {
+        case .failure(let error):
+            return .failure(error)
+        case .success(let bodyItem):
+            let transactionBody = bodyItem.encode()
+            guard let transactionHash = Sodium().genericHash.hash(message: transactionBody, outputLength: 32) else {
+                return .failure(CardanoError.failedToBuildHash)
+            }
+            
+            return .success(Data(transactionHash))
+        }
     }
     
-    public func buildForSend(transaction: Transaction, walletAmount: Decimal, signature: Data) -> (tx: Data, hash: String)? {
-        let hexPublicKeyExtended = walletPublicKey + Data(repeating: 0, count: 32)
-        let witnessBodyCBOR = [CBOR.byteString(hexPublicKeyExtended.toBytes), CBOR.byteString(signature.toBytes)] as CBOR
-        let witnessBodyItem = CBOR.tagged(.encodedCBORDataItem, CBOR.byteString(witnessBodyCBOR.encode()))
+    public func buildForSend(transaction: Transaction, walletAmount: Decimal, signature: Data) -> Result<(tx: Data, hash: String), Error> {
+        let txBodyResult = buildTransactionBody(from: transaction, walletAmount: walletAmount)
         
-        guard let unspentOutputs = unspentOutputs, let transactionBody = buildTransactionBody(from: transaction, walletAmount: walletAmount) else {
-            assertionFailure()
-            return nil
+        switch txBodyResult {
+        case .failure(let error):
+            return .failure(error)
+        case .success(let bodyItem):
+            let transactionBody = bodyItem.encode()
+            guard let transactionHash = Sodium().genericHash.hash(message: transactionBody, outputLength: 32) else {
+                return .failure(CardanoError.failedToBuildHash)
+            }
+            
+            let witnessDataItem = shelleyCard ?
+                CBOR.array([CBOR.array([CBOR.byteString(walletPublicKey.bytes),
+                                        CBOR.byteString(signature.bytes)])])
+                : CBOR.array([CBOR.array([CBOR.byteString(walletPublicKey.bytes),
+                                          CBOR.byteString(signature.bytes),
+                                          CBOR.byteString(Data(hex: "0000000000000000000000000000000000000000000000000000000000000000").bytes),
+                                          CBOR.byteString(Data(hex: "A0").bytes)
+                ])])
+            
+            let witnessMap = CBOR.map([CBOR.unsignedInt(shelleyCard ? 0 : 2) : witnessDataItem])
+            let tx = CBOR.array([bodyItem, witnessMap, nil])
+            let txForSend = tx.encode()
+            return .success((tx: Data(txForSend), hash: Data(transactionHash).asHexString()))
         }
-        
-        var unspentOutputsCBOR = [CBOR]()
-        for _ in unspentOutputs {
-            let array = [0, witnessBodyItem] as CBOR
-            unspentOutputsCBOR.append(array)
-        }
-        
-        let witness = CBOR.array(unspentOutputsCBOR).encode()
-        
-        var txForSend = Data()
-        txForSend.append(0x82)
-        txForSend.append(contentsOf: transactionBody)
-        txForSend.append(contentsOf: witness)
-        
-        guard let transactionHash = Sodium().genericHash.hash(message: transactionBody.toBytes, outputLength: 32) else {
-            assertionFailure()
-            return nil
-        }
-        
-        return (tx: txForSend, hash: transactionHash.toHexString())
     }
     
-    private func buildTransactionBody(from transaction: Transaction, walletAmount: Decimal) -> Data? {
+    private func buildTransactionBody(from transaction: Transaction, walletAmount: Decimal) -> Result<CBOR, Error> {
         guard let unspentOutputs = self.unspentOutputs else {
-                return nil
+            return .failure(CardanoError.noUnspents)
         }
-        let convertValue = pow(10, Blockchain.cardano.decimalCount)
+        let convertValue = pow(10, Blockchain.cardano(shelley: shelleyCard).decimalCount)
         let feeConverted = transaction.fee.value * convertValue
         let amountConverted = transaction.amount.value * convertValue
         let walletAmountConverted = walletAmount * convertValue
@@ -84,36 +80,42 @@ class CardanoTransactionBuilder {
         
         let amountLong = (amountConverted as NSDecimalNumber).uint64Value
         let changeLong = (change as NSDecimalNumber).uint64Value
+        let feesLong = (feeConverted as NSDecimalNumber).uint64Value
         
-        var unspentOutputsCBOR = [CBOR]()
-        for output in unspentOutputs {
-            let outputCBOR = [CBOR.byteString(Array(Data(hexString: output.id))), CBOR.unsignedInt(UInt64(output.index))] as CBOR
-            let array = [0, CBOR.tagged(.encodedCBORDataItem, CBOR.byteString(outputCBOR.encode()))] as CBOR
-            unspentOutputsCBOR.append(array)
+        if (amountLong < 1000000 || (changeLong < 1000000 && changeLong != 0)) {
+            return .failure(CardanoError.lowAda)
         }
         
-        let targetAddressBytes: [UInt8] = Array(transaction.destinationAddress.base58DecodedData!)
-        guard let targetAddressItemCBOR = try? CBORDecoder(input: targetAddressBytes).decodeItem() else {
-            assertionFailure()
-            return nil
+        guard let targetAddressBytes =  CardanoAddress.decode(transaction.destinationAddress)?.bytes else {
+            return .failure(CardanoError.failedToBuildTransaction)
         }
         
-        var transactionOutputsCBOR = [CBOR]()
-        transactionOutputsCBOR.append(CBOR.array([targetAddressItemCBOR, CBOR.unsignedInt(amountLong)]))
-        
-        let currentWalletAddressBytes: [UInt8] = Array(transaction.sourceAddress.base58DecodedData!)
-        guard let currentWalletAddressCBOR = try? CBORDecoder(input: currentWalletAddressBytes).decodeItem() else {
-            assertionFailure()
-            return nil
+        var transactionMap = CBOR.map([:])
+        var inputsArray = [CBOR]()
+        for unspentOutput in unspentOutputs {
+            let array = CBOR.array(
+                [CBOR.byteString(Data(hex: unspentOutput.id).bytes),
+                 CBOR.unsignedInt(UInt64(unspentOutput.index))])
+            inputsArray.append(array)
         }
+        
+        var outputsArray = [CBOR]()
+        outputsArray.append(CBOR.array([CBOR.byteString(targetAddressBytes), CBOR.unsignedInt(amountLong)]))
+           
+        guard let changeAddressBytes =  CardanoAddress.decode(transaction.sourceAddress)?.bytes else {
+            return .failure(CardanoError.failedToBuildTransaction)
+        }
+        
         if (changeLong > 0) {
-            transactionOutputsCBOR.append(CBOR.array([currentWalletAddressCBOR, CBOR.unsignedInt(changeLong)]))
+            outputsArray.append(CBOR.array([CBOR.byteString(changeAddressBytes), CBOR.unsignedInt(changeLong)]))
         }
-        let transactionInputsArray = CBOR.indefiniteLenghtArrayWith(unspentOutputsCBOR)
-        let transactionOutputsArray = CBOR.indefiniteLenghtArrayWith(transactionOutputsCBOR)
         
-        let transactionBody = CBOR.combineEncodedArrays([transactionInputsArray, transactionOutputsArray, CBOR.map([:]).encode()])
-        return Data(transactionBody)
+        transactionMap[CBOR.unsignedInt(0)] = CBOR.array(inputsArray)
+        transactionMap[CBOR.unsignedInt(1)] = CBOR.array(outputsArray)
+        transactionMap[2] = CBOR.unsignedInt(feesLong)
+        transactionMap[3] = CBOR.unsignedInt(90000000)
+        
+        return .success(transactionMap)
     }
 }
 

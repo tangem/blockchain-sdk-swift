@@ -32,14 +32,14 @@ class CardanoNetworkService {
                         return (balanceResponse, unspentsResponse)
                 }
         }
-        .catchError { error throws in
-            if case MoyaError.statusCode(let response) = error {
-                if self.adaliteUrl == .url1 {
-                    self.adaliteUrl = .url2
-                }
-            }
-            throw error
-        }
+//        .catchError { error throws in
+//            if case MoyaError.statusCode(let response) = error {
+//                if self.adaliteUrl == .url1 {
+//                    self.adaliteUrl = .url2
+//                }
+//            }
+//            throw error
+//        }
         .retry(2)
     }
     

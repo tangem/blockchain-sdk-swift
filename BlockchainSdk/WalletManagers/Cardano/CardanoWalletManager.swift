@@ -15,7 +15,17 @@ enum CardanoError: Error {
     case failedToBuildHash
     case failedToBuildTransaction
     case failedToMapNetworkResponse
-    case failedToCalculateTxSize
+    case lowAda
+    case failedToCalculateFee
+    
+    var errorDescription: String? {
+        switch self {
+        case .lowAda:
+            return "Sent amount and change cannot be less than 1 ADA"
+        default:
+            return "\(self)"
+        }
+    }
 }
 
 class CardanoWalletManager: WalletManager {
@@ -51,49 +61,56 @@ class CardanoWalletManager: WalletManager {
 @available(iOS 13.0, *)
 extension CardanoWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error> {
-        guard let walletAmount = wallet.amounts[.coin]?.value,
-            let hashes = txBuilder.buildForSign(transaction: transaction, walletAmount: walletAmount) else {
-                return Fail(error: CardanoError.failedToBuildHash).eraseToAnyPublisher()
+        guard let walletAmount = wallet.amounts[.coin]?.value else {
+            return Fail(error: CardanoError.failedToBuildHash).eraseToAnyPublisher()
         }
         
-        return signer.sign(hashes: [hashes], cardId: cardId)
-            .tryMap {[unowned self] response -> (tx: Data, hash: String) in
-                guard let walletAmount = self.wallet.amounts[.coin]?.value, let tx = self.txBuilder.buildForSend(transaction: transaction, walletAmount: walletAmount, signature: response.signature) else {
-                    throw CardanoError.failedToBuildTransaction
-                }
-                return tx
-        }
-        .flatMap {[unowned self] builderResponse in
-            self.networkService.send(base64EncodedTx: builderResponse.tx.base64EncodedString()).map {[unowned self] response in
-                var sendedTx = transaction
-                sendedTx.hash = builderResponse.hash
-                self.wallet.add(transaction: sendedTx)
-                return true
+        let txBuildResult = txBuilder.buildForSign(transaction: transaction, walletAmount: walletAmount)
+        switch txBuildResult {
+        case .success(let hashes):
+            return signer.sign(hashes: [hashes], cardId: cardId)
+                .tryMap {[unowned self] response -> (tx: Data, hash: String) in
+                    let txBuildForSendResult = self.txBuilder.buildForSend(transaction: transaction, walletAmount: walletAmount, signature: response.signature)
+                    switch txBuildForSendResult {
+                    case .failure(let error):
+                        throw error
+                    case .success(let tx):
+                        return tx
+                    }
             }
+            .flatMap {[unowned self] builderResponse in
+                self.networkService.send(base64EncodedTx: builderResponse.tx.base64EncodedString()).map {[unowned self] response in
+                    var sendedTx = transaction
+                    sendedTx.hash = builderResponse.hash
+                    self.wallet.add(transaction: sendedTx)
+                    return true
+                }
+            }
+            .eraseToAnyPublisher()
+        case .failure(let error):
+            return Fail(error: error).eraseToAnyPublisher()
         }
-        .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount, source: String, destination: String) -> AnyPublisher<[Amount], Error> {
-        guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount, fee: Amount(with: amount, value: 0.0001), sourceAddress: source, destinationAddress: destination)) else {
-            return Fail(error: CardanoError.failedToCalculateTxSize).eraseToAnyPublisher()
+        guard let unspentOutputs = txBuilder.unspentOutputs else {
+            return Fail(error: CardanoError.noUnspents).eraseToAnyPublisher()
         }
+        
+        guard let walletAmount = wallet.amounts[amount.type] else {
+            return Fail(error: CardanoError.failedToCalculateFee).eraseToAnyPublisher()
+        }
+        
+        
+        let outputsNumber = amount == walletAmount ? 1 : 2
+        let transactionSize = unspentOutputs.count * 40 + outputsNumber * 65 + 160
         
         let a = Decimal(0.155381)
         let b = Decimal(0.000043946)
         
-        let feeValue = a + b * estimatedTxSize
+        let feeValue = a + b * Decimal(transactionSize)
         let feeAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: feeValue)
         return Result.Publisher([feeAmount]).eraseToAnyPublisher()
-    }
-    
-    private func getEstimateSize(for transaction: Transaction) -> Decimal? {
-        guard let walletAmount = wallet.amounts[.coin]?.value,
-            let tx = txBuilder.buildForSend(transaction: transaction, walletAmount: walletAmount, signature: Data(repeating: UInt8(0x01), count: 64)) else {
-                return nil
-        }
-        
-        return Decimal(tx.tx.count)
     }
 }
 
