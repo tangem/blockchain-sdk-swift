@@ -19,8 +19,7 @@ public class CardanoShelleyAddressService: AddressService, CardanoAddressDecoder
         let publicKeyHash = Sodium().genericHash.hash(message: walletPublicKey.toBytes, outputLength: 28)!
         let addressBytes = CardanoShelleyAddressService.ADDRESS_HEADER_BYTE + publicKeyHash
         let bech32 = Bech32()
-        let convertedAddressBytes = try! bech32.convertBits(data: Array(addressBytes), fromBits: 8, toBits: 5, pad: true)
-        let walletAddress = bech32.encode("addr", values: Data(convertedAddressBytes))
+        let walletAddress = bech32.encode("addr", values: Data(addressBytes))
         return walletAddress
     }
     
