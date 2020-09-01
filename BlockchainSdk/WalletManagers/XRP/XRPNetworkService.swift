@@ -58,6 +58,8 @@ class XRPNetworkService {
             .requestPublisher(.unconfirmed(account: account))
             .map(XrpResponse.self)
             .tryMap { xrpResponse -> Decimal in
+                try self.assertAccountCreated(xrpResponse)
+                
                 guard let unconfirmedBalanceString = xrpResponse.result?.account_data?.balance,
                     let unconfirmedBalance = Decimal(unconfirmedBalanceString) else {
                         throw "Failed to load balance"
@@ -73,6 +75,8 @@ class XRPNetworkService {
             .requestPublisher(.reserve)
             .map(XrpResponse.self)
             .tryMap{ xrpResponse -> Decimal in
+                try self.assertAccountCreated(xrpResponse)
+                
                 guard let reserveBase = xrpResponse.result?.state?.validated_ledger?.reserve_base else {
                     throw "Failed to load reserve"
                 }
@@ -86,10 +90,8 @@ class XRPNetworkService {
         return provider
             .requestPublisher(.accountInfo(account: account))
             .map(XrpResponse.self)
-            .tryMap{ xrpResponse in
-                if let code = xrpResponse.result?.error_code, code == 19 {
-                    throw "No account"
-                }
+            .tryMap{[unowned self] xrpResponse in
+                try self.assertAccountCreated(xrpResponse)
                 
                 guard let accountResponse = xrpResponse.result?.account_data,
                     let balanceString = accountResponse.balance,
@@ -122,12 +124,21 @@ class XRPNetworkService {
         return provider
             .requestPublisher(.accountInfo(account: account))
             .map(XrpResponse.self)
-            .tryMap { xrpResponse -> Bool in
-                if let code = xrpResponse.result?.error_code, code == 19 {
+            .map {[unowned self] xrpResponse -> Bool in
+                do {
+                    try self.assertAccountCreated(xrpResponse)
+                    return true
+                } catch {
                     return false
                 }
-                return true
         }
         .eraseToAnyPublisher()
+        .eraseError()
+    }
+    
+    private func assertAccountCreated(_ repsonse: XrpResponse) throws {
+        if let code = repsonse.result?.error_code, code == 19 {
+            throw WalletError.noAccount(message: "no_account_xrp".localized)
+        }
     }
 }

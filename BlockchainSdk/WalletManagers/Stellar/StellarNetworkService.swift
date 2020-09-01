@@ -12,9 +12,11 @@ import Combine
 
 class StellarNetworkService {
     let stellarSdk: StellarSDK
+    let isAsset: Bool
     
-    init(stellarSdk: StellarSDK) {
+    init(stellarSdk: StellarSDK, isAsset: Bool) {
         self.stellarSdk = stellarSdk
+        self.isAsset = isAsset
     }
     
     @available(iOS 13.0, *)
@@ -27,6 +29,7 @@ class StellarNetworkService {
                     throw "Result code: \(submitTransactionResponse.transactionResult.code)"
                 }
         }
+        .mapError { [unowned self] in self.mapError($0) }
         .eraseToAnyPublisher()
     }
     
@@ -48,6 +51,7 @@ class StellarNetworkService {
                 
                 return StellarResponse(baseFee: baseFee, baseReserve: baseReserve, assetBalance: assetBalance, balance: balance, sequence: sequence)
         }
+        .mapError { [unowned self] in self.mapError($0) }
         .eraseToAnyPublisher()
     }
     
@@ -55,6 +59,18 @@ class StellarNetworkService {
         Publishers.Zip(stellarSdk.accounts.getAccountDetails(accountId: accountId),
                        stellarSdk.ledgers.getLatestLedger())
             .eraseToAnyPublisher()
+    }
+    
+    private func mapError(_ error: Error) -> Error {
+        if let horizonError = error as? HorizonRequestError {
+            if case .notFound = horizonError {
+                return WalletError.noAccount(message: isAsset ? "no_account_xlm_asset".localized : "no_account_xlm".localized)
+            } else {
+                return horizonError.parseError()
+            }
+        } else {
+            return error
+        }
     }
 }
 

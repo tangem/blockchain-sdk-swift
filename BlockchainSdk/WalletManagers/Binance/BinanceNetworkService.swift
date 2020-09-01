@@ -27,6 +27,11 @@ class BinanceNetworkService {
     func getInfo() -> AnyPublisher<BinanceInfoResponse, Error> {
         let future = Future<BinanceInfoResponse,Error> {[unowned self] promise in
             self.binance.account(address: self.address) { response in
+                if let error = response.getError() {
+                    promise(.failure(error))
+                    return
+                }
+               
                 guard let bnbBalance = response.account.balances.first(where: { $0.symbol == "BNB" }) else {
                     promise(.failure("Failed to load balance"))
                     return
@@ -46,6 +51,11 @@ class BinanceNetworkService {
     func getFee() -> AnyPublisher<String, Error> {
         let future = Future<String,Error> {[unowned self] promise in
             self.binance.fees { response in
+                if let error = response.getError() {
+                    promise(.failure(error))
+                    return
+                }
+                
                 let fees: [String] = response.fees.compactMap { fee -> String? in
                     return fee.fixedFeeParams?.fee
                 }
@@ -68,7 +78,7 @@ class BinanceNetworkService {
     func send(transaction: Message) -> AnyPublisher<Bool, Error> {
         let future = Future<Bool,Error> {[unowned self] promise in
             self.binance.broadcast(message: transaction, sync: true) { response in
-                if let error = response.error {
+                if let error = response.getError() {
                     promise(.failure(error))
                     return
                 }
@@ -76,6 +86,19 @@ class BinanceNetworkService {
             }
         }
         return AnyPublisher(future)
+    }
+    
+
+}
+
+
+extension BinanceChain.Response {
+    func getError() -> Error? {
+        if self.error?.localizedDescription.lowercased().contains("account not found") ?? false {
+            return WalletError.noAccount(message: "no_account_bnb".localized)
+        } else {
+            return error
+        }
     }
 }
 

@@ -29,6 +29,10 @@ extension String {
     mutating func capitalizeFirstLetter() {
         self = self.capitalizingFirstLetter()
     }
+    
+    var localized: String {
+        return NSLocalizedString(self, bundle: .blockchainBundle, comment: "")
+    }
 }
 
 extension String: Error, LocalizedError {

@@ -1,0 +1,15 @@
+/* 
+  Localizable.strings
+  BlockchainSdk
+
+  Created by Alexander Osokin on 01.09.2020.
+  Copyright © 2020 Tangem AG. All rights reserved.
+*/
+
+"no_account_xlm" = "To create account send 1+ XLM to this address";
+
+"no_account_xlm_asset" = "To create account send 1.5+ XLM to this address";
+
+"no_account_xrp" = "Load 20+ XRP to create account";
+
+"no_account_bnb" = "To create account send funds to this address";

@@ -11,12 +11,14 @@ import BinanceChain
 import class TangemSdk.Secp256k1Utils
 
 class BinanceTransactionBuilder {
-    var binanceWallet: BinanceWallet!
+    var binanceWallet: BinanceWallet
     private var message: Message?
     private let walletPublicKey: Data
     
     init(walletPublicKey: Data, isTestnet: Bool) {
         self.walletPublicKey = walletPublicKey
+        let compressedKey = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
+        binanceWallet = BinanceWallet(publicKey: compressedKey)
         if isTestnet {
             binanceWallet.chainId = "Binance-Chain-Nile"
             binanceWallet.endpoint = BinanceChain.Endpoint.testnet.rawValue
