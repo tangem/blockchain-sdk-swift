@@ -9,7 +9,6 @@
 import Foundation
 import stellarsdk
 import Combine
-import RxSwift
 
 class StellarNetworkService {
     let stellarSdk: StellarSDK
@@ -31,9 +30,9 @@ class StellarNetworkService {
         .eraseToAnyPublisher()
     }
     
-    public func getInfo(accountId: String, assetCode: String?) -> Single<StellarResponse> {
+    public func getInfo(accountId: String, assetCode: String?) -> AnyPublisher<StellarResponse, Error> {
         return stellarData(accountId: accountId)
-            .map({ (accountResponse, ledgerResponse) throws -> StellarResponse in
+            .tryMap{ (accountResponse, ledgerResponse) throws -> StellarResponse in
                 guard let baseFeeStroops = Decimal(ledgerResponse.baseFeeInStroops),
                     let baseReserveStroops = Decimal(ledgerResponse.baseReserveInStroops),
                     let balance = Decimal(accountResponse.balances.first(where: {$0.assetType == AssetTypeAsString.NATIVE})?.balance) else {
@@ -48,14 +47,14 @@ class StellarNetworkService {
                 let baseReserve = baseReserveStroops/divider
                 
                 return StellarResponse(baseFee: baseFee, baseReserve: baseReserve, assetBalance: assetBalance, balance: balance, sequence: sequence)
-            })
+        }
+        .eraseToAnyPublisher()
     }
     
-    private func stellarData(accountId: String) -> Single<(AccountResponse, LedgerResponse)> {
-        return Observable.zip(
-            stellarSdk.accounts.getAccountDetails(accountId: accountId),
-            stellarSdk.ledgers.getLatestLedger())
-            .asSingle()
+    private func stellarData(accountId: String) -> AnyPublisher<(AccountResponse, LedgerResponse), Error> {
+        Publishers.Zip(stellarSdk.accounts.getAccountDetails(accountId: accountId),
+                       stellarSdk.ledgers.getLatestLedger())
+            .eraseToAnyPublisher()
     }
 }
 

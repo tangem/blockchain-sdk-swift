@@ -8,7 +8,6 @@
 
 import Foundation
 import BinanceChain
-import RxSwift
 import Combine
 
 class BinanceNetworkService {
@@ -25,27 +24,22 @@ class BinanceNetworkService {
             BinanceChain(endpoint: BinanceChain.Endpoint.mainnet)
     }
     
-    func getInfo() -> Single<BinanceInfoResponse> {
-        return getAccountDetails(address: address, assetCode: assetCode)
-        .asSingle()
-    }
-        
-    private func getAccountDetails(address: String, assetCode: String?) -> Observable<BinanceInfoResponse> {
-        return Observable.create {[unowned self] observer -> Disposable in
+    func getInfo() -> AnyPublisher<BinanceInfoResponse, Error> {
+        let future = Future<BinanceInfoResponse,Error> {[unowned self] promise in
             self.binance.account(address: self.address) { response in
                 guard let bnbBalance = response.account.balances.first(where: { $0.symbol == "BNB" }) else {
-                    observer.onError("Failed to load balance")
+                    promise(.failure("Failed to load balance"))
                     return
                 }
                 
-                let assetBalance = response.account.balances.first(where: { $0.symbol == assetCode})
+                let assetBalance = response.account.balances.first(where: { $0.symbol == self.assetCode})
                 let accountNumber = response.account.accountNumber
                 let sequence = response.sequence
                 let info = BinanceInfoResponse(balance: bnbBalance.free, assetBalance: assetBalance?.free, accountNumber: accountNumber, sequence: sequence)
-                observer.onNext(info)
+                promise(.success(info))
             }
-            return Disposables.create()
         }
+        return AnyPublisher(future)
     }
         
     @available(iOS 13.0, *)

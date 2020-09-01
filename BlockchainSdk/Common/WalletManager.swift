@@ -9,22 +9,24 @@
 import Foundation
 import TangemSdk
 import Combine
-import RxSwift
 
+public enum WalletError: Error {
+    case noAccount(message: String)
+}
 
 public class WalletManager {
     public let cardId: String
     
     @Published public var wallet: Wallet
     
-    var requestDisposable: Disposable? = nil
+    var cancellable: Cancellable? = nil
     
     init(cardId: String, wallet: Wallet) {
         self.cardId = cardId
         self.wallet = wallet
     }
     
-    public func update(completion: @escaping (Result<Wallet, Error>)-> Void) {
+    public func update(completion: @escaping (Result<(), Error>)-> Void) {
         fatalError("You should override this method")
     }
     

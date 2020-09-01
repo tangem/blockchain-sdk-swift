@@ -9,7 +9,6 @@
 import Foundation
 import Moya
 import Combine
-import RxSwift
 import SwiftyJSON
 
 class CardanoNetworkService {
@@ -24,13 +23,14 @@ class CardanoNetworkService {
             .eraseError()
     }
     
-    func getInfo(address: String) -> Single<(AdaliteBalanceResponse,[AdaliteUnspentOutput])> {
+    func getInfo(address: String) -> AnyPublisher<(AdaliteBalanceResponse,[AdaliteUnspentOutput]), Error> {
         return getUnspents(address: address)
-            .flatMap { unspentsResponse -> Single<(AdaliteBalanceResponse,[AdaliteUnspentOutput])> in
+            .flatMap { unspentsResponse -> AnyPublisher<(AdaliteBalanceResponse, [AdaliteUnspentOutput]), Error> in
                 return self.getBalance(address: address)
                     .map { balanceResponse -> (AdaliteBalanceResponse,[AdaliteUnspentOutput]) in
                         return (balanceResponse, unspentsResponse)
                 }
+            .eraseToAnyPublisher()
         }
 //        .catchError { error throws in
 //            if case MoyaError.statusCode(let response) = error {
@@ -41,14 +41,14 @@ class CardanoNetworkService {
 //            throw error
 //        }
         .retry(2)
+        .eraseToAnyPublisher()
     }
     
-    private func getUnspents(address: String) -> Single<[AdaliteUnspentOutput]> {
+    private func getUnspents(address: String) -> AnyPublisher<[AdaliteUnspentOutput], Error> {
         return provider
-            .rx
-            .request(.unspents(address: address, url: adaliteUrl))
+            .requestPublisher(.unspents(address: address, url: adaliteUrl))
             .mapSwiftyJSON()
-            .map { json throws -> [AdaliteUnspentOutput] in
+            .tryMap { json throws -> [AdaliteUnspentOutput] in
                 let unspentOutputsJson = json["Right"].arrayValue
                 let unspentOutputs = unspentOutputsJson.map{ json -> AdaliteUnspentOutput in
                     let output = AdaliteUnspentOutput(id: json["cuId"].stringValue, index: json["cuOutIndex"].intValue)
@@ -56,14 +56,14 @@ class CardanoNetworkService {
                 }
                 return unspentOutputs
         }
+    .eraseToAnyPublisher()
     }
     
-    private func getBalance(address: String) -> Single<AdaliteBalanceResponse> {
+    private func getBalance(address: String) -> AnyPublisher<AdaliteBalanceResponse, Error> {
         return provider
-            .rx
-            .request(.address(address: address, url: adaliteUrl))
+            .requestPublisher(.address(address: address, url: adaliteUrl))
             .mapSwiftyJSON()
-            .map {json throws -> AdaliteBalanceResponse in                
+            .tryMap {json throws -> AdaliteBalanceResponse in
                 guard let balanceString = json["Right"]["caBalance"]["getCoin"].string,
                     let balance = Decimal(balanceString) else {
                         throw json["Left"].stringValue
@@ -79,5 +79,6 @@ class CardanoNetworkService {
                 let response = AdaliteBalanceResponse(balance: convertedValue, transactionList: transactionList)
                 return response
         }
+        .eraseToAnyPublisher()
     }
 }

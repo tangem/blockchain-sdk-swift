@@ -10,7 +10,6 @@ import Foundation
 import Moya
 import Combine
 import TangemSdk
-import RxSwift
 import Alamofire
 
 class BitcoinNetworkService: BitcoinNetworkProvider {
@@ -30,10 +29,11 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
         self.init(providers:providers, isTestNet: isTestNet)
     }
     
-    func getInfo() -> Single<BitcoinResponse> {
+    func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
         return getProvider()
+            .setFailureType(to: Error.self)
             .flatMap { $0.getInfo() }
-            .catchError {[unowned self] error in
+            .tryCatch {[unowned self] error -> AnyPublisher<BitcoinResponse, Error> in
                 if let moyaError = error as? MoyaError,
                     case let MoyaError.statusCode(response) = moyaError,
                     self.providers.count > 1,
@@ -46,6 +46,7 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
                 throw error
         }
         .retry(1)
+        .eraseToAnyPublisher()
     }
     
     @available(iOS 13.0, *)
@@ -69,8 +70,7 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
         return isTestNet ? Just(providers[.blockcypher]!) : Just(providers[networkApi]!)
     }
     
-    func getProvider() -> Single<BitcoinNetworkProvider> {
-        return isTestNet ? Observable.just(providers[.blockcypher]!).asSingle()
-        : Observable.just(providers[networkApi]!).asSingle()
+    func getProvider() -> Just<BitcoinNetworkProvider> {
+        return isTestNet ? Just(providers[.blockcypher]!) : Just(providers[networkApi]!)
     }
 }

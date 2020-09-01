@@ -8,7 +8,6 @@
 
 import Foundation
 import Moya
-import RxSwift
 import Combine
 
 class XRPNetworkService {
@@ -54,12 +53,11 @@ class XRPNetworkService {
         .eraseToAnyPublisher()
     }
     
-    func getUnconfirmed(account: String) -> Single<Decimal> {
+    func getUnconfirmed(account: String) -> AnyPublisher<Decimal, Error> {
         return provider
-            .rx
-            .request(.unconfirmed(account: account))
+            .requestPublisher(.unconfirmed(account: account))
             .map(XrpResponse.self)
-            .map { xrpResponse -> Decimal in
+            .tryMap { xrpResponse -> Decimal in
                 guard let unconfirmedBalanceString = xrpResponse.result?.account_data?.balance,
                     let unconfirmedBalance = Decimal(unconfirmedBalanceString) else {
                         throw "Failed to load balance"
@@ -67,28 +65,28 @@ class XRPNetworkService {
                 
                 return unconfirmedBalance
         }
+        .eraseToAnyPublisher()
     }
     
-    func getReserve() -> Single<Decimal> {
+    func getReserve() -> AnyPublisher<Decimal, Error> {
         return provider
-            .rx
-            .request(.reserve)
+            .requestPublisher(.reserve)
             .map(XrpResponse.self)
-            .map{ xrpResponse -> Decimal in
+            .tryMap{ xrpResponse -> Decimal in
                 guard let reserveBase = xrpResponse.result?.state?.validated_ledger?.reserve_base else {
                     throw "Failed to load reserve"
                 }
                 
                 return Decimal(reserveBase)
         }
+        .eraseToAnyPublisher()
     }
     
-    func getAccountInfo(account: String) -> Single<(balance: Decimal, sequence: Int)> {
+    func getAccountInfo(account: String) -> AnyPublisher<(balance: Decimal, sequence: Int), Error> {
         return provider
-            .rx
-            .request(.accountInfo(account: account))
+            .requestPublisher(.accountInfo(account: account))
             .map(XrpResponse.self)
-            .map{ xrpResponse in
+            .tryMap{ xrpResponse in
                 if let code = xrpResponse.result?.error_code, code == 19 {
                     throw "No account"
                 }
@@ -102,18 +100,21 @@ class XRPNetworkService {
                 
                 return (balance: balance, sequence: sequence)
         }
+        .eraseToAnyPublisher()
     }
     
-    func getInfo(account: String) -> Single<XrpInfoResponse> {
-        return Single.zip(getUnconfirmed(account: account),
-                          getReserve(),
-                          getAccountInfo(account: account))
+    func getInfo(account: String) -> AnyPublisher<XrpInfoResponse, Error> {
+        return Publishers.Zip3(getUnconfirmed(account: account),
+                               getReserve(),
+                               getAccountInfo(account: account))
             .map { (unconfirmed, reserve, info) -> XrpInfoResponse in
                 return XrpInfoResponse(balance: info.balance,
                                        sequence: info.sequence,
                                        unconfirmedBalance: unconfirmed,
                                        reserve: reserve)
+                
         }
+        .eraseToAnyPublisher()
     }
     
     @available(iOS 13.0, *)

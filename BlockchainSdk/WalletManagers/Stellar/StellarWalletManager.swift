@@ -10,7 +10,6 @@ import Foundation
 import stellarsdk
 import SwiftyJSON
 import Combine
-import RxSwift
 
 enum StellarError: Error {
     case noFee
@@ -24,14 +23,16 @@ class StellarWalletManager: WalletManager {
     var stellarSdk: StellarSDK!
     private var baseFee: Decimal?
     
-    override func update(completion: @escaping (Result<Wallet, Error>)-> Void)  {
-        requestDisposable = networkService
+    override func update(completion: @escaping (Result<(), Error>)-> Void)  {
+        cancellable = networkService
             .getInfo(accountId: wallet.address, assetCode: wallet.token?.currencySymbol)
-            .subscribe(onSuccess: {[unowned self] response in
-                self.updateWallet(with: response)
-                completion(.success(self.wallet))
-                }, onError: {error in
+            .sink(receiveCompletion: { completionSubscription in
+                if case let .failure(error) = completionSubscription {
                     completion(.failure(error))
+                }
+            }, receiveValue: { [unowned self] response in
+                self.updateWallet(with: response)
+                completion(.success(()))
             })
     }
     

@@ -8,7 +8,6 @@
 
 import Foundation
 import Moya
-import RxSwift
 import Combine
 import SwiftyJSON
 import web3swift
@@ -27,21 +26,23 @@ class EthereumNetworkService {
         return provider.requestPublisher(.send(transaction: transaction, network: network))
             .tryMap {[unowned self] response throws -> String in
                 if let hash = try? self.parseResult(response.data),
-                                       hash.count > 0 {
-                                      return hash
-                                   }
-                                    throw "Empty response"
+                    hash.count > 0 {
+                    return hash
+                }
+                throw "Empty response"
         }
         .eraseToAnyPublisher()
     }
     
-    func getInfo(address: String, contractAddress: String?) -> Single<EthereumResponse> {
+    func getInfo(address: String, contractAddress: String?) -> AnyPublisher<EthereumResponse, Error> {
         if let contractAddress = contractAddress {
             return tokenData(address: address, contractAddress: contractAddress)
                 .map { return EthereumResponse(balance: $0.0, tokenBalance: $0.1, txCount: $0.2, pendingTxCount: $0.3) }
+                .eraseToAnyPublisher()
         } else {
             return coinData(address: address)
                 .map { return EthereumResponse(balance: $0.0, tokenBalance: nil, txCount: $0.1, pendingTxCount: $0.2) }
+                .eraseToAnyPublisher()
         }
     }
     
@@ -67,46 +68,48 @@ class EthereumNetworkService {
     }
     
     
-    private func tokenData(address: String, contractAddress: String) -> Single<(Decimal,Decimal,Int,Int)> {
-        return Single.zip(getBalance(address),
-                              getTokenBalance(address, contractAddress: contractAddress),
-                              getTxCount(address),
-                              getPendingTxCount(address))
+    private func tokenData(address: String, contractAddress: String) -> AnyPublisher<(Decimal,Decimal,Int,Int), Error> {
+        return Publishers.Zip4(getBalance(address),
+                               getTokenBalance(address, contractAddress: contractAddress),
+                               getTxCount(address),
+                               getPendingTxCount(address))
+            .eraseToAnyPublisher()
     }
     
-    private func coinData(address: String) -> Single<(Decimal,Int,Int)> {
-        return Single.zip(getBalance(address),
-                          getTxCount(address),
-                          getPendingTxCount(address))
+    private func coinData(address: String) -> AnyPublisher<(Decimal,Int,Int), Error> {
+        return Publishers.Zip3(getBalance(address),
+                               getTxCount(address),
+                               getPendingTxCount(address))
+            .eraseToAnyPublisher()
     }
     
-    private func getTxCount(_ address: String) -> Single<Int> {
+    private func getTxCount(_ address: String) -> AnyPublisher<Int, Error> {
         return getTxCount(target: .transactions(address: address, network: network))
     }
     
-    private func getPendingTxCount(_ address: String) -> Single<Int> {
+    private func getPendingTxCount(_ address: String) -> AnyPublisher<Int, Error> {
         return getTxCount(target: .pending(address: address, network: network))
     }
-
-    private func getBalance(_ address: String) -> Single<Decimal> {
+    
+    private func getBalance(_ address: String) -> AnyPublisher<Decimal, Error> {
         return provider
-            .rx
-            .request(.balance(address: address, network: network))
-            .map {[unowned self] in try self.parseBalance($0.data)}
+            .requestPublisher(.balance(address: address, network: network))
+            .tryMap {[unowned self] in try self.parseBalance($0.data)}
+            .eraseToAnyPublisher()
     }
     
-    private func getTokenBalance(_ address: String, contractAddress: String) -> Single<Decimal> {
+    private func getTokenBalance(_ address: String, contractAddress: String) -> AnyPublisher<Decimal, Error> {
         return provider
-            .rx
-            .request(.tokenBalance(address: address, contractAddress: contractAddress, network: network ))
-            .map{[unowned self] in try self.parseBalance($0.data)}
+            .requestPublisher(.tokenBalance(address: address, contractAddress: contractAddress, network: network ))
+            .tryMap{[unowned self] in try self.parseBalance($0.data)}
+            .eraseToAnyPublisher()
     }
     
-    private func getTxCount(target: InfuraTarget) -> Single<Int> {
+    private func getTxCount(target: InfuraTarget) -> AnyPublisher<Int, Error> {
         return provider
-            .rx
-            .request(target)
-            .map {[unowned self] in try self.parseTxCount($0.data)}
+            .requestPublisher(target)
+            .tryMap {[unowned self] in try self.parseTxCount($0.data)}
+            .eraseToAnyPublisher()
     }
     
     private func parseResult(_ data: Data) throws -> String {
@@ -114,7 +117,7 @@ class EthereumNetworkService {
         if let result = balanceInfo["result"].string {
             return result
         }
-
+        
         throw "Failed to parse result"
     }
     

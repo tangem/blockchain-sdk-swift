@@ -9,20 +9,21 @@
 import Foundation
 import TangemSdk
 import Combine
-import RxSwift
 
 class BitcoinCashWalletManager: WalletManager {
     var txBuilder: BitcoinCashTransactionBuilder!
     var networkService: BitcoinCashNetworkService!
     
-    override func update(completion: @escaping (Result<Wallet, Error>)-> Void) {
-        requestDisposable = networkService
+    override func update(completion: @escaping (Result<Void, Error>)-> Void) {
+        cancellable = networkService
             .getInfo()
-            .subscribe(onSuccess: {[unowned self] response in
-                self.updateWallet(with: response)
-                completion(.success(self.wallet))
-                }, onError: {error in
+            .sink(receiveCompletion: { completionSubscription in
+                if case let .failure(error) = completionSubscription {
                     completion(.failure(error))
+                }
+            }, receiveValue: { [unowned self] response in
+                self.updateWallet(with: response)
+                completion(.success(()))
             })
     }
     
