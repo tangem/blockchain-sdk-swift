@@ -9,52 +9,49 @@
 import Foundation
 import stellarsdk
 import Combine
-import RxSwift
 import SwiftyJSON
 
 extension AccountService {
-    func getAccountDetails(accountId: String) -> Observable<AccountResponse> {
-        return Observable.create {[unowned self] observer -> Disposable in
+    func getAccountDetails(accountId: String) -> AnyPublisher<AccountResponse, Error> {
+        let future = Future<AccountResponse, Error> { [unowned self] promise in
             self.getAccountDetails(accountId: accountId) { response -> Void in
                 switch response {
                 case .success(let accountResponse):
-                    observer.onNext(accountResponse)
+                    promise(.success(accountResponse))
                 case .failure(let error):
-                    observer.onError(error)
+                    promise(.failure(error))
                 }
             }
-            return Disposables.create()
         }
+        return AnyPublisher(future)
     }
 }
 
-
-
 extension LedgersService {
-    func getLatestLedger() -> Observable<LedgerResponse> {
-        return Observable.create{[unowned self] observer in
+    func getLatestLedger() -> AnyPublisher<LedgerResponse, Error> {
+        let future = Future<LedgerResponse, Error> { [unowned self] promise in
             self.getLedgers(cursor: nil, order: Order.descending, limit: 1) { response -> Void in
                 switch response {
                 case .success(let ledgerResponse):
                     if let lastLedger = ledgerResponse.records.first {
-                        observer.onNext(lastLedger)
+                        promise(.success(lastLedger))
                     } else {
-                        observer.onError("Couldn't find latest ledger")
+                        promise(.failure("Couldn't find latest ledger"))
                     }
                 case .failure(let error):
-                    observer.onError(error.parseError())
+                    promise(.failure(error.parseError()))
                 }
             }
-            return Disposables.create()
         }
+        return AnyPublisher(future)
     }
 }
 
 extension TransactionsService {
     @available(iOS 13.0, *)
     func postTransaction(transactionEnvelope:String) -> AnyPublisher<SubmitTransactionResponse, Error> {
-        let future = Future<SubmitTransactionResponse, Error> { [weak self] promise in
-            self?.postTransaction(transactionEnvelope: transactionEnvelope, response: { response -> (Void) in
+        let future = Future<SubmitTransactionResponse, Error> { [unowned self] promise in
+            self.postTransaction(transactionEnvelope: transactionEnvelope, response: { response -> (Void) in
                 switch response {
                 case .success(let submitResponse):
                     promise(.success(submitResponse))

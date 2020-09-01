@@ -10,7 +10,6 @@ import Foundation
 import Moya
 import Combine
 import TangemSdk
-import RxSwift
 import Alamofire
 import SwiftyJSON
 
@@ -25,12 +24,11 @@ class BlockchairProvider {
         self.endpoint = endpoint
     }
     
-    func getInfo() -> Single<BitcoinResponse> {
+    func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
         return provider
-            .rx
-            .request(.address(address: address, endpoint: endpoint))
+            .requestPublisher(.address(address: address, endpoint: endpoint))
             .mapSwiftyJSON()
-            .map { [unowned self] json -> BitcoinResponse in
+            .tryMap { [unowned self] json -> BitcoinResponse in
                 let data = json["data"]
                 let addr = data["\(self.address)"]
                 let address = addr["address"]
@@ -69,6 +67,7 @@ class BlockchairProvider {
                 
                 return bitcoinResponse
         }
+        .eraseToAnyPublisher()
     }
     
     @available(iOS 13.0, *)

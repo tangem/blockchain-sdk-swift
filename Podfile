@@ -6,8 +6,6 @@ target 'BlockchainSdk' do
     pod 'BigInt', '~> 4.0'
     pod 'SwiftyJSON'
     pod 'Moya'
-    pod 'RxSwift'
-    pod 'Moya/RxSwift'
     pod 'Sodium'
     pod 'SwiftCBOR'
     pod 'BinanceChain', :git => 'https://bitbucket.org/tangem/swiftbinancechain.git', :tag => '0.0.6'

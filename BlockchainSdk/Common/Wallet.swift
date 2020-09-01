@@ -17,6 +17,18 @@ public struct Wallet {
     public var transactions: [Transaction] = []
     public var amounts: [Amount.AmountType:Amount] = [:]
     
+    public var isEmptyAmount: Bool {
+        if amounts.isEmpty {
+            return false
+        }
+        
+      return amounts.values.filter { $0.value != 0 }.count == 0
+    }
+    
+    public var hasPendingTx: Bool {
+        return transactions.filter { $0.status == .unconfirmed }.count > 0
+    }
+    
     internal init(blockchain: Blockchain, address: String, token: Token? = nil) {
         self.blockchain = blockchain
         self.address = address

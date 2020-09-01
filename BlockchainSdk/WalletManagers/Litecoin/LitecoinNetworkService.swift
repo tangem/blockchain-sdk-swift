@@ -8,7 +8,6 @@
 
 import Foundation
 import Combine
-import RxSwift
 
 class LitecoinNetworkService: BitcoinNetworkService {
     convenience init(address: String, isTestNet:Bool) {

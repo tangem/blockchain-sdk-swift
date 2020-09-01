@@ -8,7 +8,6 @@
 
 import Foundation
 import Moya
-import RxSwift
 import Combine
 
 class BitcoreProvider {
@@ -19,18 +18,18 @@ class BitcoreProvider {
         self.address = address
     }
     
-    func getBalance() -> Single<BitcoreBalance> {
+    func getBalance() -> AnyPublisher<BitcoreBalance, MoyaError> {
         return provider
-            .rx
-            .request(.balance(address: address))
+            .requestPublisher(.balance(address: address))
             .map(BitcoreBalance.self)
+            .eraseToAnyPublisher()
     }
     
-    func getUnspents() -> Single<[BitcoreUtxo]> {
+    func getUnspents() -> AnyPublisher<[BitcoreUtxo], MoyaError> {
         return provider
-            .rx
-            .request(.unspents(address: address))
+            .requestPublisher(.unspents(address: address))
             .map([BitcoreUtxo].self)
+            .eraseToAnyPublisher()
     }
     
     @available(iOS 13.0, *)

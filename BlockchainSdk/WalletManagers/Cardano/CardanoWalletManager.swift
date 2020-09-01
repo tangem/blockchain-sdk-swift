@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import RxSwift
 import Combine
 
 enum CardanoError: Error {
@@ -32,14 +31,16 @@ class CardanoWalletManager: WalletManager {
     var txBuilder: CardanoTransactionBuilder!
     var networkService: CardanoNetworkService!
     
-    override func update(completion: @escaping (Result<Wallet, Error>)-> Void) {//check it
-        requestDisposable = networkService
+    override func update(completion: @escaping (Result<Void, Error>)-> Void) {//check it
+        cancellable = networkService
             .getInfo(address: wallet.address)
-            .subscribe(onSuccess: {[unowned self] response in
-                self.updateWallet(with: response)
-                completion(.success(self.wallet))
-                }, onError: {error in
+            .sink(receiveCompletion: { completionSubscription in
+                if case let .failure(error) = completionSubscription {
                     completion(.failure(error))
+                }
+            }, receiveValue: { [unowned self] response in
+                self.updateWallet(with: response)
+                completion(.success(()))
             })
     }
     

@@ -9,7 +9,6 @@
 import Foundation
 import Moya
 import Combine
-import RxSwift
 
 class BlockcypherProvider: BitcoinNetworkProvider {    
     let provider = MoyaProvider<BlockcypherTarget>()
@@ -19,52 +18,45 @@ class BlockcypherProvider: BitcoinNetworkProvider {
     
     private var token: String? = nil
     
-    private lazy var retryHandler: (Observable<Error>) -> Observable<Response> = { error in
-        return error.flatMap { error -> Observable<Response> in
-            if case let MoyaError.statusCode(response) = error, response.statusCode == 429 {
-                self.token = self.getRandomToken()
-                return Observable.just(response)
-            } else {
-                return Observable.error(error)
-            }
-        }
-    }
-    
-    
     init(address: String, coin: BlockcypherCoin, chain: BlockcypherChain) {
         self.address = address
         self.coin = coin
         self.chain = chain
     }
     
-    func getInfo() -> Single<BitcoinResponse> {
+    func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
         return provider
-            .rx
-            .request(BlockcypherTarget(coin: coin, chain: chain, token: token, targetType: .address(address: address)))
-            .retryWhen { self.retryHandler($0) }
-            .map(BlockcypherAddressResponse.self)
-            .map {addressResponse -> BitcoinResponse in
-                guard let balance = addressResponse.balance,
-                    let uncBalance = addressResponse.unconfirmed_balance
-                    else {
-                        throw BitcoinError.failedToMapNetworkResponse
+            .requestPublisher(BlockcypherTarget(coin: coin, chain: chain, token: token, targetType: .address(address: address)))
+            .catch{ error -> AnyPublisher<Response, MoyaError> in
+                self.changeToken(error)
+                return Fail(error: error).eraseToAnyPublisher()
+        }
+        .retry(1)
+        .eraseToAnyPublisher()
+        .map(BlockcypherAddressResponse.self)
+        .tryMap {addressResponse -> BitcoinResponse in
+            guard let balance = addressResponse.balance,
+                let uncBalance = addressResponse.unconfirmed_balance
+                else {
+                    throw BitcoinError.failedToMapNetworkResponse
+            }
+            
+            let satoshiBalance = Decimal(balance)/Decimal(100000000)
+            let txs: [BtcTx] = addressResponse.txrefs?.compactMap { utxo -> BtcTx?  in
+                guard let hash = utxo.tx_hash,
+                    let n = utxo.tx_output_n,
+                    let val = utxo.value else {
+                        return nil
                 }
                 
-                let satoshiBalance = Decimal(balance)/Decimal(100000000)
-                let txs: [BtcTx] = addressResponse.txrefs?.compactMap { utxo -> BtcTx?  in
-                    guard let hash = utxo.tx_hash,
-                        let n = utxo.tx_output_n,
-                        let val = utxo.value else {
-                            return nil
-                    }
-                    
-                    let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: UInt64(val))
-                    return btx
-                    } ?? []
-                
-                let btcResponse = BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: balance != uncBalance, txrefs: txs)
-                return btcResponse
+                let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: UInt64(val))
+                return btx
+                } ?? []
+            
+            let btcResponse = BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: balance != uncBalance, txrefs: txs)
+            return btcResponse
         }
+        .eraseToAnyPublisher()
     }
     
     
@@ -100,20 +92,20 @@ class BlockcypherProvider: BitcoinNetworkProvider {
             .catch{ error -> AnyPublisher<Response, MoyaError> in
                 self.changeToken(error)
                 return Fail(error: error).eraseToAnyPublisher()
-            }
-            .retry(1)
-            .eraseToAnyPublisher()
-            .mapNotEmptyString()
-            .eraseError()
-            .eraseToAnyPublisher()
+        }
+        .retry(1)
+        .eraseToAnyPublisher()
+        .mapNotEmptyString()
+        .eraseError()
+        .eraseToAnyPublisher()
     }
     
     @available(iOS 13.0, *)
     func getTx(hash: String) -> AnyPublisher<BlockcypherTx, Error> {
         return provider.requestPublisher(BlockcypherTarget(coin: coin, chain: chain, token: token, targetType: .txs(txHash: hash)))
-        .catch{ error -> AnyPublisher<Response, MoyaError> in
-            self.changeToken(error)
-            return Fail(error: error).eraseToAnyPublisher()
+            .catch{ error -> AnyPublisher<Response, MoyaError> in
+                self.changeToken(error)
+                return Fail(error: error).eraseToAnyPublisher()
         }
         .retry(1)
         .eraseToAnyPublisher()

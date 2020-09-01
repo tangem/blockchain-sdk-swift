@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import RxSwift
 import Combine
 import TangemSdk
 
@@ -15,14 +14,16 @@ class XRPWalletManager: WalletManager {
     var txBuilder: XRPTransactionBuilder!
     var networkService: XRPNetworkService!
     
-    override func update(completion: @escaping (Result<Wallet, Error>)-> Void) {
-        requestDisposable = networkService
+    override func update(completion: @escaping (Result<Void, Error>)-> Void) {
+        cancellable = networkService
             .getInfo(account: wallet.address)
-            .subscribe(onSuccess: {[unowned self] response in
-                self.updateWallet(with: response)
-                completion(.success(self.wallet))
-                }, onError: {error in
+            .sink(receiveCompletion: { completionSubscription in
+                if case let .failure(error) = completionSubscription {
                     completion(.failure(error))
+                }
+            }, receiveValue: { [unowned self] response in
+                self.updateWallet(with: response)
+                completion(.success(()))
             })
     }
     

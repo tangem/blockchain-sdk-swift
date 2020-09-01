@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import RxSwift
 import Combine
 
 struct BtcFee {
@@ -34,7 +33,7 @@ enum BitcoinNetworkApi {
 }
 
 protocol BitcoinNetworkProvider {
-    func getInfo() -> Single<BitcoinResponse>
+    func getInfo() -> AnyPublisher<BitcoinResponse, Error>
     
     @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<BtcFee, Error>

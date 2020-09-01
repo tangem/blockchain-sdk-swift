@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import RxSwift
 import Combine
 import Moya
 
@@ -18,9 +17,9 @@ class DucatusNetworkService: BitcoinNetworkProvider {
         provider = BitcoreProvider(address: address)
     }
     
-    func getInfo() -> Single<BitcoinResponse> {
-        return Single.zip(provider.getBalance(), provider.getUnspents())
-            .map { balance, unspents throws -> BitcoinResponse in
+    func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
+        return Publishers.Zip(provider.getBalance(), provider.getUnspents())
+            .tryMap { balance, unspents throws -> BitcoinResponse in
                 guard let confirmed = balance.confirmed,
                     let unconfirmed = balance.unconfirmed else {
                         throw  "Failed to get request"
@@ -40,6 +39,7 @@ class DucatusNetworkService: BitcoinNetworkProvider {
                 let balance = Decimal(confirmed)/Decimal(100000000)
                 return BitcoinResponse(balance: balance, hasUnconfirmed: confirmed != unconfirmed, txrefs: utxs)
         }
+        .eraseToAnyPublisher()
     }
     
     @available(iOS 13.0, *)

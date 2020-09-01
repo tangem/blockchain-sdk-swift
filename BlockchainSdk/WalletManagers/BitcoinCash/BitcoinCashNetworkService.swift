@@ -10,7 +10,6 @@ import Foundation
 import Moya
 import Combine
 import TangemSdk
-import RxSwift
 
 class BitcoinCashNetworkService {
     let provider: BlockchairProvider
@@ -19,7 +18,7 @@ class BitcoinCashNetworkService {
          self.provider = BlockchairProvider(address: address, endpoint: .bitcoinCash)
     }
     
-    func getInfo() -> Single<BitcoinResponse> {
+    func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
         return provider.getInfo()
     }
     

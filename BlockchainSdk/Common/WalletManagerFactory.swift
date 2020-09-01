@@ -9,7 +9,6 @@
 import Foundation
 import TangemSdk
 import stellarsdk
-import RxSwift
 
 public class WalletManagerFactory {
     public init() {}

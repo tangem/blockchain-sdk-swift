@@ -9,7 +9,6 @@
 import Foundation
 import TangemSdk
 import Combine
-import RxSwift
 
 enum BitcoinError: Error {
     case noUnspents
@@ -26,13 +25,15 @@ class BitcoinWalletManager: WalletManager {
         return nil
     }
     
-    override func update(completion: @escaping (Result<Wallet, Error>)-> Void)  {
-        requestDisposable = networkService.getInfo()
-            .subscribe( onSuccess: { response in
+    override func update(completion: @escaping (Result<Void, Error>)-> Void)  {
+        cancellable = networkService.getInfo()
+            .sink(receiveCompletion: { completionSubscription in
+                if case let .failure(error) = completionSubscription {
+                    completion(.failure(error))
+                }
+            }, receiveValue: { [unowned self] response in
                 self.updateWallet(with: response)
-                completion(.success(self.wallet))
-            }, onError: { error in
-                completion(.failure(error))
+                completion(.success(()))
             })
     }
     

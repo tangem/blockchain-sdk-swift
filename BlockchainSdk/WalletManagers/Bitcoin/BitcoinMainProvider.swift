@@ -9,7 +9,6 @@
 import Foundation
 import Moya
 import Combine
-import RxSwift
 
 class BitcoinMainProvider: BitcoinNetworkProvider {
     let blockchainInfoProvider = MoyaProvider<BlockchainInfoTarget>(plugins: [NetworkLoggerPlugin()])
@@ -21,9 +20,9 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
         self.address = address
     }
     
-    func getInfo() -> Single<BitcoinResponse> {
+    func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
         return addressData(address)
-            .map {(addressResponse, unspentsResponse) throws -> BitcoinResponse in
+            .tryMap {(addressResponse, unspentsResponse) throws -> BitcoinResponse in
                 guard let balance = addressResponse.final_balance,
                     let txs = addressResponse.txs else {
                         throw "Fee request error"
@@ -44,6 +43,7 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
                 let hasUnconfirmed = txs.first(where: {$0.block_height == nil}) != nil
                 return BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: hasUnconfirmed, txrefs: utxs)
         }
+           .eraseToAnyPublisher()
     }
     
     
@@ -72,28 +72,30 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
         .eraseToAnyPublisher()
     }
     
-    private func addressData(_ address: String) -> Single<(BlockchainInfoAddressResponse, BlockchainInfoUnspentResponse)> {
-        return Single.zip(
+    private func addressData(_ address: String) -> AnyPublisher<(BlockchainInfoAddressResponse, BlockchainInfoUnspentResponse), Error> {
+        return Publishers.Zip(
             blockchainInfoProvider
-                .rx
-                .request(.address(address: address))
-                .map(BlockchainInfoAddressResponse.self),
+                .requestPublisher(.address(address: address))
+                .map(BlockchainInfoAddressResponse.self)
+                .eraseError(),
         
             blockchainInfoProvider
-                .rx
-                .request(.unspents(address: address))
+                .requestPublisher(.unspents(address: address))
                 .map(BlockchainInfoUnspentResponse.self)
-                .catchError{ error in
-                    if case let MoyaError.objectMapping(mappingError, response) = error {
+                .tryCatch { error -> AnyPublisher<BlockchainInfoUnspentResponse, Error> in
+                    if case let MoyaError.objectMapping(_, response) = error {
                         let stringError = try response.mapString()
                         if stringError == "No free outputs to spend" {
-                            return .just(BlockchainInfoUnspentResponse(unspent_outputs: []))
+                            return Just(BlockchainInfoUnspentResponse(unspent_outputs: []))
+                                .setFailureType(to: Error.self)
+                                .eraseToAnyPublisher()
                         } else {
                             throw stringError
                         }
                     } else {
-                        throw error
+                       throw error
                     }
             })
+                .eraseToAnyPublisher()
     }
 }
