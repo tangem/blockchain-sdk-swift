@@ -39,7 +39,7 @@ extension LedgersService {
                         promise(.failure("Couldn't find latest ledger"))
                     }
                 case .failure(let error):
-                    promise(.failure(error.parseError()))
+                    promise(.failure(error))
                 }
             }
         }
@@ -56,7 +56,7 @@ extension TransactionsService {
                 case .success(let submitResponse):
                     promise(.success(submitResponse))
                 case .failure(let error):
-                    promise(.failure(error.parseError()))
+                    promise(.failure(error))
                 case .destinationRequiresMemo(destinationAccountId: let destinationAccountId):
                     promise(.failure("requires memo"))
                 }
@@ -101,7 +101,7 @@ extension HorizonRequestError {
         }
     }
     
-    func parseError() -> String {
+    func parseError() -> Error {
         let hotizonMessage = message
         let json = JSON(parseJSON: hotizonMessage)
         let detailMessage = json["detail"].stringValue

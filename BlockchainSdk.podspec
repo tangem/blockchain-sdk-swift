@@ -39,6 +39,8 @@ Use BlockchainSdk for Tangem wallet integration
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
 
+  s.resource_bundles = { 'BlockchainSdk' => ['BlockchainSdk/Common/Localizations/*.lproj/*.strings']}
+
   s.dependency 'BigInt'
   s.dependency 'SwiftyJSON'
   s.dependency 'Moya'

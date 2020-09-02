@@ -72,6 +72,8 @@
 		5D557CB023AA888D009B32AF /* Uint64+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D557CAF23AA888D009B32AF /* Uint64+.swift */; };
 		5D557CB523ACCAD2009B32AF /* BlockcypherProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D557CB423ACCAD2009B32AF /* BlockcypherProvider.swift */; };
 		5D557CB723ACCB48009B32AF /* BitcoinMainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D557CB623ACCB48009B32AF /* BitcoinMainProvider.swift */; };
+		5D5E058724FE72D900F04DE1 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5D5E058924FE72D900F04DE1 /* Localizable.strings */; };
+		5D5E058C24FE749D00F04DE1 /* Bundle+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E058B24FE749D00F04DE1 /* Bundle+.swift */; };
 		5D6DEAB6243CC09A00510EC8 /* EthereumTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6DEAB5243CC09A00510EC8 /* EthereumTransactionBuilder.swift */; };
 		5D84550E243DE9B40072155E /* CardanoWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D84550D243DE9B40072155E /* CardanoWalletManager.swift */; };
 		5D845511243DE9CD0072155E /* CardanoTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D845510243DE9CD0072155E /* CardanoTransactionBuilder.swift */; };
@@ -197,6 +199,8 @@
 		5D557CAF23AA888D009B32AF /* Uint64+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Uint64+.swift"; sourceTree = "<group>"; };
 		5D557CB423ACCAD2009B32AF /* BlockcypherProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockcypherProvider.swift; sourceTree = "<group>"; };
 		5D557CB623ACCB48009B32AF /* BitcoinMainProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinMainProvider.swift; sourceTree = "<group>"; };
+		5D5E058824FE72D900F04DE1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		5D5E058B24FE749D00F04DE1 /* Bundle+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+.swift"; sourceTree = "<group>"; };
 		5D6DEAB5243CC09A00510EC8 /* EthereumTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTransactionBuilder.swift; sourceTree = "<group>"; };
 		5D84550D243DE9B40072155E /* CardanoWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoWalletManager.swift; sourceTree = "<group>"; };
 		5D845510243DE9CD0072155E /* CardanoTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoTransactionBuilder.swift; sourceTree = "<group>"; };
@@ -413,6 +417,7 @@
 		5D14E48B2397B87000C15FC8 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				5D5E058A24FE736E00F04DE1 /* Localizations */,
 				5D006ACC239950F9008BA04D /* Wallet.swift */,
 				5DEAFA8D244472CD0032E316 /* Amount.swift */,
 				5DEAFA8F244473460032E316 /* Transaction.swift */,
@@ -485,6 +490,7 @@
 				5D557CAF23AA888D009B32AF /* Uint64+.swift */,
 				5D84551B243E30E70072155E /* PrimitiveSequence+SwiftyJson.swift */,
 				5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */,
+				5D5E058B24FE749D00F04DE1 /* Bundle+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -554,6 +560,14 @@
 				5D54FE1F23E43E7E009FAC2F /* LitecoinNetworkService.swift */,
 			);
 			path = Litecoin;
+			sourceTree = "<group>";
+		};
+		5D5E058A24FE736E00F04DE1 /* Localizations */ = {
+			isa = PBXGroup;
+			children = (
+				5D5E058924FE72D900F04DE1 /* Localizable.strings */,
+			);
+			path = Localizations;
 			sourceTree = "<group>";
 		};
 		5D845512243DEAAE0072155E /* Adalite */ = {
@@ -763,6 +777,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5D01BD02243F80DC0048D1BA /* README.md in Resources */,
+				5D5E058724FE72D900F04DE1 /* Localizable.strings in Resources */,
 				5D01BD01243F80DC0048D1BA /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -892,6 +907,7 @@
 				5D01BD0A243F80DC0048D1BA /* XRPKeypair.swift in Sources */,
 				5D4B33D523F7DFB400C93A84 /* BinanceTransactionBuilder.swift in Sources */,
 				5D26CEEC243CB92700994CC0 /* BlockcypherResponse.swift in Sources */,
+				5D5E058C24FE749D00F04DE1 /* Bundle+.swift in Sources */,
 				5D845518243DFCE90072155E /* CardanoNetworkService.swift in Sources */,
 				5D86540023A906DF000DE52D /* CardManager+.swift in Sources */,
 				5D54FE1E23E4313A009FAC2F /* LitecoinWalletManager.swift in Sources */,
@@ -965,6 +981,17 @@
 			targetProxy = 5D14E4792397B80F00C15FC8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		5D5E058924FE72D900F04DE1 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5D5E058824FE72D900F04DE1 /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		5D14E4802397B80F00C15FC8 /* Debug */ = {
