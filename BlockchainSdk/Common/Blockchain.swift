@@ -103,6 +103,21 @@ public enum Blockchain {
         }
     }
     
+    public var qrPrefix: String {
+        switch self {
+        case .bitcoin:
+            return "bitcoin:"
+        case .ethereum(let testnet):
+            return testnet ? "" : "ethereum:"
+        case .litecoin:
+            return "litecoin:"
+        case .xrp:
+            return "ripple:"
+        default:
+            return ""
+        }
+    }
+    
     public func makeAddress(from walletPublicKey: Data) -> String {
         return getAddressService().makeAddress(from: walletPublicKey)
     }
@@ -114,14 +129,13 @@ public enum Blockchain {
     public func getShareString(from address: String) -> String {
         switch self {
         case .bitcoin:
-            return "bitcoin:\(address)"
+            return "\(qrPrefix)\(address)"
         case .ethereum(let testnet):
-            let sharePrefix = testnet ? "" : "ethereum:"
-            return "\(sharePrefix)\(address)"
+            return "\(qrPrefix)\(address)"
         case .litecoin:
-            return "litecoin:\(address)"
+            return "\(qrPrefix)\(address)"
         case .xrp:
-            return "ripple:\(address)"
+            return "\(qrPrefix)\(address)"
         default:
             return "\(address)"
         }
