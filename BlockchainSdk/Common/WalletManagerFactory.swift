@@ -12,7 +12,7 @@ import stellarsdk
 
 public class WalletManagerFactory {
     public init() {}
-    
+        
     public func makeWalletManager(from card: Card) -> WalletManager? {
         guard let blockchainName = card.cardData?.blockchainName,
             let curve = card.curve,
@@ -115,5 +115,15 @@ public class WalletManagerFactory {
             return Token(currencySymbol: symbol, contractAddress: contractAddress, decimalCount: decimals, displayName: displayName)
         }
         return nil
+    }
+    
+    public func isBlockchainSupported(_ card: Card) -> Bool {
+        guard let blockchainName = card.cardData?.blockchainName,
+            let curve = card.curve,
+            let _ = Blockchain.from(blockchainName: blockchainName, curve: curve) else {
+                return false
+        }
+        
+        return true
     }
 }
