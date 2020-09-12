@@ -38,6 +38,7 @@ class StellarWalletManager: WalletManager {
     
     private func updateWallet(with response: StellarResponse) {
         txBuilder.sequence = response.sequence
+        self.baseFee = response.baseFee
         let fullReserve = wallet.token != nil ? response.baseReserve * 3 : response.baseReserve * 2
         wallet.add(reserveValue: fullReserve)
         wallet.add(coinValue: response.balance - fullReserve)
