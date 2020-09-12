@@ -13,7 +13,7 @@ import Combine
 class BitcoinMainProvider: BitcoinNetworkProvider {
     let blockchainInfoProvider = MoyaProvider<BlockchainInfoTarget>(plugins: [NetworkLoggerPlugin()])
     let estimateFeeProvider = MoyaProvider<EstimateFeeTarget>(plugins: [NetworkLoggerPlugin()])
-    
+
     let address: String
     
     init(address: String) {

@@ -24,7 +24,7 @@ public class BitcoinAddressService: AddressService {
         let entendedRipemd160Hash = netSelectionByte + ripemd160Hash
         let sha = entendedRipemd160Hash.sha256().sha256()
         let ripemd160HashWithChecksum = entendedRipemd160Hash + sha[..<4]
-        let base58 = String(base58: ripemd160HashWithChecksum)
+        let base58 = String(base58: ripemd160HashWithChecksum, alphabet: Base58String.btcAlphabet)
         return base58
     }
     
@@ -41,12 +41,11 @@ public class BitcoinAddressService: AddressService {
             
             return true
         }
-        
-        guard let decoded = Data(base58: address),
+
+        guard let decoded = address.base58DecodedData,
             decoded.count > 24 else {
                 return false
         }
-        
         let rip = decoded[0..<21]
         let kcv = rip.sha256().sha256()
         

@@ -45,6 +45,8 @@ class XRPWalletManager: WalletManager {
 
 @available(iOS 13.0, *)
 extension XRPWalletManager: TransactionSender {
+    var allowsFeeSelection: Bool { false }
+    
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error> {
         guard let walletReserve = wallet.amounts[.reserve]?.value,
             let hashToSign = txBuilder.buildForSign(transaction: transaction) else {
@@ -78,7 +80,7 @@ extension XRPWalletManager: TransactionSender {
         .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, source: String, destination: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .map { xrpFeeResponse -> [Amount] in
                 let min = xrpFeeResponse.min/Decimal(1000000)

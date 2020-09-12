@@ -21,11 +21,11 @@ enum EstimateFeeTarget: TargetType {
     var path: String {
         switch self {
         case .minimal:
-            return "/6"
+            return "/n/6"
         case .normal:
-            return "/3"
+            return "/n/3"
         case .priority:
-            return "/2"
+            return "/n/2"
         }
     }
     
@@ -42,6 +42,6 @@ enum EstimateFeeTarget: TargetType {
     }
     
     var headers: [String : String]? {
-        return nil
+        return ["Content-Type": "application/json"]
     }
 }

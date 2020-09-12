@@ -52,4 +52,18 @@ public struct Amount: CustomStringConvertible, Equatable {
         
         return lhs.value == rhs.value
     }
+    
+    static public func -(l: Amount, r: Amount) -> Amount {
+        if l.type != r.type {
+            return l
+        }
+        return Amount(with: l, value: l.value - r.value)
+    }
+    
+    static public func +(l: Amount, r: Amount) -> Amount {
+        if l.type != r.type {
+            return l
+        }
+        return Amount(with: l, value: l.value + r.value)
+    }
 }

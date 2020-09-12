@@ -55,6 +55,8 @@ class StellarWalletManager: WalletManager {
 
 @available(iOS 13.0, *)
 extension StellarWalletManager: TransactionSender {
+    var allowsFeeSelection: Bool { false }
+    
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error> {
         return txBuilder.buildForSign(transaction: transaction)
             .flatMap { [unowned self] buildForSignResponse in
@@ -76,9 +78,9 @@ extension StellarWalletManager: TransactionSender {
         .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, source: String, destination: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         if let feeValue = self.baseFee {
-            let feeAmount = Amount(with: wallet.blockchain, address: source, value: feeValue)
+            let feeAmount = Amount(with: wallet.blockchain, address: self.wallet.address, value: feeValue)
             return Result.Publisher([feeAmount]).eraseToAnyPublisher()
         } else {
             return Fail(error: StellarError.noFee).eraseToAnyPublisher()

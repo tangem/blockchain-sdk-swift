@@ -30,9 +30,9 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
     }
     
     func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
-        return getProvider()
+        return Just(())
             .setFailureType(to: Error.self)
-            .flatMap { $0.getInfo() }
+            .flatMap {[unowned self] in self.getProvider().getInfo() }
             .tryCatch {[unowned self] error -> AnyPublisher<BitcoinResponse, Error> in
                 if let moyaError = error as? MoyaError,
                     case let MoyaError.statusCode(response) = moyaError,
@@ -51,26 +51,30 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
     
     @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<BtcFee, Error> {
-        return getProviderCombine()
+        return Just(())
             .setFailureType(to: Error.self)
-            .flatMap{ $0.getFee() }
-            .eraseToAnyPublisher()
+            .flatMap {[unowned self] _ -> AnyPublisher<BtcFee, Error> in
+                self.getProvider().getFee()
+            }
+            .tryCatch {[unowned self] error -> AnyPublisher<BtcFee, Error> in
+                if self.networkApi == .main {
+                    self.networkApi = .blockcypher
+                }
+                throw error
+        }
+        .retry(1)
+        .eraseToAnyPublisher()
     }
     
     @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error> {
-        return getProviderCombine()
+        return Just(())
             .setFailureType(to: Error.self)
-            .flatMap{ $0.send(transaction: transaction) }
+            .flatMap{[unowned self] in self.getProvider().send(transaction: transaction) }
             .eraseToAnyPublisher()
     }
     
-    @available(iOS 13.0, *)
-    private func getProviderCombine() -> Just<BitcoinNetworkProvider> {
-        return isTestNet ? Just(providers[.blockcypher]!) : Just(providers[networkApi]!)
-    }
-    
-    func getProvider() -> Just<BitcoinNetworkProvider> {
-        return isTestNet ? Just(providers[.blockcypher]!) : Just(providers[networkApi]!)
+    func getProvider() -> BitcoinNetworkProvider {
+        return isTestNet ? providers[.blockcypher]!: providers[networkApi]!
     }
 }

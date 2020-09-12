@@ -31,6 +31,10 @@ class EthereumTransactionBuilder {
     }
     
     public func buildForSign(transaction: Transaction, nonce: Int) -> (hash: Data, transaction: EthereumTransaction)? {
+        guard nonce >= 0 else {
+            return nil
+        }
+        
         let nonceValue = BigUInt(nonce)
         
         guard let feeValue = Web3.Utils.parseToBigUInt("\(transaction.fee.value)", decimals: transaction.fee.decimals),
