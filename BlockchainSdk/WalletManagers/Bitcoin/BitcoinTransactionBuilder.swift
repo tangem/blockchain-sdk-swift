@@ -145,7 +145,10 @@ class BitcoinTransactionBuilder {
             return script
         }
         
-        let decoded = Data(base58: address)!
+        guard let decoded = address.base58DecodedData else {
+            return nil
+        }
+        
         let first = decoded[0]
         let data = decoded[1...20]
         //P2H

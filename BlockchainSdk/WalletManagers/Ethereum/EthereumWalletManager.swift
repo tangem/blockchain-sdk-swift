@@ -53,6 +53,8 @@ class EthereumWalletManager: WalletManager {
 
 @available(iOS 13.0, *)
 extension EthereumWalletManager: TransactionSender {
+    var allowsFeeSelection: Bool { true }
+    
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error> {
         guard let txForSign = txBuilder.buildForSign(transaction: transaction, nonce: txCount) else {
             return Fail(error: EthereumError.failedToBuildHash).eraseToAnyPublisher()
@@ -72,7 +74,7 @@ extension EthereumWalletManager: TransactionSender {
     .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, source: String, destination: String) -> AnyPublisher<[Amount],Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
         return networkService.getGasPrice()
             .tryMap { [unowned self] gasPrice throws -> [Amount] in
                 let m = self.txBuilder.getGasLimit(for: amount)

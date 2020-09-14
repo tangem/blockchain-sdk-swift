@@ -49,10 +49,10 @@ public class WalletManager {
     }
     
     func validateTransaction(amount: Amount, fee: Amount?) -> TransactionError {
-        var errors: TransactionError = []
+        var errors = TransactionError()
         
         if !validate(amount: amount) {
-            errors.insert(.wrongAmount)
+            errors.update(with: .wrongAmount)
         }
         
         guard let fee = fee else {
@@ -60,18 +60,18 @@ public class WalletManager {
         }
         
         if !validate(amount: fee) {
-            errors.insert(.wrongFee)
+           errors.update(with: .wrongFee)
         }
         
         if amount.type == fee.type,
             !validate(amount: Amount(with: amount, value: amount.value + fee.value)) {
-            errors.insert(.wrongTotal)
+           errors.update(with: .wrongTotal)
         }
         
         return errors
     }
     
-    func validate(amount: Amount) -> Bool {
+    public func validate(amount: Amount) -> Bool {
         guard amount.value > 0,
             let total = wallet.amounts[amount.type]?.value, total >= amount.value else {
                 return false
@@ -83,8 +83,9 @@ public class WalletManager {
 
 @available(iOS 13.0, *)
 public protocol TransactionSender {
+    var allowsFeeSelection: Bool {get}
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error>
-    func getFee(amount: Amount, source: String, destination: String) -> AnyPublisher<[Amount], Error>
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error>
 }
 
 @available(iOS 13.0, *)

@@ -61,6 +61,8 @@ class CardanoWalletManager: WalletManager {
 
 @available(iOS 13.0, *)
 extension CardanoWalletManager: TransactionSender {
+    var allowsFeeSelection: Bool { false }
+    
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error> {
         guard let walletAmount = wallet.amounts[.coin]?.value else {
             return Fail(error: CardanoError.failedToBuildHash).eraseToAnyPublisher()
@@ -93,7 +95,7 @@ extension CardanoWalletManager: TransactionSender {
         }
     }
     
-    func getFee(amount: Amount, source: String, destination: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         guard let unspentOutputs = txBuilder.unspentOutputs else {
             return Fail(error: CardanoError.noUnspents).eraseToAnyPublisher()
         }

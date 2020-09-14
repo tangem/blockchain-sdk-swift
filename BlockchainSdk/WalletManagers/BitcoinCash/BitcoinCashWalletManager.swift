@@ -27,40 +27,6 @@ class BitcoinCashWalletManager: WalletManager {
             })
     }
     
-    @available(iOS 13.0, *)
-    func getFee(amount: Amount, source: String, destination: String) -> AnyPublisher<[Amount], Error> {
-        return networkService.getFee()
-            .tryMap {[unowned self] response throws -> [Amount] in
-                let kb = Decimal(1024)
-                let feePerByte = response.minimalKb/kb
-               
-                guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount, fee: Amount(with: amount, value: 0.0001), sourceAddress: source, destinationAddress: destination)) else {
-                    throw BitcoinError.failedToCalculateTxSize
-                }
-                
-                let fee = (feePerByte * estimatedTxSize)
-                let relayFee = Decimal(0.00001)
-                let finalFee = fee >= relayFee ? fee : relayFee
-                
-                return [
-                    Amount(with: self.wallet.blockchain, address: source, value: finalFee)
-                ]
-        }
-        .eraseToAnyPublisher()
-    }
-    
-    private func getEstimateSize(for transaction: Transaction) -> Decimal? {
-        guard let unspentOutputsCount = txBuilder.unspentOutputs?.count else {
-            return nil
-        }
-        
-        guard let tx = txBuilder.buildForSend(transaction: transaction, signature: Data(repeating: UInt8(0x01), count: 64 * unspentOutputsCount)) else {
-            return nil
-        }
-        
-        return Decimal(tx.count + 1)
-    }
-    
     private func updateWallet(with response: BitcoinResponse) {
         wallet.add(coinValue: response.balance)
         txBuilder.unspentOutputs = response.txrefs
@@ -76,6 +42,8 @@ class BitcoinCashWalletManager: WalletManager {
 
 @available(iOS 13.0, *)
 extension BitcoinCashWalletManager: TransactionSender {
+    var allowsFeeSelection: Bool { true }
+    
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error> {
         guard let hashes = txBuilder.buildForSign(transaction: transaction) else {
             return Fail(error: BitcoinError.failedToBuildHash).eraseToAnyPublisher()
@@ -95,6 +63,40 @@ extension BitcoinCashWalletManager: TransactionSender {
             }
         }
         .eraseToAnyPublisher()
+    }
+    
+    @available(iOS 13.0, *)
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
+        return networkService.getFee()
+            .tryMap {[unowned self] response throws -> [Amount] in
+                let kb = Decimal(1024)
+                let feePerByte = response.minimalKb/kb
+                
+                guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount, fee: Amount(with: amount, value: 0.0001), sourceAddress: self.wallet.address, destinationAddress: destination)) else {
+                    throw BitcoinError.failedToCalculateTxSize
+                }
+                
+                let fee = (feePerByte * estimatedTxSize)
+                let relayFee = Decimal(0.00001)
+                let finalFee = fee >= relayFee ? fee : relayFee
+                
+                return [
+                    Amount(with: self.wallet.blockchain, address: self.wallet.address, value: finalFee)
+                ]
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    private func getEstimateSize(for transaction: Transaction) -> Decimal? {
+        guard let unspentOutputsCount = txBuilder.unspentOutputs?.count else {
+            return nil
+        }
+        
+        guard let tx = txBuilder.buildForSend(transaction: transaction, signature: Data(repeating: UInt8(0x01), count: 64 * unspentOutputsCount)) else {
+            return nil
+        }
+        
+        return Decimal(tx.count + 1)
     }
 }
 

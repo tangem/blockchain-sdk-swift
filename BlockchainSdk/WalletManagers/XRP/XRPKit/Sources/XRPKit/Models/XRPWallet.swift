@@ -86,7 +86,7 @@ public class XRPWallet {
         let accountID = Data([0x00]) + RIPEMD160.hash(message: Data(xrpHex: publicKey).sha256())
         let checksum = Data(accountID).sha256().sha256().prefix(through: 3)
         let addrrssData = accountID + checksum
-        let address = String(base58: addrrssData)
+        let address = String(base58: addrrssData, alphabet: Base58String.xrpAlphabet)
         return address
     }
     
@@ -102,7 +102,7 @@ public class XRPWallet {
         if address.count < 25 || address.count > 35 {
             return false
         }
-        if let _addressData = Data(base58: address) {
+        if let _addressData = Data(base58: address, alphabet: Base58String.xrpAlphabet) {
             var addressData = [UInt8](_addressData)
             // FIXME: base58Decoding
             addressData[0] = 0
@@ -145,10 +145,10 @@ public class XRPWallet {
     private static func decodeSeed(seed: String) throws -> [UInt8]? {
         // make sure seed will at least parse for checksum validation
         // FIXME: this needs work
-        if seed.count < 10 || Data(base58: seed) == nil || seed.first != "s" {
+        if seed.count < 10 || Data(base58: seed, alphabet:Base58String.xrpAlphabet) == nil || seed.first != "s" {
             throw SeedError.invalidSeed
         }
-        let versionEntropyCheck = [UInt8](Data(base58: seed)!)
+        let versionEntropyCheck = [UInt8](Data(base58: seed, alphabet:Base58String.xrpAlphabet)!)
         let check = Array(versionEntropyCheck.suffix(4))
         let versionEntropy = versionEntropyCheck.prefix(versionEntropyCheck.count-4)
         if check == [UInt8](Data(versionEntropy).sha256().sha256().prefix(through: 3)) {

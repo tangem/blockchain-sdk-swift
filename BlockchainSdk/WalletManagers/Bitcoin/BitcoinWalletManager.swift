@@ -19,6 +19,7 @@ enum BitcoinError: Error {
 }
 
 class BitcoinWalletManager: WalletManager {
+    var allowsFeeSelection: Bool { true }
     var txBuilder: BitcoinTransactionBuilder!
     var networkService: BitcoinNetworkProvider!
     var relayFee: Decimal? {
@@ -38,7 +39,7 @@ class BitcoinWalletManager: WalletManager {
     }
     
     @available(iOS 13.0, *)
-    func getFee(amount: Amount, source: String, destination: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap {[unowned self] response throws -> [Amount] in
                 let kb = Decimal(1024)
@@ -46,7 +47,7 @@ class BitcoinWalletManager: WalletManager {
                 let normalPerByte = response.normalKb/kb
                 let maxPerByte = response.priorityKb/kb
                 
-                guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount, fee: Amount(with: amount, value: 0.0001), sourceAddress: source, destinationAddress: destination)) else {
+                guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount, fee: Amount(with: amount, value: 0.0001), sourceAddress: self.wallet.address, destinationAddress: destination)) else {
                     throw BitcoinError.failedToCalculateTxSize
                 }
                 
@@ -61,9 +62,9 @@ class BitcoinWalletManager: WalletManager {
                 }
                 
                 return [
-                    Amount(with: self.wallet.blockchain, address: source, value: minFee),
-                    Amount(with: self.wallet.blockchain, address: source, value: normalFee),
-                    Amount(with: self.wallet.blockchain, address: source, value: maxFee)
+                    Amount(with: self.wallet.blockchain, address: self.wallet.address, value: minFee),
+                    Amount(with: self.wallet.blockchain, address: self.wallet.address, value: normalFee),
+                    Amount(with: self.wallet.blockchain, address: self.wallet.address, value: maxFee)
                 ]
         }
         .eraseToAnyPublisher()

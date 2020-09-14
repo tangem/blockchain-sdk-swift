@@ -16,7 +16,7 @@ public enum Base58String {
 }
 
 public extension String {
-    init(base58 bytes: Data, alphabet: [UInt8] = Base58String.btcAlphabet) {
+    init(base58 bytes: Data, alphabet: [UInt8]) {
         var bigInt = BigUInt(bytes)
         let radix = BigUInt(alphabet.count)
 
@@ -38,7 +38,7 @@ public extension String {
 }
 
 public extension Data {
-     init?(base58 string: String, alphabet: [UInt8] = Base58String.btcAlphabet) {
+     init?(base58 string: String, alphabet: [UInt8]) {
         var answer = BigUInt(0)
         var j = BigUInt(1)
         let radix = BigUInt(alphabet.count)

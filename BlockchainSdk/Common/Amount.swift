@@ -21,6 +21,9 @@ public struct Amount: CustomStringConvertible, Equatable {
     public let decimals: Int
     
     public var description: String {
+        if value == 0 {
+            return "0.00 \(currencySymbol)"
+        }
         return "\(value.rounded(decimals)) \(currencySymbol)"
     }
     
@@ -51,5 +54,19 @@ public struct Amount: CustomStringConvertible, Equatable {
         }
         
         return lhs.value == rhs.value
+    }
+    
+    static public func -(l: Amount, r: Amount) -> Amount {
+        if l.type != r.type {
+            return l
+        }
+        return Amount(with: l, value: l.value - r.value)
+    }
+    
+    static public func +(l: Amount, r: Amount) -> Amount {
+        if l.type != r.type {
+            return l
+        }
+        return Amount(with: l, value: l.value + r.value)
     }
 }

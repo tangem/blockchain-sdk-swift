@@ -46,6 +46,8 @@ class BinanceWalletManager: WalletManager {
 
 @available(iOS 13.0, *)
 extension BinanceWalletManager: TransactionSender {
+    var allowsFeeSelection: Bool { false }
+    
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error> {
         guard let msg = txBuilder.buildForSign(transaction: transaction) else {
             return Fail(error: "Failed to build tx. Missing token contract address").eraseToAnyPublisher()
@@ -69,14 +71,14 @@ extension BinanceWalletManager: TransactionSender {
         .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, source: String, destination: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount,  destination: String) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap { feeString throws -> [Amount] in
                 guard let feeValue = Decimal(feeString) else {
                     throw "Failed to get fee"
                 }
                 
-                return [Amount(with: self.wallet.blockchain, address: source, value: feeValue)]
+                return [Amount(with: self.wallet.blockchain, address: self.wallet.address, value: feeValue)]
         }
         .eraseToAnyPublisher()
     }

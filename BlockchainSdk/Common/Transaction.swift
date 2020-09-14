@@ -42,7 +42,7 @@ public struct TransactionError: OptionSet, Error {
         self.rawValue = rawValue
     }
     
-    static let wrongAmount = TransactionError(rawValue: 0 << 1)
-    static let wrongFee = TransactionError(rawValue: 0 << 2)
-    static let wrongTotal = TransactionError(rawValue: 0 << 3)
+    static let wrongAmount = TransactionError(rawValue: 1 << 1)
+    static let wrongFee = TransactionError(rawValue: 1 << 2)
+    static let wrongTotal = TransactionError(rawValue: 1 << 3)
 }
