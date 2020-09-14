@@ -14,7 +14,7 @@ import Alamofire
 
 class BitcoinNetworkService: BitcoinNetworkProvider {
     let isTestNet: Bool
-    var networkApi: BitcoinNetworkApi = .main
+    var networkApi: BitcoinNetworkApi = .blockcypher
     let providers: [BitcoinNetworkApi: BitcoinNetworkProvider]
     
     init(providers:[BitcoinNetworkApi: BitcoinNetworkProvider], isTestNet:Bool) {

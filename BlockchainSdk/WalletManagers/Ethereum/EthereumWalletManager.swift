@@ -45,7 +45,7 @@ class EthereumWalletManager: WalletManager {
             }
         } else {
             if wallet.transactions.isEmpty {
-                wallet.addIncomingTransaction()
+                wallet.addPendingTransaction()
             }
         }
     }

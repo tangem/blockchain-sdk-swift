@@ -64,7 +64,7 @@ public struct Wallet {
         transactions.append(tx)
     }
     
-    mutating func addIncomingTransaction() {
+    mutating func addPendingTransaction() {
         let dummyAmount = Amount(with: blockchain, address: "unknown", type: .coin, value: 0)
         var tx = Transaction(amount: dummyAmount, fee: dummyAmount, sourceAddress: "unknown", destinationAddress: address)
         tx.date = Date()
