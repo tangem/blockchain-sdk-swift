@@ -21,6 +21,9 @@ public struct Amount: CustomStringConvertible, Equatable {
     public let decimals: Int
     
     public var description: String {
+        if value == 0 {
+            return "0.00 \(currencySymbol)"
+        }
         return "\(value.rounded(decimals)) \(currencySymbol)"
     }
     

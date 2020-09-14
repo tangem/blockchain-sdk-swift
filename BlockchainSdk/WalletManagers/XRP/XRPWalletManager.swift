@@ -45,7 +45,7 @@ class XRPWalletManager: WalletManager {
 
 @available(iOS 13.0, *)
 extension XRPWalletManager: TransactionSender {
-    var allowsFeeSelection: Bool { false }
+    var allowsFeeSelection: Bool { true }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error> {
         guard let walletReserve = wallet.amounts[.reserve]?.value,

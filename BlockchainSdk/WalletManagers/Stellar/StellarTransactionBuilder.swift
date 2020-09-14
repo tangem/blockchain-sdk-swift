@@ -77,8 +77,7 @@ class StellarTransactionBuilder {
                                                                 asset: asset,
                                                                 amount: transaction.amount.value)
                     
-                self?.serializeOperation(operation, sourceKeyPair: sourceKeyPair, completion: completion)
-                    
+                self?.serializeOperation(operation, sourceKeyPair: sourceKeyPair, completion: completion)                    
                 }
                 
                 
@@ -88,8 +87,6 @@ class StellarTransactionBuilder {
                 serializeOperation(operation, sourceKeyPair: sourceKeyPair, completion: completion)
             }
         }
-        assertionFailure("unsuported amount type")
-       completion(.failure(StellarError.failedToBuildTransaction))
     }
     
     @available(iOS 13.0, *)
