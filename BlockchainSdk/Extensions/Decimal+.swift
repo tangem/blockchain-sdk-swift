@@ -12,7 +12,7 @@ extension Decimal {
     /// return 8 bytes of integer. LittleEndian  format
     var bytes8LE: [UInt8] {
         let int64value = (self as NSDecimalNumber).intValue
-        let bytes8 =  int64value.bytes8
+        let bytes8 =  int64value.bytes8LE
         return Array(bytes8)
     }
     

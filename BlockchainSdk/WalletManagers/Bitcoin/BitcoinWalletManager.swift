@@ -46,8 +46,8 @@ class BitcoinWalletManager: WalletManager {
                 let minPerByte = response.minimalKb/kb
                 let normalPerByte = response.normalKb/kb
                 let maxPerByte = response.priorityKb/kb
-                
-                guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount, fee: Amount(with: amount, value: 0.0001), sourceAddress: self.wallet.address, destinationAddress: destination)) else {
+                let dummyFee = Amount(with: amount, value: 0.00000001)
+                guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount - dummyFee, fee: dummyFee, sourceAddress: self.wallet.address, destinationAddress: destination)) else {
                     throw BitcoinError.failedToCalculateTxSize
                 }
                 

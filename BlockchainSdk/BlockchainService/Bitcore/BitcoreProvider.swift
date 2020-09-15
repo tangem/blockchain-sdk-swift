@@ -21,6 +21,7 @@ class BitcoreProvider {
     func getBalance() -> AnyPublisher<BitcoreBalance, MoyaError> {
         return provider
             .requestPublisher(.balance(address: address))
+            .filterSuccessfulStatusAndRedirectCodes()
             .map(BitcoreBalance.self)
             .eraseToAnyPublisher()
     }
@@ -28,6 +29,7 @@ class BitcoreProvider {
     func getUnspents() -> AnyPublisher<[BitcoreUtxo], MoyaError> {
         return provider
             .requestPublisher(.unspents(address: address))
+            .filterSuccessfulStatusAndRedirectCodes()
             .map([BitcoreUtxo].self)
             .eraseToAnyPublisher()
     }
@@ -36,6 +38,7 @@ class BitcoreProvider {
     func send(_ transaction: String) -> AnyPublisher<BitcoreSendResponse, MoyaError> {
         return provider
             .requestPublisher(.balance(address: address))
+            .filterSuccessfulStatusAndRedirectCodes()
             .map(BitcoreSendResponse.self)
             .eraseToAnyPublisher()
     }

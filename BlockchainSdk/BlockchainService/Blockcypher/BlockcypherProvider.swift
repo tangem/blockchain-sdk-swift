@@ -27,6 +27,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
     func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
         return provider
             .requestPublisher(BlockcypherTarget(coin: coin, chain: chain, token: token, targetType: .address(address: address)))
+            .filterSuccessfulStatusAndRedirectCodes()
             .catch{ error -> AnyPublisher<Response, MoyaError> in
                 self.changeToken(error)
                 return Fail(error: error).eraseToAnyPublisher()
@@ -53,7 +54,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
                 return btx
                 } ?? []
             
-            let btcResponse = BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: balance != uncBalance, txrefs: txs)
+            let btcResponse = BitcoinResponse(balance: satoshiBalance, hasUnconfirmed:  uncBalance != 0, txrefs: txs)
             return btcResponse
         }
         .eraseToAnyPublisher()
@@ -63,6 +64,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
     @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<BtcFee, Error> {
         return provider.requestPublisher(BlockcypherTarget(coin: coin, chain: chain, token: token, targetType: .fee))
+            .filterSuccessfulStatusAndRedirectCodes()
             .catch{ error -> AnyPublisher<Response, MoyaError> in
                 self.changeToken(error)
                 return Fail(error: error).eraseToAnyPublisher()
@@ -89,6 +91,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
     @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error> {
         return provider.requestPublisher(BlockcypherTarget(coin: coin, chain: chain, token: token, targetType: .send(txHex: transaction)))
+            .filterSuccessfulStatusAndRedirectCodes()
             .catch{ error -> AnyPublisher<Response, MoyaError> in
                 self.changeToken(error)
                 return Fail(error: error).eraseToAnyPublisher()
@@ -103,6 +106,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
     @available(iOS 13.0, *)
     func getTx(hash: String) -> AnyPublisher<BlockcypherTx, Error> {
         return provider.requestPublisher(BlockcypherTarget(coin: coin, chain: chain, token: token, targetType: .txs(txHash: hash)))
+            .filterSuccessfulStatusAndRedirectCodes()
             .catch{ error -> AnyPublisher<Response, MoyaError> in
                 self.changeToken(error)
                 return Fail(error: error).eraseToAnyPublisher()

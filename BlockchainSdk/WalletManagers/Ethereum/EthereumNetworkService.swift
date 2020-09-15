@@ -24,6 +24,7 @@ class EthereumNetworkService {
     @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error> {
         return provider.requestPublisher(.send(transaction: transaction, network: network))
+            .filterSuccessfulStatusAndRedirectCodes()
             .tryMap {[unowned self] response throws -> String in
                 if let hash = try? self.parseResult(response.data),
                     hash.count > 0 {
@@ -95,6 +96,7 @@ class EthereumNetworkService {
     private func getBalance(_ address: String) -> AnyPublisher<Decimal, Error> {
         return provider
             .requestPublisher(.balance(address: address, network: network))
+            .filterSuccessfulStatusAndRedirectCodes()
             .tryMap {[unowned self] in try self.parseBalance($0.data)}
             .eraseToAnyPublisher()
     }
@@ -102,6 +104,7 @@ class EthereumNetworkService {
     private func getTokenBalance(_ address: String, contractAddress: String) -> AnyPublisher<Decimal, Error> {
         return provider
             .requestPublisher(.tokenBalance(address: address, contractAddress: contractAddress, network: network ))
+            .filterSuccessfulStatusAndRedirectCodes()
             .tryMap{[unowned self] in try self.parseBalance($0.data)}
             .eraseToAnyPublisher()
     }
@@ -109,6 +112,7 @@ class EthereumNetworkService {
     private func getTxCount(target: InfuraTarget) -> AnyPublisher<Int, Error> {
         return provider
             .requestPublisher(target)
+            .filterSuccessfulStatusAndRedirectCodes()
             .tryMap {[unowned self] in try self.parseTxCount($0.data)}
             .eraseToAnyPublisher()
     }

@@ -49,9 +49,9 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
     
     @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<BtcFee, Error> {
-        return Publishers.Zip3(estimateFeeProvider.requestPublisher(.minimal).mapString(),
-                               estimateFeeProvider.requestPublisher(.normal).mapString(),
-                               estimateFeeProvider.requestPublisher(.priority).mapString())
+        return Publishers.Zip3(estimateFeeProvider.requestPublisher(.minimal).filterSuccessfulStatusAndRedirectCodes().mapString(),
+                               estimateFeeProvider.requestPublisher(.normal).filterSuccessfulStatusAndRedirectCodes().mapString(),
+                               estimateFeeProvider.requestPublisher(.priority).filterSuccessfulStatusAndRedirectCodes().mapString())
             .tryMap { response throws -> BtcFee in
                 guard let min = Decimal(response.0),
                     let normal = Decimal(response.1),
@@ -67,6 +67,7 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
     @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error> {
         return blockchainInfoProvider.requestPublisher(.send(txHex: transaction))
+        .filterSuccessfulStatusAndRedirectCodes()
         .mapNotEmptyString()
         .eraseError()
         .eraseToAnyPublisher()
@@ -76,11 +77,13 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
         return Publishers.Zip(
             blockchainInfoProvider
                 .requestPublisher(.address(address: address))
+                .filterSuccessfulStatusAndRedirectCodes()
                 .map(BlockchainInfoAddressResponse.self)
                 .eraseError(),
         
             blockchainInfoProvider
                 .requestPublisher(.unspents(address: address))
+                .filterSuccessfulStatusAndRedirectCodes()
                 .map(BlockchainInfoUnspentResponse.self)
                 .tryCatch { error -> AnyPublisher<BlockchainInfoUnspentResponse, Error> in
                     if case let MoyaError.objectMapping(_, response) = error {

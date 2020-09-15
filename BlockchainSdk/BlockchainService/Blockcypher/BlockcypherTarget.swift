@@ -69,8 +69,11 @@ struct BlockcypherTarget: TargetType {
             parameters["unspentOnly"] = "true"
             parameters["includeScript"] = "true"
         case .send(let txHex):
-            parameters["tx"] = txHex
-        default: break
+            return .requestCompositeParameters(bodyParameters: ["tx": txHex],
+                                               bodyEncoding: JSONEncoding.default,
+                                               urlParameters: parameters)
+        default:
+            break
         }
         
         return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
