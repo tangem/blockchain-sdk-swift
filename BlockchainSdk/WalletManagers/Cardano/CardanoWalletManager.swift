@@ -9,7 +9,7 @@
 import Foundation
 import Combine
 
-enum CardanoError: Error {
+enum CardanoError: String, Error {
     case noUnspents
     case failedToBuildHash
     case failedToBuildTransaction
@@ -50,7 +50,7 @@ class CardanoWalletManager: WalletManager {
         
         wallet.transactions = wallet.transactions.compactMap { pendingTx in
             if let pendingTxHash = pendingTx.hash {
-                if response.0.transactionList.contains(pendingTxHash) {
+                if response.0.transactionList.contains(pendingTxHash.lowercased()) {
                     return nil
                 }
             }
@@ -70,15 +70,15 @@ extension CardanoWalletManager: TransactionSender {
         
         let txBuildResult = txBuilder.buildForSign(transaction: transaction, walletAmount: walletAmount)
         switch txBuildResult {
-        case .success(let hashes):
-            return signer.sign(hashes: [hashes], cardId: cardId)
+        case .success(let info):
+            return signer.sign(hashes: [info.hash], cardId: cardId)
                 .tryMap {[unowned self] response -> (tx: Data, hash: String) in
-                    let txBuildForSendResult = self.txBuilder.buildForSend(transaction: transaction, walletAmount: walletAmount, signature: response.signature)
+                    let txBuildForSendResult = self.txBuilder.buildForSend(bodyItem: info.bodyItem, signature: response.signature)
                     switch txBuildForSendResult {
                     case .failure(let error):
                         throw error
                     case .success(let tx):
-                        return tx
+                        return (tx, info.hash.asHexString())
                     }
             }
             .flatMap {[unowned self] builderResponse in

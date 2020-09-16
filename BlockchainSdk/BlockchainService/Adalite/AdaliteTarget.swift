@@ -63,7 +63,7 @@ enum AdaliteTarget: TargetType {
             return .requestData(data)
         case .send(let base64EncodedTx, _):
             return .requestParameters(parameters: ["signedTx": base64EncodedTx],
-                                      encoding: URLEncoding.default)
+                                      encoding: JSONEncoding.default)
         }
     }
     
