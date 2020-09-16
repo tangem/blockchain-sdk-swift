@@ -61,12 +61,12 @@ extension EthereumWalletManager: TransactionSender {
         }
         
         return signer.sign(hashes: [txForSign.hash], cardId: self.cardId)
-            .tryMap {[unowned self] signResponse throws -> AnyPublisher<String, Error> in
+            .tryMap {[unowned self] signResponse throws -> String in
                 guard let tx = self.txBuilder.buildForSend(transaction: txForSign.transaction, hash: txForSign.hash, signature: signResponse.signature) else {
                     throw BitcoinError.failedToBuildTransaction
                 }
-                let txHexString = "0x\(tx.toHexString())"
-                return self.networkService.send(transaction: txHexString)}
+                return "0x\(tx.toHexString())"}
+            .flatMap {[unowned self] in self.networkService.send(transaction: $0)}
             .map {[unowned self] response in
                 self.wallet.add(transaction: transaction)
                 return true

@@ -16,9 +16,11 @@ import BigInt
 class EthereumNetworkService {
     let network: EthereumNetwork
     let provider = MoyaProvider<InfuraTarget>(plugins: [NetworkLoggerPlugin()])
+    let tokenDecimals: Int?
     
-    init(network: EthereumNetwork) {
+    init(network: EthereumNetwork, tokenDecimals: Int?) {
         self.network = network
+        self.tokenDecimals = tokenDecimals
     }
     
     @available(iOS 13.0, *)
@@ -36,7 +38,7 @@ class EthereumNetworkService {
     }
     
     func getInfo(address: String, contractAddress: String?) -> AnyPublisher<EthereumResponse, Error> {
-        if let contractAddress = contractAddress {
+        if let contractAddress = contractAddress, tokenDecimals != nil {
             return tokenData(address: address, contractAddress: contractAddress)
                 .map { return EthereumResponse(balance: $0.0, tokenBalance: $0.1, txCount: $0.2, pendingTxCount: $0.3) }
                 .eraseToAnyPublisher()
@@ -105,7 +107,7 @@ class EthereumNetworkService {
         return provider
             .requestPublisher(.tokenBalance(address: address, contractAddress: contractAddress, network: network ))
             .filterSuccessfulStatusAndRedirectCodes()
-            .tryMap{[unowned self] in try self.parseBalance($0.data)}
+            .tryMap{[unowned self] in try self.parseTokenBalance($0.data)}
             .eraseToAnyPublisher()
     }
     
@@ -136,14 +138,49 @@ class EthereumNetworkService {
     }
     
     private func parseBalance(_ data: Data) throws -> Decimal {
-        let quantity = try parseResult(data)
+        let quantity = (try parseResult(data)).removeHexPrefix()
         let balanceData = Data(hex: quantity)
-        guard let balanceWei = Decimal(data: balanceData) else {
+        guard let balanceWei = dataToDecimal(balanceData) else {
             throw "Failed to convert the quantity"
         }
         
         let balanceEth = balanceWei / Decimal(1000000000000000000)
         return balanceEth
+    }
+    
+    private func parseTokenBalance(_ data: Data) throws -> Decimal {
+           let quantity = (try parseResult(data)).removeHexPrefix()
+           let balanceData = Data(hex: quantity)
+           guard let balanceWei = dataToDecimalToken(balanceData) else {
+               throw "Failed to convert the token quantity"
+           }
+           
+           let balanceEth = balanceWei.dividing(by: NSDecimalNumber(value: 1).multiplying(byPowerOf10: Int16(tokenDecimals!)))
+           return balanceEth as! Decimal
+       }
+    
+    private func dataToDecimal(_ data: Data) -> Decimal? {
+        if data.count > 8 {
+            return nil
+        }
+        let temp = NSData(bytes: data.reversed(), length: data.count)
+
+        let rawPointer = UnsafeRawPointer(temp.bytes)
+        let pointer = rawPointer.assumingMemoryBound(to: UInt64.self)
+        let value = pointer.pointee
+        return NSDecimalNumber(value: value) as? Decimal
+    }
+    
+    private func dataToDecimalToken(_ data: Data) -> NSDecimalNumber? {
+        let reversed = data.reversed()
+        var number = NSDecimalNumber(value: 0)
+
+        reversed.enumerated().forEach { (arg) in
+            let (offset, value) = arg
+            number = number.adding(NSDecimalNumber(value: value).multiplying(by: NSDecimalNumber(value: 256).raising(toPower: offset)))
+        }
+
+        return number
     }
 }
 
