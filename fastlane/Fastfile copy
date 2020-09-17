@@ -1,0 +1,7 @@
+lane :test do
+cocoapods
+run_tests(
+  workspace: "BlockchainSdk.xcworkspace",
+  clean: true
+)
+end
