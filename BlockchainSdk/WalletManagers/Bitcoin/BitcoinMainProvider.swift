@@ -12,8 +12,9 @@ import Combine
 
 class BitcoinMainProvider: BitcoinNetworkProvider {
     let blockchainInfoProvider = MoyaProvider<BlockchainInfoTarget>(plugins: [NetworkLoggerPlugin()])
-    let estimateFeeProvider = MoyaProvider<EstimateFeeTarget>(plugins: [NetworkLoggerPlugin()])
-
+    //let estimateFeeProvider = MoyaProvider<EstimateFeeTarget>(plugins: [NetworkLoggerPlugin()])
+    let bitcoinfeesProvider = MoyaProvider<BitcoinfeesTarget>(plugins: [NetworkLoggerPlugin()])
+    
     let address: String
     
     init(address: String) {
@@ -46,23 +47,43 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
            .eraseToAnyPublisher()
     }
     
-    
-    @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<BtcFee, Error> {
-        return Publishers.Zip3(estimateFeeProvider.requestPublisher(.minimal).filterSuccessfulStatusAndRedirectCodes().mapString(),
-                               estimateFeeProvider.requestPublisher(.normal).filterSuccessfulStatusAndRedirectCodes().mapString(),
-                               estimateFeeProvider.requestPublisher(.priority).filterSuccessfulStatusAndRedirectCodes().mapString())
+        return bitcoinfeesProvider.requestPublisher(.fees)
+            .filterSuccessfulStatusAndRedirectCodes()
+            .map(BitcoinfeesResponse.self)
             .tryMap { response throws -> BtcFee in
-                guard let min = Decimal(response.0),
-                    let normal = Decimal(response.1),
-                    let priority = Decimal(response.2) else {
+                guard let min = Decimal(response.hourFee),
+                      let normal = Decimal(response.halfHourFee),
+                      let priority = Decimal(response.fastestFee) else {
                         throw "Fee request error"
                 }
+                let kb = Decimal(1024)
+                let btcSatoshi = Decimal(100000000)
+                let minKbValue = min * kb / btcSatoshi
+                let normalKbValue = normal * kb / btcSatoshi
+                let maxKbValue = priority * kb / btcSatoshi
                 
-                return BtcFee(minimalKb: min, normalKb: normal, priorityKb: priority)
+                return BtcFee(minimalKb: minKbValue, normalKb: normalKbValue, priorityKb: maxKbValue)
         }
         .eraseToAnyPublisher()
     }
+    
+//    @available(iOS 13.0, *)
+//    func getFee() -> AnyPublisher<BtcFee, Error> {
+//        return Publishers.Zip3(estimateFeeProvider.requestPublisher(.minimal).filterSuccessfulStatusAndRedirectCodes().mapString(),
+//                               estimateFeeProvider.requestPublisher(.normal).filterSuccessfulStatusAndRedirectCodes().mapString(),
+//                               estimateFeeProvider.requestPublisher(.priority).filterSuccessfulStatusAndRedirectCodes().mapString())
+//            .tryMap { response throws -> BtcFee in
+//                guard let min = Decimal(response.0),
+//                    let normal = Decimal(response.1),
+//                    let priority = Decimal(response.2) else {
+//                        throw "Fee request error"
+//                }
+//
+//                return BtcFee(minimalKb: min, normalKb: normal, priorityKb: priority)
+//        }
+//        .eraseToAnyPublisher()
+//    }
     
     @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error> {
