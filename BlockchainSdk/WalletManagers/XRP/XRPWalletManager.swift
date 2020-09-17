@@ -35,7 +35,7 @@ class XRPWalletManager: WalletManager {
         txBuilder.sequence = response.sequence
         if response.balance != response.unconfirmedBalance {
             if wallet.transactions.isEmpty {
-                wallet.addIncomingTransaction()
+                wallet.addPendingTransaction()
             }
         } else {
             wallet.transactions = []
@@ -48,23 +48,28 @@ extension XRPWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error> {
-        guard let walletReserve = wallet.amounts[.reserve]?.value,
-            let hashToSign = txBuilder.buildForSign(transaction: transaction) else {
-                return Fail(error: "Missing reserve").eraseToAnyPublisher()
-        }
-        
+        let addressDecoded = (try? XRPAddress.decodeXAddress(xAddress: transaction.destinationAddress))?.rAddress ?? transaction.destinationAddress
         return networkService
-            .checkAccountCreated(account: transaction.sourceAddress)
-            .tryMap{ isAccountCreated in
+            .checkAccountCreated(account: addressDecoded)
+            .tryMap{[unowned self] isAccountCreated -> (XRPTransaction, Data) in
+                guard let walletReserve = self.wallet.amounts[.reserve]?.value,
+                    let buldResponse = self.txBuilder.buildForSign(transaction: transaction) else {
+                        throw "Missing reserve"
+                }
+                
                 if !isAccountCreated && transaction.amount.value < walletReserve {
                     throw "Target account is not created. Amount to send should be \(walletReserve) XRP + fee or more"
                 }
+                
+                return buldResponse
         }
-        .flatMap{[unowned self] in
-            return signer.sign(hashes: [hashToSign], cardId: self.cardId)
+        .flatMap{[unowned self] buildResponse -> AnyPublisher<(XRPTransaction, SignResponse),Error> in
+            return signer.sign(hashes: [buildResponse.1], cardId: self.cardId).map {
+                return (buildResponse.0, $0)
+                }.eraseToAnyPublisher()
         }
         .tryMap{[unowned self] response -> String in
-            guard let tx = self.txBuilder.buildForSend(transaction: transaction, signature: response.signature) else {
+            guard let tx = self.txBuilder.buildForSend(transaction: response.0, signature: response.1.signature) else {
                 throw "Failed to build transaction"
             }
             

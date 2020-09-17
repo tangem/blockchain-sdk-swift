@@ -27,7 +27,7 @@ class XRPTransactionBuilder {
         self.curve = curve
     }
     
-    public func buildForSign(transaction: Transaction) -> Data? {
+    public func buildForSign(transaction: Transaction) -> (XRPTransaction, Data)? {
         guard let tx = buildTransaction(from: transaction) else {
             return nil
         }
@@ -35,17 +35,13 @@ class XRPTransactionBuilder {
         let dataToSign = tx.dataToSign(publicKey: walletPublicKey.asHexString())
         switch curve {
         case .ed25519:
-            return dataToSign
+            return (tx, dataToSign)
         case .secp256k1:
-            return dataToSign.sha512Half()
+            return  (tx, dataToSign.sha512Half())
         }
     }
     
-    public func buildForSend(transaction: Transaction,  signature: Data) -> String?  {
-        guard let tx = buildTransaction(from: transaction) else {
-            return nil
-        }
-        
+    public func buildForSend(transaction: XRPTransaction,  signature: Data) -> String?  {
         var sig: Data
         switch curve {
         case .ed25519:
@@ -58,7 +54,7 @@ class XRPTransactionBuilder {
             sig = der
         }
         
-        guard let signedTx = try? tx.sign(signature: sig.toBytes) else {
+        guard let signedTx = try? transaction.sign(signature: sig.toBytes) else {
             return nil
         }
         
@@ -73,10 +69,25 @@ class XRPTransactionBuilder {
          
         let amountDrops = transaction.amount.value * Decimal(1000000)
         let feeDrops = transaction.fee.value * Decimal(1000000)
-         
-         
+        
+        var destination: String
+         var destinationTag: UInt32? = nil
+        
+         //X-address
+        let decodedXAddress = try? XRPAddress.decodeXAddress(xAddress: transaction.destinationAddress)
+         if decodedXAddress != nil {
+             destination = decodedXAddress!.rAddress
+             destinationTag = decodedXAddress!.tag
+         } else {
+             destination = transaction.destinationAddress
+            if let resolvedTag = transaction.infos[Transaction.InfoKey.destinationTag] as? String,
+                let int32Tag = UInt32(resolvedTag) {
+                 destinationTag = int32Tag
+             }
+         }
+        
          // dictionary containing partial transaction fields
-         let fields: [String:Any] = [
+         var fields: [String:Any] = [
              "Account" : account,
              "TransactionType" : "Payment",
              "Destination" : transaction.destinationAddress,
@@ -85,6 +96,10 @@ class XRPTransactionBuilder {
              "Fee" : "\(feeDrops)",
              "Sequence" : sequence,
          ]
+        
+        if destinationTag != nil {
+                       fields["DestinationTag"] = destinationTag
+                   }
          
          // create the transaction from dictionary
          return XRPTransaction(fields: fields)

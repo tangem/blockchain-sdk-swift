@@ -19,6 +19,7 @@ class CardanoNetworkService {
     func send(base64EncodedTx: String) -> AnyPublisher<String, Error> {
         return provider
             .requestPublisher(.send(base64EncodedTx: base64EncodedTx, url: adaliteUrl))
+            .filterSuccessfulStatusAndRedirectCodes()
             .mapNotEmptyString()
             .eraseError()
     }
@@ -47,6 +48,7 @@ class CardanoNetworkService {
     private func getUnspents(address: String) -> AnyPublisher<[AdaliteUnspentOutput], Error> {
         return provider
             .requestPublisher(.unspents(address: address, url: adaliteUrl))
+            .filterSuccessfulStatusAndRedirectCodes()
             .mapSwiftyJSON()
             .tryMap { json throws -> [AdaliteUnspentOutput] in
                 let unspentOutputsJson = json["Right"].arrayValue
@@ -62,6 +64,7 @@ class CardanoNetworkService {
     private func getBalance(address: String) -> AnyPublisher<AdaliteBalanceResponse, Error> {
         return provider
             .requestPublisher(.address(address: address, url: adaliteUrl))
+            .filterSuccessfulStatusAndRedirectCodes()
             .mapSwiftyJSON()
             .tryMap {json throws -> AdaliteBalanceResponse in
                 guard let balanceString = json["Right"]["caBalance"]["getCoin"].string,

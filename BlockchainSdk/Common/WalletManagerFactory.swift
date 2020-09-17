@@ -58,13 +58,13 @@ public class WalletManagerFactory {
             let ethereumNetwork = testnet ? EthereumNetwork.testnet : EthereumNetwork.mainnet
             return EthereumWalletManager(cardId: cardId, wallet: wallet).then {
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: ethereumNetwork)
-                $0.networkService = EthereumNetworkService(network: ethereumNetwork)
+                $0.networkService = EthereumNetworkService(network: ethereumNetwork, tokenDecimals: token?.decimalCount)
             }
             
         case .rsk:
             return EthereumWalletManager(cardId: cardId, wallet: wallet).then {
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: .rsk)
-                $0.networkService = EthereumNetworkService(network: .rsk)
+                $0.networkService = EthereumNetworkService(network: .rsk, tokenDecimals: token?.decimalCount)
             }
             
         case .bitcoinCash(let testnet):

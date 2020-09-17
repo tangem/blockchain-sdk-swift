@@ -92,8 +92,7 @@ class StellarTransactionBuilder {
     @available(iOS 13.0, *)
     public func buildForSend(signature: Data, transaction: TransactionXDR) -> String? {
         var transaction = transaction
-        var publicKeyData = walletPublicKey
-        let hint = Data(bytes: &publicKeyData, count: publicKeyData.count).suffix(4)
+        let hint = walletPublicKey.suffix(4)
         let decoratedSignature = DecoratedSignatureXDR(hint: WrappedData4(hint), signature: signature)
         transaction.addSignature(signature: decoratedSignature)
         let envelope = try? transaction.encodedEnvelope()

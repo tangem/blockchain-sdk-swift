@@ -32,7 +32,7 @@ class BitcoinCashWalletManager: WalletManager {
         txBuilder.unspentOutputs = response.txrefs
         if response.hasUnconfirmed {
             if wallet.transactions.isEmpty {
-                wallet.addIncomingTransaction()
+                wallet.addPendingTransaction()
             }
         } else {
             wallet.transactions = []

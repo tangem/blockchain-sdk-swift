@@ -24,7 +24,7 @@ class CardanoTransactionBuilder {
         self.shelleyCard = shelleyCard
     }
     
-    public func buildForSign(transaction: Transaction, walletAmount: Decimal) -> Result<Data, Error> {
+    public func buildForSign(transaction: Transaction, walletAmount: Decimal) -> Result<(hash:Data, bodyItem: CBOR), Error> {
         let txBodyResult = buildTransactionBody(from: transaction, walletAmount: walletAmount)
         
         switch txBodyResult {
@@ -36,38 +36,26 @@ class CardanoTransactionBuilder {
                 return .failure(CardanoError.failedToBuildHash)
             }
             
-            return .success(Data(transactionHash))
+            return .success((hash: Data(transactionHash), bodyItem: bodyItem))
         }
     }
     
-    public func buildForSend(transaction: Transaction, walletAmount: Decimal, signature: Data) -> Result<(tx: Data, hash: String), Error> {
-        let txBodyResult = buildTransactionBody(from: transaction, walletAmount: walletAmount)
+    public func buildForSend(bodyItem: CBOR, signature: Data) -> Result<Data, Error> {
+        let witnessDataItem = shelleyCard ?
+            CBOR.array([CBOR.array([CBOR.byteString(walletPublicKey.bytes),
+                                    CBOR.byteString(signature.bytes)])])
+            : CBOR.array([CBOR.array([CBOR.byteString(walletPublicKey.bytes),
+                                      CBOR.byteString(signature.bytes),
+                                      CBOR.byteString(Data(hexString: "0000000000000000000000000000000000000000000000000000000000000000").bytes),
+                                      CBOR.byteString(Data(hexString: "A0").bytes)
+            ])])
         
-        switch txBodyResult {
-        case .failure(let error):
-            return .failure(error)
-        case .success(let bodyItem):
-            let transactionBody = bodyItem.encode()
-            guard let transactionHash = Sodium().genericHash.hash(message: transactionBody, outputLength: 32) else {
-                return .failure(CardanoError.failedToBuildHash)
-            }
-            
-            let witnessDataItem = shelleyCard ?
-                CBOR.array([CBOR.array([CBOR.byteString(walletPublicKey.bytes),
-                                        CBOR.byteString(signature.bytes)])])
-                : CBOR.array([CBOR.array([CBOR.byteString(walletPublicKey.bytes),
-                                          CBOR.byteString(signature.bytes),
-                                          CBOR.byteString(Data(hex: "0000000000000000000000000000000000000000000000000000000000000000").bytes),
-                                          CBOR.byteString(Data(hex: "A0").bytes)
-                ])])
-            
-            let witnessMap = CBOR.map([CBOR.unsignedInt(shelleyCard ? 0 : 2) : witnessDataItem])
-            let tx = CBOR.array([bodyItem, witnessMap, nil])
-            let txForSend = tx.encode()
-            return .success((tx: Data(txForSend), hash: Data(transactionHash).asHexString()))
-        }
+        let witnessMap = CBOR.map([CBOR.unsignedInt(shelleyCard ? 0 : 2) : witnessDataItem])
+        let tx = CBOR.array([bodyItem, witnessMap, nil])
+        let txForSend = tx.encode()
+        return .success(Data(txForSend))
+        
     }
-    
     private func buildTransactionBody(from transaction: Transaction, walletAmount: Decimal) -> Result<CBOR, Error> {
         guard let unspentOutputs = self.unspentOutputs else {
             return .failure(CardanoError.noUnspents)
@@ -77,10 +65,9 @@ class CardanoTransactionBuilder {
         let amountConverted = transaction.amount.value * convertValue
         let walletAmountConverted = walletAmount * convertValue
         let change = walletAmountConverted - amountConverted - feeConverted
-        
-        let amountLong = (amountConverted as NSDecimalNumber).uint64Value
-        let changeLong = (change as NSDecimalNumber).uint64Value
-        let feesLong = (feeConverted as NSDecimalNumber).uint64Value
+        let amountLong = (amountConverted.rounded(0) as NSDecimalNumber).uint64Value
+        let changeLong = (change.rounded(0) as NSDecimalNumber).uint64Value
+        let feesLong = (feeConverted.rounded(0) as NSDecimalNumber).uint64Value
         
         if (amountLong < 1000000 || (changeLong < 1000000 && changeLong != 0)) {
             return .failure(CardanoError.lowAda)
@@ -94,10 +81,12 @@ class CardanoTransactionBuilder {
         var inputsArray = [CBOR]()
         for unspentOutput in unspentOutputs {
             let array = CBOR.array(
-                [CBOR.byteString(Data(hex: unspentOutput.id).bytes),
+                [CBOR.byteString(Data(hexString: unspentOutput.id).bytes),
                  CBOR.unsignedInt(UInt64(unspentOutput.index))])
             inputsArray.append(array)
         }
+        
+        
         
         var outputsArray = [CBOR]()
         outputsArray.append(CBOR.array([CBOR.byteString(targetAddressBytes), CBOR.unsignedInt(amountLong)]))
@@ -118,4 +107,3 @@ class CardanoTransactionBuilder {
         return .success(transactionMap)
     }
 }
-

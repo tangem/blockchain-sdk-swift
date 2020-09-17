@@ -32,6 +32,14 @@ public class XRPAddressService: AddressService {
     }
     
     public func validate(_ address: String) -> Bool {
-        return XRPWallet.validate(address: address)
+        if XRPSeedWallet.validate(address: address) {
+            return true
+        }
+        
+        if let _ = try? XRPAddress.decodeXAddress(xAddress: address) {
+            return true
+        }
+        
+        return false
     }
 }

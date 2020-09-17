@@ -17,6 +17,7 @@ class XRPNetworkService {
     func getFee() -> AnyPublisher<XRPFeeResponse, Error> {
         return provider
             .requestPublisher(.fee)
+            .filterSuccessfulStatusAndRedirectCodes()
             .map(XrpResponse.self)
             .tryMap { xrpResponse -> XRPFeeResponse in
                 guard let minFee = xrpResponse.result?.drops?.minimum_fee,
@@ -37,6 +38,7 @@ class XRPNetworkService {
     func send(blob: String) -> AnyPublisher<Bool, Error> {
         return provider
             .requestPublisher(.submit(tx: blob))
+            .filterSuccessfulStatusAndRedirectCodes()
             .map(XrpResponse.self)
             .tryMap { xrpResponse -> Bool in
                 guard let code = xrpResponse.result?.engine_result_code else {
@@ -56,6 +58,7 @@ class XRPNetworkService {
     func getUnconfirmed(account: String) -> AnyPublisher<Decimal, Error> {
         return provider
             .requestPublisher(.unconfirmed(account: account))
+            .filterSuccessfulStatusAndRedirectCodes()
             .map(XrpResponse.self)
             .tryMap { xrpResponse -> Decimal in
                 try self.assertAccountCreated(xrpResponse)
@@ -73,6 +76,7 @@ class XRPNetworkService {
     func getReserve() -> AnyPublisher<Decimal, Error> {
         return provider
             .requestPublisher(.reserve)
+            .filterSuccessfulStatusAndRedirectCodes()
             .map(XrpResponse.self)
             .tryMap{ xrpResponse -> Decimal in
                 try self.assertAccountCreated(xrpResponse)
@@ -89,6 +93,7 @@ class XRPNetworkService {
     func getAccountInfo(account: String) -> AnyPublisher<(balance: Decimal, sequence: Int), Error> {
         return provider
             .requestPublisher(.accountInfo(account: account))
+            .filterSuccessfulStatusAndRedirectCodes()
             .map(XrpResponse.self)
             .tryMap{[unowned self] xrpResponse in
                 try self.assertAccountCreated(xrpResponse)
@@ -123,6 +128,7 @@ class XRPNetworkService {
     func checkAccountCreated(account: String) -> AnyPublisher<Bool, Error> {
         return provider
             .requestPublisher(.accountInfo(account: account))
+            .filterSuccessfulStatusAndRedirectCodes()
             .map(XrpResponse.self)
             .map {[unowned self] xrpResponse -> Bool in
                 do {

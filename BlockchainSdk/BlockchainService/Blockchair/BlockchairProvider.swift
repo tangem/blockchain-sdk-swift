@@ -27,6 +27,7 @@ class BlockchairProvider {
     func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
         return provider
             .requestPublisher(.address(address: address, endpoint: endpoint))
+            .filterSuccessfulStatusAndRedirectCodes()
             .mapSwiftyJSON()
             .tryMap { [unowned self] json -> BitcoinResponse in
                 let data = json["data"]
@@ -73,6 +74,7 @@ class BlockchairProvider {
     @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<BtcFee, Error> {
         return provider.requestPublisher(.fee(endpoint: endpoint))
+            .filterSuccessfulStatusAndRedirectCodes()
             .mapSwiftyJSON()
             .tryMap { json throws -> BtcFee in
                 let data = json["data"]
@@ -90,6 +92,7 @@ class BlockchairProvider {
     @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error> {
         return provider.requestPublisher(.send(txHex: transaction, endpoint: endpoint))
+            .filterSuccessfulStatusAndRedirectCodes()
             .mapSwiftyJSON()
             .tryMap { json throws -> String in
                 let data = json["data"]

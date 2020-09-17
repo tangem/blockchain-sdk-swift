@@ -37,10 +37,10 @@ class BinanceNetworkService {
                     return
                 }
                 
-                let assetBalance = response.account.balances.first(where: { $0.symbol == self.assetCode})
+                let assetBalance = response.account.balances.first(where: { $0.symbol == self.assetCode})?.free ?? 0
                 let accountNumber = response.account.accountNumber
-                let sequence = response.sequence
-                let info = BinanceInfoResponse(balance: bnbBalance.free, assetBalance: assetBalance?.free, accountNumber: accountNumber, sequence: sequence)
+                let sequence = response.account.sequence
+                let info = BinanceInfoResponse(balance: bnbBalance.free, assetBalance: assetBalance, accountNumber: accountNumber, sequence: sequence)
                 promise(.success(info))
             }
         }
