@@ -52,11 +52,10 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
             .filterSuccessfulStatusAndRedirectCodes()
             .map(BitcoinfeesResponse.self)
             .tryMap { response throws -> BtcFee in
-                guard let min = Decimal(response.hourFee),
-                      let normal = Decimal(response.halfHourFee),
-                      let priority = Decimal(response.fastestFee) else {
-                        throw "Fee request error"
-                }
+                let min = Decimal(response.hourFee)
+                let normal = Decimal(response.halfHourFee)
+                let priority = Decimal(response.fastestFee)
+                
                 let kb = Decimal(1024)
                 let btcSatoshi = Decimal(100000000)
                 let minKbValue = min * kb / btcSatoshi
