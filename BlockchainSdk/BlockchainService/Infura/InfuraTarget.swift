@@ -10,6 +10,9 @@ import Foundation
 import Moya
 
 enum InfuraTarget: TargetType {
+    static let infuraTokenId = 03
+    static let infuraCoinId = 67
+    
     case balance(address: String, network: EthereumNetwork)
     case transactions(address: String, network: EthereumNetwork)
     case pending(address: String, network: EthereumNetwork)
@@ -46,27 +49,27 @@ enum InfuraTarget: TargetType {
             return  .requestParameters(parameters: ["jsonrpc": "2.0",
                                                     "method": "eth_getBalance",
                                                     "params": [address, "latest"],
-                                                    "id": 67],
+                                                    "id": InfuraTarget.infuraCoinId],
                                        encoding: JSONEncoding.default)
             
         case .transactions(let address, _):
             return .requestParameters(parameters: ["jsonrpc": "2.0",
                                                    "method": "eth_getTransactionCount",
                                                    "params": [address, "latest"],
-                                                   "id": 67],
+                                                   "id": InfuraTarget.infuraCoinId],
                                       encoding: JSONEncoding.default)
             
         case .pending(let address, _):
             return .requestParameters(parameters: ["jsonrpc": "2.0",
                                                    "method": "eth_getTransactionCount",
                                                    "params": [address, "pending"],
-                                                   "id": 67],
+                                                   "id": InfuraTarget.infuraCoinId],
                                       encoding: JSONEncoding.default)
             
         case .send(let transaction, _):
             return .requestParameters(parameters: ["jsonrpc": "2.0",
                                                    "method": "eth_sendRawTransaction",
-                                                   "params": [transaction], "id": 67],
+                                                   "params": [transaction], "id": InfuraTarget.infuraCoinId],
                                       encoding: JSONEncoding.default)
             
         case .tokenBalance(let address, let contractAddress, _):
@@ -74,7 +77,7 @@ enum InfuraTarget: TargetType {
             let dataValue = ["data": "0x70a08231000000000000000000000000\(rawAddress)", "to": contractAddress]
             return .requestParameters(parameters: ["method": "eth_call",
                                                    "params": [dataValue, "latest"],
-                                                   "id": 03],
+                                                   "id": InfuraTarget.infuraTokenId],
                                       encoding: JSONEncoding.default)
             
         }
