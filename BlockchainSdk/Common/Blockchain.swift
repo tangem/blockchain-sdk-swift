@@ -94,6 +94,8 @@ public enum Blockchain {
             return "Bitcoin Cash"
         case .xrp:
             return "XRP Ledger"
+        case .rsk:
+            return "\(self)".uppercased()
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
