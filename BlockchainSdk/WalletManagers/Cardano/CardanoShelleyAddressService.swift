@@ -65,4 +65,12 @@ struct CardanoAddress {
             return CardanoAddressService().decode(address)
         }
     }
+    
+    static func validate(_ address: String) -> Bool {
+        if address.starts(with: CardanoShelleyAddressService.BECH32_HRP) {
+            return CardanoShelleyAddressService().validate(address)
+        } else {
+            return CardanoAddressService().validate(address)
+        }
+    }
 }

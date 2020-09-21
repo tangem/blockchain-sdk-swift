@@ -123,7 +123,12 @@ public enum Blockchain {
     }
     
     public func validate(address: String) -> Bool {
-        return getAddressService().validate(address)
+        switch self {
+        case .cardano:
+            return CardanoAddress.validate(address)
+        default:
+            return getAddressService().validate(address)
+        }
     }
     
     public func getShareString(from address: String) -> String {
