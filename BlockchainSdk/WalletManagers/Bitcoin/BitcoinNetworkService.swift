@@ -75,6 +75,10 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
     }
     
     func getProvider() -> BitcoinNetworkProvider {
+        if providers.count == 1 {
+            return providers.first!
+        }
+        
         return isTestNet ? providers[.blockcypher]!: providers[networkApi]!
     }
 }
