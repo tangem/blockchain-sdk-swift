@@ -26,8 +26,9 @@ class StellarWalletManager: WalletManager {
     override func update(completion: @escaping (Result<(), Error>)-> Void)  {
         cancellable = networkService
             .getInfo(accountId: wallet.address, assetCode: wallet.token?.currencySymbol)
-            .sink(receiveCompletion: { completionSubscription in
+            .sink(receiveCompletion: {[unowned self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
+                    self.wallet.amounts = [:]
                     completion(.failure(error))
                 }
             }, receiveValue: { [unowned self] response in
