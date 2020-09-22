@@ -9,18 +9,18 @@
 import Foundation
 import Combine
 
-enum CardanoError: String, Error {
+enum CardanoError: Error, LocalizedError {
     case noUnspents
     case failedToBuildHash
     case failedToBuildTransaction
     case failedToMapNetworkResponse
     case lowAda
     case failedToCalculateFee
-    
+     
     var errorDescription: String? {
         switch self {
         case .lowAda:
-            return "Sent amount and change cannot be less than 1 ADA"
+            return "cardano_low_ada".localized
         default:
             return "\(self)"
         }

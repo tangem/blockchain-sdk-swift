@@ -13,3 +13,6 @@
 "no_account_xrp" = "Load 20+ XRP to create account";
 
 "no_account_bnb" = "To create account send funds to this address";
+
+"cardano_low_ada" = "Sent amount and change cannot be less than 1 ADA";
+

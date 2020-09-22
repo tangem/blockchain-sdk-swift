@@ -11,7 +11,7 @@ import stellarsdk
 import SwiftyJSON
 import Combine
 
-enum StellarError: String, Error, LocalizedError {
+enum StellarError: Error, LocalizedError {
     case noFee
     case failedToBuildTransaction
     case requestFailed
