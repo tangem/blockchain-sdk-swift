@@ -11,10 +11,23 @@ import stellarsdk
 import SwiftyJSON
 import Combine
 
-enum StellarError: Error {
+enum StellarError: String, Error, LocalizedError {
     case noFee
     case failedToBuildTransaction
     case requestFailed
+    case xlmCreateAccount
+    case assetCreateAccount
+    
+    var errorDescription: String? {
+        switch self {
+        case .xlmCreateAccount:
+            return "no_account_xlm".localized
+        case .assetCreateAccount:
+            return "no_account_xlm_asset".localized
+        default:
+            return "\(self)"
+        }
+    }
 }
 
 class StellarWalletManager: WalletManager {
