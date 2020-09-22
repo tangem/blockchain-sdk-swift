@@ -32,15 +32,11 @@ class BinanceNetworkService {
                     return
                 }
                
-                guard let bnbBalance = response.account.balances.first(where: { $0.symbol == "BNB" }) else {
-                    promise(.failure("Failed to load balance"))
-                    return
-                }
-                
+                let bnbBalance = response.account.balances.first(where: { $0.symbol == "BNB" })?.free ?? 0
                 let assetBalance = response.account.balances.first(where: { $0.symbol == self.assetCode})?.free ?? 0
                 let accountNumber = response.account.accountNumber
                 let sequence = response.account.sequence
-                let info = BinanceInfoResponse(balance: bnbBalance.free, assetBalance: assetBalance, accountNumber: accountNumber, sequence: sequence)
+                let info = BinanceInfoResponse(balance: bnbBalance, assetBalance: assetBalance, accountNumber: accountNumber, sequence: sequence)
                 promise(.success(info))
             }
         }
