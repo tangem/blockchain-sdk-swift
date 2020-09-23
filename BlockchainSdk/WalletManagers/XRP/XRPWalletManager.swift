@@ -48,7 +48,7 @@ class XRPWalletManager: WalletManager {
 extension XRPWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
         let addressDecoded = (try? XRPAddress.decodeXAddress(xAddress: transaction.destinationAddress))?.rAddress ?? transaction.destinationAddress
         return networkService
             .checkAccountCreated(account: addressDecoded)
@@ -69,19 +69,19 @@ extension XRPWalletManager: TransactionSender {
                 return (buildResponse.0, $0)
                 }.eraseToAnyPublisher()
         }
-        .tryMap{[unowned self] response -> String in
+        .tryMap{[unowned self] response -> (String,SignResponse) in
             guard let tx = self.txBuilder.buildForSend(transaction: response.0, signature: response.1.signature) else {
                 throw "Failed to build transaction"
             }
             
-            return tx
+            return (tx, response.1)
         }
-        .flatMap{[unowned self] builderResponse in
-            self.networkService.send(blob: builderResponse)
+        .flatMap{[unowned self] builderResponse -> AnyPublisher<SignResponse, Error> in
+            self.networkService.send(blob: builderResponse.0)
                 .map{[unowned self] response in
                     self.wallet.add(transaction: transaction)
-                    return true
-            }
+                    return builderResponse.1
+            }.eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }
