@@ -47,7 +47,9 @@ class XRPNetworkService {
                 
                 if code != 0 {
                     let message = xrpResponse.result?.engine_result_message ?? "Failed to send"
-                    throw message
+                    if message != "Held until escalated fee drops." { //TODO: find the error code
+                        throw message
+                    }
                 }
                 
                 return true

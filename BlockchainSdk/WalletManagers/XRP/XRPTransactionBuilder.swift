@@ -67,8 +67,8 @@ class XRPTransactionBuilder {
                 return nil
         }
          
-        let amountDrops = transaction.amount.value * Decimal(1000000)
-        let feeDrops = transaction.fee.value * Decimal(1000000)
+        let amountDrops = (transaction.amount.value * Decimal(1000000)).rounded(blockchain: .xrp(curve: curve))
+        let feeDrops = (transaction.fee.value * Decimal(1000000)).rounded(blockchain: .xrp(curve: curve))
         
         var destination: String
          var destinationTag: UInt32? = nil
@@ -90,7 +90,7 @@ class XRPTransactionBuilder {
          var fields: [String:Any] = [
              "Account" : account,
              "TransactionType" : "Payment",
-             "Destination" : transaction.destinationAddress,
+             "Destination" : destination,
              "Amount" : "\(amountDrops)",
              // "Flags" : UInt64(2147483648),
              "Fee" : "\(feeDrops)",

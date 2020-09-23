@@ -50,6 +50,11 @@ class StellarTransactionBuilder {
         
         if transaction.amount.type == .coin {
             checkIfAccountCreated(transaction.destinationAddress) { [weak self] isCreated in
+                if !isCreated && transaction.amount.value < 1 {
+                    completion(.failure(StellarError.xlmCreateAccount))
+                    return
+                }
+                          
                 let operation = isCreated ? PaymentOperation(sourceAccount: nil,
                                                              destination: destinationKeyPair,
                                                              asset: Asset(type: AssetType.ASSET_TYPE_NATIVE)!,
@@ -68,7 +73,7 @@ class StellarTransactionBuilder {
             if  transaction.amount.value > 0 {
                  checkIfAccountCreated(transaction.destinationAddress) { [weak self] isCreated in
                     if !isCreated {
-                        completion(.failure(StellarError.failedToBuildTransaction)) // TODO: Localizations.xlmAssetCreateAccountHint)
+                        completion(.failure(StellarError.assetCreateAccount))
                         return
                     }
                     

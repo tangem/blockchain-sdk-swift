@@ -11,10 +11,23 @@ import stellarsdk
 import SwiftyJSON
 import Combine
 
-enum StellarError: Error {
+enum StellarError: Error, LocalizedError {
     case noFee
     case failedToBuildTransaction
     case requestFailed
+    case xlmCreateAccount
+    case assetCreateAccount
+    
+    var errorDescription: String? {
+        switch self {
+        case .xlmCreateAccount:
+            return "no_account_xlm".localized
+        case .assetCreateAccount:
+            return "no_account_xlm_asset".localized
+        default:
+            return "\(self)"
+        }
+    }
 }
 
 class StellarWalletManager: WalletManager {
@@ -26,8 +39,9 @@ class StellarWalletManager: WalletManager {
     override func update(completion: @escaping (Result<(), Error>)-> Void)  {
         cancellable = networkService
             .getInfo(accountId: wallet.address, assetCode: wallet.token?.currencySymbol)
-            .sink(receiveCompletion: { completionSubscription in
+            .sink(receiveCompletion: {[unowned self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
+                    self.wallet.amounts = [:]
                     completion(.failure(error))
                 }
             }, receiveValue: { [unowned self] response in

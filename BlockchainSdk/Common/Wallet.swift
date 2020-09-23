@@ -22,7 +22,7 @@ public struct Wallet {
             return false
         }
         
-      return amounts.values.filter { $0.value != 0 }.count == 0
+        return amounts.values.filter { $0.value > 0 && $0.type != .reserve }.count == 0
     }
     
     public var hasPendingTx: Bool {

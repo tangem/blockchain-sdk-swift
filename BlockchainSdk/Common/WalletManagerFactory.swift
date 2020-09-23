@@ -107,7 +107,7 @@ public class WalletManagerFactory {
             case .binance:
                 displayName = "Binance Asset"
             case .rsk:
-                displayName = "Rootstock"
+                displayName = blockchain.displayName
             default:
                 fatalError("Unsupported blockchain")
             }
