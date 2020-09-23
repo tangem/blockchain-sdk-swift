@@ -99,23 +99,24 @@ class BitcoinWalletManager: WalletManager {
 
 @available(iOS 13.0, *)
 extension BitcoinWalletManager: TransactionSender {
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
         guard let hashes = txBuilder.buildForSign(transaction: transaction) else {
             return Fail(error: BitcoinError.failedToBuildHash).eraseToAnyPublisher()
         }
         
         return signer.sign(hashes: hashes, cardId: cardId)
-            .tryMap {[unowned self] response in
+            .tryMap {[unowned self] response -> (String, SignResponse) in
                 guard let tx = self.txBuilder.buildForSend(transaction: transaction, signature: response.signature) else {
                     throw BitcoinError.failedToBuildTransaction
                 }
-                return tx.toHexString()
+                return (tx.toHexString(), response)
         }
-        .flatMap {[unowned self] in
-            self.networkService.send(transaction: $0).map {[unowned self] response in
-                self.wallet.add(transaction: transaction)
-                return true
-            }
+        .flatMap {[unowned self] values -> AnyPublisher<SignResponse, Error> in
+            return self.networkService.send(transaction: values.0)
+                .map {[unowned self] sendResponse in
+                    self.wallet.add(transaction: transaction)
+                    return values.1
+            }.eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }

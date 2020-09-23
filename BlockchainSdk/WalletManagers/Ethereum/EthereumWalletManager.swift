@@ -56,23 +56,25 @@ class EthereumWalletManager: WalletManager {
 extension EthereumWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
         guard let txForSign = txBuilder.buildForSign(transaction: transaction, nonce: txCount) else {
             return Fail(error: EthereumError.failedToBuildHash).eraseToAnyPublisher()
         }
         
         return signer.sign(hashes: [txForSign.hash], cardId: self.cardId)
-            .tryMap {[unowned self] signResponse throws -> String in
+            .tryMap {[unowned self] signResponse throws -> (String, SignResponse) in
                 guard let tx = self.txBuilder.buildForSend(transaction: txForSign.transaction, hash: txForSign.hash, signature: signResponse.signature) else {
                     throw BitcoinError.failedToBuildTransaction
                 }
-                return "0x\(tx.toHexString())"}
-            .flatMap {[unowned self] in self.networkService.send(transaction: $0)}
-            .map {[unowned self] response in
-                self.wallet.add(transaction: transaction)
-                return true
+                return ("0x\(tx.toHexString())", signResponse)
         }
-    .eraseToAnyPublisher()
+        .flatMap {[unowned self] buildResponse -> AnyPublisher<SignResponse, Error> in
+            self.networkService.send(transaction: buildResponse.0).map {[unowned self] sendResponse in
+                self.wallet.add(transaction: transaction)
+                return buildResponse.1
+            }.eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {

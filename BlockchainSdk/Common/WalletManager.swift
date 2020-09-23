@@ -84,7 +84,7 @@ public class WalletManager {
 @available(iOS 13.0, *)
 public protocol TransactionSender {
     var allowsFeeSelection: Bool {get}
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error>
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error>
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error>
 }
 

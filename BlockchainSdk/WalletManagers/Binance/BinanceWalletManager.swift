@@ -8,6 +8,8 @@
 
 import Foundation
 import Combine
+import BinanceChain
+import struct TangemSdk.SignResponse
 
 class BinanceWalletManager: WalletManager {
     var txBuilder: BinanceTransactionBuilder!
@@ -49,25 +51,25 @@ class BinanceWalletManager: WalletManager {
 extension BinanceWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { false }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
         guard let msg = txBuilder.buildForSign(transaction: transaction) else {
             return Fail(error: "Failed to build tx. Missing token contract address").eraseToAnyPublisher()
         }
         
         let hash = msg.encodeForSignature()
         return signer.sign(hashes: [hash], cardId: cardId)
-            .tryMap {[unowned self] response in
+            .tryMap {[unowned self] response -> (Message, SignResponse) in
                 guard let tx = self.txBuilder.buildForSend(signature: response.signature, hash: hash) else {
                     throw BitcoinError.failedToBuildTransaction
                 }
-                return tx
+                return (tx, response)
         }
-        .flatMap {[unowned self] in
-            self.networkService.send(transaction: $0).map {[unowned self] response in
+        .flatMap {[unowned self] values -> AnyPublisher<SignResponse, Error> in
+            self.networkService.send(transaction: values.0).map {[unowned self] response in
                 self.wallet.add(transaction: transaction)
                 self.latestTxDate = Date()
-                return true
-            }
+                return values.1
+            }.eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }

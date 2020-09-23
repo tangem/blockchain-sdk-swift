@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import TangemSdk
 
 enum CardanoError: Error, LocalizedError {
     case noUnspents
@@ -64,7 +65,7 @@ class CardanoWalletManager: WalletManager {
 extension CardanoWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { false }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
         guard let walletAmount = wallet.amounts[.coin]?.value else {
             return Fail(error: CardanoError.failedToBuildHash).eraseToAnyPublisher()
         }
@@ -73,22 +74,22 @@ extension CardanoWalletManager: TransactionSender {
         switch txBuildResult {
         case .success(let info):
             return signer.sign(hashes: [info.hash], cardId: cardId)
-                .tryMap {[unowned self] response -> (tx: Data, hash: String) in
+                .tryMap {[unowned self] response -> (tx: Data, hash: String, signResponse: SignResponse) in
                     let txBuildForSendResult = self.txBuilder.buildForSend(bodyItem: info.bodyItem, signature: response.signature)
                     switch txBuildForSendResult {
                     case .failure(let error):
                         throw error
                     case .success(let tx):
-                        return (tx, info.hash.asHexString())
+                        return (tx, info.hash.asHexString(), response)
                     }
             }
-            .flatMap {[unowned self] builderResponse in
+            .flatMap {[unowned self] builderResponse -> AnyPublisher<SignResponse, Error> in
                 self.networkService.send(base64EncodedTx: builderResponse.tx.base64EncodedString()).map {[unowned self] response in
                     var sendedTx = transaction
                     sendedTx.hash = builderResponse.hash
                     self.wallet.add(transaction: sendedTx)
-                    return true
-                }
+                    return builderResponse.signResponse
+                }.eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
         case .failure(let error):

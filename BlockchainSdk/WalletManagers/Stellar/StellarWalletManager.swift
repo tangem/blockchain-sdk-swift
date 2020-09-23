@@ -10,6 +10,7 @@ import Foundation
 import stellarsdk
 import SwiftyJSON
 import Combine
+import TangemSdk
 
 enum StellarError: Error, LocalizedError {
     case noFee
@@ -72,23 +73,24 @@ class StellarWalletManager: WalletManager {
 extension StellarWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { false }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Bool, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
         return txBuilder.buildForSign(transaction: transaction)
             .flatMap { [unowned self] buildForSignResponse in
                 signer.sign(hashes: [buildForSignResponse.hash], cardId: self.cardId)
                     .map { return ($0, buildForSignResponse) }.eraseToAnyPublisher()
         }
-        .tryMap {[unowned self] result throws in
+        .tryMap {[unowned self] result throws -> (String,SignResponse) in
             guard let tx = self.txBuilder.buildForSend(signature: result.0.signature, transaction: result.1.transaction) else {
                 throw StellarError.failedToBuildTransaction
             }
             
-            return tx
+            return (tx, result.0)
         }
-        .flatMap {[unowned self] in self.networkService.send(transaction: $0)}
-        .map {[unowned self] in
-            self.wallet.add(transaction: transaction)
-            return $0
+        .flatMap {[unowned self] values -> AnyPublisher<SignResponse, Error> in
+            self.networkService.send(transaction: values.0).map {[unowned self] sendResponse in
+                 self.wallet.add(transaction: transaction)
+                return values.1
+            } .eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }
