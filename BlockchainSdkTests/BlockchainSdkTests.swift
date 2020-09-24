@@ -44,4 +44,13 @@ class BlockchainSdkTests: XCTestCase {
         let publicKey = Data(hex: "0250863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352")
         XCTAssertEqual(BitcoinAddressService(testnet: false).makeAddress(from: publicKey), btcAddress)
     }
+    
+    func testDucatusAddressValidation() {
+        XCTAssertTrue(Blockchain.ducatus.validate(address: "LokyqymHydUE3ZC1hnZeZo6nuART3VcsSU"))
+    }
+    
+    func testLTCAddressValidation() {
+        XCTAssertTrue(Blockchain.litecoin.validate(address: "LMbRCidgQLz1kNA77gnUpLuiv2UL6Bc4Q2"))
+    }
+    
 }
