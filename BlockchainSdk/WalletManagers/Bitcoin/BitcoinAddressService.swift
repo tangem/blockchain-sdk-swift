@@ -31,7 +31,7 @@ public class BitcoinAddressService: AddressService {
     public func validate(_ address: String) -> Bool {
         guard !address.isEmpty else { return false }
         
-        if possibleFirstCharacters.contains(String(address.first!)) {
+        if possibleFirstCharacters.contains(String(address.lowercased().first!)) {
             guard (26...35) ~= address.count else { return false }
             
         }

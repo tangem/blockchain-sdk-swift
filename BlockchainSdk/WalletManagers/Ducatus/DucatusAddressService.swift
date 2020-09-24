@@ -9,7 +9,7 @@
 import Foundation
 import TangemSdk
 
-public class DucatusAddressService: BitcoinAddressService {
+public class DucatusAddressService: LitecoinAddressService {
     override func getNetwork(_ testnet: Bool) -> Data {
         return Data([UInt8(0x31)])
     }
