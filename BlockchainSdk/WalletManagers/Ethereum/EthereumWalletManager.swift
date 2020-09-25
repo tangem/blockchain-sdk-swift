@@ -39,7 +39,7 @@ class EthereumWalletManager: WalletManager {
             wallet.add(tokenValue: tokenBalance)
         }
         txCount = response.txCount
-        pendingTxCount = response.txCount
+        pendingTxCount = response.pendingTxCount
         if txCount == pendingTxCount {
             for  index in wallet.transactions.indices {
                 wallet.transactions[index].status = .confirmed
