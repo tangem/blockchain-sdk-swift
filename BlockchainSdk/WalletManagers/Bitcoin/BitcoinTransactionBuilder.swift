@@ -152,7 +152,7 @@ class BitcoinTransactionBuilder {
         let first = decoded[0]
         let data = decoded[1...20]
         //P2H
-        if (first == 0 || first == 111 || first == 48) { //0 for BTC/BCH 1 address | 48 for LTC L address
+        if (first == 0 || first == 111 || first == 48 || first == 49) { //0 for BTC/BCH 1 address | 48 for LTC L address
             return [Op.dup.rawValue, Op.hash160.rawValue ] + buildPrefix(for: data) + data + [Op.equalVerify.rawValue, Op.checkSig.rawValue]
         }
         //P2SH
