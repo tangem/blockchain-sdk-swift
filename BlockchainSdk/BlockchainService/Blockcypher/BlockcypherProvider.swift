@@ -38,7 +38,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
             return Fail(error: error).eraseToAnyPublisher()
         }
         .retry(1)
-        .   eraseToAnyPublisher()
+        .eraseToAnyPublisher()
         .map(BlockcypherAddressResponse.self)
         .tryMap {addressResponse -> BitcoinResponse in
             guard let balance = addressResponse.balance,
