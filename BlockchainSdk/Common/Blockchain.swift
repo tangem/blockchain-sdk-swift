@@ -114,7 +114,9 @@ public enum Blockchain {
         case .litecoin:
             return "litecoin:"
         case .xrp:
-            return "ripple:"
+            return "xrpl:"
+        case .binance:
+            return "bnb:"
         default:
             return ""
         }
