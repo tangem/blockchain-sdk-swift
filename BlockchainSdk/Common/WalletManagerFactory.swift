@@ -40,7 +40,7 @@ public class WalletManagerFactory {
             }
             
         case .ducatus:
-            return BitcoinWalletManager(cardId: cardId, wallet: wallet).then {
+            return DucatusWalletManager(cardId: cardId, wallet: wallet).then {
                 $0.txBuilder = BitcoinTransactionBuilder(walletAddress: address, walletPublicKey: walletPublicKey, isTestnet: false)
                 $0.networkService = DucatusNetworkService(address: address)
             }
