@@ -71,7 +71,7 @@ class BitcoinWalletManager: WalletManager {
         .eraseToAnyPublisher()
     }
     
-    private func updateWallet(with response: BitcoinResponse) {
+    func updateWallet(with response: BitcoinResponse) {
         wallet.add(coinValue: response.balance)
         txBuilder.unspentOutputs = response.txrefs
         if response.hasUnconfirmed {

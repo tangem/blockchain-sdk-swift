@@ -117,6 +117,7 @@
 		5DED72C623A13377006D79AE /* StellarAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DED72C523A13377006D79AE /* StellarAddressService.swift */; };
 		5DF8D5B5243DB80C00186BF0 /* CardanoAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF8D5B4243DB80C00186BF0 /* CardanoAddressService.swift */; };
 		5DFE855924F0310C00194106 /* CardanoShelleyAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFE855824F0310C00194106 /* CardanoShelleyAddressService.swift */; };
+		5DFF005F2521F772005203FB /* DucatusWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFF005E2521F771005203FB /* DucatusWalletManager.swift */; };
 		88095B618D07D706BB871FE6 /* Pods_BlockchainSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1CC9E29B257CD29E6143FDD /* Pods_BlockchainSdk.framework */; };
 		ED3D33D84D8B747FB3B1D09D /* Pods_BlockchainSdkTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A172F9D47772F23948771418 /* Pods_BlockchainSdkTests.framework */; };
 /* End PBXBuildFile section */
@@ -247,6 +248,7 @@
 		5DED72C523A13377006D79AE /* StellarAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarAddressService.swift; sourceTree = "<group>"; };
 		5DF8D5B4243DB80C00186BF0 /* CardanoAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoAddressService.swift; sourceTree = "<group>"; };
 		5DFE855824F0310C00194106 /* CardanoShelleyAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoShelleyAddressService.swift; sourceTree = "<group>"; };
+		5DFF005E2521F771005203FB /* DucatusWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DucatusWalletManager.swift; sourceTree = "<group>"; };
 		7C311A9913C3A9F993C89148 /* Pods-BlockchainSdk.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.debug.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.debug.xcconfig"; sourceTree = "<group>"; };
 		8B8DF7D3E33EA0FFBCE2CCE6 /* Pods-BlockchainSdkTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkTests.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkTests/Pods-BlockchainSdkTests.release.xcconfig"; sourceTree = "<group>"; };
 		A172F9D47772F23948771418 /* Pods_BlockchainSdkTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdkTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -610,6 +612,7 @@
 		5D977BB423FAEB3700575BE4 /* Ducatus */ = {
 			isa = PBXGroup;
 			children = (
+				5DFF005E2521F771005203FB /* DucatusWalletManager.swift */,
 				5D977BB523FAEB4500575BE4 /* DucatusNetworkService.swift */,
 				5D26CEE6243CA4E200994CC0 /* DucatusAddressService.swift */,
 			);
@@ -952,6 +955,7 @@
 				5D7D243925136254001B9A4F /* IssuedAmount.swift in Sources */,
 				5DF8D5B5243DB80C00186BF0 /* CardanoAddressService.swift in Sources */,
 				5DFE855924F0310C00194106 /* CardanoShelleyAddressService.swift in Sources */,
+				5DFF005F2521F772005203FB /* DucatusWalletManager.swift in Sources */,
 				5D7D243C25136254001B9A4F /* SerializerDefinitions.swift in Sources */,
 				5DEAFA8E244472CD0032E316 /* Amount.swift in Sources */,
 				5D4B33CA23F732C800C93A84 /* BitcoinCashTransactionBuilder.swift in Sources */,

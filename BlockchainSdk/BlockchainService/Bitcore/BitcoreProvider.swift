@@ -37,7 +37,7 @@ class BitcoreProvider {
     @available(iOS 13.0, *)
     func send(_ transaction: String) -> AnyPublisher<BitcoreSendResponse, MoyaError> {
         return provider
-            .requestPublisher(.balance(address: address))
+            .requestPublisher(.send(txHex: transaction))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(BitcoreSendResponse.self)
             .eraseToAnyPublisher()
