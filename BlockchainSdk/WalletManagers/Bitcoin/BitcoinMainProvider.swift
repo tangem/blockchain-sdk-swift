@@ -106,7 +106,7 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
                 .filterSuccessfulStatusAndRedirectCodes()
                 .map(BlockchainInfoUnspentResponse.self)
                 .tryCatch { error -> AnyPublisher<BlockchainInfoUnspentResponse, Error> in
-                    if case let MoyaError.objectMapping(_, response) = error {
+                    if case let MoyaError.statusCode (response) = error {
                         let stringError = try response.mapString()
                         if stringError == "No free outputs to spend" {
                             return Just(BlockchainInfoUnspentResponse(unspent_outputs: []))
