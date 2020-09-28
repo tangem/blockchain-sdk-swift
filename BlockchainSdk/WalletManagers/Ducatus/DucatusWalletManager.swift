@@ -8,7 +8,6 @@
 import Foundation
 
 class DucatusWalletManager: BitcoinWalletManager {
-    var once: Bool = true
     override func updateWallet(with response: BitcoinResponse) {
         wallet.add(coinValue: response.balance)
         txBuilder.unspentOutputs = response.txrefs
