@@ -22,7 +22,7 @@ enum EthereumNetwork: Int {
         case .mainnet:
             return URL(string: "https://mainnet.infura.io/v3/613a0b14833145968b1f656240c7d245")!
         case .testnet:
-            return URL(string:" https://rinkeby.infura.io/v3/613a0b14833145968b1f656240c7d245")!
+            return URL(string:"https://rinkeby.infura.io/v3/613a0b14833145968b1f656240c7d245")!
         case .rsk:
             return URL(string: "https://public-node.rsk.co/")!
         }
