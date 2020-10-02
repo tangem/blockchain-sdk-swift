@@ -10,14 +10,6 @@ import Foundation
 import TangemSdk
 import Combine
 
-enum BitcoinError: Error {
-    case noUnspents
-    case failedToBuildHash
-    case failedToBuildTransaction
-    case failedToMapNetworkResponse
-    case failedToCalculateTxSize
-}
-
 class BitcoinWalletManager: WalletManager {
     var allowsFeeSelection: Bool { true }
     var txBuilder: BitcoinTransactionBuilder!
@@ -49,7 +41,7 @@ class BitcoinWalletManager: WalletManager {
                 let maxPerByte = response.priorityKb/kb
                 let dummyFee = Amount(with: amount, value: 0.00000001)
                 guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount - dummyFee, fee: dummyFee, sourceAddress: self.wallet.address, destinationAddress: destination)) else {
-                    throw BitcoinError.failedToCalculateTxSize
+                    throw WalletError.failedToCalculateTxSize
                 }
                 
                 var minFee = (minPerByte * estimatedTxSize)
@@ -101,13 +93,13 @@ class BitcoinWalletManager: WalletManager {
 extension BitcoinWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
         guard let hashes = txBuilder.buildForSign(transaction: transaction) else {
-            return Fail(error: BitcoinError.failedToBuildHash).eraseToAnyPublisher()
+            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
         return signer.sign(hashes: hashes, cardId: cardId)
             .tryMap {[unowned self] response -> (String, SignResponse) in
                 guard let tx = self.txBuilder.buildForSend(transaction: transaction, signature: response.signature) else {
-                    throw BitcoinError.failedToBuildTransaction
+                    throw WalletError.failedToBuildTx
                 }
                 return (tx.toHexString(), response)
         }

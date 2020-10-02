@@ -10,9 +10,33 @@ import Foundation
 import TangemSdk
 import Combine
 
-public enum WalletError: Error {
+public enum WalletError: Error, LocalizedError {
     case noAccount(message: String)
+    case failedToGetFee
+    case failedToBuildTx
+    case failedToParseNetworkResponse
+    case failedToSendTx
+    case failedToCalculateTxSize
+    
+    public var errorDescription: String? {
+        switch self {
+        case .noAccount(let message):
+            return message
+        case .failedToGetFee:
+            return "common_fee_error".localized
+        case .failedToBuildTx:
+            return "common_build_tx_error".localized
+        case .failedToParseNetworkResponse:
+            return "common_parse_network_response_error".localized
+        case .failedToSendTx:
+            return "common_send_tx_error".localized
+        case .failedToCalculateTxSize:
+            return "common_estimate_tx_size_error".localized
+        }
+    }
+    
 }
+
 
 public class WalletManager {
     public let cardId: String

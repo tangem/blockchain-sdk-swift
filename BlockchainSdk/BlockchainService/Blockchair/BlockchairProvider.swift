@@ -36,17 +36,17 @@ class BlockchairProvider {
                 let balance = address["balance"].stringValue
                 
                 guard let decimalSatoshiBalance = Decimal(string: balance) else {
-                    throw "Balance mapping error"
+                    throw WalletError.failedToParseNetworkResponse
                 }
                 
                 guard let transactionsData = try? addr["transactions"].rawData(),
                     let transactions: [BlockchairTransaction] = try? JSONDecoder().decode([BlockchairTransaction].self, from: transactionsData) else {
-                        throw "Transactions mapping error"
+                        throw WalletError.failedToParseNetworkResponse
                 }
                 
                 guard let utxoData = try? addr["utxo"].rawData(),
                     let utxos: [BlockchairUtxo] = try? JSONDecoder().decode([BlockchairUtxo].self, from: utxoData) else {
-                        throw "Utxos mapping error"
+                        throw WalletError.failedToParseNetworkResponse
                 }
                 
                 let utxs: [BtcTx] = utxos.compactMap { utxo -> BtcTx?  in
@@ -79,7 +79,7 @@ class BlockchairProvider {
             .tryMap { json throws -> BtcFee in
                 let data = json["data"]
                 guard let feePerByteSatoshi = data["suggested_transaction_fee_per_byte_sat"].int  else {
-                    throw "Can't load fee"
+                    throw WalletError.failedToGetFee
                 }
                 
                 let feeKbValue = Decimal(1024) * Decimal(feePerByteSatoshi) / Decimal(100000000)
@@ -98,7 +98,7 @@ class BlockchairProvider {
                 let data = json["data"]
                 
                 guard let hash = data["transaction_hash"].string else {
-                   throw "Empty response"
+                    throw WalletError.failedToParseNetworkResponse
                 }
                 
                return hash

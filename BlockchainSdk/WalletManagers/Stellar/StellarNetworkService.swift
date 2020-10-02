@@ -39,7 +39,7 @@ class StellarNetworkService {
                 guard let baseFeeStroops = Decimal(ledgerResponse.baseFeeInStroops),
                     let baseReserveStroops = Decimal(ledgerResponse.baseReserveInStroops),
                     let balance = Decimal(accountResponse.balances.first(where: {$0.assetType == AssetTypeAsString.NATIVE})?.balance) else {
-                        throw StellarError.requestFailed
+                        throw WalletError.failedToParseNetworkResponse
                 }
                 
                 let sequence = accountResponse.sequenceNumber

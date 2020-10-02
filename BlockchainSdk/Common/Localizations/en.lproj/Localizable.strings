@@ -14,5 +14,48 @@
 
 "no_account_bnb" = "To create account send funds to this address";
 
+
+
+"common_build_tx_error" = "Failed to build transaction";
+
+"common_fee_error" = "Failed to get fee";
+
+"common_parse_network_response_error" = "Failed to parse network response";
+
+"common_send_tx_error" = "Failed to send transaction";
+
+"common_estimate_tx_size_error" = "Failed to calculate transaction size";
+
+
+
+"cardano_missing_unspents" = "Missing unspents";
+
 "cardano_low_ada" = "Sent amount and change cannot be less than 1 ADA";
 
+
+
+"xrp_target_not_created_format" = "Target account is not created. Amount to send should be %@ XRP + fee or more";
+
+"xrp_load_unconfirmed_error" = "Failed to load unconfirmed balance";
+
+"xrp_load_reserve_error" = "Failed to load reserve";
+
+"xrp_load_account_error" = "Failed to load account info";
+
+"xrp_missing_reserve_error" = "Missing reserve";
+
+
+
+"eth_tx_count_parse_error" = "Failed to parse tx count";
+
+"eth_balance_parse_error" = "Failed to parse the balance";
+
+"eth_token_balance_parse_error" = "Failed to parse token balance";
+
+
+
+"xlm_latest_ledger_error" = "Couldn't find latest ledger";
+
+"xlm_requires_memo_error" = "Requires memo";
+
+"xlm_empty_response_error" = "Empty response";

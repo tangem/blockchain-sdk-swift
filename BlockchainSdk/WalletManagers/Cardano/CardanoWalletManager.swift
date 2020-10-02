@@ -10,21 +10,12 @@ import Foundation
 import Combine
 import TangemSdk
 
-enum CardanoError: Error, LocalizedError {
-    case noUnspents
-    case failedToBuildHash
-    case failedToBuildTransaction
-    case failedToMapNetworkResponse
-    case lowAda
-    case failedToCalculateFee
+public enum CardanoError: String, Error, LocalizedError {
+    case noUnspents = "cardano_missing_unspents"
+    case lowAda = "cardano_low_ada"
      
-    var errorDescription: String? {
-        switch self {
-        case .lowAda:
-            return "cardano_low_ada".localized
-        default:
-            return "\(self)"
-        }
+    public var errorDescription: String? {
+        return self.rawValue.localized
     }
 }
 
@@ -67,7 +58,7 @@ extension CardanoWalletManager: TransactionSender {
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
         guard let walletAmount = wallet.amounts[.coin]?.value else {
-            return Fail(error: CardanoError.failedToBuildHash).eraseToAnyPublisher()
+            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
         let txBuildResult = txBuilder.buildForSign(transaction: transaction, walletAmount: walletAmount)
@@ -103,7 +94,7 @@ extension CardanoWalletManager: TransactionSender {
         }
         
         guard let walletAmount = wallet.amounts[amount.type] else {
-            return Fail(error: CardanoError.failedToCalculateFee).eraseToAnyPublisher()
+            return Fail(error: WalletError.failedToGetFee).eraseToAnyPublisher()
         }
         
         

@@ -44,7 +44,7 @@ class StellarTransactionBuilder {
     public func buildForSign(transaction: Transaction, completion: @escaping (Result<(hash: Data, transaction: stellarsdk.TransactionXDR), Error>) -> Void ) {
         guard let destinationKeyPair = try? KeyPair(accountId: transaction.destinationAddress),
             let sourceKeyPair = try? KeyPair(accountId: transaction.sourceAddress) else {
-                completion(.failure(StellarError.failedToBuildTransaction))
+                completion(.failure(WalletError.failedToBuildTx))
                 return
         }
         
@@ -66,7 +66,7 @@ class StellarTransactionBuilder {
         } else if transaction.amount.type == .token {
             guard let contractAddress = transaction.contractAddress, let keyPair = try? KeyPair(accountId: contractAddress),
                 let asset = createNonNativeAsset(code: transaction.amount.currencySymbol, issuer: keyPair) else {
-                    completion(.failure(StellarError.failedToBuildTransaction))
+                    completion(.failure(WalletError.failedToBuildTx))
                     return
             }
             
@@ -129,7 +129,7 @@ class StellarTransactionBuilder {
     private func serializeOperation(_ operation: stellarsdk.Operation, sourceKeyPair: KeyPair, completion: @escaping (Result<(hash: Data, transaction: stellarsdk.TransactionXDR), Error>) -> Void ) {
         guard let xdrOperation = try? operation.toXDR(),
             let seqNumber = sequence else {
-                completion(.failure(StellarError.failedToBuildTransaction))
+                completion(.failure(WalletError.failedToBuildTx))
                 return
         }
         
@@ -145,7 +145,7 @@ class StellarTransactionBuilder {
         
         let network = isTestnet ? Network.testnet : Network.public
         guard let hash = try? tx.hash(network: network) else {
-            completion(.failure(StellarError.failedToBuildTransaction))
+            completion(.failure(WalletError.failedToBuildTx))
             return
         }
         

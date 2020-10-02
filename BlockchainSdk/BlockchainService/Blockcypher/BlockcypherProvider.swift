@@ -44,7 +44,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
             guard let balance = addressResponse.balance,
                 let uncBalance = addressResponse.unconfirmed_balance
                 else {
-                    throw BitcoinError.failedToMapNetworkResponse
+                    throw WalletError.failedToParseNetworkResponse
             }
             
             let satoshiBalance = Decimal(balance)/Decimal(100000000)

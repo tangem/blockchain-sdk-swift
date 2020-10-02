@@ -12,22 +12,15 @@ import SwiftyJSON
 import Combine
 import TangemSdk
 
-enum StellarError: Error, LocalizedError {
-    case noFee
-    case failedToBuildTransaction
-    case requestFailed
-    case xlmCreateAccount
-    case assetCreateAccount
+public enum StellarError: String, Error, LocalizedError {
+    case emptyResponse = "xlm_empty_response_error"
+    case requiresMemo = "xlm_requires_memo_error"
+    case failedToFindLatestLedger = "xlm_latest_ledger_error"
+    case xlmCreateAccount = "no_account_xlm"
+    case assetCreateAccount = "no_account_xlm_asset"
     
-    var errorDescription: String? {
-        switch self {
-        case .xlmCreateAccount:
-            return "no_account_xlm".localized
-        case .assetCreateAccount:
-            return "no_account_xlm_asset".localized
-        default:
-            return "\(self)"
-        }
+    public var errorDescription: String? {
+        return self.rawValue.localized
     }
 }
 
@@ -81,7 +74,7 @@ extension StellarWalletManager: TransactionSender {
         }
         .tryMap {[unowned self] result throws -> (String,SignResponse) in
             guard let tx = self.txBuilder.buildForSend(signature: result.0.signature, transaction: result.1.transaction) else {
-                throw StellarError.failedToBuildTransaction
+                throw WalletError.failedToBuildTx
             }
             
             return (tx, result.0)
@@ -100,7 +93,7 @@ extension StellarWalletManager: TransactionSender {
             let feeAmount = Amount(with: wallet.blockchain, address: self.wallet.address, value: feeValue)
             return Result.Publisher([feeAmount]).eraseToAnyPublisher()
         } else {
-            return Fail(error: StellarError.noFee).eraseToAnyPublisher()
+            return Fail(error: WalletError.failedToGetFee).eraseToAnyPublisher()
         }
     }
 }

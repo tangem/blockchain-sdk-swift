@@ -32,7 +32,7 @@ class EthereumNetworkService {
                     hash.count > 0 {
                     return hash
                 }
-                throw "Empty response"
+                throw WalletError.failedToParseNetworkResponse
         }
         .eraseToAnyPublisher()
     }
@@ -54,14 +54,14 @@ class EthereumNetworkService {
         let future = Future<BigUInt,Error> {[unowned self] promise in
             DispatchQueue.global().async {
                 guard let web3Network = self.network.getWeb3Network() else {
-                    promise(.failure(EthereumError.failedToGetFee))
+                    promise(.failure(WalletError.failedToGetFee))
                     return
                 }
                 let provider = Web3HttpProvider(self.network.url, network: web3Network, keystoreManager: nil)!
                 let web = web3(provider: provider)
                 
                 guard let gasPrice = try? web.eth.getGasPrice() else {
-                    promise(.failure(EthereumError.failedToGetFee))
+                    promise(.failure(WalletError.failedToGetFee))
                     return
                 }
                 
@@ -125,13 +125,13 @@ class EthereumNetworkService {
             return result
         }
         
-        throw "Failed to parse result"
+        throw WalletError.failedToParseNetworkResponse
     }
     
     private func parseTxCount(_ data: Data) throws -> Int {
         let countString = try parseResult(data)
         guard let count = Int(countString.removeHexPrefix(), radix: 16) else {
-            throw "Failed to parse count"
+            throw ETHError.failedToParseTxCount
         }
         
         return count
@@ -141,7 +141,7 @@ class EthereumNetworkService {
         let quantity = (try parseResult(data)).removeHexPrefix()
         guard let balanceData = asciiHexToData(quantity),
               let balanceWei = dataToDecimal(balanceData) else {
-            throw "Failed to convert the quantity"
+                throw ETHError.failedToParseBalance
         }
         
         let balanceEth = balanceWei / Decimal(1000000000000000000)
@@ -152,11 +152,11 @@ class EthereumNetworkService {
         let quantity = (try parseResult(data)).removeHexPrefix()
         guard let balanceData = asciiHexToData(quantity),
               let balanceWei = dataToDecimalToken(balanceData) else {
-            throw "Failed to convert the token quantity"
+            throw ETHError.failedToParseTokenBalance
         }
         
         let balanceEth = balanceWei.dividing(by: NSDecimalNumber(value: 1).multiplying(byPowerOf10: Int16(tokenDecimals!)))
-        return balanceEth as! Decimal
+        return balanceEth as Decimal
     }
 }
 
@@ -178,7 +178,7 @@ fileprivate extension EthereumNetworkService {
         let rawPointer = UnsafeRawPointer(temp.bytes)
         let pointer = rawPointer.assumingMemoryBound(to: UInt64.self)
         let value = pointer.pointee
-        return NSDecimalNumber(value: value) as? Decimal
+        return NSDecimalNumber(value: value) as Decimal
     }
     
     private func dataToDecimalToken(_ data: Data) -> NSDecimalNumber? {

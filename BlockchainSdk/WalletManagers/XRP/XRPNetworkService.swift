@@ -9,7 +9,7 @@
 import Foundation
 import Moya
 import Combine
-
+    
 class XRPNetworkService {
     let provider = MoyaProvider<XrpTarget>()
     
@@ -26,7 +26,7 @@ class XRPNetworkService {
                     let minFeeDecimal = Decimal(string: minFee),
                     let normalFeeDecimal = Decimal(string: normalFee),
                     let maxFeeDecimal = Decimal(string: maxFee) else {
-                        throw "Failed to get fee"
+                        throw WalletError.failedToGetFee
                 }
                 
                 return XRPFeeResponse(min: minFeeDecimal, normal: normalFeeDecimal, max: maxFeeDecimal)
@@ -42,11 +42,11 @@ class XRPNetworkService {
             .map(XrpResponse.self)
             .tryMap { xrpResponse -> Bool in
                 guard let code = xrpResponse.result?.engine_result_code else {
-                    throw "Submit error"
+                    throw WalletError.failedToSendTx
                 }
                 
                 if code != 0 {
-                    let message = xrpResponse.result?.engine_result_message ?? "Failed to send"
+                    let message = xrpResponse.result?.engine_result_message ?? WalletError.failedToSendTx.localizedDescription
                     if message != "Held until escalated fee drops." { //TODO: find the error code
                         throw message
                     }
@@ -67,7 +67,7 @@ class XRPNetworkService {
                 
                 guard let unconfirmedBalanceString = xrpResponse.result?.account_data?.balance,
                     let unconfirmedBalance = Decimal(unconfirmedBalanceString) else {
-                        throw "Failed to load balance"
+                        throw XRPError.failedLoadUnconfirmed
                 }
                 
                 return unconfirmedBalance
@@ -84,7 +84,7 @@ class XRPNetworkService {
                 try self.assertAccountCreated(xrpResponse)
                 
                 guard let reserveBase = xrpResponse.result?.state?.validated_ledger?.reserve_base else {
-                    throw "Failed to load reserve"
+                    throw XRPError.failedLoadReserve
                 }
                 
                 return Decimal(reserveBase)
@@ -104,7 +104,7 @@ class XRPNetworkService {
                     let balanceString = accountResponse.balance,
                     let sequence = accountResponse.sequence,
                     let balance = Decimal(balanceString) else {
-                        throw "Failed to load data"
+                        throw XRPError.failedLoadInfo
                 }
                 
                 return (balance: balance, sequence: sequence)

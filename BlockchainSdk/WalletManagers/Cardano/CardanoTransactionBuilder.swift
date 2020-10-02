@@ -33,7 +33,7 @@ class CardanoTransactionBuilder {
         case .success(let bodyItem):
             let transactionBody = bodyItem.encode()
             guard let transactionHash = Sodium().genericHash.hash(message: transactionBody, outputLength: 32) else {
-                return .failure(CardanoError.failedToBuildHash)
+                return .failure(WalletError.failedToBuildTx)
             }
             
             return .success((hash: Data(transactionHash), bodyItem: bodyItem))
@@ -74,7 +74,7 @@ class CardanoTransactionBuilder {
         }
         
         guard let targetAddressBytes =  CardanoAddress.decode(transaction.destinationAddress)?.bytes else {
-            return .failure(CardanoError.failedToBuildTransaction)
+            return .failure(WalletError.failedToBuildTx)
         }
         
         var transactionMap = CBOR.map([:])
@@ -92,7 +92,7 @@ class CardanoTransactionBuilder {
         outputsArray.append(CBOR.array([CBOR.byteString(targetAddressBytes), CBOR.unsignedInt(amountLong)]))
            
         guard let changeAddressBytes =  CardanoAddress.decode(transaction.sourceAddress)?.bytes else {
-            return .failure(CardanoError.failedToBuildTransaction)
+            return .failure(WalletError.failedToBuildTx)
         }
         
         if (changeLong > 0) {
