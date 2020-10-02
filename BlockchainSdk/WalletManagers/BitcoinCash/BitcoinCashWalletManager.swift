@@ -47,13 +47,13 @@ extension BitcoinCashWalletManager: TransactionSender {
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
         guard let hashes = txBuilder.buildForSign(transaction: transaction) else {
-            return Fail(error: BitcoinError.failedToBuildHash).eraseToAnyPublisher()
+            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
         return signer.sign(hashes: hashes, cardId: cardId)
             .tryMap {[unowned self] response -> (String, SignResponse) in
                 guard let tx = self.txBuilder.buildForSend(transaction: transaction, signature: response.signature) else {
-                    throw BitcoinError.failedToBuildTransaction
+                    throw WalletError.failedToBuildTx
                 }
                 return (tx.toHexString(), response)
         }
@@ -74,7 +74,7 @@ extension BitcoinCashWalletManager: TransactionSender {
                 let feePerByte = response.minimalKb/kb
                 
                 guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount, fee: Amount(with: amount, value: 0.0001), sourceAddress: self.wallet.address, destinationAddress: destination)) else {
-                    throw BitcoinError.failedToCalculateTxSize
+                    throw WalletError.failedToCalculateTxSize
                 }
                 
                 let fee = (feePerByte * estimatedTxSize)

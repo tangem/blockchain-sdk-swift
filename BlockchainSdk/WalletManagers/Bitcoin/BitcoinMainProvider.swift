@@ -26,7 +26,7 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
             .tryMap {(addressResponse, unspentsResponse) throws -> BitcoinResponse in
                 guard let balance = addressResponse.final_balance,
                     let txs = addressResponse.txs else {
-                        throw "Fee request error"
+                        throw WalletError.failedToGetFee
                 }
                 
                 let utxs: [BtcTx] = unspentsResponse.unspent_outputs?.compactMap { utxo -> BtcTx?  in

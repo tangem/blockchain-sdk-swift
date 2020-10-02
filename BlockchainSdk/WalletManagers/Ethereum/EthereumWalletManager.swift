@@ -13,6 +13,16 @@ import Combine
 import TangemSdk
 import Moya
 
+public enum ETHError: String, Error, LocalizedError {
+    case failedToParseTxCount = "eth_tx_count_parse_error"
+    case failedToParseBalance = "eth_balance_parse_error"
+    case failedToParseTokenBalance = "eth_token_balance_parse_error"
+    
+    public var errorDescription: String? {
+        return self.rawValue.localized
+    }
+}
+
 class EthereumWalletManager: WalletManager {
     var txBuilder: EthereumTransactionBuilder!
     var networkService: EthereumNetworkService!
@@ -58,13 +68,13 @@ extension EthereumWalletManager: TransactionSender {
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
         guard let txForSign = txBuilder.buildForSign(transaction: transaction, nonce: txCount) else {
-            return Fail(error: EthereumError.failedToBuildHash).eraseToAnyPublisher()
+            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
         return signer.sign(hashes: [txForSign.hash], cardId: self.cardId)
             .tryMap {[unowned self] signResponse throws -> (String, SignResponse) in
                 guard let tx = self.txBuilder.buildForSend(transaction: txForSign.transaction, hash: txForSign.hash, signature: signResponse.signature) else {
-                    throw BitcoinError.failedToBuildTransaction
+                    throw WalletError.failedToBuildTx
                 }
                 return ("0x\(tx.toHexString())", signResponse)
         }
@@ -94,7 +104,7 @@ extension EthereumWalletManager: TransactionSender {
                 guard let minDecimal = Decimal(string: min),
                     let normalDecimal = Decimal(string: normal),
                     let maxDecimal = Decimal(string: max) else {
-                        throw EthereumError.failedToGetFee
+                        throw WalletError.failedToGetFee
                 }
                 
                 let minAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: minDecimal)
@@ -106,12 +116,6 @@ extension EthereumWalletManager: TransactionSender {
         .eraseToAnyPublisher()
     }
 }
-
-enum EthereumError: Error {
-    case failedToGetFee
-    case failedToBuildHash
-}
-
 
 
 extension EthereumWalletManager: ThenProcessable { }

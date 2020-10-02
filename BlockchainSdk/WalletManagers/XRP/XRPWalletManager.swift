@@ -10,6 +10,17 @@ import Foundation
 import Combine
 import TangemSdk
 
+public enum XRPError: String, Error, LocalizedError {
+    case failedLoadUnconfirmed = "xrp_load_unconfirmed_error"
+    case failedLoadReserve = "xrp_load_reserve_error"
+    case failedLoadInfo = "xrp_load_account_error"
+    case missingReserve = "xrp_missing_reserve_error"
+    
+    public var errorDescription: String? {
+        return self.rawValue.localized
+    }
+}
+
 class XRPWalletManager: WalletManager {
     var txBuilder: XRPTransactionBuilder!
     var networkService: XRPNetworkService!
@@ -22,9 +33,9 @@ class XRPWalletManager: WalletManager {
                     self.wallet.amounts = [:]
                     completion(.failure(error))
                 }
-            }, receiveValue: { [unowned self] response in
-                self.updateWallet(with: response)
-                completion(.success(()))
+                }, receiveValue: { [unowned self] response in
+                    self.updateWallet(with: response)
+                    completion(.success(()))
             })
     }
     
@@ -55,11 +66,11 @@ extension XRPWalletManager: TransactionSender {
             .tryMap{[unowned self] isAccountCreated -> (XRPTransaction, Data) in
                 guard let walletReserve = self.wallet.amounts[.reserve]?.value,
                     let buldResponse = self.txBuilder.buildForSign(transaction: transaction) else {
-                        throw "Missing reserve"
+                        throw XRPError.missingReserve
                 }
                 
                 if !isAccountCreated && transaction.amount.value < walletReserve {
-                    throw "Target account is not created. Amount to send should be \(walletReserve) XRP + fee or more"
+                    throw String(format: "xrp_target_not_created_format".localized, walletReserve.description)
                 }
                 
                 return buldResponse
@@ -67,11 +78,11 @@ extension XRPWalletManager: TransactionSender {
         .flatMap{[unowned self] buildResponse -> AnyPublisher<(XRPTransaction, SignResponse),Error> in
             return signer.sign(hashes: [buildResponse.1], cardId: self.cardId).map {
                 return (buildResponse.0, $0)
-                }.eraseToAnyPublisher()
+            }.eraseToAnyPublisher()
         }
         .tryMap{[unowned self] response -> (String,SignResponse) in
             guard let tx = self.txBuilder.buildForSend(transaction: response.0, signature: response.1.signature) else {
-                throw "Failed to build transaction"
+                throw WalletError.failedToBuildTx
             }
             
             return (tx, response.1)

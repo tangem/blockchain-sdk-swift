@@ -53,14 +53,14 @@ extension BinanceWalletManager: TransactionSender {
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
         guard let msg = txBuilder.buildForSign(transaction: transaction) else {
-            return Fail(error: "Failed to build tx. Missing token contract address").eraseToAnyPublisher()
+            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
         let hash = msg.encodeForSignature()
         return signer.sign(hashes: [hash], cardId: cardId)
             .tryMap {[unowned self] response -> (Message, SignResponse) in
                 guard let tx = self.txBuilder.buildForSend(signature: response.signature, hash: hash) else {
-                    throw BitcoinError.failedToBuildTransaction
+                    throw WalletError.failedToBuildTx
                 }
                 return (tx, response)
         }
@@ -78,7 +78,7 @@ extension BinanceWalletManager: TransactionSender {
         return networkService.getFee()
             .tryMap { feeString throws -> [Amount] in
                 guard let feeValue = Decimal(feeString) else {
-                    throw "Failed to get fee"
+                    throw WalletError.failedToGetFee
                 }
                 
                 return [Amount(with: self.wallet.blockchain, address: self.wallet.address, value: feeValue)]

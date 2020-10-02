@@ -36,7 +36,7 @@ extension LedgersService {
                     if let lastLedger = ledgerResponse.records.first {
                         promise(.success(lastLedger))
                     } else {
-                        promise(.failure("Couldn't find latest ledger"))
+                        promise(.failure(StellarError.failedToFindLatestLedger))
                     }
                 case .failure(let error):
                     promise(.failure(error))
@@ -57,8 +57,8 @@ extension TransactionsService {
                     promise(.success(submitResponse))
                 case .failure(let error):
                     promise(.failure(error))
-                case .destinationRequiresMemo(destinationAccountId: let destinationAccountId):
-                    promise(.failure("requires memo"))
+                case .destinationRequiresMemo(_):
+                    promise(.failure(StellarError.requiresMemo))
                 }
             })
         }
@@ -71,7 +71,7 @@ extension HorizonRequestError {
     var message: String {
         switch self {
         case .emptyResponse:
-            return "emptyResponse"
+            return StellarError.emptyResponse.localizedDescription
         case .beforeHistory(let message, _):
             return message
         case .badRequest(let message, _):
