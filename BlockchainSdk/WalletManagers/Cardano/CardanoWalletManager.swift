@@ -89,24 +89,42 @@ extension CardanoWalletManager: TransactionSender {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        guard let unspentOutputs = txBuilder.unspentOutputs else {
-            return Fail(error: CardanoError.noUnspents).eraseToAnyPublisher()
+        guard let transactionSize = self.getEstimateSize(amount: amount, destination: destination) else {
+            return Fail(error: WalletError.failedToCalculateTxSize).eraseToAnyPublisher()
         }
-        
-        guard let walletAmount = wallet.amounts[amount.type] else {
-            return Fail(error: WalletError.failedToGetFee).eraseToAnyPublisher()
-        }
-        
-        
-        let outputsNumber = amount == walletAmount ? 1 : 2
-        let transactionSize = unspentOutputs.count * 40 + outputsNumber * 65 + 160
         
         let a = Decimal(0.155381)
-        let b = Decimal(0.000043946)
+        let b = Decimal(0.000044)
         
-        let feeValue = a + b * Decimal(transactionSize)
+        let feeValue = (a + b * transactionSize).rounded(blockchain: wallet.blockchain)
         let feeAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: feeValue)
         return Result.Publisher([feeAmount]).eraseToAnyPublisher()
+    }
+    
+    private func getEstimateSize(amount: Amount, destination: String) -> Decimal? {
+        let dummyFee = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: Decimal(0.1))
+        let dummyAmount = amount - dummyFee
+        let dummyTx = Transaction(amount: dummyAmount,
+                                  fee: dummyFee,
+                                  sourceAddress: self.wallet.address,
+                                  destinationAddress: destination)
+        
+        
+        guard let walletAmount = wallet.amounts[.coin]?.value else {
+            return nil
+        }
+        
+        let txBuildResult = txBuilder.buildForSign(transaction: dummyTx, walletAmount: walletAmount)
+        guard case let .success(info) = txBuildResult else {
+            return nil
+        }
+        
+        let txBuildForSendResult = txBuilder.buildForSend(bodyItem: info.bodyItem, signature: Data(repeating: 0, count: 64))
+        guard case let .success(tx) = txBuildForSendResult else {
+            return nil
+        }
+
+        return Decimal(tx.count)
     }
 }
 
