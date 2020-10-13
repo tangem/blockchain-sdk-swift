@@ -24,8 +24,8 @@ class CardanoTransactionBuilder {
         self.shelleyCard = shelleyCard
     }
     
-    public func buildForSign(transaction: Transaction, walletAmount: Decimal) -> Result<(hash:Data, bodyItem: CBOR), Error> {
-        let txBodyResult = buildTransactionBody(from: transaction, walletAmount: walletAmount)
+	public func buildForSign(transaction: Transaction, walletAmount: Decimal, isEstimated: Bool) -> Result<(hash:Data, bodyItem: CBOR), Error> {
+        let txBodyResult = buildTransactionBody(from: transaction, walletAmount: walletAmount, isEstimated: isEstimated)
         
         switch txBodyResult {
         case .failure(let error):
@@ -56,7 +56,7 @@ class CardanoTransactionBuilder {
         return .success(Data(txForSend))
         
     }
-    private func buildTransactionBody(from transaction: Transaction, walletAmount: Decimal) -> Result<CBOR, Error> {
+	private func buildTransactionBody(from transaction: Transaction, walletAmount: Decimal, isEstimated: Bool = false) -> Result<CBOR, Error> {
         guard let unspentOutputs = self.unspentOutputs else {
             return .failure(CardanoError.noUnspents)
         }
@@ -69,7 +69,7 @@ class CardanoTransactionBuilder {
         let changeLong = (change.rounded(0) as NSDecimalNumber).uint64Value
         let feesLong = (feeConverted.rounded(0) as NSDecimalNumber).uint64Value
         
-        if (amountLong < 1000000 || (changeLong < 1000000 && changeLong != 0)) {
+        if !isEstimated && (amountLong < 1000000 || (changeLong < 1000000 && changeLong != 0)) {
             return .failure(CardanoError.lowAda)
         }
         
