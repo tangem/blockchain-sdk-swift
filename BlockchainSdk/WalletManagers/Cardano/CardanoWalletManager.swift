@@ -61,7 +61,7 @@ extension CardanoWalletManager: TransactionSender {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
-        let txBuildResult = txBuilder.buildForSign(transaction: transaction, walletAmount: walletAmount)
+        let txBuildResult = txBuilder.buildForSign(transaction: transaction, walletAmount: walletAmount, isEstimated: false)
         switch txBuildResult {
         case .success(let info):
             return signer.sign(hashes: [info.hash], cardId: cardId)
@@ -114,7 +114,7 @@ extension CardanoWalletManager: TransactionSender {
             return nil
         }
         
-        let txBuildResult = txBuilder.buildForSign(transaction: dummyTx, walletAmount: walletAmount)
+		let txBuildResult = txBuilder.buildForSign(transaction: dummyTx, walletAmount: walletAmount, isEstimated: true)
         guard case let .success(info) = txBuildResult else {
             return nil
         }
