@@ -24,6 +24,7 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
     
     convenience init(address: String, isTestNet:Bool) {
         var providers = [BitcoinNetworkApi:BitcoinNetworkProvider]()
+		providers[.blockchair] = BlockchairProvider(address: address, endpoint: .bitcoin)
         providers[.blockcypher] = BlockcypherProvider(address: address, coin: .btc, chain:  isTestNet ? .test3: .main)
         providers[.main] = BitcoinMainProvider(address: address)
         self.init(providers:providers, isTestNet: isTestNet)
@@ -38,9 +39,7 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
                     case let MoyaError.statusCode(response) = moyaError,
                     self.providers.count > 1,
                     response.statusCode > 299  {
-                    if self.networkApi == .main {
-                        self.networkApi = .blockcypher
-                    }
+					self.switchProvider()
                 }
                 
                 throw error
@@ -57,9 +56,7 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
                 self.getProvider().getFee()
             }
             .tryCatch {[unowned self] error -> AnyPublisher<BtcFee, Error> in
-                if self.networkApi == .main {
-                    self.networkApi = .blockcypher
-                }
+				self.switchProvider()
                 throw error
         }
         .retry(1)
@@ -81,4 +78,16 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
         
         return isTestNet ? providers[.blockcypher]!: providers[networkApi]!
     }
+	
+	func switchProvider() {
+		switch networkApi {
+		case .main:
+			networkApi = .blockchair
+		case .blockchair:
+			networkApi = .blockcypher
+		default:
+			networkApi = .main
+		}
+		print("Bitcoin network service switched to: \(networkApi)")
+	}
 }

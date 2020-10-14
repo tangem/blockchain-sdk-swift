@@ -10,6 +10,7 @@ import Foundation
 import Moya
 
 enum BlockchairEndpoint: String {
+	case bitcoin = "bitcoin"
     case bitcoinCash = "bitcoin-cash"
 }
 

@@ -1,0 +1,60 @@
+/* 
+  Localizable.strings
+  BlockchainSdk
+
+  Created by Alexander Osokin on 01.09.2020.
+  Copyright © 2020 Tangem AG. All rights reserved.
+*/
+
+"no_account_xlm" = "Um ein Konto zu erstellen, senden Sie 1+ XLM an diese Adresse";
+
+"no_account_xlm_asset" = "Um ein Konto zu erstellen, senden Sie 1.5+ XLM an diese Adresse ";
+
+"no_account_xrp" = "Laden Sie 20+ XRP auf um ein Konto zu erstellen";
+
+"no_account_bnb" = "Senden Sie Geld an diese Andresse um ein Konto zu erstellen";
+
+
+"common_build_tx_error" = "Transaktion fehlgeschlagen";
+
+"common_fee_error" = "Erhalt der Gebühr fehlgeschlagen";
+
+"common_parse_network_response_error" = "Antwort des Netzwerks fehlgeschlagen";
+
+"common_send_tx_error" = "Absenden der Transaktion fehlgeschlagen";
+
+"common_estimate_tx_size_error" = "Berechnung des Transaktionsumfangs fehlgeschlagen";
+
+
+
+"cardano_missing_unspents" = "keine unverbraucht";
+
+"cardano_low_ada" = "Betrag absenden, die Änderung darf nicht unter 1 ADA liegen";
+
+
+
+"xrp_target_not_created_format" = "Das Zielkonto ist nicht erstellt. Der abzusendende Betrag soll %@ XRP + Gebühr oder mehr sein";
+
+"xrp_load_unconfirmed_error" = "Aufladen der unbestätigten Bilanz fehlgeschlagen";
+
+"xrp_load_reserve_error" = " Aufladen der Reserve fehlgeschlagen";
+
+"xrp_load_account_error" = " Aufladen der Kontoinformation fehlgeschlagen";
+
+"xrp_missing_reserve_error" = "keine Reserve";
+
+
+
+"eth_tx_count_parse_error" = "Analyse tx Berechnung fehlgeschlagen";
+
+"eth_balance_parse_error" = "Analyse der Bilanz fehlgeschlagen";
+
+"eth_token_balance_parse_error" = "Analyse der Token-Bilanz fehlgeschlagen";
+
+
+
+"xlm_latest_ledger_error" = "Letztes Konto nicht gefunden";
+
+"xlm_requires_memo_error" = "Memo erforderlich";
+
+"xlm_empty_response_error" = "Leere Antwort";
