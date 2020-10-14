@@ -13,7 +13,7 @@ import TangemSdk
 import Alamofire
 import SwiftyJSON
 
-class BlockchairProvider {
+class BlockchairProvider: BitcoinNetworkProvider {
     let provider = MoyaProvider<BlockchairTarget>()
     
     let address: String

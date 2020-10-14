@@ -29,6 +29,7 @@ struct BtcTx {
 
 enum BitcoinNetworkApi {
     case main
+	case blockchair
     case blockcypher
 }
 
