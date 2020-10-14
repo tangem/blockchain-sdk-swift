@@ -255,6 +255,7 @@
 		A6F5E34B42B2043635FB1F51 /* Pods-BlockchainSdkTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkTests.debug.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkTests/Pods-BlockchainSdkTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B022D30C2537292100D934D7 /* fr-CA */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fr-CA"; path = "fr-CA.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		B022D30D2537292800D934D7 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		B022D3102537475B00D934D7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D1CC9E29B257CD29E6143FDD /* Pods_BlockchainSdk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -783,6 +784,7 @@
 				Base,
 				"fr-CA",
 				de,
+				fr,
 			);
 			mainGroup = 5D14E4642397B80F00C15FC8;
 			productRefGroup = 5D14E46F2397B80F00C15FC8 /* Products */;
@@ -1017,6 +1019,7 @@
 				5D5E058824FE72D900F04DE1 /* en */,
 				B022D30C2537292100D934D7 /* fr-CA */,
 				B022D30D2537292800D934D7 /* de */,
+				B022D3102537475B00D934D7 /* fr */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
