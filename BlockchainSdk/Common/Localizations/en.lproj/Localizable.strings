@@ -59,3 +59,10 @@
 "xlm_requires_memo_error" = "Requires memo";
 
 "xlm_empty_response_error" = "Empty response";
+
+
+"xtz_withdrawal_message_warning" = "To avoid paying an increased commission the next time you top up your wallet, reduce the amount by %@ XTZ";
+
+"xtz_withdrawal_message_reduce" = "Reduce by %@ XTZ";
+
+"xtz_withdrawal_message_ignore" = "No, send all";

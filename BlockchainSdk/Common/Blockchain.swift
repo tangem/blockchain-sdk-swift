@@ -20,12 +20,13 @@ public enum Blockchain {
     case cardano(shelley: Bool)
     case xrp(curve: EllipticCurve)
     case ducatus
+    case tezos
     
     public var isTestnet: Bool {
         switch self {
         case .bitcoin(let testnet):
             return testnet
-        case .litecoin, .ducatus, .cardano, .xrp, .rsk:
+        case .litecoin, .ducatus, .cardano, .xrp, .rsk, .tezos:
             return false
         case .stellar(let testnet):
             return testnet
@@ -44,7 +45,7 @@ public enum Blockchain {
             return 8
         case .ethereum, .rsk:
             return 18
-        case  .cardano, .xrp:
+        case  .cardano, .xrp, .tezos:
             return 6
         case .binance:
             return 8
@@ -57,7 +58,7 @@ public enum Blockchain {
         switch self {
         case .bitcoin, .litecoin, .ethereum, .rsk, .bitcoinCash, .binance, .ducatus:
             return .down
-        case .stellar, .xrp:
+        case .stellar, .xrp, .tezos:
             return .plain
         case .cardano:
             return .up
@@ -85,6 +86,8 @@ public enum Blockchain {
             return "ADA"
         case .xrp:
             return "XRP"
+        case .tezos:
+            return "XTZ"
         }
     }
     
@@ -139,7 +142,7 @@ public enum Blockchain {
         switch self {
         case .bitcoin:
             return "\(qrPrefix)\(address)"
-        case .ethereum(let testnet):
+        case .ethereum:
             return "\(qrPrefix)\(address)"
         case .litecoin:
             return "\(qrPrefix)\(address)"
@@ -181,6 +184,8 @@ public enum Blockchain {
             return URL(string: exploreLink)!
         case .xrp:
             return URL(string: "https://xrpscan.com/account/\(address)")!
+        case .tezos:
+            return URL(string: "https://tezblock.io/account/\(address)")!
         }
     }
     
@@ -200,6 +205,7 @@ public enum Blockchain {
         case "cardano-s": return .cardano(shelley: true)
         case "xrp": return .xrp(curve: curve)
         case "duc": return .ducatus
+        case "xtz": return .tezos
         default: return nil
         }
     }
@@ -224,6 +230,8 @@ public enum Blockchain {
             return shelley ? CardanoShelleyAddressService() : CardanoAddressService()
         case .xrp(let curve):
             return XRPAddressService(curve: curve)
+        case .tezos:
+            return TezosAddressService()
         }
     }
 }

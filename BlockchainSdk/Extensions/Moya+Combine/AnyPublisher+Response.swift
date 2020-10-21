@@ -147,4 +147,14 @@ extension AnyPublisher where Failure == MoyaError {
     }
 }
 
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+public extension AnyPublisher where Output == String, Failure == MoyaError {
+    func cleanString() -> AnyPublisher<String, MoyaError> {
+        return self
+            .map { $0.remove("\"").remove("\n") }
+            .eraseToAnyPublisher()
+    }
+}
+
 #endif

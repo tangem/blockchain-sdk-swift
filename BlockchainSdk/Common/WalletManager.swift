@@ -118,4 +118,13 @@ public protocol TransactionSigner {
 }
 
 
+public protocol WithdrawalValidator {
+    func validate(_ transaction: Transaction) -> WithdrawalWarning?
+}
 
+public struct WithdrawalWarning {
+    public let warningMessage: String
+    public let reduceMessage: String
+    public let ignoreMessage: String
+    public let suggestedReduceAmount: Amount
+}
