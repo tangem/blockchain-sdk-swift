@@ -90,6 +90,11 @@ public class WalletManagerFactory {
                 $0.txBuilder = XRPTransactionBuilder(walletPublicKey: walletPublicKey, curve: curve)
                 $0.networkService = XRPNetworkService()
             }
+        case .tezos:
+            return TezosWalletManager(cardId: cardId, wallet: wallet).then {
+                $0.txBuilder = TezosTransactionBuilder(walletPublicKey: walletPublicKey)
+                $0.networkService = TezosNetworkService()
+            }
         }
     }
     

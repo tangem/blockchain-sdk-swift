@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		5D006ACD239950F9008BA04D /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D006ACC239950F9008BA04D /* Wallet.swift */; };
 		5D01BCE2243F7F7E0048D1BA /* XrpTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D01BCE1243F7F7E0048D1BA /* XrpTarget.swift */; };
+		5D03D2D0253DE61B009A8A9F /* TezosAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D03D2CF253DE61B009A8A9F /* TezosAddressService.swift */; };
+		5D0EEE67253EF2E800758FDC /* TezosTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0EEE66253EF2E800758FDC /* TezosTransactionBuilder.swift */; };
+		5D0EEE69253EF75200758FDC /* TezosFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0EEE68253EF75200758FDC /* TezosFee.swift */; };
+		5D0EEE6B253EFBF600758FDC /* TezosWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0EEE6A253EFBF600758FDC /* TezosWalletManager.swift */; };
 		5D14E4782397B80F00C15FC8 /* BlockchainSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D14E46E2397B80F00C15FC8 /* BlockchainSdk.framework */; };
 		5D14E47D2397B80F00C15FC8 /* BlockchainSdkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D14E47C2397B80F00C15FC8 /* BlockchainSdkTests.swift */; };
 		5D14E47F2397B80F00C15FC8 /* BlockchainSdk.h in Headers */ = {isa = PBXBuildFile; fileRef = 5D14E4712397B80F00C15FC8 /* BlockchainSdk.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -116,6 +120,9 @@
 		5DED72C423A1315F006D79AE /* StellarWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DED72C323A1315F006D79AE /* StellarWalletManager.swift */; };
 		5DED72C623A13377006D79AE /* StellarAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DED72C523A13377006D79AE /* StellarAddressService.swift */; };
 		5DF8D5B5243DB80C00186BF0 /* CardanoAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF8D5B4243DB80C00186BF0 /* CardanoAddressService.swift */; };
+		5DF91519253DB7B300B927DD /* TezosAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF91518253DB7B300B927DD /* TezosAddress.swift */; };
+		5DF9151D253DB85500B927DD /* TezosNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF9151C253DB85500B927DD /* TezosNetworkService.swift */; };
+		5DF91521253DB89800B927DD /* TezosTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF91520253DB89800B927DD /* TezosTarget.swift */; };
 		5DFE855924F0310C00194106 /* CardanoShelleyAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFE855824F0310C00194106 /* CardanoShelleyAddressService.swift */; };
 		5DFF005F2521F772005203FB /* DucatusWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFF005E2521F771005203FB /* DucatusWalletManager.swift */; };
 		88095B618D07D706BB871FE6 /* Pods_BlockchainSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1CC9E29B257CD29E6143FDD /* Pods_BlockchainSdk.framework */; };
@@ -136,6 +143,10 @@
 		0C79DB7FEDD8D4029AFA208D /* Pods-BlockchainSdk.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.release.xcconfig"; sourceTree = "<group>"; };
 		5D006ACC239950F9008BA04D /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		5D01BCE1243F7F7E0048D1BA /* XrpTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XrpTarget.swift; sourceTree = "<group>"; };
+		5D03D2CF253DE61B009A8A9F /* TezosAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosAddressService.swift; sourceTree = "<group>"; };
+		5D0EEE66253EF2E800758FDC /* TezosTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosTransactionBuilder.swift; sourceTree = "<group>"; };
+		5D0EEE68253EF75200758FDC /* TezosFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosFee.swift; sourceTree = "<group>"; };
+		5D0EEE6A253EFBF600758FDC /* TezosWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosWalletManager.swift; sourceTree = "<group>"; };
 		5D14E46E2397B80F00C15FC8 /* BlockchainSdk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlockchainSdk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D14E4712397B80F00C15FC8 /* BlockchainSdk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BlockchainSdk.h; sourceTree = "<group>"; };
 		5D14E4722397B80F00C15FC8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -247,6 +258,9 @@
 		5DED72C323A1315F006D79AE /* StellarWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarWalletManager.swift; sourceTree = "<group>"; };
 		5DED72C523A13377006D79AE /* StellarAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarAddressService.swift; sourceTree = "<group>"; };
 		5DF8D5B4243DB80C00186BF0 /* CardanoAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoAddressService.swift; sourceTree = "<group>"; };
+		5DF91518253DB7B300B927DD /* TezosAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosAddress.swift; sourceTree = "<group>"; };
+		5DF9151C253DB85500B927DD /* TezosNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosNetworkService.swift; sourceTree = "<group>"; };
+		5DF91520253DB89800B927DD /* TezosTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosTarget.swift; sourceTree = "<group>"; };
 		5DFE855824F0310C00194106 /* CardanoShelleyAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoShelleyAddressService.swift; sourceTree = "<group>"; };
 		5DFF005E2521F771005203FB /* DucatusWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DucatusWalletManager.swift; sourceTree = "<group>"; };
 		7C311A9913C3A9F993C89148 /* Pods-BlockchainSdk.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.debug.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.debug.xcconfig"; sourceTree = "<group>"; };
@@ -334,6 +348,7 @@
 		5D14E4892397B87000C15FC8 /* WalletManagers */ = {
 			isa = PBXGroup;
 			children = (
+				5DF91517253DB7A200B927DD /* Tezos */,
 				5DC7DD5C243F8375008F83F2 /* XRP */,
 				5DF8D5B3243DB7EE00186BF0 /* Cardano */,
 				5D977BB423FAEB3700575BE4 /* Ducatus */,
@@ -442,6 +457,7 @@
 		5D4B33B923F6E9BD00C93A84 /* BlockchainService */ = {
 			isa = PBXGroup;
 			children = (
+				5DF91524253DB8D200B927DD /* Tezos */,
 				5D7D244125136280001B9A4F /* Bitcoinfees */,
 				5D01BCE0243F7F6F0048D1BA /* XRP */,
 				5D845512243DEAAE0072155E /* Adalite */,
@@ -692,6 +708,27 @@
 			path = Cardano;
 			sourceTree = "<group>";
 		};
+		5DF91517253DB7A200B927DD /* Tezos */ = {
+			isa = PBXGroup;
+			children = (
+				5DF9151C253DB85500B927DD /* TezosNetworkService.swift */,
+				5D03D2CF253DE61B009A8A9F /* TezosAddressService.swift */,
+				5D0EEE66253EF2E800758FDC /* TezosTransactionBuilder.swift */,
+				5D0EEE68253EF75200758FDC /* TezosFee.swift */,
+				5D0EEE6A253EFBF600758FDC /* TezosWalletManager.swift */,
+			);
+			path = Tezos;
+			sourceTree = "<group>";
+		};
+		5DF91524253DB8D200B927DD /* Tezos */ = {
+			isa = PBXGroup;
+			children = (
+				5DF91518253DB7B300B927DD /* TezosAddress.swift */,
+				5DF91520253DB89800B927DD /* TezosTarget.swift */,
+			);
+			path = Tezos;
+			sourceTree = "<group>";
+		};
 		C78C27BD063723008A1058A7 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -890,9 +927,11 @@
 				5D84551C243E30E70072155E /* PrimitiveSequence+SwiftyJson.swift in Sources */,
 				5D01BCE2243F7F7E0048D1BA /* XrpTarget.swift in Sources */,
 				5D7D242925136254001B9A4F /* XRPLedger.swift in Sources */,
+				5DF9151D253DB85500B927DD /* TezosNetworkService.swift in Sources */,
 				5DEAFA9224447D350032E316 /* ThenProcessable.swift in Sources */,
 				5DCC817623FAE6D500DFC460 /* AnyPublisher+Response.swift in Sources */,
 				5DE3BF97239E6DAB00E8815D /* RIPEMD160.swift in Sources */,
+				5D0EEE67253EF2E800758FDC /* TezosTransactionBuilder.swift in Sources */,
 				5D4B33C023F6EA6C00C93A84 /* BlockchairProvider.swift in Sources */,
 				5DC7DD64244077E4008F83F2 /* XRPTransactionBuilder.swift in Sources */,
 				5D304390239A58C90066B8D9 /* BitcoinWalletManager.swift in Sources */,
@@ -917,11 +956,13 @@
 				5DE3BFA4239FB4E500E8815D /* BitcoinNetworkService.swift in Sources */,
 				5D7D243625136254001B9A4F /* XRPAccount.swift in Sources */,
 				5D7D244925136399001B9A4F /* BitcoinfeesResponse.swift in Sources */,
+				5D0EEE69253EF75200758FDC /* TezosFee.swift in Sources */,
 				5D4B33C223F72C0400C93A84 /* BitcoinCashNetworkService.swift in Sources */,
 				5D4B33BE23F6EA3700C93A84 /* BlockchairResponses.swift in Sources */,
 				5DE3BF9E239FA2F400E8815D /* SegWitBech32.swift in Sources */,
 				5D6DEAB6243CC09A00510EC8 /* EthereumTransactionBuilder.swift in Sources */,
 				5D7D243525136254001B9A4F /* XRPAmount.swift in Sources */,
+				5D03D2D0253DE61B009A8A9F /* TezosAddressService.swift in Sources */,
 				5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */,
 				5DE3BFA0239FA33800E8815D /* Bech32.swift in Sources */,
 				5DEAFA90244473460032E316 /* Transaction.swift in Sources */,
@@ -960,6 +1001,8 @@
 				5D26CEF3243CB9FB00994CC0 /* BlockchainInfoTarget.swift in Sources */,
 				5D7D243925136254001B9A4F /* IssuedAmount.swift in Sources */,
 				5DF8D5B5243DB80C00186BF0 /* CardanoAddressService.swift in Sources */,
+				5DF91519253DB7B300B927DD /* TezosAddress.swift in Sources */,
+				5DF91521253DB89800B927DD /* TezosTarget.swift in Sources */,
 				5DFE855924F0310C00194106 /* CardanoShelleyAddressService.swift in Sources */,
 				5DFF005F2521F772005203FB /* DucatusWalletManager.swift in Sources */,
 				5D7D243C25136254001B9A4F /* SerializerDefinitions.swift in Sources */,
@@ -988,6 +1031,7 @@
 				5D4B33C623F72F1100C93A84 /* BitcoinCashAddressService.swift in Sources */,
 				5D14E4982397B87000C15FC8 /* Blockchain.swift in Sources */,
 				5D4B33D323F7DF1F00C93A84 /* BinanceNetworkService.swift in Sources */,
+				5D0EEE6B253EFBF600758FDC /* TezosWalletManager.swift in Sources */,
 				5DED72B8239FE2E3006D79AE /* Decimal+.swift in Sources */,
 				5D389ECC23ACFDCF00740FE9 /* MoyaProvider+Combine.swift in Sources */,
 				5D7D243A25136254001B9A4F /* Extensions.swift in Sources */,
