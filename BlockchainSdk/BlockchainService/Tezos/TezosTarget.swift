@@ -73,13 +73,16 @@ struct TezosTarget: TargetType {
         }
         
         var task: Task {
+            let encoder = JSONEncoder()
+            encoder.keyEncodingStrategy = .convertToSnakeCase
+            
             switch self {
             case .addressData, .getHeader, .managerKey:
                 return .requestPlain
             case .forgeOperations(let body):
-                return .requestJSONEncodable(body)
+                return .requestCustomJSONEncodable(body, encoder: encoder)
             case .preapplyOperations(let body):
-                 return .requestJSONEncodable(body)
+                 return .requestCustomJSONEncodable(body, encoder: encoder)
             case .sendTransaction(let tx):
                 return .requestData("\"\(tx)\"".data(using: .utf8)!)
             }
@@ -108,18 +111,6 @@ struct TezosOperationContent: Codable {
     let publicKey: String?
     let destination: String?
     let amount: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case kind
-        case source
-        case fee
-        case counter
-        case gasLimit = "gas_limit"
-        case storageLimit = "storage_limit"
-        case publicKey = "public_key"
-        case destination
-        case amount
-    }
 }
 
 struct TezosPreapplyBody: Codable {
