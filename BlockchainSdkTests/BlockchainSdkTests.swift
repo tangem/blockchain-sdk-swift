@@ -53,4 +53,21 @@ class BlockchainSdkTests: XCTestCase {
         XCTAssertTrue(Blockchain.litecoin.validate(address: "LMbRCidgQLz1kNA77gnUpLuiv2UL6Bc4Q2"))
     }
     
+    func testBtcTxBuilder() {
+        let builder = BitcoinTransactionBuilder(walletAddress: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs",
+                                                walletPublicKey: try! CryptoUtils.generateRandomBytes(count: 38),
+                                                isTestnet: false)
+        builder.unspentOutputs = [BtcTx(tx_hash: "asdfmnbaslkdfhlkjfnasdkhfa", tx_output_n: 5, value: 5)]
+        let blockchain = Blockchain.bitcoin(testnet: false)
+        let sig = Data(repeating: UInt8(0x80), count: 64)
+        let tx = builder.buildForSend(transaction: Transaction(amount: Amount(with: blockchain, address: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs", type: .coin, value: 5),
+                                                               fee: Amount(with: blockchain, address: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs", type: .coin, value: 0.5),
+                                                               sourceAddress: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs",
+                                                               destinationAddress: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs"),
+                                      signature: sig)!
+        
+        print(tx.count)
+        XCTAssertTrue(tx.count == 199)
+    }
+    
 }
