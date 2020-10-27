@@ -22,10 +22,14 @@ public class WalletManagerFactory {
                 return nil
         }
         
-        let address = blockchain.makeAddress(from: walletPublicKey)
-        let token = getToken(from: card, blockchain: blockchain)
-        let wallet = Wallet(blockchain: blockchain, address: address, token: token)
-        
+		return makeWalletManager(for: blockchain, walletPublicKey: walletPublicKey, cardId: cardId, from: card)
+	}
+	
+	public func makeWalletManager(for blockchain: Blockchain, walletPublicKey: Data, cardId: String, from card: Card) -> WalletManager {
+		let address = blockchain.makeAddress(from: walletPublicKey)
+		let token = getToken(from: card, blockchain: blockchain)
+		let wallet = Wallet(blockchain: blockchain, address: address, token: token)
+		
         switch blockchain {
         case .bitcoin(let testnet):
             return BitcoinWalletManager(cardId: cardId, wallet: wallet).then {
