@@ -80,11 +80,11 @@ class BitcoinWalletManager: WalletManager {
             return nil
         }
         
-        guard let tx = txBuilder.buildForSend(transaction: transaction, signature: Data(repeating: UInt8(0x01), count: 64 * unspentOutputsCount)) else {
+        guard let tx = txBuilder.buildForSend(transaction: transaction, signature: Data(repeating: UInt8(0x80), count: 64 * unspentOutputsCount)) else {
             return nil
         }
         
-        return Decimal(tx.count + 1)
+        return Decimal(tx.count)
     }
 }
 
