@@ -66,3 +66,19 @@
 "xtz_withdrawal_message_reduce" = "Reduce by %@ XTZ";
 
 "xtz_withdrawal_message_ignore" = "No, send all";
+
+
+"send_validation_invalid_amount" =  "Invalid amount";
+
+"send_validation_invalid_total" = "Total exceeds balance";
+
+"send_validation_invalid_fee" = "Fee exceeds balance";
+
+"send_validation_amount_exceeds_balance" = "Amount exceeds balance";
+
+"send_error_dust_amount_format" = "Minimum amount is %@";
+
+"send_error_dust_change_format" = "Minimum change is %@";
+
+"send_error_invalid_fee_value" = "Invalid Fee";
+

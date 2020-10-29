@@ -58,3 +58,18 @@
 "xlm_requires_memo_error" = "Memo erforderlich";
 
 "xlm_empty_response_error" = "Leere Antwort";
+
+
+"send_validation_invalid_amount" =  "Ungültiger Betrag";
+
+"send_validation_invalid_total" = "Der Gesamtbetrag geht über die Bilanz hinaus";
+
+"send_validation_invalid_fee" = "Die Gebühr geht über die Bilanz hinaus";
+
+"send_validation_amount_exceeds_balance" = "Der Betrag geht über die Bilanz hinaus";
+
+"send_error_dust_amount_format" = "Minimum amount is %@";
+
+"send_error_dust_change_format" = "Minimum change is %@";
+
+"send_error_invalid_fee_value" = "Invalid Fee";

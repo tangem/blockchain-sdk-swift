@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct Amount: CustomStringConvertible, Equatable {
+public struct Amount: CustomStringConvertible, Equatable, Comparable {
     public enum AmountType {
         case coin
         case token
@@ -68,5 +68,13 @@ public struct Amount: CustomStringConvertible, Equatable {
             return l
         }
         return Amount(with: l, value: l.value + r.value)
+    }
+    
+    public static func < (lhs: Amount, rhs: Amount) -> Bool {
+        if lhs.type != rhs.type {
+            fatalError("Compared amounts must be the same type")
+        }
+        
+        return lhs.value < rhs.value
     }
 }

@@ -61,3 +61,18 @@
 "xlm_requires_memo_error" = "Mémo est requis";
 
 "xlm_empty_response_error" = "Réponse vide";
+
+
+"send_validation_invalid_amount" =  "Somme incorrecte"; //" Le montant dépasse le solde";
+
+"send_validation_invalid_total" = "Le total dépasse le solde";
+
+"send_validation_invalid_fee" = "Les commissions dépassent le solde";
+
+"send_validation_amount_exceeds_balance" = "Le montant dépasse le solde";
+
+"send_error_dust_amount_format" = "Minimum amount is %@";
+
+"send_error_dust_change_format" = "Minimum change is %@";
+
+"send_error_invalid_fee_value" = "Invalid Fee";
