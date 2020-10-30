@@ -129,3 +129,10 @@ extension CardanoWalletManager: TransactionSender {
 }
 
 extension CardanoWalletManager: ThenProcessable { }
+
+
+extension CardanoWalletManager: DustRestrictable {
+    var dustValue: Amount {
+        return Amount(with: wallet.blockchain, address: wallet.address, value: 1.0)
+    }
+}

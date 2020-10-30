@@ -54,7 +54,7 @@ public class WalletManager {
         fatalError("You should override this method")
     }
     
-    public func createTransaction(amount: Amount, fee: Amount, destinationAddress: String) -> Result<Transaction,TransactionError> {
+    public func createTransaction(amount: Amount, fee: Amount, destinationAddress: String) -> Result<Transaction,TransactionErrors> {
         let transaction = Transaction(amount: amount,
                                       fee: fee,
                                       sourceAddress: wallet.address,
@@ -65,40 +65,82 @@ public class WalletManager {
                                       hash: nil)
         
         let validationResult = validateTransaction(amount: amount, fee: fee)
-        if validationResult.isEmpty {
+        if validationResult.errors.isEmpty {
             return .success(transaction)
         } else {
             return .failure(validationResult)
         }
     }
     
-    func validateTransaction(amount: Amount, fee: Amount?) -> TransactionError {
-        var errors = TransactionError()
+    func validateTransaction(amount: Amount, fee: Amount?) -> TransactionErrors {
+        var errors = [TransactionError]()
         
-        if !validate(amount: amount) {
-            errors.update(with: .wrongAmount)
+        if let amountError = validate(amount: amount) {
+            errors.append(amountError)
         }
         
         guard let fee = fee else {
-            return errors
+            return TransactionErrors(errors: errors)
         }
         
-        if !validate(amount: fee) {
-           errors.update(with: .wrongFee)
+        if let feeError = validate(fee: fee) {
+            errors.append(feeError)
         }
+        
+        let total = amount + fee
         
         if amount.type == fee.type,
-            !validate(amount: Amount(with: amount, value: amount.value + fee.value)) {
-           errors.update(with: .wrongTotal)
+            validate(amount: total) != nil {
+            errors.append(.totalExceedsBalance)
         }
         
-        return errors
+        if let dustAmount = (self as? DustRestrictable)?.dustValue {
+            if dustAmount < amount {
+                errors.append(.dustAmount(minimumAmount: dustAmount))
+            }
+            
+            if let walletAmount = wallet.amounts[dustAmount.type] {
+                if dustAmount < walletAmount - total {
+                    errors.append(.dustChange(minimumAmount: dustAmount))
+                }
+            }
+        }
+        
+        return TransactionErrors(errors: errors)
     }
     
-    public func validate(amount: Amount) -> Bool {
-        guard amount.value > 0,
-            let total = wallet.amounts[amount.type]?.value, total >= amount.value else {
-                return false
+    public func validate(amount: Amount) -> TransactionError? {
+        if !validateAmountValue(amount) {
+            return .invalidAmount
+        }
+        
+        if !validateAmountTotal(amount) {
+            return .amountExceedsBalance
+        }
+        
+        return nil
+    }
+    
+    public func validate(fee: Amount) -> TransactionError? {
+        if !validateAmountValue(fee) {
+            return .invalidFee
+        }
+        
+        if !validateAmountTotal(fee) {
+            return .feeExceedsBalance
+        }
+        
+        return nil
+    }
+    
+    private func validateAmountValue(_ amount: Amount) -> Bool {
+        return amount.value > 0
+    }
+    
+    private func validateAmountTotal(_ amount: Amount) -> Bool {
+        guard let total = wallet.amounts[amount.type],
+            total >= amount else {
+            return false
         }
         
         return true

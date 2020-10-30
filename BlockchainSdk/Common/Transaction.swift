@@ -40,14 +40,40 @@ public enum TransactionStatus {
     case confirmed
 }
 
-public struct TransactionError: OptionSet, Error {
-    public let rawValue: Int
-    
-    public init(rawValue: Int) {
-        self.rawValue = rawValue
+public struct TransactionErrors: Error {
+    public let errors: [TransactionError]
+}
+
+public enum TransactionError: Error, LocalizedError {
+    case invalidAmount
+    case amountExceedsBalance
+    case invalidFee
+    case feeExceedsBalance
+    case totalExceedsBalance
+    case dustAmount(minimumAmount: Amount)
+    case dustChange(minimumAmount: Amount)
+        
+    public var errorDescription: String? {
+        switch self {
+        case .amountExceedsBalance:
+            return "send_validation_amount_exceeds_balance".localized
+        case .dustAmount(let minimumAmount):
+            return String(format: "send_error_dust_amount_format".localized, minimumAmount.description)
+        case .dustChange(let minimumAmount):
+           return String(format: "send_error_dust_change_format".localized, minimumAmount.description)
+        case .feeExceedsBalance:
+            return "send_validation_invalid_fee".localized
+        case .invalidAmount:
+            return "send_validation_invalid_amount".localized
+        case .invalidFee:
+            return "send_error_invalid_fee_value".localized
+        case .totalExceedsBalance:
+            return "send_validation_invalid_total".localized
+        }
     }
-    
-    public static let wrongAmount = TransactionError(rawValue: 1 << 1)
-    public static let wrongFee = TransactionError(rawValue: 1 << 2)
-    public static let wrongTotal = TransactionError(rawValue: 1 << 3)
+}
+
+
+protocol DustRestrictable {
+    var dustValue: Amount { get }
 }
