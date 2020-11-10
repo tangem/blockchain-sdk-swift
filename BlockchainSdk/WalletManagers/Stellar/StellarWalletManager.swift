@@ -62,7 +62,6 @@ class StellarWalletManager: WalletManager {
     }
 }
 
-@available(iOS 13.0, *)
 extension StellarWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { false }
     
@@ -96,6 +95,14 @@ extension StellarWalletManager: TransactionSender {
             return Fail(error: WalletError.failedToGetFee).eraseToAnyPublisher()
         }
     }
+}
+
+extension StellarWalletManager: SignatureCountValidator {
+	func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error> {
+		networkService.getSignatureCount(accountId: wallet.address)
+			.tryMap { if signedHashes != $0 { throw BlockchainSdkError.signatureCountNotMatched } }
+			.eraseToAnyPublisher()
+	}
 }
 
 extension StellarWalletManager: ThenProcessable { }

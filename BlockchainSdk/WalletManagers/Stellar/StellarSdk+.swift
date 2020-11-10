@@ -67,6 +67,57 @@ extension TransactionsService {
     }
 }
 
+extension OperationsService {
+	func getAllOperations(accountId: String, recordsLimit: Int = 200) -> AnyPublisher<[OperationResponse], Error> {
+		
+		func processResponse(_ response: PageResponse<OperationResponse>.ResponseEnum, in promise: (Result<PageResponse<OperationResponse>, Error>) -> Void) {
+			switch response {
+			case .success(let details):
+				promise(.success(details))
+			case .failure(let error):
+				promise(.failure(error))
+			}
+		}
+		
+		func pageRequest(prevPage: PageResponse<OperationResponse>) -> AnyPublisher<PageResponse<OperationResponse>, Error> {
+			Future<PageResponse<OperationResponse>, Error> { promise in
+				prevPage.getNextPage { response in
+					processResponse(response, in: promise)
+				}
+			}
+			.eraseToAnyPublisher()
+		}
+		
+		func pageRequest(accountId: String, recordsLimit: Int = 200) -> AnyPublisher<PageResponse<OperationResponse>, Error> {
+			Future<PageResponse<OperationResponse>, Error> { [unowned self] promise in
+				self.getOperations(forAccount: accountId, limit: recordsLimit) { (response) in
+					processResponse(response, in: promise)
+				}
+			}
+			.eraseToAnyPublisher()
+		}
+		
+		let pageResponseSubject = CurrentValueSubject<PageResponse<OperationResponse>?, Error>(nil)
+		
+		return pageResponseSubject
+			.flatMap { (page: PageResponse<OperationResponse>?) -> AnyPublisher<PageResponse<OperationResponse>, Error> in
+				guard let page = page else {
+					return pageRequest(accountId: accountId, recordsLimit: recordsLimit)
+				}
+				
+				return pageRequest(prevPage: page)
+			}
+			.handleEvents(receiveOutput: { (resp: PageResponse<OperationResponse>) in
+				resp.records.count == recordsLimit ?
+					pageResponseSubject.send(resp) :
+					pageResponseSubject.send(completion: .finished)
+			})
+			.map { $0.records }
+			.reduce([OperationResponse]()) { $0 + $1 }
+			.eraseToAnyPublisher()
+	}
+}
+
 extension HorizonRequestError {
     var message: String {
         switch self {
