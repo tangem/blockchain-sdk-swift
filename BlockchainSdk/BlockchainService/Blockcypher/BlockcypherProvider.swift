@@ -30,7 +30,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
             .setFailureType(to: MoyaError.self)
             .flatMap {[unowned self] in
                 self.provider
-                    .requestPublisher(BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .address(address: self.address)))
+					.requestPublisher(BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .address(address: self.address, limit: nil)))
                     .filterSuccessfulStatusAndRedirectCodes()
         }
         .catch{[unowned self] error -> AnyPublisher<Response, MoyaError> in
@@ -121,11 +121,11 @@ class BlockcypherProvider: BitcoinNetworkProvider {
     func getTx(hash: String) -> AnyPublisher<BlockcypherTx, Error> {
         return Just(())
             .setFailureType(to: MoyaError.self)
-            .flatMap {[unowned self] in
+            .flatMap { [unowned self] in
                 self.provider.requestPublisher(BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .txs(txHash: hash)))
                     .filterSuccessfulStatusAndRedirectCodes()
         }
-        .catch{[unowned self]  error -> AnyPublisher<Response, MoyaError> in
+        .catch { [unowned self]  error -> AnyPublisher<Response, MoyaError> in
             self.changeToken(error)
             return Fail(error: error).eraseToAnyPublisher()
         }
@@ -134,6 +134,30 @@ class BlockcypherProvider: BitcoinNetworkProvider {
         .map(BlockcypherTx.self)
         .eraseError()
     }
+	
+	func getSignatureCount() -> AnyPublisher<Int, Error> {
+		Just(())
+			.setFailureType(to: MoyaError.self)
+			.flatMap { [unowned self] in
+				self.provider
+					.requestPublisher(BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .address(address: self.address, limit: 2000)))
+					.filterSuccessfulStatusAndRedirectCodes()
+			}
+			.catch { [unowned self] error -> AnyPublisher<Response, MoyaError> in
+				self.changeToken(error)
+				return Fail(error: error).eraseToAnyPublisher()
+			}
+			.retry(1)
+			.eraseToAnyPublisher()
+			.map(BlockcypherAddressResponse.self)
+			.map { addressResponse -> Int in
+				var sigCount = addressResponse.txrefs?.filter { $0.tx_output_n == -1 }.count ?? 0
+				sigCount += addressResponse.unconfirmed_txrefs?.filter { $0.tx_output_n == -1 }.count ?? 0
+				return sigCount
+			}
+			.mapError { $0 }
+			.eraseToAnyPublisher()
+	}
     
     private func getRandomToken() -> String {
         let tokens: [String] = ["aa8184b0e0894b88a5688e01b3dc1e82",
