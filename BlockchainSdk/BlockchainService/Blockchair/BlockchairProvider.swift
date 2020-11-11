@@ -84,7 +84,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
-		return publisher(for: .send(txHex: transaction, endpoint: endpoint))
+		publisher(for: .send(txHex: transaction, endpoint: endpoint))
             .tryMap { json throws -> String in
                 let data = json["data"]
                 

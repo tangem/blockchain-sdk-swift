@@ -24,7 +24,6 @@ class BlockcypherProvider: BitcoinNetworkProvider {
         self.chain = chain
     }
     
-    
 	func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
 		publisher(for: BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .address(address: self.address, limit: nil)))
 			.map(BlockcypherAddressResponse.self)
