@@ -114,4 +114,14 @@ extension BitcoinWalletManager: TransactionSender {
     }
 }
 
+extension BitcoinWalletManager: SignatureCountValidator {
+	func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error> {
+		networkService.getSignatureCount(address: wallet.address)
+			.tryMap {
+				if signedHashes != $0 { throw BlockchainSdkError.signatureCountNotMatched }
+			}
+			.eraseToAnyPublisher()
+	}
+}
+
 extension BitcoinWalletManager: ThenProcessable { }

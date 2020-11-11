@@ -10,7 +10,7 @@ import Foundation
 import Moya
 
 enum BlockchainInfoTarget: TargetType {
-    case address(address:String)
+	case address(address: String, limit: Int?, offset: Int?)
     case unspents(address: String)
     case send(txHex: String)
     
@@ -20,11 +20,11 @@ enum BlockchainInfoTarget: TargetType {
     
     var path: String {
         switch self {
-        case .unspents(let address):
+        case .unspents:
             return "/unspent"
         case .send(_):
             return "/pushtx"
-        case .address(let address):
+        case .address(let address, _, _):
             return "/rawaddr/\(address)"
         }
     }
@@ -46,8 +46,15 @@ enum BlockchainInfoTarget: TargetType {
     
     var task: Task {
         switch self {
-        case .address:
-            return .requestParameters(parameters: ["limit": "5"], encoding: URLEncoding.default)
+        case let .address(_, limit, offset):
+			var params = [String:String]()
+			if let limit = limit {
+				params["limit"] = "\(limit)"
+			}
+			if let offset = offset {
+				params["offset"] = "\(offset)"
+			}
+            return .requestParameters(parameters: params, encoding: URLEncoding.default)
         case .unspents(let address):
             return .requestParameters(parameters: ["active": address], encoding: URLEncoding.default)
         case .send(let txHex):

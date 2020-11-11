@@ -25,130 +25,68 @@ class BlockcypherProvider: BitcoinNetworkProvider {
     }
     
     
-    func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
-        return Just(())
-            .setFailureType(to: MoyaError.self)
-            .flatMap {[unowned self] in
-                self.provider
-					.requestPublisher(BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .address(address: self.address, limit: nil)))
-                    .filterSuccessfulStatusAndRedirectCodes()
-        }
-        .catch{[unowned self] error -> AnyPublisher<Response, MoyaError> in
-            self.changeToken(error)
-            return Fail(error: error).eraseToAnyPublisher()
-        }
-        .retry(1)
-        .eraseToAnyPublisher()
-        .map(BlockcypherAddressResponse.self)
-        .tryMap {addressResponse -> BitcoinResponse in
-            guard let balance = addressResponse.balance,
-                let uncBalance = addressResponse.unconfirmed_balance
-                else {
-                    throw WalletError.failedToParseNetworkResponse
-            }
-            
-            let satoshiBalance = Decimal(balance)/Decimal(100000000)
-            let txs: [BtcTx] = addressResponse.txrefs?.compactMap { utxo -> BtcTx?  in
-                guard let hash = utxo.tx_hash,
-                    let n = utxo.tx_output_n,
-                    let val = utxo.value else {
-                        return nil
-                }
-                
-                let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: UInt64(val))
-                return btx
-                } ?? []
-            
-            let btcResponse = BitcoinResponse(balance: satoshiBalance, hasUnconfirmed:  uncBalance != 0, txrefs: txs)
-            return btcResponse
-        }
-        .eraseToAnyPublisher()
-    }
-    
-    
-    @available(iOS 13.0, *)
+	func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
+		publisher(for: BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .address(address: self.address, limit: nil)))
+			.map(BlockcypherAddressResponse.self)
+			.tryMap {addressResponse -> BitcoinResponse in
+				guard let balance = addressResponse.balance,
+					  let uncBalance = addressResponse.unconfirmed_balance
+				else {
+					throw WalletError.failedToParseNetworkResponse
+				}
+				
+				let satoshiBalance = Decimal(balance)/Decimal(100000000)
+				let txs: [BtcTx] = addressResponse.txrefs?.compactMap { utxo -> BtcTx?  in
+					guard let hash = utxo.tx_hash,
+						  let n = utxo.tx_output_n,
+						  let val = utxo.value else {
+						return nil
+					}
+					
+					let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: UInt64(val))
+					return btx
+				} ?? []
+				
+				let btcResponse = BitcoinResponse(balance: satoshiBalance, hasUnconfirmed:  uncBalance != 0, txrefs: txs)
+				return btcResponse
+			}
+			.eraseToAnyPublisher()
+	}
+	
     func getFee() -> AnyPublisher<BtcFee, Error> {
-        return Just(())
-            .setFailureType(to: MoyaError.self)
-            .flatMap { [unowned self] in
-                self.provider
-                    .requestPublisher(BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .fee))
-                    .filterSuccessfulStatusAndRedirectCodes()
-        }
-        .catch{[unowned self] error -> AnyPublisher<Response, MoyaError> in
-            self.changeToken(error)
-            return Fail(error: error).eraseToAnyPublisher()
-        }
-        .retry(1)
-        .eraseToAnyPublisher()
-        .map(BlockcypherFeeResponse.self)
-        .tryMap { feeResponse -> BtcFee in
-            guard let minKb = feeResponse.low_fee_per_kb,
-                let normalKb = feeResponse.medium_fee_per_kb,
-                let maxKb = feeResponse.high_fee_per_kb else {
-                    throw "Can't load fee"
-            }
-            
-            let minKbValue = Decimal(minKb)/Decimal(100000000)
-            let normalKbValue = Decimal(normalKb)/Decimal(100000000)
-            let maxKbValue = Decimal(maxKb)/Decimal(100000000)
-            let fee = BtcFee(minimalKb: minKbValue, normalKb: normalKbValue, priorityKb: maxKbValue)
-            return fee
-        }
-        .eraseToAnyPublisher()
-    }
+		publisher(for: BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .fee))
+			.map(BlockcypherFeeResponse.self)
+			.tryMap { feeResponse -> BtcFee in
+				guard let minKb = feeResponse.low_fee_per_kb,
+					  let normalKb = feeResponse.medium_fee_per_kb,
+					  let maxKb = feeResponse.high_fee_per_kb else {
+					throw "Can't load fee"
+				}
+				
+				let minKbValue = Decimal(minKb)/Decimal(100000000)
+				let normalKbValue = Decimal(normalKb)/Decimal(100000000)
+				let maxKbValue = Decimal(maxKb)/Decimal(100000000)
+				let fee = BtcFee(minimalKb: minKbValue, normalKb: normalKbValue, priorityKb: maxKbValue)
+				return fee
+			}
+			.eraseToAnyPublisher()
+	}
+	
+	func send(transaction: String) -> AnyPublisher<String, Error> {
+        publisher(for: BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token ?? self.getRandomToken(), targetType: .send(txHex: transaction)))
+			.mapNotEmptyString()
+			.eraseError()
+			.eraseToAnyPublisher()
+	}
     
-    @available(iOS 13.0, *)
-    func send(transaction: String) -> AnyPublisher<String, Error> {
-        return Just(())
-            .setFailureType(to: MoyaError.self)
-            .flatMap { [unowned self] in
-                self.provider.requestPublisher(BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token ?? self.getRandomToken(), targetType: .send(txHex: transaction)))
-                    .filterSuccessfulStatusAndRedirectCodes()
-        }
-        .catch{ [unowned self] error -> AnyPublisher<Response, MoyaError> in
-            self.changeToken(error)
-            return Fail(error: error).eraseToAnyPublisher()
-        }
-        .retry(1)
-        .eraseToAnyPublisher()
-        .mapNotEmptyString()
-        .eraseError()
-        .eraseToAnyPublisher()
-    }
-    
-    @available(iOS 13.0, *)
     func getTx(hash: String) -> AnyPublisher<BlockcypherTx, Error> {
-        return Just(())
-            .setFailureType(to: MoyaError.self)
-            .flatMap { [unowned self] in
-                self.provider.requestPublisher(BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .txs(txHash: hash)))
-                    .filterSuccessfulStatusAndRedirectCodes()
-        }
-        .catch { [unowned self]  error -> AnyPublisher<Response, MoyaError> in
-            self.changeToken(error)
-            return Fail(error: error).eraseToAnyPublisher()
-        }
-        .retry(1)
-        .eraseToAnyPublisher()
-        .map(BlockcypherTx.self)
-        .eraseError()
+		publisher(for: BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .txs(txHash: hash)))
+			.map(BlockcypherTx.self)
+			.eraseError()
     }
 	
-	func getSignatureCount() -> AnyPublisher<Int, Error> {
-		Just(())
-			.setFailureType(to: MoyaError.self)
-			.flatMap { [unowned self] in
-				self.provider
-					.requestPublisher(BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .address(address: self.address, limit: 2000)))
-					.filterSuccessfulStatusAndRedirectCodes()
-			}
-			.catch { [unowned self] error -> AnyPublisher<Response, MoyaError> in
-				self.changeToken(error)
-				return Fail(error: error).eraseToAnyPublisher()
-			}
-			.retry(1)
-			.eraseToAnyPublisher()
+	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
+		publisher(for: BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .address(address: self.address, limit: 2000)))
 			.map(BlockcypherAddressResponse.self)
 			.map { addressResponse -> Int in
 				var sigCount = addressResponse.txrefs?.filter { $0.tx_output_n == -1 }.count ?? 0
@@ -156,6 +94,22 @@ class BlockcypherProvider: BitcoinNetworkProvider {
 				return sigCount
 			}
 			.mapError { $0 }
+			.eraseToAnyPublisher()
+	}
+	
+	private func publisher(for target: BlockcypherTarget) -> AnyPublisher<Response, MoyaError> {
+		Just(())
+			.setFailureType(to: MoyaError.self)
+			.flatMap { [unowned self] in
+				self.provider
+					.requestPublisher(target)
+					.filterSuccessfulStatusAndRedirectCodes()
+			}
+			.catch { [unowned self] error -> AnyPublisher<Response, MoyaError> in
+				self.changeToken(error)
+				return Fail(error: error).eraseToAnyPublisher()
+			}
+			.retry(1)
 			.eraseToAnyPublisher()
 	}
     

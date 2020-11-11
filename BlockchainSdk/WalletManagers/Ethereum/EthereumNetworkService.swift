@@ -76,7 +76,7 @@ class EthereumNetworkService {
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
 		let provider = BlockcypherProvider(address: address, coin: .eth, chain: .main)
 		blockcypherProvider = provider
-		return provider.getSignatureCount()
+		return provider.getSignatureCount(address: address)
 	}
     
 	// MARK: - Private functions

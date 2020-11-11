@@ -11,11 +11,14 @@ import Foundation
 struct BlockchainInfoAddressResponse: Codable {
     let final_balance: UInt64?
     let txs: [BlockchainInfoTransaction]?
+	let n_tx: Int?
 }
 
 struct BlockchainInfoTransaction: Codable {
     let hash: String?
     let block_height: UInt64?
+	/// Balance difference. Using to recognize outgoing transaction for signature count
+	let result: Int64?
 }
 
 struct BlockchainInfoUnspentResponse: Codable  {

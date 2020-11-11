@@ -64,4 +64,10 @@ class DucatusNetworkService: BitcoinNetworkProvider {
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
+	
+	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
+		Just(0)
+			.setFailureType(to: Error.self)
+			.eraseToAnyPublisher()
+	}
 }

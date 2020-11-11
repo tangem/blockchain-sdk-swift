@@ -25,10 +25,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
     }
     
     func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
-        return provider
-            .requestPublisher(.address(address: address, endpoint: endpoint))
-            .filterSuccessfulStatusAndRedirectCodes()
-            .mapSwiftyJSON()
+		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: true))
             .tryMap { [unowned self] json -> BitcoinResponse in
                 let data = json["data"]
                 let addr = data["\(self.address)"]
@@ -71,11 +68,8 @@ class BlockchairProvider: BitcoinNetworkProvider {
         .eraseToAnyPublisher()
     }
     
-    @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<BtcFee, Error> {
-        return provider.requestPublisher(.fee(endpoint: endpoint))
-            .filterSuccessfulStatusAndRedirectCodes()
-            .mapSwiftyJSON()
+		publisher(for: .fee(endpoint: endpoint))
             .tryMap { json throws -> BtcFee in
                 let data = json["data"]
                 guard let feePerByteSatoshi = data["suggested_transaction_fee_per_byte_sat"].int  else {
@@ -89,11 +83,8 @@ class BlockchairProvider: BitcoinNetworkProvider {
         .eraseToAnyPublisher()
     }
     
-    @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error> {
-        return provider.requestPublisher(.send(txHex: transaction, endpoint: endpoint))
-            .filterSuccessfulStatusAndRedirectCodes()
-            .mapSwiftyJSON()
+		return publisher(for: .send(txHex: transaction, endpoint: endpoint))
             .tryMap { json throws -> String in
                 let data = json["data"]
                 
@@ -105,4 +96,28 @@ class BlockchairProvider: BitcoinNetworkProvider {
         }
         .eraseToAnyPublisher()
     }
+	
+	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
+		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: false))
+			.map { json -> Int in
+				let addr = json["\(address)"]
+				let address = addr["address"]
+				
+				guard
+					let outputCount = address["output_count"].int,
+					let unspentOutputCounr = address["unspent_output_count"].int
+				else { return 0 }
+				
+				return outputCount - unspentOutputCounr
+			}
+			.mapError { $0 as Error }
+			.eraseToAnyPublisher()
+	}
+	
+	private func publisher(for target: BlockchairTarget) -> AnyPublisher<JSON, MoyaError> {
+		provider
+			.requestPublisher(.address(address: address, endpoint: endpoint, transactionDetails: true))
+			.filterSuccessfulStatusAndRedirectCodes()
+			.mapSwiftyJSON()
+	}
 }
