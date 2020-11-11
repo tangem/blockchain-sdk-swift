@@ -12,6 +12,7 @@ import Moya
 enum BlockchairEndpoint: String {
 	case bitcoin = "bitcoin"
     case bitcoinCash = "bitcoin-cash"
+	case litecoint = "litecoin"
 }
 
 enum BlockchairTarget: TargetType {

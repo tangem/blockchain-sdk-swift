@@ -100,7 +100,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
 		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: false))
 			.map { json -> Int in
-				let addr = json["\(address)"]
+				let addr = json["data"]["\(address)"]
 				let address = addr["address"]
 				
 				guard
