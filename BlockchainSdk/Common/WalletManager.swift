@@ -94,12 +94,13 @@ public class WalletManager {
         }
         
         if let dustAmount = (self as? DustRestrictable)?.dustValue {
-            if dustAmount < amount {
+            if amount < dustAmount {
                 errors.append(.dustAmount(minimumAmount: dustAmount))
             }
             
             if let walletAmount = wallet.amounts[dustAmount.type] {
-                if dustAmount < walletAmount - total {
+                let change = walletAmount - total
+                if change.value != 0 && change < dustAmount {
                     errors.append(.dustChange(minimumAmount: dustAmount))
                 }
             }
