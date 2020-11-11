@@ -116,7 +116,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
 	
 	private func publisher(for target: BlockchairTarget) -> AnyPublisher<JSON, MoyaError> {
 		provider
-			.requestPublisher(.address(address: address, endpoint: endpoint, transactionDetails: true))
+			.requestPublisher(target)
 			.filterSuccessfulStatusAndRedirectCodes()
 			.mapSwiftyJSON()
 	}
