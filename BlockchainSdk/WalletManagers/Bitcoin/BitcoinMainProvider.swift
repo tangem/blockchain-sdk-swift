@@ -13,7 +13,8 @@ import Combine
 class BitcoinMainProvider: BitcoinNetworkProvider {
     let blockchainInfoProvider = MoyaProvider<BlockchainInfoTarget>(plugins: [NetworkLoggerPlugin()])
     //let estimateFeeProvider = MoyaProvider<EstimateFeeTarget>(plugins: [NetworkLoggerPlugin()])
-    let bitcoinfeesProvider = MoyaProvider<BitcoinfeesTarget>(plugins: [NetworkLoggerPlugin()])
+    //let bitcoinfeesProvider = MoyaProvider<BitcoinfeesTarget>(plugins: [NetworkLoggerPlugin()])
+    let feeProvider = MoyaProvider<BlockchainInfoApiTarget>(plugins: [NetworkLoggerPlugin()])
     
     let address: String
     
@@ -47,20 +48,42 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
            .eraseToAnyPublisher()
     }
     
+//    func getFee() -> AnyPublisher<BtcFee, Error> {
+//        return bitcoinfeesProvider.requestPublisher(.fees)
+//            .filterSuccessfulStatusAndRedirectCodes()
+//            .map(BitcoinfeesResponse.self)
+//            .tryMap { response throws -> BtcFee in
+//                let min = Decimal(response.hourFee)
+//                let normal = Decimal(response.halfHourFee)
+//                let priority = Decimal(response.fastestFee)
+//
+//                let kb = Decimal(1024)
+//                let btcSatoshi = Decimal(100000000)
+//                let minKbValue = min * kb / btcSatoshi
+//                let normalKbValue = normal * kb / btcSatoshi
+//                let maxKbValue = priority * kb / btcSatoshi
+//
+//                return BtcFee(minimalKb: minKbValue, normalKb: normalKbValue, priorityKb: maxKbValue)
+//        }
+//        .eraseToAnyPublisher()
+//    }
+    
     func getFee() -> AnyPublisher<BtcFee, Error> {
-        return bitcoinfeesProvider.requestPublisher(.fees)
+        return feeProvider.requestPublisher(.fees)
             .filterSuccessfulStatusAndRedirectCodes()
-            .map(BitcoinfeesResponse.self)
+            .map(BlockchainInfoApiResponse.self)
             .tryMap { response throws -> BtcFee in
-                let min = Decimal(response.hourFee)
-                let normal = Decimal(response.halfHourFee)
-                let priority = Decimal(response.fastestFee)
+                let min = Decimal(response.regular)
+                let normal = Decimal(response.regular) * Decimal(1.2)
+                let priority = Decimal(response.priority)
                 
                 let kb = Decimal(1024)
                 let btcSatoshi = Decimal(100000000)
-                let minKbValue = min * kb / btcSatoshi
-                let normalKbValue = normal * kb / btcSatoshi
-                let maxKbValue = priority * kb / btcSatoshi
+                let convertValue = kb / btcSatoshi
+                
+                let minKbValue = min * convertValue
+                let normalKbValue = normal * convertValue
+                let maxKbValue = priority * convertValue
                 
                 return BtcFee(minimalKb: minKbValue, normalKb: normalKbValue, priorityKb: maxKbValue)
         }
