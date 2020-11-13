@@ -13,7 +13,7 @@ import stellarsdk
 public class WalletManagerFactory {
     public init() {}
         
-    public func makeWalletManager(from card: Card) -> WalletManager? {
+    public func makeWalletManager(from card: Card, tokens: [TokenData]? = nil) -> WalletManager? {
         guard let blockchainName = card.cardData?.blockchainName,
             let curve = card.curve,
             let blockchain = Blockchain.from(blockchainName: blockchainName, curve: curve),
@@ -22,14 +22,15 @@ public class WalletManagerFactory {
                 return nil
         }
         
-		let token = getToken(from: card, blockchain: blockchain)
-		
-		return makeWalletManager(for: blockchain, walletPublicKey: walletPublicKey, cardId: cardId, token: token)
+        let tokens = tokens ?? getTokenData(from: card).map { [$0] } ?? []
+		return makeWalletManager(from: blockchain, walletPublicKey: walletPublicKey, cardId: cardId, tokens: tokens)
 	}
 	
-	public func makeWalletManager(for blockchain: Blockchain, walletPublicKey: Data, cardId: String, token: Token? = nil) -> WalletManager {
-		let address = blockchain.makeAddress(from: walletPublicKey)
-		let wallet = Wallet(blockchain: blockchain, address: address, token: token)
+	public func makeWalletManager(from blockchain: Blockchain, walletPublicKey: Data, cardId: String, tokens: [TokenData] = []) -> WalletManager {
+		let addresses = blockchain.makeAddresses(from: walletPublicKey)
+		let wallet = Wallet(blockchain: blockchain,
+                            addresses: addresses,
+                            tokens: tokens)
 		
         switch blockchain {
         case .bitcoin(let testnet):
@@ -51,23 +52,23 @@ public class WalletManagerFactory {
             }
             
         case .stellar(let testnet):
-            return StellarWalletManager(cardId: cardId, wallet: wallet).then {
+            return StellarWalletManager(cardId: cardId, wallet: wallet, cardTokens: tokens).then {
                 let url = testnet ? "https://horizon-testnet.stellar.org" : "https://horizon.stellar.org"
                 let stellarSdk = StellarSDK(withHorizonUrl: url)
                 $0.stellarSdk = stellarSdk
                 $0.txBuilder = StellarTransactionBuilder(stellarSdk: stellarSdk, walletPublicKey: walletPublicKey, isTestnet: testnet)
-                $0.networkService = StellarNetworkService(stellarSdk: stellarSdk, isAsset: token != nil)
+                $0.networkService = StellarNetworkService(stellarSdk: stellarSdk)
             }
             
         case .ethereum(let testnet):
             let ethereumNetwork = testnet ? EthereumNetwork.testnet : EthereumNetwork.mainnet
-            return EthereumWalletManager(cardId: cardId, wallet: wallet).then {
+            return EthereumWalletManager(cardId: cardId, wallet: wallet, cardTokens: tokens).then {
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: ethereumNetwork)
                 $0.networkService = EthereumNetworkService(network: ethereumNetwork, tokenDecimals: token?.decimalCount)
             }
             
         case .rsk:
-            return EthereumWalletManager(cardId: cardId, wallet: wallet).then {
+            return EthereumWalletManager(cardId: cardId, wallet: wallet, cardTokens: tokens).then {
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: .rsk)
                 $0.networkService = EthereumNetworkService(network: .rsk, tokenDecimals: token?.decimalCount)
             }
@@ -79,9 +80,9 @@ public class WalletManagerFactory {
             }
             
         case .binance(let testnet):
-            return BinanceWalletManager(cardId: cardId, wallet: wallet).then {
+            return BinanceWalletManager(cardId: cardId, wallet: wallet, cardTokens: tokens).then {
                 $0.txBuilder = BinanceTransactionBuilder(walletPublicKey: walletPublicKey, isTestnet: testnet)
-                $0.networkService = BinanceNetworkService(address: address, assetCode: token?.contractAddress ,isTestNet: testnet)
+                $0.networkService = BinanceNetworkService(isTestNet: testnet)
             }
             
         case .cardano(let shelley):
@@ -103,30 +104,6 @@ public class WalletManagerFactory {
         }
     }
     
-    private func getToken(from card: Card, blockchain: Blockchain) -> Token? {
-        if let symbol = card.cardData?.tokenSymbol,
-            let contractAddress = card.cardData?.tokenContractAddress,
-            let decimals = card.cardData?.tokenDecimal {
-            
-            var displayName: String
-            switch blockchain {
-            case .stellar:
-                displayName = "Stellar Asset"
-            case .ethereum:
-                displayName = "Ethereum smart contract token"
-            case .binance:
-                displayName = "Binance Asset"
-            case .rsk:
-                displayName = blockchain.displayName
-            default:
-                fatalError("Unsupported blockchain")
-            }
-            
-            return Token(currencySymbol: symbol, contractAddress: contractAddress, decimalCount: decimals, displayName: displayName)
-        }
-        return nil
-    }
-    
     public func isBlockchainSupported(_ card: Card) -> Bool {
         guard let blockchainName = card.cardData?.blockchainName,
             let curve = card.curve,
@@ -135,5 +112,16 @@ public class WalletManagerFactory {
         }
         
         return true
+    }
+    
+    private func getTokenData(from card: Card) -> TokenData? {
+        if let symbol = card.cardData?.tokenSymbol,
+            let contractAddress = card.cardData?.tokenContractAddress,
+            let decimals = card.cardData?.tokenDecimal {
+            return TokenData(symbol: symbol,
+                             contractAddress: contractAddress,
+                             decimal: decimals)
+        }
+        return nil
     }
 }

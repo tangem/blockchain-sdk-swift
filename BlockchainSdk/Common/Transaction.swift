@@ -8,9 +8,14 @@
 
 import Foundation
 
+public protocol TransactionParams {
+    
+}
+
 public struct Transaction {
-    public enum InfoKey: String {
-        case destinationTag
+    public enum TransactionInfo {//from blockchains
+        case destinationTag(value: String) //riiple
+        case memo(value: String) //stellar
     }
     
     public let amount: Amount
@@ -21,7 +26,8 @@ public struct Transaction {
     public internal(set) var date: Date? = nil
     public internal(set) var status: TransactionStatus = .unconfirmed
     public internal(set) var hash: String? = nil
-    public var infos: [InfoKey: Any] = [:]
+    public var infos: [TransactionInfo] = []
+    public var params: TransactionParams? = nil
     
     internal init(amount: Amount, fee: Amount, sourceAddress: String, destinationAddress: String, contractAddress: String? = nil, date: Date? = nil, status: TransactionStatus = .unconfirmed, hash: String? = nil) {
         self.amount = amount

@@ -10,52 +10,66 @@ import Foundation
 
 public struct Wallet {
     public let blockchain: Blockchain
-    public let address: String
-    public let exploreUrl: URL
-    public let shareString: String
-    public let token: Token?
-    public var transactions: [Transaction] = []
-    public var amounts: [Amount.AmountType:Amount] = [:]
+    public let addresses: [Address]
     
-    public var isEmptyAmount: Bool {
-        if amounts.isEmpty {
+    public private(set) var coinAmount: Amount? = nil
+    public private(set) var reserveAmount: Amount? = nil
+    
+    public var tokens: [String:Token] = [:]
+    public var transactions: [Transaction] = []
+    
+    public var address: String { addresses.first {$0.label.isDefault}!.value}
+    
+    public var isEmpty: Bool {
+        guard let coinAmount = coinAmount, coinAmount.value == 0,
+        tokens.values.filter ({ !$0.isEmpty }).count == 0 else {
             return false
         }
         
-        return amounts.values.filter { $0.value > 0 && $0.type != .reserve }.count == 0
+        return true
     }
     
     public var hasPendingTx: Bool {
         return transactions.filter { $0.status == .unconfirmed }.count > 0
     }
     
-    internal init(blockchain: Blockchain, address: String, token: Token? = nil) {
+    internal init(blockchain: Blockchain, addresses: [Address], tokens: [TokenData] = []) {
         self.blockchain = blockchain
-        self.address = address
-        self.exploreUrl = blockchain.getExploreURL(from: address, token: token)
-        self.shareString = blockchain.getShareString(from: address)
-        self.token = token
+        self.addresses = addresses
+        addTokens(tokens)
     }
     
-    mutating func add(amount: Amount) {
-        amounts[amount.type] = amount
+    /// Explore URL for specific address
+    /// - Parameter address: If nil, default address will be used
+    /// - Returns: URL
+    public func getExploreURL(for address: String? = nil, token: Token? = nil) -> URL {
+        let address = address ?? self.address
+        return blockchain.getExploreURL(from: address, tokenContractAddress: token?.contractAddress)
     }
     
-    mutating func add(tokenValue: Decimal) {
-        if let token = self.token {
-            let amount = Amount(with: token, value: tokenValue)
-            add(amount: amount)
-        }
+    /// Share string for specific address
+    /// - Parameter address: If nil, default address will be used
+    /// - Returns: String to share
+    public func getShareString(for address: String? = nil) -> String {
+        let address = address ?? self.address
+        return blockchain.getShareString(from: address)
     }
     
-    mutating func add(coinValue: Decimal) {
-        let amount = Amount(with: blockchain, address: address, type: .coin, value: coinValue)
-        add(amount: amount)
+    mutating func clearAmounts() {
+        coinAmount = nil
+        reserveAmount = nil
     }
     
-    mutating func add(reserveValue: Decimal) {
-        let amount = Amount(with: blockchain, address: address, type: .reserve, value: reserveValue)
-        add(amount: amount)
+    mutating func set(coinValue: Decimal) {
+        coinAmount = Amount(with: blockchain, address: address, type: .coin, value: coinValue)
+    }
+    
+    mutating func set(reserveValue: Decimal) {
+        reserveAmount = Amount(with: blockchain, address: address, type: .reserve, value: reserveValue)
+    }
+    
+    mutating func set(tokenValue: Decimal, for currencySymbol: String) {
+        tokens[currencySymbol]?.set(amountValue: tokenValue)
     }
     
     mutating func add(transaction: Transaction) {
@@ -69,5 +83,21 @@ public struct Wallet {
         var tx = Transaction(amount: dummyAmount, fee: dummyAmount, sourceAddress: "unknown", destinationAddress: address)
         tx.date = Date()
         transactions.append(tx)
+    }
+    
+    mutating func addToken(_ tokenData: TokenData) {
+        let displayName = blockchain.tokenDisplayName
+        let token = Token(with: tokenData, displayName: displayName)
+        tokens[token.currencySymbol] = token
+    }
+    
+    mutating func addTokens(_ tokensData: [TokenData]) {
+        tokensData.forEach { self.addToken($0) }
+    }
+}
+
+extension Wallet: AmountStringConvertible {
+    public var amountDescription: String {
+        return coinAmount?.description ?? "-"
     }
 }

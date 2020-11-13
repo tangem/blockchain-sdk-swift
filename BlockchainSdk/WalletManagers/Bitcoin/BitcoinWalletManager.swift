@@ -115,3 +115,4 @@ extension BitcoinWalletManager: TransactionSender {
 }
 
 extension BitcoinWalletManager: ThenProcessable { }
+

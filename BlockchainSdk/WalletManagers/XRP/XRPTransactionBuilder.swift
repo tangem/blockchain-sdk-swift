@@ -80,7 +80,7 @@ class XRPTransactionBuilder {
              destinationTag = decodedXAddress!.tag
          } else {
              destination = transaction.destinationAddress
-            if let resolvedTag = transaction.infos[Transaction.InfoKey.destinationTag] as? String,
+            if let resolvedTag = transaction.infos.map { }
                 let int32Tag = UInt32(resolvedTag) {
                  destinationTag = int32Tag
              }

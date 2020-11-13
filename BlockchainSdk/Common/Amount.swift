@@ -78,3 +78,7 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
         return lhs.value < rhs.value
     }
 }
+
+public protocol AmountStringConvertible {
+    var amountDescription: String { get }
+}

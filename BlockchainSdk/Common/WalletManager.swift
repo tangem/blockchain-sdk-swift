@@ -43,11 +43,13 @@ public class WalletManager {
     
     @Published public var wallet: Wallet
     
-    var cancellable: Cancellable? = nil
+    private var cancellable: Cancellable? = nil
+    private let cardTokens: [TokenData]
     
-    init(cardId: String, wallet: Wallet) {
+    init(cardId: String, wallet: Wallet, cardTokens: [TokenData] = []) {
         self.cardId = cardId
         self.wallet = wallet
+        self.cardTokens = cardTokens
     }
     
     public func update(completion: @escaping (Result<(), Error>)-> Void) {
@@ -59,7 +61,7 @@ public class WalletManager {
                                       fee: fee,
                                       sourceAddress: wallet.address,
                                       destinationAddress: destinationAddress,
-                                      contractAddress: wallet.token?.contractAddress,
+                                      contractAddress: wallet.token?.contractAddress, 
                                       date: Date(),
                                       status: .unconfirmed,
                                       hash: nil)

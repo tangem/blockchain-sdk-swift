@@ -97,6 +97,10 @@
 		5D94E56723A3946C009C7482 /* Data+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56623A3946C009C7482 /* Data+.swift */; };
 		5D977BB623FAEB4500575BE4 /* DucatusNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D977BB523FAEB4500575BE4 /* DucatusNetworkService.swift */; };
 		5DA6F7BC243F3C0B0040AB4B /* CBOR+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */; };
+		5DACA359255E97EA0096BC48 /* BitcoinAddressLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DACA358255E97EA0096BC48 /* BitcoinAddressLabel.swift */; };
+		5DACA35B255E97FE0096BC48 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DACA35A255E97FE0096BC48 /* Address.swift */; };
+		5DACA35F255E98480096BC48 /* TokenData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DACA35E255E98480096BC48 /* TokenData.swift */; };
+		5DACA361255E98900096BC48 /* MultipleAddressProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DACA360255E98900096BC48 /* MultipleAddressProvider.swift */; };
 		5DC7DD60243F83E6008F83F2 /* XRPAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC7DD5F243F83E6008F83F2 /* XRPAddressService.swift */; };
 		5DC7DD62244077D7008F83F2 /* XRPNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC7DD61244077D7008F83F2 /* XRPNetworkService.swift */; };
 		5DC7DD64244077E4008F83F2 /* XRPTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC7DD63244077E4008F83F2 /* XRPTransactionBuilder.swift */; };
@@ -235,6 +239,10 @@
 		5D94E56623A3946C009C7482 /* Data+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+.swift"; sourceTree = "<group>"; };
 		5D977BB523FAEB4500575BE4 /* DucatusNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DucatusNetworkService.swift; sourceTree = "<group>"; };
 		5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CBOR+.swift"; sourceTree = "<group>"; };
+		5DACA358255E97EA0096BC48 /* BitcoinAddressLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinAddressLabel.swift; sourceTree = "<group>"; };
+		5DACA35A255E97FE0096BC48 /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
+		5DACA35E255E98480096BC48 /* TokenData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenData.swift; sourceTree = "<group>"; };
+		5DACA360255E98900096BC48 /* MultipleAddressProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipleAddressProvider.swift; sourceTree = "<group>"; };
 		5DC7DD5F243F83E6008F83F2 /* XRPAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPAddressService.swift; sourceTree = "<group>"; };
 		5DC7DD61244077D7008F83F2 /* XRPNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPNetworkService.swift; sourceTree = "<group>"; };
 		5DC7DD63244077E4008F83F2 /* XRPTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPTransactionBuilder.swift; sourceTree = "<group>"; };
@@ -365,13 +373,13 @@
 		5D14E48B2397B87000C15FC8 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				5DACA35D255E98320096BC48 /* Token */,
+				5DACA35C255E98220096BC48 /* Address */,
 				5D5E058A24FE736E00F04DE1 /* Localizations */,
 				5D006ACC239950F9008BA04D /* Wallet.swift */,
 				5DEAFA8D244472CD0032E316 /* Amount.swift */,
 				5DEAFA8F244473460032E316 /* Transaction.swift */,
 				5D14E4902397B87000C15FC8 /* Blockchain.swift */,
-				5DEAFA932444C5300032E316 /* Token.swift */,
-				5DD831BB244DF5BD00F80CEA /* AddressService.swift */,
 				5D14E48F2397B87000C15FC8 /* WalletManager.swift */,
 				5D304393239A6A6B0066B8D9 /* WalletManagerFactory.swift */,
 			);
@@ -638,6 +646,25 @@
 			path = Ducatus;
 			sourceTree = "<group>";
 		};
+		5DACA35C255E98220096BC48 /* Address */ = {
+			isa = PBXGroup;
+			children = (
+				5DD831BB244DF5BD00F80CEA /* AddressService.swift */,
+				5DACA35A255E97FE0096BC48 /* Address.swift */,
+				5DACA360255E98900096BC48 /* MultipleAddressProvider.swift */,
+			);
+			path = Address;
+			sourceTree = "<group>";
+		};
+		5DACA35D255E98320096BC48 /* Token */ = {
+			isa = PBXGroup;
+			children = (
+				5DEAFA932444C5300032E316 /* Token.swift */,
+				5DACA35E255E98480096BC48 /* TokenData.swift */,
+			);
+			path = Token;
+			sourceTree = "<group>";
+		};
 		5DC7DD5C243F8375008F83F2 /* XRP */ = {
 			isa = PBXGroup;
 			children = (
@@ -680,6 +707,7 @@
 				5D30438F239A58C90066B8D9 /* BitcoinWalletManager.swift */,
 				5DED72BB239FEEEC006D79AE /* BitcoinTransactionBuilder.swift */,
 				5D26CEF8243CBF2700994CC0 /* BitcoinNetworkProvider.swift */,
+				5DACA358255E97EA0096BC48 /* BitcoinAddressLabel.swift */,
 			);
 			path = Bitcoin;
 			sourceTree = "<group>";
@@ -940,6 +968,7 @@
 				5D7D243B25136254001B9A4F /* URandom.swift in Sources */,
 				5DED72C623A13377006D79AE /* StellarAddressService.swift in Sources */,
 				5D7D242C25136254001B9A4F /* WebSocket.swift in Sources */,
+				5DACA361255E98900096BC48 /* MultipleAddressProvider.swift in Sources */,
 				5D7D243325136254001B9A4F /* XRPAddress.swift in Sources */,
 				5D4B33C823F72F2700C93A84 /* BitcoinCashWalletManager.swift in Sources */,
 				5D26CEF1243CB9EA00994CC0 /* BlockchainInfoResponse.swift in Sources */,
@@ -947,6 +976,7 @@
 				5D4B33D923FAAD1B00C93A84 /* BitcoreTarget.swift in Sources */,
 				5DED72BC239FEEEC006D79AE /* BitcoinTransactionBuilder.swift in Sources */,
 				5D8653FC23A8C4A9000DE52D /* StellarTransactionBuilder.swift in Sources */,
+				5DACA35B255E97FE0096BC48 /* Address.swift in Sources */,
 				5D7D2443251362AB001B9A4F /* BitcoinfeesTarget.swift in Sources */,
 				5D26CEEE243CB95000994CC0 /* BlockcypherTarget.swift in Sources */,
 				5D7D243425136254001B9A4F /* XRPAccountInfo.swift in Sources */,
@@ -1032,9 +1062,11 @@
 				5D14E4982397B87000C15FC8 /* Blockchain.swift in Sources */,
 				5D4B33D323F7DF1F00C93A84 /* BinanceNetworkService.swift in Sources */,
 				5D0EEE6B253EFBF600758FDC /* TezosWalletManager.swift in Sources */,
+				5DACA35F255E98480096BC48 /* TokenData.swift in Sources */,
 				5DED72B8239FE2E3006D79AE /* Decimal+.swift in Sources */,
 				5D389ECC23ACFDCF00740FE9 /* MoyaProvider+Combine.swift in Sources */,
 				5D7D243A25136254001B9A4F /* Extensions.swift in Sources */,
+				5DACA359255E97EA0096BC48 /* BitcoinAddressLabel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
