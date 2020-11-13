@@ -13,7 +13,7 @@ import stellarsdk
 public class WalletManagerFactory {
     public init() {}
         
-    public func makeWalletManager(from card: Card, tokens: [TokenData]? = nil) -> WalletManager? {
+    public func makeWalletManager(from card: Card, tokens: [Token]? = nil) -> WalletManager? {
         guard let blockchainName = card.cardData?.blockchainName,
             let curve = card.curve,
             let blockchain = Blockchain.from(blockchainName: blockchainName, curve: curve),
@@ -22,11 +22,11 @@ public class WalletManagerFactory {
                 return nil
         }
         
-        let tokens = tokens ?? getTokenData(from: card).map { [$0] } ?? []
+        let tokens = tokens ?? getToken(from: card).map { [$0] } ?? []
 		return makeWalletManager(from: blockchain, walletPublicKey: walletPublicKey, cardId: cardId, tokens: tokens)
 	}
 	
-	public func makeWalletManager(from blockchain: Blockchain, walletPublicKey: Data, cardId: String, tokens: [TokenData] = []) -> WalletManager {
+	public func makeWalletManager(from blockchain: Blockchain, walletPublicKey: Data, cardId: String, tokens: [Token] = []) -> WalletManager {
 		let addresses = blockchain.makeAddresses(from: walletPublicKey)
 		let wallet = Wallet(blockchain: blockchain,
                             addresses: addresses,
@@ -114,13 +114,13 @@ public class WalletManagerFactory {
         return true
     }
     
-    private func getTokenData(from card: Card) -> TokenData? {
+    private func getToken(from card: Card) -> Token? {
         if let symbol = card.cardData?.tokenSymbol,
             let contractAddress = card.cardData?.tokenContractAddress,
-            let decimals = card.cardData?.tokenDecimal {
-            return TokenData(symbol: symbol,
+            let decimal = card.cardData?.tokenDecimal {
+            return Token(symbol: symbol,
                              contractAddress: contractAddress,
-                             decimal: decimals)
+                             decimalCount: decimal)
         }
         return nil
     }

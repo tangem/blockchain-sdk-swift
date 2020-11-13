@@ -12,31 +12,28 @@ public struct Wallet {
     public let blockchain: Blockchain
     public let addresses: [Address]
     
-    public private(set) var coinAmount: Amount? = nil
-    public private(set) var reserveAmount: Amount? = nil
-    
-    public var tokens: [String:Token] = [:]
+    public var amounts: [Amount.AmountType:Amount] = [:]
     public var transactions: [Transaction] = []
     
     public var address: String { addresses.first {$0.label.isDefault}!.value}
     
     public var isEmpty: Bool {
-        guard let coinAmount = coinAmount, coinAmount.value == 0,
-        tokens.values.filter ({ !$0.isEmpty }).count == 0 else {
-            return false
-        }
-        
-        return true
+        return amounts.values.filter ({ !$0.isEmpty }).count == 0
     }
-    
+
     public var hasPendingTx: Bool {
         return transactions.filter { $0.status == .unconfirmed }.count > 0
     }
     
-    internal init(blockchain: Blockchain, addresses: [Address], tokens: [TokenData] = []) {
+    internal init(blockchain: Blockchain, addresses: [Address], tokens: [Token]) {
         self.blockchain = blockchain
         self.addresses = addresses
-        addTokens(tokens)
+        self.amounts[.coin] = Amount(with: blockchain, address: address)
+    
+        let tokenAmounts = tokens.map { Amount(with: $0) }
+        for tokenAmount in tokenAmounts {
+            self.amounts[tokenAmount.type] = tokenAmount
+        }
     }
     
     /// Explore URL for specific address
@@ -56,20 +53,20 @@ public struct Wallet {
     }
     
     mutating func clearAmounts() {
-        coinAmount = nil
-        reserveAmount = nil
+        amounts.forEach { amounts[$0.key]?.clear() }
     }
     
-    mutating func set(coinValue: Decimal) {
-        coinAmount = Amount(with: blockchain, address: address, type: .coin, value: coinValue)
+    mutating func add(coinValue: Decimal) {
+        amounts[.coin]?.value = coinValue
     }
     
-    mutating func set(reserveValue: Decimal) {
-        reserveAmount = Amount(with: blockchain, address: address, type: .reserve, value: reserveValue)
+    mutating func add(reserveValue: Decimal) {
+        amounts[.reserve] = Amount(with: blockchain, address: address, type: .reserve, value: reserveValue)
     }
     
-    mutating func set(tokenValue: Decimal, for currencySymbol: String) {
-        tokens[currencySymbol]?.set(amountValue: tokenValue)
+    mutating func add(tokenValue: Decimal, for token: Token) {
+        let amount = Amount(with: token, value: tokenValue)
+        amounts[amount.type] = amount
     }
     
     mutating func add(transaction: Transaction) {
@@ -83,21 +80,5 @@ public struct Wallet {
         var tx = Transaction(amount: dummyAmount, fee: dummyAmount, sourceAddress: "unknown", destinationAddress: address)
         tx.date = Date()
         transactions.append(tx)
-    }
-    
-    mutating func addToken(_ tokenData: TokenData) {
-        let displayName = blockchain.tokenDisplayName
-        let token = Token(with: tokenData, displayName: displayName)
-        tokens[token.currencySymbol] = token
-    }
-    
-    mutating func addTokens(_ tokensData: [TokenData]) {
-        tokensData.forEach { self.addToken($0) }
-    }
-}
-
-extension Wallet: AmountStringConvertible {
-    public var amountDescription: String {
-        return coinAmount?.description ?? "-"
     }
 }

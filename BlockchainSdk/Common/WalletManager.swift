@@ -44,9 +44,9 @@ public class WalletManager {
     @Published public var wallet: Wallet
     
     private var cancellable: Cancellable? = nil
-    private let cardTokens: [TokenData]
+    private let cardTokens: [Token]
     
-    init(cardId: String, wallet: Wallet, cardTokens: [TokenData] = []) {
+    init(cardId: String, wallet: Wallet, cardTokens: [Token] = []) {
         self.cardId = cardId
         self.wallet = wallet
         self.cardTokens = cardTokens
@@ -61,7 +61,7 @@ public class WalletManager {
                                       fee: fee,
                                       sourceAddress: wallet.address,
                                       destinationAddress: destinationAddress,
-                                      contractAddress: wallet.token?.contractAddress, 
+                                      contractAddress: amount.type.token?.contractAddress,
                                       date: Date(),
                                       status: .unconfirmed,
                                       hash: nil)
