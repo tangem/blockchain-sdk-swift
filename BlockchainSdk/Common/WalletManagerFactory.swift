@@ -29,26 +29,25 @@ public class WalletManagerFactory {
 	public func makeWalletManager(from blockchain: Blockchain, walletPublicKey: Data, cardId: String, tokens: [Token] = []) -> WalletManager {
 		let addresses = blockchain.makeAddresses(from: walletPublicKey)
 		let wallet = Wallet(blockchain: blockchain,
-                            addresses: addresses,
-                            tokens: tokens)
+                            addresses: addresses)
 		
         switch blockchain {
         case .bitcoin(let testnet):
             return BitcoinWalletManager(cardId: cardId, wallet: wallet).then {
-                $0.txBuilder = BitcoinTransactionBuilder(walletAddress: address, walletPublicKey: walletPublicKey, isTestnet: testnet)
-                $0.networkService = BitcoinNetworkService(address: address, isTestNet: testnet)
+                $0.txBuilder = BitcoinTransactionBuilder(walletPublicKey: walletPublicKey, isTestnet: testnet)
+                $0.networkService = BitcoinNetworkService(isTestNet: testnet)
             }
             
         case .litecoin:
             return LitecoinWalletManager(cardId: cardId, wallet: wallet).then {
-                $0.txBuilder = BitcoinTransactionBuilder(walletAddress: address, walletPublicKey: walletPublicKey, isTestnet: false)
-                $0.networkService = LitecoinNetworkService(address: address, isTestNet: false)
+                $0.txBuilder = BitcoinTransactionBuilder(walletPublicKey: walletPublicKey, isTestnet: false)
+                $0.networkService = LitecoinNetworkService(isTestNet: false)
             }
             
         case .ducatus:
             return DucatusWalletManager(cardId: cardId, wallet: wallet).then {
-                $0.txBuilder = BitcoinTransactionBuilder(walletAddress: address, walletPublicKey: walletPublicKey, isTestnet: false)
-                $0.networkService = DucatusNetworkService(address: address)
+                $0.txBuilder = BitcoinTransactionBuilder(walletPublicKey: walletPublicKey, isTestnet: false)
+                $0.networkService = DucatusNetworkService()
             }
             
         case .stellar(let testnet):
@@ -64,19 +63,19 @@ public class WalletManagerFactory {
             let ethereumNetwork = testnet ? EthereumNetwork.testnet : EthereumNetwork.mainnet
             return EthereumWalletManager(cardId: cardId, wallet: wallet, cardTokens: tokens).then {
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: ethereumNetwork)
-                $0.networkService = EthereumNetworkService(network: ethereumNetwork, tokenDecimals: token?.decimalCount)
+                $0.networkService = EthereumNetworkService(network: ethereumNetwork)
             }
             
         case .rsk:
             return EthereumWalletManager(cardId: cardId, wallet: wallet, cardTokens: tokens).then {
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: .rsk)
-                $0.networkService = EthereumNetworkService(network: .rsk, tokenDecimals: token?.decimalCount)
+                $0.networkService = EthereumNetworkService(network: .rsk)
             }
             
         case .bitcoinCash(let testnet):
             return BitcoinCashWalletManager(cardId: cardId, wallet: wallet).then {
-                $0.txBuilder = BitcoinCashTransactionBuilder(walletAddress: address, walletPublicKey: walletPublicKey, isTestnet: testnet)
-                $0.networkService = BitcoinCashNetworkService(address: address)
+                $0.txBuilder = BitcoinCashTransactionBuilder(walletPublicKey: walletPublicKey, isTestnet: testnet)
+                $0.networkService = BitcoinCashNetworkService()
             }
             
         case .binance(let testnet):

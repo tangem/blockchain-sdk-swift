@@ -11,14 +11,9 @@ import Moya
 import Combine
 
 class BitcoreProvider {
-    let address: String
     let provider = MoyaProvider<BitcoreTarget>(plugins: [NetworkLoggerPlugin()])
     
-    init(address: String) {
-        self.address = address
-    }
-    
-    func getBalance() -> AnyPublisher<BitcoreBalance, MoyaError> {
+    func getBalance(address: String) -> AnyPublisher<BitcoreBalance, MoyaError> {
         return provider
             .requestPublisher(.balance(address: address))
             .filterSuccessfulStatusAndRedirectCodes()
@@ -26,7 +21,7 @@ class BitcoreProvider {
             .eraseToAnyPublisher()
     }
     
-    func getUnspents() -> AnyPublisher<[BitcoreUtxo], MoyaError> {
+    func getUnspents(address: String) -> AnyPublisher<[BitcoreUtxo], MoyaError> {
         return provider
             .requestPublisher(.unspents(address: address))
             .filterSuccessfulStatusAndRedirectCodes()

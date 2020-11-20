@@ -8,26 +8,28 @@
 
 import Foundation
 
-public struct Address {
-    public let label: AddressLabel
+public protocol Address {
+    var value: String { get }
+    var localizedName: String { get }
+}
+
+public struct PlainAddress: Address {
     public let value: String
+    public var localizedName: String { "" }
     
-    public init(value: String, label: AddressLabel = DefaultAddressLabel()) {
+    public init(value: String) {
         self.value = value
-        self.label = label
     }
 }
 
-public protocol AddressLabel {
-    var label: String { get }
-}
-
-public extension AddressLabel {
-    var isDefault: Bool { label == DefaultAddressLabel().label }
-}
-
-public struct DefaultAddressLabel: AddressLabel {
-    public var label: String = ""
+public struct BitcoinAddress: Address {
+    public let type: BitcoinAddressType
+    public let value: String
     
-    public init() {}
+    public var localizedName: String { type.localizedName }
+    
+    public init(type: BitcoinAddressType, value: String) {
+        self.type = type
+        self.value = value
+    }
 }

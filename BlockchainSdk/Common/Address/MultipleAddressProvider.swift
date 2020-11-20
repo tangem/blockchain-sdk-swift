@@ -11,10 +11,3 @@ import Foundation
 public protocol MultipleAddressProvider {
     func makeAddresses(from walletPublicKey: Data) -> [Address]
 }
-
-extension AddressService: MultipleAddressProvider {
-    public func makeAddresses(from walletPublicKey: Data) -> [Address] {
-        let address = makeAddress(from: walletPublicKey)
-        return [Address(value: address)]
-    }
-}

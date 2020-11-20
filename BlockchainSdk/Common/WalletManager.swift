@@ -43,8 +43,11 @@ public class WalletManager {
     
     @Published public var wallet: Wallet
     
-    private var cancellable: Cancellable? = nil
-    private let cardTokens: [Token]
+    var defaultSourceAddress: String { wallet.address }
+    var defaultChangeAddress: String { wallet.address }
+    
+    var cancellable: Cancellable? = nil
+    let cardTokens: [Token]
     
     init(cardId: String, wallet: Wallet, cardTokens: [Token] = []) {
         self.cardId = cardId
@@ -56,11 +59,16 @@ public class WalletManager {
         fatalError("You should override this method")
     }
     
-    public func createTransaction(amount: Amount, fee: Amount, destinationAddress: String) -> Result<Transaction,TransactionErrors> {
+    public func createTransaction(amount: Amount,
+                                  fee: Amount,
+                                  destinationAddress: String,
+                                  sourceAddress: String? = nil,
+                                  changeAddress: String? = nil) -> Result<Transaction,TransactionErrors> {
         let transaction = Transaction(amount: amount,
                                       fee: fee,
-                                      sourceAddress: wallet.address,
+                                      sourceAddress: sourceAddress ?? defaultSourceAddress,
                                       destinationAddress: destinationAddress,
+                                      changeAddress: changeAddress ?? defaultChangeAddress,
                                       contractAddress: amount.type.token?.contractAddress,
                                       date: Date(),
                                       status: .unconfirmed,
@@ -72,6 +80,31 @@ public class WalletManager {
         } else {
             return .failure(validationResult)
         }
+    }
+    
+    
+    public func validate(amount: Amount) -> TransactionError? {
+        if !validateAmountValue(amount) {
+            return .invalidAmount
+        }
+        
+        if !validateAmountTotal(amount) {
+            return .amountExceedsBalance
+        }
+        
+        return nil
+    }
+    
+    public func validate(fee: Amount) -> TransactionError? {
+        if !validateAmountValue(fee) {
+            return .invalidFee
+        }
+        
+        if !validateAmountTotal(fee) {
+            return .feeExceedsBalance
+        }
+        
+        return nil
     }
     
     func validateTransaction(amount: Amount, fee: Amount?) -> TransactionErrors {
@@ -110,30 +143,6 @@ public class WalletManager {
         }
         
         return TransactionErrors(errors: errors)
-    }
-    
-    public func validate(amount: Amount) -> TransactionError? {
-        if !validateAmountValue(amount) {
-            return .invalidAmount
-        }
-        
-        if !validateAmountTotal(amount) {
-            return .amountExceedsBalance
-        }
-        
-        return nil
-    }
-    
-    public func validate(fee: Amount) -> TransactionError? {
-        if !validateAmountValue(fee) {
-            return .invalidFee
-        }
-        
-        if !validateAmountTotal(fee) {
-            return .feeExceedsBalance
-        }
-        
-        return nil
     }
     
     private func validateAmountValue(_ amount: Amount) -> Bool {

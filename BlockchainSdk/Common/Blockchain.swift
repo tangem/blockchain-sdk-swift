@@ -22,16 +22,6 @@ public enum Blockchain {
     case ducatus
     case tezos
     
-    /// Address for change
-    public var defaultAddressLabel: AddressLabel {
-        switch self {
-        case .bitcoin:
-            return BitcoinAddressLabel.bech32
-        default:
-            return DefaultAddressLabel()
-        }
-    }
-    
     public var isTestnet: Bool {
         switch self {
         case .bitcoin(let testnet):

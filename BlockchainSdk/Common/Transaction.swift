@@ -22,6 +22,7 @@ public struct Transaction {
     public let fee: Amount
     public let sourceAddress: String
     public let destinationAddress: String
+    public let changeAddress: String
     public let contractAddress: String?
     public internal(set) var date: Date? = nil
     public internal(set) var status: TransactionStatus = .unconfirmed
@@ -29,11 +30,19 @@ public struct Transaction {
     public var infos: [TransactionInfo] = []
     public var params: TransactionParams? = nil
     
-    internal init(amount: Amount, fee: Amount, sourceAddress: String, destinationAddress: String, contractAddress: String? = nil, date: Date? = nil, status: TransactionStatus = .unconfirmed, hash: String? = nil) {
+    internal init(amount: Amount, fee: Amount,
+                  sourceAddress: String,
+                  destinationAddress: String,
+                  changeAddress: String,
+                  contractAddress: String? = nil,
+                  date: Date? = nil,
+                  status: TransactionStatus = .unconfirmed,
+                  hash: String? = nil) {
         self.amount = amount
         self.fee = fee
         self.sourceAddress = sourceAddress
         self.destinationAddress = destinationAddress
+        self.changeAddress = changeAddress ?? sourceAddress
         self.contractAddress = contractAddress
         self.date = date
         self.status = status

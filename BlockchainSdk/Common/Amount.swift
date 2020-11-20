@@ -24,54 +24,43 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
     
     public let type: AmountType
     public let currencySymbol: String
-    public var value: Decimal?
+    public var value: Decimal
     public let decimals: Int
 
     public var isEmpty: Bool {
-        if let value = value, value == 0 {
+        if value == 0 {
             return true
         }
         
         return false
     }
     
-    public var hasValue: Bool {
-        return value != nil
-    }
-    
     public var description: String {
-        guard let value = value else {
-            return "-"
-        }
         if value == 0 {
             return "0.00 \(currencySymbol)"
         }
         return "\(value.rounded(decimals)) \(currencySymbol)"
     }
     
-    public init(with blockchain: Blockchain, address: String, type: AmountType = .coin, value: Decimal? = nil) {
+    public init(with blockchain: Blockchain, address: String, type: AmountType = .coin, value: Decimal) {
         self.type = type
         currencySymbol = blockchain.currencySymbol
         decimals = blockchain.decimalCount
         self.value = value
     }
     
-    public init(with token: Token, value: Decimal? = nil) {
+    public init(with token: Token, value: Decimal) {
         type = .token(value: token)
         currencySymbol = token.symbol
         decimals = token.decimalCount
         self.value = value
     }
     
-    public init(with amount: Amount, value: Decimal? = nil) {
+    public init(with amount: Amount, value: Decimal) {
         type = amount.type
         currencySymbol = amount.currencySymbol
         decimals = amount.decimals
         self.value = value
-    }
-    
-    public mutating func clear() {
-        value = nil
     }
     
     public static func ==(lhs: Amount, rhs: Amount) -> Bool {
@@ -125,10 +114,11 @@ extension Amount.AmountType: Equatable, Hashable {
         case (.reserve, .reserve):
             return true
         case (.token(let lv), .token(let rv)):
-            if lv.currencySymbol == rv.currencySymbol,
+            if lv.symbol == rv.symbol,
                 lv.contractAddress == rv.contractAddress {
                 return true
             }
+            return false
         default:
             return false
         }

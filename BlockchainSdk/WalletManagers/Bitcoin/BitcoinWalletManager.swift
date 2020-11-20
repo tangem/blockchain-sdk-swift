@@ -18,6 +18,12 @@ class BitcoinWalletManager: WalletManager {
         return nil
     }
     
+    override var defaultChangeAddress: String {
+        wallet.addresses.first {
+            ($0 as! BitcoinAddress).type == .bech32
+            }!.value
+    }
+    
     override func update(completion: @escaping (Result<Void, Error>)-> Void)  {
         cancellable = networkService.getInfo()
             .sink(receiveCompletion: {[unowned self] completionSubscription in

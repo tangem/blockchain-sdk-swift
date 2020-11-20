@@ -107,7 +107,8 @@ extension CardanoWalletManager: TransactionSender {
         let dummyTx = Transaction(amount: dummyAmount,
                                   fee: dummyFee,
                                   sourceAddress: self.wallet.address,
-                                  destinationAddress: destination)
+                                  destinationAddress: destination,
+                                  changeAddress: self.wallet.address)
         
         
         guard let walletAmount = wallet.amounts[.coin]?.value else {

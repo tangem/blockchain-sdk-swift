@@ -16,11 +16,9 @@ import BigInt
 class EthereumNetworkService {
     let network: EthereumNetwork
     let provider = MoyaProvider<InfuraTarget>(plugins: [NetworkLoggerPlugin()])
-    let tokenDecimals: Int?
     
-    init(network: EthereumNetwork, tokenDecimals: Int?) {
+    init(network: EthereumNetwork) {
         self.network = network
-        self.tokenDecimals = tokenDecimals
     }
     
     @available(iOS 13.0, *)
@@ -37,9 +35,9 @@ class EthereumNetworkService {
         .eraseToAnyPublisher()
     }
     
-    func getInfo(address: String, contractAddress: String?) -> AnyPublisher<EthereumResponse, Error> {
-        if let contractAddress = contractAddress, tokenDecimals != nil {
-            return tokenData(address: address, contractAddress: contractAddress)
+    func getInfo(address: String, contractAddress: String?, tokenDecimals: Int?) -> AnyPublisher<EthereumResponse, Error> {
+        if let contractAddress = contractAddress, let tokenDecimals = tokenDecimals {
+            return tokenData(address: address, contractAddress: contractAddress, tokenDecimals: tokenDecimals)
                 .map { return EthereumResponse(balance: $0.0, tokenBalance: $0.1, txCount: $0.2, pendingTxCount: $0.3) }
                 .eraseToAnyPublisher()
         } else {
@@ -72,9 +70,9 @@ class EthereumNetworkService {
     }
     
     
-    private func tokenData(address: String, contractAddress: String) -> AnyPublisher<(Decimal,Decimal,Int,Int), Error> {
+    private func tokenData(address: String, contractAddress: String, tokenDecimals: Int) -> AnyPublisher<(Decimal,Decimal,Int,Int), Error> {
         return Publishers.Zip4(getBalance(address),
-                               getTokenBalance(address, contractAddress: contractAddress),
+                               getTokenBalance(address, contractAddress: contractAddress, tokenDecimals: tokenDecimals),
                                getTxCount(address),
                                getPendingTxCount(address))
             .eraseToAnyPublisher()
@@ -103,11 +101,11 @@ class EthereumNetworkService {
             .eraseToAnyPublisher()
     }
     
-    private func getTokenBalance(_ address: String, contractAddress: String) -> AnyPublisher<Decimal, Error> {
+    private func getTokenBalance(_ address: String, contractAddress: String, tokenDecimals: Int) -> AnyPublisher<Decimal, Error> {
         return provider
             .requestPublisher(.tokenBalance(address: address, contractAddress: contractAddress, network: network ))
             .filterSuccessfulStatusAndRedirectCodes()
-            .tryMap{[unowned self] in try self.parseTokenBalance($0.data)}
+            .tryMap{[unowned self] in try self.parseTokenBalance($0.data, tokenDecimals: tokenDecimals)}
             .eraseToAnyPublisher()
     }
     
@@ -148,14 +146,14 @@ class EthereumNetworkService {
         return balanceEth
     }
     
-    private func parseTokenBalance(_ data: Data) throws -> Decimal {
+    private func parseTokenBalance(_ data: Data, tokenDecimals: Int) throws -> Decimal {
         let quantity = (try parseResult(data)).removeHexPrefix()
         guard let balanceData = asciiHexToData(quantity),
               let balanceWei = dataToDecimalToken(balanceData) else {
             throw ETHError.failedToParseTokenBalance
         }
         
-        let balanceEth = balanceWei.dividing(by: NSDecimalNumber(value: 1).multiplying(byPowerOf10: Int16(tokenDecimals!)))
+        let balanceEth = balanceWei.dividing(by: NSDecimalNumber(value: 1).multiplying(byPowerOf10: Int16(tokenDecimals)))
         return balanceEth as Decimal
     }
 }

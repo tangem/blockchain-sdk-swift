@@ -8,10 +8,12 @@
 
 import Foundation
 
-public enum BitcoinAddressLabel: String, AddressLabel {
+public enum BitcoinAddressType: String {
     case legacy
     case bech32
     case p2sh
     
-    public var label: String { self.rawValue }
+    public var localizedName: String {
+        return rawValue
+    }
 }
