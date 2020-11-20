@@ -16,7 +16,7 @@ class BitcoinCashWalletManager: WalletManager {
     
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
-            .getInfo()
+            .getInfo(address: self.wallet.address)
             .sink(receiveCompletion: {[unowned self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
                     self.wallet.amounts = [:]
@@ -73,7 +73,10 @@ extension BitcoinCashWalletManager: TransactionSender {
                 let kb = Decimal(1024)
                 let feePerByte = response.minimalKb/kb
                 
-                guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount, fee: Amount(with: amount, value: 0.0001), sourceAddress: self.wallet.address, destinationAddress: destination)) else {
+                guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount, fee: Amount(with: amount, value: 0.0001),
+                                                                                  sourceAddress: self.wallet.address,
+                                                                                  destinationAddress: destination,
+                                                                                  changeAddress: self.wallet.address)) else {
                     throw WalletError.failedToCalculateTxSize
                 }
                 

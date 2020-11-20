@@ -20,6 +20,10 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
             }
             return nil
         }
+        
+        public var isToken: Bool {
+            return token != nil
+        }
     }
     
     public let type: AmountType

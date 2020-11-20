@@ -18,7 +18,7 @@ class BinanceWalletManager: WalletManager {
     
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {//check it
         cancellable = networkService
-            .getInfo()
+            .getInfo(address: wallet.address)
             .sink(receiveCompletion: {[unowned self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
                     self.wallet.amounts = [:]

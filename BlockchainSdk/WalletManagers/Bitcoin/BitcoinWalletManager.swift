@@ -18,14 +18,18 @@ class BitcoinWalletManager: WalletManager {
         return nil
     }
     
+    override var defaultSourceAddress: String {
+        wallet.addresses
+            .compactMap { $0 as? BitcoinAddress }
+            .first { $0.type == .bech32 }!.value
+    }
+    
     override var defaultChangeAddress: String {
-        wallet.addresses.first {
-            ($0 as! BitcoinAddress).type == .bech32
-            }!.value
+        return defaultSourceAddress
     }
     
     override func update(completion: @escaping (Result<Void, Error>)-> Void)  {
-        cancellable = networkService.getInfo()
+        cancellable = networkService.getInfo(address: wallet.address)
             .sink(receiveCompletion: {[unowned self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
                     self.wallet.amounts = [:]
@@ -46,7 +50,11 @@ class BitcoinWalletManager: WalletManager {
                 let normalPerByte = response.normalKb/kb
                 let maxPerByte = response.priorityKb/kb
                 let dummyFee = Amount(with: amount, value: 0.00000001)
-                guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount - dummyFee, fee: dummyFee, sourceAddress: self.wallet.address, destinationAddress: destination)) else {
+                guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount - dummyFee,
+                                                                                  fee: dummyFee,
+                                                                                  sourceAddress: self.wallet.address,
+                                                                                  destinationAddress: destination,
+                                                                                  changeAddress: self.wallet.address)) else {
                     throw WalletError.failedToCalculateTxSize
                 }
                 
