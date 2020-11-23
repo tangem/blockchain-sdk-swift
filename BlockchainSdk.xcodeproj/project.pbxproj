@@ -92,6 +92,8 @@
 		5D8653FC23A8C4A9000DE52D /* StellarTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FB23A8C4A9000DE52D /* StellarTransactionBuilder.swift */; };
 		5D8653FE23A8E486000DE52D /* StellarSdk+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FD23A8E486000DE52D /* StellarSdk+.swift */; };
 		5D86540023A906DF000DE52D /* CardManager+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FF23A906DF000DE52D /* CardManager+.swift */; };
+		5D88C809256BCD6C00020028 /* XRPTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D88C808256BCD6C00020028 /* XRPTransactionParams.swift */; };
+		5D88C80B256BCDBB00020028 /* StellarTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D88C80A256BCDBB00020028 /* StellarTransactionParams.swift */; };
 		5D94E56123A381F2009C7482 /* EthereumWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56023A381F2009C7482 /* EthereumWalletManager.swift */; };
 		5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56223A38204009C7482 /* EthereumAddressService.swift */; };
 		5D94E56723A3946C009C7482 /* Data+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56623A3946C009C7482 /* Data+.swift */; };
@@ -235,6 +237,8 @@
 		5D8653FB23A8C4A9000DE52D /* StellarTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarTransactionBuilder.swift; sourceTree = "<group>"; };
 		5D8653FD23A8E486000DE52D /* StellarSdk+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StellarSdk+.swift"; sourceTree = "<group>"; };
 		5D8653FF23A906DF000DE52D /* CardManager+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CardManager+.swift"; sourceTree = "<group>"; };
+		5D88C808256BCD6C00020028 /* XRPTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPTransactionParams.swift; sourceTree = "<group>"; };
+		5D88C80A256BCDBB00020028 /* StellarTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarTransactionParams.swift; sourceTree = "<group>"; };
 		5D94E56023A381F2009C7482 /* EthereumWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumWalletManager.swift; sourceTree = "<group>"; };
 		5D94E56223A38204009C7482 /* EthereumAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumAddressService.swift; sourceTree = "<group>"; };
 		5D94E56623A3946C009C7482 /* Data+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+.swift"; sourceTree = "<group>"; };
@@ -676,6 +680,7 @@
 				5DC7DD61244077D7008F83F2 /* XRPNetworkService.swift */,
 				5DC7DD63244077E4008F83F2 /* XRPTransactionBuilder.swift */,
 				5DC7DD65244077F2008F83F2 /* XRPWalletManager.swift */,
+				5D88C808256BCD6C00020028 /* XRPTransactionParams.swift */,
 			);
 			path = XRP;
 			sourceTree = "<group>";
@@ -723,6 +728,7 @@
 				5D8653F923A8C481000DE52D /* StellarNetworkService.swift */,
 				5D8653FB23A8C4A9000DE52D /* StellarTransactionBuilder.swift */,
 				5D8653FD23A8E486000DE52D /* StellarSdk+.swift */,
+				5D88C80A256BCDBB00020028 /* StellarTransactionParams.swift */,
 			);
 			path = Stellar;
 			sourceTree = "<group>";
@@ -969,6 +975,7 @@
 				5D4B33DA23FAAD1B00C93A84 /* BitcoreResponse.swift in Sources */,
 				5DE3BF99239E722400E8815D /* Base58.swift in Sources */,
 				5D7D243B25136254001B9A4F /* URandom.swift in Sources */,
+				5D88C809256BCD6C00020028 /* XRPTransactionParams.swift in Sources */,
 				5DED72C623A13377006D79AE /* StellarAddressService.swift in Sources */,
 				5D7D242C25136254001B9A4F /* WebSocket.swift in Sources */,
 				5DACA361255E98900096BC48 /* MultipleAddressProvider.swift in Sources */,
@@ -993,6 +1000,7 @@
 				5D0EEE69253EF75200758FDC /* TezosFee.swift in Sources */,
 				5D4B33C223F72C0400C93A84 /* BitcoinCashNetworkService.swift in Sources */,
 				5D4B33BE23F6EA3700C93A84 /* BlockchairResponses.swift in Sources */,
+				5D88C80B256BCDBB00020028 /* StellarTransactionParams.swift in Sources */,
 				5DE3BF9E239FA2F400E8815D /* SegWitBech32.swift in Sources */,
 				5D6DEAB6243CC09A00510EC8 /* EthereumTransactionBuilder.swift in Sources */,
 				5D7D243525136254001B9A4F /* XRPAmount.swift in Sources */,

@@ -31,7 +31,7 @@ class StellarNetworkService {
         .eraseToAnyPublisher()
     }
     
-    public func getInfo(accountId: String, assetCode: String?) -> AnyPublisher<StellarResponse, Error> {
+    public func getInfo(accountId: String, isAsset: Bool) -> AnyPublisher<StellarResponse, Error> {
         return stellarData(accountId: accountId)
             .tryMap{ (accountResponse, ledgerResponse) throws -> StellarResponse in
                 guard let baseFeeStroops = Decimal(ledgerResponse.baseFeeInStroops),
@@ -41,15 +41,29 @@ class StellarNetworkService {
                 }
                 
                 let sequence = accountResponse.sequenceNumber
-                let assetBalance = Decimal(assetCode == nil ? nil : accountResponse.balances.first(where: {$0.assetType != AssetTypeAsString.NATIVE && $0.assetCode == assetCode!})?.balance)
-                
+                let assetBalances = try accountResponse.balances
+                    .filter ({ $0.assetType != AssetTypeAsString.NATIVE })
+                    .map { assetBalance -> StellarAssetResponse in
+                        guard let code = assetBalance.assetCode,
+                            let issuer = assetBalance.assetIssuer,
+                            let balance = Decimal(assetBalance.balance) else {
+                                throw WalletError.failedToParseNetworkResponse
+                        }
+                        
+                        return StellarAssetResponse(code: code, issuer: issuer, balance: balance)
+                }
+
                 let divider =  Decimal(10000000)
                 let baseFee = baseFeeStroops/divider
                 let baseReserve = baseReserveStroops/divider
                 
-                return StellarResponse(baseFee: baseFee, baseReserve: baseReserve, assetBalance: assetBalance, balance: balance, sequence: sequence)
+                return StellarResponse(baseFee: baseFee,
+                                       baseReserve: baseReserve,
+                                       assetBalances: assetBalances,
+                                       balance: balance,
+                                       sequence: sequence)
         }
-        .mapError { [unowned self] in self.mapError($0, isAsset: assetCode != nil) }
+        .mapError { [unowned self] in self.mapError($0, isAsset: isAsset) }
         .eraseToAnyPublisher()
     }
     
@@ -76,7 +90,13 @@ class StellarNetworkService {
 struct StellarResponse {
     let baseFee: Decimal
     let baseReserve: Decimal
-    let assetBalance: Decimal?
+    let assetBalances: [StellarAssetResponse]
     let balance: Decimal
     let sequence: Int64
+}
+
+struct StellarAssetResponse {
+    let code: String
+    let issuer: String
+    let balance: Decimal
 }

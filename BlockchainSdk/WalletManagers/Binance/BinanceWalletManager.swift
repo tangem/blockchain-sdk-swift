@@ -31,10 +31,27 @@ class BinanceWalletManager: WalletManager {
     }
     
     private func updateWallet(with response: BinanceInfoResponse) {
-        wallet.add(coinValue: Decimal(response.balance))
-        if let assetBalance = response.assetBalance {
-            wallet.add(tokenValue: Decimal(assetBalance))
+        if let coinBalance = response.balances[wallet.blockchain.currencySymbol] {
+             wallet.add(coinValue: coinBalance)
         }
+        
+        if cardTokens.isEmpty {
+            _ = response.balances
+                .filter { $0.key != wallet.blockchain.currencySymbol }
+                .map { (Token(symbol: $0.key.split(separator: "-").first.map {String($0)} ?? $0.key,
+                              contractAddress: $0.key,
+                              decimalCount: wallet.blockchain.decimalCount), $0.value) }
+                .map { token, balance in
+                    wallet.add(tokenValue: balance, for: token)
+            }
+        } else {
+            for token in cardTokens {
+                if let balance = response.balances[token.symbol] {
+                    wallet.add(tokenValue: balance, for: token)
+                }
+            }
+        }
+        
         txBuilder.binanceWallet.sequence = response.sequence
         txBuilder.binanceWallet.accountNumber = response.accountNumber
         

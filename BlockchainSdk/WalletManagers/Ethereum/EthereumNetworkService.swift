@@ -35,14 +35,14 @@ class EthereumNetworkService {
         .eraseToAnyPublisher()
     }
     
-    func getInfo(address: String, contractAddress: String?, tokenDecimals: Int?) -> AnyPublisher<EthereumResponse, Error> {
-        if let contractAddress = contractAddress, let tokenDecimals = tokenDecimals {
-            return tokenData(address: address, contractAddress: contractAddress, tokenDecimals: tokenDecimals)
-                .map { return EthereumResponse(balance: $0.0, tokenBalance: $0.1, txCount: $0.2, pendingTxCount: $0.3) }
+    func getInfo(address: String, tokens: [Token]) -> AnyPublisher<EthereumResponse, Error> {
+        if !tokens.isEmpty {
+            return tokenData(address: address, tokens: tokens)
+                .map { return EthereumResponse(balance: $0.0, tokenBalances: $0.1, txCount: $0.2, pendingTxCount: $0.3) }
                 .eraseToAnyPublisher()
         } else {
             return coinData(address: address)
-                .map { return EthereumResponse(balance: $0.0, tokenBalance: nil, txCount: $0.1, pendingTxCount: $0.2) }
+                .map { return EthereumResponse(balance: $0.0, tokenBalances: [:], txCount: $0.1, pendingTxCount: $0.2) }
                 .eraseToAnyPublisher()
         }
     }
@@ -70,9 +70,9 @@ class EthereumNetworkService {
     }
     
     
-    private func tokenData(address: String, contractAddress: String, tokenDecimals: Int) -> AnyPublisher<(Decimal,Decimal,Int,Int), Error> {
+    private func tokenData(address: String, tokens: [Token]) -> AnyPublisher<(Decimal,[Token:Decimal],Int,Int), Error> {
         return Publishers.Zip4(getBalance(address),
-                               getTokenBalance(address, contractAddress: contractAddress, tokenDecimals: tokenDecimals),
+                               getTokensBalance(address, tokens: tokens),
                                getTxCount(address),
                                getPendingTxCount(address))
             .eraseToAnyPublisher()
@@ -98,6 +98,19 @@ class EthereumNetworkService {
             .requestPublisher(.balance(address: address, network: network))
             .filterSuccessfulStatusAndRedirectCodes()
             .tryMap {[unowned self] in try self.parseBalance($0.data)}
+            .eraseToAnyPublisher()
+    }
+    
+    private func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token:Decimal], Error> {
+        tokens
+            .publisher
+            .setFailureType(to: Error.self)
+            .flatMap {[unowned self] token -> AnyPublisher<(Token, Decimal), Error> in
+                return self.getTokenBalance(address, contractAddress: token.contractAddress, tokenDecimals: token.decimalCount)
+                    .map { (token, $0) }
+                    .eraseToAnyPublisher()}
+            .collect()
+            .map { $0.reduce(into: [Token: Decimal]()) { $0[$1.0] = $1.1 } }
             .eraseToAnyPublisher()
     }
     
@@ -160,7 +173,7 @@ class EthereumNetworkService {
 
 struct EthereumResponse {
     let balance: Decimal
-    let tokenBalance: Decimal?
+    let tokenBalances: [Token: Decimal]
     let txCount: Int
     let pendingTxCount: Int
 }

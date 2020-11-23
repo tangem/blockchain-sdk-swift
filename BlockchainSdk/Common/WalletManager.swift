@@ -40,14 +40,13 @@ public enum WalletError: Error, LocalizedError {
 
 public class WalletManager {
     public let cardId: String
-    
+    public let cardTokens: [Token]
     @Published public var wallet: Wallet
     
     var defaultSourceAddress: String { wallet.address }
-    var defaultChangeAddress: String { wallet.address }
-    
+    var defaultChangeAddress: String { wallet.address }    
     var cancellable: Cancellable? = nil
-    let cardTokens: [Token]
+
     
     init(cardId: String, wallet: Wallet, cardTokens: [Token] = []) {
         self.cardId = cardId

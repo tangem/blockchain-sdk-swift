@@ -63,7 +63,7 @@ class StellarTransactionBuilder {
                 
                 self?.serializeOperation(operation, sourceKeyPair: sourceKeyPair, completion: completion)
             }
-        } else if transaction.amount.type == .token {
+        } else if transaction.amount.type.isToken {
             guard let contractAddress = transaction.contractAddress, let keyPair = try? KeyPair(accountId: contractAddress),
                 let asset = createNonNativeAsset(code: transaction.amount.currencySymbol, issuer: keyPair) else {
                     completion(.failure(WalletError.failedToBuildTx))
