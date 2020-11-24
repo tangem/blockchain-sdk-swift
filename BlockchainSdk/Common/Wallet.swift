@@ -10,52 +10,70 @@ import Foundation
 
 public struct Wallet {
     public let blockchain: Blockchain
-    public let address: String
-    public let exploreUrl: URL
-    public let shareString: String
-    public let token: Token?
-    public var transactions: [Transaction] = []
+    public let addresses: [Address]
+    
     public var amounts: [Amount.AmountType:Amount] = [:]
+    public var transactions: [Transaction] = []
+    public var state: WalletState = .created
     
-    public var isEmptyAmount: Bool {
-        if amounts.isEmpty {
-            return false
-        }
-        
-        return amounts.values.filter { $0.value > 0 && $0.type != .reserve }.count == 0
+    public var address: String { addresses.first!.value }
+    
+    public var isEmpty: Bool {
+        return amounts.values.filter ({ !$0.isEmpty }).count == 0
     }
-    
+
     public var hasPendingTx: Bool {
         return transactions.filter { $0.status == .unconfirmed }.count > 0
     }
     
-    internal init(blockchain: Blockchain, address: String, token: Token? = nil) {
+    internal init(blockchain: Blockchain, addresses: [Address]) {
         self.blockchain = blockchain
-        self.address = address
-        self.exploreUrl = blockchain.getExploreURL(from: address, token: token)
-        self.shareString = blockchain.getShareString(from: address)
-        self.token = token
+        self.addresses = addresses
+    }
+    
+    /// Explore URL for specific address
+    /// - Parameter address: If nil, default address will be used
+    /// - Returns: URL
+    public func getExploreURL(for address: String? = nil, token: Token? = nil) -> URL {
+        let address = address ?? self.address
+        return blockchain.getExploreURL(from: address, tokenContractAddress: token?.contractAddress)
+    }
+    
+    /// Share string for specific address
+    /// - Parameter address: If nil, default address will be used
+    /// - Returns: String to share
+    public func getShareString(for address: String? = nil) -> String {
+        let address = address ?? self.address
+        return blockchain.getShareString(from: address)
+    }
+    
+    mutating func clearAmounts() {
+        amounts = [:]
+    }
+    
+    mutating func add(coinValue: Decimal, address: String? = nil) {
+        let coinAmount = Amount(with: blockchain,
+                                address: address ?? self.address,
+                                type: .coin,
+                                value: coinValue)
+        add(amount: coinAmount)
+    }
+    
+    mutating func add(reserveValue: Decimal, address: String? = nil) {
+        let reserveAmount = Amount(with: blockchain,
+                                   address: address ?? self.address,
+                                   type: .reserve,
+                                   value: reserveValue)
+        add(amount: reserveAmount)
+    }
+    
+    mutating func add(tokenValue: Decimal, for token: Token) {
+        let tokenAmount = Amount(with: token, value: tokenValue)
+        add(amount: tokenAmount)
     }
     
     mutating func add(amount: Amount) {
-        amounts[amount.type] = amount
-    }
-    
-    mutating func add(tokenValue: Decimal) {
-        if let token = self.token {
-            let amount = Amount(with: token, value: tokenValue)
-            add(amount: amount)
-        }
-    }
-    
-    mutating func add(coinValue: Decimal) {
-        let amount = Amount(with: blockchain, address: address, type: .coin, value: coinValue)
-        add(amount: amount)
-    }
-    
-    mutating func add(reserveValue: Decimal) {
-        let amount = Amount(with: blockchain, address: address, type: .reserve, value: reserveValue)
-        add(amount: amount)
+         amounts[amount.type] = amount
     }
     
     mutating func add(transaction: Transaction) {
@@ -66,8 +84,19 @@ public struct Wallet {
     
     mutating func addPendingTransaction() {
         let dummyAmount = Amount(with: blockchain, address: "unknown", type: .coin, value: 0)
-        var tx = Transaction(amount: dummyAmount, fee: dummyAmount, sourceAddress: "unknown", destinationAddress: address)
+        var tx = Transaction(amount: dummyAmount,
+                             fee: dummyAmount,
+                             sourceAddress: "unknown",
+                             destinationAddress: address,
+                             changeAddress: "unknown")
         tx.date = Date()
         transactions.append(tx)
+    }
+}
+
+extension Wallet {
+    public enum WalletState {
+        case created
+        case loaded
     }
 }

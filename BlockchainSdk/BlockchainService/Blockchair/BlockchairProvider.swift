@@ -16,22 +16,20 @@ import SwiftyJSON
 class BlockchairProvider: BitcoinNetworkProvider {
     let provider = MoyaProvider<BlockchairTarget>()
     
-    let address: String
     let endpoint: BlockchairEndpoint
     
-    init(address: String, endpoint: BlockchairEndpoint) {
-        self.address = address
+    init(endpoint: BlockchairEndpoint) {
         self.endpoint = endpoint
     }
     
-    func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
+    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         return provider
             .requestPublisher(.address(address: address, endpoint: endpoint))
             .filterSuccessfulStatusAndRedirectCodes()
             .mapSwiftyJSON()
-            .tryMap { [unowned self] json -> BitcoinResponse in
+            .tryMap { json -> BitcoinResponse in
                 let data = json["data"]
-                let addr = data["\(self.address)"]
+                let addr = data["\(address)"]
                 let address = addr["address"]
                 let balance = address["balance"].stringValue
                 

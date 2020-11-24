@@ -32,7 +32,7 @@ class StellarWalletManager: WalletManager {
     
     override func update(completion: @escaping (Result<(), Error>)-> Void)  {
         cancellable = networkService
-            .getInfo(accountId: wallet.address, assetCode: wallet.token?.currencySymbol)
+            .getInfo(accountId: wallet.address, isAsset: !cardTokens.isEmpty)
             .sink(receiveCompletion: {[unowned self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
                     self.wallet.amounts = [:]
@@ -47,11 +47,24 @@ class StellarWalletManager: WalletManager {
     private func updateWallet(with response: StellarResponse) {
         txBuilder.sequence = response.sequence
         self.baseFee = response.baseFee
-        let fullReserve = wallet.token != nil ? response.baseReserve * 3 : response.baseReserve * 2
+        let fullReserve = response.assetBalances.isEmpty ? response.baseReserve * 2 : response.baseReserve * 3
         wallet.add(reserveValue: fullReserve)
         wallet.add(coinValue: response.balance - fullReserve)
-        if let assetBalance = response.assetBalance {
-            wallet.add(tokenValue: assetBalance)
+        
+        if cardTokens.isEmpty {
+            _ = response.assetBalances
+                .map { (Token(symbol: $0.code,
+                              contractAddress: $0.issuer,
+                              decimalCount: wallet.blockchain.decimalCount), $0.balance) }
+                .map { token, balance in
+                    wallet.add(tokenValue: balance, for: token)
+            }
+        } else {
+            for token in cardTokens {
+                if let assetBalance = response.assetBalances.first(where: { $0.code == token.symbol }) {
+                    wallet.add(tokenValue: assetBalance.balance, for: token)
+                }
+            }
         }
         let currentDate = Date()
         for  index in wallet.transactions.indices {

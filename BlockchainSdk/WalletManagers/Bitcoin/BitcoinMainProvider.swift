@@ -16,13 +16,7 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
     //let bitcoinfeesProvider = MoyaProvider<BitcoinfeesTarget>(plugins: [NetworkLoggerPlugin()])
     let feeProvider = MoyaProvider<BlockchainInfoApiTarget>(plugins: [NetworkLoggerPlugin()])
     
-    let address: String
-    
-    init(address: String) {
-        self.address = address
-    }
-    
-    func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
+    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         return addressData(address)
             .tryMap {(addressResponse, unspentsResponse) throws -> BitcoinResponse in
                 guard let balance = addressResponse.final_balance,

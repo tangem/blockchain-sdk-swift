@@ -8,9 +8,14 @@
 
 import Foundation
 
-public struct Token {
-    public let currencySymbol: String
+public struct Token: Hashable, Equatable {
+    public let symbol: String
     public let contractAddress: String
     public let decimalCount: Int
-    public let displayName: String
+    
+    public init(symbol: String, contractAddress: String, decimalCount: Int) {
+        self.symbol = symbol
+        self.contractAddress = contractAddress
+        self.decimalCount = decimalCount
+    }
 }

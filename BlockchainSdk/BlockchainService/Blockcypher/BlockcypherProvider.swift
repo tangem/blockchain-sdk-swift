@@ -12,25 +12,22 @@ import Combine
 
 class BlockcypherProvider: BitcoinNetworkProvider {
     let provider = MoyaProvider<BlockcypherTarget> ()
-    let address: String
     let chain: BlockcypherChain
     let coin: BlockcypherCoin
     
     private var token: String? = nil
     
-    init(address: String, coin: BlockcypherCoin, chain: BlockcypherChain) {
-        self.address = address
+    init(coin: BlockcypherCoin, chain: BlockcypherChain) {
         self.coin = coin
         self.chain = chain
     }
     
-    
-    func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
+    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         return Just(())
             .setFailureType(to: MoyaError.self)
             .flatMap {[unowned self] in
                 self.provider
-                    .requestPublisher(BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .address(address: self.address)))
+                    .requestPublisher(BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .address(address: address)))
                     .filterSuccessfulStatusAndRedirectCodes()
         }
         .catch{[unowned self] error -> AnyPublisher<Response, MoyaError> in

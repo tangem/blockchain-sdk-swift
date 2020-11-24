@@ -99,7 +99,7 @@ class EthereumTransactionBuilder {
     }
     
     private func getData(for amount: Amount, targetAddress: String) -> Data? {
-        if amount.type != .token {
+        if !amount.type.isToken {
             return Data()
         }
         

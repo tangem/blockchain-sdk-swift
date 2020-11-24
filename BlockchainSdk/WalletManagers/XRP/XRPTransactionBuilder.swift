@@ -80,10 +80,12 @@ class XRPTransactionBuilder {
              destinationTag = decodedXAddress!.tag
          } else {
              destination = transaction.destinationAddress
-            if let resolvedTag = transaction.infos[Transaction.InfoKey.destinationTag] as? String,
-                let int32Tag = UInt32(resolvedTag) {
-                 destinationTag = int32Tag
-             }
+            
+            if let params = transaction.params as? XRPTransactionParams,
+                case let XRPTransactionParams.destinationTag(value: tag) = params,
+                let int32Tag = UInt32(tag) {
+                destinationTag = int32Tag
+            }
          }
         
          // dictionary containing partial transaction fields

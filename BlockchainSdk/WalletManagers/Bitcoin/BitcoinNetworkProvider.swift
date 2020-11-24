@@ -34,7 +34,7 @@ enum BitcoinNetworkApi {
 }
 
 protocol BitcoinNetworkProvider {
-    func getInfo() -> AnyPublisher<BitcoinResponse, Error>
+    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error>
     
     @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<BtcFee, Error>

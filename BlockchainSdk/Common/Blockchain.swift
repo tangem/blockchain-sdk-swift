@@ -108,6 +108,19 @@ public enum Blockchain {
         }
     }
     
+    public var tokenDisplayName: String {
+        switch self {
+        case .stellar:
+            return "Stellar Asset"
+        case .ethereum:
+            return "Ethereum smart contract token"
+        case .binance:
+            return "Binance Asset"
+        default:
+            return displayName
+        }
+    }
+    
     public var qrPrefix: String {
         switch self {
         case .bitcoin:
@@ -125,8 +138,8 @@ public enum Blockchain {
         }
     }
     
-    public func makeAddress(from walletPublicKey: Data) -> String {
-        return getAddressService().makeAddress(from: walletPublicKey)
+    public func makeAddresses(from walletPublicKey: Data) -> [Address] {
+        return getAddressService().makeAddresses(from: walletPublicKey)
     }
     
     public func validate(address: String) -> Bool {
@@ -153,7 +166,7 @@ public enum Blockchain {
         }
     }
     
-    public func getExploreURL(from address: String, token: Token? = nil) -> URL {
+    public func getExploreURL(from address: String, tokenContractAddress: String? = nil) -> URL {
         switch self {
         case .binance:
             return URL(string: "https://explorer.binance.org/address/\(address)")!
@@ -167,14 +180,14 @@ public enum Blockchain {
             return URL(string: "https://insight.ducatus.io/#/DUC/mainnet/address/\(address)")!
         case .ethereum(let testnet):
             let baseUrl = testnet ? "https://rinkeby.etherscan.io/address/" : "https://etherscan.io/address/"
-            let exploreLink = token == nil ? baseUrl + address :
-            "https://etherscan.io/token/\(token!.contractAddress)?a=\(address)"
+            let exploreLink = tokenContractAddress == nil ? baseUrl + address :
+            "https://etherscan.io/token/\(tokenContractAddress!)?a=\(address)"
             return URL(string: exploreLink)!
         case .litecoin:
             return URL(string: "https://live.blockcypher.com/ltc/address/\(address)")!
         case .rsk:
             var exploreLink = "https://explorer.rsk.co/address/\(address)"
-            if token != nil {
+            if tokenContractAddress != nil {
                 exploreLink += "?__tab=tokens"
             }
             return URL(string: exploreLink)!
