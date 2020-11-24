@@ -25,7 +25,7 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
     convenience init(isTestNet:Bool) {
         var providers = [BitcoinNetworkApi:BitcoinNetworkProvider]()
 		providers[.blockchair] = BlockchairProvider(endpoint: .bitcoin)
-        providers[.blockcypher] = BlockcypherProvider(coin: .btc, chain:  isTestNet ? .test3: .main)
+        providers[.blockcypher] = BlockcypherProvider( endpoint: BlockcypherEndpoint(coin: .btc, chain: isTestNet ? .test3: .main))
         providers[.main] = BitcoinMainProvider()
         self.init(providers:providers, isTestNet: isTestNet)
     }

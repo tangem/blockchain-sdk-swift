@@ -15,6 +15,8 @@ class BitcoinCashTransactionBuilder {
     let walletPublicKey: Data
     var unspentOutputs: [BtcTx]?
     
+    private var blockchain: Blockchain { Blockchain.bitcoinCash(testnet: isTestnet) }
+    
     init(walletPublicKey: Data, isTestnet: Bool) {
         self.walletPublicKey = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
         self.isTestnet = isTestnet
@@ -34,7 +36,7 @@ class BitcoinCashTransactionBuilder {
             return nil
         }
         
-        let amountSatoshi = transaction.amount.value  * Decimal(100000000)
+        let amountSatoshi = transaction.amount.value  * blockchain.decimalValue
         let changeSatoshi = calculateChange(unspents: unspents, amount: transaction.amount.value , fee: transaction.fee.value )
         
         var hashes = [Data]()
@@ -76,7 +78,7 @@ class BitcoinCashTransactionBuilder {
                 return nil
         }
         
-        let amountSatoshi = transaction.amount.value  * Decimal(100000000)
+        let amountSatoshi = transaction.amount.value  * blockchain.decimalValue
         let changeSatoshi = calculateChange(unspents: unspents, amount: transaction.amount.value , fee: transaction.fee.value )
         
         let tx = buildTxBody(unspents: unspents,
@@ -90,8 +92,8 @@ class BitcoinCashTransactionBuilder {
     
     private func calculateChange(unspents: [UnspentTransaction], amount: Decimal, fee: Decimal) -> Decimal {
         let fullAmountSatoshi = Decimal(unspents.reduce(0, {$0 + $1.amount}))
-        let feeSatoshi = fee * Decimal(100000000)
-        let amountSatoshi = amount * Decimal(100000000)
+        let feeSatoshi = fee * blockchain.decimalValue
+        let amountSatoshi = amount * blockchain.decimalValue
         return fullAmountSatoshi - amountSatoshi - feeSatoshi
     }
     

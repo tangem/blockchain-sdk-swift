@@ -12,6 +12,15 @@ import Moya
 enum BlockchairEndpoint: String {
 	case bitcoin = "bitcoin"
     case bitcoinCash = "bitcoin-cash"
+    
+    var blockchain: Blockchain {
+        switch self {
+        case .bitcoin:
+            return .bitcoin(testnet: false)
+        case .bitcoinCash:
+            return .bitcoinCash(testnet: false)
+        }
+    }
 }
 
 enum BlockchairTarget: TargetType {

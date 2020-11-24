@@ -59,8 +59,8 @@ class BinanceNetworkService {
                         promise(.failure("Failed to load fee"))
                         return
                 }
-                
-                let convertedFee = (decimalfee/Decimal(100000000)).rounded(blockchain: .binance(testnet: self.testnet))
+                let blockchain = Blockchain.binance(testnet: self.testnet)
+                let convertedFee = (decimalfee/blockchain.decimalValue).rounded(blockchain: blockchain)
                 let fee = "\(convertedFee)"
                 promise(.success(fee))
             }

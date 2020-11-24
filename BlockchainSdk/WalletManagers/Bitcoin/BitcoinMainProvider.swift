@@ -35,7 +35,7 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
                     return btx
                     } ?? []
                 
-                let satoshiBalance = Decimal(balance)/Decimal(100000000)
+                let satoshiBalance = Decimal(balance) / Blockchain.bitcoin(testnet: false).decimalValue
                 let hasUnconfirmed = txs.first(where: {$0.block_height == nil}) != nil
                 return BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: hasUnconfirmed, txrefs: utxs)
         }
