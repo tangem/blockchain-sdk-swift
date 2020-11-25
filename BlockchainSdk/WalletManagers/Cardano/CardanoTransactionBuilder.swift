@@ -60,7 +60,7 @@ class CardanoTransactionBuilder {
         guard let unspentOutputs = self.unspentOutputs else {
             return .failure(CardanoError.noUnspents)
         }
-        let convertValue = pow(10, Blockchain.cardano(shelley: shelleyCard).decimalCount)
+        let convertValue = Blockchain.cardano(shelley: shelleyCard).decimalValue
         let feeConverted = transaction.fee.value * convertValue
         let amountConverted = transaction.amount.value * convertValue
         let walletAmountConverted = walletAmount * convertValue

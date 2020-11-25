@@ -12,14 +12,12 @@ import Combine
 
 class BlockcypherProvider: BitcoinNetworkProvider {
     let provider = MoyaProvider<BlockcypherTarget> ()
-    let chain: BlockcypherChain
-    let coin: BlockcypherCoin
+    let endpoint: BlockcypherEndpoint
     
     private var token: String? = nil
     
-    init(coin: BlockcypherCoin, chain: BlockcypherChain) {
-        self.coin = coin
-        self.chain = chain
+    init(endpoint: BlockcypherEndpoint) {
+        self.endpoint = endpoint
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
@@ -27,7 +25,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
             .setFailureType(to: MoyaError.self)
             .flatMap {[unowned self] in
                 self.provider
-                    .requestPublisher(BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .address(address: address)))
+                    .requestPublisher(BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address)))
                     .filterSuccessfulStatusAndRedirectCodes()
         }
         .catch{[unowned self] error -> AnyPublisher<Response, MoyaError> in
@@ -37,14 +35,14 @@ class BlockcypherProvider: BitcoinNetworkProvider {
         .retry(1)
         .eraseToAnyPublisher()
         .map(BlockcypherAddressResponse.self)
-        .tryMap {addressResponse -> BitcoinResponse in
+        .tryMap {[unowned self] addressResponse -> BitcoinResponse in
             guard let balance = addressResponse.balance,
                 let uncBalance = addressResponse.unconfirmed_balance
                 else {
                     throw WalletError.failedToParseNetworkResponse
             }
             
-            let satoshiBalance = Decimal(balance)/Decimal(100000000)
+            let satoshiBalance = Decimal(balance)/self.endpoint.blockchain.decimalValue
             let txs: [BtcTx] = addressResponse.txrefs?.compactMap { utxo -> BtcTx?  in
                 guard let hash = utxo.tx_hash,
                     let n = utxo.tx_output_n,
@@ -69,7 +67,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
             .setFailureType(to: MoyaError.self)
             .flatMap { [unowned self] in
                 self.provider
-                    .requestPublisher(BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .fee))
+                    .requestPublisher(BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .fee))
                     .filterSuccessfulStatusAndRedirectCodes()
         }
         .catch{[unowned self] error -> AnyPublisher<Response, MoyaError> in
@@ -79,16 +77,16 @@ class BlockcypherProvider: BitcoinNetworkProvider {
         .retry(1)
         .eraseToAnyPublisher()
         .map(BlockcypherFeeResponse.self)
-        .tryMap { feeResponse -> BtcFee in
+        .tryMap {[unowned self] feeResponse -> BtcFee in
             guard let minKb = feeResponse.low_fee_per_kb,
                 let normalKb = feeResponse.medium_fee_per_kb,
                 let maxKb = feeResponse.high_fee_per_kb else {
                     throw "Can't load fee"
             }
             
-            let minKbValue = Decimal(minKb)/Decimal(100000000)
-            let normalKbValue = Decimal(normalKb)/Decimal(100000000)
-            let maxKbValue = Decimal(maxKb)/Decimal(100000000)
+            let minKbValue = Decimal(minKb)/self.endpoint.blockchain.decimalValue
+            let normalKbValue = Decimal(normalKb)/self.endpoint.blockchain.decimalValue
+            let maxKbValue = Decimal(maxKb)/self.endpoint.blockchain.decimalValue
             let fee = BtcFee(minimalKb: minKbValue, normalKb: normalKbValue, priorityKb: maxKbValue)
             return fee
         }
@@ -100,7 +98,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
         return Just(())
             .setFailureType(to: MoyaError.self)
             .flatMap { [unowned self] in
-                self.provider.requestPublisher(BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token ?? self.getRandomToken(), targetType: .send(txHex: transaction)))
+                self.provider.requestPublisher(BlockcypherTarget(endpoint: self.endpoint, token: self.token ?? self.getRandomToken(), targetType: .send(txHex: transaction)))
                     .filterSuccessfulStatusAndRedirectCodes()
         }
         .catch{ [unowned self] error -> AnyPublisher<Response, MoyaError> in
@@ -119,7 +117,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
         return Just(())
             .setFailureType(to: MoyaError.self)
             .flatMap {[unowned self] in
-                self.provider.requestPublisher(BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .txs(txHash: hash)))
+                self.provider.requestPublisher(BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .txs(txHash: hash)))
                     .filterSuccessfulStatusAndRedirectCodes()
         }
         .catch{[unowned self]  error -> AnyPublisher<Response, MoyaError> in

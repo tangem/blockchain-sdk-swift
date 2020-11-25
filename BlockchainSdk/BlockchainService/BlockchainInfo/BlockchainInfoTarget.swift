@@ -20,7 +20,7 @@ enum BlockchainInfoTarget: TargetType {
     
     var path: String {
         switch self {
-        case .unspents(let address):
+        case .unspents:
             return "/unspent"
         case .send(_):
             return "/pushtx"

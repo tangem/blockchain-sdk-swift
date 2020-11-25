@@ -32,7 +32,7 @@ class DucatusNetworkService: BitcoinNetworkProvider {
                     return btx
                 }
                 
-                let balance = Decimal(confirmed)/Decimal(100000000)
+                let balance = Decimal(confirmed)/Blockchain.ducatus.decimalValue
                 return BitcoinResponse(balance: balance, hasUnconfirmed: unconfirmed != 0 , txrefs: utxs)
         }
         .eraseToAnyPublisher()

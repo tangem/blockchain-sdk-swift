@@ -41,17 +41,19 @@ public enum Blockchain {
     
     public var decimalCount: Int {
         switch self {
-        case .bitcoin, .litecoin, .bitcoinCash, .ducatus:
+        case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance:
             return 8
         case .ethereum, .rsk:
             return 18
         case  .cardano, .xrp, .tezos:
             return 6
-        case .binance:
-            return 8
         case .stellar:
             return 7
         }
+    }
+    
+    public var decimalValue: Decimal {
+        return pow(Decimal(10), decimalCount)
     }
     
     public var roundingMode: NSDecimalNumber.RoundingMode {
