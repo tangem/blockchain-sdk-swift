@@ -59,34 +59,38 @@ public class BitcoinAddressService: AddressService {
     }
 	
 	public func make1Of2MultisigAddresses(firstPublicKey: Data, secondPublicKey: Data) throws -> [Address] {
-		guard let script = create1Of2MultisigOutputScript(firstPublicKey: firstPublicKey, secondPublicKey: secondPublicKey) else {
+		guard let script = try create1Of2MultisigOutputScript(firstPublicKey: firstPublicKey, secondPublicKey: secondPublicKey) else {
 			throw BlockchainSdkError.failedToCreateMultisigScript
 		}
 		let scriptHash = script.data.sha256()
-		let base58 = getBase58(from: scriptHash)
+		let base58 = getBase58(from: scriptHash, p2sh: true)
 		let scriptAddress = BitcoinScriptAddress(script: script, value: base58, type: .legacy)
 		return [scriptAddress]
 	}
 	
-	private func create1Of2MultisigOutputScript(firstPublicKey: Data, secondPublicKey: Data) -> Script? {
-		let keys: [Data] = firstPublicKey.lexicographicallyPrecedes(secondPublicKey) ?
-			[firstPublicKey, secondPublicKey] :
-			[secondPublicKey, firstPublicKey]
-		var pubKeys = [PublicKey]()
-		for key in keys {
-			guard let compressed = Secp256k1Utils.convertKeyToCompressed(key) else { return nil }
-			pubKeys.append(PublicKey(uncompressedPublicKey: key, compressedPublicKey: compressed, coin: .bitcoin))
+	private func create1Of2MultisigOutputScript(firstPublicKey: Data, secondPublicKey: Data) throws -> Script? {
+		var pubKeys = try [firstPublicKey, secondPublicKey].map { (key: Data) throws -> PublicKey in
+			guard let compressed = Secp256k1Utils.convertKeyToCompressed(key) else {
+				throw BlockchainSdkError.failedToCreateMultisigScript
+			}
+			return PublicKey(uncompressedPublicKey: key, compressedPublicKey: compressed, coin: .bitcoin)
 		}
+		pubKeys.sort(by: { $0.compressedPublicKey.lexicographicallyPrecedes($1.compressedPublicKey) })
 		return ScriptFactory.Standard.buildMultiSig(publicKeys: pubKeys, signaturesRequired: 1)
 	}
     
-    func getNetwork(_ testnet: Bool) -> Data {
-        return testnet ? Data([UInt8(0x6F)]): Data([UInt8(0x00)])
+	func getNetwork(_ testnet: Bool) -> Data {
+		getNetwork(testnet, p2SH: false)
+	}
+	
+	func getNetwork(_ testnet: Bool, p2SH: Bool) -> Data {
+        return testnet ? Data([UInt8(0x6F)]) :
+			p2SH ? Data([UInt8(0x05)]) : Data([UInt8(0x00)])
     }
 	
-	private func getBase58(from hash: Data) -> String {
+	private func getBase58(from hash: Data, p2sh: Bool = false) -> String {
 		let ripemd160Hash = RIPEMD160.hash(message: hash)
-		let netSelectionByte = getNetwork(testnet)
+		let netSelectionByte = getNetwork(testnet, p2SH: p2sh)
 		let entendedRipemd160Hash = netSelectionByte + ripemd160Hash
 		let sha = entendedRipemd160Hash.sha256().sha256()
 		let ripemd160HashWithChecksum = entendedRipemd160Hash + sha[..<4]

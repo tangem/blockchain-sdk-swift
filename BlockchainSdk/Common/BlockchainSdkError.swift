@@ -11,6 +11,7 @@ import Foundation
 public enum BlockchainSdkError: Int, LocalizedError {
 	case signatureCountNotMatched = 0
 	case failedToCreateMultisigScript = 1
+	case failedToConvertPublicKey = 2
 	case notImplemented = -1000
 	
 	public var errorDescription: String? {
