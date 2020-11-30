@@ -21,15 +21,3 @@ public struct PlainAddress: Address {
         self.value = value
     }
 }
-
-public struct BitcoinAddress: Address {
-    public let type: BitcoinAddressType
-    public let value: String
-    
-    public var localizedName: String { type.localizedName }
-    
-    public init(type: BitcoinAddressType, value: String) {
-        self.type = type
-        self.value = value
-    }
-}

@@ -14,9 +14,7 @@ public class WalletManagerFactory {
     public init() {}
         
     public func makeWalletManager(from card: Card, tokens: [Token]? = nil) -> WalletManager? {
-        guard let blockchainName = card.cardData?.blockchainName,
-            let curve = card.curve,
-            let blockchain = Blockchain.from(blockchainName: blockchainName, curve: curve),
+        guard let blockchain = getBlockchain(from: card),
             let walletPublicKey = card.walletPublicKey,
             let cardId = card.cardId else {
                 return nil
@@ -102,6 +100,32 @@ public class WalletManagerFactory {
             }
         }
     }
+	
+	public func makeMultisigWallet(from card: Card, with pairKey: Data, tokens: [Token]? = nil) -> WalletManager? {
+		guard let blockchain = getBlockchain(from: card),
+			let walletPublicKey = card.walletPublicKey,
+			let cardId = card.cardId else {
+				return nil
+		}
+		
+		let tokens = tokens ?? getToken(from: card).map { [$0] } ?? []
+		return makeMultisigWallet(from: blockchain, walletPublicKey: walletPublicKey, walletPairPublicKey: pairKey, cardId: cardId, tokens: tokens)
+	}
+	
+	public func makeMultisigWallet(from blockchain: Blockchain, walletPublicKey: Data, walletPairPublicKey: Data, cardId: String, tokens: [Token] = []) -> WalletManager? {
+		guard let addresses = blockchain.makeMultisigAddress(from: walletPublicKey, with: walletPairPublicKey) else { return nil }
+		let wallet = Wallet(blockchain: blockchain, addresses: addresses)
+		
+		switch blockchain {
+		case .bitcoin(let testnet):
+			return BitcoinWalletManager(cardId: cardId, wallet: wallet).then {
+				$0.txBuilder = BitcoinTransactionBuilder(walletPublicKey: walletPublicKey, isTestnet: testnet)
+				$0.networkService = BitcoinNetworkService(isTestNet: testnet)
+			}
+		default:
+			return nil
+		}
+	}
     
     public func isBlockchainSupported(_ card: Card) -> Bool {
         guard let blockchainName = card.cardData?.blockchainName,
@@ -112,6 +136,16 @@ public class WalletManagerFactory {
         
         return true
     }
+	
+	private func getBlockchain(from card: Card) -> Blockchain? {
+		guard let blockchainName = card.cardData?.blockchainName,
+			let curve = card.curve,
+			let blockchain = Blockchain.from(blockchainName: blockchainName, curve: curve)
+		else {
+			return nil
+		}
+		return blockchain
+	}
     
     private func getToken(from card: Card) -> Token? {
         if let symbol = card.cardData?.tokenSymbol,
