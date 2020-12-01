@@ -63,7 +63,7 @@ DEPENDENCIES:
   - AnyCodable-FlightSchool
   - BigInt (~> 4.0)
   - BinanceChain (from `https://bitbucket.org/tangem/swiftbinancechain.git`, tag `0.0.6`)
-  - HDWalletKit (from `https://bitbucket.org/tangem/hdwallet.git`, tag `0.3.9`)
+  - HDWalletKit (from `../HDWallet`)
   - Moya
   - Sodium
   - stellar-ios-mac-sdk
@@ -96,8 +96,7 @@ EXTERNAL SOURCES:
     :git: https://bitbucket.org/tangem/swiftbinancechain.git
     :tag: 0.0.6
   HDWalletKit:
-    :git: https://bitbucket.org/tangem/hdwallet.git
-    :tag: 0.3.9
+    :path: "../HDWallet"
   TangemSdk:
     :git: "git@bitbucket.org:tangem/card-sdk-swift.git"
     :tag: build-58
@@ -109,9 +108,6 @@ CHECKOUT OPTIONS:
   BinanceChain:
     :git: https://bitbucket.org/tangem/swiftbinancechain.git
     :tag: 0.0.6
-  HDWalletKit:
-    :git: https://bitbucket.org/tangem/hdwallet.git
-    :tag: 0.3.9
   TangemSdk:
     :git: "git@bitbucket.org:tangem/card-sdk-swift.git"
     :tag: build-58
@@ -141,6 +137,6 @@ SPEC CHECKSUMS:
   web3swift: e618d3efb2075e65eb42fa1e4c47580fefd8f76b
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 40298a77e342668315e077bdb92b8d2de01def8b
+PODFILE CHECKSUM: 15f027bca60d4c35572da213f2ed48433e0d992e
 
 COCOAPODS: 1.10.0

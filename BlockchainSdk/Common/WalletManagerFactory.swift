@@ -113,7 +113,7 @@ public class WalletManagerFactory {
 	}
 	
 	public func makeMultisigWallet(from blockchain: Blockchain, walletPublicKey: Data, walletPairPublicKey: Data, cardId: String, tokens: [Token] = []) -> WalletManager? {
-		guard let addresses = blockchain.makeMultisigAddress(from: walletPublicKey, with: walletPairPublicKey) else { return nil }
+		guard let addresses = blockchain.makeMultisigAddresses(from: walletPublicKey, with: walletPairPublicKey) else { return nil }
 		let wallet = Wallet(blockchain: blockchain, addresses: addresses)
 		
 		switch blockchain {

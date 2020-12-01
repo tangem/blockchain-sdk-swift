@@ -19,9 +19,11 @@ class BitcoinWalletManager: WalletManager {
     }
     
     override var defaultSourceAddress: String {
-        wallet.addresses
-            .compactMap { $0 as? BitcoinAddress }
-            .first { $0.type == .bech32 }!.value
+		// TODO: add correct address
+		wallet.address
+//        wallet.addresses
+//            .compactMap { $0 as? BitcoinAddress }
+//            .first { $0.type == .bech32 }!.value
     }
     
     override var defaultChangeAddress: String {

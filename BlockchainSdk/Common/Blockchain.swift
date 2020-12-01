@@ -144,9 +144,9 @@ public enum Blockchain {
         return getAddressService().makeAddresses(from: walletPublicKey)
     }
 	
-	public func makeMultisigAddress(from walletPublicKey: Data, with pairPublicKey: Data) -> [Address]? {
+	public func makeMultisigAddresses(from walletPublicKey: Data, with pairPublicKey: Data) -> [Address]? {
 		guard let service = getAddressService() as? MultisigAddressProvider else { return nil }
-		return service.makeAddress(from: walletPublicKey, with: pairPublicKey)
+		return service.makeAddresses(from: walletPublicKey, with: pairPublicKey)
 	}
     
     public func validate(address: String) -> Bool {

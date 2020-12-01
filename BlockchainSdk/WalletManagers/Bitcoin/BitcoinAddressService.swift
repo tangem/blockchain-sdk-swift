@@ -20,8 +20,8 @@ public class BitcoinAddressService: AddressService {
     
     public func makeAddress(from walletPublicKey: Data) -> String {
         let hash = walletPublicKey.sha256()
-		let base58 = getBase58(from: hash)
-        return base58
+		let legacy = LegacyAddress(hash: hash, coin: .bitcoin, addressType: .pubkeyHash)
+		return legacy.base58
     }
     
     public func validate(_ address: String) -> Bool {
@@ -63,9 +63,13 @@ public class BitcoinAddressService: AddressService {
 			throw BlockchainSdkError.failedToCreateMultisigScript
 		}
 		let scriptHash = script.data.sha256()
-		let base58 = getBase58(from: scriptHash, p2sh: true)
-		let scriptAddress = BitcoinScriptAddress(script: script, value: base58, type: .legacy)
+		let legacy = LegacyAddress(hash: scriptHash, coin: .bitcoin, addressType: .scriptHash)
+		let scriptAddress = BitcoinScriptAddress(script: script, value: legacy.base58, type: .p2sh)
 		return [scriptAddress]
+	}
+	
+	func getNetwork(_ testnet: Bool) -> Data {
+		testnet ? Data([UInt8(0x6F)]) : Data([UInt8(0x00)])
 	}
 	
 	private func create1Of2MultisigOutputScript(firstPublicKey: Data, secondPublicKey: Data) throws -> Script? {
@@ -78,34 +82,30 @@ public class BitcoinAddressService: AddressService {
 		pubKeys.sort(by: { $0.compressedPublicKey.lexicographicallyPrecedes($1.compressedPublicKey) })
 		return ScriptFactory.Standard.buildMultiSig(publicKeys: pubKeys, signaturesRequired: 1)
 	}
-    
-	func getNetwork(_ testnet: Bool) -> Data {
-		getNetwork(testnet, p2SH: false)
-	}
 	
-	func getNetwork(_ testnet: Bool, p2SH: Bool) -> Data {
-        return testnet ? Data([UInt8(0x6F)]) :
-			p2SH ? Data([UInt8(0x05)]) : Data([UInt8(0x00)])
-    }
-	
-	private func getBase58(from hash: Data, p2sh: Bool = false) -> String {
-		let ripemd160Hash = RIPEMD160.hash(message: hash)
-		let netSelectionByte = getNetwork(testnet, p2SH: p2sh)
-		let entendedRipemd160Hash = netSelectionByte + ripemd160Hash
-		let sha = entendedRipemd160Hash.sha256().sha256()
-		let ripemd160HashWithChecksum = entendedRipemd160Hash + sha[..<4]
-		let base58 = String(base58: ripemd160HashWithChecksum, alphabet: Base58String.btcAlphabet)
-		return base58
-	}
+//	func getNetwork(_ testnet: Bool, p2SH: Bool) -> Data {
+//        return testnet ? Data([UInt8(0x6F)]) :
+//			p2SH ? Data([UInt8(0x05)]) : Data([UInt8(0x00)])
+//    }
+//
+//	private func getBase58(from hash: Data, p2sh: Bool = false) -> String {
+//		let ripemd160Hash = RIPEMD160.hash(message: hash)
+//		let netSelectionByte = getNetwork(testnet, p2SH: p2sh)
+//		let entendedRipemd160Hash = netSelectionByte + ripemd160Hash
+//		let sha = entendedRipemd160Hash.sha256().sha256()
+//		let ripemd160HashWithChecksum = entendedRipemd160Hash + sha[..<4]
+//		let base58 = String(base58: ripemd160HashWithChecksum, alphabet: Base58String.btcAlphabet)
+//		return base58
+//	}
 }
 
 extension BitcoinAddressService: MultisigAddressProvider {
-	public func makeAddress(from walletPublicKey: Data, with pairPublicKey: Data)  -> [Address] {
+	public func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data) -> [Address]? {
 		do {
 			return try make1Of2MultisigAddresses(firstPublicKey: walletPublicKey, secondPublicKey: pairPublicKey)
 		} catch {
 			print(error)
-			return []
+			return nil
 		}
 	}
 }

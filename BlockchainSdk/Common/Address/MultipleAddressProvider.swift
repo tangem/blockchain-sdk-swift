@@ -13,5 +13,5 @@ public protocol MultipleAddressProvider {
 }
 
 public protocol MultisigAddressProvider {
-	func makeAddress(from walletPublicKey: Data, with pairPublicKey: Data) -> [Address]
+	func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data) -> [Address]?
 }
