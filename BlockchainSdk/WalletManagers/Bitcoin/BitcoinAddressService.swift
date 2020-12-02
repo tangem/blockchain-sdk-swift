@@ -20,7 +20,7 @@ public class BitcoinAddressService: AddressService {
     
     public func makeAddress(from walletPublicKey: Data) -> String {
         let hash = walletPublicKey.sha256()
-		let legacy = LegacyAddress(hash: hash, coin: .bitcoin, addressType: .pubkeyHash)
+		let legacy = LegacyAddress(hash: hash, coin: .bitcoin, addressType: testnet ? .testnet : .pubkeyHash)
 		return legacy.base58
     }
     
@@ -43,7 +43,7 @@ public class BitcoinAddressService: AddressService {
                 return false
         }
         let rip = decoded[0..<21]
-        let kcv = rip.sha256().sha256()
+        let kcv = rip.doubleSha256
         
         for i in 0..<4 {
             if kcv[i] != decoded[21+i] {

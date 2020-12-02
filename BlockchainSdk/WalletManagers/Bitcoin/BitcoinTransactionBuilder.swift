@@ -8,6 +8,7 @@
 
 import Foundation
 import TangemSdk
+import HDWalletKit
 
 class BitcoinTransactionBuilder {
     let isTestnet: Bool
@@ -15,10 +16,17 @@ class BitcoinTransactionBuilder {
     var unspentOutputs: [BtcTx]?
     
     var blockchain: Blockchain { Blockchain.bitcoin(testnet: isTestnet) }
+	
+	private let walletAddresses: [Address]
+	private let walletScripts: [Script]
     
-    init(walletPublicKey: Data, isTestnet: Bool) {
+	private var hdTransaction: HDWalletKit.Transaction?
+	
+	init(walletPublicKey: Data, isTestnet: Bool, addresses: [Address]) {
         self.walletPublicKey = walletPublicKey
         self.isTestnet = isTestnet
+		self.walletAddresses = addresses
+		walletScripts = addresses.map { $0 as? BitcoinScriptAddress }.flatMap { $0?.script }
     }
     
     public func buildForSign(transaction: Transaction) -> [Data]? {
@@ -32,22 +40,44 @@ class BitcoinTransactionBuilder {
         
         let amountSatoshi = transaction.amount.value * blockchain.decimalValue
         let changeSatoshi = calculateChange(unspents: unspents, amount: transaction.amount.value, fee: transaction.fee.value)
-        
+		
+		guard let hdTransaction = hdWalletTransaction(from: transaction, unspents: unspents, amount: amountSatoshi, change: changeSatoshi) else {
+			return nil
+		}
+		
+		self.hdTransaction = hdTransaction
+		
         var hashes = [Data]()
         
-        for index in 0..<unspents.count {
-            guard var tx = buildTxBody(unspents: unspents,
-                                       amount: amountSatoshi,
-                                       change: changeSatoshi,
-                                       targetAddress: transaction.destinationAddress,
-                                       changeAddress: transaction.changeAddress,
-                                       index: index) else {
-                return nil
-            }
-            
-            tx.append(contentsOf: [UInt8(0x01),UInt8(0x00),UInt8(0x00),UInt8(0x00)])
-            let hash = tx.sha256().sha256()
-            hashes.append(hash)
+		for (index, unspent) in hdTransaction.inputs.enumerated() {
+			
+			if let script = Script(data: unspent.signatureScript),
+			   // Only .p2sh and .p2pkh are available. If you want to use another types you should updaet HDWalletKit
+			   script.scriptType == .p2sh {
+				guard
+					let spendingScript = findSpendingScript(scriptPubKey: script),
+					let hashedScript = try? hdTransaction.hashForSignature(index: index, script: spendingScript, type: SighashType.BTC.ALL)
+				else {
+					return nil
+				}
+				
+				hashes.append(hashedScript)
+			} else {
+				guard var tx = buildTxBody(unspents: unspents,
+										   amount: amountSatoshi,
+										   change: changeSatoshi,
+										   targetAddress: transaction.destinationAddress,
+										   changeAddress: transaction.changeAddress,
+										   index: index) else {
+					return nil
+				}
+				
+				// We also have to write a hash type (sigHashType is actually an unsigned char). Sighash type ALL = 0100 0000
+				let suffix = [UInt8(0x01),UInt8(0x00),UInt8(0x00),UInt8(0x00)]
+				tx.append(contentsOf: suffix)
+				let hash = tx.doubleSha256
+				hashes.append(hash)
+			}
         }
         
         return hashes
@@ -58,23 +88,69 @@ class BitcoinTransactionBuilder {
             return nil
         }
         
-        guard let outputScripts = buildSignedScripts(signature: signature,
-                                                     publicKey: walletPublicKey,
-                                                     outputsCount: unspentOutputs.count),
-            let unspents = buildUnspents(with: outputScripts) else {
-                return nil
-        }
+		guard let signedHashes = extractSignedScripts(signature: signature, outputsCount: unspentOutputs.count) else {
+			return nil
+		}
+		
+		/// Parsed signed hashes
+		let outputScripts = buildSignedScripts(signedHashes, publicKey: walletPublicKey)
+
+		/// Signed hashes converted to unspents
+		guard let unspents = buildUnspents(with: outputScripts) else {
+			return nil
+		}
+		
+		let legacyScripts = buildSignedScripts(signature: signature, publicKey: walletPublicKey, outputsCount: unspentOutputs.count)
         
         let amountSatoshi = transaction.amount.value * blockchain.decimalValue
         let changeSatoshi = calculateChange(unspents: unspents, amount: transaction.amount.value, fee: transaction.fee.value)
-        
-        let tx = buildTxBody(unspents: unspents,
-                             amount: amountSatoshi,
-                             change: changeSatoshi,
-                             targetAddress: transaction.destinationAddress,
-                             changeAddress: transaction.changeAddress,
-                             index: nil)
-        return tx
+		
+		func legacyTxBody() -> Data? {
+			let tx = buildTxBody(unspents: unspents,
+								 amount: amountSatoshi,
+								 change: changeSatoshi,
+								 targetAddress: transaction.destinationAddress,
+								 changeAddress: transaction.changeAddress,
+								 index: nil)
+			return tx
+		}
+		
+		if var hdTx = hdTransaction, hdTx.inputs.count == outputScripts.count {
+			var inputs = [TransactionInput]()
+			for (index, unspent) in hdTx.inputs.enumerated() {
+				guard let script = Script(data: unspent.signatureScript) else {
+					return nil
+				}
+				
+				switch script.scriptType {
+				case .p2sh:
+					guard
+						let spendingScript = findSpendingScript(scriptPubKey: script),
+						spendingScript.isSentToMultisig,
+						let newScriptData = ScriptFactory.MultiSig.createMultiSigInputScriptBytes(for: [signedHashes[index]], with: spendingScript)
+					else {
+						return nil
+					}
+					
+					inputs.append(TransactionInput(previousOutput: unspent.previousOutput, signatureScript: newScriptData.data, sequence: unspent.sequence))
+				case .p2wsh, .p2wpkh:
+					return nil
+				default:
+					continue
+				}
+			}
+			
+			hdTransaction = nil
+			
+			if inputs.count == 0 {
+				return legacyTxBody()
+			} else {
+				hdTx.inputs = inputs
+			}
+			return hdTx.serialized()
+		}
+		
+       return legacyTxBody()
     }
     
     private func calculateChange(unspents: [UnspentTransaction], amount: Decimal, fee: Decimal) -> Decimal {
@@ -187,11 +263,11 @@ class BitcoinTransactionBuilder {
         // version
         txToSign.append(contentsOf: [UInt8(0x01),UInt8(0x00),UInt8(0x00),UInt8(0x00)])
         
-        //01
+        // number of unspents(inputs) 01
         txToSign.append(unspents.count.byte)
         
         //hex str hash prev btc
-        
+        // serialized unspents (inputs)
         for (inputIndex, input) in unspents.enumerated() {
             let hashKey: [UInt8] = input.hash.reversed()
             txToSign.append(contentsOf: hashKey)
@@ -202,11 +278,11 @@ class BitcoinTransactionBuilder {
             } else {
                 txToSign.append(UInt8(0x00))
             }
-            //ffffffff
-            txToSign.append(contentsOf: [UInt8(0xff),UInt8(0xff),UInt8(0xff),UInt8(0xff)]) // sequence
+            // sequence - ffffffff
+            txToSign.append(contentsOf: [UInt8(0xff),UInt8(0xff),UInt8(0xff),UInt8(0xff)])
         }
         
-        //02
+        // number of outputs 02
         let outputCount = change == 0 ? 1 : 2
         txToSign.append(outputCount.byte)
         
@@ -229,37 +305,88 @@ class BitcoinTransactionBuilder {
             txToSign.append(outputScriptChangeBytes.count.byte)
             txToSign.append(contentsOf: outputScriptChangeBytes)
         }
-        //00000000
+        // lock time - 00000000
         txToSign.append(contentsOf: [UInt8(0x00),UInt8(0x00),UInt8(0x00),UInt8(0x00)])
         
         return txToSign
     }
     
     private func buildSignedScripts(signature: Data, publicKey: Data, outputsCount: Int) -> [Data]? {
-        var scripts: [Data] = .init()
-        scripts.reserveCapacity(outputsCount)
-        for index in 0..<outputsCount {
-            let offsetMin = index*64
-            let offsetMax = offsetMin+64
-            guard offsetMax <= signature.count else {
-                return nil
-            }
-            
-            let sig = signature[offsetMin..<offsetMax]
-            guard let signDer = Secp256k1Utils.serializeToDer(secp256k1Signature: sig) else {
-                return nil
-            }
-            
-            var script = Data()
-            script.append((signDer.count+1).byte)
-            script.append(contentsOf: signDer)
-            script.append(UInt8(0x1))
-            script.append(UInt8(0x41))
-            script.append(contentsOf: publicKey)
-            scripts.append(script)
-        }
-        return scripts
+		guard let extracted = extractSignedScripts(signature: signature, outputsCount: outputsCount) else { return nil }
+		
+		return buildSignedScripts(extracted, publicKey: publicKey)
     }
+	
+	private func buildSignedScripts(_ scripts: [Data], publicKey: Data) -> [Data] {
+		var newScripts = [Data]()
+		scripts.forEach {
+			var script = Data()
+			script.append($0.count.byte)
+			script.append($0)
+			script.append(UInt8(0x41))
+			script.append(contentsOf: publicKey)
+			newScripts.append(script)
+		}
+		return newScripts
+	}
+	
+	private func extractSignedScripts(signature: Data, outputsCount: Int) -> [Data]? {
+		var scripts: [Data] = .init()
+		scripts.reserveCapacity(outputsCount)
+		for index in 0..<outputsCount {
+			let offsetMin = index * 64
+			let offsetMax = offsetMin + 64
+			guard offsetMax <= signature.count else {
+				return nil
+			}
+			
+			let sig = signature[offsetMin..<offsetMax]
+			guard let signDer = Secp256k1Utils.serializeToDer(secp256k1Signature: sig) else {
+				return nil
+			}
+			
+			var script = Data()
+			script.append(contentsOf: signDer)
+			
+			// SigHash ALL = 0x01. Comment below - explanation from bitcoinj
+			// A byte that controls which parts of a transaction are signed. This is exposed because signatures
+			// parsed off the wire may have sighash flags that aren't "normal" serializations of the enum values.
+			// Because Bitcoin Core works via bit testing, we must not lose the exact value when round-tripping
+			// otherwise we'll fail to verify signature hashes.
+			script.append(UInt8(0x1))
+			scripts.append(script)
+		}
+		return scripts
+	}
+	
+	private func hdWalletTransaction(from transaction: Transaction, unspents: [UnspentTransaction], amount: Decimal, change: Decimal) -> HDWalletKit.Transaction? {
+		let hdWalletUnspents = unspents.map { HDWalletKit.TransactionInput(previousOutput: TransactionOutPoint(hash: Data($0.hash.reversed()), index: UInt32($0.outputIndex)), signatureScript: $0.outputScript, sequence: 0xFFFFFFFF) }
+		var outputs = [TransactionOutput]()
+		
+		guard let destinationScript = buildOutputScript(address: transaction.destinationAddress) else { return nil }
+		outputs.append(TransactionOutput(value: NSDecimalNumber(decimal: amount).uint64Value, lockingScript: destinationScript))
+		
+		if change != 0, let sourceScript = buildOutputScript(address: transaction.sourceAddress) {
+			outputs.append(TransactionOutput(value: NSDecimalNumber(decimal: change).uint64Value, lockingScript: sourceScript))
+		}
+		let hdWalletTransaction = HDWalletKit.Transaction(version: 0x00000001,
+														  inputs: hdWalletUnspents,
+														  outputs: outputs,
+														  lockTime: 0)
+		return hdWalletTransaction
+	}
+	
+	private func findSpendingScript(scriptPubKey: Script) -> Script? {
+		guard let scriptHash = scriptPubKey.pushedData(at: 1) else { return nil }
+		switch scriptHash.count {
+		case 20:
+			return walletScripts.first(where: { $0.data.sha256Ripemd160 == scriptHash })
+		case 32:
+			return walletScripts.first(where: { $0.data.sha256() == scriptHash })
+		default:
+			return nil
+		}
+	}
 }
 
 enum Op: UInt8 {
