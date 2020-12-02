@@ -5,6 +5,7 @@ inhibit_all_warnings!
 target 'BlockchainSdk' do
     pod 'BigInt', '~> 4.0'
     pod 'SwiftyJSON'
+		pod 'Alamofire', '~> 5.1.0'
     pod 'Moya'
     pod 'Sodium'
     pod 'SwiftCBOR'
