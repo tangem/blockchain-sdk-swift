@@ -11,18 +11,18 @@ import TangemSdk
 
 class BitcoinTransactionBuilder {
     let isTestnet: Bool
-    let walletAddress: String
     let walletPublicKey: Data
     var unspentOutputs: [BtcTx]?
     
-    init(walletAddress: String, walletPublicKey: Data, isTestnet: Bool) {
-        self.walletAddress = walletAddress
+    var blockchain: Blockchain { Blockchain.bitcoin(testnet: isTestnet) }
+    
+    init(walletPublicKey: Data, isTestnet: Bool) {
         self.walletPublicKey = walletPublicKey
         self.isTestnet = isTestnet
     }
     
     public func buildForSign(transaction: Transaction) -> [Data]? {
-        guard let outputScript = buildOutputScript(address: walletAddress) else {
+        guard let outputScript = buildOutputScript(address: transaction.sourceAddress) else {
             return nil
         }
         
@@ -30,13 +30,18 @@ class BitcoinTransactionBuilder {
             return nil
         }
         
-        let amountSatoshi = transaction.amount.value * Decimal(100000000)
+        let amountSatoshi = transaction.amount.value * blockchain.decimalValue
         let changeSatoshi = calculateChange(unspents: unspents, amount: transaction.amount.value, fee: transaction.fee.value)
         
         var hashes = [Data]()
         
         for index in 0..<unspents.count {
-            guard var tx = buildTxBody(unspents: unspents, amount: amountSatoshi, change: changeSatoshi, targetAddress: transaction.destinationAddress, index: index) else {
+            guard var tx = buildTxBody(unspents: unspents,
+                                       amount: amountSatoshi,
+                                       change: changeSatoshi,
+                                       targetAddress: transaction.destinationAddress,
+                                       changeAddress: transaction.changeAddress,
+                                       index: index) else {
                 return nil
             }
             
@@ -60,17 +65,22 @@ class BitcoinTransactionBuilder {
                 return nil
         }
         
-        let amountSatoshi = transaction.amount.value * Decimal(100000000)
+        let amountSatoshi = transaction.amount.value * blockchain.decimalValue
         let changeSatoshi = calculateChange(unspents: unspents, amount: transaction.amount.value, fee: transaction.fee.value)
         
-        let tx = buildTxBody(unspents: unspents, amount: amountSatoshi, change: changeSatoshi, targetAddress: transaction.destinationAddress, index: nil)
+        let tx = buildTxBody(unspents: unspents,
+                             amount: amountSatoshi,
+                             change: changeSatoshi,
+                             targetAddress: transaction.destinationAddress,
+                             changeAddress: transaction.changeAddress,
+                             index: nil)
         return tx
     }
     
     private func calculateChange(unspents: [UnspentTransaction], amount: Decimal, fee: Decimal) -> Decimal {
         let fullAmountSatoshi = Decimal(unspents.reduce(0, {$0 + $1.amount}))
-        let feeSatoshi = fee * Decimal(100000000)
-        let amountSatoshi = amount * Decimal(100000000)
+        let feeSatoshi = fee * blockchain.decimalValue
+        let amountSatoshi = amount * blockchain.decimalValue
         return fullAmountSatoshi - amountSatoshi - feeSatoshi
     }
     
@@ -172,7 +182,7 @@ class BitcoinTransactionBuilder {
         return unspentTransactions
     }
     
-    private func buildTxBody(unspents: [UnspentTransaction], amount: Decimal, change: Decimal, targetAddress: String, index: Int?) -> Data? {
+    private func buildTxBody(unspents: [UnspentTransaction], amount: Decimal, change: Decimal, targetAddress: String, changeAddress: String, index: Int?) -> Data? {
         var txToSign = Data()
         // version
         txToSign.append(contentsOf: [UInt8(0x01),UInt8(0x00),UInt8(0x00),UInt8(0x00)])
@@ -213,7 +223,7 @@ class BitcoinTransactionBuilder {
             //8 bytes
             txToSign.append(contentsOf: change.bytes8LE)
             //hex str 1976a914....88ac
-            guard let outputScriptChangeBytes = buildOutputScript(address: walletAddress) else {
+            guard let outputScriptChangeBytes = buildOutputScript(address: changeAddress) else {
                 return nil
             }
             txToSign.append(outputScriptChangeBytes.count.byte)

@@ -10,10 +10,10 @@ import Foundation
 import Combine
 
 class LitecoinNetworkService: BitcoinNetworkService {
-    convenience init(address: String, isTestNet:Bool) {
+    convenience init(isTestNet:Bool) {
         var providers = [BitcoinNetworkApi:BitcoinNetworkProvider]()
-        providers[.blockcypher] = BlockcypherProvider(address: address, coin: .ltc, chain: .main)
-		providers[.blockchair] = BlockchairProvider(address: address, endpoint: .litecoint)
+		providers[.blockcypher] = BlockcypherProvider(endpoint: BlockcypherEndpoint(coin: .ltc, chain: .main))
+		providers[.blockchair] = BlockchairProvider(endpoint: .litecoint)
         self.init(providers: providers, isTestNet: isTestNet)
 		networkApi = .blockchair
     }

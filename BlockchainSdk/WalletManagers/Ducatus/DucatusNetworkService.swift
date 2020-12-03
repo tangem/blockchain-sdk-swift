@@ -11,14 +11,10 @@ import Combine
 import Moya
 
 class DucatusNetworkService: BitcoinNetworkProvider {
-    let provider: BitcoreProvider
+    let provider =  BitcoreProvider()
     
-    init(address: String) {
-        provider = BitcoreProvider(address: address)
-    }
-    
-    func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
-        return Publishers.Zip(provider.getBalance(), provider.getUnspents())
+    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
+        return Publishers.Zip(provider.getBalance(address: address), provider.getUnspents(address: address))
             .tryMap { balance, unspents throws -> BitcoinResponse in
                 guard let confirmed = balance.confirmed,
                     let unconfirmed = balance.unconfirmed else {
@@ -36,7 +32,7 @@ class DucatusNetworkService: BitcoinNetworkProvider {
                     return btx
                 }
                 
-                let balance = Decimal(confirmed)/Decimal(100000000)
+                let balance = Decimal(confirmed)/Blockchain.ducatus.decimalValue
                 return BitcoinResponse(balance: balance, hasUnconfirmed: unconfirmed != 0 , txrefs: utxs)
         }
         .eraseToAnyPublisher()

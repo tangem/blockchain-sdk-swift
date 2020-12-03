@@ -54,8 +54,7 @@ class BlockchainSdkTests: XCTestCase {
     }
     
     func testBtcTxBuilder() {
-        let builder = BitcoinTransactionBuilder(walletAddress: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs",
-                                                walletPublicKey: try! CryptoUtils.generateRandomBytes(count: 38),
+        let builder = BitcoinTransactionBuilder(walletPublicKey: try! CryptoUtils.generateRandomBytes(count: 38),
                                                 isTestnet: false)
         builder.unspentOutputs = [BtcTx(tx_hash: "asdfmnbaslkdfhlkjfnasdkhfa", tx_output_n: 5, value: 5)]
         let blockchain = Blockchain.bitcoin(testnet: false)
@@ -63,7 +62,8 @@ class BlockchainSdkTests: XCTestCase {
         let tx = builder.buildForSend(transaction: Transaction(amount: Amount(with: blockchain, address: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs", type: .coin, value: 5),
                                                                fee: Amount(with: blockchain, address: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs", type: .coin, value: 0.5),
                                                                sourceAddress: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs",
-                                                               destinationAddress: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs"),
+                                                               destinationAddress: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs",
+                                                               changeAddress: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs"),
                                       signature: sig)!
         
         print(tx.count)

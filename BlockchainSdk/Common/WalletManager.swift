@@ -39,26 +39,35 @@ public enum WalletError: Error, LocalizedError {
 
 public class WalletManager {
     public let cardId: String
-    
+    public let cardTokens: [Token]
     @Published public var wallet: Wallet
     
+    var defaultSourceAddress: String { wallet.address }
+    var defaultChangeAddress: String { wallet.address }    
     var cancellable: Cancellable? = nil
+
     
-    init(cardId: String, wallet: Wallet) {
+    init(cardId: String, wallet: Wallet, cardTokens: [Token] = []) {
         self.cardId = cardId
         self.wallet = wallet
+        self.cardTokens = cardTokens
     }
     
     public func update(completion: @escaping (Result<(), Error>)-> Void) {
         fatalError("You should override this method")
     }
     
-    public func createTransaction(amount: Amount, fee: Amount, destinationAddress: String) -> Result<Transaction,TransactionErrors> {
+    public func createTransaction(amount: Amount,
+                                  fee: Amount,
+                                  destinationAddress: String,
+                                  sourceAddress: String? = nil,
+                                  changeAddress: String? = nil) -> Result<Transaction,TransactionErrors> {
         let transaction = Transaction(amount: amount,
                                       fee: fee,
-                                      sourceAddress: wallet.address,
+                                      sourceAddress: sourceAddress ?? defaultSourceAddress,
                                       destinationAddress: destinationAddress,
-                                      contractAddress: wallet.token?.contractAddress,
+                                      changeAddress: changeAddress ?? defaultChangeAddress,
+                                      contractAddress: amount.type.token?.contractAddress,
                                       date: Date(),
                                       status: .unconfirmed,
                                       hash: nil)
@@ -69,6 +78,31 @@ public class WalletManager {
         } else {
             return .failure(validationResult)
         }
+    }
+    
+    
+    public func validate(amount: Amount) -> TransactionError? {
+        if !validateAmountValue(amount) {
+            return .invalidAmount
+        }
+        
+        if !validateAmountTotal(amount) {
+            return .amountExceedsBalance
+        }
+        
+        return nil
+    }
+    
+    public func validate(fee: Amount) -> TransactionError? {
+        if !validateAmountValue(fee) {
+            return .invalidFee
+        }
+        
+        if !validateAmountTotal(fee) {
+            return .feeExceedsBalance
+        }
+        
+        return nil
     }
     
     func validateTransaction(amount: Amount, fee: Amount?) -> TransactionErrors {
@@ -107,30 +141,6 @@ public class WalletManager {
         }
         
         return TransactionErrors(errors: errors)
-    }
-    
-    public func validate(amount: Amount) -> TransactionError? {
-        if !validateAmountValue(amount) {
-            return .invalidAmount
-        }
-        
-        if !validateAmountTotal(amount) {
-            return .amountExceedsBalance
-        }
-        
-        return nil
-    }
-    
-    public func validate(fee: Amount) -> TransactionError? {
-        if !validateAmountValue(fee) {
-            return .invalidFee
-        }
-        
-        if !validateAmountTotal(fee) {
-            return .feeExceedsBalance
-        }
-        
-        return nil
     }
     
     private func validateAmountValue(_ amount: Amount) -> Bool {

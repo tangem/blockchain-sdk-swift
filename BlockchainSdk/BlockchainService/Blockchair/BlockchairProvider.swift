@@ -16,19 +16,17 @@ import SwiftyJSON
 class BlockchairProvider: BitcoinNetworkProvider {
     let provider = MoyaProvider<BlockchairTarget>()
     
-    let address: String
-    let endpoint: BlockchairEndpoint
+    private let endpoint: BlockchairEndpoint
     
-    init(address: String, endpoint: BlockchairEndpoint) {
-        self.address = address
+    init(endpoint: BlockchairEndpoint) {
         self.endpoint = endpoint
     }
     
-    func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
+	func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
 		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: true))
             .tryMap { [unowned self] json -> BitcoinResponse in
                 let data = json["data"]
-                let addr = data["\(self.address)"]
+                let addr = data["\(address)"]
                 let address = addr["address"]
                 let balance = address["balance"].stringValue
                 
@@ -60,7 +58,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
                 let hasUnconfirmed = transactions.first(where: {$0.block_id == -1 || $0.block_id == 1 }) != nil
                 
                 
-                let decimalBtcBalance = decimalSatoshiBalance/Decimal(100000000)
+                let decimalBtcBalance = decimalSatoshiBalance / self.endpoint.blockchain.decimalValue
                 let bitcoinResponse = BitcoinResponse(balance: decimalBtcBalance, hasUnconfirmed: hasUnconfirmed, txrefs: utxs)
                 
                 return bitcoinResponse
@@ -70,14 +68,19 @@ class BlockchairProvider: BitcoinNetworkProvider {
     
     func getFee() -> AnyPublisher<BtcFee, Error> {
 		publisher(for: .fee(endpoint: endpoint))
-            .tryMap { json throws -> BtcFee in
+            .tryMap { [unowned self] json throws -> BtcFee in
                 let data = json["data"]
                 guard let feePerByteSatoshi = data["suggested_transaction_fee_per_byte_sat"].int  else {
                     throw WalletError.failedToGetFee
                 }
                 
-                let feeKbValue = Decimal(1024) * Decimal(feePerByteSatoshi) / Decimal(100000000)
-                let fee = BtcFee(minimalKb: feeKbValue, normalKb: feeKbValue, priorityKb: feeKbValue)
+                let normal = (Decimal(1024) * Decimal(feePerByteSatoshi) / self.endpoint.blockchain.decimalValue)
+                let min = (Decimal(0.8) * normal).rounded(blockchain: self.endpoint.blockchain)
+                let max = (Decimal(1.2) * normal).rounded(blockchain: self.endpoint.blockchain)
+                
+                let fee = BtcFee(minimalKb: min,
+                                 normalKb: normal.rounded(blockchain: self.endpoint.blockchain),
+                                 priorityKb: max)
                 return fee
         }
         .eraseToAnyPublisher()

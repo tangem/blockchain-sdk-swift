@@ -9,6 +9,26 @@
 import Foundation
 import Moya
 
+struct BlockcypherEndpoint {
+    let coin: BlockcypherCoin
+    let chain: BlockcypherChain
+    
+    var blockchain: Blockchain {
+        switch (coin,chain) {
+        case (.btc, .main):
+            return .bitcoin(testnet: false)
+        case (.btc, .test3):
+            return .bitcoin(testnet: true)
+        case (.eth, .main):
+            return .ethereum(testnet: false)
+        case (.eth, .test3):
+            return .ethereum(testnet: true)
+        case (.ltc, .main), (.ltc, .test3):
+            return .litecoin
+        }
+    }
+}
+
 enum BlockcypherCoin: String {
     case btc
     case ltc
@@ -28,12 +48,11 @@ struct BlockcypherTarget: TargetType {
         case txs(txHash: String)
     }
     
-    let coin: BlockcypherCoin
-    let chain: BlockcypherChain
+    let endpoint: BlockcypherEndpoint
     let token: String?
     let targetType: BlockcypherTargetType
     
-    var baseURL: URL { URL(string: "https://api.blockcypher.com/v1/\(coin.rawValue)/\(chain.rawValue)")! }
+    var baseURL: URL { URL(string: "https://api.blockcypher.com/v1/\(endpoint.coin.rawValue)/\(endpoint.chain.rawValue)")! }
     
     var path: String {
         switch targetType {

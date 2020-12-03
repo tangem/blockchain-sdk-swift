@@ -13,6 +13,17 @@ enum BlockchairEndpoint: String {
 	case bitcoin = "bitcoin"
     case bitcoinCash = "bitcoin-cash"
 	case litecoint = "litecoin"
+    
+    var blockchain: Blockchain {
+        switch self {
+        case .bitcoin:
+            return .bitcoin(testnet: false)
+        case .bitcoinCash:
+            return .bitcoinCash(testnet: false)
+		case .litecoint:
+			return .litecoin
+        }
+    }
 }
 
 enum BlockchairTarget: TargetType {
@@ -60,7 +71,7 @@ enum BlockchairTarget: TargetType {
     }
     
     var task: Task {
-        var parameters =  ["key":apiKey]
+        var parameters =  ["key": apiKey]
         switch self {
         case .address(_, _, let details):
             parameters["transaction_details"] = "\(details)"

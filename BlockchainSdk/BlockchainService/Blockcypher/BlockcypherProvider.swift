@@ -12,20 +12,16 @@ import Combine
 
 class BlockcypherProvider: BitcoinNetworkProvider {
     let provider = MoyaProvider<BlockcypherTarget> ()
-    let address: String
-    let chain: BlockcypherChain
-    let coin: BlockcypherCoin
+    let endpoint: BlockcypherEndpoint
     
     private var token: String? = nil
     
-    init(address: String, coin: BlockcypherCoin, chain: BlockcypherChain) {
-        self.address = address
-        self.coin = coin
-        self.chain = chain
+    init(endpoint: BlockcypherEndpoint) {
+        self.endpoint = endpoint
     }
     
-	func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
-		publisher(for: BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .address(address: self.address, limit: nil)))
+	func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
+		publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, limit: nil)))
 			.map(BlockcypherAddressResponse.self)
 			.tryMap {addressResponse -> BitcoinResponse in
 				guard let balance = addressResponse.balance,
@@ -34,7 +30,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
 					throw WalletError.failedToParseNetworkResponse
 				}
 				
-				let satoshiBalance = Decimal(balance)/Decimal(100000000)
+				let satoshiBalance = Decimal(balance) / self.endpoint.blockchain.decimalValue
 				let txs: [BtcTx] = addressResponse.txrefs?.compactMap { utxo -> BtcTx?  in
 					guard let hash = utxo.tx_hash,
 						  let n = utxo.tx_output_n,
@@ -53,7 +49,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
 	}
 	
     func getFee() -> AnyPublisher<BtcFee, Error> {
-		publisher(for: BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .fee))
+		publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .fee))
 			.map(BlockcypherFeeResponse.self)
 			.tryMap { feeResponse -> BtcFee in
 				guard let minKb = feeResponse.low_fee_per_kb,
@@ -62,9 +58,9 @@ class BlockcypherProvider: BitcoinNetworkProvider {
 					throw "Can't load fee"
 				}
 				
-				let minKbValue = Decimal(minKb)/Decimal(100000000)
-				let normalKbValue = Decimal(normalKb)/Decimal(100000000)
-				let maxKbValue = Decimal(maxKb)/Decimal(100000000)
+				let minKbValue = Decimal(minKb) / self.endpoint.blockchain.decimalValue
+				let normalKbValue = Decimal(normalKb) / self.endpoint.blockchain.decimalValue
+				let maxKbValue = Decimal(maxKb) / self.endpoint.blockchain.decimalValue
 				let fee = BtcFee(minimalKb: minKbValue, normalKb: normalKbValue, priorityKb: maxKbValue)
 				return fee
 			}
@@ -72,20 +68,20 @@ class BlockcypherProvider: BitcoinNetworkProvider {
 	}
 	
 	func send(transaction: String) -> AnyPublisher<String, Error> {
-        publisher(for: BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token ?? self.getRandomToken(), targetType: .send(txHex: transaction)))
+		publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token ?? self.getRandomToken(), targetType: .send(txHex: transaction)))
 			.mapNotEmptyString()
 			.eraseError()
 			.eraseToAnyPublisher()
 	}
     
     func getTx(hash: String) -> AnyPublisher<BlockcypherTx, Error> {
-		publisher(for: BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .txs(txHash: hash)))
+		publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .txs(txHash: hash)))
 			.map(BlockcypherTx.self)
 			.eraseError()
     }
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-		publisher(for: BlockcypherTarget(coin: self.coin, chain: self.chain, token: self.token, targetType: .address(address: self.address, limit: 2000)))
+		publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, limit: 2000)))
 			.map(BlockcypherAddressResponse.self)
 			.map { addressResponse -> Int in
 				var sigCount = addressResponse.txrefs?.filter { $0.tx_output_n == -1 }.count ?? 0

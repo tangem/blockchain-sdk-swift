@@ -31,7 +31,7 @@ class EthereumWalletManager: WalletManager {
     
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
-            .getInfo(address: wallet.address, contractAddress: wallet.token?.contractAddress)
+            .getInfo(address: wallet.address, tokens: cardTokens)
             .sink(receiveCompletion: {[unowned self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
                     self.wallet.amounts = [:]
@@ -45,8 +45,8 @@ class EthereumWalletManager: WalletManager {
     
     private func updateWallet(with response: EthereumResponse) {
         wallet.add(coinValue: response.balance)
-        if let tokenBalance = response.tokenBalance {
-            wallet.add(tokenValue: tokenBalance)
+        for tokenBalance in response.tokenBalances {
+            wallet.add(tokenValue: tokenBalance.value, for: tokenBalance.key)
         }
         txCount = response.txCount
         pendingTxCount = response.pendingTxCount

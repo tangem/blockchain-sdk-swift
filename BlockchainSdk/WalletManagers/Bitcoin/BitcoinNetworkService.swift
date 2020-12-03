@@ -22,18 +22,18 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
         self.isTestNet = isTestNet
     }
     
-    convenience init(address: String, isTestNet:Bool) {
+    convenience init(isTestNet:Bool) {
         var providers = [BitcoinNetworkApi:BitcoinNetworkProvider]()
-		providers[.blockchair] = BlockchairProvider(address: address, endpoint: .bitcoin)
-        providers[.blockcypher] = BlockcypherProvider(address: address, coin: .btc, chain:  isTestNet ? .test3: .main)
-        providers[.main] = BitcoinMainProvider(address: address)
+		providers[.blockchair] = BlockchairProvider(endpoint: .bitcoin)
+        providers[.blockcypher] = BlockcypherProvider( endpoint: BlockcypherEndpoint(coin: .btc, chain: isTestNet ? .test3: .main))
+        providers[.main] = BitcoinMainProvider()
         self.init(providers:providers, isTestNet: isTestNet)
     }
     
-    func getInfo() -> AnyPublisher<BitcoinResponse, Error> {
+    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         return Just(())
             .setFailureType(to: Error.self)
-            .flatMap {[unowned self] in self.getProvider().getInfo() }
+            .flatMap {[unowned self] in self.getProvider().getInfo(address: address) }
             .tryCatch {[unowned self] error -> AnyPublisher<BitcoinResponse, Error> in
                 if let moyaError = error as? MoyaError,
                     case let MoyaError.statusCode(response) = moyaError,

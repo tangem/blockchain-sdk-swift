@@ -12,31 +12,29 @@ import Combine
 
 class BinanceNetworkService {
     let binance: BinanceChain
-    let address: String
     let testnet: Bool
-    let assetCode: String?
     
-    init(address: String, assetCode: String?, isTestNet:Bool) {
-        self.address = address
+    init(isTestNet:Bool) {
         self.testnet = isTestNet
-        self.assetCode = assetCode
         binance = isTestNet ? BinanceChain(endpoint: BinanceChain.Endpoint.testnet):
             BinanceChain(endpoint: BinanceChain.Endpoint.mainnet)
     }
     
-    func getInfo() -> AnyPublisher<BinanceInfoResponse, Error> {
+    func getInfo(address: String) -> AnyPublisher<BinanceInfoResponse, Error> {
         let future = Future<BinanceInfoResponse,Error> {[unowned self] promise in
-            self.binance.account(address: self.address) { response in
+            self.binance.account(address: address) { response in
                 if let error = response.getError() {
                     promise(.failure(error))
                     return
                 }
                
-                let bnbBalance = response.account.balances.first(where: { $0.symbol == "BNB" })?.free ?? 0
-                let assetBalance = response.account.balances.first(where: { $0.symbol == self.assetCode})?.free ?? 0
+                let balances = response.account.balances.reduce(into: [:]) { result, balance in
+                    result[balance.symbol] = Decimal(balance.free)
+                }
+                
                 let accountNumber = response.account.accountNumber
                 let sequence = response.account.sequence
-                let info = BinanceInfoResponse(balance: bnbBalance, assetBalance: assetBalance, accountNumber: accountNumber, sequence: sequence)
+                let info = BinanceInfoResponse(balances: balances, accountNumber: accountNumber, sequence: sequence)
                 promise(.success(info))
             }
         }
@@ -61,8 +59,8 @@ class BinanceNetworkService {
                         promise(.failure("Failed to load fee"))
                         return
                 }
-                
-                let convertedFee = (decimalfee/Decimal(100000000)).rounded(blockchain: .binance(testnet: self.testnet))
+                let blockchain = Blockchain.binance(testnet: self.testnet)
+                let convertedFee = (decimalfee/blockchain.decimalValue).rounded(blockchain: blockchain)
                 let fee = "\(convertedFee)"
                 promise(.success(fee))
             }
@@ -99,8 +97,7 @@ extension BinanceChain.Response {
 }
 
 struct BinanceInfoResponse {
-    let balance: Double
-    let assetBalance: Double?
+    let balances: [String:Decimal]
     let accountNumber: Int
     let sequence: Int
 }

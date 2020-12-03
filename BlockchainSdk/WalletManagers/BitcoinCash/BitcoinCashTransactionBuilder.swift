@@ -12,18 +12,18 @@ import TangemSdk
 
 class BitcoinCashTransactionBuilder {
     let isTestnet: Bool
-    let walletAddress: String
     let walletPublicKey: Data
     var unspentOutputs: [BtcTx]?
     
-    init(walletAddress: String, walletPublicKey: Data, isTestnet: Bool) {
-        self.walletAddress = walletAddress
+    private var blockchain: Blockchain { Blockchain.bitcoinCash(testnet: isTestnet) }
+    
+    init(walletPublicKey: Data, isTestnet: Bool) {
         self.walletPublicKey = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
         self.isTestnet = isTestnet
     }
     
     public func buildForSign(transaction: Transaction) -> [Data]? {
-        guard let legacyWalletAddress = try? BitcoinCashAddress(walletAddress).base58,
+        guard let legacyWalletAddress = try? BitcoinCashAddress(transaction.sourceAddress).base58,
             let legacyTargetAddress =  try? BitcoinCashAddress(transaction.destinationAddress).base58 else {
                 return nil
         }
@@ -36,13 +36,18 @@ class BitcoinCashTransactionBuilder {
             return nil
         }
         
-        let amountSatoshi = transaction.amount.value  * Decimal(100000000)
+        let amountSatoshi = transaction.amount.value  * blockchain.decimalValue
         let changeSatoshi = calculateChange(unspents: unspents, amount: transaction.amount.value , fee: transaction.fee.value )
         
         var hashes = [Data]()
         
         for index in 0..<unspents.count {
-            guard let tx = buildPreimage(unspents: unspents, amount: amountSatoshi, change: changeSatoshi, targetAddress: legacyTargetAddress, index: index) else {
+            guard let tx = buildPreimage(unspents: unspents,
+                                         amount: amountSatoshi,
+                                         change: changeSatoshi,
+                                         targetAddress: legacyTargetAddress,
+                                         sourceAddress: legacyWalletAddress,
+                                         index: index) else {
                 return nil
             }
             // tx.append(contentsOf: [UInt8(0x01),UInt8(0x00),UInt8(0x00),UInt8(0x00)]) for btc
@@ -62,6 +67,10 @@ class BitcoinCashTransactionBuilder {
             return nil
         }
         
+        guard let legacyChangeAddress = try? BitcoinCashAddress(transaction.changeAddress).base58 else {
+            return nil
+        }
+        
         guard let outputScripts = buildSignedScripts(signature: signature,
                                                      publicKey: walletPublicKey,
                                                      outputsCount: unspentOutputs.count),
@@ -69,17 +78,22 @@ class BitcoinCashTransactionBuilder {
                 return nil
         }
         
-        let amountSatoshi = transaction.amount.value  * Decimal(100000000)
+        let amountSatoshi = transaction.amount.value  * blockchain.decimalValue
         let changeSatoshi = calculateChange(unspents: unspents, amount: transaction.amount.value , fee: transaction.fee.value )
         
-        let tx = buildTxBody(unspents: unspents, amount: amountSatoshi, change: changeSatoshi, targetAddress: legacyTargetAddress, index: nil)
+        let tx = buildTxBody(unspents: unspents,
+                             amount: amountSatoshi,
+                             change: changeSatoshi,
+                             targetAddress: legacyTargetAddress,
+                             changeAddress: legacyChangeAddress,
+                             index: nil)
         return tx
     }
     
     private func calculateChange(unspents: [UnspentTransaction], amount: Decimal, fee: Decimal) -> Decimal {
         let fullAmountSatoshi = Decimal(unspents.reduce(0, {$0 + $1.amount}))
-        let feeSatoshi = fee * Decimal(100000000)
-        let amountSatoshi = amount * Decimal(100000000)
+        let feeSatoshi = fee * blockchain.decimalValue
+        let amountSatoshi = amount * blockchain.decimalValue
         return fullAmountSatoshi - amountSatoshi - feeSatoshi
     }
     
@@ -178,11 +192,12 @@ class BitcoinCashTransactionBuilder {
         return unspentTransactions
     }
     
-    private func buildPreimage(unspents: [UnspentTransaction], amount: Decimal, change: Decimal, targetAddress: String, index: Int) -> Data? {
-        guard let legacyWalletAddress = try? BitcoinCashAddress(walletAddress).base58 else {
-            return nil
-        }
-        
+    private func buildPreimage(unspents: [UnspentTransaction],
+                               amount: Decimal,
+                               change: Decimal,
+                               targetAddress: String,
+                               sourceAddress: String,
+                               index: Int) -> Data? {
         var txToSign = Data()
         // version
         txToSign.append(contentsOf: [UInt8(0x02),UInt8(0x00),UInt8(0x00),UInt8(0x00)])
@@ -205,7 +220,7 @@ class BitcoinCashTransactionBuilder {
         txToSign.append(contentsOf: currentOutput.outputIndex.bytes4LE)
         
         //scriptCode of the input (serialized as scripts inside CTxOuts)
-        guard let scriptCode = buildOutputScript(address: legacyWalletAddress) else { //build change out
+        guard let scriptCode = buildOutputScript(address: sourceAddress) else { //build change out
             return nil
         }
         txToSign.append(scriptCode.count.byte)
@@ -229,7 +244,7 @@ class BitcoinCashTransactionBuilder {
         //output for change (if any)
         if change != 0 {
             outputs.append(contentsOf: change.bytes8LE)
-            guard let outputScriptChangeBytes = buildOutputScript(address: legacyWalletAddress) else {
+            guard let outputScriptChangeBytes = buildOutputScript(address: sourceAddress) else {
                 return nil
             }
             outputs.append(outputScriptChangeBytes.count.byte)
@@ -249,11 +264,12 @@ class BitcoinCashTransactionBuilder {
     }
     
     
-    private func buildTxBody(unspents: [UnspentTransaction], amount: Decimal, change: Decimal, targetAddress: String, index: Int?) -> Data? {
-        guard let legacyWalletAddress = try? BitcoinCashAddress(walletAddress).base58 else {
-                  return nil
-              }
-        
+    private func buildTxBody(unspents: [UnspentTransaction],
+                             amount: Decimal,
+                             change: Decimal,
+                             targetAddress: String,
+                             changeAddress: String,
+                             index: Int?) -> Data? {
         var txToSign = Data()
         // version
         txToSign.append(contentsOf: [UInt8(0x02),UInt8(0x00),UInt8(0x00),UInt8(0x00)])
@@ -294,7 +310,7 @@ class BitcoinCashTransactionBuilder {
             //8 bytes
             txToSign.append(contentsOf: change.bytes8LE)
             //hex str 1976a914....88ac
-            guard let outputScriptChangeBytes = buildOutputScript(address: legacyWalletAddress) else {
+            guard let outputScriptChangeBytes = buildOutputScript(address: changeAddress) else {
                 return nil
             }
             txToSign.append(outputScriptChangeBytes.count.byte)
