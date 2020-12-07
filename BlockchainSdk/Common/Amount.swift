@@ -43,7 +43,7 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
         if value == 0 {
             return "0.00 \(currencySymbol)"
         }
-        return "\(value.rounded(decimals)) \(currencySymbol)"
+        return "\(value.rounded(scale: decimals)) \(currencySymbol)"
     }
     
     public init(with blockchain: Blockchain, address: String, type: AmountType = .coin, value: Decimal) {

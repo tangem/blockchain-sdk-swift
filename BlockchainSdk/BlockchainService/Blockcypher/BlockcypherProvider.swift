@@ -46,11 +46,12 @@ class BlockcypherProvider: BitcoinNetworkProvider {
             let txs: [BtcTx] = addressResponse.txrefs?.compactMap { utxo -> BtcTx?  in
                 guard let hash = utxo.tx_hash,
                     let n = utxo.tx_output_n,
-                    let val = utxo.value else {
+                    let val = utxo.value,
+                    let script = utxo.script else {
                         return nil
                 }
                 
-                let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: UInt64(val))
+                let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: UInt64(val), script: script)
                 return btx
                 } ?? []
             
@@ -83,11 +84,11 @@ class BlockcypherProvider: BitcoinNetworkProvider {
                 let maxKb = feeResponse.high_fee_per_kb else {
                     throw "Can't load fee"
             }
-            
-            let minKbValue = Decimal(minKb)/self.endpoint.blockchain.decimalValue
-            let normalKbValue = Decimal(normalKb)/self.endpoint.blockchain.decimalValue
-            let maxKbValue = Decimal(maxKb)/self.endpoint.blockchain.decimalValue
-            let fee = BtcFee(minimalKb: minKbValue, normalKb: normalKbValue, priorityKb: maxKbValue)
+            let kb = Decimal(1024)
+            let min = (Decimal(minKb)/kb).rounded(roundingMode: .down)
+            let normal = (Decimal(normalKb)/kb).rounded(roundingMode: .down)
+            let max = (Decimal(maxKb)/kb).rounded(roundingMode: .down)
+            let fee = BtcFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: normal, prioritySatoshiPerByte: max)
             return fee
         }
         .eraseToAnyPublisher()

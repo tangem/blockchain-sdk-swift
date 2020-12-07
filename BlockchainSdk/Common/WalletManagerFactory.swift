@@ -9,6 +9,7 @@
 import Foundation
 import TangemSdk
 import stellarsdk
+import BitcoinCore
 
 public class WalletManagerFactory {
     public init() {}
@@ -35,18 +36,22 @@ public class WalletManagerFactory {
         case .bitcoin(let testnet):
             return BitcoinWalletManager(cardId: cardId, wallet: wallet).then {
                 $0.txBuilder = BitcoinTransactionBuilder(walletPublicKey: walletPublicKey, isTestnet: testnet)
+                $0.txBuilder.bitcoinManager = BitcoinManager(networkParams: testnet ? BitcoinNetwork.testnet.networkParams : BitcoinNetwork.mainnet.networkParams, walletPublicKey: walletPublicKey, compressedWalletPublicKey: Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!, bip: .bip84)
                 $0.networkService = BitcoinNetworkService(isTestNet: testnet)
+                
             }
             
         case .litecoin:
             return LitecoinWalletManager(cardId: cardId, wallet: wallet).then {
                 $0.txBuilder = BitcoinTransactionBuilder(walletPublicKey: walletPublicKey, isTestnet: false)
+                $0.txBuilder.bitcoinManager = BitcoinManager(networkParams: BitcoinNetwork.mainnet.networkParams, walletPublicKey: walletPublicKey, compressedWalletPublicKey: Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!, bip: .bip44)
                 $0.networkService = LitecoinNetworkService(isTestNet: false)
             }
             
         case .ducatus:
             return DucatusWalletManager(cardId: cardId, wallet: wallet).then {
                 $0.txBuilder = BitcoinTransactionBuilder(walletPublicKey: walletPublicKey, isTestnet: false)
+                $0.txBuilder.bitcoinManager = BitcoinManager(networkParams: BitcoinNetwork.mainnet.networkParams, walletPublicKey: walletPublicKey, compressedWalletPublicKey: Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!, bip: .bip44)
                 $0.networkService = DucatusNetworkService()
             }
             

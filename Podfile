@@ -1,9 +1,9 @@
-platform :ios, '11.0'
+platform :ios, '13.0'
 use_frameworks!
 inhibit_all_warnings!
 
 target 'BlockchainSdk' do
-    pod 'BigInt', '~> 4.0'
+    pod 'BigInt', '~> 5.0'
     pod 'SwiftyJSON'
     pod 'Moya'
     pod 'Sodium'
@@ -13,10 +13,11 @@ target 'BlockchainSdk' do
     pod 'HDWalletKit', :git => 'https://bitbucket.org/tangem/hdwallet.git', :tag => '0.3.8'
     #pod 'HDWalletKit', :path => '/Users/alexander.osokin/repos/tangem/HDWallet'
     #pod 'web3swift', :path => '/Users/alexander.osokin/repos/tangem/web3swift'
-    pod 'web3swift', :git => 'https://bitbucket.org/tangem/web3swift.git', :tag => '2.2.3'
+    pod 'web3swift', :git => 'https://bitbucket.org/tangem/web3swift.git', :tag => '2.2.4'
     pod 'AnyCodable-FlightSchool'
     pod 'TangemSdk', :git => 'git@bitbucket.org:tangem/card-sdk-swift.git', :tag => 'build-58'
     pod 'stellar-ios-mac-sdk'
+    pod 'BitcoinCore.swift', :path => '../bitcoincore'
 end
 
 target 'BlockchainSdkTests' do

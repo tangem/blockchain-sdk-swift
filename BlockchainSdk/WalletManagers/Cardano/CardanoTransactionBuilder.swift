@@ -65,9 +65,9 @@ class CardanoTransactionBuilder {
         let amountConverted = transaction.amount.value * convertValue
         let walletAmountConverted = walletAmount * convertValue
         let change = walletAmountConverted - amountConverted - feeConverted
-        let amountLong = (amountConverted.rounded(0) as NSDecimalNumber).uint64Value
-        let changeLong = (change.rounded(0) as NSDecimalNumber).uint64Value
-        let feesLong = (feeConverted.rounded(0) as NSDecimalNumber).uint64Value
+        let amountLong = (amountConverted.rounded() as NSDecimalNumber).uint64Value
+        let changeLong = (change.rounded() as NSDecimalNumber).uint64Value
+        let feesLong = (feeConverted.rounded() as NSDecimalNumber).uint64Value
         
         if !isEstimated && (amountLong < 1000000 || (changeLong < 1000000 && changeLong != 0)) {
             return .failure(CardanoError.lowAda)

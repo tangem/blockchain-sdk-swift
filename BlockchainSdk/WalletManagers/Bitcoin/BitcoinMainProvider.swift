@@ -27,11 +27,12 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
                 let utxs: [BtcTx] = unspentsResponse.unspent_outputs?.compactMap { utxo -> BtcTx?  in
                     guard let hash = utxo.tx_hash_big_endian,
                         let n = utxo.tx_output_n,
-                        let val = utxo.value else {
+                        let val = utxo.value,
+                        let script = utxo.script else {
                             return nil
                     }
                     
-                    let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: val)
+                    let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: val, script: script)
                     return btx
                     } ?? []
                 
@@ -68,18 +69,11 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
             .map(BlockchainInfoApiResponse.self)
             .tryMap { response throws -> BtcFee in
                 let min = Decimal(response.regular)
-                let normal = Decimal(response.regular) * Decimal(1.2)
+                let normal = (Decimal(response.regular) * Decimal(1.2)).rounded(roundingMode: .down)
                 let priority = Decimal(response.priority)
                 
-                let kb = Decimal(1024)
-                let btcSatoshi = Decimal(100000000)
-                let convertValue = kb / btcSatoshi
-                
-                let minKbValue = min * convertValue
-                let normalKbValue = normal * convertValue
-                let maxKbValue = priority * convertValue
-                
-                return BtcFee(minimalKb: minKbValue, normalKb: normalKbValue, priorityKb: maxKbValue)
+
+                return BtcFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: normal, prioritySatoshiPerByte: priority)
         }
         .eraseToAnyPublisher()
     }
