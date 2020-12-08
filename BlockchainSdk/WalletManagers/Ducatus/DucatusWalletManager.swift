@@ -8,10 +8,11 @@
 import Foundation
 
 class DucatusWalletManager: BitcoinWalletManager {
-    override func updateWallet(with response: BitcoinResponse) {
-        wallet.add(coinValue: response.balance)
-        txBuilder.unspentOutputs = response.txrefs
-        if response.hasUnconfirmed {
+    override func updateWallet(with response: [BitcoinResponse]) {
+        let singleResponse = response.first!
+        wallet.add(coinValue: singleResponse.balance)
+        txBuilder.unspentOutputs = singleResponse.txrefs
+        if singleResponse.hasUnconfirmed {
             if wallet.transactions.isEmpty {
                 wallet.addPendingTransaction()
             }

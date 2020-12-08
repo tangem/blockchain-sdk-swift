@@ -9,53 +9,34 @@
 import Foundation
 import TangemSdk
 import HDWalletKit
+import BitcoinCore
 
 public class BitcoinAddressService: AddressService {
-    let testnet: Bool
-    var possibleFirstCharacters: [String] { ["1","2","3","n","m"] }
+    let legacy: BitcoinLegacyAddressService
+    let bech32: BitcoinBech32AddressService
     
-    init(testnet: Bool) {
-        self.testnet = testnet
+    init(networkParams: INetwork) {
+        legacy = BitcoinLegacyAddressService(networkParams: networkParams)
+        bech32 = BitcoinBech32AddressService(networkParams: networkParams)
     }
     
     public func makeAddress(from walletPublicKey: Data) -> String {
-        let hash = walletPublicKey.sha256()
-		let legacy = LegacyAddress(hash: hash, coin: .bitcoin, addressType: testnet ? .testnet : .pubkeyHash)
-		return legacy.base58
+        return bech32.makeAddress(from: walletPublicKey)
     }
     
     public func validate(_ address: String) -> Bool {
-        guard !address.isEmpty else { return false }
+        legacy.validate(address) || bech32.validate(address)
+    }
+    
+    public func makeAddresses(from walletPublicKey: Data) -> [Address] {
+        let bech32AddressString = bech32.makeAddress(from: walletPublicKey)
+        let legacyAddressString = legacy.makeAddress(from: walletPublicKey)
+      
+        let bech32Address = BitcoinAddress(type: .bech32, value: bech32AddressString)
         
-        if possibleFirstCharacters.contains(String(address.lowercased().first!)) {
-            guard (26...35) ~= address.count else { return false }
-            
-        }
-        else {
-            let networkPrefix = testnet ? "tb" : "bc"
-            guard let _ = try? SegWitBech32.decode(hrp: networkPrefix, addr: address) else { return false }
-            
-            return true
-        }
-
-        guard let decoded = address.base58DecodedData,
-            decoded.count > 24 else {
-                return false
-        }
-        let rip = decoded[0..<21]
-        let kcv = rip.doubleSha256
+        let legacyAddress = BitcoinAddress(type: .legacy, value: legacyAddressString)
         
-        for i in 0..<4 {
-            if kcv[i] != decoded[21+i] {
-                return false
-            }
-        }
-        
-        if testnet && (address.starts(with: "1") || address.starts(with: "3")) {
-            return false
-        }
-        
-        return true
+        return [bech32Address, legacyAddress]
     }
 	
 	public func make1Of2MultisigAddresses(firstPublicKey: Data, secondPublicKey: Data) throws -> [Address] {
@@ -63,8 +44,8 @@ public class BitcoinAddressService: AddressService {
 			throw BlockchainSdkError.failedToCreateMultisigScript
 		}
 		let scriptHash = script.data.sha256()
-		let legacy = LegacyAddress(hash: scriptHash, coin: .bitcoin, addressType: .scriptHash)
-		let scriptAddress = BitcoinScriptAddress(script: script, value: legacy.base58, type: .p2sh)
+		let legacy = HDWalletKit.LegacyAddress(hash: scriptHash, coin: .bitcoin, addressType: .scriptHash)
+		let scriptAddress = BitcoinScriptAddress(script: script, value: legacy.base58, type: .legacy)
 		return [scriptAddress]
 	}
 	
@@ -72,12 +53,12 @@ public class BitcoinAddressService: AddressService {
 		testnet ? Data([UInt8(0x6F)]) : Data([UInt8(0x00)])
 	}
 	
-	private func create1Of2MultisigOutputScript(firstPublicKey: Data, secondPublicKey: Data) throws -> Script? {
-		var pubKeys = try [firstPublicKey, secondPublicKey].map { (key: Data) throws -> PublicKey in
+	private func create1Of2MultisigOutputScript(firstPublicKey: Data, secondPublicKey: Data) throws -> HDWalletKit.Script? {
+		var pubKeys = try [firstPublicKey, secondPublicKey].map { (key: Data) throws -> HDWalletKit.PublicKey in
 			guard let compressed = Secp256k1Utils.convertKeyToCompressed(key) else {
 				throw BlockchainSdkError.failedToCreateMultisigScript
 			}
-			return PublicKey(uncompressedPublicKey: key, compressedPublicKey: compressed, coin: .bitcoin)
+			return HDWalletKit.PublicKey(uncompressedPublicKey: key, compressedPublicKey: compressed, coin: .bitcoin)
 		}
 		pubKeys.sort(by: { $0.compressedPublicKey.lexicographicallyPrecedes($1.compressedPublicKey) })
 		return ScriptFactory.Standard.buildMultiSig(publicKeys: pubKeys, signaturesRequired: 1)
@@ -97,6 +78,66 @@ public class BitcoinAddressService: AddressService {
 //		let base58 = String(base58: ripemd160HashWithChecksum, alphabet: Base58String.btcAlphabet)
 //		return base58
 //	}
+}
+
+
+public class BitcoinLegacyAddressService: AddressService {
+    private let converter: IAddressConverter
+
+    init(networkParams: INetwork) {
+        converter = Base58AddressConverter(addressVersion: networkParams.pubKeyHash, addressScriptVersion: networkParams.scriptHash)
+    }
+    
+    public func makeAddress(from walletPublicKey: Data) -> String {
+        let publicKey = PublicKey(withAccount: 0,
+                                  index: 0,
+                                  external: true,
+                                  hdPublicKeyData: walletPublicKey)
+        
+        let address = try! converter.convert(publicKey: publicKey, type: .p2pkh).stringValue
+        
+        return address
+    }
+    
+    public func validate(_ address: String) -> Bool {
+        do {
+            _ = try converter.convert(address: address)
+            return true
+        } catch {
+            return false
+        }
+    }
+}
+
+
+public class BitcoinBech32AddressService: AddressService {
+    private let converter: IAddressConverter
+
+    init(networkParams: INetwork) {
+        let scriptConverter = ScriptConverter()
+        converter = SegWitBech32AddressConverter(prefix: networkParams.bech32PrefixPattern, scriptConverter: scriptConverter)
+    }
+    
+    public func makeAddress(from walletPublicKey: Data) -> String {
+        let compressedKey = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
+        let publicKey = PublicKey(withAccount: 0,
+                                  index: 0,
+                                  external: true,
+                                  hdPublicKeyData: compressedKey)
+        
+        let address = try! converter.convert(publicKey: publicKey, type: .p2wpkh).stringValue
+        
+        return address
+    }
+	
+	public func validate(_ address: String) -> Bool {
+			do {
+				_ = try converter.convert(address: address)
+				return true
+			} catch {
+				return false
+			}
+		}
 }
 
 extension BitcoinAddressService: MultisigAddressProvider {
