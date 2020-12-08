@@ -11,9 +11,13 @@ import Foundation
 public enum BitcoinAddressType: String {
     case legacy
     case bech32
-    case p2sh
     
     public var localizedName: String {
-        return rawValue
+        switch self {
+        case .legacy:
+            return "Legacy"
+        case .bech32:
+            return "Default"
+        }
     }
 }

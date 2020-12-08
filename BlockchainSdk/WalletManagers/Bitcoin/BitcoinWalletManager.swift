@@ -21,7 +21,8 @@ class BitcoinWalletManager: WalletManager {
     override var defaultSourceAddress: String {
         wallet.addresses
             .compactMap { $0 as? BitcoinAddress }
-            .first { $0.type == .bech32 }!.value
+            .first { $0.type == .bech32 }?.value
+            ?? wallet.address
     }
     
     override var defaultChangeAddress: String {
@@ -29,45 +30,57 @@ class BitcoinWalletManager: WalletManager {
     }
     
     override func update(completion: @escaping (Result<Void, Error>)-> Void)  {
-        cancellable = networkService.getInfo(address: wallet.address)
+        let publishers = wallet.addresses.map { networkService.getInfo(address: $0.value) }
+        cancellable = Publishers.MergeMany(publishers)
+            .collect()
+            .eraseToAnyPublisher()
             .sink(receiveCompletion: {[unowned self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
                     self.wallet.amounts = [:]
                     completion(.failure(error))
                 }
             }, receiveValue: { [unowned self] response in
+                response
                 self.updateWallet(with: response)
                 completion(.success(()))
             })
     }
     
     @available(iOS 13.0, *)
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap {[unowned self] response throws -> [Amount] in
-                let kb = Decimal(1024)
-                let minPerByte = response.minimalKb/kb
-                let normalPerByte = response.normalKb/kb
-                let maxPerByte = response.priorityKb/kb
-                let dummyFee = Amount(with: amount, value: 0.00000001)
-                guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount - dummyFee,
-                                                                                  fee: dummyFee,
-                                                                                  sourceAddress: self.wallet.address,
-                                                                                  destinationAddress: destination,
-                                                                                  changeAddress: self.wallet.address)) else {
-                    throw WalletError.failedToCalculateTxSize
-                }
+              //  let dummyFee = Amount(with: amount, value: 0.00000001)
+                let minRate = (response.minimalSatoshiPerByte as NSDecimalNumber).intValue
+                let normalRate = (response.normalSatoshiPerByte as NSDecimalNumber).intValue
+                let maxRate = (response.prioritySatoshiPerByte as NSDecimalNumber).intValue
                 
-                var minFee = (minPerByte * estimatedTxSize)
-                var normalFee = (normalPerByte * estimatedTxSize)
-                var maxFee = (maxPerByte * estimatedTxSize)
+                var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: !includeFee)
+                var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: !includeFee)
+                var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: !includeFee)
                 
+//                guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount - dummyFee,
+//                                                                                  fee: dummyFee,
+//                                                                                  sourceAddress: self.wallet.address,
+//                                                                                  destinationAddress: destination,
+//                                                                                  changeAddress: self.wallet.address)) else {
+//                    throw WalletError.failedToCalculateTxSize
+//                }
+//
+//                var minFee = (minPerByte * estimatedTxSize)
+//                var normalFee = (normalPerByte * estimatedTxSize)
+//                var maxFee = (maxPerByte * estimatedTxSize)
+//
                 if let relayFee = self.relayFee {
                     minFee = max(minFee, relayFee)
                     normalFee = max(normalFee, relayFee)
                     maxFee = max(maxFee, relayFee)
                 }
                 
+                txBuilder.feeRates = [:]
+                txBuilder.feeRates[minFee] = minRate
+                txBuilder.feeRates[normalFee] = normalRate
+                txBuilder.feeRates[maxFee] = maxRate
                 return [
                     Amount(with: self.wallet.blockchain, address: self.wallet.address, value: minFee),
                     Amount(with: self.wallet.blockchain, address: self.wallet.address, value: normalFee),
@@ -77,10 +90,14 @@ class BitcoinWalletManager: WalletManager {
         .eraseToAnyPublisher()
     }
     
-    func updateWallet(with response: BitcoinResponse) {
-        wallet.add(coinValue: response.balance)
-        txBuilder.unspentOutputs = response.txrefs
-        if response.hasUnconfirmed {
+    func updateWallet(with response: [BitcoinResponse]) {
+        let balance = response.reduce(into: 0) { $0 += $1.balance }
+        let hasUnconfirmed = response.contains(where: { $0.hasUnconfirmed })
+        let unspents = response.flatMap { $0.txrefs }
+        
+        wallet.add(coinValue: balance)
+        txBuilder.unspentOutputs = unspents
+        if hasUnconfirmed{
             if wallet.transactions.isEmpty {
                 wallet.addPendingTransaction()
             }
@@ -89,17 +106,17 @@ class BitcoinWalletManager: WalletManager {
         }
     }
     
-    private func getEstimateSize(for transaction: Transaction) -> Decimal? {
-        guard let unspentOutputsCount = txBuilder.unspentOutputs?.count else {
-            return nil
-        }
-        
-        guard let tx = txBuilder.buildForSend(transaction: transaction, signature: Data(repeating: UInt8(0x80), count: 64 * unspentOutputsCount)) else {
-            return nil
-        }
-        
-        return Decimal(tx.count)
-    }
+//    private func getEstimateSize(for transaction: Transaction) -> Decimal? {
+//        guard let unspentOutputsCount = txBuilder.unspentOutputs?.count else {
+//            return nil
+//        }
+//
+//        guard let tx = txBuilder.buildForSend(transaction: transaction, signature: Data(repeating: UInt8(0x80), count: 64 * unspentOutputsCount)) else {
+//            return nil
+//        }
+//
+//        return Decimal(tx.count)
+//    }
 }
 
 
@@ -112,7 +129,7 @@ extension BitcoinWalletManager: TransactionSender {
         
         return signer.sign(hashes: hashes, cardId: cardId)
             .tryMap {[unowned self] response -> (String, SignResponse) in
-                guard let tx = self.txBuilder.buildForSend(transaction: transaction, signature: response.signature) else {
+                guard let tx = self.txBuilder.buildForSend(transaction: transaction, signature: response.signature, hashesCount: hashes.count) else {
                     throw WalletError.failedToBuildTx
                 }
                 return (tx.toHexString(), response)

@@ -8,61 +8,93 @@
 
 import Foundation
 import TangemSdk
+import BitcoinCore
 
 public class BitcoinAddressService: AddressService {
-    let testnet: Bool
-    var possibleFirstCharacters: [String] { ["1","2","3","n","m"] }
+    let legacy: BitcoinLegacyAddressService
+    let bech32: BitcoinBech32AddressService
     
-    init(testnet: Bool) {
-        self.testnet = testnet
+    init(networkParams: INetwork) {
+        legacy = BitcoinLegacyAddressService(networkParams: networkParams)
+        bech32 = BitcoinBech32AddressService(networkParams: networkParams)
     }
     
     public func makeAddress(from walletPublicKey: Data) -> String {
-        let hash = walletPublicKey.sha256()
-        let ripemd160Hash = RIPEMD160.hash(message: hash)
-        let netSelectionByte = getNetwork(testnet)
-        let entendedRipemd160Hash = netSelectionByte + ripemd160Hash
-        let sha = entendedRipemd160Hash.sha256().sha256()
-        let ripemd160HashWithChecksum = entendedRipemd160Hash + sha[..<4]
-        let base58 = String(base58: ripemd160HashWithChecksum, alphabet: Base58String.btcAlphabet)
-        return base58
+        return bech32.makeAddress(from: walletPublicKey)
     }
     
     public func validate(_ address: String) -> Bool {
-        guard !address.isEmpty else { return false }
-        
-        if possibleFirstCharacters.contains(String(address.lowercased().first!)) {
-            guard (26...35) ~= address.count else { return false }
-            
-        }
-        else {
-            let networkPrefix = testnet ? "tb" : "bc"
-            guard let _ = try? SegWitBech32.decode(hrp: networkPrefix, addr: address) else { return false }
-            
-            return true
-        }
-
-        guard let decoded = address.base58DecodedData,
-            decoded.count > 24 else {
-                return false
-        }
-        let rip = decoded[0..<21]
-        let kcv = rip.sha256().sha256()
-        
-        for i in 0..<4 {
-            if kcv[i] != decoded[21+i] {
-                return false
-            }
-        }
-        
-        if testnet && (address.starts(with: "1") || address.starts(with: "3")) {
-            return false
-        }
-        
-        return true
+        legacy.validate(address) || bech32.validate(address)
     }
     
-    func getNetwork(_ testnet: Bool) -> Data {
-        return testnet ? Data([UInt8(0x6F)]): Data([UInt8(0x00)])
+    public func makeAddresses(from walletPublicKey: Data) -> [Address] {
+        let bech32AddressString = bech32.makeAddress(from: walletPublicKey)
+        let legacyAddressString = legacy.makeAddress(from: walletPublicKey)
+      
+        let bech32Address = BitcoinAddress(type: .bech32, value: bech32AddressString)
+        
+        let legacyAddress = BitcoinAddress(type: .legacy, value: legacyAddressString)
+        
+        return [bech32Address, legacyAddress]
+    }
+}
+
+
+public class BitcoinLegacyAddressService: AddressService {
+    private let converter: IAddressConverter
+
+    init(networkParams: INetwork) {
+        converter = Base58AddressConverter(addressVersion: networkParams.pubKeyHash, addressScriptVersion: networkParams.scriptHash)
+    }
+    
+    public func makeAddress(from walletPublicKey: Data) -> String {
+        let publicKey = PublicKey(withAccount: 0,
+                                  index: 0,
+                                  external: true,
+                                  hdPublicKeyData: walletPublicKey)
+        
+        let address = try! converter.convert(publicKey: publicKey, type: .p2pkh).stringValue
+        
+        return address
+    }
+    
+    public func validate(_ address: String) -> Bool {
+        do {
+            _ = try converter.convert(address: address)
+            return true
+        } catch {
+            return false
+        }
+    }
+}
+
+
+public class BitcoinBech32AddressService: AddressService {
+    private let converter: IAddressConverter
+
+    init(networkParams: INetwork) {
+        let scriptConverter = ScriptConverter()
+        converter = SegWitBech32AddressConverter(prefix: networkParams.bech32PrefixPattern, scriptConverter: scriptConverter)
+    }
+    
+    public func makeAddress(from walletPublicKey: Data) -> String {
+        let compressedKey = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
+        let publicKey = PublicKey(withAccount: 0,
+                                  index: 0,
+                                  external: true,
+                                  hdPublicKeyData: compressedKey)
+        
+        let address = try! converter.convert(publicKey: publicKey, type: .p2wpkh).stringValue
+        
+        return address
+    }
+    
+    public func validate(_ address: String) -> Bool {
+        do {
+            _ = try converter.convert(address: address)
+            return true
+        } catch {
+            return false
+        }
     }
 }

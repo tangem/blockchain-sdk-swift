@@ -44,8 +44,6 @@ Use BlockchainSdk for Tangem wallet integration
   s.dependency 'BigInt'
   s.dependency 'SwiftyJSON'
   s.dependency 'Moya'
-  s.dependency 'RxSwift'
-  s.dependency 'Moya/RxSwift'
   s.dependency 'Sodium' 
   s.dependency 'SwiftCBOR'
   s.dependency 'stellar-ios-mac-sdk'
@@ -54,4 +52,5 @@ Use BlockchainSdk for Tangem wallet integration
   s.dependency 'web3swift'
   s.dependency 'TangemSdk'
   s.dependency 'AnyCodable-FlightSchool'
+  s.dependency 'BitcoinCore.swift'
 end

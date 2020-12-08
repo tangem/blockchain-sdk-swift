@@ -10,9 +10,9 @@ import Foundation
 import Combine
 
 struct BtcFee {
-    let minimalKb: Decimal
-    let normalKb: Decimal
-    let priorityKb: Decimal
+    let minimalSatoshiPerByte: Decimal
+    let normalSatoshiPerByte: Decimal
+    let prioritySatoshiPerByte: Decimal
 }
 
 struct BitcoinResponse {
@@ -25,6 +25,7 @@ struct BtcTx {
     let tx_hash: String
     let tx_output_n: Int
     let value: UInt64
+    let script: String
 }
 
 enum BitcoinNetworkApi {
