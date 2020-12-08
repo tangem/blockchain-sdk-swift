@@ -31,7 +31,7 @@ class BitcoinTransactionBuilder {
     var bitcoinManager: BitcoinManager!
     var blockchain: Blockchain { Blockchain.bitcoin(testnet: isTestnet) }
     
-    init(walletPublicKey: Data, isTestnet: Bool) {
+    init(walletPublicKey: Data, isTestnet: Bool) { //todo: remove
         self.walletPublicKey = walletPublicKey
         self.isTestnet = isTestnet
     }
@@ -45,7 +45,7 @@ class BitcoinTransactionBuilder {
             print(error)
             return nil
         }
-        
+            
 //        guard let outputScript = buildOutputScript(address: transaction.sourceAddress) else {
 //            return nil
 //        }
