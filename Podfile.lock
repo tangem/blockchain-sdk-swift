@@ -82,7 +82,7 @@ DEPENDENCIES:
   - AnyCodable-FlightSchool
   - BigInt (~> 5.0)
   - BinanceChain (from `https://bitbucket.org/tangem/swiftbinancechain.git`, tag `0.0.6`)
-  - BitcoinCore.swift (from `../bitcoincore`)
+  - BitcoinCore.swift (from `https://bitbucket.org/tangem/bitcoincore.git`, tag `0.0.1`)
   - HDWalletKit (from `https://bitbucket.org/tangem/hdwallet.git`, tag `0.3.8`)
   - Moya
   - Sodium
@@ -122,7 +122,8 @@ EXTERNAL SOURCES:
     :git: https://bitbucket.org/tangem/swiftbinancechain.git
     :tag: 0.0.6
   BitcoinCore.swift:
-    :path: "../bitcoincore"
+    :git: https://bitbucket.org/tangem/bitcoincore.git
+    :tag: 0.0.1
   HDWalletKit:
     :git: https://bitbucket.org/tangem/hdwallet.git
     :tag: 0.3.8
@@ -137,6 +138,9 @@ CHECKOUT OPTIONS:
   BinanceChain:
     :git: https://bitbucket.org/tangem/swiftbinancechain.git
     :tag: 0.0.6
+  BitcoinCore.swift:
+    :git: https://bitbucket.org/tangem/bitcoincore.git
+    :tag: 0.0.1
   HDWalletKit:
     :git: https://bitbucket.org/tangem/hdwallet.git
     :tag: 0.3.8
@@ -176,6 +180,6 @@ SPEC CHECKSUMS:
   web3swift: 21ab60f3c80aea2366ebf016f377e5cb654909bf
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: e1ee9ebf90e7511b89d8bc0360c294f4aad89fed
+PODFILE CHECKSUM: ed407d69004ef55b8fe933d2def21ec61bb0de38
 
 COCOAPODS: 1.10.0
