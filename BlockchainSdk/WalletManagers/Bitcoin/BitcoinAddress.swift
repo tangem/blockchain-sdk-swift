@@ -22,7 +22,7 @@ public struct BitcoinAddress: Address {
 }
 
 public struct BitcoinScriptAddress: Address {
-	public let script: Script
+	public let script: HDWalletScript
 	public let value: String
 	public let type: BitcoinAddressType
 	
