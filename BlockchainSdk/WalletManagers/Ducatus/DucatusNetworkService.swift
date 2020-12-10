@@ -24,11 +24,12 @@ class DucatusNetworkService: BitcoinNetworkProvider {
                 let utxs: [BtcTx] = unspents.compactMap { utxo -> BtcTx?  in
                     guard let hash = utxo.mintTxid,
                         let n = utxo.mintIndex,
-                        let val = utxo.value else {
+                        let val = utxo.value,
+                        let script = utxo.script else {
                             return nil
                     }
                     
-                    let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: UInt64(val))
+                    let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: UInt64(val), script: script)
                     return btx
                 }
                 
@@ -52,9 +53,9 @@ class DucatusNetworkService: BitcoinNetworkProvider {
     
     @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<BtcFee, Error> {
-        let fee = BtcFee(minimalKb: 0.00091136,
-                         normalKb: 0.00147456,
-                         priorityKb: 0.003584)
+        let fee = BtcFee(minimalSatoshiPerByte: 0.00000089,
+                         normalSatoshiPerByte: 0.00000144,
+                         prioritySatoshiPerByte: 0.0000035)
         
         return Just(fee)
             .setFailureType(to: Error.self)

@@ -11,7 +11,7 @@ import Foundation
 extension Decimal {
     /// return 8 bytes of integer. LittleEndian  format
     var bytes8LE: [UInt8] {
-        let int64value = (self.rounded(0) as NSDecimalNumber).intValue
+        let int64value = (self.rounded(scale: 0) as NSDecimalNumber).intValue
         let bytes8 =  int64value.bytes8LE
         return Array(bytes8)
     }
@@ -40,12 +40,12 @@ extension Decimal {
         self.init(uint64)
     }
     
-    public mutating func round(_ scale: Int, _ roundingMode: NSDecimalNumber.RoundingMode = .plain) {
+    public mutating func round(scale: Int = 0, roundingMode: NSDecimalNumber.RoundingMode = .plain) {
         var localCopy = self
         NSDecimalRound(&self, &localCopy, scale, roundingMode)
     }
     
-    public func rounded(_ scale: Int, _ roundingMode: NSDecimalNumber.RoundingMode = .plain) -> Decimal {
+    public func rounded(scale: Int = 0, roundingMode: NSDecimalNumber.RoundingMode = .plain) -> Decimal {
         var result = Decimal()
         var localCopy = self
         NSDecimalRound(&result, &localCopy, scale, roundingMode)
@@ -53,6 +53,6 @@ extension Decimal {
     }
     
     public func rounded(blockchain: Blockchain) -> Decimal {
-        return rounded(Int(blockchain.decimalCount), blockchain.roundingMode)
+        return rounded(scale: Int(blockchain.decimalCount), roundingMode: blockchain.roundingMode)
     }
 }

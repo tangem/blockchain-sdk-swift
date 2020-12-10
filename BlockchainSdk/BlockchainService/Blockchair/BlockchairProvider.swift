@@ -24,11 +24,12 @@ class BlockchairProvider: BitcoinNetworkProvider {
     
 	func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
 		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: true))
-            .tryMap { [unowned self] json -> BitcoinResponse in
+            .tryMap { [unowned self] json -> BitcoinResponse in //TODO: refactor to normal JSON
                 let data = json["data"]
                 let addr = data["\(address)"]
                 let address = addr["address"]
                 let balance = address["balance"].stringValue
+                let script = address["script_hex"].stringValue
                 
                 guard let decimalSatoshiBalance = Decimal(string: balance) else {
                     throw WalletError.failedToParseNetworkResponse
@@ -51,7 +52,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
                             return nil
                     }
                     
-                    let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: val)
+                    let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: val, script: script)
                     return btx
                 }
                 
@@ -68,19 +69,19 @@ class BlockchairProvider: BitcoinNetworkProvider {
     
     func getFee() -> AnyPublisher<BtcFee, Error> {
 		publisher(for: .fee(endpoint: endpoint))
-            .tryMap { [unowned self] json throws -> BtcFee in
+            .tryMap { json throws -> BtcFee in
                 let data = json["data"]
                 guard let feePerByteSatoshi = data["suggested_transaction_fee_per_byte_sat"].int  else {
                     throw WalletError.failedToGetFee
                 }
                 
-                let normal = (Decimal(1024) * Decimal(feePerByteSatoshi) / self.endpoint.blockchain.decimalValue)
-                let min = (Decimal(0.8) * normal).rounded(blockchain: self.endpoint.blockchain)
-                let max = (Decimal(1.2) * normal).rounded(blockchain: self.endpoint.blockchain)
-                
-                let fee = BtcFee(minimalKb: min,
-                                 normalKb: normal.rounded(blockchain: self.endpoint.blockchain),
-                                 priorityKb: max)
+                let normal = Decimal(feePerByteSatoshi)
+                let min = (Decimal(0.8) * normal).rounded(roundingMode: .down)
+                let max = (Decimal(1.2) * normal).rounded(roundingMode: .down)
+
+                let fee = BtcFee(minimalSatoshiPerByte: min,
+                                 normalSatoshiPerByte: normal,
+                                 prioritySatoshiPerByte: max)
                 return fee
         }
         .eraseToAnyPublisher()

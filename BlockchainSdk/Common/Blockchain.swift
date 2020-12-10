@@ -8,6 +8,7 @@
 
 import Foundation
 import TangemSdk
+import BitcoinCore
 
 public enum Blockchain {
     case bitcoin(testnet: Bool)
@@ -139,10 +140,22 @@ public enum Blockchain {
             return ""
         }
     }
+	
+	public var defaultAddressType: AddressType {
+		switch self {
+		case .bitcoin: return .bitcoin(type: .bech32)
+		default: return .plain
+		}
+	}
     
     public func makeAddresses(from walletPublicKey: Data) -> [Address] {
         return getAddressService().makeAddresses(from: walletPublicKey)
     }
+	
+	public func makeMultisigAddresses(from walletPublicKey: Data, with pairPublicKey: Data) -> [Address]? {
+		guard let service = getAddressService() as? MultisigAddressProvider else { return nil }
+		return service.makeAddresses(from: walletPublicKey, with: pairPublicKey)
+	}
     
     public func validate(address: String) -> Bool {
         switch self {
@@ -228,9 +241,11 @@ public enum Blockchain {
     func getAddressService() -> AddressService {
         switch self {
         case .bitcoin(let testnet):
-            return BitcoinAddressService(testnet: testnet)
+            let network: BitcoinNetwork = testnet ? .testnet : .mainnet
+            let networkParams = network.networkParams
+            return BitcoinAddressService(networkParams: networkParams)
         case .litecoin:
-            return LitecoinAddressService(testnet: false)
+            return BitcoinLegacyAddressService(networkParams: LitecoinNetworkParams())
         case .stellar:
             return StellarAddressService()
         case .ethereum, .rsk:
@@ -240,7 +255,7 @@ public enum Blockchain {
         case .binance(let testnet):
             return BinanceAddressService(testnet: testnet)
         case .ducatus:
-            return DucatusAddressService(testnet: false)
+            return BitcoinLegacyAddressService(networkParams: DucatusNetworkParams())
         case .cardano(let shelley):
             return shelley ? CardanoShelleyAddressService() : CardanoAddressService()
         case .xrp(let curve):

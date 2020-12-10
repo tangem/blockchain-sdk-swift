@@ -8,6 +8,7 @@
 
 import XCTest
 import TangemSdk
+import BitcoinCore
 @testable import BlockchainSdk
 
 class BlockchainSdkTests: XCTestCase {
@@ -42,7 +43,7 @@ class BlockchainSdkTests: XCTestCase {
     func testBtcAddress() {
         let btcAddress = "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs"
         let publicKey = Data(hex: "0250863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352")
-        XCTAssertEqual(BitcoinAddressService(testnet: false).makeAddress(from: publicKey), btcAddress)
+        XCTAssertEqual(BitcoinLegacyAddressService(networkParams: BitcoinNetwork.mainnet.networkParams).makeAddress(from: publicKey), btcAddress)
     }
     
     func testDucatusAddressValidation() {
@@ -54,20 +55,28 @@ class BlockchainSdkTests: XCTestCase {
     }
     
     func testBtcTxBuilder() {
-        let builder = BitcoinTransactionBuilder(walletPublicKey: try! CryptoUtils.generateRandomBytes(count: 38),
-                                                isTestnet: false)
-        builder.unspentOutputs = [BtcTx(tx_hash: "asdfmnbaslkdfhlkjfnasdkhfa", tx_output_n: 5, value: 5)]
-        let blockchain = Blockchain.bitcoin(testnet: false)
-        let sig = Data(repeating: UInt8(0x80), count: 64)
-        let tx = builder.buildForSend(transaction: Transaction(amount: Amount(with: blockchain, address: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs", type: .coin, value: 5),
-                                                               fee: Amount(with: blockchain, address: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs", type: .coin, value: 0.5),
-                                                               sourceAddress: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs",
-                                                               destinationAddress: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs",
-                                                               changeAddress: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs"),
-                                      signature: sig)!
-        
-        print(tx.count)
-        XCTAssertTrue(tx.count == 199)
+		// TODO: Make new test for transaction creation via BitcoinCore
+		
+//        let publicKey = Data(hex: "0250863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352")
+//		let legacyAddressString = BitcoinLegacyAddressService(networkParams: BitcoinNetwork.mainnet.networkParams).makeAddress(from: publicKey)
+//		let legacyAddress = BitcoinAddress(type: .legacy, value: legacyAddressString)
+//        let builder = BitcoinTransactionBuilder(walletPublicKey: publicKey,
+//												isTestnet: false,
+//												addresses: [legacyAddress])
+//        builder.bitcoinManager = BitcoinManager(networkParams: BitcoinNetwork.mainnet.networkParams, walletPublicKey: publicKey, compressedWalletPublicKey: publicKey, bip: .bip44)
+//		builder.feeRates[Decimal(0.5)] = 0
+//        builder.unspentOutputs = [BtcTx(tx_hash: "asdfmnbaslkdfhlkjfnasdkhfa", tx_output_n: 5, value: 5, script: "0014ce57cdd3eb8596a1301b9e8a7824f655e8ab003d")]
+//        let blockchain = Blockchain.bitcoin(testnet: false)
+//        let sig = Data(repeating: UInt8(0x80), count: 64)
+//        let tx = builder.buildForSend(transaction: Transaction(amount: Amount(with: blockchain, address: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs", type: .coin, value: 5),
+//                                                               fee: Amount(with: blockchain, address: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs", type: .coin, value: 0.5),
+//                                                               sourceAddress: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs",
+//                                                               destinationAddress: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs",
+//                                                               changeAddress: "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs"),
+//                                      signature: sig, hashesCount: 1)!
+//
+//        print(tx.count)
+//        XCTAssertTrue(tx.count == 199)
     }
     
 }

@@ -67,11 +67,10 @@ extension BitcoinCashWalletManager: TransactionSender {
     }
     
     @available(iOS 13.0, *)
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap {[unowned self] response throws -> [Amount] in
-                let kb = Decimal(1024)
-                let feePerByte = response.minimalKb/kb
+                let feePerByte = response.minimalSatoshiPerByte
                 
                 guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount, fee: Amount(with: amount, value: 0.0001),
                                                                                   sourceAddress: self.wallet.address,

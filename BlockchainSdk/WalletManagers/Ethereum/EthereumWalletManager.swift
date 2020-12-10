@@ -87,7 +87,7 @@ extension EthereumWalletManager: TransactionSender {
         .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
+    func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount],Error> {
         return networkService.getGasPrice()
             .tryMap { [unowned self] gasPrice throws -> [Amount] in
                 let m = self.txBuilder.getGasLimit(for: amount)
