@@ -140,6 +140,13 @@ public enum Blockchain {
             return ""
         }
     }
+	
+	public var defaultAddressType: AddressType {
+		switch self {
+		case .bitcoin: return .bitcoin(type: .bech32)
+		default: return .plain
+		}
+	}
     
     public func makeAddresses(from walletPublicKey: Data) -> [Address] {
         return getAddressService().makeAddresses(from: walletPublicKey)

@@ -11,10 +11,24 @@ import Foundation
 public protocol Address {
     var value: String { get }
     var localizedName: String { get }
+	var type: AddressType { get }
+}
+
+public enum AddressType: Equatable {
+	case plain
+	case bitcoin(type: BitcoinAddressType)
+	
+	var localizedName: String {
+		switch self {
+		case .plain: return ""
+		case .bitcoin(let type): return type.localizedName
+		}
+	}
 }
 
 public struct PlainAddress: Address {
     public let value: String
+	public let type: AddressType = .plain
     public var localizedName: String { "" }
     
     public init(value: String) {
