@@ -8,6 +8,7 @@
 
 import Foundation
 import TangemSdk
+import HDWalletKit
 import BitcoinCore
 
 public class BitcoinAddressService: AddressService {
@@ -37,6 +38,28 @@ public class BitcoinAddressService: AddressService {
         
         return [bech32Address, legacyAddress]
     }
+	
+	public func make1Of2MultisigAddresses(firstPublicKey: Data, secondPublicKey: Data) throws -> [Address] {
+		guard let script = try create1Of2MultisigOutputScript(firstPublicKey: firstPublicKey, secondPublicKey: secondPublicKey) else {
+			throw BlockchainSdkError.failedToCreateMultisigScript
+		}
+		let legacyAddressString = legacy.makeMultisigAddress(from: script.data.sha256Ripemd160)
+		let scriptAddress = BitcoinScriptAddress(script: script, value: legacyAddressString, type: .legacy)
+		let bech32AddressString = bech32.makeMultisigAddress(from: script.data.sha256())
+		let bech32Address = BitcoinScriptAddress(script: script, value: bech32AddressString, type: .bech32)
+		return [bech32Address, scriptAddress]
+	}
+	
+	private func create1Of2MultisigOutputScript(firstPublicKey: Data, secondPublicKey: Data) throws -> HDWalletScript? {
+		var pubKeys = try [firstPublicKey, secondPublicKey].map { (key: Data) throws -> HDWalletKit.PublicKey in
+			guard let compressed = Secp256k1Utils.convertKeyToCompressed(key) else {
+				throw BlockchainSdkError.failedToCreateMultisigScript
+			}
+			return HDWalletKit.PublicKey(uncompressedPublicKey: key, compressedPublicKey: compressed, coin: .bitcoin)
+		}
+		pubKeys.sort(by: { $0.compressedPublicKey.lexicographicallyPrecedes($1.compressedPublicKey) })
+		return ScriptFactory.Standard.buildMultiSig(publicKeys: pubKeys, signaturesRequired: 1)
+	}
 }
 
 
@@ -66,35 +89,59 @@ public class BitcoinLegacyAddressService: AddressService {
             return false
         }
     }
+	
+	public func makeMultisigAddress(from scriptHash: Data) -> String {
+		let address = try! converter.convert(keyHash: scriptHash, type: .p2sh).stringValue
+		
+		return address
+	}
 }
 
 
 public class BitcoinBech32AddressService: AddressService {
-    private let converter: IAddressConverter
+	private let converter: SegWitBech32AddressConverter
+	
+	init(networkParams: INetwork) {
+		let scriptConverter = ScriptConverter()
+		converter = SegWitBech32AddressConverter(prefix: networkParams.bech32PrefixPattern, scriptConverter: scriptConverter)
+	}
+	
+	public func makeAddress(from walletPublicKey: Data) -> String {
+		let compressedKey = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
+		let publicKey = PublicKey(withAccount: 0,
+								  index: 0,
+								  external: true,
+								  hdPublicKeyData: compressedKey)
+		
+		let address = try! converter.convert(publicKey: publicKey, type: .p2wpkh).stringValue
+		
+		return address
+	}
+	
+	public func validate(_ address: String) -> Bool {
+		do {
+			_ = try converter.convert(address: address)
+			return true
+		} catch {
+			return false
+		}
+	}
+	
+	public func makeMultisigAddress(from scriptHash: Data) -> String {
+		print("Script hash hex: ", scriptHash.hex)
+		let address = try! converter.convert(scriptHash: scriptHash).stringValue
+		
+		return address
+	}
+}
 
-    init(networkParams: INetwork) {
-        let scriptConverter = ScriptConverter()
-        converter = SegWitBech32AddressConverter(prefix: networkParams.bech32PrefixPattern, scriptConverter: scriptConverter)
-    }
-    
-    public func makeAddress(from walletPublicKey: Data) -> String {
-        let compressedKey = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
-        let publicKey = PublicKey(withAccount: 0,
-                                  index: 0,
-                                  external: true,
-                                  hdPublicKeyData: compressedKey)
-        
-        let address = try! converter.convert(publicKey: publicKey, type: .p2wpkh).stringValue
-        
-        return address
-    }
-    
-    public func validate(_ address: String) -> Bool {
-        do {
-            _ = try converter.convert(address: address)
-            return true
-        } catch {
-            return false
-        }
-    }
+extension BitcoinAddressService: MultisigAddressProvider {
+	public func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data) -> [Address]? {
+		do {
+			return try make1Of2MultisigAddresses(firstPublicKey: walletPublicKey, secondPublicKey: pairPublicKey)
+		} catch {
+			print(error)
+			return nil
+		}
+	}
 }

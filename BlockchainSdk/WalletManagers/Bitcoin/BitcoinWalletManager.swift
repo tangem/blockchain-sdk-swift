@@ -18,17 +18,6 @@ class BitcoinWalletManager: WalletManager {
         return nil
     }
     
-    override var defaultSourceAddress: String {
-        wallet.addresses
-            .compactMap { $0 as? BitcoinAddress }
-            .first { $0.type == .bech32 }?.value
-            ?? wallet.address
-    }
-    
-    override var defaultChangeAddress: String {
-        return defaultSourceAddress
-    }
-    
     override func update(completion: @escaping (Result<Void, Error>)-> Void)  {
         let publishers = wallet.addresses.map { networkService.getInfo(address: $0.value) }
         cancellable = Publishers.MergeMany(publishers)
@@ -40,7 +29,6 @@ class BitcoinWalletManager: WalletManager {
                     completion(.failure(error))
                 }
             }, receiveValue: { [unowned self] response in
-                response
                 self.updateWallet(with: response)
                 completion(.success(()))
             })

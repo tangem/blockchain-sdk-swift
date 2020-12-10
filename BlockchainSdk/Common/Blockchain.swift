@@ -140,10 +140,22 @@ public enum Blockchain {
             return ""
         }
     }
+	
+	public var defaultAddressType: AddressType {
+		switch self {
+		case .bitcoin: return .bitcoin(type: .bech32)
+		default: return .plain
+		}
+	}
     
     public func makeAddresses(from walletPublicKey: Data) -> [Address] {
         return getAddressService().makeAddresses(from: walletPublicKey)
     }
+	
+	public func makeMultisigAddresses(from walletPublicKey: Data, with pairPublicKey: Data) -> [Address]? {
+		guard let service = getAddressService() as? MultisigAddressProvider else { return nil }
+		return service.makeAddresses(from: walletPublicKey, with: pairPublicKey)
+	}
     
     public func validate(address: String) -> Bool {
         switch self {

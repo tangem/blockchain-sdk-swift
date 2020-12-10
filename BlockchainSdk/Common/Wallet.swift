@@ -16,7 +16,13 @@ public struct Wallet {
     public var transactions: [Transaction] = []
     public var state: WalletState = .created
     
-    public var address: String { addresses.first!.value }
+	public var address: String {
+		if let address = addresses.first(where: { $0.type == blockchain.defaultAddressType })?.value {
+			return address
+		} else {
+			return addresses.first!.value
+		}
+	}
     
     public var isEmpty: Bool {
         return amounts.values.filter ({ !$0.isEmpty }).count == 0
