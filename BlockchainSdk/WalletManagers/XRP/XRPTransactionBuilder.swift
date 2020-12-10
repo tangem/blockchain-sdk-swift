@@ -27,8 +27,8 @@ class XRPTransactionBuilder {
         self.curve = curve
     }
     
-    public func buildForSign(transaction: Transaction) -> (XRPTransaction, Data)? {
-        guard let tx = buildTransaction(from: transaction) else {
+    public func buildForSign(transaction: Transaction) throws -> (XRPTransaction, Data)? {
+        guard let tx = try buildTransaction(from: transaction) else {
             return nil
         }
         
@@ -62,7 +62,7 @@ class XRPTransactionBuilder {
         return blob
     }
     
-    private func buildTransaction(from transaction: Transaction) -> XRPTransaction? {
+    private func buildTransaction(from transaction: Transaction) throws -> XRPTransaction? {
         guard let account = account, let sequence = sequence else {
                 return nil
         }
@@ -70,23 +70,20 @@ class XRPTransactionBuilder {
         let amountDrops = (transaction.amount.value * Decimal(1000000)).rounded(blockchain: .xrp(curve: curve))
         let feeDrops = (transaction.fee.value * Decimal(1000000)).rounded(blockchain: .xrp(curve: curve))
         
-        var destination: String
-         var destinationTag: UInt32? = nil
-        
-         //X-address
         let decodedXAddress = try? XRPAddress.decodeXAddress(xAddress: transaction.destinationAddress)
-         if decodedXAddress != nil {
-             destination = decodedXAddress!.rAddress
-             destinationTag = decodedXAddress!.tag
-         } else {
-             destination = transaction.destinationAddress
-            
-            if let params = transaction.params as? XRPTransactionParams,
-                case let XRPTransactionParams.destinationTag(value: tag) = params,
-                let int32Tag = UInt32(tag) {
-                destinationTag = int32Tag
+        let destination = decodedXAddress?.rAddress ?? transaction.destinationAddress
+        
+        let decodedTag = decodedXAddress?.tag
+        let explicitTag = (transaction.params as? XRPTransactionParams)?.destinationTag
+
+        let destinationTag: UInt32? = try {
+            if decodedTag != nil {
+                if decodedTag != explicitTag {
+                    throw "xrp_distinct_tags_found".localized
+                }
             }
-         }
+            return explicitTag
+        }()
         
          // dictionary containing partial transaction fields
          var fields: [String:Any] = [
@@ -100,8 +97,8 @@ class XRPTransactionBuilder {
          ]
         
         if destinationTag != nil {
-                       fields["DestinationTag"] = destinationTag
-                   }
+            fields["DestinationTag"] = destinationTag
+        }
          
          // create the transaction from dictionary
          return XRPTransaction(fields: fields)
