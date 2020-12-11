@@ -109,10 +109,10 @@ class BlockchairProvider: BitcoinNetworkProvider {
 				
 				guard
 					let outputCount = address["output_count"].int,
-					let unspentOutputCounr = address["unspent_output_count"].int
+					let unspentOutputCount = address["unspent_output_count"].int
 				else { return 0 }
 				
-				return outputCount - unspentOutputCounr
+				return outputCount - unspentOutputCount
 			}
 			.mapError { $0 as Error }
 			.eraseToAnyPublisher()
