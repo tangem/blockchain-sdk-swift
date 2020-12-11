@@ -11,18 +11,7 @@ import BigInt
 import web3swift
 import TangemSdk
 
-class EthereumTransactionBuilder {
-    enum GasLimit: Int {
-        case `default` = 21000
-        case erc20 = 60000
-        case medium = 150000
-        case high = 300000
-        
-        var value: BigUInt {
-            return BigUInt(self.rawValue)
-        }
-    }
-    
+class EthereumTransactionBuilder {    
     private let walletPublicKey: Data
     private let network: EthereumNetwork
     init(walletPublicKey: Data, network: EthereumNetwork) {
@@ -30,7 +19,7 @@ class EthereumTransactionBuilder {
         self.network = network
     }
     
-    public func buildForSign(transaction: Transaction, nonce: Int) -> (hash: Data, transaction: EthereumTransaction)? {
+    public func buildForSign(transaction: Transaction, nonce: Int, gasLimit: BigUInt) -> (hash: Data, transaction: EthereumTransaction)? {
         guard nonce >= 0 else {
             return nil
         }
@@ -42,7 +31,6 @@ class EthereumTransactionBuilder {
                 return nil
         }
         
-        let gasLimit = getGasLimit(for: transaction.amount)
         guard let data = getData(for: transaction.amount, targetAddress: transaction.destinationAddress) else {
             return nil
         }
@@ -82,29 +70,13 @@ class EthereumTransactionBuilder {
         return encodedBytesToSend
     }
     
-    func getGasLimit(for amount: Amount) -> BigUInt {
-        if amount.type == .coin {
-            return GasLimit.default.value
-        }
-        
-        if amount.currencySymbol == "DGX" {
-            return GasLimit.high.value
-        }
-        
-        if amount.currencySymbol == "AWG" {
-            return GasLimit.medium.value
-        }
-        
-        return GasLimit.erc20.value
-    }
-    
-    private func getData(for amount: Amount, targetAddress: String) -> Data? {
+    func getData(for amount: Amount, targetAddress: String) -> Data? {
         if !amount.type.isToken {
             return Data()
         }
         
         guard let amountValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: amount.decimals) else {
-                return nil
+            return nil
         }
         
         var amountString = String(amountValue, radix: 16).remove("0X")
