@@ -48,20 +48,24 @@ class StellarTransactionBuilder {
                 return
         }
         
+        let memo = (transaction.params as? StellarTransactionParams)?.memo ?? Memo.text("")
+        
         if transaction.amount.type == .coin {
             checkIfAccountCreated(transaction.destinationAddress) { [weak self] isCreated in
                 if !isCreated && transaction.amount.value < 1 {
                     completion(.failure(StellarError.xlmCreateAccount))
                     return
                 }
-                          
-                let operation = isCreated ? PaymentOperation(sourceAccount: nil,
-                                                             destination: destinationKeyPair,
-                                                             asset: Asset(type: AssetType.ASSET_TYPE_NATIVE)!,
-                                                             amount: transaction.amount.value ) :
-                    CreateAccountOperation(destination: destinationKeyPair, startBalance: transaction.amount.value)
-                
-                self?.serializeOperation(operation, sourceKeyPair: sourceKeyPair, completion: completion)
+                do {
+                    let operation = isCreated ? try PaymentOperation(sourceAccountId: transaction.sourceAddress,
+                                                                     destinationAccountId: transaction.destinationAddress,
+                                                                     asset: Asset(type: AssetType.ASSET_TYPE_NATIVE)!,
+                                                                     amount: transaction.amount.value ) :
+                        CreateAccountOperation(sourceAccountId: nil, destination: destinationKeyPair, startBalance: transaction.amount.value)
+                    self?.serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo, completion: completion)
+                } catch {
+                    completion(.failure(error))
+                }
             }
         } else if transaction.amount.type.isToken {
             guard let contractAddress = transaction.contractAddress, let keyPair = try? KeyPair(accountId: contractAddress),
@@ -77,19 +81,20 @@ class StellarTransactionBuilder {
                         return
                     }
                     
-                   let operation = PaymentOperation(sourceAccount: sourceKeyPair,
-                                                                destination: destinationKeyPair,
-                                                                asset: asset,
-                                                                amount: transaction.amount.value)
+                    do {
+                    let operation = try PaymentOperation(sourceAccountId: transaction.sourceAddress,
+                                                     destinationAccountId: transaction.destinationAddress,
+                                                     asset: asset,
+                                                     amount: transaction.amount.value)
                     
-                self?.serializeOperation(operation, sourceKeyPair: sourceKeyPair, completion: completion)                    
+                        self?.serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo, completion: completion)
+                    } catch {
+                        completion(.failure(error))
+                    }
                 }
-                
-                
-               
             } else {
-                let operation = ChangeTrustOperation(sourceAccount: sourceKeyPair, asset: asset, limit: Decimal(string: "900000000000.0000000"))
-                serializeOperation(operation, sourceKeyPair: sourceKeyPair, completion: completion)
+                let operation = ChangeTrustOperation(sourceAccountId: transaction.sourceAddress, asset: asset, limit: Decimal(string: "900000000000.0000000"))
+                serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo, completion: completion)
             }
         }
     }
@@ -126,7 +131,7 @@ class StellarTransactionBuilder {
         }
     }
     
-    private func serializeOperation(_ operation: stellarsdk.Operation, sourceKeyPair: KeyPair, completion: @escaping (Result<(hash: Data, transaction: stellarsdk.TransactionXDR), Error>) -> Void ) {
+    private func serializeOperation(_ operation: stellarsdk.Operation, sourceKeyPair: KeyPair, memo: Memo, completion: @escaping (Result<(hash: Data, transaction: stellarsdk.TransactionXDR), Error>) -> Void ) {
         guard let xdrOperation = try? operation.toXDR(),
             let seqNumber = sequence else {
                 completion(.failure(WalletError.failedToBuildTx))
@@ -140,7 +145,7 @@ class StellarTransactionBuilder {
         let tx = TransactionXDR(sourceAccount: sourceKeyPair.publicKey,
                                 seqNum: seqNumber + 1,
                                 timeBounds: useTimebounds ? TimeBoundsXDR(minTime: UInt64(minTime), maxTime: UInt64(maxTime)): nil,
-                                memo: Memo.text("").toXDR(),
+                                memo: memo.toXDR(),
                                 operations: [xdrOperation])
         
         let network = isTestnet ? Network.testnet : Network.public

@@ -15,9 +15,15 @@ public enum XRPError: String, Error, LocalizedError {
     case failedLoadReserve = "xrp_load_reserve_error"
     case failedLoadInfo = "xrp_load_account_error"
     case missingReserve = "xrp_missing_reserve_error"
+    case distinctTagsFound
     
     public var errorDescription: String? {
-        return self.rawValue.localized
+        switch self {
+        case .distinctTagsFound:
+            return rawValue
+        default:
+            return rawValue.localized
+        }
     }
 }
 
@@ -65,7 +71,7 @@ extension XRPWalletManager: TransactionSender {
             .checkAccountCreated(account: addressDecoded)
             .tryMap{[unowned self] isAccountCreated -> (XRPTransaction, Data) in
                 guard let walletReserve = self.wallet.amounts[.reserve]?.value,
-                    let buldResponse = self.txBuilder.buildForSign(transaction: transaction) else {
+                    let buldResponse = try self.txBuilder.buildForSign(transaction: transaction) else {
                         throw XRPError.missingReserve
                 }
                 

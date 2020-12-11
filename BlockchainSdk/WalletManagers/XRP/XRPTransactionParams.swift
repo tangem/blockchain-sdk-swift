@@ -9,5 +9,12 @@
 import Foundation
 
 public enum XRPTransactionParams: TransactionParams {
-     case destinationTag(value: String)
+    case destinationTag(String)
+    
+    var destinationTag: UInt32? {
+        switch self {
+        case .destinationTag(let stringTag):
+            return UInt32(stringTag)
+        }
+    }
 }
