@@ -12,7 +12,9 @@ import Combine
 class LitecoinNetworkService: BitcoinNetworkService {
     convenience init(isTestNet:Bool) {
         var providers = [BitcoinNetworkApi:BitcoinNetworkProvider]()
-        providers[.blockcypher] = BlockcypherProvider(endpoint: BlockcypherEndpoint(coin: .ltc, chain: .main))
+		providers[.blockcypher] = BlockcypherProvider(endpoint: BlockcypherEndpoint(coin: .ltc, chain: .main))
+		providers[.blockchair] = BlockchairProvider(endpoint: .litecoint)
         self.init(providers: providers, isTestNet: isTestNet)
+		networkApi = .blockchair
     }
 }

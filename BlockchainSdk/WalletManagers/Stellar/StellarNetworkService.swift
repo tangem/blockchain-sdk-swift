@@ -86,6 +86,17 @@ class StellarNetworkService {
     }
 }
 
+extension StellarNetworkService {
+	public func getSignatureCount(accountId: String) -> AnyPublisher<Int, Error> {
+		stellarSdk.operations.getAllOperations(accountId: accountId, recordsLimit: 1)
+			.map { items in
+				items.filter { $0.sourceAccount == accountId }.count
+			}
+			.mapError { [unowned self] in self.mapError($0) }
+			.eraseToAnyPublisher()
+	}
+}
+
 
 struct StellarResponse {
     let baseFee: Decimal

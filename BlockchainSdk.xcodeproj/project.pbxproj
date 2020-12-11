@@ -997,6 +997,7 @@
 				5D7D2443251362AB001B9A4F /* BitcoinfeesTarget.swift in Sources */,
 				5D26CEEE243CB95000994CC0 /* BlockcypherTarget.swift in Sources */,
 				5D7D243425136254001B9A4F /* XRPAccountInfo.swift in Sources */,
+				B0D432842559253900C35B6C /* BlockchainSdkError.swift in Sources */,
 				5D7D243225136254001B9A4F /* XRPWallet.swift in Sources */,
 				5D845514243DEABB0072155E /* AdaliteResponse.swift in Sources */,
 				5D7D243825136254001B9A4F /* Entropy.swift in Sources */,

@@ -42,7 +42,7 @@ enum BlockcypherChain: String {
 
 struct BlockcypherTarget: TargetType {
     enum BlockcypherTargetType {
-        case address(address:String)
+		case address(address: String, unspentsOnly: Bool, limit: Int?)
         case fee
         case send(txHex: String)
         case txs(txHash: String)
@@ -56,7 +56,7 @@ struct BlockcypherTarget: TargetType {
     
     var path: String {
         switch targetType {
-        case .address(let address):
+        case .address(let address, _, _):
             return "/addrs/\(address)"
         case .fee:
             return ""
@@ -82,11 +82,16 @@ struct BlockcypherTarget: TargetType {
     
     var task: Task {
         var parameters = token == nil ? [:] : ["token":token!]
-        
+		
         switch targetType {
-        case .address:
-            parameters["unspentOnly"] = "true"
+        case .address(_, let unspentsOnly, let limit):
+			if unspentsOnly {
+				parameters["unspentOnly"] = "true"
+			}
             parameters["includeScript"] = "true"
+			if let limit = limit {
+				parameters["limit"] = "\(limit)"
+			}
         case .send(let txHex):
             return .requestCompositeParameters(bodyParameters: ["tx": txHex],
                                                bodyEncoding: JSONEncoding.default,

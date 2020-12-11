@@ -17,6 +17,8 @@ class EthereumNetworkService {
     let network: EthereumNetwork
     let provider = MoyaProvider<InfuraTarget>(plugins: [NetworkLoggerPlugin()])
     
+	private var blockcypherProvider: BlockcypherProvider?
+	
     init(network: EthereumNetwork) {
         self.network = network
     }
@@ -68,7 +70,14 @@ class EthereumNetworkService {
         }
         return AnyPublisher(future)
     }
+	
+	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
+		let provider = BlockcypherProvider(endpoint: .init(coin: .eth, chain: .main))
+		blockcypherProvider = provider
+		return provider.getSignatureCount(address: address)
+	}
     
+	// MARK: - Private functions
     
     private func tokenData(address: String, tokens: [Token]) -> AnyPublisher<(Decimal,[Token:Decimal],Int,Int), Error> {
         return Publishers.Zip4(getBalance(address),

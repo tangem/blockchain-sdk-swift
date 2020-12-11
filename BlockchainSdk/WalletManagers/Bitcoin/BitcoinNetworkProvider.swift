@@ -42,4 +42,6 @@ protocol BitcoinNetworkProvider {
     
     @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error>
+	
+	func getSignatureCount(address: String) -> AnyPublisher<Int, Error>
 }

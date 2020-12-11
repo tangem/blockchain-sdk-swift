@@ -79,7 +79,11 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
         return isTestNet ? providers[.blockcypher]!: providers[networkApi]!
     }
 	
-	func switchProvider() {
+	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
+		getProvider().getSignatureCount(address: address)
+	}
+	
+	private func switchProvider() {
 		switch networkApi {
 		case .main:
 			networkApi = .blockchair
@@ -90,4 +94,5 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
 		}
 		print("Bitcoin network service switched to: \(networkApi)")
 	}
+	
 }

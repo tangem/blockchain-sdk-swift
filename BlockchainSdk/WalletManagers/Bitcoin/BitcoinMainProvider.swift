@@ -17,7 +17,7 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
     let feeProvider = MoyaProvider<BlockchainInfoApiTarget>(plugins: [NetworkLoggerPlugin()])
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        return addressData(address)
+		return addressUnspentsData(address)
             .tryMap {(addressResponse, unspentsResponse) throws -> BitcoinResponse in
                 guard let balance = addressResponse.final_balance,
                     let txs = addressResponse.txs else {
@@ -103,16 +103,49 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
         .eraseError()
         .eraseToAnyPublisher()
     }
-    
-    private func addressData(_ address: String) -> AnyPublisher<(BlockchainInfoAddressResponse, BlockchainInfoUnspentResponse), Error> {
-        return Publishers.Zip(
-            blockchainInfoProvider
-                .requestPublisher(.address(address: address))
-                .filterSuccessfulStatusAndRedirectCodes()
-                .map(BlockchainInfoAddressResponse.self)
-                .eraseError(),
-        
-            blockchainInfoProvider
+	
+	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
+		let responseTransactionCap = 50
+		var numberOfItems = 0
+		var currentOffset = 0
+		var loadedCount = 0
+		
+		let subject = CurrentValueSubject<Int, Error>(currentOffset)
+		return subject
+			.flatMap { [unowned self] offset -> AnyPublisher<BlockchainInfoAddressResponse, Error> in
+				offset == 0 ?
+					self.addressData(address, limit: responseTransactionCap) :
+					self.addressData(address, limit: responseTransactionCap, transactionsOffset: offset)
+			}
+			.handleEvents(receiveOutput: { (response: BlockchainInfoAddressResponse) in
+				let responseTxCount = response.txs?.count ?? 0
+				if currentOffset == 0 {
+					numberOfItems = response.n_tx ?? 0
+					if numberOfItems > responseTxCount {
+						while currentOffset < numberOfItems {
+							currentOffset += responseTransactionCap
+							subject.send(currentOffset)
+						}
+					}
+				}
+				loadedCount += responseTxCount
+				if loadedCount >= numberOfItems {
+					subject.send(completion: .finished)
+				}
+			})
+			.map { $0.txs ?? [] }
+			.reduce([BlockchainInfoTransaction](), { $0 + $1 })
+			.map { items in
+				items.filter { ($0.result ?? 0) < 0 }.count
+			}
+			.eraseToAnyPublisher()
+	}
+	
+	private func addressUnspentsData(_ address: String) -> AnyPublisher<(BlockchainInfoAddressResponse, BlockchainInfoUnspentResponse), Error> {
+		return Publishers.Zip(
+			addressData(address, limit: 5),
+			
+			blockchainInfoProvider
                 .requestPublisher(.unspents(address: address))
                 .filterSuccessfulStatusAndRedirectCodes()
                 .map(BlockchainInfoUnspentResponse.self)
@@ -132,4 +165,12 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
             })
                 .eraseToAnyPublisher()
     }
+	
+	private func addressData(_ address: String, limit: Int? = nil, transactionsOffset: Int? = nil) -> AnyPublisher<BlockchainInfoAddressResponse, Error> {
+		blockchainInfoProvider
+			.requestPublisher(.address(address: address, limit: limit, offset: transactionsOffset))
+			.filterSuccessfulStatusAndRedirectCodes()
+			.map(BlockchainInfoAddressResponse.self)
+			.eraseError()
+	}
 }

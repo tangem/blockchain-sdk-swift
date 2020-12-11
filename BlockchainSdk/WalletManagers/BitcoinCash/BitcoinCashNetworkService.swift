@@ -27,4 +27,8 @@ class BitcoinCashNetworkService {
     func send(transaction: String) -> AnyPublisher<String, Error> {
         return provider.send(transaction: transaction)
     }
+	
+	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
+		provider.getSignatureCount(address: address)
+	}
 }

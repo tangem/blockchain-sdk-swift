@@ -12,6 +12,7 @@ import Moya
 enum BlockchairEndpoint: String {
 	case bitcoin = "bitcoin"
     case bitcoinCash = "bitcoin-cash"
+	case litecoint = "litecoin"
     
     var blockchain: Blockchain {
         switch self {
@@ -19,12 +20,14 @@ enum BlockchairEndpoint: String {
             return .bitcoin(testnet: false)
         case .bitcoinCash:
             return .bitcoinCash(testnet: false)
+		case .litecoint:
+			return .litecoin
         }
     }
 }
 
 enum BlockchairTarget: TargetType {
-    case address(address:String, endpoint: BlockchairEndpoint = .bitcoinCash)
+	case address(address: String, endpoint: BlockchairEndpoint = .bitcoinCash, transactionDetails: Bool)
     case fee(endpoint: BlockchairEndpoint = .bitcoinCash)
     case send(txHex: String, endpoint: BlockchairEndpoint = .bitcoinCash)
     
@@ -32,7 +35,7 @@ enum BlockchairTarget: TargetType {
         var endpointString = ""
         
         switch self {
-        case .address(_, let endpoint):
+        case .address(_, let endpoint, _):
             endpointString = endpoint.rawValue
         case .fee(let endpoint):
             endpointString = endpoint.rawValue
@@ -45,7 +48,7 @@ enum BlockchairTarget: TargetType {
     
     var path: String {
         switch self {
-        case .address(let address, _):
+        case .address(let address, _, _):
             return "/dashboards/address/\(address)"
         case .fee:
             return "/stats"
@@ -68,10 +71,10 @@ enum BlockchairTarget: TargetType {
     }
     
     var task: Task {
-        var parameters =  ["key":apiKey]
+        var parameters =  ["key": apiKey]
         switch self {
-        case .address:
-            parameters["transaction_details"] = "true"
+        case .address(_, _, let details):
+            parameters["transaction_details"] = "\(details)"
         case .fee:
             break
         case .send(let txHex, _):

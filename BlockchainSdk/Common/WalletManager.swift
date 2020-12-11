@@ -37,7 +37,6 @@ public enum WalletError: Error, LocalizedError {
     
 }
 
-
 public class WalletManager {
     public let cardId: String
     public let cardTokens: [Token]
@@ -158,18 +157,19 @@ public class WalletManager {
     }
 }
 
-@available(iOS 13.0, *)
 public protocol TransactionSender {
     var allowsFeeSelection: Bool {get}
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error>
     func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error>
 }
 
-@available(iOS 13.0, *)
 public protocol TransactionSigner {
     func sign(hashes: [Data], cardId: String) -> AnyPublisher<SignResponse, Error>
 }
 
+public protocol SignatureCountValidator {
+	func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error>
+}
 
 public protocol WithdrawalValidator {
     func validate(_ transaction: Transaction) -> WithdrawalWarning?

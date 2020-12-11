@@ -22,12 +22,9 @@ class BlockchairProvider: BitcoinNetworkProvider {
         self.endpoint = endpoint
     }
     
-    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        return provider
-            .requestPublisher(.address(address: address, endpoint: endpoint))
-            .filterSuccessfulStatusAndRedirectCodes()
-            .mapSwiftyJSON()
-            .tryMap {[unowned self] json -> BitcoinResponse in //TODO: refactor to normal JSON
+	func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
+		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: true))
+            .tryMap { [unowned self] json -> BitcoinResponse in //TODO: refactor to normal JSON
                 let data = json["data"]
                 let addr = data["\(address)"]
                 let address = addr["address"]
@@ -70,12 +67,9 @@ class BlockchairProvider: BitcoinNetworkProvider {
         .eraseToAnyPublisher()
     }
     
-    @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<BtcFee, Error> {
-        return provider.requestPublisher(.fee(endpoint: endpoint))
-            .filterSuccessfulStatusAndRedirectCodes()
-            .mapSwiftyJSON()
-            .tryMap {[unowned self] json throws -> BtcFee in
+		publisher(for: .fee(endpoint: endpoint))
+            .tryMap { json throws -> BtcFee in
                 let data = json["data"]
                 guard let feePerByteSatoshi = data["suggested_transaction_fee_per_byte_sat"].int  else {
                     throw WalletError.failedToGetFee
@@ -93,11 +87,8 @@ class BlockchairProvider: BitcoinNetworkProvider {
         .eraseToAnyPublisher()
     }
     
-    @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error> {
-        return provider.requestPublisher(.send(txHex: transaction, endpoint: endpoint))
-            .filterSuccessfulStatusAndRedirectCodes()
-            .mapSwiftyJSON()
+		publisher(for: .send(txHex: transaction, endpoint: endpoint))
             .tryMap { json throws -> String in
                 let data = json["data"]
                 
@@ -109,4 +100,28 @@ class BlockchairProvider: BitcoinNetworkProvider {
         }
         .eraseToAnyPublisher()
     }
+	
+	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
+		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: false))
+			.map { json -> Int in
+				let addr = json["data"]["\(address)"]
+				let address = addr["address"]
+				
+				guard
+					let outputCount = address["output_count"].int,
+					let unspentOutputCount = address["unspent_output_count"].int
+				else { return 0 }
+				
+				return outputCount - unspentOutputCount
+			}
+			.mapError { $0 as Error }
+			.eraseToAnyPublisher()
+	}
+	
+	private func publisher(for target: BlockchairTarget) -> AnyPublisher<JSON, MoyaError> {
+		provider
+			.requestPublisher(target)
+			.filterSuccessfulStatusAndRedirectCodes()
+			.mapSwiftyJSON()
+	}
 }
