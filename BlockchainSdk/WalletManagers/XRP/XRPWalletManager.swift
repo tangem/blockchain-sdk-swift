@@ -15,10 +15,15 @@ public enum XRPError: String, Error, LocalizedError {
     case failedLoadReserve = "xrp_load_reserve_error"
     case failedLoadInfo = "xrp_load_account_error"
     case missingReserve = "xrp_missing_reserve_error"
-    case distinctTagsFound = "xrp_distinct_tags_found"
+    case distinctTagsFound
     
     public var errorDescription: String? {
-        return self.rawValue.localized
+        switch self {
+        case .distinctTagsFound:
+            return rawValue
+        default:
+            return rawValue.localized
+        }
     }
 }
 

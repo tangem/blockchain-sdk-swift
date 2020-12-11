@@ -44,7 +44,7 @@
 
 "xrp_missing_reserve_error" = "Missing reserve";
 
-"xrp_distinct_tags_found" = "Two distinct destination tags found";
+
 
 "eth_tx_count_parse_error" = "Failed to parse tx count";
 
