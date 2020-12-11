@@ -25,7 +25,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
             .setFailureType(to: MoyaError.self)
             .flatMap {[unowned self] in
                 self.provider
-					.requestPublisher(BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, limit: nil)))
+					.requestPublisher(BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, unspentsOnly: true, limit: nil)))
                     .filterSuccessfulStatusAndRedirectCodes()
         }
         .catch{[unowned self] error -> AnyPublisher<Response, MoyaError> in
@@ -120,7 +120,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
     }
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-		publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, limit: 2000)))
+		publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, unspentsOnly: false, limit: 2000)))
 			.map(BlockcypherAddressResponse.self)
 			.map { addressResponse -> Int in
 				var sigCount = addressResponse.txrefs?.filter { $0.tx_output_n == -1 }.count ?? 0

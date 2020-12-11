@@ -17,12 +17,12 @@ target 'BlockchainSdk' do
     #pod 'web3swift', :path => '/Users/alexander.osokin/repos/tangem/web3swift'
     pod 'web3swift', :git => 'https://bitbucket.org/tangem/web3swift.git', :tag => '2.2.4'
     pod 'AnyCodable-FlightSchool'
-    pod 'TangemSdk', :git => 'git@bitbucket.org:tangem/card-sdk-swift.git', :tag => 'build-58'
+    pod 'TangemSdk', :git => 'git@bitbucket.org:tangem/card-sdk-swift.git', :tag => 'build-79'
     pod 'stellar-ios-mac-sdk'
 		pod 'BitcoinCore.swift', :git => 'https://bitbucket.org/tangem/bitcoincore.git', :tag => '0.0.3'
     #pod 'BitcoinCore.swift', :path => '../bitcoincore'
 end
 
 target 'BlockchainSdkTests' do
-   pod 'TangemSdk', :git => 'git@bitbucket.org:tangem/card-sdk-swift.git', :tag => 'build-58'
+   pod 'TangemSdk', :git => 'git@bitbucket.org:tangem/card-sdk-swift.git', :tag => 'build-79'
 end

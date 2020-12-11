@@ -27,7 +27,7 @@ enum BlockchairEndpoint: String {
 }
 
 enum BlockchairTarget: TargetType {
-	case address(address:String, endpoint: BlockchairEndpoint = .bitcoinCash, transactionDetails: Bool)
+	case address(address: String, endpoint: BlockchairEndpoint = .bitcoinCash, transactionDetails: Bool)
     case fee(endpoint: BlockchairEndpoint = .bitcoinCash)
     case send(txHex: String, endpoint: BlockchairEndpoint = .bitcoinCash)
     
