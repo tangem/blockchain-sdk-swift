@@ -18,6 +18,7 @@ enum InfuraTarget: TargetType {
     case pending(address: String, network: EthereumNetwork)
     case send(transaction: String, network: EthereumNetwork)
     case tokenBalance(address: String, contractAddress: String, network: EthereumNetwork)
+    case gasPrice(to: String, from: String, data: String?, network: EthereumNetwork)
     
     var baseURL: URL {
         switch self {
@@ -26,10 +27,9 @@ enum InfuraTarget: TargetType {
         case .send(_, let network): return network.url
         case .tokenBalance(_, _, let network): return network.url
         case .transactions(_, let network): return network.url
+        case .gasPrice(_, _, _, let network): return network.url
         }
     }
-    
-   //  return URL(string: network.eth.rawValue)!
     
     var path: String {
         return ""
@@ -69,15 +69,29 @@ enum InfuraTarget: TargetType {
         case .send(let transaction, _):
             return .requestParameters(parameters: ["jsonrpc": "2.0",
                                                    "method": "eth_sendRawTransaction",
-                                                   "params": [transaction], "id": InfuraTarget.infuraCoinId],
+                                                   "params": [transaction],
+                                                   "id": InfuraTarget.infuraCoinId],
                                       encoding: JSONEncoding.default)
             
         case .tokenBalance(let address, let contractAddress, _):
             let rawAddress = address[address.index((address.startIndex), offsetBy: 2)...]
             let dataValue = ["data": "0x70a08231000000000000000000000000\(rawAddress)", "to": contractAddress]
-            return .requestParameters(parameters: ["method": "eth_call",
+            return .requestParameters(parameters: ["jsonrpc": "2.0",
+                                                   "method": "eth_call",
                                                    "params": [dataValue, "latest"],
                                                    "id": InfuraTarget.infuraTokenId],
+                                      encoding: JSONEncoding.default)
+        case .gasPrice(let to, let from, let data, network: _):
+            var params = [String:String]()
+            params["from"] = from
+            params["to"] = to
+            if let data = data {
+                params["data"] = data
+            }
+            return .requestParameters(parameters: ["jsonrpc": "2.0",
+                                                   "method": "eth_estimateGas",
+                                                   "params": [params],
+                                                   "id": InfuraTarget.infuraCoinId],
                                       encoding: JSONEncoding.default)
             
         }

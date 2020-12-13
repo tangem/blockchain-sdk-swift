@@ -23,7 +23,6 @@ class EthereumNetworkService {
         self.network = network
     }
     
-    @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error> {
         return provider.requestPublisher(.send(transaction: transaction, network: network))
             .filterSuccessfulStatusAndRedirectCodes()
@@ -49,7 +48,6 @@ class EthereumNetworkService {
         }
     }
     
-    @available(iOS 13.0, *)
     func getGasPrice() -> AnyPublisher<BigUInt, Error> {
         let future = Future<BigUInt,Error> {[unowned self] promise in
             DispatchQueue.global().async {
@@ -69,6 +67,14 @@ class EthereumNetworkService {
             }
         }
         return AnyPublisher(future)
+    }
+    
+    func getGasLimit(to: String, from: String, data: String?) -> AnyPublisher<BigUInt, Error> {
+        return provider
+            .requestPublisher(.gasPrice(to: to, from: from, data: data, network: network))
+            .filterSuccessfulStatusAndRedirectCodes()
+            .tryMap {[unowned self] in try self.parseGas($0.data)}
+            .eraseToAnyPublisher()
     }
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
@@ -146,6 +152,15 @@ class EthereumNetworkService {
         }
         
         throw WalletError.failedToParseNetworkResponse
+    }
+    
+    private func parseGas(_ data: Data) throws -> BigUInt {
+        let res = try parseResult(data)
+        guard let count = BigUInt(res.removeHexPrefix(), radix: 16) else {
+            throw ETHError.failedToParseGasLimit
+        }
+        
+        return count
     }
     
     private func parseTxCount(_ data: Data) throws -> Int {
