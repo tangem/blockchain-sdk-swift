@@ -27,19 +27,19 @@ enum BlockchairEndpoint: String {
 }
 
 enum BlockchairTarget: TargetType {
-	case address(address: String, endpoint: BlockchairEndpoint = .bitcoinCash, transactionDetails: Bool)
-    case fee(endpoint: BlockchairEndpoint = .bitcoinCash)
-    case send(txHex: String, endpoint: BlockchairEndpoint = .bitcoinCash)
+    case address(address: String, endpoint: BlockchairEndpoint = .bitcoinCash, transactionDetails: Bool, apiKey: String)
+    case fee(endpoint: BlockchairEndpoint = .bitcoinCash, apiKey: String)
+    case send(txHex: String, endpoint: BlockchairEndpoint = .bitcoinCash, apiKey: String)
     
     var baseURL: URL {
         var endpointString = ""
         
         switch self {
-        case .address(_, let endpoint, _):
+        case .address(_, let endpoint, _, _):
             endpointString = endpoint.rawValue
-        case .fee(let endpoint):
+        case .fee(let endpoint, _):
             endpointString = endpoint.rawValue
-        case .send(_, let endpoint):
+        case .send(_, let endpoint, _):
             endpointString = endpoint.rawValue
         }
         
@@ -48,7 +48,7 @@ enum BlockchairTarget: TargetType {
     
     var path: String {
         switch self {
-        case .address(let address, _, _):
+        case .address(let address, _, _, _):
             return "/dashboards/address/\(address)"
         case .fee:
             return "/stats"
@@ -71,15 +71,19 @@ enum BlockchairTarget: TargetType {
     }
     
     var task: Task {
-        var parameters =  ["key": apiKey]
+        var parameters = [String:String]()
+        var key: String
         switch self {
-        case .address(_, _, let details):
+        case .address(_, _, let details, let apiKey):
+            key = apiKey
             parameters["transaction_details"] = "\(details)"
-        case .fee:
-            break
-        case .send(let txHex, _):
+        case .fee(_, let apiKey):
+            key = apiKey
+        case .send(let txHex, _, let apiKey):
+            key = apiKey
             parameters["data"] = txHex
         }
+        parameters["key"] = key
         return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
     }
     
@@ -90,9 +94,5 @@ enum BlockchairTarget: TargetType {
         case .send:
             return ["Content-Type": "application/x-www-form-urlencoded"]
         }
-    }
-    
-    private var apiKey: String {
-        return "A___0Shpsu4KagE7oSabrw20DfXAqWlT"
     }
 }

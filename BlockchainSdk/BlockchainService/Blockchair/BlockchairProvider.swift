@@ -17,13 +17,15 @@ class BlockchairProvider: BitcoinNetworkProvider {
     let provider = MoyaProvider<BlockchairTarget>()
     
     private let endpoint: BlockchairEndpoint
+    private let apiKey: String
     
-    init(endpoint: BlockchairEndpoint) {
+    init(endpoint: BlockchairEndpoint, apiKey: String) {
         self.endpoint = endpoint
+        self.apiKey = apiKey
     }
     
 	func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: true))
+        publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: true, apiKey: apiKey))
             .tryMap { [unowned self] json -> BitcoinResponse in //TODO: refactor to normal JSON
                 let data = json["data"]
                 let addr = data["\(address)"]
@@ -68,7 +70,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
     }
     
     func getFee() -> AnyPublisher<BtcFee, Error> {
-		publisher(for: .fee(endpoint: endpoint))
+		publisher(for: .fee(endpoint: endpoint, apiKey: apiKey))
             .tryMap { json throws -> BtcFee in
                 let data = json["data"]
                 guard let feePerByteSatoshi = data["suggested_transaction_fee_per_byte_sat"].int  else {
@@ -88,7 +90,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
-		publisher(for: .send(txHex: transaction, endpoint: endpoint))
+		publisher(for: .send(txHex: transaction, endpoint: endpoint, apiKey: apiKey))
             .tryMap { json throws -> String in
                 let data = json["data"]
                 
@@ -102,7 +104,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
     }
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: false))
+		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: false, apiKey: apiKey))
 			.map { json -> Int in
 				let addr = json["data"]["\(address)"]
 				let address = addr["address"]

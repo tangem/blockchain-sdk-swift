@@ -13,21 +13,14 @@ import TangemSdk
 import Alamofire
 
 class BitcoinNetworkService: BitcoinNetworkProvider {
-    let isTestNet: Bool
-    var networkApi: BitcoinNetworkApi = .main
-    let providers: [BitcoinNetworkApi: BitcoinNetworkProvider]
+    private let isTestNet: Bool
+    private var networkApi: BitcoinNetworkApi
+    private let providers: [BitcoinNetworkApi: BitcoinNetworkProvider]
     
-    init(providers:[BitcoinNetworkApi: BitcoinNetworkProvider], isTestNet:Bool) {
+    init(providers:[BitcoinNetworkApi: BitcoinNetworkProvider], isTestNet:Bool, defaultApi: BitcoinNetworkApi = .main) {
         self.providers = providers
         self.isTestNet = isTestNet
-    }
-    
-    convenience init(isTestNet:Bool) {
-        var providers = [BitcoinNetworkApi:BitcoinNetworkProvider]()
-		providers[.blockchair] = BlockchairProvider(endpoint: .bitcoin)
-        providers[.blockcypher] = BlockcypherProvider( endpoint: BlockcypherEndpoint(coin: .btc, chain: isTestNet ? .test3: .main))
-        providers[.main] = BitcoinMainProvider()
-        self.init(providers:providers, isTestNet: isTestNet)
+        self.networkApi = defaultApi
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {

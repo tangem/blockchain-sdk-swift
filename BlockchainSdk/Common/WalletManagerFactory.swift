@@ -12,9 +12,12 @@ import stellarsdk
 import BitcoinCore
 
 public class WalletManagerFactory {
-    public init() {}
+    private let config: BlockchainSdkConfig
+    public init(config: BlockchainSdkConfig) {
+        self.config = config
+    }
         
-    public func makeWalletManager(from card: Card, tokens: [Token]? = nil) -> WalletManager? {
+    public func makeWalletManager(from card: Card, tokens: [Token]? = nil, pairKey: Data? = nil) -> WalletManager? {
         guard let blockchain = getBlockchain(from: card),
             let walletPublicKey = card.walletPublicKey,
             let cardId = card.cardId else {
@@ -22,34 +25,55 @@ public class WalletManagerFactory {
         }
         
         let tokens = tokens ?? getToken(from: card).map { [$0] } ?? []
-		return makeWalletManager(from: blockchain, walletPublicKey: walletPublicKey, cardId: cardId, tokens: tokens)
+		return makeWalletManager(from: blockchain, walletPublicKey: walletPublicKey, cardId: cardId, walletPairPublicKey: pairKey, tokens: tokens)
 	}
 	
-	public func makeWalletManager(from blockchain: Blockchain, walletPublicKey: Data, cardId: String, tokens: [Token] = []) -> WalletManager {
-		let addresses = blockchain.makeAddresses(from: walletPublicKey)
+    public func makeWalletManager(from blockchain: Blockchain, walletPublicKey: Data, cardId: String, walletPairPublicKey: Data? = nil, tokens: [Token] = []) -> WalletManager {
+		let addresses = blockchain.makeAddresses(from: walletPublicKey, with: walletPairPublicKey)
 		let wallet = Wallet(blockchain: blockchain,
                             addresses: addresses)
 		
         switch blockchain {
         case .bitcoin(let testnet):
             return BitcoinWalletManager(cardId: cardId, wallet: wallet).then {
-				$0.txBuilder = BitcoinTransactionBuilder(walletPublicKey: walletPublicKey, isTestnet: testnet, addresses: addresses)
-                $0.txBuilder.bitcoinManager = BitcoinManager(networkParams: testnet ? BitcoinNetwork.testnet.networkParams : BitcoinNetwork.mainnet.networkParams, walletPublicKey: walletPublicKey, compressedWalletPublicKey: Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!, bip: .bip84)
-                $0.networkService = BitcoinNetworkService(isTestNet: testnet)
+                let network: BitcoinNetwork = testnet ? .testnet : .mainnet
+                let bitcoinManager = BitcoinManager(networkParams: network.networkParams,
+                                                             walletPublicKey: walletPublicKey,
+                                                             compressedWalletPublicKey: Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!,
+                                                             bip: .bip84)
                 
+                $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: addresses)
+                
+                var providers = [BitcoinNetworkApi:BitcoinNetworkProvider]()
+                providers[.blockchair] = BlockchairProvider(endpoint: .bitcoin, apiKey: config.blockchairApiKey)
+                providers[.blockcypher] = BlockcypherProvider(endpoint: BlockcypherEndpoint(coin: .btc, chain: testnet ? .test3: .main),
+                                                              tokens: config.blockcypherTokens)
+                providers[.main] = BitcoinMainProvider()
+                
+                $0.networkService = BitcoinNetworkService(providers: providers, isTestNet: testnet)
             }
             
         case .litecoin:
             return LitecoinWalletManager(cardId: cardId, wallet: wallet).then {
-				$0.txBuilder = BitcoinTransactionBuilder(walletPublicKey: walletPublicKey, isTestnet: false, addresses: addresses)
-                $0.txBuilder.bitcoinManager = BitcoinManager(networkParams: BitcoinNetwork.mainnet.networkParams, walletPublicKey: walletPublicKey, compressedWalletPublicKey: Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!, bip: .bip44)
-                $0.networkService = LitecoinNetworkService(isTestNet: false)
+                let bitcoinManager = BitcoinManager(networkParams: BitcoinNetwork.mainnet.networkParams,
+                                                    walletPublicKey: walletPublicKey,
+                                                    compressedWalletPublicKey: Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!,
+                                                    bip: .bip44)
+                
+                $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: addresses)
+                
+                var providers = [BitcoinNetworkApi:BitcoinNetworkProvider]()
+                providers[.blockcypher] = BlockcypherProvider(endpoint: BlockcypherEndpoint(coin: .ltc, chain: .main), tokens: config.blockcypherTokens)
+                providers[.blockchair] = BlockchairProvider(endpoint: .litecoint, apiKey: config.blockchairApiKey)
+
+                $0.networkService = BitcoinNetworkService(providers: providers, isTestNet: false, defaultApi: .blockchair)
             }
             
         case .ducatus:
             return DucatusWalletManager(cardId: cardId, wallet: wallet).then {
-				$0.txBuilder = BitcoinTransactionBuilder(walletPublicKey: walletPublicKey, isTestnet: false, addresses: addresses)
-                $0.txBuilder.bitcoinManager = BitcoinManager(networkParams: BitcoinNetwork.mainnet.networkParams, walletPublicKey: walletPublicKey, compressedWalletPublicKey: Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!, bip: .bip44)
+                let bitcoinManager = BitcoinManager(networkParams: BitcoinNetwork.mainnet.networkParams, walletPublicKey: walletPublicKey, compressedWalletPublicKey: Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!, bip: .bip44)
+                
+                $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: addresses)
                 $0.networkService = DucatusNetworkService()
             }
             
@@ -63,22 +87,24 @@ public class WalletManagerFactory {
             }
             
         case .ethereum(let testnet):
-            let ethereumNetwork = testnet ? EthereumNetwork.testnet : EthereumNetwork.mainnet
             return EthereumWalletManager(cardId: cardId, wallet: wallet, cardTokens: tokens).then {
+                let ethereumNetwork = testnet ? EthereumNetwork.testnet(projectId: config.infuraProjectId) : EthereumNetwork.mainnet(projectId: config.infuraProjectId)
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: ethereumNetwork)
-                $0.networkService = EthereumNetworkService(network: ethereumNetwork)
+                let provider = BlockcypherProvider(endpoint: .init(coin: .eth, chain: .main), tokens: config.blockcypherTokens)
+                $0.networkService = EthereumNetworkService(network: ethereumNetwork, blockcypherProvider: provider)
             }
             
         case .rsk:
             return EthereumWalletManager(cardId: cardId, wallet: wallet, cardTokens: tokens).then {
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: .rsk)
-                $0.networkService = EthereumNetworkService(network: .rsk)
+                $0.networkService = EthereumNetworkService(network: .rsk, blockcypherProvider: nil)
             }
             
         case .bitcoinCash(let testnet):
             return BitcoinCashWalletManager(cardId: cardId, wallet: wallet).then {
+                let provider = BlockchairProvider(endpoint: .bitcoinCash, apiKey: config.blockchairApiKey)
                 $0.txBuilder = BitcoinCashTransactionBuilder(walletPublicKey: walletPublicKey, isTestnet: testnet)
-                $0.networkService = BitcoinCashNetworkService()
+                $0.networkService = BitcoinCashNetworkService(provider: provider)
             }
             
         case .binance(let testnet):
@@ -106,33 +132,6 @@ public class WalletManagerFactory {
         }
     }
 	
-	public func makeMultisigWallet(from card: Card, with pairKey: Data, tokens: [Token]? = nil) -> WalletManager? {
-		guard let blockchain = getBlockchain(from: card),
-			let walletPublicKey = card.walletPublicKey,
-			let cardId = card.cardId else {
-				return nil
-		}
-		
-		let tokens = tokens ?? getToken(from: card).map { [$0] } ?? []
-		return makeMultisigWallet(from: blockchain, walletPublicKey: walletPublicKey, walletPairPublicKey: pairKey, cardId: cardId, tokens: tokens)
-	}
-	
-	public func makeMultisigWallet(from blockchain: Blockchain, walletPublicKey: Data, walletPairPublicKey: Data, cardId: String, tokens: [Token] = []) -> WalletManager? {
-		guard let addresses = blockchain.makeMultisigAddresses(from: walletPublicKey, with: walletPairPublicKey) else { return nil }
-		let wallet = Wallet(blockchain: blockchain, addresses: addresses)
-		
-		switch blockchain {
-		case .bitcoin(let testnet):
-			return BitcoinWalletManager(cardId: cardId, wallet: wallet).then {
-				$0.txBuilder = BitcoinTransactionBuilder(walletPublicKey: walletPublicKey, isTestnet: testnet, addresses: addresses)
-				$0.txBuilder.bitcoinManager = BitcoinManager(networkParams: testnet ? BitcoinNetwork.testnet.networkParams : BitcoinNetwork.mainnet.networkParams, walletPublicKey: walletPublicKey, compressedWalletPublicKey: Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!, bip: .bip44)
-				$0.networkService = BitcoinNetworkService(isTestNet: testnet)
-			}
-		default:
-			return nil
-		}
-	}
-    
     public func isBlockchainSupported(_ card: Card) -> Bool {
         guard let blockchainName = card.cardData?.blockchainName,
             let curve = card.curve,

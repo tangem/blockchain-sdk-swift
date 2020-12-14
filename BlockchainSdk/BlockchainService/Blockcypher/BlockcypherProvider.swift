@@ -15,9 +15,11 @@ class BlockcypherProvider: BitcoinNetworkProvider {
     let endpoint: BlockcypherEndpoint
     
     private var token: String? = nil
+    private let tokens: [String]
     
-    init(endpoint: BlockcypherEndpoint) {
+    init(endpoint: BlockcypherEndpoint, tokens: [String]) {
         self.endpoint = endpoint
+        self.tokens = tokens
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
@@ -148,10 +150,6 @@ class BlockcypherProvider: BitcoinNetworkProvider {
 	}
     
     private func getRandomToken() -> String {
-        let tokens: [String] = ["aa8184b0e0894b88a5688e01b3dc1e82",
-                                "56c4ca23c6484c8f8864c32fde4def8d",
-                                "66a8a37c5e9d4d2c9bb191acfe7f93aa"]
-        
         let tokenIndex = Int.random(in: 0...2)
         return tokens[tokenIndex]
     }

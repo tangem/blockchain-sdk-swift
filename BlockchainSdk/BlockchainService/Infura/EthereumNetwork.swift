@@ -10,19 +10,30 @@ import Foundation
 import BigInt
 import web3swift
 
-enum EthereumNetwork: Int {
-    case mainnet = 1
-    case testnet = 4
-    case rsk = 30
+enum EthereumNetwork {
+    case mainnet(projectId: String)
+    case testnet(projectId: String)
+    case rsk
     
-    var chainId: BigUInt { return BigUInt(self.rawValue) }
+    var chainId: BigUInt { return BigUInt(self.id) }
+    
+    var id: Int {
+        switch self {
+        case .mainnet:
+           return 1
+        case .testnet:
+            return 4
+        case .rsk:
+            return 30
+        }
+    }
     
     var url: URL {
         switch self {
-        case .mainnet:
-            return URL(string: "https://mainnet.infura.io/v3/613a0b14833145968b1f656240c7d245")!
-        case .testnet:
-            return URL(string:"https://rinkeby.infura.io/v3/613a0b14833145968b1f656240c7d245")!
+        case .mainnet(let projectId):
+            return URL(string: "https://mainnet.infura.io/v3/\(projectId)")!
+        case .testnet(let projectId):
+            return URL(string:"https://rinkeby.infura.io/v3/\(projectId)")!
         case .rsk:
             return URL(string: "https://public-node.rsk.co/")!
         }

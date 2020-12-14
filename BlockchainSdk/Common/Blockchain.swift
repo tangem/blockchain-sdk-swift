@@ -148,14 +148,16 @@ public enum Blockchain {
 		}
 	}
     
-    public func makeAddresses(from walletPublicKey: Data) -> [Address] {
-        return getAddressService().makeAddresses(from: walletPublicKey)
+    public func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data?) -> [Address] {
+        let addressService = getAddressService()
+        if let multiSigAddressProvider = addressService as? MultisigAddressProvider,
+           let pairKey = pairPublicKey,
+           let addresses = multiSigAddressProvider.makeAddresses(from: walletPublicKey, with: pairKey) {
+            return addresses
+        }
+        
+        return addressService.makeAddresses(from: walletPublicKey)
     }
-	
-	public func makeMultisigAddresses(from walletPublicKey: Data, with pairPublicKey: Data) -> [Address]? {
-		guard let service = getAddressService() as? MultisigAddressProvider else { return nil }
-		return service.makeAddresses(from: walletPublicKey, with: pairPublicKey)
-	}
     
     public func validate(address: String) -> Bool {
         switch self {
