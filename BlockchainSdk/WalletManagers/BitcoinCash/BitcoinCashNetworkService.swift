@@ -12,8 +12,12 @@ import Combine
 import TangemSdk
 
 class BitcoinCashNetworkService {
-    let provider = BlockchairProvider(endpoint: .bitcoinCash)
+    private let provider: BlockchairProvider
 
+    init(provider: BlockchairProvider) {
+        self.provider = provider
+    }
+    
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         return provider.getInfo(address: address)
     }

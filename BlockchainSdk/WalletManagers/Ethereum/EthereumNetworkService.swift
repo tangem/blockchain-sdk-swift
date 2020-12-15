@@ -14,13 +14,13 @@ import web3swift
 import BigInt
 
 class EthereumNetworkService {
-    let network: EthereumNetwork
-    let provider = MoyaProvider<InfuraTarget>(plugins: [NetworkLoggerPlugin()])
-    
-	private var blockcypherProvider: BlockcypherProvider?
+    private let network: EthereumNetwork
+    private let provider = MoyaProvider<InfuraTarget>(plugins: [NetworkLoggerPlugin()])
+    private let blockcypherProvider: BlockcypherProvider?
 	
-    init(network: EthereumNetwork) {
+    init(network: EthereumNetwork, blockcypherProvider: BlockcypherProvider?) {
         self.network = network
+        self.blockcypherProvider = blockcypherProvider
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
@@ -78,9 +78,11 @@ class EthereumNetworkService {
     }
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-		let provider = BlockcypherProvider(endpoint: .init(coin: .eth, chain: .main))
-		blockcypherProvider = provider
-		return provider.getSignatureCount(address: address)
+        guard let blockcypherProvider = blockcypherProvider else {
+            return Fail(error: ETHError.unsupportedFeature).eraseToAnyPublisher()
+        }
+        
+		return blockcypherProvider.getSignatureCount(address: address)
 	}
     
 	// MARK: - Private functions

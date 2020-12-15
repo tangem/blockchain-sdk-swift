@@ -12,8 +12,6 @@ import HDWalletKit
 import BitcoinCore
 
 class BitcoinTransactionBuilder {
-	let isTestnet: Bool
-	let walletPublicKey: Data
 	var unspentOutputs: [BtcTx]? {
 		didSet {
 			let utxoDTOs: [UtxoDTO]? = unspentOutputs?.map {
@@ -35,18 +33,12 @@ class BitcoinTransactionBuilder {
 	}
 	
 	var feeRates: [Decimal: Int] = [:]
-	var bitcoinManager: BitcoinManager!
-	var blockchain: Blockchain { Blockchain.bitcoin(testnet: isTestnet) }
-	
-	private let walletAddresses: [Address]
+    var bitcoinManager: BitcoinManager
+    
 	private let walletScripts: [HDWalletScript]
-	
-	private var hdTransaction: HDWalletKit.Transaction?
-	
-	init(walletPublicKey: Data, isTestnet: Bool, addresses: [Address]) {
-		self.walletPublicKey = walletPublicKey
-		self.isTestnet = isTestnet
-		self.walletAddresses = addresses
+
+	init(bitcoinManager: BitcoinManager, addresses: [Address]) {
+        self.bitcoinManager = bitcoinManager
 		walletScripts = addresses.map { $0 as? BitcoinScriptAddress }.compactMap { $0?.script }
 	}
 	
