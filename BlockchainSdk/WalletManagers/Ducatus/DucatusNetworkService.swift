@@ -53,9 +53,9 @@ class DucatusNetworkService: BitcoinNetworkProvider {
     
     @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<BtcFee, Error> {
-        let fee = BtcFee(minimalSatoshiPerByte: 0.00000089,
-                         normalSatoshiPerByte: 0.00000144,
-                         prioritySatoshiPerByte: 0.0000035)
+        let fee = BtcFee(minimalSatoshiPerByte: 89,
+                         normalSatoshiPerByte: 144,
+                         prioritySatoshiPerByte: 350)
         
         return Just(fee)
             .setFailureType(to: Error.self)
