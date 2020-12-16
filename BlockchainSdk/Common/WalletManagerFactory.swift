@@ -55,7 +55,7 @@ public class WalletManagerFactory {
             
         case .litecoin:
             return LitecoinWalletManager(cardId: cardId, wallet: wallet).then {
-                let bitcoinManager = BitcoinManager(networkParams: BitcoinNetwork.mainnet.networkParams,
+                let bitcoinManager = BitcoinManager(networkParams: LitecoinNetworkParams(),
                                                     walletPublicKey: walletPublicKey,
                                                     compressedWalletPublicKey: Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!,
                                                     bip: .bip44)
@@ -71,7 +71,7 @@ public class WalletManagerFactory {
             
         case .ducatus:
             return DucatusWalletManager(cardId: cardId, wallet: wallet).then {
-                let bitcoinManager = BitcoinManager(networkParams: BitcoinNetwork.mainnet.networkParams, walletPublicKey: walletPublicKey, compressedWalletPublicKey: Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!, bip: .bip44)
+                let bitcoinManager = BitcoinManager(networkParams: DucatusNetworkParams(), walletPublicKey: walletPublicKey, compressedWalletPublicKey: Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!, bip: .bip44)
                 
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: addresses)
                 $0.networkService = DucatusNetworkService()
