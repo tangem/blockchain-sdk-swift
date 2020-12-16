@@ -31,9 +31,8 @@ class BinanceWalletManager: WalletManager {
     }
     
     private func updateWallet(with response: BinanceInfoResponse) {
-        if let coinBalance = response.balances[wallet.blockchain.currencySymbol] {
-             wallet.add(coinValue: coinBalance)
-        }
+        let coinBalance = response.balances[wallet.blockchain.currencySymbol] ?? 0 //if withdrawal all funds, there is no balance from network
+        wallet.add(coinValue: coinBalance)
         
         if cardTokens.isEmpty {
             _ = response.balances
@@ -46,9 +45,8 @@ class BinanceWalletManager: WalletManager {
             }
         } else {
             for token in cardTokens {
-                if let balance = response.balances[token.symbol] {
-                    wallet.add(tokenValue: balance, for: token)
-                }
+                let balance = response.balances[token.contractAddress] ?? 0 //if withdrawal all funds, there is no balance from network
+                wallet.add(tokenValue: balance, for: token)
             }
         }
         
