@@ -23,37 +23,32 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
         self.networkApi = defaultApi
     }
     
+    func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
+        return Just(())
+            .setFailureType(to: Error.self)
+            .flatMap {[unowned self] in self.getProvider().getInfo(addresses: addresses) }
+            .mapError {[unowned self] in self.handleError($0)}
+            .retry(2)
+            .eraseToAnyPublisher()
+    }
+    
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         return Just(())
             .setFailureType(to: Error.self)
             .flatMap {[unowned self] in self.getProvider().getInfo(address: address) }
-            .tryCatch {[unowned self] error -> AnyPublisher<BitcoinResponse, Error> in
-                if let moyaError = error as? MoyaError,
-                    case let MoyaError.statusCode(response) = moyaError,
-                    self.providers.count > 1,
-                    response.statusCode > 299  {
-					self.switchProvider()
-                }
-                
-                throw error
-        }
-        .retry(1)
-        .eraseToAnyPublisher()
+            .mapError {[unowned self] in self.handleError($0)}
+            .retry(2)
+            .eraseToAnyPublisher()
     }
     
     @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<BtcFee, Error> {
         return Just(())
             .setFailureType(to: Error.self)
-            .flatMap {[unowned self] _ -> AnyPublisher<BtcFee, Error> in
-                self.getProvider().getFee()
-            }
-            .tryCatch {[unowned self] error -> AnyPublisher<BtcFee, Error> in
-				self.switchProvider()
-                throw error
-        }
-        .retry(1)
-        .eraseToAnyPublisher()
+            .flatMap {[unowned self] in self.getProvider().getFee() }
+            .mapError {[unowned self] in self.handleError($0)}
+            .retry(2)
+            .eraseToAnyPublisher()
     }
     
     @available(iOS 13.0, *)
@@ -75,6 +70,17 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
 		getProvider().getSignatureCount(address: address)
 	}
+    
+    private func handleError(_ error: Error) -> Error {
+        if let moyaError = error as? MoyaError,
+           case let MoyaError.statusCode(response) = moyaError,
+           self.providers.count > 1,
+           response.statusCode > 299  {
+            switchProvider()
+        }
+        
+        return error
+    }
 	
 	private func switchProvider() {
 		switch networkApi {
