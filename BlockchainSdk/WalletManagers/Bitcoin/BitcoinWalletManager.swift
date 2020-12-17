@@ -19,10 +19,9 @@ class BitcoinWalletManager: WalletManager {
     }
     
     override func update(completion: @escaping (Result<Void, Error>)-> Void)  {
-        let publishers = wallet.addresses.map { networkService.getInfo(address: $0.value) }
-        cancellable = Publishers.MergeMany(publishers)
-            .collect()
+        cancellable = networkService.getInfo(addresses: wallet.addresses.map{ $0.value })
             .eraseToAnyPublisher()
+            .subscribe(on: DispatchQueue.global())
             .sink(receiveCompletion: {[unowned self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
                     self.wallet.amounts = [:]
@@ -85,7 +84,7 @@ class BitcoinWalletManager: WalletManager {
         
         wallet.add(coinValue: balance)
         txBuilder.unspentOutputs = unspents
-        if hasUnconfirmed{
+        if hasUnconfirmed {
             if wallet.transactions.isEmpty {
                 wallet.addPendingTransaction()
             }

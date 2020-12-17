@@ -35,6 +35,8 @@ enum BitcoinNetworkApi {
 }
 
 protocol BitcoinNetworkProvider {
+    func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error>
+    
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error>
     
     @available(iOS 13.0, *)
@@ -44,4 +46,14 @@ protocol BitcoinNetworkProvider {
     func send(transaction: String) -> AnyPublisher<String, Error>
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error>
+}
+
+
+extension BitcoinNetworkProvider {
+    func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
+        let publishers = addresses.map { getInfo(address: $0) }
+        return Publishers.MergeMany(publishers)
+            .collect()
+            .eraseToAnyPublisher()
+    }
 }
