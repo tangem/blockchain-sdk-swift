@@ -13,6 +13,4 @@ class LitecoinWalletManager: BitcoinWalletManager {
     override var relayFee: Decimal? {
         return Decimal(0.00001)
     }
-    
-    override var allowsFeeSelection: Bool { false }
 }

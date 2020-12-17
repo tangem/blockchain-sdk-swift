@@ -12,7 +12,7 @@ import Moya
 enum BlockchairEndpoint: String {
 	case bitcoin = "bitcoin"
     case bitcoinCash = "bitcoin-cash"
-	case litecoint = "litecoin"
+	case litecoin = "litecoin"
     
     var blockchain: Blockchain {
         switch self {
@@ -20,7 +20,7 @@ enum BlockchairEndpoint: String {
             return .bitcoin(testnet: false)
         case .bitcoinCash:
             return .bitcoinCash(testnet: false)
-		case .litecoint:
+		case .litecoin:
 			return .litecoin
         }
     }

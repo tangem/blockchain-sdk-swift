@@ -38,13 +38,17 @@ class BitcoinWalletManager: WalletManager {
         return networkService.getFee()
             .tryMap {[unowned self] response throws -> [Amount] in
               //  let dummyFee = Amount(with: amount, value: 0.00000001)
-                let minRate = (response.minimalSatoshiPerByte as NSDecimalNumber).intValue
-                let normalRate = (response.normalSatoshiPerByte as NSDecimalNumber).intValue
-                let maxRate = (response.prioritySatoshiPerByte as NSDecimalNumber).intValue
+                var minRate = max((response.minimalSatoshiPerByte as NSDecimalNumber).intValue, 1)
+                var normalRate = max((response.normalSatoshiPerByte as NSDecimalNumber).intValue, 1)
+                var maxRate = max((response.prioritySatoshiPerByte as NSDecimalNumber).intValue, 1)
                 
                 var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: !includeFee)
                 var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: !includeFee)
                 var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: !includeFee)
+                
+                
+                
+                
                 
 //                guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount - dummyFee,
 //                                                                                  fee: dummyFee,
@@ -59,9 +63,20 @@ class BitcoinWalletManager: WalletManager {
 //                var maxFee = (maxPerByte * estimatedTxSize)
 //
                 if let relayFee = self.relayFee {
-                    minFee = max(minFee, relayFee)
-                    normalFee = max(normalFee, relayFee)
-                    maxFee = max(maxFee, relayFee)
+                    if minFee < relayFee {
+                        minRate = ((relayFee/minFee).rounded(scale: 0, roundingMode: .down) as NSDecimalNumber).intValue
+                        minFee = relayFee
+                    }
+                    
+                    if normalFee < relayFee {
+                        normalRate = ((relayFee/normalFee).rounded(scale: 0, roundingMode: .down) as NSDecimalNumber).intValue
+                        normalFee = relayFee
+                    }
+                    
+                    if maxFee < relayFee {
+                        maxRate = ((relayFee/maxFee).rounded(scale: 0, roundingMode: .down) as NSDecimalNumber).intValue
+                        maxFee = relayFee
+                    }
                 }
                 
                 txBuilder.feeRates = [:]
