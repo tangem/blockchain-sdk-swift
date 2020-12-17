@@ -64,7 +64,7 @@ public class WalletManagerFactory {
                 
                 var providers = [BitcoinNetworkApi:BitcoinNetworkProvider]()
                 providers[.blockcypher] = BlockcypherProvider(endpoint: BlockcypherEndpoint(coin: .ltc, chain: .main), tokens: config.blockcypherTokens)
-                providers[.blockchair] = BlockchairProvider(endpoint: .litecoint, apiKey: config.blockchairApiKey)
+                providers[.blockchair] = BlockchairProvider(endpoint: .litecoin, apiKey: config.blockchairApiKey)
 
                 $0.networkService = BitcoinNetworkService(providers: providers, isTestNet: false, defaultApi: .blockchair)
             }
