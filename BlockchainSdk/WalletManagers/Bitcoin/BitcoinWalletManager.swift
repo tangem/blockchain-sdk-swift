@@ -42,9 +42,9 @@ class BitcoinWalletManager: WalletManager {
                 var normalRate = max((response.normalSatoshiPerByte as NSDecimalNumber).intValue, 1)
                 var maxRate = max((response.prioritySatoshiPerByte as NSDecimalNumber).intValue, 1)
                 
-                var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: !includeFee)
-                var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: !includeFee)
-                var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: !includeFee)
+                var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: !includeFee, changeScript: nil)
+                var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: !includeFee, changeScript: nil)
+                var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: !includeFee, changeScript: nil)
                 
                 
                 

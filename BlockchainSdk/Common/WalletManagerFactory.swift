@@ -40,7 +40,7 @@ public class WalletManagerFactory {
                 let bitcoinManager = BitcoinManager(networkParams: network.networkParams,
                                                              walletPublicKey: walletPublicKey,
                                                              compressedWalletPublicKey: Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!,
-                                                             bip: .bip84)
+                                                             bip: walletPairPublicKey == nil ? .bip84 : .bip141)
                 
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: addresses)
                 
