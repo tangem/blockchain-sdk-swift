@@ -35,18 +35,33 @@ class BitcoinTransactionBuilder {
 	var feeRates: [Decimal: Int] = [:]
     var bitcoinManager: BitcoinManager
     
+    private var changeScript: Data?
 	private let walletScripts: [HDWalletScript]
 
 	init(bitcoinManager: BitcoinManager, addresses: [Address]) {
         self.bitcoinManager = bitcoinManager
-		walletScripts = addresses.map { $0 as? BitcoinScriptAddress }.compactMap { $0?.script }
+        let scriptAddresses = addresses.map { $0 as? BitcoinScriptAddress }
+        var script: Data?
+        if scriptAddresses.count > 0 {
+            if let scriptAddress = scriptAddresses.first(where: {
+                if case .bitcoin(let t) = $0?.type {
+                    return t == .bech32
+                }
+                return false
+            }) {
+                script = scriptAddress?.script.data
+            }
+        }
+        walletScripts = scriptAddresses.compactMap { $0?.script }
+        changeScript = script?.sha256()
 	}
 	
 	public func buildForSign(transaction: Transaction) -> [Data]? {
 		do {
 			let hashes = try bitcoinManager.buildForSign(target: transaction.destinationAddress,
 														 amount: transaction.amount.value,
-														 feeRate: feeRates[transaction.fee.value]!)
+                                                         feeRate: feeRates[transaction.fee.value]!,
+                                                         changeScript: changeScript)
 			return hashes
 		} catch {
 			print(error)
@@ -63,7 +78,8 @@ class BitcoinTransactionBuilder {
 			return try bitcoinManager.buildForSend(target: transaction.destinationAddress,
 												   amount: transaction.amount.value,
 												   feeRate: feeRates[transaction.fee.value]!,
-												   derSignatures: signatures)
+                                                   derSignatures: signatures,
+                                                   changeScript: changeScript)
 		} catch {
 			print(error)
 			return nil
