@@ -18,6 +18,11 @@
 		5D14E47F2397B80F00C15FC8 /* BlockchainSdk.h in Headers */ = {isa = PBXBuildFile; fileRef = 5D14E4712397B80F00C15FC8 /* BlockchainSdk.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5D14E4972397B87000C15FC8 /* WalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D14E48F2397B87000C15FC8 /* WalletManager.swift */; };
 		5D14E4982397B87000C15FC8 /* Blockchain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D14E4902397B87000C15FC8 /* Blockchain.swift */; };
+		5D16094625921D5C00738AE6 /* EthereumAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56223A38204009C7482 /* EthereumAddressService.swift */; };
+		5D16096925921DA900738AE6 /* AddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD831BB244DF5BD00F80CEA /* AddressService.swift */; };
+		5D16096C25921DAC00738AE6 /* MultipleAddressProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DACA360255E98900096BC48 /* MultipleAddressProvider.swift */; };
+		5D16096D25921DAF00738AE6 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DACA35A255E97FE0096BC48 /* Address.swift */; };
+		5D16097025921DB100738AE6 /* BitcoinAddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DACA358255E97EA0096BC48 /* BitcoinAddressType.swift */; };
 		5D26CEE7243CA4E200994CC0 /* DucatusAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D26CEE6243CA4E200994CC0 /* DucatusAddressService.swift */; };
 		5D26CEEC243CB92700994CC0 /* BlockcypherResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D26CEEB243CB92700994CC0 /* BlockcypherResponse.swift */; };
 		5D26CEEE243CB95000994CC0 /* BlockcypherTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D26CEED243CB95000994CC0 /* BlockcypherTarget.swift */; };
@@ -1095,6 +1100,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				5D14E47D2397B80F00C15FC8 /* BlockchainSdkTests.swift in Sources */,
+				5D16096C25921DAC00738AE6 /* MultipleAddressProvider.swift in Sources */,
+				5D16096925921DA900738AE6 /* AddressService.swift in Sources */,
+				5D16094625921D5C00738AE6 /* EthereumAddressService.swift in Sources */,
+				5D16096D25921DAF00738AE6 /* Address.swift in Sources */,
+				5D16097025921DB100738AE6 /* BitcoinAddressType.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
