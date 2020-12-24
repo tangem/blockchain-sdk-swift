@@ -9,16 +9,12 @@
 import Foundation
 import stellarsdk
 
-public enum StellarTransactionParams: TransactionParams {
-    case memo(StellarMemo)
-    
-    var memo: StellarMemo? {
-        switch self {
-        case .memo(let memo):
-            return memo
-        }
-    }
-}
-
 public typealias StellarMemo = Memo
 
+public struct StellarTransactionParams: TransactionParams {
+    public var memo: StellarMemo?
+    
+    public init(memo: StellarMemo? = nil) {
+        self.memo = memo
+    }
+}
