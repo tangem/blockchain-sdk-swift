@@ -8,13 +8,10 @@
 
 import Foundation
 
-public enum XRPTransactionParams: TransactionParams {
-    case destinationTag(String)
+public struct XRPTransactionParams: TransactionParams {
+    public var destinationTag: UInt32?
     
-    var destinationTag: UInt32? {
-        switch self {
-        case .destinationTag(let stringTag):
-            return UInt32(stringTag)
-        }
+    public init(destinationTag: UInt32? = nil) {
+        self.destinationTag = destinationTag
     }
 }
