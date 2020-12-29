@@ -19,7 +19,7 @@ target 'BlockchainSdk' do
     pod 'AnyCodable-FlightSchool'
     pod 'TangemSdk', :git => 'git@bitbucket.org:tangem/card-sdk-swift.git', :tag => 'build-79'
     pod 'stellar-ios-mac-sdk'
-		pod 'BitcoinCore.swift', :git => 'https://bitbucket.org/tangem/bitcoincore.git', :tag => '0.0.6'
+		pod 'BitcoinCore.swift', :git => 'https://bitbucket.org/tangem/bitcoincore.git', :tag => '0.0.7'
     #pod 'BitcoinCore.swift', :path => '../bitcoincore'
 end
 
