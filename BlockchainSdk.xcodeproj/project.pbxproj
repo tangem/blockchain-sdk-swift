@@ -91,7 +91,6 @@
 		5D845514243DEABB0072155E /* AdaliteResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D845513243DEABB0072155E /* AdaliteResponse.swift */; };
 		5D845516243DEAC80072155E /* AdaliteTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D845515243DEAC80072155E /* AdaliteTarget.swift */; };
 		5D845518243DFCE90072155E /* CardanoNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D845517243DFCE90072155E /* CardanoNetworkService.swift */; };
-		5D84551C243E30E70072155E /* PrimitiveSequence+SwiftyJson.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D84551B243E30E70072155E /* PrimitiveSequence+SwiftyJson.swift */; };
 		5D8653FA23A8C481000DE52D /* StellarNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653F923A8C481000DE52D /* StellarNetworkService.swift */; };
 		5D8653FC23A8C4A9000DE52D /* StellarTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FB23A8C4A9000DE52D /* StellarTransactionBuilder.swift */; };
 		5D8653FE23A8E486000DE52D /* StellarSdk+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FD23A8E486000DE52D /* StellarSdk+.swift */; };
@@ -238,7 +237,6 @@
 		5D845513243DEABB0072155E /* AdaliteResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaliteResponse.swift; sourceTree = "<group>"; };
 		5D845515243DEAC80072155E /* AdaliteTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaliteTarget.swift; sourceTree = "<group>"; };
 		5D845517243DFCE90072155E /* CardanoNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoNetworkService.swift; sourceTree = "<group>"; };
-		5D84551B243E30E70072155E /* PrimitiveSequence+SwiftyJson.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrimitiveSequence+SwiftyJson.swift"; sourceTree = "<group>"; };
 		5D8653F923A8C481000DE52D /* StellarNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarNetworkService.swift; sourceTree = "<group>"; };
 		5D8653FB23A8C4A9000DE52D /* StellarTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarTransactionBuilder.swift; sourceTree = "<group>"; };
 		5D8653FD23A8E486000DE52D /* StellarSdk+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StellarSdk+.swift"; sourceTree = "<group>"; };
@@ -462,7 +460,6 @@
 				5D94E56623A3946C009C7482 /* Data+.swift */,
 				5D8653FF23A906DF000DE52D /* CardManager+.swift */,
 				5D557CAF23AA888D009B32AF /* Uint64+.swift */,
-				5D84551B243E30E70072155E /* PrimitiveSequence+SwiftyJson.swift */,
 				5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */,
 				5D5E058B24FE749D00F04DE1 /* Bundle+.swift */,
 			);
@@ -972,7 +969,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				5D4B33D123F7DC7500C93A84 /* BinanceAddressService.swift in Sources */,
-				5D84551C243E30E70072155E /* PrimitiveSequence+SwiftyJson.swift in Sources */,
 				5D01BCE2243F7F7E0048D1BA /* XrpTarget.swift in Sources */,
 				5D7D242925136254001B9A4F /* XRPLedger.swift in Sources */,
 				5DF9151D253DB85500B927DD /* TezosNetworkService.swift in Sources */,
