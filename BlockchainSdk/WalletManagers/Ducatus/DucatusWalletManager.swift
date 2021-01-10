@@ -14,7 +14,7 @@ class DucatusWalletManager: BitcoinWalletManager {
         txBuilder.unspentOutputs = singleResponse.txrefs
         if singleResponse.hasUnconfirmed {
             if wallet.transactions.isEmpty {
-                wallet.addPendingTransaction()
+                wallet.addDummyPendingTransaction()
             }
         } else {
             for index in wallet.transactions.indices {

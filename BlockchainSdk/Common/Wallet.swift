@@ -32,6 +32,27 @@ public struct Wallet {
         return transactions.filter { $0.status == .unconfirmed }.count > 0
     }
     
+    public var pendingOutgoingTransactions: [Transaction] {
+        transactions.filter { tx in
+            tx.status == .unconfirmed &&
+                tx.destinationAddress != .unknown &&
+                addresses.contains(where: { $0.value == tx.sourceAddress })
+        }
+    }
+    
+    public var pendingIncomingTransactions: [Transaction] {
+        transactions.filter { tx in
+            tx.status == .unconfirmed &&
+                tx.sourceAddress != .unknown &&
+                addresses.contains(where: { $0.value == tx.destinationAddress })
+        }
+    }
+    
+    public var pendingBalance: Decimal {
+        pendingOutgoingTransactions
+            .reduce(0, { $0 + $1.amount.value + $1.fee.value })
+    }
+    
     internal init(blockchain: Blockchain, addresses: [Address]) {
         self.blockchain = blockchain
         self.addresses = addresses
@@ -88,13 +109,22 @@ public struct Wallet {
         transactions.append(tx)
     }
     
-    mutating func addPendingTransaction() {
-        let dummyAmount = Amount(with: blockchain, address: "unknown", type: .coin, value: 0)
+    mutating func addPendingTransaction(amount: Amount, sourceAddress: String, destinationAddress: String, date: Date, changeAddress: String = .unknown) {
+        transactions.append(Transaction(amount: amount,
+                                        fee: .dummyCoin(for: blockchain),
+                                        sourceAddress: sourceAddress,
+                                        destinationAddress: destinationAddress,
+                                        changeAddress: changeAddress,
+                                        date: date))
+    }
+    
+    mutating func addDummyPendingTransaction() {
+        let dummyAmount = Amount.dummyCoin(for: blockchain)
         var tx = Transaction(amount: dummyAmount,
                              fee: dummyAmount,
-                             sourceAddress: "unknown",
+                             sourceAddress: .unknown,
                              destinationAddress: address,
-                             changeAddress: "unknown")
+                             changeAddress: .unknown)
         tx.date = Date()
         transactions.append(tx)
     }
@@ -105,4 +135,8 @@ extension Wallet {
         case created
         case loaded
     }
+}
+
+extension String {
+    static let unknown = "unknown"
 }

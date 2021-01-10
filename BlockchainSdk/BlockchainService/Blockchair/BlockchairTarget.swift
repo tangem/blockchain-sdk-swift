@@ -30,6 +30,8 @@ enum BlockchairTarget: TargetType {
     case address(address: String, endpoint: BlockchairEndpoint = .bitcoinCash, transactionDetails: Bool, apiKey: String)
     case fee(endpoint: BlockchairEndpoint = .bitcoinCash, apiKey: String)
     case send(txHex: String, endpoint: BlockchairEndpoint = .bitcoinCash, apiKey: String)
+    case txDetails(txHash: String, endpoint: BlockchairEndpoint = .bitcoin, apiKey: String)
+    case txsDetails(hashes: [String], endpoint: BlockchairEndpoint = .bitcoin, apiKey: String)
     
     var baseURL: URL {
         var endpointString = ""
@@ -40,6 +42,10 @@ enum BlockchairTarget: TargetType {
         case .fee(let endpoint, _):
             endpointString = endpoint.rawValue
         case .send(_, let endpoint, _):
+            endpointString = endpoint.rawValue
+        case .txDetails(_, let endpoint, _):
+            endpointString = endpoint.rawValue
+        case .txsDetails(_, let endpoint, _):
             endpointString = endpoint.rawValue
         }
         
@@ -54,12 +60,24 @@ enum BlockchairTarget: TargetType {
             return "/stats"
         case .send:
             return "/push/transaction"
+        case .txDetails(let hash, _, _):
+            return "/dashboards/transaction/\(hash)"
+        case .txsDetails(let hashes, _, _):
+            var path = "/dashboards/transactions/"
+            if hashes.count > 0 {
+                hashes.forEach {
+                    path.append($0)
+                    path.append(",")
+                }
+                path.removeLast()
+            }
+            return path
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .address, .fee:
+        case .address, .fee, .txDetails, .txsDetails:
             return .get
         case .send:
             return .post
@@ -82,6 +100,8 @@ enum BlockchairTarget: TargetType {
         case .send(let txHex, _, let apiKey):
             key = apiKey
             parameters["data"] = txHex
+        case .txDetails(_, _, let apiKey), .txsDetails(_, _, let apiKey):
+            key = apiKey
         }
         parameters["key"] = key
         return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
@@ -89,7 +109,7 @@ enum BlockchairTarget: TargetType {
     
     var headers: [String: String]? {
         switch self {
-        case .address, .fee:
+        case .address, .fee, .txDetails, .txsDetails:
             return ["Content-Type": "application/json"]
         case .send:
             return ["Content-Type": "application/x-www-form-urlencoded"]

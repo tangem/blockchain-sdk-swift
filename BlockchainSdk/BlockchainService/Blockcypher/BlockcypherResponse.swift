@@ -16,6 +16,15 @@ struct BlockcypherAddressResponse : Codable {
     let unconfirmed_txrefs: [BlockcypherTxref]?
 }
 
+struct BlockcypherFullAddressResponse: Codable {
+    let address: String?
+    let balance: Int?
+    let unconfirmedBalance: Int?
+    let nTx: Int?
+    let unconfirmedNTx: Int?
+    let txs: [BlockcypherTx]?
+}
+
 struct BlockcypherTxref: Codable {
     let tx_hash: String?
     let tx_output_n: Int?
@@ -31,6 +40,64 @@ struct BlockcypherFeeResponse: Codable {
 }
 
 struct BlockcypherTx: Codable {
-    let hex: String?
-    let addresses: [String]?
+    let blockIndex: Int64
+    let hash: String
+    let addresses: [String]
+    let total: Decimal
+    let fees: Decimal
+    let size: Int64
+    let confirmations: Int
+    let received: String
+    let inputs: [BlockcypherTxInput]
+    let outputs: [BlockcypherTxOutput]
+    
+    func pendingBtxTx(sourceAddress: String, decimalValue: Decimal, dateFormatter: DateFormatter) -> PendingBtcTx {
+        var destination: String = .unknown
+        var source: String = .unknown
+        var value: UInt64 = 0
+        
+        var dateStr = received
+        if let dotIndex = dateStr.firstIndex(of: ".") {
+            dateStr.removeSubrange(dotIndex..<dateStr.endIndex)
+        } else {
+            dateStr.removeLast()
+        }
+        
+        let date = dateFormatter.date(from: dateStr) ?? Date()
+        
+        if let input = inputs.first(where: { $0.addresses.contains(sourceAddress) } ), let output = outputs.first(where: { !$0.addresses.contains(sourceAddress) } ) {
+            destination = output.addresses.first ?? .unknown
+            source = input.addresses.first ?? .unknown
+            value = output.value
+        } else if let input = outputs.first(where: { $0.addresses.contains(sourceAddress) } ), let output = inputs.first(where: { !$0.addresses.contains(sourceAddress) } ) {
+            destination = input.addresses.first ?? .unknown
+            source = output.addresses.first ?? .unknown
+            value = input.value
+        }
+        
+        return PendingBtcTx(hash: hash,
+                            destination: destination,
+                            value: Decimal(value) / decimalValue,
+                            source: source,
+                            fee: fees / decimalValue,
+                            date: date)
+    }
+}
+
+struct BlockcypherTxInput: Codable {
+    let prevHash: String
+    let outputValue: UInt64
+    let addresses: [String]
+    let sequence: UInt64
+    let scriptType: String
+    let witness: [String]?
+    let script: String?
+}
+
+struct BlockcypherTxOutput: Codable {
+    let value: UInt64
+    let script: String
+    let addresses: [String]
+    let scriptType: String
+    let spentBy: String?
 }

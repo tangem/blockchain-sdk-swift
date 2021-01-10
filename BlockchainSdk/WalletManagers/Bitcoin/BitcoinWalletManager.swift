@@ -100,8 +100,15 @@ class BitcoinWalletManager: WalletManager {
         wallet.add(coinValue: balance)
         txBuilder.unspentOutputs = unspents
         if hasUnconfirmed {
-            if wallet.transactions.isEmpty {
-                wallet.addPendingTransaction()
+            wallet.transactions.removeAll()
+            response.forEach {
+                let pendingTxs = $0.pendingTxRefs
+                pendingTxs.forEach {
+                    wallet.addPendingTransaction(amount: Amount(with: wallet.blockchain, address: $0.source, value: $0.value),
+                                                 sourceAddress: $0.source,
+                                                 destinationAddress: $0.destination,
+                                                 date: $0.date)
+                }
             }
         } else {
             wallet.transactions = []
@@ -155,6 +162,31 @@ extension BitcoinWalletManager: SignatureCountValidator {
 			}
 			.eraseToAnyPublisher()
 	}
+}
+
+extension BitcoinWalletManager: TransactionPusher {
+    func canPushTransaction(_ transaction: Transaction) -> AnyPublisher<Bool, Error> {
+        let availableBalance = wallet.amounts[.coin]?.value ?? 0 + wallet.pendingBalance
+        let txAmount = transaction.amount.value
+        let txFee = transaction.fee.value
+        let txTotal = txAmount + txFee
+        
+        guard txTotal < availableBalance else {
+            return Just(false)
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+            
+        }
+        
+        return getFee(amount: transaction.amount, destination: transaction.destinationAddress, includeFee: txTotal == availableBalance)
+            .map { fees -> Bool in
+                fees.filter {
+                    $0.value > txFee &&
+                        $0.value + txAmount <= availableBalance
+                }.count > 0
+            }
+            .eraseToAnyPublisher()
+    }
 }
 
 extension BitcoinWalletManager: ThenProcessable { }

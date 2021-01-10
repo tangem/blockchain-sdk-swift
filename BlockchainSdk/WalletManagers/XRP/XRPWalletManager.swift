@@ -53,7 +53,7 @@ class XRPWalletManager: WalletManager {
         txBuilder.sequence = response.sequence
         if response.balance != response.unconfirmedBalance {
             if wallet.transactions.isEmpty {
-                wallet.addPendingTransaction()
+                wallet.addDummyPendingTransaction()
             }
         } else {
             wallet.transactions = []

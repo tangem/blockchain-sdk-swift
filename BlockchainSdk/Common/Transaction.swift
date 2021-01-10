@@ -10,7 +10,18 @@ import Foundation
 
 public protocol TransactionParams {}
 
-public struct Transaction {    
+public struct Transaction: Equatable {
+    public static func == (lhs: Transaction, rhs: Transaction) -> Bool {
+        lhs.amount == rhs.amount &&
+            lhs.fee == rhs.fee &&
+            lhs.sourceAddress == rhs.sourceAddress &&
+            lhs.destinationAddress == rhs.destinationAddress &&
+            lhs.changeAddress == rhs.changeAddress &&
+            lhs.date == rhs.date &&
+            lhs.status == rhs.status &&
+            lhs.hash == rhs.hash
+    }
+    
     public let amount: Amount
     public let fee: Amount
     public let sourceAddress: String
@@ -42,7 +53,7 @@ public struct Transaction {
     }
 }
 
-public enum TransactionStatus {
+public enum TransactionStatus: Equatable {
     case unconfirmed
     case confirmed
 }

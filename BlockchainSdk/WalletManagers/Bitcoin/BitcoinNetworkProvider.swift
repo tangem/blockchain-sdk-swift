@@ -15,10 +15,20 @@ struct BtcFee {
     let prioritySatoshiPerByte: Decimal
 }
 
+struct PendingBtcTx {
+    let hash: String
+    let destination: String
+    let value: Decimal
+    let source: String
+    let fee: Decimal?
+    let date: Date
+}
+
 struct BitcoinResponse {
     let balance: Decimal
     let hasUnconfirmed: Bool
     let txrefs: [BtcTx]
+    var pendingTxRefs: [PendingBtcTx]
 }
 
 struct BtcTx {

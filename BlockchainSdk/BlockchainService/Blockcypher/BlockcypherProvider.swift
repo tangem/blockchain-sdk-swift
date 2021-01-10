@@ -17,6 +17,12 @@ class BlockcypherProvider: BitcoinNetworkProvider {
     private var token: String? = nil
     private let tokens: [String]
     
+    private let jsonDecoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        return decoder
+    }()
+    
     init(endpoint: BlockcypherEndpoint, tokens: [String]) {
         self.endpoint = endpoint
         self.tokens = tokens
@@ -27,7 +33,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
             .setFailureType(to: MoyaError.self)
             .flatMap {[unowned self] in
                 self.provider
-                    .requestPublisher(BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, unspentsOnly: true, limit: nil)))
+                    .requestPublisher(BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, unspentsOnly: true, limit: nil, isFull: true)))
                     .filterSuccessfulStatusAndRedirectCodes()
             }
             .catch{[unowned self] error -> AnyPublisher<Response, MoyaError> in
@@ -36,28 +42,83 @@ class BlockcypherProvider: BitcoinNetworkProvider {
             }
             .retry(1)
             .eraseToAnyPublisher()
-            .map(BlockcypherAddressResponse.self)
+            .map(BlockcypherFullAddressResponse.self, using: jsonDecoder)
             .tryMap {[unowned self] addressResponse -> BitcoinResponse in
                 guard let balance = addressResponse.balance,
-                      let uncBalance = addressResponse.unconfirmed_balance
+                      let uncBalance = addressResponse.unconfirmedBalance
                 else {
                     throw WalletError.failedToParseNetworkResponse
                 }
                 
-                let satoshiBalance = Decimal(balance)/self.endpoint.blockchain.decimalValue
-                let txs: [BtcTx] = addressResponse.txrefs?.compactMap { utxo -> BtcTx?  in
-                    guard let hash = utxo.tx_hash,
-                          let n = utxo.tx_output_n,
-                          let val = utxo.value,
-                          let script = utxo.script else {
+                let satoshiBalance = Decimal(balance) / self.endpoint.blockchain.decimalValue
+                
+                var utxo: [BtcTx] = []
+                var pendingTxRefs: [PendingBtcTx] = []
+                
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+                formatter.calendar = Calendar(identifier: .iso8601)
+                formatter.timeZone = TimeZone(secondsFromGMT: 0)
+                formatter.locale = Locale(identifier: "en_US_POSIX")
+                
+                addressResponse.txs?.forEach { tx in
+                    if tx.blockIndex == -1 {
+                        let pendingTx = tx.pendingBtxTx(sourceAddress: address, decimalValue: self.endpoint.blockchain.decimalValue, dateFormatter: formatter)
+                        pendingTxRefs.append(pendingTx)
+                    } else {
+                        if tx.outputs.contains(where: { $0.spentBy != nil }) {
+                            return
+                        }
+                        
+                        var txOutputIndex: Int = -1
+                        guard
+                            tx.outputs.contains(where: {
+                                guard let i = $0.addresses.firstIndex(of: address) else { return false }
+                                txOutputIndex = i
+                                return true
+                            }),
+                            txOutputIndex >= 0
+                        else {
+                            return
+                        }
+                        
+                        let hash = tx.hash
+                        let script = tx.outputs[txOutputIndex].script
+                        let value = tx.outputs[txOutputIndex].value
+                        
+                        let btx = BtcTx(tx_hash: hash, tx_output_n: txOutputIndex, value: value, script: script)
+                        utxo.append(btx)
+                    }
+                }
+                let txs: [BtcTx] = addressResponse.txs?.compactMap { tx -> BtcTx?  in
+                    if tx.outputs.contains(where: { $0.addresses.contains(where: { $0 == address }) && $0.spentBy != nil }) {
                         return nil
                     }
                     
-                    let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: UInt64(val), script: script)
+                    var txOutputIndex: Int = -1
+                    guard
+                        tx.outputs.contains(where: {
+                            guard let i = $0.addresses.firstIndex(of: address) else { return false }
+                            txOutputIndex = i
+                            return true
+                        }),
+                        txOutputIndex >= 0
+                    else {
+                        return nil
+                    }
+                    
+                    let hash = tx.hash
+                    let script = tx.outputs[txOutputIndex].script
+                    let value = tx.outputs[txOutputIndex].value
+                    
+                    let btx = BtcTx(tx_hash: hash, tx_output_n: txOutputIndex, value: value, script: script)
                     return btx
                 } ?? []
                 
-                let btcResponse = BitcoinResponse(balance: satoshiBalance, hasUnconfirmed:  uncBalance != 0, txrefs: txs)
+                if Decimal(uncBalance) / self.endpoint.blockchain.decimalValue != pendingTxRefs.reduce(0, { $0 + $1.value }) {
+                    print("Unconfirmed balance and pending tx refs sum is not equal")
+                }
+                let btcResponse = BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: uncBalance != 0, txrefs: utxo, pendingTxRefs: pendingTxRefs)
                 return btcResponse
             }
             .eraseToAnyPublisher()
@@ -115,14 +176,14 @@ class BlockcypherProvider: BitcoinNetworkProvider {
             .eraseToAnyPublisher()
     }
     
-    func getTx(hash: String) -> AnyPublisher<BlockcypherTx, Error> {
-        publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .txs(txHash: hash)))
-            .map(BlockcypherTx.self)
-            .eraseError()
-    }
-    
+//    func getTx(hash: String) -> AnyPublisher<BlockcypherTx, Error> {
+//        publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .txs(txHash: hash)))
+//            .map(BlockcypherTx.self)
+//            .eraseError()
+//    }
+
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-        publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, unspentsOnly: false, limit: 2000)))
+        publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, unspentsOnly: false, limit: 2000, isFull: false)))
             .map(BlockcypherAddressResponse.self)
             .map { addressResponse -> Int in
                 var sigCount = addressResponse.txrefs?.filter { $0.tx_output_n == -1 }.count ?? 0

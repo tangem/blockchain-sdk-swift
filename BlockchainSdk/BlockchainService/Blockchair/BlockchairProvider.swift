@@ -19,6 +19,13 @@ class BlockchairProvider: BitcoinNetworkProvider {
     private let endpoint: BlockchairEndpoint
     private let apiKey: String
     
+    private let jsonDecoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.dateDecodingStrategy = .formatted(DateFormatter(withFormat: "YYYY-MM-dd HH:mm:ss", locale: "en_US"))
+        return decoder
+    }()
+    
     init(endpoint: BlockchairEndpoint, apiKey: String) {
         self.endpoint = endpoint
         self.apiKey = apiKey
@@ -26,7 +33,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
     
 	func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: true, apiKey: apiKey))
-            .tryMap { [unowned self] json -> BitcoinResponse in //TODO: refactor to normal JSON
+            .tryMap { [unowned self] json -> (BitcoinResponse, [BlockchairTransactionShort]) in //TODO: refactor to normal JSON
                 let data = json["data"]
                 let addr = data["\(address)"]
                 let address = addr["address"]
@@ -38,17 +45,17 @@ class BlockchairProvider: BitcoinNetworkProvider {
                 }
                 
                 guard let transactionsData = try? addr["transactions"].rawData(),
-                    let transactions: [BlockchairTransaction] = try? JSONDecoder().decode([BlockchairTransaction].self, from: transactionsData) else {
+                      let transactions: [BlockchairTransactionShort] = try? self.jsonDecoder.decode([BlockchairTransactionShort].self, from: transactionsData) else {
                         throw WalletError.failedToParseNetworkResponse
                 }
                 
                 guard let utxoData = try? addr["utxo"].rawData(),
-                    let utxos: [BlockchairUtxo] = try? JSONDecoder().decode([BlockchairUtxo].self, from: utxoData) else {
+                      let utxos: [BlockchairUtxo] = try? self.jsonDecoder.decode([BlockchairUtxo].self, from: utxoData) else {
                         throw WalletError.failedToParseNetworkResponse
                 }
                 
                 let utxs: [BtcTx] = utxos.compactMap { utxo -> BtcTx?  in
-                    guard let hash = utxo.transaction_hash,
+                    guard let hash = utxo.transactionHash,
                         let n = utxo.index,
                         let val = utxo.value else {
                             return nil
@@ -58,15 +65,45 @@ class BlockchairProvider: BitcoinNetworkProvider {
                     return btx
                 }
                 
-                let hasUnconfirmed = transactions.first(where: {$0.block_id == -1 || $0.block_id == 1 }) != nil
-                
+                let pendingTxs = transactions.filter { $0.blockId == -1 || $0.blockId == 1 }
+                let hasUnconfirmed = pendingTxs.count != 0
                 
                 let decimalBtcBalance = decimalSatoshiBalance / self.endpoint.blockchain.decimalValue
-                let bitcoinResponse = BitcoinResponse(balance: decimalBtcBalance, hasUnconfirmed: hasUnconfirmed, txrefs: utxs)
+                let bitcoinResponse = BitcoinResponse(balance: decimalBtcBalance, hasUnconfirmed: hasUnconfirmed, txrefs: utxs, pendingTxRefs: [])
                 
-                return bitcoinResponse
-        }
-        .eraseToAnyPublisher()
+                return (bitcoinResponse, pendingTxs)
+            }
+            .flatMap { [unowned self] (resp: (BitcoinResponse, [BlockchairTransactionShort])) -> AnyPublisher<BitcoinResponse, Error> in
+                guard resp.1.count > 0 else {
+                    return Just(resp.0)
+                        .setFailureType(to: Error.self)
+                        .eraseToAnyPublisher()
+                }
+                
+                let hashes = resp.1.map { $0.hash }
+                return publisher(for: .txsDetails(hashes: hashes, endpoint: self.endpoint, apiKey: self.apiKey))
+                    .tryMap { [unowned self] json -> BitcoinResponse in
+                        let data = json["data"]
+                        let txsData = hashes.map {
+                            data[$0]
+                        }
+                        
+                        let txs = try txsData.map {
+                            getTransactionDetails(from: $0)
+                        }
+                        
+                        let pendingBtcTxs: [PendingBtcTx] = txs.compactMap {
+                            guard let tx = $0 else { return nil }
+                            
+                            return tx.pendingBtxTx(sourceAddress: address, decimalValue: self.endpoint.blockchain.decimalValue)
+                        }
+                        
+                        let oldResp = resp.0
+                        return BitcoinResponse(balance: oldResp.balance, hasUnconfirmed: oldResp.hasUnconfirmed, txrefs: oldResp.txrefs, pendingTxRefs: pendingBtcTxs)
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
     
     func getFee() -> AnyPublisher<BtcFee, Error> {
@@ -119,6 +156,21 @@ class BlockchairProvider: BitcoinNetworkProvider {
 			.mapError { $0 as Error }
 			.eraseToAnyPublisher()
 	}
+    
+    func getTransactionInfo(hash: String, address: String) -> AnyPublisher<PendingBtcTx, Error> {
+        publisher(for: .txDetails(txHash: hash, endpoint: endpoint, apiKey: apiKey))
+            .tryMap { [unowned self] json -> PendingBtcTx in
+                let txJson = json["data"]["\(hash)"]
+                
+                guard let tx = self.getTransactionDetails(from: txJson) else {
+                    throw WalletError.failedToParseNetworkResponse
+                }
+                
+                return tx.pendingBtxTx(sourceAddress: address, decimalValue: self.endpoint.blockchain.decimalValue)
+            }
+            .mapError { $0 as Error }
+            .eraseToAnyPublisher()
+    }
 	
 	private func publisher(for target: BlockchairTarget) -> AnyPublisher<JSON, MoyaError> {
 		provider
@@ -126,4 +178,12 @@ class BlockchairProvider: BitcoinNetworkProvider {
 			.filterSuccessfulStatusAndRedirectCodes()
 			.mapSwiftyJSON()
 	}
+    
+    private func getTransactionDetails(from json: JSON) -> BlockchairTransactionDetailed? {
+        guard let txData = try? json.rawData(),
+              let tx = try? self.jsonDecoder.decode(BlockchairTransactionDetailed.self, from: txData)
+        else { return nil }
+        
+        return tx
+    }
 }

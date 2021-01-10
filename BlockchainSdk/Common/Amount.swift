@@ -128,3 +128,9 @@ extension Amount.AmountType: Equatable, Hashable {
         }
     }
 }
+
+extension Amount {
+    static func dummyCoin(for blockchain: Blockchain) -> Amount {
+        Amount(with: blockchain, address: .unknown, type: .coin, value: 0)
+    }
+}
