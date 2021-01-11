@@ -20,6 +20,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
     private let jsonDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.dateDecodingStrategy = .customISO8601
         return decoder
     }()
     
@@ -55,26 +56,20 @@ class BlockcypherProvider: BitcoinNetworkProvider {
                 var utxo: [BtcTx] = []
                 var pendingTxRefs: [PendingBtcTx] = []
                 
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-                formatter.calendar = Calendar(identifier: .iso8601)
-                formatter.timeZone = TimeZone(secondsFromGMT: 0)
-                formatter.locale = Locale(identifier: "en_US_POSIX")
-                
                 addressResponse.txs?.forEach { tx in
                     if tx.blockIndex == -1 {
-                        let pendingTx = tx.pendingBtxTx(sourceAddress: address, decimalValue: self.endpoint.blockchain.decimalValue, dateFormatter: formatter)
+                        let pendingTx = tx.pendingBtxTx(sourceAddress: address, decimalValue: self.endpoint.blockchain.decimalValue)
                         pendingTxRefs.append(pendingTx)
                     } else {
-                        if tx.outputs.contains(where: { $0.spentBy != nil }) {
-                            return
-                        }
-                        
                         var txOutputIndex: Int = -1
                         guard
-                            tx.outputs.contains(where: {
-                                guard let i = $0.addresses.firstIndex(of: address) else { return false }
-                                txOutputIndex = i
+                            tx.outputs.enumerated().contains(where: {
+                                guard
+                                    $0.element.addresses.contains(address),
+                                    $0.element.spentBy == nil
+                                else { return false }
+                                
+                                txOutputIndex = $0.offset
                                 return true
                             }),
                             txOutputIndex >= 0
@@ -90,30 +85,6 @@ class BlockcypherProvider: BitcoinNetworkProvider {
                         utxo.append(btx)
                     }
                 }
-                let txs: [BtcTx] = addressResponse.txs?.compactMap { tx -> BtcTx?  in
-                    if tx.outputs.contains(where: { $0.addresses.contains(where: { $0 == address }) && $0.spentBy != nil }) {
-                        return nil
-                    }
-                    
-                    var txOutputIndex: Int = -1
-                    guard
-                        tx.outputs.contains(where: {
-                            guard let i = $0.addresses.firstIndex(of: address) else { return false }
-                            txOutputIndex = i
-                            return true
-                        }),
-                        txOutputIndex >= 0
-                    else {
-                        return nil
-                    }
-                    
-                    let hash = tx.hash
-                    let script = tx.outputs[txOutputIndex].script
-                    let value = tx.outputs[txOutputIndex].value
-                    
-                    let btx = BtcTx(tx_hash: hash, tx_output_n: txOutputIndex, value: value, script: script)
-                    return btx
-                } ?? []
                 
                 if Decimal(uncBalance) / self.endpoint.blockchain.decimalValue != pendingTxRefs.reduce(0, { $0 + $1.value }) {
                     print("Unconfirmed balance and pending tx refs sum is not equal")

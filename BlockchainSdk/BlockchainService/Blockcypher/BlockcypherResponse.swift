@@ -47,23 +47,14 @@ struct BlockcypherTx: Codable {
     let fees: Decimal
     let size: Int64
     let confirmations: Int
-    let received: String
+    let received: Date
     let inputs: [BlockcypherTxInput]
     let outputs: [BlockcypherTxOutput]
     
-    func pendingBtxTx(sourceAddress: String, decimalValue: Decimal, dateFormatter: DateFormatter) -> PendingBtcTx {
+    func pendingBtxTx(sourceAddress: String, decimalValue: Decimal) -> PendingBtcTx {
         var destination: String = .unknown
         var source: String = .unknown
         var value: UInt64 = 0
-        
-        var dateStr = received
-        if let dotIndex = dateStr.firstIndex(of: ".") {
-            dateStr.removeSubrange(dotIndex..<dateStr.endIndex)
-        } else {
-            dateStr.removeLast()
-        }
-        
-        let date = dateFormatter.date(from: dateStr) ?? Date()
         
         if let input = inputs.first(where: { $0.addresses.contains(sourceAddress) } ), let output = outputs.first(where: { !$0.addresses.contains(sourceAddress) } ) {
             destination = output.addresses.first ?? .unknown
@@ -80,7 +71,7 @@ struct BlockcypherTx: Codable {
                             value: Decimal(value) / decimalValue,
                             source: source,
                             fee: fees / decimalValue,
-                            date: date)
+                            date: received)
     }
 }
 

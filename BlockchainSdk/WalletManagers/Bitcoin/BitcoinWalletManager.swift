@@ -46,10 +46,6 @@ class BitcoinWalletManager: WalletManager {
                 var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: !includeFee, changeScript: nil)
                 var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: !includeFee, changeScript: nil)
                 
-                
-                
-                
-                
 //                guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount - dummyFee,
 //                                                                                  fee: dummyFee,
 //                                                                                  sourceAddress: self.wallet.address,
