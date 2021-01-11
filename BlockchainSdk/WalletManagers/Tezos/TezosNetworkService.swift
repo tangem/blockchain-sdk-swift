@@ -54,7 +54,7 @@ class TezosNetworkService {
                     .cleanString()
                     .map { $0 == "null" ? false : true }
                     .tryCatch { error -> AnyPublisher<Bool, Error> in
-                        if case let MoyaError.stringMapping(response) = error {
+                        if case MoyaError.stringMapping(_) = error {
                             return Just(false)
                                 .setFailureType(to: Error.self)
                                 .eraseToAnyPublisher()
