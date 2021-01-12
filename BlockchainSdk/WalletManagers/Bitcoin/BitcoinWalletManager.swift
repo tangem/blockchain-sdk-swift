@@ -100,10 +100,7 @@ class BitcoinWalletManager: WalletManager {
             response.forEach {
                 let pendingTxs = $0.pendingTxRefs
                 pendingTxs.forEach {
-                    wallet.addPendingTransaction(amount: Amount(with: wallet.blockchain, address: $0.source, value: $0.value),
-                                                 sourceAddress: $0.source,
-                                                 destinationAddress: $0.destination,
-                                                 date: $0.date)
+                    wallet.addPendingTransaction($0)
                 }
             }
         } else {

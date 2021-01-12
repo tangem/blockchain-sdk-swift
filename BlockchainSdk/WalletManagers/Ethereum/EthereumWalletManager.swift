@@ -59,7 +59,12 @@ class EthereumWalletManager: WalletManager {
         }
         txCount = response.txCount
         pendingTxCount = response.pendingTxCount
-        if txCount == pendingTxCount {
+        if response.pendingTxs.count > 0 {
+            wallet.transactions.removeAll()
+            response.pendingTxs.forEach {
+                wallet.addPendingTransaction($0)
+            }
+        } else if txCount == pendingTxCount {
             for  index in wallet.transactions.indices {
                 wallet.transactions[index].status = .confirmed
             }

@@ -30,21 +30,8 @@ class BlockcypherProvider: BitcoinNetworkProvider {
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        return Just(())
-            .setFailureType(to: MoyaError.self)
-            .flatMap {[unowned self] in
-                self.provider
-                    .requestPublisher(BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, unspentsOnly: true, limit: nil, isFull: true)))
-                    .filterSuccessfulStatusAndRedirectCodes()
-            }
-            .catch{[unowned self] error -> AnyPublisher<Response, MoyaError> in
-                self.changeToken(error)
-                return Fail(error: error).eraseToAnyPublisher()
-            }
-            .retry(1)
-            .eraseToAnyPublisher()
-            .map(BlockcypherFullAddressResponse.self, using: jsonDecoder)
-            .tryMap {[unowned self] addressResponse -> BitcoinResponse in
+        getFullInfo(address: address)
+            .tryMap {[unowned self] (addressResponse: BlockcypherFullAddressResponse<BlockcypherBitcoinTx>) -> BitcoinResponse in
                 guard let balance = addressResponse.balance,
                       let uncBalance = addressResponse.unconfirmedBalance
                 else {
@@ -54,35 +41,16 @@ class BlockcypherProvider: BitcoinNetworkProvider {
                 let satoshiBalance = Decimal(balance) / self.endpoint.blockchain.decimalValue
                 
                 var utxo: [BtcTx] = []
-                var pendingTxRefs: [PendingBtcTx] = []
+                var pendingTxRefs: [PendingTransaction] = []
                 
                 addressResponse.txs?.forEach { tx in
                     if tx.blockIndex == -1 {
-                        let pendingTx = tx.pendingBtxTx(sourceAddress: address, decimalValue: self.endpoint.blockchain.decimalValue)
+                        let pendingTx = tx.pendingTx(for: address, decimalValue: self.endpoint.blockchain.decimalValue)
                         pendingTxRefs.append(pendingTx)
                     } else {
-                        var txOutputIndex: Int = -1
-                        guard
-                            tx.outputs.enumerated().contains(where: {
-                                guard
-                                    $0.element.addresses.contains(address),
-                                    $0.element.spentBy == nil
-                                else { return false }
-                                
-                                txOutputIndex = $0.offset
-                                return true
-                            }),
-                            txOutputIndex >= 0
-                        else {
-                            return
-                        }
+                        guard let btcTx = tx.btcTx(for: address) else { return }
                         
-                        let hash = tx.hash
-                        let script = tx.outputs[txOutputIndex].script
-                        let value = tx.outputs[txOutputIndex].value
-                        
-                        let btx = BtcTx(tx_hash: hash, tx_output_n: txOutputIndex, value: value, script: script)
-                        utxo.append(btx)
+                        utxo.append(btcTx)
                     }
                 }
                 
@@ -98,19 +66,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
     
     @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<BtcFee, Error> {
-        return Just(())
-            .setFailureType(to: MoyaError.self)
-            .flatMap { [unowned self] in
-                self.provider
-                    .requestPublisher(BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .fee))
-                    .filterSuccessfulStatusAndRedirectCodes()
-            }
-            .catch{[unowned self] error -> AnyPublisher<Response, MoyaError> in
-                self.changeToken(error)
-                return Fail(error: error).eraseToAnyPublisher()
-            }
-            .retry(1)
-            .eraseToAnyPublisher()
+        publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .fee))
             .map(BlockcypherFeeResponse.self)
             .tryMap { feeResponse -> BtcFee in
                 guard let minKb = feeResponse.low_fee_per_kb,
@@ -130,18 +86,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
     
     @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error> {
-        return Just(())
-            .setFailureType(to: MoyaError.self)
-            .flatMap { [unowned self] in
-                self.provider.requestPublisher(BlockcypherTarget(endpoint: self.endpoint, token: self.token ?? self.getRandomToken(), targetType: .send(txHex: transaction)))
-                    .filterSuccessfulStatusAndRedirectCodes()
-            }
-            .catch{ [unowned self] error -> AnyPublisher<Response, MoyaError> in
-                self.changeToken(error)
-                return Fail(error: error).eraseToAnyPublisher()
-            }
-            .retry(1)
-            .eraseToAnyPublisher()
+        publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token ?? self.getRandomToken(), targetType: .send(txHex: transaction)))
             .mapNotEmptyString()
             .eraseError()
             .eraseToAnyPublisher()
@@ -163,6 +108,11 @@ class BlockcypherProvider: BitcoinNetworkProvider {
             }
             .mapError { $0 }
             .eraseToAnyPublisher()
+    }
+    
+    private func getFullInfo<Tx: Codable>(address: String) -> AnyPublisher<BlockcypherFullAddressResponse<Tx>, MoyaError> {
+        publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, unspentsOnly: true, limit: nil, isFull: true)))
+            .map(BlockcypherFullAddressResponse<Tx>.self, using: jsonDecoder)
     }
     
     private func publisher(for target: BlockcypherTarget) -> AnyPublisher<Response, MoyaError> {
@@ -192,5 +142,44 @@ class BlockcypherProvider: BitcoinNetworkProvider {
         if case let MoyaError.statusCode(response) = error, response.statusCode == 429 {
             token = getRandomToken()
         }
+    }
+}
+
+extension BlockcypherProvider: EthereumNetworkProvider {
+    func getTransactionsInfo(address: String) -> AnyPublisher<EthereumTransactionResponse, Error> {
+        getFullInfo(address: address)
+            .tryMap { [unowned self] (response: BlockcypherFullAddressResponse<BlockcypherEthereumTransaction>) -> EthereumTransactionResponse in
+                guard let balance = response.balance else {
+                    throw WalletError.failedToParseNetworkResponse
+                }
+                
+                let ethBalance = Decimal(balance) / self.endpoint.blockchain.decimalValue
+                var pendingTxs: [PendingTransaction] = []
+                
+                var croppedAddress = address
+                if croppedAddress.starts(with: "0x") {
+                    croppedAddress.removeFirst(2)
+                }
+                croppedAddress = croppedAddress.lowercased()
+                
+                response.txs?.forEach { tx in
+                    guard tx.blockHeight == -1 else { return }
+                    
+                    var pendingTx = tx.pendingTx(for: croppedAddress, decimalValue: self.endpoint.blockchain.decimalValue)
+                    if pendingTx.source == croppedAddress {
+                        pendingTx.source = address
+                        pendingTx.destination = "0x" + pendingTx.destination
+                    } else if pendingTx.destination == croppedAddress {
+                        pendingTx.destination = address
+                        pendingTx.source = "0x" + pendingTx.source
+                    }
+                    pendingTxs.append(pendingTx)
+               }
+                
+                let ethResp = EthereumTransactionResponse(balance: ethBalance, pendingTxs: pendingTxs)
+                return ethResp
+            }
+            .eraseToAnyPublisher()
+        
     }
 }

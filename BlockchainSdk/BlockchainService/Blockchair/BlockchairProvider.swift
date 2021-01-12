@@ -92,7 +92,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
                             getTransactionDetails(from: $0)
                         }
                         
-                        let pendingBtcTxs: [PendingBtcTx] = txs.compactMap {
+                        let pendingBtcTxs: [PendingTransaction] = txs.compactMap {
                             guard let tx = $0 else { return nil }
                             
                             return tx.pendingBtxTx(sourceAddress: address, decimalValue: self.endpoint.blockchain.decimalValue)
@@ -157,9 +157,9 @@ class BlockchairProvider: BitcoinNetworkProvider {
 			.eraseToAnyPublisher()
 	}
     
-    func getTransactionInfo(hash: String, address: String) -> AnyPublisher<PendingBtcTx, Error> {
+    func getTransactionInfo(hash: String, address: String) -> AnyPublisher<PendingTransaction, Error> {
         publisher(for: .txDetails(txHash: hash, endpoint: endpoint, apiKey: apiKey))
-            .tryMap { [unowned self] json -> PendingBtcTx in
+            .tryMap { [unowned self] json -> PendingTransaction in
                 let txJson = json["data"]["\(hash)"]
                 
                 guard let tx = self.getTransactionDetails(from: txJson) else {

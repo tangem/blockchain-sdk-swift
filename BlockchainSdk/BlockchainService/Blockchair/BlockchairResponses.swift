@@ -26,7 +26,7 @@ struct BlockchairTransactionDetailed: Codable {
     let inputs: [BlockchairTxInput]
     let outputs: [BlockchairTxOutput]
     
-    func pendingBtxTx(sourceAddress: String, decimalValue: Decimal) -> PendingBtcTx {
+    func pendingBtxTx(sourceAddress: String, decimalValue: Decimal) -> PendingTransaction {
         var destination: String = .unknown
         var source: String = .unknown
         
@@ -38,7 +38,7 @@ struct BlockchairTransactionDetailed: Codable {
             destination = outputs.first(where: { $0.recipient != sourceAddress })?.recipient ?? .unknown
         }
         
-        return PendingBtcTx(hash: transaction.hash,
+        return PendingTransaction(hash: transaction.hash,
                             destination: destination,
                             value: transaction.outputTotal / decimalValue,
                             source: source,

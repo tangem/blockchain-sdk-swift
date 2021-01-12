@@ -12,14 +12,17 @@ public protocol TransactionParams {}
 
 public struct Transaction: Equatable {
     public static func == (lhs: Transaction, rhs: Transaction) -> Bool {
-        lhs.amount == rhs.amount &&
+        if lhs.hash != nil && rhs.hash != nil {
+            return lhs.hash == rhs.hash
+        }
+        
+        return lhs.amount == rhs.amount &&
             lhs.fee == rhs.fee &&
             lhs.sourceAddress == rhs.sourceAddress &&
             lhs.destinationAddress == rhs.destinationAddress &&
             lhs.changeAddress == rhs.changeAddress &&
             lhs.date == rhs.date &&
-            lhs.status == rhs.status &&
-            lhs.hash == rhs.hash
+            lhs.status == rhs.status
     }
     
     public let amount: Amount

@@ -16,11 +16,11 @@ import BigInt
 class EthereumNetworkService {
     private let network: EthereumNetwork
     private let provider = MoyaProvider<InfuraTarget>(plugins: [NetworkLoggerPlugin()])
-    private let blockcypherProvider: BlockcypherProvider?
+    private let networkProvider: EthereumNetworkProvider?
 	
-    init(network: EthereumNetwork, blockcypherProvider: BlockcypherProvider?) {
+    init(network: EthereumNetwork, networkProvider: EthereumNetworkProvider?) {
         self.network = network
-        self.blockcypherProvider = blockcypherProvider
+        self.networkProvider = networkProvider
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
@@ -44,6 +44,21 @@ class EthereumNetworkService {
         } else {
             return coinData(address: address)
                 .map { return EthereumResponse(balance: $0.0, tokenBalances: [:], txCount: $0.1, pendingTxCount: $0.2) }
+                .flatMap { [unowned self] resp -> AnyPublisher<EthereumResponse, Error> in
+                    guard let networkProvider = self.networkProvider else {
+                        return Just(resp)
+                            .setFailureType(to: Error.self)
+                            .eraseToAnyPublisher()
+                    }
+                    
+                    return networkProvider.getTransactionsInfo(address: address)
+                        .tryMap { ethResponse -> EthereumResponse in
+                            var newResp = resp
+                            newResp.pendingTxs = ethResponse.pendingTxs
+                            return newResp
+                        }
+                        .eraseToAnyPublisher()
+                }
                 .eraseToAnyPublisher()
         }
     }
@@ -78,11 +93,11 @@ class EthereumNetworkService {
     }
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-        guard let blockcypherProvider = blockcypherProvider else {
+        guard let networkProvider = networkProvider else {
             return Fail(error: ETHError.unsupportedFeature).eraseToAnyPublisher()
         }
         
-		return blockcypherProvider.getSignatureCount(address: address)
+		return networkProvider.getSignatureCount(address: address)
 	}
     
 	// MARK: - Private functions
@@ -202,6 +217,8 @@ struct EthereumResponse {
     let tokenBalances: [Token: Decimal]
     let txCount: Int
     let pendingTxCount: Int
+    
+    var pendingTxs: [PendingTransaction] = []
 }
 
 //MARK: Bytes

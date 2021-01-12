@@ -16,13 +16,13 @@ struct BlockcypherAddressResponse : Codable {
     let unconfirmed_txrefs: [BlockcypherTxref]?
 }
 
-struct BlockcypherFullAddressResponse: Codable {
+struct BlockcypherFullAddressResponse<EndpointTx: Codable>: Codable {
     let address: String?
     let balance: Int?
     let unconfirmedBalance: Int?
     let nTx: Int?
     let unconfirmedNTx: Int?
-    let txs: [BlockcypherTx]?
+    let txs: [EndpointTx]?
 }
 
 struct BlockcypherTxref: Codable {
@@ -39,7 +39,53 @@ struct BlockcypherFeeResponse: Codable {
     let high_fee_per_kb: Int64?
 }
 
-struct BlockcypherTx: Codable {
+protocol BlockcypherPendingTxConvertible {
+    associatedtype Input: BlockcypherInput
+    associatedtype Output: BlockcypherOutput
+    var hash: String { get }
+    var fees: Decimal { get }
+    var received: Date { get }
+    var inputs: [Input] { get }
+    var outputs: [Output] { get }
+    
+    func pendingTx(for sourceAddress: String, decimalValue: Decimal) -> PendingTransaction
+}
+
+extension BlockcypherPendingTxConvertible {
+    func pendingTx(for sourceAddress: String, decimalValue: Decimal) -> PendingTransaction {
+        var source: String = .unknown
+        var destination: String = .unknown
+        var value: UInt64 = 0
+        
+        if let txSource = inputs.first(where: { $0.addresses.contains(sourceAddress) } ), let txDestination = outputs.first(where: { !$0.addresses.contains(sourceAddress) } ) {
+            destination = txDestination.addresses.first ?? .unknown
+            source = txSource.addresses.first ?? .unknown
+            value = txDestination.value
+        } else if let txDestination = outputs.first(where: { $0.addresses.contains(sourceAddress) } ), let txSource = inputs.first(where: { !$0.addresses.contains(sourceAddress) } ) {
+            destination = txDestination.addresses.first ?? .unknown
+            source = txSource.addresses.first ?? .unknown
+            value = txDestination.value
+        }
+        
+        return PendingTransaction(hash: hash,
+                                  destination: destination,
+                                  value: Decimal(value) / decimalValue,
+                                  source: source,
+                                  fee: fees / decimalValue,
+                                  date: received)
+    }
+}
+
+protocol BlockcypherInput {
+    var addresses: [String] { get }
+}
+
+protocol BlockcypherOutput {
+    var value: UInt64 { get }
+    var addresses: [String] { get }
+}
+
+struct BlockcypherBitcoinTx: Codable, BlockcypherPendingTxConvertible {
     let blockIndex: Int64
     let hash: String
     let addresses: [String]
@@ -51,31 +97,32 @@ struct BlockcypherTx: Codable {
     let inputs: [BlockcypherTxInput]
     let outputs: [BlockcypherTxOutput]
     
-    func pendingBtxTx(sourceAddress: String, decimalValue: Decimal) -> PendingBtcTx {
-        var destination: String = .unknown
-        var source: String = .unknown
-        var value: UInt64 = 0
-        
-        if let input = inputs.first(where: { $0.addresses.contains(sourceAddress) } ), let output = outputs.first(where: { !$0.addresses.contains(sourceAddress) } ) {
-            destination = output.addresses.first ?? .unknown
-            source = input.addresses.first ?? .unknown
-            value = output.value
-        } else if let input = outputs.first(where: { $0.addresses.contains(sourceAddress) } ), let output = inputs.first(where: { !$0.addresses.contains(sourceAddress) } ) {
-            destination = input.addresses.first ?? .unknown
-            source = output.addresses.first ?? .unknown
-            value = input.value
+    func btcTx(for sourceAddress: String) -> BtcTx? {
+        var txOutputIndex: Int = -1
+        guard
+            outputs.enumerated().contains(where: {
+                guard
+                    $0.element.addresses.contains(sourceAddress),
+                    $0.element.spentBy == nil
+                else { return false }
+                
+                txOutputIndex = $0.offset
+                return true
+            }),
+            txOutputIndex >= 0
+        else {
+            return nil
         }
         
-        return PendingBtcTx(hash: hash,
-                            destination: destination,
-                            value: Decimal(value) / decimalValue,
-                            source: source,
-                            fee: fees / decimalValue,
-                            date: received)
+        let script = outputs[txOutputIndex].script
+        let value = outputs[txOutputIndex].value
+        
+        let btc = BtcTx(tx_hash: hash, tx_output_n: txOutputIndex, value: value, script: script)
+        return btc
     }
 }
 
-struct BlockcypherTxInput: Codable {
+struct BlockcypherTxInput: Codable, BlockcypherInput {
     let prevHash: String
     let outputValue: UInt64
     let addresses: [String]
@@ -85,7 +132,7 @@ struct BlockcypherTxInput: Codable {
     let script: String?
 }
 
-struct BlockcypherTxOutput: Codable {
+struct BlockcypherTxOutput: Codable, BlockcypherOutput {
     let value: UInt64
     let script: String
     let addresses: [String]
