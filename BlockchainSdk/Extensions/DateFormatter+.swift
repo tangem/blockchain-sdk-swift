@@ -20,4 +20,10 @@ extension DateFormatter {
         formatter.formatOptions = [.withInternetDateTime]
         return formatter
     }()
+    
+    convenience init(withFormat format: String, locale: String) {
+        self.init()
+        dateFormat = format
+        self.locale = Locale(identifier: locale)
+    }
 }

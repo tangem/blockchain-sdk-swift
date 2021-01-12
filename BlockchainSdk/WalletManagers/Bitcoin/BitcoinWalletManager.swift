@@ -10,10 +10,15 @@ import Foundation
 import TangemSdk
 import Combine
 
-class BitcoinWalletManager: WalletManager {
+class BitcoinWalletManager: WalletManager, FeeProvider {
     var allowsFeeSelection: Bool { true }
     var txBuilder: BitcoinTransactionBuilder!
     var networkService: BitcoinNetworkProvider!
+    
+    var feeProvider: FeeProvider! {
+        self
+    }
+    
     var relayFee: Decimal? {
         return nil
     }
@@ -157,30 +162,7 @@ extension BitcoinWalletManager: SignatureCountValidator {
 	}
 }
 
-extension BitcoinWalletManager: TransactionPusher {
-    func canPushTransaction(_ transaction: Transaction) -> AnyPublisher<Bool, Error> {
-        let availableBalance = wallet.amounts[.coin]?.value ?? 0 + wallet.pendingBalance
-        let txAmount = transaction.amount.value
-        let txFee = transaction.fee.value
-        let txTotal = txAmount + txFee
-        
-        guard txTotal < availableBalance else {
-            return Just(false)
-                .setFailureType(to: Error.self)
-                .eraseToAnyPublisher()
-            
-        }
-        
-        return getFee(amount: transaction.amount, destination: transaction.destinationAddress, includeFee: txTotal == availableBalance)
-            .map { fees -> Bool in
-                fees.filter {
-                    $0.value > txFee &&
-                        $0.value + txAmount <= availableBalance
-                }.count > 0
-            }
-            .eraseToAnyPublisher()
-    }
-}
+extension BitcoinWalletManager: TransactionPusher { }
 
 extension BitcoinWalletManager: ThenProcessable { }
 

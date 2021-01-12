@@ -30,9 +30,14 @@ public enum ETHError: String, Error, LocalizedError {
     }
 }
 
-class EthereumWalletManager: WalletManager {
+class EthereumWalletManager: WalletManager, FeeProvider {
     var txBuilder: EthereumTransactionBuilder!
     var networkService: EthereumNetworkService!
+    
+    var feeProvider: FeeProvider! {
+        self
+    }
+    
     var txCount: Int = -1
     var pendingTxCount: Int = -1
     
@@ -179,6 +184,8 @@ extension EthereumWalletManager: SignatureCountValidator {
 			.eraseToAnyPublisher()
 	}
 }
+
+extension EthereumWalletManager: TransactionPusher {}
 
 extension EthereumWalletManager: ThenProcessable { }
 

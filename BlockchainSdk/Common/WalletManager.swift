@@ -171,10 +171,6 @@ public protocol SignatureCountValidator {
 	func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error>
 }
 
-public protocol TransactionPusher {
-    func canPushTransaction(_ transaction: Transaction) -> AnyPublisher<Bool, Error>
-}
-
 public protocol WithdrawalValidator {
     func validate(_ transaction: Transaction) -> WithdrawalWarning?
 }

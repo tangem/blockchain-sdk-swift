@@ -88,7 +88,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
                             data[$0]
                         }
                         
-                        let txs = try txsData.map {
+                        let txs = txsData.map {
                             getTransactionDetails(from: $0)
                         }
                         
