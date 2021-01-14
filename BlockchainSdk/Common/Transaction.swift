@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import BitcoinCore
 
 public protocol TransactionParams {}
 
@@ -26,7 +27,7 @@ public struct Transaction: Equatable {
     }
     
     public let amount: Amount
-    public let fee: Amount
+    public var fee: Amount
     public let sourceAddress: String
     public let destinationAddress: String
     public let changeAddress: String
@@ -35,6 +36,8 @@ public struct Transaction: Equatable {
     public internal(set) var status: TransactionStatus = .unconfirmed
     public internal(set) var hash: String? = nil
     public var params: TransactionParams? = nil
+    public let sequence: Int
+    public let isAlreadyReplasedByFee: Bool
     
     internal init(amount: Amount, fee: Amount,
                   sourceAddress: String,
@@ -43,7 +46,9 @@ public struct Transaction: Equatable {
                   contractAddress: String? = nil,
                   date: Date? = nil,
                   status: TransactionStatus = .unconfirmed,
-                  hash: String? = nil) {
+                  hash: String? = nil,
+                  sequence: Int = SequenceValues.default.rawValue,
+                  isAlreadyReplasedByFee: Bool = false) {
         self.amount = amount
         self.fee = fee
         self.sourceAddress = sourceAddress
@@ -53,6 +58,8 @@ public struct Transaction: Equatable {
         self.date = date
         self.status = status
         self.hash = hash
+        self.sequence = sequence
+        self.isAlreadyReplasedByFee = isAlreadyReplasedByFee
     }
 }
 

@@ -109,20 +109,25 @@ public struct Wallet {
         transactions.append(tx)
     }
     
-    mutating func addPendingTransaction(amount: Amount, sourceAddress: String, destinationAddress: String, date: Date, changeAddress: String = .unknown) {
+    mutating func addPendingTransaction(amount: Amount, fee: Amount, sourceAddress: String, destinationAddress: String, date: Date, changeAddress: String = .unknown, sequence: Int, isAlreadyReplacedByFee: Bool) {
         transactions.append(Transaction(amount: amount,
-                                        fee: .dummyCoin(for: blockchain),
+                                        fee: fee,
                                         sourceAddress: sourceAddress,
                                         destinationAddress: destinationAddress,
                                         changeAddress: changeAddress,
-                                        date: date))
+                                        date: date,
+                                        sequence: sequence,
+                                        isAlreadyReplasedByFee: isAlreadyReplacedByFee))
     }
     
     mutating func addPendingTransaction(_ tx: PendingTransaction) {
         addPendingTransaction(amount: Amount(with: blockchain, address: tx.source, value: tx.value),
+                              fee: Amount(with: blockchain, address: tx.source, value: tx.fee ?? 0),
                               sourceAddress: tx.source,
                               destinationAddress: tx.destination,
-                              date: tx.date)
+                              date: tx.date,
+                              sequence: tx.sequence,
+                              isAlreadyReplacedByFee: tx.isAlreadyRbf)
     }
     
     mutating func addDummyPendingTransaction() {

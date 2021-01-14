@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import BitcoinCore
 
 struct BlockchairTransactionShort: Codable {
     let blockId: Int64
@@ -29,21 +30,29 @@ struct BlockchairTransactionDetailed: Codable {
     func pendingBtxTx(sourceAddress: String, decimalValue: Decimal) -> PendingTransaction {
         var destination: String = .unknown
         var source: String = .unknown
+        var value: Decimal = 0
+        var sequence: Int = SequenceValues.default.rawValue
         
-        if let output = outputs.first(where: { $0.recipient == sourceAddress }) {
-            destination = output.recipient
-            source = inputs.first(where: { $0.recipient != sourceAddress })?.recipient ?? .unknown
-        } else if let input = inputs.first(where:  { $0.recipient == sourceAddress }) {
+        if let input = inputs.first(where:  { $0.recipient == sourceAddress }), let output = outputs.first(where: { $0.recipient != sourceAddress }) {
             source = input.recipient
-            destination = outputs.first(where: { $0.recipient != sourceAddress })?.recipient ?? .unknown
+            destination = output.recipient
+            value = output.value
+            sequence = input.spendingSequence
+        } else if let output = outputs.first(where: { $0.recipient == sourceAddress }), let input = inputs.first(where: { $0.recipient != sourceAddress }) {
+            destination = output.recipient
+            source = input.recipient
+            value = output.value
+            sequence = input.spendingSequence
         }
         
         return PendingTransaction(hash: transaction.hash,
-                            destination: destination,
-                            value: transaction.outputTotal / decimalValue,
-                            source: source,
-                            fee: transaction.fee / decimalValue,
-                            date: transaction.time)
+                                  destination: destination,
+                                  value: value / decimalValue,
+                                  source: source,
+                                  fee: transaction.fee / decimalValue,
+                                  date: transaction.time,
+                                  isAlreadyRbf: false,
+                                  sequence: sequence)
     }
 }
 

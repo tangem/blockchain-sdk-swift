@@ -17,6 +17,10 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
     private var networkApi: BitcoinNetworkApi
     private let providers: [BitcoinNetworkApi: BitcoinNetworkProvider]
     
+    var canPushTransaction: Bool {
+        providers[.blockchair] != nil
+    }
+    
     init(providers:[BitcoinNetworkApi: BitcoinNetworkProvider], isTestNet:Bool, defaultApi: BitcoinNetworkApi = .main) {
         self.providers = providers
         self.isTestNet = isTestNet
@@ -56,6 +60,17 @@ class BitcoinNetworkService: BitcoinNetworkProvider {
         return Just(())
             .setFailureType(to: Error.self)
             .flatMap{[unowned self] in self.getProvider().send(transaction: transaction) }
+            .eraseToAnyPublisher()
+    }
+    
+    func push(transaction: String) -> AnyPublisher<String, Error> {
+        guard canPushTransaction else {
+            return Fail(error: NetworkServiceError.notAvailable)
+                .eraseToAnyPublisher()
+        }
+        return Just(())
+            .setFailureType(to: Error.self)
+            .flatMap { [unowned self] in self.providers[.blockchair]!.send(transaction: transaction) }
             .eraseToAnyPublisher()
     }
     

@@ -36,6 +36,8 @@ enum BitcoinNetworkApi {
 }
 
 protocol BitcoinNetworkProvider {
+    var canPushTransaction: Bool { get }
+    
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error>
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error>
@@ -47,6 +49,8 @@ protocol BitcoinNetworkProvider {
     func send(transaction: String) -> AnyPublisher<String, Error>
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error>
+    
+    func push(transaction: String) -> AnyPublisher<String, Error>
 }
 
 

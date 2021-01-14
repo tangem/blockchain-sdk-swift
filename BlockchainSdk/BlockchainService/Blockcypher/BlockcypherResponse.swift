@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import BitcoinCore
 
 struct BlockcypherAddressResponse : Codable {
     let address: String?
@@ -45,6 +46,7 @@ protocol BlockcypherPendingTxConvertible {
     var hash: String { get }
     var fees: Decimal { get }
     var received: Date { get }
+    var isAlreadyRbf: Bool { get }
     var inputs: [Input] { get }
     var outputs: [Output] { get }
     
@@ -72,11 +74,14 @@ extension BlockcypherPendingTxConvertible {
                                   value: Decimal(value) / decimalValue,
                                   source: source,
                                   fee: fees / decimalValue,
-                                  date: received)
+                                  date: received,
+                                  isAlreadyRbf: isAlreadyRbf,
+                                  sequence: inputs.first?.sequence ?? SequenceValues.default.rawValue)
     }
 }
 
 protocol BlockcypherInput {
+    var sequence: Int { get }
     var addresses: [String] { get }
 }
 
@@ -94,8 +99,14 @@ struct BlockcypherBitcoinTx: Codable, BlockcypherPendingTxConvertible {
     let size: Int64
     let confirmations: Int
     let received: Date
+    let doubleSpendTx: String?
+    let optInRbf: Bool?
     let inputs: [BlockcypherTxInput]
     let outputs: [BlockcypherTxOutput]
+    
+    var isAlreadyRbf: Bool {
+        doubleSpendTx != nil
+    }
     
     func btcTx(for sourceAddress: String) -> BtcTx? {
         var txOutputIndex: Int = -1
@@ -126,7 +137,7 @@ struct BlockcypherTxInput: Codable, BlockcypherInput {
     let prevHash: String
     let outputValue: UInt64
     let addresses: [String]
-    let sequence: UInt64
+    let sequence: Int
     let scriptType: String
     let witness: [String]?
     let script: String?

@@ -45,7 +45,7 @@ public class WalletManagerFactory {
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: addresses)
                 
                 var providers = [BitcoinNetworkApi:BitcoinNetworkProvider]()
-                providers[.blockchair] = BlockchairProvider(endpoint: .bitcoin, apiKey: config.blockchairApiKey)
+                providers[.blockchair] = BlockchairProvider(endpoint: testnet ? .bitcoinTestnet : .bitcoin, apiKey: config.blockchairApiKey)
                 providers[.blockcypher] = BlockcypherProvider(endpoint: BlockcypherEndpoint(coin: .btc, chain: testnet ? .test3: .main),
                                                               tokens: config.blockcypherTokens)
                // providers[.main] = BitcoinMainProvider()

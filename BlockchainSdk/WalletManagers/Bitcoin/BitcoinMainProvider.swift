@@ -16,6 +16,8 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
     //let bitcoinfeesProvider = MoyaProvider<BitcoinfeesTarget>(plugins: [NetworkLoggerPlugin()])
     let feeProvider = MoyaProvider<BlockchainInfoApiTarget>(plugins: [NetworkLoggerPlugin()])
     
+    var canPushTransaction: Bool { false }
+    
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
 		return addressUnspentsData(address)
             .tryMap {(addressResponse, unspentsResponse) throws -> BitcoinResponse in
@@ -102,6 +104,11 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
         .mapNotEmptyString()
         .eraseError()
         .eraseToAnyPublisher()
+    }
+    
+    func push(transaction: String) -> AnyPublisher<String, Error> {
+        Fail(error: NetworkServiceError.notAvailable)
+            .eraseToAnyPublisher()
     }
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {

@@ -185,7 +185,17 @@ extension EthereumWalletManager: SignatureCountValidator {
 	}
 }
 
-extension EthereumWalletManager: TransactionPusher {}
+extension EthereumWalletManager: DefaultTransactionPusher {}
+
+extension EthereumWalletManager: TransactionPusher {
+    func canPushTransaction(_ transaction: Transaction) -> AnyPublisher<(Bool, [Amount]), Error> {
+        canPushTx(transaction)
+    }
+    
+    func pushTransaction(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
+        send(transaction, signer: signer)
+    }
+}
 
 extension EthereumWalletManager: ThenProcessable { }
 

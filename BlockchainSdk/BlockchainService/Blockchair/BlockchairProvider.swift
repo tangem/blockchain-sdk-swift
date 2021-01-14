@@ -12,6 +12,7 @@ import Combine
 import TangemSdk
 import Alamofire
 import SwiftyJSON
+import BitcoinCore
 
 class BlockchairProvider: BitcoinNetworkProvider {
     let provider = MoyaProvider<BlockchairTarget>()
@@ -25,6 +26,10 @@ class BlockchairProvider: BitcoinNetworkProvider {
         decoder.dateDecodingStrategy = .formatted(DateFormatter(withFormat: "YYYY-MM-dd HH:mm:ss", locale: "en_US"))
         return decoder
     }()
+    
+    var canPushTransaction: Bool {
+        true
+    }
     
     init(endpoint: BlockchairEndpoint, apiKey: String) {
         self.endpoint = endpoint
@@ -92,12 +97,23 @@ class BlockchairProvider: BitcoinNetworkProvider {
                             getTransactionDetails(from: $0)
                         }
                         
-                        let pendingBtcTxs: [PendingTransaction] = txs.compactMap {
+                        var pendingBtcTxs: [PendingTransaction] = txs.compactMap {
                             guard let tx = $0 else { return nil }
                             
                             return tx.pendingBtxTx(sourceAddress: address, decimalValue: self.endpoint.blockchain.decimalValue)
                         }
                         
+                        for (index, tx) in pendingBtcTxs.enumerated() {
+                            guard tx.sequence == SequenceValues.baseTx.rawValue else { continue }
+                            
+                            pendingBtcTxs[index].isAlreadyRbf = pendingBtcTxs.contains(where: {
+                                tx.source == $0.source &&
+                                    tx.destination == $0.destination &&
+                                    tx.value == $0.value &&
+                                    tx.fee ?? 0 < $0.fee ?? 0 &&
+                                    tx.sequence < $0.sequence
+                            })
+                        }
                         let oldResp = resp.0
                         return BitcoinResponse(balance: oldResp.balance, hasUnconfirmed: oldResp.hasUnconfirmed, txrefs: oldResp.txrefs, pendingTxRefs: pendingBtcTxs)
                     }
@@ -138,6 +154,10 @@ class BlockchairProvider: BitcoinNetworkProvider {
                return hash
         }
         .eraseToAnyPublisher()
+    }
+    
+    func push(transaction: String) -> AnyPublisher<String, Error> {
+        send(transaction: transaction)
     }
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {

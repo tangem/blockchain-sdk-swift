@@ -9,6 +9,7 @@
 import Foundation
 import Moya
 import Combine
+import BitcoinCore
 
 class BlockcypherProvider: BitcoinNetworkProvider {
     let provider = MoyaProvider<BlockcypherTarget> ()
@@ -23,6 +24,10 @@ class BlockcypherProvider: BitcoinNetworkProvider {
         decoder.dateDecodingStrategy = .customISO8601
         return decoder
     }()
+    
+    var canPushTransaction: Bool {
+        false
+    }
     
     init(endpoint: BlockcypherEndpoint, tokens: [String]) {
         self.endpoint = endpoint
@@ -49,15 +54,28 @@ class BlockcypherProvider: BitcoinNetworkProvider {
                         pendingTxRefs.append(pendingTx)
                     } else {
                         guard let btcTx = tx.btcTx(for: address) else { return }
-                        
+
                         utxo.append(btcTx)
                     }
                 }
                 
+                for (index, tx) in pendingTxRefs.enumerated() {
+                    guard tx.sequence == SequenceValues.baseTx.rawValue else { continue }
+                    
+                    if tx.isAlreadyRbf { continue }
+                    
+                    pendingTxRefs[index].isAlreadyRbf = pendingTxRefs.contains(where: {
+                        tx.source == $0.source &&
+                            tx.destination == $0.destination &&
+                            tx.value == $0.value &&
+                            tx.fee ?? 0 < $0.fee ?? 0 &&
+                            tx.sequence < $0.sequence
+                    })
+                }
                 if Decimal(uncBalance) / self.endpoint.blockchain.decimalValue != pendingTxRefs.reduce(0, { $0 + $1.value }) {
                     print("Unconfirmed balance and pending tx refs sum is not equal")
                 }
-                let btcResponse = BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: uncBalance != 0, txrefs: utxo, pendingTxRefs: pendingTxRefs)
+                let btcResponse = BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: pendingTxRefs.count > 0, txrefs: utxo, pendingTxRefs: pendingTxRefs)
                 return btcResponse
             }
             .eraseToAnyPublisher()
@@ -92,6 +110,11 @@ class BlockcypherProvider: BitcoinNetworkProvider {
             .eraseToAnyPublisher()
     }
     
+    func push(transaction: String) -> AnyPublisher<String, Error> {
+        Fail(error: NetworkServiceError.notAvailable)
+            .eraseToAnyPublisher()
+    }
+    
 //    func getTx(hash: String) -> AnyPublisher<BlockcypherTx, Error> {
 //        publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .txs(txHash: hash)))
 //            .map(BlockcypherTx.self)
@@ -111,7 +134,7 @@ class BlockcypherProvider: BitcoinNetworkProvider {
     }
     
     private func getFullInfo<Tx: Codable>(address: String) -> AnyPublisher<BlockcypherFullAddressResponse<Tx>, MoyaError> {
-        publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, unspentsOnly: true, limit: nil, isFull: true)))
+        publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, unspentsOnly: true, limit: 30, isFull: true)))
             .map(BlockcypherFullAddressResponse<Tx>.self, using: jsonDecoder)
     }
     

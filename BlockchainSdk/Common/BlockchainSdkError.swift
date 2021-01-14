@@ -24,3 +24,7 @@ public enum BlockchainSdkError: Int, LocalizedError {
 		}
 	}
 }
+
+public enum NetworkServiceError: Error {
+    case notAvailable
+}

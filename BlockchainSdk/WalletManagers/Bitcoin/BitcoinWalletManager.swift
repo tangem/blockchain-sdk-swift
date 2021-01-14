@@ -9,8 +9,9 @@
 import Foundation
 import TangemSdk
 import Combine
+import BitcoinCore
 
-class BitcoinWalletManager: WalletManager, FeeProvider {
+class BitcoinWalletManager: WalletManager, FeeProvider, DefaultTransactionPusher {
     var allowsFeeSelection: Bool { true }
     var txBuilder: BitcoinTransactionBuilder!
     var networkService: BitcoinNetworkProvider!
@@ -47,9 +48,9 @@ class BitcoinWalletManager: WalletManager, FeeProvider {
                 var normalRate = max((response.normalSatoshiPerByte as NSDecimalNumber).intValue, 1)
                 var maxRate = max((response.prioritySatoshiPerByte as NSDecimalNumber).intValue, 1)
                 
-                var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: !includeFee, changeScript: nil)
-                var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: !includeFee, changeScript: nil)
-                var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: !includeFee, changeScript: nil)
+                var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: !includeFee, changeScript: nil, isReplacedByFee: false)
+                var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: !includeFee, changeScript: nil, isReplacedByFee: false)
+                var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: !includeFee, changeScript: nil, isReplacedByFee: false)
                 
 //                guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount - dummyFee,
 //                                                                                  fee: dummyFee,
@@ -124,31 +125,44 @@ class BitcoinWalletManager: WalletManager, FeeProvider {
 //
 //        return Decimal(tx.count)
 //    }
+    
+    private func send(_ transaction: Transaction, signer: TransactionSigner, isPushingTx: Bool) -> AnyPublisher<SignResponse, Error> {
+        guard let hashes = txBuilder.buildForSign(transaction: transaction, isReplacedByFee: isPushingTx) else {
+            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+        }
+        
+        return signer.sign(hashes: hashes, cardId: cardId)
+            .tryMap {[unowned self] response -> (String, SignResponse) in
+                guard let tx = self.txBuilder.buildForSend(transaction: transaction, signature: response.signature, hashesCount: hashes.count, isReplacedByFee: isPushingTx) else {
+                    throw WalletError.failedToBuildTx
+                }
+                return (tx.toHexString(), response)
+        }
+        .flatMap {[unowned self] values -> AnyPublisher<SignResponse, Error> in
+            let completion: (String) -> SignResponse = {
+                [unowned self] sendResponse in
+                    self.wallet.add(transaction: transaction)
+                    return values.1
+            }
+            if isPushingTx {
+                return self.networkService.push(transaction: values.0)
+                    .map(completion)
+                    .eraseToAnyPublisher()
+            } else {
+                return self.networkService.send(transaction: values.0)
+                    .map(completion)
+                    .eraseToAnyPublisher()
+            }
+        }
+        .eraseToAnyPublisher()
+    }
 }
 
 
 @available(iOS 13.0, *)
 extension BitcoinWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
-        guard let hashes = txBuilder.buildForSign(transaction: transaction) else {
-            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
-        }
-        
-        return signer.sign(hashes: hashes, cardId: cardId)
-            .tryMap {[unowned self] response -> (String, SignResponse) in
-                guard let tx = self.txBuilder.buildForSend(transaction: transaction, signature: response.signature, hashesCount: hashes.count) else {
-                    throw WalletError.failedToBuildTx
-                }
-                return (tx.toHexString(), response)
-        }
-        .flatMap {[unowned self] values -> AnyPublisher<SignResponse, Error> in
-            return self.networkService.send(transaction: values.0)
-                .map {[unowned self] sendResponse in
-                    self.wallet.add(transaction: transaction)
-                    return values.1
-            }.eraseToAnyPublisher()
-        }
-        .eraseToAnyPublisher()
+        send(transaction, signer: signer, isPushingTx: false)
     }
 }
 
@@ -162,7 +176,25 @@ extension BitcoinWalletManager: SignatureCountValidator {
 	}
 }
 
-extension BitcoinWalletManager: TransactionPusher { }
+extension BitcoinWalletManager: TransactionPusher {
+    func canPushTransaction(_ transaction: Transaction) -> AnyPublisher<(Bool, [Amount]), Error> {
+        guard
+            networkService.canPushTransaction,
+            transaction.sequence != SequenceValues.default.rawValue,
+            transaction.sequence != SequenceValues.replasedByFeeTx.rawValue,
+            !transaction.isAlreadyReplasedByFee
+        else {
+            return Just((false, []))
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        }
+        
+        return canPushTx(transaction)
+    }
+    func pushTransaction(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
+        send(transaction, signer: signer, isPushingTx: true)
+    }
+}
 
 extension BitcoinWalletManager: ThenProcessable { }
 

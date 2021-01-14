@@ -31,6 +31,10 @@ struct BlockcypherEthereumTransaction: Codable, BlockcypherPendingTxConvertible 
     let confirmations: Int
     let inputs: [BlockcypherEthInput]
     let outputs: [BlockcypherEthOutput]
+    
+    var isAlreadyRbf: Bool {
+        false
+    }
 }
 
 struct BlockcypherEthInput: Codable, BlockcypherInput {

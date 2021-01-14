@@ -15,4 +15,6 @@ struct PendingTransaction {
     var source: String
     let fee: Decimal?
     let date: Date
+    var isAlreadyRbf: Bool
+    let sequence: Int
 }

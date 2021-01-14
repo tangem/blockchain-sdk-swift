@@ -13,6 +13,8 @@ import Moya
 class DucatusNetworkService: BitcoinNetworkProvider {
     let provider =  BitcoreProvider()
     
+    var canPushTransaction: Bool { false }
+    
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         return Publishers.Zip(provider.getBalance(address: address), provider.getUnspents(address: address))
             .tryMap { balance, unspents throws -> BitcoinResponse in
@@ -49,6 +51,11 @@ class DucatusNetworkService: BitcoinNetworkProvider {
                     throw WalletError.failedToParseNetworkResponse
                 }
         }.eraseToAnyPublisher()
+    }
+    
+    func push(transaction: String) -> AnyPublisher<String, Error> {
+        Fail(error: BlockchainSdkError.notImplemented)
+            .eraseToAnyPublisher()
     }
     
     @available(iOS 13.0, *)
