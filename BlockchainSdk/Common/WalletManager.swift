@@ -109,7 +109,12 @@ public class WalletManager {
         var errors = [TransactionError]()
         
         if let amountError = validate(amount: amount) {
-            errors.append(amountError)
+            let testFeeValue = fee?.value ?? 0
+            if testFeeValue > 0, case .invalidAmount = amountError {
+                errors.append(.feeExceedsBalance)
+            } else {
+                errors.append(amountError)
+            }
         }
         
         guard let fee = fee else {
