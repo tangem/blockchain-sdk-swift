@@ -25,7 +25,7 @@ struct BlockcypherEthereumTransaction: Codable, BlockcypherPendingTxConvertible 
     let fees: Decimal
     let size: Int
     let gasLimit: UInt64
-    let gasUsed: UInt64
+    let gasUsed: UInt64?
     let gasPrice: UInt64
     let received: Date
     let confirmations: Int
