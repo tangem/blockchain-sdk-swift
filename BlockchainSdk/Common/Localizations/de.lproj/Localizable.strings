@@ -78,6 +78,8 @@
 
 "send_error_dust_amount_format" = "Minimaler Betrag ist %@";
 
+"send_error_dust_change_format" = "Minimaler Wechselgeld ist %@";
+
 "send_error_invalid_fee_value" = "Falsche Gebühr";
 
 "send_error_unknown" = "Unbekannter Fehler";
