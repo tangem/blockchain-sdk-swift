@@ -61,7 +61,8 @@ class BitcoinTransactionBuilder {
 			let hashes = try bitcoinManager.buildForSign(target: transaction.destinationAddress,
 														 amount: transaction.amount.value,
                                                          feeRate: feeRates[transaction.fee.value]!,
-                                                         changeScript: changeScript)
+                                                         changeScript: changeScript,
+                                                         isReplacedByFee: false)
 			return hashes
 		} catch {
 			print(error)
@@ -79,7 +80,8 @@ class BitcoinTransactionBuilder {
 												   amount: transaction.amount.value,
 												   feeRate: feeRates[transaction.fee.value]!,
                                                    derSignatures: signatures,
-                                                   changeScript: changeScript)
+                                                   changeScript: changeScript,
+                                                   isReplacedByFee: false)
 		} catch {
 			print(error)
 			return nil
