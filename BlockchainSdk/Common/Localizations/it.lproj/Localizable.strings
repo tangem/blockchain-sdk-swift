@@ -88,3 +88,6 @@
 
 "send_error_dust_amount_format" = "L'importo minimo è di %@";
 
+"send_validation_amount_exceeds_balance" = "L'importo supera il saldo";
+
+"send_error_dust_change_format" = "Il resto minimo è di %@";

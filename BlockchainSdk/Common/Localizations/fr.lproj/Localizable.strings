@@ -89,3 +89,5 @@
 "send_error_invalid_fee_value" = "Commission non valide";
 
 "send_error_dust_amount_format" = "Le montant minimal est de %@";
+
+"send_error_dust_change_format" = "Le monnaie minimal est de %@";
