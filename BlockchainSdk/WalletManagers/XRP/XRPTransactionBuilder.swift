@@ -75,14 +75,20 @@ class XRPTransactionBuilder {
         
         let decodedTag = decodedXAddress?.tag
         let explicitTag = (transaction.params as? XRPTransactionParams)?.destinationTag
-
+        
         let destinationTag: UInt32? = try {
-            if decodedTag != nil {
-                if decodedTag != explicitTag {
-                    throw "xrp_distinct_tags_found".localized
+            switch (decodedTag, explicitTag) {
+            case (.some(let tag), .none):
+                return tag
+            case (.none, .some(let tag)):
+                return tag
+            case (.some(let tag1), .some(let tag2)):
+                if tag1 != tag2 {
+                    throw XRPError.distinctTagsFound
                 }
+                return tag1
+            case (.none, .none): return nil
             }
-            return explicitTag
         }()
         
          // dictionary containing partial transaction fields
