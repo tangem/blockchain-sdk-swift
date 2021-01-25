@@ -51,7 +51,7 @@ public struct TransactionErrors: Error {
     public let errors: [TransactionError]
 }
 
-public enum TransactionError: Error, LocalizedError {
+public enum TransactionError: Error, LocalizedError, Equatable {
     case invalidAmount
     case amountExceedsBalance
     case invalidFee

@@ -7,9 +7,7 @@
 //
 
 import XCTest
-import TangemSdk
 import BitcoinCore
-@testable import BlockchainSdk
 
 class BlockchainSdkTests: XCTestCase {
 
@@ -104,5 +102,37 @@ class BlockchainSdkTests: XCTestCase {
         }
 
         XCTAssertFalse(ethAddressService.validate("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b9adb"))
+    }
+    
+    func testTxValidation() {
+        let vm: WalletManager = BitcoinWalletManager(cardId: "",
+                                      wallet: Wallet(blockchain: .bitcoin(testnet: false),
+                                                     addresses: [PlainAddress(value: "adfjbajhfaldfh")]))
+        
+        vm.wallet.add(coinValue: 10)
+        var errors = vm.validateTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 3),
+                                            fee: Amount(with: vm.wallet.amounts[.coin]!, value: 3))
+        XCTAssertTrue(errors.errors.isEmpty)
+
+        errors = vm.validateTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: -1),
+                                            fee: Amount(with: vm.wallet.amounts[.coin]!, value: 3))
+        XCTAssertTrue(errors.errors.first! == (TransactionError.invalidAmount))
+        
+        
+        errors = vm.validateTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: -1),
+                                            fee: Amount(with: vm.wallet.amounts[.coin]!, value: -1))
+        XCTAssertTrue(errors.errors.first! == (TransactionError.invalidFee))
+        
+        errors = vm.validateTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 11),
+                                            fee: Amount(with: vm.wallet.amounts[.coin]!, value: 1))
+        XCTAssertTrue(errors.errors.first! == (TransactionError.amountExceedsBalance))
+        
+        errors = vm.validateTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 1),
+                                            fee: Amount(with: vm.wallet.amounts[.coin]!, value: 11))
+        XCTAssertTrue(errors.errors.first! == (TransactionError.feeExceedsBalance))
+        
+        errors = vm.validateTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 3),
+                                            fee: Amount(with: vm.wallet.amounts[.coin]!, value: 8))
+        XCTAssertTrue(errors.errors.first! == (TransactionError.totalExceedsBalance))
     }
 }
