@@ -80,6 +80,13 @@ public enum TransactionError: Error, LocalizedError {
     }
 }
 
+extension Array where Element == TransactionError {
+    mutating func appendIfNotNil(_ value: TransactionError?) {
+        if let value = value {
+            append(value)
+        }
+    }
+}
 
 protocol DustRestrictable {
     var dustValue: Amount { get }
