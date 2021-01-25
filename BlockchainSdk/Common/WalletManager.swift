@@ -108,23 +108,16 @@ public class WalletManager {
     func validateTransaction(amount: Amount, fee: Amount?) -> TransactionErrors {
         var errors = [TransactionError]()
         
-        if let amountError = validate(amount: amount) {
-            let testFeeValue = fee?.value ?? 0
-            if testFeeValue > 0, case .invalidAmount = amountError {
-                errors.append(.feeExceedsBalance)
-            } else {
-                errors.append(amountError)
-            }
-        }
+        let amountError = validate(amount: amount)
         
         guard let fee = fee else {
+            errors.appendIfNotNil(amountError)
             return TransactionErrors(errors: errors)
         }
         
-        if let feeError = validate(fee: fee) {
-            errors.append(feeError)
-        }
-        
+        errors.appendIfNotNil(validate(fee: fee))
+        errors.appendIfNotNil(amountError)
+                
         let total = amount + fee
         
         if amount.type == fee.type,

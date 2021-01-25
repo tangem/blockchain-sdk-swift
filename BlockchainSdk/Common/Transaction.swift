@@ -51,7 +51,7 @@ public struct TransactionErrors: Error {
     public let errors: [TransactionError]
 }
 
-public enum TransactionError: Error, LocalizedError {
+public enum TransactionError: Error, LocalizedError, Equatable {
     case invalidAmount
     case amountExceedsBalance
     case invalidFee
@@ -80,6 +80,13 @@ public enum TransactionError: Error, LocalizedError {
     }
 }
 
+extension Array where Element == TransactionError {
+    mutating func appendIfNotNil(_ value: TransactionError?) {
+        if let value = value {
+            append(value)
+        }
+    }
+}
 
 protocol DustRestrictable {
     var dustValue: Amount { get }
