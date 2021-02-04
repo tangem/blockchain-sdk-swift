@@ -149,7 +149,7 @@ class TezosNetworkService {
     }
     
     private func encodeSignature(_ signature: Data) -> String {
-        let edsigPrefix = Data(hex: "09F5CD8612")
+        let edsigPrefix: Data = Data(hex: "09F5CD8612")
         let prefixedSignature = edsigPrefix + signature
         let checksum = prefixedSignature.sha256().sha256().prefix(4)
         let prefixedSignatureWithChecksum = prefixedSignature + checksum

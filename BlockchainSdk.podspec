@@ -52,5 +52,5 @@ Use BlockchainSdk for Tangem wallet integration
   s.dependency 'web3swift'
   s.dependency 'TangemSdk'
   s.dependency 'AnyCodable-FlightSchool'
-  s.dependency 'BitcoinCore.swift'
+  s.dependency 'BitcoinCoreSPV.swift'
 end

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import BitcoinCore
+import BitcoinCoreSPV
 
 class DucatusNetworkParams: INetwork {
     let bundleName = "BitcoinKit"

@@ -9,7 +9,7 @@
 import Foundation
 import TangemSdk
 import HDWalletKit
-import BitcoinCore
+import BitcoinCoreSPV
 
 class BitcoinTransactionBuilder {
 	var unspentOutputs: [BtcTx]? {

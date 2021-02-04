@@ -71,7 +71,7 @@ class TezosTransactionBuilder {
     }
     
     private func encodePublicKey(_ pkUncompressed: Data) -> String {
-        let edpkPrefix = Data(hex: "0D0F25D9")
+        let edpkPrefix: Data = Data(hex: "0D0F25D9")
         let prefixedPubKey = edpkPrefix + pkUncompressed
 
         let checksum = prefixedPubKey.sha256().sha256().prefix(4)

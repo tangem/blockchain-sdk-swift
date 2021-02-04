@@ -10,15 +10,18 @@ import Foundation
 import TangemSdk
 import Combine
 
-class BitcoinWalletManager: WalletManager {
-    var allowsFeeSelection: Bool { true }
+public class BitcoinWalletManager: WalletManager {
+    
+    public var spv: SpvAdapter!
+        
+    public var allowsFeeSelection: Bool { true }
     var txBuilder: BitcoinTransactionBuilder!
     var networkService: BitcoinNetworkProvider!
     var relayFee: Decimal? {
         return nil
     }
     
-    override func update(completion: @escaping (Result<Void, Error>)-> Void)  {
+    public override func update(completion: @escaping (Result<Void, Error>)-> Void)  {
         cancellable = networkService.getInfo(addresses: wallet.addresses.map{ $0.value })
             .eraseToAnyPublisher()
             .subscribe(on: DispatchQueue.global())
@@ -34,7 +37,7 @@ class BitcoinWalletManager: WalletManager {
     }
     
     @available(iOS 13.0, *)
-    func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
+    public func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap {[unowned self] response throws -> [Amount] in
               //  let dummyFee = Amount(with: amount, value: 0.00000001)
@@ -124,7 +127,7 @@ class BitcoinWalletManager: WalletManager {
 
 @available(iOS 13.0, *)
 extension BitcoinWalletManager: TransactionSender {
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
+    public func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
         guard let hashes = txBuilder.buildForSign(transaction: transaction) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
@@ -148,7 +151,7 @@ extension BitcoinWalletManager: TransactionSender {
 }
 
 extension BitcoinWalletManager: SignatureCountValidator {
-	func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error> {
+	public func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error> {
 		networkService.getSignatureCount(address: wallet.address)
 			.tryMap {
 				if signedHashes != $0 { throw BlockchainSdkError.signatureCountNotMatched }

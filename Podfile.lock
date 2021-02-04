@@ -19,8 +19,14 @@ PODS:
   - BinanceChain/Libraries (1.0.1-beta)
   - BinanceChain/Protobuf (1.0.1-beta)
   - BinanceChain/Util (1.0.1-beta)
-  - BitcoinCore.swift (0.15.4)
+  - BitcoinCoreSPV.swift (0.15.4):
+    - BigInt (~> 5.0)
+    - GRDB.swift (~> 4.0)
+    - ObjectMapper (~> 3.0)
   - CryptoSwift (1.3.8)
+  - GRDB.swift (4.14.0):
+    - GRDB.swift/standard (= 4.14.0)
+  - GRDB.swift/standard (4.14.0)
   - HDWalletKit (0.3.5):
     - CryptoSwift
     - secp256k1.swift
@@ -31,6 +37,7 @@ PODS:
   - ObjcExceptionBridging (1.0.1):
     - ObjcExceptionBridging/ObjcExceptionBridging (= 1.0.1)
   - ObjcExceptionBridging/ObjcExceptionBridging (1.0.1)
+  - ObjectMapper (3.5.3)
   - PromiseKit (6.8.5):
     - PromiseKit/CorePromise (= 6.8.5)
     - PromiseKit/Foundation (= 6.8.5)
@@ -65,7 +72,7 @@ DEPENDENCIES:
   - AnyCodable-FlightSchool
   - BigInt
   - BinanceChain (from `https://bitbucket.org/tangem/swiftbinancechain.git`, tag `0.0.7`)
-  - BitcoinCore.swift (from `https://bitbucket.org/tangem/bitcoincore.git`, tag `0.0.10`)
+  - BitcoinCoreSPV.swift (from `../spv/BitcoinCore/`)
   - HDWalletKit (from `https://bitbucket.org/tangem/hdwallet.git`, tag `0.3.12`)
   - Moya
   - Sodium
@@ -81,8 +88,10 @@ SPEC REPOS:
     - AnyCodable-FlightSchool
     - BigInt
     - CryptoSwift
+    - GRDB.swift
     - Moya
     - ObjcExceptionBridging
+    - ObjectMapper
     - PromiseKit
     - secp256k1.swift
     - Sodium
@@ -98,9 +107,8 @@ EXTERNAL SOURCES:
   BinanceChain:
     :git: https://bitbucket.org/tangem/swiftbinancechain.git
     :tag: 0.0.7
-  BitcoinCore.swift:
-    :git: https://bitbucket.org/tangem/bitcoincore.git
-    :tag: 0.0.10
+  BitcoinCoreSPV.swift:
+    :path: "../spv/BitcoinCore/"
   HDWalletKit:
     :git: https://bitbucket.org/tangem/hdwallet.git
     :tag: 0.3.12
@@ -115,9 +123,6 @@ CHECKOUT OPTIONS:
   BinanceChain:
     :git: https://bitbucket.org/tangem/swiftbinancechain.git
     :tag: 0.0.7
-  BitcoinCore.swift:
-    :git: https://bitbucket.org/tangem/bitcoincore.git
-    :tag: 0.0.10
   HDWalletKit:
     :git: https://bitbucket.org/tangem/hdwallet.git
     :tag: 0.3.12
@@ -133,11 +138,13 @@ SPEC CHECKSUMS:
   AnyCodable-FlightSchool: 9bf42632b5256c78710e2f4fb18ce78e89180883
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
   BinanceChain: 590254fcbe333b0374c69f5ea80f56afb291bb26
-  BitcoinCore.swift: 64ac4e69d9a6ef917bcbb0c23f1324cf57a822fb
+  BitcoinCoreSPV.swift: 8ef549e2e8529bd43f03741b4f643440319f08fa
   CryptoSwift: 01b0f0cba1d5c212e5a335ff6c054fb75a204f00
+  GRDB.swift: 8cc3ab7c8b8b4ac1761deb8dca4b51c1c9d429f8
   HDWalletKit: 5f03c82ab8ac7972951feae247780d39823f04ea
   Moya: 5b45dacb75adb009f97fde91c204c1e565d31916
   ObjcExceptionBridging: c30e00eb3700467e695faeea30e26e18bd445001
+  ObjectMapper: 97111c97e054a6ee25917662106689f0b4127b37
   PromiseKit: 9616b0afef31eae56ab9ce044c8ec2b8612a15cd
   secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
   Sodium: 23d11554ecd556196d313cf6130d406dfe7ac6da
@@ -151,6 +158,6 @@ SPEC CHECKSUMS:
   web3swift: 21ab60f3c80aea2366ebf016f377e5cb654909bf
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: ca3be574bcf866219a653b4fdb16885abd9115ce
+PODFILE CHECKSUM: 55dbcead1c6417e9d4a6095204967dcad4df0516
 
 COCOAPODS: 1.10.0

@@ -19,10 +19,21 @@ target 'BlockchainSdk' do
   pod 'AnyCodable-FlightSchool'
   pod 'TangemSdk', :git => 'git@bitbucket.org:tangem/card-sdk-swift.git', :tag => 'build-79'
   pod 'stellar-ios-mac-sdk'
-  pod 'BitcoinCore.swift', :git => 'https://bitbucket.org/tangem/bitcoincore.git', :tag => '0.0.12'
+  #pod 'BitcoinCore.swift', :git => 'https://bitbucket.org/tangem/bitcoincore.git', :tag => '0.0.12'
   #pod 'BitcoinCore.swift', :path => '../bitcoincore'
+  pod 'BitcoinCoreSPV.swift', :path => '../spv/BitcoinCore/'
 end
 
 target 'BlockchainSdkTests' do
   pod 'TangemSdk', :git => 'git@bitbucket.org:tangem/card-sdk-swift.git', :tag => 'build-79'
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      if Gem::Version.new('9.0') > Gem::Version.new(config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'])
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
+      end
+    end
+  end
 end

@@ -8,7 +8,7 @@
 
 import Foundation
 import TangemSdk
-import BitcoinCore
+import BitcoinCoreSPV
 
 public enum Blockchain {
     case bitcoin(testnet: Bool)

@@ -9,7 +9,7 @@
 import Foundation
 import TangemSdk
 import HDWalletKit
-import BitcoinCore
+import BitcoinCoreSPV
 
 public class BitcoinAddressService: AddressService {
     let legacy: BitcoinLegacyAddressService
@@ -128,7 +128,7 @@ public class BitcoinBech32AddressService: AddressService {
 	}
 	
 	public func makeMultisigAddress(from scriptHash: Data) -> String {
-		print("Script hash hex: ", scriptHash.hex)
+		print("Script hash hex: ", scriptHash.toHexString())
 		let address = try! converter.convert(scriptHash: scriptHash).stringValue
 		
 		return address

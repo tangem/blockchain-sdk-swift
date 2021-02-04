@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import BitcoinCore
+import BitcoinCoreSPV
 
 class LitecoinNetworkParams: INetwork {
     let bundleName = "BitcoinKit"
