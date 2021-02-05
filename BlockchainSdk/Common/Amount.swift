@@ -40,9 +40,10 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
     }
     
     public var description: String {
-        if value == 0 {
+        if value == 0 && decimals > 0 {
             return "0.00 \(currencySymbol)"
         }
+    
         return "\(value.rounded(scale: decimals)) \(currencySymbol)"
     }
     
