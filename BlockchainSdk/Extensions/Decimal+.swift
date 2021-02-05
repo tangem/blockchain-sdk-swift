@@ -40,12 +40,12 @@ extension Decimal {
         self.init(uint64)
     }
     
-    public mutating func round(scale: Int = 0, roundingMode: NSDecimalNumber.RoundingMode = .plain) {
+    public mutating func round(scale: Int = 0, roundingMode: NSDecimalNumber.RoundingMode = .down) {
         var localCopy = self
         NSDecimalRound(&self, &localCopy, scale, roundingMode)
     }
     
-    public func rounded(scale: Int = 0, roundingMode: NSDecimalNumber.RoundingMode = .plain) -> Decimal {
+    public func rounded(scale: Int = 0, roundingMode: NSDecimalNumber.RoundingMode = .down) -> Decimal {
         var result = Decimal()
         var localCopy = self
         NSDecimalRound(&result, &localCopy, scale, roundingMode)
@@ -53,6 +53,6 @@ extension Decimal {
     }
     
     public func rounded(blockchain: Blockchain) -> Decimal {
-        return rounded(scale: Int(blockchain.decimalCount), roundingMode: blockchain.roundingMode)
+        return rounded(scale: Int(blockchain.decimalCount))
     }
 }
