@@ -76,6 +76,10 @@ class EthereumNetworkService {
             .tryMap {[unowned self] in try self.parseGas($0.data)}
             .eraseToAnyPublisher()
     }
+    
+    func updateTokensBalance(for address: String, tokens: [Token]) -> AnyPublisher<[Token : Decimal], Error> {
+        getTokensBalance(address, tokens: tokens)
+    }
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
         guard let blockcypherProvider = blockcypherProvider else {

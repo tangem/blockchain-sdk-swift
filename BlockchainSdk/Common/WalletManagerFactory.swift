@@ -24,11 +24,20 @@ public class WalletManagerFactory {
                 return nil
         }
         
-        let tokens = tokens ?? getToken(from: card).map { [$0] } ?? []
-		return makeWalletManager(from: blockchain, walletPublicKey: walletPublicKey, cardId: cardId, walletPairPublicKey: pairKey, tokens: tokens)
+        let tkns: [Token]
+        let canManageTokens: Bool
+        if let cardTokens = getToken(from: card).map({ [$0] }) {
+            tkns = cardTokens
+            canManageTokens = false
+        } else {
+            tkns = tokens ?? []
+            canManageTokens = true
+        }
+         
+		return makeWalletManager(from: blockchain, walletPublicKey: walletPublicKey, cardId: cardId, walletPairPublicKey: pairKey, tokens: tkns, canManageTokens: canManageTokens)
 	}
 	
-    public func makeWalletManager(from blockchain: Blockchain, walletPublicKey: Data, cardId: String, walletPairPublicKey: Data? = nil, tokens: [Token] = []) -> WalletManager {
+    public func makeWalletManager(from blockchain: Blockchain, walletPublicKey: Data, cardId: String, walletPairPublicKey: Data? = nil, tokens: [Token] = [], canManageTokens: Bool) -> WalletManager {
 		let addresses = blockchain.makeAddresses(from: walletPublicKey, with: walletPairPublicKey)
 		let wallet = Wallet(blockchain: blockchain,
                             addresses: addresses)
@@ -87,7 +96,7 @@ public class WalletManagerFactory {
             }
             
         case .ethereum(let testnet):
-            return EthereumWalletManager(cardId: cardId, wallet: wallet, cardTokens: tokens).then {
+            return EthereumWalletManager(cardId: cardId, wallet: wallet, cardTokens: tokens, canManageTokens: canManageTokens).then {
                 let ethereumNetwork = testnet ? EthereumNetwork.testnet(projectId: config.infuraProjectId) : EthereumNetwork.mainnet(projectId: config.infuraProjectId)
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: ethereumNetwork)
                 let provider = BlockcypherProvider(endpoint: .init(coin: .eth, chain: .main), tokens: config.blockcypherTokens)
