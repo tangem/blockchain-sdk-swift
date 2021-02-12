@@ -25,6 +25,7 @@
 
 "common_estimate_tx_size_error" = "Berechnung des Transaktionsumfangs fehlgeschlagen";
 
+"common_failed_to_load_token_balance" = "Failed to load %@ token balance";
 
 
 "cardano_missing_unspents" = "keine unverbraucht";

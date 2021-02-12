@@ -17,6 +17,7 @@ public enum WalletError: Error, LocalizedError {
     case failedToParseNetworkResponse
     case failedToSendTx
     case failedToCalculateTxSize
+    case failedToLoadTokenBalance(token: Token)
     
     public var errorDescription: String? {
         switch self {
@@ -32,6 +33,8 @@ public enum WalletError: Error, LocalizedError {
             return "common_send_tx_error".localized
         case .failedToCalculateTxSize:
             return "common_estimate_tx_size_error".localized
+        case let .failedToLoadTokenBalance(token):
+            return String(format: "common_failed_to_load_token_balance".localized, token.name)
         }
     }
     
@@ -39,7 +42,9 @@ public enum WalletError: Error, LocalizedError {
 
 public class WalletManager {
     public let cardId: String
-    public let cardTokens: [Token]
+    public let canManageTokens: Bool
+    
+    internal(set) public var cardTokens: [Token]
     @Published public var wallet: Wallet
     
     var defaultSourceAddress: String { wallet.address }
@@ -47,10 +52,11 @@ public class WalletManager {
     var cancellable: Cancellable? = nil
 
     
-    init(cardId: String, wallet: Wallet, cardTokens: [Token] = []) {
+    init(cardId: String, wallet: Wallet, cardTokens: [Token] = [], canManageTokens: Bool = false) {
         self.cardId = cardId
         self.wallet = wallet
         self.cardTokens = cardTokens
+        self.canManageTokens = canManageTokens
     }
     
     public func update(completion: @escaping (Result<(), Error>)-> Void) {
@@ -103,6 +109,11 @@ public class WalletManager {
         }
         
         return nil
+    }
+    
+    public func removeToken(_ token: Token) {
+        cardTokens.removeAll(where: { $0 == token })
+        wallet.remove(token: token)
     }
     
     func validateTransaction(amount: Amount, fee: Amount?) -> TransactionErrors {
@@ -167,6 +178,11 @@ public protocol TransactionSigner {
 
 public protocol SignatureCountValidator {
 	func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error>
+}
+
+public protocol TokenManager {
+    func addToken(_ token: Token) -> AnyPublisher<Amount, Error>
+    func removeToken(_ token: Token)
 }
 
 public protocol WithdrawalValidator {

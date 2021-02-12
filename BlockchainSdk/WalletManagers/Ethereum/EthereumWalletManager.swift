@@ -175,6 +175,24 @@ extension EthereumWalletManager: SignatureCountValidator {
 	}
 }
 
+extension EthereumWalletManager: TokenManager {
+    func addToken(_ token: Token) -> AnyPublisher<Amount, Error> {
+        if !cardTokens.contains(token) {
+            cardTokens.append(token)
+        }
+        
+        return networkService.getTokensBalance(wallet.address, tokens: [token])
+            .tryMap { [unowned self] result throws -> Amount in
+                guard let value = result[token] else {
+                    throw WalletError.failedToLoadTokenBalance(token: token)
+                }
+                let tokenAmount = wallet.add(tokenValue: value, for: token)
+                return tokenAmount
+            }
+            .eraseToAnyPublisher()
+    }
+}
+
 extension EthereumWalletManager: ThenProcessable { }
 
 extension EthereumWalletManager {

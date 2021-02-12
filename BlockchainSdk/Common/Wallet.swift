@@ -73,9 +73,11 @@ public struct Wallet {
         add(amount: reserveAmount)
     }
     
-    mutating func add(tokenValue: Decimal, for token: Token) {
+    @discardableResult
+    mutating func add(tokenValue: Decimal, for token: Token) -> Amount {
         let tokenAmount = Amount(with: token, value: tokenValue)
         add(amount: tokenAmount)
+        return tokenAmount
     }
     
     mutating func add(amount: Amount) {
@@ -97,6 +99,10 @@ public struct Wallet {
                              changeAddress: "unknown")
         tx.date = Date()
         transactions.append(tx)
+    }
+    
+    mutating func remove(token: Token) {
+        amounts[.token(value: token)] = nil
     }
 }
 

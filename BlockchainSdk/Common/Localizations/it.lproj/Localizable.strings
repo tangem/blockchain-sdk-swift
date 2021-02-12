@@ -27,6 +27,7 @@
 
 "common_estimate_tx_size_error" = "Impossibile calcolare la dimensione della transazione";
 
+"common_failed_to_load_token_balance" = "Failed to load %@ token balance";
 
 
 "cardano_missing_unspents" = "Assenti fondi non spesi";
