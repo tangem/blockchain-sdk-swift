@@ -181,7 +181,7 @@ extension EthereumWalletManager: TokenManager {
         return networkService.updateTokensBalance(for: wallet.address, tokens: [token])
             .tryMap { [unowned self] result throws -> Amount in
                 guard let value = result[token] else {
-                    throw WalletError.failedToParseNetworkResponse
+                    throw WalletError.failedToLoadTokenBalance(token: token)
                 }
                 let tokenAmount = wallet.add(tokenValue: value, for: token)
                 return tokenAmount

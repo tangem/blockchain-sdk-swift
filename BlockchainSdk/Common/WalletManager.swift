@@ -17,6 +17,7 @@ public enum WalletError: Error, LocalizedError {
     case failedToParseNetworkResponse
     case failedToSendTx
     case failedToCalculateTxSize
+    case failedToLoadTokenBalance(token: Token)
     
     public var errorDescription: String? {
         switch self {
@@ -32,6 +33,8 @@ public enum WalletError: Error, LocalizedError {
             return "common_send_tx_error".localized
         case .failedToCalculateTxSize:
             return "common_estimate_tx_size_error".localized
+        case let .failedToLoadTokenBalance(token):
+            return String(format: "common_failed_to_load_token_balance".localized, token.name)
         }
     }
     
@@ -153,11 +156,6 @@ public class WalletManager {
         if cardTokens.contains(token) { return }
         
         cardTokens.append(token)
-    }
-    
-    internal func addToken(_ token: Token, amount: Amount) {
-        wallet.add(amount: amount)
-        addToken(token)
     }
     
     private func validateAmountValue(_ amount: Amount) -> Bool {

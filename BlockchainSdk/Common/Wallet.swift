@@ -102,13 +102,7 @@ public struct Wallet {
     }
     
     mutating func remove(token: Token) {
-        amounts.filter {
-            guard
-                case let .token(t) = $0.key,
-                t == token
-            else { return false }
-            return true
-        }.forEach { amounts.removeValue(forKey: $0.key) }
+        amounts[.token(value: token)] = nil
     }
 }
 

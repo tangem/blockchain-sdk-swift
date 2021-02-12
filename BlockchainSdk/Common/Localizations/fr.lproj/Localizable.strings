@@ -26,6 +26,7 @@
 
 "common_estimate_tx_size_error" = "Échec de calcul de la taille de la transaction";
 
+"common_failed_to_load_token_balance" = "Failed to load %@ token balance";
 
 
 
