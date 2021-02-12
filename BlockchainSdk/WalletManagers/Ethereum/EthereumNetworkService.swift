@@ -77,10 +77,19 @@ class EthereumNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func updateTokensBalance(for address: String, tokens: [Token]) -> AnyPublisher<[Token : Decimal], Error> {
-        getTokensBalance(address, tokens: tokens)
+    func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error> {
+        tokens
+            .publisher
+            .setFailureType(to: Error.self)
+            .flatMap {[unowned self] token -> AnyPublisher<(Token, Decimal), Error> in
+                return self.getTokenBalance(address, contractAddress: token.contractAddress, tokenDecimals: token.decimalCount)
+                    .map { (token, $0) }
+                    .eraseToAnyPublisher()}
+            .collect()
+            .map { $0.reduce(into: [Token: Decimal]()) { $0[$1.0] = $1.1 } }
+            .eraseToAnyPublisher()
     }
-	
+    
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
         guard let blockcypherProvider = blockcypherProvider else {
             return Fail(error: ETHError.unsupportedFeature).eraseToAnyPublisher()
@@ -119,19 +128,6 @@ class EthereumNetworkService {
             .requestPublisher(.balance(address: address, network: network))
             .filterSuccessfulStatusAndRedirectCodes()
             .tryMap {[unowned self] in try self.parseBalance($0.data)}
-            .eraseToAnyPublisher()
-    }
-    
-    private func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token:Decimal], Error> {
-        tokens
-            .publisher
-            .setFailureType(to: Error.self)
-            .flatMap {[unowned self] token -> AnyPublisher<(Token, Decimal), Error> in
-                return self.getTokenBalance(address, contractAddress: token.contractAddress, tokenDecimals: token.decimalCount)
-                    .map { (token, $0) }
-                    .eraseToAnyPublisher()}
-            .collect()
-            .map { $0.reduce(into: [Token: Decimal]()) { $0[$1.0] = $1.1 } }
             .eraseToAnyPublisher()
     }
     

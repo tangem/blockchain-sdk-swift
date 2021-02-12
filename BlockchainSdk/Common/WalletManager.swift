@@ -152,12 +152,6 @@ public class WalletManager {
         return TransactionErrors(errors: errors)
     }
     
-    internal func addToken(_ token: Token) {
-        if cardTokens.contains(token) { return }
-        
-        cardTokens.append(token)
-    }
-    
     private func validateAmountValue(_ amount: Amount) -> Bool {
         return amount.value > 0
     }
