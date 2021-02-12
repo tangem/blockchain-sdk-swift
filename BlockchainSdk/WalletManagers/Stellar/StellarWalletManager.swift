@@ -62,9 +62,9 @@ class StellarWalletManager: WalletManager {
             }
         } else {
             for token in cardTokens {
-                if let assetBalance = response.assetBalances.first(where: { $0.code == token.symbol }) {
-                    wallet.add(tokenValue: assetBalance.balance, for: token)
-                }
+                let assetBalance = response.assetBalances.first(where: { $0.code == token.symbol })?.balance ?? 0.0
+                wallet.add(tokenValue: assetBalance, for: token)
+                
             }
         }
         let currentDate = Date()

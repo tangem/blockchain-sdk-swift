@@ -57,16 +57,6 @@ public enum Blockchain {
         return pow(Decimal(10), decimalCount)
     }
     
-    public var roundingMode: NSDecimalNumber.RoundingMode {
-        switch self {
-        case .bitcoin, .litecoin, .ethereum, .rsk, .bitcoinCash, .binance, .ducatus:
-            return .down
-        case .stellar, .xrp, .tezos:
-            return .plain
-        case .cardano:
-            return .up
-        }
-    }
     public var currencySymbol: String {
         switch self {
         case .bitcoin:
