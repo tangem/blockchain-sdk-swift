@@ -9,6 +9,16 @@
 import Foundation
 
 public struct Token: Hashable, Equatable, Codable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(contractAddress)
+        hasher.combine(symbol)
+    }
+    
+    public static func == (lhs: Token, rhs: Token) -> Bool {
+        lhs.contractAddress == rhs.contractAddress &&
+            lhs.symbol == rhs.symbol
+    }
+    
     public let name: String
     public let symbol: String
     public let contractAddress: String
