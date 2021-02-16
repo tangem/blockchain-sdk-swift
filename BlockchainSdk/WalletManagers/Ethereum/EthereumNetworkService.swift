@@ -83,12 +83,12 @@ class EthereumNetworkService {
         tokens
             .publisher
             .setFailureType(to: Error.self)
-            .flatMap {[unowned self] token -> AnyPublisher<(Token, Decimal?), Error> in
+            .flatMap {[unowned self] token -> AnyPublisher<(Token, Decimal), Error> in
                 let tokenBalancePublisher = self.getTokenBalance(address, contractAddress: token.contractAddress, tokenDecimals: token.decimalCount)
                 if self.canManageTokens {
                     return tokenBalancePublisher
                         .replaceError(with: -1)
-                        .map { (token, $0 == -1 ? nil : $0) }
+                        .map { (token, $0) }
                         .setFailureType(to: Error.self)
                         .eraseToAnyPublisher()
                 }
@@ -98,9 +98,9 @@ class EthereumNetworkService {
             }
             .collect()
             .map { $0.reduce(into: [Token: Decimal]()) {
-                guard let value = $1.1 else { return }
+                guard $1.1 >= 0 else { return }
                 
-                $0[$1.0] = value
+                $0[$1.0] = $1.1
             }}
             .eraseToAnyPublisher()
     }
