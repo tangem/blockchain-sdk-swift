@@ -17,10 +17,12 @@ class EthereumNetworkService {
     private let network: EthereumNetwork
     private let provider = MoyaProvider<InfuraTarget>(plugins: [NetworkLoggerPlugin()])
     private let blockcypherProvider: BlockcypherProvider?
+    private let canManageTokens: Bool
 	
-    init(network: EthereumNetwork, blockcypherProvider: BlockcypherProvider?) {
+    init(network: EthereumNetwork, blockcypherProvider: BlockcypherProvider?, canManageTokens: Bool) {
         self.network = network
         self.blockcypherProvider = blockcypherProvider
+        self.canManageTokens = canManageTokens
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
@@ -82,11 +84,21 @@ class EthereumNetworkService {
             .publisher
             .setFailureType(to: Error.self)
             .flatMap {[unowned self] token -> AnyPublisher<(Token, Decimal), Error> in
-                return self.getTokenBalance(address, contractAddress: token.contractAddress, tokenDecimals: token.decimalCount)
+                let tokenBalancePublisher = self.getTokenBalance(address, contractAddress: token.contractAddress, tokenDecimals: token.decimalCount)
+                if self.canManageTokens {
+                    return tokenBalancePublisher
+                        .replaceError(with: -1)
+                        .setFailureType(to: Error.self)
+                        .filter { $0 >= 0 }
+                        .map { (token, $0) }
+                        .eraseToAnyPublisher()
+                }
+                return tokenBalancePublisher
                     .map { (token, $0) }
-                    .eraseToAnyPublisher()}
+                    .eraseToAnyPublisher()
+            }
             .collect()
-            .map { $0.reduce(into: [Token: Decimal]()) { $0[$1.0] = $1.1 } }
+            .map { $0.reduce(into: [Token: Decimal]()) { $0[$1.0] = $1.1 }}
             .eraseToAnyPublisher()
     }
     
