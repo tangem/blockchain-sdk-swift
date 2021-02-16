@@ -88,8 +88,9 @@ class EthereumNetworkService {
                 if self.canManageTokens {
                     return tokenBalancePublisher
                         .replaceError(with: -1)
-                        .map { (token, $0) }
                         .setFailureType(to: Error.self)
+                        .filter { $0 >= 0 }
+                        .map { (token, $0) }
                         .eraseToAnyPublisher()
                 }
                 return tokenBalancePublisher
@@ -97,11 +98,7 @@ class EthereumNetworkService {
                     .eraseToAnyPublisher()
             }
             .collect()
-            .map { $0.reduce(into: [Token: Decimal]()) {
-                guard $1.1 >= 0 else { return }
-                
-                $0[$1.0] = $1.1
-            }}
+            .map { $0.reduce(into: [Token: Decimal]()) { $0[$1.0] = $1.1 }}
             .eraseToAnyPublisher()
     }
     
