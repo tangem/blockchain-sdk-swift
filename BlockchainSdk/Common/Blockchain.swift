@@ -114,20 +114,20 @@ public enum Blockchain {
         }
     }
     
-    public var qrPrefix: String {
+    public var qrPrefixes: [String] {
         switch self {
         case .bitcoin:
-            return "bitcoin:"
+            return ["bitcoin:"]
         case .ethereum(let testnet):
-            return testnet ? "" : "ethereum:"
+            return [testnet ? "" : "ethereum:"]
         case .litecoin:
-            return "litecoin:"
+            return ["litecoin:"]
         case .xrp:
-            return "xrpl:"
+            return ["xrpl:", "ripple:"]
         case .binance:
-            return "bnb:"
+            return ["bnb:"]
         default:
-            return ""
+            return [""]
         }
     }
 	
@@ -160,14 +160,8 @@ public enum Blockchain {
     
     public func getShareString(from address: String) -> String {
         switch self {
-        case .bitcoin:
-            return "\(qrPrefix)\(address)"
-        case .ethereum:
-            return "\(qrPrefix)\(address)"
-        case .litecoin:
-            return "\(qrPrefix)\(address)"
-        case .xrp:
-            return "\(qrPrefix)\(address)"
+        case .bitcoin, .ethereum, .litecoin, .xrp:
+            return "\(qrPrefixes.first ?? "")\(address)"
         default:
             return "\(address)"
         }
