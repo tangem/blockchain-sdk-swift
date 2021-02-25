@@ -10,7 +10,6 @@ import Foundation
 import stellarsdk
 import Combine
 
-
 class StellarTransactionBuilder {
     public var sequence: Int64?
     var useTimebounds = true
@@ -25,81 +24,66 @@ class StellarTransactionBuilder {
         self.isTestnet = isTestnet
     }
     
-    @available(iOS 13.0, *)
     public func buildForSign(transaction: Transaction) -> AnyPublisher<(hash: Data, transaction: stellarsdk.TransactionXDR), Error> {
-        let future = Future<(hash: Data, transaction: stellarsdk.TransactionXDR), Error> {[weak self] promise in
-            self?.buildForSign(transaction: transaction, completion: { result in
-                switch result {
-                case .success(let response):
-                    promise(.success(response))
-                case .failure(let error):
-                    promise(.failure(error))
-                }
-            })
-        }
-        return AnyPublisher(future)
-    }
-    
-    @available(iOS 13.0, *)
-    public func buildForSign(transaction: Transaction, completion: @escaping (Result<(hash: Data, transaction: stellarsdk.TransactionXDR), Error>) -> Void ) {
         guard let destinationKeyPair = try? KeyPair(accountId: transaction.destinationAddress),
             let sourceKeyPair = try? KeyPair(accountId: transaction.sourceAddress) else {
-                completion(.failure(WalletError.failedToBuildTx))
-                return
+            return Fail(error: WalletError.failedToBuildTx)
+                .eraseToAnyPublisher()
         }
         
         let memo = (transaction.params as? StellarTransactionParams)?.memo ?? Memo.text("")
         
-        if transaction.amount.type == .coin {
-            checkIfAccountCreated(transaction.destinationAddress) { [weak self] isCreated in
-                if !isCreated && transaction.amount.value < 1 {
-                    completion(.failure(StellarError.xlmCreateAccount))
-                    return
-                }
-                do {
-                    let operation = isCreated ? try PaymentOperation(sourceAccountId: transaction.sourceAddress,
-                                                                     destinationAccountId: transaction.destinationAddress,
-                                                                     asset: Asset(type: AssetType.ASSET_TYPE_NATIVE)!,
-                                                                     amount: transaction.amount.value ) :
+        return stellarSdk.accounts.checkTargetAccount(address: transaction.destinationAddress, token: transaction.amount.type.token)
+            .tryMap { [unowned self] response -> (hash: Data, transaction: stellarsdk.TransactionXDR) in
+                let isAccountCreated = response.accountCreated
+                
+                if transaction.amount.type == .coin {
+                    if !isAccountCreated && transaction.amount.value < 1 {
+                        throw StellarError.xlmCreateAccount
+                    }
+                    
+                    let operation = isAccountCreated ? try PaymentOperation(sourceAccountId: transaction.sourceAddress,
+                                                                            destinationAccountId: transaction.destinationAddress,
+                                                                            asset: Asset(type: AssetType.ASSET_TYPE_NATIVE)!,
+                                                                            amount: transaction.amount.value ) :
                         CreateAccountOperation(sourceAccountId: nil, destination: destinationKeyPair, startBalance: transaction.amount.value)
-                    self?.serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo, completion: completion)
-                } catch {
-                    completion(.failure(error))
-                }
-            }
-        } else if transaction.amount.type.isToken {
-            guard let contractAddress = transaction.contractAddress, let keyPair = try? KeyPair(accountId: contractAddress),
-                let asset = createNonNativeAsset(code: transaction.amount.currencySymbol, issuer: keyPair) else {
-                    completion(.failure(WalletError.failedToBuildTx))
-                    return
-            }
-            
-            if  transaction.amount.value > 0 {
-                 checkIfAccountCreated(transaction.destinationAddress) { [weak self] isCreated in
-                    if !isCreated {
-                        completion(.failure(StellarError.assetCreateAccount))
-                        return
+                    
+                    return try self.serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo)
+                    
+                } else if transaction.amount.type.isToken {
+                    guard let contractAddress = transaction.contractAddress, let keyPair = try? KeyPair(accountId: contractAddress),
+                          let asset = createNonNativeAsset(code: transaction.amount.currencySymbol, issuer: keyPair) else {
+                        throw WalletError.failedToBuildTx
                     }
                     
-                    do {
-                    let operation = try PaymentOperation(sourceAccountId: transaction.sourceAddress,
-                                                     destinationAccountId: transaction.destinationAddress,
-                                                     asset: asset,
-                                                     amount: transaction.amount.value)
-                    
-                        self?.serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo, completion: completion)
-                    } catch {
-                        completion(.failure(error))
+                    guard isAccountCreated else {
+                        throw StellarError.assetNoAccountOnDestination
                     }
+                    
+                    guard response.trustlineCreated  else {
+                        throw StellarError.assetNoTrustline
+                    }
+                    
+                    if  transaction.amount.value > 0 {
+                        
+                        let operation = try PaymentOperation(sourceAccountId: transaction.sourceAddress,
+                                                             destinationAccountId: transaction.destinationAddress,
+                                                             asset: asset,
+                                                             amount: transaction.amount.value)
+                        
+                        return try self.serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo)
+                    } else {
+                        let operation = ChangeTrustOperation(sourceAccountId: transaction.sourceAddress, asset: asset, limit: Decimal(string: "900000000000.0000000"))
+                        return try self.serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo)
+                    }
+                    
+                } else {
+                    throw WalletError.failedToBuildTx
                 }
-            } else {
-                let operation = ChangeTrustOperation(sourceAccountId: transaction.sourceAddress, asset: asset, limit: Decimal(string: "900000000000.0000000"))
-                serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo, completion: completion)
             }
-        }
+            .eraseToAnyPublisher()
     }
     
-    @available(iOS 13.0, *)
     public func buildForSend(signature: Data, transaction: TransactionXDR) -> String? {
         var transaction = transaction
         let hint = walletPublicKey.suffix(4)
@@ -120,22 +104,10 @@ class StellarTransactionBuilder {
         }
     }
     
-    private func checkIfAccountCreated(_ address: String, completion: @escaping (Bool) -> Void) {
-        stellarSdk.accounts.getAccountDetails(accountId: address) { response -> (Void) in
-            switch response {
-            case .success(_):
-                completion(true)
-            case .failure(_):
-                completion(false)
-            }
-        }
-    }
-    
-    private func serializeOperation(_ operation: stellarsdk.Operation, sourceKeyPair: KeyPair, memo: Memo, completion: @escaping (Result<(hash: Data, transaction: stellarsdk.TransactionXDR), Error>) -> Void ) {
+    private func serializeOperation(_ operation: stellarsdk.Operation, sourceKeyPair: KeyPair, memo: Memo) throws -> (hash: Data, transaction: stellarsdk.TransactionXDR) {
         guard let xdrOperation = try? operation.toXDR(),
             let seqNumber = sequence else {
-                completion(.failure(WalletError.failedToBuildTx))
-                return
+            throw WalletError.failedToBuildTx
         }
         
         let currentTime = Date().timeIntervalSince1970
@@ -150,10 +122,9 @@ class StellarTransactionBuilder {
         
         let network = isTestnet ? Network.testnet : Network.public
         guard let hash = try? tx.hash(network: network) else {
-            completion(.failure(WalletError.failedToBuildTx))
-            return
+            throw WalletError.failedToBuildTx
         }
         
-        completion(.success((hash, tx)))
+        return (hash, tx)
     }
 }
