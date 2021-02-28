@@ -40,6 +40,17 @@ public enum Blockchain {
         }
     }
     
+    public var curve: EllipticCurve {
+        switch self {
+        case .stellar:
+            return .ed25519
+        case .xrp(let curve):
+            return curve
+        default:
+            return .secp256k1
+        }
+    }
+    
     public var decimalCount: Int {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance:
@@ -130,13 +141,13 @@ public enum Blockchain {
             return [""]
         }
     }
-	
-	public var defaultAddressType: AddressType {
-		switch self {
-		case .bitcoin: return .bitcoin(type: .bech32)
-		default: return .plain
-		}
-	}
+    
+    public var defaultAddressType: AddressType {
+        switch self {
+        case .bitcoin: return .bitcoin(type: .bech32)
+        default: return .plain
+        }
+    }
     
     public func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data?) -> [Address] {
         let addressService = getAddressService()
@@ -182,7 +193,7 @@ public enum Blockchain {
         case .ethereum(let testnet):
             let baseUrl = testnet ? "https://rinkeby.etherscan.io/address/" : "https://etherscan.io/address/"
             let exploreLink = tokenContractAddress == nil ? baseUrl + address :
-            "https://etherscan.io/token/\(tokenContractAddress!)?a=\(address)"
+                "https://etherscan.io/token/\(tokenContractAddress!)?a=\(address)"
             return URL(string: exploreLink)
         case .litecoin:
             return URL(string: "https://live.blockcypher.com/ltc/address/\(address)")
@@ -248,6 +259,70 @@ public enum Blockchain {
             return XRPAddressService(curve: curve)
         case .tezos:
             return TezosAddressService()
+        }
+    }
+}
+
+
+extension Blockchain: Equatable, Hashable, Codable {
+    var codingKey: String {
+        switch self {
+        case .binance: return "binance"
+        case .bitcoin: return "bitcoin"
+        case .bitcoinCash: return "bitcoinCash"
+        case .cardano: return "cardano"
+        case .ducatus: return "ducatus"
+        case .ethereum: return "ethereum"
+        case .litecoin: return "litecoin"
+        case .rsk: return "rsk"
+        case .stellar: return "stellar"
+        case .tezos: return "tezos"
+        case .xrp: return "xrp"
+        }
+    }
+    
+    enum Keys: CodingKey {
+        case key
+        case testnet
+        case curve
+        case shelley
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: Keys.self)
+        let key = try container.decode(String.self, forKey: Keys.key)
+        let curveString = try container.decode(String.self, forKey: Keys.curve)
+        let isTestnet = try container.decode(Bool.self, forKey: Keys.testnet)
+        let shelley = try? container.decode(Bool.self, forKey: Keys.shelley)
+        
+        guard let curve = EllipticCurve(rawValue: curveString) else {
+            throw TangemSdkError.decodingFailed
+        }
+        
+        switch key {
+        case "bitcoin": self = .bitcoin(testnet: isTestnet)
+        case "stellar": self = .stellar(testnet: isTestnet)
+        case "ethereum": self = .ethereum(testnet: isTestnet)
+        case "litecoin": self = .litecoin
+        case "rsk": self = .rsk
+        case "bitcoinCash": self = .bitcoinCash(testnet: isTestnet)
+        case "binance": self = .binance(testnet: isTestnet)
+        case "cardano": self =  .cardano(shelley: shelley!)
+        case "xrp": self = .xrp(curve: curve)
+        case "ducatus": self = .ducatus
+        case "tezos": self = .tezos
+        default: throw TangemSdkError.decodingFailed
+        }
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = try encoder.container(keyedBy: Keys.self)
+        try container.encode(codingKey, forKey: Keys.key)
+        try container.encode(curve.rawValue, forKey: Keys.curve)
+        try container.encode(isTestnet, forKey: Keys.testnet)
+        
+        if case let .cardano(shelley) = self {
+            try container.encode(shelley, forKey: Keys.shelley)
         }
     }
 }
