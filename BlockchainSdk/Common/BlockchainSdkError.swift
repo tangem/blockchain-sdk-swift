@@ -13,6 +13,7 @@ public enum BlockchainSdkError: Int, LocalizedError {
 	case failedToCreateMultisigScript = 1
 	case failedToConvertPublicKey = 2
 	case notImplemented = -1000
+    case decodingFailed
 	
 	public var errorDescription: String? {
 		switch self {

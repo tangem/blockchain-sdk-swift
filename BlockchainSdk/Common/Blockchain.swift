@@ -296,7 +296,7 @@ extension Blockchain: Equatable, Hashable, Codable {
         let shelley = try? container.decode(Bool.self, forKey: Keys.shelley)
         
         guard let curve = EllipticCurve(rawValue: curveString) else {
-            throw TangemSdkError.decodingFailed
+            throw BlockchainSdkError.decodingFailed
         }
         
         switch key {
@@ -311,7 +311,7 @@ extension Blockchain: Equatable, Hashable, Codable {
         case "xrp": self = .xrp(curve: curve)
         case "ducatus": self = .ducatus
         case "tezos": self = .tezos
-        default: throw TangemSdkError.decodingFailed
+        default: throw BlockchainSdkError.decodingFailed
         }
     }
     
