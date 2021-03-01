@@ -10,6 +10,10 @@
 
 "no_account_xlm_asset" = "Um ein Konto zu erstellen, senden Sie 1.5+ XLM an diese Adresse ";
 
+"no_trustline_xlm_asset" = "The destination account does not have a trustline for the asset being sent.";
+
+"no_account_on_destination_xlm_asset" = "The destination account is not created. To create account send 1+ XLM.";
+
 "no_account_xrp" = "Laden Sie 20+ XRP auf um ein Konto zu erstellen";
 
 "no_account_bnb" = "Senden Sie Geld an diese Andresse um ein Konto zu erstellen";
