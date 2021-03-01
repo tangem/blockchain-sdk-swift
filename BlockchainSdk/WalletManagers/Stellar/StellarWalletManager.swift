@@ -18,6 +18,8 @@ public enum StellarError: String, Error, LocalizedError {
     case failedToFindLatestLedger = "xlm_latest_ledger_error"
     case xlmCreateAccount = "no_account_xlm"
     case assetCreateAccount = "no_account_xlm_asset"
+    case assetNoAccountOnDestination = "no_account_on_destination_xlm_asset"
+    case assetNoTrustline = "no_trustline_xlm_asset"
     
     public var errorDescription: String? {
         return self.rawValue.localized

@@ -111,3 +111,8 @@ struct StellarAssetResponse {
     let issuer: String
     let balance: Decimal
 }
+
+struct StellarTargetAccountResponse {
+    let accountCreated: Bool
+    let trustlineCreated: Bool
+}
