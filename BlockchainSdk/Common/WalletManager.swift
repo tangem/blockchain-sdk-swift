@@ -116,6 +116,10 @@ public class WalletManager {
         wallet.remove(token: token)
     }
     
+    public func addToken(_ token: Token) -> AnyPublisher<Amount, Error> {
+        return Fail(error: BlockchainSdkError.notImplemented).eraseToAnyPublisher()
+    }
+    
     func validateTransaction(amount: Amount, fee: Amount?) -> TransactionErrors {
         var errors = [TransactionError]()
         
@@ -178,11 +182,6 @@ public protocol TransactionSigner {
 
 public protocol SignatureCountValidator {
 	func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error>
-}
-
-public protocol TokenManager {
-    func addToken(_ token: Token) -> AnyPublisher<Amount, Error>
-    func removeToken(_ token: Token)
 }
 
 public protocol WithdrawalValidator {
