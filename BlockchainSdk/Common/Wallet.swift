@@ -32,6 +32,10 @@ public struct Wallet {
         return transactions.filter { $0.status == .unconfirmed }.count > 0
     }
     
+    public func hasPendingTx(for amountType: Amount.AmountType) -> Bool {
+        return transactions.filter { $0.status == .unconfirmed && ($0.amount.type == amountType || $0.fee.type == amountType) }.count > 0
+    }
+    
     internal init(blockchain: Blockchain, addresses: [Address]) {
         self.blockchain = blockchain
         self.addresses = addresses
