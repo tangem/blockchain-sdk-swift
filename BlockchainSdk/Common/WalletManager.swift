@@ -42,7 +42,6 @@ public enum WalletError: Error, LocalizedError {
 
 public class WalletManager {
     public let cardId: String
-    public let canManageTokens: Bool
     
     internal(set) public var cardTokens: [Token]
     @Published public var wallet: Wallet
@@ -52,11 +51,10 @@ public class WalletManager {
     var cancellable: Cancellable? = nil
 
     
-    init(cardId: String, wallet: Wallet, cardTokens: [Token] = [], canManageTokens: Bool = false) {
+    init(cardId: String, wallet: Wallet, cardTokens: [Token] = []) {
         self.cardId = cardId
         self.wallet = wallet
         self.cardTokens = cardTokens
-        self.canManageTokens = canManageTokens
     }
     
     public func update(completion: @escaping (Result<(), Error>)-> Void) {

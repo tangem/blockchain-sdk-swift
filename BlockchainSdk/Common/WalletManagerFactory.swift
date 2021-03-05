@@ -13,35 +13,81 @@ import BitcoinCore
 
 public class WalletManagerFactory {
     private let config: BlockchainSdkConfig
+    
     public init(config: BlockchainSdkConfig) {
         self.config = config
     }
-        
-    public func makeWalletManager(from card: Card, tokens: [Token]? = nil, pairKey: Data? = nil) -> WalletManager? {
-        guard let blockchain = getBlockchain(from: card),
-            let walletPublicKey = card.walletPublicKey,
-            let cardId = card.cardId else {
-                return nil
+    
+    /// Base wallet manager constructor
+    /// - Parameters:
+    ///   - card: Tangem card
+    ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
+    /// - Returns: WalletManager?
+    public func makeWalletManager(from card: Card, blockchain: Blockchain? = nil) -> WalletManager? {
+        guard let walletPublicKey = card.walletPublicKey,
+              let cardId = card.cardId,
+              let curve = card.curve,
+              let selectedBlockchain = blockchain ?? card.blockchain else {
+            return nil
         }
         
-        let tkns: [Token]
-        let canManageTokens: Bool
-        if let cardTokens = getToken(from: card).map({ [$0] }) {
-            tkns = cardTokens
-            canManageTokens = false
-        } else {
-            tkns = tokens ?? []
-            canManageTokens = true
+        var tokens: [Token] = .init()
+        if selectedBlockchain == card.blockchain { //search for native tokens only for native blockchain
+            if let cardToken = card.token {
+                tokens.append(cardToken)
+            }
         }
-         
-		return makeWalletManager(from: blockchain, walletPublicKey: walletPublicKey, cardId: cardId, walletPairPublicKey: pairKey, tokens: tkns, canManageTokens: canManageTokens)
-	}
-	
-    public func makeWalletManager(from blockchain: Blockchain, walletPublicKey: Data, cardId: String, walletPairPublicKey: Data? = nil, tokens: [Token] = [], canManageTokens: Bool) -> WalletManager {
+        
+        return makeWalletManager(from: selectedBlockchain,
+                                 walletPublicKey: walletPublicKey,
+                                 cardId: cardId,
+                                 cardCurve: curve,
+                                 walletPairPublicKey: nil,
+                                 tokens: tokens)
+    }
+    
+    public func makeWalletManagers(from card: Card, blockchains: [Blockchain]) -> [WalletManager] {
+        return blockchains.compactMap { makeWalletManager(from: card, blockchain: $0) }
+    }
+    
+    public func makeEthereumWalletManager(from card: Card, erc20Tokens: [Token]) -> WalletManager? {
+        guard let manager = makeWalletManager(from: card, blockchain: .ethereum(testnet: card.isTestnet)) else {
+            return nil
+        }
+        
+        let additionalTokens = erc20Tokens.filter { !manager.cardTokens.contains($0) }
+        manager.cardTokens.append(contentsOf: additionalTokens)
+        return manager
+    }
+    
+    public func makeTwinWalletManager(from card: Card, pairKey: Data) -> WalletManager? {
+        guard let walletPublicKey = card.walletPublicKey,
+              let cardId = card.cardId,
+              let curve = card.curve,
+              let blockchain = card.blockchain else {
+            return nil
+        }
+        
+        return makeWalletManager(from: blockchain,
+                                 walletPublicKey: walletPublicKey,
+                                 cardId: cardId,
+                                 cardCurve: curve,
+                                 walletPairPublicKey: pairKey,
+                                 tokens: [])
+    }
+    
+    func makeWalletManager(from blockchain: Blockchain,
+                           walletPublicKey: Data,
+                           cardId: String,
+                           cardCurve: EllipticCurve,
+                           walletPairPublicKey: Data? = nil,
+                           tokens: [Token] = []) -> WalletManager? {
+        guard blockchain.curve == cardCurve else { return nil }
+        
 		let addresses = blockchain.makeAddresses(from: walletPublicKey, with: walletPairPublicKey)
 		let wallet = Wallet(blockchain: blockchain,
                             addresses: addresses)
-		
+         
         switch blockchain {
         case .bitcoin(let testnet):
             return BitcoinWalletManager(cardId: cardId, wallet: wallet).then {
@@ -96,17 +142,17 @@ public class WalletManagerFactory {
             }
             
         case .ethereum(let testnet):
-            return EthereumWalletManager(cardId: cardId, wallet: wallet, cardTokens: tokens, canManageTokens: canManageTokens).then {
+            return EthereumWalletManager(cardId: cardId, wallet: wallet, cardTokens: tokens).then {
                 let ethereumNetwork = testnet ? EthereumNetwork.testnet(projectId: config.infuraProjectId) : EthereumNetwork.mainnet(projectId: config.infuraProjectId)
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: ethereumNetwork)
                 let provider = BlockcypherProvider(endpoint: .init(coin: .eth, chain: .main), tokens: config.blockcypherTokens)
-                $0.networkService = EthereumNetworkService(network: ethereumNetwork, blockcypherProvider: provider, canManageTokens: canManageTokens)
+                $0.networkService = EthereumNetworkService(network: ethereumNetwork, blockcypherProvider: provider)
             }
             
         case .rsk:
             return EthereumWalletManager(cardId: cardId, wallet: wallet, cardTokens: tokens).then {
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: .rsk)
-                $0.networkService = EthereumNetworkService(network: .rsk, blockcypherProvider: nil, canManageTokens: canManageTokens)
+                $0.networkService = EthereumNetworkService(network: .rsk, blockcypherProvider: nil)
             }
             
         case .bitcoinCash(let testnet):
@@ -139,36 +185,5 @@ public class WalletManagerFactory {
                 $0.networkService = TezosNetworkService()
             }
         }
-    }
-	
-    public func isBlockchainSupported(_ card: Card) -> Bool {
-        guard let blockchainName = card.cardData?.blockchainName,
-            let curve = card.curve,
-            let _ = Blockchain.from(blockchainName: blockchainName, curve: curve) else {
-                return false
-        }
-        
-        return true
-    }
-	
-	private func getBlockchain(from card: Card) -> Blockchain? {
-		guard let blockchainName = card.cardData?.blockchainName,
-			let curve = card.curve,
-			let blockchain = Blockchain.from(blockchainName: blockchainName, curve: curve)
-		else {
-			return nil
-		}
-		return blockchain
-	}
-    
-    private func getToken(from card: Card) -> Token? {
-        if let symbol = card.cardData?.tokenSymbol,
-            let contractAddress = card.cardData?.tokenContractAddress,
-            let decimal = card.cardData?.tokenDecimal {
-            return Token(symbol: symbol,
-                             contractAddress: contractAddress,
-                             decimalCount: decimal)
-        }
-        return nil
     }
 }
