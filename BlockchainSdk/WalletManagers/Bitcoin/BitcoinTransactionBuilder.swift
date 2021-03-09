@@ -58,9 +58,11 @@ class BitcoinTransactionBuilder {
 	
 	public func buildForSign(transaction: Transaction) -> [Data]? {
 		do {
+            guard let feeRate = feeRates[transaction.fee.value] else { return nil }
+            
 			let hashes = try bitcoinManager.buildForSign(target: transaction.destinationAddress,
 														 amount: transaction.amount.value,
-                                                         feeRate: feeRates[transaction.fee.value]!,
+                                                         feeRate: feeRate,
                                                          changeScript: changeScript,
                                                          isReplacedByFee: false)
 			return hashes
@@ -71,14 +73,15 @@ class BitcoinTransactionBuilder {
 	}
 	
 	public func buildForSend(transaction: Transaction, signature: Data, hashesCount: Int) -> Data? {
-		guard let signatures = splitSignatureAndConvertToDER(signature, hashesCount: hashesCount) else {
+        guard let signatures = splitSignatureAndConvertToDER(signature, hashesCount: hashesCount),
+              let feeRate = feeRates[transaction.fee.value] else {
 			return nil
 		}
 		
 		do {
 			return try bitcoinManager.buildForSend(target: transaction.destinationAddress,
 												   amount: transaction.amount.value,
-												   feeRate: feeRates[transaction.fee.value]!,
+												   feeRate: feeRate,
                                                    derSignatures: signatures,
                                                    changeScript: changeScript,
                                                    isReplacedByFee: false)
