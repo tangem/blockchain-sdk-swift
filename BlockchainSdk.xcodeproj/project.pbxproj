@@ -100,6 +100,7 @@
 		5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56223A38204009C7482 /* EthereumAddressService.swift */; };
 		5D94E56723A3946C009C7482 /* Data+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56623A3946C009C7482 /* Data+.swift */; };
 		5D977BB623FAEB4500575BE4 /* DucatusNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D977BB523FAEB4500575BE4 /* DucatusNetworkService.swift */; };
+		5D9D749325F254E600121621 /* Card+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9D749225F254E600121621 /* Card+.swift */; };
 		5DA6F7BC243F3C0B0040AB4B /* CBOR+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */; };
 		5DACA359255E97EA0096BC48 /* BitcoinAddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DACA358255E97EA0096BC48 /* BitcoinAddressType.swift */; };
 		5DACA35B255E97FE0096BC48 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DACA35A255E97FE0096BC48 /* Address.swift */; };
@@ -358,6 +359,7 @@
 		5D94E56223A38204009C7482 /* EthereumAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumAddressService.swift; sourceTree = "<group>"; };
 		5D94E56623A3946C009C7482 /* Data+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+.swift"; sourceTree = "<group>"; };
 		5D977BB523FAEB4500575BE4 /* DucatusNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DucatusNetworkService.swift; sourceTree = "<group>"; };
+		5D9D749225F254E600121621 /* Card+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Card+.swift"; sourceTree = "<group>"; };
 		5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CBOR+.swift"; sourceTree = "<group>"; };
 		5DACA358255E97EA0096BC48 /* BitcoinAddressType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinAddressType.swift; sourceTree = "<group>"; };
 		5DACA35A255E97FE0096BC48 /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
@@ -573,6 +575,7 @@
 				5D557CAF23AA888D009B32AF /* Uint64+.swift */,
 				5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */,
 				5D5E058B24FE749D00F04DE1 /* Bundle+.swift */,
+				5D9D749225F254E600121621 /* Card+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1187,6 +1190,7 @@
 				5D557CB523ACCAD2009B32AF /* BlockcypherProvider.swift in Sources */,
 				5D7D243725136254001B9A4F /* XRPCurrentLedgerInfo.swift in Sources */,
 				5DD831BC244DF5BD00F80CEA /* AddressService.swift in Sources */,
+				5D9D749325F254E600121621 /* Card+.swift in Sources */,
 				5D304399239A8C9C0066B8D9 /* BitcoinAddressService.swift in Sources */,
 				5D557CB723ACCB48009B32AF /* BitcoinMainProvider.swift in Sources */,
 				5D26CEE7243CA4E200994CC0 /* DucatusAddressService.swift in Sources */,
