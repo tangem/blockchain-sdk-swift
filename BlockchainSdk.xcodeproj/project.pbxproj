@@ -89,7 +89,7 @@
 		5D845511243DE9CD0072155E /* CardanoTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D845510243DE9CD0072155E /* CardanoTransactionBuilder.swift */; };
 		5D845514243DEABB0072155E /* AdaliteResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D845513243DEABB0072155E /* AdaliteResponse.swift */; };
 		5D845516243DEAC80072155E /* AdaliteTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D845515243DEAC80072155E /* AdaliteTarget.swift */; };
-		5D845518243DFCE90072155E /* CardanoNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D845517243DFCE90072155E /* CardanoNetworkService.swift */; };
+		5D845518243DFCE90072155E /* AdaliteProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D845517243DFCE90072155E /* AdaliteProvider.swift */; };
 		5D8653FA23A8C481000DE52D /* StellarNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653F923A8C481000DE52D /* StellarNetworkService.swift */; };
 		5D8653FC23A8C4A9000DE52D /* StellarTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FB23A8C4A9000DE52D /* StellarTransactionBuilder.swift */; };
 		5D8653FE23A8E486000DE52D /* StellarSdk+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FD23A8E486000DE52D /* StellarSdk+.swift */; };
@@ -177,7 +177,7 @@
 		5DDD82FD25BF0E2000166EA9 /* CardanoTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D845510243DE9CD0072155E /* CardanoTransactionBuilder.swift */; };
 		5DDD82FE25BF0E2000166EA9 /* CardanoAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF8D5B4243DB80C00186BF0 /* CardanoAddressService.swift */; };
 		5DDD82FF25BF0E2000166EA9 /* CardanoShelleyAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFE855824F0310C00194106 /* CardanoShelleyAddressService.swift */; };
-		5DDD830025BF0E2000166EA9 /* CardanoNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D845517243DFCE90072155E /* CardanoNetworkService.swift */; };
+		5DDD830025BF0E2000166EA9 /* AdaliteProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D845517243DFCE90072155E /* AdaliteProvider.swift */; };
 		5DDD830125BF0E2000166EA9 /* CardanoWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D84550D243DE9B40072155E /* CardanoWalletManager.swift */; };
 		5DDD830425BF0E2400166EA9 /* XRPTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC7DD63244077E4008F83F2 /* XRPTransactionBuilder.swift */; };
 		5DDD830525BF0E2400166EA9 /* XRPWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC7DD65244077F2008F83F2 /* XRPWalletManager.swift */; };
@@ -251,6 +251,7 @@
 		88095B618D07D706BB871FE6 /* Pods_BlockchainSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1CC9E29B257CD29E6143FDD /* Pods_BlockchainSdk.framework */; };
 		B056729B2570F9DC00A8CB59 /* BlockchainSdkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B056729A2570F9DC00A8CB59 /* BlockchainSdkError.swift */; };
 		B05BF634256F953500B50FD7 /* BitcoinAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05BF633256F953500B50FD7 /* BitcoinAddress.swift */; };
+		B0C8222A25F8DA860027E3BF /* CardanoNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C8222925F8DA860027E3BF /* CardanoNetworkProvider.swift */; };
 		ED3D33D84D8B747FB3B1D09D /* Pods_BlockchainSdkTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A172F9D47772F23948771418 /* Pods_BlockchainSdkTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -348,7 +349,7 @@
 		5D845510243DE9CD0072155E /* CardanoTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoTransactionBuilder.swift; sourceTree = "<group>"; };
 		5D845513243DEABB0072155E /* AdaliteResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaliteResponse.swift; sourceTree = "<group>"; };
 		5D845515243DEAC80072155E /* AdaliteTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaliteTarget.swift; sourceTree = "<group>"; };
-		5D845517243DFCE90072155E /* CardanoNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoNetworkService.swift; sourceTree = "<group>"; };
+		5D845517243DFCE90072155E /* AdaliteProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaliteProvider.swift; sourceTree = "<group>"; };
 		5D8653F923A8C481000DE52D /* StellarNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarNetworkService.swift; sourceTree = "<group>"; };
 		5D8653FB23A8C4A9000DE52D /* StellarTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarTransactionBuilder.swift; sourceTree = "<group>"; };
 		5D8653FD23A8E486000DE52D /* StellarSdk+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StellarSdk+.swift"; sourceTree = "<group>"; };
@@ -404,6 +405,7 @@
 		B022D3102537475B00D934D7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B056729A2570F9DC00A8CB59 /* BlockchainSdkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainSdkError.swift; sourceTree = "<group>"; };
 		B05BF633256F953500B50FD7 /* BitcoinAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinAddress.swift; sourceTree = "<group>"; };
+		B0C8222925F8DA860027E3BF /* CardanoNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoNetworkProvider.swift; sourceTree = "<group>"; };
 		D1CC9E29B257CD29E6143FDD /* Pods_BlockchainSdk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -747,6 +749,7 @@
 		5D845512243DEAAE0072155E /* Adalite */ = {
 			isa = PBXGroup;
 			children = (
+				5D845517243DFCE90072155E /* AdaliteProvider.swift */,
 				5D845513243DEABB0072155E /* AdaliteResponse.swift */,
 				5D845515243DEAC80072155E /* AdaliteTarget.swift */,
 			);
@@ -858,11 +861,11 @@
 		5DF8D5B3243DB7EE00186BF0 /* Cardano */ = {
 			isa = PBXGroup;
 			children = (
-				5D845517243DFCE90072155E /* CardanoNetworkService.swift */,
 				5DF8D5B4243DB80C00186BF0 /* CardanoAddressService.swift */,
 				5D84550D243DE9B40072155E /* CardanoWalletManager.swift */,
 				5D845510243DE9CD0072155E /* CardanoTransactionBuilder.swift */,
 				5DFE855824F0310C00194106 /* CardanoShelleyAddressService.swift */,
+				B0C8222925F8DA860027E3BF /* CardanoNetworkProvider.swift */,
 			);
 			path = Cardano;
 			sourceTree = "<group>";
@@ -1137,11 +1140,12 @@
 				5D4B33D523F7DFB400C93A84 /* BinanceTransactionBuilder.swift in Sources */,
 				5D26CEEC243CB92700994CC0 /* BlockcypherResponse.swift in Sources */,
 				5D5E058C24FE749D00F04DE1 /* Bundle+.swift in Sources */,
-				5D845518243DFCE90072155E /* CardanoNetworkService.swift in Sources */,
+				5D845518243DFCE90072155E /* AdaliteProvider.swift in Sources */,
 				5D86540023A906DF000DE52D /* CardManager+.swift in Sources */,
 				5D54FE1E23E4313A009FAC2F /* LitecoinWalletManager.swift in Sources */,
 				5D557CAE23AA771E009B32AF /* EthereumNetworkService.swift in Sources */,
 				5DACA363255ED7E30096BC48 /* BlockchainInfoApiTarget.swift in Sources */,
+				B0C8222A25F8DA860027E3BF /* CardanoNetworkProvider.swift in Sources */,
 				B05BF634256F953500B50FD7 /* BitcoinAddress.swift in Sources */,
 				5D7D242A25136254001B9A4F /* WebSocket+Convenience.swift in Sources */,
 				5DC7DD60243F83E6008F83F2 /* XRPAddressService.swift in Sources */,
@@ -1283,7 +1287,7 @@
 				5DDD82C325BF0D6C00166EA9 /* SegWitBech32.swift in Sources */,
 				5DDD831325BF0E7800166EA9 /* EthereumNetwork.swift in Sources */,
 				5DDD82C925BF0DA100166EA9 /* BlockchairProvider.swift in Sources */,
-				5DDD830025BF0E2000166EA9 /* CardanoNetworkService.swift in Sources */,
+				5DDD830025BF0E2000166EA9 /* AdaliteProvider.swift in Sources */,
 				5DDD82AF25BF0D2F00166EA9 /* BlockchainSdkError.swift in Sources */,
 				5D16096D25921DAF00738AE6 /* Address.swift in Sources */,
 				5DDD828D25BF0CDC00166EA9 /* BitcoinNetworkProvider.swift in Sources */,

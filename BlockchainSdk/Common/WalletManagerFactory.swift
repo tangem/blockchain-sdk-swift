@@ -171,7 +171,7 @@ public class WalletManagerFactory {
         case .cardano(let shelley):
             return CardanoWalletManager(cardId: cardId, wallet: wallet).then {
                 $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: walletPublicKey, shelleyCard: shelley)
-                $0.networkService = CardanoNetworkService()
+                $0.networkService = AdaliteProvider()
             }
             
         case .xrp(let curve):

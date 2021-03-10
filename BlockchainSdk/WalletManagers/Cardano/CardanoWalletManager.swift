@@ -21,7 +21,7 @@ public enum CardanoError: String, Error, LocalizedError {
 
 class CardanoWalletManager: WalletManager {
     var txBuilder: CardanoTransactionBuilder!
-    var networkService: CardanoNetworkService!
+    var networkService: AdaliteProvider!
     
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {//check it
         cancellable = networkService
@@ -40,8 +40,12 @@ class CardanoWalletManager: WalletManager {
     private func updateWallet(with response: (AdaliteBalanceResponse,[AdaliteUnspentOutput])) {
         wallet.add(coinValue: response.0.balance)
         txBuilder.unspentOutputs = response.1
+        let respTxs = response.0.transactionList
         
         wallet.transactions = wallet.transactions.compactMap { pendingTx in
+            if respTxs.isEmpty {
+                
+            }
             if let pendingTxHash = pendingTx.hash {
                 if response.0.transactionList.contains(pendingTxHash.lowercased()) {
                     return nil
@@ -49,6 +53,26 @@ class CardanoWalletManager: WalletManager {
             }
             return pendingTx
         }
+        
+        
+//        wallet.recentTransactions.forEach { recentTransaction ->
+//                    if (response.recentTransactionsHashes.isEmpty()) { // case for Rosetta API, it lacks recent transactions
+//                        if (response.unspentOutputs.isEmpty() ||
+//                                response.unspentOutputs.find {
+//                                    it.transactionHash.toHexString()
+//                                            .equals(recentTransaction.hash, ignoreCase = true)
+//                                } != null
+//                        ) {
+//                            recentTransaction.status = TransactionStatus.Confirmed
+//                        }
+//                    } else { // case for APIs with recent transactions
+//                        if (response.recentTransactionsHashes
+//                                        .find { it.equals(recentTransaction.hash, true) } != null
+//                        ) {
+//                            recentTransaction.status = TransactionStatus.Confirmed
+//                        }
+//                    }
+//                }
     }
 }
 
