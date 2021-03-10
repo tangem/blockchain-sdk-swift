@@ -42,7 +42,7 @@ public enum Blockchain {
     
     public var curve: EllipticCurve {
         switch self {
-        case .stellar:
+        case .stellar, .cardano:
             return .ed25519
         case .xrp(let curve):
             return curve
