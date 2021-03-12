@@ -28,7 +28,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
         publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: true, apiKey: apiKey))
             .tryMap { [unowned self] json -> BitcoinResponse in //TODO: refactor to normal JSON
                 let data = json["data"]
-                let addr = data["\(address)"]
+                let addr = data["\(address.lowercased())"]
                 let address = addr["address"]
                 let balance = address["balance"].stringValue
                 let script = address["script_hex"].stringValue
@@ -106,7 +106,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
 		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: false, apiKey: apiKey))
 			.map { json -> Int in
-				let addr = json["data"]["\(address)"]
+                let addr = json["data"]["\(address.lowercased())"]
 				let address = addr["address"]
 				
 				guard
@@ -119,6 +119,18 @@ class BlockchairProvider: BitcoinNetworkProvider {
 			.mapError { $0 as Error }
 			.eraseToAnyPublisher()
 	}
+    
+    func findErc20Tokens(address: String) -> AnyPublisher<[BlockchairToken], Error> {
+        publisher(for: .findErc20Tokens(address: address, apiKey: apiKey))
+            .tryMap { json -> [BlockchairToken] in
+                let tokensObject = json["data"]["\(address.lowercased())"]["layer_2"]["erc_20"]
+                let tokensData = try tokensObject.rawData()
+                let tokens = try JSONDecoder().decode([BlockchairToken].self, from: tokensData)
+                return tokens
+            }
+            .mapError { $0 as Error }
+            .eraseToAnyPublisher()
+    }
 	
 	private func publisher(for target: BlockchairTarget) -> AnyPublisher<JSON, MoyaError> {
 		provider

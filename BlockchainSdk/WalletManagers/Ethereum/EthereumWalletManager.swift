@@ -37,6 +37,7 @@ class EthereumWalletManager: WalletManager {
     var pendingTxCount: Int = -1
     
     private var gasLimit: BigUInt? = nil
+    private var findTokensSubscription: AnyCancellable? = nil
     
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
@@ -202,5 +203,36 @@ extension EthereumWalletManager {
         var value: BigUInt {
             return BigUInt(self.rawValue)
         }
+    }
+}
+
+extension EthereumWalletManager: TokenFinder {
+    func findErc20Tokens(completion: @escaping (Result<Bool, Error>)-> Void) {
+        findTokensSubscription?.cancel()
+        findTokensSubscription = networkService
+            .findErc20Tokens(address: wallet.address)
+            .sink(receiveCompletion: { subscriptionCompletion in
+                if case let .failure(error) = subscriptionCompletion {
+                    completion(.failure(error))
+                    return
+                }
+            }, receiveValue: {[unowned self] blockchairTokens in
+                if blockchairTokens.isEmpty {
+                    completion(.success(false))
+                    return
+                }
+                
+                blockchairTokens.forEach { blockchairToken in
+                    let token = Token(blockchairToken)
+                    if !self.cardTokens.contains(token) {
+                        self.cardTokens.append(token)
+                        let balanceValue = Decimal(blockchairToken.balance) ?? 0
+                        let balanceWeiValue = balanceValue / pow(Decimal(10), blockchairToken.decimals)
+                        self.wallet.add(tokenValue: balanceWeiValue, for: token)
+                    }
+                }
+                
+                completion(.success(true))
+            })
     }
 }

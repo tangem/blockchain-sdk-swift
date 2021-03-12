@@ -17,10 +17,12 @@ class EthereumNetworkService {
     private let network: EthereumNetwork
     private let provider = MoyaProvider<InfuraTarget>(plugins: [NetworkLoggerPlugin()])
     private let blockcypherProvider: BlockcypherProvider?
-	
-    init(network: EthereumNetwork, blockcypherProvider: BlockcypherProvider?) {
+    private let blockchairProvider: BlockchairProvider?
+    
+    init(network: EthereumNetwork, blockcypherProvider: BlockcypherProvider?, blockchairProvider: BlockchairProvider?) {
         self.network = network
         self.blockcypherProvider = blockcypherProvider
+        self.blockchairProvider = blockchairProvider
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
@@ -100,6 +102,14 @@ class EthereumNetworkService {
         
 		return blockcypherProvider.getSignatureCount(address: address)
 	}
+    
+    func findErc20Tokens(address: String) -> AnyPublisher<[BlockchairToken], Error> {
+        guard let blockchairProvider = blockchairProvider else {
+            return Fail(error: ETHError.unsupportedFeature).eraseToAnyPublisher()
+        }
+        
+        return blockchairProvider.findErc20Tokens(address: address)
+    }
     
 	// MARK: - Private functions
     
