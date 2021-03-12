@@ -21,7 +21,7 @@ public enum CardanoError: String, Error, LocalizedError {
 
 class CardanoWalletManager: WalletManager {
     var txBuilder: CardanoTransactionBuilder!
-    var networkService: AdaliteProvider!
+    var networkService: CardanoNetworkProvider!
     
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {//check it
         cancellable = networkService
@@ -37,42 +37,24 @@ class CardanoWalletManager: WalletManager {
             })
     }
     
-    private func updateWallet(with response: (AdaliteBalanceResponse,[AdaliteUnspentOutput])) {
-        wallet.add(coinValue: response.0.balance)
-        txBuilder.unspentOutputs = response.1
-        let respTxs = response.0.transactionList
+    private func updateWallet(with response: CardanoAddressResponse) {
+        wallet.add(coinValue: response.balance)
+        txBuilder.unspentOutputs = response.unspentOutputs
         
-        wallet.transactions = wallet.transactions.compactMap { pendingTx in
-            if respTxs.isEmpty {
-                
-            }
-            if let pendingTxHash = pendingTx.hash {
-                if response.0.transactionList.contains(pendingTxHash.lowercased()) {
-                    return nil
+        wallet.transactions = wallet.transactions.map {
+            var mutableTx = $0
+            if response.recentTransactionsHashes.isEmpty {
+                if response.unspentOutputs.isEmpty ||
+                   response.unspentOutputs.first(where: { $0.transactionHash == mutableTx.hash }) != nil {
+                    mutableTx.status = .confirmed
+                }
+            } else {
+                if response.recentTransactionsHashes.first(where: { $0 == mutableTx.hash }) != nil {
+                    mutableTx.status = .confirmed
                 }
             }
-            return pendingTx
+            return mutableTx
         }
-        
-        
-//        wallet.recentTransactions.forEach { recentTransaction ->
-//                    if (response.recentTransactionsHashes.isEmpty()) { // case for Rosetta API, it lacks recent transactions
-//                        if (response.unspentOutputs.isEmpty() ||
-//                                response.unspentOutputs.find {
-//                                    it.transactionHash.toHexString()
-//                                            .equals(recentTransaction.hash, ignoreCase = true)
-//                                } != null
-//                        ) {
-//                            recentTransaction.status = TransactionStatus.Confirmed
-//                        }
-//                    } else { // case for APIs with recent transactions
-//                        if (response.recentTransactionsHashes
-//                                        .find { it.equals(recentTransaction.hash, true) } != null
-//                        ) {
-//                            recentTransaction.status = TransactionStatus.Confirmed
-//                        }
-//                    }
-//                }
     }
 }
 
@@ -99,7 +81,7 @@ extension CardanoWalletManager: TransactionSender {
                     }
             }
             .flatMap {[unowned self] builderResponse -> AnyPublisher<SignResponse, Error> in
-                self.networkService.send(base64EncodedTx: builderResponse.tx.base64EncodedString()).map {[unowned self] response in
+                self.networkService.send(transaction: builderResponse.tx).map {[unowned self] response in
                     var sendedTx = transaction
                     sendedTx.hash = builderResponse.hash
                     self.wallet.add(transaction: sendedTx)

@@ -13,7 +13,7 @@ import TangemSdk
 
 class CardanoTransactionBuilder {
     let walletPublicKey: Data
-    var unspentOutputs: [AdaliteUnspentOutput]? = nil
+    var unspentOutputs: [CardanoUnspentOutput]? = nil
     let kDecimalNumber: Int16 = 6
     let kProtocolMagic: UInt64 = 764824073
     let shelleyCard: Bool
@@ -81,8 +81,8 @@ class CardanoTransactionBuilder {
         var inputsArray = [CBOR]()
         for unspentOutput in unspentOutputs {
             let array = CBOR.array(
-                [CBOR.byteString(Data(hexString: unspentOutput.id).bytes),
-                 CBOR.unsignedInt(UInt64(unspentOutput.index))])
+                [CBOR.byteString(Data(hexString: unspentOutput.transactionHash).bytes),
+                 CBOR.unsignedInt(UInt64(unspentOutput.outputIndex))])
             inputsArray.append(array)
         }
         

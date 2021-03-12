@@ -16,9 +16,9 @@ import BigInt
 class EthereumNetworkService {
     private let network: EthereumNetwork
     private let provider = MoyaProvider<InfuraTarget>(plugins: [NetworkLoggerPlugin()])
-    private let blockcypherProvider: BlockcypherProvider?
+    private let blockcypherProvider: BlockcypherNetworkProvider?
 	
-    init(network: EthereumNetwork, blockcypherProvider: BlockcypherProvider?) {
+    init(network: EthereumNetwork, blockcypherProvider: BlockcypherNetworkProvider?) {
         self.network = network
         self.blockcypherProvider = blockcypherProvider
     }

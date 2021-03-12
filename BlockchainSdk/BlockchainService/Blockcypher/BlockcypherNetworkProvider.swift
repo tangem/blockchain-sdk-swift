@@ -1,5 +1,5 @@
 //
-//  Blockcypher.swift
+//  BlockcypherNetworkProvider.swift
 //  BlockchainSdk
 //
 //  Created by Alexander Osokin on 20.12.2019.
@@ -10,7 +10,7 @@ import Foundation
 import Moya
 import Combine
 
-class BlockcypherProvider: BitcoinNetworkProvider {
+class BlockcypherNetworkProvider: BitcoinNetworkProvider {
     let provider = MoyaProvider<BlockcypherTarget> ()
     let endpoint: BlockcypherEndpoint
     

@@ -16,5 +16,5 @@ public struct AdaliteUnspentOutput {
 
 public struct AdaliteBalanceResponse {
     let balance: Decimal
-    let transactionList: [String]
+    let transactions: [String]
 }

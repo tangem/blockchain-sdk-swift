@@ -100,8 +100,8 @@ public class WalletManagerFactory {
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: addresses)
                 
                 var providers = [BitcoinNetworkApi:BitcoinNetworkProvider]()
-                providers[.blockchair] = BlockchairProvider(endpoint: .bitcoin, apiKey: config.blockchairApiKey)
-                providers[.blockcypher] = BlockcypherProvider(endpoint: BlockcypherEndpoint(coin: .btc, chain: testnet ? .test3: .main),
+                providers[.blockchair] = BlockchairNetworkProvider(endpoint: .bitcoin, apiKey: config.blockchairApiKey)
+                providers[.blockcypher] = BlockcypherNetworkProvider(endpoint: BlockcypherEndpoint(coin: .btc, chain: testnet ? .test3: .main),
                                                               tokens: config.blockcypherTokens)
                // providers[.main] = BitcoinMainProvider()
                 
@@ -118,8 +118,8 @@ public class WalletManagerFactory {
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: addresses)
                 
                 var providers = [BitcoinNetworkApi:BitcoinNetworkProvider]()
-                providers[.blockcypher] = BlockcypherProvider(endpoint: BlockcypherEndpoint(coin: .ltc, chain: .main), tokens: config.blockcypherTokens)
-                providers[.blockchair] = BlockchairProvider(endpoint: .litecoin, apiKey: config.blockchairApiKey)
+                providers[.blockcypher] = BlockcypherNetworkProvider(endpoint: BlockcypherEndpoint(coin: .ltc, chain: .main), tokens: config.blockcypherTokens)
+                providers[.blockchair] = BlockchairNetworkProvider(endpoint: .litecoin, apiKey: config.blockchairApiKey)
 
                 $0.networkService = BitcoinNetworkService(providers: providers, isTestNet: false, defaultApi: .blockchair)
             }
@@ -145,7 +145,7 @@ public class WalletManagerFactory {
             return EthereumWalletManager(cardId: cardId, wallet: wallet, cardTokens: tokens).then {
                 let ethereumNetwork = testnet ? EthereumNetwork.testnet(projectId: config.infuraProjectId) : EthereumNetwork.mainnet(projectId: config.infuraProjectId)
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: ethereumNetwork)
-                let provider = BlockcypherProvider(endpoint: .init(coin: .eth, chain: .main), tokens: config.blockcypherTokens)
+                let provider = BlockcypherNetworkProvider(endpoint: .init(coin: .eth, chain: .main), tokens: config.blockcypherTokens)
                 $0.networkService = EthereumNetworkService(network: ethereumNetwork, blockcypherProvider: provider)
             }
             
@@ -157,7 +157,7 @@ public class WalletManagerFactory {
             
         case .bitcoinCash(let testnet):
             return BitcoinCashWalletManager(cardId: cardId, wallet: wallet).then {
-                let provider = BlockchairProvider(endpoint: .bitcoinCash, apiKey: config.blockchairApiKey)
+                let provider = BlockchairNetworkProvider(endpoint: .bitcoinCash, apiKey: config.blockchairApiKey)
                 $0.txBuilder = BitcoinCashTransactionBuilder(walletPublicKey: walletPublicKey, isTestnet: testnet)
                 $0.networkService = BitcoinCashNetworkService(provider: provider)
             }
@@ -171,7 +171,12 @@ public class WalletManagerFactory {
         case .cardano(let shelley):
             return CardanoWalletManager(cardId: cardId, wallet: wallet).then {
                 $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: walletPublicKey, shelleyCard: shelley)
-                $0.networkService = AdaliteProvider()
+                let service = CardanoNetworkService(providers: [
+                    AdaliteNetworkProvider(baseUrl: .main),
+                    AdaliteNetworkProvider(baseUrl: .reserve),
+                    RosettaNetworkProvider()
+                ])
+                $0.networkService = service
             }
             
         case .xrp(let curve):

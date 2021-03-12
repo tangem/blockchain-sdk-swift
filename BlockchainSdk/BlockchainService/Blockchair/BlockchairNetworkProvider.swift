@@ -1,5 +1,5 @@
 //
-//  BlockchairProvider.swift
+//  BlockchairNetworkProvider.swift
 //  BlockchainSdk
 //
 //  Created by Alexander Osokin on 14.02.2020.
@@ -13,7 +13,7 @@ import TangemSdk
 import Alamofire
 import SwiftyJSON
 
-class BlockchairProvider: BitcoinNetworkProvider {
+class BlockchairNetworkProvider: BitcoinNetworkProvider {
     let provider = MoyaProvider<BlockchairTarget>()
     
     private let endpoint: BlockchairEndpoint
