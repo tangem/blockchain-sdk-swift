@@ -15,8 +15,7 @@ public struct Token: Hashable, Equatable, Codable {
     }
     
     public static func == (lhs: Token, rhs: Token) -> Bool {
-        lhs.contractAddress == rhs.contractAddress &&
-            lhs.symbol == rhs.symbol
+        lhs.contractAddress == rhs.contractAddress
     }
     
     public let name: String
@@ -29,5 +28,12 @@ public struct Token: Hashable, Equatable, Codable {
         self.symbol = symbol
         self.contractAddress = contractAddress
         self.decimalCount = decimalCount
+    }
+    
+    init(_ blockhairToken: BlockchairToken) {
+        self.name = blockhairToken.name
+        self.symbol = blockhairToken.symbol
+        self.contractAddress = blockhairToken.address
+        self.decimalCount = blockhairToken.decimals
     }
 }
