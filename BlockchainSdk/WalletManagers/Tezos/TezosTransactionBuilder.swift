@@ -64,7 +64,7 @@ class TezosTransactionBuilder {
             storageLimit:  "300", // set it to 0?
             publicKey: nil,
             destination: transaction.destinationAddress,
-            amount: (transaction.amount.value * Blockchain.tezos.decimalValue).description)
+            amount: (transaction.amount.value * Blockchain.tezos(curve: .ed25519).decimalValue).description)
         
         contents.append(transactionOp)
         return contents
