@@ -222,6 +222,7 @@ extension EthereumWalletManager: TokenFinder {
                     return
                 }
                 
+                var tokensAdded = false
                 blockchairTokens.forEach { blockchairToken in
                     let token = Token(blockchairToken)
                     if !self.cardTokens.contains(token) {
@@ -229,10 +230,11 @@ extension EthereumWalletManager: TokenFinder {
                         let balanceValue = Decimal(blockchairToken.balance) ?? 0
                         let balanceWeiValue = balanceValue / pow(Decimal(10), blockchairToken.decimals)
                         self.wallet.add(tokenValue: balanceWeiValue, for: token)
+                        tokensAdded = true
                     }
                 }
                 
-                completion(.success(true))
+                completion(.success(tokensAdded))
             })
     }
 }
