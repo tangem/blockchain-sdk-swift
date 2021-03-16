@@ -37,7 +37,7 @@ class TezosNetworkService {
                     throw WalletError.failedToParseNetworkResponse
             }
             
-            let balanceConverted = balance / Blockchain.tezos.decimalValue
+            let balanceConverted = balance / Blockchain.tezos(curve: .ed25519).decimalValue
             return TezosAddress(balance: balanceConverted, counter: counter)
         }
         .eraseToAnyPublisher()

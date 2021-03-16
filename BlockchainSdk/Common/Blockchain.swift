@@ -21,7 +21,7 @@ public enum Blockchain {
     case cardano(shelley: Bool)
     case xrp(curve: EllipticCurve)
     case ducatus
-    case tezos
+    case tezos(curve: EllipticCurve)
     
     public var isTestnet: Bool {
         switch self {
@@ -45,6 +45,8 @@ public enum Blockchain {
         case .stellar, .cardano:
             return .ed25519
         case .xrp(let curve):
+            return curve
+        case .tezos(let curve):
             return curve
         default:
             return .secp256k1
@@ -230,7 +232,7 @@ public enum Blockchain {
         case "cardano-s": return .cardano(shelley: true)
         case "xrp": return .xrp(curve: curve)
         case "duc": return .ducatus
-        case "xtz": return .tezos
+        case "xtz": return .tezos(curve: curve)
         default: return nil
         }
     }
@@ -310,7 +312,7 @@ extension Blockchain: Equatable, Hashable, Codable {
         case "cardano": self =  .cardano(shelley: shelley!)
         case "xrp": self = .xrp(curve: curve)
         case "ducatus": self = .ducatus
-        case "tezos": self = .tezos
+        case "tezos": self = .tezos(curve: curve)
         default: throw BlockchainSdkError.decodingFailed
         }
     }

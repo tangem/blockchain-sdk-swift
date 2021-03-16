@@ -15,7 +15,7 @@ public struct Token: Hashable, Equatable, Codable {
     }
     
     public static func == (lhs: Token, rhs: Token) -> Bool {
-        lhs.contractAddress == rhs.contractAddress
+        lhs.contractAddress.lowercased() == rhs.contractAddress.lowercased()
     }
     
     public let name: String

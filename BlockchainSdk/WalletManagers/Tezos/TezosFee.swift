@@ -14,7 +14,7 @@ enum TezosFee: Decimal {
     case allocation = 0.257
     
     var mutezValue: String {
-        let converted = rawValue * Blockchain.tezos.decimalValue
+        let converted = rawValue * Blockchain.tezos(curve: .ed25519).decimalValue
         return converted.description
     }
 }
