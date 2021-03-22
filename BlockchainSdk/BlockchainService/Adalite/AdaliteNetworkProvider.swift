@@ -21,19 +21,21 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
     
     @available(iOS 13.0, *)
     func send(transaction: Data) -> AnyPublisher<String, Error> {
-        return provider
+        provider
             .requestPublisher(.send(base64EncodedTx: transaction.base64EncodedString(), url: adaliteUrl))
             .filterSuccessfulStatusAndRedirectCodes()
             .mapNotEmptyString()
             .eraseError()
     }
     
-    func getInfo(address: String) -> AnyPublisher<CardanoAddressResponse, Error> {
-        getUnspents(address: address)
+    func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
+        getUnspents(addresses: addresses)
             .flatMap { unspents -> AnyPublisher<CardanoAddressResponse, Error> in
-                self.getBalance(address: address)
+                self.getBalance(addresses: addresses)
                     .map { balanceResponse -> CardanoAddressResponse in
-                        CardanoAddressResponse(balance: balanceResponse.balance, recentTransactionsHashes: balanceResponse.transactions, unspentOutputs: unspents)
+                        let balance = balanceResponse.reduce(Decimal(0), { $0 + $1.balance })
+                        let txHashes = balanceResponse.reduce([String](), { $0 + $1.transactions })
+                        return CardanoAddressResponse(balance: balance, recentTransactionsHashes: txHashes, unspentOutputs: unspents)
                     }
                     .eraseToAnyPublisher()
             }
@@ -41,9 +43,9 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
             .eraseToAnyPublisher()
     }
     
-    private func getUnspents(address: String) -> AnyPublisher<[CardanoUnspentOutput], Error> {
-        return provider
-            .requestPublisher(.unspents(address: address, url: adaliteUrl))
+    private func getUnspents(addresses: [String]) -> AnyPublisher<[CardanoUnspentOutput], Error> {
+        provider
+            .requestPublisher(.unspents(addresses: addresses, url: adaliteUrl))
             .filterSuccessfulStatusAndRedirectCodes()
             .mapSwiftyJSON()
             .tryMap { json throws -> [CardanoUnspentOutput] in
@@ -53,32 +55,36 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
                     return output
                 }
                 return unspentOutputs
-        }
-    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
     
-    private func getBalance(address: String) -> AnyPublisher<AdaliteBalanceResponse, Error> {
-        return provider
-            .requestPublisher(.address(address: address, url: adaliteUrl))
-            .filterSuccessfulStatusAndRedirectCodes()
-            .mapSwiftyJSON()
-            .tryMap {json throws -> AdaliteBalanceResponse in
-                let addressData = json["Right"]
-                guard let balanceString = addressData["caBalance"]["getCoin"].string,
-                    let balance = Decimal(balanceString) else {
+    private func getBalance(addresses: [String]) -> AnyPublisher<[AdaliteBalanceResponse], Error> {
+        .multiAddressPublisher(addresses: addresses, requestFactory: { [weak self] in
+            guard let self = self else { return .emptyFail }
+            
+            return self.provider
+                .requestPublisher(.address(address: $0, url: self.adaliteUrl))
+                .filterSuccessfulStatusAndRedirectCodes()
+                .mapSwiftyJSON()
+                .tryMap {json throws -> AdaliteBalanceResponse in
+                    let addressData = json["Right"]
+                    guard let balanceString = addressData["caBalance"]["getCoin"].string,
+                          let balance = Decimal(balanceString) else {
                         throw json["Left"].stringValue
+                    }
+                    
+                    let convertedValue = balance/Decimal(1000000)
+                    
+                    var transactionList = [String]()
+                    if let transactionListJSON = addressData["caTxList"].array {
+                        transactionList = transactionListJSON.map({ return $0["ctbId"].stringValue })
+                    }
+                    
+                    let response = AdaliteBalanceResponse(balance: convertedValue, transactions: transactionList)
+                    return response
                 }
-                
-                let convertedValue = balance/Decimal(1000000)
-                
-                var transactionList = [String]()
-                if let transactionListJSON = addressData["caTxList"].array {
-                    transactionList = transactionListJSON.map({ return $0["ctbId"].stringValue })
-                }
-                
-                let response = AdaliteBalanceResponse(balance: convertedValue, transactions: transactionList)
-                return response
-        }
-        .eraseToAnyPublisher()
+                .eraseToAnyPublisher()
+        })
     }
 }

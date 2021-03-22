@@ -172,9 +172,8 @@ public class WalletManagerFactory {
             return CardanoWalletManager(cardId: cardId, wallet: wallet).then {
                 $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: walletPublicKey, shelleyCard: shelley)
                 let service = CardanoNetworkService(providers: [
-                    AdaliteNetworkProvider(baseUrl: .main),
-                    AdaliteNetworkProvider(baseUrl: .reserve),
-                    RosettaNetworkProvider()
+//                    AdaliteNetworkProvider(baseUrl: .main),
+                    RosettaNetworkProvider(baseUrl: .tangemRosetta)
                 ])
                 $0.networkService = service
             }

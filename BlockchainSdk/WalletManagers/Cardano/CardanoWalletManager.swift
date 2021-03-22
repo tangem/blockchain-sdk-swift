@@ -25,7 +25,7 @@ class CardanoWalletManager: WalletManager {
     
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {//check it
         cancellable = networkService
-            .getInfo(address: wallet.address)
+            .getInfo(addresses: wallet.addresses.map { $0.value })
             .sink(receiveCompletion: {[unowned self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
                     self.wallet.amounts = [:]
@@ -102,7 +102,7 @@ extension CardanoWalletManager: TransactionSender {
         let a = Decimal(0.155381)
         let b = Decimal(0.000044)
         
-        let feeValue = (a + b * transactionSize).rounded(blockchain: wallet.blockchain)
+        let feeValue = (a + b * transactionSize).rounded(scale: wallet.blockchain.decimalCount, roundingMode: .plain)
         let feeAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: feeValue)
         return Result.Publisher([feeAmount]).eraseToAnyPublisher()
     }

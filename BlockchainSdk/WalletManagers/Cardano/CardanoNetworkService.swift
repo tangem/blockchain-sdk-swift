@@ -10,14 +10,14 @@ import Foundation
 import Combine
 
 protocol CardanoNetworkProvider {
-    func getInfo(address: String) -> AnyPublisher<CardanoAddressResponse, Error>
+    func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error>
     func send(transaction: Data) -> AnyPublisher<String, Error>
 }
 
 class CardanoNetworkService: MultiNetworkProvider<CardanoNetworkProvider>, CardanoNetworkProvider {
-    func getInfo(address: String) -> AnyPublisher<CardanoAddressResponse, Error> {
+    func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
         providerSwitchablePublisher { [weak self] in
-            self?.provider.getInfo(address: address) ?? .emptyFail
+            self?.provider.getInfo(addresses: addresses) ?? .emptyFail
         }
     }
     

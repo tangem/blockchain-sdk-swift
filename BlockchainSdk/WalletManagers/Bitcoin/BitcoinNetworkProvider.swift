@@ -34,7 +34,7 @@ enum BitcoinNetworkApi {
     case blockcypher
 }
 
-protocol BitcoinNetworkProvider {
+protocol BitcoinNetworkProvider: class {
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error>
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error>
@@ -51,9 +51,8 @@ protocol BitcoinNetworkProvider {
 
 extension BitcoinNetworkProvider {
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
-        let publishers = addresses.map { getInfo(address: $0) }
-        return Publishers.MergeMany(publishers)
-            .collect()
-            .eraseToAnyPublisher()
+        .multiAddressPublisher(addresses: addresses, requestFactory: { [weak self] in
+            self?.getInfo(address: $0) ?? .emptyFail
+        })
     }
 }

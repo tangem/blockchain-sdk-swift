@@ -18,4 +18,12 @@ extension AnyPublisher {
         Fail(error: "")
             .eraseToAnyPublisher()
     }
+    
+    static func multiAddressPublisher<T>(addresses: [String], requestFactory: @escaping (String) -> AnyPublisher<T, Error>) -> AnyPublisher<[T], Error> {
+        Publishers.MergeMany(addresses.map {
+            requestFactory($0)
+        })
+        .collect()
+        .eraseToAnyPublisher()
+    }
 }

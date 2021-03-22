@@ -16,7 +16,7 @@ enum AdaliteUrl: String {
 
 enum AdaliteTarget: TargetType {
     case address(address:String, url: AdaliteUrl)
-    case unspents(address: String, url: AdaliteUrl)
+    case unspents(addresses: [String], url: AdaliteUrl)
     case send(base64EncodedTx: String, url: AdaliteUrl)
     
     var baseURL: URL {
@@ -58,8 +58,11 @@ enum AdaliteTarget: TargetType {
         switch self {
         case .address:
             return .requestPlain
-        case .unspents(let address, _):
-            let data = "[\"\(address)\"]".data(using: .utf8) ?? Data()
+        case .unspents(let addresses, _):
+            var addrs = addresses.reduce("[\"", { $0 + $1 + "\"," })
+            addrs.removeLast()
+            addrs.append("]")
+            let data = addrs.data(using: .utf8) ?? Data()
             return .requestData(data)
         case .send(let base64EncodedTx, _):
             return .requestParameters(parameters: ["signedTx": base64EncodedTx],
