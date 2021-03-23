@@ -9,21 +9,24 @@
 import Foundation
 import Sodium
 import stellarsdk
+import TangemSdk
 
 class TezosTransactionBuilder {
     var counter: Int? = nil
     var isPublicKeyRevealed: Bool? = nil
     
     private let walletPublicKey: Data
-
-    internal init(walletPublicKey: Data) {
+    private let curve: EllipticCurve
+    
+    internal init(walletPublicKey: Data, curve: EllipticCurve) {
         self.walletPublicKey = walletPublicKey
+        self.curve = curve
     }
     
     func buildToSign(forgedContents: String) -> Data? {
-        let genericOperationWatermark = "03"
-        let message = Data(hex: genericOperationWatermark + forgedContents).bytes
-        return Sodium().genericHash.hash(message: message, outputLength: 32).map { Data($0) }
+        let genericOperationWatermark = Data(TezosPrefix.Watermark.operation)
+        let message = genericOperationWatermark + Data(hex: forgedContents)
+        return Sodium().genericHash.hash(message: message.bytes, outputLength: 32).map { Data($0) }
     }
 
     func buildToSend(signature: Data, forgedContents: String) -> String {
@@ -71,8 +74,8 @@ class TezosTransactionBuilder {
     }
     
     private func encodePublicKey(_ pkUncompressed: Data) -> String {
-        let edpkPrefix = Data(hex: "0D0F25D9")
-        let prefixedPubKey = edpkPrefix + pkUncompressed
+        let publicPrefix = TezosPrefix.publicPrefix(for: curve)
+        let prefixedPubKey = publicPrefix + pkUncompressed
 
         let checksum = prefixedPubKey.sha256().sha256().prefix(4)
         let prefixedHashWithChecksum = prefixedPubKey + checksum

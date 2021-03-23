@@ -9,12 +9,19 @@
 import Foundation
 import Sodium
 import stellarsdk
+import TangemSdk
 
 public class TezosAddressService: AddressService {
+    private let curve: EllipticCurve
+    
+    init(curve: EllipticCurve) {
+        self.curve = curve
+    }
+    
     public func makeAddress(from walletPublicKey: Data) -> String {
         let publicKeyHash = Sodium().genericHash.hash(message: walletPublicKey.bytes, outputLength: 20)!
-        let tz1Prefix = Data(hex: "06A19F")
-        let prefixedHash = tz1Prefix + publicKeyHash
+        let prefix = TezosPrefix.addressPrefix(for: curve)
+        let prefixedHash = prefix + publicKeyHash
         let checksum = prefixedHash.sha256().sha256().prefix(4)
         let prefixedHashWithChecksum = prefixedHash + checksum
         return Base58.encode(prefixedHashWithChecksum)

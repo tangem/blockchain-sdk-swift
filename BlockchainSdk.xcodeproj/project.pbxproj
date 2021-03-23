@@ -107,6 +107,7 @@
 		5DACA361255E98900096BC48 /* MultipleAddressProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DACA360255E98900096BC48 /* MultipleAddressProvider.swift */; };
 		5DACA363255ED7E30096BC48 /* BlockchainInfoApiTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DACA362255ED7E30096BC48 /* BlockchainInfoApiTarget.swift */; };
 		5DACA366255ED8950096BC48 /* BlockchainInfoApiResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DACA365255ED8950096BC48 /* BlockchainInfoApiResponse.swift */; };
+		5DC3855B260A3CBE00611CF8 /* TezosPrefixes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC3855A260A3CBE00611CF8 /* TezosPrefixes.swift */; };
 		5DC7DD60243F83E6008F83F2 /* XRPAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC7DD5F243F83E6008F83F2 /* XRPAddressService.swift */; };
 		5DC7DD62244077D7008F83F2 /* XRPNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC7DD61244077D7008F83F2 /* XRPNetworkService.swift */; };
 		5DC7DD64244077E4008F83F2 /* XRPTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC7DD63244077E4008F83F2 /* XRPTransactionBuilder.swift */; };
@@ -366,6 +367,7 @@
 		5DACA360255E98900096BC48 /* MultipleAddressProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipleAddressProvider.swift; sourceTree = "<group>"; };
 		5DACA362255ED7E30096BC48 /* BlockchainInfoApiTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainInfoApiTarget.swift; sourceTree = "<group>"; };
 		5DACA365255ED8950096BC48 /* BlockchainInfoApiResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainInfoApiResponse.swift; sourceTree = "<group>"; };
+		5DC3855A260A3CBE00611CF8 /* TezosPrefixes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosPrefixes.swift; sourceTree = "<group>"; };
 		5DC7DD5F243F83E6008F83F2 /* XRPAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPAddressService.swift; sourceTree = "<group>"; };
 		5DC7DD61244077D7008F83F2 /* XRPNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPNetworkService.swift; sourceTree = "<group>"; };
 		5DC7DD63244077E4008F83F2 /* XRPTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPTransactionBuilder.swift; sourceTree = "<group>"; };
@@ -875,6 +877,7 @@
 				5D0EEE66253EF2E800758FDC /* TezosTransactionBuilder.swift */,
 				5D0EEE68253EF75200758FDC /* TezosFee.swift */,
 				5D0EEE6A253EFBF600758FDC /* TezosWalletManager.swift */,
+				5DC3855A260A3CBE00611CF8 /* TezosPrefixes.swift */,
 			);
 			path = Tezos;
 			sourceTree = "<group>";
@@ -1111,6 +1114,7 @@
 				5DACA35B255E97FE0096BC48 /* Address.swift in Sources */,
 				5D7D2443251362AB001B9A4F /* BitcoinfeesTarget.swift in Sources */,
 				5D26CEEE243CB95000994CC0 /* BlockcypherTarget.swift in Sources */,
+				5DC3855B260A3CBE00611CF8 /* TezosPrefixes.swift in Sources */,
 				5D7D243425136254001B9A4F /* XRPAccountInfo.swift in Sources */,
 				5D7D243225136254001B9A4F /* XRPWallet.swift in Sources */,
 				5D845514243DEABB0072155E /* AdaliteResponse.swift in Sources */,

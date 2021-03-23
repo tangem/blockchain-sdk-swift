@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import TangemSdk
+import stellarsdk
 
 class TezosWalletManager: WalletManager {
     var txBuilder: TezosTransactionBuilder!
@@ -69,7 +70,7 @@ extension TezosWalletManager: TransactionSender {
         }
         .flatMap {[unowned self] (header, forgedContents, signResponse) in
             self.networkService
-                .checkTransaction(protocol: header.protocol, hash: header.hash, contents: contents, signature: signResponse.signature)
+                .checkTransaction(protocol: header.protocol, hash: header.hash, contents: contents, signature: self.encodeSignature(signResponse.signature))
                 .map { _ in (forgedContents, signResponse) }
                 .eraseToAnyPublisher()
         }
@@ -104,6 +105,14 @@ extension TezosWalletManager: TransactionSender {
                 return [Amount(with: self.wallet.blockchain, address: self.wallet.address, value: fee)]
         }
         .eraseToAnyPublisher()
+    }
+    
+    private func encodeSignature(_ signature: Data) -> String {
+        let edsigPrefix = TezosPrefix.signaturePrefix(for: wallet.blockchain.curve)
+        let prefixedSignature = edsigPrefix + signature
+        let checksum = prefixedSignature.sha256().sha256().prefix(4)
+        let prefixedSignatureWithChecksum = prefixedSignature + checksum
+        return Base58.encode(prefixedSignatureWithChecksum)
     }
 }
 
