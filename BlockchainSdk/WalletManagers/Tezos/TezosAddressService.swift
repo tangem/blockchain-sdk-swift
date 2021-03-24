@@ -19,7 +19,14 @@ public class TezosAddressService: AddressService {
     }
     
     public func makeAddress(from walletPublicKey: Data) -> String {
-        let publicKeyHash = Sodium().genericHash.hash(message: walletPublicKey.bytes, outputLength: 20)!
+        var key: Data
+        switch curve {
+        case .ed25519:
+            key = walletPublicKey
+        case .secp256k1:
+            key = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
+        }
+        let publicKeyHash = Sodium().genericHash.hash(message: key.bytes, outputLength: 20)!
         let prefix = TezosPrefix.addressPrefix(for: curve)
         let prefixedHash = prefix + publicKeyHash
         let checksum = prefixedHash.sha256().sha256().prefix(4)
