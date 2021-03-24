@@ -19,7 +19,12 @@ class TezosTransactionBuilder {
     private let curve: EllipticCurve
     
     internal init(walletPublicKey: Data, curve: EllipticCurve) {
-        self.walletPublicKey = walletPublicKey
+        switch curve {
+        case .ed25519:
+            self.walletPublicKey = walletPublicKey
+        case .secp256k1:
+            self.walletPublicKey = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
+        }
         self.curve = curve
     }
     
@@ -50,7 +55,7 @@ class TezosTransactionBuilder {
                 counter: counter.description,
                 gasLimit: "10000",
                 storageLimit:  "0",
-                publicKey: encodePublicKey(walletPublicKey),
+                publicKey: encodePublicKey(),
                 destination: nil,
                 amount: nil)
             
@@ -73,10 +78,10 @@ class TezosTransactionBuilder {
         return contents
     }
     
-    private func encodePublicKey(_ pkUncompressed: Data) -> String {
+    private func encodePublicKey() -> String {
         let publicPrefix = TezosPrefix.publicPrefix(for: curve)
-        let prefixedPubKey = publicPrefix + pkUncompressed
-
+        let prefixedPubKey = publicPrefix + walletPublicKey
+        
         let checksum = prefixedPubKey.sha256().sha256().prefix(4)
         let prefixedHashWithChecksum = prefixedPubKey + checksum
 
