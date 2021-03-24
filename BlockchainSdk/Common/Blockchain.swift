@@ -259,8 +259,8 @@ public enum Blockchain {
             return shelley ? CardanoShelleyAddressService() : CardanoAddressService()
         case .xrp(let curve):
             return XRPAddressService(curve: curve)
-        case .tezos:
-            return TezosAddressService()
+        case .tezos(let curve):
+            return TezosAddressService(curve: curve)
         }
     }
 }

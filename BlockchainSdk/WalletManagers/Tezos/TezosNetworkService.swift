@@ -111,7 +111,7 @@ class TezosNetworkService {
     func checkTransaction(protocol: String,
                           hash: String,
                           contents: [TezosOperationContent],
-                          signature: Data) -> AnyPublisher<Response, Error> {
+                          signature: String) -> AnyPublisher<Response, Error> {
         return Just(())
             .setFailureType(to: MoyaError.self)
             .flatMap {[unowned self] in
@@ -120,7 +120,7 @@ class TezosNetworkService {
                                                   endpoint: .preapplyOperations(body: [TezosPreapplyBody(protocol: `protocol`,
                                                                                                          branch: hash,
                                                                                                          contents: contents,
-                                                                                                         signature: self.encodeSignature(signature))])))
+                                                                                                         signature: signature)])))
                     .filterSuccessfulStatusCodes()
                     .eraseToAnyPublisher()
         }
@@ -146,18 +146,5 @@ class TezosNetworkService {
     private func switchApi<T>(_ error: Error) -> AnyPublisher<T, Error> {
         api = api == .tezos ? .tezosReserve : .tezos
         return Fail(error: error).eraseToAnyPublisher()
-    }
-    
-    private func encodeSignature(_ signature: Data) -> String {
-        let edsigPrefix = Data(hex: "09F5CD8612")
-        let prefixedSignature = edsigPrefix + signature
-        let checksum = prefixedSignature.sha256().sha256().prefix(4)
-        let prefixedSignatureWithChecksum = prefixedSignature + checksum
-//        let b58 =  String(base58: prefixedSignatureWithChecksum, alphabet: Base58String.btcAlphabet)
-//        let b581 = Base58.encode(prefixedSignatureWithChecksum)
-//        if b58 == b581 {
-//            print("equals")
-//        }
-        return Base58.encode(prefixedSignatureWithChecksum)
     }
 }

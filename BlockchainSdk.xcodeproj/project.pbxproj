@@ -58,6 +58,8 @@
 		5D557CB723ACCB48009B32AF /* BitcoinMainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D557CB623ACCB48009B32AF /* BitcoinMainProvider.swift */; };
 		5D5E058724FE72D900F04DE1 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5D5E058924FE72D900F04DE1 /* Localizable.strings */; };
 		5D5E058C24FE749D00F04DE1 /* Bundle+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E058B24FE749D00F04DE1 /* Bundle+.swift */; };
+		5D65D5C9260B261F00F84BED /* TezosPrefix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D65D5C8260B261F00F84BED /* TezosPrefix.swift */; };
+		5D65D5CE260B2FF400F84BED /* TezosPrefix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D65D5C8260B261F00F84BED /* TezosPrefix.swift */; };
 		5D6DEAB6243CC09A00510EC8 /* EthereumTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6DEAB5243CC09A00510EC8 /* EthereumTransactionBuilder.swift */; };
 		5D7D242725136254001B9A4F /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 5D7D240925136254001B9A4F /* LICENSE */; };
 		5D7D242825136254001B9A4F /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5D7D240A25136254001B9A4F /* README.md */; };
@@ -317,6 +319,7 @@
 		5D557CB623ACCB48009B32AF /* BitcoinMainProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinMainProvider.swift; sourceTree = "<group>"; };
 		5D5E058824FE72D900F04DE1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5D5E058B24FE749D00F04DE1 /* Bundle+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+.swift"; sourceTree = "<group>"; };
+		5D65D5C8260B261F00F84BED /* TezosPrefix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TezosPrefix.swift; sourceTree = "<group>"; };
 		5D6DEAB5243CC09A00510EC8 /* EthereumTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTransactionBuilder.swift; sourceTree = "<group>"; };
 		5D7D240925136254001B9A4F /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		5D7D240A25136254001B9A4F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -870,6 +873,7 @@
 		5DF91517253DB7A200B927DD /* Tezos */ = {
 			isa = PBXGroup;
 			children = (
+				5D65D5C8260B261F00F84BED /* TezosPrefix.swift */,
 				5DF9151C253DB85500B927DD /* TezosNetworkService.swift */,
 				5D03D2CF253DE61B009A8A9F /* TezosAddressService.swift */,
 				5D0EEE66253EF2E800758FDC /* TezosTransactionBuilder.swift */,
@@ -1125,6 +1129,7 @@
 				5DE3BF9E239FA2F400E8815D /* SegWitBech32.swift in Sources */,
 				5D6DEAB6243CC09A00510EC8 /* EthereumTransactionBuilder.swift in Sources */,
 				5D7D243525136254001B9A4F /* XRPAmount.swift in Sources */,
+				5D65D5C9260B261F00F84BED /* TezosPrefix.swift in Sources */,
 				5D03D2D0253DE61B009A8A9F /* TezosAddressService.swift in Sources */,
 				5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */,
 				5DE3BFA0239FA33800E8815D /* Bech32.swift in Sources */,
@@ -1215,6 +1220,7 @@
 				5D14E47D2397B80F00C15FC8 /* BlockchainSdkTests.swift in Sources */,
 				5DDD829225BF0CDC00166EA9 /* BitcoinAddress.swift in Sources */,
 				5DDD835625BF100100166EA9 /* MoyaPublisher.swift in Sources */,
+				5D65D5CE260B2FF400F84BED /* TezosPrefix.swift in Sources */,
 				5DDD830125BF0E2000166EA9 /* CardanoWalletManager.swift in Sources */,
 				5DDD835725BF100100166EA9 /* MoyaProvider+Combine.swift in Sources */,
 				5DDD834325BF0ECC00166EA9 /* WebSocket+Convenience.swift in Sources */,
