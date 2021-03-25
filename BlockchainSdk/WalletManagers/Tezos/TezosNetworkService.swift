@@ -144,7 +144,7 @@ class TezosNetworkService {
     }
     
     private func switchApi<T>(_ error: Error) -> AnyPublisher<T, Error> {
-        api = api == .tezos ? .tezosReserve : .tezos
+       // api = api == .tezos ? .tezosReserve : .tezos
         return Fail(error: error).eraseToAnyPublisher()
     }
 }
