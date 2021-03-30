@@ -75,9 +75,9 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     }
     
     func send(transaction: Data) -> AnyPublisher<String, Error> {
-        let txHex = CBOR.array([
-            CBOR.byteString(transaction.asHexString().data(using: .utf8)!.bytes)
-        ]).encode().toHexString()
+        let txHex: String = CBOR.array(
+            [CBOR.utf8String(transaction.toHexString())]
+        ).encode().toHexString()
         return provider.requestPublisher(.submitTransaction(baseUrl: self.baseUrl,
                                                             submitBody: RosettaSubmitBody(networkIdentifier: .mainNet,
                                                                                           signedTransaction: txHex)))

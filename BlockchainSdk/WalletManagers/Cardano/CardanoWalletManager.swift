@@ -102,7 +102,7 @@ extension CardanoWalletManager: TransactionSender {
         let a = Decimal(0.155381)
         let b = Decimal(0.000044)
         
-        let feeValue = (a + b * transactionSize).rounded(scale: wallet.blockchain.decimalCount, roundingMode: .plain)
+        let feeValue = (a + b * transactionSize).rounded(scale: wallet.blockchain.decimalCount, roundingMode: .up)
         let feeAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: feeValue)
         return Result.Publisher([feeAmount]).eraseToAnyPublisher()
     }
