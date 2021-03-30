@@ -51,8 +51,8 @@ protocol BitcoinNetworkProvider: class {
 
 extension BitcoinNetworkProvider {
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
-        .multiAddressPublisher(addresses: addresses, requestFactory: { [weak self] in
-            self?.getInfo(address: $0) ?? .emptyFail
+        .multiAddressPublisher(addresses: addresses, requestFactory: {
+            self.getInfo(address: $0)
         })
     }
 }
