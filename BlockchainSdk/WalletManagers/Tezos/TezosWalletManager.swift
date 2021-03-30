@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import TangemSdk
+import stellarsdk
 
 class TezosWalletManager: WalletManager {
     var txBuilder: TezosTransactionBuilder!
@@ -58,23 +59,25 @@ extension TezosWalletManager: TransactionSender {
                         return (header, forgeResult)
                 }
         }
-        .flatMap {[unowned self] (header, forgedContents) -> AnyPublisher<(header: TezosHeader, forgedContents: String, signResponse: SignResponse), Error> in
-            guard let txToSign = self.txBuilder.buildToSign(forgedContents: forgedContents) else {
+            .flatMap {[unowned self] (header, forgedContents) -> AnyPublisher<(header: TezosHeader, forgedContents: String, signature: Data, signResponse: SignResponse), Error> in
+            guard let txToSign: Data = self.txBuilder.buildToSign(forgedContents: forgedContents) else {
                 return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
             }
             
             return signer.sign(hashes: [txToSign], cardId: self.cardId)
-                .map { (header, forgedContents, $0)}
+                .tryMap {[unowned self] signResponse -> (TezosHeader, String, Data, SignResponse) in
+                    return (header, forgedContents, try self.txBuilder.normalizeSignatureIfNeeded(signResponse.signature, hash: txToSign), signResponse)
+                }
                 .eraseToAnyPublisher()
         }
-        .flatMap {[unowned self] (header, forgedContents, signResponse) in
+        .flatMap {[unowned self] (header, forgedContents, normalizedSignature, signResponse) in
             self.networkService
-                .checkTransaction(protocol: header.protocol, hash: header.hash, contents: contents, signature: signResponse.signature)
-                .map { _ in (forgedContents, signResponse) }
+                .checkTransaction(protocol: header.protocol, hash: header.hash, contents: contents, signature: self.encodeSignature(normalizedSignature))
+                .map { _ in (forgedContents, normalizedSignature, signResponse) }
                 .eraseToAnyPublisher()
         }
-        .flatMap {[unowned self] (forgedContents, signResponse) -> AnyPublisher<SignResponse, Error> in
-            let txToSend = self.txBuilder.buildToSend(signature: signResponse.signature, forgedContents: forgedContents)
+        .flatMap {[unowned self] (forgedContents, signature, signResponse) -> AnyPublisher<SignResponse, Error> in
+            let txToSend = self.txBuilder.buildToSend(signature: signature, forgedContents: forgedContents)
             return self.networkService
                 .sendTransaction(txToSend)
                 .map{[unowned self] response in
@@ -104,6 +107,14 @@ extension TezosWalletManager: TransactionSender {
                 return [Amount(with: self.wallet.blockchain, address: self.wallet.address, value: fee)]
         }
         .eraseToAnyPublisher()
+    }
+    
+    private func encodeSignature(_ signature: Data) -> String {
+        let edsigPrefix = TezosPrefix.signaturePrefix(for: wallet.blockchain.curve)
+        let prefixedSignature = edsigPrefix + signature
+        let checksum = prefixedSignature.sha256().sha256().prefix(4)
+        let prefixedSignatureWithChecksum = prefixedSignature + checksum
+        return Base58.encode(prefixedSignatureWithChecksum)
     }
 }
 

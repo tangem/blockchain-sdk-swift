@@ -186,6 +186,10 @@ public protocol WithdrawalValidator {
     func validate(_ transaction: Transaction) -> WithdrawalWarning?
 }
 
+public protocol TokenFinder {
+    func findErc20Tokens(completion: @escaping (Result<Bool, Error>)-> Void)
+}
+
 public struct WithdrawalWarning {
     public let warningMessage: String
     public let reduceMessage: String

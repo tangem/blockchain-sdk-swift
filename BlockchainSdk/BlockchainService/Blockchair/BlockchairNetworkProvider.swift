@@ -27,8 +27,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
 	func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: true, apiKey: apiKey))
             .tryMap { [unowned self] json -> BitcoinResponse in //TODO: refactor to normal JSON
-                let data = json["data"]
-                let addr = data["\(address)"]
+                let addr = self.mapAddressBlock(address, json: json)
                 let address = addr["address"]
                 let balance = address["balance"].stringValue
                 let script = address["script_hex"].stringValue
@@ -106,7 +105,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
 		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: false, apiKey: apiKey))
 			.map { json -> Int in
-				let addr = json["data"]["\(address)"]
+                let addr = self.mapAddressBlock(address, json: json)
 				let address = addr["address"]
 				
 				guard
@@ -119,6 +118,19 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
 			.mapError { $0 as Error }
 			.eraseToAnyPublisher()
 	}
+    
+    func findErc20Tokens(address: String) -> AnyPublisher<[BlockchairToken], Error> {
+        publisher(for: .findErc20Tokens(address: address, apiKey: apiKey))
+            .tryMap { json -> [BlockchairToken] in
+                let addr = self.mapAddressBlock(address, json: json)
+                let tokensObject = addr["layer_2"]["erc_20"]
+                let tokensData = try tokensObject.rawData()
+                let tokens = try JSONDecoder().decode([BlockchairToken].self, from: tokensData)
+                return tokens
+            }
+            .mapError { $0 as Error }
+            .eraseToAnyPublisher()
+    }
 	
 	private func publisher(for target: BlockchairTarget) -> AnyPublisher<JSON, MoyaError> {
 		provider
@@ -126,4 +138,19 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
 			.filterSuccessfulStatusAndRedirectCodes()
 			.mapSwiftyJSON()
 	}
+    
+    private func mapAddressBlock(_ address: String, json: JSON) -> JSON {
+        let data = json["data"]
+        let dictionary = data.dictionaryValue
+        if dictionary.keys.contains(address) {
+            return data["\(address)"]
+        }
+        
+        let lowercasedAddress = address.lowercased()
+        if dictionary.keys.contains(lowercasedAddress) {
+            return data["\(lowercasedAddress)"]
+        }
+
+        return json
+    }
 }

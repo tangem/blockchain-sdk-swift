@@ -146,13 +146,15 @@ public class WalletManagerFactory {
                 let ethereumNetwork = testnet ? EthereumNetwork.testnet(projectId: config.infuraProjectId) : EthereumNetwork.mainnet(projectId: config.infuraProjectId)
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: ethereumNetwork)
                 let provider = BlockcypherNetworkProvider(endpoint: .init(coin: .eth, chain: .main), tokens: config.blockcypherTokens)
-                $0.networkService = EthereumNetworkService(network: ethereumNetwork, blockcypherProvider: provider)
+                let blockchair = BlockchairNetworkProvider(endpoint: .bitcoin, apiKey: config.blockchairApiKey)
+                $0.networkService = EthereumNetworkService(network: ethereumNetwork, blockcypherProvider: provider, blockchairProvider: blockchair)
             }
             
         case .rsk:
             return EthereumWalletManager(cardId: cardId, wallet: wallet, cardTokens: tokens).then {
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: .rsk)
-                $0.networkService = EthereumNetworkService(network: .rsk, blockcypherProvider: nil)
+                let blockchair = BlockchairNetworkProvider(endpoint: .bitcoin, apiKey: config.blockchairApiKey)
+                $0.networkService = EthereumNetworkService(network: .rsk, blockcypherProvider: nil, blockchairProvider: blockchair)
             }
             
         case .bitcoinCash(let testnet):
@@ -183,9 +185,9 @@ public class WalletManagerFactory {
                 $0.txBuilder = XRPTransactionBuilder(walletPublicKey: walletPublicKey, curve: curve)
                 $0.networkService = XRPNetworkService()
             }
-        case .tezos:
+        case .tezos(let curve):
             return TezosWalletManager(cardId: cardId, wallet: wallet).then {
-                $0.txBuilder = TezosTransactionBuilder(walletPublicKey: walletPublicKey)
+                $0.txBuilder = TezosTransactionBuilder(walletPublicKey: walletPublicKey, curve: curve)
                 $0.networkService = TezosNetworkService()
             }
         }
