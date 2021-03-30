@@ -65,7 +65,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
                 }
             }
             
-            balance = balance / Decimal(1000000)
+            balance = balance / Blockchain.cardano(shelley: false).decimalValue
             
             return CardanoAddressResponse(balance: balance,
                                           recentTransactionsHashes: [],

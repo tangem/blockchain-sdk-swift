@@ -74,7 +74,7 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
                         throw json["Left"].stringValue
                     }
                     
-                    let convertedValue = balance/Decimal(1000000)
+                    let convertedValue = balance / Blockchain.cardano(shelley: false).decimalValue
                     
                     var transactionList = [String]()
                     if let transactionListJSON = addressData["caTxList"].array {

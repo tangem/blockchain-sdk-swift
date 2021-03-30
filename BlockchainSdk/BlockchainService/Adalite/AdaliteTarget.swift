@@ -59,9 +59,7 @@ enum AdaliteTarget: TargetType {
         case .address:
             return .requestPlain
         case .unspents(let addresses, _):
-            var addrs = addresses.reduce("[\"", { $0 + $1 + "\"," })
-            addrs.removeLast()
-            addrs.append("]")
+            let addrs = "[\(addresses.joined(separator: ","))]"
             let data = addrs.data(using: .utf8) ?? Data()
             return .requestData(data)
         case .send(let base64EncodedTx, _):

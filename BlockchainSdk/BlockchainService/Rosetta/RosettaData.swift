@@ -45,31 +45,3 @@ struct RosettaCoinIdentifier: Codable {
 struct RosettaTransactionIdentifier: Codable {
     let hash: String?
 }
-//@JsonClass(generateAdapter = true)
-//data class RosettaAmount(
-//        val value: Long? = null,
-//        val currency: RosettaCurrency? = null
-//)
-//
-//@JsonClass(generateAdapter = true)
-//data class RosettaCurrency(
-//        val symbol: String? = null,
-//        val decimals: Int? = null
-//)
-//
-//@JsonClass(generateAdapter = true)
-//data class RosettaCoin(
-//        @Json(name = "coin_identifier")
-//        val coinIdentifier: RosettaCoinIdentifier? = null,
-//        val amount: RosettaAmount? = null
-//)
-//
-//@JsonClass(generateAdapter = true)
-//data class RosettaCoinIdentifier(
-//        val identifier: String? = null
-//)
-//
-//@JsonClass(generateAdapter = true)
-//data class RosettaTransactionIdentifier(
-//        val hash: String? = null
-//)

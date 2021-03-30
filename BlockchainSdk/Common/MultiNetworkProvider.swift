@@ -9,30 +9,26 @@
 import Foundation
 import Combine
 
-class MultiNetworkProvider<T> {
+class MultiNetworkProvider<Provider> {
     
-    private let providers: [T]
+    private let providers: [Provider]
     private var currentProviderIndex = 0
     
-    var provider: T {
+    var provider: Provider {
         providers[currentProviderIndex]
     }
     
-    init(providers: [T]) {
+    init(providers: [Provider]) {
         self.providers = providers
     }
     
-    func providerSwitchablePublisher<T>(for publisherFactory: @escaping () -> AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
-        publisherFactory()
-            .map { [weak self] in
-                self?.resetProviders()
-                return $0
-            }
+    func providerPublisher<T>(for requestPublisher: @escaping (_ provider: Provider) -> AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
+        requestPublisher(provider)
             .catch { [weak self] error -> AnyPublisher<T, Error> in
                 print("Switchable publisher catched error:", error)
                 if self?.needRetry() ?? false {
                     print("Switching to next publisher")
-                    return self?.providerSwitchablePublisher(for: publisherFactory) ?? .emptyFail
+                    return self?.providerPublisher(for: requestPublisher) ?? .emptyFail
                 }
                 
                 return .anyFail(error: error)

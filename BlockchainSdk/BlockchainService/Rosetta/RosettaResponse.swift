@@ -18,16 +18,3 @@ struct RosettaBalanceResponse: Codable {
 struct RosettaSubmitResponse: Codable {
     let transactionIdentifier: RosettaTransactionIdentifier
 }
-
-
-//@JsonClass(generateAdapter = true)
-//data class RosettaBalanceResponse(
-//        val balances: List<RosettaAmount>? = null,
-//        val coins: List<RosettaCoin>? = null
-//)
-//
-//@JsonClass(generateAdapter = true)
-//data class RosettaSubmitResponse(
-//        @Json(name = "transaction_identifier")
-//        val transactionIdentifier: RosettaTransactionIdentifier? = null
-//)
