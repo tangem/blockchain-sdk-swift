@@ -17,11 +17,12 @@ class CardanoTransactionBuilder {
     let kDecimalNumber: Int16 = 6
     let kProtocolMagic: UInt64 = 764824073
     let shelleyCard: Bool
+    private var addressDecoder: CardanoAddressDecoder?
     
-    
-    internal init(walletPublicKey: Data, shelleyCard: Bool) {
+    internal init(walletPublicKey: Data, shelleyCard: Bool, addressDecoder: CardanoAddressDecoder?) {
         self.walletPublicKey = walletPublicKey
         self.shelleyCard = shelleyCard
+        self.addressDecoder = addressDecoder
     }
     
 	public func buildForSign(transaction: Transaction, walletAmount: Decimal, isEstimated: Bool) -> Result<(hash:Data, bodyItem: CBOR), Error> {
@@ -73,7 +74,7 @@ class CardanoTransactionBuilder {
             return .failure(CardanoError.lowAda)
         }
         
-        guard let targetAddressBytes =  CardanoAddress.decode(transaction.destinationAddress)?.bytes else {
+        guard let targetAddressBytes = addressDecoder?.decode(transaction.destinationAddress)?.bytes else {
             return .failure(WalletError.failedToBuildTx)
         }
         
@@ -91,7 +92,7 @@ class CardanoTransactionBuilder {
         var outputsArray = [CBOR]()
         outputsArray.append(CBOR.array([CBOR.byteString(targetAddressBytes), CBOR.unsignedInt(amountLong)]))
            
-        guard let changeAddressBytes =  CardanoAddress.decode(transaction.sourceAddress)?.bytes else {
+        guard let changeAddressBytes = addressDecoder?.decode(transaction.sourceAddress)?.bytes else {
             return .failure(WalletError.failedToBuildTx)
         }
         

@@ -163,12 +163,7 @@ public enum Blockchain {
     }
     
     public func validate(address: String) -> Bool {
-        switch self {
-        case .cardano:
-            return CardanoAddress.validate(address)
-        default:
-            return getAddressService().validate(address)
-        }
+        getAddressService().validate(address)
     }
     
     public func getShareString(from address: String) -> String {
@@ -256,7 +251,7 @@ public enum Blockchain {
         case .ducatus:
             return BitcoinLegacyAddressService(networkParams: DucatusNetworkParams())
         case .cardano(let shelley):
-            return shelley ? CardanoShelleyAddressService() : CardanoAddressService()
+            return CardanoAddressService(shelley: shelley)
         case .xrp(let curve):
             return XRPAddressService(curve: curve)
         case .tezos(let curve):
@@ -318,7 +313,7 @@ extension Blockchain: Equatable, Hashable, Codable {
     }
     
     public func encode(to encoder: Encoder) throws {
-        var container = try encoder.container(keyedBy: Keys.self)
+        var container = encoder.container(keyedBy: Keys.self)
         try container.encode(codingKey, forKey: Keys.key)
         try container.encode(curve.rawValue, forKey: Keys.curve)
         try container.encode(isTestnet, forKey: Keys.testnet)
