@@ -21,11 +21,11 @@ public enum CardanoError: String, Error, LocalizedError {
 
 class CardanoWalletManager: WalletManager {
     var txBuilder: CardanoTransactionBuilder!
-    var networkService: CardanoNetworkService!
+    var networkService: CardanoNetworkProvider!
     
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {//check it
         cancellable = networkService
-            .getInfo(address: wallet.address)
+            .getInfo(addresses: wallet.addresses.map { $0.value })
             .sink(receiveCompletion: {[unowned self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
                     self.wallet.amounts = [:]
@@ -37,17 +37,23 @@ class CardanoWalletManager: WalletManager {
             })
     }
     
-    private func updateWallet(with response: (AdaliteBalanceResponse,[AdaliteUnspentOutput])) {
-        wallet.add(coinValue: response.0.balance)
-        txBuilder.unspentOutputs = response.1
+    private func updateWallet(with response: CardanoAddressResponse) {
+        wallet.add(coinValue: response.balance)
+        txBuilder.unspentOutputs = response.unspentOutputs
         
-        wallet.transactions = wallet.transactions.compactMap { pendingTx in
-            if let pendingTxHash = pendingTx.hash {
-                if response.0.transactionList.contains(pendingTxHash.lowercased()) {
-                    return nil
+        wallet.transactions = wallet.transactions.map {
+            var mutableTx = $0
+            if response.recentTransactionsHashes.isEmpty {
+                if response.unspentOutputs.isEmpty ||
+                   response.unspentOutputs.first(where: { $0.transactionHash == mutableTx.hash }) != nil {
+                    mutableTx.status = .confirmed
+                }
+            } else {
+                if response.recentTransactionsHashes.first(where: { $0 == mutableTx.hash }) != nil {
+                    mutableTx.status = .confirmed
                 }
             }
-            return pendingTx
+            return mutableTx
         }
     }
 }
@@ -75,7 +81,7 @@ extension CardanoWalletManager: TransactionSender {
                     }
             }
             .flatMap {[unowned self] builderResponse -> AnyPublisher<SignResponse, Error> in
-                self.networkService.send(base64EncodedTx: builderResponse.tx.base64EncodedString()).map {[unowned self] response in
+                self.networkService.send(transaction: builderResponse.tx).map {[unowned self] response in
                     var sendedTx = transaction
                     sendedTx.hash = builderResponse.hash
                     self.wallet.add(transaction: sendedTx)
@@ -95,6 +101,7 @@ extension CardanoWalletManager: TransactionSender {
         
         let a = Decimal(0.155381)
         let b = Decimal(0.000044)
+        
         let feeValue = (a + b * transactionSize).rounded(scale: wallet.blockchain.decimalCount, roundingMode: .up)
         let feeAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: feeValue)
         return Result.Publisher([feeAmount]).eraseToAnyPublisher()

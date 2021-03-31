@@ -1,5 +1,5 @@
 //
-//  TezosProvider.swift
+//  TezosNetworkService.swift
 //  BlockchainSdk
 //
 //  Created by Alexander Osokin on 19.10.2020.

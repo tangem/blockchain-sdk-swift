@@ -12,9 +12,9 @@ import Combine
 import TangemSdk
 
 class BitcoinCashNetworkService {
-    private let provider: BlockchairProvider
+    private let provider: BlockchairNetworkProvider
 
-    init(provider: BlockchairProvider) {
+    init(provider: BlockchairNetworkProvider) {
         self.provider = provider
     }
     
