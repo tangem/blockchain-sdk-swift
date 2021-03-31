@@ -16,14 +16,14 @@ protocol CardanoNetworkProvider {
 
 class CardanoNetworkService: MultiNetworkProvider<CardanoNetworkProvider>, CardanoNetworkProvider {
     func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
-        providerSwitchablePublisher { [weak self] in
-            self?.provider.getInfo(addresses: addresses) ?? .emptyFail
+        providerPublisher { provider in
+            provider.getInfo(addresses: addresses)
         }
     }
     
     func send(transaction: Data) -> AnyPublisher<String, Error> {
-        providerSwitchablePublisher { [weak self] in
-            self?.provider.send(transaction: transaction) ?? .emptyFail
+        providerPublisher { provider in
+            provider.send(transaction: transaction)
         }
     }
 }
