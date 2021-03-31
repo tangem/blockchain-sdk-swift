@@ -51,7 +51,10 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
             .tryMap { json throws -> [CardanoUnspentOutput] in
                 let unspentOutputsJson = json["Right"].arrayValue
                 let unspentOutputs = unspentOutputsJson.map{ json -> CardanoUnspentOutput in
-                    let output = CardanoUnspentOutput(address: json["cuAddress"].stringValue, amount: Decimal(json["cuCoins"]["getCoin"].doubleValue), outputIndex: json["cuOutIndex"].intValue, transactionHash: json["cuId"].stringValue)
+                    let output = CardanoUnspentOutput(address: json["cuAddress"].stringValue,
+                                                      amount: Decimal(json["cuCoins"]["getCoin"].doubleValue),
+                                                      outputIndex: json["cuOutIndex"].intValue,
+                                                      transactionHash: json["cuId"].stringValue)
                     return output
                 }
                 return unspentOutputs

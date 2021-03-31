@@ -11,16 +11,8 @@ import Sodium
 import SwiftCBOR
 import CryptoSwift
 
-protocol CardanoAddressDecoder {
-    func decode(_ address: String) -> Data?
-}
-
-public class CardanoAddressService: AddressService, CardanoAddressDecoder {
+public class CardanoAddressService: AddressService {
     private let addressHeaderByte = Data([UInt8(97)])
-    private let bech32Hrp = "addr"
-    private let bech32Separator = "1"
-    
-    private var bech32Prefix: String { bech32Hrp + bech32Separator }
     
     private let shelley: Bool
     
@@ -31,17 +23,15 @@ public class CardanoAddressService: AddressService, CardanoAddressDecoder {
     public func makeAddresses(from walletPublicKey: Data) -> [Address] {
         if shelley {
             return [
-                PlainAddress(value: makeByronAddress(from: walletPublicKey)),
-                PlainAddress(value: makeShelleyAddress(from: walletPublicKey))
+                CardanoAddress(type: .bech32, value: makeShelleyAddress(from: walletPublicKey)),
+                CardanoAddress(type: .legacy, value: makeByronAddress(from: walletPublicKey))
             ]
         }
-        return [PlainAddress(value: makeAddress(from: walletPublicKey))]
+        return [makeCardanoAddress(from: walletPublicKey)]
     }
     
     public func makeAddress(from walletPublicKey: Data) -> String {
-        shelley ?
-            makeShelleyAddress(from: walletPublicKey) :
-            makeByronAddress(from: walletPublicKey)
+        makeCardanoAddress(from: walletPublicKey).value
     }
     
     public func validate(_ address: String) -> Bool {
@@ -49,7 +39,7 @@ public class CardanoAddressService: AddressService, CardanoAddressDecoder {
             return false
         }
         
-        if isBech32Address(address) {
+        if CardanoAddressUtils.isShelleyAddress(address) {
             return (try? Bech32().decodeLong(address)) != nil
             
         } else {
@@ -78,25 +68,10 @@ public class CardanoAddressService: AddressService, CardanoAddressDecoder {
         }
     }
     
-    public func decode(_ address: String) -> Data? {
-        guard isBech32Address(address) else {
-            return address.base58DecodedData
-        }
-        
-        let bech32 = Bech32()
-        guard let decoded = try? bech32.decodeLong(address) else {
-            return nil
-        }
-        
-        guard let converted = try? bech32.convertBits(data: Array(decoded.checksum), fromBits: 5, toBits: 8, pad: false) else {
-            return nil
-        }
-        
-        return Data(converted)
-    }
-    
-    private func isBech32Address(_ address: String) -> Bool {
-        address.starts(with: bech32Prefix)
+    private func makeCardanoAddress(from pubkey: Data) -> CardanoAddress {
+        shelley ?
+            CardanoAddress(type: .bech32, value: makeShelleyAddress(from: pubkey)) :
+            CardanoAddress(type: .legacy, value: makeByronAddress(from: pubkey))
     }
     
     private func makeByronAddress(from walletPublicKey: Data) -> String {
@@ -116,7 +91,7 @@ public class CardanoAddressService: AddressService, CardanoAddressDecoder {
         let publicKeyHash = Sodium().genericHash.hash(message: walletPublicKey.toBytes, outputLength: 28)!
         let addressBytes = addressHeaderByte + publicKeyHash
         let bech32 = Bech32()
-        let walletAddress = bech32.encode(bech32Hrp, values: Data(addressBytes))
+        let walletAddress = bech32.encode(CardanoAddressUtils.bech32Hrp, values: Data(addressBytes))
         return walletAddress
     }
 }
