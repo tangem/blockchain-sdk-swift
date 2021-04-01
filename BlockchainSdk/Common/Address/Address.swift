@@ -17,11 +17,13 @@ public protocol Address {
 public enum AddressType: Equatable {
 	case plain
 	case bitcoin(type: BitcoinAddressType)
+    case cardano(type: CardanoAddressType)
 	
 	var localizedName: String {
 		switch self {
 		case .plain: return ""
 		case .bitcoin(let type): return type.localizedName
+        case .cardano(let type): return type.localizedName
 		}
 	}
 }
