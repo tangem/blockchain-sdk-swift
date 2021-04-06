@@ -45,6 +45,8 @@ extension TezosPrefix {
             return Data(Keys.Ed25519.public)
         case .secp256k1:
             return Data(Keys.Secp256k1.public)
+        case .secp256r1:
+            return Data(Keys.P256.public)
         }
     }
     
@@ -54,6 +56,8 @@ extension TezosPrefix {
             return Data(Keys.Ed25519.signature)
         case .secp256k1:
             return Data(Keys.Secp256k1.signature)
+        case .secp256r1:
+            return Data(Keys.P256.signature)
         }
     }
     
@@ -63,6 +67,8 @@ extension TezosPrefix {
             return Data(Address.tz1)
         case .secp256k1:
             return Data(Address.tz2)
+        case .secp256r1:
+            return Data(Address.tz3)
         }
     }
 }

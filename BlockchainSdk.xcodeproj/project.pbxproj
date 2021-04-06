@@ -95,14 +95,13 @@
 		5D8653FA23A8C481000DE52D /* StellarNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653F923A8C481000DE52D /* StellarNetworkService.swift */; };
 		5D8653FC23A8C4A9000DE52D /* StellarTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FB23A8C4A9000DE52D /* StellarTransactionBuilder.swift */; };
 		5D8653FE23A8E486000DE52D /* StellarSdk+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FD23A8E486000DE52D /* StellarSdk+.swift */; };
-		5D86540023A906DF000DE52D /* CardManager+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FF23A906DF000DE52D /* CardManager+.swift */; };
+		5D86540023A906DF000DE52D /* TangemSdk+TransactionSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FF23A906DF000DE52D /* TangemSdk+TransactionSigner.swift */; };
 		5D88C809256BCD6C00020028 /* XRPTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D88C808256BCD6C00020028 /* XRPTransactionParams.swift */; };
 		5D88C80B256BCDBB00020028 /* StellarTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D88C80A256BCDBB00020028 /* StellarTransactionParams.swift */; };
 		5D94E56123A381F2009C7482 /* EthereumWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56023A381F2009C7482 /* EthereumWalletManager.swift */; };
 		5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56223A38204009C7482 /* EthereumAddressService.swift */; };
 		5D94E56723A3946C009C7482 /* Data+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56623A3946C009C7482 /* Data+.swift */; };
 		5D977BB623FAEB4500575BE4 /* DucatusNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D977BB523FAEB4500575BE4 /* DucatusNetworkService.swift */; };
-		5D9D749325F254E600121621 /* Card+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9D749225F254E600121621 /* Card+.swift */; };
 		5DA6F7BC243F3C0B0040AB4B /* CBOR+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */; };
 		5DACA359255E97EA0096BC48 /* BitcoinAddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DACA358255E97EA0096BC48 /* BitcoinAddressType.swift */; };
 		5DACA35B255E97FE0096BC48 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DACA35A255E97FE0096BC48 /* Address.swift */; };
@@ -135,7 +134,7 @@
 		5DDD82B125BF0D2F00166EA9 /* Amount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DEAFA8D244472CD0032E316 /* Amount.swift */; };
 		5DDD82B225BF0D2F00166EA9 /* WalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D14E48F2397B87000C15FC8 /* WalletManager.swift */; };
 		5DDD82B825BF0D6700166EA9 /* Int+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DED72B9239FE2F8006D79AE /* Int+.swift */; };
-		5DDD82B925BF0D6700166EA9 /* CardManager+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FF23A906DF000DE52D /* CardManager+.swift */; };
+		5DDD82B925BF0D6700166EA9 /* TangemSdk+TransactionSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FF23A906DF000DE52D /* TangemSdk+TransactionSigner.swift */; };
 		5DDD82BA25BF0D6700166EA9 /* Bundle+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E058B24FE749D00F04DE1 /* Bundle+.swift */; };
 		5DDD82BB25BF0D6700166EA9 /* Uint64+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D557CAF23AA888D009B32AF /* Uint64+.swift */; };
 		5DDD82BC25BF0D6700166EA9 /* CBOR+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */; };
@@ -370,14 +369,13 @@
 		5D8653F923A8C481000DE52D /* StellarNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarNetworkService.swift; sourceTree = "<group>"; };
 		5D8653FB23A8C4A9000DE52D /* StellarTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarTransactionBuilder.swift; sourceTree = "<group>"; };
 		5D8653FD23A8E486000DE52D /* StellarSdk+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StellarSdk+.swift"; sourceTree = "<group>"; };
-		5D8653FF23A906DF000DE52D /* CardManager+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CardManager+.swift"; sourceTree = "<group>"; };
+		5D8653FF23A906DF000DE52D /* TangemSdk+TransactionSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TangemSdk+TransactionSigner.swift"; sourceTree = "<group>"; };
 		5D88C808256BCD6C00020028 /* XRPTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPTransactionParams.swift; sourceTree = "<group>"; };
 		5D88C80A256BCDBB00020028 /* StellarTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarTransactionParams.swift; sourceTree = "<group>"; };
 		5D94E56023A381F2009C7482 /* EthereumWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumWalletManager.swift; sourceTree = "<group>"; };
 		5D94E56223A38204009C7482 /* EthereumAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumAddressService.swift; sourceTree = "<group>"; };
 		5D94E56623A3946C009C7482 /* Data+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+.swift"; sourceTree = "<group>"; };
 		5D977BB523FAEB4500575BE4 /* DucatusNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DucatusNetworkService.swift; sourceTree = "<group>"; };
-		5D9D749225F254E600121621 /* Card+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Card+.swift"; sourceTree = "<group>"; };
 		5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CBOR+.swift"; sourceTree = "<group>"; };
 		5DACA358255E97EA0096BC48 /* BitcoinAddressType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinAddressType.swift; sourceTree = "<group>"; };
 		5DACA35A255E97FE0096BC48 /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
@@ -600,11 +598,10 @@
 				5DED72B7239FE2E3006D79AE /* Decimal+.swift */,
 				5DED72B9239FE2F8006D79AE /* Int+.swift */,
 				5D94E56623A3946C009C7482 /* Data+.swift */,
-				5D8653FF23A906DF000DE52D /* CardManager+.swift */,
+				5D8653FF23A906DF000DE52D /* TangemSdk+TransactionSigner.swift */,
 				5D557CAF23AA888D009B32AF /* Uint64+.swift */,
 				5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */,
 				5D5E058B24FE749D00F04DE1 /* Bundle+.swift */,
-				5D9D749225F254E600121621 /* Card+.swift */,
 				B0C2C86625FBA10E00A61622 /* AnyPublisher+.swift */,
 			);
 			path = Extensions;
@@ -1192,7 +1189,7 @@
 				5D26CEEC243CB92700994CC0 /* BlockcypherResponse.swift in Sources */,
 				5D5E058C24FE749D00F04DE1 /* Bundle+.swift in Sources */,
 				5D845518243DFCE90072155E /* AdaliteNetworkProvider.swift in Sources */,
-				5D86540023A906DF000DE52D /* CardManager+.swift in Sources */,
+				5D86540023A906DF000DE52D /* TangemSdk+TransactionSigner.swift in Sources */,
 				5D54FE1E23E4313A009FAC2F /* LitecoinWalletManager.swift in Sources */,
 				5D557CAE23AA771E009B32AF /* EthereumNetworkService.swift in Sources */,
 				5DACA363255ED7E30096BC48 /* BlockchainInfoApiTarget.swift in Sources */,
@@ -1248,7 +1245,6 @@
 				5D557CB523ACCAD2009B32AF /* BlockcypherNetworkProvider.swift in Sources */,
 				5D7D243725136254001B9A4F /* XRPCurrentLedgerInfo.swift in Sources */,
 				5DD831BC244DF5BD00F80CEA /* AddressService.swift in Sources */,
-				5D9D749325F254E600121621 /* Card+.swift in Sources */,
 				5D304399239A8C9C0066B8D9 /* BitcoinAddressService.swift in Sources */,
 				5D557CB723ACCB48009B32AF /* BitcoinMainProvider.swift in Sources */,
 				5D26CEE7243CA4E200994CC0 /* DucatusAddressService.swift in Sources */,
@@ -1293,7 +1289,7 @@
 				5DDD832E25BF0EC500166EA9 /* SerializerDefinitions.swift in Sources */,
 				5DDD82D825BF0DF800166EA9 /* TezosAddress.swift in Sources */,
 				5D16096925921DA900738AE6 /* AddressService.swift in Sources */,
-				5DDD82B925BF0D6700166EA9 /* CardManager+.swift in Sources */,
+				5DDD82B925BF0D6700166EA9 /* TangemSdk+TransactionSigner.swift in Sources */,
 				5DDD82D525BF0DB100166EA9 /* BlockcypherTarget.swift in Sources */,
 				5DDD833D25BF0EC900166EA9 /* XRPKeypair.swift in Sources */,
 				5DDD830B25BF0E3400166EA9 /* TezosNetworkService.swift in Sources */,

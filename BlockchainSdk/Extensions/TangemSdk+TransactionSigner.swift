@@ -12,9 +12,9 @@ import Combine
 
 @available(iOS 13.0, *)
 extension TangemSdk: TransactionSigner {
-    public func sign(hashes: [Data], cardId: String) -> AnyPublisher<SignResponse, Error> {
+    public func sign(hashes: [Data], cardId: String, walletPublicKey: Data) -> AnyPublisher<SignResponse, Error> {
         let future = Future<SignResponse, Error> {[unowned self] promise in
-            self.sign(hashes: hashes, cardId: cardId) { signResult in
+            self.sign(hashes: hashes, cardId: cardId, walletPublicKey: walletPublicKey) { signResult in
                 switch signResult {
                 case .success(let response):
                     promise(.success(response))

@@ -48,7 +48,7 @@ PODS:
   - SwiftDate (6.0.3)
   - SwiftProtobuf (1.14.0)
   - SwiftyJSON (5.0.0)
-  - TangemSdk (2.0.2)
+  - TangemSdk (2.4.2)
   - web3swift (2.2.1):
     - BigInt
     - CryptoSwift
@@ -72,7 +72,7 @@ DEPENDENCIES:
   - stellar-ios-mac-sdk
   - SwiftCBOR
   - SwiftyJSON
-  - "TangemSdk (from `git@bitbucket.org:tangem/card-sdk-swift.git`, tag `build-79`)"
+  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `build-109`)
   - web3swift (from `https://bitbucket.org/tangem/web3swift.git`, tag `2.2.4`)
 
 SPEC REPOS:
@@ -105,8 +105,8 @@ EXTERNAL SOURCES:
     :git: https://bitbucket.org/tangem/hdwallet.git
     :tag: 0.3.12
   TangemSdk:
-    :git: "git@bitbucket.org:tangem/card-sdk-swift.git"
-    :tag: build-79
+    :git: https://github.com/Tangem/tangem-sdk-ios.git
+    :tag: build-109
   web3swift:
     :git: https://bitbucket.org/tangem/web3swift.git
     :tag: 2.2.4
@@ -122,8 +122,8 @@ CHECKOUT OPTIONS:
     :git: https://bitbucket.org/tangem/hdwallet.git
     :tag: 0.3.12
   TangemSdk:
-    :git: "git@bitbucket.org:tangem/card-sdk-swift.git"
-    :tag: build-79
+    :git: https://github.com/Tangem/tangem-sdk-ios.git
+    :tag: build-109
   web3swift:
     :git: https://bitbucket.org/tangem/web3swift.git
     :tag: 2.2.4
@@ -147,10 +147,10 @@ SPEC CHECKSUMS:
   SwiftDate: 8d4f14bf1ef68e95094511504856547bf9e3e1a6
   SwiftProtobuf: ed465ed18402f998fd117f631da27e0168e6b59c
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
-  TangemSdk: 2c0260f85c41711af449f8901f698c12b6e45673
+  TangemSdk: 511458380dddc9b71e29d064cfb35c44806e5d5e
   web3swift: 21ab60f3c80aea2366ebf016f377e5cb654909bf
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: c2dab1930cd8296b4b94bf707dc528adcba6b554
+PODFILE CHECKSUM: af00b5269c0d5a0d1dea8b400412e7b975baa1fa
 
 COCOAPODS: 1.10.1

@@ -9,9 +9,10 @@
 import Foundation
 
 public struct Wallet {
+    public let cardId: String
     public let blockchain: Blockchain
     public let addresses: [Address]
-    
+    public let publicKey: Data
     public var amounts: [Amount.AmountType:Amount] = [:]
     public var transactions: [Transaction] = []
     public var state: WalletState = .created
@@ -36,9 +37,11 @@ public struct Wallet {
         return transactions.filter { $0.status == .unconfirmed && $0.amount.type == amountType }.count > 0
     }
     
-    internal init(blockchain: Blockchain, addresses: [Address]) {
+    internal init(blockchain: Blockchain, addresses: [Address], cardId: String, publicKey: Data) {
         self.blockchain = blockchain
         self.addresses = addresses
+        self.publicKey = publicKey
+        self.cardId = cardId
     }
     
     /// Explore URL for specific address

@@ -41,8 +41,6 @@ public enum WalletError: Error, LocalizedError {
 }
 
 public class WalletManager {
-    public let cardId: String
-    
     internal(set) public var cardTokens: [Token]
     @Published public var wallet: Wallet
     
@@ -51,8 +49,7 @@ public class WalletManager {
     var cancellable: Cancellable? = nil
 
     
-    init(cardId: String, wallet: Wallet, cardTokens: [Token] = []) {
-        self.cardId = cardId
+    init(wallet: Wallet, cardTokens: [Token] = []) {
         self.wallet = wallet
         self.cardTokens = cardTokens
     }
@@ -175,7 +172,7 @@ public protocol TransactionSender {
 }
 
 public protocol TransactionSigner {
-    func sign(hashes: [Data], cardId: String) -> AnyPublisher<SignResponse, Error>
+    func sign(hashes: [Data], cardId: String, walletPublicKey: Data) -> AnyPublisher<SignResponse, Error>
 }
 
 public protocol SignatureCountValidator {

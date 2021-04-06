@@ -82,7 +82,7 @@ extension XRPWalletManager: TransactionSender {
                 return buldResponse
         }
         .flatMap{[unowned self] buildResponse -> AnyPublisher<(XRPTransaction, SignResponse),Error> in
-            return signer.sign(hashes: [buildResponse.1], cardId: self.cardId).map {
+            return signer.sign(hashes: [buildResponse.1], cardId: wallet.cardId, walletPublicKey: wallet.publicKey).map {
                 return (buildResponse.0, $0)
             }.eraseToAnyPublisher()
         }
