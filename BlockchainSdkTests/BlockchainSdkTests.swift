@@ -105,9 +105,10 @@ class BlockchainSdkTests: XCTestCase {
     }
     
     func testTxValidation() {
-        let vm: WalletManager = BitcoinWalletManager(cardId: "",
-                                      wallet: Wallet(blockchain: .bitcoin(testnet: false),
-                                                     addresses: [PlainAddress(value: "adfjbajhfaldfh")]))
+        let vm: WalletManager = BitcoinWalletManager(wallet: Wallet(blockchain: .bitcoin(testnet: false),
+                                                                    addresses: [PlainAddress(value: "adfjbajhfaldfh")],
+                                                                    cardId: "",
+                                                                    publicKey: Data()))
         
         vm.wallet.add(coinValue: 10)
         var errors = vm.validateTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 3),
