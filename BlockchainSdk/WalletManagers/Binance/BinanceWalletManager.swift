@@ -73,7 +73,7 @@ extension BinanceWalletManager: TransactionSender {
         }
         
         let hash = msg.encodeForSignature()
-        return signer.sign(hashes: [hash], cardId: cardId)
+        return signer.sign(hashes: [hash], cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
             .tryMap {[unowned self] response -> (Message, SignResponse) in
                 guard let tx = self.txBuilder.buildForSend(signature: response.signature, hash: hash) else {
                     throw WalletError.failedToBuildTx

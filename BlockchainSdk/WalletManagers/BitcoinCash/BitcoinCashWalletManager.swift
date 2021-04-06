@@ -50,7 +50,7 @@ extension BitcoinCashWalletManager: TransactionSender {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
-        return signer.sign(hashes: hashes, cardId: cardId)
+        return signer.sign(hashes: hashes, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
             .tryMap {[unowned self] response -> (String, SignResponse) in
                 guard let tx = self.txBuilder.buildForSend(transaction: transaction, signature: response.signature) else {
                     throw WalletError.failedToBuildTx

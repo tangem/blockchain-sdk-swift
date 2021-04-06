@@ -70,7 +70,7 @@ extension CardanoWalletManager: TransactionSender {
         let txBuildResult = txBuilder.buildForSign(transaction: transaction, walletAmount: walletAmount, isEstimated: false)
         switch txBuildResult {
         case .success(let info):
-            return signer.sign(hashes: [info.hash], cardId: cardId)
+            return signer.sign(hashes: [info.hash], cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
                 .tryMap {[unowned self] response -> (tx: Data, hash: String, signResponse: SignResponse) in
                     let txBuildForSendResult = self.txBuilder.buildForSend(bodyItem: info.bodyItem, signature: response.signature)
                     switch txBuildForSendResult {

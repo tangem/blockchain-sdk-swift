@@ -25,6 +25,8 @@ public class TezosAddressService: AddressService {
             key = walletPublicKey
         case .secp256k1:
             key = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
+        case .secp256r1:
+            fatalError("Not implemented")
         }
         let publicKeyHash = Sodium().genericHash.hash(message: key.bytes, outputLength: 20)!
         let prefix = TezosPrefix.addressPrefix(for: curve)

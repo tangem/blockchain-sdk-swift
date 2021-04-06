@@ -115,7 +115,7 @@ extension EthereumWalletManager: TransactionSender {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
-        return signer.sign(hashes: [txForSign.hash], cardId: self.cardId)
+        return signer.sign(hashes: [txForSign.hash], cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
             .tryMap {[unowned self] signResponse throws -> (String, SignResponse) in
                 guard let tx = self.txBuilder.buildForSend(transaction: txForSign.transaction, hash: txForSign.hash, signature: signResponse.signature) else {
                     throw WalletError.failedToBuildTx

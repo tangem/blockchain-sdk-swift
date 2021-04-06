@@ -84,7 +84,7 @@ extension StellarWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
         return txBuilder.buildForSign(transaction: transaction)
             .flatMap { [unowned self] buildForSignResponse in
-                signer.sign(hashes: [buildForSignResponse.hash], cardId: self.cardId)
+                signer.sign(hashes: [buildForSignResponse.hash], cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
                     .map { return ($0, buildForSignResponse) }.eraseToAnyPublisher()
         }
         .tryMap {[unowned self] result throws -> (String,SignResponse) in
