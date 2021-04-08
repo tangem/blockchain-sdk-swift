@@ -112,7 +112,13 @@ public class WalletManager {
     }
     
     public func addToken(_ token: Token) -> AnyPublisher<Amount, Error> {
-        return Fail(error: BlockchainSdkError.notImplemented).eraseToAnyPublisher()
+        if !cardTokens.contains(token) {
+            cardTokens.append(token)
+        }
+        
+        return Just(Amount(with: token, value: 0))
+            .setFailureType(to: Error.self)
+            .eraseToAnyPublisher()
     }
     
     func validateTransaction(amount: Amount, fee: Amount?) -> TransactionErrors {
