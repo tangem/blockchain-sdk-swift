@@ -173,12 +173,13 @@ public class WalletManager {
 
 public protocol TransactionSender {
     var allowsFeeSelection: Bool {get}
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error>
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error>
     func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error>
 }
 
 public protocol TransactionSigner {
-    func sign(hashes: [Data], cardId: String, walletPublicKey: Data) -> AnyPublisher<SignResponse, Error>
+    func sign(hashes: [Data], cardId: String, walletPublicKey: Data) -> AnyPublisher<[Data], Error>
+    func sign(hash: Data, cardId: String, walletPublicKey: Data) -> AnyPublisher<Data, Error>
 }
 
 public protocol SignatureCountValidator {
