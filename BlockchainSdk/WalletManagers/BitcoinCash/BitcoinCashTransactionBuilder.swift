@@ -58,7 +58,7 @@ class BitcoinCashTransactionBuilder {
         return hashes
     }
     
-    public func buildForSend(transaction: Transaction, signature: Data) -> Data? {
+    public func buildForSend(transaction: Transaction, signatures: [Data]) -> Data? {
         guard let unspentOutputs = unspentOutputs else {
                 return nil
         }
@@ -71,9 +71,8 @@ class BitcoinCashTransactionBuilder {
             return nil
         }
         
-        guard let outputScripts = buildSignedScripts(signature: signature,
-                                                     publicKey: walletPublicKey,
-                                                     outputsCount: unspentOutputs.count),
+        guard let outputScripts = buildSignedScripts(signatures: signatures,
+                                                     publicKey: walletPublicKey),
             let unspents = buildUnspents(with: outputScripts) else {
                 return nil
         }
@@ -322,18 +321,11 @@ class BitcoinCashTransactionBuilder {
         return txToSign
     }
     
-    private func buildSignedScripts(signature: Data, publicKey: Data, outputsCount: Int) -> [Data]? {
+    private func buildSignedScripts(signatures: [Data], publicKey: Data) -> [Data]? {
         var scripts: [Data] = .init()
-        scripts.reserveCapacity(outputsCount)
-        for index in 0..<outputsCount {
-            let offsetMin = index*64
-            let offsetMax = offsetMin+64
-            guard offsetMax <= signature.count else {
-                return nil
-            }
-            
-            let sig = signature[offsetMin..<offsetMax]
-            guard let signDer = Secp256k1Utils.serializeToDer(secp256k1Signature: sig) else {
+        scripts.reserveCapacity(signatures.count)
+        for signature in signatures {
+            guard let signDer = Secp256k1Utils.serializeToDer(secp256k1Signature: signature) else {
                 return nil
             }
             
@@ -345,6 +337,7 @@ class BitcoinCashTransactionBuilder {
             script.append(contentsOf: publicKey)
             scripts.append(script)
         }
+
         return scripts
     }
 }

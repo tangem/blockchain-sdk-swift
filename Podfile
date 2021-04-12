@@ -16,12 +16,12 @@ target 'BlockchainSdk' do
   #pod 'web3swift', :path => '../web3swift'
   pod 'web3swift', :git => 'https://github.com/lazutkin-andrey/web3swift.git', :tag => '2.2.4'
   pod 'AnyCodable-FlightSchool'
-  pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'build-109'
+  pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'build-110'
   pod 'stellar-ios-mac-sdk'
   pod 'BitcoinCore.swift', :git => 'https://github.com/lazutkin-andrey/bitcoincore.git', :tag => '0.0.13'
   #pod 'BitcoinCore.swift', :path => '../bitcoincore'
 end
 
 target 'BlockchainSdkTests' do
-  pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'build-109'
+  pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'build-110'
 end

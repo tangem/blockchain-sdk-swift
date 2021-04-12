@@ -45,7 +45,7 @@ extension TezosWalletManager: TransactionSender {
         false
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         guard let contents = txBuilder.buildContents(transaction: transaction) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
@@ -59,30 +59,29 @@ extension TezosWalletManager: TransactionSender {
                         return (header, forgeResult)
                 }
         }
-            .flatMap {[unowned self] (header, forgedContents) -> AnyPublisher<(header: TezosHeader, forgedContents: String, signature: Data, signResponse: SignResponse), Error> in
+            .flatMap {[unowned self] (header, forgedContents) -> AnyPublisher<(header: TezosHeader, forgedContents: String, signature: Data), Error> in
             guard let txToSign: Data = self.txBuilder.buildToSign(forgedContents: forgedContents) else {
                 return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
             }
             
-            return signer.sign(hashes: [txToSign], cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
-                .tryMap {[unowned self] signResponse -> (TezosHeader, String, Data, SignResponse) in
-                    return (header, forgedContents, try self.txBuilder.normalizeSignatureIfNeeded(signResponse.signature, hash: txToSign), signResponse)
+            return signer.sign(hash: txToSign, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
+                .tryMap {[unowned self] signature -> (TezosHeader, String, Data) in
+                    return (header, forgedContents, try self.txBuilder.normalizeSignatureIfNeeded(signature, hash: txToSign))
                 }
                 .eraseToAnyPublisher()
         }
-        .flatMap {[unowned self] (header, forgedContents, normalizedSignature, signResponse) in
+        .flatMap {[unowned self] (header, forgedContents, normalizedSignature) in
             self.networkService
                 .checkTransaction(protocol: header.protocol, hash: header.hash, contents: contents, signature: self.encodeSignature(normalizedSignature))
-                .map { _ in (forgedContents, normalizedSignature, signResponse) }
+                .map { _ in (forgedContents, normalizedSignature) }
                 .eraseToAnyPublisher()
         }
-        .flatMap {[unowned self] (forgedContents, signature, signResponse) -> AnyPublisher<SignResponse, Error> in
+        .flatMap {[unowned self] (forgedContents, signature) -> AnyPublisher<Void, Error> in
             let txToSend = self.txBuilder.buildToSend(signature: signature, forgedContents: forgedContents)
             return self.networkService
                 .sendTransaction(txToSend)
                 .map{[unowned self] response in
                     self.wallet.add(transaction: transaction)
-                    return signResponse
             }
             .eraseToAnyPublisher()
         }

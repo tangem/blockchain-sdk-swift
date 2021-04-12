@@ -81,23 +81,22 @@ class StellarWalletManager: WalletManager {
 extension StellarWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { false }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         return txBuilder.buildForSign(transaction: transaction)
             .flatMap { [unowned self] buildForSignResponse in
-                signer.sign(hashes: [buildForSignResponse.hash], cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
+                signer.sign(hash: buildForSignResponse.hash, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
                     .map { return ($0, buildForSignResponse) }.eraseToAnyPublisher()
         }
-        .tryMap {[unowned self] result throws -> (String,SignResponse) in
-            guard let tx = self.txBuilder.buildForSend(signature: result.0.signature, transaction: result.1.transaction) else {
+        .tryMap {[unowned self] result throws -> String in
+            guard let tx = self.txBuilder.buildForSend(signature: result.0, transaction: result.1.transaction) else {
                 throw WalletError.failedToBuildTx
             }
             
-            return (tx, result.0)
+            return tx
         }
-        .flatMap {[unowned self] values -> AnyPublisher<SignResponse, Error> in
-            self.networkService.send(transaction: values.0).map {[unowned self] sendResponse in
+        .flatMap {[unowned self] tx -> AnyPublisher<Void, Error> in
+            self.networkService.send(transaction: tx).map {[unowned self] sendResponse in
                  self.wallet.add(transaction: transaction)
-                return values.1
             } .eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
