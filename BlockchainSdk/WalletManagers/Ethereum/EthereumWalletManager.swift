@@ -124,7 +124,9 @@ extension EthereumWalletManager: TransactionSender {
         }
         .flatMap {[unowned self] buildResponse -> AnyPublisher<SignResponse, Error> in
             self.networkService.send(transaction: buildResponse.0).map {[unowned self] sendResponse in
-                self.wallet.add(transaction: transaction)
+                var tx = transaction
+                tx.hash = sendResponse
+                self.wallet.add(transaction: tx)
                 return buildResponse.1
             }.eraseToAnyPublisher()
         }

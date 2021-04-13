@@ -11,7 +11,7 @@ import BigInt
 import web3swift
 import TangemSdk
 
-class EthereumTransactionBuilder {    
+class EthereumTransactionBuilder {
     private let walletPublicKey: Data
     private let network: EthereumNetwork
     init(walletPublicKey: Data, network: EthereumNetwork) {
@@ -31,7 +31,8 @@ class EthereumTransactionBuilder {
                 return nil
         }
         
-        guard let data = getData(for: transaction.amount, targetAddress: transaction.destinationAddress) else {
+        let params = transaction.params as? EthereumTransactionParams
+        guard let data = params?.data ?? getData(for: transaction.amount, targetAddress: transaction.destinationAddress) else {
             return nil
         }
         
@@ -43,7 +44,7 @@ class EthereumTransactionBuilder {
                                                     fee: feeValue,
                                                     targetAddress: targetAddr,
                                                     nonce: nonceValue,
-                                                    gasLimit: gasLimit,
+                                                    gasLimit: params?.gasLimit ?? gasLimit,
                                                     data: data,
                                                     ignoreCheckSum: transaction.amount.type != .coin) else {
                                                         return nil
