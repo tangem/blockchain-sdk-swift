@@ -56,6 +56,7 @@
 		5D557CB023AA888D009B32AF /* Uint64+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D557CAF23AA888D009B32AF /* Uint64+.swift */; };
 		5D557CB523ACCAD2009B32AF /* BlockcypherNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D557CB423ACCAD2009B32AF /* BlockcypherNetworkProvider.swift */; };
 		5D557CB723ACCB48009B32AF /* BitcoinMainProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D557CB623ACCB48009B32AF /* BitcoinMainProvider.swift */; };
+		5D5CE0D52625C8EC009023EC /* XrpNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5CE0D42625C8EC009023EC /* XrpNetworkProvider.swift */; };
 		5D5E058724FE72D900F04DE1 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5D5E058924FE72D900F04DE1 /* Localizable.strings */; };
 		5D5E058C24FE749D00F04DE1 /* Bundle+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E058B24FE749D00F04DE1 /* Bundle+.swift */; };
 		5D65D5C9260B261F00F84BED /* TezosPrefix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D65D5C8260B261F00F84BED /* TezosPrefix.swift */; };
@@ -333,6 +334,7 @@
 		5D557CAF23AA888D009B32AF /* Uint64+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Uint64+.swift"; sourceTree = "<group>"; };
 		5D557CB423ACCAD2009B32AF /* BlockcypherNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockcypherNetworkProvider.swift; sourceTree = "<group>"; };
 		5D557CB623ACCB48009B32AF /* BitcoinMainProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinMainProvider.swift; sourceTree = "<group>"; };
+		5D5CE0D42625C8EC009023EC /* XrpNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XrpNetworkProvider.swift; sourceTree = "<group>"; };
 		5D5E058824FE72D900F04DE1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5D5E058B24FE749D00F04DE1 /* Bundle+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+.swift"; sourceTree = "<group>"; };
 		5D65D5C8260B261F00F84BED /* TezosPrefix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TezosPrefix.swift; sourceTree = "<group>"; };
@@ -462,6 +464,7 @@
 			children = (
 				5D01BCE1243F7F7E0048D1BA /* XrpTarget.swift */,
 				5DC7DD6724408266008F83F2 /* XrpResponse.swift */,
+				5D5CE0D42625C8EC009023EC /* XrpNetworkProvider.swift */,
 			);
 			path = XRP;
 			sourceTree = "<group>";
@@ -1189,6 +1192,7 @@
 				5D7D243525136254001B9A4F /* XRPAmount.swift in Sources */,
 				5D65D5C9260B261F00F84BED /* TezosPrefix.swift in Sources */,
 				5D03D2D0253DE61B009A8A9F /* TezosAddressService.swift in Sources */,
+				5D5CE0D52625C8EC009023EC /* XrpNetworkProvider.swift in Sources */,
 				5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */,
 				5DE3BFA0239FA33800E8815D /* Bech32.swift in Sources */,
 				5DEAFA90244473460032E316 /* Transaction.swift in Sources */,
