@@ -20,18 +20,18 @@ class EthereumTransactionBuilder {
     }
     
     public func buildForSign(transaction: Transaction, nonce: Int, gasLimit: BigUInt) -> (hash: Data, transaction: EthereumTransaction)? {
-        guard nonce >= 0 else {
+        let params = transaction.params as? EthereumTransactionParams
+        let nonceValue = BigUInt(params?.nonce ?? nonce)
+        
+        guard nonceValue >= 0 else {
             return nil
         }
-        
-        let nonceValue = BigUInt(nonce)
         
         guard let feeValue = Web3.Utils.parseToBigUInt("\(transaction.fee.value)", decimals: transaction.fee.decimals),
             let amountValue = Web3.Utils.parseToBigUInt("\(transaction.amount.value)", decimals: transaction.amount.decimals) else {
                 return nil
         }
         
-        let params = transaction.params as? EthereumTransactionParams
         guard let data = params?.data ?? getData(for: transaction.amount, targetAddress: transaction.destinationAddress) else {
             return nil
         }
