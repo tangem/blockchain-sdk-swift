@@ -9,15 +9,35 @@
 import Foundation
 import Moya
 
+enum XrpUrl: String {
+    case main = "https://s1.ripple.com:51234"
+    case reserve = "https://s2.ripple.com:51234/"
+    
+    var url: URL {
+        return URL(string: rawValue)!
+    }
+}
+
 enum XrpTarget: TargetType {
-    case accountInfo(account:String)
-    case unconfirmed(account:String)
-    case submit(tx:String)
-    case fee
-    case reserve
+    case accountInfo(account:String, url: XrpUrl)
+    case unconfirmed(account:String, url: XrpUrl)
+    case submit(tx:String, url: XrpUrl)
+    case fee(url: XrpUrl)
+    case reserve(url: XrpUrl)
     
     var baseURL: URL {
-        return URL(string: "https://s1.ripple.com:51234")!
+        switch self {
+        case .accountInfo(_, let url):
+            return url.url
+        case .fee(let url):
+            return url.url
+        case .reserve(let url):
+            return url.url
+        case .submit(_, let url):
+            return url.url
+        case .unconfirmed(_, let url):
+            return url.url
+        }
     }
     
     var path: String {""}
@@ -28,7 +48,7 @@ enum XrpTarget: TargetType {
     
     var task: Task {
         switch self {
-        case .accountInfo(let account):
+        case .accountInfo(let account, _):
             let parameters: [String: Any] = [
                 "method" : "account_info",
                 "params": [
@@ -39,7 +59,7 @@ enum XrpTarget: TargetType {
                 ]
             ]
             return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
-        case .unconfirmed(let account):
+        case .unconfirmed(let account, _):
             let parameters: [String: Any] = [
                 "method" : "account_info",
                 "params": [
@@ -50,7 +70,7 @@ enum XrpTarget: TargetType {
                 ]
             ]
             return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
-        case .submit(let tx):
+        case .submit(let tx, _):
             let parameters: [String: Any] = [
                 "method" : "submit",
                 "params": [

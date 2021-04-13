@@ -160,7 +160,8 @@ public class WalletManagerFactory {
         case .xrp(let curve):
             return XRPWalletManager(wallet: wallet).then {
                 $0.txBuilder = XRPTransactionBuilder(walletPublicKey: walletPublicKey, curve: curve)
-                $0.networkService = XRPNetworkService()
+                $0.networkService = XRPNetworkService(providers: [XRPNetworkProvider(baseUrl: .main),
+                                                                  XRPNetworkProvider(baseUrl: .reserve)])
             }
         case .tezos(let curve):
             return TezosWalletManager(wallet: wallet).then {
