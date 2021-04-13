@@ -62,7 +62,7 @@ class CardanoWalletManager: WalletManager {
 extension CardanoWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { false }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         guard let walletAmount = wallet.amounts[.coin]?.value else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
@@ -70,22 +70,21 @@ extension CardanoWalletManager: TransactionSender {
         let txBuildResult = txBuilder.buildForSign(transaction: transaction, walletAmount: walletAmount, isEstimated: false)
         switch txBuildResult {
         case .success(let info):
-            return signer.sign(hashes: [info.hash], cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
-                .tryMap {[unowned self] response -> (tx: Data, hash: String, signResponse: SignResponse) in
-                    let txBuildForSendResult = self.txBuilder.buildForSend(bodyItem: info.bodyItem, signature: response.signature)
+            return signer.sign(hash: info.hash, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
+                .tryMap {[unowned self] signature -> (tx: Data, hash: String) in
+                    let txBuildForSendResult = self.txBuilder.buildForSend(bodyItem: info.bodyItem, signature: signature)
                     switch txBuildForSendResult {
                     case .failure(let error):
                         throw error
                     case .success(let tx):
-                        return (tx, info.hash.asHexString(), response)
+                        return (tx, info.hash.asHexString())
                     }
             }
-            .flatMap {[unowned self] builderResponse -> AnyPublisher<SignResponse, Error> in
+            .flatMap {[unowned self] builderResponse -> AnyPublisher<Void, Error> in
                 self.networkService.send(transaction: builderResponse.tx).map {[unowned self] response in
                     var sendedTx = transaction
                     sendedTx.hash = builderResponse.hash
                     self.wallet.add(transaction: sendedTx)
-                    return builderResponse.signResponse
                 }.eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()

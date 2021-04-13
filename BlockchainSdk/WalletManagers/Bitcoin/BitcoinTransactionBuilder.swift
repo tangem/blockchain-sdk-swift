@@ -72,8 +72,8 @@ class BitcoinTransactionBuilder {
 		}
 	}
 	
-	public func buildForSend(transaction: Transaction, signature: Data, hashesCount: Int) -> Data? {
-        guard let signatures = splitSignatureAndConvertToDER(signature, hashesCount: hashesCount),
+	public func buildForSend(transaction: Transaction, signatures: [Data]) -> Data? {
+        guard let signatures = convertToDER(signatures),
               let feeRate = feeRates[transaction.fee.value] else {
 			return nil
 		}
@@ -91,23 +91,17 @@ class BitcoinTransactionBuilder {
 		}
 	}
 	
-	private func splitSignatureAndConvertToDER(_ signature: Data, hashesCount: Int) -> [Data]? {
-		var derSigs = [Data]()
-		for index in 0..<hashesCount {
-			let offsetMin = index*64
-			let offsetMax = offsetMin+64
-			guard offsetMax <= signature.count else {
-				return nil
-			}
-			
-			let sig = signature[offsetMin..<offsetMax]
-			guard let signDer = Secp256k1Utils.serializeToDer(secp256k1Signature: sig) else {
-				return nil
-			}
-			
-			derSigs.append(signDer)
-		}
-		
+	private func convertToDER(_ signatures: [Data]) -> [Data]? {
+        var derSigs = [Data]()
+        
+        for signature in signatures {
+            guard let signDer = Secp256k1Utils.serializeToDer(secp256k1Signature: signature) else {
+                return nil
+            }
+            
+            derSigs.append(signDer)
+        }
+    
 		return derSigs
 	}
 }

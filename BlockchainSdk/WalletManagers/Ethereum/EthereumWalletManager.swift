@@ -108,26 +108,25 @@ class EthereumWalletManager: WalletManager {
 extension EthereumWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         guard let txForSign = txBuilder.buildForSign(transaction: transaction,
                                                      nonce: txCount,
                                                      gasLimit: gasLimit ?? getFixedGasLimit(for: transaction.amount)) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
-        return signer.sign(hashes: [txForSign.hash], cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
-            .tryMap {[unowned self] signResponse throws -> (String, SignResponse) in
-                guard let tx = self.txBuilder.buildForSend(transaction: txForSign.transaction, hash: txForSign.hash, signature: signResponse.signature) else {
+        return signer.sign(hash: txForSign.hash, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
+            .tryMap {[unowned self] signature throws -> String in
+                guard let tx = self.txBuilder.buildForSend(transaction: txForSign.transaction, hash: txForSign.hash, signature: signature) else {
                     throw WalletError.failedToBuildTx
                 }
-                return ("0x\(tx.toHexString())", signResponse)
+                return "0x\(tx.toHexString())"
         }
-        .flatMap {[unowned self] buildResponse -> AnyPublisher<SignResponse, Error> in
-            self.networkService.send(transaction: buildResponse.0).map {[unowned self] sendResponse in
+        .flatMap {[unowned self] tx -> AnyPublisher<Void, Error> in
+            self.networkService.send(transaction: tx).map {[unowned self] sendResponse in
                 var tx = transaction
                 tx.hash = sendResponse
                 self.wallet.add(transaction: tx)
-                return buildResponse.1
             }.eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
