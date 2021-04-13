@@ -104,6 +104,19 @@ class BlockchainSdkTests: XCTestCase {
         XCTAssertFalse(ethAddressService.validate("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b9adb"))
     }
     
+    func testRskChecksum() {
+        let rskAddressService = RskAddressService()
+        let chesksummed = rskAddressService.makeAddress(from: Data(hex:"04BAEC8CD3BA50FDFE1E8CF2B04B58E17041245341CD1F1C6B3A496B48956DB4C896A6848BCF8FCFC33B88341507DD25E5F4609386C68086C74CF472B86E5C3820"))
+        
+        XCTAssertEqual(chesksummed, "0xc63763572D45171E4C25cA0818B44e5DD7f5c15b")
+        
+        let correctAddress = "0xc63763572d45171e4c25ca0818b44e5dd7f5c15b"
+        let correctAddressWithChecksum = "0xc63763572D45171E4C25cA0818B44e5DD7f5c15b"
+        
+        XCTAssertTrue(rskAddressService.validate(correctAddress))
+        XCTAssertTrue(rskAddressService.validate(correctAddressWithChecksum))
+    }
+    
     func testTxValidation() {
         let vm: WalletManager = BitcoinWalletManager(wallet: Wallet(blockchain: .bitcoin(testnet: false),
                                                                     addresses: [PlainAddress(value: "adfjbajhfaldfh")],
