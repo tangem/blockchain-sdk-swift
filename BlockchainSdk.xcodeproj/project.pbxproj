@@ -61,6 +61,8 @@
 		5D65D5C9260B261F00F84BED /* TezosPrefix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D65D5C8260B261F00F84BED /* TezosPrefix.swift */; };
 		5D65D5CE260B2FF400F84BED /* TezosPrefix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D65D5C8260B261F00F84BED /* TezosPrefix.swift */; };
 		5D6DEAB6243CC09A00510EC8 /* EthereumTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6DEAB5243CC09A00510EC8 /* EthereumTransactionBuilder.swift */; };
+		5D740B802625B42500DE9636 /* RskAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D740B7F2625B42500DE9636 /* RskAddressService.swift */; };
+		5D740B832625B6E400DE9636 /* RskAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D740B7F2625B42500DE9636 /* RskAddressService.swift */; };
 		5D7D242725136254001B9A4F /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 5D7D240925136254001B9A4F /* LICENSE */; };
 		5D7D242825136254001B9A4F /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5D7D240A25136254001B9A4F /* README.md */; };
 		5D7D242925136254001B9A4F /* XRPLedger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7D240E25136254001B9A4F /* XRPLedger.swift */; };
@@ -335,6 +337,7 @@
 		5D5E058B24FE749D00F04DE1 /* Bundle+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+.swift"; sourceTree = "<group>"; };
 		5D65D5C8260B261F00F84BED /* TezosPrefix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TezosPrefix.swift; sourceTree = "<group>"; };
 		5D6DEAB5243CC09A00510EC8 /* EthereumTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTransactionBuilder.swift; sourceTree = "<group>"; };
+		5D740B7F2625B42500DE9636 /* RskAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RskAddressService.swift; sourceTree = "<group>"; };
 		5D7D240925136254001B9A4F /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		5D7D240A25136254001B9A4F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5D7D240E25136254001B9A4F /* XRPLedger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XRPLedger.swift; sourceTree = "<group>"; };
@@ -508,6 +511,7 @@
 		5D14E4892397B87000C15FC8 /* WalletManagers */ = {
 			isa = PBXGroup;
 			children = (
+				5D740B7A2625B40800DE9636 /* Rsk */,
 				5DF91517253DB7A200B927DD /* Tezos */,
 				5DC7DD5C243F8375008F83F2 /* XRP */,
 				5DF8D5B3243DB7EE00186BF0 /* Cardano */,
@@ -682,6 +686,14 @@
 				5D5E058924FE72D900F04DE1 /* Localizable.strings */,
 			);
 			path = Localizations;
+			sourceTree = "<group>";
+		};
+		5D740B7A2625B40800DE9636 /* Rsk */ = {
+			isa = PBXGroup;
+			children = (
+				5D740B7F2625B42500DE9636 /* RskAddressService.swift */,
+			);
+			path = Rsk;
 			sourceTree = "<group>";
 		};
 		5D7D240825136254001B9A4F /* XRPKit */ = {
@@ -1183,6 +1195,7 @@
 				5D977BB623FAEB4500575BE4 /* DucatusNetworkService.swift in Sources */,
 				5D845511243DE9CD0072155E /* CardanoTransactionBuilder.swift in Sources */,
 				5DED72C423A1315F006D79AE /* StellarWalletManager.swift in Sources */,
+				5D740B802625B42500DE9636 /* RskAddressService.swift in Sources */,
 				5D8653FE23A8E486000DE52D /* StellarSdk+.swift in Sources */,
 				5D26CEF9243CBF2700994CC0 /* BitcoinNetworkProvider.swift in Sources */,
 				5D4B33D523F7DFB400C93A84 /* BinanceTransactionBuilder.swift in Sources */,
@@ -1333,6 +1346,7 @@
 				5DDD82F925BF0E1D00166EA9 /* DucatusAddressService.swift in Sources */,
 				5DDD829325BF0CDC00166EA9 /* BitcoinAddressService.swift in Sources */,
 				5DDD82E925BF0E1100166EA9 /* LitecoinWalletManager.swift in Sources */,
+				5D740B832625B6E400DE9636 /* RskAddressService.swift in Sources */,
 				5DDD831225BF0E7800166EA9 /* InfuraTarget.swift in Sources */,
 				5DDD82C625BF0D7B00166EA9 /* ThenProcessable.swift in Sources */,
 				5DDD82D325BF0DB100166EA9 /* BlockcypherResponse.swift in Sources */,

@@ -242,8 +242,10 @@ public enum Blockchain {
             return BitcoinLegacyAddressService(networkParams: LitecoinNetworkParams())
         case .stellar:
             return StellarAddressService()
-        case .ethereum, .rsk:
+        case .ethereum:
             return EthereumAddressService()
+        case .rsk:
+            return RskAddressService()
         case .bitcoinCash:
             return BitcoinCashAddressService()
         case .binance(let testnet):
