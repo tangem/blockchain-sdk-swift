@@ -98,7 +98,6 @@ class EthereumTransactionBuilder {
 
 extension EthereumTransaction {
     func encodeForSend(chainID: BigUInt? = nil) -> Data? {
-        
         let encodeV = chainID == nil ? self.v :
             self.v - 27 + chainID! * 2 + 35
         
