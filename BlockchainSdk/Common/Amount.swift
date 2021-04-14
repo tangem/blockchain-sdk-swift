@@ -100,6 +100,12 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
     
 }
 
+public extension Amount {
+    static func zeroCoin(for blockchain: Blockchain, address: String) -> Amount {
+        .init(with: blockchain, address: address, type: .coin, value: 0)
+    }
+}
+
 extension Amount.AmountType: Equatable, Hashable {
     public func hash(into hasher: inout Hasher) {
         switch self {

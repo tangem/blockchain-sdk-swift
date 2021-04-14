@@ -18,6 +18,7 @@ public enum ETHError: String, Error, LocalizedError {
     case failedToParseBalance = "eth_balance_parse_error"
     case failedToParseTokenBalance = "eth_token_balance_parse_error"
     case failedToParseGasLimit
+    case notValidEthereumValue
     case unsupportedFeature
     
     public var errorDescription: String? {
@@ -28,6 +29,11 @@ public enum ETHError: String, Error, LocalizedError {
             return rawValue.localized
         }
     }
+}
+
+public protocol EthereumGasLoader: class {
+    func getGasPrice() -> AnyPublisher<BigUInt, Error>
+    func getGasLimit(amount: Amount, destination: String) -> AnyPublisher<BigUInt, Never>
 }
 
 class EthereumWalletManager: WalletManager {
@@ -124,15 +130,16 @@ extension EthereumWalletManager: TransactionSender {
         }
         .flatMap {[unowned self] tx -> AnyPublisher<Void, Error> in
             self.networkService.send(transaction: tx).map {[unowned self] sendResponse in
-                self.wallet.add(transaction: transaction)
+                var tx = transaction
+                tx.hash = sendResponse
+                self.wallet.add(transaction: tx)
             }.eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount],Error> {
-        return networkService
-            .getGasPrice()
+        getGasPrice()
             .combineLatest(getGasLimit(amount: amount, destination: destination).setFailureType(to: Error.self))
             .tryMap { [unowned self] gasPrice, gasLimit throws -> [Amount] in
                 self.gasLimit = gasLimit
@@ -161,7 +168,15 @@ extension EthereumWalletManager: TransactionSender {
         .eraseToAnyPublisher()
     }
     
-    private func getGasLimit(amount: Amount, destination: String) -> AnyPublisher<BigUInt, Never> {
+    
+}
+
+extension EthereumWalletManager: EthereumGasLoader {
+    func getGasPrice() -> AnyPublisher<BigUInt, Error> {
+        networkService.getGasPrice()
+    }
+    
+    func getGasLimit(amount: Amount, destination: String) -> AnyPublisher<BigUInt, Never> {
         var to = destination
         var data: String? = nil
         

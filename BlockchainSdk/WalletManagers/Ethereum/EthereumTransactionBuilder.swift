@@ -11,7 +11,7 @@ import BigInt
 import web3swift
 import TangemSdk
 
-class EthereumTransactionBuilder {    
+class EthereumTransactionBuilder {
     private let walletPublicKey: Data
     private let network: EthereumNetwork
     init(walletPublicKey: Data, network: EthereumNetwork) {
@@ -20,18 +20,19 @@ class EthereumTransactionBuilder {
     }
     
     public func buildForSign(transaction: Transaction, nonce: Int, gasLimit: BigUInt) -> (hash: Data, transaction: EthereumTransaction)? {
-        guard nonce >= 0 else {
+        let params = transaction.params as? EthereumTransactionParams
+        let nonceValue = BigUInt(params?.nonce ?? nonce)
+        
+        guard nonceValue >= 0 else {
             return nil
         }
-        
-        let nonceValue = BigUInt(nonce)
         
         guard let feeValue = Web3.Utils.parseToBigUInt("\(transaction.fee.value)", decimals: transaction.fee.decimals),
             let amountValue = Web3.Utils.parseToBigUInt("\(transaction.amount.value)", decimals: transaction.amount.decimals) else {
                 return nil
         }
         
-        guard let data = getData(for: transaction.amount, targetAddress: transaction.destinationAddress) else {
+        guard let data = params?.data ?? getData(for: transaction.amount, targetAddress: transaction.destinationAddress) else {
             return nil
         }
         
@@ -43,7 +44,7 @@ class EthereumTransactionBuilder {
                                                     fee: feeValue,
                                                     targetAddress: targetAddr,
                                                     nonce: nonceValue,
-                                                    gasLimit: gasLimit,
+                                                    gasLimit: params?.gasLimit ?? gasLimit,
                                                     data: data,
                                                     ignoreCheckSum: transaction.amount.type != .coin) else {
                                                         return nil
@@ -97,7 +98,6 @@ class EthereumTransactionBuilder {
 
 extension EthereumTransaction {
     func encodeForSend(chainID: BigUInt? = nil) -> Data? {
-        
         let encodeV = chainID == nil ? self.v :
             self.v - 27 + chainID! * 2 + 35
         
