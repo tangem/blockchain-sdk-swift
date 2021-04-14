@@ -31,6 +31,11 @@ public enum ETHError: String, Error, LocalizedError {
     }
 }
 
+public protocol EthereumGasLoader: class {
+    func getGasPrice() -> AnyPublisher<BigUInt, Error>
+    func getGasLimit(amount: Amount, destination: String) -> AnyPublisher<BigUInt, Never>
+}
+
 class EthereumWalletManager: WalletManager {
     var txBuilder: EthereumTransactionBuilder!
     var networkService: EthereumNetworkService!
@@ -134,8 +139,7 @@ extension EthereumWalletManager: TransactionSender {
     }
     
     func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount],Error> {
-        return networkService
-            .getGasPrice()
+        getGasPrice()
             .combineLatest(getGasLimit(amount: amount, destination: destination).setFailureType(to: Error.self))
             .tryMap { [unowned self] gasPrice, gasLimit throws -> [Amount] in
                 self.gasLimit = gasLimit
@@ -164,7 +168,15 @@ extension EthereumWalletManager: TransactionSender {
         .eraseToAnyPublisher()
     }
     
-    private func getGasLimit(amount: Amount, destination: String) -> AnyPublisher<BigUInt, Never> {
+    
+}
+
+extension EthereumWalletManager: EthereumGasLoader {
+    func getGasPrice() -> AnyPublisher<BigUInt, Error> {
+        networkService.getGasPrice()
+    }
+    
+    func getGasLimit(amount: Amount, destination: String) -> AnyPublisher<BigUInt, Never> {
         var to = destination
         var data: String? = nil
         

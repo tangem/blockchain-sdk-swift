@@ -8,7 +8,7 @@
 
 import Combine
 
-extension AnyPublisher {
+public extension AnyPublisher {
     static func anyFail(error: Failure) -> AnyPublisher<Output, Failure> {
         Fail(error: error)
             .eraseToAnyPublisher()
@@ -16,6 +16,12 @@ extension AnyPublisher {
     
     static var emptyFail: AnyPublisher<Output, Error> {
         Fail(error: "")
+            .eraseToAnyPublisher()
+    }
+    
+    static func justWithError(output: Output) -> AnyPublisher<Output, Error> {
+        Just(output)
+            .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
     
