@@ -251,6 +251,7 @@
 		5DF91521253DB89800B927DD /* TezosTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF91520253DB89800B927DD /* TezosTarget.swift */; };
 		5DFF005F2521F772005203FB /* DucatusWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFF005E2521F771005203FB /* DucatusWalletManager.swift */; };
 		88095B618D07D706BB871FE6 /* Pods_BlockchainSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1CC9E29B257CD29E6143FDD /* Pods_BlockchainSdk.framework */; };
+		B03D51AB2629AD5A0029DC43 /* XrpNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5CE0D42625C8EC009023EC /* XrpNetworkProvider.swift */; };
 		B044B3A126047F5500D9864F /* RosettaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B044B3A026047F5500D9864F /* RosettaResponse.swift */; };
 		B04E8D5025F8F67F00821CBE /* RosettaNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04E8D4F25F8F67F00821CBE /* RosettaNetworkProvider.swift */; };
 		B056729B2570F9DC00A8CB59 /* BlockchainSdkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B056729A2570F9DC00A8CB59 /* BlockchainSdkError.swift */; };
@@ -1390,6 +1391,7 @@
 				5DDD82BB25BF0D6700166EA9 /* Uint64+.swift in Sources */,
 				5DDD829925BF0D0F00166EA9 /* Data+.swift in Sources */,
 				5DDD833025BF0EC500166EA9 /* URandom.swift in Sources */,
+				B03D51AB2629AD5A0029DC43 /* XrpNetworkProvider.swift in Sources */,
 				B0A1D3A02625A16F0013F0BF /* EthereumUtils.swift in Sources */,
 				5DDD82DC25BF0E0900166EA9 /* StellarSdk+.swift in Sources */,
 				5DDD830E25BF0E3400166EA9 /* TezosTransactionBuilder.swift in Sources */,
