@@ -1,0 +1,42 @@
+name: Neutral Build Tag
+
+on:
+  push:
+    branches: [ develop ]
+
+env:
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DVELOPMENT_IOS }}
+
+jobs:
+  tag:
+    name: Create tag
+    runs-on: macOS-latest
+    steps:
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+    
+    - name: Create tag
+      uses: actions/github-script@v3
+      with:
+        github-token: ${{ github.token }}
+        script: |
+          github.git.createRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: "refs/tags/${{ steps.extract_branch.outputs.branch }}-${{ github.run_number }}",
+            sha: context.sha
+          })
+    - name: Build notification
+      if: always()
+      uses: adamkdean/simple-slack-notify@master
+      with:
+        channel: '#development-ios'
+        status: ${{ job.status }}
+        success_text: 'Neutral build #${{ github.run_number }} completed successfully. Tag has been created.'
+        failure_text: 'GitHub Action #${{ github.run_number }} failed. Tag has not been not created.'
+        cancelled_text: 'GitHub Action #${{ github.run_number }} was cancelled'
+        fields: |
+          [{"title": "TAG", "value": "${{ steps.extract_branch.outputs.branch }}-${{ github.run_number }}"},
+          {"title": "Action URL", "value": "${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}"}]
