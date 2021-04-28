@@ -46,7 +46,8 @@ class EthereumTransactionBuilder {
                                                     nonce: nonceValue,
                                                     gasLimit: params?.gasLimit ?? gasLimit,
                                                     data: data,
-                                                    ignoreCheckSum: transaction.amount.type != .coin) else {
+                                                    ignoreCheckSum: transaction.amount.type != .coin,
+                                                    network: network) else {
                                                         return nil
         }
         
@@ -95,6 +96,15 @@ class EthereumTransactionBuilder {
     }
 }
 
+extension EthereumNetwork {
+    var web3SwiftNetwork: web3swift.Networks {
+        switch self {
+        case .rsk: return .RSK
+        case .testnet: return .Rinkeby
+        default: return .Mainnet
+        }
+    }
+}
 
 extension EthereumTransaction {
     func encodeForSend(chainID: BigUInt? = nil) -> Data? {
@@ -105,10 +115,10 @@ extension EthereumTransaction {
         return RLP.encode(fields)
     }
     
-    init?(amount: BigUInt, fee: BigUInt, targetAddress: String, nonce: BigUInt, gasLimit: BigUInt = 21000, data: Data, ignoreCheckSum: Bool, v: BigUInt = 0, r: BigUInt = 0, s: BigUInt = 0) {
+    init?(amount: BigUInt, fee: BigUInt, targetAddress: String, nonce: BigUInt, gasLimit: BigUInt = 21000, data: Data, ignoreCheckSum: Bool, v: BigUInt = 0, r: BigUInt = 0, s: BigUInt = 0, network: EthereumNetwork) {
         let gasPrice = fee / gasLimit
         
-        guard let ethAddress = EthereumAddress(targetAddress, type: .normal, ignoreChecksum: ignoreCheckSum) else {
+        guard let ethAddress = EthereumAddress(targetAddress, type: .normal, ignoreChecksum: ignoreCheckSum, network: network.web3SwiftNetwork) else {
             return nil
         }
         
