@@ -43,13 +43,14 @@ class CardanoWalletManager: WalletManager {
         
         wallet.transactions = wallet.transactions.map {
             var mutableTx = $0
+            let hashLowercased = mutableTx.hash?.lowercased()
             if response.recentTransactionsHashes.isEmpty {
                 if response.unspentOutputs.isEmpty ||
-                   response.unspentOutputs.first(where: { $0.transactionHash == mutableTx.hash }) != nil {
+                    response.unspentOutputs.first(where: { $0.transactionHash.lowercased() == hashLowercased }) != nil {
                     mutableTx.status = .confirmed
                 }
             } else {
-                if response.recentTransactionsHashes.first(where: { $0 == mutableTx.hash }) != nil {
+                if response.recentTransactionsHashes.first(where: { $0.lowercased() == hashLowercased }) != nil {
                     mutableTx.status = .confirmed
                 }
             }
