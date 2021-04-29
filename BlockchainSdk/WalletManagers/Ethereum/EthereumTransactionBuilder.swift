@@ -88,7 +88,7 @@ class EthereumTransactionBuilder {
         
         let amountData = Data(hex: amountString)
         
-        guard let addressData = EthereumAddress(targetAddress)?.addressData else {
+        guard let addressData = EthereumAddress(targetAddress, network: network.web3SwiftNetwork)?.addressData else {
             return nil
         }
         let prefixData = Data(hex: "a9059cbb000000000000000000000000")
