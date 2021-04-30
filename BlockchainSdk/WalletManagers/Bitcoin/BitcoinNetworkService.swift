@@ -12,7 +12,7 @@ import Combine
 import TangemSdk
 import Alamofire
 
-class BitcoinNetworkService: MultiNetworkProvider<BitcoinNetworkProvider> {
+class BitcoinNetworkService: MultiNetworkProvider<BitcoinNetworkProvider>, BitcoinNetworkProvider {
     private let isTestNet: Bool
     private var networkApi: BitcoinNetworkApi
     

@@ -46,22 +46,6 @@ class BitcoinWalletManager: WalletManager {
                 var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: false, changeScript: nil, isReplacedByFee: false)
                 var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: false, changeScript: nil, isReplacedByFee: false)
                 
-                
-                
-                
-                
-//                guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount - dummyFee,
-//                                                                                  fee: dummyFee,
-//                                                                                  sourceAddress: self.wallet.address,
-//                                                                                  destinationAddress: destination,
-//                                                                                  changeAddress: self.wallet.address)) else {
-//                    throw WalletError.failedToCalculateTxSize
-//                }
-//
-//                var minFee = (minPerByte * estimatedTxSize)
-//                var normalFee = (normalPerByte * estimatedTxSize)
-//                var maxFee = (maxPerByte * estimatedTxSize)
-//
                 if let relayFee = self.relayFee {
                     if minFee < relayFee {
                         minRate = ((relayFee/minFee).rounded(scale: 0, roundingMode: .down) as NSDecimalNumber).intValue
