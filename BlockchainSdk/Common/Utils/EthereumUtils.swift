@@ -9,25 +9,14 @@
 import Foundation
 
 public enum EthereumUtils {
-    public static func parseEthereumValue(_ string: String) throws -> Decimal {
-        let quantity = try prepareHexString(string)
-        guard let balanceData = asciiHexToData(quantity),
-              let balanceWei = dataToDecimal(balanceData) else {
-                throw ETHError.failedToParseBalance
-        }
-        
-        let balanceEth = balanceWei / Blockchain.ethereum(testnet: false).decimalValue
-        return balanceEth
-    }
-    
-    public static func parseEthereumDecimalToken(_ string: String, tokenDecimals: Int) throws -> Decimal {
+    public static func parseEthereumDecimal(_ string: String, decimalsCount: Int) throws -> Decimal {
         let value = try prepareHexString(string)
         guard let balanceData = asciiHexToData(value),
-              let balanceWei = dataToDecimalToken(balanceData) else {
+              let balanceWei = dataToDecimal(balanceData) else {
             throw ETHError.failedToParseTokenBalance
         }
         
-        let balanceEth = balanceWei.dividing(by: NSDecimalNumber(value: 1).multiplying(byPowerOf10: Int16(tokenDecimals)))
+        let balanceEth = balanceWei.dividing(by: NSDecimalNumber(value: 1).multiplying(byPowerOf10: Int16(decimalsCount)))
         return balanceEth as Decimal
     }
     
@@ -41,19 +30,7 @@ public enum EthereumUtils {
         return value
     }
     
-    private static func dataToDecimal(_ data: Data) -> Decimal? {
-        if data.count > 8 {
-            return nil
-        }
-        let temp = NSData(bytes: data.reversed(), length: data.count)
-        
-        let rawPointer = UnsafeRawPointer(temp.bytes)
-        let pointer = rawPointer.assumingMemoryBound(to: UInt64.self)
-        let value = pointer.pointee
-        return NSDecimalNumber(value: value) as Decimal
-    }
-    
-    private static func dataToDecimalToken(_ data: Data) -> NSDecimalNumber? {
+    private static func dataToDecimal(_ data: Data) -> NSDecimalNumber? {
         let reversed = data.reversed()
         var number = NSDecimalNumber(value: 0)
         
