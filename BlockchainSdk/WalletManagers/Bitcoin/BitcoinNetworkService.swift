@@ -12,63 +12,63 @@ import Combine
 import TangemSdk
 import Alamofire
 
-class BitcoinNetworkService: BitcoinNetworkProvider {
+class BitcoinNetworkService: MultiNetworkProvider<BitcoinNetworkProvider> {
     private let isTestNet: Bool
     private var networkApi: BitcoinNetworkApi
-    private let providers: [BitcoinNetworkApi: BitcoinNetworkProvider]
     
-    init(providers:[BitcoinNetworkApi: BitcoinNetworkProvider], isTestNet:Bool, defaultApi: BitcoinNetworkApi = .main) {
-        self.providers = providers
+    init(providers: [BitcoinNetworkProvider], isTestNet: Bool, defaultApi: BitcoinNetworkApi = .main) {
         self.isTestNet = isTestNet
         self.networkApi = defaultApi
+        super.init(providers: providers)
     }
     
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
-        return Just(())
-            .setFailureType(to: Error.self)
-            .flatMap {[unowned self] in self.getProvider().getInfo(addresses: addresses) }
-            .mapError {[unowned self] in self.handleError($0)}
-            .retry(2)
-            .eraseToAnyPublisher()
+        providerPublisher {
+            $0.getInfo(addresses: addresses)
+                .mapError {[unowned self] in self.handleError($0)}
+                .retry(2)
+                .eraseToAnyPublisher()
+        }
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        return Just(())
-            .setFailureType(to: Error.self)
-            .flatMap {[unowned self] in self.getProvider().getInfo(address: address) }
-            .mapError {[unowned self] in self.handleError($0)}
-            .retry(2)
-            .eraseToAnyPublisher()
-    }
-    
-    @available(iOS 13.0, *)
-    func getFee() -> AnyPublisher<BtcFee, Error> {
-        return Just(())
-            .setFailureType(to: Error.self)
-            .flatMap {[unowned self] in self.getProvider().getFee() }
-            .mapError {[unowned self] in self.handleError($0)}
-            .retry(2)
-            .eraseToAnyPublisher()
-    }
-    
-    @available(iOS 13.0, *)
-    func send(transaction: String) -> AnyPublisher<String, Error> {
-        return Just(())
-            .setFailureType(to: Error.self)
-            .flatMap{[unowned self] in self.getProvider().send(transaction: transaction) }
-            .eraseToAnyPublisher()
-    }
-    
-    func getProvider() -> BitcoinNetworkProvider {
-        if providers.count == 1 {
-            return providers.first!.value
+        providerPublisher{
+            $0.getInfo(address: address)
+                .mapError {[unowned self] in self.handleError($0)}
+                .retry(2)
+                .eraseToAnyPublisher()
         }
-        
-        return isTestNet ? providers[.blockcypher]!: providers[networkApi] ?? providers.first!.value
+    }
+    
+    func getFee() -> AnyPublisher<BtcFee, Error> {
+        Publishers.MergeMany(providers.map { $0.getFee() })
+            .collect()
+            .mapError { [unowned self] in self.handleError($0) }
+            .retry(2)
+            .map { feeList -> BtcFee in
+                var min: Decimal = 0
+                var norm: Decimal = 0
+                var priority: Decimal = 0
+                feeList.forEach {
+                    min = max($0.minimalSatoshiPerByte, min)
+                    norm = max($0.normalSatoshiPerByte, norm)
+                    priority = max($0.prioritySatoshiPerByte, priority)
+                }
+                return BtcFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: norm, prioritySatoshiPerByte: priority)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func send(transaction: String) -> AnyPublisher<String, Error> {
+        providerPublisher {
+            $0.send(transaction: transaction)
+        }
     }
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-		getProvider().getSignatureCount(address: address)
+        providerPublisher {
+            $0.getSignatureCount(address: address)
+        }
 	}
     
     private func handleError(_ error: Error) -> Error {
