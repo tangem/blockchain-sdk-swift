@@ -9,14 +9,14 @@
 import Foundation
 
 public enum EthereumUtils {
-    public static func parseEthereumDecimal(_ string: String, tokenDecimals: Int) throws -> Decimal {
+    public static func parseEthereumDecimal(_ string: String, decimalsCount: Int) throws -> Decimal {
         let value = try prepareHexString(string)
         guard let balanceData = asciiHexToData(value),
               let balanceWei = dataToDecimal(balanceData) else {
             throw ETHError.failedToParseTokenBalance
         }
         
-        let balanceEth = balanceWei.dividing(by: NSDecimalNumber(value: 1).multiplying(byPowerOf10: Int16(tokenDecimals)))
+        let balanceEth = balanceWei.dividing(by: NSDecimalNumber(value: 1).multiplying(byPowerOf10: Int16(decimalsCount)))
         return balanceEth as Decimal
     }
     

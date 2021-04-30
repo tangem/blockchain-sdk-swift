@@ -141,7 +141,7 @@ class EthereumNetworkService {
         return provider
             .requestPublisher(.balance(address: address, network: network))
             .filterSuccessfulStatusAndRedirectCodes()
-            .tryMap {[unowned self] in try self.parseBalance($0.data, tokenDecimals: network.blockchain.decimalCount)}
+            .tryMap {[unowned self] in try self.parseBalance($0.data, decimalsCount: network.blockchain.decimalCount)}
             .eraseToAnyPublisher()
     }
     
@@ -149,7 +149,7 @@ class EthereumNetworkService {
         return provider
             .requestPublisher(.tokenBalance(address: address, contractAddress: contractAddress, network: network ))
             .filterSuccessfulStatusAndRedirectCodes()
-            .tryMap{[unowned self] in try self.parseBalance($0.data, tokenDecimals: tokenDecimals)}
+            .tryMap{[unowned self] in try self.parseBalance($0.data, decimalsCount: tokenDecimals)}
             .eraseToAnyPublisher()
     }
     
@@ -188,8 +188,8 @@ class EthereumNetworkService {
         return count
     }
     
-    private func parseBalance(_ data: Data, tokenDecimals: Int) throws -> Decimal {
-        try EthereumUtils.parseEthereumDecimal(try parseResult(data), tokenDecimals: tokenDecimals)
+    private func parseBalance(_ data: Data, decimalsCount: Int) throws -> Decimal {
+        try EthereumUtils.parseEthereumDecimal(try parseResult(data), decimalsCount: decimalsCount)
     }
 }
 
