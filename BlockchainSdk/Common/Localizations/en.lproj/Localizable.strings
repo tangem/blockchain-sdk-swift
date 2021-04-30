@@ -57,6 +57,7 @@
 
 "eth_token_balance_parse_error" = "Failed to parse token balance";
 
+"failed_to_load_fee_error" = "Failed to load fee from network";
 
 
 "xlm_latest_ledger_error" = "Couldn't find latest ledger";
