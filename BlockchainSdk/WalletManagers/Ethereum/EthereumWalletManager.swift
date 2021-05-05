@@ -18,6 +18,7 @@ public enum ETHError: String, Error, LocalizedError {
     case failedToParseBalance = "eth_balance_parse_error"
     case failedToParseTokenBalance = "eth_token_balance_parse_error"
     case failedToParseGasLimit
+    case failedToParseGasPrice
     case notValidEthereumValue
     case unsupportedFeature
     
@@ -75,7 +76,7 @@ class EthereumWalletManager: WalletManager {
             .eraseToAnyPublisher()
     }
     
-    private func updateWallet(with response: EthereumResponse) {
+    private func updateWallet(with response: EthereumInfoResponse) {
         wallet.add(coinValue: response.balance)
         for tokenBalance in response.tokenBalances {
             wallet.add(tokenValue: tokenBalance.value, for: tokenBalance.key)
@@ -83,7 +84,7 @@ class EthereumWalletManager: WalletManager {
         txCount = response.txCount
         pendingTxCount = response.pendingTxCount
         if txCount == pendingTxCount {
-            for  index in wallet.transactions.indices {
+            for index in wallet.transactions.indices {
                 wallet.transactions[index].status = .confirmed
             }
         } else {
@@ -107,6 +108,18 @@ class EthereumWalletManager: WalletManager {
         }
         
         return GasLimit.erc20.value
+    }
+    
+    private func formatDestinationInfo(for destination: String, amount: Amount) -> (to: String, data: String?) {
+        var to = destination
+        var data: String? = nil
+        
+        if let token = amount.type.token, let erc20Data = txBuilder.getData(for: amount, targetAddress: destination) {
+            to = token.contractAddress
+            data = "0x" + erc20Data.asHexString()
+        }
+        
+        return (to, data)
     }
 }
 
@@ -139,35 +152,22 @@ extension EthereumWalletManager: TransactionSender {
     }
     
     func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount],Error> {
-        getGasPrice()
-            .combineLatest(getGasLimit(amount: amount, destination: destination).setFailureType(to: Error.self))
-            .tryMap { [unowned self] gasPrice, gasLimit throws -> [Amount] in
-                self.gasLimit = gasLimit
-                let decimalCount = self.wallet.blockchain.decimalCount
-                let minValue = gasPrice * gasLimit
-                let min = Web3.Utils.formatToEthereumUnits(minValue, toUnits: .eth, decimals: decimalCount, decimalSeparator: ".", fallbackToScientific: false)!
-                
-                let normalValue = gasPrice * BigUInt(12) / BigUInt(10) * gasLimit
-                let normal = Web3.Utils.formatToEthereumUnits(normalValue, toUnits: .eth, decimals: decimalCount, decimalSeparator: ".", fallbackToScientific: false)!
-                
-                let maxValue = gasPrice * BigUInt(15) / BigUInt(10) * gasLimit
-                let max = Web3.Utils.formatToEthereumUnits(maxValue, toUnits: .eth, decimals: decimalCount, decimalSeparator: ".", fallbackToScientific: false)!
-                
-                guard let minDecimal = Decimal(string: min),
-                    let normalDecimal = Decimal(string: normal),
-                    let maxDecimal = Decimal(string: max) else {
-                        throw WalletError.failedToGetFee
+        let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
+        return networkService.getFee(to: destinationInfo.to, from: wallet.address, data: destinationInfo.data, fallbackGasLimit: getFixedGasLimit(for: amount))
+            .tryMap {
+                guard $0.fees.count == 3 else {
+                    throw BlockchainSdkError.failedToLoadFee
                 }
+                self.gasLimit = $0.gasLimit
                 
-                let minAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: minDecimal)
-                let normalAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: normalDecimal)
-                let maxAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: maxDecimal)
+                let minAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: $0.fees[0])
+                let normalAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: $0.fees[1])
+                let maxAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: $0.fees[2])
                 
                 return [minAmount, normalAmount, maxAmount]
-        }
-        .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
-    
     
 }
 
@@ -177,16 +177,10 @@ extension EthereumWalletManager: EthereumGasLoader {
     }
     
     func getGasLimit(amount: Amount, destination: String) -> AnyPublisher<BigUInt, Never> {
-        var to = destination
-        var data: String? = nil
-        
-        if let token = amount.type.token, let erc20Data = txBuilder.getData(for: amount, targetAddress: destination) {
-            to = token.contractAddress
-            data = "0x" + erc20Data.asHexString()
-        }
+        let destInfo = formatDestinationInfo(for: destination, amount: amount)
         
         return networkService
-            .getGasLimit(to: to, from: wallet.address, data: data)
+            .getGasLimit(to: destInfo.to, from: wallet.address, data: destInfo.data)
             .catch {[unowned self] error -> Just<BigUInt> in
                 print(error)
                 return Just(self.getFixedGasLimit(for: amount))

@@ -121,17 +121,22 @@ public class WalletManagerFactory {
         case .ethereum(let testnet):
             return EthereumWalletManager(wallet: wallet, cardTokens: tokens).then {
                 let ethereumNetwork = testnet ? EthereumNetwork.testnet(projectId: config.infuraProjectId) : EthereumNetwork.mainnet(projectId: config.infuraProjectId)
+                let jsonRpcProviders = [
+                    EthereumJsonRpcProvider(network: ethereumNetwork),
+                    EthereumJsonRpcProvider(network: .tangem)
+                ]
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: ethereumNetwork)
                 let provider = BlockcypherNetworkProvider(endpoint: .init(coin: .eth, chain: .main), tokens: config.blockcypherTokens)
-                let blockchair = BlockchairNetworkProvider(endpoint: .bitcoin, apiKey: config.blockchairApiKey)
-                $0.networkService = EthereumNetworkService(network: ethereumNetwork, blockcypherProvider: provider, blockchairProvider: blockchair)
+                let blockchair = BlockchairEthNetworkProvider(apiKey: config.blockchairApiKey)
+                $0.networkService = EthereumNetworkService(network: ethereumNetwork, providers: jsonRpcProviders, blockcypherProvider: provider, blockchairProvider: blockchair)
             }
             
         case .rsk:
             return EthereumWalletManager(wallet: wallet, cardTokens: tokens).then {
-                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: .rsk)
-                let blockchair = BlockchairNetworkProvider(endpoint: .bitcoin, apiKey: config.blockchairApiKey)
-                $0.networkService = EthereumNetworkService(network: .rsk, blockcypherProvider: nil, blockchairProvider: blockchair)
+                let network: EthereumNetwork = .rsk
+                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: network)
+                let blockchair = BlockchairEthNetworkProvider(apiKey: config.blockchairApiKey)
+                $0.networkService = EthereumNetworkService(network: .rsk, providers: [EthereumJsonRpcProvider(network: network)], blockcypherProvider: nil, blockchairProvider: blockchair)
             }
             
         case .bitcoinCash(let testnet):
