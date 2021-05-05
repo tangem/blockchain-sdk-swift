@@ -255,6 +255,10 @@
 		B03BF9D326319F3E000384EB /* IconsUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03BF9D226319F3E000384EB /* IconsUtils.swift */; };
 		B03D51AB2629AD5A0029DC43 /* XrpNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5CE0D42625C8EC009023EC /* XrpNetworkProvider.swift */; };
 		B044B3A126047F5500D9864F /* RosettaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B044B3A026047F5500D9864F /* RosettaResponse.swift */; };
+		B04AA0442642C8AD0075AE32 /* EthereumJsonRpcProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CDFF242641488900B9BA9D /* EthereumJsonRpcProvider.swift */; };
+		B04AA0472642C8B20075AE32 /* BlockchairEthNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06C678E2642856D0037E7AD /* BlockchairEthNetworkProvider.swift */; };
+		B04AA04A2642C8B70075AE32 /* EthereumResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B004DABF26416B8A000863A4 /* EthereumResponse.swift */; };
+		B04AA04D2642C8FE0075AE32 /* BlockchairAddressBlockMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06C6792264286390037E7AD /* BlockchairAddressBlockMapper.swift */; };
 		B04E8D5025F8F67F00821CBE /* RosettaNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04E8D4F25F8F67F00821CBE /* RosettaNetworkProvider.swift */; };
 		B056729B2570F9DC00A8CB59 /* BlockchainSdkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B056729A2570F9DC00A8CB59 /* BlockchainSdkError.swift */; };
 		B05BF634256F953500B50FD7 /* BitcoinAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05BF633256F953500B50FD7 /* BitcoinAddress.swift */; };
@@ -1355,6 +1359,7 @@
 				5DDD82EC25BF0E1500166EA9 /* BitcoinCashAddressService.swift in Sources */,
 				5DDD82DB25BF0E0900166EA9 /* StellarWalletManager.swift in Sources */,
 				5DDD830725BF0E2400166EA9 /* XRPAddressService.swift in Sources */,
+				B04AA04A2642C8B70075AE32 /* EthereumResponse.swift in Sources */,
 				B0A63E1026259D03001FDB7A /* EthereumTransactionParams.swift in Sources */,
 				5DDD82AD25BF0D2F00166EA9 /* Transaction.swift in Sources */,
 				5DDD835825BF100100166EA9 /* AnyPublisher+Response.swift in Sources */,
@@ -1369,6 +1374,7 @@
 				B06AFAEB261494F700E7AAB0 /* CardanoAddress.swift in Sources */,
 				5DDD82C225BF0D6C00166EA9 /* Base58.swift in Sources */,
 				5DDD831A25BF0E7F00166EA9 /* XrpTarget.swift in Sources */,
+				B04AA04D2642C8FE0075AE32 /* BlockchairAddressBlockMapper.swift in Sources */,
 				5DDD833C25BF0EC900166EA9 /* XRPAddress.swift in Sources */,
 				5DDD832725BF0EBC00166EA9 /* BlockchainInfoApiResponse.swift in Sources */,
 				5DDD82E025BF0E0900166EA9 /* StellarTransactionParams.swift in Sources */,
@@ -1377,6 +1383,7 @@
 				5DDD833725BF0EC900166EA9 /* XRPLResponse.swift in Sources */,
 				5DDD82EF25BF0E1500166EA9 /* BitcoinCashWalletManager.swift in Sources */,
 				B087283C26134DA100E3FF57 /* MultiNetworkProvider.swift in Sources */,
+				B04AA0442642C8AD0075AE32 /* EthereumJsonRpcProvider.swift in Sources */,
 				5DDD833125BF0EC500166EA9 /* SigningAlgorithm.swift in Sources */,
 				5DDD832C25BF0EC500166EA9 /* Extensions.swift in Sources */,
 				5DDD82F925BF0E1D00166EA9 /* DucatusAddressService.swift in Sources */,
@@ -1431,6 +1438,7 @@
 				5DDD82FA25BF0E1D00166EA9 /* DucatusNetworkService.swift in Sources */,
 				5DDD831B25BF0E7F00166EA9 /* XrpResponse.swift in Sources */,
 				5DDD829F25BF0D2800166EA9 /* Wallet.swift in Sources */,
+				B04AA0472642C8B20075AE32 /* BlockchairEthNetworkProvider.swift in Sources */,
 				5DDD832825BF0EBC00166EA9 /* BlockchainInfoApiTarget.swift in Sources */,
 				5DDD832B25BF0EC500166EA9 /* Serializer.swift in Sources */,
 				5DDD82D425BF0DB100166EA9 /* BlockcypherNetworkProvider.swift in Sources */,
