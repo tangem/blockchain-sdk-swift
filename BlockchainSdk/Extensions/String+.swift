@@ -33,6 +33,10 @@ extension String {
     var localized: String {
         return NSLocalizedString(self, bundle: .blockchainBundle, comment: "")
     }
+    
+    static var unknown: String {
+        "unknown"
+    }
 }
 
 extension String: Error, LocalizedError {

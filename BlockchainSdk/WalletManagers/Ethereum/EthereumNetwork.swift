@@ -13,13 +13,14 @@ import web3swift
 enum EthereumNetwork {
     case mainnet(projectId: String)
     case testnet(projectId: String)
+    case tangem
     case rsk
     
     var chainId: BigUInt { return BigUInt(self.id) }
     
     var blockchain: Blockchain {
         switch self {
-        case .mainnet: return .ethereum(testnet: false)
+        case .mainnet, .tangem: return .ethereum(testnet: false)
         case .testnet: return .ethereum(testnet: true)
         case .rsk: return .rsk
         }
@@ -27,7 +28,7 @@ enum EthereumNetwork {
     
     var id: Int {
         switch self {
-        case .mainnet:
+        case .mainnet, .tangem:
            return 1
         case .testnet:
             return 4
@@ -42,6 +43,8 @@ enum EthereumNetwork {
             return URL(string: "https://mainnet.infura.io/v3/\(projectId)")!
         case .testnet(let projectId):
             return URL(string:"https://rinkeby.infura.io/v3/\(projectId)")!
+        case .tangem:
+            return URL(string: "https://eth.tangem.com/")!
         case .rsk:
             return URL(string: "https://public-node.rsk.co/")!
         }
