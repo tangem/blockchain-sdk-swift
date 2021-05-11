@@ -14,6 +14,9 @@ class BitcoinCashWalletManager: WalletManager {
     var txBuilder: BitcoinCashTransactionBuilder!
     var networkService: BitcoinCashNetworkService!
     
+    var minimalFeePerByte: Decimal { 1 }
+    var minimalFee: Decimal { 0.00001 }
+    
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(address: self.wallet.address)
@@ -69,7 +72,7 @@ extension BitcoinCashWalletManager: TransactionSender {
     func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap {[unowned self] response throws -> [Amount] in
-                let feePerByte = response.minimalSatoshiPerByte
+                let feePerByte = max(response.minimalSatoshiPerByte, self.minimalFeePerByte)
                 
                 guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount, fee: Amount(with: amount, value: 0.0001),
                                                                                   sourceAddress: self.wallet.address,
@@ -78,8 +81,8 @@ extension BitcoinCashWalletManager: TransactionSender {
                     throw WalletError.failedToCalculateTxSize
                 }
                 
-                let fee = (feePerByte * estimatedTxSize)
-                let relayFee = Decimal(0.00001)
+                let fee = (feePerByte * estimatedTxSize) / Blockchain.bitcoinCash(testnet: false).decimalValue
+                let relayFee = self.minimalFee
                 let finalFee = fee >= relayFee ? fee : relayFee
                 
                 return [
