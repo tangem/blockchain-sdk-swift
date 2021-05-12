@@ -10,5 +10,5 @@ import Foundation
 import Combine
 
 class LitecoinWalletManager: BitcoinWalletManager {
-    override var minimalFeePerKb: Decimal { 1024 }
+    override var minimalFeePerByte: Decimal { 1 }
 }

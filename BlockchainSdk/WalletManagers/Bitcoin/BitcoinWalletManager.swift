@@ -15,8 +15,7 @@ class BitcoinWalletManager: WalletManager {
     var txBuilder: BitcoinTransactionBuilder!
     var networkService: BitcoinNetworkProvider!
     
-    var minimalFeePerKb: Decimal { 10000 }
-    var minimalFeePerByte: Decimal { minimalFeePerKb / 1024 }
+    var minimalFeePerByte: Decimal { 10 }
     var minimalFee: Decimal { 0.00001 }
     
     override func update(completion: @escaping (Result<Void, Error>)-> Void)  {
