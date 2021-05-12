@@ -98,7 +98,7 @@ public class WalletManagerFactory {
                 providers.append(BlockcypherNetworkProvider(endpoint: BlockcypherEndpoint(coin: .ltc, chain: .main), tokens: config.blockcypherTokens))
                 providers.append(BlockchairNetworkProvider(endpoint: .litecoin, apiKey: config.blockchairApiKey))
 
-                $0.networkService = BitcoinNetworkService(providers: providers, isTestNet: false, defaultApi: .blockchair)
+                $0.networkService = LitecoinNetworkService(providers: providers, isTestNet: false, defaultApi: .blockchair)
             }
             
         case .ducatus:

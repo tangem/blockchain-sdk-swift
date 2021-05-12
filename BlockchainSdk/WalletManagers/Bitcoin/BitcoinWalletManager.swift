@@ -14,9 +14,9 @@ class BitcoinWalletManager: WalletManager {
     var allowsFeeSelection: Bool { true }
     var txBuilder: BitcoinTransactionBuilder!
     var networkService: BitcoinNetworkProvider!
-    var relayFee: Decimal? {
-        return nil
-    }
+    
+    var minimalFeePerByte: Decimal { 10 }
+    var minimalFee: Decimal { 0.00001 }
     
     override func update(completion: @escaping (Result<Void, Error>)-> Void)  {
         cancellable = networkService.getInfo(addresses: wallet.addresses.map{ $0.value })
@@ -38,29 +38,27 @@ class BitcoinWalletManager: WalletManager {
         return networkService.getFee()
             .tryMap {[unowned self] response throws -> [Amount] in
               //  let dummyFee = Amount(with: amount, value: 0.00000001)
-                var minRate = max((response.minimalSatoshiPerByte as NSDecimalNumber).intValue, 1)
-                var normalRate = max((response.normalSatoshiPerByte as NSDecimalNumber).intValue, 1)
-                var maxRate = max((response.prioritySatoshiPerByte as NSDecimalNumber).intValue, 1)
+                var minRate = (max(response.minimalSatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
+                var normalRate = (max(response.normalSatoshiPerByte, self.minimalFeePerByte * 1.2) as NSDecimalNumber).intValue
+                var maxRate = (max(response.prioritySatoshiPerByte, self.minimalFeePerByte * 1.5) as NSDecimalNumber).intValue
                 
                 var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: false, changeScript: nil, isReplacedByFee: false)
                 var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: false, changeScript: nil, isReplacedByFee: false)
                 var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: false, changeScript: nil, isReplacedByFee: false)
                 
-                if let relayFee = self.relayFee {
-                    if minFee < relayFee {
-                        minRate = ((relayFee/minFee).rounded(scale: 0, roundingMode: .down) as NSDecimalNumber).intValue
-                        minFee = relayFee
-                    }
-                    
-                    if normalFee < relayFee {
-                        normalRate = ((relayFee/normalFee).rounded(scale: 0, roundingMode: .down) as NSDecimalNumber).intValue
-                        normalFee = relayFee
-                    }
-                    
-                    if maxFee < relayFee {
-                        maxRate = ((relayFee/maxFee).rounded(scale: 0, roundingMode: .down) as NSDecimalNumber).intValue
-                        maxFee = relayFee
-                    }
+                if minFee < self.minimalFee {
+                    minRate = ((self.minimalFee/minFee).rounded(scale: 0, roundingMode: .down) as NSDecimalNumber).intValue
+                    minFee = self.minimalFee
+                }
+                
+                if normalFee < self.minimalFee {
+                    normalRate = ((self.minimalFee/normalFee).rounded(scale: 0, roundingMode: .down) as NSDecimalNumber).intValue
+                    normalFee = self.minimalFee
+                }
+                
+                if maxFee < self.minimalFee {
+                    maxRate = ((self.minimalFee/maxFee).rounded(scale: 0, roundingMode: .down) as NSDecimalNumber).intValue
+                    maxFee = self.minimalFee
                 }
                 
                 txBuilder.feeRates = [:]
