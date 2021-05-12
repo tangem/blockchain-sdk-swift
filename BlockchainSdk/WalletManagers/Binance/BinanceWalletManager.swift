@@ -63,7 +63,6 @@ class BinanceWalletManager: WalletManager {
     }
 }
 
-@available(iOS 13.0, *)
 extension BinanceWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { false }
     

@@ -71,7 +71,6 @@ extension LedgersService {
 }
 
 extension TransactionsService {
-    @available(iOS 13.0, *)
     func postTransaction(transactionEnvelope:String) -> AnyPublisher<SubmitTransactionResponse, Error> {
         let future = Future<SubmitTransactionResponse, Error> { [unowned self] promise in
             self.postTransaction(transactionEnvelope: transactionEnvelope, response: { response -> (Void) in

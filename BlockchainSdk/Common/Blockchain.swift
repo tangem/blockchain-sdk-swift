@@ -10,6 +10,7 @@ import Foundation
 import TangemSdk
 import BitcoinCore
 
+@available(iOS 13.0, *)
 public enum Blockchain {
     case bitcoin(testnet: Bool)
     case litecoin

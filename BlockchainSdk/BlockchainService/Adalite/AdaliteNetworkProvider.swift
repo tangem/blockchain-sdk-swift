@@ -19,7 +19,6 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
         adaliteUrl = baseUrl
     }
     
-    @available(iOS 13.0, *)
     func send(transaction: Data) -> AnyPublisher<String, Error> {
         provider
             .requestPublisher(.send(base64EncodedTx: transaction.base64EncodedString(), url: adaliteUrl))

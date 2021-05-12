@@ -95,7 +95,6 @@ class BitcoinMainProvider: BitcoinNetworkProvider {
 //        .eraseToAnyPublisher()
 //    }
     
-    @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error> {
         return blockchainInfoProvider.requestPublisher(.send(txHex: transaction))
         .filterSuccessfulStatusAndRedirectCodes()

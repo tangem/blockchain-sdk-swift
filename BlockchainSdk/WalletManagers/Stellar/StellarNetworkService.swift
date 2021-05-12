@@ -10,6 +10,7 @@ import Foundation
 import stellarsdk
 import Combine
 
+@available(iOS 13.0, *)
 class StellarNetworkService {
     let stellarSdk: StellarSDK
     
@@ -17,7 +18,6 @@ class StellarNetworkService {
         self.stellarSdk = stellarSdk
     }
     
-    @available(iOS 13.0, *)
     public func send(transaction: String) -> AnyPublisher<Bool, Error> {
         return stellarSdk.transactions.postTransaction(transactionEnvelope: transaction)
             .tryMap{ submitTransactionResponse throws  -> Bool in

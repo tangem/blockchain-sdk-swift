@@ -39,7 +39,6 @@ class DucatusNetworkService: BitcoinNetworkProvider {
         .eraseToAnyPublisher()
     }
     
-    @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error> {
         return provider.send(transaction)
             .tryMap { response throws -> String in
@@ -51,7 +50,6 @@ class DucatusNetworkService: BitcoinNetworkProvider {
         }.eraseToAnyPublisher()
     }
     
-    @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<BtcFee, Error> {
         let fee = BtcFee(minimalSatoshiPerByte: 89,
                          normalSatoshiPerByte: 144,

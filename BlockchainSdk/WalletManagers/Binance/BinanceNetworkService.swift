@@ -41,7 +41,6 @@ class BinanceNetworkService {
         return AnyPublisher(future)
     }
         
-    @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<String, Error> {
         let future = Future<String,Error> {[unowned self] promise in
             self.binance.fees { response in
@@ -68,7 +67,6 @@ class BinanceNetworkService {
         return AnyPublisher(future)
     }
     
-    @available(iOS 13.0, *)
     func send(transaction: Message) -> AnyPublisher<Bool, Error> {
         let future = Future<Bool,Error> {[unowned self] promise in
             self.binance.broadcast(message: transaction, sync: true) { response in
