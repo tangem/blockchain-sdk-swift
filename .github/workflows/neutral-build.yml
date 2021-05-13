@@ -26,7 +26,7 @@ jobs:
       uses: adamkdean/simple-slack-notify@master
       with:
         channel: '#development-ios'
-        text: 'Neutral build #${{ github.run_number }} failed'
+        text: 'Blockchain SDK tests #${{ github.run_number }} failed'
         color: 'danger'
         fields: |
           [{ "title": "Action URL", "value": "${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}"}]
