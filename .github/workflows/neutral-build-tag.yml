@@ -34,7 +34,7 @@ jobs:
       with:
         channel: '#development-ios'
         status: ${{ job.status }}
-        success_text: 'Neutral build #${{ github.run_number }} completed successfully. Tag has been created.'
+        success_text: 'Blockchain SDK tag (${{ steps.extract_branch.outputs.branch }}-${{ github.run_number }}) has been created.'
         failure_text: 'GitHub Action #${{ github.run_number }} failed. Tag has not been not created.'
         cancelled_text: 'GitHub Action #${{ github.run_number }} was cancelled'
         fields: |
