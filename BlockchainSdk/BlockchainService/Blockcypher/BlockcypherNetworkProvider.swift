@@ -64,7 +64,6 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
     }
     
     
-    @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<BtcFee, Error> {
         return Just(())
             .setFailureType(to: MoyaError.self)
@@ -96,7 +95,6 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
             .eraseToAnyPublisher()
     }
     
-    @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error> {
         return Just(())
             .setFailureType(to: MoyaError.self)

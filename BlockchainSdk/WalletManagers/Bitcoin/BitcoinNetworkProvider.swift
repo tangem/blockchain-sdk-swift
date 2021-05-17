@@ -34,7 +34,7 @@ enum BitcoinNetworkApi {
     case blockcypher
 }
 
-protocol BitcoinNetworkProvider: class {
+protocol BitcoinNetworkProvider: AnyObject {
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error>
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error>
     func getFee() -> AnyPublisher<BtcFee, Error>

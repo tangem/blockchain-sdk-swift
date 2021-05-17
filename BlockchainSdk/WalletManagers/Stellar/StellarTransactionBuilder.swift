@@ -10,6 +10,7 @@ import Foundation
 import stellarsdk
 import Combine
 
+@available(iOS 13.0, *)
 class StellarTransactionBuilder {
     public var sequence: Int64?
     var useTimebounds = true

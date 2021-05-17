@@ -59,7 +59,7 @@ class BitcoinCashTransactionBuilder {
     }
     
     public func buildForSend(transaction: Transaction, signatures: [Data]) -> Data? {
-        guard let unspentOutputs = unspentOutputs else {
+        guard unspentOutputs != nil else {
                 return nil
         }
         

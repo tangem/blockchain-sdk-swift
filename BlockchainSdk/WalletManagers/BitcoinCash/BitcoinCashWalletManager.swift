@@ -44,7 +44,6 @@ class BitcoinCashWalletManager: WalletManager {
     }
 }
 
-@available(iOS 13.0, *)
 extension BitcoinCashWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
@@ -68,7 +67,6 @@ extension BitcoinCashWalletManager: TransactionSender {
         .eraseToAnyPublisher()
     }
     
-    @available(iOS 13.0, *)
     func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap {[unowned self] response throws -> [Amount] in

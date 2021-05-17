@@ -8,6 +8,7 @@
 
 import Combine
 
+@available(iOS 13.0, *)
 public extension AnyPublisher {
     static func anyFail(error: Failure) -> AnyPublisher<Output, Failure> {
         Fail(error: error)

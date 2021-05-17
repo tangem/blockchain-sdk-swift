@@ -11,6 +11,7 @@ import TangemSdk
 import stellarsdk
 import BitcoinCore
 
+@available(iOS 13.0, *)
 public class WalletManagerFactory {
     private let config: BlockchainSdkConfig
     

@@ -61,7 +61,6 @@ class XRPWalletManager: WalletManager {
     }
 }
 
-@available(iOS 13.0, *)
 extension XRPWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     

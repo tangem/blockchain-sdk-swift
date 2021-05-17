@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 
+@available(iOS 13.0, *)
 class MultiNetworkProvider<Provider> {
     
     internal let providers: [Provider]

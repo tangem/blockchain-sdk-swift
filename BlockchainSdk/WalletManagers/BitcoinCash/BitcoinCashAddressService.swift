@@ -10,6 +10,7 @@ import Foundation
 import HDWalletKit
 import TangemSdk
 
+@available(iOS 13.0, *)
 public class BitcoinCashAddressService: AddressService {
     public func makeAddress(from walletPublicKey: Data) -> String {
         let compressedKey = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
