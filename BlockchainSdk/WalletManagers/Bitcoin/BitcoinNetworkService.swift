@@ -13,14 +13,6 @@ import TangemSdk
 import Alamofire
 
 class BitcoinNetworkService: MultiNetworkProvider<BitcoinNetworkProvider>, BitcoinNetworkProvider {
-    private let isTestNet: Bool
-    private var networkApi: BitcoinNetworkApi
-    
-    init(providers: [BitcoinNetworkProvider], isTestNet: Bool, defaultApi: BitcoinNetworkApi = .main) {
-        self.isTestNet = isTestNet
-        self.networkApi = defaultApi
-        super.init(providers: providers)
-    }
     
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
         providerPublisher {
@@ -38,15 +30,15 @@ class BitcoinNetworkService: MultiNetworkProvider<BitcoinNetworkProvider>, Bitco
         }
     }
     
-    func getFee() -> AnyPublisher<BtcFee, Error> {
+    func getFee() -> AnyPublisher<BitcoinFee, Error> {
         Publishers.MergeMany(providers.map {
             $0.getFee()
                 .retry(2)
-                .replaceError(with: BtcFee(minimalSatoshiPerByte: 0, normalSatoshiPerByte: 0, prioritySatoshiPerByte: 0))
+                .replaceError(with: BitcoinFee(minimalSatoshiPerByte: 0, normalSatoshiPerByte: 0, prioritySatoshiPerByte: 0))
                 .eraseToAnyPublisher()
         })
         .collect()
-        .tryMap { feeList -> BtcFee in
+        .tryMap { feeList -> BitcoinFee in
             var min: Decimal = 0
             var norm: Decimal = 0
             var priority: Decimal = 0
@@ -59,7 +51,7 @@ class BitcoinNetworkService: MultiNetworkProvider<BitcoinNetworkProvider>, Bitco
             guard min > 0 , norm > 0, priority > 0 else {
                 throw BlockchainSdkError.failedToLoadFee
             }
-            return BtcFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: norm, prioritySatoshiPerByte: priority)
+            return BitcoinFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: norm, prioritySatoshiPerByte: priority)
         }
         .eraseToAnyPublisher()
     }

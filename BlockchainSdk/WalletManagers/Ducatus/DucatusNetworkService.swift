@@ -21,7 +21,7 @@ class DucatusNetworkService: BitcoinNetworkProvider {
                         throw WalletError.failedToParseNetworkResponse
                 }
                 
-                let utxs: [BtcTx] = unspents.compactMap { utxo -> BtcTx?  in
+                let utxs: [BitcoinUnspentOutput] = unspents.compactMap { utxo -> BitcoinUnspentOutput?  in
                     guard let hash = utxo.mintTxid,
                         let n = utxo.mintIndex,
                         let val = utxo.value,
@@ -29,12 +29,12 @@ class DucatusNetworkService: BitcoinNetworkProvider {
                             return nil
                     }
                     
-                    let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: UInt64(val), script: script)
+                    let btx = BitcoinUnspentOutput(transactionHash: hash, outputIndex: n, amount: UInt64(val), outputScript: script)
                     return btx
                 }
                 
                 let balance = Decimal(confirmed)/Blockchain.ducatus.decimalValue
-                return BitcoinResponse(balance: balance, hasUnconfirmed: unconfirmed != 0 , txrefs: utxs)
+                return BitcoinResponse(balance: balance, hasUnconfirmed: unconfirmed != 0 , unspentOutputs: utxs)
         }
         .eraseToAnyPublisher()
     }
@@ -50,8 +50,8 @@ class DucatusNetworkService: BitcoinNetworkProvider {
         }.eraseToAnyPublisher()
     }
     
-    func getFee() -> AnyPublisher<BtcFee, Error> {
-        let fee = BtcFee(minimalSatoshiPerByte: 89,
+    func getFee() -> AnyPublisher<BitcoinFee, Error> {
+        let fee = BitcoinFee(minimalSatoshiPerByte: 89,
                          normalSatoshiPerByte: 144,
                          prioritySatoshiPerByte: 350)
         
