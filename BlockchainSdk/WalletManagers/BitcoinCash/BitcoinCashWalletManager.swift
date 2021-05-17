@@ -33,7 +33,7 @@ class BitcoinCashWalletManager: WalletManager {
     
     private func updateWallet(with response: BitcoinResponse) {
         wallet.add(coinValue: response.balance)
-        txBuilder.unspentOutputs = response.txrefs
+        txBuilder.unspentOutputs = response.unspentOutputs
         if response.hasUnconfirmed {
             if wallet.transactions.isEmpty {
                 wallet.addPendingTransaction()

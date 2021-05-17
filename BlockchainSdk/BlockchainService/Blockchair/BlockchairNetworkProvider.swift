@@ -46,14 +46,14 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                         throw WalletError.failedToParseNetworkResponse
                 }
                 
-                let utxs: [BtcTx] = utxos.compactMap { utxo -> BtcTx?  in
+                let utxs: [BitcoinUnspentOutput] = utxos.compactMap { utxo -> BitcoinUnspentOutput?  in
                     guard let hash = utxo.transaction_hash,
                         let n = utxo.index,
                         let val = utxo.value else {
                             return nil
                     }
                     
-                    let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: val, script: script)
+                    let btx = BitcoinUnspentOutput(transactionHash: hash, outputIndex: n, amount: val, outputScript: script)
                     return btx
                 }
                 
@@ -61,16 +61,16 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                 
                 
                 let decimalBtcBalance = decimalSatoshiBalance / self.endpoint.blockchain.decimalValue
-                let bitcoinResponse = BitcoinResponse(balance: decimalBtcBalance, hasUnconfirmed: hasUnconfirmed, txrefs: utxs)
+                let bitcoinResponse = BitcoinResponse(balance: decimalBtcBalance, hasUnconfirmed: hasUnconfirmed, unspentOutputs: utxs)
                 
                 return bitcoinResponse
         }
         .eraseToAnyPublisher()
     }
     
-    func getFee() -> AnyPublisher<BtcFee, Error> {
+    func getFee() -> AnyPublisher<BitcoinFee, Error> {
 		publisher(for: .fee(endpoint: endpoint, apiKey: apiKey))
-            .tryMap { json throws -> BtcFee in
+            .tryMap { json throws -> BitcoinFee in
                 let data = json["data"]
                 guard let feePerByteSatoshi = data["suggested_transaction_fee_per_byte_sat"].int  else {
                     throw WalletError.failedToGetFee
@@ -80,7 +80,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                 let min = (Decimal(0.8) * normal).rounded(roundingMode: .down)
                 let max = (Decimal(1.2) * normal).rounded(roundingMode: .down)
 
-                let fee = BtcFee(minimalSatoshiPerByte: min,
+                let fee = BitcoinFee(minimalSatoshiPerByte: min,
                                  normalSatoshiPerByte: normal,
                                  prioritySatoshiPerByte: max)
                 return fee

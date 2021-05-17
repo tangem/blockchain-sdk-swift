@@ -22,7 +22,7 @@ class BitcoinCashNetworkService {
         return provider.getInfo(address: address)
     }
     
-    func getFee() -> AnyPublisher<BtcFee, Error> {
+    func getFee() -> AnyPublisher<BitcoinFee, Error> {
         return provider.getFee()
     }
     

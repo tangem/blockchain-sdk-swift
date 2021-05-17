@@ -76,7 +76,7 @@ class BitcoinWalletManager: WalletManager {
     func updateWallet(with response: [BitcoinResponse]) {
         let balance = response.reduce(into: 0) { $0 += $1.balance }
         let hasUnconfirmed = response.contains(where: { $0.hasUnconfirmed })
-        let unspents = response.flatMap { $0.txrefs }
+        let unspents = response.flatMap { $0.unspentOutputs }
         
         wallet.add(coinValue: balance)
         txBuilder.unspentOutputs = unspents
