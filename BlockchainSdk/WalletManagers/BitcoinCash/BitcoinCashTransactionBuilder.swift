@@ -13,7 +13,7 @@ import TangemSdk
 class BitcoinCashTransactionBuilder {
     let isTestnet: Bool
     let walletPublicKey: Data
-    var unspentOutputs: [BtcTx]?
+    var unspentOutputs: [BitcoinUnspentOutput]?
     
     private var blockchain: Blockchain { Blockchain.bitcoinCash(testnet: isTestnet) }
     
@@ -59,7 +59,7 @@ class BitcoinCashTransactionBuilder {
     }
     
     public func buildForSend(transaction: Transaction, signatures: [Data]) -> Data? {
-        guard let unspentOutputs = unspentOutputs else {
+        guard unspentOutputs != nil else {
                 return nil
         }
         
@@ -183,9 +183,9 @@ class BitcoinCashTransactionBuilder {
     
     private func buildUnspents(with outputScripts:[Data]) -> [UnspentTransaction]? {
         let unspentTransactions: [UnspentTransaction]? = unspentOutputs?.enumerated().compactMap({ index, txRef  in
-            let hash = Data(hex: txRef.tx_hash)
+            let hash = Data(hex: txRef.transactionHash)
             let outputScript = outputScripts.count == 1 ? outputScripts.first! : outputScripts[index]
-            return UnspentTransaction(amount: txRef.value, outputIndex: txRef.tx_output_n, hash: hash, outputScript: outputScript)
+            return UnspentTransaction(amount: txRef.amount, outputIndex: txRef.outputIndex, hash: hash, outputScript: outputScript)
         })
         
         return unspentTransactions

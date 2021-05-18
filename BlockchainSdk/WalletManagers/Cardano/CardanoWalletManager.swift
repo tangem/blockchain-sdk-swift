@@ -59,7 +59,6 @@ class CardanoWalletManager: WalletManager {
     }
 }
 
-@available(iOS 13.0, *)
 extension CardanoWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { false }
     

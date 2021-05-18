@@ -11,6 +11,7 @@ import TangemSdk
 import HDWalletKit
 import BitcoinCore
 
+@available(iOS 13.0, *)
 public class BitcoinAddressService: AddressService {
     let legacy: BitcoinLegacyAddressService
     let bech32: BitcoinBech32AddressService
@@ -97,7 +98,7 @@ public class BitcoinLegacyAddressService: AddressService {
 	}
 }
 
-
+@available(iOS 13.0, *)
 public class BitcoinBech32AddressService: AddressService {
 	private let converter: SegWitBech32AddressConverter
 	

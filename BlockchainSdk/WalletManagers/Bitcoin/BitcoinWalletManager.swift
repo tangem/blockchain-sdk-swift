@@ -33,7 +33,6 @@ class BitcoinWalletManager: WalletManager {
             })
     }
     
-    @available(iOS 13.0, *)
     func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap {[unowned self] response throws -> [Amount] in
@@ -77,7 +76,7 @@ class BitcoinWalletManager: WalletManager {
     func updateWallet(with response: [BitcoinResponse]) {
         let balance = response.reduce(into: 0) { $0 += $1.balance }
         let hasUnconfirmed = response.contains(where: { $0.hasUnconfirmed })
-        let unspents = response.flatMap { $0.txrefs }
+        let unspents = response.flatMap { $0.unspentOutputs }
         
         wallet.add(coinValue: balance)
         txBuilder.unspentOutputs = unspents
@@ -104,7 +103,6 @@ class BitcoinWalletManager: WalletManager {
 }
 
 
-@available(iOS 13.0, *)
 extension BitcoinWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         guard let hashes = txBuilder.buildForSign(transaction: transaction) else {

@@ -12,13 +12,13 @@ import HDWalletKit
 import BitcoinCore
 
 class BitcoinTransactionBuilder {
-	var unspentOutputs: [BtcTx]? {
+	var unspentOutputs: [BitcoinUnspentOutput]? {
 		didSet {
 			let utxoDTOs: [UtxoDTO]? = unspentOutputs?.map {
-				return UtxoDTO(hash: Data(Data(hex: $0.tx_hash).reversed()),
-							   index: $0.tx_output_n,
-							   value: Int($0.value),
-							   script: Data(hex: $0.script))
+				return UtxoDTO(hash: Data(Data(hex: $0.transactionHash).reversed()),
+							   index: $0.outputIndex,
+							   value: Int($0.amount),
+							   script: Data(hex: $0.outputScript))
 			}
 			if let utxos = utxoDTOs {
 				let spendingScripts: [Script] = walletScripts.compactMap { script in

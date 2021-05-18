@@ -32,6 +32,7 @@ public enum ETHError: String, Error, LocalizedError {
     }
 }
 
+@available(iOS 13.0, *)
 public protocol EthereumGasLoader: AnyObject {
     func getGasPrice() -> AnyPublisher<BigUInt, Error>
     func getGasLimit(amount: Amount, destination: String) -> AnyPublisher<BigUInt, Never>
@@ -127,7 +128,6 @@ class EthereumWalletManager: WalletManager {
     }
 }
 
-@available(iOS 13.0, *)
 extension EthereumWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     

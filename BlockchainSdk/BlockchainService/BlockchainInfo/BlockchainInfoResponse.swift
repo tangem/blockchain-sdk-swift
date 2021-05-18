@@ -9,25 +9,57 @@
 import Foundation
 
 struct BlockchainInfoAddressResponse: Codable {
-    let final_balance: UInt64?
-    let txs: [BlockchainInfoTransaction]?
-	let n_tx: Int?
+    let finalBalance: UInt64?
+    let transactions: [BlockchainInfoTransaction]?
+	let transactionCount: Int?
+    
+    private enum CodingKeys: String, CodingKey {
+        case finalBalance = "final_balance",
+             transactions = "txs",
+             transactionCount = "n_tx"
+    }
+}
+
+struct BlockchainInfoFeeResponse: Codable {
+    let regular: Int
+    let priority: Int
 }
 
 struct BlockchainInfoTransaction: Codable {
     let hash: String?
-    let block_height: UInt64?
+    let blockHeight: UInt64?
 	/// Balance difference. Using to recognize outgoing transaction for signature count
-	let result: Int64?
+	let balanceDif: Int64?
+    let inputCount: Int?
+    let time: Double?
+    
+    private enum CodingKeys: String, CodingKey {
+        case hash,
+             blockHeight = "block_height",
+             balanceDif = "result",
+             inputCount = "vin_sz",
+             time
+    }
 }
 
 struct BlockchainInfoUnspentResponse: Codable  {
-    let unspent_outputs: [BlockchainInfoUtxo]?
+    let unspentOutputs: [BlockchainInfoUtxo]?
+    
+    private enum CodingKeys: String, CodingKey {
+        case unspentOutputs = "unspent_outputs"
+    }
 }
 
 struct BlockchainInfoUtxo: Codable {
-    let tx_hash_big_endian: String?
-    let tx_output_n: Int?
-    let value: UInt64?
-    let script: String?
+    let hash: String?
+    let outputIndex: Int?
+    let amount: UInt64?
+    let outputScript: String?
+    
+    private enum CodingKeys: String, CodingKey {
+        case hash = "tx_hash_big_endian",
+             outputIndex = "tx_output_n",
+             amount = "value",
+             outputScript = "script"
+    }
 }

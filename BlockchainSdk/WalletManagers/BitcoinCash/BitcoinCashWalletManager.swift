@@ -33,7 +33,7 @@ class BitcoinCashWalletManager: WalletManager {
     
     private func updateWallet(with response: BitcoinResponse) {
         wallet.add(coinValue: response.balance)
-        txBuilder.unspentOutputs = response.txrefs
+        txBuilder.unspentOutputs = response.unspentOutputs
         if response.hasUnconfirmed {
             if wallet.transactions.isEmpty {
                 wallet.addPendingTransaction()
@@ -44,7 +44,6 @@ class BitcoinCashWalletManager: WalletManager {
     }
 }
 
-@available(iOS 13.0, *)
 extension BitcoinCashWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
@@ -68,7 +67,6 @@ extension BitcoinCashWalletManager: TransactionSender {
         .eraseToAnyPublisher()
     }
     
-    @available(iOS 13.0, *)
     func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap {[unowned self] response throws -> [Amount] in

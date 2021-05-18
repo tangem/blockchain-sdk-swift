@@ -18,7 +18,6 @@ class XRPNetworkProvider: XRPNetworkServiceType {
         self.baseUrl = baseUrl
     }
     
-    @available(iOS 13.0, *)
     func getFee() -> AnyPublisher<XRPFeeResponse, Error> {
         return request(.fee(url: baseUrl))
             .tryMap { xrpResponse -> XRPFeeResponse in
@@ -36,7 +35,6 @@ class XRPNetworkProvider: XRPNetworkServiceType {
             .eraseToAnyPublisher()
     }
     
-    @available(iOS 13.0, *)
     func send(blob: String) -> AnyPublisher<Bool, Error> {
         return request(.submit(tx: blob, url: baseUrl))
             .tryMap { xrpResponse -> Bool in
@@ -116,7 +114,6 @@ class XRPNetworkProvider: XRPNetworkServiceType {
             .eraseToAnyPublisher()
     }
     
-    @available(iOS 13.0, *)
     func checkAccountCreated(account: String) -> AnyPublisher<Bool, Error> {
         return request(.accountInfo(account: account, url: baseUrl))
             .map {[unowned self] xrpResponse -> Bool in

@@ -11,6 +11,7 @@ import Sodium
 import stellarsdk
 import TangemSdk
 
+@available(iOS 13.0, *)
 public class TezosAddressService: AddressService {
     private let curve: EllipticCurve
     

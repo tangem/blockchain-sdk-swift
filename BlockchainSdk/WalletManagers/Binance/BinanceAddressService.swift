@@ -9,6 +9,7 @@
 import Foundation
 import TangemSdk
 
+@available(iOS 13.0, *)
 public class BinanceAddressService: AddressService {
     let testnet: Bool
     

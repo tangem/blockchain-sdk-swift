@@ -9,7 +9,7 @@
 import Foundation
 import Combine
 
-struct BtcFee {
+struct BitcoinFee {
     let minimalSatoshiPerByte: Decimal
     let normalSatoshiPerByte: Decimal
     let prioritySatoshiPerByte: Decimal
@@ -18,26 +18,26 @@ struct BtcFee {
 struct BitcoinResponse {
     let balance: Decimal
     let hasUnconfirmed: Bool
-    let txrefs: [BtcTx]
+    let unspentOutputs: [BitcoinUnspentOutput]
 }
 
-struct BtcTx {
-    let tx_hash: String
-    let tx_output_n: Int
-    let value: UInt64
-    let script: String
+struct BitcoinUnspentOutput {
+    let transactionHash: String
+    let outputIndex: Int
+    let amount: UInt64
+    let outputScript: String
 }
 
 enum BitcoinNetworkApi {
-    case main
+    case blockchainInfo
 	case blockchair
     case blockcypher
 }
 
-protocol BitcoinNetworkProvider: class {
+protocol BitcoinNetworkProvider: AnyObject {
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error>
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error>
-    func getFee() -> AnyPublisher<BtcFee, Error>
+    func getFee() -> AnyPublisher<BitcoinFee, Error>
     func send(transaction: String) -> AnyPublisher<String, Error>
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error>
 }

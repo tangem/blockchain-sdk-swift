@@ -45,7 +45,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
                 }
                 
                 let satoshiBalance = Decimal(balance)/self.endpoint.blockchain.decimalValue
-                let txs: [BtcTx] = addressResponse.txrefs?.compactMap { utxo -> BtcTx?  in
+                let txs: [BitcoinUnspentOutput] = addressResponse.txrefs?.compactMap { utxo -> BitcoinUnspentOutput?  in
                     guard let hash = utxo.tx_hash,
                           let n = utxo.tx_output_n,
                           let val = utxo.value,
@@ -53,19 +53,18 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
                         return nil
                     }
                     
-                    let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: UInt64(val), script: script)
+                    let btx = BitcoinUnspentOutput(transactionHash: hash, outputIndex: n, amount: UInt64(val), outputScript: script)
                     return btx
                 } ?? []
                 
-                let btcResponse = BitcoinResponse(balance: satoshiBalance, hasUnconfirmed:  uncBalance != 0, txrefs: txs)
+                let btcResponse = BitcoinResponse(balance: satoshiBalance, hasUnconfirmed:  uncBalance != 0, unspentOutputs: txs)
                 return btcResponse
             }
             .eraseToAnyPublisher()
     }
     
     
-    @available(iOS 13.0, *)
-    func getFee() -> AnyPublisher<BtcFee, Error> {
+    func getFee() -> AnyPublisher<BitcoinFee, Error> {
         return Just(())
             .setFailureType(to: MoyaError.self)
             .flatMap { [unowned self] in
@@ -80,7 +79,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
             .retry(1)
             .eraseToAnyPublisher()
             .map(BlockcypherFeeResponse.self)
-            .tryMap { feeResponse -> BtcFee in
+            .tryMap { feeResponse -> BitcoinFee in
                 guard let minKb = feeResponse.low_fee_per_kb,
                       let normalKb = feeResponse.medium_fee_per_kb,
                       let maxKb = feeResponse.high_fee_per_kb else {
@@ -90,13 +89,12 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
                 let min = (Decimal(minKb)/kb).rounded(roundingMode: .down)
                 let normal = (Decimal(normalKb)/kb).rounded(roundingMode: .down)
                 let max = (Decimal(maxKb)/kb).rounded(roundingMode: .down)
-                let fee = BtcFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: normal, prioritySatoshiPerByte: max)
+                let fee = BitcoinFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: normal, prioritySatoshiPerByte: max)
                 return fee
             }
             .eraseToAnyPublisher()
     }
     
-    @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error> {
         return Just(())
             .setFailureType(to: MoyaError.self)

@@ -11,6 +11,7 @@ import TangemSdk
 import stellarsdk
 import BitcoinCore
 
+@available(iOS 13.0, *)
 public class WalletManagerFactory {
     private let config: BlockchainSdkConfig
     
@@ -77,12 +78,12 @@ public class WalletManagerFactory {
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: addresses)
                 
                 var providers = [BitcoinNetworkProvider]()
+                providers.append(BlockchainInfoNetworkProvider())
                 providers.append(BlockchairNetworkProvider(endpoint: .bitcoin, apiKey: config.blockchairApiKey))
                 providers.append(BlockcypherNetworkProvider(endpoint: BlockcypherEndpoint(coin: .btc, chain: testnet ? .test3: .main),
                                                               tokens: config.blockcypherTokens))
-               // providers[.main] = BitcoinMainProvider()
                 
-                $0.networkService = BitcoinNetworkService(providers: providers, isTestNet: testnet, defaultApi: .blockchair)
+                $0.networkService = BitcoinNetworkService(providers: providers)
             }
             
         case .litecoin:
@@ -98,7 +99,7 @@ public class WalletManagerFactory {
                 providers.append(BlockcypherNetworkProvider(endpoint: BlockcypherEndpoint(coin: .ltc, chain: .main), tokens: config.blockcypherTokens))
                 providers.append(BlockchairNetworkProvider(endpoint: .litecoin, apiKey: config.blockchairApiKey))
 
-                $0.networkService = LitecoinNetworkService(providers: providers, isTestNet: false, defaultApi: .blockchair)
+                $0.networkService = LitecoinNetworkService(providers: providers)
             }
             
         case .ducatus:

@@ -29,7 +29,6 @@ class BitcoreProvider {
             .eraseToAnyPublisher()
     }
     
-    @available(iOS 13.0, *)
     func send(_ transaction: String) -> AnyPublisher<BitcoreSendResponse, MoyaError> {
         return provider
             .requestPublisher(.send(txHex: transaction))

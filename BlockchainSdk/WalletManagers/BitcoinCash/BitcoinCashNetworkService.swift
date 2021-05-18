@@ -22,12 +22,10 @@ class BitcoinCashNetworkService {
         return provider.getInfo(address: address)
     }
     
-    @available(iOS 13.0, *)
-    func getFee() -> AnyPublisher<BtcFee, Error> {
+    func getFee() -> AnyPublisher<BitcoinFee, Error> {
         return provider.getFee()
     }
     
-    @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error> {
         return provider.send(transaction: transaction)
     }
