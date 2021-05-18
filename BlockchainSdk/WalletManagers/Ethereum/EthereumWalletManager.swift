@@ -38,6 +38,10 @@ public protocol EthereumGasLoader: AnyObject {
     func getGasLimit(amount: Amount, destination: String) -> AnyPublisher<BigUInt, Never>
 }
 
+public protocol EthereumTransactionSigner: AnyObject {
+    func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error>
+}
+
 class EthereumWalletManager: WalletManager {
     var txBuilder: EthereumTransactionBuilder!
     var networkService: EthereumNetworkService!
@@ -128,27 +132,15 @@ extension EthereumWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
-        guard let txForSign = txBuilder.buildForSign(transaction: transaction,
-                                                     nonce: txCount,
-                                                     gasLimit: gasLimit ?? getFixedGasLimit(for: transaction.amount)) else {
-            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
-        }
-        
-        return signer.sign(hash: txForSign.hash, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
-            .tryMap {[unowned self] signature throws -> String in
-                guard let tx = self.txBuilder.buildForSend(transaction: txForSign.transaction, hash: txForSign.hash, signature: signature) else {
-                    throw WalletError.failedToBuildTx
-                }
-                return "0x\(tx.toHexString())"
-        }
-        .flatMap {[unowned self] tx -> AnyPublisher<Void, Error> in
-            self.networkService.send(transaction: tx).map {[unowned self] sendResponse in
-                var tx = transaction
-                tx.hash = sendResponse
-                self.wallet.add(transaction: tx)
-            }.eraseToAnyPublisher()
-        }
-        .eraseToAnyPublisher()
+        sign(transaction, signer: signer)
+            .flatMap {[unowned self] tx -> AnyPublisher<Void, Error> in
+                self.networkService.send(transaction: tx).map {[unowned self] sendResponse in
+                    var tx = transaction
+                    tx.hash = sendResponse
+                    self.wallet.add(transaction: tx)
+                }.eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount],Error> {
@@ -169,6 +161,25 @@ extension EthereumWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
+}
+
+extension EthereumWalletManager: EthereumTransactionSigner {
+    func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
+        guard let txForSign = txBuilder.buildForSign(transaction: transaction,
+                                                     nonce: txCount,
+                                                     gasLimit: gasLimit ?? getFixedGasLimit(for: transaction.amount)) else {
+            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+        }
+        
+        return signer.sign(hash: txForSign.hash, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
+            .tryMap {[unowned self] signature throws -> String in
+                guard let tx = self.txBuilder.buildForSend(transaction: txForSign.transaction, hash: txForSign.hash, signature: signature) else {
+                    throw WalletError.failedToBuildTx
+                }
+                return "0x\(tx.toHexString())"
+            }
+            .eraseToAnyPublisher()
+    }
 }
 
 extension EthereumWalletManager: EthereumGasLoader {
