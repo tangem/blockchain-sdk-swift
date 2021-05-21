@@ -42,10 +42,18 @@ class BitcoinNetworkService: MultiNetworkProvider<BitcoinNetworkProvider>, Bitco
             var min: Decimal = 0
             var norm: Decimal = 0
             var priority: Decimal = 0
-            feeList.forEach {
-                min = max($0.minimalSatoshiPerByte, min)
-                norm = max($0.normalSatoshiPerByte, norm)
-                priority = max($0.prioritySatoshiPerByte, priority)
+            
+            if feeList.count > 2 {
+                let divider = Decimal(feeList.count - 1)
+                min = feeList.map { $0.minimalSatoshiPerByte }.sorted().dropFirst().reduce(0, +) / divider
+                norm = feeList.map { $0.normalSatoshiPerByte }.sorted().dropFirst().reduce(0, +) / divider
+                priority = feeList.map { $0.prioritySatoshiPerByte }.sorted().dropFirst().reduce(0, +) / divider
+            } else {
+                feeList.forEach {
+                    min = max($0.minimalSatoshiPerByte, min)
+                    norm = max($0.normalSatoshiPerByte, norm)
+                    priority = max($0.prioritySatoshiPerByte, priority)
+                }
             }
             
             guard min > 0 , norm > 0, priority > 0 else {
