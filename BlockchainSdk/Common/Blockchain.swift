@@ -23,12 +23,13 @@ public enum Blockchain {
     case xrp(curve: EllipticCurve)
     case ducatus
     case tezos(curve: EllipticCurve)
+    case dogecoin
     
     public var isTestnet: Bool {
         switch self {
         case .bitcoin(let testnet):
             return testnet
-        case .litecoin, .ducatus, .cardano, .xrp, .rsk, .tezos:
+        case .litecoin, .ducatus, .cardano, .xrp, .rsk, .tezos, .dogecoin:
             return false
         case .stellar(let testnet):
             return testnet
@@ -56,7 +57,7 @@ public enum Blockchain {
     
     public var decimalCount: Int {
         switch self {
-        case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance:
+        case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin:
             return 8
         case .ethereum, .rsk:
             return 18
@@ -95,6 +96,8 @@ public enum Blockchain {
             return "XRP"
         case .tezos:
             return "XTZ"
+        case .dogecoin:
+            return "DOGE"
         }
     }
     
@@ -140,6 +143,8 @@ public enum Blockchain {
             return ["xrpl:", "ripple:", "xrp:"]
         case .binance:
             return ["bnb:"]
+        case .dogecoin:
+            return ["doge:"]
         default:
             return [""]
         }
@@ -209,6 +214,8 @@ public enum Blockchain {
             return URL(string: "https://xrpscan.com/account/\(address)")
         case .tezos:
             return URL(string: "https://tezblock.io/account/\(address)")
+        case .dogecoin:
+            return URL(string: "https://blockchair.com/dogecoin/address/\(address)")
         }
     }
     
@@ -229,6 +236,7 @@ public enum Blockchain {
         case "xrp": return .xrp(curve: curve)
         case "duc": return .ducatus
         case "xtz": return .tezos(curve: curve)
+        case "doge": return .dogecoin
         default: return nil
         }
     }
@@ -259,6 +267,8 @@ public enum Blockchain {
             return XRPAddressService(curve: curve)
         case .tezos(let curve):
             return TezosAddressService(curve: curve)
+        case .dogecoin:
+            return BitcoinLegacyAddressService(networkParams: DogecoinNetworkParams())
         }
     }
 }
@@ -278,6 +288,7 @@ extension Blockchain: Equatable, Hashable, Codable {
         case .stellar: return "stellar"
         case .tezos: return "tezos"
         case .xrp: return "xrp"
+        case .dogecoin: return "dogecoin"
         }
     }
     
@@ -311,6 +322,7 @@ extension Blockchain: Equatable, Hashable, Codable {
         case "xrp": self = .xrp(curve: curve)
         case "ducatus": self = .ducatus
         case "tezos": self = .tezos(curve: curve)
+        case "dogecoin": self = .dogecoin
         default: throw BlockchainSdkError.decodingFailed
         }
     }
