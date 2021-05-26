@@ -110,7 +110,7 @@ public enum Blockchain {
         case .rsk:
             return "\(self)".uppercased()
         case .bsc(let testnet):
-            return testnet ? "Smart Chain - Testnet" : "Smart Chain"
+            return testnet ? "Binance Smart Chain - Testnet" : "Binance Smart Chain"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
