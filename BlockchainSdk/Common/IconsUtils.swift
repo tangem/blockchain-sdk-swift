@@ -75,6 +75,8 @@ fileprivate extension Blockchain {
             return nil
         case .dogecoin:
             return "doge"
+        case .bsc:
+            return "smartchain"
         }
     }
     

@@ -24,6 +24,7 @@ public enum Blockchain {
     case ducatus
     case tezos(curve: EllipticCurve)
     case dogecoin
+    case bsc(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -33,7 +34,7 @@ public enum Blockchain {
             return false
         case .stellar(let testnet):
             return testnet
-        case .ethereum(let testnet):
+        case .ethereum(let testnet), .bsc(let testnet):
             return testnet
         case .bitcoinCash(let testnet):
             return testnet
@@ -59,7 +60,7 @@ public enum Blockchain {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin:
             return 8
-        case .ethereum, .rsk:
+        case .ethereum, .rsk, .bsc:
             return 18
         case  .cardano, .xrp, .tezos:
             return 6
@@ -98,6 +99,8 @@ public enum Blockchain {
             return "XTZ"
         case .dogecoin:
             return "DOGE"
+        case .bsc:
+            return "BNB"
         }
     }
     
@@ -109,6 +112,8 @@ public enum Blockchain {
             return "XRP Ledger"
         case .rsk:
             return "\(self)".uppercased()
+        case .bsc(let testnet):
+            return testnet ? "Binance Smart Chain - Testnet" : "Binance Smart Chain"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -216,6 +221,10 @@ public enum Blockchain {
             return URL(string: "https://tezblock.io/account/\(address)")
         case .dogecoin:
             return URL(string: "https://blockchair.com/dogecoin/address/\(address)")
+        case .bsc(let testnet):
+            let baseUrl = testnet ? "https://testnet.bscscan.com/address/" : "https://bscscan.com/address/"
+            let link = baseUrl + address
+            return URL(string: link)
         }
     }
     
@@ -251,7 +260,7 @@ public enum Blockchain {
             return BitcoinLegacyAddressService(networkParams: LitecoinNetworkParams())
         case .stellar:
             return StellarAddressService()
-        case .ethereum:
+        case .ethereum, .bsc:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -289,6 +298,7 @@ extension Blockchain: Equatable, Hashable, Codable {
         case .tezos: return "tezos"
         case .xrp: return "xrp"
         case .dogecoin: return "dogecoin"
+        case .bsc: return "bsc"
         }
     }
     
@@ -323,6 +333,7 @@ extension Blockchain: Equatable, Hashable, Codable {
         case "ducatus": self = .ducatus
         case "tezos": self = .tezos(curve: curve)
         case "dogecoin": self = .dogecoin
+        case "bsc": self = .bsc(testnet: isTestnet)
         default: throw BlockchainSdkError.decodingFailed
         }
     }
