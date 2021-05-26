@@ -8,4 +8,6 @@
 
 import Foundation
 
-typealias DogecoinWalletManager = LitecoinWalletManager
+class DogecoinWalletManager: BitcoinWalletManager {
+    override var minimalFee: Decimal { 1.0 }
+}
