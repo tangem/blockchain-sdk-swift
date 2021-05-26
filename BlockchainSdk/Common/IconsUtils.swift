@@ -75,6 +75,8 @@ fileprivate extension Blockchain {
             return nil
         case .bsc:
             return "smartchain"
+        case .matic:
+            return "polygon"
         }
     }
     
