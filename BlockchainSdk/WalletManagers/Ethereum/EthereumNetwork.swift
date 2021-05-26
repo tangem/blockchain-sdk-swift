@@ -15,6 +15,8 @@ enum EthereumNetwork {
     case testnet(projectId: String)
     case tangem
     case rsk
+    case bscMainnet
+    case bscTestnet
     
     var chainId: BigUInt { return BigUInt(self.id) }
     
@@ -23,6 +25,8 @@ enum EthereumNetwork {
         case .mainnet, .tangem: return .ethereum(testnet: false)
         case .testnet: return .ethereum(testnet: true)
         case .rsk: return .rsk
+        case .bscMainnet: return .bsc(testnet: false)
+        case .bscTestnet: return .bsc(testnet: true)
         }
     }
     
@@ -34,6 +38,10 @@ enum EthereumNetwork {
             return 4
         case .rsk:
             return 30
+        case .bscMainnet:
+            return 56
+        case .bscTestnet:
+            return 97
         }
     }
     
@@ -47,6 +55,10 @@ enum EthereumNetwork {
             return URL(string: "https://eth.tangem.com/")!
         case .rsk:
             return URL(string: "https://public-node.rsk.co/")!
+        case .bscMainnet:
+            return URL(string: "https://bsc-dataseed.binance.org/")!
+        case .bscTestnet:
+            return URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!
         }
     }
     

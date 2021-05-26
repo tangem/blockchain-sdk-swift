@@ -73,6 +73,8 @@ fileprivate extension Blockchain {
             return "tezos"
         case .rsk, .ducatus:
             return nil
+        case .bsc:
+            return "smartchain"
         }
     }
     
