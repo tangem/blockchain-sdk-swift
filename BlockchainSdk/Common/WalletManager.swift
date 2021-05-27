@@ -44,11 +44,11 @@ public enum WalletError: Error, LocalizedError {
 public class WalletManager {
     internal(set) public var cardTokens: [Token]
     @Published public var wallet: Wallet
+    public var currentHost: String { "Not provided" }
     
     var defaultSourceAddress: String { wallet.address }
     var defaultChangeAddress: String { wallet.address }    
     var cancellable: Cancellable? = nil
-
     
     init(wallet: Wallet, cardTokens: [Token] = []) {
         self.wallet = wallet

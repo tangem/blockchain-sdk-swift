@@ -23,6 +23,10 @@ class CardanoWalletManager: WalletManager {
     var txBuilder: CardanoTransactionBuilder!
     var networkService: CardanoNetworkProvider!
     
+    override var currentHost: String {
+        networkService.host
+    }
+    
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {//check it
         cancellable = networkService
             .getInfo(addresses: wallet.addresses.map { $0.value })

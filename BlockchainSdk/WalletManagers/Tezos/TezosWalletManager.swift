@@ -15,6 +15,10 @@ class TezosWalletManager: WalletManager {
     var txBuilder: TezosTransactionBuilder!
     var networkService: TezosNetworkService!
     
+    override var currentHost: String {
+        networkService.host
+    }
+    
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(address: wallet.address)

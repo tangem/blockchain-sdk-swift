@@ -35,6 +35,7 @@ enum BitcoinNetworkApi {
 }
 
 protocol BitcoinNetworkProvider: AnyObject {
+    var host: String { get }
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error>
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error>
     func getFee() -> AnyPublisher<BitcoinFee, Error>

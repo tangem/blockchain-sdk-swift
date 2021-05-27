@@ -14,10 +14,16 @@ class BinanceNetworkService {
     let binance: BinanceChain
     let testnet: Bool
     
+    var host: String {
+        URL(string: endpoint.rawValue)!.hostOrUnknown
+    }
+    
+    private let endpoint: BinanceChain.Endpoint
+    
     init(isTestNet:Bool) {
         self.testnet = isTestNet
-        binance = isTestNet ? BinanceChain(endpoint: BinanceChain.Endpoint.testnet):
-            BinanceChain(endpoint: BinanceChain.Endpoint.mainnet)
+        endpoint = isTestNet ? .testnet : .mainnet
+        binance = BinanceChain(endpoint: endpoint)
     }
     
     func getInfo(address: String) -> AnyPublisher<BinanceInfoResponse, Error> {

@@ -19,6 +19,10 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     private let endpoint: BlockchairEndpoint
     private let apiKey: String
     
+    var host: String {
+        BlockchairTarget.fee(endpoint: endpoint, apiKey: "").baseURL.hostOrUnknown
+    }
+    
     init(endpoint: BlockchairEndpoint, apiKey: String) {
         self.endpoint = endpoint
         self.apiKey = apiKey

@@ -18,6 +18,10 @@ class BitcoinWalletManager: WalletManager {
     var minimalFeePerByte: Decimal { 10 }
     var minimalFee: Decimal { 0.00001 }
     
+    override var currentHost: String {
+        networkService.host
+    }
+    
     override func update(completion: @escaping (Result<Void, Error>)-> Void)  {
         cancellable = networkService.getInfo(addresses: wallet.addresses.map{ $0.value })
             .eraseToAnyPublisher()

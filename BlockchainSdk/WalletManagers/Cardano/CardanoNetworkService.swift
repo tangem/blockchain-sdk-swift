@@ -10,11 +10,16 @@ import Foundation
 import Combine
 
 protocol CardanoNetworkProvider {
+    var host: String { get }
     func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error>
     func send(transaction: Data) -> AnyPublisher<String, Error>
 }
 
 class CardanoNetworkService: MultiNetworkProvider<CardanoNetworkProvider>, CardanoNetworkProvider {
+    var host: String {
+        provider.host
+    }
+    
     func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
         providerPublisher { provider in
             provider.getInfo(addresses: addresses)

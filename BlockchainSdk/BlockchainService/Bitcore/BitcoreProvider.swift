@@ -13,6 +13,10 @@ import Combine
 class BitcoreProvider {
     let provider = MoyaProvider<BitcoreTarget>(plugins: [NetworkLoggerPlugin()])
     
+    var host: String {
+        BitcoreTarget.balance(address: "").baseURL.hostOrUnknown
+    }
+    
     func getBalance(address: String) -> AnyPublisher<BitcoreBalance, MoyaError> {
         return provider
             .requestPublisher(.balance(address: address))

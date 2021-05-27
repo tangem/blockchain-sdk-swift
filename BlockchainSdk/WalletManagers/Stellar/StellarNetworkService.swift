@@ -14,6 +14,10 @@ import Combine
 class StellarNetworkService {
     let stellarSdk: StellarSDK
     
+    var host: String {
+        URL(string: stellarSdk.horizonURL)!.hostOrUnknown
+    }
+    
     init(stellarSdk: StellarSDK) {
         self.stellarSdk = stellarSdk
     }

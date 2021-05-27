@@ -17,6 +17,10 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
     private var token: String? = nil
     private let tokens: [String]
     
+    var host: String {
+        getTarget(for: .fee).baseURL.hostOrUnknown
+    }
+    
     init(endpoint: BlockcypherEndpoint, tokens: [String]) {
         self.endpoint = endpoint
         self.tokens = tokens
@@ -27,7 +31,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
             .setFailureType(to: MoyaError.self)
             .flatMap {[unowned self] in
                 self.provider
-                    .requestPublisher(BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, unspentsOnly: true, limit: nil)))
+                    .requestPublisher(getTarget(for: .address(address: address, unspentsOnly: true, limit: nil)))
                     .filterSuccessfulStatusAndRedirectCodes()
             }
             .catch{[unowned self] error -> AnyPublisher<Response, MoyaError> in
@@ -69,7 +73,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
             .setFailureType(to: MoyaError.self)
             .flatMap { [unowned self] in
                 self.provider
-                    .requestPublisher(BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .fee))
+                    .requestPublisher(getTarget(for: .fee))
                     .filterSuccessfulStatusAndRedirectCodes()
             }
             .catch{[unowned self] error -> AnyPublisher<Response, MoyaError> in
@@ -99,7 +103,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
         return Just(())
             .setFailureType(to: MoyaError.self)
             .flatMap { [unowned self] in
-                self.provider.requestPublisher(BlockcypherTarget(endpoint: self.endpoint, token: self.token ?? self.getRandomToken(), targetType: .send(txHex: transaction)))
+                self.provider.requestPublisher(getTarget(for: .send(txHex: transaction), withRandomToken: true))
                     .filterSuccessfulStatusAndRedirectCodes()
             }
             .catch{ [unowned self] error -> AnyPublisher<Response, MoyaError> in
@@ -114,13 +118,13 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
     }
     
     func getTx(hash: String) -> AnyPublisher<BlockcypherTx, Error> {
-        publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .txs(txHash: hash)))
+        publisher(for: getTarget(for: .txs(txHash: hash)))
             .map(BlockcypherTx.self)
             .eraseError()
     }
     
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-        publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, unspentsOnly: false, limit: 2000)))
+        publisher(for: getTarget(for: .address(address: address, unspentsOnly: false, limit: 2000)))
             .map(BlockcypherAddressResponse.self)
             .map { addressResponse -> Int in
                 var sigCount = addressResponse.txrefs?.filter { $0.tx_output_n == -1 }.count ?? 0
@@ -129,6 +133,10 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
             }
             .mapError { $0 }
             .eraseToAnyPublisher()
+    }
+    
+    private func getTarget(for type: BlockcypherTarget.BlockcypherTargetType, withRandomToken: Bool = false) -> BlockcypherTarget {
+        .init(endpoint: endpoint, token: withRandomToken ? token ?? getRandomToken() : token, targetType: type)
     }
     
     private func publisher(for target: BlockcypherTarget) -> AnyPublisher<Response, MoyaError> {

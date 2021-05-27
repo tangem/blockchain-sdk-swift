@@ -11,6 +11,7 @@ import Moya
 import Combine
 
 protocol XRPNetworkServiceType {
+    var host: String { get }
     func getFee() -> AnyPublisher<XRPFeeResponse, Error>
     func send(blob: String) -> AnyPublisher<Bool, Error>
     func getInfo(account: String) -> AnyPublisher<XrpInfoResponse, Error>
@@ -18,6 +19,10 @@ protocol XRPNetworkServiceType {
 }
 
 class XRPNetworkService: MultiNetworkProvider<XRPNetworkProvider>, XRPNetworkServiceType {
+    var host: String {
+        provider.host
+    }
+    
     func getInfo(account: String) -> AnyPublisher<XrpInfoResponse, Error> {
         providerPublisher { provider in
             provider.getInfo(account: account)

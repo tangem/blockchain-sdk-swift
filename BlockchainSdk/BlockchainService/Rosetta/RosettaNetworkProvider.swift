@@ -22,6 +22,10 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
         return d
     }
     
+    var host: String {
+        URL(string: baseUrl.rawValue)!.hostOrUnknown
+    }
+    
     init(baseUrl: RosettaUrl) {
         self.baseUrl = baseUrl
     }

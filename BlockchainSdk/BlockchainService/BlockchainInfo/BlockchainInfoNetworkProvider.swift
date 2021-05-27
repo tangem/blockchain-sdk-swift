@@ -13,6 +13,10 @@ import Combine
 class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
     let provider = MoyaProvider<BlockchainInfoTarget>(plugins: [NetworkLoggerPlugin()])
     
+    var host: String {
+        BlockchainInfoTarget.address(address: "", offset: nil).baseURL.hostOrUnknown
+    }
+    
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         return addressUnspentsData(address)
             .tryMap {(addressResponse, unspentsResponse) throws -> BitcoinResponse in

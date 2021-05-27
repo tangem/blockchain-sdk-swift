@@ -14,6 +14,11 @@ import web3swift
 import BigInt
 
 class EthereumNetworkService: MultiNetworkProvider<EthereumJsonRpcProvider> {
+    
+    var host: String {
+        provider.host
+    }
+    
     private let network: EthereumNetwork
     private let jsonRpcProvider: [EthereumJsonRpcProvider] = []
 

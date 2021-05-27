@@ -48,6 +48,10 @@ class EthereumWalletManager: WalletManager {
     var txCount: Int = -1
     var pendingTxCount: Int = -1
     
+    override var currentHost: String {
+        networkService.host
+    }
+    
     private var gasLimit: BigUInt? = nil
     private var findTokensSubscription: AnyCancellable? = nil
     

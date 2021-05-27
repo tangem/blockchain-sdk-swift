@@ -32,6 +32,10 @@ class StellarWalletManager: WalletManager {
     var stellarSdk: StellarSDK!
     private var baseFee: Decimal?
     
+    override var currentHost: String {
+        networkService.host
+    }
+    
     override func update(completion: @escaping (Result<(), Error>)-> Void)  {
         cancellable = networkService
             .getInfo(accountId: wallet.address, isAsset: !cardTokens.isEmpty)
