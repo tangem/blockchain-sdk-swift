@@ -25,6 +25,7 @@ public enum Blockchain {
     case tezos(curve: EllipticCurve)
     case dogecoin
     case bsc(testnet: Bool)
+    case matic(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -39,6 +40,8 @@ public enum Blockchain {
         case .bitcoinCash(let testnet):
             return testnet
         case .binance(let testnet):
+            return testnet
+        case .matic(let testnet):
             return testnet
         }
     }
@@ -60,7 +63,7 @@ public enum Blockchain {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin:
             return 8
-        case .ethereum, .rsk, .bsc:
+        case .ethereum, .rsk, .bsc, .matic:
             return 18
         case  .cardano, .xrp, .tezos:
             return 6
@@ -101,6 +104,8 @@ public enum Blockchain {
             return "DOGE"
         case .bsc:
             return "BNB"
+        case .matic:
+            return "MATIC"
         }
     }
     
@@ -114,6 +119,8 @@ public enum Blockchain {
             return "\(self)".uppercased()
         case .bsc(let testnet):
             return testnet ? "Binance Smart Chain - Testnet" : "Binance Smart Chain"
+        case .matic(let testnet):
+            return testnet ? "Polygon (Matic) Testnet" : "Polygon (Matic)"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -225,6 +232,10 @@ public enum Blockchain {
             let baseUrl = testnet ? "https://testnet.bscscan.com/address/" : "https://bscscan.com/address/"
             let link = baseUrl + address
             return URL(string: link)
+        case .matic(let testnet):
+            let baseUrl = testnet ? "https://explorer-mumbai.maticvigil.com/address/" : "https://explorer-mainnet.maticvigil.com/address/"
+            let link = baseUrl + address
+            return URL(string: link)
         }
     }
     
@@ -246,6 +257,8 @@ public enum Blockchain {
         case "duc": return .ducatus
         case "xtz": return .tezos(curve: curve)
         case "doge": return .dogecoin
+        case "bsc": return .bsc(testnet: isTestnet)
+        case "matic": return .matic(testnet: isTestnet)
         default: return nil
         }
     }
@@ -260,7 +273,7 @@ public enum Blockchain {
             return BitcoinLegacyAddressService(networkParams: LitecoinNetworkParams())
         case .stellar:
             return StellarAddressService()
-        case .ethereum, .bsc:
+        case .ethereum, .bsc, .matic:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -299,6 +312,7 @@ extension Blockchain: Equatable, Hashable, Codable {
         case .xrp: return "xrp"
         case .dogecoin: return "dogecoin"
         case .bsc: return "bsc"
+        case .matic: return "matic"
         }
     }
     
@@ -334,6 +348,7 @@ extension Blockchain: Equatable, Hashable, Codable {
         case "tezos": self = .tezos(curve: curve)
         case "dogecoin": self = .dogecoin
         case "bsc": self = .bsc(testnet: isTestnet)
+        case "matic": self = .matic(testnet: isTestnet)
         default: throw BlockchainSdkError.decodingFailed
         }
     }

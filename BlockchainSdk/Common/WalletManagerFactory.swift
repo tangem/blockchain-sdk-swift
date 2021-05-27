@@ -162,6 +162,14 @@ public class WalletManagerFactory {
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: network)
                 $0.networkService = EthereumNetworkService(network: network, providers: [EthereumJsonRpcProvider(network: network)], blockcypherProvider: nil, blockchairProvider: nil)
             }
+            
+        case .matic(let testnet):
+            return EthereumWalletManager(wallet: wallet).then {
+                let network: EthereumNetwork = testnet ? .maticTestnet : .maticMainnet
+                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: network)
+                $0.networkService = EthereumNetworkService(network: network, providers: [EthereumJsonRpcProvider(network: network)], blockcypherProvider: nil, blockchairProvider: nil)
+            }
+            
         case .bitcoinCash(let testnet):
             return BitcoinCashWalletManager(wallet: wallet).then {
                 let provider = BlockchairNetworkProvider(endpoint: .bitcoinCash, apiKey: config.blockchairApiKey)
