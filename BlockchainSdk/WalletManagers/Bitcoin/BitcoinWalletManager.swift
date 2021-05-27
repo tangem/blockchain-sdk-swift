@@ -45,19 +45,21 @@ class BitcoinWalletManager: WalletManager {
                 var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: false, changeScript: nil, isReplacedByFee: false)
                 var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: false, changeScript: nil, isReplacedByFee: false)
                 
-                if minFee < self.minimalFee {
-                    minRate = ((self.minimalFee/minFee).rounded(scale: 0, roundingMode: .down) as NSDecimalNumber).intValue
-                    minFee = self.minimalFee
+                let minimalFeeRate = (((self.minimalFee * Decimal(minRate)) / minFee).rounded(scale: 0, roundingMode: .up) as NSDecimalNumber).intValue
+                let minimalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minimalFeeRate, senderPay: false, changeScript: nil, isReplacedByFee: false)
+                if minFee < minimalFee {
+                    minRate = minimalFeeRate
+                    minFee = minimalFee
                 }
                 
-                if normalFee < self.minimalFee {
-                    normalRate = ((self.minimalFee/normalFee).rounded(scale: 0, roundingMode: .down) as NSDecimalNumber).intValue
-                    normalFee = self.minimalFee
+                if normalFee < minimalFee {
+                    normalRate = minimalFeeRate
+                    normalFee = minimalFee
                 }
                 
-                if maxFee < self.minimalFee {
-                    maxRate = ((self.minimalFee/maxFee).rounded(scale: 0, roundingMode: .down) as NSDecimalNumber).intValue
-                    maxFee = self.minimalFee
+                if maxFee < minimalFee {
+                    maxRate = minimalFeeRate
+                    maxFee = minimalFee
                 }
                 
                 txBuilder.feeRates = [:]

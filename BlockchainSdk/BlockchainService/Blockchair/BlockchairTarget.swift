@@ -13,6 +13,7 @@ enum BlockchairEndpoint: String {
 	case bitcoin = "bitcoin"
     case bitcoinCash = "bitcoin-cash"
 	case litecoin = "litecoin"
+    case dogecoin
     case ethereum
     
     var blockchain: Blockchain {
@@ -25,6 +26,8 @@ enum BlockchairEndpoint: String {
 			return .litecoin
         case .ethereum:
             return .ethereum(testnet: false)
+        case .dogecoin:
+            return .dogecoin
         }
     }
 }

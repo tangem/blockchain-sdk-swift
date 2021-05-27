@@ -102,6 +102,22 @@ public class WalletManagerFactory {
                 $0.networkService = LitecoinNetworkService(providers: providers)
             }
             
+        case .dogecoin:
+            return DogecoinWalletManager(wallet: wallet).then {
+                let bitcoinManager = BitcoinManager(networkParams: DogecoinNetworkParams(),
+                                                    walletPublicKey: walletPublicKey,
+                                                    compressedWalletPublicKey: Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!,
+                                                    bip: .bip44)
+                
+                $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: addresses)
+                
+                var providers = [BitcoinNetworkProvider]()
+                providers.append(BlockcypherNetworkProvider(endpoint: BlockcypherEndpoint(coin: .doge, chain: .main), tokens: config.blockcypherTokens))
+                providers.append(BlockchairNetworkProvider(endpoint: .dogecoin, apiKey: config.blockchairApiKey))
+
+                $0.networkService = DogecoinNetworkService(providers: providers)
+            }
+            
         case .ducatus:
             return DucatusWalletManager(wallet: wallet).then {
                 let bitcoinManager = BitcoinManager(networkParams: DucatusNetworkParams(), walletPublicKey: walletPublicKey, compressedWalletPublicKey: Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!, bip: .bip44)
