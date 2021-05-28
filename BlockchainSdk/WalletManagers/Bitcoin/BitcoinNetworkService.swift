@@ -14,6 +14,10 @@ import Alamofire
 
 class BitcoinNetworkService: MultiNetworkProvider<BitcoinNetworkProvider>, BitcoinNetworkProvider {
     
+    var host: String {
+        provider.host
+    }
+    
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
         providerPublisher {
             $0.getInfo(addresses: addresses)

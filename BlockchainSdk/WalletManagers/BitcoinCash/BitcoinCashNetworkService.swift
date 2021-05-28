@@ -13,6 +13,10 @@ import TangemSdk
 
 class BitcoinCashNetworkService {
     private let provider: BlockchairNetworkProvider
+    
+    var currentHost: String {
+        provider.host
+    }
 
     init(provider: BlockchairNetworkProvider) {
         self.provider = provider

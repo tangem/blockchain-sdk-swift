@@ -31,6 +31,10 @@ class XRPWalletManager: WalletManager {
     var txBuilder: XRPTransactionBuilder!
     var networkService: XRPNetworkService!
     
+    override var currentHost: String {
+        networkService.host
+    }
+    
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(account: wallet.address)

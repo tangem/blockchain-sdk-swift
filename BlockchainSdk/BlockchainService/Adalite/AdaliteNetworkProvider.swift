@@ -15,6 +15,10 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
     private let adaliteUrl: AdaliteUrl
     private let provider = MoyaProvider<AdaliteTarget>()
     
+    var host: String {
+        AdaliteTarget.address(address: "", url: adaliteUrl).baseURL.hostOrUnknown
+    }
+    
     init(baseUrl: AdaliteUrl) {
         adaliteUrl = baseUrl
     }

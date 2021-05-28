@@ -14,6 +14,10 @@ class XRPNetworkProvider: XRPNetworkServiceType {
     let baseUrl: XrpUrl
     let provider = MoyaProvider<XrpTarget>()
     
+    var host: String {
+        baseUrl.url.hostOrUnknown
+    }
+    
     init(baseUrl: XrpUrl) {
         self.baseUrl = baseUrl
     }

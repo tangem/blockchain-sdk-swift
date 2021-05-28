@@ -17,6 +17,10 @@ class BitcoinCashWalletManager: WalletManager {
     var minimalFeePerByte: Decimal { 1 }
     var minimalFee: Decimal { 0.00001 }
     
+    override var currentHost: String {
+        networkService.currentHost
+    }
+    
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(address: self.wallet.address)

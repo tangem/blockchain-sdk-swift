@@ -16,6 +16,10 @@ class BinanceWalletManager: WalletManager {
     var networkService: BinanceNetworkService!
     private var latestTxDate: Date?
     
+    override var currentHost: String {
+        networkService.host
+    }
+    
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {//check it
         cancellable = networkService
             .getInfo(address: wallet.address)

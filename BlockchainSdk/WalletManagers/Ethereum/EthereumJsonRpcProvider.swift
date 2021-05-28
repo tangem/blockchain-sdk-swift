@@ -13,6 +13,10 @@ import Moya
 
 class EthereumJsonRpcProvider {
     
+    var host: String {
+        network.url.hostOrUnknown
+    }
+    
     private let provider: MoyaProvider<EthereumTarget> = .init(
         plugins: [NetworkLoggerPlugin()]
     )

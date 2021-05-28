@@ -17,6 +17,10 @@ class TezosNetworkService {
                                                                                                                                     logOptions: .verbose))])
     private var api: TezosTarget.TezosApi = .tezos
     
+    var host: String {
+        URL(string: api.rawValue)!.hostOrUnknown
+    }
+    
     func getInfo(address: String) -> AnyPublisher<TezosAddress, Error> {
         return Just(())
             .setFailureType(to: MoyaError.self)

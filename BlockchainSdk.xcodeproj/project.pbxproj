@@ -248,6 +248,7 @@
 		5DFF005F2521F772005203FB /* DucatusWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFF005E2521F771005203FB /* DucatusWalletManager.swift */; };
 		88095B618D07D706BB871FE6 /* Pods_BlockchainSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1CC9E29B257CD29E6143FDD /* Pods_BlockchainSdk.framework */; };
 		B004DAC026416B8A000863A4 /* EthereumResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B004DABF26416B8A000863A4 /* EthereumResponse.swift */; };
+		B0299635265FDAA9009C0481 /* URL+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04E556A265FB89400679EAF /* URL+.swift */; };
 		B03BF9D326319F3E000384EB /* IconsUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03BF9D226319F3E000384EB /* IconsUtils.swift */; };
 		B03D51AB2629AD5A0029DC43 /* XrpNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5CE0D42625C8EC009023EC /* XrpNetworkProvider.swift */; };
 		B044B3A126047F5500D9864F /* RosettaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B044B3A026047F5500D9864F /* RosettaResponse.swift */; };
@@ -256,6 +257,7 @@
 		B04AA04A2642C8B70075AE32 /* EthereumResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B004DABF26416B8A000863A4 /* EthereumResponse.swift */; };
 		B04AA04D2642C8FE0075AE32 /* BlockchairAddressBlockMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06C6792264286390037E7AD /* BlockchairAddressBlockMapper.swift */; };
 		B04E5569265F721900679EAF /* DogecoinNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EBBEF1265D0E7700D37141 /* DogecoinNetworkParams.swift */; };
+		B04E556B265FB89400679EAF /* URL+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04E556A265FB89400679EAF /* URL+.swift */; };
 		B04E8D5025F8F67F00821CBE /* RosettaNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04E8D4F25F8F67F00821CBE /* RosettaNetworkProvider.swift */; };
 		B056729B2570F9DC00A8CB59 /* BlockchainSdkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B056729A2570F9DC00A8CB59 /* BlockchainSdkError.swift */; };
 		B05BF634256F953500B50FD7 /* BitcoinAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05BF633256F953500B50FD7 /* BitcoinAddress.swift */; };
@@ -438,6 +440,7 @@
 		B022D3102537475B00D934D7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B03BF9D226319F3E000384EB /* IconsUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconsUtils.swift; sourceTree = "<group>"; };
 		B044B3A026047F5500D9864F /* RosettaResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosettaResponse.swift; sourceTree = "<group>"; };
+		B04E556A265FB89400679EAF /* URL+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+.swift"; sourceTree = "<group>"; };
 		B04E8D4F25F8F67F00821CBE /* RosettaNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosettaNetworkProvider.swift; sourceTree = "<group>"; };
 		B056729A2570F9DC00A8CB59 /* BlockchainSdkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainSdkError.swift; sourceTree = "<group>"; };
 		B05BF633256F953500B50FD7 /* BitcoinAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinAddress.swift; sourceTree = "<group>"; };
@@ -616,9 +619,9 @@
 		5D304395239A6B880066B8D9 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				5DEAFA9124447D350032E316 /* ThenProcessable.swift */,
 				5DE3BF95239E6D8E00E8815D /* BlockchainUtils */,
 				5DCC817923FAE70500DFC460 /* Moya+Combine */,
+				5DEAFA9124447D350032E316 /* ThenProcessable.swift */,
 				5D304396239A6B960066B8D9 /* String+.swift */,
 				5DED72B7239FE2E3006D79AE /* Decimal+.swift */,
 				5DED72B9239FE2F8006D79AE /* Int+.swift */,
@@ -628,6 +631,7 @@
 				5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */,
 				5D5E058B24FE749D00F04DE1 /* Bundle+.swift */,
 				B0C2C86625FBA10E00A61622 /* AnyPublisher+.swift */,
+				B04E556A265FB89400679EAF /* URL+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1303,6 +1307,7 @@
 				5D304399239A8C9C0066B8D9 /* BitcoinAddressService.swift in Sources */,
 				5D557CB723ACCB48009B32AF /* BlockchainInfoNetworkProvider.swift in Sources */,
 				5D26CEE7243CA4E200994CC0 /* DucatusAddressService.swift in Sources */,
+				B04E556B265FB89400679EAF /* URL+.swift in Sources */,
 				5D84550E243DE9B40072155E /* CardanoWalletManager.swift in Sources */,
 				B0EBBEF4265D0EE600D37141 /* DogecoinWalletManager.swift in Sources */,
 				B0A1D39D2625A1150013F0BF /* EthereumUtils.swift in Sources */,
@@ -1439,6 +1444,7 @@
 				5DDD82D025BF0DAD00166EA9 /* BitcoreProvider.swift in Sources */,
 				5DDD82B025BF0D2F00166EA9 /* BlockchainSdkConfig.swift in Sources */,
 				5DDD82DD25BF0E0900166EA9 /* StellarNetworkService.swift in Sources */,
+				B0299635265FDAA9009C0481 /* URL+.swift in Sources */,
 				5DDD834E25BF0F6D00166EA9 /* String+.swift in Sources */,
 				5DDD82ED25BF0E1500166EA9 /* BitcoinCashTransactionBuilder.swift in Sources */,
 				5DDD832125BF0EB500166EA9 /* BlockchainInfoResponse.swift in Sources */,
@@ -1607,6 +1613,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7C311A9913C3A9F993C89148 /* Pods-BlockchainSdk.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -1634,6 +1641,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0C79DB7FEDD8D4029AFA208D /* Pods-BlockchainSdk.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -1660,7 +1668,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A6F5E34B42B2043635FB1F51 /* Pods-BlockchainSdkTests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4897UJ6D8C;
 				INFOPLIST_FILE = BlockchainSdkTests/Info.plist;
@@ -1680,7 +1688,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8B8DF7D3E33EA0FFBCE2CCE6 /* Pods-BlockchainSdkTests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4897UJ6D8C;
 				INFOPLIST_FILE = BlockchainSdkTests/Info.plist;
