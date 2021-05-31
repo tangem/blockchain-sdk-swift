@@ -9,7 +9,7 @@
 import Foundation
 import Combine
 
-struct BtcFee {
+struct BitcoinFee {
     let minimalSatoshiPerByte: Decimal
     let normalSatoshiPerByte: Decimal
     let prioritySatoshiPerByte: Decimal
@@ -18,36 +18,31 @@ struct BtcFee {
 struct BitcoinResponse {
     let balance: Decimal
     let hasUnconfirmed: Bool
-    let txrefs: [BtcTx]
+    let txrefs: [BitcoinUnspentOutput]
     var pendingTxRefs: [PendingTransaction]
+    let unspentOutputs: [BitcoinUnspentOutput]
 }
 
-struct BtcTx {
-    let tx_hash: String
-    let tx_output_n: Int
-    let value: UInt64
-    let script: String
+struct BitcoinUnspentOutput {
+    let transactionHash: String
+    let outputIndex: Int
+    let amount: UInt64
+    let outputScript: String
 }
 
 enum BitcoinNetworkApi {
-    case main
+    case blockchainInfo
 	case blockchair
     case blockcypher
 }
 
-protocol BitcoinNetworkProvider {
+protocol BitcoinNetworkProvider: AnyObject {
+    var host: String { get }
     var canPushTransaction: Bool { get }
-    
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error>
-    
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error>
-    
-    @available(iOS 13.0, *)
-    func getFee() -> AnyPublisher<BtcFee, Error>
-    
-    @available(iOS 13.0, *)
+    func getFee() -> AnyPublisher<BitcoinFee, Error>
     func send(transaction: String) -> AnyPublisher<String, Error>
-	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error>
     
     func push(transaction: String) -> AnyPublisher<String, Error>
@@ -56,9 +51,8 @@ protocol BitcoinNetworkProvider {
 
 extension BitcoinNetworkProvider {
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
-        let publishers = addresses.map { getInfo(address: $0) }
-        return Publishers.MergeMany(publishers)
-            .collect()
-            .eraseToAnyPublisher()
+        .multiAddressPublisher(addresses: addresses, requestFactory: {
+            self.getInfo(address: $0)
+        })
     }
 }

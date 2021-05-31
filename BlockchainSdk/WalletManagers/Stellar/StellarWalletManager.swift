@@ -18,6 +18,8 @@ public enum StellarError: String, Error, LocalizedError {
     case failedToFindLatestLedger = "xlm_latest_ledger_error"
     case xlmCreateAccount = "no_account_xlm"
     case assetCreateAccount = "no_account_xlm_asset"
+    case assetNoAccountOnDestination = "no_account_on_destination_xlm_asset"
+    case assetNoTrustline = "no_trustline_xlm_asset"
     
     public var errorDescription: String? {
         return self.rawValue.localized
@@ -29,6 +31,10 @@ class StellarWalletManager: WalletManager {
     var networkService: StellarNetworkService!
     var stellarSdk: StellarSDK!
     private var baseFee: Decimal?
+    
+    override var currentHost: String {
+        networkService.host
+    }
     
     override func update(completion: @escaping (Result<(), Error>)-> Void)  {
         cancellable = networkService
@@ -55,15 +61,16 @@ class StellarWalletManager: WalletManager {
             _ = response.assetBalances
                 .map { (Token(symbol: $0.code,
                               contractAddress: $0.issuer,
-                              decimalCount: wallet.blockchain.decimalCount), $0.balance) }
+                              decimalCount: wallet.blockchain.decimalCount),
+                        $0.balance) }
                 .map { token, balance in
                     wallet.add(tokenValue: balance, for: token)
             }
         } else {
             for token in cardTokens {
-                if let assetBalance = response.assetBalances.first(where: { $0.code == token.symbol }) {
-                    wallet.add(tokenValue: assetBalance.balance, for: token)
-                }
+                let assetBalance = response.assetBalances.first(where: { $0.code == token.symbol })?.balance ?? 0.0
+                wallet.add(tokenValue: assetBalance, for: token)
+                
             }
         }
         let currentDate = Date()
@@ -78,23 +85,22 @@ class StellarWalletManager: WalletManager {
 extension StellarWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { false }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         return txBuilder.buildForSign(transaction: transaction)
             .flatMap { [unowned self] buildForSignResponse in
-                signer.sign(hashes: [buildForSignResponse.hash], cardId: self.cardId)
+                signer.sign(hash: buildForSignResponse.hash, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
                     .map { return ($0, buildForSignResponse) }.eraseToAnyPublisher()
         }
-        .tryMap {[unowned self] result throws -> (String,SignResponse) in
-            guard let tx = self.txBuilder.buildForSend(signature: result.0.signature, transaction: result.1.transaction) else {
+        .tryMap {[unowned self] result throws -> String in
+            guard let tx = self.txBuilder.buildForSend(signature: result.0, transaction: result.1.transaction) else {
                 throw WalletError.failedToBuildTx
             }
             
-            return (tx, result.0)
+            return tx
         }
-        .flatMap {[unowned self] values -> AnyPublisher<SignResponse, Error> in
-            self.networkService.send(transaction: values.0).map {[unowned self] sendResponse in
+        .flatMap {[unowned self] tx -> AnyPublisher<Void, Error> in
+            self.networkService.send(transaction: tx).map {[unowned self] sendResponse in
                  self.wallet.add(transaction: transaction)
-                return values.1
             } .eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()

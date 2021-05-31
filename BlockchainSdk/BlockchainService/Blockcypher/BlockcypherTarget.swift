@@ -25,6 +25,8 @@ struct BlockcypherEndpoint {
             return .ethereum(testnet: true)
         case (.ltc, .main), (.ltc, .test3):
             return .litecoin
+        case (.doge, _):
+            return .dogecoin
         }
     }
 }
@@ -33,6 +35,7 @@ enum BlockcypherCoin: String {
     case btc
     case ltc
     case eth
+    case doge
 }
 
 enum BlockcypherChain: String {

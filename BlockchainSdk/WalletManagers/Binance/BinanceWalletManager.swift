@@ -16,6 +16,10 @@ class BinanceWalletManager: WalletManager {
     var networkService: BinanceNetworkService!
     private var latestTxDate: Date?
     
+    override var currentHost: String {
+        networkService.host
+    }
+    
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {//check it
         cancellable = networkService
             .getInfo(address: wallet.address)
@@ -39,7 +43,8 @@ class BinanceWalletManager: WalletManager {
                 .filter { $0.key != wallet.blockchain.currencySymbol }
                 .map { (Token(symbol: $0.key.split(separator: "-").first.map {String($0)} ?? $0.key,
                               contractAddress: $0.key,
-                              decimalCount: wallet.blockchain.decimalCount), $0.value) }
+                              decimalCount: wallet.blockchain.decimalCount),
+                        $0.value) }
                 .map { token, balance in
                     wallet.add(tokenValue: balance, for: token)
             }
@@ -62,28 +67,26 @@ class BinanceWalletManager: WalletManager {
     }
 }
 
-@available(iOS 13.0, *)
 extension BinanceWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { false }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         guard let msg = txBuilder.buildForSign(transaction: transaction) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
         let hash = msg.encodeForSignature()
-        return signer.sign(hashes: [hash], cardId: cardId)
-            .tryMap {[unowned self] response -> (Message, SignResponse) in
-                guard let tx = self.txBuilder.buildForSend(signature: response.signature, hash: hash) else {
+        return signer.sign(hash: hash, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
+            .tryMap {[unowned self] signature -> Message in
+                guard let tx = self.txBuilder.buildForSend(signature: signature, hash: hash) else {
                     throw WalletError.failedToBuildTx
                 }
-                return (tx, response)
+                return tx
         }
-        .flatMap {[unowned self] values -> AnyPublisher<SignResponse, Error> in
-            self.networkService.send(transaction: values.0).map {[unowned self] response in
+        .flatMap {[unowned self] tx -> AnyPublisher<Void, Error> in
+            self.networkService.send(transaction: tx).map {[unowned self] response in
                 self.wallet.add(transaction: transaction)
                 self.latestTxDate = Date()
-                return values.1
             }.eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()

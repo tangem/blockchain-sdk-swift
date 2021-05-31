@@ -1,5 +1,5 @@
 //
-//  TezosProvider.swift
+//  TezosNetworkService.swift
 //  BlockchainSdk
 //
 //  Created by Alexander Osokin on 19.10.2020.
@@ -16,6 +16,10 @@ class TezosNetworkService {
                                                                                                                                     output: NetworkLoggerPlugin.Configuration.defaultOutput,
                                                                                                                                     logOptions: .verbose))])
     private var api: TezosTarget.TezosApi = .tezos
+    
+    var host: String {
+        URL(string: api.rawValue)!.hostOrUnknown
+    }
     
     func getInfo(address: String) -> AnyPublisher<TezosAddress, Error> {
         return Just(())
@@ -37,7 +41,7 @@ class TezosNetworkService {
                     throw WalletError.failedToParseNetworkResponse
             }
             
-            let balanceConverted = balance / Blockchain.tezos.decimalValue
+            let balanceConverted = balance / Blockchain.tezos(curve: .ed25519).decimalValue
             return TezosAddress(balance: balanceConverted, counter: counter)
         }
         .eraseToAnyPublisher()
@@ -111,7 +115,7 @@ class TezosNetworkService {
     func checkTransaction(protocol: String,
                           hash: String,
                           contents: [TezosOperationContent],
-                          signature: Data) -> AnyPublisher<Response, Error> {
+                          signature: String) -> AnyPublisher<Response, Error> {
         return Just(())
             .setFailureType(to: MoyaError.self)
             .flatMap {[unowned self] in
@@ -120,7 +124,7 @@ class TezosNetworkService {
                                                   endpoint: .preapplyOperations(body: [TezosPreapplyBody(protocol: `protocol`,
                                                                                                          branch: hash,
                                                                                                          contents: contents,
-                                                                                                         signature: self.encodeSignature(signature))])))
+                                                                                                         signature: signature)])))
                     .filterSuccessfulStatusCodes()
                     .eraseToAnyPublisher()
         }
@@ -144,20 +148,7 @@ class TezosNetworkService {
     }
     
     private func switchApi<T>(_ error: Error) -> AnyPublisher<T, Error> {
-        api = api == .tezos ? .tezosReserve : .tezos
+       // api = api == .tezos ? .tezosReserve : .tezos
         return Fail(error: error).eraseToAnyPublisher()
-    }
-    
-    private func encodeSignature(_ signature: Data) -> String {
-        let edsigPrefix = Data(hex: "09F5CD8612")
-        let prefixedSignature = edsigPrefix + signature
-        let checksum = prefixedSignature.sha256().sha256().prefix(4)
-        let prefixedSignatureWithChecksum = prefixedSignature + checksum
-//        let b58 =  String(base58: prefixedSignatureWithChecksum, alphabet: Base58String.btcAlphabet)
-//        let b581 = Base58.encode(prefixedSignatureWithChecksum)
-//        if b58 == b581 {
-//            print("equals")
-//        }
-        return Base58.encode(prefixedSignatureWithChecksum)
     }
 }

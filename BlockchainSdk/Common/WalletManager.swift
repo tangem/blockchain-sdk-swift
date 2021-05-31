@@ -17,6 +17,7 @@ public enum WalletError: Error, LocalizedError {
     case failedToParseNetworkResponse
     case failedToSendTx
     case failedToCalculateTxSize
+    case failedToLoadTokenBalance(token: Token)
     
     public var errorDescription: String? {
         switch self {
@@ -32,23 +33,24 @@ public enum WalletError: Error, LocalizedError {
             return "common_send_tx_error".localized
         case .failedToCalculateTxSize:
             return "common_estimate_tx_size_error".localized
+        case let .failedToLoadTokenBalance(token):
+            return String(format: "common_failed_to_load_token_balance".localized, token.name)
         }
     }
     
 }
 
+@available(iOS 13.0, *)
 public class WalletManager {
-    public let cardId: String
-    public let cardTokens: [Token]
+    internal(set) public var cardTokens: [Token]
     @Published public var wallet: Wallet
+    public var currentHost: String { "Not provided" }
     
     var defaultSourceAddress: String { wallet.address }
     var defaultChangeAddress: String { wallet.address }    
     var cancellable: Cancellable? = nil
-
     
-    init(cardId: String, wallet: Wallet, cardTokens: [Token] = []) {
-        self.cardId = cardId
+    init(wallet: Wallet, cardTokens: [Token] = []) {
         self.wallet = wallet
         self.cardTokens = cardTokens
     }
@@ -105,21 +107,34 @@ public class WalletManager {
         return nil
     }
     
+    public func removeToken(_ token: Token) {
+        cardTokens.removeAll(where: { $0 == token })
+        wallet.remove(token: token)
+    }
+    
+    public func addToken(_ token: Token) -> AnyPublisher<Amount, Error> {
+        if !cardTokens.contains(token) {
+            cardTokens.append(token)
+        }
+        
+        return Just(Amount(with: token, value: 0))
+            .setFailureType(to: Error.self)
+            .eraseToAnyPublisher()
+    }
+    
     func validateTransaction(amount: Amount, fee: Amount?) -> TransactionErrors {
         var errors = [TransactionError]()
         
-        if let amountError = validate(amount: amount) {
-            errors.append(amountError)
-        }
+        let amountError = validate(amount: amount)
         
         guard let fee = fee else {
+            errors.appendIfNotNil(amountError)
             return TransactionErrors(errors: errors)
         }
         
-        if let feeError = validate(fee: fee) {
-            errors.append(feeError)
-        }
-        
+        errors.appendIfNotNil(validate(fee: fee))
+        errors.appendIfNotNil(amountError)
+                
         let total = amount + fee
         
         if amount.type == fee.type,
@@ -144,7 +159,7 @@ public class WalletManager {
     }
     
     private func validateAmountValue(_ amount: Amount) -> Bool {
-        return amount.value > 0
+        return amount.value >= 0
     }
     
     private func validateAmountTotal(_ amount: Amount) -> Bool {
@@ -157,22 +172,30 @@ public class WalletManager {
     }
 }
 
+@available(iOS 13.0, *)
 public protocol TransactionSender {
     var allowsFeeSelection: Bool {get}
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error>
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error>
     func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error>
 }
 
+@available(iOS 13.0, *)
 public protocol TransactionSigner {
-    func sign(hashes: [Data], cardId: String) -> AnyPublisher<SignResponse, Error>
+    func sign(hashes: [Data], cardId: String, walletPublicKey: Data) -> AnyPublisher<[Data], Error>
+    func sign(hash: Data, cardId: String, walletPublicKey: Data) -> AnyPublisher<Data, Error>
 }
 
+@available(iOS 13.0, *)
 public protocol SignatureCountValidator {
 	func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error>
 }
 
 public protocol WithdrawalValidator {
     func validate(_ transaction: Transaction) -> WithdrawalWarning?
+}
+
+public protocol TokenFinder {
+    func findErc20Tokens(completion: @escaping (Result<Bool, Error>)-> Void)
 }
 
 public struct WithdrawalWarning {

@@ -9,21 +9,33 @@
 import Foundation
 import Sodium
 import stellarsdk
+import TangemSdk
 
 class TezosTransactionBuilder {
     var counter: Int? = nil
     var isPublicKeyRevealed: Bool? = nil
     
     private let walletPublicKey: Data
-
-    internal init(walletPublicKey: Data) {
-        self.walletPublicKey = walletPublicKey
+    private let walletPublicKeyOriginal: Data
+    private let curve: EllipticCurve
+    
+    internal init(walletPublicKey: Data, curve: EllipticCurve) {
+        self.walletPublicKeyOriginal = walletPublicKey
+        switch curve {
+        case .ed25519:
+            self.walletPublicKey = walletPublicKey
+        case .secp256k1:
+            self.walletPublicKey = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
+        case .secp256r1:
+            fatalError("Not implemented")
+        }
+        self.curve = curve
     }
     
     func buildToSign(forgedContents: String) -> Data? {
-        let genericOperationWatermark = "03"
-        let message = Data(hex: genericOperationWatermark + forgedContents).bytes
-        return Sodium().genericHash.hash(message: message, outputLength: 32).map { Data($0) }
+        let genericOperationWatermark = Data(TezosPrefix.Watermark.operation)
+        let message = genericOperationWatermark + Data(hex: forgedContents)
+        return Sodium().genericHash.hash(message: message.bytes, outputLength: 32).map { Data($0) }
     }
 
     func buildToSend(signature: Data, forgedContents: String) -> String {
@@ -47,7 +59,7 @@ class TezosTransactionBuilder {
                 counter: counter.description,
                 gasLimit: "10000",
                 storageLimit:  "0",
-                publicKey: encodePublicKey(walletPublicKey),
+                publicKey: encodePublicKey(),
                 destination: nil,
                 amount: nil)
             
@@ -64,16 +76,31 @@ class TezosTransactionBuilder {
             storageLimit:  "300", // set it to 0?
             publicKey: nil,
             destination: transaction.destinationAddress,
-            amount: (transaction.amount.value * Blockchain.tezos.decimalValue).description)
+            amount: (transaction.amount.value * Blockchain.tezos(curve: .ed25519).decimalValue).description)
         
         contents.append(transactionOp)
         return contents
     }
     
-    private func encodePublicKey(_ pkUncompressed: Data) -> String {
-        let edpkPrefix = Data(hex: "0D0F25D9")
-        let prefixedPubKey = edpkPrefix + pkUncompressed
-
+    func normalizeSignatureIfNeeded(_ signature: Data, hash: Data) throws -> Data {
+        guard curve == .secp256k1 else {
+            return signature
+        }
+        
+        guard let normalizedSignature = Secp256k1Utils.normalizeVerify(
+            secp256k1Signature: signature,
+            hash: hash,
+            publicKey: walletPublicKeyOriginal) else {
+            throw WalletError.failedToBuildTx
+        }
+        
+        return normalizedSignature
+    }
+    
+    private func encodePublicKey() -> String {
+        let publicPrefix = TezosPrefix.publicPrefix(for: curve)
+        let prefixedPubKey = publicPrefix + walletPublicKey
+        
         let checksum = prefixedPubKey.sha256().sha256().prefix(4)
         let prefixedHashWithChecksum = prefixedPubKey + checksum
 

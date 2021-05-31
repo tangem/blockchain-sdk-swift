@@ -14,6 +14,13 @@ class BitcoinCashWalletManager: WalletManager {
     var txBuilder: BitcoinCashTransactionBuilder!
     var networkService: BitcoinCashNetworkService!
     
+    var minimalFeePerByte: Decimal { 1 }
+    var minimalFee: Decimal { 0.00001 }
+    
+    override var currentHost: String {
+        networkService.currentHost
+    }
+    
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(address: self.wallet.address)
@@ -30,7 +37,7 @@ class BitcoinCashWalletManager: WalletManager {
     
     private func updateWallet(with response: BitcoinResponse) {
         wallet.add(coinValue: response.balance)
-        txBuilder.unspentOutputs = response.txrefs
+        txBuilder.unspentOutputs = response.unspentOutputs
         if response.hasUnconfirmed {
             if wallet.transactions.isEmpty {
                 wallet.addDummyPendingTransaction()
@@ -41,36 +48,33 @@ class BitcoinCashWalletManager: WalletManager {
     }
 }
 
-@available(iOS 13.0, *)
 extension BitcoinCashWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         guard let hashes = txBuilder.buildForSign(transaction: transaction) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
-        return signer.sign(hashes: hashes, cardId: cardId)
-            .tryMap {[unowned self] response -> (String, SignResponse) in
-                guard let tx = self.txBuilder.buildForSend(transaction: transaction, signature: response.signature) else {
+        return signer.sign(hashes: hashes, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
+            .tryMap {[unowned self] signatures -> String in
+                guard let tx = self.txBuilder.buildForSend(transaction: transaction, signatures: signatures) else {
                     throw WalletError.failedToBuildTx
                 }
-                return (tx.toHexString(), response)
+                return tx.toHexString()
         }
-        .flatMap {[unowned self] values -> AnyPublisher<SignResponse, Error> in
-            self.networkService.send(transaction: values.0).map {[unowned self] response in
+        .flatMap {[unowned self] tx -> AnyPublisher<Void, Error> in
+            self.networkService.send(transaction: tx).map {[unowned self] response in
                 self.wallet.add(transaction: transaction)
-                return values.1
             }.eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }
     
-    @available(iOS 13.0, *)
     func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap {[unowned self] response throws -> [Amount] in
-                let feePerByte = response.minimalSatoshiPerByte
+                let feePerByte = max(response.minimalSatoshiPerByte, self.minimalFeePerByte)
                 
                 guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount, fee: Amount(with: amount, value: 0.0001),
                                                                                   sourceAddress: self.wallet.address,
@@ -79,8 +83,8 @@ extension BitcoinCashWalletManager: TransactionSender {
                     throw WalletError.failedToCalculateTxSize
                 }
                 
-                let fee = (feePerByte * estimatedTxSize)
-                let relayFee = Decimal(0.00001)
+                let fee = (feePerByte * estimatedTxSize) / Blockchain.bitcoinCash(testnet: false).decimalValue
+                let relayFee = self.minimalFee
                 let finalFee = fee >= relayFee ? fee : relayFee
                 
                 return [
@@ -94,8 +98,9 @@ extension BitcoinCashWalletManager: TransactionSender {
         guard let unspentOutputsCount = txBuilder.unspentOutputs?.count else {
             return nil
         }
-        
-        guard let tx = txBuilder.buildForSend(transaction: transaction, signature: Data(repeating: UInt8(0x01), count: 64 * unspentOutputsCount)) else {
+        let signature = Data(repeating: UInt8(0x01), count: 64)
+        let signatures: [Data] = .init(repeating: signature, count: unspentOutputsCount)
+        guard let tx = txBuilder.buildForSend(transaction: transaction, signatures: signatures) else {
             return nil
         }
         

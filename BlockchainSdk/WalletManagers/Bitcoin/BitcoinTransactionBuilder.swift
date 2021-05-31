@@ -12,13 +12,13 @@ import HDWalletKit
 import BitcoinCore
 
 class BitcoinTransactionBuilder {
-	var unspentOutputs: [BtcTx]? {
+	var unspentOutputs: [BitcoinUnspentOutput]? {
 		didSet {
 			let utxoDTOs: [UtxoDTO]? = unspentOutputs?.map {
-				return UtxoDTO(hash: Data(Data(hex: $0.tx_hash).reversed()),
-							   index: $0.tx_output_n,
-							   value: Int($0.value),
-							   script: Data(hex: $0.script))
+				return UtxoDTO(hash: Data(Data(hex: $0.transactionHash).reversed()),
+							   index: $0.outputIndex,
+							   value: Int($0.amount),
+							   script: Data(hex: $0.outputScript))
 			}
 			if let utxos = utxoDTOs {
 				let spendingScripts: [Script] = walletScripts.compactMap { script in
@@ -58,9 +58,11 @@ class BitcoinTransactionBuilder {
 	
 	public func buildForSign(transaction: Transaction, isReplacedByFee: Bool) -> [Data]? {
 		do {
+            guard let feeRate = feeRates[transaction.fee.value] else { return nil }
+            
 			let hashes = try bitcoinManager.buildForSign(target: transaction.destinationAddress,
 														 amount: transaction.amount.value,
-                                                         feeRate: feeRates[transaction.fee.value]!,
+                                                         feeRate: feeRate,
                                                          changeScript: changeScript,
                                                          isReplacedByFee: isReplacedByFee)
 			return hashes
@@ -70,15 +72,16 @@ class BitcoinTransactionBuilder {
 		}
 	}
 	
-	public func buildForSend(transaction: Transaction, signature: Data, hashesCount: Int, isReplacedByFee: Bool) -> Data? {
-		guard let signatures = splitSignatureAndConvertToDER(signature, hashesCount: hashesCount) else {
+	public func buildForSend(transaction: Transaction, signatures: [Data], isReplacedByFee: Bool) -> Data? {
+        guard let signatures = convertToDER(signatures),
+              let feeRate = feeRates[transaction.fee.value] else {
 			return nil
 		}
 		
 		do {
 			return try bitcoinManager.buildForSend(target: transaction.destinationAddress,
 												   amount: transaction.amount.value,
-												   feeRate: feeRates[transaction.fee.value]!,
+												   feeRate: feeRate,
                                                    derSignatures: signatures,
                                                    changeScript: changeScript,
                                                    isReplacedByFee: isReplacedByFee)
@@ -88,23 +91,17 @@ class BitcoinTransactionBuilder {
 		}
 	}
 	
-	private func splitSignatureAndConvertToDER(_ signature: Data, hashesCount: Int) -> [Data]? {
-		var derSigs = [Data]()
-		for index in 0..<hashesCount {
-			let offsetMin = index*64
-			let offsetMax = offsetMin+64
-			guard offsetMax <= signature.count else {
-				return nil
-			}
-			
-			let sig = signature[offsetMin..<offsetMax]
-			guard let signDer = Secp256k1Utils.serializeToDer(secp256k1Signature: sig) else {
-				return nil
-			}
-			
-			derSigs.append(signDer)
-		}
-		
+	private func convertToDER(_ signatures: [Data]) -> [Data]? {
+        var derSigs = [Data]()
+        
+        for signature in signatures {
+            guard let signDer = Secp256k1Utils.serializeToDer(secp256k1Signature: signature) else {
+                return nil
+            }
+            
+            derSigs.append(signDer)
+        }
+    
 		return derSigs
 	}
 }

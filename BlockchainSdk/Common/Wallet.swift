@@ -9,9 +9,10 @@
 import Foundation
 
 public struct Wallet {
+    public let cardId: String
     public let blockchain: Blockchain
     public let addresses: [Address]
-    
+    public let publicKey: Data
     public var amounts: [Amount.AmountType:Amount] = [:]
     public var transactions: [Transaction] = []
     public var state: WalletState = .created
@@ -25,7 +26,7 @@ public struct Wallet {
 	}
     
     public var isEmpty: Bool {
-        return amounts.values.filter ({ !$0.isEmpty }).count == 0
+        return amounts.filter { $0.key != .reserve && !$0.value.isEmpty }.count == 0
     }
 
     public var hasPendingTx: Bool {
@@ -53,9 +54,15 @@ public struct Wallet {
             .reduce(0, { $0 + $1.amount.value + $1.fee.value })
     }
     
-    internal init(blockchain: Blockchain, addresses: [Address]) {
+    public func hasPendingTx(for amountType: Amount.AmountType) -> Bool {
+        return transactions.filter { $0.status == .unconfirmed && $0.amount.type == amountType }.count > 0
+    }
+    
+    internal init(blockchain: Blockchain, addresses: [Address], cardId: String, publicKey: Data) {
         self.blockchain = blockchain
         self.addresses = addresses
+        self.publicKey = publicKey
+        self.cardId = cardId
     }
     
     /// Explore URL for specific address
@@ -94,9 +101,11 @@ public struct Wallet {
         add(amount: reserveAmount)
     }
     
-    mutating func add(tokenValue: Decimal, for token: Token) {
+    @discardableResult
+    mutating func add(tokenValue: Decimal, for token: Token) -> Amount {
         let tokenAmount = Amount(with: token, value: tokenValue)
         add(amount: tokenAmount)
+        return tokenAmount
     }
     
     mutating func add(amount: Amount) {
@@ -109,7 +118,15 @@ public struct Wallet {
         transactions.append(tx)
     }
     
-    mutating func addPendingTransaction(amount: Amount, fee: Amount, sourceAddress: String, destinationAddress: String, date: Date, changeAddress: String = .unknown, sequence: Int, isAlreadyReplacedByFee: Bool) {
+
+    mutating func addPendingTransaction(amount: Amount,
+                                        fee: Amount,
+                                        sourceAddress: String,
+                                        destinationAddress: String,
+                                        date: Date,
+                                        changeAddress: String = .unknown,
+                                        sequence: Int,
+                                        isAlreadyReplacedByFee: Bool) {
         transactions.append(Transaction(amount: amount,
                                         fee: fee,
                                         sourceAddress: sourceAddress,
@@ -140,6 +157,10 @@ public struct Wallet {
         tx.date = Date()
         transactions.append(tx)
     }
+    
+    mutating func remove(token: Token) {
+        amounts[.token(value: token)] = nil
+    }
 }
 
 extension Wallet {
@@ -147,8 +168,4 @@ extension Wallet {
         case created
         case loaded
     }
-}
-
-extension String {
-    static let unknown = "unknown"
 }

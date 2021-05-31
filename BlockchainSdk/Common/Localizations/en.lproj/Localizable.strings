@@ -10,6 +10,10 @@
 
 "no_account_xlm_asset" = "To create account send 1.5+ XLM to this address";
 
+"no_trustline_xlm_asset" = "The destination account does not have a trustline for the asset being sent.";
+
+"no_account_on_destination_xlm_asset" = "The destination account is not created. To create account send 1+ XLM.";
+
 "no_account_xrp" = "Load 20+ XRP to create account";
 
 "no_account_bnb" = "To create account send funds to this address";
@@ -26,6 +30,7 @@
 
 "common_estimate_tx_size_error" = "Failed to calculate transaction size";
 
+"common_failed_to_load_token_balance" = "Failed to load %@ token balance";
 
 
 "cardano_missing_unspents" = "Missing unspents";
@@ -52,6 +57,7 @@
 
 "eth_token_balance_parse_error" = "Failed to parse token balance";
 
+"failed_to_load_fee_error" = "Failed to load fee from network";
 
 
 "xlm_latest_ledger_error" = "Couldn't find latest ledger";

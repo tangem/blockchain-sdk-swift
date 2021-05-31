@@ -12,9 +12,13 @@ import Combine
 import TangemSdk
 
 class BitcoinCashNetworkService {
-    private let provider: BlockchairProvider
+    private let provider: BlockchairNetworkProvider
+    
+    var currentHost: String {
+        provider.host
+    }
 
-    init(provider: BlockchairProvider) {
+    init(provider: BlockchairNetworkProvider) {
         self.provider = provider
     }
     
@@ -22,12 +26,10 @@ class BitcoinCashNetworkService {
         return provider.getInfo(address: address)
     }
     
-    @available(iOS 13.0, *)
-    func getFee() -> AnyPublisher<BtcFee, Error> {
+    func getFee() -> AnyPublisher<BitcoinFee, Error> {
         return provider.getFee()
     }
     
-    @available(iOS 13.0, *)
     func send(transaction: String) -> AnyPublisher<String, Error> {
         return provider.send(transaction: transaction)
     }

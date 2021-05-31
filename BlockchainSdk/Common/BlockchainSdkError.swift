@@ -13,12 +13,16 @@ public enum BlockchainSdkError: Int, LocalizedError {
 	case failedToCreateMultisigScript = 1
 	case failedToConvertPublicKey = 2
 	case notImplemented = -1000
+    case decodingFailed
+    case failedToLoadFee
 	
 	public var errorDescription: String? {
 		switch self {
 		case .signatureCountNotMatched, .notImplemented:
 			// TODO: Replace with proper error message. Android sending instead of message just code, and client app decide what message to show to user
 			return "\(rawValue)"
+        case .failedToLoadFee:
+            return "failed_to_load_fee_error".localized
 		default:
 			return "\(rawValue)"
 		}

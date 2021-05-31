@@ -22,6 +22,8 @@ class XRPTransactionBuilder {
             key = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
         case .ed25519:
             key = [UInt8(0xED)] + walletPublicKey
+        case .secp256r1:
+            fatalError("secp256r1 is not supported by XRP")
         }
         self.walletPublicKey = key
         self.curve = curve
@@ -38,6 +40,8 @@ class XRPTransactionBuilder {
             return (tx, dataToSign)
         case .secp256k1:
             return  (tx, dataToSign.sha512Half())
+        case .secp256r1:
+            fatalError("secp256r1 is not supported by XRP")
         }
     }
     
@@ -52,6 +56,8 @@ class XRPTransactionBuilder {
             }
             
             sig = der
+        case .secp256r1:
+            fatalError("secp256r1 is not supported by XRP")
         }
         
         guard let signedTx = try? transaction.sign(signature: sig.toBytes) else {
@@ -75,14 +81,20 @@ class XRPTransactionBuilder {
         
         let decodedTag = decodedXAddress?.tag
         let explicitTag = (transaction.params as? XRPTransactionParams)?.destinationTag
-
+        
         let destinationTag: UInt32? = try {
-            if decodedTag != nil {
-                if decodedTag != explicitTag {
-                    throw "xrp_distinct_tags_found".localized
+            switch (decodedTag, explicitTag) {
+            case (.some(let tag), .none):
+                return tag
+            case (.none, .some(let tag)):
+                return tag
+            case (.some(let tag1), .some(let tag2)):
+                if tag1 != tag2 {
+                    throw XRPError.distinctTagsFound
                 }
+                return tag1
+            case (.none, .none): return nil
             }
-            return explicitTag
         }()
         
          // dictionary containing partial transaction fields

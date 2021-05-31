@@ -10,6 +10,10 @@
 
 "no_account_xlm_asset" = "Um ein Konto zu erstellen, senden Sie 1.5+ XLM an diese Adresse ";
 
+"no_trustline_xlm_asset" = "The destination account does not have a trustline for the asset being sent.";
+
+"no_account_on_destination_xlm_asset" = "The destination account is not created. To create account send 1+ XLM.";
+
 "no_account_xrp" = "Laden Sie 20+ XRP auf um ein Konto zu erstellen";
 
 "no_account_bnb" = "Senden Sie Geld an diese Andresse um ein Konto zu erstellen";
@@ -25,6 +29,7 @@
 
 "common_estimate_tx_size_error" = "Berechnung des Transaktionsumfangs fehlgeschlagen";
 
+"common_failed_to_load_token_balance" = "Failed to load %@ token balance";
 
 
 "cardano_missing_unspents" = "keine unverbraucht";
@@ -77,6 +82,8 @@
 "send_validation_amount_exceeds_balance" = "Der Betrag geht über die Bilanz hinaus";
 
 "send_error_dust_amount_format" = "Minimaler Betrag ist %@";
+
+"send_error_dust_change_format" = "Minimaler Wechselgeld ist %@";
 
 "send_error_invalid_fee_value" = "Falsche Gebühr";
 

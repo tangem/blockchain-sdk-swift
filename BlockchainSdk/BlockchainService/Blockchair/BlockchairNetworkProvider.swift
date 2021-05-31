@@ -1,5 +1,5 @@
 //
-//  BlockchairProvider.swift
+//  BlockchairNetworkProvider.swift
 //  BlockchainSdk
 //
 //  Created by Alexander Osokin on 14.02.2020.
@@ -14,12 +14,13 @@ import Alamofire
 import SwiftyJSON
 import BitcoinCore
 
-class BlockchairProvider: BitcoinNetworkProvider {
+class BlockchairNetworkProvider: BitcoinNetworkProvider {
     let provider = MoyaProvider<BlockchairTarget>()
     
     private let endpoint: BlockchairEndpoint
     private let apiKey: String
     
+
     private let jsonDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -31,6 +32,10 @@ class BlockchairProvider: BitcoinNetworkProvider {
         true
     }
     
+    var host: String {
+        BlockchairTarget.fee(endpoint: endpoint, apiKey: "").baseURL.hostOrUnknown
+    }
+    
     init(endpoint: BlockchairEndpoint, apiKey: String) {
         self.endpoint = endpoint
         self.apiKey = apiKey
@@ -39,8 +44,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
 	func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: true, apiKey: apiKey))
             .tryMap { [unowned self] json -> (BitcoinResponse, [BlockchairTransactionShort]) in //TODO: refactor to normal JSON
-                let data = json["data"]
-                let addr = data["\(address)"]
+                let addr = self.mapAddressBlock(address, json: json)
                 let address = addr["address"]
                 let balance = address["balance"].stringValue
                 let script = address["script_hex"].stringValue
@@ -59,14 +63,14 @@ class BlockchairProvider: BitcoinNetworkProvider {
                         throw WalletError.failedToParseNetworkResponse
                 }
                 
-                let utxs: [BtcTx] = utxos.compactMap { utxo -> BtcTx?  in
+                let utxs: [BitcoinUnspentOutput] = utxos.compactMap { utxo -> BitcoinUnspentOutput?  in
                     guard let hash = utxo.transactionHash,
                         let n = utxo.index,
                         let val = utxo.value else {
                             return nil
                     }
                     
-                    let btx = BtcTx(tx_hash: hash, tx_output_n: n, value: val, script: script)
+                    let btx = BitcoinUnspentOutput(transactionHash: hash, outputIndex: n, amount: val, outputScript: script)
                     return btx
                 }
                 
@@ -74,15 +78,13 @@ class BlockchairProvider: BitcoinNetworkProvider {
                 let hasUnconfirmed = pendingTxs.count != 0
                 
                 let decimalBtcBalance = decimalSatoshiBalance / self.endpoint.blockchain.decimalValue
-                let bitcoinResponse = BitcoinResponse(balance: decimalBtcBalance, hasUnconfirmed: hasUnconfirmed, txrefs: utxs, pendingTxRefs: [])
+                let bitcoinResponse = BitcoinResponse(balance: decimalBtcBalance, hasUnconfirmed: hasUnconfirmed, pendingTxRefs: [], unspentOutputs: utxs)
                 
                 return (bitcoinResponse, pendingTxs)
             }
             .flatMap { [unowned self] (resp: (BitcoinResponse, [BlockchairTransactionShort])) -> AnyPublisher<BitcoinResponse, Error> in
                 guard resp.1.count > 0 else {
-                    return Just(resp.0)
-                        .setFailureType(to: Error.self)
-                        .eraseToAnyPublisher()
+                    return .justWithError(output: resp.0)
                 }
                 
                 let hashes = resp.1.map { $0.hash }
@@ -115,16 +117,16 @@ class BlockchairProvider: BitcoinNetworkProvider {
                             })
                         }
                         let oldResp = resp.0
-                        return BitcoinResponse(balance: oldResp.balance, hasUnconfirmed: oldResp.hasUnconfirmed, txrefs: oldResp.txrefs, pendingTxRefs: pendingBtcTxs)
+                        return BitcoinResponse(balance: oldResp.balance, hasUnconfirmed: oldResp.hasUnconfirmed, pendingTxRefs: pendingBtcTxs, unspentOutputs: oldResp.unspentOutputs)
                     }
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
     
-    func getFee() -> AnyPublisher<BtcFee, Error> {
+    func getFee() -> AnyPublisher<BitcoinFee, Error> {
 		publisher(for: .fee(endpoint: endpoint, apiKey: apiKey))
-            .tryMap { json throws -> BtcFee in
+            .tryMap { json throws -> BitcoinFee in
                 let data = json["data"]
                 guard let feePerByteSatoshi = data["suggested_transaction_fee_per_byte_sat"].int  else {
                     throw WalletError.failedToGetFee
@@ -134,7 +136,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
                 let min = (Decimal(0.8) * normal).rounded(roundingMode: .down)
                 let max = (Decimal(1.2) * normal).rounded(roundingMode: .down)
 
-                let fee = BtcFee(minimalSatoshiPerByte: min,
+                let fee = BitcoinFee(minimalSatoshiPerByte: min,
                                  normalSatoshiPerByte: normal,
                                  prioritySatoshiPerByte: max)
                 return fee
@@ -163,7 +165,7 @@ class BlockchairProvider: BitcoinNetworkProvider {
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
 		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: false, apiKey: apiKey))
 			.map { json -> Int in
-				let addr = json["data"]["\(address)"]
+                let addr = self.mapAddressBlock(address, json: json)
 				let address = addr["address"]
 				
 				guard
@@ -207,3 +209,5 @@ class BlockchairProvider: BitcoinNetworkProvider {
         return tx
     }
 }
+
+extension BlockchairNetworkProvider: BlockchairAddressBlockMapper {}

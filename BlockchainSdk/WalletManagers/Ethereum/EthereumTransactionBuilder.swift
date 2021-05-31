@@ -11,7 +11,7 @@ import BigInt
 import web3swift
 import TangemSdk
 
-class EthereumTransactionBuilder {    
+class EthereumTransactionBuilder {
     private let walletPublicKey: Data
     private let network: EthereumNetwork
     init(walletPublicKey: Data, network: EthereumNetwork) {
@@ -20,18 +20,19 @@ class EthereumTransactionBuilder {
     }
     
     public func buildForSign(transaction: Transaction, nonce: Int, gasLimit: BigUInt) -> (hash: Data, transaction: EthereumTransaction)? {
-        guard nonce >= 0 else {
+        let params = transaction.params as? EthereumTransactionParams
+        let nonceValue = BigUInt(params?.nonce ?? nonce)
+        
+        guard nonceValue >= 0 else {
             return nil
         }
-        
-        let nonceValue = BigUInt(nonce)
         
         guard let feeValue = Web3.Utils.parseToBigUInt("\(transaction.fee.value)", decimals: transaction.fee.decimals),
             let amountValue = Web3.Utils.parseToBigUInt("\(transaction.amount.value)", decimals: transaction.amount.decimals) else {
                 return nil
         }
         
-        guard let data = getData(for: transaction.amount, targetAddress: transaction.destinationAddress) else {
+        guard let data = params?.data ?? getData(for: transaction.amount, targetAddress: transaction.destinationAddress) else {
             return nil
         }
         
@@ -43,9 +44,10 @@ class EthereumTransactionBuilder {
                                                     fee: feeValue,
                                                     targetAddress: targetAddr,
                                                     nonce: nonceValue,
-                                                    gasLimit: gasLimit,
+                                                    gasLimit: params?.gasLimit ?? gasLimit,
                                                     data: data,
-                                                    ignoreCheckSum: transaction.amount.type != .coin) else {
+                                                    ignoreCheckSum: transaction.amount.type != .coin,
+                                                    network: network) else {
                                                         return nil
         }
         
@@ -86,7 +88,7 @@ class EthereumTransactionBuilder {
         
         let amountData = Data(hex: amountString)
         
-        guard let addressData = EthereumAddress(targetAddress)?.addressData else {
+        guard let addressData = EthereumAddress(targetAddress, network: network.web3SwiftNetwork)?.addressData else {
             return nil
         }
         let prefixData = Data(hex: "a9059cbb000000000000000000000000")
@@ -94,10 +96,18 @@ class EthereumTransactionBuilder {
     }
 }
 
+extension EthereumNetwork {
+    var web3SwiftNetwork: web3swift.Networks {
+        switch self {
+        case .rsk: return .RSK
+        case .testnet: return .Rinkeby
+        default: return .Mainnet
+        }
+    }
+}
 
 extension EthereumTransaction {
     func encodeForSend(chainID: BigUInt? = nil) -> Data? {
-        
         let encodeV = chainID == nil ? self.v :
             self.v - 27 + chainID! * 2 + 35
         
@@ -105,10 +115,10 @@ extension EthereumTransaction {
         return RLP.encode(fields)
     }
     
-    init?(amount: BigUInt, fee: BigUInt, targetAddress: String, nonce: BigUInt, gasLimit: BigUInt = 21000, data: Data, ignoreCheckSum: Bool, v: BigUInt = 0, r: BigUInt = 0, s: BigUInt = 0) {
+    init?(amount: BigUInt, fee: BigUInt, targetAddress: String, nonce: BigUInt, gasLimit: BigUInt = 21000, data: Data, ignoreCheckSum: Bool, v: BigUInt = 0, r: BigUInt = 0, s: BigUInt = 0, network: EthereumNetwork) {
         let gasPrice = fee / gasLimit
         
-        guard let ethAddress = EthereumAddress(targetAddress, type: .normal, ignoreChecksum: ignoreCheckSum) else {
+        guard let ethAddress = EthereumAddress(targetAddress, type: .normal, ignoreChecksum: ignoreCheckSum, network: network.web3SwiftNetwork) else {
             return nil
         }
         

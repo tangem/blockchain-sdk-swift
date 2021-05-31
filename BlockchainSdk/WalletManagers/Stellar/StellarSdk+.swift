@@ -25,6 +25,29 @@ extension AccountService {
         }
         return AnyPublisher(future)
     }
+    
+    func checkTargetAccount(address: String, token: Token?) -> AnyPublisher<StellarTargetAccountResponse, Error> {
+        getAccountDetails(accountId: address)
+            .map { resp -> StellarTargetAccountResponse in
+                guard let token = token else {
+                    return StellarTargetAccountResponse(accountCreated: true, trustlineCreated: false)
+                }
+                
+                let balance = resp.balances.filter { $0.assetCode == token.symbol && $0.assetIssuer == token.contractAddress }
+                return StellarTargetAccountResponse(accountCreated: true, trustlineCreated: balance.count > 0 )
+            }
+            .tryCatch { error -> AnyPublisher<StellarTargetAccountResponse, Error> in
+                guard
+                    let stellarError = error as? HorizonRequestError,
+                    case .notFound = stellarError else {
+                    throw error
+                }
+                return Just(StellarTargetAccountResponse(accountCreated: false, trustlineCreated: false))
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
 }
 
 extension LedgersService {
@@ -48,7 +71,6 @@ extension LedgersService {
 }
 
 extension TransactionsService {
-    @available(iOS 13.0, *)
     func postTransaction(transactionEnvelope:String) -> AnyPublisher<SubmitTransactionResponse, Error> {
         let future = Future<SubmitTransactionResponse, Error> { [unowned self] promise in
             self.postTransaction(transactionEnvelope: transactionEnvelope, response: { response -> (Void) in

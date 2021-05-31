@@ -10,13 +10,13 @@ import Foundation
 import Moya
 
 enum AdaliteUrl: String {
-    case url1 = "https://explorer2.adalite.io"
-    //case url2 = "https://nodes.southeastasia.cloudapp.azure.com"
+    case main = "https://explorer2.adalite.io"
+    case reserve = "https://nodes.southeastasia.cloudapp.azure.com"
 }
 
 enum AdaliteTarget: TargetType {
     case address(address:String, url: AdaliteUrl)
-    case unspents(address: String, url: AdaliteUrl)
+    case unspents(addresses: [String], url: AdaliteUrl)
     case send(base64EncodedTx: String, url: AdaliteUrl)
     
     var baseURL: URL {
@@ -58,8 +58,9 @@ enum AdaliteTarget: TargetType {
         switch self {
         case .address:
             return .requestPlain
-        case .unspents(let address, _):
-            let data = "[\"\(address)\"]".data(using: .utf8) ?? Data()
+        case .unspents(let addresses, _):
+            let addrs = "[\(addresses.map{ "\"\($0)\"" }.joined(separator: ","))]"
+            let data = addrs.data(using: .utf8) ?? Data()
             return .requestData(data)
         case .send(let base64EncodedTx, _):
             return .requestParameters(parameters: ["signedTx": base64EncodedTx],

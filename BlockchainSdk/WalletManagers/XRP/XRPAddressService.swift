@@ -9,6 +9,7 @@
 import Foundation
 import TangemSdk
 
+@available(iOS 13.0, *)
 public class XRPAddressService: AddressService {
     let curve: EllipticCurve
     
@@ -23,6 +24,8 @@ public class XRPAddressService: AddressService {
             key = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
         case .ed25519:
             key = [UInt8(0xED)] + walletPublicKey
+        case .secp256r1:
+            fatalError("secp256r1 is not supported by XRP")
         }
         let input = RIPEMD160.hash(message: key.sha256())
         let buffer = [0x00] + input

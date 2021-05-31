@@ -10,6 +10,10 @@
 
 "no_account_xlm_asset" = "Pour créer un compte, envoyez 1.5+ XLM à cette adresse";
 
+"no_trustline_xlm_asset" = "The destination account does not have a trustline for the asset being sent.";
+
+"no_account_on_destination_xlm_asset" = "The destination account is not created. To create account send 1+ XLM.";
+
 "no_account_xrp" = "Pour créer un compte, téléchargez 20+ XRP";
 
 "no_account_bnb" = "Pour créer un compte, envoyez des fonds monétaires à cette adresse";
@@ -26,6 +30,7 @@
 
 "common_estimate_tx_size_error" = "Échec de calcul de la taille de la transaction";
 
+"common_failed_to_load_token_balance" = "Failed to load %@ token balance";
 
 
 
@@ -89,3 +94,5 @@
 "send_error_invalid_fee_value" = "Commission non valide";
 
 "send_error_dust_amount_format" = "Le montant minimal est de %@";
+
+"send_error_dust_change_format" = "Le monnaie minimal est de %@";

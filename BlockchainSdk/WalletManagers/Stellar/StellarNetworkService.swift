@@ -10,14 +10,18 @@ import Foundation
 import stellarsdk
 import Combine
 
+@available(iOS 13.0, *)
 class StellarNetworkService {
     let stellarSdk: StellarSDK
+    
+    var host: String {
+        URL(string: stellarSdk.horizonURL)!.hostOrUnknown
+    }
     
     init(stellarSdk: StellarSDK) {
         self.stellarSdk = stellarSdk
     }
     
-    @available(iOS 13.0, *)
     public func send(transaction: String) -> AnyPublisher<Bool, Error> {
         return stellarSdk.transactions.postTransaction(transactionEnvelope: transaction)
             .tryMap{ submitTransactionResponse throws  -> Bool in
@@ -110,4 +114,9 @@ struct StellarAssetResponse {
     let code: String
     let issuer: String
     let balance: Decimal
+}
+
+struct StellarTargetAccountResponse {
+    let accountCreated: Bool
+    let trustlineCreated: Bool
 }

@@ -35,3 +35,4 @@ class LitecoinNetworkParams: INetwork {
 
     let dustRelayTxFee = 3000 //  https://github.com/bitcoin/bitcoin/blob/master/src/policy/policy.h#L52
 }
+

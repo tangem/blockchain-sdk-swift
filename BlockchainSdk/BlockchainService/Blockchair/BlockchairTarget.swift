@@ -14,6 +14,8 @@ enum BlockchairEndpoint: String {
     case bitcoinTestnet = "bitcoin/testnet"
     case bitcoinCash = "bitcoin-cash"
 	case litecoin = "litecoin"
+    case dogecoin
+    case ethereum
     
     var blockchain: Blockchain {
         switch self {
@@ -25,6 +27,10 @@ enum BlockchairEndpoint: String {
             return .bitcoinCash(testnet: false)
 		case .litecoin:
 			return .litecoin
+        case .ethereum:
+            return .ethereum(testnet: false)
+        case .dogecoin:
+            return .dogecoin
         }
     }
 }
@@ -35,6 +41,7 @@ enum BlockchairTarget: TargetType {
     case send(txHex: String, endpoint: BlockchairEndpoint = .bitcoinCash, apiKey: String)
     case txDetails(txHash: String, endpoint: BlockchairEndpoint = .bitcoin, apiKey: String)
     case txsDetails(hashes: [String], endpoint: BlockchairEndpoint = .bitcoin, apiKey: String)
+    case findErc20Tokens(address: String, apiKey: String)
     
     var baseURL: URL {
         var endpointString = ""
@@ -50,6 +57,8 @@ enum BlockchairTarget: TargetType {
             endpointString = endpoint.rawValue
         case .txsDetails(_, let endpoint, _):
             endpointString = endpoint.rawValue
+        case .findErc20Tokens:
+            endpointString = BlockchairEndpoint.ethereum.rawValue
         }
         
         return URL(string: "https://api.blockchair.com/\(endpointString)")!
@@ -75,12 +84,14 @@ enum BlockchairTarget: TargetType {
                 path.removeLast()
             }
             return path
+        case .findErc20Tokens(address: let address, _):
+            return "/dashboards/address/\(address)"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .address, .fee, .txDetails, .txsDetails:
+        case .address, .fee, .txDetails, .txsDetails, .findErc20Tokens:
             return .get
         case .send:
             return .post
@@ -105,6 +116,9 @@ enum BlockchairTarget: TargetType {
             parameters["data"] = txHex
         case .txDetails(_, _, let apiKey), .txsDetails(_, _, let apiKey):
             key = apiKey
+        case .findErc20Tokens(address: let address, apiKey: let apiKey):
+            key = apiKey
+            parameters["erc_20"] = "true"
         }
         parameters["key"] = key
         return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
@@ -112,7 +126,7 @@ enum BlockchairTarget: TargetType {
     
     var headers: [String: String]? {
         switch self {
-        case .address, .fee, .txDetails, .txsDetails:
+        case .address, .fee, .txDetails, .txsDetails, .findErc20Tokens:
             return ["Content-Type": "application/json"]
         case .send:
             return ["Content-Type": "application/x-www-form-urlencoded"]

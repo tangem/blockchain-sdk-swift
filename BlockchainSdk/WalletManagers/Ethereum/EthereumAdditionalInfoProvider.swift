@@ -8,7 +8,7 @@
 
 import Combine
 
-protocol EthereumNetworkProvider {
+protocol EthereumAdditionalInfoProvider {
     func getTransactionsInfo(address: String) -> AnyPublisher<EthereumTransactionResponse, Error>
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error>
 }

@@ -13,11 +13,10 @@ import TangemSdk
 
 class CardanoTransactionBuilder {
     let walletPublicKey: Data
-    var unspentOutputs: [AdaliteUnspentOutput]? = nil
+    var unspentOutputs: [CardanoUnspentOutput]? = nil
     let kDecimalNumber: Int16 = 6
     let kProtocolMagic: UInt64 = 764824073
     let shelleyCard: Bool
-    
     
     internal init(walletPublicKey: Data, shelleyCard: Bool) {
         self.walletPublicKey = walletPublicKey
@@ -41,21 +40,31 @@ class CardanoTransactionBuilder {
     }
     
     public func buildForSend(bodyItem: CBOR, signature: Data) -> Result<Data, Error> {
-        let witnessDataItem = shelleyCard ?
-            CBOR.array([CBOR.array([CBOR.byteString(walletPublicKey.bytes),
-                                    CBOR.byteString(signature.bytes)])])
-            : CBOR.array([CBOR.array([CBOR.byteString(walletPublicKey.bytes),
-                                      CBOR.byteString(signature.bytes),
-                                      CBOR.byteString(Data(hexString: "0000000000000000000000000000000000000000000000000000000000000000").bytes),
-                                      CBOR.byteString(Data(hexString: "A0").bytes)
-            ])])
+        guard let unspents = unspentOutputs else {
+            return .failure(CardanoError.noUnspents)
+        }
         
-        let witnessMap = CBOR.map([CBOR.unsignedInt(shelleyCard ? 0 : 2) : witnessDataItem])
+        let useByronWitness = unspents.contains(where: { !CardanoAddressUtils.isShelleyAddress($0.address) })
+        let useShelleyWitness = unspents.contains(where: { CardanoAddressUtils.isShelleyAddress($0.address) })
+
+        var witnessMap = CBOR.map([:])
+        if useShelleyWitness {
+            witnessMap[0] = CBOR.array([CBOR.array([CBOR.byteString(walletPublicKey.bytes),
+                                                    CBOR.byteString(signature.bytes)])])
+        }
+        if useByronWitness {
+            witnessMap[2] = CBOR.array([CBOR.array([CBOR.byteString(walletPublicKey.bytes),
+                                                    CBOR.byteString(signature.bytes),
+                                                    CBOR.byteString(Data(repeating: 0, count: 32).bytes),
+                                                    CBOR.byteString(Data(hexString: "A0").bytes)
+                            ])])
+        }
+        
         let tx = CBOR.array([bodyItem, witnessMap, nil])
         let txForSend = tx.encode()
         return .success(Data(txForSend))
-        
     }
+    
 	private func buildTransactionBody(from transaction: Transaction, walletAmount: Decimal, isEstimated: Bool = false) -> Result<CBOR, Error> {
         guard let unspentOutputs = self.unspentOutputs else {
             return .failure(CardanoError.noUnspents)
@@ -73,7 +82,7 @@ class CardanoTransactionBuilder {
             return .failure(CardanoError.lowAda)
         }
         
-        guard let targetAddressBytes =  CardanoAddress.decode(transaction.destinationAddress)?.bytes else {
+        guard let targetAddressBytes = CardanoAddressUtils.decode(transaction.destinationAddress)?.bytes else {
             return .failure(WalletError.failedToBuildTx)
         }
         
@@ -81,8 +90,8 @@ class CardanoTransactionBuilder {
         var inputsArray = [CBOR]()
         for unspentOutput in unspentOutputs {
             let array = CBOR.array(
-                [CBOR.byteString(Data(hexString: unspentOutput.id).bytes),
-                 CBOR.unsignedInt(UInt64(unspentOutput.index))])
+                [CBOR.byteString(Data(hexString: unspentOutput.transactionHash).bytes),
+                 CBOR.unsignedInt(UInt64(unspentOutput.outputIndex))])
             inputsArray.append(array)
         }
         
@@ -91,7 +100,7 @@ class CardanoTransactionBuilder {
         var outputsArray = [CBOR]()
         outputsArray.append(CBOR.array([CBOR.byteString(targetAddressBytes), CBOR.unsignedInt(amountLong)]))
            
-        guard let changeAddressBytes =  CardanoAddress.decode(transaction.sourceAddress)?.bytes else {
+        guard let changeAddressBytes = CardanoAddressUtils.decode(transaction.sourceAddress)?.bytes else {
             return .failure(WalletError.failedToBuildTx)
         }
         
