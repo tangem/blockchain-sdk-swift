@@ -1,5 +1,5 @@
 //
-//  EthereumNetworkProvider.swift
+//  EthereumAdditionalInfoProvider.swift
 //  BlockchainSdk
 //
 //  Created by Andrew Son on 11/01/21.
@@ -9,7 +9,7 @@
 import Combine
 
 protocol EthereumAdditionalInfoProvider {
-    func getTransactionsInfo(address: String) -> AnyPublisher<EthereumTransactionResponse, Error>
+    func getEthTxsInfo(address: String) -> AnyPublisher<EthereumTransactionResponse, Error>
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error>
 }
 

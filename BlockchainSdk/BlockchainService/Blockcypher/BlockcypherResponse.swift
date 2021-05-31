@@ -108,7 +108,7 @@ struct BlockcypherBitcoinTx: Codable, BlockcypherPendingTxConvertible {
         doubleSpendTx != nil
     }
     
-    func btcTx(for sourceAddress: String) -> BtcTx? {
+    func btcTx(for sourceAddress: String) -> BitcoinUnspentOutput? {
         var txOutputIndex: Int = -1
         guard
             outputs.enumerated().contains(where: {
@@ -128,7 +128,7 @@ struct BlockcypherBitcoinTx: Codable, BlockcypherPendingTxConvertible {
         let script = outputs[txOutputIndex].script
         let value = outputs[txOutputIndex].value
         
-        let btc = BtcTx(tx_hash: hash, tx_output_n: txOutputIndex, value: value, script: script)
+        let btc = BitcoinUnspentOutput(transactionHash: hash, outputIndex: txOutputIndex, amount: value, outputScript: script)
         return btc
     }
 }

@@ -18,7 +18,6 @@ struct BitcoinFee {
 struct BitcoinResponse {
     let balance: Decimal
     let hasUnconfirmed: Bool
-    let txrefs: [BitcoinUnspentOutput]
     var pendingTxRefs: [PendingTransaction]
     let unspentOutputs: [BitcoinUnspentOutput]
 }

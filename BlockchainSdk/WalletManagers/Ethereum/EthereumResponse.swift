@@ -14,6 +14,7 @@ struct EthereumInfoResponse {
     let tokenBalances: [Token: Decimal]
     let txCount: Int
     let pendingTxCount: Int
+    var pendingTxs: [PendingTransaction]
 }
 
 struct EthereumFeeResponse {

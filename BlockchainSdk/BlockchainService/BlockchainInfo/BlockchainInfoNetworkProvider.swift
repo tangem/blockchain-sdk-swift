@@ -17,6 +17,12 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
         BlockchainInfoTarget.address(address: "", offset: nil).baseURL.hostOrUnknown
     }
     
+    var canPushTransaction: Bool { false }
+    
+    func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
+        .anyFail(error: "")
+    }
+    
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         return addressUnspentsData(address)
             .tryMap {(addressResponse, unspentsResponse) throws -> BitcoinResponse in
@@ -39,7 +45,7 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
                 
                 let satoshiBalance = Decimal(balance) / Blockchain.bitcoin(testnet: false).decimalValue
                 let hasUnconfirmed = txs.first(where: { ($0.blockHeight ?? 0) == 0  }) != nil
-                return BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: hasUnconfirmed, unspentOutputs: utxs)
+                return BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: hasUnconfirmed, pendingTxRefs: [], unspentOutputs: utxs)
             }
             .eraseToAnyPublisher()
     }
@@ -65,6 +71,10 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
             .mapNotEmptyString()
             .eraseError()
             .eraseToAnyPublisher()
+    }
+    
+    func push(transaction: String) -> AnyPublisher<String, Error> {
+        .anyFail(error: "Not supported")
     }
     
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {

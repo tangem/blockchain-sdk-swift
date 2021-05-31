@@ -15,7 +15,7 @@ public protocol FeeProvider {
 
 public protocol TransactionPusher {
     func canPushTransaction(_ transaction: Transaction) -> AnyPublisher<(Bool, [Amount]), Error>
-    func pushTransaction(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<SignResponse, Error>
+    func pushTransaction(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error>
 }
 
 protocol DefaultTransactionPusher {
