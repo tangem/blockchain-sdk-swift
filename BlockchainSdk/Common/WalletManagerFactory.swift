@@ -96,8 +96,8 @@ public class WalletManagerFactory {
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: addresses)
                 
                 var providers = [BitcoinNetworkProvider]()
-                providers.append(BlockcypherNetworkProvider(endpoint: BlockcypherEndpoint(coin: .ltc, chain: .main), tokens: config.blockcypherTokens))
                 providers.append(BlockchairNetworkProvider(endpoint: .litecoin, apiKey: config.blockchairApiKey))
+                providers.append(BlockcypherNetworkProvider(endpoint: BlockcypherEndpoint(coin: .ltc, chain: .main), tokens: config.blockcypherTokens))
 
                 $0.networkService = LitecoinNetworkService(providers: providers)
             }
@@ -112,8 +112,8 @@ public class WalletManagerFactory {
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: addresses)
                 
                 var providers = [BitcoinNetworkProvider]()
-                providers.append(BlockcypherNetworkProvider(endpoint: BlockcypherEndpoint(coin: .doge, chain: .main), tokens: config.blockcypherTokens))
                 providers.append(BlockchairNetworkProvider(endpoint: .dogecoin, apiKey: config.blockchairApiKey))
+                providers.append(BlockcypherNetworkProvider(endpoint: BlockcypherEndpoint(coin: .doge, chain: .main), tokens: config.blockcypherTokens))
 
                 $0.networkService = DogecoinNetworkService(providers: providers)
             }
