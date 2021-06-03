@@ -10,4 +10,5 @@ import Foundation
 
 class DogecoinWalletManager: BitcoinWalletManager {
     override var minimalFee: Decimal { 1.0 }
+    override var minimalFeePerByte: Decimal { 1000000 }
 }
