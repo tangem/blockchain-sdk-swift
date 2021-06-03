@@ -11,6 +11,10 @@ import Combine
 import Moya
 
 class DucatusNetworkService: BitcoinNetworkProvider {
+    func getTransaction(with hash: String) -> AnyPublisher<BitcoinTransaction, Error> {
+        .anyFail(error: "Not supported")
+    }
+    
     let provider =  BitcoreProvider()
     
     var canPushTransaction: Bool { false }
@@ -41,7 +45,7 @@ class DucatusNetworkService: BitcoinNetworkProvider {
                 }
                 
                 let balance = Decimal(confirmed)/Blockchain.ducatus.decimalValue
-                return BitcoinResponse(balance: balance, hasUnconfirmed: unconfirmed != 0, pendingTxRefs: [], unspentOutputs: utxs)
+                return BitcoinResponse(balance: balance, hasUnconfirmed: unconfirmed != 0, recentTransactions: [], unspentOutputs: utxs)
         }
         .eraseToAnyPublisher()
     }

@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import Moya
 
 @available(iOS 13.0, *)
 class MultiNetworkProvider<Provider> {
@@ -26,6 +27,9 @@ class MultiNetworkProvider<Provider> {
     func providerPublisher<T>(for requestPublisher: @escaping (_ provider: Provider) -> AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
         requestPublisher(provider)
             .catch { [weak self] error -> AnyPublisher<T, Error> in
+                if let moyaError = error as? MoyaError, case let .statusCode(resp) = moyaError {
+                    print("Switchable publisher catched error: \(moyaError). Response message: \(String(data: resp.data, encoding: .utf8))")
+                }
                 print("Switchable publisher catched error:", error)
                 if self?.needRetry() ?? false {
                     print("Switching to next publisher")

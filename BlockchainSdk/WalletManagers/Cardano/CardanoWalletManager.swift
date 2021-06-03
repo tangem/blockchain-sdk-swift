@@ -106,12 +106,12 @@ extension CardanoWalletManager: TransactionSender {
         let b = Decimal(0.000044)
         
         let feeValue = (a + b * transactionSize).rounded(scale: wallet.blockchain.decimalCount, roundingMode: .up)
-        let feeAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: feeValue)
+        let feeAmount = Amount(with: self.wallet.blockchain, value: feeValue)
         return Result.Publisher([feeAmount]).eraseToAnyPublisher()
     }
     
     private func getEstimateSize(amount: Amount, destination: String) -> Decimal? {
-        let dummyFee = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: Decimal(0.1))
+        let dummyFee = Amount(with: self.wallet.blockchain, value: Decimal(0.1))
         let dummyAmount = amount - dummyFee
         let dummyTx = Transaction(amount: dummyAmount,
                                   fee: dummyFee,
@@ -143,6 +143,6 @@ extension CardanoWalletManager: ThenProcessable { }
 
 extension CardanoWalletManager: DustRestrictable {
     var dustValue: Amount {
-        return Amount(with: wallet.blockchain, address: wallet.address, value: 1.0)
+        return Amount(with: wallet.blockchain, value: 1.0)
     }
 }

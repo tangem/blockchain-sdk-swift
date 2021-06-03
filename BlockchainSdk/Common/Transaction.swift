@@ -101,6 +101,22 @@ public enum TransactionError: Error, LocalizedError, Equatable {
     }
 }
 
+struct BasicTransactionData {
+    let balanceDif: Decimal
+    let hash: String
+    let date: Date?
+    let isConfirmed: Bool
+    
+    func toTransaction(for blockchain: Blockchain, address: String) -> Transaction {
+        let isIncoming = balanceDif > 0
+        return .init(amount: Amount(with: blockchain, type: .coin, value: abs(balanceDif)),
+                     fee: .zeroCoin(for: blockchain),
+                     sourceAddress: isIncoming ? .unknown : address,
+                     destinationAddress: isIncoming ? address : .unknown,
+                     changeAddress: .unknown)
+    }
+}
+
 extension Array where Element == TransactionError {
     mutating func appendIfNotNil(_ value: TransactionError?) {
         if let value = value {

@@ -20,7 +20,7 @@ class BitcoinWalletManager: WalletManager, FeeProvider, DefaultTransactionPusher
     var txBuilder: BitcoinTransactionBuilder!
     var networkService: BitcoinNetworkProvider!
     
-    var minimalFeePerByte: Decimal { 10 }
+    var minimalFeePerByte: Decimal { 1 }
     var minimalFee: Decimal { 0.00001 }
     
     override var currentHost: String {
@@ -46,20 +46,20 @@ class BitcoinWalletManager: WalletManager, FeeProvider, DefaultTransactionPusher
         return networkService.getFee()
             .tryMap {[unowned self] response throws -> [Amount] in
               //  let dummyFee = Amount(with: amount, value: 0.00000001)
-                var minRate = (max(response.minimalSatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
+                var minRate = (min(response.minimalSatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
                 var normalRate = (max(response.normalSatoshiPerByte, self.minimalFeePerByte * 1.2) as NSDecimalNumber).intValue
                 var maxRate = (max(response.prioritySatoshiPerByte, self.minimalFeePerByte * 1.5) as NSDecimalNumber).intValue
                 
-                var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: false, changeScript: nil, isReplacedByFee: false)
-                var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: false, changeScript: nil, isReplacedByFee: false)
-                var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: false, changeScript: nil, isReplacedByFee: false)
+                var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: false, changeScript: nil, sequence: .max)
+                var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: false, changeScript: nil, sequence: .max)
+                var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: false, changeScript: nil, sequence: .max)
                 
                 let minimalFeeRate = (((self.minimalFee * Decimal(minRate)) / minFee).rounded(scale: 0, roundingMode: .up) as NSDecimalNumber).intValue
-                let minimalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minimalFeeRate, senderPay: false, changeScript: nil, isReplacedByFee: false)
-                if minFee < minimalFee {
-                    minRate = minimalFeeRate
-                    minFee = minimalFee
-                }
+                let minimalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minimalFeeRate, senderPay: false, changeScript: nil, sequence: .max)
+//                if minFee < minimalFee {
+//                    minRate = minimalFeeRate
+//                    minFee = minimalFee
+//                }
                 
                 if normalFee < minimalFee {
                     normalRate = minimalFeeRate
@@ -76,9 +76,9 @@ class BitcoinWalletManager: WalletManager, FeeProvider, DefaultTransactionPusher
                 txBuilder.feeRates[normalFee] = normalRate
                 txBuilder.feeRates[maxFee] = maxRate
                 return [
-                    Amount(with: self.wallet.blockchain, address: self.wallet.address, value: minFee),
-                    Amount(with: self.wallet.blockchain, address: self.wallet.address, value: normalFee),
-                    Amount(with: self.wallet.blockchain, address: self.wallet.address, value: maxFee)
+                    Amount(with: self.wallet.blockchain, value: minFee),
+                    Amount(with: self.wallet.blockchain, value: normalFee),
+                    Amount(with: self.wallet.blockchain, value: maxFee)
                 ]
         }
         .eraseToAnyPublisher()
@@ -91,13 +91,10 @@ class BitcoinWalletManager: WalletManager, FeeProvider, DefaultTransactionPusher
         
         wallet.add(coinValue: balance)
         txBuilder.unspentOutputs = unspents
+            
         if hasUnconfirmed {
-            wallet.transactions.removeAll()
             response.forEach {
-                let pendingTxs = $0.pendingTxRefs
-                pendingTxs.forEach {
-                    wallet.addPendingTransaction($0)
-                }
+                updateRecentTransactionsBasic($0.recentTransactions)
             }
         } else {
             wallet.transactions = []
@@ -129,13 +126,14 @@ class BitcoinWalletManager: WalletManager, FeeProvider, DefaultTransactionPusher
 
 extension BitcoinWalletManager {
     func send(_ transaction: Transaction, signer: TransactionSigner, isPushingTx: Bool) -> AnyPublisher<Void, Error> {
-        guard let hashes = txBuilder.buildForSign(transaction: transaction, isReplacedByFee: isPushingTx) else {
+        let sequence: Int = isPushingTx ? SequenceValues.default.rawValue + 10 : 1
+        guard let hashes = txBuilder.buildForSign(transaction: transaction, sequence: sequence) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
         return signer.sign(hashes: hashes, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
             .tryMap {[unowned self] signatures -> (String) in
-                guard let tx = self.txBuilder.buildForSend(transaction: transaction, signatures: signatures, isReplacedByFee: isPushingTx) else {
+                guard let tx = self.txBuilder.buildForSend(transaction: transaction, signatures: signatures, sequence: sequence) else {
                     throw WalletError.failedToBuildTx
                 }
                 return tx.toHexString()
@@ -190,13 +188,10 @@ extension BitcoinWalletManager: TransactionPusher {
     func canPushTransaction(_ transaction: Transaction) -> AnyPublisher<(Bool, [Amount]), Error> {
         guard
             networkService.canPushTransaction,
-            transaction.sequence != SequenceValues.default.rawValue,
-            transaction.sequence != SequenceValues.replasedByFeeTx.rawValue,
+            transaction.sequence <= SequenceValues.replacedByFeeMaxValue.rawValue,
             !transaction.isAlreadyReplasedByFee
         else {
-            return Just((false, []))
-                .setFailureType(to: Error.self)
-                .eraseToAnyPublisher()
+            return .justWithError(output: (false, []))
         }
         
         return canPushTx(transaction)

@@ -99,7 +99,7 @@ extension BinanceWalletManager: TransactionSender {
                     throw WalletError.failedToGetFee
                 }
                 
-                return [Amount(with: self.wallet.blockchain, address: self.wallet.address, value: feeValue)]
+                return [Amount(with: self.wallet.blockchain, value: feeValue)]
         }
         .eraseToAnyPublisher()
     }

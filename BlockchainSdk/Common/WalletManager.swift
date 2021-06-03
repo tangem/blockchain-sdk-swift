@@ -158,6 +158,24 @@ public class WalletManager {
         return TransactionErrors(errors: errors)
     }
     
+    func updateRecentTransactionsBasic(_ transactions: [BasicTransactionData]) {
+        var confirmed = [BasicTransactionData]()
+        var unconfirmed = [BasicTransactionData]()
+        transactions.forEach { $0.isConfirmed ? confirmed.append($0) : unconfirmed.append($0) }
+        wallet.transactions.append(contentsOf: wallet.transactions.map { tx in
+            var tx = tx
+            if confirmed.contains(where: { $0.hash == tx.hash }) {
+                tx.status = .confirmed
+            }
+            return tx
+        })
+        unconfirmed.forEach { unconfirmed in
+            if !wallet.transactions.contains(where: { $0.hash == unconfirmed.hash }) {
+                wallet.transactions.append(unconfirmed.toTransaction(for: wallet.blockchain, address: wallet.address))
+            }
+        }
+    }
+    
     private func validateAmountValue(_ amount: Amount) -> Bool {
         return amount.value >= 0
     }

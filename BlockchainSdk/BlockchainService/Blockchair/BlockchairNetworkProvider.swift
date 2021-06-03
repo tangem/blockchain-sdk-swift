@@ -15,6 +15,10 @@ import SwiftyJSON
 import BitcoinCore
 
 class BlockchairNetworkProvider: BitcoinNetworkProvider {
+    func getTransaction(with hash: String) -> AnyPublisher<BitcoinTransaction, Error> {
+        .anyFail(error: "Not implemented")
+    }
+    
     let provider = MoyaProvider<BlockchairTarget>()
     
     private let endpoint: BlockchairEndpoint
@@ -78,7 +82,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                 let hasUnconfirmed = pendingTxs.count != 0
                 
                 let decimalBtcBalance = decimalSatoshiBalance / self.endpoint.blockchain.decimalValue
-                let bitcoinResponse = BitcoinResponse(balance: decimalBtcBalance, hasUnconfirmed: hasUnconfirmed, pendingTxRefs: [], unspentOutputs: utxs)
+                let bitcoinResponse = BitcoinResponse(balance: decimalBtcBalance, hasUnconfirmed: hasUnconfirmed, recentTransactions: [], unspentOutputs: utxs)
                 
                 return (bitcoinResponse, pendingTxs)
             }
@@ -106,7 +110,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                         }
                         
                         for (index, tx) in pendingBtcTxs.enumerated() {
-                            guard tx.sequence == SequenceValues.baseTx.rawValue else { continue }
+                            guard tx.sequence >= SequenceValues.disabledReplacedByFee.rawValue else { continue }
                             
                             pendingBtcTxs[index].isAlreadyRbf = pendingBtcTxs.contains(where: {
                                 tx.source == $0.source &&
@@ -117,7 +121,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                             })
                         }
                         let oldResp = resp.0
-                        return BitcoinResponse(balance: oldResp.balance, hasUnconfirmed: oldResp.hasUnconfirmed, pendingTxRefs: pendingBtcTxs, unspentOutputs: oldResp.unspentOutputs)
+                        return BitcoinResponse(balance: oldResp.balance, hasUnconfirmed: oldResp.hasUnconfirmed, recentTransactions: [], unspentOutputs: oldResp.unspentOutputs)
                     }
                     .eraseToAnyPublisher()
             }

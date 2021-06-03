@@ -88,7 +88,7 @@ extension BitcoinCashWalletManager: TransactionSender {
                 let finalFee = fee >= relayFee ? fee : relayFee
                 
                 return [
-                    Amount(with: self.wallet.blockchain, address: self.wallet.address, value: finalFee)
+                    Amount(with: self.wallet.blockchain, value: finalFee)
                 ]
         }
         .eraseToAnyPublisher()

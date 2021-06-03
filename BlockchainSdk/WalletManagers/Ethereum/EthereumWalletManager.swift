@@ -169,9 +169,9 @@ extension EthereumWalletManager: TransactionSender {
                 }
                 self.gasLimit = $0.gasLimit
                 
-                let minAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: $0.fees[0])
-                let normalAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: $0.fees[1])
-                let maxAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: $0.fees[2])
+                let minAmount = Amount(with: self.wallet.blockchain, value: $0.fees[0])
+                let normalAmount = Amount(with: self.wallet.blockchain, value: $0.fees[1])
+                let maxAmount = Amount(with: self.wallet.blockchain, value: $0.fees[2])
                 
                 return [minAmount, normalAmount, maxAmount]
             }

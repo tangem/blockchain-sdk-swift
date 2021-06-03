@@ -79,6 +79,12 @@ class BitcoinNetworkService: MultiNetworkProvider<BitcoinNetworkProvider>, Bitco
         }
     }
     
+    func getTransaction(with hash: String) -> AnyPublisher<BitcoinTransaction, Error> {
+        providerPublisher(for: {
+            $0.getTransaction(with: hash)
+        })
+    }
+    
     func push(transaction: String) -> AnyPublisher<String, Error> {
         guard canPushTransaction else {
             return Fail(error: NetworkServiceError.notAvailable)

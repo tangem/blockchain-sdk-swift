@@ -18,8 +18,28 @@ struct BitcoinFee {
 struct BitcoinResponse {
     let balance: Decimal
     let hasUnconfirmed: Bool
-    var pendingTxRefs: [PendingTransaction]
+//    var pendingTxRefs: [PendingTransaction]
+    var recentTransactions: [BasicTransactionData]
     let unspentOutputs: [BitcoinUnspentOutput]
+}
+
+struct BitcoinTransaction {
+    let hash: String
+    let isConfirmed: Bool
+    let time: Date
+    let inputs: [BitcoinTransactionInput]
+    let outputs: [BitcoinTransactionOutput]
+}
+
+struct BitcoinTransactionInput {
+    let unspentOutput: BitcoinUnspentOutput
+    let sender: String
+    let sequence: Int
+}
+
+struct BitcoinTransactionOutput {
+    let amount: Decimal
+    let recipient: String
 }
 
 struct BitcoinUnspentOutput {
@@ -44,6 +64,7 @@ protocol BitcoinNetworkProvider: AnyObject {
     func send(transaction: String) -> AnyPublisher<String, Error>
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error>
     
+    func getTransaction(with hash: String) -> AnyPublisher<BitcoinTransaction, Error>
     func push(transaction: String) -> AnyPublisher<String, Error>
 }
 

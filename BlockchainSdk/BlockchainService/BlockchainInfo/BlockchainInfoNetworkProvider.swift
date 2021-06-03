@@ -11,6 +11,10 @@ import Moya
 import Combine
 
 class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
+    func getTransaction(with hash: String) -> AnyPublisher<BitcoinTransaction, Error> {
+        .anyFail(error: "Not implemented")
+    }
+    
     let provider = MoyaProvider<BlockchainInfoTarget>(plugins: [NetworkLoggerPlugin()])
     
     var host: String {
@@ -45,7 +49,7 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
                 
                 let satoshiBalance = Decimal(balance) / Blockchain.bitcoin(testnet: false).decimalValue
                 let hasUnconfirmed = txs.first(where: { ($0.blockHeight ?? 0) == 0  }) != nil
-                return BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: hasUnconfirmed, pendingTxRefs: [], unspentOutputs: utxs)
+                return BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: hasUnconfirmed, recentTransactions: [], unspentOutputs: utxs)
             }
             .eraseToAnyPublisher()
     }
