@@ -47,8 +47,8 @@ class BitcoinWalletManager: WalletManager, FeeProvider, DefaultTransactionPusher
             .tryMap {[unowned self] response throws -> [Amount] in
               //  let dummyFee = Amount(with: amount, value: 0.00000001)
                 var minRate = (min(response.minimalSatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
-                var normalRate = (max(response.normalSatoshiPerByte, self.minimalFeePerByte * 1.2) as NSDecimalNumber).intValue
-                var maxRate = (max(response.prioritySatoshiPerByte, self.minimalFeePerByte * 1.5) as NSDecimalNumber).intValue
+                var normalRate = (max(response.normalSatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
+                var maxRate = (max(response.prioritySatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
                 
                 var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: false, changeScript: nil, sequence: .max)
                 var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: false, changeScript: nil, sequence: .max)
