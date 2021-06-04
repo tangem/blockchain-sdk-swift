@@ -46,20 +46,16 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
                     throw WalletError.failedToParseNetworkResponse
                 }
 
-                let satoshiBalance = Decimal(balance) / self.endpoint.blockchain.decimalValue
+                let decimalValue = self.endpoint.blockchain.decimalValue
+                let satoshiBalance = Decimal(balance) / decimalValue
 
-                var recentTransactions = addressResponse.txrefs?.map { $0.toBasicTransactionData(isConfirmed: true, decimals: self.endpoint.blockchain.decimalValue) } ?? []
-                recentTransactions.append(contentsOf: addressResponse.unconfirmedTxrefs?.map { $0.toBasicTransactionData(isConfirmed: false, decimals: self.endpoint.blockchain.decimalValue) } ?? [])
+                var recentTransactions = addressResponse.txrefs?.toBasicTxDataArray(isConfirmed: true, decimals: decimalValue) ?? []
+                let unconfirmedTxs = addressResponse.unconfirmedTxrefs?.toBasicTxDataArray(isConfirmed: false, decimals: decimalValue) ?? []
+                recentTransactions.append(contentsOf: unconfirmedTxs)
                 
-                var utxo: [BitcoinUnspentOutput] = []
+                var utxo: [BitcoinUnspentOutput] = addressResponse.txrefs?.compactMap { $0.toUnspentOutput() } ?? []
                 
-                addressResponse.txrefs?.forEach { tx in
-                    guard let btcTx = tx.toUnspentOutput() else { return }
-                    
-                    utxo.append(btcTx)
-                }
-                
-                return .init(balance: satoshiBalance, hasUnconfirmed: false, recentTransactions: recentTransactions, unspentOutputs: utxo)
+                return .init(balance: satoshiBalance, hasUnconfirmed: unconfirmedTxs.count > 0, recentTransactions: recentTransactions, unspentOutputs: utxo)
             }
             .eraseToAnyPublisher()
     }

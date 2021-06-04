@@ -47,28 +47,42 @@ struct BlockcypherTxref: Codable {
 }
 
 extension BlockcypherTxref {
-    func toBasicTransactionData(isConfirmed: Bool, decimals: Decimal) -> BasicTransactionData {
-        let valueDecimal = Decimal(value ?? 0) / decimals
-        let balanceDif = outputIndex == -1 ? -valueDecimal : valueDecimal
-        var receivedDate: Date?
-        if let receivedStr = received,
-           let date = DateFormatter.iso8601withFractionalSeconds.date(from: receivedStr) ?? DateFormatter.iso8601.date(from: receivedStr) {
-            receivedDate = date
-        }
-        
-        return .init(balanceDif: balanceDif, hash: hash ?? "", date: receivedDate, isConfirmed: isConfirmed)
-    }
-    
     func toUnspentOutput() -> BitcoinUnspentOutput? {
         guard
             let hash = hash,
             let outputIndex = outputIndex,
             let value = value,
             let script = outputScript,
-            !(spent ?? false)
+            spent == false
         else { return nil }
         
         return BitcoinUnspentOutput(transactionHash: hash, outputIndex: outputIndex, amount: UInt64(value), outputScript: script)
+    }
+}
+
+extension Array where Element == BlockcypherTxref {
+    func toBasicTxDataArray(isConfirmed: Bool, decimals: Decimal) -> [BasicTransactionData] {
+        var txsDict = [String: BasicTransactionData]()
+        forEach {
+            let valueDecimal = Decimal($0.value ?? 0) / decimals
+            var balanceDif = $0.outputIndex == -1 ? -valueDecimal : valueDecimal
+            var receivedDate: Date?
+            if let receivedStr = $0.received,
+               let date = DateFormatter.iso8601withFractionalSeconds.date(from: receivedStr) ?? DateFormatter.iso8601.date(from: receivedStr) {
+                receivedDate = date
+            }
+            
+            let hash = $0.hash ?? ""
+            if let tx = txsDict[hash] {
+                balanceDif += tx.balanceDif
+            }
+            
+            let tx = BasicTransactionData(balanceDif: balanceDif, hash: hash, date: receivedDate, isConfirmed: isConfirmed)
+            
+            txsDict[hash] = tx
+        }
+        
+        return txsDict.map { $0.value }
     }
 }
 

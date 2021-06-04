@@ -46,10 +46,6 @@ class EthereumWalletManager: WalletManager {
     var txBuilder: EthereumTransactionBuilder!
     var networkService: EthereumNetworkService!
     
-    var feeProvider: FeeProvider! {
-        self
-    }
-    
     var txCount: Int = -1
     var pendingTxCount: Int = -1
     
@@ -143,8 +139,6 @@ class EthereumWalletManager: WalletManager {
     }
 }
 
-extension EthereumWalletManager: FeeProvider { }
-
 extension EthereumWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
@@ -225,18 +219,6 @@ extension EthereumWalletManager: SignatureCountValidator {
 			}
 			.eraseToAnyPublisher()
 	}
-}
-
-extension EthereumWalletManager: DefaultTransactionPusher {}
-
-extension EthereumWalletManager: TransactionPusher {
-    func canPushTransaction(_ transaction: Transaction) -> AnyPublisher<(Bool, [Amount]), Error> {
-        canPushTx(transaction)
-    }
-    
-    func pushTransaction(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
-        send(transaction, signer: signer)
-    }
 }
 
 extension EthereumWalletManager: ThenProcessable { }

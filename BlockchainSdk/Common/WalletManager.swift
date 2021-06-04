@@ -159,19 +159,15 @@ public class WalletManager {
     }
     
     func updateRecentTransactionsBasic(_ transactions: [BasicTransactionData]) {
-        var confirmed = [BasicTransactionData]()
-        var unconfirmed = [BasicTransactionData]()
-        transactions.forEach { $0.isConfirmed ? confirmed.append($0) : unconfirmed.append($0) }
-        wallet.transactions.append(contentsOf: wallet.transactions.map { tx in
-            var tx = tx
-            if confirmed.contains(where: { $0.hash == tx.hash }) {
-                tx.status = .confirmed
-            }
-            return tx
-        })
-        unconfirmed.forEach { unconfirmed in
-            if !wallet.transactions.contains(where: { $0.hash == unconfirmed.hash }) {
-                wallet.transactions.append(unconfirmed.toTransaction(for: wallet.blockchain, address: wallet.address))
+        transactions.forEach { tx in
+            if tx.isConfirmed {
+                if let index = wallet.transactions.firstIndex(where: { $0.hash == tx.hash }) {
+                    wallet.transactions[index].status = .confirmed
+                }
+            } else {
+                if !wallet.transactions.contains(where: { $0.hash == tx.hash }) {
+                    wallet.transactions.append(tx.toTransaction(for: wallet.blockchain, address: wallet.address))
+                }
             }
         }
     }
