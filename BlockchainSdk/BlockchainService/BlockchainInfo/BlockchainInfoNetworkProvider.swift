@@ -23,12 +23,8 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
     
     var canPushTransaction: Bool { false }
     
-    func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
-        .anyFail(error: "")
-    }
-    
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        return addressUnspentsData(address)
+        addressUnspentsData(address)
             .tryMap {(addressResponse, unspentsResponse) throws -> BitcoinResponse in
                 guard let balance = addressResponse.finalBalance,
                       let txs = addressResponse.transactions else {
@@ -47,9 +43,12 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
                     return btx
                 } ?? []
                 
-                let satoshiBalance = Decimal(balance) / Blockchain.bitcoin(testnet: false).decimalValue
+                let decimalValue = Blockchain.bitcoin(testnet: false).decimalValue
+                let pendingTxs = addressResponse.transactions?.filter { $0.blockHeight == nil }
+                    .map { $0.toBasicTxData(decimalValue: decimalValue) }
+                let satoshiBalance = Decimal(balance) / decimalValue
                 let hasUnconfirmed = txs.first(where: { ($0.blockHeight ?? 0) == 0  }) != nil
-                return BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: hasUnconfirmed, recentTransactions: [], unspentOutputs: utxs)
+                return BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: hasUnconfirmed, recentTransactions: pendingTxs, unspentOutputs: utxs)
             }
             .eraseToAnyPublisher()
     }

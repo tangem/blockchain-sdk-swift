@@ -10,6 +10,7 @@ import Foundation
 
 struct BlockchainInfoAddressResponse: Codable {
     let finalBalance: UInt64?
+    let address: String?
     let transactions: [BlockchainInfoTransaction]?
 	let transactionCount: Int?
     
@@ -17,6 +18,7 @@ struct BlockchainInfoAddressResponse: Codable {
         case finalBalance = "final_balance",
              transactions = "txs",
              transactionCount = "n_tx"
+        case address
     }
 }
 
@@ -25,20 +27,63 @@ struct BlockchainInfoFeeResponse: Codable {
     let priority: Int
 }
 
+struct BlockchainInfoInput: Codable {
+    let sequence: Int?
+    let witness: String?
+    let script: String?
+    let index: Int?
+    let previousOutput: BlockchainInfoOutput?
+    
+    private enum CodingKeys: String, CodingKey {
+        case previousOutput = "prev_out", index = "n"
+        case sequence, witness, script
+    }
+}
+
+struct BlockchainInfoOutput: Codable {
+    let type: Int?
+    let spent: Bool?
+    let value: Int?
+    let script: String?
+    let address: String?
+    
+    private enum CodingKeys: String, CodingKey {
+        case address = "addr"
+        case type, spent, value, script
+    }
+}
+
 struct BlockchainInfoTransaction: Codable {
     let hash: String?
     let blockHeight: UInt64?
 	/// Balance difference. Using to recognize outgoing transaction for signature count
 	let balanceDif: Int64?
     let inputCount: Int?
+    let inputs: [BlockchainInfoInput]?
+    let outputs: [BlockchainInfoOutput]?
     let time: Double?
     
     private enum CodingKeys: String, CodingKey {
-        case hash,
-             blockHeight = "block_height",
+        case blockHeight = "block_height",
              balanceDif = "result",
              inputCount = "vin_sz",
-             time
+             outputs = "out"
+        case hash, inputs, time
+    }
+    
+    func toBasicTxData(userAddress: String, decimalValue: Decimal) -> BasicTransactionData? {
+        guard
+            let balanceDif = balanceDif,
+            let hash = hash,
+            let time = time
+        else { return nil }
+        
+        let isIncoming = balanceDif > 0
+        return BasicTransactionData(balanceDif: Decimal(balanceDif) / decimalValue,
+                                    hash: hash,
+                                    date: Date(seconds: time),
+                                    isConfirmed: false,
+                                    targetAddress: outputs?.first(where: { isIncoming ? $0.address == userAddress : $0.address != userAddress })?.address)
     }
 }
 

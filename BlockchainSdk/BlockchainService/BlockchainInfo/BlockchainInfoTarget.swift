@@ -52,6 +52,7 @@ enum BlockchainInfoTarget: TargetType {
         switch self {
         case let .address(_, offset):
 			var params = [String:String]()
+            params["limit"] = "20"
 			if let offset = offset {
 				params["offset"] = "\(offset)"
 			}
