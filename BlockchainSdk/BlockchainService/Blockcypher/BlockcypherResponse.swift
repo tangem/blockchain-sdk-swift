@@ -77,7 +77,7 @@ extension Array where Element == BlockcypherTxref {
                 balanceDif += tx.balanceDif
             }
             
-            let tx = BasicTransactionData(balanceDif: balanceDif, hash: hash, date: receivedDate, isConfirmed: isConfirmed)
+            let tx = BasicTransactionData(balanceDif: balanceDif, hash: hash, date: receivedDate, isConfirmed: isConfirmed, targetAddress: nil)
             
             txsDict[hash] = tx
         }

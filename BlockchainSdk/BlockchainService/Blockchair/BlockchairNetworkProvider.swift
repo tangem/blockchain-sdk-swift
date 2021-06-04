@@ -103,25 +103,26 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                             getTransactionDetails(from: $0)
                         }
                         
-                        var pendingBtcTxs: [PendingTransaction] = txs.compactMap {
+                        let pendingBtcTxs: [PendingTransaction] = txs.compactMap {
                             guard let tx = $0 else { return nil }
                             
                             return tx.pendingBtxTx(sourceAddress: address, decimalValue: self.endpoint.blockchain.decimalValue)
                         }
                         
-                        for (index, tx) in pendingBtcTxs.enumerated() {
-                            guard tx.sequence >= SequenceValues.disabledReplacedByFee.rawValue else { continue }
-                            
-                            pendingBtcTxs[index].isAlreadyRbf = pendingBtcTxs.contains(where: {
-                                tx.source == $0.source &&
-                                    tx.destination == $0.destination &&
-                                    tx.value == $0.value &&
-                                    tx.fee ?? 0 < $0.fee ?? 0 &&
-                                    tx.sequence < $0.sequence
-                            })
-                        }
+                        let basicTxs = pendingBtcTxs.map { $0.toBasicTx(userAddress: address) }
+//                        for (index, tx) in pendingBtcTxs.enumerated() {
+//                            guard tx.sequence >= SequenceValues.disabledReplacedByFee.rawValue else { continue }
+//
+//                            pendingBtcTxs[index].isAlreadyRbf = pendingBtcTxs.contains(where: {
+//                                tx.source == $0.source &&
+//                                    tx.destination == $0.destination &&
+//                                    tx.value == $0.value &&
+//                                    tx.fee ?? 0 < $0.fee ?? 0 &&
+//                                    tx.sequence < $0.sequence
+//                            })
+//                        }
                         let oldResp = resp.0
-                        return BitcoinResponse(balance: oldResp.balance, hasUnconfirmed: oldResp.hasUnconfirmed, recentTransactions: [], unspentOutputs: oldResp.unspentOutputs)
+                        return BitcoinResponse(balance: oldResp.balance, hasUnconfirmed: oldResp.hasUnconfirmed, recentTransactions: basicTxs, unspentOutputs: oldResp.unspentOutputs)
                     }
                     .eraseToAnyPublisher()
             }

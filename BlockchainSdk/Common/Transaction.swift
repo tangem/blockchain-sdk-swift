@@ -106,13 +106,14 @@ struct BasicTransactionData {
     let hash: String
     let date: Date?
     let isConfirmed: Bool
+    let targetAddress: String?
     
     func toTransaction(for blockchain: Blockchain, address: String) -> Transaction {
         let isIncoming = balanceDif > 0
         return .init(amount: Amount(with: blockchain, type: .coin, value: abs(balanceDif)),
                      fee: .zeroCoin(for: blockchain),
-                     sourceAddress: isIncoming ? .unknown : address,
-                     destinationAddress: isIncoming ? address : .unknown,
+                     sourceAddress: isIncoming ? targetAddress ?? .unknown : address,
+                     destinationAddress: isIncoming ? address : targetAddress ?? .unknown,
                      changeAddress: .unknown)
     }
 }
