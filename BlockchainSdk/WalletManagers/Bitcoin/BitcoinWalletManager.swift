@@ -16,7 +16,7 @@ class BitcoinWalletManager: WalletManager {
     var txBuilder: BitcoinTransactionBuilder!
     var networkService: BitcoinNetworkProvider!
     
-    var minimalFeePerByte: Decimal { 1 }
+    var minimalFeePerByte: Decimal { 10 }
     var minimalFee: Decimal { 0.00001 }
     
     override var currentHost: String {
@@ -90,11 +90,11 @@ class BitcoinWalletManager: WalletManager {
         wallet.transactions.removeAll()
         if hasUnconfirmed {
             response.forEach {
-                updateRecentTransactionsBasic($0.pendingTxRefs.map { $0.toBasicTx(userAddress: wallet.address) })
+                $0.pendingTxRefs.forEach { wallet.addPendingTransaction($0) }
             }
-            response.forEach {
-                updateRecentTransactionsBasic($0.recentTransactions)
-            }
+//            response.forEach {
+//                updateRecentTransactionsBasic($0.recentTransactions)
+//            }
         }
     }
     

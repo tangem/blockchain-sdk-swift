@@ -45,7 +45,7 @@ class DucatusNetworkService: BitcoinNetworkProvider {
                 }
                 
                 let balance = Decimal(confirmed)/Blockchain.ducatus.decimalValue
-                return BitcoinResponse(balance: balance, hasUnconfirmed: unconfirmed != 0, recentTransactions: [], unspentOutputs: utxs)
+                return BitcoinResponse(balance: balance, hasUnconfirmed: unconfirmed != 0, pendingTxRefs: [], unspentOutputs: utxs)
         }
         .eraseToAnyPublisher()
     }

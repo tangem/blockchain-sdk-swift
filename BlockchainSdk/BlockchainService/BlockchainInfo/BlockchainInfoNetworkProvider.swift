@@ -35,7 +35,9 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
                     guard let hash = utxo.hash,
                           let outputIndex = utxo.outputIndex,
                           let amount = utxo.amount,
-                          let script = utxo.outputScript else {
+                          let script = utxo.outputScript,
+                          utxo.confirmations ?? 0 > 0
+                          else {
                         return nil
                     }
                     
@@ -44,11 +46,12 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
                 } ?? []
                 
                 let decimalValue = Blockchain.bitcoin(testnet: false).decimalValue
-                let pendingBasicTxs = addressResponse.transactions?.filter { $0.blockHeight == nil }
-                    .compactMap { $0.toBasicTxData(userAddress: address, decimalValue: decimalValue) }
+//                let pendingBasicTxs = addressResponse.transactions?.filter { $0.blockHeight == nil }
+//                    .compactMap { $0.toBasicTxData(userAddress: address, decimalValue: decimalValue) }
+                let pendingTxs: [PendingTransaction] = addressResponse.transactions?.filter { $0.blockHeight == nil }.compactMap { $0.toPendingTx(userAddress: address, decimalValue: decimalValue) } ?? []
                 let satoshiBalance = Decimal(balance) / decimalValue
                 let hasUnconfirmed = txs.first(where: { ($0.blockHeight ?? 0) == 0  }) != nil
-                return BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: hasUnconfirmed, recentTransactions: pendingBasicTxs ?? [], unspentOutputs: utxs)
+                return BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: hasUnconfirmed, pendingTxRefs: pendingTxs, unspentOutputs: utxs)
             }
             .eraseToAnyPublisher()
     }

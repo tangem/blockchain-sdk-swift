@@ -30,13 +30,13 @@ struct BitcoinResponse {
         self.unspentOutputs = unspentOutputs
     }
     
-    init(balance: Decimal, hasUnconfirmed: Bool, recentTransactions: [BasicTransactionData], unspentOutputs: [BitcoinUnspentOutput]) {
-        self.balance = balance
-        self.hasUnconfirmed = hasUnconfirmed
-        self.pendingTxRefs = []
-        self.recentTransactions = recentTransactions
-        self.unspentOutputs = unspentOutputs
-    }
+//    init(balance: Decimal, hasUnconfirmed: Bool, recentTransactions: [BasicTransactionData], unspentOutputs: [BitcoinUnspentOutput]) {
+//        self.balance = balance
+//        self.hasUnconfirmed = hasUnconfirmed
+//        self.pendingTxRefs = []
+//        self.recentTransactions = recentTransactions
+//        self.unspentOutputs = unspentOutputs
+//    }
 
 }
 
