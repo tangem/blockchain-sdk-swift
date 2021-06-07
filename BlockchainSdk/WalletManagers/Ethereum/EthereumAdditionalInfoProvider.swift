@@ -18,7 +18,7 @@ struct EthereumTransactionResponse {
     let pendingTxs: [PendingTransaction]
 }
 
-struct BlockcypherEthereumTransaction: Codable {
+struct BlockcypherEthereumTransaction: Codable, BlockcypherPendingTxConvertible {
     let blockHeight: Int64
     let hash: String
     let total: UInt64
@@ -29,8 +29,8 @@ struct BlockcypherEthereumTransaction: Codable {
     let gasPrice: UInt64
     let received: Date
     let confirmations: Int
-//    let inputs: [BlockcypherEthInput]
-//    let outputs: [BlockcypherEthOutput]
+    let inputs: [BlockcypherInput]
+    let outputs: [BlockcypherOutput]
     
     var isAlreadyRbf: Bool {
         false

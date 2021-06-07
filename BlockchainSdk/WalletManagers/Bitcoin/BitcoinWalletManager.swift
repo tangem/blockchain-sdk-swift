@@ -90,6 +90,9 @@ class BitcoinWalletManager: WalletManager {
         wallet.transactions.removeAll()
         if hasUnconfirmed {
             response.forEach {
+                updateRecentTransactionsBasic($0.pendingTxRefs.map { $0.toBasicTx(userAddress: wallet.address) })
+            }
+            response.forEach {
                 updateRecentTransactionsBasic($0.recentTransactions)
             }
         }

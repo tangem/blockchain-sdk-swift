@@ -18,9 +18,26 @@ struct BitcoinFee {
 struct BitcoinResponse {
     let balance: Decimal
     let hasUnconfirmed: Bool
-//    var pendingTxRefs: [PendingTransaction]
+    var pendingTxRefs: [PendingTransaction]
     var recentTransactions: [BasicTransactionData]
     let unspentOutputs: [BitcoinUnspentOutput]
+    
+    init(balance: Decimal, hasUnconfirmed: Bool, pendingTxRefs: [PendingTransaction], unspentOutputs: [BitcoinUnspentOutput]) {
+        self.balance = balance
+        self.hasUnconfirmed = hasUnconfirmed
+        self.pendingTxRefs = pendingTxRefs
+        self.recentTransactions = []
+        self.unspentOutputs = unspentOutputs
+    }
+    
+    init(balance: Decimal, hasUnconfirmed: Bool, recentTransactions: [BasicTransactionData], unspentOutputs: [BitcoinUnspentOutput]) {
+        self.balance = balance
+        self.hasUnconfirmed = hasUnconfirmed
+        self.pendingTxRefs = []
+        self.recentTransactions = recentTransactions
+        self.unspentOutputs = unspentOutputs
+    }
+
 }
 
 struct BitcoinTransaction {

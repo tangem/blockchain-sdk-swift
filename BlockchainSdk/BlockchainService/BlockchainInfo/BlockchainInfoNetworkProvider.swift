@@ -44,11 +44,11 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
                 } ?? []
                 
                 let decimalValue = Blockchain.bitcoin(testnet: false).decimalValue
-                let pendingTxs = addressResponse.transactions?.filter { $0.blockHeight == nil }
-                    .map { $0.toBasicTxData(decimalValue: decimalValue) }
+                let pendingBasicTxs = addressResponse.transactions?.filter { $0.blockHeight == nil }
+                    .compactMap { $0.toBasicTxData(userAddress: address, decimalValue: decimalValue) }
                 let satoshiBalance = Decimal(balance) / decimalValue
                 let hasUnconfirmed = txs.first(where: { ($0.blockHeight ?? 0) == 0  }) != nil
-                return BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: hasUnconfirmed, recentTransactions: pendingTxs, unspentOutputs: utxs)
+                return BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: hasUnconfirmed, recentTransactions: pendingBasicTxs ?? [], unspentOutputs: utxs)
             }
             .eraseToAnyPublisher()
     }

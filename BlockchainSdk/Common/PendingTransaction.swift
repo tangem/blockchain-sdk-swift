@@ -20,6 +20,6 @@ struct PendingTransaction {
     
     func toBasicTx(userAddress: String) -> BasicTransactionData {
         let isIncoming = userAddress == destination
-        return .init(balanceDif: isIncoming ? value : -value, hash: hash, date: date, isConfirmed: false, targetAddress: isIncoming ? userAddress : source)
+        return .init(balanceDif: isIncoming ? value : -value, hash: hash, date: date, isConfirmed: false, targetAddress: isIncoming ? source : destination)
     }
 }

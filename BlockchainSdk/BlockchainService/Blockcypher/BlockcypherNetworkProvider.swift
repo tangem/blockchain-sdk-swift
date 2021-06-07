@@ -38,24 +38,73 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
         self.tokens = tokens
     }
     
+//    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
+//        publisher(for: getTarget(for: .address(address: address, unspentsOnly: false, limit: nil, isFull: false)))
+//            .map(BlockcypherAddressResponse.self)
+//            .tryMap { [unowned self] (addressResponse: BlockcypherAddressResponse) -> BitcoinResponse in
+//                guard let balance = addressResponse.balance else {
+//                    throw WalletError.failedToParseNetworkResponse
+//                }
+//
+//                let decimalValue = self.endpoint.blockchain.decimalValue
+//                let satoshiBalance = Decimal(balance) / decimalValue
+//
+//                var recentTransactions = addressResponse.txrefs?.toBasicTxDataArray(isConfirmed: true, decimals: decimalValue) ?? []
+//                let unconfirmedTxs = addressResponse.unconfirmedTxrefs?.toBasicTxDataArray(isConfirmed: false, decimals: decimalValue) ?? []
+//                recentTransactions.append(contentsOf: unconfirmedTxs)
+//
+//                let utxo: [BitcoinUnspentOutput] = addressResponse.txrefs?.compactMap { $0.toUnspentOutput() } ?? []
+//
+//                return .init(balance: satoshiBalance, hasUnconfirmed: unconfirmedTxs.count > 0, recentTransactions: recentTransactions, unspentOutputs: utxo)
+//            }
+//            .eraseToAnyPublisher()
+//    }
+    
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        publisher(for: getTarget(for: .address(address: address, unspentsOnly: false, limit: nil, isFull: false)))
-            .map(BlockcypherAddressResponse.self)
-            .tryMap { [unowned self] (addressResponse: BlockcypherAddressResponse) -> BitcoinResponse in
-                guard let balance = addressResponse.balance else {
+        getFullInfo(address: address)
+            .tryMap {[unowned self] (addressResponse: BlockcypherFullAddressResponse<BlockcypherBitcoinTx>) -> BitcoinResponse in
+                guard let balance = addressResponse.balance,
+                      let uncBalance = addressResponse.unconfirmedBalance
+                else {
                     throw WalletError.failedToParseNetworkResponse
                 }
-
-                let decimalValue = self.endpoint.blockchain.decimalValue
-                let satoshiBalance = Decimal(balance) / decimalValue
-
-                var recentTransactions = addressResponse.txrefs?.toBasicTxDataArray(isConfirmed: true, decimals: decimalValue) ?? []
-                let unconfirmedTxs = addressResponse.unconfirmedTxrefs?.toBasicTxDataArray(isConfirmed: false, decimals: decimalValue) ?? []
-                recentTransactions.append(contentsOf: unconfirmedTxs)
                 
-                var utxo: [BitcoinUnspentOutput] = addressResponse.txrefs?.compactMap { $0.toUnspentOutput() } ?? []
+                let satoshiBalance = Decimal(balance) / self.endpoint.blockchain.decimalValue
                 
-                return .init(balance: satoshiBalance, hasUnconfirmed: unconfirmedTxs.count > 0, recentTransactions: recentTransactions, unspentOutputs: utxo)
+                var utxo: [BitcoinUnspentOutput] = []
+                var pendingTxRefs: [PendingTransaction] = []
+                
+                addressResponse.txs?.forEach { tx in
+                    if tx.blockIndex == -1 {
+                        let pendingTx = tx.pendingTx(for: address, decimalValue: self.endpoint.blockchain.decimalValue)
+                        pendingTxRefs.append(pendingTx)
+                    } else {
+                        guard let btcTx = tx.toUnspentOutput(for: address) else { return }
+                        
+                        utxo.append(btcTx)
+                    }
+                }
+                
+                for (index, tx) in pendingTxRefs.enumerated() {
+                    guard tx.sequence == SequenceValues.disabledReplacedByFee.rawValue else { continue }
+                    
+                    if tx.isAlreadyRbf { continue }
+                    
+                    pendingTxRefs[index].isAlreadyRbf = pendingTxRefs.contains(where: {
+                        tx.source == $0.source &&
+                            tx.destination == $0.destination &&
+                            tx.value == $0.value &&
+                            tx.fee ?? 0 < $0.fee ?? 0 &&
+                            tx.sequence < $0.sequence
+                    })
+                    
+                }
+                
+                if Decimal(uncBalance) / self.endpoint.blockchain.decimalValue != pendingTxRefs.reduce(0, { $0 + $1.value }) {
+                    print("Unconfirmed balance and pending tx refs sum is not equal")
+                }
+                let btcResponse = BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: pendingTxRefs.count > 0, pendingTxRefs: pendingTxRefs, unspentOutputs: utxo)
+                return btcResponse
             }
             .eraseToAnyPublisher()
     }
@@ -208,15 +257,15 @@ extension BlockcypherNetworkProvider: EthereumAdditionalInfoProvider {
                 response.txs?.forEach { tx in
                     guard tx.blockHeight == -1 else { return }
                     
-//                    var pendingTx = tx.pendingTx(for: croppedAddress, decimalValue: self.endpoint.blockchain.decimalValue)
-//                    if pendingTx.source == croppedAddress {
-//                        pendingTx.source = address
-//                        pendingTx.destination = "0x" + pendingTx.destination
-//                    } else if pendingTx.destination == croppedAddress {
-//                        pendingTx.destination = address
-//                        pendingTx.source = "0x" + pendingTx.source
-//                    }
-//                    pendingTxs.append(pendingTx)
+                    var pendingTx = tx.pendingTx(for: croppedAddress, decimalValue: self.endpoint.blockchain.decimalValue)
+                    if pendingTx.source == croppedAddress {
+                        pendingTx.source = address
+                        pendingTx.destination = "0x" + pendingTx.destination
+                    } else if pendingTx.destination == croppedAddress {
+                        pendingTx.destination = address
+                        pendingTx.source = "0x" + pendingTx.source
+                    }
+                    pendingTxs.append(pendingTx)
                }
                 
                 let ethResp = EthereumTransactionResponse(balance: ethBalance, pendingTxs: pendingTxs)
