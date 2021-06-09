@@ -110,23 +110,24 @@ public enum Blockchain {
     }
     
     public var displayName: String {
+        let testnetSuffix = " Testnet"
         switch self {
-        case .bitcoinCash:
-            return "Bitcoin Cash"
+        case .bitcoinCash(let testnet):
+            return "Bitcoin Cash" + (testnet ? testnetSuffix : "")
         case .xrp:
             return "XRP Ledger"
         case .rsk:
             return "\(self)".uppercased()
         case .bsc(let testnet):
-            return testnet ? "Binance Smart Chain - Testnet" : "Binance Smart Chain"
+            return "Binance Smart Chain" + (testnet ? testnetSuffix : "")
         case .matic(let testnet):
-            return testnet ? "Polygon (Matic) Testnet" : "Polygon (Matic)"
+            return "Polygon (Matic)" + (testnet ? testnetSuffix : "")
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
                 name = String(name.prefix(upTo: index))
             }
-            return isTestnet ?  name + " test" : name
+            return isTestnet ?  name + testnetSuffix : name
         }
     }
     
