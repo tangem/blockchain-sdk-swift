@@ -276,6 +276,9 @@
 		B087283926134D8A00E3FF57 /* CardanoNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C8222925F8DA860027E3BF /* CardanoNetworkService.swift */; };
 		B087283C26134DA100E3FF57 /* MultiNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F9DCA025FB4C9B00C0AF18 /* MultiNetworkProvider.swift */; };
 		B087283F26134E1100E3FF57 /* AnyPublisher+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C2C86625FBA10E00A61622 /* AnyPublisher+.swift */; };
+		B09374B2267089B2001450B0 /* PendingTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0AD566325AC8DD50084F924 /* PendingTransaction.swift */; };
+		B09374B3267089F1001450B0 /* DateFormatter+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07EE8B125AC1504009DB163 /* DateFormatter+.swift */; };
+		B09374B426708A05001450B0 /* JSONDecoder+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04DC62625AC1C50009AA7B3 /* JSONDecoder+.swift */; };
 		B0A1D39D2625A1150013F0BF /* EthereumUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A1D39C2625A1150013F0BF /* EthereumUtils.swift */; };
 		B0A1D3A02625A16F0013F0BF /* EthereumUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A1D39C2625A1150013F0BF /* EthereumUtils.swift */; };
 		B0A63E0D26259D01001FDB7A /* EthereumTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A63E0C26259D01001FDB7A /* EthereumTransactionParams.swift */; };
@@ -1369,6 +1372,7 @@
 				5DDD831625BF0E7B00166EA9 /* AdaliteTarget.swift in Sources */,
 				5DDD830625BF0E2400166EA9 /* XRPTransactionParams.swift in Sources */,
 				5DDD832E25BF0EC500166EA9 /* SerializerDefinitions.swift in Sources */,
+				B09374B2267089B2001450B0 /* PendingTransaction.swift in Sources */,
 				5DDD82D825BF0DF800166EA9 /* TezosAddress.swift in Sources */,
 				5D16096925921DA900738AE6 /* AddressService.swift in Sources */,
 				5DDD82B925BF0D6700166EA9 /* TangemSdk+TransactionSigner.swift in Sources */,
@@ -1416,11 +1420,13 @@
 				B04AA0442642C8AD0075AE32 /* EthereumJsonRpcProvider.swift in Sources */,
 				5DDD833125BF0EC500166EA9 /* SigningAlgorithm.swift in Sources */,
 				5DDD832C25BF0EC500166EA9 /* Extensions.swift in Sources */,
+				B09374B426708A05001450B0 /* JSONDecoder+.swift in Sources */,
 				5DDD82F925BF0E1D00166EA9 /* DucatusAddressService.swift in Sources */,
 				5DDD829325BF0CDC00166EA9 /* BitcoinAddressService.swift in Sources */,
 				5DDD82E925BF0E1100166EA9 /* LitecoinWalletManager.swift in Sources */,
 				5D740B832625B6E400DE9636 /* RskAddressService.swift in Sources */,
 				5DDD831225BF0E7800166EA9 /* EthereumTarget.swift in Sources */,
+				B09374B3267089F1001450B0 /* DateFormatter+.swift in Sources */,
 				5DDD82C625BF0D7B00166EA9 /* ThenProcessable.swift in Sources */,
 				5DDD82D325BF0DB100166EA9 /* BlockcypherResponse.swift in Sources */,
 				5DDD833925BF0EC900166EA9 /* XRPAccount.swift in Sources */,

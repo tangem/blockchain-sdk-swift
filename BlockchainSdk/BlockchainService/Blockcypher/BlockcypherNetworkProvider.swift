@@ -25,10 +25,6 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
         return decoder
     }()
     
-    var canPushTransaction: Bool {
-        false
-    }
-    
     var host: String {
         getTarget(for: .fee).baseURL.hostOrUnknown
     }
@@ -155,12 +151,6 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
             .eraseToAnyPublisher()
             .mapNotEmptyString()
             .eraseError()
-            .eraseToAnyPublisher()
-    }
-    
-
-    func push(transaction: String) -> AnyPublisher<String, Error> {
-        Fail(error: NetworkServiceError.notAvailable)
             .eraseToAnyPublisher()
     }
     

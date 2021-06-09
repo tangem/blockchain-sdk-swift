@@ -15,9 +15,6 @@ import SwiftyJSON
 import BitcoinCore
 
 class BlockchairNetworkProvider: BitcoinNetworkProvider {
-    func getTransaction(with hash: String) -> AnyPublisher<BitcoinTransaction, Error> {
-        .anyFail(error: "Not implemented")
-    }
     
     let provider = MoyaProvider<BlockchairTarget>()
     
@@ -31,10 +28,6 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
         decoder.dateDecodingStrategy = .formatted(DateFormatter(withFormat: "YYYY-MM-dd HH:mm:ss", locale: "en_US"))
         return decoder
     }()
-    
-    var canPushTransaction: Bool {
-        true
-    }
     
     var host: String {
         BlockchairTarget.fee(endpoint: endpoint, apiKey: "").baseURL.hostOrUnknown
@@ -161,10 +154,6 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                return hash
         }
         .eraseToAnyPublisher()
-    }
-    
-    func push(transaction: String) -> AnyPublisher<String, Error> {
-        send(transaction: transaction)
     }
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {

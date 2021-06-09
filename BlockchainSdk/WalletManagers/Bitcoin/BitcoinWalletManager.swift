@@ -97,18 +97,6 @@ class BitcoinWalletManager: WalletManager {
 //            }
         }
     }
-    
-//    private func getEstimateSize(for transaction: Transaction) -> Decimal? {
-//        guard let unspentOutputsCount = txBuilder.unspentOutputs?.count else {
-//            return nil
-//        }
-//
-//        guard let tx = txBuilder.buildForSend(transaction: transaction, signature: Data(repeating: UInt8(0x80), count: 64 * unspentOutputsCount)) else {
-//            return nil
-//        }
-//
-//        return Decimal(tx.count)
-//    }
 }
 
 @available(iOS 13.0, *)

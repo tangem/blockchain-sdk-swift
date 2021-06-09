@@ -11,14 +11,8 @@ import Combine
 import Moya
 
 class DucatusNetworkService: BitcoinNetworkProvider {
-    func getTransaction(with hash: String) -> AnyPublisher<BitcoinTransaction, Error> {
-        .anyFail(error: "Not supported")
-    }
-    
     let provider =  BitcoreProvider()
     
-    var canPushTransaction: Bool { false }
-
     var host: String {
         provider.host
     }
@@ -59,11 +53,6 @@ class DucatusNetworkService: BitcoinNetworkProvider {
                     throw WalletError.failedToParseNetworkResponse
                 }
         }.eraseToAnyPublisher()
-    }
-    
-    func push(transaction: String) -> AnyPublisher<String, Error> {
-        Fail(error: BlockchainSdkError.notImplemented)
-            .eraseToAnyPublisher()
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {

@@ -13,11 +13,6 @@ import TangemSdk
 import Alamofire
 
 class BitcoinNetworkService: MultiNetworkProvider<BitcoinNetworkProvider>, BitcoinNetworkProvider {
-    
-    var canPushTransaction: Bool {
-        false
-//        providers[.blockchair] != nil
-    }
 
     var host: String {
         provider.host
@@ -77,23 +72,6 @@ class BitcoinNetworkService: MultiNetworkProvider<BitcoinNetworkProvider>, Bitco
         providerPublisher {
             $0.send(transaction: transaction)
         }
-    }
-    
-    func getTransaction(with hash: String) -> AnyPublisher<BitcoinTransaction, Error> {
-        providerPublisher(for: {
-            $0.getTransaction(with: hash)
-        })
-    }
-    
-    func push(transaction: String) -> AnyPublisher<String, Error> {
-        guard canPushTransaction else {
-            return Fail(error: NetworkServiceError.notAvailable)
-                .eraseToAnyPublisher()
-        }
-        return Just(())
-            .setFailureType(to: Error.self)
-            .flatMap { [unowned self] in self.providers.first(where: { $0 is BlockcypherNetworkProvider })!.send(transaction: transaction) }
-            .eraseToAnyPublisher()
     }
     
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {

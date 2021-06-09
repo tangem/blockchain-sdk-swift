@@ -6,6 +6,7 @@
 //  Copyright © 2021 Tangem AG. All rights reserved.
 //
 
+import Foundation
 import Combine
 
 protocol EthereumAdditionalInfoProvider {
@@ -36,13 +37,3 @@ struct BlockcypherEthereumTransaction: Codable, BlockcypherPendingTxConvertible 
         false
     }
 }
-
-//struct BlockcypherEthInput: Codable, BlockcypherInput {
-//    let sequence: Int
-//    let addresses: [String]
-//}
-//
-//struct BlockcypherEthOutput: Codable, BlockcypherOutput {
-//    let value: UInt64
-//    let addresses: [String]
-//}

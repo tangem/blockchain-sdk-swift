@@ -11,17 +11,12 @@ import Moya
 import Combine
 
 class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
-    func getTransaction(with hash: String) -> AnyPublisher<BitcoinTransaction, Error> {
-        .anyFail(error: "Not implemented")
-    }
     
     let provider = MoyaProvider<BlockchainInfoTarget>(plugins: [NetworkLoggerPlugin()])
     
     var host: String {
         BlockchainInfoTarget.address(address: "", offset: nil).baseURL.hostOrUnknown
     }
-    
-    var canPushTransaction: Bool { false }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         addressUnspentsData(address)
@@ -77,10 +72,6 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
             .mapNotEmptyString()
             .eraseError()
             .eraseToAnyPublisher()
-    }
-    
-    func push(transaction: String) -> AnyPublisher<String, Error> {
-        .anyFail(error: "Not supported")
     }
     
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
