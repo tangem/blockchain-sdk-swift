@@ -14,14 +14,16 @@ import SwiftyJSON
 class BlockchairEthNetworkProvider {
     let provider = MoyaProvider<BlockchairTarget>()
     
+    private let endpoint: BlockchairEndpoint
     private let apiKey: String
     
-    init(apiKey: String) {
+    init(endpoint: BlockchairEndpoint, apiKey: String) {
+        self.endpoint = endpoint
         self.apiKey = apiKey
     }
     
     func findErc20Tokens(address: String) -> AnyPublisher<[BlockchairToken], Error> {
-        publisher(for: .findErc20Tokens(address: address, apiKey: apiKey))
+        publisher(for: .findErc20Tokens(address: address, endpoint: endpoint, apiKey: apiKey))
             .tryMap { json -> [BlockchairToken] in
                 let addr = self.mapAddressBlock(address, json: json)
                 let tokensObject = addr["layer_2"]["erc_20"]

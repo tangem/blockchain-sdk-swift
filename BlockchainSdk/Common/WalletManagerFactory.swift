@@ -78,9 +78,11 @@ public class WalletManagerFactory {
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: addresses)
                 
                 var providers = [BitcoinNetworkProvider]()
-                providers.append(BlockchainInfoNetworkProvider())
-                providers.append(BlockchairNetworkProvider(endpoint: .bitcoin, apiKey: config.blockchairApiKey))
-                providers.append(BlockcypherNetworkProvider(endpoint: BlockcypherEndpoint(coin: .btc, chain: testnet ? .test3: .main),
+                if !testnet {
+                    providers.append(BlockchainInfoNetworkProvider())
+                }
+                providers.append(BlockchairNetworkProvider(endpoint: .bitcoin(testnet: testnet), apiKey: config.blockchairApiKey))
+                providers.append(BlockcypherNetworkProvider(endpoint: .bitcoin(testnet: testnet),
                                                               tokens: config.blockcypherTokens))
                 
                 $0.networkService = BitcoinNetworkService(providers: providers)
@@ -97,7 +99,7 @@ public class WalletManagerFactory {
                 
                 var providers = [BitcoinNetworkProvider]()
                 providers.append(BlockchairNetworkProvider(endpoint: .litecoin, apiKey: config.blockchairApiKey))
-                providers.append(BlockcypherNetworkProvider(endpoint: BlockcypherEndpoint(coin: .ltc, chain: .main), tokens: config.blockcypherTokens))
+                providers.append(BlockcypherNetworkProvider(endpoint: .litecoin, tokens: config.blockcypherTokens))
 
                 $0.networkService = LitecoinNetworkService(providers: providers)
             }
@@ -113,7 +115,7 @@ public class WalletManagerFactory {
                 
                 var providers = [BitcoinNetworkProvider]()
                 providers.append(BlockchairNetworkProvider(endpoint: .dogecoin, apiKey: config.blockchairApiKey))
-//                providers.append(BlockcypherNetworkProvider(endpoint: BlockcypherEndpoint(coin: .doge, chain: .main), tokens: config.blockcypherTokens))
+//                providers.append(BlockcypherNetworkProvider(endpoint: .dogecoin, tokens: config.blockcypherTokens))
 
                 $0.networkService = DogecoinNetworkService(providers: providers)
             }
@@ -143,8 +145,8 @@ public class WalletManagerFactory {
                     EthereumJsonRpcProvider(network: .tangem)
                 ]
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: ethereumNetwork)
-                let provider = BlockcypherNetworkProvider(endpoint: .init(coin: .eth, chain: .main), tokens: config.blockcypherTokens)
-                let blockchair = BlockchairEthNetworkProvider(apiKey: config.blockchairApiKey)
+                let provider = BlockcypherNetworkProvider(endpoint: .ethereum, tokens: config.blockcypherTokens)
+                let blockchair = BlockchairEthNetworkProvider(endpoint: .ethereum(testnet: testnet), apiKey: config.blockchairApiKey)
                 $0.networkService = EthereumNetworkService(network: ethereumNetwork, providers: jsonRpcProviders, blockcypherProvider: provider, blockchairProvider: blockchair)
             }
             
@@ -152,8 +154,7 @@ public class WalletManagerFactory {
             return EthereumWalletManager(wallet: wallet, cardTokens: tokens).then {
                 let network: EthereumNetwork = .rsk
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: network)
-                let blockchair = BlockchairEthNetworkProvider(apiKey: config.blockchairApiKey)
-                $0.networkService = EthereumNetworkService(network: .rsk, providers: [EthereumJsonRpcProvider(network: network)], blockcypherProvider: nil, blockchairProvider: blockchair)
+                $0.networkService = EthereumNetworkService(network: .rsk, providers: [EthereumJsonRpcProvider(network: network)], blockcypherProvider: nil, blockchairProvider: nil)
             }
             
         case .bsc(let testnet):
