@@ -123,16 +123,14 @@ public struct Wallet {
                                         destinationAddress: String,
                                         date: Date,
                                         changeAddress: String = .unknown,
-                                        sequence: Int,
-                                        isAlreadyReplacedByFee: Bool) {
+                                        sequence: Int) {
         transactions.append(Transaction(amount: amount,
                                         fee: fee,
                                         sourceAddress: sourceAddress,
                                         destinationAddress: destinationAddress,
                                         changeAddress: changeAddress,
                                         date: date,
-                                        sequence: sequence,
-                                        isAlreadyReplasedByFee: isAlreadyReplacedByFee))
+                                        sequence: sequence))
     }
     
     mutating func addPendingTransaction(_ tx: PendingTransaction) {
@@ -141,8 +139,7 @@ public struct Wallet {
                               sourceAddress: tx.source,
                               destinationAddress: tx.destination,
                               date: tx.date,
-                              sequence: tx.sequence,
-                              isAlreadyReplacedByFee: tx.isAlreadyRbf)
+                              sequence: tx.sequence)
     }
     
     mutating func addDummyPendingTransaction() {

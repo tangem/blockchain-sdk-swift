@@ -37,7 +37,6 @@ public struct Transaction: Equatable {
     public internal(set) var hash: String? = nil
     public var params: TransactionParams? = nil
     public let sequence: Int
-    public let isAlreadyReplasedByFee: Bool
     
     internal init(amount: Amount, fee: Amount,
                   sourceAddress: String,
@@ -47,8 +46,7 @@ public struct Transaction: Equatable {
                   date: Date? = nil,
                   status: TransactionStatus = .unconfirmed,
                   hash: String? = nil,
-                  sequence: Int = SequenceValues.default.rawValue,
-                  isAlreadyReplasedByFee: Bool = false) {
+                  sequence: Int = SequenceValues.default.rawValue) {
         self.amount = amount
         self.fee = fee
         self.sourceAddress = sourceAddress
@@ -59,7 +57,6 @@ public struct Transaction: Equatable {
         self.status = status
         self.hash = hash
         self.sequence = sequence
-        self.isAlreadyReplasedByFee = isAlreadyReplasedByFee
     }
 }
 

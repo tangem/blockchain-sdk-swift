@@ -20,19 +20,21 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         addressUnspentsData(address)
-            .tryMap {(addressResponse, unspentsResponse) throws -> BitcoinResponse in
+            .tryMap {(addressResponse, unspentsResponse) throws -> (BitcoinResponse, [UInt64]) in
                 guard let balance = addressResponse.finalBalance,
                       let txs = addressResponse.transactions else {
                     throw WalletError.failedToGetFee
                 }
                 
-                let utxs: [BitcoinUnspentOutput] = unspentsResponse.unspentOutputs?.compactMap { utxo -> BitcoinUnspentOutput?  in
+                // Unspents in Blockchain.info have 0 confirmations when transaction that used parent unspent currently in Mempool.
+                // For this case we cannot use this unspent neither for new transaction nor for replacing old transaction
+                var utxs: [BitcoinUnspentOutput] = unspentsResponse.unspentOutputs?.compactMap { utxo -> BitcoinUnspentOutput?  in
                     guard let hash = utxo.hash,
                           let outputIndex = utxo.outputIndex,
                           let amount = utxo.amount,
                           let script = utxo.outputScript,
                           utxo.confirmations ?? 0 > 0
-                          else {
+                    else {
                         return nil
                     }
                     
@@ -40,13 +42,60 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
                     return btx
                 } ?? []
                 
+                var missingUnspents: [UInt64] = []
                 let decimalValue = Blockchain.bitcoin(testnet: false).decimalValue
 //                let pendingBasicTxs = addressResponse.transactions?.filter { $0.blockHeight == nil }
 //                    .compactMap { $0.toBasicTxData(userAddress: address, decimalValue: decimalValue) }
-                let pendingTxs: [PendingTransaction] = addressResponse.transactions?.filter { $0.blockHeight == nil }.compactMap { $0.toPendingTx(userAddress: address, decimalValue: decimalValue) } ?? []
+                let pendingTxs: [PendingTransaction] = addressResponse.transactions?.filter { $0.blockHeight == nil }.compactMap { tx in
+                    
+                    guard let pendingTx = tx.toPendingTx(userAddress: address, decimalValue: decimalValue) else { return nil }
+                    
+                    if !pendingTx.isIncoming {
+                        // We must find unspent outputs if we encounter outgoing transaction,
+                        // because Blockchain.info won't return this unspents in unspents request
+                        let addressInputs = tx.inputs?.filter { $0.previousOutput?.address == address } ?? []
+                        addressInputs.forEach { input in
+                            // Blockchain.info doesn't return transaction hash like Blockcypher of Blockchair
+                            // Because of that we must to search tx by index
+                            guard let txIndex = input.previousOutput?.txIndex else { return }
+                            
+                            guard
+                                let transaction = addressResponse.transactions?.first(where: { txIndex == $0.txIndex }),
+                                let unspent = transaction.findUnspentOutput(for: address)
+                            else {
+                                // If transaction with specified tx index wasn't found, we must request this specific tx from API
+                                missingUnspents.append(txIndex)
+                                return
+                            }
+                            
+                            
+                            utxs.append(unspent)
+                        }
+                    }
+                    
+                    return pendingTx
+                } ?? []
                 let satoshiBalance = Decimal(balance) / decimalValue
                 let hasUnconfirmed = txs.first(where: { ($0.blockHeight ?? 0) == 0  }) != nil
-                return BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: hasUnconfirmed, pendingTxRefs: pendingTxs, unspentOutputs: utxs)
+                return (BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: hasUnconfirmed, pendingTxRefs: pendingTxs, unspentOutputs: utxs), missingUnspents)
+            }
+            .flatMap { [unowned self] (btcResponse: BitcoinResponse, missingUnspentsIndices: [UInt64]) -> AnyPublisher<BitcoinResponse, Error> in
+                guard missingUnspentsIndices.count > 0 else {
+                    return .justWithError(output: btcResponse)
+                }
+                
+                return Publishers.MergeMany(
+                    missingUnspentsIndices.map { self.getTransaction(with: $0) }
+                )
+                .collect()
+                .map { missingTxs -> BitcoinResponse in
+                    let unspents = missingTxs.compactMap { $0.findUnspentOutput(for: address) }
+                    var finalUnspents = btcResponse.unspentOutputs
+                    unspents.forEach { finalUnspents.appendIfNotContain($0) }
+                    
+                    return BitcoinResponse(balance: btcResponse.balance, hasUnconfirmed: btcResponse.hasUnconfirmed, pendingTxRefs: btcResponse.pendingTxRefs, unspentOutputs: finalUnspents)
+                }
+                .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
@@ -109,6 +158,19 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
                 items.filter { ($0.balanceDif ?? 0) < 0 }.count
             }
             .eraseToAnyPublisher()
+    }
+    
+    func getTransaction(with hash: String) -> AnyPublisher<BlockchainInfoTransaction, Error> {
+        provider
+            .requestPublisher(.transaction(hash: hash))
+            .filterSuccessfulStatusAndRedirectCodes()
+            .map(BlockchainInfoTransaction.self)
+            .eraseError()
+            .eraseToAnyPublisher()
+    }
+    
+    private func getTransaction(with index: UInt64) -> AnyPublisher<BlockchainInfoTransaction, Error> {
+        getTransaction(with: "\(index)")
     }
     
     private func addressUnspentsData(_ address: String) -> AnyPublisher<(BlockchainInfoAddressResponse, BlockchainInfoUnspentResponse), Error> {

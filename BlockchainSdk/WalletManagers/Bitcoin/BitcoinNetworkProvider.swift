@@ -66,6 +66,14 @@ struct BitcoinUnspentOutput {
     let outputScript: String
 }
 
+extension Array where Element == BitcoinUnspentOutput {
+    mutating func appendIfNotContain(_ utxo: BitcoinUnspentOutput) {
+        if !contains(where: { $0.transactionHash == utxo.transactionHash }) {
+            append(utxo)
+        }
+    }
+}
+
 enum BitcoinNetworkApi {
     case blockchainInfo
 	case blockchair

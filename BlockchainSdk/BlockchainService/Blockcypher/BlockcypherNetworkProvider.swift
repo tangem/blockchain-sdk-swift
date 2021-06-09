@@ -72,28 +72,13 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
                 
                 addressResponse.txs?.forEach { tx in
                     if tx.blockIndex == -1 {
-                        let pendingTx = tx.pendingTx(for: address, decimalValue: self.endpoint.blockchain.decimalValue)
+                        let pendingTx = tx.toPendingTx(userAddress: address, decimalValue: self.endpoint.blockchain.decimalValue)
                         pendingTxRefs.append(pendingTx)
                     } else {
-                        guard let btcTx = tx.toUnspentOutput(for: address) else { return }
+                        guard let btcTx = tx.findUnspentOutput(for: address) else { return }
                         
                         utxo.append(btcTx)
                     }
-                }
-                
-                for (index, tx) in pendingTxRefs.enumerated() {
-                    guard tx.sequence == SequenceValues.disabledReplacedByFee.rawValue else { continue }
-                    
-                    if tx.isAlreadyRbf { continue }
-                    
-                    pendingTxRefs[index].isAlreadyRbf = pendingTxRefs.contains(where: {
-                        tx.source == $0.source &&
-                            tx.destination == $0.destination &&
-                            tx.value == $0.value &&
-                            tx.fee ?? 0 < $0.fee ?? 0 &&
-                            tx.sequence < $0.sequence
-                    })
-                    
                 }
                 
                 if Decimal(uncBalance) / self.endpoint.blockchain.decimalValue != pendingTxRefs.reduce(0, { $0 + $1.value }) {
@@ -247,7 +232,7 @@ extension BlockcypherNetworkProvider: EthereumAdditionalInfoProvider {
                 response.txs?.forEach { tx in
                     guard tx.blockHeight == -1 else { return }
                     
-                    var pendingTx = tx.pendingTx(for: croppedAddress, decimalValue: self.endpoint.blockchain.decimalValue)
+                    var pendingTx = tx.toPendingTx(userAddress: croppedAddress, decimalValue: self.endpoint.blockchain.decimalValue)
                     if pendingTx.source == croppedAddress {
                         pendingTx.source = address
                         pendingTx.destination = "0x" + pendingTx.destination

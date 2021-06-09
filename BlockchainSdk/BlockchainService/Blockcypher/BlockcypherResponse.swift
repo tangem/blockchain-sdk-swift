@@ -96,25 +96,26 @@ protocol BlockcypherPendingTxConvertible {
     var hash: String { get }
     var fees: Decimal { get }
     var received: Date { get }
-    var isAlreadyRbf: Bool { get }
     var inputs: [BlockcypherInput] { get }
     var outputs: [BlockcypherOutput] { get }
 
-    func pendingTx(for sourceAddress: String, decimalValue: Decimal) -> PendingTransaction
+    func toPendingTx(userAddress: String, decimalValue: Decimal) -> PendingTransaction
 }
 
 extension BlockcypherPendingTxConvertible {
-    func pendingTx(for sourceAddress: String, decimalValue: Decimal) -> PendingTransaction {
+    func toPendingTx(userAddress: String, decimalValue: Decimal) -> PendingTransaction {
         var source: String = .unknown
         var destination: String = .unknown
         var value: UInt64 = 0
+        var isIncoming: Bool = false
 
-        if let txSource = inputs.first(where: { $0.addresses?.contains(sourceAddress) ?? false } ), let txDestination = outputs.first(where: { !($0.addresses?.contains(sourceAddress) ?? false) } ) {
+        if let txSource = inputs.first(where: { $0.addresses?.contains(userAddress) ?? false } ), let txDestination = outputs.first(where: { !($0.addresses?.contains(userAddress) ?? false) } ) {
             destination = txDestination.addresses?.first ?? .unknown
-            source = txSource.addresses?.first ?? .unknown
+            source = userAddress
             value = txDestination.value ?? 0
-        } else if let txDestination = outputs.first(where: { $0.addresses?.contains(sourceAddress) ?? false } ), let txSource = inputs.first(where: { !($0.addresses?.contains(sourceAddress) ?? false) } ) {
-            destination = txDestination.addresses?.first ?? .unknown
+        } else if let txDestination = outputs.first(where: { $0.addresses?.contains(userAddress) ?? false } ), let txSource = inputs.first(where: { !($0.addresses?.contains(userAddress) ?? false) } ) {
+            isIncoming = true
+            destination = userAddress
             source = txSource.addresses?.first ?? .unknown
             value = txDestination.value ?? 0
         }
@@ -125,8 +126,8 @@ extension BlockcypherPendingTxConvertible {
                                   source: source,
                                   fee: fees / decimalValue,
                                   date: received,
-                                  isAlreadyRbf: isAlreadyRbf,
-                                  sequence: inputs.first?.sequence ?? SequenceValues.default.rawValue)
+                                  sequence: inputs.first?.sequence ?? SequenceValues.default.rawValue,
+                                  isIncoming: isIncoming)
     }
 }
 
@@ -201,11 +202,7 @@ struct BlockcypherBitcoinTx: Codable, BlockcypherPendingTxConvertible {
     let inputs: [BlockcypherInput]
     let outputs: [BlockcypherOutput]
     
-    var isAlreadyRbf: Bool {
-        doubleSpendTx != nil
-    }
-    
-    func toUnspentOutput(for sourceAddress: String) -> BitcoinUnspentOutput? {
+    func findUnspentOutput(for sourceAddress: String) -> BitcoinUnspentOutput? {
         var txOutputIndex: Int = -1
         guard
             outputs.enumerated().contains(where: {

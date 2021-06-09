@@ -60,18 +60,23 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                         throw WalletError.failedToParseNetworkResponse
                 }
                 
+                // Unspents with blockId lower than or equal 1 is not currently available
+                // This unspents related to transaction in Mempool and are pending. We should ignore this unspents
                 let utxs: [BitcoinUnspentOutput] = utxos.compactMap { utxo -> BitcoinUnspentOutput?  in
                     guard let hash = utxo.transactionHash,
                         let n = utxo.index,
-                        let val = utxo.value else {
-                            return nil
+                        let val = utxo.value,
+                        let blockId = utxo.blockId,
+                        blockId <= 1
+                    else {
+                        return nil
                     }
                     
                     let btx = BitcoinUnspentOutput(transactionHash: hash, outputIndex: n, amount: val, outputScript: script)
                     return btx
                 }
                 
-                let pendingTxs = transactions.filter { $0.blockId == -1 || $0.blockId == 1 }
+                let pendingTxs = transactions.filter { $0.blockId <= 1 }
                 let hasUnconfirmed = pendingTxs.count != 0
                 
                 let decimalBtcBalance = decimalSatoshiBalance / self.endpoint.blockchain.decimalValue
@@ -96,26 +101,27 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                             getTransactionDetails(from: $0)
                         }
                         
+                        let oldResp = resp.0
+                        var utxos = oldResp.unspentOutputs
+                        
                         var pendingBtcTxs: [PendingTransaction] = txs.compactMap {
                             guard let tx = $0 else { return nil }
                             
-                            return tx.pendingBtxTx(sourceAddress: address, decimalValue: self.endpoint.blockchain.decimalValue)
+                            let pendingTx = tx.toPendingTx(userAddress: address, decimalValue: self.endpoint.blockchain.decimalValue)
+                            
+                            // We must find unspent outputs if we encounter outgoing transaction,
+                            // because Blockchair won't return this unspents in address request as utxos
+                            if !pendingTx.isIncoming {
+                                let unspents = tx.findUnspentOuputs(for: address)
+                                unspents.forEach { utxos.appendIfNotContain($0) }
+                            }
+                            
+                            return pendingTx
                         }
                         
 //                        let basicTxs = pendingBtcTxs.map { $0.toBasicTx(userAddress: address) }
-                        for (index, tx) in pendingBtcTxs.enumerated() {
-                            guard tx.sequence >= SequenceValues.disabledReplacedByFee.rawValue else { continue }
-
-                            pendingBtcTxs[index].isAlreadyRbf = pendingBtcTxs.contains(where: {
-                                tx.source == $0.source &&
-                                    tx.destination == $0.destination &&
-                                    tx.value == $0.value &&
-                                    tx.fee ?? 0 < $0.fee ?? 0 &&
-                                    tx.sequence < $0.sequence
-                            })
-                        }
-                        let oldResp = resp.0
-                        return BitcoinResponse(balance: oldResp.balance, hasUnconfirmed: oldResp.hasUnconfirmed, pendingTxRefs: pendingBtcTxs, unspentOutputs: oldResp.unspentOutputs)
+                        
+                        return BitcoinResponse(balance: oldResp.balance, hasUnconfirmed: oldResp.hasUnconfirmed, pendingTxRefs: pendingBtcTxs, unspentOutputs: utxos)
                     }
                     .eraseToAnyPublisher()
             }
@@ -182,7 +188,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                     throw WalletError.failedToParseNetworkResponse
                 }
                 
-                return tx.pendingBtxTx(sourceAddress: address, decimalValue: self.endpoint.blockchain.decimalValue)
+                return tx.toPendingTx(userAddress: address, decimalValue: self.endpoint.blockchain.decimalValue)
             }
             .mapError { $0 as Error }
             .eraseToAnyPublisher()

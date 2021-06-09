@@ -44,12 +44,14 @@ struct BlockchainInfoInput: Codable {
 struct BlockchainInfoOutput: Codable {
     let type: Int?
     let spent: Bool?
-    let value: Int?
+    let value: UInt64?
     let script: String?
     let address: String?
+    let index: Int?
+    let txIndex: UInt64?
     
     private enum CodingKeys: String, CodingKey {
-        case address = "addr"
+        case address = "addr", index = "n", txIndex = "tx_index"
         case type, spent, value, script
     }
 }
@@ -60,6 +62,7 @@ struct BlockchainInfoTransaction: Codable {
 	/// Balance difference. Using to recognize outgoing transaction for signature count
 	let balanceDif: Int64?
     let inputCount: Int?
+    let txIndex: UInt64?
     let inputs: [BlockchainInfoInput]?
     let outputs: [BlockchainInfoOutput]?
     let time: Double?
@@ -71,7 +74,8 @@ struct BlockchainInfoTransaction: Codable {
              balanceDif = "result",
              inputCount = "vin_sz",
              outputs = "out",
-             doubleSpend = "double_spend"
+             doubleSpend = "double_spend",
+             txIndex = "tx_index"
         case hash, inputs, time, fee
     }
     
@@ -115,8 +119,20 @@ struct BlockchainInfoTransaction: Codable {
                                   source: source,
                                   fee: fee == nil ? nil : Decimal(fee!) / decimalValue,
                                   date: date,
-                                  isAlreadyRbf: doubleSpend ?? false,
-                                  sequence: inputs?.max(by: { $0.sequence ?? 0 > $1.sequence ?? 0 })?.sequence ?? SequenceValues.default.rawValue)
+                                  sequence: inputs?.max(by: { $0.sequence ?? 0 > $1.sequence ?? 0 })?.sequence ?? SequenceValues.default.rawValue,
+                                  isIncoming: isIncoming)
+    }
+    
+    func findUnspentOutput(for userAddress: String) -> BitcoinUnspentOutput? {
+        guard
+            let txHash = hash,
+            let output = outputs?.first(where: { $0.address == userAddress }),
+            let index = output.index,
+            let script = output.script,
+            let value = output.value
+        else { return nil }
+        
+        return BitcoinUnspentOutput(transactionHash: txHash, outputIndex: index, amount: value, outputScript: script)
     }
 }
 

@@ -15,11 +15,10 @@ struct PendingTransaction {
     var source: String
     let fee: Decimal?
     let date: Date
-    var isAlreadyRbf: Bool
     let sequence: Int
+    let isIncoming: Bool
     
     func toBasicTx(userAddress: String) -> BasicTransactionData {
-        let isIncoming = userAddress == destination
-        return .init(balanceDif: isIncoming ? value : -value, hash: hash, date: date, isConfirmed: false, targetAddress: isIncoming ? source : destination)
+        .init(balanceDif: isIncoming ? value : -value, hash: hash, date: date, isConfirmed: false, targetAddress: isIncoming ? source : destination)
     }
 }

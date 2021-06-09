@@ -116,7 +116,7 @@ enum BlockchairTarget: TargetType {
             parameters["data"] = txHex
         case .txDetails(_, _, let apiKey), .txsDetails(_, _, let apiKey):
             key = apiKey
-        case .findErc20Tokens(address: let address, apiKey: let apiKey):
+        case .findErc20Tokens(_, let apiKey):
             key = apiKey
             parameters["erc_20"] = "true"
         }
