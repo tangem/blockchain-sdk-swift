@@ -9,38 +9,35 @@
 import Foundation
 import Moya
 
-struct BlockcypherEndpoint {
-    let coin: BlockcypherCoin
-    let chain: BlockcypherChain
+enum BlockcypherEndpoint {
+    case bitcoin(testnet: Bool)
+    case ethereum, litecoin, dogecoin
+    
+    var path: String {
+        var suffix = "main"
+        let blockchain: String
+        switch self {
+        case .bitcoin(let testnet):
+            blockchain = "btc"
+            if testnet {
+                suffix = "test3"
+            }
+        case .ethereum: blockchain = "eth"
+        case .litecoin: blockchain = "ltc"
+        case .dogecoin: blockchain = "doge"
+        }
+        return "\(blockchain)/\(suffix)"
+    }
     
     var blockchain: Blockchain {
-        switch (coin,chain) {
-        case (.btc, .main):
-            return .bitcoin(testnet: false)
-        case (.btc, .test3):
-            return .bitcoin(testnet: true)
-        case (.eth, .main):
-            return .ethereum(testnet: false)
-        case (.eth, .test3):
-            return .ethereum(testnet: true)
-        case (.ltc, .main), (.ltc, .test3):
-            return .litecoin
-        case (.doge, _):
-            return .dogecoin
+        switch self {
+        case .bitcoin(let testnet):
+            return .bitcoin(testnet: testnet)
+        case .ethereum: return .ethereum(testnet: false)
+        case .litecoin: return .litecoin
+        case .dogecoin: return .dogecoin
         }
     }
-}
-
-enum BlockcypherCoin: String {
-    case btc
-    case ltc
-    case eth
-    case doge
-}
-
-enum BlockcypherChain: String {
-    case main
-    case test3
 }
 
 struct BlockcypherTarget: TargetType {
@@ -55,7 +52,7 @@ struct BlockcypherTarget: TargetType {
     let token: String?
     let targetType: BlockcypherTargetType
     
-    var baseURL: URL { URL(string: "https://api.blockcypher.com/v1/\(endpoint.coin.rawValue)/\(endpoint.chain.rawValue)")! }
+    var baseURL: URL { URL(string: "https://api.blockcypher.com/v1/\(endpoint.path)")! }
     
     var path: String {
         switch targetType {
