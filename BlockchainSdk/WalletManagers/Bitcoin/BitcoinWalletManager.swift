@@ -124,6 +124,16 @@ extension BitcoinWalletManager: TransactionSender {
     }
 }
 
+extension BitcoinWalletManager: TransactionPusher {
+    func isPushAvailable(for hash: String) -> Bool {
+        networkService.supportsRbf
+    }
+    
+    func getTransactionData(for hash: String) -> AnyPublisher<Transaction, Error> {
+        <#code#>
+    }
+}
+
 extension BitcoinWalletManager: SignatureCountValidator {
 	func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error> {
 		networkService.getSignatureCount(address: wallet.address)
