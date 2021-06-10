@@ -9,23 +9,33 @@
 import Foundation
 import Moya
 
-enum BlockchairEndpoint: String {
-	case bitcoin = "bitcoin"
-    case bitcoinCash = "bitcoin-cash"
-	case litecoin = "litecoin"
-    case dogecoin
-    case ethereum
+enum BlockchairEndpoint {
+    case bitcoin(testnet: Bool),
+         bitcoinCash,
+         litecoin,
+         dogecoin,
+         ethereum(testnet: Bool)
+    
+    var path: String {
+        switch self {
+        case .bitcoin(let testnet): return "bitcoin" + (testnet ? "/testnet" : "")
+        case .bitcoinCash: return "bitcoin-cash"
+        case .litecoin: return "litecoin"
+        case .dogecoin: return "dogecoin"
+        case .ethereum(let testnet): return "ethereum" + (testnet ? "/testnet" : "")
+        }
+    }
     
     var blockchain: Blockchain {
         switch self {
-        case .bitcoin:
-            return .bitcoin(testnet: false)
+        case .bitcoin(let testnet):
+            return .bitcoin(testnet: testnet)
         case .bitcoinCash:
             return .bitcoinCash(testnet: false)
 		case .litecoin:
 			return .litecoin
-        case .ethereum:
-            return .ethereum(testnet: false)
+        case .ethereum(let testnet):
+            return .ethereum(testnet: testnet)
         case .dogecoin:
             return .dogecoin
         }
@@ -36,20 +46,20 @@ enum BlockchairTarget: TargetType {
     case address(address: String, endpoint: BlockchairEndpoint = .bitcoinCash, transactionDetails: Bool, apiKey: String)
     case fee(endpoint: BlockchairEndpoint = .bitcoinCash, apiKey: String)
     case send(txHex: String, endpoint: BlockchairEndpoint = .bitcoinCash, apiKey: String)
-    case findErc20Tokens(address: String, apiKey: String)
+    case findErc20Tokens(address: String, endpoint: BlockchairEndpoint = .ethereum(testnet: false), apiKey: String)
     
     var baseURL: URL {
         var endpointString = ""
         
         switch self {
         case .address(_, let endpoint, _, _):
-            endpointString = endpoint.rawValue
+            endpointString = endpoint.path
         case .fee(let endpoint, _):
-            endpointString = endpoint.rawValue
+            endpointString = endpoint.path
         case .send(_, let endpoint, _):
-            endpointString = endpoint.rawValue
-        case .findErc20Tokens:
-            endpointString = BlockchairEndpoint.ethereum.rawValue
+            endpointString = endpoint.path
+        case .findErc20Tokens(_, let endpoint, _):
+            endpointString = endpoint.path
         }
         
         return URL(string: "https://api.blockchair.com/\(endpointString)")!
@@ -63,7 +73,7 @@ enum BlockchairTarget: TargetType {
             return "/stats"
         case .send:
             return "/push/transaction"
-        case .findErc20Tokens(address: let address, _):
+        case .findErc20Tokens(let address, _, _):
             return "/dashboards/address/\(address)"
         }
     }
@@ -93,7 +103,7 @@ enum BlockchairTarget: TargetType {
         case .send(let txHex, _, let apiKey):
             key = apiKey
             parameters["data"] = txHex
-        case .findErc20Tokens(address: let address, apiKey: let apiKey):
+        case .findErc20Tokens(address: let address, _, apiKey: let apiKey):
             key = apiKey
             parameters["erc_20"] = "true"
         }
