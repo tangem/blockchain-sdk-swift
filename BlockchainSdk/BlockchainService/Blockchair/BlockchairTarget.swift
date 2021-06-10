@@ -47,9 +47,9 @@ enum BlockchairTarget: TargetType {
     case fee(endpoint: BlockchairEndpoint = .bitcoinCash, apiKey: String)
     case send(txHex: String, endpoint: BlockchairEndpoint = .bitcoinCash, apiKey: String)
 
-    case txDetails(txHash: String, endpoint: BlockchairEndpoint = .bitcoin, apiKey: String)
-    case txsDetails(hashes: [String], endpoint: BlockchairEndpoint = .bitcoin, apiKey: String)
-    case findErc20Tokens(address: String, endpoint: BlockchairEndpoint = .ethereum(testnet: false), apiKey: String)
+    case txDetails(txHash: String, endpoint: BlockchairEndpoint, apiKey: String)
+    case txsDetails(hashes: [String], endpoint: BlockchairEndpoint, apiKey: String)
+    case findErc20Tokens(address: String, endpoint: BlockchairEndpoint, apiKey: String)
     
     var baseURL: URL {
         var endpointString = ""
@@ -60,11 +60,11 @@ enum BlockchairTarget: TargetType {
         case .fee(let endpoint, _):
             endpointString = endpoint.path
         case .send(_, let endpoint, _):
-            endpointString = endpoint.rawValue
+            endpointString = endpoint.path
         case .txDetails(_, let endpoint, _):
-            endpointString = endpoint.rawValue
+            endpointString = endpoint.path
         case .txsDetails(_, let endpoint, _):
-            endpointString = endpoint.rawValue
+            endpointString = endpoint.path
         case .findErc20Tokens(_, let endpoint, _):
             endpointString = endpoint.path
         }
@@ -125,7 +125,7 @@ enum BlockchairTarget: TargetType {
             parameters["data"] = txHex
         case .txDetails(_, _, let apiKey), .txsDetails(_, _, let apiKey):
             key = apiKey
-        case .findErc20Tokens(address: let address, _, apiKey: let apiKey):
+        case .findErc20Tokens(_, _, let apiKey):
             key = apiKey
             parameters["erc_20"] = "true"
         }
