@@ -203,7 +203,6 @@ public protocol TransactionSigner {
 protocol TransactionPusher {
     func isPushAvailable(for hash: String) -> Bool
     func getTransactionData(for hash: String) -> AnyPublisher<Transaction, Error>
-    func getPushFee(for hash: String, amount: Amount, destination: String) -> AnyPublisher<[Amount], Error>
 }
 
 @available(iOS 13.0, *)

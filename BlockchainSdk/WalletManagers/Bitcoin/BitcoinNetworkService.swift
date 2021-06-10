@@ -18,6 +18,8 @@ class BitcoinNetworkService: MultiNetworkProvider<BitcoinNetworkProvider>, Bitco
         provider.host
     }
     
+    var supportsRbf: Bool { providers.filter { $0.supportsRbf }.count > 0 }
+    
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
         providerPublisher {
             $0.getInfo(addresses: addresses)

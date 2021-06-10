@@ -130,7 +130,7 @@ extension BitcoinWalletManager: TransactionPusher {
     }
     
     func getTransactionData(for hash: String) -> AnyPublisher<Transaction, Error> {
-        <#code#>
+        .anyFail(error: "Not implemented")
     }
 }
 

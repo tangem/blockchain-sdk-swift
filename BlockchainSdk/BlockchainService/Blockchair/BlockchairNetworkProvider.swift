@@ -15,6 +15,7 @@ import SwiftyJSON
 import BitcoinCore
 
 class BlockchairNetworkProvider: BitcoinNetworkProvider {
+    var supportsRbf: Bool { true }
     
     let provider = MoyaProvider<BlockchairTarget>()
     
