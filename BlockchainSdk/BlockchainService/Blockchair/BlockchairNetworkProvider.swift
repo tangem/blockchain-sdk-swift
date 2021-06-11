@@ -68,7 +68,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                         let n = utxo.index,
                         let val = utxo.value,
                         let blockId = utxo.blockId,
-                        blockId <= 1
+                        blockId > 1
                     else {
                         return nil
                     }
