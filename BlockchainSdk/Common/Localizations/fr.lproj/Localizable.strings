@@ -96,3 +96,7 @@
 "send_error_dust_amount_format" = "Le montant minimal est de %@";
 
 "send_error_dust_change_format" = "Le monnaie minimal est de %@";
+
+"failed_to_find_transaction" = "Transaction not found in pending list";
+
+"failed_to_find_tx_inputs" = "Failed to find transaction inputs";

@@ -109,7 +109,7 @@ extension BlockcypherPendingTxConvertible {
         var value: UInt64 = 0
         var isIncoming: Bool = false
 
-        if let txSource = inputs.first(where: { $0.addresses?.contains(userAddress) ?? false } ), let txDestination = outputs.first(where: { !($0.addresses?.contains(userAddress) ?? false) } ) {
+        if let _ = inputs.first(where: { $0.addresses?.contains(userAddress) ?? false } ), let txDestination = outputs.first(where: { !($0.addresses?.contains(userAddress) ?? false) } ) {
             destination = txDestination.addresses?.first ?? .unknown
             source = userAddress
             value = txDestination.value ?? 0
@@ -126,8 +126,8 @@ extension BlockcypherPendingTxConvertible {
                                   source: source,
                                   fee: fees / decimalValue,
                                   date: received,
-                                  sequence: inputs.first?.sequence ?? SequenceValues.default.rawValue,
-                                  isIncoming: isIncoming)
+                                  isIncoming: isIncoming,
+                                  transactionParams: BitcoinTransactionParams(inputs: inputs.compactMap { $0.toBitcoinInput() } ))
     }
 }
 
@@ -151,6 +151,18 @@ struct BlockcypherInput: Codable {
     private enum CodingKeys: String, CodingKey {
         case transactionHash = "prev_hash", value = "output_value", index = "output_index"
         case addresses, sequence, script
+    }
+    
+    func toBitcoinInput() -> BitcoinInput? {
+        guard
+            let hash = transactionHash,
+            let sequence = sequence,
+            let address = addresses?.first,
+            let index = index,
+            let value = value
+        else { return nil }
+        
+        return .init(sequence: sequence, address: address, outputIndex: index, outputValue: value, prevHash: hash)
     }
     
     func toBtcInput() -> BitcoinTransactionInput? {

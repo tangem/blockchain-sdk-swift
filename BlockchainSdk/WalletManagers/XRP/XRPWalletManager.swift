@@ -105,7 +105,7 @@ extension XRPWalletManager: TransactionSender {
         .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .map { xrpFeeResponse -> [Amount] in
                 let min = xrpFeeResponse.min/Decimal(1000000)

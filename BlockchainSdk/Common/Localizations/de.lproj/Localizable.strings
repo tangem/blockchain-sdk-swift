@@ -93,3 +93,5 @@
 
 "send_error_blockchain_internal" = "Interner Fehler der Blockchain";
 
+"failed_to_find_transaction" = "Transaction not found in pending list";
+

@@ -16,6 +16,8 @@ public enum BlockchainSdkError: Int, LocalizedError {
     case decodingFailed
     case failedToLoadFee
     case failedToLoadTxDetails
+    case failedToFindTransaction
+    case failedToFindTxInputs
 	
 	public var errorDescription: String? {
 		switch self {
@@ -24,6 +26,10 @@ public enum BlockchainSdkError: Int, LocalizedError {
 			return "\(rawValue)"
         case .failedToLoadFee:
             return "failed_to_load_fee_error".localized
+        case .failedToFindTransaction:
+            return "failed_to_find_transaction".localized
+        case .failedToFindTxInputs:
+            return "failed_to_find_tx_inputs".localized
 		default:
 			return "\(rawValue)"
 		}

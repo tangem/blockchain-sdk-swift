@@ -293,6 +293,8 @@
 		B0EBBEF2265D0E7700D37141 /* DogecoinNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EBBEF1265D0E7700D37141 /* DogecoinNetworkParams.swift */; };
 		B0EBBEF4265D0EE600D37141 /* DogecoinWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EBBEF3265D0EE600D37141 /* DogecoinWalletManager.swift */; };
 		B0EBBEF6265D246700D37141 /* DogecoinNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EBBEF5265D246600D37141 /* DogecoinNetworkService.swift */; };
+		B0EC11FD267337DF00137059 /* BitcoinTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EC11FC267337DF00137059 /* BitcoinTransactionParams.swift */; };
+		B0EC11FE2673743000137059 /* BitcoinTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EC11FC267337DF00137059 /* BitcoinTransactionParams.swift */; };
 		B0F9DCA125FB4C9B00C0AF18 /* MultiNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F9DCA025FB4C9B00C0AF18 /* MultiNetworkProvider.swift */; };
 		B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0FF8816264AEA60003E000A /* LitecoinNetworkService.swift */; };
 		ED3D33D84D8B747FB3B1D09D /* Pods_BlockchainSdkTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A172F9D47772F23948771418 /* Pods_BlockchainSdkTests.framework */; };
@@ -472,6 +474,7 @@
 		B0EBBEF1265D0E7700D37141 /* DogecoinNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogecoinNetworkParams.swift; sourceTree = "<group>"; };
 		B0EBBEF3265D0EE600D37141 /* DogecoinWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogecoinWalletManager.swift; sourceTree = "<group>"; };
 		B0EBBEF5265D246600D37141 /* DogecoinNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogecoinNetworkService.swift; sourceTree = "<group>"; };
+		B0EC11FC267337DF00137059 /* BitcoinTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinTransactionParams.swift; sourceTree = "<group>"; };
 		B0F9DCA025FB4C9B00C0AF18 /* MultiNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiNetworkProvider.swift; sourceTree = "<group>"; };
 		B0FF8816264AEA60003E000A /* LitecoinNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LitecoinNetworkService.swift; sourceTree = "<group>"; };
 		D1CC9E29B257CD29E6143FDD /* Pods_BlockchainSdk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -917,6 +920,7 @@
 				5DED72BB239FEEEC006D79AE /* BitcoinTransactionBuilder.swift */,
 				5D26CEF8243CBF2700994CC0 /* BitcoinNetworkProvider.swift */,
 				5DACA358255E97EA0096BC48 /* BitcoinAddressType.swift */,
+				B0EC11FC267337DF00137059 /* BitcoinTransactionParams.swift */,
 			);
 			path = Bitcoin;
 			sourceTree = "<group>";
@@ -1294,6 +1298,7 @@
 				5DA6F7BC243F3C0B0040AB4B /* CBOR+.swift in Sources */,
 				5DED72BA239FE2F8006D79AE /* Int+.swift in Sources */,
 				B06C6793264286390037E7AD /* BlockchairAddressBlockMapper.swift in Sources */,
+				B0EC11FD267337DF00137059 /* BitcoinTransactionParams.swift in Sources */,
 				5D26CEF3243CB9FB00994CC0 /* BlockchainInfoTarget.swift in Sources */,
 				5DEC90C12587A35800826C95 /* BlockchainSdkConfig.swift in Sources */,
 				5D7D243925136254001B9A4F /* IssuedAmount.swift in Sources */,
@@ -1368,6 +1373,7 @@
 				5DDD835325BF0FDB00166EA9 /* Decimal+.swift in Sources */,
 				5DDD833B25BF0EC900166EA9 /* XRPAmount.swift in Sources */,
 				5D16096C25921DAC00738AE6 /* MultipleAddressProvider.swift in Sources */,
+				B0EC11FE2673743000137059 /* BitcoinTransactionParams.swift in Sources */,
 				5DDD834425BF0ECC00166EA9 /* WebSocket.swift in Sources */,
 				5DDD831625BF0E7B00166EA9 /* AdaliteTarget.swift in Sources */,
 				5DDD830625BF0E2400166EA9 /* XRPTransactionParams.swift in Sources */,

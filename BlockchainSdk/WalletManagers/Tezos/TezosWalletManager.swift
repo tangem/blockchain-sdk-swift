@@ -92,7 +92,7 @@ extension TezosWalletManager: TransactionSender {
         .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         networkService
             .checkPublicKeyRevealed(address: wallet.address)
             .combineLatest(networkService.getInfo(address: destination))

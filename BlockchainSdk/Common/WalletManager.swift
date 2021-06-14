@@ -190,7 +190,7 @@ public class WalletManager {
 public protocol TransactionSender {
     var allowsFeeSelection: Bool {get}
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error>
-    func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error>
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error>
 }
 
 @available(iOS 13.0, *)
@@ -200,9 +200,10 @@ public protocol TransactionSigner {
 }
 
 @available(iOS 13.0, *)
-protocol TransactionPusher {
-    func isPushAvailable(for hash: String) -> Bool
-    func getTransactionData(for hash: String) -> AnyPublisher<Transaction, Error>
+public protocol TransactionPusher {
+    func isPushAvailable(for transactionHash: String) -> Bool
+    func getPushFee(for transactionHash: String) -> AnyPublisher<[Amount], Error>
+    func pushTransaction(with transactionHash: String, newTransaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error>
 }
 
 @available(iOS 13.0, *)

@@ -95,3 +95,5 @@
 "send_error_blockchain_internal" = "Blockchain internal error";
 
 "send_error_unknown" = "Unknown error";
+
+"failed_to_find_transaction" = "Transaction not found in pending list";

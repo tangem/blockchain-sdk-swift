@@ -71,7 +71,7 @@ extension BitcoinCashWalletManager: TransactionSender {
         .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap {[unowned self] response throws -> [Amount] in
                 let feePerByte = max(response.minimalSatoshiPerByte, self.minimalFeePerByte)
