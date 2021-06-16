@@ -29,6 +29,11 @@ struct BlockcypherFullAddressResponse<EndpointTx: Codable>: Codable {
     let nTx: Int?
     let unconfirmedNTx: Int?
     let txs: [EndpointTx]?
+    
+    private enum CodingKeys: String, CodingKey {
+        case address, balance, txs
+        case unconfirmedBalance = "unconfirmed_balance", nTx = "n_tx", unconfirmedNTx = "unconfirmed_n_tx"
+    }
 }
 
 struct BlockcypherTxref: Codable {
@@ -189,6 +194,11 @@ struct BlockcypherOutput: Codable {
     let scriptType: String?
     let spentBy: String?
     
+    private enum CodingKeys: String, CodingKey {
+        case value, script, addresses
+        case scriptType = "script_type", spentBy = "spent_by"
+    }
+    
     func toBtcOutput(decimals: Decimal) -> BitcoinTransactionOutput? {
         guard
             let amount = value,
@@ -213,6 +223,11 @@ struct BlockcypherBitcoinTx: Codable, BlockcypherPendingTxConvertible {
     let optInRbf: Bool?
     let inputs: [BlockcypherInput]
     let outputs: [BlockcypherOutput]
+    
+    private enum CodingKeys: String, CodingKey {
+        case hash, addresses, total, fees, size, confirmations, received, inputs, outputs
+        case blockIndex = "block_index", doubleSpendTx = "double_spend_tx", optInRbf = "opt_in_rbf"
+    }
     
     func findUnspentOutput(for sourceAddress: String) -> BitcoinUnspentOutput? {
         var txOutputIndex: Int = -1

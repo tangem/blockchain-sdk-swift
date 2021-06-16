@@ -22,7 +22,6 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
     
     private let jsonDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
         decoder.dateDecodingStrategy = .customISO8601
         return decoder
     }()
