@@ -34,8 +34,8 @@ extension String {
         return NSLocalizedString(self, bundle: .blockchainBundle, comment: "")
     }
     
-    static var unknown: String {
-        "unknown"
+    public static var unknown: String {
+        "Unknown"
     }
 }
 

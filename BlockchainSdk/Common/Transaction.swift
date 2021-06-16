@@ -55,6 +55,14 @@ public struct Transaction: Equatable {
         self.status = status
         self.hash = hash
     }
+    
+    public static func dummyTx(blockchain: Blockchain, type: Amount.AmountType, destinationAddress: String) -> Transaction {
+        Transaction(amount: Amount(with: blockchain, type: type, value: 0),
+                    fee: Amount(with: blockchain, type: type, value: 0),
+                    sourceAddress: .unknown,
+                    destinationAddress: destinationAddress,
+                    changeAddress: .unknown)
+    }
 }
 
 public enum TransactionStatus: Equatable {
