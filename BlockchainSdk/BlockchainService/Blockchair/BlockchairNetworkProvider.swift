@@ -122,7 +122,10 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                         
 //                        let basicTxs = pendingBtcTxs.map { $0.toBasicTx(userAddress: address) }
                         
-                        return BitcoinResponse(balance: oldResp.balance, hasUnconfirmed: oldResp.hasUnconfirmed, pendingTxRefs: pendingBtcTxs, unspentOutputs: utxos)
+                        return BitcoinResponse(balance: Decimal(utxos.reduce(0, { $0 + $1.amount })) / self.endpoint.blockchain.decimalValue,
+                                               hasUnconfirmed: oldResp.hasUnconfirmed,
+                                               pendingTxRefs: pendingBtcTxs,
+                                               unspentOutputs: utxos)
                     }
                     .eraseToAnyPublisher()
             }
