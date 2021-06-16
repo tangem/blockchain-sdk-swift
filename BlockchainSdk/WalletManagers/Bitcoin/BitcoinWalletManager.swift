@@ -43,8 +43,7 @@ class BitcoinWalletManager: WalletManager {
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap {[unowned self] response throws -> [Amount] in
-//                var minRate = (max(response.minimalSatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
-                var minRate = 0
+                var minRate = (max(response.minimalSatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
                 var normalRate = (max(response.normalSatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
                 var maxRate = (max(response.prioritySatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
                 
@@ -54,10 +53,10 @@ class BitcoinWalletManager: WalletManager {
                 
                 let minimalFeeRate = (((self.minimalFee * Decimal(minRate)) / minFee).rounded(scale: 0, roundingMode: .up) as NSDecimalNumber).intValue
                 let minimalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minimalFeeRate, senderPay: false, changeScript: nil, sequence: .max)
-//                if minFee < minimalFee {
-//                    minRate = minimalFeeRate
-//                    minFee = minimalFee
-//                }
+                if minFee < minimalFee {
+                    minRate = minimalFeeRate
+                    minFee = minimalFee
+                }
                 
                 if normalFee < minimalFee {
                     normalRate = minimalFeeRate
