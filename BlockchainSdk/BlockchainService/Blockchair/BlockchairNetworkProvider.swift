@@ -26,7 +26,9 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     private let jsonDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
-        decoder.dateDecodingStrategy = .formatted(DateFormatter(withFormat: "YYYY-MM-dd HH:mm:ss", locale: "en_US"))
+        let dateFormatter = DateFormatter(withFormat: "YYYY-MM-dd HH:mm:ss", locale: "en_US")
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        decoder.dateDecodingStrategy = .formatted(dateFormatter)
         return decoder
     }()
     
