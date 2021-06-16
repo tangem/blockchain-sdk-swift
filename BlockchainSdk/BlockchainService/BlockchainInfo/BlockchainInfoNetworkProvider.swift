@@ -125,6 +125,10 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
             .eraseToAnyPublisher()
     }
     
+    func push(transaction: String) -> AnyPublisher<String, Error> {
+        send(transaction: transaction)
+    }
+    
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
         let responseTransactionCap = 50
         var numberOfItems = 0

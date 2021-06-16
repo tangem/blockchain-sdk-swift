@@ -102,7 +102,7 @@ class BitcoinWalletManager: WalletManager {
         }
     }
     
-    private func send(_ transaction: Transaction, signer: TransactionSigner, sequence: Int) -> AnyPublisher<Void, Error> {
+    private func send(_ transaction: Transaction, signer: TransactionSigner, sequence: Int, isPushingTx: Bool) -> AnyPublisher<Void, Error> {
         guard let hashes = txBuilder.buildForSign(transaction: transaction, sequence: sequence) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
@@ -115,9 +115,17 @@ class BitcoinWalletManager: WalletManager {
                 return tx.toHexString()
         }
         .flatMap {[unowned self] tx -> AnyPublisher<Void, Error> in
-            return self.networkService.send(transaction: tx)
-                .map {[unowned self] sendResponse in
-                    self.wallet.add(transaction: transaction)
+            let txHashPublisher: AnyPublisher<String, Error>
+            if isPushingTx {
+                txHashPublisher = self.networkService.push(transaction: tx)
+            } else {
+                txHashPublisher = self.networkService.send(transaction: tx)
+            }
+            
+            return txHashPublisher.map {[unowned self] sendResponse in
+                var sendedTx = transaction
+                sendedTx.hash = sendResponse
+                self.wallet.add(transaction: sendedTx)
             }.eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
@@ -128,7 +136,7 @@ class BitcoinWalletManager: WalletManager {
 extension BitcoinWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         txBuilder.unspentOutputs = loadedUnspents
-        return send(transaction, signer: signer, sequence: SequenceValues.default.rawValue)
+        return send(transaction, signer: signer, sequence: SequenceValues.default.rawValue, isPushingTx: false)
     }
 }
 
@@ -171,15 +179,7 @@ extension BitcoinWalletManager: TransactionPusher {
             return .anyFail(error: BlockchainSdkError.failedToFindTransaction)
         }
         
-        guard let params = tx.params as? BitcoinTransactionParams else {
-            return .anyFail(error: BlockchainSdkError.failedToFindTxInputs)
-        }
-        
-        txBuilder.unspentOutputs = loadedUnspents.filter { unspent in
-            params.inputs.contains(where: { input in
-                input.prevHash == unspent.transactionHash
-            })  && unspent.transactionHash != transactionHash
-        }
+        txBuilder.unspentOutputs = loadedUnspents.filter { $0.transactionHash != transactionHash }
         
         return getFee(amount: tx.amount, destination: tx.destinationAddress)
             .map { [weak self] in
@@ -195,7 +195,7 @@ extension BitcoinWalletManager: TransactionPusher {
         }
         
         guard oldTx.fee.value < newTransaction.fee.value else {
-            return .anyFail(error: "Fee for new transaction (\(newTransaction.fee.value)) is less than for old: \(oldTx.fee.value)")
+            return .anyFail(error: BlockchainSdkError.feeForPushTxNotEnough)
         }
         
         guard
@@ -205,10 +205,11 @@ extension BitcoinWalletManager: TransactionPusher {
             return .anyFail(error: BlockchainSdkError.failedToFindTxInputs)
         }
         
-        let outputs = loadedUnspents.filter { unspent in params.inputs.contains(where: { $0.prevHash == unspent.transactionHash })}
+//        let outputs = loadedUnspents.filter { unspent in params.inputs.contains(where: { $0.prevHash == unspent.transactionHash })}
+        let outputs = loadedUnspents.filter { $0.transactionHash != transactionHash }
         txBuilder.unspentOutputs = outputs
         
-        return send(newTransaction, signer: signer, sequence: sequence + 1)
+        return send(newTransaction, signer: signer, sequence: sequence + 1, isPushingTx: true)
     }
 }
 

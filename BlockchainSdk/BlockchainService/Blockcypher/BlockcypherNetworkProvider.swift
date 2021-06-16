@@ -140,6 +140,10 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
             .eraseToAnyPublisher()
     }
     
+    func push(transaction: String) -> AnyPublisher<String, Error> {
+        .anyFail(error: "RBF not supported")
+    }
+    
     func getTransaction(with hash: String) -> AnyPublisher<BitcoinTransaction, Error> {
         publisher(for: getTarget(for: .txs(txHash: hash)))
             .map(BlockcypherTransaction.self)

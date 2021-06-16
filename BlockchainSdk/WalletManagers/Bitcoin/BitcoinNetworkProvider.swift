@@ -87,6 +87,7 @@ protocol BitcoinNetworkProvider: AnyObject {
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error>
     func getFee() -> AnyPublisher<BitcoinFee, Error>
     func send(transaction: String) -> AnyPublisher<String, Error>
+    func push(transaction: String) -> AnyPublisher<String, Error>
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error>
 }
 

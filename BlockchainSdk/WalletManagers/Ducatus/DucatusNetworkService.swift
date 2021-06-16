@@ -56,6 +56,10 @@ class DucatusNetworkService: BitcoinNetworkProvider {
         }.eraseToAnyPublisher()
     }
     
+    func push(transaction: String) -> AnyPublisher<String, Error> {
+        .anyFail(error: "Rbf not supported")
+    }
+    
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
         let fee = BitcoinFee(minimalSatoshiPerByte: 89,
                              normalSatoshiPerByte: 144,

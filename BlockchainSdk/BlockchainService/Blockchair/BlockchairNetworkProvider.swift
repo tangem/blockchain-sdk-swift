@@ -162,6 +162,10 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
         }
         .eraseToAnyPublisher()
     }
+    
+    func push(transaction: String) -> AnyPublisher<String, Error> {
+        send(transaction: transaction)
+    }
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
 		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: false, apiKey: apiKey))
