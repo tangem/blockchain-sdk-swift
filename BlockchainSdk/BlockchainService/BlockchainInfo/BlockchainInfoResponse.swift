@@ -46,7 +46,7 @@ struct BlockchainInfoInput: Codable {
             let prevOutput = previousOutput,
             let address = prevOutput.address,
             let value = prevOutput.value,
-            let index = index
+            let index = prevOutput.index
         else { return nil }
         
         return .init(sequence: sequence, address: address, outputIndex: index, outputValue: value, prevHash: "")
