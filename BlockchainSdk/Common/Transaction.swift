@@ -11,21 +11,7 @@ import BitcoinCore
 
 public protocol TransactionParams {}
 
-public struct Transaction: Equatable {
-    public static func == (lhs: Transaction, rhs: Transaction) -> Bool {
-        if lhs.hash != nil && rhs.hash != nil {
-            return lhs.hash == rhs.hash
-        }
-        
-        return lhs.amount == rhs.amount &&
-            lhs.fee == rhs.fee &&
-            lhs.sourceAddress == rhs.sourceAddress &&
-            lhs.destinationAddress == rhs.destinationAddress &&
-            lhs.changeAddress == rhs.changeAddress &&
-            lhs.date == rhs.date &&
-            lhs.status == rhs.status
-    }
-    
+public struct Transaction {
     public let amount: Amount
     public var fee: Amount
     public let sourceAddress: String
@@ -57,6 +43,22 @@ public struct Transaction: Equatable {
         self.status = status
         self.hash = hash
         self.sequence = sequence
+    }
+}
+
+extension Transaction: Equatable {
+    public static func == (lhs: Transaction, rhs: Transaction) -> Bool {
+        if lhs.hash != nil && rhs.hash != nil {
+            return lhs.hash == rhs.hash
+        }
+        
+        return lhs.amount == rhs.amount &&
+            lhs.fee == rhs.fee &&
+            lhs.sourceAddress == rhs.sourceAddress &&
+            lhs.destinationAddress == rhs.destinationAddress &&
+            lhs.changeAddress == rhs.changeAddress &&
+            lhs.date == rhs.date &&
+            lhs.status == rhs.status
     }
 }
 
@@ -95,23 +97,6 @@ public enum TransactionError: Error, LocalizedError, Equatable {
         case .totalExceedsBalance:
             return "send_validation_invalid_total".localized
         }
-    }
-}
-
-struct BasicTransactionData {
-    let balanceDif: Decimal
-    let hash: String
-    let date: Date?
-    let isConfirmed: Bool
-    let targetAddress: String?
-    
-    func toTransaction(for blockchain: Blockchain, address: String) -> Transaction {
-        let isIncoming = balanceDif > 0
-        return .init(amount: Amount(with: blockchain, type: .coin, value: abs(balanceDif)),
-                     fee: .zeroCoin(for: blockchain),
-                     sourceAddress: isIncoming ? targetAddress ?? .unknown : address,
-                     destinationAddress: isIncoming ? address : targetAddress ?? .unknown,
-                     changeAddress: .unknown)
     }
 }
 

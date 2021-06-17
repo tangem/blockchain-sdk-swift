@@ -158,20 +158,6 @@ public class WalletManager {
         return TransactionErrors(errors: errors)
     }
     
-    func updateRecentTransactionsBasic(_ transactions: [BasicTransactionData]) {
-        transactions.forEach { tx in
-            if tx.isConfirmed {
-                if let index = wallet.transactions.firstIndex(where: { $0.hash == tx.hash }) {
-                    wallet.transactions[index].status = .confirmed
-                }
-            } else {
-                if !wallet.transactions.contains(where: { $0.hash == tx.hash }) {
-                    wallet.transactions.append(tx.toTransaction(for: wallet.blockchain, address: wallet.address))
-                }
-            }
-        }
-    }
-    
     private func validateAmountValue(_ amount: Amount) -> Bool {
         return amount.value >= 0
     }

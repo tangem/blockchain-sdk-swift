@@ -60,32 +60,6 @@ extension BlockcypherTxref {
     }
 }
 
-extension Array where Element == BlockcypherTxref {
-    func toBasicTxDataArray(isConfirmed: Bool, decimals: Decimal) -> [BasicTransactionData] {
-        var txsDict = [String: BasicTransactionData]()
-        forEach {
-            let valueDecimal = Decimal($0.value ?? 0) / decimals
-            var balanceDif = $0.outputIndex == -1 ? -valueDecimal : valueDecimal
-            var receivedDate: Date?
-            if let receivedStr = $0.received,
-               let date = DateFormatter.iso8601withFractionalSeconds.date(from: receivedStr) ?? DateFormatter.iso8601.date(from: receivedStr) {
-                receivedDate = date
-            }
-            
-            let hash = $0.hash ?? ""
-            if let tx = txsDict[hash] {
-                balanceDif += tx.balanceDif
-            }
-            
-            let tx = BasicTransactionData(balanceDif: balanceDif, hash: hash, date: receivedDate, isConfirmed: isConfirmed, targetAddress: nil)
-            
-            txsDict[hash] = tx
-        }
-        
-        return txsDict.map { $0.value }
-    }
-}
-
 struct BlockcypherFeeResponse: Codable {
     let low_fee_per_kb: Int64?
     let medium_fee_per_kb: Int64?
@@ -109,7 +83,7 @@ extension BlockcypherPendingTxConvertible {
         var value: UInt64 = 0
         var isIncoming: Bool = false
 
-        if let txSource = inputs.first(where: { $0.addresses?.contains(userAddress) ?? false } ), let txDestination = outputs.first(where: { !($0.addresses?.contains(userAddress) ?? false) } ) {
+        if let _ = inputs.first(where: { $0.addresses?.contains(userAddress) ?? false } ), let txDestination = outputs.first(where: { !($0.addresses?.contains(userAddress) ?? false) } ) {
             destination = txDestination.addresses?.first ?? .unknown
             source = userAddress
             value = txDestination.value ?? 0
