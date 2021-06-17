@@ -139,6 +139,8 @@ public enum Blockchain {
             return "Ethereum smart contract token"
         case .binance:
             return "Binance Asset"
+        case .bsc:
+            return "Binance Smart Chain token"
         default:
             return displayName
         }
