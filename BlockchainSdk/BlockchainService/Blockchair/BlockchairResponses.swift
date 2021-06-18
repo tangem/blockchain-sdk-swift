@@ -9,6 +9,7 @@
 import Foundation
 import BitcoinCore
 
+/// Blockchair transaction that returns in address request
 struct BlockchairTransactionShort: Codable {
     let blockId: Int64
     let hash: String
@@ -16,6 +17,7 @@ struct BlockchairTransactionShort: Codable {
     let balanceChange: Double
 }
 
+/// Returns in address request
 struct BlockchairUtxo: Codable {
     let blockId: Int64?
     let transactionHash: String?
@@ -23,6 +25,7 @@ struct BlockchairUtxo: Codable {
     let value: UInt64?
 }
 
+/// Structure returns when requesting detalization about transaction by transactionHash
 struct BlockchairTransactionDetailed: Codable {
     let transaction: BlockchairTransaction
     let inputs: [BlockchairTxInput]
@@ -64,6 +67,7 @@ struct BlockchairTransactionDetailed: Codable {
     }
 }
 
+/// General information about transaction
 struct BlockchairTransaction: Codable {
     let blockId: Int64
     let hash: String
@@ -102,7 +106,7 @@ struct BlockchairTxOutput: Codable {
     let scriptHex: String
 }
 
-
+/// Structure for loading ethereum tokens
 struct BlockchairToken: Codable {
     let address: String
     let name: String

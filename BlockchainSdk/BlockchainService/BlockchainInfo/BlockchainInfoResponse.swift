@@ -91,21 +91,6 @@ struct BlockchainInfoTransaction: Codable {
         case hash, inputs, time, fee
     }
     
-    func toBasicTxData(userAddress: String, decimalValue: Decimal) -> BasicTransactionData? {
-        guard
-            let balanceDif = balanceDif,
-            let hash = hash,
-            let time = time
-        else { return nil }
-        
-        let isIncoming = balanceDif > 0
-        return BasicTransactionData(balanceDif: Decimal(balanceDif) / decimalValue,
-                                    hash: hash,
-                                    date: Date(seconds: time),
-                                    isConfirmed: false,
-                                    targetAddress: outputs?.first(where: { isIncoming ? $0.address == userAddress : $0.address != userAddress })?.address)
-    }
-    
     func toPendingTx(userAddress: String, decimalValue: Decimal) -> PendingTransaction? {
         var source: String = .unknown
         var destination: String = .unknown
