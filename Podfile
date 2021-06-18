@@ -18,8 +18,8 @@ target 'BlockchainSdk' do
   pod 'AnyCodable-FlightSchool'
   pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'build-110'
   pod 'stellar-ios-mac-sdk'
-  pod 'BitcoinCore.swift', :git => 'https://github.com/lazutkin-andrey/bitcoincore.git', :tag => '0.0.13'
-  #pod 'BitcoinCore.swift', :path => '../bitcoincore'
+  pod 'BitcoinCore.swift', :git => 'https://github.com/lazutkin-andrey/bitcoincore.git', :tag => '0.0.15'
+#  pod 'BitcoinCore.swift', :path => '../bitcoincore'
 end
 
 target 'BlockchainSdkTests' do

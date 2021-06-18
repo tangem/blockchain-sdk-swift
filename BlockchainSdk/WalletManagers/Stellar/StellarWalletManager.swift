@@ -108,7 +108,7 @@ extension StellarWalletManager: TransactionSender {
     
     func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
         if let feeValue = self.baseFee {
-            let feeAmount = Amount(with: wallet.blockchain, address: self.wallet.address, value: feeValue)
+            let feeAmount = Amount(with: wallet.blockchain, value: feeValue)
             return Result.Publisher([feeAmount]).eraseToAnyPublisher()
         } else {
             return Fail(error: WalletError.failedToGetFee).eraseToAnyPublisher()

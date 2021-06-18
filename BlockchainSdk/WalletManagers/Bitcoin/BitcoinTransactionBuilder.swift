@@ -56,7 +56,7 @@ class BitcoinTransactionBuilder {
         changeScript = script?.sha256()
 	}
 	
-	public func buildForSign(transaction: Transaction) -> [Data]? {
+	public func buildForSign(transaction: Transaction, sequence: Int?) -> [Data]? {
 		do {
             guard let feeRate = feeRates[transaction.fee.value] else { return nil }
             
@@ -64,7 +64,7 @@ class BitcoinTransactionBuilder {
 														 amount: transaction.amount.value,
                                                          feeRate: feeRate,
                                                          changeScript: changeScript,
-                                                         isReplacedByFee: false)
+                                                         sequence: sequence)
 			return hashes
 		} catch {
 			print(error)
@@ -72,7 +72,7 @@ class BitcoinTransactionBuilder {
 		}
 	}
 	
-	public func buildForSend(transaction: Transaction, signatures: [Data]) -> Data? {
+	public func buildForSend(transaction: Transaction, signatures: [Data], sequence: Int?) -> Data? {
         guard let signatures = convertToDER(signatures),
               let feeRate = feeRates[transaction.fee.value] else {
 			return nil
@@ -84,7 +84,7 @@ class BitcoinTransactionBuilder {
 												   feeRate: feeRate,
                                                    derSignatures: signatures,
                                                    changeScript: changeScript,
-                                                   isReplacedByFee: false)
+                                                   sequence: sequence)
 		} catch {
 			print(error)
 			return nil

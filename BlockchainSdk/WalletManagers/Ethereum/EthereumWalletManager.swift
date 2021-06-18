@@ -45,6 +45,7 @@ public protocol EthereumTransactionSigner: AnyObject {
 class EthereumWalletManager: WalletManager {
     var txBuilder: EthereumTransactionBuilder!
     var networkService: EthereumNetworkService!
+    
     var txCount: Int = -1
     var pendingTxCount: Int = -1
     
@@ -92,13 +93,19 @@ class EthereumWalletManager: WalletManager {
         }
         txCount = response.txCount
         pendingTxCount = response.pendingTxCount
-        if txCount == pendingTxCount {
-            for index in wallet.transactions.indices {
+
+        if response.pendingTxs.count > 0 {
+            wallet.transactions.removeAll()
+            response.pendingTxs.forEach {
+                wallet.addPendingTransaction($0)
+            }
+        } else if txCount == pendingTxCount {
+            for  index in wallet.transactions.indices {
                 wallet.transactions[index].status = .confirmed
             }
         } else {
             if wallet.transactions.isEmpty {
-                wallet.addPendingTransaction()
+                wallet.addDummyPendingTransaction()
             }
         }
     }
@@ -156,9 +163,9 @@ extension EthereumWalletManager: TransactionSender {
                 }
                 self.gasLimit = $0.gasLimit
                 
-                let minAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: $0.fees[0])
-                let normalAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: $0.fees[1])
-                let maxAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: $0.fees[2])
+                let minAmount = Amount(with: self.wallet.blockchain, value: $0.fees[0])
+                let normalAmount = Amount(with: self.wallet.blockchain, value: $0.fees[1])
+                let maxAmount = Amount(with: self.wallet.blockchain, value: $0.fees[2])
                 
                 return [minAmount, normalAmount, maxAmount]
             }

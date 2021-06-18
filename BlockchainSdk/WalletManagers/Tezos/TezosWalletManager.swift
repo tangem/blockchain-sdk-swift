@@ -107,7 +107,7 @@ extension TezosWalletManager: TransactionSender {
                     fee += TezosFee.allocation.rawValue
                 }
                 
-                return [Amount(with: self.wallet.blockchain, address: self.wallet.address, value: fee)]
+                return [Amount(with: self.wallet.blockchain, value: fee)]
         }
         .eraseToAnyPublisher()
     }

@@ -57,7 +57,7 @@ class XRPWalletManager: WalletManager {
         txBuilder.sequence = response.sequence
         if response.balance != response.unconfirmedBalance {
             if wallet.transactions.isEmpty {
-                wallet.addPendingTransaction()
+                wallet.addDummyPendingTransaction()
             }
         } else {
             wallet.transactions = []
@@ -112,9 +112,9 @@ extension XRPWalletManager: TransactionSender {
                 let normal = xrpFeeResponse.normal/Decimal(1000000)
                 let max = xrpFeeResponse.max/Decimal(1000000)
                 
-                let minAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: min)
-                let normalAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: normal)
-                let maxAmount = Amount(with: self.wallet.blockchain, address: self.wallet.address, value: max)
+                let minAmount = Amount(with: self.wallet.blockchain, value: min)
+                let normalAmount = Amount(with: self.wallet.blockchain, value: normal)
+                let maxAmount = Amount(with: self.wallet.blockchain, value: max)
                 return [minAmount, normalAmount, maxAmount]
         }
         .eraseToAnyPublisher()

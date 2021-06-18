@@ -13,7 +13,7 @@ import TangemSdk
 import Alamofire
 
 class BitcoinNetworkService: MultiNetworkProvider<BitcoinNetworkProvider>, BitcoinNetworkProvider {
-    
+
     var host: String {
         provider.host
     }

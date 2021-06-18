@@ -9,11 +9,13 @@
 import Foundation
 import BigInt
 
+/// Final Ethereum response that contain all information about address
 struct EthereumInfoResponse {
     let balance: Decimal
     let tokenBalances: [Token: Decimal]
     let txCount: Int
     let pendingTxCount: Int
+    var pendingTxs: [PendingTransaction]
 }
 
 struct EthereumFeeResponse {
@@ -21,6 +23,7 @@ struct EthereumFeeResponse {
     let gasLimit: BigUInt
 }
 
+/// Json rpc response structure
 struct EthereumResponse: Codable {
     let jsonRpc: String
     let id: Int?

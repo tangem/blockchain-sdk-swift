@@ -7,12 +7,13 @@
 //
 
 import Foundation
+import BitcoinCore
 
 public protocol TransactionParams {}
 
-public struct Transaction {    
+public struct Transaction {
     public let amount: Amount
-    public let fee: Amount
+    public var fee: Amount
     public let sourceAddress: String
     public let destinationAddress: String
     public let changeAddress: String
@@ -21,6 +22,7 @@ public struct Transaction {
     public internal(set) var status: TransactionStatus = .unconfirmed
     public internal(set) var hash: String? = nil
     public var params: TransactionParams? = nil
+    public let sequence: Int
     
     internal init(amount: Amount, fee: Amount,
                   sourceAddress: String,
@@ -29,7 +31,8 @@ public struct Transaction {
                   contractAddress: String? = nil,
                   date: Date? = nil,
                   status: TransactionStatus = .unconfirmed,
-                  hash: String? = nil) {
+                  hash: String? = nil,
+                  sequence: Int = SequenceValues.default.rawValue) {
         self.amount = amount
         self.fee = fee
         self.sourceAddress = sourceAddress
@@ -39,10 +42,27 @@ public struct Transaction {
         self.date = date
         self.status = status
         self.hash = hash
+        self.sequence = sequence
     }
 }
 
-public enum TransactionStatus {
+extension Transaction: Equatable {
+    public static func == (lhs: Transaction, rhs: Transaction) -> Bool {
+        if lhs.hash != nil && rhs.hash != nil {
+            return lhs.hash == rhs.hash
+        }
+        
+        return lhs.amount == rhs.amount &&
+            lhs.fee == rhs.fee &&
+            lhs.sourceAddress == rhs.sourceAddress &&
+            lhs.destinationAddress == rhs.destinationAddress &&
+            lhs.changeAddress == rhs.changeAddress &&
+            lhs.date == rhs.date &&
+            lhs.status == rhs.status
+    }
+}
+
+public enum TransactionStatus: Equatable {
     case unconfirmed
     case confirmed
 }

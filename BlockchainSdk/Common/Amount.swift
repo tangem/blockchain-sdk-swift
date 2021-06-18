@@ -47,7 +47,7 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
         return "\(value.rounded(scale: decimals)) \(currencySymbol)"
     }
     
-    public init(with blockchain: Blockchain, address: String, type: AmountType = .coin, value: Decimal) {
+    public init(with blockchain: Blockchain, type: AmountType = .coin, value: Decimal) {
         self.type = type
         currencySymbol = blockchain.currencySymbol
         decimals = blockchain.decimalCount
@@ -101,8 +101,8 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
 }
 
 public extension Amount {
-    static func zeroCoin(for blockchain: Blockchain, address: String) -> Amount {
-        .init(with: blockchain, address: address, type: .coin, value: 0)
+    static func zeroCoin(for blockchain: Blockchain) -> Amount {
+        .init(with: blockchain, type: .coin, value: 0)
     }
 }
 
@@ -133,5 +133,11 @@ extension Amount.AmountType: Equatable, Hashable {
         default:
             return false
         }
+    }
+}
+
+extension Amount {
+    static func dummyCoin(for blockchain: Blockchain) -> Amount {
+        Amount(with: blockchain, type: .coin, value: 0)
     }
 }

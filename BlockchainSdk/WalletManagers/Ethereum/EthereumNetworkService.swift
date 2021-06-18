@@ -22,12 +22,12 @@ class EthereumNetworkService: MultiNetworkProvider<EthereumJsonRpcProvider> {
     private let network: EthereumNetwork
     private let jsonRpcProvider: [EthereumJsonRpcProvider] = []
 
-    private let blockcypherProvider: BlockcypherNetworkProvider?
+    private let ethereumInfoNetworkProvider: EthereumAdditionalInfoProvider?
     private let blockchairProvider: BlockchairEthNetworkProvider?
     
     init(network: EthereumNetwork, providers: [EthereumJsonRpcProvider], blockcypherProvider: BlockcypherNetworkProvider?, blockchairProvider: BlockchairEthNetworkProvider?) {
         self.network = network
-        self.blockcypherProvider = blockcypherProvider
+        self.ethereumInfoNetworkProvider = blockcypherProvider
         self.blockchairProvider = blockchairProvider
         super.init(providers: providers)
     }
@@ -48,7 +48,20 @@ class EthereumNetworkService: MultiNetworkProvider<EthereumJsonRpcProvider> {
             getPendingTxCount(address)
         )
         .map { (result: (Decimal, [Token: Decimal], Int, Int)) in
-            EthereumInfoResponse(balance: result.0, tokenBalances: result.1, txCount: result.2, pendingTxCount: result.3)
+            EthereumInfoResponse(balance: result.0, tokenBalances: result.1, txCount: result.2, pendingTxCount: result.3, pendingTxs: [])
+        }
+        .flatMap { [unowned self] resp -> AnyPublisher<EthereumInfoResponse, Error> in
+            guard let provider = self.ethereumInfoNetworkProvider else {
+                return .justWithError(output: resp)
+            }
+            
+            return provider.getEthTxsInfo(address: address)
+                .map { ethResponse -> EthereumInfoResponse in
+                    var newResp = resp
+                    newResp.pendingTxs = ethResponse.pendingTxs
+                    return newResp
+                }
+                .eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }
@@ -121,11 +134,11 @@ class EthereumNetworkService: MultiNetworkProvider<EthereumJsonRpcProvider> {
     }
     
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-        guard let blockcypherProvider = blockcypherProvider else {
+        guard let networkProvider = ethereumInfoNetworkProvider else {
             return Fail(error: ETHError.unsupportedFeature).eraseToAnyPublisher()
         }
         
-		return blockcypherProvider.getSignatureCount(address: address)
+		return networkProvider.getSignatureCount(address: address)
 	}
     
     func findErc20Tokens(address: String) -> AnyPublisher<[BlockchairToken], Error> {
@@ -188,7 +201,7 @@ class EthereumNetworkService: MultiNetworkProvider<EthereumJsonRpcProvider> {
         guard let result = response.result else {
             throw WalletError.failedToParseNetworkResponse
         }
-        
+      
         return result
     }
     

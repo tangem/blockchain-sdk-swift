@@ -14,6 +14,7 @@ enum BlockchainInfoTarget: TargetType {
     case unspents(address: String)
     case send(txHex: String)
     case fees
+    case transaction(hash: String)
     
     var baseURL: URL {
         switch self {
@@ -32,12 +33,14 @@ enum BlockchainInfoTarget: TargetType {
             return "/rawaddr/\(address)"
         case .fees:
             return "/mempool/fees"
+        case .transaction(let hash):
+            return "/rawtx/\(hash)"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .unspents, .fees, .address:
+        case .unspents, .fees, .address, .transaction:
             return .get
         case .send:
             return .post
@@ -52,6 +55,7 @@ enum BlockchainInfoTarget: TargetType {
         switch self {
         case let .address(_, offset):
 			var params = [String:String]()
+            params["limit"] = "20"
 			if let offset = offset {
 				params["offset"] = "\(offset)"
 			}
@@ -62,7 +66,7 @@ enum BlockchainInfoTarget: TargetType {
             let params = "tx=\(txHex)"
             let body = params.data(using: .utf8)!
             return .requestData(body)
-        case .fees:
+        case .fees, .transaction:
             return .requestPlain
         }
     }

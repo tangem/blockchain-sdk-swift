@@ -16,6 +16,7 @@ class DucatusNetworkService: BitcoinNetworkProvider {
     var host: String {
         provider.host
     }
+
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         return Publishers.Zip(provider.getBalance(address: address), provider.getUnspents(address: address))
@@ -38,7 +39,7 @@ class DucatusNetworkService: BitcoinNetworkProvider {
                 }
                 
                 let balance = Decimal(confirmed)/Blockchain.ducatus.decimalValue
-                return BitcoinResponse(balance: balance, hasUnconfirmed: unconfirmed != 0 , unspentOutputs: utxs)
+                return BitcoinResponse(balance: balance, hasUnconfirmed: unconfirmed != 0, pendingTxRefs: [], unspentOutputs: utxs)
         }
         .eraseToAnyPublisher()
     }
@@ -56,8 +57,8 @@ class DucatusNetworkService: BitcoinNetworkProvider {
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
         let fee = BitcoinFee(minimalSatoshiPerByte: 89,
-                         normalSatoshiPerByte: 144,
-                         prioritySatoshiPerByte: 350)
+                             normalSatoshiPerByte: 144,
+                             prioritySatoshiPerByte: 350)
         
         return Just(fee)
             .setFailureType(to: Error.self)

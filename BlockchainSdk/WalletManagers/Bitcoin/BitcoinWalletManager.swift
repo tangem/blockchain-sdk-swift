@@ -9,6 +9,7 @@
 import Foundation
 import TangemSdk
 import Combine
+import BitcoinCore
 
 class BitcoinWalletManager: WalletManager {
     var allowsFeeSelection: Bool { true }
@@ -40,17 +41,16 @@ class BitcoinWalletManager: WalletManager {
     func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap {[unowned self] response throws -> [Amount] in
-              //  let dummyFee = Amount(with: amount, value: 0.00000001)
                 var minRate = (max(response.minimalSatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
                 var normalRate = (max(response.normalSatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
                 var maxRate = (max(response.prioritySatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
                 
-                var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: false, changeScript: nil, isReplacedByFee: false)
-                var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: false, changeScript: nil, isReplacedByFee: false)
-                var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: false, changeScript: nil, isReplacedByFee: false)
+                var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: false, changeScript: nil, sequence: .max)
+                var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: false, changeScript: nil, sequence: .max)
+                var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: false, changeScript: nil, sequence: .max)
                 
                 let minimalFeeRate = (((self.minimalFee * Decimal(minRate)) / minFee).rounded(scale: 0, roundingMode: .up) as NSDecimalNumber).intValue
-                let minimalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minimalFeeRate, senderPay: false, changeScript: nil, isReplacedByFee: false)
+                let minimalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minimalFeeRate, senderPay: false, changeScript: nil, sequence: .max)
                 if minFee < minimalFee {
                     minRate = minimalFeeRate
                     minFee = minimalFee
@@ -71,9 +71,9 @@ class BitcoinWalletManager: WalletManager {
                 txBuilder.feeRates[normalFee] = normalRate
                 txBuilder.feeRates[maxFee] = maxRate
                 return [
-                    Amount(with: self.wallet.blockchain, address: self.wallet.address, value: minFee),
-                    Amount(with: self.wallet.blockchain, address: self.wallet.address, value: normalFee),
-                    Amount(with: self.wallet.blockchain, address: self.wallet.address, value: maxFee)
+                    Amount(with: self.wallet.blockchain, value: minFee),
+                    Amount(with: self.wallet.blockchain, value: normalFee),
+                    Amount(with: self.wallet.blockchain, value: maxFee)
                 ]
         }
         .eraseToAnyPublisher()
@@ -86,38 +86,27 @@ class BitcoinWalletManager: WalletManager {
         
         wallet.add(coinValue: balance)
         txBuilder.unspentOutputs = unspents
+            
+        wallet.transactions.removeAll()
         if hasUnconfirmed {
-            if wallet.transactions.isEmpty {
-                wallet.addPendingTransaction()
+            response.forEach {
+                $0.pendingTxRefs.forEach { wallet.addPendingTransaction($0) }
             }
-        } else {
-            wallet.transactions = []
         }
     }
-    
-//    private func getEstimateSize(for transaction: Transaction) -> Decimal? {
-//        guard let unspentOutputsCount = txBuilder.unspentOutputs?.count else {
-//            return nil
-//        }
-//
-//        guard let tx = txBuilder.buildForSend(transaction: transaction, signature: Data(repeating: UInt8(0x80), count: 64 * unspentOutputsCount)) else {
-//            return nil
-//        }
-//
-//        return Decimal(tx.count)
-//    }
 }
 
-
+@available(iOS 13.0, *)
 extension BitcoinWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
-        guard let hashes = txBuilder.buildForSign(transaction: transaction) else {
+        let sequence = SequenceValues.disabledReplacedByFee.rawValue
+        guard let hashes = txBuilder.buildForSign(transaction: transaction, sequence: sequence) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
         return signer.sign(hashes: hashes, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
             .tryMap {[unowned self] signatures -> (String) in
-                guard let tx = self.txBuilder.buildForSend(transaction: transaction, signatures: signatures) else {
+                guard let tx = self.txBuilder.buildForSend(transaction: transaction, signatures: signatures, sequence: sequence) else {
                     throw WalletError.failedToBuildTx
                 }
                 return tx.toHexString()

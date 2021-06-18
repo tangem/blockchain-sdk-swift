@@ -40,7 +40,7 @@ class BitcoinCashWalletManager: WalletManager {
         txBuilder.unspentOutputs = response.unspentOutputs
         if response.hasUnconfirmed {
             if wallet.transactions.isEmpty {
-                wallet.addPendingTransaction()
+                wallet.addDummyPendingTransaction()
             }
         } else {
             wallet.transactions = []
@@ -88,7 +88,7 @@ extension BitcoinCashWalletManager: TransactionSender {
                 let finalFee = fee >= relayFee ? fee : relayFee
                 
                 return [
-                    Amount(with: self.wallet.blockchain, address: self.wallet.address, value: finalFee)
+                    Amount(with: self.wallet.blockchain, value: finalFee)
                 ]
         }
         .eraseToAnyPublisher()

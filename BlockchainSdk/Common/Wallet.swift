@@ -33,6 +33,27 @@ public struct Wallet {
         return transactions.filter { $0.status == .unconfirmed }.count > 0
     }
     
+    public var pendingOutgoingTransactions: [Transaction] {
+        transactions.filter { tx in
+            tx.status == .unconfirmed &&
+                tx.destinationAddress != .unknown &&
+                addresses.contains(where: { $0.value == tx.sourceAddress })
+        }
+    }
+    
+    public var pendingIncomingTransactions: [Transaction] {
+        transactions.filter { tx in
+            tx.status == .unconfirmed &&
+                tx.sourceAddress != .unknown &&
+                addresses.contains(where: { $0.value == tx.destinationAddress })
+        }
+    }
+    
+    public var pendingBalance: Decimal {
+        pendingOutgoingTransactions
+            .reduce(0, { $0 + $1.amount.value + $1.fee.value })
+    }
+    
     public func hasPendingTx(for amountType: Amount.AmountType) -> Bool {
         return transactions.filter { $0.status == .unconfirmed && $0.amount.type == amountType }.count > 0
     }
@@ -64,17 +85,15 @@ public struct Wallet {
         amounts = [:]
     }
     
-    mutating func add(coinValue: Decimal, address: String? = nil) {
+    mutating func add(coinValue: Decimal) {
         let coinAmount = Amount(with: blockchain,
-                                address: address ?? self.address,
                                 type: .coin,
                                 value: coinValue)
         add(amount: coinAmount)
     }
     
-    mutating func add(reserveValue: Decimal, address: String? = nil) {
+    mutating func add(reserveValue: Decimal) {
         let reserveAmount = Amount(with: blockchain,
-                                   address: address ?? self.address,
                                    type: .reserve,
                                    value: reserveValue)
         add(amount: reserveAmount)
@@ -97,8 +116,34 @@ public struct Wallet {
         transactions.append(tx)
     }
     
-    mutating func addPendingTransaction() {
-        let dummyAmount = Amount(with: blockchain, address: .unknown, type: .coin, value: 0)
+
+    mutating func addPendingTransaction(amount: Amount,
+                                        fee: Amount,
+                                        sourceAddress: String,
+                                        destinationAddress: String,
+                                        date: Date,
+                                        changeAddress: String = .unknown,
+                                        sequence: Int) {
+        transactions.append(Transaction(amount: amount,
+                                        fee: fee,
+                                        sourceAddress: sourceAddress,
+                                        destinationAddress: destinationAddress,
+                                        changeAddress: changeAddress,
+                                        date: date,
+                                        sequence: sequence))
+    }
+    
+    mutating func addPendingTransaction(_ tx: PendingTransaction) {
+        addPendingTransaction(amount: Amount(with: blockchain, value: tx.value),
+                              fee: Amount(with: blockchain, value: tx.fee ?? 0),
+                              sourceAddress: tx.source,
+                              destinationAddress: tx.destination,
+                              date: tx.date,
+                              sequence: tx.sequence)
+    }
+    
+    mutating func addDummyPendingTransaction() {
+        let dummyAmount = Amount.dummyCoin(for: blockchain)
         var tx = Transaction(amount: dummyAmount,
                              fee: dummyAmount,
                              sourceAddress: .unknown,

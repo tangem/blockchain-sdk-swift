@@ -15,6 +15,7 @@ public enum BlockchainSdkError: Int, LocalizedError {
 	case notImplemented = -1000
     case decodingFailed
     case failedToLoadFee
+    case failedToLoadTxDetails
 	
 	public var errorDescription: String? {
 		switch self {
@@ -27,4 +28,8 @@ public enum BlockchainSdkError: Int, LocalizedError {
 			return "\(rawValue)"
 		}
 	}
+}
+
+public enum NetworkServiceError: Error {
+    case notAvailable
 }
