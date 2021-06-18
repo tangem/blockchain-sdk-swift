@@ -11,11 +11,13 @@ import Combine
 
 protocol BitcoinNetworkProvider: AnyObject {
     var host: String { get }
+    var supportsRbf: Bool { get }
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error>
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error>
     func getFee() -> AnyPublisher<BitcoinFee, Error>
     func send(transaction: String) -> AnyPublisher<String, Error>
-	func getSignatureCount(address: String) -> AnyPublisher<Int, Error>
+    func push(transaction: String) -> AnyPublisher<String, Error>
+    func getSignatureCount(address: String) -> AnyPublisher<Int, Error>
 }
 
 
