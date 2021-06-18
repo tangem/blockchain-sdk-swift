@@ -288,11 +288,13 @@
 		B0BAEE9C25FF1E4200F318A6 /* RosettaData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0BAEE9B25FF1E4200F318A6 /* RosettaData.swift */; };
 		B0C2C86725FBA10E00A61622 /* AnyPublisher+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C2C86625FBA10E00A61622 /* AnyPublisher+.swift */; };
 		B0C2C89D25FBCF0200A61622 /* RosettaTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C2C89C25FBCF0200A61622 /* RosettaTarget.swift */; };
+		B0C34958267B83580027CC9D /* BitcoinModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C34957267B83580027CC9D /* BitcoinModels.swift */; };
 		B0C8222A25F8DA860027E3BF /* CardanoNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C8222925F8DA860027E3BF /* CardanoNetworkService.swift */; };
 		B0CDFF252641488900B9BA9D /* EthereumJsonRpcProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CDFF242641488900B9BA9D /* EthereumJsonRpcProvider.swift */; };
 		B0EBBEF2265D0E7700D37141 /* DogecoinNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EBBEF1265D0E7700D37141 /* DogecoinNetworkParams.swift */; };
 		B0EBBEF4265D0EE600D37141 /* DogecoinWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EBBEF3265D0EE600D37141 /* DogecoinWalletManager.swift */; };
 		B0EBBEF6265D246700D37141 /* DogecoinNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EBBEF5265D246600D37141 /* DogecoinNetworkService.swift */; };
+		B0ED200D267C69BA00D5C3E5 /* BitcoinModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C34957267B83580027CC9D /* BitcoinModels.swift */; };
 		B0F9DCA125FB4C9B00C0AF18 /* MultiNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F9DCA025FB4C9B00C0AF18 /* MultiNetworkProvider.swift */; };
 		B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0FF8816264AEA60003E000A /* LitecoinNetworkService.swift */; };
 		ED3D33D84D8B747FB3B1D09D /* Pods_BlockchainSdkTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A172F9D47772F23948771418 /* Pods_BlockchainSdkTests.framework */; };
@@ -467,6 +469,7 @@
 		B0BAEE9B25FF1E4200F318A6 /* RosettaData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosettaData.swift; sourceTree = "<group>"; };
 		B0C2C86625FBA10E00A61622 /* AnyPublisher+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyPublisher+.swift"; sourceTree = "<group>"; };
 		B0C2C89C25FBCF0200A61622 /* RosettaTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosettaTarget.swift; sourceTree = "<group>"; };
+		B0C34957267B83580027CC9D /* BitcoinModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinModels.swift; sourceTree = "<group>"; };
 		B0C8222925F8DA860027E3BF /* CardanoNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoNetworkService.swift; sourceTree = "<group>"; };
 		B0CDFF242641488900B9BA9D /* EthereumJsonRpcProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumJsonRpcProvider.swift; sourceTree = "<group>"; };
 		B0EBBEF1265D0E7700D37141 /* DogecoinNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogecoinNetworkParams.swift; sourceTree = "<group>"; };
@@ -910,13 +913,11 @@
 		5DE3BFA1239FB41100E8815D /* Bitcoin */ = {
 			isa = PBXGroup;
 			children = (
-				5DE3BFA3239FB4E500E8815D /* BitcoinNetworkService.swift */,
-				B05BF633256F953500B50FD7 /* BitcoinAddress.swift */,
-				5D304398239A8C9C0066B8D9 /* BitcoinAddressService.swift */,
+				B0C3495A267B83AA0027CC9D /* Address */,
+				B0C34959267B83A00027CC9D /* Network */,
 				5D30438F239A58C90066B8D9 /* BitcoinWalletManager.swift */,
 				5DED72BB239FEEEC006D79AE /* BitcoinTransactionBuilder.swift */,
-				5D26CEF8243CBF2700994CC0 /* BitcoinNetworkProvider.swift */,
-				5DACA358255E97EA0096BC48 /* BitcoinAddressType.swift */,
+				B0C34957267B83580027CC9D /* BitcoinModels.swift */,
 			);
 			path = Bitcoin;
 			sourceTree = "<group>";
@@ -988,6 +989,25 @@
 				B0A1D39C2625A1150013F0BF /* EthereumUtils.swift */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		B0C34959267B83A00027CC9D /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				5D26CEF8243CBF2700994CC0 /* BitcoinNetworkProvider.swift */,
+				5DE3BFA3239FB4E500E8815D /* BitcoinNetworkService.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		B0C3495A267B83AA0027CC9D /* Address */ = {
+			isa = PBXGroup;
+			children = (
+				5DACA358255E97EA0096BC48 /* BitcoinAddressType.swift */,
+				B05BF633256F953500B50FD7 /* BitcoinAddress.swift */,
+				5D304398239A8C9C0066B8D9 /* BitcoinAddressService.swift */,
+			);
+			path = Address;
 			sourceTree = "<group>";
 		};
 		B0EBBEF0265D0E4900D37141 /* Dogecoin */ = {
@@ -1216,6 +1236,7 @@
 				5D7D242C25136254001B9A4F /* WebSocket.swift in Sources */,
 				5DACA361255E98900096BC48 /* MultipleAddressProvider.swift in Sources */,
 				5D7D243325136254001B9A4F /* XRPAddress.swift in Sources */,
+				B0C34958267B83580027CC9D /* BitcoinModels.swift in Sources */,
 				5D4B33C823F72F2700C93A84 /* BitcoinCashWalletManager.swift in Sources */,
 				5D26CEF1243CB9EA00994CC0 /* BlockchainInfoResponse.swift in Sources */,
 				5D54FE1A23E41E5A009FAC2F /* LitecoinNetworkParams.swift in Sources */,
@@ -1423,6 +1444,7 @@
 				B09374B426708A05001450B0 /* JSONDecoder+.swift in Sources */,
 				5DDD82F925BF0E1D00166EA9 /* DucatusAddressService.swift in Sources */,
 				5DDD829325BF0CDC00166EA9 /* BitcoinAddressService.swift in Sources */,
+				B0ED200D267C69BA00D5C3E5 /* BitcoinModels.swift in Sources */,
 				5DDD82E925BF0E1100166EA9 /* LitecoinWalletManager.swift in Sources */,
 				5D740B832625B6E400DE9636 /* RskAddressService.swift in Sources */,
 				5DDD831225BF0E7800166EA9 /* EthereumTarget.swift in Sources */,

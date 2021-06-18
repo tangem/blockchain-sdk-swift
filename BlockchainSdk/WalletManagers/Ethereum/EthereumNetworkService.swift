@@ -66,31 +66,6 @@ class EthereumNetworkService: MultiNetworkProvider<EthereumJsonRpcProvider> {
         .eraseToAnyPublisher()
     }
     
-//<<<<<<< HEAD
-//    func getInfo(address: String, tokens: [Token]) -> AnyPublisher<EthereumResponse, Error> {
-//        if !tokens.isEmpty {
-//            return tokenData(address: address, tokens: tokens)
-//                .map { return EthereumResponse(balance: $0.0, tokenBalances: $0.1, txCount: $0.2, pendingTxCount: $0.3) }
-//                .eraseToAnyPublisher()
-//        } else {
-//            return coinData(address: address)
-//                .map { return EthereumResponse(balance: $0.0, tokenBalances: [:], txCount: $0.1, pendingTxCount: $0.2) }
-//                .flatMap { [unowned self] resp -> AnyPublisher<EthereumResponse, Error> in
-//                    guard let networkProvider = self.networkProvider else {
-//                        return Just(resp)
-//                            .setFailureType(to: Error.self)
-//                            .eraseToAnyPublisher()
-//                    }
-//
-//                    return networkProvider.getTransactionsInfo(address: address)
-//                        .tryMap { ethResponse -> EthereumResponse in
-//                            var newResp = resp
-//                            newResp.pendingTxs = ethResponse.pendingTxs
-//                            return newResp
-//                        }
-//                        .eraseToAnyPublisher()
-//                }
-//=======
     func getFee(to: String, from: String, data: String?, fallbackGasLimit: BigUInt?) -> AnyPublisher<EthereumFeeResponse, Error> {
         func parseGas(_ publisher: AnyPublisher<EthereumResponse, Error>) -> AnyPublisher<BigUInt, Never> {
             publisher.tryMap { try self.getGas(from: $0) }

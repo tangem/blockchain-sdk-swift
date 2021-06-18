@@ -9,6 +9,7 @@
 import Foundation
 import BitcoinCore
 
+/// Response for standart address request
 struct BlockcypherAddressResponse : Codable {
     let address: String?
     let balance: Int?
@@ -22,7 +23,8 @@ struct BlockcypherAddressResponse : Codable {
     }
 }
 
-struct BlockcypherFullAddressResponse<EndpointTx: Codable>: Codable {
+/// Response for full address request. This response contain full information about transaction that Blockcypher can provide
+struct BlockcypherFullAddressResponse<EndpointTx: Codable & BlockcypherPendingTxConvertible>: Codable {
     let address: String?
     let balance: Int?
     let unconfirmedBalance: Int?
@@ -31,6 +33,7 @@ struct BlockcypherFullAddressResponse<EndpointTx: Codable>: Codable {
     let txs: [EndpointTx]?
 }
 
+// Transaction for standart address request
 struct BlockcypherTxref: Codable {
     let hash: String?
     let outputIndex: Int?
@@ -66,6 +69,7 @@ struct BlockcypherFeeResponse: Codable {
     let high_fee_per_kb: Int64?
 }
 
+/// Protocol for Blockcypher transactions for unified converting to PendingTransaction model
 protocol BlockcypherPendingTxConvertible {
     var hash: String { get }
     var fees: Decimal { get }
@@ -162,6 +166,7 @@ struct BlockcypherOutput: Codable {
     }
 }
 
+/// Bitcoin transaction structure for blockcypher response
 struct BlockcypherBitcoinTx: Codable, BlockcypherPendingTxConvertible {
     let blockIndex: Int64
     let hash: String
@@ -200,16 +205,18 @@ struct BlockcypherBitcoinTx: Codable, BlockcypherPendingTxConvertible {
     }
 }
 
-//struct BlockcypherTxInput: Codable, BlockcypherInput {
-//    let transactionHash: String?
-//    let value: UInt64?
-//    let addresses: [String]
-//    let sequence: Int
-//    let witness: [String]?
-//    let script: String?
-//
-//    private enum CodingKeys: String, CodingKey {
-//        case transactionHash = "prev_hash", value = "output_value"
-//        case addresses, sequence, witness, script
-//    }
-//}
+/// Ethereum transaction structure for blockcypher response
+struct BlockcypherEthereumTransaction: Codable, BlockcypherPendingTxConvertible {
+    let blockHeight: Int64
+    let hash: String
+    let total: UInt64
+    let fees: Decimal
+    let size: Int
+    let gasLimit: UInt64
+    let gasUsed: UInt64?
+    let gasPrice: UInt64
+    let received: Date
+    let confirmations: Int
+    let inputs: [BlockcypherInput]
+    let outputs: [BlockcypherOutput]
+}

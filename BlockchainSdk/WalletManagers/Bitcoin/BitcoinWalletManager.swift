@@ -92,9 +92,6 @@ class BitcoinWalletManager: WalletManager {
             response.forEach {
                 $0.pendingTxRefs.forEach { wallet.addPendingTransaction($0) }
             }
-//            response.forEach {
-//                updateRecentTransactionsBasic($0.recentTransactions)
-//            }
         }
     }
 }

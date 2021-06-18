@@ -34,28 +34,6 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
         self.tokens = tokens
     }
     
-//    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-//        publisher(for: getTarget(for: .address(address: address, unspentsOnly: false, limit: nil, isFull: false)))
-//            .map(BlockcypherAddressResponse.self)
-//            .tryMap { [unowned self] (addressResponse: BlockcypherAddressResponse) -> BitcoinResponse in
-//                guard let balance = addressResponse.balance else {
-//                    throw WalletError.failedToParseNetworkResponse
-//                }
-//
-//                let decimalValue = self.endpoint.blockchain.decimalValue
-//                let satoshiBalance = Decimal(balance) / decimalValue
-//
-//                var recentTransactions = addressResponse.txrefs?.toBasicTxDataArray(isConfirmed: true, decimals: decimalValue) ?? []
-//                let unconfirmedTxs = addressResponse.unconfirmedTxrefs?.toBasicTxDataArray(isConfirmed: false, decimals: decimalValue) ?? []
-//                recentTransactions.append(contentsOf: unconfirmedTxs)
-//
-//                let utxo: [BitcoinUnspentOutput] = addressResponse.txrefs?.compactMap { $0.toUnspentOutput() } ?? []
-//
-//                return .init(balance: satoshiBalance, hasUnconfirmed: unconfirmedTxs.count > 0, recentTransactions: recentTransactions, unspentOutputs: utxo)
-//            }
-//            .eraseToAnyPublisher()
-//    }
-    
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         getFullInfo(address: address)
             .tryMap {[unowned self] (addressResponse: BlockcypherFullAddressResponse<BlockcypherBitcoinTx>) -> BitcoinResponse in

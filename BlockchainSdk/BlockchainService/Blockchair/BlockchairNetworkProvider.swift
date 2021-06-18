@@ -104,7 +104,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                         let oldResp = resp.0
                         var utxos = oldResp.unspentOutputs
                         
-                        var pendingBtcTxs: [PendingTransaction] = txs.compactMap {
+                        let pendingBtcTxs: [PendingTransaction] = txs.compactMap {
                             guard let tx = $0 else { return nil }
                             
                             let pendingTx = tx.toPendingTx(userAddress: address, decimalValue: self.endpoint.blockchain.decimalValue)
