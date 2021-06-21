@@ -43,7 +43,8 @@ class BinanceWalletManager: WalletManager {
                 .filter { $0.key != wallet.blockchain.currencySymbol }
                 .map { (Token(symbol: $0.key.split(separator: "-").first.map {String($0)} ?? $0.key,
                               contractAddress: $0.key,
-                              decimalCount: wallet.blockchain.decimalCount),
+                              decimalCount: wallet.blockchain.decimalCount,
+                              blockchain: .binance(testnet: false)),
                         $0.value) }
                 .map { token, balance in
                     wallet.add(tokenValue: balance, for: token)

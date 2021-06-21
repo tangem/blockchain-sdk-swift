@@ -61,7 +61,8 @@ class StellarWalletManager: WalletManager {
             _ = response.assetBalances
                 .map { (Token(symbol: $0.code,
                               contractAddress: $0.issuer,
-                              decimalCount: wallet.blockchain.decimalCount),
+                              decimalCount: wallet.blockchain.decimalCount,
+                              blockchain: .stellar(testnet: false)),
                         $0.balance) }
                 .map { token, balance in
                     wallet.add(tokenValue: balance, for: token)

@@ -34,6 +34,28 @@ public class WalletManagerFactory {
         return blockchains.compactMap { makeWalletManager(from: cardId, walletPublicKey:walletPublicKey, blockchain: $0) }
     }
     
+    public func makeWalletManagers(for cardId: String, with walletPublicKey: Data, and tokens: [Token]) -> [WalletManager] {
+        var blockchainDict = [Blockchain: [Token]]()
+        tokens.forEach {
+            guard let blockchain = $0.blockchain else { return }
+            
+            if blockchainDict[blockchain] != nil {
+                blockchainDict[blockchain]!.append($0)
+            } else {
+                blockchainDict[blockchain] = [$0]
+            }
+        }
+        
+        var managers = [WalletManager]()
+        blockchainDict.forEach {
+            guard let manager = makeWalletManager(from: cardId, walletPublicKey: walletPublicKey, blockchain: $0.key) else { return }
+            
+            manager.cardTokens.append(contentsOf: $0.value.filter { !manager.cardTokens.contains($0) })
+            managers.append(manager)
+        }
+        return managers
+    }
+    
     public func makeEthereumWalletManager(from cardId: String, walletPublicKey: Data, erc20Tokens: [Token], isTestnet: Bool) -> WalletManager? {
         guard let manager = makeWalletManager(from: cardId, walletPublicKey: walletPublicKey, blockchain: .ethereum(testnet: isTestnet)) else {
             return nil
