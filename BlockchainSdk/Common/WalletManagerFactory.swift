@@ -56,16 +56,6 @@ public class WalletManagerFactory {
         return managers
     }
     
-    public func makeEthereumWalletManager(from cardId: String, walletPublicKey: Data, erc20Tokens: [Token], isTestnet: Bool) -> WalletManager? {
-        guard let manager = makeWalletManager(from: cardId, walletPublicKey: walletPublicKey, blockchain: .ethereum(testnet: isTestnet)) else {
-            return nil
-        }
-        
-        let additionalTokens = erc20Tokens.filter { !manager.cardTokens.contains($0) }
-        manager.cardTokens.append(contentsOf: additionalTokens)
-        return manager
-    }
-    
     public func makeTwinWalletManager(from cardId: String, walletPublicKey: Data, pairKey: Data, isTestnet: Bool) -> WalletManager? {
         makeWalletManager(from: .bitcoin(testnet: isTestnet),
                           walletPublicKey: walletPublicKey,
