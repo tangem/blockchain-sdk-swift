@@ -254,7 +254,7 @@ extension EthereumWalletManager: TokenFinder {
                 
                 var tokensAdded = false
                 blockchairTokens.forEach { blockchairToken in
-                    let token = Token(blockchairToken)
+                    let token = Token(blockchairToken, blockchain: self.wallet.blockchain)
                     if !self.cardTokens.contains(token) {
                         self.cardTokens.append(token)
                         let balanceValue = Decimal(blockchairToken.balance) ?? 0

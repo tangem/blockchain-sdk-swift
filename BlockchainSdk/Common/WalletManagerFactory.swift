@@ -34,14 +34,17 @@ public class WalletManagerFactory {
         return blockchains.compactMap { makeWalletManager(from: cardId, walletPublicKey:walletPublicKey, blockchain: $0) }
     }
     
-    public func makeEthereumWalletManager(from cardId: String, walletPublicKey: Data, erc20Tokens: [Token], isTestnet: Bool) -> WalletManager? {
-        guard let manager = makeWalletManager(from: cardId, walletPublicKey: walletPublicKey, blockchain: .ethereum(testnet: isTestnet)) else {
-            return nil
+    public func makeWalletManagers(for cardId: String, with walletPublicKey: Data, and tokens: [Token]) -> [WalletManager] {
+        let blockchainDict = Dictionary(grouping: tokens, by: { $0.blockchain })
+        
+        let managers: [WalletManager] = blockchainDict.compactMap {
+            guard let manager = makeWalletManager(from: cardId, walletPublicKey: walletPublicKey, blockchain: $0.key) else { return nil }
+            
+            manager.cardTokens.append(contentsOf: $0.value.filter { !manager.cardTokens.contains($0) })
+            return manager
         }
         
-        let additionalTokens = erc20Tokens.filter { !manager.cardTokens.contains($0) }
-        manager.cardTokens.append(contentsOf: additionalTokens)
-        return manager
+        return managers
     }
     
     public func makeTwinWalletManager(from cardId: String, walletPublicKey: Data, pairKey: Data, isTestnet: Bool) -> WalletManager? {
