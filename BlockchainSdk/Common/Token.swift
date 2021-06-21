@@ -11,9 +11,7 @@ import Foundation
 public struct Token: Hashable, Equatable, Codable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(contractAddress.lowercased())
-        if let blockchain = blockchain {
-            hasher.combine(blockchain)
-        }
+        hasher.combine(blockchain)
     }
     
     public static func == (lhs: Token, rhs: Token) -> Bool {
@@ -26,9 +24,9 @@ public struct Token: Hashable, Equatable, Codable {
     public let decimalCount: Int
     public let customIcon: String?
     public let customIconUrl: String?
-    public var blockchain: Blockchain?
+    public var blockchain: Blockchain
     
-    public init(name: String? = nil, symbol: String, contractAddress: String, decimalCount: Int, customIcon: String? = nil, customIconUrl: String? = nil, blockchain: Blockchain?) {
+    public init(name: String? = nil, symbol: String, contractAddress: String, decimalCount: Int, customIcon: String? = nil, customIconUrl: String? = nil, blockchain: Blockchain) {
         self.name = name ?? symbol
         self.symbol = symbol
         self.contractAddress = contractAddress

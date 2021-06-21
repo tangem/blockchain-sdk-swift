@@ -35,24 +35,15 @@ public class WalletManagerFactory {
     }
     
     public func makeWalletManagers(for cardId: String, with walletPublicKey: Data, and tokens: [Token]) -> [WalletManager] {
-        var blockchainDict = [Blockchain: [Token]]()
-        tokens.forEach {
-            guard let blockchain = $0.blockchain else { return }
-            
-            if blockchainDict[blockchain] != nil {
-                blockchainDict[blockchain]!.append($0)
-            } else {
-                blockchainDict[blockchain] = [$0]
-            }
-        }
+        let blockchainDict = Dictionary(grouping: tokens, by: { $0.blockchain })
         
-        var managers = [WalletManager]()
-        blockchainDict.forEach {
-            guard let manager = makeWalletManager(from: cardId, walletPublicKey: walletPublicKey, blockchain: $0.key) else { return }
+        let managers: [WalletManager] = blockchainDict.compactMap {
+            guard let manager = makeWalletManager(from: cardId, walletPublicKey: walletPublicKey, blockchain: $0.key) else { return nil }
             
             manager.cardTokens.append(contentsOf: $0.value.filter { !manager.cardTokens.contains($0) })
-            managers.append(manager)
+            return manager
         }
+        
         return managers
     }
     
