@@ -246,4 +246,9 @@ struct BlockcypherEthereumTransaction: Codable, BlockcypherPendingTxConvertible 
     let confirmations: Int
     let inputs: [BlockcypherInput]
     let outputs: [BlockcypherOutput]
+    
+    private enum CodingKeys: String, CodingKey {
+        case blockHeight = "block_height", gasLimit = "gas_limit", gasUsed = "gas_used", gasPrice = "gas_price"
+        case hash, total, fees, size, received, confirmations, inputs, outputs
+    }
 }
