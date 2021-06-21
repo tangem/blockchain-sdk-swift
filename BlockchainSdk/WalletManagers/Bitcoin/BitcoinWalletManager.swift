@@ -19,6 +19,8 @@ class BitcoinWalletManager: WalletManager {
     var minimalFeePerByte: Decimal { 10 }
     var minimalFee: Decimal { 0.00001 }
     
+    private var loadedUnspents: [BitcoinUnspentOutput] = []
+    
     override var currentHost: String {
         networkService.host
     }
@@ -38,7 +40,7 @@ class BitcoinWalletManager: WalletManager {
             })
     }
     
-    func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap {[unowned self] response throws -> [Amount] in
                 var minRate = (max(response.minimalSatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
@@ -85,6 +87,7 @@ class BitcoinWalletManager: WalletManager {
         let unspents = response.flatMap { $0.unspentOutputs }
         
         wallet.add(coinValue: balance)
+        loadedUnspents = unspents
         txBuilder.unspentOutputs = unspents
             
         wallet.transactions.removeAll()
@@ -94,12 +97,8 @@ class BitcoinWalletManager: WalletManager {
             }
         }
     }
-}
-
-@available(iOS 13.0, *)
-extension BitcoinWalletManager: TransactionSender {
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
-        let sequence = SequenceValues.disabledReplacedByFee.rawValue
+    
+    private func send(_ transaction: Transaction, signer: TransactionSigner, sequence: Int, isPushingTx: Bool) -> AnyPublisher<Void, Error> {
         guard let hashes = txBuilder.buildForSign(transaction: transaction, sequence: sequence) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
@@ -112,12 +111,101 @@ extension BitcoinWalletManager: TransactionSender {
                 return tx.toHexString()
         }
         .flatMap {[unowned self] tx -> AnyPublisher<Void, Error> in
-            return self.networkService.send(transaction: tx)
-                .map {[unowned self] sendResponse in
-                    self.wallet.add(transaction: transaction)
+            let txHashPublisher: AnyPublisher<String, Error>
+            if isPushingTx {
+                txHashPublisher = self.networkService.push(transaction: tx)
+            } else {
+                txHashPublisher = self.networkService.send(transaction: tx)
+            }
+            
+            return txHashPublisher.map {[unowned self] sendResponse in
+                var sendedTx = transaction
+                sendedTx.hash = sendResponse
+                self.wallet.add(transaction: sendedTx)
             }.eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
+    }
+}
+
+@available(iOS 13.0, *)
+extension BitcoinWalletManager: TransactionSender {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+        txBuilder.unspentOutputs = loadedUnspents
+        return send(transaction, signer: signer, sequence: SequenceValues.default.rawValue, isPushingTx: false)
+    }
+}
+
+extension BitcoinWalletManager: TransactionPusher {
+    func isPushAvailable(for transactionHash: String) -> Bool {
+        guard networkService.supportsRbf else {
+            return false
+        }
+        
+        guard let tx = wallet.transactions.first(where: { $0.hash == transactionHash }) else {
+            return false
+        }
+        
+        let userAddresses = wallet.addresses.map { $0.value }
+        
+        guard userAddresses.contains(tx.sourceAddress) else {
+            return false
+        }
+        
+        guard let params = tx.params as? BitcoinTransactionParams, tx.status == .unconfirmed else {
+            return false
+        }
+        
+        var containNotRbfInput: Bool = false
+        var containOtherOutputAccount: Bool = false
+        params.inputs.forEach {
+            if !userAddresses.contains($0.address) {
+                containOtherOutputAccount = true
+            }
+            if $0.sequence >= SequenceValues.disabledReplacedByFee.rawValue {
+                containNotRbfInput = true
+            }
+        }
+        
+        return !containNotRbfInput && !containOtherOutputAccount
+    }
+    
+    func getPushFee(for transactionHash: String) -> AnyPublisher<[Amount], Error> {
+        guard let tx = wallet.transactions.first(where: { $0.hash == transactionHash }) else {
+            return .anyFail(error: BlockchainSdkError.failedToFindTransaction)
+        }
+        
+        txBuilder.unspentOutputs = loadedUnspents.filter { $0.transactionHash != transactionHash }
+        
+        return getFee(amount: tx.amount, destination: tx.destinationAddress)
+            .map { [weak self] in
+                self?.txBuilder.unspentOutputs = self?.loadedUnspents
+                return $0
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func pushTransaction(with transactionHash: String, newTransaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+        guard let oldTx = wallet.transactions.first(where: { $0.hash == transactionHash }) else {
+            return .anyFail(error: BlockchainSdkError.failedToFindTransaction)
+        }
+        
+        guard oldTx.fee.value < newTransaction.fee.value else {
+            return .anyFail(error: BlockchainSdkError.feeForPushTxNotEnough)
+        }
+        
+        guard
+            let params = oldTx.params as? BitcoinTransactionParams,
+            let sequence = params.inputs.max(by: { $0.sequence < $1.sequence })?.sequence
+        else {
+            return .anyFail(error: BlockchainSdkError.failedToFindTxInputs)
+        }
+        
+//        let outputs = loadedUnspents.filter { unspent in params.inputs.contains(where: { $0.prevHash == unspent.transactionHash })}
+        let outputs = loadedUnspents.filter { $0.transactionHash != transactionHash }
+        txBuilder.unspentOutputs = outputs
+        
+        return send(newTransaction, signer: signer, sequence: sequence + 1, isPushingTx: true)
     }
 }
 

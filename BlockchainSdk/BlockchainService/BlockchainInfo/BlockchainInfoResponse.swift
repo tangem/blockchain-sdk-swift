@@ -39,6 +39,18 @@ struct BlockchainInfoInput: Codable {
         case previousOutput = "prev_out", index = "n"
         case sequence, witness, script
     }
+    
+    func toBitcoinInput() -> BitcoinInput? {
+        guard
+            let sequence = sequence,
+            let prevOutput = previousOutput,
+            let address = prevOutput.address,
+            let value = prevOutput.value,
+            let index = prevOutput.index
+        else { return nil }
+        
+        return .init(sequence: sequence, address: address, outputIndex: index, outputValue: value, prevHash: "")
+    }
 }
 
 struct BlockchainInfoOutput: Codable {
@@ -104,8 +116,8 @@ struct BlockchainInfoTransaction: Codable {
                                   source: source,
                                   fee: fee == nil ? nil : Decimal(fee!) / decimalValue,
                                   date: date,
-                                  sequence: inputs?.max(by: { $0.sequence ?? 0 > $1.sequence ?? 0 })?.sequence ?? SequenceValues.default.rawValue,
-                                  isIncoming: isIncoming)
+                                  isIncoming: isIncoming,
+                                  transactionParams: BitcoinTransactionParams(inputs: inputs?.compactMap { $0.toBitcoinInput()} ?? []))
     }
     
     func findUnspentOutput(for userAddress: String) -> BitcoinUnspentOutput? {

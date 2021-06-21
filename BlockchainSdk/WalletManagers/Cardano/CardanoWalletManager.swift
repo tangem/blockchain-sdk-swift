@@ -97,7 +97,7 @@ extension CardanoWalletManager: TransactionSender {
         }
     }
     
-    func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         guard let transactionSize = self.getEstimateSize(amount: amount, destination: destination) else {
             return Fail(error: WalletError.failedToCalculateTxSize).eraseToAnyPublisher()
         }

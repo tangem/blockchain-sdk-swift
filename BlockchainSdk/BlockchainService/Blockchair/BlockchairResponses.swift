@@ -35,20 +35,17 @@ struct BlockchairTransactionDetailed: Codable {
         var destination: String = .unknown
         var source: String = .unknown
         var value: UInt64 = 0
-        var sequence: Int = SequenceValues.default.rawValue
         var isIncoming: Bool = false
         
-        if let input = inputs.first(where:  { $0.recipient == userAddress }), let output = outputs.first(where: { $0.recipient != userAddress }) {
+        if let _ = inputs.first(where:  { $0.recipient == userAddress }), let output = outputs.first(where: { $0.recipient != userAddress }) {
             source = userAddress
             destination = output.recipient
             value = output.value
-            sequence = input.spendingSequence
         } else if let output = outputs.first(where: { $0.recipient == userAddress }), let input = inputs.first(where: { $0.recipient != userAddress }) {
             isIncoming = true
             destination = userAddress
             source = input.recipient
             value = output.value
-            sequence = input.spendingSequence
         }
         
         return PendingTransaction(hash: transaction.hash,
@@ -57,8 +54,8 @@ struct BlockchairTransactionDetailed: Codable {
                                   source: source,
                                   fee: transaction.fee / decimalValue,
                                   date: transaction.time,
-                                  sequence: sequence,
-                                  isIncoming: isIncoming)
+                                  isIncoming: isIncoming,
+                                  transactionParams: BitcoinTransactionParams(inputs: inputs.map { $0.toBitcoinInput() }))
     }
     
     func findUnspentOuputs(for userAddress: String) -> [BitcoinUnspentOutput] {
@@ -93,6 +90,10 @@ struct BlockchairTxInput: Codable {
     let scriptHex: String
     let spendingSequence: Int
     let recipient: String
+    
+    func toBitcoinInput() -> BitcoinInput {
+        .init(sequence: spendingSequence, address: recipient, outputIndex: index, outputValue: value, prevHash: transactionHash)
+    }
 }
 
 struct BlockchairTxOutput: Codable {

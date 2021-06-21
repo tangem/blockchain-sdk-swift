@@ -12,6 +12,8 @@ import Combine
 import BitcoinCore
 
 class BlockcypherNetworkProvider: BitcoinNetworkProvider {
+    var supportsRbf: Bool { false }
+    
     let provider = MoyaProvider<BlockcypherTarget> ()
     let endpoint: BlockcypherEndpoint
     
@@ -20,7 +22,6 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
     
     private let jsonDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
         decoder.dateDecodingStrategy = .customISO8601
         return decoder
     }()
@@ -115,6 +116,10 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
             .mapNotEmptyString()
             .eraseError()
             .eraseToAnyPublisher()
+    }
+    
+    func push(transaction: String) -> AnyPublisher<String, Error> {
+        .anyFail(error: "RBF not supported")
     }
     
     func getTransaction(with hash: String) -> AnyPublisher<BitcoinTransaction, Error> {

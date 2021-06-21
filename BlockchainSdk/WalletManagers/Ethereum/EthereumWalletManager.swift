@@ -154,7 +154,7 @@ extension EthereumWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, destination: String, includeFee: Bool) -> AnyPublisher<[Amount],Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
         let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
         return networkService.getFee(to: destinationInfo.to, from: wallet.address, data: destinationInfo.data, fallbackGasLimit: getFixedGasLimit(for: amount))
             .tryMap {

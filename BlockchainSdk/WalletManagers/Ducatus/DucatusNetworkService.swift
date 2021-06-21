@@ -17,6 +17,7 @@ class DucatusNetworkService: BitcoinNetworkProvider {
         provider.host
     }
 
+    var supportsRbf: Bool { false }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         return Publishers.Zip(provider.getBalance(address: address), provider.getUnspents(address: address))
@@ -53,6 +54,10 @@ class DucatusNetworkService: BitcoinNetworkProvider {
                     throw WalletError.failedToParseNetworkResponse
                 }
         }.eraseToAnyPublisher()
+    }
+    
+    func push(transaction: String) -> AnyPublisher<String, Error> {
+        .anyFail(error: "Rbf not supported")
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {

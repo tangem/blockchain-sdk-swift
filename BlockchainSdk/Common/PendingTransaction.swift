@@ -15,6 +15,7 @@ struct PendingTransaction {
     var source: String
     let fee: Decimal?
     let date: Date
-    let sequence: Int
     let isIncoming: Bool
+    
+    let transactionParams: TransactionParams?
 }

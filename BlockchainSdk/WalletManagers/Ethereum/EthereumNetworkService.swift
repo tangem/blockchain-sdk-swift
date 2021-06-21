@@ -51,7 +51,7 @@ class EthereumNetworkService: MultiNetworkProvider<EthereumJsonRpcProvider> {
             EthereumInfoResponse(balance: result.0, tokenBalances: result.1, txCount: result.2, pendingTxCount: result.3, pendingTxs: [])
         }
         .flatMap { [unowned self] resp -> AnyPublisher<EthereumInfoResponse, Error> in
-            guard let provider = self.ethereumInfoNetworkProvider else {
+            guard let provider = self.ethereumInfoNetworkProvider, resp.pendingTxCount > 0 else {
                 return .justWithError(output: resp)
             }
             

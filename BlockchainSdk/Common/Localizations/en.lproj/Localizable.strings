@@ -95,3 +95,11 @@
 "send_error_blockchain_internal" = "Blockchain internal error";
 
 "send_error_unknown" = "Unknown error";
+
+"failed_to_find_transaction" = "Transaction not found in pending list";
+
+"failed_to_find_tx_inputs" = "Failed to find transaction inputs";
+
+"fee_for_push_tx_not_enough" = "Fee for pushing transaction must be greater than fee for original transaction";
+
+"network_providers_not_supports_rbf" = "Pushing transaction currently not available. Please, try again later";

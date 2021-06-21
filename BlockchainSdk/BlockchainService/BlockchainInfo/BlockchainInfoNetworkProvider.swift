@@ -18,6 +18,8 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
         BlockchainInfoTarget.address(address: "", offset: nil).baseURL.hostOrUnknown
     }
     
+    var supportsRbf: Bool { true }
+    
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         addressUnspentsData(address)
             .tryMap {(addressResponse, unspentsResponse) throws -> (BitcoinResponse, [UInt64]) in
@@ -121,6 +123,10 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
             .mapNotEmptyString()
             .eraseError()
             .eraseToAnyPublisher()
+    }
+    
+    func push(transaction: String) -> AnyPublisher<String, Error> {
+        send(transaction: transaction)
     }
     
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {

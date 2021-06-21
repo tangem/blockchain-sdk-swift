@@ -15,6 +15,7 @@ import SwiftyJSON
 import BitcoinCore
 
 class BlockchairNetworkProvider: BitcoinNetworkProvider {
+    var supportsRbf: Bool { true }
     
     let provider = MoyaProvider<BlockchairTarget>()
     
@@ -25,7 +26,9 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     private let jsonDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
-        decoder.dateDecodingStrategy = .formatted(DateFormatter(withFormat: "YYYY-MM-dd HH:mm:ss", locale: "en_US"))
+        let dateFormatter = DateFormatter(withFormat: "YYYY-MM-dd HH:mm:ss", locale: "en_US")
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        decoder.dateDecodingStrategy = .formatted(dateFormatter)
         return decoder
     }()
     
@@ -121,7 +124,10 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                         
 //                        let basicTxs = pendingBtcTxs.map { $0.toBasicTx(userAddress: address) }
                         
-                        return BitcoinResponse(balance: oldResp.balance, hasUnconfirmed: oldResp.hasUnconfirmed, pendingTxRefs: pendingBtcTxs, unspentOutputs: utxos)
+                        return BitcoinResponse(balance: Decimal(utxos.reduce(0, { $0 + $1.amount })) / self.endpoint.blockchain.decimalValue,
+                                               hasUnconfirmed: oldResp.hasUnconfirmed,
+                                               pendingTxRefs: pendingBtcTxs,
+                                               unspentOutputs: utxos)
                     }
                     .eraseToAnyPublisher()
             }
@@ -160,6 +166,10 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                return hash
         }
         .eraseToAnyPublisher()
+    }
+    
+    func push(transaction: String) -> AnyPublisher<String, Error> {
+        send(transaction: transaction)
     }
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {

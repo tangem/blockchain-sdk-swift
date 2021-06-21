@@ -22,7 +22,6 @@ public struct Transaction {
     public internal(set) var status: TransactionStatus = .unconfirmed
     public internal(set) var hash: String? = nil
     public var params: TransactionParams? = nil
-    public let sequence: Int
     
     internal init(amount: Amount, fee: Amount,
                   sourceAddress: String,
@@ -31,8 +30,7 @@ public struct Transaction {
                   contractAddress: String? = nil,
                   date: Date? = nil,
                   status: TransactionStatus = .unconfirmed,
-                  hash: String? = nil,
-                  sequence: Int = SequenceValues.default.rawValue) {
+                  hash: String? = nil) {
         self.amount = amount
         self.fee = fee
         self.sourceAddress = sourceAddress
@@ -42,7 +40,14 @@ public struct Transaction {
         self.date = date
         self.status = status
         self.hash = hash
-        self.sequence = sequence
+    }
+    
+    public static func dummyTx(blockchain: Blockchain, type: Amount.AmountType, destinationAddress: String) -> Transaction {
+        Transaction(amount: Amount(with: blockchain, type: type, value: 0),
+                    fee: Amount(with: blockchain, type: type, value: 0),
+                    sourceAddress: .unknown,
+                    destinationAddress: destinationAddress,
+                    changeAddress: .unknown)
     }
 }
 

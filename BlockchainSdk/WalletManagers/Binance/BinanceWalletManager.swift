@@ -92,7 +92,7 @@ extension BinanceWalletManager: TransactionSender {
         .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount,  destination: String, includeFee: Bool) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount,  destination: String) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap { feeString throws -> [Amount] in
                 guard let feeValue = Decimal(feeString) else {
