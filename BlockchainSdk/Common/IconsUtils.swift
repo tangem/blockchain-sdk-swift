@@ -77,7 +77,7 @@ fileprivate extension Blockchain {
             return "doge"
         case .bsc:
             return "smartchain"
-        case .matic:
+        case .polygon:
             return "polygon"
         }
     }
