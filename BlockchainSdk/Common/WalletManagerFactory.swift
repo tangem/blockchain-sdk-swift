@@ -167,9 +167,9 @@ public class WalletManagerFactory {
                 $0.networkService = EthereumNetworkService(network: network, providers: [EthereumJsonRpcProvider(network: network)], blockcypherProvider: nil, blockchairProvider: nil)
             }
             
-        case .matic(let testnet):
+        case .polygon(let testnet):
             return EthereumWalletManager(wallet: wallet).then {
-                let network: EthereumNetwork = testnet ? .maticTestnet : .maticMainnet
+                let network: EthereumNetwork = testnet ? .polygonTestnet : .polygon
                 $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: network)
                 $0.networkService = EthereumNetworkService(network: network, providers: [EthereumJsonRpcProvider(network: network)], blockcypherProvider: nil, blockchairProvider: nil)
             }
