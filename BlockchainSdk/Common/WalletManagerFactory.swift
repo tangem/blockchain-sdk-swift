@@ -118,7 +118,7 @@ public class WalletManagerFactory {
                 
                 var providers = [BitcoinNetworkProvider]()
                 providers.append(BlockchairNetworkProvider(endpoint: .dogecoin, apiKey: config.blockchairApiKey))
-//                providers.append(BlockcypherNetworkProvider(endpoint: .dogecoin, tokens: config.blockcypherTokens))
+                providers.append(BlockcypherNetworkProvider(endpoint: .dogecoin, tokens: config.blockcypherTokens))
 
                 $0.networkService = DogecoinNetworkService(providers: providers)
             }
