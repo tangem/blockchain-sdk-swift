@@ -198,8 +198,9 @@ public enum Blockchain {
     
     public func getExploreURL(from address: String, tokenContractAddress: String? = nil) -> URL? {
         switch self {
-        case .binance:
-            return URL(string: "https://explorer.binance.org/address/\(address)")
+        case .binance(let testnet):
+            let baseUrl = testnet ? "https://testnet-explorer.binance.org/address/" : "https://explorer.binance.org/address/"
+            return URL(string: baseUrl + address)
         case .bitcoin:
             return URL(string: "https://blockchain.info/address/\(address)")
         case .bitcoinCash:
