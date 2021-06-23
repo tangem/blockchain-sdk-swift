@@ -15,7 +15,7 @@ import SwiftyJSON
 import BitcoinCore
 
 class BlockchairNetworkProvider: BitcoinNetworkProvider {
-    var supportsRbf: Bool {
+    var supportsTransactionPush: Bool {
         switch endpoint {
         case .bitcoin:
             return true

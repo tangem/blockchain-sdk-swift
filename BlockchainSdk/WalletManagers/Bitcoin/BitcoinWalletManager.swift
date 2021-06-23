@@ -138,7 +138,7 @@ extension BitcoinWalletManager: TransactionSender {
 
 extension BitcoinWalletManager: TransactionPusher {
     func isPushAvailable(for transactionHash: String) -> Bool {
-        guard networkService.supportsRbf else {
+        guard networkService.supportsTransactionPush else {
             return false
         }
         

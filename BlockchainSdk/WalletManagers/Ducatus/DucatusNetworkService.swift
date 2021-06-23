@@ -17,7 +17,7 @@ class DucatusNetworkService: BitcoinNetworkProvider {
         provider.host
     }
 
-    var supportsRbf: Bool { false }
+    var supportsTransactionPush: Bool { false }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         return Publishers.Zip(provider.getBalance(address: address), provider.getUnspents(address: address))
