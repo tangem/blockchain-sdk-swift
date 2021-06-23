@@ -17,8 +17,8 @@ enum EthereumNetwork {
     case rsk
     case bscMainnet
     case bscTestnet
-    case maticMainnet
-    case maticTestnet
+    case polygon
+    case polygonTestnet
     
     var chainId: BigUInt { return BigUInt(self.id) }
     
@@ -29,8 +29,8 @@ enum EthereumNetwork {
         case .rsk: return .rsk
         case .bscMainnet: return .bsc(testnet: false)
         case .bscTestnet: return .bsc(testnet: true)
-        case .maticMainnet: return .matic(testnet: false)
-        case .maticTestnet: return .matic(testnet: true)
+        case .polygon: return .polygon(testnet: false)
+        case .polygonTestnet: return .polygon(testnet: true)
         }
     }
     
@@ -46,9 +46,9 @@ enum EthereumNetwork {
             return 56
         case .bscTestnet:
             return 97
-        case .maticMainnet:
+        case .polygon:
             return 137
-        case .maticTestnet:
+        case .polygonTestnet:
             return 80001
         }
     }
@@ -67,9 +67,9 @@ enum EthereumNetwork {
             return URL(string: "https://bsc-dataseed.binance.org/")!
         case .bscTestnet:
             return URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!
-        case .maticMainnet:
+        case .polygon:
             return URL(string: "https://rpc-mainnet.maticvigil.com/")!
-        case .maticTestnet:
+        case .polygonTestnet:
             return URL(string: "https://rpc-mumbai.maticvigil.com/")!
         }
     }

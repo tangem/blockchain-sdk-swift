@@ -24,7 +24,7 @@ public struct Token: Hashable, Equatable, Codable {
     public let decimalCount: Int
     public let customIcon: String?
     public let customIconUrl: String?
-    public var blockchain: Blockchain
+    public let blockchain: Blockchain
     
     public init(name: String? = nil, symbol: String, contractAddress: String, decimalCount: Int, customIcon: String? = nil, customIconUrl: String? = nil, blockchain: Blockchain) {
         self.name = name ?? symbol
