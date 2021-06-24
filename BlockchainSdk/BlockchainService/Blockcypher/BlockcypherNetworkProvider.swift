@@ -12,7 +12,7 @@ import Combine
 import BitcoinCore
 
 class BlockcypherNetworkProvider: BitcoinNetworkProvider {
-    var supportsRbf: Bool { false }
+    var supportsTransactionPush: Bool { false }
     
     let provider = MoyaProvider<BlockcypherTarget> ()
     let endpoint: BlockcypherEndpoint

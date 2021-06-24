@@ -18,7 +18,7 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
         BlockchainInfoTarget.address(address: "", offset: nil).baseURL.hostOrUnknown
     }
     
-    var supportsRbf: Bool { true }
+    var supportsTransactionPush: Bool { true }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         addressUnspentsData(address)

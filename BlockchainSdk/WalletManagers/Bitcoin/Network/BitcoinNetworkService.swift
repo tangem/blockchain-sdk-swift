@@ -18,7 +18,7 @@ class BitcoinNetworkService: MultiNetworkProvider<BitcoinNetworkProvider>, Bitco
         provider.host
     }
     
-    var supportsRbf: Bool { providers.filter { $0.supportsRbf }.count > 0 }
+    var supportsTransactionPush: Bool { providers.filter { $0.supportsTransactionPush }.count > 0 }
     
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
         providerPublisher {
@@ -77,7 +77,7 @@ class BitcoinNetworkService: MultiNetworkProvider<BitcoinNetworkProvider>, Bitco
     }
     
     func push(transaction: String) -> AnyPublisher<String, Error> {
-        providers.first(where: { $0.supportsRbf })?
+        providers.first(where: { $0.supportsTransactionPush })?
             .push(transaction: transaction) ?? .anyFail(error: BlockchainSdkError.networkProvidersNotSupportsRbf)
     }
     
