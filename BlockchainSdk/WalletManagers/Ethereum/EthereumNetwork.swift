@@ -20,27 +20,6 @@ public enum EthereumNetwork {
     case polygon
     case polygonTestnet
     
-    public static func network(for id: Int) -> EthereumNetwork? {
-        switch id {
-        case EthereumNetwork.bscMainnet.id:
-            return .bscMainnet
-        case EthereumNetwork.bscTestnet.id:
-            return .bscTestnet
-        case EthereumNetwork.mainnet(projectId: "").id:
-            return .mainnet(projectId: "")
-        case EthereumNetwork.testnet(projectId: "").id:
-            return .testnet(projectId: "")
-        case EthereumNetwork.polygon.id:
-            return .polygon
-        case EthereumNetwork.polygonTestnet.id:
-            return .polygonTestnet
-        default:
-            return nil
-        }
-    }
-    
-    var chainId: BigUInt { return BigUInt(self.id) }
-    
     public var blockchain: Blockchain {
         switch self {
         case .mainnet, .tangem: return .ethereum(testnet: false)
@@ -72,6 +51,8 @@ public enum EthereumNetwork {
         }
     }
     
+    var chainId: BigUInt { return BigUInt(self.id) }
+    
     var url: URL {
         switch self {
         case .mainnet(let projectId):
@@ -90,6 +71,25 @@ public enum EthereumNetwork {
             return URL(string: "https://rpc-mainnet.maticvigil.com/")!
         case .polygonTestnet:
             return URL(string: "https://rpc-mumbai.maticvigil.com/")!
+        }
+    }
+    
+    public static func network(for id: Int) -> EthereumNetwork? {
+        switch id {
+        case EthereumNetwork.bscMainnet.id:
+            return .bscMainnet
+        case EthereumNetwork.bscTestnet.id:
+            return .bscTestnet
+        case EthereumNetwork.mainnet(projectId: "").id:
+            return .mainnet(projectId: "")
+        case EthereumNetwork.testnet(projectId: "").id:
+            return .testnet(projectId: "")
+        case EthereumNetwork.polygon.id:
+            return .polygon
+        case EthereumNetwork.polygonTestnet.id:
+            return .polygonTestnet
+        default:
+            return nil
         }
     }
     
