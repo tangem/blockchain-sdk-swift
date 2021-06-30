@@ -10,7 +10,7 @@ import Foundation
 import BigInt
 import web3swift
 
-enum EthereumNetwork {
+public enum EthereumNetwork {
     case mainnet(projectId: String)
     case testnet(projectId: String)
     case tangem
@@ -20,9 +20,28 @@ enum EthereumNetwork {
     case polygon
     case polygonTestnet
     
+    public static func network(for id: Int) -> EthereumNetwork? {
+        switch id {
+        case EthereumNetwork.bscMainnet.id:
+            return .bscMainnet
+        case EthereumNetwork.bscTestnet.id:
+            return .bscTestnet
+        case EthereumNetwork.mainnet(projectId: "").id:
+            return .mainnet(projectId: "")
+        case EthereumNetwork.testnet(projectId: "").id:
+            return .testnet(projectId: "")
+        case EthereumNetwork.polygon.id:
+            return .polygon
+        case EthereumNetwork.polygonTestnet.id:
+            return .polygonTestnet
+        default:
+            return nil
+        }
+    }
+    
     var chainId: BigUInt { return BigUInt(self.id) }
     
-    var blockchain: Blockchain {
+    public var blockchain: Blockchain {
         switch self {
         case .mainnet, .tangem: return .ethereum(testnet: false)
         case .testnet: return .ethereum(testnet: true)
@@ -34,7 +53,7 @@ enum EthereumNetwork {
         }
     }
     
-    var id: Int {
+    public var id: Int {
         switch self {
         case .mainnet, .tangem:
            return 1
