@@ -10,8 +10,9 @@ import Foundation
 import Moya
 
 enum XrpUrl: String {
-    case main = "https://s1.ripple.com:51234"
-    case reserve = "https://s2.ripple.com:51234/"
+    case xrpLedgerFoundation = "https://xrplcluster.com/"
+    case ripple = "https://s1.ripple.com:51234"
+    case rippleReserve = "https://s2.ripple.com:51234/"
     
     var url: URL {
         return URL(string: rawValue)!
