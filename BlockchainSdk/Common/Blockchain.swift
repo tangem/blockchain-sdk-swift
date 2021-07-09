@@ -274,7 +274,7 @@ public enum Blockchain {
             let networkParams = network.networkParams
             return BitcoinAddressService(networkParams: networkParams)
         case .litecoin:
-            return BitcoinLegacyAddressService(networkParams: LitecoinNetworkParams())
+            return BitcoinAddressService(networkParams: LitecoinNetworkParams())
         case .stellar:
             return StellarAddressService()
         case .ethereum, .bsc, .polygon:
