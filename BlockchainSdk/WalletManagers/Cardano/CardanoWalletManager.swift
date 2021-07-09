@@ -81,7 +81,7 @@ extension CardanoWalletManager: TransactionSender {
                     case .failure(let error):
                         throw error
                     case .success(let tx):
-                        return (tx, info.hash.asHexString())
+                        return (tx, info.hash.hexString)
                     }
             }
             .flatMap {[unowned self] builderResponse -> AnyPublisher<Void, Error> in

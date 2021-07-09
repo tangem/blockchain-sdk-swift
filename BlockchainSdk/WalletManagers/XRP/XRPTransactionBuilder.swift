@@ -34,7 +34,7 @@ class XRPTransactionBuilder {
             return nil
         }
         
-        let dataToSign = tx.dataToSign(publicKey: walletPublicKey.asHexString())
+        let dataToSign = tx.dataToSign(publicKey: walletPublicKey.hexString)
         switch curve {
         case .ed25519:
             return (tx, dataToSign)
