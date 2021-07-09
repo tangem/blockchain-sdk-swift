@@ -122,7 +122,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/lazutkin-andrey/hdwallet.git
     :tag: 0.3.12
   TangemSdk:
-    :commit: bf8ca14b2e585ae795a8a1ee98194b75aacaaa6a
+    :commit: 9857ad982b5b64f2b06f8598e989bd68362a3be0
     :git: https://github.com/Tangem/tangem-sdk-ios.git
   web3swift:
     :git: https://github.com/lazutkin-andrey/web3swift.git
@@ -151,6 +151,6 @@ SPEC CHECKSUMS:
   web3swift: 21ab60f3c80aea2366ebf016f377e5cb654909bf
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 1da320c0424d51ca00db3d956ea1723e826af722
+PODFILE CHECKSUM: 7b9196627381525fb5a4f4331d2fadcf05e6cefa
 
 COCOAPODS: 1.10.1

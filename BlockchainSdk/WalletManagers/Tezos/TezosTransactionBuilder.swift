@@ -39,7 +39,7 @@ class TezosTransactionBuilder {
     }
 
     func buildToSend(signature: Data, forgedContents: String) -> String {
-        return forgedContents + signature.asHexString()
+        return forgedContents + signature.hexString
     }
     
     func buildContents(transaction: Transaction) -> [TezosOperationContent]? {
