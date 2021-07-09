@@ -132,7 +132,7 @@ class EthereumWalletManager: WalletManager {
         
         if let token = amount.type.token, let erc20Data = txBuilder.getData(for: amount, targetAddress: destination) {
             to = token.contractAddress
-            data = "0x" + erc20Data.hexString
+            data = "0x" + erc20Data.asHexString()
         }
         
         return (to, data)

@@ -17,7 +17,7 @@ extension TangemSdk: TransactionSigner {
             self.sign(hashes: hashes, walletPublicKey: walletPublicKey, cardId: cardId) { signResult in
                 switch signResult {
                 case .success(let response):
-                    promise(.success(response.signatures))
+                    promise(.success(response))
                 case .failure(let error):
                     promise(.failure(error))
                 }
@@ -31,7 +31,7 @@ extension TangemSdk: TransactionSigner {
             self.sign(hash: hash, walletPublicKey: walletPublicKey, cardId: cardId) { signResult in
                 switch signResult {
                 case .success(let response):
-                    promise(.success(response.signature))
+                    promise(.success(response))
                 case .failure(let error):
                     promise(.failure(error))
                 }

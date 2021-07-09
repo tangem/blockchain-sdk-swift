@@ -115,7 +115,6 @@ public struct Wallet {
         tx.date = Date()
         transactions.append(tx)
     }
-    
 
     mutating func addPendingTransaction(amount: Amount,
                                         fee: Amount,
@@ -125,6 +124,10 @@ public struct Wallet {
                                         changeAddress: String = .unknown,
                                         transactionHash: String,
                                         transactionParams: TransactionParams? = nil) {
+        if transactions.contains(where: { $0.hash == transactionHash }) {
+            return
+        }
+        
         var tx = Transaction(amount: amount,
                              fee: fee,
                              sourceAddress: sourceAddress,
