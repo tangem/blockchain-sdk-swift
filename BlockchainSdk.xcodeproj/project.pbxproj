@@ -102,6 +102,7 @@
 		5D88C809256BCD6C00020028 /* XRPTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D88C808256BCD6C00020028 /* XRPTransactionParams.swift */; };
 		5D88C80B256BCDBB00020028 /* StellarTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D88C80A256BCDBB00020028 /* StellarTransactionParams.swift */; };
 		5D908C5726A6D39C00270FA3 /* BinanceTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D908C5626A6D39C00270FA3 /* BinanceTransactionParams.swift */; };
+		5D908C5826A6E2B600270FA3 /* BinanceTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D908C5626A6D39C00270FA3 /* BinanceTransactionParams.swift */; };
 		5D94E56123A381F2009C7482 /* EthereumWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56023A381F2009C7482 /* EthereumWalletManager.swift */; };
 		5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56223A38204009C7482 /* EthereumAddressService.swift */; };
 		5D94E56723A3946C009C7482 /* Data+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56623A3946C009C7482 /* Data+.swift */; };
@@ -1458,6 +1459,7 @@
 				B0ED2012267C9E4500D5C3E5 /* BitcoinTransactionParams.swift in Sources */,
 				5D740B832625B6E400DE9636 /* RskAddressService.swift in Sources */,
 				5DDD831225BF0E7800166EA9 /* EthereumTarget.swift in Sources */,
+				5D908C5826A6E2B600270FA3 /* BinanceTransactionParams.swift in Sources */,
 				B09374B3267089F1001450B0 /* DateFormatter+.swift in Sources */,
 				5DDD82C625BF0D7B00166EA9 /* ThenProcessable.swift in Sources */,
 				5DDD82D325BF0DB100166EA9 /* BlockcypherResponse.swift in Sources */,
