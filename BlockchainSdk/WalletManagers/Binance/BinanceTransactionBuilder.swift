@@ -35,7 +35,8 @@ class BinanceTransactionBuilder {
             return nil
         }
         
-        message = Message.transfer(symbol: symbol, amount: Double("\(amount)")!, to: targetAddress, wallet: binanceWallet)
+        let memo = (transaction.params as? BinanceTransactionParams)?.memo ?? ""
+        message = Message.transfer(symbol: symbol, amount: Double("\(amount)")!, to: targetAddress, memo: memo, wallet: binanceWallet)
         return message!
     }
     

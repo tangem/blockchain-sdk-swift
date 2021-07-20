@@ -4,7 +4,7 @@ inhibit_all_warnings!
 
 def common_pods
   #pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'build-110'
-  pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :branch => 'CSS_160_refactoring_sdk_epic'
+  pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'beta-1'
 end
 
 
@@ -15,7 +15,7 @@ target 'BlockchainSdk' do
   pod 'Moya'
   pod 'Sodium'
   pod 'SwiftCBOR'
-  pod 'BinanceChain', :git => 'https://github.com/lazutkin-andrey/swiftbinancechain.git', :tag => '0.0.7'
+  pod 'BinanceChain', :git => 'https://github.com/lazutkin-andrey/swiftbinancechain.git', :tag => '0.0.8'
   #pod 'BinanceChain', :path => '../SwiftBinanceChain'
   pod 'HDWalletKit', :git => 'https://github.com/lazutkin-andrey/hdwallet.git', :tag => '0.3.12'
   #pod 'HDWalletKit', :path => '../HDWallet'
