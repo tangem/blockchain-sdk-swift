@@ -101,6 +101,8 @@
 		5D86540023A906DF000DE52D /* TangemSdk+TransactionSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FF23A906DF000DE52D /* TangemSdk+TransactionSigner.swift */; };
 		5D88C809256BCD6C00020028 /* XRPTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D88C808256BCD6C00020028 /* XRPTransactionParams.swift */; };
 		5D88C80B256BCDBB00020028 /* StellarTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D88C80A256BCDBB00020028 /* StellarTransactionParams.swift */; };
+		5D908C5726A6D39C00270FA3 /* BinanceTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D908C5626A6D39C00270FA3 /* BinanceTransactionParams.swift */; };
+		5D908C5826A6E2B600270FA3 /* BinanceTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D908C5626A6D39C00270FA3 /* BinanceTransactionParams.swift */; };
 		5D94E56123A381F2009C7482 /* EthereumWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56023A381F2009C7482 /* EthereumWalletManager.swift */; };
 		5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56223A38204009C7482 /* EthereumAddressService.swift */; };
 		5D94E56723A3946C009C7482 /* Data+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56623A3946C009C7482 /* Data+.swift */; };
@@ -406,6 +408,7 @@
 		5D8653FF23A906DF000DE52D /* TangemSdk+TransactionSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TangemSdk+TransactionSigner.swift"; sourceTree = "<group>"; };
 		5D88C808256BCD6C00020028 /* XRPTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPTransactionParams.swift; sourceTree = "<group>"; };
 		5D88C80A256BCDBB00020028 /* StellarTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarTransactionParams.swift; sourceTree = "<group>"; };
+		5D908C5626A6D39C00270FA3 /* BinanceTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceTransactionParams.swift; sourceTree = "<group>"; };
 		5D94E56023A381F2009C7482 /* EthereumWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumWalletManager.swift; sourceTree = "<group>"; };
 		5D94E56223A38204009C7482 /* EthereumAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumAddressService.swift; sourceTree = "<group>"; };
 		5D94E56623A3946C009C7482 /* Data+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+.swift"; sourceTree = "<group>"; };
@@ -704,6 +707,7 @@
 				5D4B33D023F7DC7500C93A84 /* BinanceAddressService.swift */,
 				5D4B33D223F7DF1F00C93A84 /* BinanceNetworkService.swift */,
 				5D4B33D423F7DFB400C93A84 /* BinanceTransactionBuilder.swift */,
+				5D908C5626A6D39C00270FA3 /* BinanceTransactionParams.swift */,
 			);
 			path = Binance;
 			sourceTree = "<group>";
@@ -1257,6 +1261,7 @@
 				5D845514243DEABB0072155E /* AdaliteResponse.swift in Sources */,
 				B0C2C89D25FBCF0200A61622 /* RosettaTarget.swift in Sources */,
 				B06AFA852614522100E7AAB0 /* CardanoAddress.swift in Sources */,
+				5D908C5726A6D39C00270FA3 /* BinanceTransactionParams.swift in Sources */,
 				5D7D243825136254001B9A4F /* Entropy.swift in Sources */,
 				5DE3BFA4239FB4E500E8815D /* BitcoinNetworkService.swift in Sources */,
 				B03BF9D326319F3E000384EB /* IconsUtils.swift in Sources */,
@@ -1454,6 +1459,7 @@
 				B0ED2012267C9E4500D5C3E5 /* BitcoinTransactionParams.swift in Sources */,
 				5D740B832625B6E400DE9636 /* RskAddressService.swift in Sources */,
 				5DDD831225BF0E7800166EA9 /* EthereumTarget.swift in Sources */,
+				5D908C5826A6E2B600270FA3 /* BinanceTransactionParams.swift in Sources */,
 				B09374B3267089F1001450B0 /* DateFormatter+.swift in Sources */,
 				5DDD82C625BF0D7B00166EA9 /* ThenProcessable.swift in Sources */,
 				5DDD82D325BF0DB100166EA9 /* BlockcypherResponse.swift in Sources */,

@@ -46,7 +46,7 @@ PODS:
   - stellar-ios-mac-sdk (1.9.7)
   - SwiftCBOR (0.4.3)
   - SwiftDate (6.0.3)
-  - SwiftProtobuf (1.16.0)
+  - SwiftProtobuf (1.17.0)
   - SwiftyJSON (5.0.1)
   - TangemSdk (3.0.2)
   - web3swift (2.2.1):
@@ -64,7 +64,7 @@ DEPENDENCIES:
   - Alamofire
   - AnyCodable-FlightSchool
   - BigInt
-  - BinanceChain (from `https://github.com/lazutkin-andrey/swiftbinancechain.git`, tag `0.0.7`)
+  - BinanceChain (from `https://github.com/lazutkin-andrey/swiftbinancechain.git`, tag `0.0.8`)
   - BitcoinCore.swift (from `https://github.com/lazutkin-andrey/bitcoincore.git`, tag `0.0.15`)
   - HDWalletKit (from `https://github.com/lazutkin-andrey/hdwallet.git`, tag `0.3.12`)
   - Moya
@@ -72,7 +72,7 @@ DEPENDENCIES:
   - stellar-ios-mac-sdk
   - SwiftCBOR
   - SwiftyJSON
-  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, branch `CSS_160_refactoring_sdk_epic`)
+  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `beta-1`)
   - web3swift (from `https://github.com/lazutkin-andrey/web3swift.git`, tag `2.2.6`)
 
 SPEC REPOS:
@@ -97,7 +97,7 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   BinanceChain:
     :git: https://github.com/lazutkin-andrey/swiftbinancechain.git
-    :tag: 0.0.7
+    :tag: 0.0.8
   BitcoinCore.swift:
     :git: https://github.com/lazutkin-andrey/bitcoincore.git
     :tag: 0.0.15
@@ -105,8 +105,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/lazutkin-andrey/hdwallet.git
     :tag: 0.3.12
   TangemSdk:
-    :branch: CSS_160_refactoring_sdk_epic
     :git: https://github.com/Tangem/tangem-sdk-ios.git
+    :tag: beta-1
   web3swift:
     :git: https://github.com/lazutkin-andrey/web3swift.git
     :tag: 2.2.6
@@ -114,7 +114,7 @@ EXTERNAL SOURCES:
 CHECKOUT OPTIONS:
   BinanceChain:
     :git: https://github.com/lazutkin-andrey/swiftbinancechain.git
-    :tag: 0.0.7
+    :tag: 0.0.8
   BitcoinCore.swift:
     :git: https://github.com/lazutkin-andrey/bitcoincore.git
     :tag: 0.0.15
@@ -122,8 +122,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/lazutkin-andrey/hdwallet.git
     :tag: 0.3.12
   TangemSdk:
-    :commit: 9857ad982b5b64f2b06f8598e989bd68362a3be0
     :git: https://github.com/Tangem/tangem-sdk-ios.git
+    :tag: beta-1
   web3swift:
     :git: https://github.com/lazutkin-andrey/web3swift.git
     :tag: 2.2.6
@@ -145,12 +145,12 @@ SPEC CHECKSUMS:
   stellar-ios-mac-sdk: e2040245ce3479fee1e5c4f334f2c0e9de2bbd4e
   SwiftCBOR: c7d740966575e0fd5d971466de2b6776db3f10c3
   SwiftDate: 8d4f14bf1ef68e95094511504856547bf9e3e1a6
-  SwiftProtobuf: 4e16842b83c6fda06b10fac50d73b3f1fce8ab7b
+  SwiftProtobuf: 9c85136c6ba74b0a1b84279dbf0f6db8efb714e0
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
   TangemSdk: 26b8d99c941d307ce44c2eb0bb73d5337ced5bed
   web3swift: 21ab60f3c80aea2366ebf016f377e5cb654909bf
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 7b9196627381525fb5a4f4331d2fadcf05e6cefa
+PODFILE CHECKSUM: 64a61df093935f585d9cca2d4551cfde4bc5c3fe
 
 COCOAPODS: 1.10.1
