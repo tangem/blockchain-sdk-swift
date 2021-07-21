@@ -19,7 +19,7 @@ class BitcoinWalletManager: WalletManager {
     var minimalFeePerByte: Decimal { 10 }
     var minimalFee: Decimal { 0.00001 }
     
-    private var loadedUnspents: [BitcoinUnspentOutput] = []
+    var loadedUnspents: [BitcoinUnspentOutput] = []
     
     override var currentHost: String {
         networkService.host
