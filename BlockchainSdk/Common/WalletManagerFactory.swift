@@ -120,7 +120,7 @@ public class WalletManagerFactory {
                 providers.append(BlockchairNetworkProvider(endpoint: .dogecoin, apiKey: config.blockchairApiKey))
                 providers.append(BlockcypherNetworkProvider(endpoint: .dogecoin, tokens: config.blockcypherTokens))
 
-                $0.networkService = DogecoinNetworkService(providers: providers)
+                $0.networkService = BitcoinNetworkService(providers: providers)
             }
             
         case .ducatus:
