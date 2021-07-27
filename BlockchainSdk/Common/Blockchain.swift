@@ -167,7 +167,7 @@ public enum Blockchain {
     
     public var defaultAddressType: AddressType {
         switch self {
-        case .bitcoin: return .bitcoin(type: .bech32)
+        case .bitcoin, .litecoin: return .bitcoin(type: .bech32)
         default: return .plain
         }
     }
