@@ -23,7 +23,7 @@ class BitcoinCashNetworkService {
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        return provider.getInfo(address: address)
+        provider.getInfo(address: address.remove(BitcoinCashAddressService.addressPrefix).remove(":"))
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
