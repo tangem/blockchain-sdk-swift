@@ -128,6 +128,10 @@ public struct Wallet {
             return
         }
         
+        if addresses.contains(where: { $0.value == sourceAddress }) && addresses.contains(where: { $0.value == destinationAddress }) {
+            return
+        }
+        
         var tx = Transaction(amount: amount,
                              fee: fee,
                              sourceAddress: sourceAddress,
