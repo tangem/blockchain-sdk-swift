@@ -159,7 +159,7 @@ public enum Blockchain {
         case .binance:
             return ["bnb:"]
         case .dogecoin:
-            return ["doge:"]
+            return ["doge:", "dogecoin:"]
         default:
             return [""]
         }
@@ -189,7 +189,7 @@ public enum Blockchain {
     
     public func getShareString(from address: String) -> String {
         switch self {
-        case .bitcoin, .ethereum, .litecoin:
+        case .bitcoin, .ethereum, .litecoin, .binance:
             return "\(qrPrefixes.first ?? "")\(address)"
         default:
             return "\(address)"
