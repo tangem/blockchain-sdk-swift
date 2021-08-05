@@ -18,7 +18,7 @@ class BitcoinCashTransactionBuilder {
     private var blockchain: Blockchain { Blockchain.bitcoinCash(testnet: isTestnet) }
     
     init(walletPublicKey: Data, isTestnet: Bool) {
-        self.walletPublicKey = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
+        self.walletPublicKey = Secp256k1Utils.compressPublicKey(walletPublicKey)!
         self.isTestnet = isTestnet
     }
     

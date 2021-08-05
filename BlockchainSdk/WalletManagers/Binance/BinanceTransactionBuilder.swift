@@ -17,7 +17,7 @@ class BinanceTransactionBuilder {
     
     init(walletPublicKey: Data, isTestnet: Bool) {
         self.walletPublicKey = walletPublicKey
-        let compressedKey = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
+        let compressedKey = Secp256k1Utils.compressPublicKey(walletPublicKey)!
         binanceWallet = BinanceWallet(publicKey: compressedKey)
         if isTestnet {
             binanceWallet.chainId = "Binance-Chain-Nile"

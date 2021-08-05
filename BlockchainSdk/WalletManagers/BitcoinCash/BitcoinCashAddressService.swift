@@ -15,7 +15,7 @@ public class BitcoinCashAddressService: AddressService {
     internal static var addressPrefix: String { "bitcoincash" }
     
     public func makeAddress(from walletPublicKey: Data) -> String {
-        let compressedKey = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
+        let compressedKey = Secp256k1Utils.compressPublicKey(walletPublicKey)!
         let prefix = Data([UInt8(0x00)]) //public key hash
         let payload = RIPEMD160.hash(message: compressedKey.sha256())
         let walletAddress = HDWalletKit.Bech32.encode(prefix + payload, prefix: BitcoinCashAddressService.addressPrefix)
