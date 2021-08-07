@@ -3,8 +3,8 @@ use_frameworks!
 inhibit_all_warnings!
 
 def common_pods
-  #pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'build-110'
-  pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'beta-1'
+  pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'develop-44'
+  #pod 'TangemSdk', :path => '../tangem-sdk-ios'
 end
 
 
