@@ -53,7 +53,7 @@ public class BitcoinAddressService: AddressService {
 	
 	private func create1Of2MultisigOutputScript(firstPublicKey: Data, secondPublicKey: Data) throws -> HDWalletScript? {
 		var pubKeys = try [firstPublicKey, secondPublicKey].map { (key: Data) throws -> HDWalletKit.PublicKey in
-			guard let compressed = Secp256k1Utils.convertKeyToCompressed(key) else {
+			guard let compressed = Secp256k1Utils.compressPublicKey(key) else {
 				throw BlockchainSdkError.failedToCreateMultisigScript
 			}
 			return HDWalletKit.PublicKey(uncompressedPublicKey: key, compressedPublicKey: compressed, coin: .bitcoin)
@@ -108,7 +108,7 @@ public class BitcoinBech32AddressService: AddressService {
 	}
 	
 	public func makeAddress(from walletPublicKey: Data) -> String {
-		let compressedKey = Secp256k1Utils.convertKeyToCompressed(walletPublicKey)!
+		let compressedKey = Secp256k1Utils.compressPublicKey(walletPublicKey)!
 		let publicKey = PublicKey(withAccount: 0,
 								  index: 0,
 								  external: true,

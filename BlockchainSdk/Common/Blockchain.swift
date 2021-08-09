@@ -172,6 +172,28 @@ public enum Blockchain {
         }
     }
     
+    /// BIP44
+    public var coinType: UInt32 {
+        if isTestnet {
+            return 1
+        }
+        
+        switch self {
+        case .bitcoin, .ducatus: return 0
+        case .litecoin: return 2
+        case .dogecoin: return 3
+        case .ethereum, .bsc: return 60
+        case .stellar: return 148
+        case .rsk: return 137
+        case .bitcoinCash: return 145
+        case .binance: return 714
+        case .cardano: return 1815
+        case .xrp: return 144
+        case .tezos: return 1729
+        case .polygon: return 966
+        }
+    }
+    
     public func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data?) -> [Address] {
         let addressService = getAddressService()
         if let multiSigAddressProvider = addressService as? MultisigAddressProvider,
