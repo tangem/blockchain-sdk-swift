@@ -10,11 +10,12 @@ import Foundation
 
 struct RosettaBalanceResponse: Codable {
     let balances: [RosettaAmount]?
-    let coins: [RosettaCoin]?
-    
-    var address: String?
 }
 
 struct RosettaSubmitResponse: Codable {
     let transactionIdentifier: RosettaTransactionIdentifier
+}
+
+struct RosettaCoinsResponse: Codable {
+    let coins: [RosettaCoin]?
 }

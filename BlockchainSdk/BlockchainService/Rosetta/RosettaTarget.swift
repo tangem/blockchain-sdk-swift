@@ -16,10 +16,11 @@ enum RosettaUrl: String {
 enum RosettaTarget: TargetType {
     case address(baseUrl: RosettaUrl, addressBody: RosettaAddressBody)
     case submitTransaction(baseUrl: RosettaUrl, submitBody: RosettaSubmitBody)
+    case coins(baseUrl: RosettaUrl, addressBody: RosettaAddressBody)
     
     var baseURL: URL {
         switch self {
-        case .address(let url, _), .submitTransaction(let url, _):
+        case .address(let url, _), .submitTransaction(let url, _), .coins(let url, _):
             return URL(string: url.rawValue)!
         }
     }
@@ -30,12 +31,14 @@ enum RosettaTarget: TargetType {
             return "/account/balance"
         case .submitTransaction:
             return "/construction/submit"
+        case .coins:
+            return "/account/coins"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .address, .submitTransaction:
+        case .address, .submitTransaction, .coins:
             return .post
         }
     }
@@ -48,7 +51,7 @@ enum RosettaTarget: TargetType {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         switch self {
-        case .address(_, let body):
+        case .address(_, let body), .coins(_, let body):
             return .requestCustomJSONEncodable(body, encoder: encoder)
         case .submitTransaction(_, let body):
             return .requestCustomJSONEncodable(body, encoder: encoder)

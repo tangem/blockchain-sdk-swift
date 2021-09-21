@@ -32,37 +32,55 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     
     func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
         AnyPublisher<RosettaBalanceResponse, Error>.multiAddressPublisher(addresses: addresses, requestFactory: { address in
-            self.provider
-                .requestPublisher(.address(baseUrl: self.baseUrl, addressBody: RosettaAddressBody(networkIdentifier: .mainNet, accountIdentifier: RosettaAccountIdentifier(address: address))))
+            
+            let balancesPublisher = self.provider
+                .requestPublisher(.address(baseUrl: self.baseUrl,
+                                           addressBody: RosettaAddressBody(networkIdentifier: .mainNet,
+                                                                           accountIdentifier: RosettaAccountIdentifier(address: address))))
                 .mapNotEmptyString()
                 .tryMap { [unowned self] (response: String) -> RosettaBalanceResponse in
                     guard let data = response.data(using: .utf8) else {
                         throw WalletError.failedToParseNetworkResponse
                     }
-                    var balanceResponse = try self.decoder.decode(RosettaBalanceResponse.self, from: data)
-                    balanceResponse.address = address
-                    return balanceResponse
+                    return try self.decoder.decode(RosettaBalanceResponse.self, from: data)
                 }
                 .eraseToAnyPublisher()
+            
+            let coinsPublisher = self.provider
+                .requestPublisher(.coins(baseUrl: self.baseUrl,
+                                         addressBody: RosettaAddressBody(networkIdentifier: .mainNet,
+                                                                         accountIdentifier: RosettaAccountIdentifier(address: address))))
+                .mapNotEmptyString()
+                .tryMap { [unowned self] (response: String) -> RosettaCoinsResponse in
+                    guard let data = response.data(using: .utf8) else {
+                        throw WalletError.failedToParseNetworkResponse
+                    }
+                    return try self.decoder.decode(RosettaCoinsResponse.self, from: data)
+                }
+                .eraseToAnyPublisher()
+            
+            return Publishers.Zip(balancesPublisher, coinsPublisher)
+                .map {($0, $1, address)}
+                .eraseToAnyPublisher()
         })
-        .map { (addressesResponses: [RosettaBalanceResponse]) -> CardanoAddressResponse in
+        .map { (responses: [(RosettaBalanceResponse, RosettaCoinsResponse, String)]) -> CardanoAddressResponse in
             let cardanoCurrencySymbol = "ADA"
             var balance = Decimal(0)
             var unspentOutputs = [CardanoUnspentOutput]()
             
-            addressesResponses.forEach { response in
-                response.coins?.forEach { coin in
+            responses.forEach { (balanceResponse, coinsResponse, address) in
+                coinsResponse.coins?.forEach { coin in
                     if coin.amount?.currency?.symbol == cardanoCurrencySymbol,
                        let splittedIdentifier = coin.coinIdentifier?.identifier?.split(separator: ":"),
                        splittedIdentifier.count == 2,
                        let index = Int(splittedIdentifier[1]) {
-                        unspentOutputs.append(CardanoUnspentOutput(address: response.address ?? "",
+                        unspentOutputs.append(CardanoUnspentOutput(address: address,
                                                                    amount: coin.amount?.valueDecimal ?? 0,
                                                                    outputIndex: index,
                                                                    transactionHash: String(splittedIdentifier[0])))
                     }
                 }
-                response.balances?.forEach { b in
+                balanceResponse.balances?.forEach { b in
                     if b.currency?.symbol == cardanoCurrencySymbol {
                         balance += b.valueDecimal ?? 0
                     }
