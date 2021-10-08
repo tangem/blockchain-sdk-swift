@@ -14,7 +14,7 @@
 
 "no_account_on_destination_xlm_asset" = "The destination account is not created. To create account send 1+ XLM.";
 
-"no_account_xrp" = "Pour créer un compte, téléchargez 20+ XRP";
+"no_account_xrp" = "Pour créer un compte, téléchargez 10+ XRP";
 
 "no_account_bnb" = "Pour créer un compte, envoyez des fonds monétaires à cette adresse";
 
