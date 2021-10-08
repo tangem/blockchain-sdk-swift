@@ -48,7 +48,7 @@ PODS:
   - SwiftDate (6.0.3)
   - SwiftProtobuf (1.17.0)
   - SwiftyJSON (5.0.1)
-  - TangemSdk (3.0.2)
+  - TangemSdk (3.1.0)
   - web3swift (2.2.1):
     - BigInt
     - CryptoSwift
@@ -72,7 +72,7 @@ DEPENDENCIES:
   - stellar-ios-mac-sdk
   - SwiftCBOR
   - SwiftyJSON
-  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-44`)
+  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-82`)
   - web3swift (from `https://github.com/lazutkin-andrey/web3swift.git`, tag `2.2.6`)
 
 SPEC REPOS:
@@ -106,7 +106,7 @@ EXTERNAL SOURCES:
     :tag: 0.3.12
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-44
+    :tag: develop-82
   web3swift:
     :git: https://github.com/lazutkin-andrey/web3swift.git
     :tag: 2.2.6
@@ -123,7 +123,7 @@ CHECKOUT OPTIONS:
     :tag: 0.3.12
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-44
+    :tag: develop-82
   web3swift:
     :git: https://github.com/lazutkin-andrey/web3swift.git
     :tag: 2.2.6
@@ -147,10 +147,10 @@ SPEC CHECKSUMS:
   SwiftDate: 8d4f14bf1ef68e95094511504856547bf9e3e1a6
   SwiftProtobuf: 9c85136c6ba74b0a1b84279dbf0f6db8efb714e0
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
-  TangemSdk: 26b8d99c941d307ce44c2eb0bb73d5337ced5bed
+  TangemSdk: 1d84c9088994f712e94afec6f41a41ae690ebb50
   web3swift: 21ab60f3c80aea2366ebf016f377e5cb654909bf
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 2a40b60eccfec0eab15982776fdb359676ef754c
+PODFILE CHECKSUM: 601b84a5e966048c863e27f85036e2e862612e22
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.2
