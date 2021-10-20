@@ -10,6 +10,12 @@ import Foundation
 
 struct XrpResponse: Codable {
     let result: XrpResult?
+    
+    func assertAccountCreated() throws {
+        if let code = result?.error_code, code == 19 {
+            throw WalletError.noAccount(message: "no_account_xrp".localized)
+        }
+    }
 }
 
 struct XrpResult: Codable {

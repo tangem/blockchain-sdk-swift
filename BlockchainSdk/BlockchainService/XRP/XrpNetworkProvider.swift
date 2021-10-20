@@ -61,7 +61,7 @@ class XRPNetworkProvider: XRPNetworkServiceType {
     func getUnconfirmed(account: String) -> AnyPublisher<Decimal, Error> {
         return request(.unconfirmed(account: account, url: baseUrl))
             .tryMap { xrpResponse -> Decimal in
-                try self.assertAccountCreated(xrpResponse)
+                try xrpResponse.assertAccountCreated()
                 
                 guard let unconfirmedBalanceString = xrpResponse.result?.account_data?.balance,
                       let unconfirmedBalance = Decimal(unconfirmedBalanceString) else {
@@ -76,7 +76,7 @@ class XRPNetworkProvider: XRPNetworkServiceType {
     func getReserve() -> AnyPublisher<Decimal, Error> {
         return request(.reserve(url: baseUrl))
             .tryMap{ xrpResponse -> Decimal in
-                try self.assertAccountCreated(xrpResponse)
+                try xrpResponse.assertAccountCreated()
                 
                 guard let reserveBase = xrpResponse.result?.state?.validated_ledger?.reserve_base else {
                     throw XRPError.failedLoadReserve
@@ -89,8 +89,8 @@ class XRPNetworkProvider: XRPNetworkServiceType {
     
     func getAccountInfo(account: String) -> AnyPublisher<(balance: Decimal, sequence: Int), Error> {
         return request(.accountInfo(account: account, url: baseUrl))
-            .tryMap{[unowned self] xrpResponse in
-                try self.assertAccountCreated(xrpResponse)
+            .tryMap{ xrpResponse in
+                try xrpResponse.assertAccountCreated()
                 
                 guard let accountResponse = xrpResponse.result?.account_data,
                       let balanceString = accountResponse.balance,
@@ -120,9 +120,9 @@ class XRPNetworkProvider: XRPNetworkServiceType {
     
     func checkAccountCreated(account: String) -> AnyPublisher<Bool, Error> {
         return request(.accountInfo(account: account, url: baseUrl))
-            .map {[unowned self] xrpResponse -> Bool in
+            .map {xrpResponse -> Bool in
                 do {
-                    try self.assertAccountCreated(xrpResponse)
+                    try xrpResponse.assertAccountCreated()
                     return true
                 } catch {
                     return false
@@ -130,12 +130,6 @@ class XRPNetworkProvider: XRPNetworkServiceType {
             }
             .eraseToAnyPublisher()
             .eraseError()
-    }
-    
-    private func assertAccountCreated(_ repsonse: XrpResponse) throws {
-        if let code = repsonse.result?.error_code, code == 19 {
-            throw WalletError.noAccount(message: "no_account_xrp".localized)
-        }
     }
     
     private func request(_ target: XrpTarget) -> AnyPublisher<XrpResponse, MoyaError> {
