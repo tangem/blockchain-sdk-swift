@@ -16,11 +16,9 @@ class TezosTransactionBuilder {
     var isPublicKeyRevealed: Bool? = nil
     
     private let walletPublicKey: Data
-    private let walletPublicKeyOriginal: Data
     private let curve: EllipticCurve
     
     internal init(walletPublicKey: Data, curve: EllipticCurve) {
-        self.walletPublicKeyOriginal = walletPublicKey
         switch curve {
         case .ed25519:
             self.walletPublicKey = walletPublicKey
@@ -80,21 +78,6 @@ class TezosTransactionBuilder {
         
         contents.append(transactionOp)
         return contents
-    }
-    
-    func normalizeSignatureIfNeeded(_ signature: Data, hash: Data) throws -> Data {
-        guard curve == .secp256k1 else {
-            return signature
-        }
-        
-        guard let normalizedSignature = Secp256k1Utils.normalizeVerify(
-            secp256k1Signature: signature,
-            hash: hash,
-            publicKey: walletPublicKeyOriginal) else {
-            throw WalletError.failedToBuildTx
-        }
-        
-        return normalizedSignature
     }
     
     private func encodePublicKey() -> String {
