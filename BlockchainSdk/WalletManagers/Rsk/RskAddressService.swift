@@ -7,10 +7,12 @@
 //
 
 import Foundation
+import TangemSdk
 
 public class RskAddressService: AddressService {
     public func makeAddress(from walletPublicKey: Data) -> String {
         //skip secp256k1 prefix
+        let walletPublicKey = Secp256k1Utils.decompressPublicKey(walletPublicKey)!
         let keccak = walletPublicKey[1...].sha3(.keccak256)
         let addressBytes = keccak[12...]
         let hexAddressBytes = addressBytes.toHexString()

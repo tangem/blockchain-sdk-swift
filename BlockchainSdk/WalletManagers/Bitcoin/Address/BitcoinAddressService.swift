@@ -56,7 +56,12 @@ public class BitcoinAddressService: AddressService {
 			guard let compressed = Secp256k1Utils.compressPublicKey(key) else {
 				throw BlockchainSdkError.failedToCreateMultisigScript
 			}
-			return HDWalletKit.PublicKey(uncompressedPublicKey: key, compressedPublicKey: compressed, coin: .bitcoin)
+            
+            guard let deCompressed = Secp256k1Utils.decompressPublicKey(key) else {
+                throw BlockchainSdkError.failedToCreateMultisigScript
+            }
+            
+			return HDWalletKit.PublicKey(uncompressedPublicKey: deCompressed, compressedPublicKey: compressed, coin: .bitcoin)
 		}
 		pubKeys.sort(by: { $0.compressedPublicKey.lexicographicallyPrecedes($1.compressedPublicKey) })
 		return ScriptFactory.Standard.buildMultiSig(publicKeys: pubKeys, signaturesRequired: 1)
