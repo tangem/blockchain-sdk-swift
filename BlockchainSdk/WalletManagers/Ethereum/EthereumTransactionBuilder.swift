@@ -15,7 +15,7 @@ class EthereumTransactionBuilder {
     private let walletPublicKey: Data
     private let network: EthereumNetwork
     init(walletPublicKey: Data, network: EthereumNetwork) {
-        self.walletPublicKey = walletPublicKey
+        self.walletPublicKey = Secp256k1Utils.decompressPublicKey(walletPublicKey)!
         self.network = network
     }
     

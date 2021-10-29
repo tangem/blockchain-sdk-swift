@@ -69,15 +69,15 @@ extension TezosWalletManager: TransactionSender {
             }
             
             return signer.sign(hash: txToSign, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
-                .tryMap {[unowned self] signature -> (TezosHeader, String, Data) in
-                    return (header, forgedContents, try self.txBuilder.normalizeSignatureIfNeeded(signature, hash: txToSign))
+                .map {signature -> (TezosHeader, String, Data) in
+                    return (header, forgedContents, signature)
                 }
                 .eraseToAnyPublisher()
         }
-        .flatMap {[unowned self] (header, forgedContents, normalizedSignature) in
+        .flatMap {[unowned self] (header, forgedContents, signature) in
             self.networkService
-                .checkTransaction(protocol: header.protocol, hash: header.hash, contents: contents, signature: self.encodeSignature(normalizedSignature))
-                .map { _ in (forgedContents, normalizedSignature) }
+                .checkTransaction(protocol: header.protocol, hash: header.hash, contents: contents, signature: self.encodeSignature(signature))
+                .map { _ in (forgedContents, signature) }
                 .eraseToAnyPublisher()
         }
         .flatMap {[unowned self] (forgedContents, signature) -> AnyPublisher<Void, Error> in

@@ -13,10 +13,8 @@ import class TangemSdk.Secp256k1Utils
 class BinanceTransactionBuilder {
     var binanceWallet: BinanceWallet
     private var message: Message?
-    private let walletPublicKey: Data
     
     init(walletPublicKey: Data, isTestnet: Bool) {
-        self.walletPublicKey = walletPublicKey
         let compressedKey = Secp256k1Utils.compressPublicKey(walletPublicKey)!
         binanceWallet = BinanceWallet(publicKey: compressedKey)
         if isTestnet {
@@ -41,17 +39,11 @@ class BinanceTransactionBuilder {
     }
     
     func buildForSend(signature: Data, hash: Data) -> Message? {
-        guard let normalizedSignature = Secp256k1Utils.normalizeVerify(
-            secp256k1Signature: signature,
-            hash: hash,
-            publicKey: walletPublicKey) else {
-                return nil
-        }
-        
         guard let message = message else {
             return nil
         }
-        message.add(signature: normalizedSignature)
+        
+        message.add(signature: signature)
         return message
     }
 }

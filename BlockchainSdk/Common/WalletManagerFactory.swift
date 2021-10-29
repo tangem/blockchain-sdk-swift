@@ -147,7 +147,7 @@ public class WalletManagerFactory {
                     EthereumJsonRpcProvider(network: ethereumNetwork),
                     EthereumJsonRpcProvider(network: .tangem)
                 ]
-                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: Secp256k1Utils.decompressPublicKey(walletPublicKey)!,
+                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey,
                                                           network: ethereumNetwork)
                 let provider = BlockcypherNetworkProvider(endpoint: .ethereum, tokens: config.blockcypherTokens)
                 let blockchair = BlockchairEthNetworkProvider(endpoint: .ethereum(testnet: testnet), apiKey: config.blockchairApiKey)
@@ -157,7 +157,7 @@ public class WalletManagerFactory {
         case .rsk:
             return EthereumWalletManager(wallet: wallet, cardTokens: tokens).then {
                 let network: EthereumNetwork = .rsk
-                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: Secp256k1Utils.decompressPublicKey(walletPublicKey)!,
+                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey,
                                                           network: network)
                 $0.networkService = EthereumNetworkService(network: .rsk, providers: [EthereumJsonRpcProvider(network: network)], blockcypherProvider: nil, blockchairProvider: nil)
             }
@@ -165,7 +165,7 @@ public class WalletManagerFactory {
         case .bsc(let testnet):
             return EthereumWalletManager(wallet: wallet).then {
                 let network: EthereumNetwork = testnet ? .bscTestnet : .bscMainnet
-                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: Secp256k1Utils.decompressPublicKey(walletPublicKey)!,
+                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey,
                                                           network: network)
                 $0.networkService = EthereumNetworkService(network: network, providers: [EthereumJsonRpcProvider(network: network)], blockcypherProvider: nil, blockchairProvider: nil)
             }
@@ -173,7 +173,7 @@ public class WalletManagerFactory {
         case .polygon(let testnet):
             return EthereumWalletManager(wallet: wallet).then {
                 let network: EthereumNetwork = testnet ? .polygonTestnet : .polygon
-                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: Secp256k1Utils.decompressPublicKey(walletPublicKey)!,
+                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey,
                                                           network: network)
                 $0.networkService = EthereumNetworkService(network: network, providers: [EthereumJsonRpcProvider(network: network)], blockcypherProvider: nil, blockchairProvider: nil)
             }
