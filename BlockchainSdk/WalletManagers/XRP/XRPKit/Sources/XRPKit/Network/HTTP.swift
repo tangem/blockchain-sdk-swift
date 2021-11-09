@@ -27,9 +27,7 @@ class HTTP {
             if let error = error {
                 completion(.failure(error))
             }
-            if let response = response {
-                //print(response)
-            }
+
             if let data = data {
                 do {
                     let json = try JSONSerialization.jsonObject(with: data, options: [])
