@@ -74,7 +74,11 @@ class StellarTransactionBuilder {
                         
                         return try self.serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo)
                     } else {
-                        let operation = ChangeTrustOperation(sourceAccountId: transaction.sourceAddress, asset: asset, limit: Decimal(string: "900000000000.0000000"))
+                        guard let changeTrustAsset = asset.toChangeTrustAsset() else {
+                            throw WalletError.failedToBuildTx
+                        }
+                        
+                        let operation = ChangeTrustOperation(sourceAccountId: transaction.sourceAddress, asset: changeTrustAsset, limit: Decimal(string: "900000000000.0000000"))
                         return try self.serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo)
                     }
                     
@@ -127,5 +131,11 @@ class StellarTransactionBuilder {
         }
         
         return (hash, tx)
+    }
+}
+
+extension Asset {
+    func toChangeTrustAsset() -> ChangeTrustAsset? {
+        ChangeTrustAsset(type: self.type, code: self.code, issuer: self.issuer)
     }
 }
