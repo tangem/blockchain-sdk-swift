@@ -11,24 +11,25 @@ import Combine
 import Moya
 
 @available(iOS 13.0, *)
-class MultiNetworkProvider<Provider> {
+protocol MultiNetworkProvider: AnyObject, HostProvider {
+    associatedtype Provider: HostProvider
     
-    internal let providers: [Provider]
-    private var currentProviderIndex = 0
-    
+    var providers: [Provider] { get }
+    var currentProviderIndex: Int { get set }
+}
+
+extension MultiNetworkProvider {
     var provider: Provider {
         providers[currentProviderIndex]
     }
     
-    init(providers: [Provider]) {
-        self.providers = providers
-    }
+    var host: String { provider.host }
     
     func providerPublisher<T>(for requestPublisher: @escaping (_ provider: Provider) -> AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
         requestPublisher(provider)
             .catch { [weak self] error -> AnyPublisher<T, Error> in
                 if let moyaError = error as? MoyaError, case let .statusCode(resp) = moyaError {
-                    print("Switchable publisher catched error: \(moyaError). Response message: \(String(data: resp.data, encoding: .utf8))")
+                    print("Switchable publisher catched error: \(moyaError). Response message: \(String(describing: String(data: resp.data, encoding: .utf8)))")
                 }
                 print("Switchable publisher catched error:", error)
                 if self?.needRetry() ?? false {
@@ -53,4 +54,8 @@ class MultiNetworkProvider<Provider> {
     private func resetProviders() {
         currentProviderIndex = 0
     }
+}
+
+protocol HostProvider {
+    var host: String { get }
 }

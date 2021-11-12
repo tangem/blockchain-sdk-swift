@@ -10,7 +10,7 @@ import Foundation
 import Moya
 import Combine
 
-class XRPNetworkProvider: XRPNetworkServiceType {
+class XRPNetworkProvider: XRPNetworkServiceType, HostProvider {
     let baseUrl: XrpUrl
     let provider = MoyaProvider<XrpTarget>()
     

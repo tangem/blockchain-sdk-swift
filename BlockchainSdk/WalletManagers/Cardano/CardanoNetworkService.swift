@@ -9,27 +9,49 @@
 import Foundation
 import Combine
 
-protocol CardanoNetworkProvider {
-    var host: String { get }
+protocol CardanoNetworkProvider: HostProvider {
     func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error>
     func send(transaction: Data) -> AnyPublisher<String, Error>
 }
 
-class CardanoNetworkService: MultiNetworkProvider<CardanoNetworkProvider>, CardanoNetworkProvider {
-    var host: String {
-        provider.host
+extension CardanoNetworkProvider {
+    func eraseToAnyCardanoNetworkProvider() -> AnyCardanoNetworkProvider {
+        AnyCardanoNetworkProvider(self)
+    }
+}
+
+class AnyCardanoNetworkProvider: CardanoNetworkProvider {
+    var host: String { provider.host }
+    
+    private let provider: CardanoNetworkProvider
+    
+    init<P: CardanoNetworkProvider>(_ provider: P) {
+        self.provider = provider
     }
     
     func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
-        providerPublisher { provider in
-            provider.getInfo(addresses: addresses)
-        }
+        provider.getInfo(addresses: addresses)
     }
     
     func send(transaction: Data) -> AnyPublisher<String, Error> {
-        providerPublisher { provider in
-            provider.send(transaction: transaction)
-        }
+        provider.send(transaction: transaction)
+    }
+}
+
+class CardanoNetworkService: MultiNetworkProvider, CardanoNetworkProvider {
+    let providers: [AnyCardanoNetworkProvider]
+    var currentProviderIndex: Int = 0
+    
+    init(providers: [AnyCardanoNetworkProvider]) {
+        self.providers = providers
+    }
+    
+    func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
+        providerPublisher { $0.getInfo(addresses: addresses) }
+    }
+    
+    func send(transaction: Data) -> AnyPublisher<String, Error> {
+        providerPublisher { $0.send(transaction: transaction) }
     }
 }
 

@@ -13,23 +13,22 @@ import SwiftyJSON
 import web3swift
 import BigInt
 
-class EthereumNetworkService: MultiNetworkProvider<EthereumJsonRpcProvider> {
-    
-    var host: String {
-        provider.host
-    }
+class EthereumNetworkService: MultiNetworkProvider {
+    let providers: [EthereumJsonRpcProvider]
+    var currentProviderIndex: Int = 0
     
     private let network: EthereumNetwork
-    private let jsonRpcProvider: [EthereumJsonRpcProvider] = []
-
     private let ethereumInfoNetworkProvider: EthereumAdditionalInfoProvider?
     private let blockchairProvider: BlockchairEthNetworkProvider?
     
-    init(network: EthereumNetwork, providers: [EthereumJsonRpcProvider], blockcypherProvider: BlockcypherNetworkProvider?, blockchairProvider: BlockchairEthNetworkProvider?) {
+    init(network: EthereumNetwork,
+         providers: [EthereumJsonRpcProvider],
+         blockcypherProvider: BlockcypherNetworkProvider?,
+         blockchairProvider: BlockchairEthNetworkProvider?) {
+        self.providers = providers
         self.network = network
         self.ethereumInfoNetworkProvider = blockcypherProvider
         self.blockchairProvider = blockchairProvider
-        super.init(providers: providers)
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
@@ -79,7 +78,7 @@ class EthereumNetworkService: MultiNetworkProvider<EthereumJsonRpcProvider> {
             Publishers.MergeMany(providers.map { parseGas($0.getGasLimit(to: to, from: from, data: data)) }).collect()
         )
         .tryMap { (result: ([BigUInt], [BigUInt])) -> EthereumFeeResponse in
-            guard result.0.count > 0 else {
+            guard !result.0.isEmpty else {
                 throw BlockchainSdkError.failedToLoadFee
             }
             
