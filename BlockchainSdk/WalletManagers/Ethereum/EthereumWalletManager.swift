@@ -94,7 +94,7 @@ class EthereumWalletManager: WalletManager {
         txCount = response.txCount
         pendingTxCount = response.pendingTxCount
 
-        if response.pendingTxs.count > 0 {
+        if !response.pendingTxs.isEmpty {
             wallet.transactions.removeAll()
             response.pendingTxs.forEach {
                 wallet.addPendingTransaction($0)

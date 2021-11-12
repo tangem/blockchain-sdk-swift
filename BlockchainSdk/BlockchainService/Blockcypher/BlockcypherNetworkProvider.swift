@@ -63,7 +63,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
                 if Decimal(uncBalance) / self.endpoint.blockchain.decimalValue != pendingTxRefs.reduce(0, { $0 + $1.value }) {
                     print("Unconfirmed balance and pending tx refs sum is not equal")
                 }
-                let btcResponse = BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: pendingTxRefs.count > 0, pendingTxRefs: pendingTxRefs, unspentOutputs: utxo)
+                let btcResponse = BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: !pendingTxRefs.isEmpty, pendingTxRefs: pendingTxRefs, unspentOutputs: utxo)
                 return btcResponse
             }
             .eraseToAnyPublisher()
@@ -182,7 +182,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
     }
     
     private func getRandomToken() -> String? {
-        guard tokens.count > 0 else { return nil }
+        guard !tokens.isEmpty else { return nil }
         
         let tokenIndex = Int.random(in: 0..<tokens.count)
         return tokens[tokenIndex]

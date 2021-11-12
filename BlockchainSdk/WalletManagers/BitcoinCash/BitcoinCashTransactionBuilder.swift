@@ -112,7 +112,7 @@ class BitcoinCashTransactionBuilder {
     private func getOpCode(for data: Data) -> UInt8? {
         var opcode: UInt8
         
-        if data.count == 0 {
+        if data.isEmpty {
             opcode = Op.op0.rawValue
         } else if data.count == 1 {
             let byte = data[0]
@@ -146,7 +146,7 @@ class BitcoinCashTransactionBuilder {
             var script = Data()
             script.append(version == 0 ? Op.op0.rawValue : version - 1 + Op.op1.rawValue) //smallNum
             let program = segWitData.program
-            if program.count == 0 {
+            if program.isEmpty {
                 script.append(Op.op0.rawValue) //smallNum
             } else {
                 guard let opCode = getOpCode(for: program) else { return nil }
