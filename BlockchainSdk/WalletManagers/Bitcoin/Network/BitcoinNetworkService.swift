@@ -12,13 +12,15 @@ import Combine
 import TangemSdk
 import Alamofire
 
-class BitcoinNetworkService: MultiNetworkProvider<BitcoinNetworkProvider>, BitcoinNetworkProvider {
-
-    var host: String {
-        provider.host
+class BitcoinNetworkService: MultiNetworkProvider, BitcoinNetworkProvider {
+    let providers: [AnyBitcoinNetworkProvider]
+    var currentProviderIndex: Int = 0
+    
+    init(providers: [AnyBitcoinNetworkProvider]) {
+        self.providers = providers
     }
     
-    var supportsTransactionPush: Bool { providers.filter { $0.supportsTransactionPush }.count > 0 }
+    var supportsTransactionPush: Bool { !providers.filter { $0.supportsTransactionPush }.isEmpty }
     
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
         providerPublisher {

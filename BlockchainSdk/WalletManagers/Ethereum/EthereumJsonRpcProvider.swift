@@ -11,7 +11,7 @@ import Combine
 import BigInt
 import Moya
 
-class EthereumJsonRpcProvider {
+class EthereumJsonRpcProvider: HostProvider {
     
     var host: String {
         network.url.hostOrUnknown

@@ -18,9 +18,12 @@ protocol XRPNetworkServiceType {
     func checkAccountCreated(account: String) -> AnyPublisher<Bool, Error>
 }
 
-class XRPNetworkService: MultiNetworkProvider<XRPNetworkProvider>, XRPNetworkServiceType {
-    var host: String {
-        provider.host
+class XRPNetworkService: MultiNetworkProvider, XRPNetworkServiceType {
+    let providers: [XRPNetworkProvider]
+    var currentProviderIndex: Int = 0
+    
+    init(providers: [XRPNetworkProvider]) {
+        self.providers = providers
     }
     
     func getInfo(account: String) -> AnyPublisher<XrpInfoResponse, Error> {

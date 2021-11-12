@@ -80,13 +80,17 @@ public class WalletManagerFactory {
                 
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: addresses)
                 
-                var providers = [BitcoinNetworkProvider]()
+                var providers = [AnyBitcoinNetworkProvider]()
                 if !testnet {
-                    providers.append(BlockchainInfoNetworkProvider())
+                    providers.append(BlockchainInfoNetworkProvider()
+                                        .eraseToAnyBitcoinNetworkProvider())
                 }
-                providers.append(BlockchairNetworkProvider(endpoint: .bitcoin(testnet: testnet), apiKey: config.blockchairApiKey))
+                providers.append(BlockchairNetworkProvider(endpoint: .bitcoin(testnet: testnet),
+                                                           apiKey: config.blockchairApiKey)
+                                    .eraseToAnyBitcoinNetworkProvider())
                 providers.append(BlockcypherNetworkProvider(endpoint: .bitcoin(testnet: testnet),
-                                                              tokens: config.blockcypherTokens))
+                                                              tokens: config.blockcypherTokens)
+                                    .eraseToAnyBitcoinNetworkProvider())
                 
                 $0.networkService = BitcoinNetworkService(providers: providers)
             }
@@ -100,9 +104,13 @@ public class WalletManagerFactory {
                 
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: addresses)
                 
-                var providers = [BitcoinNetworkProvider]()
-                providers.append(BlockchairNetworkProvider(endpoint: .litecoin, apiKey: config.blockchairApiKey))
-                providers.append(BlockcypherNetworkProvider(endpoint: .litecoin, tokens: config.blockcypherTokens))
+                var providers = [AnyBitcoinNetworkProvider]()
+                providers.append(BlockchairNetworkProvider(endpoint: .litecoin,
+                                                           apiKey: config.blockchairApiKey)
+                                    .eraseToAnyBitcoinNetworkProvider())
+                providers.append(BlockcypherNetworkProvider(endpoint: .litecoin,
+                                                            tokens: config.blockcypherTokens)
+                                    .eraseToAnyBitcoinNetworkProvider())
 
                 $0.networkService = LitecoinNetworkService(providers: providers)
             }
@@ -116,9 +124,13 @@ public class WalletManagerFactory {
                 
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: addresses)
                 
-                var providers = [BitcoinNetworkProvider]()
-                providers.append(BlockchairNetworkProvider(endpoint: .dogecoin, apiKey: config.blockchairApiKey))
-                providers.append(BlockcypherNetworkProvider(endpoint: .dogecoin, tokens: config.blockcypherTokens))
+                var providers = [AnyBitcoinNetworkProvider]()
+                providers.append(BlockchairNetworkProvider(endpoint: .dogecoin,
+                                                           apiKey: config.blockchairApiKey)
+                                    .eraseToAnyBitcoinNetworkProvider())
+                providers.append(BlockcypherNetworkProvider(endpoint: .dogecoin,
+                                                            tokens: config.blockcypherTokens)
+                                    .eraseToAnyBitcoinNetworkProvider())
 
                 $0.networkService = BitcoinNetworkService(providers: providers)
             }
@@ -195,8 +207,8 @@ public class WalletManagerFactory {
             return CardanoWalletManager(wallet: wallet).then {
                 $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: walletPublicKey, shelleyCard: shelley)
                 let service = CardanoNetworkService(providers: [
-                    AdaliteNetworkProvider(baseUrl: .main),
-                    RosettaNetworkProvider(baseUrl: .tangemRosetta)
+                    AdaliteNetworkProvider(baseUrl: .main).eraseToAnyCardanoNetworkProvider(),
+                    RosettaNetworkProvider(baseUrl: .tangemRosetta).eraseToAnyCardanoNetworkProvider()
                 ])
                 $0.networkService = service
             }
@@ -211,7 +223,7 @@ public class WalletManagerFactory {
         case .tezos(let curve):
             return TezosWalletManager(wallet: wallet).then {
                 $0.txBuilder = TezosTransactionBuilder(walletPublicKey: walletPublicKey, curve: curve)
-                $0.networkService = TezosNetworkService()
+                $0.networkService = TezosNetworkService(providers: TezosApi.makeAllProviders())
             }
         }
     }

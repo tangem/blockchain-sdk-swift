@@ -88,13 +88,7 @@ struct TezosTarget: TargetType {
             }
         }
     }
-
-    enum TezosApi: String {
-        case tezos = "https://teznode.letzbake.com"
-        case tezosReserve = "https://mainnet.tezrpc.me"
-    }
 }
-
 
 struct TezosForgeBody: Codable {
     let branch: String

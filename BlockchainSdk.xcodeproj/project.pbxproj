@@ -107,6 +107,7 @@
 		5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56223A38204009C7482 /* EthereumAddressService.swift */; };
 		5D94E56723A3946C009C7482 /* Data+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D94E56623A3946C009C7482 /* Data+.swift */; };
 		5D977BB623FAEB4500575BE4 /* DucatusNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D977BB523FAEB4500575BE4 /* DucatusNetworkService.swift */; };
+		5DA163D2273D2146007AA991 /* TezosJsonRpcProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA163D1273D2146007AA991 /* TezosJsonRpcProvider.swift */; };
 		5DA6F7BC243F3C0B0040AB4B /* CBOR+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */; };
 		5DACA359255E97EA0096BC48 /* BitcoinAddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DACA358255E97EA0096BC48 /* BitcoinAddressType.swift */; };
 		5DACA35B255E97FE0096BC48 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DACA35A255E97FE0096BC48 /* Address.swift */; };
@@ -412,6 +413,7 @@
 		5D94E56223A38204009C7482 /* EthereumAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumAddressService.swift; sourceTree = "<group>"; };
 		5D94E56623A3946C009C7482 /* Data+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+.swift"; sourceTree = "<group>"; };
 		5D977BB523FAEB4500575BE4 /* DucatusNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DucatusNetworkService.swift; sourceTree = "<group>"; };
+		5DA163D1273D2146007AA991 /* TezosJsonRpcProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosJsonRpcProvider.swift; sourceTree = "<group>"; };
 		5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CBOR+.swift"; sourceTree = "<group>"; };
 		5DACA358255E97EA0096BC48 /* BitcoinAddressType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinAddressType.swift; sourceTree = "<group>"; };
 		5DACA35A255E97FE0096BC48 /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
@@ -973,6 +975,7 @@
 			children = (
 				5DF91518253DB7B300B927DD /* TezosAddress.swift */,
 				5DF91520253DB89800B927DD /* TezosTarget.swift */,
+				5DA163D1273D2146007AA991 /* TezosJsonRpcProvider.swift */,
 			);
 			path = Tezos;
 			sourceTree = "<group>";
@@ -1319,6 +1322,7 @@
 				B0AD566425AC8DD50084F924 /* PendingTransaction.swift in Sources */,
 				5D26CEF6243CBA4300994CC0 /* EstimateFeeTarget.swift in Sources */,
 				5DA6F7BC243F3C0B0040AB4B /* CBOR+.swift in Sources */,
+				5DA163D2273D2146007AA991 /* TezosJsonRpcProvider.swift in Sources */,
 				5DED72BA239FE2F8006D79AE /* Int+.swift in Sources */,
 				B06C6793264286390037E7AD /* BlockchairAddressBlockMapper.swift in Sources */,
 				5D26CEF3243CB9FB00994CC0 /* BlockchainInfoTarget.swift in Sources */,
@@ -1687,9 +1691,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.tangem.BlockchainSdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1715,8 +1720,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.tangem.BlockchainSdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
