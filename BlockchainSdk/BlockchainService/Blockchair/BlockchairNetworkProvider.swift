@@ -95,7 +95,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                 return (bitcoinResponse, pendingTxs)
             }
             .flatMap { [unowned self] (resp: (BitcoinResponse, [BlockchairTransactionShort])) -> AnyPublisher<BitcoinResponse, Error> in
-                guard resp.1.count > 0 else {
+                guard !resp.1.isEmpty else {
                     return .justWithError(output: resp.0)
                 }
                 

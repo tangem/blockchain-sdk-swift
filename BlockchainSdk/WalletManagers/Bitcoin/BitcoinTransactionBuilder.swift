@@ -42,7 +42,7 @@ class BitcoinTransactionBuilder {
         self.bitcoinManager = bitcoinManager
         let scriptAddresses = addresses.map { $0 as? BitcoinScriptAddress }
         var script: Data?
-        if scriptAddresses.count > 0 {
+        if !scriptAddresses.isEmpty {
             if let scriptAddress = scriptAddresses.first(where: {
                 if case .bitcoin(let t) = $0?.type {
                     return t == .bech32

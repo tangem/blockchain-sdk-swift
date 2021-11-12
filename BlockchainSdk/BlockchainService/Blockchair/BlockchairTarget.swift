@@ -84,7 +84,7 @@ enum BlockchairTarget: TargetType {
             return "/dashboards/transaction/\(hash)"
         case .txsDetails(let hashes, _, _):
             var path = "/dashboards/transactions/"
-            if hashes.count > 0 {
+            if !hashes.isEmpty {
                 hashes.forEach {
                     path.append($0)
                     path.append(",")

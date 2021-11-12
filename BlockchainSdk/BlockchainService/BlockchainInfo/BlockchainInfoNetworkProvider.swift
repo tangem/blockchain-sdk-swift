@@ -82,7 +82,7 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
                 return (BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: hasUnconfirmed, pendingTxRefs: pendingTxs, unspentOutputs: utxs), missingUnspents)
             }
             .flatMap { [unowned self] (btcResponse: BitcoinResponse, missingUnspentsIndices: [UInt64]) -> AnyPublisher<BitcoinResponse, Error> in
-                guard missingUnspentsIndices.count > 0 else {
+                guard !missingUnspentsIndices.isEmpty else {
                     return .justWithError(output: btcResponse)
                 }
                 
