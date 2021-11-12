@@ -223,10 +223,12 @@ public enum Blockchain {
         case .binance(let testnet):
             let baseUrl = testnet ? "https://testnet-explorer.binance.org/address/" : "https://explorer.binance.org/address/"
             return URL(string: baseUrl + address)
-        case .bitcoin:
-            return URL(string: "https://blockchain.info/address/\(address)")
-        case .bitcoinCash:
-            return URL(string: "https://blockchair.com/bitcoin-cash/address/\(address)")
+        case .bitcoin(let testnet):
+            let baseUrl = testnet ? "https://www.blockchain.com/btc-testnet/address/" : "https://www.blockchain.com/btc/address/"
+            return URL(string: baseUrl + address)
+        case .bitcoinCash(let testnet):
+            let baseUrl = testnet ? "https://www.blockchain.com/bch-testnet/address/" : "https://www.blockchain.com/bch/address/"
+            return URL(string: baseUrl + address)
         case .cardano:
             return URL(string: "https://cardanoexplorer.com/address/\(address)")
         case .ducatus:
@@ -237,7 +239,7 @@ public enum Blockchain {
                 "https://etherscan.io/token/\(tokenContractAddress!)?a=\(address)"
             return URL(string: exploreLink)
         case .litecoin:
-            return URL(string: "https://live.blockcypher.com/ltc/address/\(address)")
+            return URL(string: "https://blockchair.com/litecoin/address/\(address)")
         case .rsk:
             var exploreLink = "https://explorer.rsk.co/address/\(address)"
             if tokenContractAddress != nil {
