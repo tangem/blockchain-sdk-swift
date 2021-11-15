@@ -100,3 +100,5 @@
 "fee_for_push_tx_not_enough" = "Fee for pushing transaction must be greater than fee for original transaction";
 
 "network_providers_not_supports_rbf" = "Pushing transaction currently not available. Please, try again later";
+
+"common_cancelled" = "User cancelled";

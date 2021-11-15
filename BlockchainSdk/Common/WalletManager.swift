@@ -18,6 +18,7 @@ public enum WalletError: Error, LocalizedError {
     case failedToSendTx
     case failedToCalculateTxSize
     case failedToLoadTokenBalance(token: Token)
+    case cancelled
     
     public var errorDescription: String? {
         switch self {
@@ -35,9 +36,10 @@ public enum WalletError: Error, LocalizedError {
             return "common_estimate_tx_size_error".localized
         case let .failedToLoadTokenBalance(token):
             return String(format: "common_failed_to_load_token_balance".localized, token.name)
+        case .cancelled:
+            return "common_cancelled".localized
         }
     }
-    
 }
 
 @available(iOS 13.0, *)

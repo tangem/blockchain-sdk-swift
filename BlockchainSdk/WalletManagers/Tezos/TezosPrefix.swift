@@ -5,36 +5,73 @@ import TangemSdk
 
 /// Common prefixes used across Tezos Cryptography.
 enum TezosPrefix {
-  enum Watermark {
-    static let operation: [UInt8] = [ 3 ] // 03
-  }
-
-  enum Keys {
-    enum Ed25519 {
-      static let `public`: [UInt8] = [13, 15, 37, 217] // edpk
-      static let secret: [UInt8] = [43, 246, 78, 7]    // edsk
-      static let seed: [UInt8] = [13, 15, 58, 7] // edsk
-      static let signature: [UInt8] = [9, 245, 205, 134, 18] // edsig
+    enum Watermark {
+        static let genericOperation: Data = .init(hexString: "03") // 03
     }
-
-    enum P256 {
-      static let secret: [UInt8] = [16, 81, 238, 189]  // p2sk
-      static let `public`: [UInt8] = [3, 178, 139, 127] // p2pk
-      static let signature: [UInt8] = [54, 240, 44, 52] // p2sig
+    
+    enum Signature: String {
+        case ed25519 = "09F5CD8612" // edsig
+        case secp256k1 = "0D7365133F" // spsig
+        case p256 = "36F02C34" // p2sig
+        
+        var bytesValue: Data {
+            Data(hexString: rawValue)
+        }
     }
-
-    enum Secp256k1 {
-      static let `public`: [UInt8] = [3, 254, 226, 86] // sppk
-      static let secret: [UInt8] = [17, 162, 224, 201]  // spsk
-      static let signature: [UInt8] = [13, 115, 101, 19, 63] // spsig
+    
+    enum PublicKey: String {
+        case ed25519 = "0D0F25D9" //edpk
+        case secp256k1 = "03FEE256" //sppk
+        case p256 = "03B28B7F" //p2pk
+        
+        var bytesValue: Data {
+            Data(hexString: rawValue)
+        }
+        
+        var encodedPrefix: String {
+            switch self {
+            case .ed25519: return "00"
+            case .secp256k1: return "01"
+            case .p256: return "02"
+            }
+        }
     }
-  }
+    
+    enum Address: String {
+        case tz1 = "06A19F"
+        case tz2 = "06A1A1"
+        case tz3 = "06A1A4"
+        case kt1 = "025A79"
 
-  enum Address {
-    static let tz1: [UInt8] = [6, 161, 159] // tz1
-    static let tz2: [UInt8] = [6, 161, 161] // tz2
-    static let tz3: [UInt8] = [6, 161, 164] // tz3
-  }
+        var bytesValue: Data {
+            Data(hexString: rawValue)
+        }
+        
+        var encodedPrefix: String {
+            switch self {
+            case .tz1: return "00"
+            case .tz2: return "01"
+            case .tz3: return "02"
+            case .kt1: fatalError("Nothing to encode")
+            }
+        }
+    }
+    
+    enum TransactionKind: String {
+        case reveal
+        case transaction
+        
+        var encodedPrefix: String {
+            switch self {
+            case .reveal:
+                return "6b"
+            case .transaction:
+                return "6c"
+            }
+        }
+    }
+    
+    static let branch = "0134"
 }
 
 
@@ -42,33 +79,33 @@ extension TezosPrefix {
     static func publicPrefix(for curve: EllipticCurve) -> Data {
         switch curve {
         case .ed25519:
-            return Data(Keys.Ed25519.public)
+            return PublicKey.ed25519.bytesValue
         case .secp256k1:
-            return Data(Keys.Secp256k1.public)
+            return PublicKey.secp256k1.bytesValue
         case .secp256r1:
-            return Data(Keys.P256.public)
+            return PublicKey.p256.bytesValue
         }
     }
     
     static func signaturePrefix(for curve: EllipticCurve) -> Data {
         switch curve {
         case .ed25519:
-            return Data(Keys.Ed25519.signature)
+            return Signature.ed25519.bytesValue
         case .secp256k1:
-            return Data(Keys.Secp256k1.signature)
+            return Signature.secp256k1.bytesValue
         case .secp256r1:
-            return Data(Keys.P256.signature)
+            return Signature.p256.bytesValue
         }
     }
     
     static func addressPrefix(for curve: EllipticCurve) -> Data {
         switch curve {
         case .ed25519:
-            return Data(Address.tz1)
+            return Address.tz1.bytesValue
         case .secp256k1:
-            return Data(Address.tz2)
+            return Address.tz2.bytesValue
         case .secp256r1:
-            return Data(Address.tz3)
+            return Address.tz3.bytesValue
         }
     }
 }
