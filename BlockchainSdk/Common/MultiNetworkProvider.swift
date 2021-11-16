@@ -31,6 +31,11 @@ extension MultiNetworkProvider {
                 if let moyaError = error as? MoyaError, case let .statusCode(resp) = moyaError {
                     print("Switchable publisher catched error: \(moyaError). Response message: \(String(describing: String(data: resp.data, encoding: .utf8)))")
                 }
+                
+                if case WalletError.noAccount = error {
+                    return .anyFail(error: error)
+                }
+                
                 print("Switchable publisher catched error:", error)
                 if self?.needRetry() ?? false {
                     print("Switching to next publisher")
