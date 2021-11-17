@@ -25,7 +25,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     }
     
     func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
-        .multiAddressPublisher(addresses: addresses, requestFactory: {[weak self] address in
+        .multiAddressPublisher(addresses: addresses, requestFactory: {[weak self] (address: String) in
             guard let self = self else { return .emptyFail }
             
             let balancesPublisher = self.provider
