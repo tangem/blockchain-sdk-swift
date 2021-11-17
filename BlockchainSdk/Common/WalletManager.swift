@@ -204,7 +204,7 @@ public protocol WithdrawalValidator {
 }
 
 public protocol TokenFinder {
-    func findErc20Tokens(completion: @escaping (Result<Bool, Error>)-> Void)
+    func findErc20Tokens(knownTokens: [Token], completion: @escaping (Result<Bool, Error>)-> Void)
 }
 
 public struct WithdrawalWarning {

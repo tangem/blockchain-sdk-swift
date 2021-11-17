@@ -237,7 +237,7 @@ extension EthereumWalletManager {
 }
 
 extension EthereumWalletManager: TokenFinder {
-    func findErc20Tokens(completion: @escaping (Result<Bool, Error>)-> Void) {
+    func findErc20Tokens(knownTokens: [Token], completion: @escaping (Result<Bool, Error>)-> Void) {
         findTokensSubscription?.cancel()
         findTokensSubscription = networkService
             .findErc20Tokens(address: wallet.address)
@@ -254,8 +254,9 @@ extension EthereumWalletManager: TokenFinder {
                 
                 var tokensAdded = false
                 blockchairTokens.forEach { blockchairToken in
-                    let token = Token(blockchairToken, blockchain: self.wallet.blockchain)
-                    if !self.cardTokens.contains(token) {
+                    let foundToken = Token(blockchairToken, blockchain: self.wallet.blockchain)
+                    if !self.cardTokens.contains(foundToken) {
+                        let token: Token = knownTokens.first(where: { $0 == foundToken }) ?? foundToken
                         self.cardTokens.append(token)
                         let balanceValue = Decimal(blockchairToken.balance) ?? 0
                         let balanceWeiValue = balanceValue / pow(Decimal(10), blockchairToken.decimals)
