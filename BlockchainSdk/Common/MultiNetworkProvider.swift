@@ -28,6 +28,8 @@ extension MultiNetworkProvider {
     func providerPublisher<T>(for requestPublisher: @escaping (_ provider: Provider) -> AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
         requestPublisher(provider)
             .catch { [weak self] error -> AnyPublisher<T, Error> in
+                guard let self = self else { return .anyFail(error: error) }
+                
                 if let moyaError = error as? MoyaError, case let .statusCode(resp) = moyaError {
                     print("Switchable publisher catched error: \(moyaError). Response message: \(String(describing: String(data: resp.data, encoding: .utf8)))")
                 }
@@ -37,9 +39,10 @@ extension MultiNetworkProvider {
                 }
                 
                 print("Switchable publisher catched error:", error)
-                if self?.needRetry() ?? false {
+                
+                if self.needRetry() {
                     print("Switching to next publisher")
-                    return self?.providerPublisher(for: requestPublisher) ?? .emptyFail
+                    return self.providerPublisher(for: requestPublisher)
                 }
                 
                 return .anyFail(error: error)

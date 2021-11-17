@@ -16,12 +16,6 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     private let provider: MoyaProvider<RosettaTarget> = .init()
     private let baseUrl: RosettaUrl
     
-    private var decoder: JSONDecoder {
-        let d = JSONDecoder()
-        d.keyDecodingStrategy = .convertFromSnakeCase
-        return d
-    }
-    
     var host: String {
         URL(string: baseUrl.rawValue)!.hostOrUnknown
     }
@@ -31,18 +25,23 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     }
     
     func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
-        AnyPublisher<RosettaBalanceResponse, Error>.multiAddressPublisher(addresses: addresses, requestFactory: { address in
+        .multiAddressPublisher(addresses: addresses, requestFactory: {[weak self] address in
+            guard let self = self else { return .emptyFail }
             
             let balancesPublisher = self.provider
                 .requestPublisher(.address(baseUrl: self.baseUrl,
                                            addressBody: RosettaAddressBody(networkIdentifier: .mainNet,
                                                                            accountIdentifier: RosettaAccountIdentifier(address: address))))
                 .mapNotEmptyString()
-                .tryMap { [unowned self] (response: String) -> RosettaBalanceResponse in
+                .tryMap {(response: String) -> RosettaBalanceResponse in
                     guard let data = response.data(using: .utf8) else {
                         throw WalletError.failedToParseNetworkResponse
                     }
-                    return try self.decoder.decode(RosettaBalanceResponse.self, from: data)
+                    
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    
+                    return try decoder.decode(RosettaBalanceResponse.self, from: data)
                 }
                 .eraseToAnyPublisher()
             
@@ -51,11 +50,15 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
                                          addressBody: RosettaAddressBody(networkIdentifier: .mainNet,
                                                                          accountIdentifier: RosettaAccountIdentifier(address: address))))
                 .mapNotEmptyString()
-                .tryMap { [unowned self] (response: String) -> RosettaCoinsResponse in
+                .tryMap {(response: String) -> RosettaCoinsResponse in
                     guard let data = response.data(using: .utf8) else {
                         throw WalletError.failedToParseNetworkResponse
                     }
-                    return try self.decoder.decode(RosettaCoinsResponse.self, from: data)
+                    
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    
+                    return try decoder.decode(RosettaCoinsResponse.self, from: data)
                 }
                 .eraseToAnyPublisher()
             
@@ -100,16 +103,20 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
         let txHex: String = CBOR.array(
             [CBOR.utf8String(transaction.toHexString())]
         ).encode().toHexString()
-        return provider.requestPublisher(.submitTransaction(baseUrl: self.baseUrl,
+        
+        return provider.requestPublisher(.submitTransaction(baseUrl: baseUrl,
                                                             submitBody: RosettaSubmitBody(networkIdentifier: .mainNet,
                                                                                           signedTransaction: txHex)))
             .mapNotEmptyString()
-            .tryMap { [unowned self] (resp: String) -> String in
-                print(resp)
+            .tryMap{(resp: String) -> String in
                 guard let data = resp.data(using: .utf8) else {
                     throw WalletError.failedToParseNetworkResponse
                 }
-                let submitResponse = try self.decoder.decode(RosettaSubmitResponse.self, from: data)
+                
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                
+                let submitResponse = try decoder.decode(RosettaSubmitResponse.self, from: data)
                 return submitResponse.transactionIdentifier.hash ?? ""
             }
             .eraseToAnyPublisher()

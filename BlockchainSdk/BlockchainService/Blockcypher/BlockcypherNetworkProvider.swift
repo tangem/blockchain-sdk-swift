@@ -37,7 +37,9 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         getFullInfo(address: address)
-            .tryMap {[unowned self] (addressResponse: BlockcypherFullAddressResponse<BlockcypherBitcoinTx>) -> BitcoinResponse in
+            .tryMap {[weak self] (addressResponse: BlockcypherFullAddressResponse<BlockcypherBitcoinTx>) -> BitcoinResponse in
+                guard let self = self else { throw WalletError.empty }
+                
                 guard let balance = addressResponse.balance,
                       let uncBalance = addressResponse.unconfirmedBalance
                 else {
@@ -70,26 +72,15 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
-        return Just(())
-            .setFailureType(to: MoyaError.self)
-            .flatMap { [unowned self] in
-                self.provider
-                    .requestPublisher(getTarget(for: .fee))
-                    .filterSuccessfulStatusAndRedirectCodes()
-            }
-            .catch{[unowned self] error -> AnyPublisher<Response, MoyaError> in
-                self.changeToken(error)
-                return Fail(error: error).eraseToAnyPublisher()
-            }
-            .retry(1)
-            .eraseToAnyPublisher()
+        publisher(for: getTarget(for: .fee))
             .map(BlockcypherFeeResponse.self)
             .tryMap { feeResponse -> BitcoinFee in
                 guard let minKb = feeResponse.low_fee_per_kb,
                       let normalKb = feeResponse.medium_fee_per_kb,
                       let maxKb = feeResponse.high_fee_per_kb else {
-                    throw "Can't load fee"
-                }
+                          throw WalletError.failedToGetFee
+                      }
+                
                 let kb = Decimal(1024)
                 let min = (Decimal(minKb)/kb).rounded(roundingMode: .down)
                 let normal = (Decimal(normalKb)/kb).rounded(roundingMode: .down)
@@ -101,18 +92,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
-        return Just(())
-            .setFailureType(to: MoyaError.self)
-            .flatMap { [unowned self] in
-                self.provider.requestPublisher(getTarget(for: .send(txHex: transaction), withRandomToken: true))
-                    .filterSuccessfulStatusAndRedirectCodes()
-            }
-            .catch{ [unowned self] error -> AnyPublisher<Response, MoyaError> in
-                self.changeToken(error)
-                return Fail(error: error).eraseToAnyPublisher()
-            }
-            .retry(1)
-            .eraseToAnyPublisher()
+        publisher(for: getTarget(for: .send(txHex: transaction), withRandomToken: true))
             .mapNotEmptyString()
             .eraseError()
             .eraseToAnyPublisher()
@@ -123,10 +103,12 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
     }
     
     func getTransaction(with hash: String) -> AnyPublisher<BitcoinTransaction, Error> {
-        publisher(for: getTarget(for: .txs(txHash: hash)))
+        let endpoint = self.endpoint
+        
+        return publisher(for: getTarget(for: .txs(txHash: hash)))
             .map(BlockcypherTransaction.self)
             .eraseError()
-            .tryMap { [unowned self] (tx: BlockcypherTransaction) -> BitcoinTransaction in
+            .tryMap { (tx: BlockcypherTransaction) -> BitcoinTransaction in
                 guard
                     let hash = tx.hash,
                     let dateStr = tx.confirmed ?? tx.received,
@@ -136,7 +118,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
                 }
                 
                 let inputs = tx.inputs?.compactMap { $0.toBtcInput() } ?? []
-                let outputs = tx.outputs?.compactMap { $0.toBtcOutput(decimals: self.endpoint.blockchain.decimalValue) } ?? []
+                let outputs = tx.outputs?.compactMap { $0.toBtcOutput(decimals: endpoint.blockchain.decimalValue) } ?? []
                 
                 return BitcoinTransaction(hash: hash, isConfirmed: tx.block ?? 0 > 0, time: date, inputs: inputs, outputs: outputs)
             }
@@ -167,17 +149,27 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
     
     private func publisher(for target: BlockcypherTarget) -> AnyPublisher<Response, MoyaError> {
         Just(())
-            .setFailureType(to: MoyaError.self)
-            .flatMap { [unowned self] in
-                self.provider
+            .setFailureType(to: Error.self)
+            .flatMap { [weak self] _ -> AnyPublisher<Response, Error> in
+                guard let self = self else {
+                    return .emptyFail
+                }
+                
+                return self.provider
                     .requestPublisher(target)
                     .filterSuccessfulStatusAndRedirectCodes()
+                    .eraseError()
             }
-            .catch { [unowned self] error -> AnyPublisher<Response, MoyaError> in
+            .catch { [weak self] error -> AnyPublisher<Response, Error> in
+                guard let self = self else {
+                    return .emptyFail
+                }
+                
                 self.changeToken(error)
                 return Fail(error: error).eraseToAnyPublisher()
             }
             .retry(1)
+            .mapError { MoyaError.underlying($0, nil) }
             .eraseToAnyPublisher()
     }
     
@@ -188,7 +180,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
         return tokens[tokenIndex]
     }
     
-    private func changeToken(_ error: MoyaError) {
+    private func changeToken(_ error: Error) {
         if case let MoyaError.statusCode(response) = error, response.statusCode == 429 {
             token = getRandomToken()
         }
@@ -198,7 +190,9 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
 extension BlockcypherNetworkProvider: EthereumAdditionalInfoProvider {
     func getEthTxsInfo(address: String) -> AnyPublisher<EthereumTransactionResponse, Error> {
         getFullInfo(address: address)
-            .tryMap { [unowned self] (response: BlockcypherFullAddressResponse<BlockcypherEthereumTransaction>) -> EthereumTransactionResponse in
+            .tryMap { [weak self] (response: BlockcypherFullAddressResponse<BlockcypherEthereumTransaction>) -> EthereumTransactionResponse in
+                guard let self = self else { throw WalletError.empty }
+                
                 guard let balance = response.balance else {
                     throw WalletError.failedToParseNetworkResponse
                 }

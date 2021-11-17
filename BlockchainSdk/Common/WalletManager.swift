@@ -19,6 +19,7 @@ public enum WalletError: Error, LocalizedError {
     case failedToCalculateTxSize
     case failedToLoadTokenBalance(token: Token)
     case cancelled
+    case empty
     
     public var errorDescription: String? {
         switch self {
@@ -38,6 +39,8 @@ public enum WalletError: Error, LocalizedError {
             return String(format: "common_failed_to_load_token_balance".localized, token.name)
         case .cancelled:
             return "common_cancelled".localized
+        case .empty:
+            return ""
         }
     }
 }

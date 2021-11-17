@@ -71,29 +71,29 @@ extension CardanoWalletManager: TransactionSender {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
-        let txBuildResult = txBuilder.buildForSign(transaction: transaction, walletAmount: walletAmount, isEstimated: false)
-        switch txBuildResult {
-        case .success(let info):
+        do {
+            let info = try txBuilder.buildForSign(transaction: transaction, walletAmount: walletAmount, isEstimated: false)
+            
             return signer.sign(hash: info.hash, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
-                .tryMap {[unowned self] signature -> (tx: Data, hash: String) in
-                    let txBuildForSendResult = self.txBuilder.buildForSend(bodyItem: info.bodyItem, signature: signature)
-                    switch txBuildForSendResult {
-                    case .failure(let error):
-                        throw error
-                    case .success(let tx):
-                        return (tx, info.hash.hexString)
-                    }
+                .tryMap {[weak self] signature -> (tx: Data, hash: String) in
+                    guard let self = self else { throw WalletError.empty }
+                    
+                    let tx = try self.txBuilder.buildForSend(bodyItem: info.bodyItem, signature: signature)
+                    return (tx, info.hash.hexString)
             }
-            .flatMap {[unowned self] builderResponse -> AnyPublisher<Void, Error> in
-                self.networkService.send(transaction: builderResponse.tx).map {[unowned self] response in
+            .flatMap {[weak self] builderResponse -> AnyPublisher<Void, Error> in
+                self?.networkService.send(transaction: builderResponse.tx).tryMap {[weak self] response in
+                    guard let self = self else { throw WalletError.empty }
+                    
                     var sendedTx = transaction
                     sendedTx.hash = builderResponse.hash
                     self.wallet.add(transaction: sendedTx)
-                }.eraseToAnyPublisher()
+                }.eraseToAnyPublisher() ?? .emptyFail
             }
             .eraseToAnyPublisher()
-        case .failure(let error):
-            return Fail(error: error).eraseToAnyPublisher()
+            
+        } catch {
+            return .anyFail(error: error)
         }
     }
     
@@ -124,13 +124,8 @@ extension CardanoWalletManager: TransactionSender {
             return nil
         }
         
-		let txBuildResult = txBuilder.buildForSign(transaction: dummyTx, walletAmount: walletAmount, isEstimated: true)
-        guard case let .success(info) = txBuildResult else {
-            return nil
-        }
-        
-        let txBuildForSendResult = txBuilder.buildForSend(bodyItem: info.bodyItem, signature: Data(repeating: 0, count: 64))
-        guard case let .success(tx) = txBuildForSendResult else {
+		guard let info = try? txBuilder.buildForSign(transaction: dummyTx, walletAmount: walletAmount, isEstimated: true),
+              let tx = try? txBuilder.buildForSend(bodyItem: info.bodyItem, signature: Data(repeating: 0, count: 64)) else {
             return nil
         }
 

@@ -30,33 +30,33 @@ class StellarNetworkService {
                 } else {
                     throw "Result code: \(submitTransactionResponse.transactionResult.code)"
                 }
-        }
-        .mapError { [unowned self] in self.mapError($0) }
-        .eraseToAnyPublisher()
+            }
+            .mapError {[weak self] in self?.mapError($0) ?? WalletError.empty }
+            .eraseToAnyPublisher()
     }
     
     public func getInfo(accountId: String, isAsset: Bool) -> AnyPublisher<StellarResponse, Error> {
         return stellarData(accountId: accountId)
             .tryMap{ (accountResponse, ledgerResponse) throws -> StellarResponse in
                 guard let baseFeeStroops = Decimal(ledgerResponse.baseFeeInStroops),
-                    let baseReserveStroops = Decimal(ledgerResponse.baseReserveInStroops),
-                    let balance = Decimal(accountResponse.balances.first(where: {$0.assetType == AssetTypeAsString.NATIVE})?.balance) else {
-                        throw WalletError.failedToParseNetworkResponse
-                }
+                      let baseReserveStroops = Decimal(ledgerResponse.baseReserveInStroops),
+                      let balance = Decimal(accountResponse.balances.first(where: {$0.assetType == AssetTypeAsString.NATIVE})?.balance) else {
+                          throw WalletError.failedToParseNetworkResponse
+                      }
                 
                 let sequence = accountResponse.sequenceNumber
                 let assetBalances = try accountResponse.balances
                     .filter ({ $0.assetType != AssetTypeAsString.NATIVE })
                     .map { assetBalance -> StellarAssetResponse in
                         guard let code = assetBalance.assetCode,
-                            let issuer = assetBalance.assetIssuer,
-                            let balance = Decimal(assetBalance.balance) else {
-                                throw WalletError.failedToParseNetworkResponse
-                        }
+                              let issuer = assetBalance.assetIssuer,
+                              let balance = Decimal(assetBalance.balance) else {
+                                  throw WalletError.failedToParseNetworkResponse
+                              }
                         
                         return StellarAssetResponse(code: code, issuer: issuer, balance: balance)
-                }
-
+                    }
+                
                 let divider =  Blockchain.stellar(testnet: false).decimalValue
                 let baseFee = baseFeeStroops/divider
                 let baseReserve = baseReserveStroops/divider
@@ -66,9 +66,9 @@ class StellarNetworkService {
                                        assetBalances: assetBalances,
                                        balance: balance,
                                        sequence: sequence)
-        }
-        .mapError { [unowned self] in self.mapError($0, isAsset: isAsset) }
-        .eraseToAnyPublisher()
+            }
+            .mapError {[weak self] in self?.mapError($0, isAsset: isAsset) ?? WalletError.empty }
+            .eraseToAnyPublisher()
     }
     
     private func stellarData(accountId: String) -> AnyPublisher<(AccountResponse, LedgerResponse), Error> {
@@ -91,14 +91,14 @@ class StellarNetworkService {
 }
 
 extension StellarNetworkService {
-	public func getSignatureCount(accountId: String) -> AnyPublisher<Int, Error> {
-		stellarSdk.operations.getAllOperations(accountId: accountId, recordsLimit: 1)
-			.map { items in
-				items.filter { $0.sourceAccount == accountId }.count
-			}
-			.mapError { [unowned self] in self.mapError($0) }
-			.eraseToAnyPublisher()
-	}
+    public func getSignatureCount(accountId: String) -> AnyPublisher<Int, Error> {
+        stellarSdk.operations.getAllOperations(accountId: accountId, recordsLimit: 1)
+            .map { items in
+                items.filter { $0.sourceAccount == accountId }.count
+            }
+            .mapError {[weak self] in self?.mapError($0) ?? WalletError.empty }
+            .eraseToAnyPublisher()
+    }
 }
 
 

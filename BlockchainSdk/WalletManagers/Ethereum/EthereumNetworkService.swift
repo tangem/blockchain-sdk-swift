@@ -34,7 +34,10 @@ class EthereumNetworkService: MultiNetworkProvider {
     func send(transaction: String) -> AnyPublisher<String, Error> {
         providerPublisher {
             $0.send(transaction: transaction)
-                .tryMap { try self.getResult(from: $0) }
+                .tryMap {[weak self] in
+                    guard let self = self else { throw WalletError.empty }
+                    
+                    return try self.getResult(from: $0) }
                 .eraseToAnyPublisher()
         }
     }
@@ -46,59 +49,60 @@ class EthereumNetworkService: MultiNetworkProvider {
             getTxCount(address),
             getPendingTxCount(address)
         )
-        .map { (result: (Decimal, [Token: Decimal], Int, Int)) in
-            EthereumInfoResponse(balance: result.0, tokenBalances: result.1, txCount: result.2, pendingTxCount: result.3, pendingTxs: [])
-        }
-        .flatMap { [unowned self] resp -> AnyPublisher<EthereumInfoResponse, Error> in
-            guard let provider = self.ethereumInfoNetworkProvider, resp.pendingTxCount > 0 else {
-                return .justWithError(output: resp)
+            .map { (result: (Decimal, [Token: Decimal], Int, Int)) in
+                EthereumInfoResponse(balance: result.0, tokenBalances: result.1, txCount: result.2, pendingTxCount: result.3, pendingTxs: [])
             }
-            
-            return provider.getEthTxsInfo(address: address)
-                .map { ethResponse -> EthereumInfoResponse in
-                    var newResp = resp
-                    newResp.pendingTxs = ethResponse.pendingTxs
-                    return newResp
+            .flatMap { [weak self] resp -> AnyPublisher<EthereumInfoResponse, Error> in
+                guard let self = self else { return .emptyFail }
+                
+                guard let provider = self.ethereumInfoNetworkProvider, resp.pendingTxCount > 0 else {
+                    return .justWithError(output: resp)
                 }
-                .eraseToAnyPublisher()
-        }
-        .eraseToAnyPublisher()
+                
+                return provider.getEthTxsInfo(address: address)
+                    .map { ethResponse -> EthereumInfoResponse in
+                        var newResp = resp
+                        newResp.pendingTxs = ethResponse.pendingTxs
+                        return newResp
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
     
     func getFee(to: String, from: String, data: String?, fallbackGasLimit: BigUInt?) -> AnyPublisher<EthereumFeeResponse, Error> {
-        func parseGas(_ publisher: AnyPublisher<EthereumResponse, Error>) -> AnyPublisher<BigUInt, Never> {
-            publisher.tryMap { try self.getGas(from: $0) }
-                .replaceError(with: 0)
-                .filter { $0 > 0 }
-                .eraseToAnyPublisher()
-        }
-        
         return Publishers.Zip(
             Publishers.MergeMany(providers.map { parseGas($0.getGasPrice()) }).collect(),
             Publishers.MergeMany(providers.map { parseGas($0.getGasLimit(to: to, from: from, data: data)) }).collect()
         )
-        .tryMap { (result: ([BigUInt], [BigUInt])) -> EthereumFeeResponse in
-            guard !result.0.isEmpty else {
-                throw BlockchainSdkError.failedToLoadFee
+            .tryMap {[weak self] (result: ([BigUInt], [BigUInt])) -> EthereumFeeResponse in
+                guard let self = self else { throw WalletError.empty }
+                
+                guard !result.0.isEmpty else {
+                    throw BlockchainSdkError.failedToLoadFee
+                }
+                
+                let maxPrice = result.0.max()!
+                let maxLimit = result.1.max()
+                if maxLimit == nil, fallbackGasLimit == nil {
+                    throw BlockchainSdkError.failedToLoadFee
+                }
+                
+                let maxGasLimit = maxLimit ?? fallbackGasLimit!
+                let fees = try self.calculateFee(gasPrice: maxPrice, gasLimit: maxGasLimit, decimalCount: self.network.blockchain.decimalCount)
+                return EthereumFeeResponse(fees: fees, gasLimit: maxGasLimit)
             }
-            
-            let maxPrice = result.0.max()!
-            let maxLimit = result.1.max()
-            if maxLimit == nil, fallbackGasLimit == nil {
-                throw BlockchainSdkError.failedToLoadFee
-            }
-            
-            let maxGasLimit = maxLimit ?? fallbackGasLimit!
-            let fees = try self.calculateFee(gasPrice: maxPrice, gasLimit: maxGasLimit, decimalCount: self.network.blockchain.decimalCount)
-            return EthereumFeeResponse(fees: fees, gasLimit: maxGasLimit)
-        }
-        .eraseToAnyPublisher()
+            .eraseToAnyPublisher()
     }
     
     func getGasPrice() -> AnyPublisher<BigUInt, Error> {
         providerPublisher {
             $0.getGasPrice()
-                .tryMap { try self.getGas(from: $0) }
+                .tryMap {[weak self] in
+                    guard let self = self else { throw WalletError.empty }
+                    
+                    return try self.getGas(from: $0)
+                }
                 .eraseToAnyPublisher()
         }
     }
@@ -106,7 +110,11 @@ class EthereumNetworkService: MultiNetworkProvider {
     func getGasLimit(to: String, from: String, data: String?) -> AnyPublisher<BigUInt, Error> {
         providerPublisher {
             $0.getGasLimit(to: to, from: from, data: data)
-                .tryMap { try self.getGas(from: $0) }
+                .tryMap {[weak self] in
+                    guard let self = self else { throw WalletError.empty }
+                    
+                    return try self.getGas(from: $0)
+                }
                 .eraseToAnyPublisher()
         }
     }
@@ -115,30 +123,31 @@ class EthereumNetworkService: MultiNetworkProvider {
         tokens
             .publisher
             .setFailureType(to: Error.self)
-            .flatMap {[unowned self] token in
-                self.providerPublisher { provider in
+            .flatMap {[weak self] token in
+                self?.providerPublisher { provider in
                     provider.getTokenBalance(for: address, contractAddress: token.contractAddress)
-                        .tryMap { resp -> Decimal in
-                            let result = try self.getResult(from: resp)
+                        .tryMap {[weak self] resp -> Decimal in
+                            guard let self = self else { throw WalletError.empty }
                             
+                            let result = try self.getResult(from: resp)
                             return try EthereumUtils.parseEthereumDecimal(result, decimalsCount: token.decimalCount)
                         }
                         .map { (token, $0) }
                         .eraseToAnyPublisher()
-                }
+                } ?? .emptyFail
             }
             .collect()
             .map { $0.reduce(into: [Token: Decimal]()) { $0[$1.0] = $1.1 }}
             .eraseToAnyPublisher()
     }
     
-	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
+    func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
         guard let networkProvider = ethereumInfoNetworkProvider else {
             return Fail(error: ETHError.unsupportedFeature).eraseToAnyPublisher()
         }
         
-		return networkProvider.getSignatureCount(address: address)
-	}
+        return networkProvider.getSignatureCount(address: address)
+    }
     
     func findErc20Tokens(address: String) -> AnyPublisher<[BlockchairToken], Error> {
         guard let blockchairProvider = blockchairProvider else {
@@ -148,12 +157,16 @@ class EthereumNetworkService: MultiNetworkProvider {
         return blockchairProvider.findErc20Tokens(address: address)
     }
     
-	// MARK: - Private functions
+    // MARK: - Private functions
     
     private func getBalance(_ address: String) -> AnyPublisher<Decimal, Error> {
         providerPublisher { provider in
             provider.getBalance(for: address)
-                .tryMap { try EthereumUtils.parseEthereumDecimal(self.getResult(from: $0), decimalsCount: self.network.blockchain.decimalCount) }
+                .tryMap {[weak self] in
+                    guard let self = self else { throw WalletError.empty }
+                    
+                    return try EthereumUtils.parseEthereumDecimal(self.getResult(from: $0), decimalsCount: self.network.blockchain.decimalCount)
+                }
                 .eraseToAnyPublisher()
         }
     }
@@ -161,7 +174,11 @@ class EthereumNetworkService: MultiNetworkProvider {
     private func getTxCount(_ address: String) -> AnyPublisher<Int, Error> {
         providerPublisher { provider in
             provider.getTxCount(for: address)
-                .tryMap { try self.getTxCount(from: $0) }
+                .tryMap {[weak self] in
+                    guard let self = self else { throw WalletError.empty }
+                    
+                    return try self.getTxCount(from: $0)
+                }
                 .eraseToAnyPublisher()
         }
     }
@@ -169,7 +186,11 @@ class EthereumNetworkService: MultiNetworkProvider {
     private func getPendingTxCount(_ address: String) -> AnyPublisher<Int, Error> {
         providerPublisher {
             $0.getPendingTxCount(for: address)
-                .tryMap { try self.getTxCount(from: $0) }
+                .tryMap {[weak self] in
+                    guard let self = self else { throw WalletError.empty }
+                    
+                    return try self.getTxCount(from: $0)
+                }
                 .eraseToAnyPublisher()
         }
     }
@@ -200,7 +221,7 @@ class EthereumNetworkService: MultiNetworkProvider {
         guard let result = response.result else {
             throw WalletError.failedToParseNetworkResponse
         }
-      
+        
         return result
     }
     
@@ -215,12 +236,23 @@ class EthereumNetworkService: MultiNetworkProvider {
         let max = Web3.Utils.formatToEthereumUnits(maxValue, toUnits: .eth, decimals: decimalCount, decimalSeparator: ".", fallbackToScientific: false)!
         
         guard let minDecimal = Decimal(string: min),
-            let normalDecimal = Decimal(string: normal),
-            let maxDecimal = Decimal(string: max) else {
-                throw WalletError.failedToGetFee
-        }
+              let normalDecimal = Decimal(string: normal),
+              let maxDecimal = Decimal(string: max) else {
+                  throw WalletError.failedToGetFee
+              }
         
         return [minDecimal, normalDecimal, maxDecimal]
+    }
+    
+    private func parseGas(_ publisher: AnyPublisher<EthereumResponse, Error>) -> AnyPublisher<BigUInt, Never> {
+        publisher.tryMap {[weak self] in
+            guard let self = self else { throw WalletError.empty }
+            
+            return try self.getGas(from: $0)
+        }
+        .replaceError(with: 0)
+        .filter { $0 > 0 }
+        .eraseToAnyPublisher()
     }
 }
 

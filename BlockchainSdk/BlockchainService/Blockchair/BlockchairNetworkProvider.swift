@@ -50,7 +50,9 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     
 	func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: true, apiKey: apiKey))
-            .tryMap { [unowned self] json -> (BitcoinResponse, [BlockchairTransactionShort]) in //TODO: refactor to normal JSON
+            .tryMap { [weak self] json -> (BitcoinResponse, [BlockchairTransactionShort]) in //TODO: refactor to normal JSON
+                guard let self = self else { throw WalletError.empty }
+                
                 let addr = self.mapAddressBlock(address, json: json)
                 let address = addr["address"]
                 let balance = address["balance"].stringValue
@@ -94,21 +96,25 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                 
                 return (bitcoinResponse, pendingTxs)
             }
-            .flatMap { [unowned self] (resp: (BitcoinResponse, [BlockchairTransactionShort])) -> AnyPublisher<BitcoinResponse, Error> in
+            .flatMap { [weak self] (resp: (BitcoinResponse, [BlockchairTransactionShort])) -> AnyPublisher<BitcoinResponse, Error> in
+                guard let self = self else { return .emptyFail }
+                
                 guard !resp.1.isEmpty else {
                     return .justWithError(output: resp.0)
                 }
                 
                 let hashes = resp.1.map { $0.hash }
-                return publisher(for: .txsDetails(hashes: hashes, endpoint: self.endpoint, apiKey: self.apiKey))
-                    .tryMap { [unowned self] json -> BitcoinResponse in
+                return self.publisher(for: .txsDetails(hashes: hashes, endpoint: self.endpoint, apiKey: self.apiKey))
+                    .tryMap { [weak self] json -> BitcoinResponse in
+                        guard let self = self else { throw WalletError.empty }
+                        
                         let data = json["data"]
                         let txsData = hashes.map {
                             data[$0]
                         }
                         
                         let txs = txsData.map {
-                            getTransactionDetails(from: $0)
+                            self.getTransactionDetails(from: $0)
                         }
                         
                         let oldResp = resp.0
@@ -181,7 +187,9 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
 		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: false, apiKey: apiKey))
-			.map { json -> Int in
+			.tryMap {[weak self] json -> Int in
+                guard let self = self else {  throw WalletError.empty }
+                
                 let addr = self.mapAddressBlock(address, json: json)
 				let address = addr["address"]
 				
@@ -198,7 +206,9 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     
     func getTransactionInfo(hash: String, address: String) -> AnyPublisher<PendingTransaction, Error> {
         publisher(for: .txDetails(txHash: hash, endpoint: endpoint, apiKey: apiKey))
-            .tryMap { [unowned self] json -> PendingTransaction in
+            .tryMap { [weak self] json -> PendingTransaction in
+                guard let self = self else { throw WalletError.empty }
+                
                 let txJson = json["data"]["\(hash)"]
                 
                 guard let tx = self.getTransactionDetails(from: txJson) else {

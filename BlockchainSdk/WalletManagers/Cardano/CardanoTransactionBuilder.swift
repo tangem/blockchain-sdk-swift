@@ -23,25 +23,19 @@ class CardanoTransactionBuilder {
         self.shelleyCard = shelleyCard
     }
     
-	public func buildForSign(transaction: Transaction, walletAmount: Decimal, isEstimated: Bool) -> Result<(hash:Data, bodyItem: CBOR), Error> {
-        let txBodyResult = buildTransactionBody(from: transaction, walletAmount: walletAmount, isEstimated: isEstimated)
-        
-        switch txBodyResult {
-        case .failure(let error):
-            return .failure(error)
-        case .success(let bodyItem):
-            let transactionBody = bodyItem.encode()
-            guard let transactionHash = Sodium().genericHash.hash(message: transactionBody, outputLength: 32) else {
-                return .failure(WalletError.failedToBuildTx)
-            }
-            
-            return .success((hash: Data(transactionHash), bodyItem: bodyItem))
+	public func buildForSign(transaction: Transaction, walletAmount: Decimal, isEstimated: Bool) throws -> (hash:Data, bodyItem: CBOR)  {
+        let bodyItem = try buildTransactionBody(from: transaction, walletAmount: walletAmount, isEstimated: isEstimated)
+        let transactionBody = bodyItem.encode()
+        guard let transactionHash = Sodium().genericHash.hash(message: transactionBody, outputLength: 32) else {
+            throw WalletError.failedToBuildTx
         }
+        
+        return (hash: Data(transactionHash), bodyItem: bodyItem)
     }
     
-    public func buildForSend(bodyItem: CBOR, signature: Data) -> Result<Data, Error> {
+    public func buildForSend(bodyItem: CBOR, signature: Data) throws -> Data {
         guard let unspents = unspentOutputs else {
-            return .failure(CardanoError.noUnspents)
+            throw CardanoError.noUnspents
         }
         
         let useByronWitness = unspents.contains(where: { !CardanoAddressUtils.isShelleyAddress($0.address) })
@@ -62,13 +56,14 @@ class CardanoTransactionBuilder {
         
         let tx = CBOR.array([bodyItem, witnessMap, nil])
         let txForSend = tx.encode()
-        return .success(Data(txForSend))
+        return Data(txForSend)
     }
     
-	private func buildTransactionBody(from transaction: Transaction, walletAmount: Decimal, isEstimated: Bool = false) -> Result<CBOR, Error> {
+	private func buildTransactionBody(from transaction: Transaction, walletAmount: Decimal, isEstimated: Bool = false) throws -> CBOR {
         guard let unspentOutputs = self.unspentOutputs else {
-            return .failure(CardanoError.noUnspents)
+            throw CardanoError.noUnspents
         }
+        
         let convertValue = Blockchain.cardano(shelley: shelleyCard).decimalValue
         let feeConverted = transaction.fee.value * convertValue
         let amountConverted = transaction.amount.value * convertValue
@@ -79,11 +74,11 @@ class CardanoTransactionBuilder {
         let feesLong = (feeConverted.rounded() as NSDecimalNumber).uint64Value
         
         if !isEstimated && (amountLong < 1000000 || (changeLong < 1000000 && changeLong != 0)) {
-            return .failure(CardanoError.lowAda)
+            throw CardanoError.lowAda
         }
         
         guard let targetAddressBytes = CardanoAddressUtils.decode(transaction.destinationAddress)?.bytes else {
-            return .failure(WalletError.failedToBuildTx)
+            throw WalletError.failedToBuildTx
         }
         
         var transactionMap = CBOR.map([:])
@@ -101,7 +96,7 @@ class CardanoTransactionBuilder {
         outputsArray.append(CBOR.array([CBOR.byteString(targetAddressBytes), CBOR.unsignedInt(amountLong)]))
            
         guard let changeAddressBytes = CardanoAddressUtils.decode(transaction.sourceAddress)?.bytes else {
-            return .failure(WalletError.failedToBuildTx)
+            throw WalletError.failedToBuildTx
         }
         
         if (changeLong > 0) {
@@ -113,6 +108,6 @@ class CardanoTransactionBuilder {
         transactionMap[2] = CBOR.unsignedInt(feesLong)
         transactionMap[3] = CBOR.unsignedInt(90000000)
         
-        return .success(transactionMap)
+        return transactionMap
     }
 }

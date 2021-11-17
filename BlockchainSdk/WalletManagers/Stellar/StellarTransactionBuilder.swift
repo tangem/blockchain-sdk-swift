@@ -35,7 +35,9 @@ class StellarTransactionBuilder {
         let memo = (transaction.params as? StellarTransactionParams)?.memo ?? Memo.text("")
         
         return stellarSdk.accounts.checkTargetAccount(address: transaction.destinationAddress, token: transaction.amount.type.token)
-            .tryMap { [unowned self] response -> (hash: Data, transaction: stellarsdk.TransactionXDR) in
+            .tryMap { [weak self] response -> (hash: Data, transaction: stellarsdk.TransactionXDR) in
+                guard let self = self else { throw WalletError.empty }
+                
                 let isAccountCreated = response.accountCreated
                 
                 if transaction.amount.type == .coin {
@@ -53,7 +55,7 @@ class StellarTransactionBuilder {
                     
                 } else if transaction.amount.type.isToken {
                     guard let contractAddress = transaction.contractAddress, let keyPair = try? KeyPair(accountId: contractAddress),
-                          let asset = createNonNativeAsset(code: transaction.amount.currencySymbol, issuer: keyPair) else {
+                          let asset = self.createNonNativeAsset(code: transaction.amount.currencySymbol, issuer: keyPair) else {
                         throw WalletError.failedToBuildTx
                     }
                     

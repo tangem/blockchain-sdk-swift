@@ -27,7 +27,12 @@ class BinanceNetworkService {
     }
     
     func getInfo(address: String) -> AnyPublisher<BinanceInfoResponse, Error> {
-        let future = Future<BinanceInfoResponse,Error> {[unowned self] promise in
+        let future = Future<BinanceInfoResponse,Error> {[weak self] promise in
+            guard let self = self else {
+                promise(.failure(WalletError.empty))
+                return
+            }
+            
             self.binance.account(address: address) { response in
                 if let error = response.getError() {
                     promise(.failure(error))
@@ -48,7 +53,12 @@ class BinanceNetworkService {
     }
         
     func getFee() -> AnyPublisher<String, Error> {
-        let future = Future<String,Error> {[unowned self] promise in
+        let future = Future<String,Error> {[weak self] promise in
+            guard let self = self else {
+                promise(.failure(WalletError.empty))
+                return
+            }
+            
             self.binance.fees { response in
                 if let error = response.getError() {
                     promise(.failure(error))
@@ -74,7 +84,12 @@ class BinanceNetworkService {
     }
     
     func send(transaction: Message) -> AnyPublisher<Bool, Error> {
-        let future = Future<Bool,Error> {[unowned self] promise in
+        let future = Future<Bool,Error> {[weak self] promise in
+            guard let self = self else {
+                promise(.failure(WalletError.empty))
+                return
+            }
+            
             self.binance.broadcast(message: transaction, sync: true) { response in
                 if let error = response.getError() {
                     promise(.failure(error))

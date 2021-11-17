@@ -67,7 +67,7 @@ class StellarWalletManager: WalletManager {
                         $0.balance) }
                 .map { token, balance in
                     wallet.add(tokenValue: balance, for: token)
-            }
+                }
         } else {
             for token in cardTokens {
                 let assetBalance = response.assetBalances.first(where: { $0.code == token.symbol })?.balance ?? 0.0
@@ -89,23 +89,29 @@ extension StellarWalletManager: TransactionSender {
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         return txBuilder.buildForSign(transaction: transaction)
-            .flatMap { [unowned self] buildForSignResponse in
-                signer.sign(hash: buildForSignResponse.hash, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
+            .flatMap {[weak self] buildForSignResponse -> AnyPublisher<(Data, (hash: Data, transaction: stellarsdk.TransactionXDR)), Error> in
+                guard let self = self else { return .emptyFail }
+                
+                return signer.sign(hash: buildForSignResponse.hash, cardId: self.wallet.cardId, walletPublicKey: self.wallet.publicKey)
                     .map { return ($0, buildForSignResponse) }.eraseToAnyPublisher()
-        }
-        .tryMap {[unowned self] result throws -> String in
-            guard let tx = self.txBuilder.buildForSend(signature: result.0, transaction: result.1.transaction) else {
-                throw WalletError.failedToBuildTx
             }
-            
-            return tx
-        }
-        .flatMap {[unowned self] tx -> AnyPublisher<Void, Error> in
-            self.networkService.send(transaction: tx).map {[unowned self] sendResponse in
-                 self.wallet.add(transaction: transaction)
-            } .eraseToAnyPublisher()
-        }
-        .eraseToAnyPublisher()
+            .tryMap {[weak self] result throws -> String in
+                guard let self = self else { throw WalletError.empty }
+                
+                guard let tx = self.txBuilder.buildForSend(signature: result.0, transaction: result.1.transaction) else {
+                    throw WalletError.failedToBuildTx
+                }
+                
+                return tx
+            }
+            .flatMap {[weak self] tx -> AnyPublisher<Void, Error> in
+                self?.networkService.send(transaction: tx).tryMap {[weak self] sendResponse in
+                    guard let self = self else { throw WalletError.empty }
+                    
+                    self.wallet.add(transaction: transaction)
+                } .eraseToAnyPublisher() ?? .emptyFail
+            }
+            .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
@@ -119,13 +125,13 @@ extension StellarWalletManager: TransactionSender {
 }
 
 extension StellarWalletManager: SignatureCountValidator {
-	func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error> {
-		networkService.getSignatureCount(accountId: wallet.address)
-			.tryMap {
-				if signedHashes != $0 { throw BlockchainSdkError.signatureCountNotMatched }
-			}
-			.eraseToAnyPublisher()
-	}
+    func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error> {
+        networkService.getSignatureCount(accountId: wallet.address)
+            .tryMap {
+                if signedHashes != $0 { throw BlockchainSdkError.signatureCountNotMatched }
+            }
+            .eraseToAnyPublisher()
+    }
 }
 
 extension StellarWalletManager: ThenProcessable { }

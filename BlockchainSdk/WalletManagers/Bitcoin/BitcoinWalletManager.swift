@@ -42,41 +42,11 @@ class BitcoinWalletManager: WalletManager {
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
-            .tryMap {[unowned self] response throws -> [Amount] in
-                var minRate = (max(response.minimalSatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
-                var normalRate = (max(response.normalSatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
-                var maxRate = (max(response.prioritySatoshiPerByte, self.minimalFeePerByte) as NSDecimalNumber).intValue
+            .tryMap {[weak self] response throws -> [Amount] in
+                guard let self = self else { throw WalletError.empty }
                 
-                var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: false, changeScript: nil, sequence: .max)
-                var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: false, changeScript: nil, sequence: .max)
-                var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: false, changeScript: nil, sequence: .max)
-                
-                let minimalFeeRate = (((self.minimalFee * Decimal(minRate)) / minFee).rounded(scale: 0, roundingMode: .up) as NSDecimalNumber).intValue
-                let minimalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minimalFeeRate, senderPay: false, changeScript: nil, sequence: .max)
-                if minFee < minimalFee {
-                    minRate = minimalFeeRate
-                    minFee = minimalFee
-                }
-                
-                if normalFee < minimalFee {
-                    normalRate = minimalFeeRate
-                    normalFee = minimalFee
-                }
-                
-                if maxFee < minimalFee {
-                    maxRate = minimalFeeRate
-                    maxFee = minimalFee
-                }
-                
-                txBuilder.feeRates = [:]
-                txBuilder.feeRates[minFee] = minRate
-                txBuilder.feeRates[normalFee] = normalRate
-                txBuilder.feeRates[maxFee] = maxRate
-                return [
-                    Amount(with: self.wallet.blockchain, value: minFee),
-                    Amount(with: self.wallet.blockchain, value: normalFee),
-                    Amount(with: self.wallet.blockchain, value: maxFee)
-                ]
+                return self.processFee(response, amount: amount, destination: destination)
+               
         }
         .eraseToAnyPublisher()
     }
@@ -104,13 +74,18 @@ class BitcoinWalletManager: WalletManager {
         }
         
         return signer.sign(hashes: hashes, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
-            .tryMap {[unowned self] signatures -> (String) in
+            .tryMap {[weak self] signatures -> (String) in
+                guard let self = self else { throw WalletError.empty }
+                
                 guard let tx = self.txBuilder.buildForSend(transaction: transaction, signatures: signatures, sequence: sequence) else {
                     throw WalletError.failedToBuildTx
                 }
+                
                 return tx.toHexString()
         }
-        .flatMap {[unowned self] tx -> AnyPublisher<Void, Error> in
+        .flatMap {[weak self] tx -> AnyPublisher<Void, Error> in
+            guard let self = self else { return .emptyFail }
+            
             let txHashPublisher: AnyPublisher<String, Error>
             if isPushingTx {
                 txHashPublisher = self.networkService.push(transaction: tx)
@@ -118,13 +93,52 @@ class BitcoinWalletManager: WalletManager {
                 txHashPublisher = self.networkService.send(transaction: tx)
             }
             
-            return txHashPublisher.map {[unowned self] sendResponse in
+            return txHashPublisher.tryMap {[weak self] sendResponse in
+                guard let self = self else { throw WalletError.empty }
+                
                 var sendedTx = transaction
                 sendedTx.hash = sendResponse
                 self.wallet.add(transaction: sendedTx)
             }.eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
+    }
+    
+    private func processFee(_ response: BitcoinFee, amount: Amount, destination: String) -> [Amount] {
+        var minRate = (max(response.minimalSatoshiPerByte, minimalFeePerByte) as NSDecimalNumber).intValue
+        var normalRate = (max(response.normalSatoshiPerByte, minimalFeePerByte) as NSDecimalNumber).intValue
+        var maxRate = (max(response.prioritySatoshiPerByte, minimalFeePerByte) as NSDecimalNumber).intValue
+        
+        var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: false, changeScript: nil, sequence: .max)
+        var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: false, changeScript: nil, sequence: .max)
+        var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: false, changeScript: nil, sequence: .max)
+        
+        let minimalFeeRate = (((minimalFee * Decimal(minRate)) / minFee).rounded(scale: 0, roundingMode: .up) as NSDecimalNumber).intValue
+        let minimalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minimalFeeRate, senderPay: false, changeScript: nil, sequence: .max)
+        if minFee < minimalFee {
+            minRate = minimalFeeRate
+            minFee = minimalFee
+        }
+        
+        if normalFee < minimalFee {
+            normalRate = minimalFeeRate
+            normalFee = minimalFee
+        }
+        
+        if maxFee < minimalFee {
+            maxRate = minimalFeeRate
+            maxFee = minimalFee
+        }
+        
+        txBuilder.feeRates = [:]
+        txBuilder.feeRates[minFee] = minRate
+        txBuilder.feeRates[normalFee] = normalRate
+        txBuilder.feeRates[maxFee] = maxRate
+        return [
+            Amount(with: wallet.blockchain, value: minFee),
+            Amount(with: wallet.blockchain, value: normalFee),
+            Amount(with: wallet.blockchain, value: maxFee)
+        ]
     }
 }
 

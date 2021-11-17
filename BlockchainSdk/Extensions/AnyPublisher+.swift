@@ -16,7 +16,7 @@ public extension AnyPublisher {
     }
     
     static var emptyFail: AnyPublisher<Output, Error> {
-        Fail(error: "")
+        Fail(error: WalletError.empty)
             .eraseToAnyPublisher()
     }
     

@@ -57,23 +57,29 @@ extension BitcoinCashWalletManager: TransactionSender {
         }
         
         return signer.sign(hashes: hashes, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
-            .tryMap {[unowned self] signatures -> String in
+            .tryMap {[weak self] signatures -> String in
+                guard let self = self else { throw WalletError.empty }
+                
                 guard let tx = self.txBuilder.buildForSend(transaction: transaction, signatures: signatures) else {
                     throw WalletError.failedToBuildTx
                 }
                 return tx.toHexString()
         }
-        .flatMap {[unowned self] tx -> AnyPublisher<Void, Error> in
-            self.networkService.send(transaction: tx).map {[unowned self] response in
+        .flatMap {[weak self] tx -> AnyPublisher<Void, Error> in
+            self?.networkService.send(transaction: tx).tryMap {[weak self] response in
+                guard let self = self else { throw WalletError.empty }
+                
                 self.wallet.add(transaction: transaction)
-            }.eraseToAnyPublisher()
+            }.eraseToAnyPublisher() ?? .emptyFail
         }
         .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
-            .tryMap {[unowned self] response throws -> [Amount] in
+            .tryMap {[weak self] response throws -> [Amount] in
+                guard let self = self else { throw WalletError.empty }
+                
                 let feePerByte = max(response.minimalSatoshiPerByte, self.minimalFeePerByte)
                 
                 guard let estimatedTxSize = self.getEstimateSize(for: Transaction(amount: amount, fee: Amount(with: amount, value: 0.0001),
