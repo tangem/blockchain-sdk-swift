@@ -24,7 +24,9 @@ class BlockchairEthNetworkProvider {
     
     func findErc20Tokens(address: String) -> AnyPublisher<[BlockchairToken], Error> {
         publisher(for: .findErc20Tokens(address: address, endpoint: endpoint, apiKey: apiKey))
-            .tryMap { json -> [BlockchairToken] in
+            .tryMap {[weak self] json -> [BlockchairToken] in
+                guard let self = self else { throw WalletError.empty }
+                
                 let addr = self.mapAddressBlock(address, json: json)
                 let tokensObject = addr["layer_2"]["erc_20"]
                 let tokensData = try tokensObject.rawData()

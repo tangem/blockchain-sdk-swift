@@ -76,11 +76,13 @@ class EthereumWalletManager: WalletManager {
         }
         
         return networkService.getTokensBalance(wallet.address, tokens: [token])
-            .tryMap { [unowned self] result throws -> Amount in
+            .tryMap {[weak self] result throws -> Amount in
+                guard let self = self else { throw WalletError.empty }
+                
                 guard let value = result[token] else {
                     throw WalletError.failedToLoadTokenBalance(token: token)
                 }
-                let tokenAmount = wallet.add(tokenValue: value, for: token)
+                let tokenAmount = self.wallet.add(tokenValue: value, for: token)
                 return tokenAmount
             }
             .eraseToAnyPublisher()
@@ -144,19 +146,24 @@ extension EthereumWalletManager: TransactionSender {
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         sign(transaction, signer: signer)
-            .flatMap {[unowned self] tx -> AnyPublisher<Void, Error> in
-                self.networkService.send(transaction: tx).map {[unowned self] sendResponse in
+            .flatMap {[weak self] tx -> AnyPublisher<Void, Error> in
+                self?.networkService.send(transaction: tx).tryMap {[weak self] sendResponse in
+                    guard let self = self else { throw WalletError.empty }
+                    
                     var tx = transaction
                     tx.hash = sendResponse
                     self.wallet.add(transaction: tx)
-                }.eraseToAnyPublisher()
+                }.eraseToAnyPublisher() ?? .emptyFail
             }
             .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
         let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
-        return networkService.getFee(to: destinationInfo.to, from: wallet.address, data: destinationInfo.data, fallbackGasLimit: getFixedGasLimit(for: amount))
+        return networkService.getFee(to: destinationInfo.to,
+                                     from: wallet.address,
+                                     data: destinationInfo.data,
+                                     fallbackGasLimit: getFixedGasLimit(for: amount))
             .tryMap {
                 guard $0.fees.count == 3 else {
                     throw BlockchainSdkError.failedToLoadFee
@@ -183,10 +190,13 @@ extension EthereumWalletManager: EthereumTransactionSigner {
         }
         
         return signer.sign(hash: txForSign.hash, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
-            .tryMap {[unowned self] signature throws -> String in
+            .tryMap {[weak self] signature -> String in
+                guard let self = self else { throw WalletError.empty }
+                
                 guard let tx = self.txBuilder.buildForSend(transaction: txForSign.transaction, hash: txForSign.hash, signature: signature) else {
                     throw WalletError.failedToBuildTx
                 }
+                
                 return "0x\(tx.toHexString())"
             }
             .eraseToAnyPublisher()
@@ -200,13 +210,11 @@ extension EthereumWalletManager: EthereumGasLoader {
     
     func getGasLimit(amount: Amount, destination: String) -> AnyPublisher<BigUInt, Never> {
         let destInfo = formatDestinationInfo(for: destination, amount: amount)
+        let defaultLimit = self.getFixedGasLimit(for: amount)
         
         return networkService
             .getGasLimit(to: destInfo.to, from: wallet.address, data: destInfo.data)
-            .catch {[unowned self] error -> Just<BigUInt> in
-                print(error)
-                return Just(self.getFixedGasLimit(for: amount))
-            }
+            .replaceError(with: defaultLimit)
             .eraseToAnyPublisher()
     }
 }

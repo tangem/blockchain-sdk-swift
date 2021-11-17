@@ -57,7 +57,7 @@ extension TezosWalletManager: TransactionSender {
         return networkService
             .getHeader()
             .tryMap {[weak self] header -> (TezosHeader, String) in
-                guard let self = self else { throw WalletError.cancelled }
+                guard let self = self else { throw WalletError.empty }
                 
                 let forged = try self.txBuilder
                     .forgeContents(headerHash: header.hash, contents: contents)
@@ -65,7 +65,7 @@ extension TezosWalletManager: TransactionSender {
                 return (header, forged)
             }
             .flatMap {[weak self] (header, forgedContents) -> AnyPublisher<(header: TezosHeader, forgedContents: String, signature: Data), Error> in
-                guard let self = self else { return Fail(error: WalletError.cancelled).eraseToAnyPublisher() }
+                guard let self = self else { return .emptyFail }
                 
                 guard let txToSign: Data = self.txBuilder.buildToSign(forgedContents: forgedContents) else {
                     return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
@@ -78,7 +78,7 @@ extension TezosWalletManager: TransactionSender {
                     .eraseToAnyPublisher()
             }
             .flatMap {[weak self] (header, forgedContents, signature) -> AnyPublisher<(String, Data), Error> in
-                guard let self = self else { return Fail(error: WalletError.cancelled).eraseToAnyPublisher() }
+                guard let self = self else { return .emptyFail }
                 
                 return self.networkService
                     .checkTransaction(protocol: header.protocol, hash: header.hash, contents: contents, signature: self.encodeSignature(signature))
@@ -86,13 +86,15 @@ extension TezosWalletManager: TransactionSender {
                     .eraseToAnyPublisher()
             }
             .flatMap {[weak self] (forgedContents, signature) -> AnyPublisher<Void, Error> in
-                guard let self = self else { return Fail(error: WalletError.cancelled).eraseToAnyPublisher() }
+                guard let self = self else { return .emptyFail }
                 
                 let txToSend = self.txBuilder.buildToSend(signature: signature, forgedContents: forgedContents)
                 return self.networkService
                     .sendTransaction(txToSend)
                     .tryMap{[weak self] response in
-                        self?.wallet.add(transaction: transaction)
+                        guard let self = self else { throw WalletError.empty }
+                        
+                        self.wallet.add(transaction: transaction)
                     }
                     .eraseToAnyPublisher()
             }
@@ -103,7 +105,9 @@ extension TezosWalletManager: TransactionSender {
         networkService
             .checkPublicKeyRevealed(address: wallet.address)
             .combineLatest(networkService.getInfo(address: destination))
-            .map {[unowned self] (isPublicKeyRevealed, destinationInfo) -> [Amount] in
+            .tryMap {[weak self] (isPublicKeyRevealed, destinationInfo) -> [Amount] in
+                guard let self = self else { throw WalletError.empty }
+                
                 self.txBuilder.isPublicKeyRevealed = isPublicKeyRevealed
                 var fee = TezosFee.transaction.rawValue
                 if !isPublicKeyRevealed {

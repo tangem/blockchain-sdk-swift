@@ -81,7 +81,9 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
                 let hasUnconfirmed = txs.first(where: { ($0.blockHeight ?? 0) == 0  }) != nil
                 return (BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: hasUnconfirmed, pendingTxRefs: pendingTxs, unspentOutputs: utxs), missingUnspents)
             }
-            .flatMap { [unowned self] (btcResponse: BitcoinResponse, missingUnspentsIndices: [UInt64]) -> AnyPublisher<BitcoinResponse, Error> in
+            .flatMap { [weak self] (btcResponse: BitcoinResponse, missingUnspentsIndices: [UInt64]) -> AnyPublisher<BitcoinResponse, Error> in
+                guard let self = self else { return .emptyFail }
+                
                 guard !missingUnspentsIndices.isEmpty else {
                     return .justWithError(output: btcResponse)
                 }
@@ -137,10 +139,12 @@ class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
         
         let subject = CurrentValueSubject<Int, Error>(currentOffset)
         return subject
-            .flatMap { [unowned self] offset -> AnyPublisher<BlockchainInfoAddressResponse, Error> in
-                offset == 0 ?
-                    self.addressData(address) :
-                    self.addressData(address, transactionsOffset: offset)
+            .flatMap { [weak self] offset -> AnyPublisher<BlockchainInfoAddressResponse, Error> in
+                guard let self = self else { return .emptyFail }
+                
+                return offset == 0 ?
+                self.addressData(address) :
+                self.addressData(address, transactionsOffset: offset)
             }
             .handleEvents(receiveOutput: { (response: BlockchainInfoAddressResponse) in
                 let responseTxCount = response.transactions?.count ?? 0

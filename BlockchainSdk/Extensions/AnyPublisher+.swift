@@ -9,14 +9,14 @@
 import Combine
 
 @available(iOS 13.0, *)
-public extension AnyPublisher {
+public extension Publisher {
     static func anyFail(error: Failure) -> AnyPublisher<Output, Failure> {
         Fail(error: error)
             .eraseToAnyPublisher()
     }
     
     static var emptyFail: AnyPublisher<Output, Error> {
-        Fail(error: "")
+        Fail(error: WalletError.empty)
             .eraseToAnyPublisher()
     }
     

@@ -72,7 +72,9 @@ extension XRPWalletManager: TransactionSender {
         let addressDecoded = (try? XRPAddress.decodeXAddress(xAddress: transaction.destinationAddress))?.rAddress ?? transaction.destinationAddress
         return networkService
             .checkAccountCreated(account: addressDecoded)
-            .tryMap{[unowned self] isAccountCreated -> (XRPTransaction, Data) in
+            .tryMap{[weak self] isAccountCreated -> (XRPTransaction, Data) in
+                guard let self = self else { throw WalletError.empty }
+                
                 guard let walletReserve = self.wallet.amounts[.reserve]?.value,
                     let buldResponse = try self.txBuilder.buildForSign(transaction: transaction) else {
                         throw XRPError.missingReserve
@@ -84,23 +86,29 @@ extension XRPWalletManager: TransactionSender {
                 
                 return buldResponse
         }
-        .flatMap{[unowned self] buildResponse -> AnyPublisher<(XRPTransaction, Data),Error> in
-            return signer.sign(hash: buildResponse.1, cardId: wallet.cardId, walletPublicKey: wallet.publicKey).map {
+        .flatMap{[weak self] buildResponse -> AnyPublisher<(XRPTransaction, Data),Error> in
+            guard let self = self else { return .emptyFail }
+            
+            return signer.sign(hash: buildResponse.1, cardId: self.wallet.cardId, walletPublicKey: self.wallet.publicKey).map {
                 return (buildResponse.0, $0)
             }.eraseToAnyPublisher()
         }
-        .tryMap{[unowned self] response -> (String) in
+        .tryMap{[weak self] response -> (String) in
+            guard let self = self else { throw WalletError.empty }
+            
             guard let tx = self.txBuilder.buildForSend(transaction: response.0, signature: response.1) else {
                 throw WalletError.failedToBuildTx
             }
             
             return tx
         }
-        .flatMap{[unowned self] builderResponse -> AnyPublisher<Void, Error> in
-            self.networkService.send(blob: builderResponse)
-                .map{[unowned self] response in
-                    self.wallet.add(transaction: transaction)
-            }.eraseToAnyPublisher()
+        .flatMap{[weak self] builderResponse -> AnyPublisher<Void, Error> in
+            self?.networkService.send(blob: builderResponse)
+                .tryMap{[weak self] response in
+                    guard let self = self else { throw WalletError.empty }
+                    
+                    return self.wallet.add(transaction: transaction)
+                }.eraseToAnyPublisher() ?? .emptyFail
         }
         .eraseToAnyPublisher()
     }

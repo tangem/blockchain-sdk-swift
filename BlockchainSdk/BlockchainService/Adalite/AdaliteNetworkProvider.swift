@@ -33,8 +33,10 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
     
     func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
         getUnspents(addresses: addresses)
-            .flatMap { unspents -> AnyPublisher<CardanoAddressResponse, Error> in
-                self.getBalance(addresses: addresses)
+            .flatMap {[weak self] unspents -> AnyPublisher<CardanoAddressResponse, Error> in
+                guard let self = self else { return .emptyFail }
+                
+                return self.getBalance(addresses: addresses)
                     .map { balanceResponse -> CardanoAddressResponse in
                         let balance = balanceResponse.reduce(Decimal(0), { $0 + $1.balance })
                         let txHashes = balanceResponse.reduce([String](), { $0 + $1.transactions })

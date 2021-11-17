@@ -13,7 +13,12 @@ import SwiftyJSON
 
 extension AccountService {
     func getAccountDetails(accountId: String) -> AnyPublisher<AccountResponse, Error> {
-        let future = Future<AccountResponse, Error> { [unowned self] promise in
+        let future = Future<AccountResponse, Error> { [weak self] promise in
+            guard let self = self else {
+                promise(.failure(WalletError.empty))
+                return
+            }
+            
             self.getAccountDetails(accountId: accountId) { response -> Void in
                 switch response {
                 case .success(let accountResponse):
@@ -52,7 +57,12 @@ extension AccountService {
 
 extension LedgersService {
     func getLatestLedger() -> AnyPublisher<LedgerResponse, Error> {
-        let future = Future<LedgerResponse, Error> { [unowned self] promise in
+        let future = Future<LedgerResponse, Error> { [weak self] promise in
+            guard let self = self else {
+                promise(.failure(WalletError.empty))
+                return
+            }
+            
             self.getLedgers(cursor: nil, order: Order.descending, limit: 1) { response -> Void in
                 switch response {
                 case .success(let ledgerResponse):
@@ -72,7 +82,12 @@ extension LedgersService {
 
 extension TransactionsService {
     func postTransaction(transactionEnvelope:String) -> AnyPublisher<SubmitTransactionResponse, Error> {
-        let future = Future<SubmitTransactionResponse, Error> { [unowned self] promise in
+        let future = Future<SubmitTransactionResponse, Error> { [weak self] promise in
+            guard let self = self else {
+                promise(.failure(WalletError.empty))
+                return
+            }
+            
             self.postTransaction(transactionEnvelope: transactionEnvelope, response: { response -> (Void) in
                 switch response {
                 case .success(let submitResponse):
@@ -111,7 +126,12 @@ extension OperationsService {
 		}
 		
 		func pageRequest(accountId: String, recordsLimit: Int = 200) -> AnyPublisher<PageResponse<OperationResponse>, Error> {
-			Future<PageResponse<OperationResponse>, Error> { [unowned self] promise in
+			Future<PageResponse<OperationResponse>, Error> { [weak self] promise in
+                guard let self = self else {
+                    promise(.failure(WalletError.empty))
+                    return
+                }
+                
 				self.getOperations(forAccount: accountId, limit: recordsLimit) { (response) in
 					processResponse(response, in: promise)
 				}

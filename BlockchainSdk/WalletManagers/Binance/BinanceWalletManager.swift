@@ -49,7 +49,7 @@ class BinanceWalletManager: WalletManager {
                         $0.value) }
                 .map { token, balance in
                     wallet.add(tokenValue: balance, for: token)
-            }
+                }
         } else {
             for token in cardTokens {
                 let balance = response.balances[token.contractAddress] ?? 0 //if withdrawal all funds, there is no balance from network
@@ -61,7 +61,7 @@ class BinanceWalletManager: WalletManager {
         txBuilder.binanceWallet.accountNumber = response.accountNumber
         
         let currentDate = Date()
-        for  index in wallet.transactions.indices {
+        for index in wallet.transactions.indices {
             if DateInterval(start: wallet.transactions[index].date!, end: currentDate).duration > 10 {
                 wallet.transactions[index].status = .confirmed
             }
@@ -79,31 +79,37 @@ extension BinanceWalletManager: TransactionSender {
         
         let hash = msg.encodeForSignature()
         return signer.sign(hash: hash, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
-            .tryMap {[unowned self] signature -> Message in
+            .tryMap {[weak self] signature -> Message in
+                guard let self = self else { throw WalletError.empty }
+                
                 guard let tx = self.txBuilder.buildForSend(signature: signature, hash: hash) else {
                     throw WalletError.failedToBuildTx
                 }
                 return tx
-        }
-        .flatMap {[unowned self] tx -> AnyPublisher<Void, Error> in
-            self.networkService.send(transaction: tx).map {[unowned self] response in
-                self.wallet.add(transaction: transaction)
-                self.latestTxDate = Date()
-            }.eraseToAnyPublisher()
-        }
-        .eraseToAnyPublisher()
+            }
+            .flatMap {[weak self] tx -> AnyPublisher<Void, Error> in
+                self?.networkService.send(transaction: tx).tryMap {[weak self] response in
+                    guard let self = self else { throw WalletError.empty }
+                    
+                    self.wallet.add(transaction: transaction)
+                    self.latestTxDate = Date()
+                }.eraseToAnyPublisher() ?? .emptyFail
+            }
+            .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount,  destination: String) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
-            .tryMap { feeString throws -> [Amount] in
+            .tryMap {[weak self] feeString throws -> [Amount] in
+                guard let self = self else { throw WalletError.empty }
+                
                 guard let feeValue = Decimal(feeString) else {
                     throw WalletError.failedToGetFee
                 }
                 
                 return [Amount(with: self.wallet.blockchain, value: feeValue)]
-        }
-        .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
 }
 
