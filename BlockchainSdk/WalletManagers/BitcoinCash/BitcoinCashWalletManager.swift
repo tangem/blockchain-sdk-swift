@@ -58,7 +58,7 @@ extension BitcoinCashWalletManager: TransactionSender {
         
         return signer.sign(hashes: hashes,
                            cardId: wallet.cardId,
-                           walletPublicKey: self.wallet.publicKey.signingPublicKey,
+                           walletPublicKey: self.wallet.publicKey.seedPublicKey,
                            hdPath: self.wallet.publicKey.hdPath)
             .tryMap {[weak self] signatures -> String in
                 guard let self = self else { throw WalletError.empty }

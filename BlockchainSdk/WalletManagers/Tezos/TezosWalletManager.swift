@@ -73,7 +73,7 @@ extension TezosWalletManager: TransactionSender {
                 
                 return signer.sign(hash: txToSign,
                                    cardId: self.wallet.cardId,
-                                   walletPublicKey: self.wallet.publicKey.signingPublicKey,
+                                   walletPublicKey: self.wallet.publicKey.seedPublicKey,
                                    hdPath: self.wallet.publicKey.hdPath)
                     .map {signature -> (TezosHeader, String, Data) in
                         return (header, forgedContents, signature)
