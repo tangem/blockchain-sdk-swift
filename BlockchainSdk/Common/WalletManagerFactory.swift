@@ -31,6 +31,18 @@ public class WalletManagerFactory {
                               cardId: cardId)
     }
     
+    /// Temp wallet manager constructor
+    /// - Parameters:
+    ///   - card: Tangem card
+    ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
+    /// - Returns: WalletManager?
+    public func makeWalletManager(from cardId: String, walletPublicKey: Data, chainCode: Data?, blockchain: Blockchain) throws -> WalletManager {
+        try makeWalletManager(from: blockchain,
+                              publicKey: walletPublicKey,
+                              chainCode: chainCode,
+                              cardId: cardId)
+    }
+    
     public func makeWalletManagers(from cardId: String, wallet: Card.Wallet, blockchains: [Blockchain]) throws -> [WalletManager] {
         return try blockchains.map { try makeWalletManager(from: cardId, wallet: wallet, blockchain: $0) }
     }
