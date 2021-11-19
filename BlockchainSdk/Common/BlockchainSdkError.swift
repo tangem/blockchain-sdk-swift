@@ -20,6 +20,7 @@ public enum BlockchainSdkError: Int, LocalizedError {
     case failedToFindTxInputs
     case feeForPushTxNotEnough
     case networkProvidersNotSupportsRbf
+    case wrongKey
 	
 	public var errorDescription: String? {
 		switch self {

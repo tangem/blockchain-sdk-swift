@@ -92,7 +92,10 @@ extension StellarWalletManager: TransactionSender {
             .flatMap {[weak self] buildForSignResponse -> AnyPublisher<(Data, (hash: Data, transaction: stellarsdk.TransactionXDR)), Error> in
                 guard let self = self else { return .emptyFail }
                 
-                return signer.sign(hash: buildForSignResponse.hash, cardId: self.wallet.cardId, walletPublicKey: self.wallet.publicKey)
+                return signer.sign(hash: buildForSignResponse.hash,
+                                   cardId: self.wallet.cardId,
+                                   walletPublicKey: self.wallet.publicKey.signingPublicKey,
+                                   hdPath: self.wallet.publicKey.hdPath)
                     .map { return ($0, buildForSignResponse) }.eraseToAnyPublisher()
             }
             .tryMap {[weak self] result throws -> String in

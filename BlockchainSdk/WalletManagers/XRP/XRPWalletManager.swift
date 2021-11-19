@@ -89,7 +89,10 @@ extension XRPWalletManager: TransactionSender {
         .flatMap{[weak self] buildResponse -> AnyPublisher<(XRPTransaction, Data),Error> in
             guard let self = self else { return .emptyFail }
             
-            return signer.sign(hash: buildResponse.1, cardId: self.wallet.cardId, walletPublicKey: self.wallet.publicKey).map {
+            return signer.sign(hash: buildResponse.1,
+                               cardId: self.wallet.cardId,
+                               walletPublicKey: self.wallet.publicKey.signingPublicKey,
+                               hdPath: self.wallet.publicKey.hdPath).map {
                 return (buildResponse.0, $0)
             }.eraseToAnyPublisher()
         }

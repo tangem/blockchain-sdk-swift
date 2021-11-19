@@ -73,7 +73,10 @@ class BitcoinWalletManager: WalletManager {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
-        return signer.sign(hashes: hashes, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
+        return signer.sign(hashes: hashes,
+                           cardId: wallet.cardId,
+                           walletPublicKey: self.wallet.publicKey.signingPublicKey,
+                           hdPath: self.wallet.publicKey.hdPath)
             .tryMap {[weak self] signatures -> (String) in
                 guard let self = self else { throw WalletError.empty }
                 

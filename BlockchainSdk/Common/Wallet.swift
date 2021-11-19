@@ -7,12 +7,13 @@
 //
 
 import Foundation
+import TangemSdk
 
 public struct Wallet {
     public let cardId: String
     public let blockchain: Blockchain
     public let addresses: [Address]
-    public let publicKey: Data
+    public let publicKey: PublicKey
     public var amounts: [Amount.AmountType:Amount] = [:]
     public var transactions: [Transaction] = []
     public var state: WalletState = .created
@@ -58,7 +59,7 @@ public struct Wallet {
         return !transactions.filter { $0.status == .unconfirmed && $0.amount.type == amountType }.isEmpty
     }
     
-    internal init(blockchain: Blockchain, addresses: [Address], cardId: String, publicKey: Data) {
+    internal init(blockchain: Blockchain, addresses: [Address], cardId: String, publicKey: PublicKey) {
         self.blockchain = blockchain
         self.addresses = addresses
         self.publicKey = publicKey
@@ -173,5 +174,20 @@ extension Wallet {
     public enum WalletState {
         case created
         case loaded
+    }
+    
+    public struct PublicKey: Codable, Hashable {
+        private let publicKey: Data
+        private let derivedKey: Data?
+        public let hdPath: DerivationPath?
+        
+        public var signingPublicKey: Data { publicKey }
+        public var blockchainPublicKey: Data { derivedKey ?? publicKey }
+        
+        public init(publicKey: Data, derivedKey: Data?, hdPath: DerivationPath?) {
+            self.publicKey = publicKey
+            self.derivedKey = derivedKey
+            self.hdPath = hdPath
+        }
     }
 }
