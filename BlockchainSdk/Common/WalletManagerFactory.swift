@@ -24,22 +24,22 @@ public class WalletManagerFactory {
     ///   - card: Tangem card
     ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
     /// - Returns: WalletManager?
-    public func makeWalletManager(from cardId: String, walletPublicKey: Data, chainCode: Data?, blockchain: Blockchain) throws -> WalletManager {
+    public func makeWalletManager(from cardId: String, wallet: Card.Wallet, blockchain: Blockchain) throws -> WalletManager {
         try makeWalletManager(from: blockchain,
-                              publicKey: walletPublicKey,
-                              chainCode: chainCode,
+                              publicKey: wallet.publicKey,
+                              chainCode: wallet.chainCode,
                               cardId: cardId)
     }
     
-    public func makeWalletManagers(from cardId: String, walletPublicKey: Data, chainCode: Data?, blockchains: [Blockchain]) throws -> [WalletManager] {
-        return try blockchains.map { try makeWalletManager(from: cardId, walletPublicKey:walletPublicKey, chainCode: chainCode, blockchain: $0) }
+    public func makeWalletManagers(from cardId: String, wallet: Card.Wallet, blockchains: [Blockchain]) throws -> [WalletManager] {
+        return try blockchains.map { try makeWalletManager(from: cardId, wallet: wallet, blockchain: $0) }
     }
     
-    public func makeWalletManagers(for cardId: String, with walletPublicKey: Data, chainCode: Data?, and tokens: [Token]) throws -> [WalletManager] {
+    public func makeWalletManagers(for cardId: String, wallet: Card.Wallet, and tokens: [Token]) throws -> [WalletManager] {
         let blockchainDict = Dictionary(grouping: tokens, by: { $0.blockchain })
         
         let managers: [WalletManager] = try blockchainDict.map {
-            let manager = try makeWalletManager(from: cardId, walletPublicKey: walletPublicKey, chainCode: chainCode, blockchain: $0.key)
+            let manager = try makeWalletManager(from: cardId, wallet: wallet, blockchain: $0.key)
             manager.cardTokens.append(contentsOf: $0.value.filter { !manager.cardTokens.contains($0) })
             return manager
         }
