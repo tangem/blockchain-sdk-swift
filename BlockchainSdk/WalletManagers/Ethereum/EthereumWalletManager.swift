@@ -95,7 +95,7 @@ class EthereumWalletManager: WalletManager {
         }
         txCount = response.txCount
         pendingTxCount = response.pendingTxCount
-
+        
         if !response.pendingTxs.isEmpty {
             wallet.transactions.removeAll()
             response.pendingTxs.forEach {
@@ -223,13 +223,13 @@ extension EthereumWalletManager: EthereumGasLoader {
 }
 
 extension EthereumWalletManager: SignatureCountValidator {
-	func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error> {
-		networkService.getSignatureCount(address: wallet.address)
-			.tryMap {
-				if signedHashes != $0 { throw BlockchainSdkError.signatureCountNotMatched }
-			}
-			.eraseToAnyPublisher()
-	}
+    func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error> {
+        networkService.getSignatureCount(address: wallet.address)
+            .tryMap {
+                if signedHashes != $0 { throw BlockchainSdkError.signatureCountNotMatched }
+            }
+            .eraseToAnyPublisher()
+    }
 }
 
 extension EthereumWalletManager: ThenProcessable { }

@@ -43,9 +43,9 @@ class XRPWalletManager: WalletManager {
                     self.wallet.amounts = [:]
                     completion(.failure(error))
                 }
-                }, receiveValue: { [unowned self] response in
-                    self.updateWallet(with: response)
-                    completion(.success(()))
+            }, receiveValue: { [unowned self] response in
+                self.updateWallet(with: response)
+                completion(.success(()))
             })
     }
     
@@ -76,44 +76,44 @@ extension XRPWalletManager: TransactionSender {
                 guard let self = self else { throw WalletError.empty }
                 
                 guard let walletReserve = self.wallet.amounts[.reserve]?.value,
-                    let buldResponse = try self.txBuilder.buildForSign(transaction: transaction) else {
-                        throw XRPError.missingReserve
-                }
+                      let buldResponse = try self.txBuilder.buildForSign(transaction: transaction) else {
+                          throw XRPError.missingReserve
+                      }
                 
                 if !isAccountCreated && transaction.amount.value < walletReserve {
                     throw String(format: "xrp_target_not_created_format".localized, walletReserve.description)
                 }
                 
                 return buldResponse
-        }
-        .flatMap{[weak self] buildResponse -> AnyPublisher<(XRPTransaction, Data),Error> in
-            guard let self = self else { return .emptyFail }
-            
-            return signer.sign(hash: buildResponse.1,
-                               cardId: self.wallet.cardId,
-                               walletPublicKey: self.wallet.publicKey.signingPublicKey,
-                               hdPath: self.wallet.publicKey.hdPath).map {
-                return (buildResponse.0, $0)
-            }.eraseToAnyPublisher()
-        }
-        .tryMap{[weak self] response -> (String) in
-            guard let self = self else { throw WalletError.empty }
-            
-            guard let tx = self.txBuilder.buildForSend(transaction: response.0, signature: response.1) else {
-                throw WalletError.failedToBuildTx
             }
-            
-            return tx
-        }
-        .flatMap{[weak self] builderResponse -> AnyPublisher<Void, Error> in
-            self?.networkService.send(blob: builderResponse)
-                .tryMap{[weak self] response in
-                    guard let self = self else { throw WalletError.empty }
-                    
-                    return self.wallet.add(transaction: transaction)
-                }.eraseToAnyPublisher() ?? .emptyFail
-        }
-        .eraseToAnyPublisher()
+            .flatMap{[weak self] buildResponse -> AnyPublisher<(XRPTransaction, Data),Error> in
+                guard let self = self else { return .emptyFail }
+                
+                return signer.sign(hash: buildResponse.1,
+                                   cardId: self.wallet.cardId,
+                                   walletPublicKey: self.wallet.publicKey.signingPublicKey,
+                                   hdPath: self.wallet.publicKey.hdPath).map {
+                    return (buildResponse.0, $0)
+                }.eraseToAnyPublisher()
+            }
+            .tryMap{[weak self] response -> (String) in
+                guard let self = self else { throw WalletError.empty }
+                
+                guard let tx = self.txBuilder.buildForSend(transaction: response.0, signature: response.1) else {
+                    throw WalletError.failedToBuildTx
+                }
+                
+                return tx
+            }
+            .flatMap{[weak self] builderResponse -> AnyPublisher<Void, Error> in
+                self?.networkService.send(blob: builderResponse)
+                    .tryMap{[weak self] response in
+                        guard let self = self else { throw WalletError.empty }
+                        
+                        return self.wallet.add(transaction: transaction)
+                    }.eraseToAnyPublisher() ?? .emptyFail
+            }
+            .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
@@ -127,8 +127,8 @@ extension XRPWalletManager: TransactionSender {
                 let normalAmount = Amount(with: self.wallet.blockchain, value: normal)
                 let maxAmount = Amount(with: self.wallet.blockchain, value: max)
                 return [minAmount, normalAmount, maxAmount]
-        }
-        .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
 }
 
