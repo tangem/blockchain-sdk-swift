@@ -121,7 +121,7 @@ class BlockchainSdkTests: XCTestCase {
         let vm: WalletManager = BitcoinWalletManager(wallet: Wallet(blockchain: .bitcoin(testnet: false),
                                                                     addresses: [PlainAddress(value: "adfjbajhfaldfh")],
                                                                     cardId: "",
-                                                                    publicKey: .init(publicKey: Data(), derivedKey: nil, hdPath: nil)))
+                                                                    publicKey: .init(seedKey: Data(), derivedKey: nil, hdPath: nil)))
         
         vm.wallet.add(coinValue: 10)
         var errors = vm.validateTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 3),

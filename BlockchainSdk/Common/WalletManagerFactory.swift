@@ -76,8 +76,8 @@ public class WalletManagerFactory {
             return BitcoinWalletManager(wallet: wallet).then {
                 let network: BitcoinNetwork = testnet ? .testnet : .mainnet
                 let bitcoinManager = BitcoinManager(networkParams: network.networkParams,
-                                                    walletPublicKey: wallet.publicKey.blockchainPublicKey,
-                                                    compressedWalletPublicKey: Secp256k1Utils.compressPublicKey(wallet.publicKey.blockchainPublicKey)!,
+                                                    walletPublicKey: wallet.publicKey.blockchainKey,
+                                                    compressedWalletPublicKey: Secp256k1Utils.compressPublicKey(wallet.publicKey.blockchainKey)!,
                                                     bip: pairPublicKey == nil ? .bip84 : .bip141)
                 
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
@@ -100,8 +100,8 @@ public class WalletManagerFactory {
         case .litecoin:
             return LitecoinWalletManager(wallet: wallet).then {
                 let bitcoinManager = BitcoinManager(networkParams: LitecoinNetworkParams(),
-                                                    walletPublicKey: wallet.publicKey.blockchainPublicKey,
-                                                    compressedWalletPublicKey: Secp256k1Utils.compressPublicKey(wallet.publicKey.blockchainPublicKey)!,
+                                                    walletPublicKey: wallet.publicKey.blockchainKey,
+                                                    compressedWalletPublicKey: Secp256k1Utils.compressPublicKey(wallet.publicKey.blockchainKey)!,
                                                     bip: .bip84)
                 
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
@@ -120,8 +120,8 @@ public class WalletManagerFactory {
         case .dogecoin:
             return DogecoinWalletManager(wallet: wallet).then {
                 let bitcoinManager = BitcoinManager(networkParams: DogecoinNetworkParams(),
-                                                    walletPublicKey: wallet.publicKey.blockchainPublicKey,
-                                                    compressedWalletPublicKey: Secp256k1Utils.compressPublicKey(wallet.publicKey.blockchainPublicKey)!,
+                                                    walletPublicKey: wallet.publicKey.blockchainKey,
+                                                    compressedWalletPublicKey: Secp256k1Utils.compressPublicKey(wallet.publicKey.blockchainKey)!,
                                                     bip: .bip44)
                 
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
@@ -139,7 +139,7 @@ public class WalletManagerFactory {
             
         case .ducatus:
             return DucatusWalletManager(wallet: wallet).then {
-                let bitcoinManager = BitcoinManager(networkParams: DucatusNetworkParams(), walletPublicKey: wallet.publicKey.blockchainPublicKey, compressedWalletPublicKey: Secp256k1Utils.compressPublicKey(wallet.publicKey.blockchainPublicKey)!, bip: .bip44)
+                let bitcoinManager = BitcoinManager(networkParams: DucatusNetworkParams(), walletPublicKey: wallet.publicKey.blockchainKey, compressedWalletPublicKey: Secp256k1Utils.compressPublicKey(wallet.publicKey.blockchainKey)!, bip: .bip44)
                 
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
                 $0.networkService = DucatusNetworkService()
@@ -150,7 +150,7 @@ public class WalletManagerFactory {
                 let url = testnet ? "https://horizon-testnet.stellar.org" : "https://horizon.stellar.org"
                 let stellarSdk = StellarSDK(withHorizonUrl: url)
                 $0.stellarSdk = stellarSdk
-                $0.txBuilder = StellarTransactionBuilder(stellarSdk: stellarSdk, walletPublicKey: wallet.publicKey.blockchainPublicKey, isTestnet: testnet)
+                $0.txBuilder = StellarTransactionBuilder(stellarSdk: stellarSdk, walletPublicKey: wallet.publicKey.blockchainKey, isTestnet: testnet)
                 $0.networkService = StellarNetworkService(stellarSdk: stellarSdk)
             }
             
@@ -161,7 +161,7 @@ public class WalletManagerFactory {
                     EthereumJsonRpcProvider(network: ethereumNetwork),
                     EthereumJsonRpcProvider(network: .tangem)
                 ]
-                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainPublicKey,
+                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey,
                                                           network: ethereumNetwork)
                 let provider = BlockcypherNetworkProvider(endpoint: .ethereum, tokens: config.blockcypherTokens)
                 let blockchair = BlockchairEthNetworkProvider(endpoint: .ethereum(testnet: testnet), apiKey: config.blockchairApiKey)
@@ -171,7 +171,7 @@ public class WalletManagerFactory {
         case .rsk:
             return EthereumWalletManager(wallet: wallet, cardTokens: tokens).then {
                 let network: EthereumNetwork = .rsk
-                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainPublicKey,
+                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey,
                                                           network: network)
                 $0.networkService = EthereumNetworkService(network: .rsk, providers: [EthereumJsonRpcProvider(network: network)], blockcypherProvider: nil, blockchairProvider: nil)
             }
@@ -179,7 +179,7 @@ public class WalletManagerFactory {
         case .bsc(let testnet):
             return EthereumWalletManager(wallet: wallet).then {
                 let network: EthereumNetwork = testnet ? .bscTestnet : .bscMainnet
-                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainPublicKey,
+                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey,
                                                           network: network)
                 $0.networkService = EthereumNetworkService(network: network, providers: [EthereumJsonRpcProvider(network: network)], blockcypherProvider: nil, blockchairProvider: nil)
             }
@@ -187,7 +187,7 @@ public class WalletManagerFactory {
         case .polygon(let testnet):
             return EthereumWalletManager(wallet: wallet).then {
                 let network: EthereumNetwork = testnet ? .polygonTestnet : .polygon
-                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainPublicKey,
+                $0.txBuilder = EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey,
                                                           network: network)
                 $0.networkService = EthereumNetworkService(network: network, providers: [EthereumJsonRpcProvider(network: network)], blockcypherProvider: nil, blockchairProvider: nil)
             }
@@ -195,19 +195,19 @@ public class WalletManagerFactory {
         case .bitcoinCash(let testnet):
             return BitcoinCashWalletManager(wallet: wallet).then {
                 let provider = BlockchairNetworkProvider(endpoint: .bitcoinCash, apiKey: config.blockchairApiKey)
-                $0.txBuilder = BitcoinCashTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainPublicKey, isTestnet: testnet)
+                $0.txBuilder = BitcoinCashTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, isTestnet: testnet)
                 $0.networkService = BitcoinCashNetworkService(provider: provider)
             }
             
         case .binance(let testnet):
             return BinanceWalletManager(wallet: wallet, cardTokens: tokens).then {
-                $0.txBuilder = BinanceTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainPublicKey, isTestnet: testnet)
+                $0.txBuilder = BinanceTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, isTestnet: testnet)
                 $0.networkService = BinanceNetworkService(isTestNet: testnet)
             }
             
         case .cardano(let shelley):
             return CardanoWalletManager(wallet: wallet).then {
-                $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainPublicKey, shelleyCard: shelley)
+                $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, shelleyCard: shelley)
                 let service = CardanoNetworkService(providers: [
                     AdaliteNetworkProvider(baseUrl: .main).eraseToAnyCardanoNetworkProvider(),
                     RosettaNetworkProvider(baseUrl: .tangemRosetta).eraseToAnyCardanoNetworkProvider()
@@ -217,14 +217,14 @@ public class WalletManagerFactory {
             
         case .xrp(let curve):
             return XRPWalletManager(wallet: wallet).then {
-                $0.txBuilder = XRPTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainPublicKey, curve: curve)
+                $0.txBuilder = XRPTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, curve: curve)
                 $0.networkService = XRPNetworkService(providers: [XRPNetworkProvider(baseUrl: .xrpLedgerFoundation),
                                                                   XRPNetworkProvider(baseUrl: .ripple),
                                                                   XRPNetworkProvider(baseUrl: .rippleReserve)])
             }
         case .tezos(let curve):
             return TezosWalletManager(wallet: wallet).then {
-                $0.txBuilder = TezosTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainPublicKey, curve: curve)
+                $0.txBuilder = TezosTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, curve: curve)
                 $0.networkService = TezosNetworkService(providers: TezosApi.makeAllProviders())
             }
         }
@@ -236,7 +236,7 @@ public class WalletManagerFactory {
                             cardId: String,
                             pairPublicKey: Data? = nil) throws -> Wallet {
         let publicKey = try blockchain.makePublicKey(publicKey, chainCode: chainCode)
-        let addresses = blockchain.makeAddresses(from: publicKey.blockchainPublicKey, with: pairPublicKey)
+        let addresses = blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey)
         return Wallet(blockchain: blockchain, addresses: addresses,
                       cardId: cardId, publicKey: publicKey)
     }

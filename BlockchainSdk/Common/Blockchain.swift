@@ -401,14 +401,14 @@ extension Blockchain: Equatable, Hashable, Codable {
         }
     }
     
-    public func makePublicKey(_ seedPublicKey: Data, chainCode: Data?) throws -> Wallet.PublicKey {
+    public func makePublicKey(_ seedKey: Data, chainCode: Data?) throws -> Wallet.PublicKey {
         guard let chainCode = chainCode, let hdPath = self.derivationPath else {
-                  return Wallet.PublicKey(seedPublicKey: seedPublicKey, derivedKey: nil, hdPath: nil)
+                  return Wallet.PublicKey(seedKey: seedKey, derivedKey: nil, hdPath: nil)
               }
         
-        let extendedKey = ExtendedPublicKey(compressedPublicKey: seedPublicKey, chainCode: chainCode)
+        let extendedKey = ExtendedPublicKey(compressedPublicKey: seedKey, chainCode: chainCode)
         let derivedKey = try extendedKey.derivePublicKey(path: hdPath).compressedPublicKey
         
-        return Wallet.PublicKey(seedPublicKey: seedPublicKey, derivedKey: derivedKey, hdPath: hdPath)
+        return Wallet.PublicKey(seedKey: seedKey, derivedKey: derivedKey, hdPath: hdPath)
     }
 }

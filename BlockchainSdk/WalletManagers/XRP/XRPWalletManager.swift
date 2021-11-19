@@ -91,7 +91,7 @@ extension XRPWalletManager: TransactionSender {
                 
                 return signer.sign(hash: buildResponse.1,
                                    cardId: self.wallet.cardId,
-                                   walletPublicKey: self.wallet.publicKey.seedPublicKey,
+                                   walletPublicKey: self.wallet.publicKey.seedKey,
                                    hdPath: self.wallet.publicKey.hdPath).map {
                     return (buildResponse.0, $0)
                 }.eraseToAnyPublisher()

@@ -177,14 +177,14 @@ extension Wallet {
     }
     
     public struct PublicKey: Codable, Hashable {
-        public let seedPublicKey: Data
+        public let seedKey: Data
         public let hdPath: DerivationPath?
         private let derivedKey: Data?
 
-        public var blockchainPublicKey: Data { derivedKey ?? seedPublicKey }
+        public var blockchainKey: Data { derivedKey ?? seedKey }
         
-        public init(seedPublicKey: Data, derivedKey: Data?, hdPath: DerivationPath?) {
-            self.seedPublicKey = seedPublicKey
+        public init(seedKey: Data, derivedKey: Data?, hdPath: DerivationPath?) {
+            self.seedKey = seedKey
             self.derivedKey = derivedKey
             self.hdPath = hdPath
         }
