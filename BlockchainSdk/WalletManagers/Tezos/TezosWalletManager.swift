@@ -71,7 +71,10 @@ extension TezosWalletManager: TransactionSender {
                     return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
                 }
                 
-                return signer.sign(hash: txToSign, cardId: self.wallet.cardId, walletPublicKey: self.wallet.publicKey)
+                return signer.sign(hash: txToSign,
+                                   cardId: self.wallet.cardId,
+                                   walletPublicKey: self.wallet.publicKey.seedKey,
+                                   hdPath: self.wallet.publicKey.hdPath)
                     .map {signature -> (TezosHeader, String, Data) in
                         return (header, forgedContents, signature)
                     }

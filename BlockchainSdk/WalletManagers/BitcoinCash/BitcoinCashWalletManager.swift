@@ -56,7 +56,10 @@ extension BitcoinCashWalletManager: TransactionSender {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
-        return signer.sign(hashes: hashes, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
+        return signer.sign(hashes: hashes,
+                           cardId: wallet.cardId,
+                           walletPublicKey: self.wallet.publicKey.seedKey,
+                           hdPath: self.wallet.publicKey.hdPath)
             .tryMap {[weak self] signatures -> String in
                 guard let self = self else { throw WalletError.empty }
                 
@@ -64,15 +67,15 @@ extension BitcoinCashWalletManager: TransactionSender {
                     throw WalletError.failedToBuildTx
                 }
                 return tx.toHexString()
-        }
-        .flatMap {[weak self] tx -> AnyPublisher<Void, Error> in
-            self?.networkService.send(transaction: tx).tryMap {[weak self] response in
-                guard let self = self else { throw WalletError.empty }
-                
-                self.wallet.add(transaction: transaction)
-            }.eraseToAnyPublisher() ?? .emptyFail
-        }
-        .eraseToAnyPublisher()
+            }
+            .flatMap {[weak self] tx -> AnyPublisher<Void, Error> in
+                self?.networkService.send(transaction: tx).tryMap {[weak self] response in
+                    guard let self = self else { throw WalletError.empty }
+                    
+                    self.wallet.add(transaction: transaction)
+                }.eraseToAnyPublisher() ?? .emptyFail
+            }
+            .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
@@ -96,8 +99,8 @@ extension BitcoinCashWalletManager: TransactionSender {
                 return [
                     Amount(with: self.wallet.blockchain, value: finalFee)
                 ]
-        }
-        .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
     
     private func getEstimateSize(for transaction: Transaction) -> Decimal? {
@@ -115,13 +118,13 @@ extension BitcoinCashWalletManager: TransactionSender {
 }
 
 extension BitcoinCashWalletManager: SignatureCountValidator {
-	func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error> {
-		networkService.getSignatureCount(address: wallet.address)
-			.tryMap {
-				if signedHashes != $0 { throw BlockchainSdkError.signatureCountNotMatched }
-			}
-			.eraseToAnyPublisher()
-	}
+    func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error> {
+        networkService.getSignatureCount(address: wallet.address)
+            .tryMap {
+                if signedHashes != $0 { throw BlockchainSdkError.signatureCountNotMatched }
+            }
+            .eraseToAnyPublisher()
+    }
 }
 
 

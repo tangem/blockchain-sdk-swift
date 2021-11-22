@@ -173,6 +173,17 @@ public enum Blockchain {
     }
     
     /// BIP44
+    public var derivationPath: DerivationPath? {
+        guard curve == .secp256k1 else { return  nil }
+        
+        let bip44 = BIP44(coinType: coinType,
+                          account: 0,
+                          change: .external,
+                          addressIndex: 0)
+        
+        return bip44.buildPath().toNonHardened()
+    }
+    
     public var coinType: UInt32 {
         if isTestnet {
             return 1
@@ -182,15 +193,13 @@ public enum Blockchain {
         case .bitcoin, .ducatus: return 0
         case .litecoin: return 2
         case .dogecoin: return 3
-        case .ethereum, .bsc: return 60
-        case .stellar: return 148
-        case .rsk: return 137
+        case .ethereum, .bsc, .rsk, .polygon: return 60
         case .bitcoinCash: return 145
         case .binance: return 714
-        case .cardano: return 1815
         case .xrp: return 144
         case .tezos: return 1729
-        case .polygon: return 966
+        case .stellar: return 148
+        case .cardano: return 1815
         }
     }
     
@@ -390,5 +399,16 @@ extension Blockchain: Equatable, Hashable, Codable {
         if case let .cardano(shelley) = self {
             try container.encode(shelley, forKey: Keys.shelley)
         }
+    }
+    
+    public func makePublicKey(_ seedKey: Data, chainCode: Data?) throws -> Wallet.PublicKey {
+        guard let chainCode = chainCode, let hdPath = self.derivationPath else {
+                  return Wallet.PublicKey(seedKey: seedKey, derivedKey: nil, hdPath: nil)
+              }
+        
+        let extendedKey = ExtendedPublicKey(compressedPublicKey: seedKey, chainCode: chainCode)
+        let derivedKey = try extendedKey.derivePublicKey(path: hdPath).compressedPublicKey
+        
+        return Wallet.PublicKey(seedKey: seedKey, derivedKey: derivedKey, hdPath: hdPath)
     }
 }

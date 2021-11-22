@@ -46,9 +46,9 @@ class BitcoinWalletManager: WalletManager {
                 guard let self = self else { throw WalletError.empty }
                 
                 return self.processFee(response, amount: amount, destination: destination)
-               
-        }
-        .eraseToAnyPublisher()
+                
+            }
+            .eraseToAnyPublisher()
     }
     
     func updateWallet(with response: [BitcoinResponse]) {
@@ -59,7 +59,7 @@ class BitcoinWalletManager: WalletManager {
         wallet.add(coinValue: balance)
         loadedUnspents = unspents
         txBuilder.unspentOutputs = unspents
-            
+        
         wallet.transactions.removeAll()
         if hasUnconfirmed {
             response.forEach {
@@ -73,7 +73,10 @@ class BitcoinWalletManager: WalletManager {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
-        return signer.sign(hashes: hashes, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
+        return signer.sign(hashes: hashes,
+                           cardId: wallet.cardId,
+                           walletPublicKey: self.wallet.publicKey.seedKey,
+                           hdPath: self.wallet.publicKey.hdPath)
             .tryMap {[weak self] signatures -> (String) in
                 guard let self = self else { throw WalletError.empty }
                 
@@ -82,26 +85,26 @@ class BitcoinWalletManager: WalletManager {
                 }
                 
                 return tx.toHexString()
-        }
-        .flatMap {[weak self] tx -> AnyPublisher<Void, Error> in
-            guard let self = self else { return .emptyFail }
-            
-            let txHashPublisher: AnyPublisher<String, Error>
-            if isPushingTx {
-                txHashPublisher = self.networkService.push(transaction: tx)
-            } else {
-                txHashPublisher = self.networkService.send(transaction: tx)
             }
-            
-            return txHashPublisher.tryMap {[weak self] sendResponse in
-                guard let self = self else { throw WalletError.empty }
+            .flatMap {[weak self] tx -> AnyPublisher<Void, Error> in
+                guard let self = self else { return .emptyFail }
                 
-                var sendedTx = transaction
-                sendedTx.hash = sendResponse
-                self.wallet.add(transaction: sendedTx)
-            }.eraseToAnyPublisher()
-        }
-        .eraseToAnyPublisher()
+                let txHashPublisher: AnyPublisher<String, Error>
+                if isPushingTx {
+                    txHashPublisher = self.networkService.push(transaction: tx)
+                } else {
+                    txHashPublisher = self.networkService.send(transaction: tx)
+                }
+                
+                return txHashPublisher.tryMap {[weak self] sendResponse in
+                    guard let self = self else { throw WalletError.empty }
+                    
+                    var sendedTx = transaction
+                    sendedTx.hash = sendResponse
+                    self.wallet.add(transaction: sendedTx)
+                }.eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
     
     private func processFee(_ response: BitcoinFee, amount: Amount, destination: String) -> [Amount] {
@@ -215,7 +218,7 @@ extension BitcoinWalletManager: TransactionPusher {
             return .anyFail(error: BlockchainSdkError.failedToFindTxInputs)
         }
         
-//        let outputs = loadedUnspents.filter { unspent in params.inputs.contains(where: { $0.prevHash == unspent.transactionHash })}
+        //        let outputs = loadedUnspents.filter { unspent in params.inputs.contains(where: { $0.prevHash == unspent.transactionHash })}
         let outputs = loadedUnspents.filter { $0.transactionHash != transactionHash }
         txBuilder.unspentOutputs = outputs
         
@@ -224,13 +227,13 @@ extension BitcoinWalletManager: TransactionPusher {
 }
 
 extension BitcoinWalletManager: SignatureCountValidator {
-	func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error> {
-		networkService.getSignatureCount(address: wallet.address)
-			.tryMap {
-				if signedHashes != $0 { throw BlockchainSdkError.signatureCountNotMatched }
-			}
-			.eraseToAnyPublisher()
-	}
+    func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error> {
+        networkService.getSignatureCount(address: wallet.address)
+            .tryMap {
+                if signedHashes != $0 { throw BlockchainSdkError.signatureCountNotMatched }
+            }
+            .eraseToAnyPublisher()
+    }
 }
 
 extension BitcoinWalletManager: ThenProcessable { }
