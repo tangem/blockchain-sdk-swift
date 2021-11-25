@@ -400,23 +400,4 @@ extension Blockchain: Equatable, Hashable, Codable {
             try container.encode(shelley, forKey: Keys.shelley)
         }
     }
-}
-
-extension Blockchain {
-    public static func makeBlockchains(for testnet: Bool) -> [Blockchain] {
-        [.bitcoin(testnet: testnet),
-         .litecoin,
-         .stellar(testnet: testnet),
-         .ethereum(testnet: testnet),
-         .rsk,
-         .bitcoinCash(testnet: testnet),
-         .binance(testnet: testnet),
-         .cardano(shelley: testnet),
-         .xrp(curve: .secp256k1),
-         .ducatus,
-         .tezos(curve: .secp256k1),
-         .bsc(testnet: testnet),
-         .polygon(testnet: testnet)
-        ]
-    }
-}
+}s
