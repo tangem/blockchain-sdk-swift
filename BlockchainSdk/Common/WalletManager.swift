@@ -117,15 +117,10 @@ public class WalletManager {
         wallet.remove(token: token)
     }
     
-    @discardableResult
-    public func addToken(_ token: Token) -> AnyPublisher<Amount, Error> {
+    public func addToken(_ token: Token) {
         if !cardTokens.contains(token) {
             cardTokens.append(token)
         }
-        
-        return Just(Amount(with: token, value: 0))
-            .setFailureType(to: Error.self)
-            .eraseToAnyPublisher()
     }
     
     public func addTokens(_ tokens: [Token]) {
