@@ -19,69 +19,95 @@ public class WalletManagerFactory {
         self.config = config
     }
     
-    /// Base wallet manager constructor
+    /// Base wallet manager initializer
     /// - Parameters:
-    ///   - card: Tangem card
+    ///   - cardId: Card's cardId
     ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
+    ///   - seedKey: ExtendedPublicKey of the wallet
+    ///   - derivedKey: Derived ExtendedPublicKey by the card
     /// - Returns: WalletManager?
-    public func makeWalletManager(from cardId: String, wallet: Card.Wallet, blockchain: Blockchain) throws -> WalletManager {
-        try makeWalletManager(from: blockchain,
-                              publicKey: wallet.publicKey,
-                              chainCode: wallet.chainCode,
-                              cardId: cardId)
-    }
-    
-    /// Temp wallet manager constructor
-    /// - Parameters:
-    ///   - card: Tangem card
-    ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
-    /// - Returns: WalletManager?
-    public func makeWalletManager(from cardId: String, walletPublicKey: Data, chainCode: Data?, blockchain: Blockchain) throws -> WalletManager {
-        try makeWalletManager(from: blockchain,
-                              publicKey: walletPublicKey,
-                              chainCode: chainCode,
-                              cardId: cardId)
-    }
-    
-    public func makeWalletManagers(from cardId: String, wallet: Card.Wallet, blockchains: [Blockchain]) throws -> [WalletManager] {
-        return try blockchains.map { try makeWalletManager(from: cardId, wallet: wallet, blockchain: $0) }
-    }
-    
-    public func makeWalletManagers(for cardId: String, wallet: Card.Wallet, and tokens: [Token]) throws -> [WalletManager] {
-        let blockchainDict = Dictionary(grouping: tokens, by: { $0.blockchain })
+    public func makeWalletManager(cardId: String, blockchain: Blockchain, seedKey: ExtendedPublicKey, derivedKey: ExtendedPublicKey) throws -> WalletManager {
+        guard blockchain.derivationPath == derivedKey.derivationPath else {
+            throw BlockchainSdkError.wrongDerivationPath
+        }
         
-        let managers: [WalletManager] = try blockchainDict.map {
-            let manager = try makeWalletManager(from: cardId, wallet: wallet, blockchain: $0.key)
+        return try makeWalletManager(from: blockchain,
+                                     publicKey: .init(seedKey: seedKey.compressedPublicKey,
+                                                      derivedKey: derivedKey.compressedPublicKey,
+                                                      derivationPath: derivedKey.derivationPath),
+                                     cardId: cardId)
+    }
+    
+    /// Base wallet manager initializer for tokens
+    /// - Parameters:
+    ///   - cardId: Card's cardId
+    ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
+    ///   - seedKey: ExtendedPublicKey of the wallet
+    ///   - derivedKey: Derived ExtendedPublicKey by the card
+    public func makeWalletManagers(cardId: String, tokens: [Token], seedKey: ExtendedPublicKey, derivedKey: ExtendedPublicKey) throws -> [WalletManager] {
+        let groupedTokens = Dictionary(grouping: tokens, by: { $0.blockchain })
+        return try groupedTokens.map {
+            let manager = try makeWalletManager(cardId: cardId, blockchain: $0.key, seedKey: seedKey, derivedKey: derivedKey)
             manager.cardTokens.append(contentsOf: $0.value.filter { !manager.cardTokens.contains($0) })
             return manager
         }
-        
-        return managers
     }
     
+    /// Legacy wallet manager initializer
+    /// - Parameters:
+    ///   - cardId: Card's cardId
+    ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
+    ///   - walletPublicKey: Wallet's publicKey
+    /// - Returns: WalletManager
+    public func makeWalletManager(cardId: String, blockchain: Blockchain, walletPublicKey: Data) throws -> WalletManager {
+        try makeWalletManager(from: blockchain,
+                              publicKey: .init(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil),
+                              cardId: cardId)
+    }
+    
+    /// Legacy wallet manager initializer for tokens
+    /// - Parameters:
+    ///   - cardId: Card's cardId
+    ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
+    ///   - walletPublicKey: Wallet's publicKey
+    /// - Returns: [WalletManager]
+    public func makeWalletManagers(cardId: String, tokens: [Token], walletPublicKey: Data) throws -> [WalletManager] {
+        let groupedTokens = Dictionary(grouping: tokens, by: { $0.blockchain })
+        return try groupedTokens.map {
+            let manager = try makeWalletManager(cardId: cardId, blockchain: $0.key, walletPublicKey: walletPublicKey)
+            manager.cardTokens.append(contentsOf: $0.value.filter { !manager.cardTokens.contains($0) })
+            return manager
+        }
+    }
+    
+    /// Wallet manager initializer for twin cards
+    /// - Parameters:
+    ///   - cardId: Card's cardId
+    ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
+    ///   - walletPublicKey: Wallet's publicKey
     public func makeTwinWalletManager(from cardId: String, walletPublicKey: Data, pairKey: Data, isTestnet: Bool) throws -> WalletManager {
         try makeWalletManager(from: .bitcoin(testnet: isTestnet),
-                              publicKey: walletPublicKey,
-                              chainCode: nil,
+                              publicKey: .init(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil),
                               cardId: cardId,
                               pairPublicKey: pairKey,
                               tokens: [])
     }
     
     func makeWalletManager(from blockchain: Blockchain,
-                           publicKey: Data,
-                           chainCode: Data?,
+                           publicKey: Wallet.PublicKey,
                            cardId: String,
                            pairPublicKey: Data? = nil,
                            tokens: [Token] = []) throws -> WalletManager {
         
-        if blockchain.curve == .ed25519, publicKey.count > 32 { throw BlockchainSdkError.wrongKey }
+        if blockchain.curve == .ed25519, publicKey.seedKey.count > 32 || publicKey.blockchainKey.count > 32  {
+            throw BlockchainSdkError.wrongKey
+        }
         
-        let wallet = try makeWallet(from: blockchain,
-                                    publicKey: publicKey,
-                                    chainCode: chainCode,
-                                    cardId: cardId,
-                                    pairPublicKey: pairPublicKey)
+        let addresses = blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey)
+        let wallet = Wallet(blockchain: blockchain,
+                            addresses: addresses,
+                            cardId: cardId,
+                            publicKey: publicKey)
         
         switch blockchain {
         case .bitcoin(let testnet):
@@ -240,16 +266,5 @@ public class WalletManagerFactory {
                 $0.networkService = TezosNetworkService(providers: TezosApi.makeAllProviders())
             }
         }
-    }
-    
-    private func makeWallet(from blockchain: Blockchain,
-                            publicKey: Data,
-                            chainCode: Data?,
-                            cardId: String,
-                            pairPublicKey: Data? = nil) throws -> Wallet {
-        let publicKey = try blockchain.makePublicKey(publicKey, chainCode: chainCode)
-        let addresses = blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey)
-        return Wallet(blockchain: blockchain, addresses: addresses,
-                      cardId: cardId, publicKey: publicKey)
     }
 }

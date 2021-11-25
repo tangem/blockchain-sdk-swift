@@ -186,8 +186,8 @@ public protocol TransactionSender {
 
 @available(iOS 13.0, *)
 public protocol TransactionSigner {
-    func sign(hashes: [Data], cardId: String, walletPublicKey: Data, hdPath: DerivationPath?) -> AnyPublisher<[Data], Error>
-    func sign(hash: Data, cardId: String, walletPublicKey: Data, hdPath: DerivationPath?) -> AnyPublisher<Data, Error>
+    func sign(hashes: [Data], cardId: String, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[Data], Error>
+    func sign(hash: Data, cardId: String, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error>
 }
 
 @available(iOS 13.0, *)

@@ -72,7 +72,7 @@ DEPENDENCIES:
   - stellar-ios-mac-sdk
   - SwiftCBOR
   - SwiftyJSON
-  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-103`)
+  - TangemSdk (from `../tangem-sdk-ios`)
   - web3swift (from `https://github.com/lazutkin-andrey/web3swift.git`, tag `2.2.6`)
 
 SPEC REPOS:
@@ -105,8 +105,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/lazutkin-andrey/hdwallet.git
     :tag: 0.3.12
   TangemSdk:
-    :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-103
+    :path: "../tangem-sdk-ios"
   web3swift:
     :git: https://github.com/lazutkin-andrey/web3swift.git
     :tag: 2.2.6
@@ -121,9 +120,6 @@ CHECKOUT OPTIONS:
   HDWalletKit:
     :git: https://github.com/lazutkin-andrey/hdwallet.git
     :tag: 0.3.12
-  TangemSdk:
-    :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-103
   web3swift:
     :git: https://github.com/lazutkin-andrey/web3swift.git
     :tag: 2.2.6
@@ -151,6 +147,6 @@ SPEC CHECKSUMS:
   web3swift: 21ab60f3c80aea2366ebf016f377e5cb654909bf
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: f533d294595fae389a748535470f22f3afa4a87f
+PODFILE CHECKSUM: 2c3cca48732291b7b07882504cfba3e0f8f31e34
 
 COCOAPODS: 1.11.2
