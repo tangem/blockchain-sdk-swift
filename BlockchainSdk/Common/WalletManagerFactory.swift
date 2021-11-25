@@ -38,21 +38,6 @@ public class WalletManagerFactory {
                                      cardId: cardId)
     }
     
-    /// Base wallet manager initializer for tokens
-    /// - Parameters:
-    ///   - cardId: Card's cardId
-    ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
-    ///   - seedKey: ExtendedPublicKey of the wallet
-    ///   - derivedKey: Derived ExtendedPublicKey by the card
-    public func makeWalletManagers(cardId: String, tokens: [Token], seedKey: ExtendedPublicKey, derivedKey: ExtendedPublicKey) throws -> [WalletManager] {
-        let groupedTokens = Dictionary(grouping: tokens, by: { $0.blockchain })
-        return try groupedTokens.map {
-            let manager = try makeWalletManager(cardId: cardId, blockchain: $0.key, seedKey: seedKey, derivedKey: derivedKey)
-            manager.cardTokens.append(contentsOf: $0.value.filter { !manager.cardTokens.contains($0) })
-            return manager
-        }
-    }
-    
     /// Legacy wallet manager initializer
     /// - Parameters:
     ///   - cardId: Card's cardId
@@ -63,21 +48,6 @@ public class WalletManagerFactory {
         try makeWalletManager(from: blockchain,
                               publicKey: .init(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil),
                               cardId: cardId)
-    }
-    
-    /// Legacy wallet manager initializer for tokens
-    /// - Parameters:
-    ///   - cardId: Card's cardId
-    ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
-    ///   - walletPublicKey: Wallet's publicKey
-    /// - Returns: [WalletManager]
-    public func makeWalletManagers(cardId: String, tokens: [Token], walletPublicKey: Data) throws -> [WalletManager] {
-        let groupedTokens = Dictionary(grouping: tokens, by: { $0.blockchain })
-        return try groupedTokens.map {
-            let manager = try makeWalletManager(cardId: cardId, blockchain: $0.key, walletPublicKey: walletPublicKey)
-            manager.cardTokens.append(contentsOf: $0.value.filter { !manager.cardTokens.contains($0) })
-            return manager
-        }
     }
     
     /// Wallet manager initializer for twin cards
