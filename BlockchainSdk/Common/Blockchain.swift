@@ -400,4 +400,5 @@ extension Blockchain: Equatable, Hashable, Codable {
             try container.encode(shelley, forKey: Keys.shelley)
         }
     }
-}s
+}
+
