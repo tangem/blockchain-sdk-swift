@@ -181,7 +181,7 @@ public enum Blockchain {
                           change: .external,
                           addressIndex: 0)
         
-        return bip44.buildPath().toNonHardened()
+        return bip44.buildPath()
     }
     
     public var coinType: UInt32 {
@@ -400,15 +400,5 @@ extension Blockchain: Equatable, Hashable, Codable {
             try container.encode(shelley, forKey: Keys.shelley)
         }
     }
-    
-    public func makePublicKey(_ seedKey: Data, chainCode: Data?) throws -> Wallet.PublicKey {
-        guard let chainCode = chainCode, let hdPath = self.derivationPath else {
-                  return Wallet.PublicKey(seedKey: seedKey, derivedKey: nil, hdPath: nil)
-              }
-        
-        let extendedKey = ExtendedPublicKey(compressedPublicKey: seedKey, chainCode: chainCode)
-        let derivedKey = try extendedKey.derivePublicKey(path: hdPath).compressedPublicKey
-        
-        return Wallet.PublicKey(seedKey: seedKey, derivedKey: derivedKey, hdPath: hdPath)
-    }
 }
+

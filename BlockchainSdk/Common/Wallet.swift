@@ -18,18 +18,18 @@ public struct Wallet {
     public var transactions: [Transaction] = []
     public var state: WalletState = .created
     
-	public var address: String {
-		if let address = addresses.first(where: { $0.type == blockchain.defaultAddressType })?.value {
-			return address
-		} else {
-			return addresses.first!.value
-		}
-	}
+    public var address: String {
+        if let address = addresses.first(where: { $0.type == blockchain.defaultAddressType })?.value {
+            return address
+        } else {
+            return addresses.first!.value
+        }
+    }
     
     public var isEmpty: Bool {
         return amounts.filter { $0.key != .reserve && !$0.value.isEmpty }.isEmpty
     }
-
+    
     public var hasPendingTx: Bool {
         return !transactions.filter { $0.status == .unconfirmed }.isEmpty
     }
@@ -37,16 +37,16 @@ public struct Wallet {
     public var pendingOutgoingTransactions: [Transaction] {
         transactions.filter { tx in
             tx.status == .unconfirmed &&
-                tx.destinationAddress != .unknown &&
-                addresses.contains(where: { $0.value == tx.sourceAddress })
+            tx.destinationAddress != .unknown &&
+            addresses.contains(where: { $0.value == tx.sourceAddress })
         }
     }
     
     public var pendingIncomingTransactions: [Transaction] {
         transactions.filter { tx in
             tx.status == .unconfirmed &&
-                tx.sourceAddress != .unknown &&
-                addresses.contains(where: { $0.value == tx.destinationAddress })
+            tx.sourceAddress != .unknown &&
+            addresses.contains(where: { $0.value == tx.destinationAddress })
         }
     }
     
@@ -108,7 +108,7 @@ public struct Wallet {
     }
     
     mutating func add(amount: Amount) {
-         amounts[amount.type] = amount
+        amounts[amount.type] = amount
     }
     
     mutating func add(transaction: Transaction) {
@@ -116,7 +116,7 @@ public struct Wallet {
         tx.date = Date()
         transactions.append(tx)
     }
-
+    
     mutating func addPendingTransaction(amount: Amount,
                                         fee: Amount,
                                         sourceAddress: String,
@@ -178,15 +178,15 @@ extension Wallet {
     
     public struct PublicKey: Codable, Hashable {
         public let seedKey: Data
-        public let hdPath: DerivationPath?
+        public let derivationPath: DerivationPath?
         private let derivedKey: Data?
-
+        
         public var blockchainKey: Data { derivedKey ?? seedKey }
         
-        public init(seedKey: Data, derivedKey: Data?, hdPath: DerivationPath?) {
+        public init(seedKey: Data, derivedKey: Data?, derivationPath: DerivationPath?) {
             self.seedKey = seedKey
             self.derivedKey = derivedKey
-            self.hdPath = hdPath
+            self.derivationPath = derivationPath
         }
     }
 }

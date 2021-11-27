@@ -94,8 +94,7 @@ extension StellarWalletManager: TransactionSender {
                 
                 return signer.sign(hash: buildForSignResponse.hash,
                                    cardId: self.wallet.cardId,
-                                   walletPublicKey: self.wallet.publicKey.seedKey,
-                                   hdPath: self.wallet.publicKey.hdPath)
+                                   walletPublicKey: self.wallet.publicKey)
                     .map { return ($0, buildForSignResponse) }.eraseToAnyPublisher()
             }
             .tryMap {[weak self] result throws -> String in

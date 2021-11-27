@@ -21,6 +21,7 @@ public enum BlockchainSdkError: Int, LocalizedError {
     case feeForPushTxNotEnough
     case networkProvidersNotSupportsRbf
     case wrongKey
+    case wrongDerivationPath
 	
 	public var errorDescription: String? {
 		switch self {

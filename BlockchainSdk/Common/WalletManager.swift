@@ -117,14 +117,14 @@ public class WalletManager {
         wallet.remove(token: token)
     }
     
-    public func addToken(_ token: Token) -> AnyPublisher<Amount, Error> {
+    public func addToken(_ token: Token) {
         if !cardTokens.contains(token) {
             cardTokens.append(token)
         }
-        
-        return Just(Amount(with: token, value: 0))
-            .setFailureType(to: Error.self)
-            .eraseToAnyPublisher()
+    }
+    
+    public func addTokens(_ tokens: [Token]) {
+        tokens.forEach { addToken($0) }
     }
     
     func validateTransaction(amount: Amount, fee: Amount?) -> TransactionErrors {
@@ -186,8 +186,8 @@ public protocol TransactionSender {
 
 @available(iOS 13.0, *)
 public protocol TransactionSigner {
-    func sign(hashes: [Data], cardId: String, walletPublicKey: Data, hdPath: DerivationPath?) -> AnyPublisher<[Data], Error>
-    func sign(hash: Data, cardId: String, walletPublicKey: Data, hdPath: DerivationPath?) -> AnyPublisher<Data, Error>
+    func sign(hashes: [Data], cardId: String, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[Data], Error>
+    func sign(hash: Data, cardId: String, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error>
 }
 
 @available(iOS 13.0, *)

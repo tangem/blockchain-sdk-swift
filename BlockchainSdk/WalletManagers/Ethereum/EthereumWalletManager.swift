@@ -70,24 +70,6 @@ class EthereumWalletManager: WalletManager {
             })
     }
     
-    override public func addToken(_ token: Token) -> AnyPublisher<Amount, Error> {
-        if !cardTokens.contains(token) {
-            cardTokens.append(token)
-        }
-        
-        return networkService.getTokensBalance(wallet.address, tokens: [token])
-            .tryMap {[weak self] result throws -> Amount in
-                guard let self = self else { throw WalletError.empty }
-                
-                guard let value = result[token] else {
-                    throw WalletError.failedToLoadTokenBalance(token: token)
-                }
-                let tokenAmount = self.wallet.add(tokenValue: value, for: token)
-                return tokenAmount
-            }
-            .eraseToAnyPublisher()
-    }
-    
     private func updateWallet(with response: EthereumInfoResponse) {
         wallet.add(coinValue: response.balance)
         for tokenBalance in response.tokenBalances {
@@ -191,8 +173,7 @@ extension EthereumWalletManager: EthereumTransactionSigner {
         
         return signer.sign(hash: txForSign.hash,
                            cardId: wallet.cardId,
-                           walletPublicKey: self.wallet.publicKey.seedKey,
-                           hdPath: self.wallet.publicKey.hdPath)
+                           walletPublicKey: self.wallet.publicKey)
             .tryMap {[weak self] signature -> String in
                 guard let self = self else { throw WalletError.empty }
                 
