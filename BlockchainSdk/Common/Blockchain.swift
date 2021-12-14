@@ -172,16 +172,35 @@ public enum Blockchain {
         }
     }
     
-    /// BIP44
     public var derivationPath: DerivationPath? {
-        guard curve == .secp256k1 else { return  nil }
+        guard curve == .secp256k1 || curve == .ed25519 else { return  nil }
         
-        let bip44 = BIP44(coinType: coinType,
-                          account: 0,
-                          change: .external,
-                          addressIndex: 0)
-        
-        return bip44.buildPath()
+        switch self {
+        case .stellar:
+            //Path according to sep-0005. https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md
+            return DerivationPath(nodes: [.hardened(BIP44.purpose),
+                                          .hardened(coinType),
+                                          .hardened(0)])
+        case .cardano(let shelley):
+            if !shelley { //We use shelley for all new cards with HD wallets feature
+                return nil
+            }
+            
+            //Path according to CIP-1852. https://cips.cardano.org/cips/cip1852/
+            return DerivationPath(nodes: [.hardened(1852), //purpose
+                                          .hardened(coinType),
+                                          .hardened(0),
+                                          .nonHardened(0),
+                                          .nonHardened(0)])
+        default:
+            //Standart bip44
+            let bip44 = BIP44(coinType: coinType,
+                              account: 0,
+                              change: .external,
+                              addressIndex: 0)
+            
+            return bip44.buildPath()
+        }
     }
     
     public var coinType: UInt32 {
@@ -248,7 +267,7 @@ public enum Blockchain {
         case .ethereum(let testnet):
             let baseUrl = testnet ? "https://rinkeby.etherscan.io/address/" : "https://etherscan.io/address/"
             let exploreLink = tokenContractAddress == nil ? baseUrl + address :
-                "https://etherscan.io/token/\(tokenContractAddress!)?a=\(address)"
+            "https://etherscan.io/token/\(tokenContractAddress!)?a=\(address)"
             return URL(string: exploreLink)
         case .litecoin:
             return URL(string: "https://blockchair.com/litecoin/address/\(address)")
