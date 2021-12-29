@@ -14,6 +14,8 @@ import Combine
 class StellarTransactionBuilder {
     public var sequence: Int64?
     var useTimebounds = true
+    //for tests
+    var specificTxTime: TimeInterval? = nil
     
     private let stellarSdk: StellarSDK
     private let walletPublicKey: Data
@@ -117,7 +119,7 @@ class StellarTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
         
-        let currentTime = Date().timeIntervalSince1970
+        let currentTime = specificTxTime ?? Date().timeIntervalSince1970
         let minTime = currentTime - 60.0
         let maxTime = currentTime + 60.0
         

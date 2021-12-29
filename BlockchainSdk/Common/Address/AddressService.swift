@@ -9,7 +9,7 @@
 import Foundation
 
 public protocol AddressService: MultipleAddressProvider {
-    func makeAddress(from walletPublicKey: Data) -> String
+    func makeAddress(from walletPublicKey: Data) -> String //todo throws
     func validate(_ address: String) -> Bool
 }
 
