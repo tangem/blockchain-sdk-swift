@@ -1,5 +1,5 @@
 PODS:
-  - Alamofire (5.4.4)
+  - Alamofire (5.5.0)
   - AnyCodable-FlightSchool (0.6.2)
   - BigInt (5.2.0)
   - BinanceChain (1.0.1-beta):
@@ -11,11 +11,11 @@ PODS:
     - BinanceChain/Util
     - HDWalletKit
     - secp256k1.swift
-    - Starscream (~> 3.1)
-    - SwiftDate (~> 6.0.1)
-    - SwiftProtobuf (~> 1.4)
+    - Starscream
+    - SwiftDate
+    - SwiftProtobuf
     - SwiftyJSON
-    - XCGLogger (~> 7.0)
+    - XCGLogger
   - BinanceChain/Libraries (1.0.1-beta)
   - BinanceChain/Protobuf (1.0.1-beta)
   - BinanceChain/Util (1.0.1-beta)
@@ -31,30 +31,30 @@ PODS:
   - ObjcExceptionBridging (1.0.1):
     - ObjcExceptionBridging/ObjcExceptionBridging (= 1.0.1)
   - ObjcExceptionBridging/ObjcExceptionBridging (1.0.1)
-  - PromiseKit (6.8.5):
-    - PromiseKit/CorePromise (= 6.8.5)
-    - PromiseKit/Foundation (= 6.8.5)
-    - PromiseKit/UIKit (= 6.8.5)
-  - PromiseKit/CorePromise (6.8.5)
-  - PromiseKit/Foundation (6.8.5):
+  - PromiseKit (6.15.3):
+    - PromiseKit/CorePromise (= 6.15.3)
+    - PromiseKit/Foundation (= 6.15.3)
+    - PromiseKit/UIKit (= 6.15.3)
+  - PromiseKit/CorePromise (6.15.3)
+  - PromiseKit/Foundation (6.15.3):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.8.5):
+  - PromiseKit/UIKit (6.15.3):
     - PromiseKit/CorePromise
   - secp256k1.swift (0.1.4)
   - Sodium (0.9.1)
-  - Starscream (3.1.1)
+  - Starscream (4.0.4)
   - stellar-ios-mac-sdk (2.0.7)
   - SwiftCBOR (0.4.4)
-  - SwiftDate (6.0.3)
+  - SwiftDate (6.3.1)
   - SwiftProtobuf (1.18.0)
   - SwiftyJSON (5.0.1)
-  - TangemSdk (3.1.4)
+  - TangemSdk (3.1.5)
   - web3swift (2.2.1):
     - BigInt
     - CryptoSwift
-    - PromiseKit (~> 6.8.4)
+    - PromiseKit
     - secp256k1.swift
-    - Starscream (~> 3.1.0)
+    - Starscream
   - XCGLogger (7.0.1):
     - XCGLogger/Core (= 7.0.1)
   - XCGLogger/Core (7.0.1):
@@ -64,16 +64,16 @@ DEPENDENCIES:
   - Alamofire
   - AnyCodable-FlightSchool
   - BigInt
-  - BinanceChain (from `https://github.com/lazutkin-andrey/swiftbinancechain.git`, tag `0.0.8`)
-  - BitcoinCore.swift (from `https://github.com/lazutkin-andrey/bitcoincore.git`, tag `0.0.15`)
+  - BinanceChain (from `../SwiftBinanceChain`)
+  - BitcoinCore.swift (from `../bitcoincore`)
   - HDWalletKit (from `https://github.com/lazutkin-andrey/hdwallet.git`, tag `0.3.12`)
   - Moya
   - Sodium
   - stellar-ios-mac-sdk
   - SwiftCBOR
   - SwiftyJSON
-  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-104`)
-  - web3swift (from `https://github.com/lazutkin-andrey/web3swift.git`, tag `2.2.6`)
+  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-122`)
+  - web3swift (from `../web3swift`)
 
 SPEC REPOS:
   trunk:
@@ -96,61 +96,49 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   BinanceChain:
-    :git: https://github.com/lazutkin-andrey/swiftbinancechain.git
-    :tag: 0.0.8
+    :path: "../SwiftBinanceChain"
   BitcoinCore.swift:
-    :git: https://github.com/lazutkin-andrey/bitcoincore.git
-    :tag: 0.0.15
+    :path: "../bitcoincore"
   HDWalletKit:
     :git: https://github.com/lazutkin-andrey/hdwallet.git
     :tag: 0.3.12
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-104
+    :tag: develop-122
   web3swift:
-    :git: https://github.com/lazutkin-andrey/web3swift.git
-    :tag: 2.2.6
+    :path: "../web3swift"
 
 CHECKOUT OPTIONS:
-  BinanceChain:
-    :git: https://github.com/lazutkin-andrey/swiftbinancechain.git
-    :tag: 0.0.8
-  BitcoinCore.swift:
-    :git: https://github.com/lazutkin-andrey/bitcoincore.git
-    :tag: 0.0.15
   HDWalletKit:
     :git: https://github.com/lazutkin-andrey/hdwallet.git
     :tag: 0.3.12
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-104
-  web3swift:
-    :git: https://github.com/lazutkin-andrey/web3swift.git
-    :tag: 2.2.6
+    :tag: develop-122
 
 SPEC CHECKSUMS:
-  Alamofire: f3b09a368f1582ab751b3fff5460276e0d2cf5c9
+  Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
   AnyCodable-FlightSchool: ac75ed9bae659e16a41ebfa6c71a663d6f2c111c
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
-  BinanceChain: 590254fcbe333b0374c69f5ea80f56afb291bb26
+  BinanceChain: b77d4c0e496efbf13bdb1f428621480fd52f4ba1
   BitcoinCore.swift: 64ac4e69d9a6ef917bcbb0c23f1324cf57a822fb
   CryptoSwift: a532e74ed010f8c95f611d00b8bbae42e9fe7c17
   HDWalletKit: 5f03c82ab8ac7972951feae247780d39823f04ea
   Moya: 138f0573e53411fb3dc17016add0b748dfbd78ee
   ObjcExceptionBridging: c30e00eb3700467e695faeea30e26e18bd445001
-  PromiseKit: 9616b0afef31eae56ab9ce044c8ec2b8612a15cd
+  PromiseKit: 3b2b6995e51a954c46dbc550ce3da44fbfb563c5
   secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
   Sodium: 23d11554ecd556196d313cf6130d406dfe7ac6da
-  Starscream: 4bb2f9942274833f7b4d296a55504dcfc7edb7b0
+  Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
   stellar-ios-mac-sdk: dbace17a64d1e565ddd084a839aea569c672d539
   SwiftCBOR: ce5354ec8b660da2d6fc754462881119dbe1f963
-  SwiftDate: 8d4f14bf1ef68e95094511504856547bf9e3e1a6
+  SwiftDate: 72d28954e8e1c6c1c0f917ccc8005e4f83c7d4b2
   SwiftProtobuf: c3c12645230d9b09c72267e0de89468c5543bd86
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
-  TangemSdk: ef514f64ce20c021dca9679659e035c8afe40caa
-  web3swift: 21ab60f3c80aea2366ebf016f377e5cb654909bf
+  TangemSdk: 436eab945e920c45cec1d0e4b795f4bffa423b42
+  web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: bd3f4b32dfa0a0c0f0b3ec5c0f58e75d0186c912
+PODFILE CHECKSUM: 4119f5aec2cb87b57e5b38e6754be6062cb36f64
 
 COCOAPODS: 1.11.2
