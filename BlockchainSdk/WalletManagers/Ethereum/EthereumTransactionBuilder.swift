@@ -14,8 +14,8 @@ import TangemSdk
 class EthereumTransactionBuilder {
     private let walletPublicKey: Data
     private let network: EthereumNetwork
-    init(walletPublicKey: Data, network: EthereumNetwork) {
-        self.walletPublicKey = Secp256k1Utils.decompressPublicKey(walletPublicKey)!
+    init(walletPublicKey: Data, network: EthereumNetwork) throws {
+        self.walletPublicKey = try Secp256k1Key(with: walletPublicKey).decompress()
         self.network = network
     }
     
@@ -60,7 +60,7 @@ class EthereumTransactionBuilder {
     
     public func buildForSend(transaction: EthereumTransaction, hash: Data, signature: Data) -> Data? {
         var transaction = transaction
-        guard let unmarshalledSignature = Secp256k1Utils.unmarshal(secp256k1Signature: signature, hash: hash, publicKey: walletPublicKey) else {
+        guard let unmarshalledSignature = try? Secp256k1Signature(with: signature).unmarshal(with: walletPublicKey, hash: hash) else {
             return nil
         }
         

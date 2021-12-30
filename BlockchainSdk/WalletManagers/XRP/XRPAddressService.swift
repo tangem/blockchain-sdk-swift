@@ -17,11 +17,11 @@ public class XRPAddressService: AddressService {
         self.curve = curve
     }
     
-    public func makeAddress(from walletPublicKey: Data) -> String {
+    public func makeAddress(from walletPublicKey: Data) throws -> String {
         var key: Data
         switch curve {
         case .secp256k1:
-            key = Secp256k1Utils.compressPublicKey(walletPublicKey)!
+            key = try Secp256k1Key(with: walletPublicKey).compress()
         case .ed25519:
             key = [UInt8(0xED)] + walletPublicKey
         case .secp256r1:

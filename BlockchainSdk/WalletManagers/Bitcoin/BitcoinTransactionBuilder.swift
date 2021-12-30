@@ -94,8 +94,9 @@ class BitcoinTransactionBuilder {
 	private func convertToDER(_ signatures: [Data]) -> [Data]? {
         var derSigs = [Data]()
         
+        let utils = Secp256k1Utils()
         for signature in signatures {
-            guard let signDer = Secp256k1Utils.serializeToDer(secp256k1Signature: signature) else {
+            guard let signDer = try? utils.serializeDer(signature) else {
                 return nil
             }
             

@@ -17,8 +17,8 @@ class BitcoinCashTransactionBuilder {
     
     private var blockchain: Blockchain { Blockchain.bitcoinCash(testnet: isTestnet) }
     
-    init(walletPublicKey: Data, isTestnet: Bool) {
-        self.walletPublicKey = Secp256k1Utils.compressPublicKey(walletPublicKey)!
+    init(walletPublicKey: Data, isTestnet: Bool) throws {
+        self.walletPublicKey = try Secp256k1Key(with: walletPublicKey).compress()
         self.isTestnet = isTestnet
     }
     
@@ -325,7 +325,7 @@ class BitcoinCashTransactionBuilder {
         var scripts: [Data] = .init()
         scripts.reserveCapacity(signatures.count)
         for signature in signatures {
-            guard let signDer = Secp256k1Utils.serializeToDer(secp256k1Signature: signature) else {
+            guard let signDer = try? Secp256k1Signature(with: signature).serializeDer() else {
                 return nil
             }
             
