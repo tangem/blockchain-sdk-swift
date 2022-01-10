@@ -23,7 +23,7 @@ class EthereumTests: XCTestCase {
         let walletPubKey = Data(hex: "04BAEC8CD3BA50FDFE1E8CF2B04B58E17041245341CD1F1C6B3A496B48956DB4C896A6848BCF8FCFC33B88341507DD25E5F4609386C68086C74CF472B86E5C3820")
         let expectedAddress = "0xc63763572D45171e4C25cA0818b44E5Dd7F5c15B"
         
-        XCTAssertEqual(addressService.makeAddress(from: walletPubKey), expectedAddress)
+        XCTAssertEqual(try! addressService.makeAddress(from: walletPubKey), expectedAddress)
     }
     
     func testValidateCorrectAddress() {
@@ -43,8 +43,8 @@ class EthereumTests: XCTestCase {
         let destinationAddress = "0x7655b9b19ffab8b897f836857dae22a1e7f8d735"
         let nonce = 15
         
-        let walletAddress = addressService.makeAddress(from: walletPublicKey)
-        let transactionBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: .mainnet(projectId: ""))
+        let walletAddress = try! addressService.makeAddress(from: walletPublicKey)
+        let transactionBuilder = try! EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: .mainnet(projectId: ""))
         
         let sendAmount = Amount(with: blockchain, type: .coin, value: sendValue)
         let fee = Amount(with: blockchain, type: .coin, value: feeValue)
@@ -57,7 +57,7 @@ class EthereumTests: XCTestCase {
         let transactionToSign = transactionBuilder.buildForSign(transaction: transaction, nonce: nonce, gasLimit: gasLimit)
         XCTAssertNotNil(transactionToSign)
         let signedTransaction = transactionBuilder.buildForSend(transaction: transactionToSign!.transaction, hash: transactionToSign!.hash, signature: signature)
-        
+        XCTAssertNotNil(signedTransaction)
         XCTAssertEqual(transactionToSign?.hash, expectedHashToSign)
         XCTAssertEqual(signedTransaction, expectedSignedTransaction)
     }
@@ -73,8 +73,8 @@ class EthereumTests: XCTestCase {
         let contractAddress = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
         let token = Token(symbol: "USDC", contractAddress: contractAddress, decimalCount: 6, blockchain: .ethereum(testnet: false))
         
-        let walletAddress = addressService.makeAddress(from: walletPublicKey)
-        let transactionBuilder = EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: .mainnet(projectId: ""))
+        let walletAddress = try! addressService.makeAddress(from: walletPublicKey)
+        let transactionBuilder = try! EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: .mainnet(projectId: ""))
         
         let amountToSend = Amount(with: blockchain, type: .token(value: token), value: sendValue)
         let fee = Amount(with: blockchain, type: .coin, value: feeValue)

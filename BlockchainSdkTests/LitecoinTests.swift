@@ -26,7 +26,7 @@ class LitecoinTests: XCTestCase {
         let walletPublicKey = Data(hex: "041C1E7B3253E5C1E3519FB22894AD95285CE244D1D426A58D3178296A488FDC56699C85990B3EC09505253CB3C3FC7B712F1C6E953675922534B61D17408EAB39")
         let expectedAddress = "LWjJD6H1QrMmCQ5QhBKMqvPqMzwYpJPv2M"
         
-        XCTAssertEqual(addressService.makeAddresses(from: walletPublicKey)[1].value, expectedAddress)
+        XCTAssertEqual(try! addressService.makeAddresses(from: walletPublicKey)[1].value, expectedAddress)
     }
     
     func testValidateCorrectAddress() {
@@ -35,7 +35,7 @@ class LitecoinTests: XCTestCase {
     
     func testBuildTransaction() {
         let walletPubkey = Data(hex: "04AC17063C443E9DC00C090733A0A76FF18A322D8484495FDF65BE5922EA6C1F5EDC0A802D505BFF664E32E9082DC934D60A4B4E83572A0818F1D73F8FB4D100EA")
-        let compressedPubkey = Secp256k1Utils.compressPublicKey(walletPubkey)
+        let compressedPubkey = try! Secp256k1Key(with: walletPubkey).compress()
         XCTAssertNotNil(compressedPubkey)
             
         let signature1 = Data(hex: "F4E41BBE57B306529EBE797ABCE8CBA399F391B0804B8CD52C329F398E815FB4E7C314437399CB915AA9580458DDC2440EA3E6121CC2D6B5F5C67232B5B60C54")
@@ -46,11 +46,11 @@ class LitecoinTests: XCTestCase {
         let destinationAddress = "LWjJD6H1QrMmCQ5QhBKMqvPqMzwYpJPv2M"
         
         let feeRate = 4
-        let addresses = addressService.makeAddresses(from: walletPubkey)
+        let addresses = try! addressService.makeAddresses(from: walletPubkey)
         let address = addresses[1].value
         XCTAssertNotNil(address)
         
-        let bitcoinCoreManager = BitcoinManager(networkParams: networkParams, walletPublicKey: walletPubkey, compressedWalletPublicKey: compressedPubkey!, bip: .bip44)
+        let bitcoinCoreManager = BitcoinManager(networkParams: networkParams, walletPublicKey: walletPubkey, compressedWalletPublicKey: compressedPubkey, bip: .bip44)
         let txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinCoreManager, addresses: addresses)
         txBuilder.feeRates[feeValue] = feeRate
         txBuilder.unspentOutputs =

@@ -27,7 +27,7 @@ class StellarTests: XCTestCase {
         let walletPubkey = Data(hex: "EC5387D8B38BD9EF80BDBC78D0D7E1C53F08E269436C99D5B3C2DF4B2CE73012")
         let expectedAddress = "GDWFHB6YWOF5T34AXW6HRUGX4HCT6CHCNFBWZGOVWPBN6SZM44YBFUDZ"
 
-        XCTAssertEqual(addressService.makeAddress(from: walletPubkey), expectedAddress)
+        XCTAssertEqual(try! addressService.makeAddress(from: walletPubkey), expectedAddress)
     }
 
     func testValidateCorrectAddress() {
@@ -43,7 +43,7 @@ class StellarTests: XCTestCase {
         let feeValue = Decimal(0.00001)
         let destinationAddress = "GBPMXXLHHPCOO4YOWGS4BWSVMLELZ355DVQ6JCGZX3H4HO3LH2SUETUW"
 
-        let walletAddress = addressService.makeAddress(from: walletPubkey)
+        let walletAddress = try! addressService.makeAddress(from: walletPubkey)
 
         let txBuilder = StellarTransactionBuilder(stellarSdk: StellarSDK(withHorizonUrl: "https://horizon.stellar.org"), walletPublicKey: walletPubkey, isTestnet: false)
         txBuilder.sequence = 139655650517975046
