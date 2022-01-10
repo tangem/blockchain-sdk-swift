@@ -64,8 +64,8 @@ DEPENDENCIES:
   - Alamofire
   - AnyCodable-FlightSchool
   - BigInt
-  - BinanceChain (from `../SwiftBinanceChain`)
-  - BitcoinCore.swift (from `../bitcoincore`)
+  - BinanceChain (from `https://github.com/lazutkin-andrey/swiftbinancechain.git`, tag `0.0.9`)
+  - BitcoinCore.swift (from `https://github.com/lazutkin-andrey/bitcoincore.git`, tag `0.0.15`)
   - HDWalletKit (from `https://github.com/lazutkin-andrey/hdwallet.git`, tag `0.3.12`)
   - Moya
   - Sodium
@@ -73,7 +73,7 @@ DEPENDENCIES:
   - SwiftCBOR
   - SwiftyJSON
   - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-122`)
-  - web3swift (from `../web3swift`)
+  - web3swift (from `https://github.com/lazutkin-andrey/web3swift.git`, tag `2.2.7`)
 
 SPEC REPOS:
   trunk:
@@ -96,9 +96,11 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   BinanceChain:
-    :path: "../SwiftBinanceChain"
+    :git: https://github.com/lazutkin-andrey/swiftbinancechain.git
+    :tag: 0.0.9
   BitcoinCore.swift:
-    :path: "../bitcoincore"
+    :git: https://github.com/lazutkin-andrey/bitcoincore.git
+    :tag: 0.0.15
   HDWalletKit:
     :git: https://github.com/lazutkin-andrey/hdwallet.git
     :tag: 0.3.12
@@ -106,15 +108,25 @@ EXTERNAL SOURCES:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-122
   web3swift:
-    :path: "../web3swift"
+    :git: https://github.com/lazutkin-andrey/web3swift.git
+    :tag: 2.2.7
 
 CHECKOUT OPTIONS:
+  BinanceChain:
+    :git: https://github.com/lazutkin-andrey/swiftbinancechain.git
+    :tag: 0.0.9
+  BitcoinCore.swift:
+    :git: https://github.com/lazutkin-andrey/bitcoincore.git
+    :tag: 0.0.15
   HDWalletKit:
     :git: https://github.com/lazutkin-andrey/hdwallet.git
     :tag: 0.3.12
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-122
+  web3swift:
+    :git: https://github.com/lazutkin-andrey/web3swift.git
+    :tag: 2.2.7
 
 SPEC CHECKSUMS:
   Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
@@ -139,6 +151,6 @@ SPEC CHECKSUMS:
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 4119f5aec2cb87b57e5b38e6754be6062cb36f64
+PODFILE CHECKSUM: 98d2d4fb23c9c49ba937b979a81bab0f4470ccf9
 
 COCOAPODS: 1.11.2
