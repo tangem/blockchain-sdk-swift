@@ -18,12 +18,12 @@ class TezosTransactionBuilder {
     private let walletPublicKey: Data
     private let curve: EllipticCurve
     
-    internal init(walletPublicKey: Data, curve: EllipticCurve) {
+    internal init(walletPublicKey: Data, curve: EllipticCurve) throws {
         switch curve {
         case .ed25519:
             self.walletPublicKey = walletPublicKey
         case .secp256k1:
-            self.walletPublicKey = Secp256k1Utils.compressPublicKey(walletPublicKey)!
+            self.walletPublicKey = try Secp256k1Key(with: walletPublicKey).compress()
         case .secp256r1:
             fatalError("Not implemented")
         }

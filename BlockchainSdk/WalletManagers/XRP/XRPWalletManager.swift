@@ -97,12 +97,8 @@ extension XRPWalletManager: TransactionSender {
             }
             .tryMap{[weak self] response -> (String) in
                 guard let self = self else { throw WalletError.empty }
-                
-                guard let tx = self.txBuilder.buildForSend(transaction: response.0, signature: response.1) else {
-                    throw WalletError.failedToBuildTx
-                }
-                
-                return tx
+
+                return try self.txBuilder.buildForSend(transaction: response.0, signature: response.1)
             }
             .flatMap{[weak self] builderResponse -> AnyPublisher<Void, Error> in
                 self?.networkService.send(blob: builderResponse)

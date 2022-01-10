@@ -19,13 +19,13 @@ public class TezosAddressService: AddressService {
         self.curve = curve
     }
     
-    public func makeAddress(from walletPublicKey: Data) -> String {
+    public func makeAddress(from walletPublicKey: Data) throws -> String {
         var key: Data
         switch curve {
         case .ed25519:
             key = walletPublicKey
         case .secp256k1:
-            key = Secp256k1Utils.compressPublicKey(walletPublicKey)!
+            key = try Secp256k1Key(with: walletPublicKey).compress()
         case .secp256r1:
             fatalError("Not implemented")
         }

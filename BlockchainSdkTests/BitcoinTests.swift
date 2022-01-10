@@ -27,7 +27,7 @@ class BitcoinTests: XCTestCase {
         let expectedLegacyAddress = "1KWFv7SBZGMsneK2ZJ3D4aKcCzbvEyUbAA"
         let expectedSegwitAddress = "bc1qxzdqcmh6pknevm2ugtw94y50dwhsu3l0p5tg63"
         
-        let addresses = addressService.makeAddresses(from: walletPublicKey)
+        let addresses = try! addressService.makeAddresses(from: walletPublicKey)
         XCTAssertEqual(addresses.count, numberOfAddresses)
         
         let legacy = addresses.first(where: { $0.type == .bitcoin(type: .legacy) })
@@ -78,7 +78,7 @@ class BitcoinTests: XCTestCase {
     
     func testBtcTxBuilder() {
         let pubkey = Data(hex: "046DB397495FA03FE263EE4021B77C49496E5C7DB8266E6E33A03D5B3A370C3D6D744A863B14DE2457D82BEE322416523E336530760C4533AEE980F4A4CDB9A98D")
-        let compressedPubkey = Secp256k1Utils.compressPublicKey(pubkey)
+        let compressedPubkey = try! Secp256k1Key(with: pubkey).compress()
         XCTAssertNotNil(compressedPubkey)
         
         let signature1 = Data(hex: "00325BF907137BB6ED0A84D78C12F9680DD57AE374F45D43CDC7068ABF56F5B93C08BC1F9CD1E91E7A496DA2ECD54597B11AE0DDA4F6672235853C0CEF6BF8B4")
@@ -88,9 +88,9 @@ class BitcoinTests: XCTestCase {
         let feeValue = Decimal(0.00004641)
         let destination = "bc1q67dmfccnax59247kshfkxcq6qr53wmwqfa4s28cupktj2amf5jus2j6qvt"
         
-        let addresses = addressService.makeAddresses(from: pubkey)
+        let addresses = try! addressService.makeAddresses(from: pubkey)
         let segwit = addresses.first(where: { $0.type == .bitcoin(type: .bech32) } )!
-        let manager = BitcoinManager(networkParams: networkParams, walletPublicKey: pubkey, compressedWalletPublicKey: compressedPubkey!)
+        let manager = BitcoinManager(networkParams: networkParams, walletPublicKey: pubkey, compressedWalletPublicKey: compressedPubkey)
         let txBuilder = BitcoinTransactionBuilder(bitcoinManager: manager, addresses: addresses)
         txBuilder.feeRates[feeValue] = 21
         let converter = SegWitBech32AddressConverter(prefix: networkParams.bech32PrefixPattern, scriptConverter: ScriptConverter())

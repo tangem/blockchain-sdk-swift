@@ -18,8 +18,8 @@ class AddressesTests: XCTestCase {
   
     func testBtc() {
         let blockchain = Blockchain.bitcoin(testnet: false)
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         
 //        let addr3 = btc.makeAddresses(from: edKey, with: nil)
 //        XCTAssertEqual(addr3.count, 0) //todo: uncomment after cryptoutils refactoring
@@ -42,8 +42,8 @@ class AddressesTests: XCTestCase {
     
     func testBtcTestnet() {
         let blockchain = Blockchain.bitcoin(testnet: true)
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         
 //        let addr3 = btc.makeAddresses(from: edKey, with: nil)
 //        XCTAssertEqual(addr3.count, 0) //todo: uncomment after cryptoutils refactoring
@@ -70,10 +70,10 @@ class AddressesTests: XCTestCase {
         let secpPairCompressedKey = Data(hexString: "022A5741873B88C383A7CFF4AA23792754B5D20248F1A24DF1DAC35641B3F97D89")
         
         let blockchain = Blockchain.bitcoin(testnet: false) //no testnet for twins
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: secpPairDecompressedKey)
-        let addr_dec1 = blockchain.makeAddresses(from: secpDecompressedKey, with: secpPairCompressedKey)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: secpPairCompressedKey)
-        let addr_comp1 = blockchain.makeAddresses(from: secpCompressedKey, with: secpPairDecompressedKey)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: secpPairDecompressedKey)
+        let addr_dec1 = try! blockchain.makeAddresses(from: secpDecompressedKey, with: secpPairCompressedKey)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: secpPairCompressedKey)
+        let addr_comp1 = try! blockchain.makeAddresses(from: secpCompressedKey, with: secpPairDecompressedKey)
         XCTAssertEqual(addr_dec.count, 2)
         XCTAssertEqual(addr_dec1.count, 2)
         XCTAssertEqual(addr_comp.count, 2)
@@ -100,8 +100,8 @@ class AddressesTests: XCTestCase {
     
     func testLtc() {
         let blockchain = Blockchain.litecoin
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         
 //        let addr3 = btc.makeAddresses(from: edKey, with: nil)
 //        XCTAssertEqual(addr3.count, 0) //todo: uncomment after cryptoutils refactoring
@@ -124,7 +124,7 @@ class AddressesTests: XCTestCase {
     
     func testXlm() {
         let blockchain = Blockchain.stellar(testnet: false)
-        let addrs = blockchain.makeAddresses(from: edKey, with: nil)
+        let addrs = try! blockchain.makeAddresses(from: edKey, with: nil)
         
        // XCTAssertThrowsError(blockchain.makeAddresses(from: secpCompressedKey, with: nil))
        //  XCTAssertThrowsError(blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
@@ -137,7 +137,7 @@ class AddressesTests: XCTestCase {
     
     func testXlmTestnet() {
         let blockchain = Blockchain.stellar(testnet: true)
-        let addrs = blockchain.makeAddresses(from: edKey, with: nil)
+        let addrs = try! blockchain.makeAddresses(from: edKey, with: nil)
         
        // XCTAssertThrowsError(blockchain.makeAddresses(from: secpCompressedKey, with: nil))
        //  XCTAssertThrowsError(blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
@@ -150,8 +150,8 @@ class AddressesTests: XCTestCase {
     
     func testEth() {
         let blockchain = Blockchain.ethereum(testnet: false)
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         XCTAssertEqual(addr_dec.count, 1)
         XCTAssertEqual(addr_comp.count, 1)
         XCTAssertEqual(addr_dec[0].value, addr_comp[0].value)
@@ -163,8 +163,8 @@ class AddressesTests: XCTestCase {
     
     func testEthTestnet() {
         let blockchain = Blockchain.ethereum(testnet: true)
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         XCTAssertEqual(addr_dec.count, 1)
         XCTAssertEqual(addr_comp.count, 1)
         XCTAssertEqual(addr_dec[0].value, addr_comp[0].value)
@@ -176,8 +176,8 @@ class AddressesTests: XCTestCase {
     
     func testRsk() {
         let blockchain = Blockchain.rsk
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         XCTAssertEqual(addr_dec.count, 1)
         XCTAssertEqual(addr_comp.count, 1)
         XCTAssertEqual(addr_dec[0].value, addr_comp[0].value)
@@ -188,8 +188,8 @@ class AddressesTests: XCTestCase {
     
     func testBch() {
         let blockchain = Blockchain.bitcoinCash(testnet: false)
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         XCTAssertEqual(addr_dec.count, 1)
         XCTAssertEqual(addr_comp.count, 1)
         XCTAssertEqual(addr_dec[0].value, addr_comp[0].value)
@@ -200,8 +200,8 @@ class AddressesTests: XCTestCase {
     
     func testBchTestnet() {
         let blockchain = Blockchain.bitcoinCash(testnet: true)
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         XCTAssertEqual(addr_dec.count, 1)
         XCTAssertEqual(addr_comp.count, 1)
         XCTAssertEqual(addr_dec[0].value, addr_comp[0].value)
@@ -212,8 +212,8 @@ class AddressesTests: XCTestCase {
     
     func testBinance() {
         let blockchain = Blockchain.binance(testnet: false)
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         XCTAssertEqual(addr_dec.count, 1)
         XCTAssertEqual(addr_comp.count, 1)
         XCTAssertEqual(addr_dec[0].value, addr_comp[0].value)
@@ -224,8 +224,8 @@ class AddressesTests: XCTestCase {
     
     func testBinanceTestnet() {
         let blockchain = Blockchain.binance(testnet: true)
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         XCTAssertEqual(addr_dec.count, 1)
         XCTAssertEqual(addr_comp.count, 1)
         XCTAssertEqual(addr_dec[0].value, addr_comp[0].value)
@@ -236,7 +236,7 @@ class AddressesTests: XCTestCase {
     
     func testAda() {
         let blockchain = Blockchain.cardano(shelley: false)
-        let addrs = blockchain.makeAddresses(from: edKey, with: nil)
+        let addrs = try! blockchain.makeAddresses(from: edKey, with: nil)
         
        // XCTAssertThrowsError(blockchain.makeAddresses(from: secpCompressedKey, with: nil))
        //  XCTAssertThrowsError(blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
@@ -249,7 +249,7 @@ class AddressesTests: XCTestCase {
     
     func testAdaShelley() {
         let blockchain = Blockchain.cardano(shelley: true)
-        let addrs = blockchain.makeAddresses(from: edKey, with: nil)
+        let addrs = try! blockchain.makeAddresses(from: edKey, with: nil)
         
        // XCTAssertThrowsError(blockchain.makeAddresses(from: secpCompressedKey, with: nil))
        //  XCTAssertThrowsError(blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
@@ -265,8 +265,8 @@ class AddressesTests: XCTestCase {
     
     func testXrpSecp() {
         let blockchain = Blockchain.xrp(curve: .secp256k1)
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         XCTAssertEqual(addr_dec.count, 1)
         XCTAssertEqual(addr_comp.count, 1)
         XCTAssertEqual(addr_dec[0].value, addr_comp[0].value)
@@ -276,7 +276,7 @@ class AddressesTests: XCTestCase {
     
     func testXrpEd() {
         let blockchain = Blockchain.xrp(curve: .ed25519)
-        let addrs = blockchain.makeAddresses(from: edKey, with: nil)
+        let addrs = try! blockchain.makeAddresses(from: edKey, with: nil)
         
        // XCTAssertThrowsError(blockchain.makeAddresses(from: secpCompressedKey, with: nil))
        //  XCTAssertThrowsError(blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
@@ -289,8 +289,8 @@ class AddressesTests: XCTestCase {
     
     func testDuc() {
         let blockchain = Blockchain.dogecoin
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         XCTAssertEqual(addr_dec.count, 1)
         XCTAssertEqual(addr_comp.count, 1)
         XCTAssertEqual(addr_dec[0].value, "DMbHXKA4pE7Wz1ay6Rs4s4CkQ7EvKG3DqY")
@@ -301,8 +301,8 @@ class AddressesTests: XCTestCase {
     
     func testXTZSecp() {
         let blockchain = Blockchain.tezos(curve: .secp256k1)
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         XCTAssertEqual(addr_dec.count, 1)
         XCTAssertEqual(addr_comp.count, 1)
         XCTAssertEqual(addr_dec[0].value, addr_comp[0].value)
@@ -312,7 +312,7 @@ class AddressesTests: XCTestCase {
     
     func testXTZEd() {
         let blockchain = Blockchain.tezos(curve: .ed25519)
-        let addrs = blockchain.makeAddresses(from: edKey, with: nil)
+        let addrs = try! blockchain.makeAddresses(from: edKey, with: nil)
         
        // XCTAssertThrowsError(blockchain.makeAddresses(from: secpCompressedKey, with: nil))
        //  XCTAssertThrowsError(blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
@@ -325,8 +325,8 @@ class AddressesTests: XCTestCase {
     
     func testDoge() {
         let blockchain = Blockchain.dogecoin
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         XCTAssertEqual(addr_dec.count, 1)
         XCTAssertEqual(addr_comp.count, 1)
         XCTAssertEqual(addr_dec[0].value, "DMbHXKA4pE7Wz1ay6Rs4s4CkQ7EvKG3DqY")
@@ -337,8 +337,8 @@ class AddressesTests: XCTestCase {
     
     func testBsc() {
         let blockchain = Blockchain.bsc(testnet: false)
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         XCTAssertEqual(addr_dec.count, 1)
         XCTAssertEqual(addr_comp.count, 1)
         XCTAssertEqual(addr_dec[0].value, addr_comp[0].value)
@@ -350,8 +350,8 @@ class AddressesTests: XCTestCase {
     
     func testBscTestnet() {
         let blockchain = Blockchain.bsc(testnet: true)
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         XCTAssertEqual(addr_dec.count, 1)
         XCTAssertEqual(addr_comp.count, 1)
         XCTAssertEqual(addr_dec[0].value, addr_comp[0].value)
@@ -362,8 +362,8 @@ class AddressesTests: XCTestCase {
     
     func testPolygon() {
         let blockchain = Blockchain.polygon(testnet: false)
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         XCTAssertEqual(addr_dec.count, 1)
         XCTAssertEqual(addr_comp.count, 1)
         XCTAssertEqual(addr_dec[0].value, addr_comp[0].value)
@@ -375,8 +375,8 @@ class AddressesTests: XCTestCase {
     
     func testPolygonTestnet() {
         let blockchain = Blockchain.polygon(testnet: true)
-        let addr_dec = blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
-        let addr_comp = blockchain.makeAddresses(from: secpCompressedKey, with: nil)
+        let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
+        let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
         XCTAssertEqual(addr_dec.count, 1)
         XCTAssertEqual(addr_comp.count, 1)
         XCTAssertEqual(addr_dec[0].value, addr_comp[0].value)

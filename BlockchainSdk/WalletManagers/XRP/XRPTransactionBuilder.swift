@@ -15,11 +15,11 @@ class XRPTransactionBuilder {
     let walletPublicKey: Data
     let curve: EllipticCurve
     
-    internal init(walletPublicKey: Data, curve: EllipticCurve) {
+    internal init(walletPublicKey: Data, curve: EllipticCurve) throws {
         var key: Data
         switch curve {
         case .secp256k1:
-            key = Secp256k1Utils.compressPublicKey(walletPublicKey)!
+            key = try Secp256k1Key(with: walletPublicKey).compress()
         case .ed25519:
             key = [UInt8(0xED)] + walletPublicKey
         case .secp256r1:
@@ -45,25 +45,18 @@ class XRPTransactionBuilder {
         }
     }
     
-    public func buildForSend(transaction: XRPTransaction,  signature: Data) -> String?  {
+    public func buildForSend(transaction: XRPTransaction,  signature: Data) throws -> String  {
         var sig: Data
         switch curve {
         case .ed25519:
             sig = signature
         case .secp256k1:
-            guard let der = Secp256k1Utils.serializeToDer(secp256k1Signature: signature) else {
-                return nil
-            }
-            
-            sig = der
+            sig = try Secp256k1Signature(with: signature).serializeDer()
         case .secp256r1:
             fatalError("secp256r1 is not supported by XRP")
         }
         
-        guard let signedTx = try? transaction.sign(signature: sig.toBytes) else {
-            return nil
-        }
-        
+        let signedTx = try transaction.sign(signature: sig.toBytes)
         let blob = signedTx.getBlob()
         return blob
     }

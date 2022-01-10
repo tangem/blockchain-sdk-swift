@@ -16,4 +16,9 @@ extension ThenProcessable where Self: Any {
         block(self)
         return self
     }
+    
+    func then(_ block: (Self) throws -> Void) throws -> Self {
+        try block(self)
+        return self
+    }
 }
