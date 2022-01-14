@@ -10,6 +10,7 @@ import Foundation
 import TangemSdk
 import stellarsdk
 import BitcoinCore
+import Solana_Swift
 
 @available(iOS 13.0, *)
 public class WalletManagerFactory {
@@ -234,6 +235,15 @@ public class WalletManagerFactory {
             return try TezosWalletManager(wallet: wallet).then {
                 $0.txBuilder = try TezosTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, curve: curve)
                 $0.networkService = TezosNetworkService(providers: TezosApi.makeAllProviders())
+            }
+        case .solana(let testnet):
+            return SolanaWalletManager(wallet: wallet, cardTokens: tokens).then {
+                // Testnet is very slow and often yields a request timeout. Use devnet instead.
+                let endpoint: RPCEndpoint = testnet ? .devnetSolana : .mainnetBetaSolana
+                let networkRouter = NetworkingRouter(endpoint: endpoint)
+                let accountStorage = SolanaDummyAccountStorage()
+                
+                $0.solanaSdk = Solana(router: networkRouter, accountStorage: accountStorage)
             }
         }
     }

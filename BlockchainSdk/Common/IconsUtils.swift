@@ -79,12 +79,14 @@ fileprivate extension Blockchain {
             return "smartchain"
         case .polygon:
             return "polygon"
+        case .solana:
+            return "solana"
         }
     }
     
     var tokenIconsAvailable: Bool {
         switch self {
-        case .ethereum, .binance:
+        case .ethereum, .binance, .solana:
             return true
         default:
             return false

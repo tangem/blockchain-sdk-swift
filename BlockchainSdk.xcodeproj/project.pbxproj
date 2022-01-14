@@ -302,6 +302,12 @@
 		B0ED2012267C9E4500D5C3E5 /* BitcoinTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0ED2010267C9E4500D5C3E5 /* BitcoinTransactionParams.swift */; };
 		B0F9DCA125FB4C9B00C0AF18 /* MultiNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F9DCA025FB4C9B00C0AF18 /* MultiNetworkProvider.swift */; };
 		B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0FF8816264AEA60003E000A /* LitecoinNetworkService.swift */; };
+		DAE30DFB279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */; };
+		DAE30DFC279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */; };
+		DAE30DFD279164500056C5A3 /* SolanaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */; };
+		DAE30DFE279164500056C5A3 /* SolanaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */; };
+		DAE30DFF279164500056C5A3 /* SolanaWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DFA279164500056C5A3 /* SolanaWalletManager.swift */; };
+		DAE30E00279164500056C5A3 /* SolanaWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DFA279164500056C5A3 /* SolanaWalletManager.swift */; };
 		ED3D33D84D8B747FB3B1D09D /* Pods_BlockchainSdkTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A172F9D47772F23948771418 /* Pods_BlockchainSdkTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -490,6 +496,9 @@
 		B0F9DCA025FB4C9B00C0AF18 /* MultiNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiNetworkProvider.swift; sourceTree = "<group>"; };
 		B0FF8816264AEA60003E000A /* LitecoinNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LitecoinNetworkService.swift; sourceTree = "<group>"; };
 		D1CC9E29B257CD29E6143FDD /* Pods_BlockchainSdk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolanaDummyAccountStorage.swift; sourceTree = "<group>"; };
+		DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolanaAddressService.swift; sourceTree = "<group>"; };
+		DAE30DFA279164500056C5A3 /* SolanaWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolanaWalletManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -583,6 +592,7 @@
 				5D54FE1623E41CAE009FAC2F /* Litecoin */,
 				5D740B7A2625B40800DE9636 /* Rsk */,
 				5DED72C223A13145006D79AE /* Stellar */,
+				DAE30DF7279164500056C5A3 /* Solana */,
 				5DF91517253DB7A200B927DD /* Tezos */,
 				5DC7DD5C243F8375008F83F2 /* XRP */,
 			);
@@ -1050,6 +1060,16 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		DAE30DF7279164500056C5A3 /* Solana */ = {
+			isa = PBXGroup;
+			children = (
+				DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */,
+				DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */,
+				DAE30DFA279164500056C5A3 /* SolanaWalletManager.swift */,
+			);
+			path = Solana;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1331,6 +1351,7 @@
 				5D4B33BC23F6EA0500C93A84 /* BlockchairTarget.swift in Sources */,
 				5D94E56723A3946C009C7482 /* Data+.swift in Sources */,
 				B0AD566425AC8DD50084F924 /* PendingTransaction.swift in Sources */,
+				DAE30DFD279164500056C5A3 /* SolanaAddressService.swift in Sources */,
 				5D26CEF6243CBA4300994CC0 /* EstimateFeeTarget.swift in Sources */,
 				5DA6F7BC243F3C0B0040AB4B /* CBOR+.swift in Sources */,
 				5DA163D2273D2146007AA991 /* TezosJsonRpcProvider.swift in Sources */,
@@ -1377,9 +1398,11 @@
 				5D14E4982397B87000C15FC8 /* Blockchain.swift in Sources */,
 				B004DAC026416B8A000863A4 /* EthereumResponse.swift in Sources */,
 				B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */,
+				DAE30DFF279164500056C5A3 /* SolanaWalletManager.swift in Sources */,
 				5D4B33D323F7DF1F00C93A84 /* BinanceNetworkService.swift in Sources */,
 				5D0EEE6B253EFBF600758FDC /* TezosWalletManager.swift in Sources */,
 				5DED72B8239FE2E3006D79AE /* Decimal+.swift in Sources */,
+				DAE30DFB279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */,
 				5D389ECC23ACFDCF00740FE9 /* MoyaProvider+Combine.swift in Sources */,
 				5D7D243A25136254001B9A4F /* Extensions.swift in Sources */,
 				5DACA359255E97EA0096BC48 /* BitcoinAddressType.swift in Sources */,
@@ -1443,11 +1466,13 @@
 				5DDD832F25BF0EC500166EA9 /* Entropy.swift in Sources */,
 				5DDD82DF25BF0E0900166EA9 /* StellarTransactionBuilder.swift in Sources */,
 				5DDD828E25BF0CDC00166EA9 /* BlockchainInfoNetworkProvider.swift in Sources */,
+				DAE30DFE279164500056C5A3 /* SolanaAddressService.swift in Sources */,
 				5DDD82CB25BF0DA100166EA9 /* BlockchairTarget.swift in Sources */,
 				5DDD82B825BF0D6700166EA9 /* Int+.swift in Sources */,
 				B06AFAEB261494F700E7AAB0 /* CardanoAddress.swift in Sources */,
 				5DDD82C225BF0D6C00166EA9 /* Base58.swift in Sources */,
 				5DDD831A25BF0E7F00166EA9 /* XrpTarget.swift in Sources */,
+				DAE30DFC279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */,
 				B04AA04D2642C8FE0075AE32 /* BlockchairAddressBlockMapper.swift in Sources */,
 				5DDD833C25BF0EC900166EA9 /* XRPAddress.swift in Sources */,
 				5DDD82E025BF0E0900166EA9 /* StellarTransactionParams.swift in Sources */,
@@ -1526,6 +1551,7 @@
 				5DDD82D425BF0DB100166EA9 /* BlockcypherNetworkProvider.swift in Sources */,
 				5DDD82E425BF0E0D00166EA9 /* EthereumNetworkService.swift in Sources */,
 				5DDD833825BF0EC900166EA9 /* XRPWallet.swift in Sources */,
+				DAE30E00279164500056C5A3 /* SolanaWalletManager.swift in Sources */,
 				5DDD834125BF0ECC00166EA9 /* HTTP.swift in Sources */,
 				5DDD82C125BF0D6C00166EA9 /* RIPEMD160.swift in Sources */,
 				5DDD829025BF0CDC00166EA9 /* BitcoinNetworkService.swift in Sources */,
