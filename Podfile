@@ -25,8 +25,8 @@ target 'BlockchainSdk' do
   pod 'stellar-ios-mac-sdk'
   pod 'BitcoinCore.swift', :git => 'https://github.com/lazutkin-andrey/bitcoincore.git', :tag => '0.0.15'
   #pod 'BitcoinCore.swift', :path => '../bitcoincore'
-  #pod 'Solana.Swift', :git => 'https://github.com/tangem/Solana.Swift', :branch => 'feature/add-external-signer'
-  pod 'Solana.Swift', :path => '../Solana.Swift'
+  pod 'Solana.Swift', :git => 'https://github.com/tangem/Solana.Swift', :branch => 'feature/add-external-signer'
+  #pod 'Solana.Swift', :path => '../Solana.Swift'
 
   common_pods
 end

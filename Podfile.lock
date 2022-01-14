@@ -74,7 +74,7 @@ DEPENDENCIES:
   - HDWalletKit (from `https://github.com/lazutkin-andrey/hdwallet.git`, tag `0.3.12`)
   - Moya
   - Sodium
-  - Solana.Swift (from `../Solana.Swift.Tangem`)
+  - Solana.Swift (from `https://github.com/tangem/Solana.Swift`, branch `feature/add-external-signer`)
   - stellar-ios-mac-sdk
   - SwiftCBOR
   - SwiftyJSON
@@ -112,7 +112,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/lazutkin-andrey/hdwallet.git
     :tag: 0.3.12
   Solana.Swift:
-    :path: "../Solana.Swift.Tangem"
+    :branch: feature/add-external-signer
+    :git: https://github.com/tangem/Solana.Swift
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-123
@@ -130,6 +131,9 @@ CHECKOUT OPTIONS:
   HDWalletKit:
     :git: https://github.com/lazutkin-andrey/hdwallet.git
     :tag: 0.3.12
+  Solana.Swift:
+    :commit: bb8de04811d3642816f9d264820b653d20ff0ed1
+    :git: https://github.com/tangem/Solana.Swift
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-123
@@ -162,6 +166,6 @@ SPEC CHECKSUMS:
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 3567667f2d903b34f8e7c47aebfa90ee257821fd
+PODFILE CHECKSUM: 54259e212b73c6536fd1d658e7f5a566421b2404
 
 COCOAPODS: 1.11.2
