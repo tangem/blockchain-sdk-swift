@@ -59,15 +59,13 @@ public class WalletManagerFactory {
         try makeWalletManager(from: .bitcoin(testnet: isTestnet),
                               publicKey: .init(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil),
                               cardId: cardId,
-                              pairPublicKey: pairKey,
-                              tokens: [])
+                              pairPublicKey: pairKey)
     }
     
     func makeWalletManager(from blockchain: Blockchain,
                            publicKey: Wallet.PublicKey,
                            cardId: String,
-                           pairPublicKey: Data? = nil,
-                           tokens: [Token] = []) throws -> WalletManager {
+                           pairPublicKey: Data? = nil) throws -> WalletManager {
         
         if blockchain.curve == .ed25519, publicKey.seedKey.count > 32 || publicKey.blockchainKey.count > 32  {
             throw BlockchainSdkError.wrongKey
@@ -154,7 +152,7 @@ public class WalletManagerFactory {
             }
             
         case .stellar(let testnet):
-            return StellarWalletManager(wallet: wallet, cardTokens: tokens).then {
+            return StellarWalletManager(wallet: wallet).then {
                 let url = testnet ? "https://horizon-testnet.stellar.org" : "https://horizon.stellar.org"
                 let stellarSdk = StellarSDK(withHorizonUrl: url)
                 $0.stellarSdk = stellarSdk
@@ -163,7 +161,7 @@ public class WalletManagerFactory {
             }
             
         case .ethereum(let testnet):
-            return try EthereumWalletManager(wallet: wallet, cardTokens: tokens).then {
+            return try EthereumWalletManager(wallet: wallet).then {
                 let ethereumNetwork = testnet ? EthereumNetwork.testnet(projectId: config.infuraProjectId) : EthereumNetwork.mainnet(projectId: config.infuraProjectId)
                 let jsonRpcProviders = [
                     EthereumJsonRpcProvider(network: ethereumNetwork),
@@ -177,7 +175,7 @@ public class WalletManagerFactory {
             }
             
         case .rsk:
-            return try EthereumWalletManager(wallet: wallet, cardTokens: tokens).then {
+            return try EthereumWalletManager(wallet: wallet).then {
                 let network: EthereumNetwork = .rsk
                 $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey,
                                                               network: network)
@@ -208,7 +206,7 @@ public class WalletManagerFactory {
             }
             
         case .binance(let testnet):
-            return try BinanceWalletManager(wallet: wallet, cardTokens: tokens).then {
+            return try BinanceWalletManager(wallet: wallet).then {
                 $0.txBuilder = try BinanceTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, isTestnet: testnet)
                 $0.networkService = BinanceNetworkService(isTestNet: testnet)
             }

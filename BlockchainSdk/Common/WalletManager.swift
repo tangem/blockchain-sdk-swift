@@ -47,7 +47,7 @@ public enum WalletError: Error, LocalizedError {
 
 @available(iOS 13.0, *)
 public class WalletManager {
-    internal(set) public var cardTokens: [Token]
+    internal(set) public var cardTokens: [Token] = []
     @Published public var wallet: Wallet
     public var currentHost: String { "Not provided" }
     
@@ -55,9 +55,8 @@ public class WalletManager {
     var defaultChangeAddress: String { wallet.address }    
     var cancellable: Cancellable? = nil
     
-    init(wallet: Wallet, cardTokens: [Token] = []) {
+    init(wallet: Wallet) {
         self.wallet = wallet
-        self.cardTokens = cardTokens
     }
     
     public func update(completion: @escaping (Result<(), Error>)-> Void) {
