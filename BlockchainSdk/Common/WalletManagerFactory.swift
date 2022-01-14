@@ -238,8 +238,7 @@ public class WalletManagerFactory {
             }
         case .solana(let testnet):
             return SolanaWalletManager(wallet: wallet, cardTokens: tokens).then {
-                // Testnet is very slow and often yields a request timeout. Use devnet instead.
-                let endpoint: RPCEndpoint = testnet ? .devnetSolana : .mainnetBetaSolana
+                let endpoint: RPCEndpoint = testnet ? .testnetSolana : .mainnetBetaSolana
                 let networkRouter = NetworkingRouter(endpoint: endpoint)
                 let accountStorage = SolanaDummyAccountStorage()
                 
