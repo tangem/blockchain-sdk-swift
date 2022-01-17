@@ -1066,10 +1066,10 @@
 		DAE30DF7279164500056C5A3 /* Solana */ = {
 			isa = PBXGroup;
 			children = (
-				DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */,
-				DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */,
 				DAE30DFA279164500056C5A3 /* SolanaWalletManager.swift */,
+				DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */,
 				DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */,
+				DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */,
 			);
 			path = Solana;
 			sourceTree = "<group>";
