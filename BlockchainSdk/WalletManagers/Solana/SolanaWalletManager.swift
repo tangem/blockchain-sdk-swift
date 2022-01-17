@@ -16,6 +16,7 @@ enum SolanaError: Error {
 
 class SolanaWalletManager: WalletManager {
     var solanaSdk: Solana!
+    var networkService: SolanaNetworkService!
     
     public override func update(completion: @escaping (Result<(), Error>) -> Void) {
         

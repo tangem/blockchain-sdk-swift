@@ -242,7 +242,11 @@ public class WalletManagerFactory {
                 let networkRouter = NetworkingRouter(endpoint: endpoint)
                 let accountStorage = SolanaDummyAccountStorage()
                 
-                $0.solanaSdk = Solana(router: networkRouter, accountStorage: accountStorage)
+                let solanaSdk = Solana(router: networkRouter, accountStorage: accountStorage)
+                let networkService = SolanaNetworkService(solanaSdk: solanaSdk)
+                
+                $0.solanaSdk = solanaSdk
+                $0.networkService = networkService
             }
         }
     }
