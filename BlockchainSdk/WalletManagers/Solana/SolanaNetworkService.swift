@@ -12,7 +12,7 @@ import Solana_Swift
 
 @available(iOS 13.0, *)
 class SolanaNetworkService {
-    let solanaSdk: Solana
+    private let solanaSdk: Solana
     
     init(solanaSdk: Solana) {
         self.solanaSdk = solanaSdk
@@ -64,7 +64,7 @@ class SolanaNetworkService {
         let programId = PublicKey.tokenProgramId.base58EncodedString
         
         return Future { [unowned self] promise in
-            self.solanaSdk.api.getTokenAccountsByOwner(pubkey: accountId, mint: nil, programId: programId, configs: configs) {
+            self.solanaSdk.api.getTokenAccountsByOwner(pubkey: accountId, programId: programId, configs: configs) {
                 (result: Result<[TokenAccount<AccountInfoData>], Error>) in
                 
                 switch result {
