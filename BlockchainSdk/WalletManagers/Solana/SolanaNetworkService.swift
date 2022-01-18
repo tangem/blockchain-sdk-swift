@@ -75,10 +75,10 @@ class SolanaNetworkService {
     }
     
     private func tokenAccountsInfo(accountId: String) -> AnyPublisher<[TokenAccount<AccountInfoData>], Error> {
-        let configs = RequestConfiguration(commitment: "recent", encoding: "jsonParsed")
-        let programId = PublicKey.tokenProgramId.base58EncodedString
-        
-        return Future { [unowned self] promise in
+        Future { [unowned self] promise in
+            let configs = RequestConfiguration(commitment: "recent", encoding: "jsonParsed")
+            let programId = PublicKey.tokenProgramId.base58EncodedString
+
             self.solanaSdk.api.getTokenAccountsByOwner(pubkey: accountId, programId: programId, configs: configs) {
                 (result: Result<[TokenAccount<AccountInfoData>], Error>) in
                 
