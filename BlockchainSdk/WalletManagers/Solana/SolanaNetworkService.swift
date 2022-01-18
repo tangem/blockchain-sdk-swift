@@ -13,9 +13,11 @@ import Solana_Swift
 @available(iOS 13.0, *)
 class SolanaNetworkService {
     private let solanaSdk: Solana
+    private let blockchain: Blockchain
     
-    init(solanaSdk: Solana) {
+    init(solanaSdk: Solana, blockchain: Blockchain) {
         self.solanaSdk = solanaSdk
+        self.blockchain = blockchain
     }
     
     func accountInfo(accountId: String) -> AnyPublisher<SolanaAccountInfoResponse, Error> {
@@ -36,7 +38,6 @@ class SolanaNetworkService {
                         return
                     }
                     
-                    let blockchain = Blockchain.solana(testnet: false)
                     let totalFee = Decimal(lamportsPerSignature) * Decimal(numberOfSignatures) / blockchain.decimalValue
 
                     promise(.success(totalFee))
