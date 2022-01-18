@@ -21,7 +21,7 @@ class SolanaNetworkService {
     }
     
     func accountInfo(accountId: String) -> AnyPublisher<SolanaAccountInfoResponse, Error> {
-        Publishers.Zip(mainAccountInfo(accountId: accountId), tokenAccountsInfo(accountId: accountId))
+        Publishers.Zip(mainAccountBalance(accountId: accountId), tokenAccountsInfo(accountId: accountId))
             .map(self.mapInfo)
             .eraseToAnyPublisher()
     }
@@ -34,7 +34,7 @@ class SolanaNetworkService {
                     promise(.failure(error))
                 case .success(let fee):
                     guard let lamportsPerSignature = fee.feeCalculator?.lamportsPerSignature else {
-                        promise(.failure(SolanaError.noFeeReturned))
+                        promise(.failure(SolanaWalletError.noFeeReturned))
                         return
                     }
                     
@@ -47,16 +47,30 @@ class SolanaNetworkService {
         .eraseToAnyPublisher()
     }
     
-    private func mainAccountInfo(accountId: String) -> AnyPublisher<BufferInfo<AccountInfo>, Error> {
+    private func mainAccountBalance(accountId: String) -> AnyPublisher<Lamports, Error> {
         Future { [unowned self] promise in
             self.solanaSdk.api.getAccountInfo(account: accountId, decodedTo: AccountInfo.self) { result in
                 switch result {
                 case .failure(let error):
                     promise(.failure(error))
                 case .success(let info):
-                    promise(.success(info))
+                    let lamports = info.lamports
+                    promise(.success(lamports))
                 }
             }
+        }.tryCatch { (error: Error) -> AnyPublisher<Lamports, Error> in
+            if let solanaError = error as? SolanaError {
+                switch solanaError {
+                case .nullValue:
+                    return Just(0)
+                        .setFailureType(to: Error.self)
+                        .eraseToAnyPublisher()
+                default:
+                    break
+                }
+            }
+            
+            throw error
         }.eraseToAnyPublisher()
     }
     
@@ -81,7 +95,9 @@ class SolanaNetworkService {
 }
 
 private extension SolanaNetworkService {
-    private func mapInfo(mainAccountInfo: BufferInfo<AccountInfo>, tokenAccountsInfo: [TokenAccount<AccountInfoData>]) -> SolanaAccountInfoResponse {
+    private func mapInfo(mainAccountBalance: Lamports, tokenAccountsInfo: [TokenAccount<AccountInfoData>]) -> SolanaAccountInfoResponse {
+        let balance = Decimal(mainAccountBalance) / blockchain.decimalValue
+
         let tokens: [SolanaTokenAccountInfoResponse] = tokenAccountsInfo.compactMap {
             guard let info = $0.account.data.value?.parsed.info else { return nil }
             let address = $0.pubkey
@@ -90,9 +106,6 @@ private extension SolanaNetworkService {
             
             return SolanaTokenAccountInfoResponse(address: address, mint: mint, balance: amount)
         }
-        
-        let blockchain = Blockchain.solana(testnet: false)
-        let balance = Decimal(mainAccountInfo.lamports) / blockchain.decimalValue
         
         return SolanaAccountInfoResponse(balance: balance, tokens: tokens)
     }

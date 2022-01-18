@@ -10,7 +10,7 @@ import Foundation
 import Combine
 import Solana_Swift
 
-enum SolanaError: Error {
+enum SolanaWalletError: Error {
     case noFeeReturned
 }
 
