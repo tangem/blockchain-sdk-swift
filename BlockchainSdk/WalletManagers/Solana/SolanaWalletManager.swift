@@ -19,7 +19,26 @@ class SolanaWalletManager: WalletManager {
     var networkService: SolanaNetworkService!
     
     public override func update(completion: @escaping (Result<(), Error>) -> Void) {
-        
+        cancellable = networkService
+            .accountInfo(accountId: wallet.address)
+            .sink { [unowned self] in
+                switch $0 {
+                case .failure(let error):
+                    self.wallet.clearAmounts()
+                    completion(.failure(error))
+                case .finished:
+                    completion(.success(()))
+                }
+            } receiveValue: { [unowned self] in
+                self.updateWallet($0)
+            }
+    }
+    
+    private func updateWallet(_ response: SolanaAccountInfoResponse) {
+        self.wallet.add(coinValue: response.balance)
+        for token in response.tokens {
+            self.wallet.add(tokenValue: token.balance, for: token.token)
+        }
     }
 }
 
