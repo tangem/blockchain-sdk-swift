@@ -24,6 +24,28 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
+    func fee(numberOfSignatures: Int) -> AnyPublisher<Decimal, Error> {
+        Future { [unowned self] promise in
+            self.solanaSdk.api.getFees(commitment: nil) { result in
+                switch result {
+                case .failure(let error):
+                    promise(.failure(error))
+                case .success(let fee):
+                    guard let lamportsPerSignature = fee.feeCalculator?.lamportsPerSignature else {
+                        promise(.failure(SolanaError.noFeeReturned))
+                        return
+                    }
+                    
+                    let blockchain = Blockchain.solana(testnet: false)
+                    let totalFee = Decimal(lamportsPerSignature) * Decimal(numberOfSignatures) / blockchain.decimalValue
+
+                    promise(.success(totalFee))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
     private func mainAccountInfo(accountId: String) -> AnyPublisher<BufferInfo<AccountInfo>, Error> {
         Future { [unowned self] promise in
             self.solanaSdk.api.getAccountInfo(account: accountId, decodedTo: AccountInfo.self) { result in

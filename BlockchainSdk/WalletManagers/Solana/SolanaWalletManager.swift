@@ -44,24 +44,13 @@ extension SolanaWalletManager: TransactionSender {
     }
     
     public func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        Future { [unowned self] promise in
-            self.solanaSdk.api.getFees(commitment: nil) { result in
-                switch result {
-                case .failure(let error):
-                    promise(.failure(error))
-                case .success(let fee):
-                    guard let lamports = fee.feeCalculator?.lamportsPerSignature else {
-                        promise(.failure(SolanaError.noFeeReturned))
-                        return
-                    }
-                    
-                    let blockchain = self.wallet.blockchain
-                    let amount = Amount(with: blockchain, type: .coin, value: Decimal(lamports) / blockchain.decimalValue)
-                    promise(.success([amount]))
-                }
+        networkService
+            .fee(numberOfSignatures: 1)
+            .map {
+                let blockchain = self.wallet.blockchain
+                return [Amount(with: blockchain, type: .coin, value: $0)]
             }
-        }
-        .eraseToAnyPublisher()
+            .eraseToAnyPublisher()
     }
 }
 
