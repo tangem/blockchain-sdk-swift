@@ -228,10 +228,22 @@ public class WalletManagerFactory {
                                                                   XRPNetworkProvider(baseUrl: .ripple),
                                                                   XRPNetworkProvider(baseUrl: .rippleReserve)])
             }
+            
         case .tezos(let curve):
             return try TezosWalletManager(wallet: wallet).then {
                 $0.txBuilder = try TezosTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, curve: curve)
                 $0.networkService = TezosNetworkService(providers: TezosApi.makeAllProviders())
+            }
+            
+        case .avalanche(let testnet):
+            return try EthereumWalletManager(wallet: wallet).then {
+                let network: EthereumNetwork = testnet ? .avalancheTestnet : .avalanche
+                $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey,
+                                                              network: network)
+                $0.networkService = EthereumNetworkService(network: network,
+                                                           providers: [EthereumJsonRpcProvider(network: network)],
+                                                           blockcypherProvider: nil,
+                                                           blockchairProvider: nil)
             }
         }
     }
