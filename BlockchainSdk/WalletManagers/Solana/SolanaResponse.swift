@@ -14,7 +14,6 @@ struct SolanaAccountInfoResponse {
 }
 
 struct SolanaTokenAccountInfoResponse {
-    let address: String
-    let mint: String
     let balance: Decimal
+    let token: Token
 }

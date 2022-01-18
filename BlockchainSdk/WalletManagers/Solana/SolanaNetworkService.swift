@@ -84,11 +84,18 @@ private extension SolanaNetworkService {
     private func mapInfo(mainAccountInfo: BufferInfo<AccountInfo>, tokenAccountsInfo: [TokenAccount<AccountInfoData>]) -> SolanaAccountInfoResponse {
         let tokens: [SolanaTokenAccountInfoResponse] = tokenAccountsInfo.compactMap {
             guard let info = $0.account.data.value?.parsed.info else { return nil }
-            let address = $0.pubkey
-            let mint = info.mint
+
             let amount = Decimal(info.tokenAmount.uiAmount)
+
+            let token = Token(
+                name: "",
+                symbol: "",
+                contractAddress: info.mint,
+                decimalCount: Int(info.tokenAmount.decimals),
+                blockchain: self.blockchain
+            )
             
-            return SolanaTokenAccountInfoResponse(address: address, mint: mint, balance: amount)
+            return SolanaTokenAccountInfoResponse(balance: amount, token: token)
         }
         
         let blockchain = Blockchain.solana(testnet: false)
