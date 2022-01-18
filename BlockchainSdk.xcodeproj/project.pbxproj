@@ -306,6 +306,8 @@
 		DA71441F2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
 		DAB6548A27967D860002A5E8 /* SolanaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB6548927967D860002A5E8 /* SolanaResponse.swift */; };
 		DAB6548B27967D860002A5E8 /* SolanaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB6548927967D860002A5E8 /* SolanaResponse.swift */; };
+		DAB6548D2796C5F00002A5E8 /* SolanaTransactionSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB6548C2796C5F00002A5E8 /* SolanaTransactionSigner.swift */; };
+		DAB6548E2796C5F00002A5E8 /* SolanaTransactionSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB6548C2796C5F00002A5E8 /* SolanaTransactionSigner.swift */; };
 		DAE30DFB279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */; };
 		DAE30DFC279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */; };
 		DAE30DFD279164500056C5A3 /* SolanaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */; };
@@ -502,6 +504,7 @@
 		D1CC9E29B257CD29E6143FDD /* Pods_BlockchainSdk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaNetworkService.swift; sourceTree = "<group>"; };
 		DAB6548927967D860002A5E8 /* SolanaResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaResponse.swift; sourceTree = "<group>"; };
+		DAB6548C2796C5F00002A5E8 /* SolanaTransactionSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaTransactionSigner.swift; sourceTree = "<group>"; };
 		DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolanaDummyAccountStorage.swift; sourceTree = "<group>"; };
 		DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolanaAddressService.swift; sourceTree = "<group>"; };
 		DAE30DFA279164500056C5A3 /* SolanaWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolanaWalletManager.swift; sourceTree = "<group>"; };
@@ -1073,6 +1076,7 @@
 				DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */,
 				DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */,
 				DAB6548927967D860002A5E8 /* SolanaResponse.swift */,
+				DAB6548C2796C5F00002A5E8 /* SolanaTransactionSigner.swift */,
 				DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */,
 			);
 			path = Solana;
@@ -1333,6 +1337,7 @@
 				5D5E058C24FE749D00F04DE1 /* Bundle+.swift in Sources */,
 				5D845518243DFCE90072155E /* AdaliteNetworkProvider.swift in Sources */,
 				5D86540023A906DF000DE52D /* TangemSdk+TransactionSigner.swift in Sources */,
+				DAB6548D2796C5F00002A5E8 /* SolanaTransactionSigner.swift in Sources */,
 				5D54FE1E23E4313A009FAC2F /* LitecoinWalletManager.swift in Sources */,
 				5D557CAE23AA771E009B32AF /* EthereumNetworkService.swift in Sources */,
 				B0C8222A25F8DA860027E3BF /* CardanoNetworkService.swift in Sources */,
@@ -1456,6 +1461,7 @@
 				5DDD82F425BF0E1800166EA9 /* BinanceTransactionBuilder.swift in Sources */,
 				5DDD82CF25BF0DAD00166EA9 /* BitcoreTarget.swift in Sources */,
 				5DDD833E25BF0EC900166EA9 /* XRPTransaction.swift in Sources */,
+				DAB6548E2796C5F00002A5E8 /* SolanaTransactionSigner.swift in Sources */,
 				5DDD828F25BF0CDC00166EA9 /* BitcoinWalletManager.swift in Sources */,
 				5DDD831725BF0E7B00166EA9 /* AdaliteResponse.swift in Sources */,
 				5DDD82F225BF0E1800166EA9 /* BinanceAddressService.swift in Sources */,

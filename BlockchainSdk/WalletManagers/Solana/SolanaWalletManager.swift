@@ -81,37 +81,4 @@ extension SolanaWalletManager: TransactionSender {
     }
 }
 
-fileprivate class SolanaTransactionSigner: Signer {
-    var publicKey: PublicKey {
-        PublicKey(data: walletPublicKey.blockchainKey)!
-    }
-    
-    let transactionSigner: TransactionSigner
-    let cardId: String
-    let walletPublicKey: Wallet.PublicKey
-    
-    var subscriptions: Set<AnyCancellable> = []
-    
-    init(transactionSigner: TransactionSigner, cardId: String, walletPublicKey: Wallet.PublicKey) {
-        self.transactionSigner = transactionSigner
-        self.cardId = cardId
-        self.walletPublicKey = walletPublicKey
-    }
-    
-    func sign(message: Data, completion: @escaping (Result<Data, Error>) -> Void) {
-        transactionSigner.sign(hash: message, cardId: cardId, walletPublicKey: walletPublicKey)
-            .sink { result in
-                switch result {
-                case .failure(let error):
-                    completion(.failure(error))
-                case .finished:
-                    break
-                }
-            } receiveValue: { data in
-                completion(.success(data))
-            }
-            .store(in: &subscriptions)
-    }
-}
-
 extension SolanaWalletManager: ThenProcessable { }
