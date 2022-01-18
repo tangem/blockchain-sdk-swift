@@ -36,8 +36,16 @@ class SolanaWalletManager: WalletManager {
     
     private func updateWallet(_ response: SolanaAccountInfoResponse) {
         self.wallet.add(coinValue: response.balance)
-        for token in response.tokens {
-            self.wallet.add(tokenValue: token.balance, for: token.token)
+        
+        for cardToken in cardTokens {
+            let contractAddress = cardToken.contractAddress
+            guard let responseToken = response.tokens.first(where: {
+                $0.mint == contractAddress
+            }) else {
+                continue
+            }
+            
+            self.wallet.add(tokenValue: responseToken.balance, for: cardToken)
         }
     }
 }
