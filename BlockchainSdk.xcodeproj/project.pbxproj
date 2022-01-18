@@ -304,6 +304,8 @@
 		B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0FF8816264AEA60003E000A /* LitecoinNetworkService.swift */; };
 		DA71441E2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
 		DA71441F2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
+		DAB6548A27967D860002A5E8 /* SolanaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB6548927967D860002A5E8 /* SolanaResponse.swift */; };
+		DAB6548B27967D860002A5E8 /* SolanaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB6548927967D860002A5E8 /* SolanaResponse.swift */; };
 		DAE30DFB279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */; };
 		DAE30DFC279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */; };
 		DAE30DFD279164500056C5A3 /* SolanaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */; };
@@ -499,6 +501,7 @@
 		B0FF8816264AEA60003E000A /* LitecoinNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LitecoinNetworkService.swift; sourceTree = "<group>"; };
 		D1CC9E29B257CD29E6143FDD /* Pods_BlockchainSdk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaNetworkService.swift; sourceTree = "<group>"; };
+		DAB6548927967D860002A5E8 /* SolanaResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaResponse.swift; sourceTree = "<group>"; };
 		DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolanaDummyAccountStorage.swift; sourceTree = "<group>"; };
 		DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolanaAddressService.swift; sourceTree = "<group>"; };
 		DAE30DFA279164500056C5A3 /* SolanaWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolanaWalletManager.swift; sourceTree = "<group>"; };
@@ -1069,6 +1072,7 @@
 				DAE30DFA279164500056C5A3 /* SolanaWalletManager.swift */,
 				DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */,
 				DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */,
+				DAB6548927967D860002A5E8 /* SolanaResponse.swift */,
 				DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */,
 			);
 			path = Solana;
@@ -1382,6 +1386,7 @@
 				5D7D242B25136254001B9A4F /* HTTP.swift in Sources */,
 				5D7D242E25136254001B9A4F /* XrpData.swift in Sources */,
 				5D4B33DC23FAAD8300C93A84 /* BitcoreProvider.swift in Sources */,
+				DAB6548A27967D860002A5E8 /* SolanaResponse.swift in Sources */,
 				5D304397239A6B960066B8D9 /* String+.swift in Sources */,
 				5DC7DD6824408266008F83F2 /* XrpResponse.swift in Sources */,
 				5D7D243D25136254001B9A4F /* Serializer.swift in Sources */,
@@ -1478,6 +1483,7 @@
 				B06AFAEB261494F700E7AAB0 /* CardanoAddress.swift in Sources */,
 				5DDD82C225BF0D6C00166EA9 /* Base58.swift in Sources */,
 				5DDD831A25BF0E7F00166EA9 /* XrpTarget.swift in Sources */,
+				DAB6548B27967D860002A5E8 /* SolanaResponse.swift in Sources */,
 				DAE30DFC279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */,
 				B04AA04D2642C8FE0075AE32 /* BlockchairAddressBlockMapper.swift in Sources */,
 				5DDD833C25BF0EC900166EA9 /* XRPAddress.swift in Sources */,

@@ -11,18 +11,20 @@ import Combine
 import Solana_Swift
 
 @available(iOS 13.0, *)
-public class SolanaNetworkService {
+class SolanaNetworkService {
     let solanaSdk: Solana
     
     init(solanaSdk: Solana) {
         self.solanaSdk = solanaSdk
     }
     
-//    public func accountInfo(accountId: String) -> AnyPublisher<Void, Error> {
-//    
-//    }
+    func accountInfo(accountId: String) -> AnyPublisher<SolanaAccountInfoResponse, Error> {
+        Publishers.Zip(mainAccountInfo(accountId: accountId), tokenAccountsInfo(accountId: accountId))
+            .map(self.mapInfo)
+            .eraseToAnyPublisher()
+    }
     
-    public func mainAccountInfo(accountId: String) -> AnyPublisher<BufferInfo<AccountInfo>, Error> {
+    private func mainAccountInfo(accountId: String) -> AnyPublisher<BufferInfo<AccountInfo>, Error> {
         Future { [unowned self] promise in
             self.solanaSdk.api.getAccountInfo(account: accountId, decodedTo: AccountInfo.self) { result in
                 switch result {
@@ -33,10 +35,9 @@ public class SolanaNetworkService {
                 }
             }
         }.eraseToAnyPublisher()
-
     }
     
-    public func tokenAccountsInfo(accountId: String) -> AnyPublisher<[TokenAccount<AccountInfoData>], Error> {
+    private func tokenAccountsInfo(accountId: String) -> AnyPublisher<[TokenAccount<AccountInfoData>], Error> {
         let configs = RequestConfiguration(commitment: "recent", encoding: "jsonParsed")
         let programId = PublicKey.tokenProgramId.base58EncodedString
         
@@ -53,5 +54,23 @@ public class SolanaNetworkService {
             }
         }
         .eraseToAnyPublisher()
+    }
+}
+
+private extension SolanaNetworkService {
+    private func mapInfo(mainAccountInfo: BufferInfo<AccountInfo>, tokenAccountsInfo: [TokenAccount<AccountInfoData>]) -> SolanaAccountInfoResponse {
+        let tokens: [SolanaTokenAccountInfoResponse] = tokenAccountsInfo.compactMap {
+            guard let info = $0.account.data.value?.parsed.info else { return nil }
+            let address = $0.pubkey
+            let mint = info.mint
+            let amount = Decimal(info.tokenAmount.uiAmount)
+            
+            return SolanaTokenAccountInfoResponse(address: address, mint: mint, balance: amount)
+        }
+        
+        let blockchain = Blockchain.solana(testnet: false)
+        let balance = Decimal(mainAccountInfo.lamports) / blockchain.decimalValue
+        
+        return SolanaAccountInfoResponse(balance: balance, tokens: tokens)
     }
 }
