@@ -19,6 +19,8 @@ public enum EthereumNetwork {
     case bscTestnet
     case polygon
     case polygonTestnet
+    case avalanche //c-chain
+    case avalancheTestnet //c-chain
     
     public var blockchain: Blockchain {
         switch self {
@@ -29,6 +31,8 @@ public enum EthereumNetwork {
         case .bscTestnet: return .bsc(testnet: true)
         case .polygon: return .polygon(testnet: false)
         case .polygonTestnet: return .polygon(testnet: true)
+        case .avalanche: return .avalanche(testnet: false)
+        case .avalancheTestnet: return .avalanche(testnet: true)
         }
     }
     
@@ -48,6 +52,10 @@ public enum EthereumNetwork {
             return 137
         case .polygonTestnet:
             return 80001
+        case .avalanche:
+            return 43114
+        case .avalancheTestnet:
+            return 43113
         }
     }
     
@@ -71,6 +79,10 @@ public enum EthereumNetwork {
             return URL(string: "https://rpc-mainnet.maticvigil.com/")!
         case .polygonTestnet:
             return URL(string: "https://rpc-mumbai.maticvigil.com/")!
+        case .avalanche:
+            return URL(string: "https://api.avax.network/ext/bc/C/rpc")!
+        case .avalancheTestnet:
+            return URL(string: "https://api.avax-test.network/ext/bc/C/rpc")!
         }
     }
     
@@ -88,6 +100,10 @@ public enum EthereumNetwork {
             return .polygon
         case EthereumNetwork.polygonTestnet.id:
             return .polygonTestnet
+        case EthereumNetwork.avalanche.id:
+            return .avalanche
+        case EthereumNetwork.avalancheTestnet.id:
+            return .avalancheTestnet
         default:
             return nil
         }

@@ -50,7 +50,7 @@ public enum IconsUtils {
 }
 
 fileprivate extension Blockchain {
-    var getPath: String? {
+    var getPath: String? { //from https://github.com/trustwallet/assets/tree/master/blockchains
         switch self {
         case .bitcoin:
             return "bitcoin"
@@ -78,6 +78,8 @@ fileprivate extension Blockchain {
             return "smartchain"
         case .polygon:
             return "polygon"
+        case .avalanche:
+            return "avalanchec"
         case .solana:
             return "solana"
         }
