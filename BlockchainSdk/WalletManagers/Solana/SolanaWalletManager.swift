@@ -12,6 +12,7 @@ import Solana_Swift
 
 enum SolanaWalletError: Error {
     case noFeeReturned
+    case invalidAddress
 }
 
 class SolanaWalletManager: WalletManager {
@@ -54,11 +55,55 @@ extension SolanaWalletManager: TransactionSender {
     public var allowsFeeSelection: Bool { false }
     
     public func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+        switch transaction.amount.type {
+        case .coin:
+            return sendSol(transaction, signer: signer)
+        case .token(let token):
+            return sendSplToken(transaction, token: token, signer: signer)
+        case .reserve:
+            return .emptyFail
+        }
+    }
+    
+    private func sendSol(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         Future { [unowned self] promise in
             let signer = SolanaTransactionSigner(transactionSigner: signer, cardId: self.wallet.cardId, walletPublicKey: self.wallet.publicKey)
 
             let lamport = NSDecimalNumber(decimal: transaction.amount.value * self.wallet.blockchain.decimalValue).uint64Value
-            self.solanaSdk.action.sendSOL(to: transaction.destinationAddress, amount: lamport, signer: signer) { result in
+            self.solanaSdk.action.sendSOL(to: transaction.destinationAddress, amount: lamport, allowUnfundedRecipient: true, signer: signer) { result in
+                switch result {
+                case .failure(let error):
+                    promise(.failure(error))
+                case .success:
+                    promise(.success(()))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    private func sendSplToken(_ transaction: Transaction, token: Token, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+        Future { [unowned self] promise in
+            guard
+                let associatedSourceTokenAccountAddress = associatedTokenAddress(accountAddress: transaction.sourceAddress, mintAddress: token.contractAddress)
+            else {
+                promise(.failure(SolanaWalletError.invalidAddress))
+                return
+            }
+            
+            let signer = SolanaTransactionSigner(transactionSigner: signer, cardId: self.wallet.cardId, walletPublicKey: self.wallet.publicKey)
+
+            let lamport = NSDecimalNumber(decimal: transaction.amount.value * token.decimalValue).uint64Value
+            
+            self.solanaSdk.action.sendSPLTokens(
+                mintAddress: token.contractAddress,
+                decimals: Decimals(token.decimalCount),
+                from: associatedSourceTokenAccountAddress,
+                to: transaction.destinationAddress,
+                amount: lamport,
+                allowUnfundedRecipient: true,
+                signer: signer
+            ) { result in
                 switch result {
                 case .failure(let error):
                     promise(.failure(error))
@@ -78,6 +123,18 @@ extension SolanaWalletManager: TransactionSender {
                 return [Amount(with: blockchain, type: .coin, value: $0)]
             }
             .eraseToAnyPublisher()
+    }
+    
+    private func associatedTokenAddress(accountAddress: String, mintAddress: String) -> String? {
+        guard
+            let accountPublicKey = PublicKey(string: accountAddress),
+            let tokenMintPublicKey = PublicKey(string: mintAddress),
+            case let .success(associatedSourceTokenAddress) = PublicKey.associatedTokenAddress(walletAddress: accountPublicKey, tokenMintAddress: tokenMintPublicKey)
+        else {
+            return nil
+        }
+        
+        return associatedSourceTokenAddress.base58EncodedString
     }
 }
 
