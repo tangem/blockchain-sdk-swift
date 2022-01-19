@@ -240,11 +240,8 @@ public class WalletManagerFactory {
                 let networkRouter = NetworkingRouter(endpoint: endpoint)
                 let accountStorage = SolanaDummyAccountStorage()
                 
-                let solanaSdk = Solana(router: networkRouter, accountStorage: accountStorage)
-                let networkService = SolanaNetworkService(solanaSdk: solanaSdk, blockchain: blockchain)
-                
-                $0.solanaSdk = solanaSdk
-                $0.networkService = networkService
+                $0.solanaSdk = Solana(router: networkRouter, accountStorage: accountStorage)
+                $0.networkService = SolanaNetworkService(solanaSdk: $0.solanaSdk, blockchain: blockchain)
             }
         }
     }
