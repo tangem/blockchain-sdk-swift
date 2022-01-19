@@ -106,7 +106,8 @@ private extension SolanaNetworkService {
             
             return SolanaTokenAccountInfoResponse(address: address, mint: mint, balance: amount)
         }
+        let tokensByMint = Dictionary(uniqueKeysWithValues: tokens.map { ($0.mint, $0) })
         
-        return SolanaAccountInfoResponse(balance: balance, tokens: tokens)
+        return SolanaAccountInfoResponse(balance: balance, tokensByMint: tokensByMint)
     }
 }

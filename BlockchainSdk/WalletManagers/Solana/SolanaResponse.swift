@@ -10,7 +10,7 @@ import Foundation
 
 struct SolanaAccountInfoResponse {
     let balance: Decimal
-    let tokens: [SolanaTokenAccountInfoResponse]
+    let tokensByMint: [String: SolanaTokenAccountInfoResponse]
 }
 
 struct SolanaTokenAccountInfoResponse {
