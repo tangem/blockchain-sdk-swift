@@ -235,7 +235,7 @@ public class WalletManagerFactory {
                 $0.networkService = TezosNetworkService(providers: TezosApi.makeAllProviders())
             }
         case .solana(let testnet):
-            return SolanaWalletManager(wallet: wallet, cardTokens: tokens).then {
+            return SolanaWalletManager(wallet: wallet).then {
                 let endpoint: RPCEndpoint = testnet ? .testnetSolana : .mainnetBetaSolana
                 let networkRouter = NetworkingRouter(endpoint: endpoint)
                 let accountStorage = SolanaDummyAccountStorage()
