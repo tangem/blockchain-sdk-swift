@@ -309,7 +309,7 @@ public enum Blockchain {
             return URL(string: link)
         case .solana(let testnet):
             let baseUrl = "https://explorer.solana.com/address/"
-            let cluster = testnet ? "" : "?cluster=testnet"
+            let cluster = testnet ? "?cluster=testnet" : ""
             return URL(string: baseUrl + address + cluster)
         }
     }
