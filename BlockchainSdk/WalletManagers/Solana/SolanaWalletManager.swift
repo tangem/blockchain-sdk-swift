@@ -107,19 +107,22 @@ extension SolanaWalletManager: TransactionSender {
     }
     
     public func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        let openingFeePublisher: AnyPublisher<Decimal, Error>
+        let transactionFeePublisher = networkService
+            .transactionFee(numberOfSignatures: 1)
+        
+        let accountCreationFeePublisher: AnyPublisher<Decimal, Error>
         switch amount.type {
         case .coin:
-            openingFeePublisher = networkService.mainAccountCreationFee()
+            accountCreationFeePublisher = networkService.mainAccountCreationFee()
         case .token:
-            openingFeePublisher = networkService.tokenAccountCreationFee()
+            accountCreationFeePublisher = networkService.tokenAccountCreationFee()
         case .reserve:
             return .anyFail(error: BlockchainSdkError.failedToLoadFee)
         }
         
-        let accountExistsPublisher = networkService
+        let accountExistsPublisher: AnyPublisher<Bool, Error> = networkService
             .accountInfo(accountId: destination)
-            .map { info -> Bool in
+            .map { info in
                 switch amount.type {
                 case .coin:
                     return info.accountExists
@@ -132,11 +135,11 @@ extension SolanaWalletManager: TransactionSender {
             }
             .eraseToAnyPublisher()
         
-        return Publishers.Zip3(networkService.transactionFee(numberOfSignatures: 1), openingFeePublisher, accountExistsPublisher)
-            .map { transactionFee, accountOpeningFee, accountExists in
+        return Publishers.Zip3(transactionFeePublisher, accountCreationFeePublisher, accountExistsPublisher)
+            .map { transactionFee, accountCreationFee, accountExists in
                 var totalFee = transactionFee
                 if !accountExists {
-                    totalFee += accountOpeningFee
+                    totalFee += accountCreationFee
                 }
                 
                 let blockchain = self.wallet.blockchain
