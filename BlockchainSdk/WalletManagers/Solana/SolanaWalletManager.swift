@@ -61,53 +61,24 @@ extension SolanaWalletManager: TransactionSender {
     }
     
     private func sendSol(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
-        Future { [unowned self] promise in
-            let signer = SolanaTransactionSigner(transactionSigner: signer, cardId: self.wallet.cardId, walletPublicKey: self.wallet.publicKey)
-
-            let lamport = NSDecimalNumber(decimal: transaction.amount.value * self.wallet.blockchain.decimalValue).uint64Value
-            self.solanaSdk.action.sendSOL(to: transaction.destinationAddress, amount: lamport, allowUnfundedRecipient: true, signer: signer) { result in
-                switch result {
-                case .failure(let error):
-                    promise(.failure(error))
-                case .success:
-                    promise(.success(()))
-                }
-            }
-        }
-        .eraseToAnyPublisher()
+        let signer = SolanaTransactionSigner(transactionSigner: signer, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
+        let amount = NSDecimalNumber(decimal: transaction.amount.value * wallet.blockchain.decimalValue).uint64Value
+        let destination = transaction.destinationAddress
+        return networkService.sendSol(amount: amount, destinationAddress: destination, signer: signer)
     }
     
     private func sendSplToken(_ transaction: Transaction, token: Token, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
-        Future { [unowned self] promise in
-            guard
-                let associatedSourceTokenAccountAddress = associatedTokenAddress(accountAddress: transaction.sourceAddress, mintAddress: token.contractAddress)
-            else {
-                promise(.failure(SolanaWalletError.invalidAddress))
-                return
-            }
-            
-            let signer = SolanaTransactionSigner(transactionSigner: signer, cardId: self.wallet.cardId, walletPublicKey: self.wallet.publicKey)
-
-            let lamport = NSDecimalNumber(decimal: transaction.amount.value * token.decimalValue).uint64Value
-            
-            self.solanaSdk.action.sendSPLTokens(
-                mintAddress: token.contractAddress,
-                decimals: Decimals(token.decimalCount),
-                from: associatedSourceTokenAccountAddress,
-                to: transaction.destinationAddress,
-                amount: lamport,
-                allowUnfundedRecipient: true,
-                signer: signer
-            ) { result in
-                switch result {
-                case .failure(let error):
-                    promise(.failure(error))
-                case .success:
-                    promise(.success(()))
-                }
-            }
+        guard
+            let associatedSourceTokenAccountAddress = associatedTokenAddress(accountAddress: transaction.sourceAddress, mintAddress: token.contractAddress)
+        else {
+            return .anyFail(error: SolanaWalletError.invalidAddress)
         }
-        .eraseToAnyPublisher()
+        
+        let lamport = NSDecimalNumber(decimal: transaction.amount.value * token.decimalValue).uint64Value
+
+        
+        let signer = SolanaTransactionSigner(transactionSigner: signer, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
+        return networkService.sendSplToken(amount: lamport, sourceTokenAddress: associatedSourceTokenAccountAddress, destinationAddress: transaction.destinationAddress, token: token, signer: signer)
     }
     
     public func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {

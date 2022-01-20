@@ -26,6 +26,47 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
+    func sendSol(amount: UInt64, destinationAddress: String, signer: SolanaTransactionSigner) -> AnyPublisher<Void, Error> {
+        Future { [unowned self] promise in
+            self.solanaSdk.action.sendSOL(
+                to: destinationAddress,
+                amount: amount,
+                allowUnfundedRecipient: true,
+                signer: signer
+            ) { result in
+                switch result {
+                case .failure(let error):
+                    promise(.failure(error))
+                case .success:
+                    promise(.success(()))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    func sendSplToken(amount: UInt64, sourceTokenAddress: String, destinationAddress: String, token: Token, signer: SolanaTransactionSigner) -> AnyPublisher<Void, Error> {
+        Future { [unowned self] promise in
+            self.solanaSdk.action.sendSPLTokens(
+                mintAddress: token.contractAddress,
+                decimals: Decimals(token.decimalCount),
+                from: sourceTokenAddress,
+                to: destinationAddress,
+                amount: amount,
+                allowUnfundedRecipient: true,
+                signer: signer
+            ) { result in
+                switch result {
+                case .failure(let error):
+                    promise(.failure(error))
+                case .success:
+                    promise(.success(()))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
     func transactionFee(numberOfSignatures: Int) -> AnyPublisher<Decimal, Error> {
         Future { [unowned self] promise in
             self.solanaSdk.api.getFees(commitment: nil) { result in
