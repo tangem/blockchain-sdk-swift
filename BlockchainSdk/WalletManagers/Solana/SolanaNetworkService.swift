@@ -77,7 +77,7 @@ class SolanaNetworkService {
         .eraseToAnyPublisher()
     }
     
-    private func mainAccountBalance(accountId: String) -> AnyPublisher<Lamports, Error> {
+    private func mainAccountBalance(accountId: String) -> AnyPublisher<SolanaMainAccountInfoResponse, Error> {
         Future { [unowned self] promise in
             self.solanaSdk.api.getAccountInfo(account: accountId, decodedTo: AccountInfo.self) { result in
                 switch result {
@@ -85,14 +85,16 @@ class SolanaNetworkService {
                     promise(.failure(error))
                 case .success(let info):
                     let lamports = info.lamports
-                    promise(.success(lamports))
+                    let accountInfo = SolanaMainAccountInfoResponse(balance: lamports, accountExists: true)
+                    promise(.success(accountInfo))
                 }
             }
-        }.tryCatch { (error: Error) -> AnyPublisher<Lamports, Error> in
+        }.tryCatch { (error: Error) -> AnyPublisher<SolanaMainAccountInfoResponse, Error> in
             if let solanaError = error as? SolanaError {
                 switch solanaError {
                 case .nullValue:
-                    return Just(0)
+                    let info = SolanaMainAccountInfoResponse(balance: 0, accountExists: false)
+                    return Just(info)
                         .setFailureType(to: Error.self)
                         .eraseToAnyPublisher()
                 default:
@@ -125,8 +127,9 @@ class SolanaNetworkService {
 }
 
 private extension SolanaNetworkService {
-    private func mapInfo(mainAccountBalance: Lamports, tokenAccountsInfo: [TokenAccount<AccountInfoData>]) -> SolanaAccountInfoResponse {
-        let balance = Decimal(mainAccountBalance) / blockchain.decimalValue
+    private func mapInfo(mainAccountInfo: SolanaMainAccountInfoResponse, tokenAccountsInfo: [TokenAccount<AccountInfoData>]) -> SolanaAccountInfoResponse {
+        let balance = Decimal(mainAccountInfo.balance) / blockchain.decimalValue
+        let accountExists = mainAccountInfo.accountExists
 
         let tokens: [SolanaTokenAccountInfoResponse] = tokenAccountsInfo.compactMap {
             guard let info = $0.account.data.value?.parsed.info else { return nil }
@@ -138,6 +141,6 @@ private extension SolanaNetworkService {
         }
         let tokensByMint = Dictionary(uniqueKeysWithValues: tokens.map { ($0.mint, $0) })
         
-        return SolanaAccountInfoResponse(balance: balance, tokensByMint: tokensByMint)
+        return SolanaAccountInfoResponse(balance: balance, accountExists: accountExists, tokensByMint: tokensByMint)
     }
 }

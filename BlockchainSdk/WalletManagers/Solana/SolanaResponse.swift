@@ -7,10 +7,17 @@
 //
 
 import Foundation
+import Solana_Swift
 
 struct SolanaAccountInfoResponse {
     let balance: Decimal
+    let accountExists: Bool
     let tokensByMint: [String: SolanaTokenAccountInfoResponse]
+}
+
+struct SolanaMainAccountInfoResponse {
+    let balance: Lamports
+    let accountExists: Bool
 }
 
 struct SolanaTokenAccountInfoResponse {
