@@ -114,7 +114,7 @@ extension SolanaWalletManager: TransactionSender {
         case .token:
             openingFeePublisher = networkService.tokenAccountCreationFee()
         case .reserve:
-            return .emptyFail
+            return .anyFail(error: BlockchainSdkError.failedToLoadFee)
         }
         
         let accountExistsPublisher = networkService
