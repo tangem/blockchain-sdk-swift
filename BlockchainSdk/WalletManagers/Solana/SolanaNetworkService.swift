@@ -26,7 +26,7 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func fee(numberOfSignatures: Int) -> AnyPublisher<Decimal, Error> {
+    func transactionFee(numberOfSignatures: Int) -> AnyPublisher<Decimal, Error> {
         Future { [unowned self] promise in
             self.solanaSdk.api.getFees(commitment: nil) { result in
                 switch result {

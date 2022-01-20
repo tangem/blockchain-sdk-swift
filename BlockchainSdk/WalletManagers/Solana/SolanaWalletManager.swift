@@ -112,7 +112,7 @@ extension SolanaWalletManager: TransactionSender {
     
     public func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         networkService
-            .fee(numberOfSignatures: 1)
+            .transactionFee(numberOfSignatures: 1)
             .map {
                 let blockchain = self.wallet.blockchain
                 return [Amount(with: blockchain, type: .coin, value: $0)]
