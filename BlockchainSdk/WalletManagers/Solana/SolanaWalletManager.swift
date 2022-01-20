@@ -10,11 +10,6 @@ import Foundation
 import Combine
 import Solana_Swift
 
-enum SolanaWalletError: Error {
-    case noFeeReturned
-    case invalidAddress
-}
-
 class SolanaWalletManager: WalletManager {
     var solanaSdk: Solana!
     var networkService: SolanaNetworkService!
@@ -96,7 +91,7 @@ extension SolanaWalletManager: TransactionSender {
         guard
             let associatedSourceTokenAccountAddress = associatedTokenAddress(accountAddress: transaction.sourceAddress, mintAddress: token.contractAddress)
         else {
-            return .anyFail(error: SolanaWalletError.invalidAddress)
+            return .anyFail(error: BlockchainSdkError.failedToConvertPublicKey)
         }
         
         let amount = NSDecimalNumber(decimal: transaction.amount.value * token.decimalValue).uint64Value

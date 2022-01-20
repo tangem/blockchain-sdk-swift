@@ -75,7 +75,7 @@ class SolanaNetworkService {
                     promise(.failure(error))
                 case .success(let fee):
                     guard let lamportsPerSignature = fee.feeCalculator?.lamportsPerSignature else {
-                        promise(.failure(SolanaWalletError.noFeeReturned))
+                        promise(.failure(BlockchainSdkError.failedToLoadFee))
                         return
                     }
                     
