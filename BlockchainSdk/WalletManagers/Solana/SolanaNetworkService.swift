@@ -109,9 +109,9 @@ class SolanaNetworkService {
                 switch result {
                 case .failure(let error):
                     promise(.failure(error))
-                case .success(let fee):
-                    let lamports = Decimal(fee) / blockchain.decimalValue
-                    promise(.success(lamports))
+                case .success(let feeInLamports):
+                    let amount = Decimal(feeInLamports) / blockchain.decimalValue
+                    promise(.success(amount))
                 }
             }
         }
@@ -149,8 +149,8 @@ class SolanaNetworkService {
     
     private func tokenAccountsInfo(accountId: String) -> AnyPublisher<[TokenAccount<AccountInfoData>], Error> {
         Future { [unowned self] promise in
-            let configs = RequestConfiguration(commitment: "recent", encoding: "jsonParsed")
             let programId = PublicKey.tokenProgramId.base58EncodedString
+            let configs = RequestConfiguration(commitment: "recent", encoding: "jsonParsed")
 
             self.solanaSdk.api.getTokenAccountsByOwner(pubkey: accountId, programId: programId, configs: configs) {
                 (result: Result<[TokenAccount<AccountInfoData>], Error>) in
