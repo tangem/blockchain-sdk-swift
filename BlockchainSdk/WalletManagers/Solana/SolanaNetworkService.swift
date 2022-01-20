@@ -47,6 +47,36 @@ class SolanaNetworkService {
         .eraseToAnyPublisher()
     }
     
+    // This fee is deducted from the transaction amount itself (!)
+    func mainAccountCreationFee() -> AnyPublisher<Decimal, Error> {
+        // https://docs.solana.com/developing/programming-model/accounts#calculation-of-rent
+        let minimumAccountSizeInBytes = Decimal(128)
+        let numberOfEpochs = Decimal(1)
+        let rentInLamportPerByteEpoch = Decimal(19.055441478439427)
+        let lamportsInSol = blockchain.decimalValue
+        
+        let rent = minimumAccountSizeInBytes * numberOfEpochs * rentInLamportPerByteEpoch / lamportsInSol
+        let rentAmount = Amount(with: blockchain, value: rent)
+
+        return Just(rent).setFailureType(to: Error.self).eraseToAnyPublisher()
+    }
+    
+    // This fee is deducted from the main SOL account
+    func tokenAccountCreationFee() -> AnyPublisher<Decimal, Error> {
+        Future { [unowned self] promise in
+            self.solanaSdk.action.getCreatingTokenAccountFee { result in
+                switch result {
+                case .failure(let error):
+                    promise(.failure(error))
+                case .success(let fee):
+                    let lamports = Decimal(fee) / blockchain.decimalValue
+                    promise(.success(lamports))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
     private func mainAccountBalance(accountId: String) -> AnyPublisher<Lamports, Error> {
         Future { [unowned self] promise in
             self.solanaSdk.api.getAccountInfo(account: accountId, decodedTo: AccountInfo.self) { result in

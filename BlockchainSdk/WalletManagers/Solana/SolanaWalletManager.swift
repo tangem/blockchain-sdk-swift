@@ -119,19 +119,7 @@ extension SolanaWalletManager: TransactionSender {
             }
             .eraseToAnyPublisher()
     }
-    
-    public func getAccountOpeningRent() -> AnyPublisher<Amount, Never> {
-        // https://docs.solana.com/developing/programming-model/accounts#calculation-of-rent
-        let minimumAccountSizeInBytes = Decimal(128)
-        let numberOfEpochs = Decimal(1)
-        let rentInLamportPerByteEpoch = Decimal(19.055441478439427)
-        let lamportsInSol = wallet.blockchain.decimalValue
         
-        let rent = minimumAccountSizeInBytes * numberOfEpochs * rentInLamportPerByteEpoch / lamportsInSol
-        let rentAmount = Amount(with: wallet.blockchain, value: rent)
-        return Just(rentAmount).eraseToAnyPublisher()
-    }
-    
     private func associatedTokenAddress(accountAddress: String, mintAddress: String) -> String? {
         guard
             let accountPublicKey = PublicKey(string: accountAddress),
