@@ -15,8 +15,6 @@ class SolanaNetworkService {
     private let solanaSdk: Solana
     private let blockchain: Blockchain
     
-    private let minimumAccountSizeInBytes: UInt64 = 128
-    
     init(solanaSdk: Solana, blockchain: Blockchain) {
         self.solanaSdk = solanaSdk
         self.blockchain = blockchain
@@ -81,7 +79,7 @@ class SolanaNetworkService {
     // This fee is deducted from the transaction amount itself (!)
     func mainAccountCreationFee() -> AnyPublisher<Decimal, Error> {
         // https://docs.solana.com/developing/programming-model/accounts#calculation-of-rent
-        let minimumAccountSizeInBytes = Decimal(self.minimumAccountSizeInBytes)
+        let minimumAccountSizeInBytes = Decimal(128)
         let numberOfEpochs = Decimal(1)
         let rentInLamportPerByteEpoch = Decimal(19.055441478439427)
         let lamportsInSol = blockchain.decimalValue
@@ -105,7 +103,8 @@ class SolanaNetworkService {
     }
     
     func rentExemptionBalance() -> AnyPublisher<Decimal, Error> {
-        solanaSdk.api.getMinimumBalanceForRentExemption(dataLength: minimumAccountSizeInBytes)
+        // The accounts metadata size (128) is already factored in
+        solanaSdk.api.getMinimumBalanceForRentExemption(dataLength: 0)
             .tryMap { [weak self] balanceInLamports in
                 guard let self = self else {
                     throw WalletError.empty
