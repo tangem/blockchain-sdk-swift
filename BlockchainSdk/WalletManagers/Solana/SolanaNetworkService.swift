@@ -78,6 +78,10 @@ class SolanaNetworkService {
     
     // This fee is deducted from the transaction amount itself (!)
     func mainAccountCreationFee() -> AnyPublisher<Decimal, Error> {
+        accountRentFeePerEpoch()
+    }
+    
+    func accountRentFeePerEpoch() -> AnyPublisher<Decimal, Error> {
         // https://docs.solana.com/developing/programming-model/accounts#calculation-of-rent
         let minimumAccountSizeInBytes = Decimal(128)
         let numberOfEpochs = Decimal(1)

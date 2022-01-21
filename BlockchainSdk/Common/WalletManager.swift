@@ -215,3 +215,8 @@ public struct WithdrawalWarning {
     public let ignoreMessage: String
     public let suggestedReduceAmount: Amount
 }
+
+public protocol RentProvider {
+    func minimalBalanceForRentExemption() -> AnyPublisher<Amount, Error>
+    func rentAmount() -> AnyPublisher<Amount, Error>
+}
