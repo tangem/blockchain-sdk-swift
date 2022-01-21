@@ -102,7 +102,7 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func rentExemptionBalance() -> AnyPublisher<Decimal, Error> {
+    func minimalBalanceForRentExemption() -> AnyPublisher<Decimal, Error> {
         // The accounts metadata size (128) is already factored in
         solanaSdk.api.getMinimumBalanceForRentExemption(dataLength: 0)
             .tryMap { [weak self] balanceInLamports in
