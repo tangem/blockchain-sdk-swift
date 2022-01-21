@@ -79,7 +79,11 @@ extension SolanaWalletManager: TransactionSender {
         let signer = SolanaTransactionSigner(transactionSigner: signer, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
 
         return additionalAmountPublisher
-            .flatMap { [unowned self] additionalAmount -> AnyPublisher<Void, Error> in
+            .flatMap { [weak self] additionalAmount -> AnyPublisher<Void, Error> in
+                guard let self = self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+                
                 let decimalAmount = (transaction.amount.value + additionalAmount) * self.wallet.blockchain.decimalValue
                 let intAmount = (decimalAmount as NSDecimalNumber).uint64Value
                 return self.networkService.sendSol(amount: intAmount, destinationAddress: destination, signer: signer)
@@ -136,7 +140,11 @@ extension SolanaWalletManager: TransactionSender {
             .eraseToAnyPublisher()
         
         return Publishers.Zip3(transactionFeePublisher, accountCreationFeePublisher, accountExistsPublisher)
-            .map { transactionFee, accountCreationFee, accountExists in
+            .tryMap { [weak self] transactionFee, accountCreationFee, accountExists in
+                guard let self = self else {
+                    throw WalletError.empty
+                }
+                
                 var totalFee = transactionFee
                 if !accountExists {
                     totalFee += accountCreationFee

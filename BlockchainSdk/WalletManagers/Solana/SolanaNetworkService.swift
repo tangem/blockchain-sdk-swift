@@ -22,7 +22,13 @@ class SolanaNetworkService {
     
     func accountInfo(accountId: String) -> AnyPublisher<SolanaAccountInfoResponse, Error> {
         Publishers.Zip(mainAccountBalance(accountId: accountId), tokenAccountsInfo(accountId: accountId))
-            .map(self.mapInfo)
+            .tryMap { [weak self] in
+                guard let self = self else {
+                    throw WalletError.empty
+                }
+                
+                return self.mapInfo(mainAccountInfo: $0, tokenAccountsInfo: $1)
+            }
             .eraseToAnyPublisher()
     }
     
