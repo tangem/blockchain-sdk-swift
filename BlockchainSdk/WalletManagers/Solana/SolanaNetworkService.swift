@@ -103,7 +103,6 @@ class SolanaNetworkService {
         let lamportsInSol = blockchain.decimalValue
         
         let rent = minimumAccountSizeInBytes * numberOfEpochs * rentInLamportPerByteEpoch / lamportsInSol
-        let rentAmount = Amount(with: blockchain, value: rent)
 
         return Just(rent).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
