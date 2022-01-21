@@ -75,9 +75,7 @@ public enum Blockchain {
             return 6
         case .stellar:
             return 7
-        case .avalanche:
-            return 9
-        case .solana:
+        case .avalanche, .solana:
             return 9
         }
     }
