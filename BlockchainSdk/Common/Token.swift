@@ -46,3 +46,9 @@ public struct Token: Hashable, Equatable, Codable {
         self.blockchain = blockchain
     }
 }
+
+public extension Token {
+    public var decimalValue: Decimal {
+        return pow(Decimal(10), decimalCount)
+    }
+}

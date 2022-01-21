@@ -10,6 +10,7 @@ import Foundation
 import TangemSdk
 import stellarsdk
 import BitcoinCore
+import Solana_Swift
 
 @available(iOS 13.0, *)
 public class WalletManagerFactory {
@@ -244,6 +245,16 @@ public class WalletManagerFactory {
                                                            providers: [EthereumJsonRpcProvider(network: network)],
                                                            blockcypherProvider: nil,
                                                            blockchairProvider: nil)
+            }
+            
+        case .solana(let testnet):
+            return SolanaWalletManager(wallet: wallet).then {
+                let endpoint: RPCEndpoint = testnet ? .testnetSolana : .mainnetBetaSolana
+                let networkRouter = NetworkingRouter(endpoint: endpoint)
+                let accountStorage = SolanaDummyAccountStorage()
+                
+                $0.solanaSdk = Solana(router: networkRouter, accountStorage: accountStorage)
+                $0.networkService = SolanaNetworkService(solanaSdk: $0.solanaSdk, blockchain: blockchain)
             }
         }
     }

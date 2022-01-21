@@ -42,6 +42,10 @@ PODS:
     - PromiseKit/CorePromise
   - secp256k1.swift (0.1.4)
   - Sodium (0.9.1)
+  - Solana.Swift (1.1):
+    - secp256k1.swift
+    - Starscream (~> 4.0.0)
+    - TweetNacl (~> 1.0.2)
   - Starscream (4.0.4)
   - stellar-ios-mac-sdk (2.0.7)
   - SwiftCBOR (0.4.4)
@@ -49,6 +53,7 @@ PODS:
   - SwiftProtobuf (1.18.0)
   - SwiftyJSON (5.0.1)
   - TangemSdk (3.2.1)
+  - TweetNacl (1.0.2)
   - web3swift (2.2.1):
     - BigInt
     - CryptoSwift
@@ -69,6 +74,7 @@ DEPENDENCIES:
   - HDWalletKit (from `https://github.com/lazutkin-andrey/hdwallet.git`, tag `0.3.12`)
   - Moya
   - Sodium
+  - Solana.Swift (from `https://github.com/tangem/Solana.Swift`, tag `add-external-signer-1`)
   - stellar-ios-mac-sdk
   - SwiftCBOR
   - SwiftyJSON
@@ -92,6 +98,7 @@ SPEC REPOS:
     - SwiftDate
     - SwiftProtobuf
     - SwiftyJSON
+    - TweetNacl
     - XCGLogger
 
 EXTERNAL SOURCES:
@@ -104,6 +111,9 @@ EXTERNAL SOURCES:
   HDWalletKit:
     :git: https://github.com/lazutkin-andrey/hdwallet.git
     :tag: 0.3.12
+  Solana.Swift:
+    :git: https://github.com/tangem/Solana.Swift
+    :tag: add-external-signer-1
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-128
@@ -121,6 +131,9 @@ CHECKOUT OPTIONS:
   HDWalletKit:
     :git: https://github.com/lazutkin-andrey/hdwallet.git
     :tag: 0.3.12
+  Solana.Swift:
+    :git: https://github.com/tangem/Solana.Swift
+    :tag: add-external-signer-1
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-128
@@ -141,6 +154,7 @@ SPEC CHECKSUMS:
   PromiseKit: 3b2b6995e51a954c46dbc550ce3da44fbfb563c5
   secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
   Sodium: 23d11554ecd556196d313cf6130d406dfe7ac6da
+  Solana.Swift: c86f550e70aeaf1f2171435ef95dca16fc55c950
   Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
   stellar-ios-mac-sdk: dbace17a64d1e565ddd084a839aea569c672d539
   SwiftCBOR: ce5354ec8b660da2d6fc754462881119dbe1f963
@@ -148,9 +162,10 @@ SPEC CHECKSUMS:
   SwiftProtobuf: c3c12645230d9b09c72267e0de89468c5543bd86
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
   TangemSdk: 24127483da68cffe64a4bd766893f11dedbdb430
+  TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: eb7406f38ed354762b262c0967beddfcd7ae1910
+PODFILE CHECKSUM: 0f560a323c5eef77d7c4e815ae9c7d4ced3652c2
 
 COCOAPODS: 1.11.2

@@ -27,6 +27,7 @@ public enum Blockchain {
     case bsc(testnet: Bool)
     case polygon(testnet: Bool)
     case avalanche(testnet: Bool)
+    case solana(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -46,12 +47,14 @@ public enum Blockchain {
             return testnet
         case .avalanche(let testnet):
             return testnet
+        case .solana(let testnet):
+            return testnet
         }
     }
     
     public var curve: EllipticCurve {
         switch self {
-        case .stellar, .cardano:
+        case .stellar, .cardano, .solana:
             return .ed25519
         case .xrp(let curve):
             return curve
@@ -72,7 +75,7 @@ public enum Blockchain {
             return 6
         case .stellar:
             return 7
-        case .avalanche:
+        case .avalanche, .solana:
             return 9
         }
     }
@@ -113,6 +116,8 @@ public enum Blockchain {
             return "MATIC"
         case .avalanche:
             return "AVAX"
+        case .solana:
+            return "SOL"
         }
     }
     
@@ -131,6 +136,8 @@ public enum Blockchain {
             return "Polygon" + (testnet ? testnetSuffix : "")
         case .avalanche(let testnet):
             return "Avalanche C-Chain" + (testnet ? testnetSuffix : "")
+        case .solana(let testnet):
+            return "Solana" + (testnet ? testnetSuffix : "")
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -150,6 +157,8 @@ public enum Blockchain {
             return "Binance Asset"
         case .bsc:
             return "Binance Smart Chain token"
+        case .solana:
+            return "Solana Token"
         default:
             return displayName
         }
@@ -212,6 +221,7 @@ public enum Blockchain {
         }
     }
     
+    // https://github.com/satoshilabs/slips/blob/master/slip-0044.md
     public var coinType: UInt32 {
         if isTestnet {
             return 1
@@ -232,6 +242,7 @@ public enum Blockchain {
         case .rsk: return 137
         case .polygon: return 966
         case .avalanche: return 9000
+        case .solana: return 501
         }
     }
     
@@ -308,6 +319,10 @@ public enum Blockchain {
             let baseUrl = testnet ? "https://snowtrace.io/address/" : "https://testnet.snowtrace.io/address/"
             let link = baseUrl + address
             return URL(string: link)
+        case .solana(let testnet):
+            let baseUrl = "https://explorer.solana.com/address/"
+            let cluster = testnet ? "?cluster=testnet" : ""
+            return URL(string: baseUrl + address + cluster)
         }
     }
     
@@ -332,6 +347,7 @@ public enum Blockchain {
         case "bsc": return .bsc(testnet: isTestnet)
         case "polygon": return .polygon(testnet: isTestnet)
         case "avalanche": return .avalanche(testnet: isTestnet)
+        case "solana": return .solana(testnet: isTestnet)
         default: return nil
         }
     }
@@ -364,6 +380,8 @@ public enum Blockchain {
             return TezosAddressService(curve: curve)
         case .dogecoin:
             return BitcoinLegacyAddressService(networkParams: DogecoinNetworkParams())
+        case .solana:
+            return SolanaAddressService()
         }
     }
 }
@@ -387,6 +405,7 @@ extension Blockchain: Equatable, Hashable, Codable {
         case .bsc: return "bsc"
         case .polygon: return "polygon"
         case .avalanche: return "avalanche"
+        case .solana: return "solana"
         }
     }
     
@@ -424,6 +443,7 @@ extension Blockchain: Equatable, Hashable, Codable {
         case "bsc": self = .bsc(testnet: isTestnet)
         case "polygon", "matic": self = .polygon(testnet: isTestnet)
         case "avalanche": self = .avalanche(testnet: isTestnet)
+        case "solana": self = .solana(testnet: isTestnet)
         default: throw BlockchainSdkError.decodingFailed
         }
     }

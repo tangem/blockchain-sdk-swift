@@ -80,6 +80,8 @@ fileprivate extension Blockchain {
             return "polygon"
         case .avalanche:
             return "avalanchec"
+        case .solana:
+            return "solana"
         }
     }
 }
