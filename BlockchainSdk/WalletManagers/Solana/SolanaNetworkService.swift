@@ -165,9 +165,7 @@ class SolanaNetworkService {
         }
         .eraseToAnyPublisher()
     }
-}
-
-private extension SolanaNetworkService {
+    
     private func mapInfo(mainAccountInfo: SolanaMainAccountInfoResponse, tokenAccountsInfo: [TokenAccount<AccountInfoData>]) -> SolanaAccountInfoResponse {
         let balance = Decimal(mainAccountInfo.balance) / blockchain.decimalValue
         let accountExists = mainAccountInfo.accountExists
