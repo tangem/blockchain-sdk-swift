@@ -78,6 +78,10 @@ class SolanaNetworkService {
     
     // This fee is deducted from the transaction amount itself (!)
     func mainAccountCreationFee() -> AnyPublisher<Decimal, Error> {
+        accountRentFeePerEpoch()
+    }
+    
+    func accountRentFeePerEpoch() -> AnyPublisher<Decimal, Error> {
         // https://docs.solana.com/developing/programming-model/accounts#calculation-of-rent
         let minimumAccountSizeInBytes = Decimal(128)
         let numberOfEpochs = Decimal(1)
@@ -98,6 +102,19 @@ class SolanaNetworkService {
                 }
                 
                 return Decimal(feeInLamports) / self.blockchain.decimalValue
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func minimalBalanceForRentExemption() -> AnyPublisher<Decimal, Error> {
+        // The accounts metadata size (128) is already factored in
+        solanaSdk.api.getMinimumBalanceForRentExemption(dataLength: 0)
+            .tryMap { [weak self] balanceInLamports in
+                guard let self = self else {
+                    throw WalletError.empty
+                }
+                
+                return Decimal(balanceInLamports) / self.blockchain.decimalValue
             }
             .eraseToAnyPublisher()
     }

@@ -34,6 +34,34 @@ extension Api {
         .eraseToAnyPublisher()
     }
     
+    
+    func getMinimumBalanceForRentExemption(
+        dataLength: UInt64,
+        commitment: Commitment? = "recent"
+    ) -> AnyPublisher<UInt64, Error> {
+        Deferred {
+            Future { [weak self] promise in
+                guard let self = self else {
+                    promise(.failure(WalletError.empty))
+                    return
+                }
+
+                self.getMinimumBalanceForRentExemption(
+                    dataLength: dataLength,
+                    commitment: commitment
+                ) { 
+                    switch $0 {
+                    case .failure(let error):
+                        promise(.failure(error))
+                    case .success(let fee):
+                        promise(.success(fee))
+                    }
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
     func getAccountInfo<T: BufferLayout>(account: String, decodedTo: T.Type) -> AnyPublisher<BufferInfo<T>, Error> {
         Deferred {
             Future { [weak self] promise in

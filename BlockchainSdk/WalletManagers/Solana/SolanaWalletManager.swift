@@ -169,4 +169,32 @@ extension SolanaWalletManager: TransactionSender {
     }
 }
 
+extension SolanaWalletManager: RentProvider {
+    func minimalBalanceForRentExemption() -> AnyPublisher<Amount, Error> {
+        networkService.minimalBalanceForRentExemption()
+            .tryMap { [weak self] balance in
+                guard let self = self else {
+                    throw WalletError.empty
+                }
+                
+                let blockchain = self.wallet.blockchain
+                return Amount(with: blockchain, type: .coin, value: balance)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func rentAmount() -> AnyPublisher<Amount, Error> {
+        networkService.accountRentFeePerEpoch()
+            .tryMap { [weak self] fee in
+                guard let self = self else {
+                    throw WalletError.empty
+                }
+                
+                let blockchain = self.wallet.blockchain
+                return Amount(with: blockchain, type: .coin, value: fee)
+            }
+            .eraseToAnyPublisher()
+    }
+}
+
 extension SolanaWalletManager: ThenProcessable { }
