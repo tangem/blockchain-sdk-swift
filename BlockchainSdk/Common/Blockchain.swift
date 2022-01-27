@@ -194,8 +194,10 @@ public enum Blockchain {
         guard curve == .secp256k1 || curve == .ed25519 else { return  nil }
         
         switch self {
-        case .stellar:
+        case .stellar, .solana:
             //Path according to sep-0005. https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md
+            // Solana path consistent with TrustWallet:
+            // https://github.com/trustwallet/wallet-core/blob/456f22d6a8ce8a66ccc73e3b42bcfec5a6afe53a/registry.json#L1013
             return DerivationPath(nodes: [.hardened(BIP44.purpose),
                                           .hardened(coinType),
                                           .hardened(0)])
