@@ -69,13 +69,13 @@ public enum Blockchain {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin:
             return 8
-        case .ethereum, .rsk, .bsc, .polygon:
+        case .ethereum, .rsk, .bsc, .polygon, .avalanche:
             return 18
         case  .cardano, .xrp, .tezos:
             return 6
         case .stellar:
             return 7
-        case .avalanche, .solana:
+        case .solana:
             return 9
         }
     }
@@ -318,7 +318,7 @@ public enum Blockchain {
             let link = baseUrl + address
             return URL(string: link)
         case .avalanche(let testnet):
-            let baseUrl = testnet ? "https://snowtrace.io/address/" : "https://testnet.snowtrace.io/address/"
+            let baseUrl = testnet ? "https://testnet.snowtrace.io/address/" : "https://snowtrace.io/address/"
             let link = baseUrl + address
             return URL(string: link)
         case .solana(let testnet):
