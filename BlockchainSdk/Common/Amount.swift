@@ -74,9 +74,9 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
         formatter.alwaysShowsDecimalSeparator = true
         formatter.maximumFractionDigits = decimalsCount
         formatter.minimumFractionDigits = 2
-        formatter.roundingMode = .down
-        return formatter.string(from: value as NSNumber) ??
-            "\(value.rounded(scale: decimalsCount)) \(currencySymbol)"
+        let rounded = value.rounded(scale: decimalsCount)
+        return formatter.string(from: rounded as NSDecimalNumber) ??
+            "\(rounded) \(currencySymbol)"
     }
     
     public static func ==(lhs: Amount, rhs: Amount) -> Bool {
