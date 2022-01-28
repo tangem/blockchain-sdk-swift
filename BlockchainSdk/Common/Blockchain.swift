@@ -283,7 +283,7 @@ public enum Blockchain {
             let baseUrl = testnet ? "https://www.blockchain.com/bch-testnet/address/" : "https://www.blockchain.com/bch/address/"
             return URL(string: baseUrl + address)
         case .cardano:
-            return URL(string: "https://cardanoexplorer.com/address/\(address)")
+            return URL(string: "https://explorer.cardano.org/en/address.html?address=\(address)")
         case .ducatus:
             return URL(string: "https://insight.ducatus.io/#/DUC/mainnet/address/\(address)")
         case .ethereum(let testnet):
