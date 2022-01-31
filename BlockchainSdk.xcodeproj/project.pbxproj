@@ -304,6 +304,7 @@
 		B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0FF8816264AEA60003E000A /* LitecoinNetworkService.swift */; };
 		DA346451279A802E00E77B1D /* SolanaSdk+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA346450279A802E00E77B1D /* SolanaSdk+.swift */; };
 		DA346452279A802E00E77B1D /* SolanaSdk+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA346450279A802E00E77B1D /* SolanaSdk+.swift */; };
+		DA570CF927A82322007F34EB /* PolkadotBlockchainMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA570CF727A82322007F34EB /* PolkadotBlockchainMeta.swift */; };
 		DA71441E2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
 		DA71441F2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
 		DA82433D27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433C27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift */; };
@@ -512,6 +513,7 @@
 		B0FF8816264AEA60003E000A /* LitecoinNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LitecoinNetworkService.swift; sourceTree = "<group>"; };
 		D1CC9E29B257CD29E6143FDD /* Pods_BlockchainSdk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA346450279A802E00E77B1D /* SolanaSdk+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SolanaSdk+.swift"; sourceTree = "<group>"; };
+		DA570CF727A82322007F34EB /* PolkadotBlockchainMeta.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotBlockchainMeta.swift; sourceTree = "<group>"; };
 		DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaNetworkService.swift; sourceTree = "<group>"; };
 		DA82433C27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotJsonRpcProvider.swift; sourceTree = "<group>"; };
 		DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetwork.swift; sourceTree = "<group>"; };
@@ -1109,6 +1111,7 @@
 				DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */,
 				DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */,
 				DAC7C04027A3BB17002F7252 /* PolkadotTransactionBuilder.swift */,
+				DA570CF727A82322007F34EB /* PolkadotBlockchainMeta.swift */,
 			);
 			path = Polkadot;
 			sourceTree = "<group>";
@@ -1394,6 +1397,7 @@
 				5DC7DD66244077F2008F83F2 /* XRPWalletManager.swift in Sources */,
 				DA71441E2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */,
 				5D7D243E25136254001B9A4F /* SigningAlgorithm.swift in Sources */,
+				DA570CF927A82322007F34EB /* PolkadotBlockchainMeta.swift in Sources */,
 				5D14E4972397B87000C15FC8 /* WalletManager.swift in Sources */,
 				5D557CAC23AA70AC009B32AF /* EthereumTarget.swift in Sources */,
 				5D4B33BC23F6EA0500C93A84 /* BlockchairTarget.swift in Sources */,
