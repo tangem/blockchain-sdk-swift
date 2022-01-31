@@ -23,13 +23,13 @@ extension SolanaError: LocalizedError {
         case .socket:
             return "socket"
         case .couldNotRetriveAccountInfo:
-            return "couldNotRetriveAccountInfo"
+            return "couldNotRetrieveAccountInfo"
         case .other(let reason):
             return "other (\(reason))"
         case .nullValue:
             return "nullValue"
         case .couldNotRetriveBalance:
-            return "couldNotRetriveBalance"
+            return "couldNotRetrieveBalance"
         case .blockHashNotFound:
             return "blockHashNotFound"
         case .invalidPublicKey:
