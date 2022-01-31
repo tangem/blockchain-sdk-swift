@@ -86,7 +86,15 @@ class SolanaNetworkService {
         // https://docs.solana.com/developing/programming-model/accounts#calculation-of-rent
         let minimumAccountSizeInBytes = Decimal(128)
         let numberOfEpochs = Decimal(1)
-        let rentInLamportPerByteEpoch = Decimal(19.055441478439427)
+        
+        let rentInLamportPerByteEpoch: Decimal
+        if blockchain.isTestnet {
+            // Solana Testnet uses the same value as Mainnet.
+            // The following value is for DEVNET. It is not mentioned in the docs and was obtained empirically.
+            rentInLamportPerByteEpoch = Decimal(0.359375)
+        } else {
+            rentInLamportPerByteEpoch = Decimal(19.055441478439427)
+        }
         let lamportsInSol = blockchain.decimalValue
         
         let rent = minimumAccountSizeInBytes * numberOfEpochs * rentInLamportPerByteEpoch / lamportsInSol
