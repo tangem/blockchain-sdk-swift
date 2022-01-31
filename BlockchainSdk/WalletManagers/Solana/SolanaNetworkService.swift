@@ -36,6 +36,7 @@ class SolanaNetworkService {
         solanaSdk.action.sendSOL(
             to: destinationAddress,
             amount: amount,
+            allowUnfundedRecipient: true,
             signer: signer
         )
             .map { _ in
