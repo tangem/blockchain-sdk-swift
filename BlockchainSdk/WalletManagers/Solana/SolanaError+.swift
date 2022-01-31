@@ -35,7 +35,7 @@ extension SolanaError: LocalizedError {
         case .invalidPublicKey:
             return "invalidPublicKey"
         case .invalidMNemonic:
-            return "invalidMNemonic"
+            return "invalidMnemonic"
         }
     }
 }
