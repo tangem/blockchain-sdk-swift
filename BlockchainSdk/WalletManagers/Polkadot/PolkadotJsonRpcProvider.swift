@@ -13,7 +13,9 @@ import Moya
 class PolkadotJsonRpcProvider: HostProvider {
     let host: String
     private let network: PolkadotNetwork
-    private let provider: MoyaProvider<PolkadotTarget> = .init(plugins: [NetworkLoggerPlugin()])
+    private let provider: MoyaProvider<PolkadotTarget> = .init(plugins: [
+//        NetworkLoggerPlugin()
+    ])
     
     init(network: PolkadotNetwork) {
         self.network = network
@@ -22,6 +24,10 @@ class PolkadotJsonRpcProvider: HostProvider {
     
     func blockhash(_ type: PolkadotBlockhashType) -> AnyPublisher<String, Error> {
         requestPublisher(for: .blockhash(type: type, network: network))
+    }
+    
+    func header(_ blockhash: String) -> AnyPublisher<PolkadotHeader, Error> {
+        requestPublisher(for: .header(hash: blockhash, network: network))
     }
     
     func accountNextIndex(_ address: String) -> AnyPublisher<Int, Error> {
@@ -41,7 +47,7 @@ class PolkadotJsonRpcProvider: HostProvider {
         return provider.requestPublisher(target)
             .filterSuccessfulStatusAndRedirectCodes()
             .map(PolkadotJsonRpcResponse<T>.self)
-            .map(\.result)
+            .compactMap(\.result)
             .mapError { $0 }
             .eraseToAnyPublisher()
     }

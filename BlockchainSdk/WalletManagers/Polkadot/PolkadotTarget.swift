@@ -15,6 +15,7 @@ enum PolkadotBlockhashType {
 
 enum PolkadotTarget: TargetType {
     case blockhash(type: PolkadotBlockhashType, network: PolkadotNetwork)
+    case header(hash: String, network: PolkadotNetwork)
     case accountNextIndex(address: String, network: PolkadotNetwork)
     case runtimeVersion(network: PolkadotNetwork)
     case submitExtrinsic(extrinsic: String, network: PolkadotNetwork)
@@ -22,6 +23,7 @@ enum PolkadotTarget: TargetType {
     var baseURL: URL {
         switch self {
         case .blockhash(_, let network): return network.url
+        case .header(_, let network): return network.url
         case .accountNextIndex(_, let network): return network.url
         case .runtimeVersion(let network): return network.url
         case .submitExtrinsic(_, let network): return network.url
@@ -52,6 +54,8 @@ enum PolkadotTarget: TargetType {
             case .latest:
                 break
             }
+        case .header(let hash, _):
+            params.append(hash)
         case .accountNextIndex(let address, _):
             params.append(address)
         case .runtimeVersion:
@@ -73,6 +77,8 @@ enum PolkadotTarget: TargetType {
         switch self {
         case .blockhash:
             return "chain_getBlockHash"
+        case .header:
+            return "chain_getHeader"
         case .accountNextIndex:
             return "system_accountNextIndex"
         case .runtimeVersion:
