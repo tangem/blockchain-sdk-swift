@@ -8,13 +8,18 @@
 
 import Foundation
 
-enum PolkadotNetwork {
+enum PolkadotNetwork: CaseIterable {
+    case polkadot
+    case kusama
     case westend
     
     var url: URL {
         switch self {
         case .westend:
             return URL(string: "https://westend-rpc.polkadot.io")!
+        default:
+            #warning("TODO")
+            fatalError()
         }
     }
 }
