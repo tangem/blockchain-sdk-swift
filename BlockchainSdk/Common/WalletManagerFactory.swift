@@ -256,6 +256,14 @@ public class WalletManagerFactory {
                 $0.solanaSdk = Solana(router: networkRouter, accountStorage: accountStorage)
                 $0.networkService = SolanaNetworkService(solanaSdk: $0.solanaSdk, blockchain: blockchain)
             }
+        case .polkadot(let testnet):
+            return makePolkadotWalletManager(network: testnet ? .westend : .polkadot, wallet: wallet)
+        case .kusama:
+            return makePolkadotWalletManager(network: .kusama, wallet: wallet)
         }
+    }
+    
+    private func makePolkadotWalletManager(network: PolkadotNetwork, wallet: Wallet) -> WalletManager {
+        fatalError()
     }
 }

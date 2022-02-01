@@ -10,23 +10,16 @@ import Foundation
 import Sodium
 
 class PolkadotAddressService: AddressService {
-    // https://wiki.polkadot.network/docs/build-protocol-info#addresses
-    enum AddressPrefix: UInt8 {
-        case polkadot = 0
-        case kusama = 2
-        case westend = 42
-    }
-    
-    private let addressPrefix: AddressPrefix
+    private let network: PolkadotNetwork
     private let checksumLength = 2
     private let ss58prefix = "SS58PRE".data(using: .utf8) ?? Data()
     
-    init(addressPrefix: AddressPrefix) {
-        self.addressPrefix = addressPrefix
+    init(network: PolkadotNetwork) {
+        self.network = network
     }
     
     func makeAddress(from walletPublicKey: Data) throws -> String {
-        var addressData = Data(addressPrefix.rawValue) + walletPublicKey
+        var addressData = Data(network.addressPrefix) + walletPublicKey
         
         let checksumMessage = ss58prefix + addressData
         let checksum = blake2checksum(checksumMessage)

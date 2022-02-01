@@ -82,6 +82,10 @@ fileprivate extension Blockchain {
             return "avalanchec"
         case .solana:
             return "solana"
+        case .polkadot:
+            return "polkadot"
+        case .kusama:
+            return "kusama"
         }
     }
 }
