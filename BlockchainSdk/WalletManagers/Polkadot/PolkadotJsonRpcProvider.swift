@@ -30,7 +30,7 @@ class PolkadotJsonRpcProvider: HostProvider {
         requestPublisher(for: .header(hash: blockhash, network: network))
     }
     
-    func accountNextIndex(_ address: String) -> AnyPublisher<Int, Error> {
+    func accountNextIndex(_ address: String) -> AnyPublisher<UInt64, Error> {
         requestPublisher(for: .accountNextIndex(address: address, network: network))
     }
     

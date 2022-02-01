@@ -35,6 +35,6 @@ struct PolkadotHeader: Codable {
 
 struct PolkadotRuntimeVersion: Codable {
     let specName: String
-    let specVersion: Int
-    let transactionVersion: Int
+    let specVersion: UInt64
+    let transactionVersion: UInt64
 }
