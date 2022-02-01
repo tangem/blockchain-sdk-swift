@@ -265,6 +265,7 @@ public class WalletManagerFactory {
     
     private func makePolkadotWalletManager(network: PolkadotNetwork, wallet: Wallet) -> WalletManager {
         PolkadotWalletManager(network: network, wallet: wallet).then {
+            $0.networkService = PolkadotNetworkService(rpcProvider: PolkadotJsonRpcProvider(network: network))
             $0.txBuilder = PolkadotTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, blockchain: network.blockchain, network: network)
         }
     }

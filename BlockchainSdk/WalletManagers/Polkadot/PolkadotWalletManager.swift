@@ -12,6 +12,7 @@ import Combine
 class PolkadotWalletManager: WalletManager {
     private let network: PolkadotNetwork
     var txBuilder: PolkadotTransactionBuilder!
+    var networkService: PolkadotNetworkService!
     
     init(network: PolkadotNetwork, wallet: Wallet) {
         self.network = network
