@@ -264,6 +264,8 @@ public class WalletManagerFactory {
     }
     
     private func makePolkadotWalletManager(network: PolkadotNetwork, wallet: Wallet) -> WalletManager {
-        fatalError()
+        PolkadotWalletManager(network: network, wallet: wallet).then {
+            $0.txBuilder = PolkadotTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, blockchain: network.blockchain, network: network)
+        }
     }
 }
