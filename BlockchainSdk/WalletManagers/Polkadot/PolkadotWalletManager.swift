@@ -57,7 +57,7 @@ extension PolkadotWalletManager: TransactionSender {
     }
     
     private func sign(amount: Amount, destination: String, meta: PolkadotBlockchainMeta, signer: TransactionSigner) -> AnyPublisher<Data, Error> {
-        let x = Just(())
+        Just(())
             .tryMap { _ in
                 try self.txBuilder.buildForSign(
                     amount: amount,
@@ -81,8 +81,6 @@ extension PolkadotWalletManager: TransactionSender {
                 )
             }
             .eraseToAnyPublisher()
-        
-        return x
     }
 }
 
