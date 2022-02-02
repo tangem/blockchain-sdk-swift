@@ -81,7 +81,7 @@ class PolkadotTransactionBuilder {
         let encodedValue = try SCALE.default.encode(value, .compact)
         call.append(encodedValue)
         
-        return encodedValue
+        return call
     }
     
     private func encodeEraNonceTip(era: PolkadotBlockchainMeta.Era?, nonce: UInt64, tip: UInt64) throws -> Data {
