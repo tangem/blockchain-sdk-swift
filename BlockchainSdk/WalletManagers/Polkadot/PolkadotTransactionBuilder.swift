@@ -39,7 +39,7 @@ class PolkadotTransactionBuilder {
         self.network = network
     }
     
-    func buildForSign(transaction: Transaction, walletAmount: Decimal, isEstimated: Bool, meta: PolkadotBlockchainMeta) throws -> Data {
+    func buildForSign(transaction: Transaction, meta: PolkadotBlockchainMeta) throws -> Data {
         var message = Data()
         message.append(try encodeCall(transaction: transaction))
         message.append(try encodeEraNonceTip(era: meta.era, nonce: meta.nonce, tip: 0))

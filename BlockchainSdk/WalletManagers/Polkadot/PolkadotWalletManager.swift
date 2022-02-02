@@ -48,7 +48,7 @@ extension PolkadotWalletManager: TransactionSender {
     private func sign(meta: PolkadotBlockchainMeta, transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Data, Error> {
         let x = Just(())
             .tryMap { _ in
-                try self.txBuilder.buildForSign(transaction: transaction, walletAmount: 0, isEstimated: false, meta: meta)
+                try self.txBuilder.buildForSign(transaction: transaction, meta: meta)
             }
             .flatMap { preImage in
                 signer.sign(hash: preImage, cardId: self.wallet.cardId, walletPublicKey: self.wallet.publicKey)
