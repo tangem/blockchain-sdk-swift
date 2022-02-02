@@ -84,9 +84,9 @@ class PolkadotTransactionBuilder {
         #warning("TODO: why 0? why remove first byte?")
         call.append(Data(UInt8(0)) + addressData.dropFirst())
                 
-        let value = BigUInt(NSDecimalNumber(decimal: transaction.amount.value * blockchain.decimalValue).uint64Value)
-        let encodedValue = try SCALE.default.encode(value, .compact)
-        call.append(encodedValue)
+        let decimalValue = transaction.amount.value * blockchain.decimalValue
+        let intValue = BigUInt((decimalValue.rounded() as NSDecimalNumber).uint64Value)
+        call.append(try SCALE.default.encode(intValue, .compact))
         
         return call
     }
