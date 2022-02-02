@@ -17,14 +17,19 @@ class PolkadotTransactionBuilder {
     private let codec = SCALE.default
     
     private var balanceTransferCallIndex: Data {
+        /*
+            Polkadot and Kusama indexes are taken from TrustWallet:
+            https://github.com/trustwallet/wallet-core/blob/a771f38d3af112db7098730a5b0b9a1a9b65ca86/src/Polkadot/Extrinsic.cpp#L30
+         
+            Westend index is taken from the transaction made by Fearless iOS app
+        */
         switch network {
         case .polkadot:
             return Data(hexString: "0x0500")
         case .kusama:
             return Data(hexString: "0x0400")
         case .westend:
-            #warning("TODO")
-            fatalError()
+            return Data(hexString: "0x0400")
         }
     }
     
