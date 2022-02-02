@@ -19,6 +19,7 @@ enum PolkadotTarget: TargetType {
     case header(hash: String, network: PolkadotNetwork)
     case accountNextIndex(address: String, network: PolkadotNetwork)
     case runtimeVersion(network: PolkadotNetwork)
+    case queryInfo(extrinsic: String, network: PolkadotNetwork)
     case submitExtrinsic(extrinsic: String, network: PolkadotNetwork)
     
     var baseURL: URL {
@@ -27,6 +28,7 @@ enum PolkadotTarget: TargetType {
         case .header(_, let network): return network.url
         case .accountNextIndex(_, let network): return network.url
         case .runtimeVersion(let network): return network.url
+        case .queryInfo(_, let network): return network.url
         case .submitExtrinsic(_, let network): return network.url
         }
     }
@@ -61,6 +63,8 @@ enum PolkadotTarget: TargetType {
             params.append(address)
         case .runtimeVersion:
             break
+        case .queryInfo(let extrinsic, _):
+            params.append(extrinsic)
         case .submitExtrinsic(let extrinsic, _):
             params.append(extrinsic)
         }
@@ -84,6 +88,8 @@ enum PolkadotTarget: TargetType {
             return "system_accountNextIndex"
         case .runtimeVersion:
             return "state_getRuntimeVersion"
+        case .queryInfo:
+            return "payment_queryInfo"
         case .submitExtrinsic:
             return "author_submitExtrinsic"
         }

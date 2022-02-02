@@ -51,6 +51,17 @@ class PolkadotNetworkService {
         .eraseToAnyPublisher()
     }
     
+    func fee(for extrinsic: Data) -> AnyPublisher<UInt64, Error> {
+        rpcProvider.queryInfo("0x" + extrinsic.hexString)
+            .tryMap {
+                guard let fee = UInt64($0.partialFee) else {
+                    throw WalletError.failedToGetFee
+                }
+                return fee
+            }
+            .eraseToAnyPublisher()
+    }
+    
     func submitExtrinsic(data: Data) -> AnyPublisher<Void, Error> {
         rpcProvider.submitExtrinsic("0x" + data.hexString)
             .map { _ in

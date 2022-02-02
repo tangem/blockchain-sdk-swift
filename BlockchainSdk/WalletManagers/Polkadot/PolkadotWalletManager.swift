@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import TangemSdk
 
 class PolkadotWalletManager: WalletManager {
     private let network: PolkadotNetwork
@@ -42,7 +43,17 @@ extension PolkadotWalletManager: TransactionSender {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        .emptyFail
+        networkService.blockchainMeta(for: destination)
+            .flatMap { meta in
+                self.sign(amount: amount, destination: destination, meta: meta, signer: DummyTransactionSigner())
+            }
+            .flatMap { image in
+                self.networkService.fee(for: image)
+            }
+            .map { intValue in
+                [Amount(with: self.wallet.blockchain, value: Decimal(intValue) / self.wallet.blockchain.decimalValue)]
+            }
+            .eraseToAnyPublisher()
     }
     
     private func sign(amount: Amount, destination: String, meta: PolkadotBlockchainMeta, signer: TransactionSigner) -> AnyPublisher<Data, Error> {
@@ -76,3 +87,23 @@ extension PolkadotWalletManager: TransactionSender {
 }
 
 extension PolkadotWalletManager: ThenProcessable { }
+
+
+// MARK: - Dummy transaction signer
+
+fileprivate class DummyTransactionSigner: TransactionSigner {
+    private let privateKey = Data(repeating: 0, count: 32)
+    private let curve = EllipticCurve.ed25519
+    
+    func sign(hashes: [Data], cardId: String, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[Data], Error> {
+        Fail(error: WalletError.failedToGetFee).eraseToAnyPublisher()
+    }
+    
+    func sign(hash: Data, cardId: String, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
+        Just<Data>(hash)
+            .tryMap { hash in
+                try hash.sign(privateKey: privateKey, curve: curve)
+            }
+            .eraseToAnyPublisher()
+    }
+}

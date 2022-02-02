@@ -38,3 +38,7 @@ struct PolkadotRuntimeVersion: Codable {
     let specVersion: UInt32
     let transactionVersion: UInt32
 }
+
+struct PolkadotQueriedInfo: Codable {
+    let partialFee: String
+}

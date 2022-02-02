@@ -34,6 +34,10 @@ class PolkadotJsonRpcProvider: HostProvider {
         requestPublisher(for: .accountNextIndex(address: address, network: network))
     }
     
+    func queryInfo(_ extrinsic: String) -> AnyPublisher<PolkadotQueriedInfo, Error> {
+        requestPublisher(for: .queryInfo(extrinsic: extrinsic, network: network))
+    }
+    
     func runtimeVersion() -> AnyPublisher<PolkadotRuntimeVersion, Error> {
         requestPublisher(for: .runtimeVersion(network: network))
     }
