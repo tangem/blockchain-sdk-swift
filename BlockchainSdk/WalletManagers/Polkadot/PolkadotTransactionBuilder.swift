@@ -57,7 +57,8 @@ class PolkadotTransactionBuilder {
         
         var transactionData = Data()
         transactionData.append(Data(extrinsicFormat | signedBit))
-        transactionData.append(walletPublicKey)
+        #warning("TODO: why 0?")
+        transactionData.append(Data(UInt8(0)) + walletPublicKey)
         transactionData.append(Data(sigTypeEd25519))
         transactionData.append(signature)
         transactionData.append(try encodeEraNonceTip(era: meta.era, nonce: meta.nonce, tip: 0))
@@ -80,7 +81,8 @@ class PolkadotTransactionBuilder {
         guard let addressData = transaction.destinationAddress.base58DecodedData?.dropLast(addressChecksumLength) else {
             throw BlockchainSdkError.failedToConvertPublicKey
         }
-        call.append(addressData)
+        #warning("TODO: why 0? why remove first byte?")
+        call.append(Data(UInt8(0)) + addressData.dropFirst())
                 
         let value = BigUInt(NSDecimalNumber(decimal: transaction.amount.value * blockchain.decimalValue).uint64Value)
         let encodedValue = try SCALE.default.encode(value, .compact)
