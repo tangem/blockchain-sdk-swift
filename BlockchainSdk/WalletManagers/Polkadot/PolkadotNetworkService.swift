@@ -70,6 +70,7 @@ class PolkadotNetworkService {
             .eraseToAnyPublisher()
     }
     
+    #warning("TODO: better way?")
     static private func decodeBigEndian(data: Data) throws -> UInt64{
         let codec = SCALE.default
         
