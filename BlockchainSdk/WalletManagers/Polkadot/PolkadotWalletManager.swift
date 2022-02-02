@@ -33,7 +33,7 @@ extension PolkadotWalletManager: TransactionSender {
         networkService
             .blockchainMeta(for: transaction.sourceAddress)
             .flatMap { meta in
-                self.sign(meta: meta, transaction: transaction, signer: signer)
+                self.sign(amount: transaction.amount, destination: transaction.destinationAddress, meta: meta, signer: signer)
             }
             .flatMap { image in
                 self.networkService.submitExtrinsic(data: image)
@@ -45,16 +45,29 @@ extension PolkadotWalletManager: TransactionSender {
         .emptyFail
     }
     
-    private func sign(meta: PolkadotBlockchainMeta, transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Data, Error> {
+    private func sign(amount: Amount, destination: String, meta: PolkadotBlockchainMeta, signer: TransactionSigner) -> AnyPublisher<Data, Error> {
         let x = Just(())
             .tryMap { _ in
-                try self.txBuilder.buildForSign(transaction: transaction, meta: meta)
+                try self.txBuilder.buildForSign(
+                    amount: amount,
+                    destination: destination,
+                    meta: meta
+                )
             }
             .flatMap { preImage in
-                signer.sign(hash: preImage, cardId: self.wallet.cardId, walletPublicKey: self.wallet.publicKey)
+                signer.sign(
+                    hash: preImage,
+                    cardId: self.wallet.cardId,
+                    walletPublicKey: self.wallet.publicKey
+                )
             }
             .tryMap { signature in
-                try self.txBuilder.buildForSend(meta: meta, transaction: transaction, signature: signature)
+                try self.txBuilder.buildForSend(
+                    amount: amount,
+                    destination: destination,
+                    meta: meta,
+                    signature: signature
+                )
             }
             .eraseToAnyPublisher()
         

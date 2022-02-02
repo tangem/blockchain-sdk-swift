@@ -39,9 +39,9 @@ class PolkadotTransactionBuilder {
         self.network = network
     }
     
-    func buildForSign(transaction: Transaction, meta: PolkadotBlockchainMeta) throws -> Data {
+    func buildForSign(amount: Amount, destination: String, meta: PolkadotBlockchainMeta) throws -> Data {
         var message = Data()
-        message.append(try encodeCall(transaction: transaction))
+        message.append(try encodeCall(amount: amount, destination: destination))
         message.append(try encodeEraNonceTip(era: meta.era, nonce: meta.nonce, tip: 0))
         message.append(try codec.encode(meta.specVersion))
         message.append(try codec.encode(meta.transactionVersion))
@@ -50,7 +50,7 @@ class PolkadotTransactionBuilder {
         return message
     }
     
-    func buildForSend(meta: PolkadotBlockchainMeta, transaction: Transaction, signature: Data) throws -> Data {
+    func buildForSend(amount: Amount, destination: String, meta: PolkadotBlockchainMeta, signature: Data) throws -> Data {
         let extrinsicFormat: UInt8 = 4
         let signedBit: UInt8 = 0x80
         let sigTypeEd25519: UInt8 = 0x00
@@ -62,7 +62,7 @@ class PolkadotTransactionBuilder {
         transactionData.append(Data(sigTypeEd25519))
         transactionData.append(signature)
         transactionData.append(try encodeEraNonceTip(era: meta.era, nonce: meta.nonce, tip: 0))
-        transactionData.append(try encodeCall(transaction: transaction))
+        transactionData.append(try encodeCall(amount: amount, destination: destination))
 
         let messageLength = try messageLength(transactionData)
         transactionData = messageLength + transactionData
@@ -70,7 +70,7 @@ class PolkadotTransactionBuilder {
         return transactionData
     }
     
-    private func encodeCall(transaction: Transaction) throws -> Data {
+    private func encodeCall(amount: Amount, destination: String) throws -> Data {
         var call = Data()
         
         call.append(balanceTransferCallIndex)
@@ -78,13 +78,13 @@ class PolkadotTransactionBuilder {
         // Raw account ID
         #warning("TODO")
         let addressChecksumLength = 2
-        guard let addressData = transaction.destinationAddress.base58DecodedData?.dropLast(addressChecksumLength) else {
+        guard let addressData = destination.base58DecodedData?.dropLast(addressChecksumLength) else {
             throw BlockchainSdkError.failedToConvertPublicKey
         }
         #warning("TODO: why 0? why remove first byte?")
         call.append(Data(UInt8(0)) + addressData.dropFirst())
                 
-        let decimalValue = transaction.amount.value * blockchain.decimalValue
+        let decimalValue = amount.value * blockchain.decimalValue
         let intValue = BigUInt((decimalValue.rounded() as NSDecimalNumber).uint64Value)
         call.append(try SCALE.default.encode(intValue, .compact))
         
