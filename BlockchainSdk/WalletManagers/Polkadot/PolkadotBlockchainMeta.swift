@@ -14,8 +14,8 @@ struct PolkadotBlockchainMeta {
         let period: UInt64
     }
     
-    let specVersion: UInt64
-    let transactionVersion: UInt64
+    let specVersion: UInt32
+    let transactionVersion: UInt32
     let genesisHash: String
     let blockHash: String
     let nonce: UInt64
