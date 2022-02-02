@@ -15,8 +15,12 @@ class SolanaWalletManager: WalletManager {
     var networkService: SolanaNetworkService!
     
     public override func update(completion: @escaping (Result<(), Error>) -> Void) {
-        cancellable = networkService
-            .accountInfo(accountId: wallet.address)
+        let transactionIDs = wallet.transactions.compactMap { $0.hash }
+        
+        cancellable = Publishers.Zip(
+            networkService.accountInfo(accountId: wallet.address),
+            networkService.confirmedTransactions(among: transactionIDs)
+        )
             .sink { [unowned self] in
                 switch $0 {
                 case .failure(let error):
@@ -25,18 +29,26 @@ class SolanaWalletManager: WalletManager {
                 case .finished:
                     completion(.success(()))
                 }
-            } receiveValue: { [unowned self] in
-                self.updateWallet($0)
+            } receiveValue: { [unowned self] result in
+                let info = result.0
+                let confirmedTransactionIDs = result.1
+                self.updateWallet(info: info, confirmedTransactionIDs: confirmedTransactionIDs)
             }
     }
     
-    private func updateWallet(_ response: SolanaAccountInfoResponse) {
-        self.wallet.add(coinValue: response.balance)
+    private func updateWallet(info: SolanaAccountInfoResponse, confirmedTransactionIDs: [String]) {
+        self.wallet.add(coinValue: info.balance)
         
         for cardToken in cardTokens {
             let mintAddress = cardToken.contractAddress
-            let balance = response.tokensByMint[mintAddress]?.balance ?? Decimal(0)
+            let balance = info.tokensByMint[mintAddress]?.balance ?? Decimal(0)
             self.wallet.add(tokenValue: balance, for: cardToken)
+        }
+        
+        for (index, transaction) in wallet.transactions.enumerated() {
+            if let hash = transaction.hash, confirmedTransactionIDs.contains(hash) {
+                wallet.transactions[index].status = .confirmed
+            }
         }
     }
 }
@@ -45,17 +57,27 @@ extension SolanaWalletManager: TransactionSender {
     public var allowsFeeSelection: Bool { false }
     
     public func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+        let sendPublisher: AnyPublisher<TransactionID, Error>
         switch transaction.amount.type {
         case .coin:
-            return sendSol(transaction, signer: signer)
+            sendPublisher = sendSol(transaction, signer: signer)
         case .token(let token):
-            return sendSplToken(transaction, token: token, signer: signer)
+            sendPublisher = sendSplToken(transaction, token: token, signer: signer)
         case .reserve:
             return .emptyFail
         }
+        
+        return sendPublisher
+            .tryMap { [weak self] transactionID in
+                guard let self = self else { throw WalletError.empty }
+                var sentTransaction = transaction
+                sentTransaction.hash = transactionID
+                self.wallet.add(transaction: sentTransaction)
+            }
+            .eraseToAnyPublisher()
     }
     
-    private func sendSol(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+    private func sendSol(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionID, Error> {
         let destination = transaction.destinationAddress
         
         /*  HACK:
@@ -79,7 +101,7 @@ extension SolanaWalletManager: TransactionSender {
         let signer = SolanaTransactionSigner(transactionSigner: signer, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
 
         return additionalAmountPublisher
-            .flatMap { [weak self] additionalAmount -> AnyPublisher<Void, Error> in
+            .flatMap { [weak self] additionalAmount -> AnyPublisher<TransactionID, Error> in
                 guard let self = self else {
                     return .anyFail(error: WalletError.empty)
                 }
@@ -91,7 +113,7 @@ extension SolanaWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
-    private func sendSplToken(_ transaction: Transaction, token: Token, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+    private func sendSplToken(_ transaction: Transaction, token: Token, signer: TransactionSigner) -> AnyPublisher<TransactionID, Error> {
         guard
             let associatedSourceTokenAccountAddress = associatedTokenAddress(accountAddress: transaction.sourceAddress, mintAddress: token.contractAddress)
         else {

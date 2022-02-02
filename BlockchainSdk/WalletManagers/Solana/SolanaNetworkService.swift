@@ -32,20 +32,36 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func sendSol(amount: UInt64, destinationAddress: String, signer: SolanaTransactionSigner) -> AnyPublisher<Void, Error> {
+    func confirmedTransactions(among transactionIDs: [String]) -> AnyPublisher<[String], Error> {
+        guard !transactionIDs.isEmpty else {
+            return .justWithError(output: [])
+        }
+        
+        return solanaSdk.api.getSignatureStatuses(pubkeys: transactionIDs)
+            .map { statuses in
+                zip(transactionIDs, statuses)
+                    .filter {
+                        guard let status = $0.1 else { return false }
+                        return status.confirmations == nil
+                    }
+                    .map {
+                        $0.0
+                    }
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func sendSol(amount: UInt64, destinationAddress: String, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
         solanaSdk.action.sendSOL(
             to: destinationAddress,
             amount: amount,
             allowUnfundedRecipient: true,
             signer: signer
         )
-            .map { _ in
-                return ()
-            }
             .eraseToAnyPublisher()
     }
     
-    func sendSplToken(amount: UInt64, sourceTokenAddress: String, destinationAddress: String, token: Token, signer: SolanaTransactionSigner) -> AnyPublisher<Void, Error> {
+    func sendSplToken(amount: UInt64, sourceTokenAddress: String, destinationAddress: String, token: Token, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
         solanaSdk.action.sendSPLTokens(
             mintAddress: token.contractAddress,
             decimals: Decimals(token.decimalCount),
@@ -55,9 +71,6 @@ class SolanaNetworkService {
             allowUnfundedRecipient: true,
             signer: signer
         )
-            .map { _ in
-                return ()
-            }
             .eraseToAnyPublisher()
     }
     
