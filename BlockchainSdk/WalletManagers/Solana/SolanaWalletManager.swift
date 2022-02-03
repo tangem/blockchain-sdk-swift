@@ -163,11 +163,12 @@ extension SolanaWalletManager: TransactionSender {
             return .anyFail(error: BlockchainSdkError.failedToConvertPublicKey)
         }
         
-        let amount = NSDecimalNumber(decimal: transaction.amount.value * token.decimalValue).uint64Value
+        let decimalAmount = transaction.amount.value * token.decimalValue
+        let intAmount = (decimalAmount.rounded() as NSDecimalNumber).uint64Value
         let signer = SolanaTransactionSigner(transactionSigner: signer, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
 
         return networkService.sendSplToken(
-            amount: amount,
+            amount: intAmount,
             sourceTokenAddress: associatedSourceTokenAccountAddress,
             destinationAddress: transaction.destinationAddress,
             token: token,
