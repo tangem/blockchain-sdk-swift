@@ -30,6 +30,7 @@ extension PolkadotWalletManager: TransactionSender {
         false
     }
     
+    #warning("TODO: save transaction to the wallet")
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         networkService
             .blockchainMeta(for: transaction.sourceAddress)
