@@ -21,6 +21,7 @@ class PolkadotWalletManager: WalletManager {
     }
     
     override func update(completion: @escaping (Result<(), Error>) -> Void) {
+        // TODO: Get confirmed transactions as well
         completion(.success(()))
     }
 }
@@ -30,7 +31,6 @@ extension PolkadotWalletManager: TransactionSender {
         false
     }
     
-    #warning("TODO: save transaction to the wallet")
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         networkService
             .blockchainMeta(for: transaction.sourceAddress)
@@ -39,6 +39,11 @@ extension PolkadotWalletManager: TransactionSender {
             }
             .flatMap { image in
                 self.networkService.submitExtrinsic(data: image)
+            }
+            .map { transactionID in
+                var submittedTransaction = transaction
+                submittedTransaction.hash = transactionID
+                self.wallet.transactions.append(submittedTransaction)
             }
             .eraseToAnyPublisher()
     }

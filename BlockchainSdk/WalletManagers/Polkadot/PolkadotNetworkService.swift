@@ -62,12 +62,8 @@ class PolkadotNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func submitExtrinsic(data: Data) -> AnyPublisher<Void, Error> {
+    func submitExtrinsic(data: Data) -> AnyPublisher<String, Error> {
         rpcProvider.submitExtrinsic("0x" + data.hexString)
-            .map { _ in
-                ()
-            }
-            .eraseToAnyPublisher()
     }
     
     #warning("TODO: better way?")
