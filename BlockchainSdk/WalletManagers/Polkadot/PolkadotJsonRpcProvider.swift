@@ -51,8 +51,17 @@ class PolkadotJsonRpcProvider: HostProvider {
         return provider.requestPublisher(target)
             .filterSuccessfulStatusAndRedirectCodes()
             .map(PolkadotJsonRpcResponse<T>.self)
-            .compactMap(\.result)
-            .mapError { $0 }
+            .tryMap {
+                if let error = $0.error?.error {
+                    throw error
+                }
+
+                guard let result = $0.result else {
+                    throw WalletError.empty
+                }
+
+                return result
+            }
             .eraseToAnyPublisher()
     }
 }
