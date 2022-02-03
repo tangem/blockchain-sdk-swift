@@ -22,7 +22,7 @@ class SolanaNetworkService {
     
     func getInfo(accountId: String, transactionIDs: [String]) -> AnyPublisher<SolanaAccountInfoResponse, Error> {
         Publishers.Zip3(
-            mainAccountBalance(accountId: accountId),
+            mainAccountInfo(accountId: accountId),
             tokenAccountsInfo(accountId: accountId),
             confirmedTransactions(among: transactionIDs)
         )
@@ -126,7 +126,7 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
-    private func mainAccountBalance(accountId: String) -> AnyPublisher<SolanaMainAccountInfoResponse, Error> {
+    private func mainAccountInfo(accountId: String) -> AnyPublisher<SolanaMainAccountInfoResponse, Error> {
         solanaSdk.api.getAccountInfo(account: accountId, decodedTo: AccountInfo.self)
             .tryMap { info in
                 let lamports = info.lamports
