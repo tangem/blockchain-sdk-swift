@@ -20,33 +20,18 @@ class SolanaNetworkService {
         self.blockchain = blockchain
     }
     
-    func accountInfo(accountId: String) -> AnyPublisher<SolanaAccountInfoResponse, Error> {
-        Publishers.Zip(mainAccountBalance(accountId: accountId), tokenAccountsInfo(accountId: accountId))
-            .tryMap { [weak self] in
+    func getInfo(accountId: String, transactionIDs: [String]) -> AnyPublisher<SolanaAccountInfoResponse, Error> {
+        Publishers.Zip3(
+            mainAccountBalance(accountId: accountId),
+            tokenAccountsInfo(accountId: accountId),
+            confirmedTransactions(among: transactionIDs)
+        )
+            .tryMap { [weak self] mainAccount, tokenAccounts, confirmedTransactionIDs in
                 guard let self = self else {
                     throw WalletError.empty
                 }
                 
-                return self.mapInfo(mainAccountInfo: $0, tokenAccountsInfo: $1)
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    func confirmedTransactions(among transactionIDs: [String]) -> AnyPublisher<[String], Error> {
-        guard !transactionIDs.isEmpty else {
-            return .justWithError(output: [])
-        }
-        
-        return solanaSdk.api.getSignatureStatuses(pubkeys: transactionIDs)
-            .map { statuses in
-                zip(transactionIDs, statuses)
-                    .filter {
-                        guard let status = $0.1 else { return false }
-                        return status.confirmations == nil
-                    }
-                    .map {
-                        $0.0
-                    }
+                return self.mapInfo(mainAccountInfo: mainAccount, tokenAccountsInfo: tokenAccounts, confirmedTransactionIDs: confirmedTransactionIDs)
             }
             .eraseToAnyPublisher()
     }
@@ -172,7 +157,30 @@ class SolanaNetworkService {
         return solanaSdk.api.getTokenAccountsByOwner(pubkey: accountId, programId: programId, configs: configs)
     }
     
-    private func mapInfo(mainAccountInfo: SolanaMainAccountInfoResponse, tokenAccountsInfo: [TokenAccount<AccountInfoData>]) -> SolanaAccountInfoResponse {
+    private func confirmedTransactions(among transactionIDs: [String]) -> AnyPublisher<[String], Error> {
+        guard !transactionIDs.isEmpty else {
+            return .justWithError(output: [])
+        }
+        
+        return solanaSdk.api.getSignatureStatuses(pubkeys: transactionIDs)
+            .map { statuses in
+                zip(transactionIDs, statuses)
+                    .filter {
+                        guard let status = $0.1 else { return false }
+                        return status.confirmations == nil
+                    }
+                    .map {
+                        $0.0
+                    }
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func mapInfo(
+        mainAccountInfo: SolanaMainAccountInfoResponse,
+        tokenAccountsInfo: [TokenAccount<AccountInfoData>],
+        confirmedTransactionIDs: [String]
+    ) -> SolanaAccountInfoResponse {
         let balance = Decimal(mainAccountInfo.balance) / blockchain.decimalValue
         let accountExists = mainAccountInfo.accountExists
         
@@ -186,6 +194,6 @@ class SolanaNetworkService {
         }
         let tokensByMint = Dictionary(uniqueKeysWithValues: tokens.map { ($0.mint, $0) })
         
-        return SolanaAccountInfoResponse(balance: balance, accountExists: accountExists, tokensByMint: tokensByMint)
+        return SolanaAccountInfoResponse(balance: balance, accountExists: accountExists, tokensByMint: tokensByMint, confirmedTransactionIDs: confirmedTransactionIDs)
     }
 }

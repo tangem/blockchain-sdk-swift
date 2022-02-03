@@ -17,10 +17,7 @@ class SolanaWalletManager: WalletManager {
     public override func update(completion: @escaping (Result<(), Error>) -> Void) {
         let transactionIDs = wallet.transactions.compactMap { $0.hash }
         
-        cancellable = Publishers.Zip(
-            networkService.accountInfo(accountId: wallet.address),
-            networkService.confirmedTransactions(among: transactionIDs)
-        )
+        cancellable = networkService.getInfo(accountId: wallet.address, transactionIDs: transactionIDs)
             .sink { [unowned self] in
                 switch $0 {
                 case .failure(let error):
@@ -29,14 +26,12 @@ class SolanaWalletManager: WalletManager {
                 case .finished:
                     completion(.success(()))
                 }
-            } receiveValue: { [unowned self] result in
-                let info = result.0
-                let confirmedTransactionIDs = result.1
-                self.updateWallet(info: info, confirmedTransactionIDs: confirmedTransactionIDs)
+            } receiveValue: { [unowned self] info in
+                self.updateWallet(info: info)
             }
     }
     
-    private func updateWallet(info: SolanaAccountInfoResponse, confirmedTransactionIDs: [String]) {
+    private func updateWallet(info: SolanaAccountInfoResponse) {
         self.wallet.add(coinValue: info.balance)
         
         for cardToken in cardTokens {
@@ -46,7 +41,7 @@ class SolanaWalletManager: WalletManager {
         }
         
         for (index, transaction) in wallet.transactions.enumerated() {
-            if let hash = transaction.hash, confirmedTransactionIDs.contains(hash) {
+            if let hash = transaction.hash, info.confirmedTransactionIDs.contains(hash) {
                 wallet.transactions[index].status = .confirmed
             }
         }
@@ -94,7 +89,7 @@ extension SolanaWalletManager: TransactionSender {
         }
         
         let accountExistsPublisher: AnyPublisher<Bool, Error> = networkService
-            .accountInfo(accountId: destination)
+            .getInfo(accountId: destination, transactionIDs: [])
             .map { info in
                 switch amount.type {
                 case .coin:
@@ -137,7 +132,7 @@ extension SolanaWalletManager: TransactionSender {
             The account opening fee we returned in getFee is used for display purposes only.
          */
         let additionalAmountPublisher = Publishers.Zip(
-            networkService.accountInfo(accountId: destination),
+            networkService.getInfo(accountId: destination, transactionIDs: []),
             networkService.mainAccountCreationFee()
         )
             .map { accountInfo, accountCreationFee in
