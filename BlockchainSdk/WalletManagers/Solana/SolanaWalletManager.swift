@@ -69,7 +69,9 @@ extension SolanaWalletManager: TransactionSender {
         
         return sendPublisher
             .tryMap { [weak self] transactionID in
-                guard let self = self else { throw WalletError.empty }
+                guard let self = self else {
+                    throw WalletError.empty
+                }
                 var sentTransaction = transaction
                 sentTransaction.hash = transactionID
                 self.wallet.add(transaction: sentTransaction)
