@@ -20,32 +20,33 @@ class SolanaNetworkService {
         self.blockchain = blockchain
     }
     
-    func accountInfo(accountId: String) -> AnyPublisher<SolanaAccountInfoResponse, Error> {
-        Publishers.Zip(mainAccountBalance(accountId: accountId), tokenAccountsInfo(accountId: accountId))
-            .tryMap { [weak self] in
+    func getInfo(accountId: String, transactionIDs: [String]) -> AnyPublisher<SolanaAccountInfoResponse, Error> {
+        Publishers.Zip3(
+            mainAccountInfo(accountId: accountId),
+            tokenAccountsInfo(accountId: accountId),
+            confirmedTransactions(among: transactionIDs)
+        )
+            .tryMap { [weak self] mainAccount, tokenAccounts, confirmedTransactionIDs in
                 guard let self = self else {
                     throw WalletError.empty
                 }
                 
-                return self.mapInfo(mainAccountInfo: $0, tokenAccountsInfo: $1)
+                return self.mapInfo(mainAccountInfo: mainAccount, tokenAccountsInfo: tokenAccounts, confirmedTransactionIDs: confirmedTransactionIDs)
             }
             .eraseToAnyPublisher()
     }
     
-    func sendSol(amount: UInt64, destinationAddress: String, signer: SolanaTransactionSigner) -> AnyPublisher<Void, Error> {
+    func sendSol(amount: UInt64, destinationAddress: String, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
         solanaSdk.action.sendSOL(
             to: destinationAddress,
             amount: amount,
             allowUnfundedRecipient: true,
             signer: signer
         )
-            .map { _ in
-                return ()
-            }
             .eraseToAnyPublisher()
     }
     
-    func sendSplToken(amount: UInt64, sourceTokenAddress: String, destinationAddress: String, token: Token, signer: SolanaTransactionSigner) -> AnyPublisher<Void, Error> {
+    func sendSplToken(amount: UInt64, sourceTokenAddress: String, destinationAddress: String, token: Token, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
         solanaSdk.action.sendSPLTokens(
             mintAddress: token.contractAddress,
             decimals: Decimals(token.decimalCount),
@@ -55,9 +56,6 @@ class SolanaNetworkService {
             allowUnfundedRecipient: true,
             signer: signer
         )
-            .map { _ in
-                return ()
-            }
             .eraseToAnyPublisher()
     }
     
@@ -128,7 +126,7 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
-    private func mainAccountBalance(accountId: String) -> AnyPublisher<SolanaMainAccountInfoResponse, Error> {
+    private func mainAccountInfo(accountId: String) -> AnyPublisher<SolanaMainAccountInfoResponse, Error> {
         solanaSdk.api.getAccountInfo(account: accountId, decodedTo: AccountInfo.self)
             .tryMap { info in
                 let lamports = info.lamports
@@ -159,7 +157,30 @@ class SolanaNetworkService {
         return solanaSdk.api.getTokenAccountsByOwner(pubkey: accountId, programId: programId, configs: configs)
     }
     
-    private func mapInfo(mainAccountInfo: SolanaMainAccountInfoResponse, tokenAccountsInfo: [TokenAccount<AccountInfoData>]) -> SolanaAccountInfoResponse {
+    private func confirmedTransactions(among transactionIDs: [String]) -> AnyPublisher<[String], Error> {
+        guard !transactionIDs.isEmpty else {
+            return .justWithError(output: [])
+        }
+        
+        return solanaSdk.api.getSignatureStatuses(pubkeys: transactionIDs)
+            .map { statuses in
+                zip(transactionIDs, statuses)
+                    .filter {
+                        guard let status = $0.1 else { return false }
+                        return status.confirmations == nil
+                    }
+                    .map {
+                        $0.0
+                    }
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func mapInfo(
+        mainAccountInfo: SolanaMainAccountInfoResponse,
+        tokenAccountsInfo: [TokenAccount<AccountInfoData>],
+        confirmedTransactionIDs: [String]
+    ) -> SolanaAccountInfoResponse {
         let balance = Decimal(mainAccountInfo.balance) / blockchain.decimalValue
         let accountExists = mainAccountInfo.accountExists
         
@@ -173,6 +194,6 @@ class SolanaNetworkService {
         }
         let tokensByMint = Dictionary(uniqueKeysWithValues: tokens.map { ($0.mint, $0) })
         
-        return SolanaAccountInfoResponse(balance: balance, accountExists: accountExists, tokensByMint: tokensByMint)
+        return SolanaAccountInfoResponse(balance: balance, accountExists: accountExists, tokensByMint: tokensByMint, confirmedTransactionIDs: confirmedTransactionIDs)
     }
 }
