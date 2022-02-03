@@ -15,6 +15,7 @@ enum PolkadotBlockhashType {
 }
 
 enum PolkadotTarget: TargetType {
+    case storage(key: String, network: PolkadotNetwork)
     case blockhash(type: PolkadotBlockhashType, network: PolkadotNetwork)
     case header(hash: String, network: PolkadotNetwork)
     case accountNextIndex(address: String, network: PolkadotNetwork)
@@ -24,6 +25,7 @@ enum PolkadotTarget: TargetType {
     
     var baseURL: URL {
         switch self {
+        case .storage(_, let network): return network.url
         case .blockhash(_, let network): return network.url
         case .header(_, let network): return network.url
         case .accountNextIndex(_, let network): return network.url
@@ -50,6 +52,8 @@ enum PolkadotTarget: TargetType {
         
         var params: [Any] = []
         switch self {
+        case .storage(let key, _):
+            params.append(key)
         case .blockhash(let type, _):
             switch type {
             case .genesis:
@@ -80,6 +84,8 @@ enum PolkadotTarget: TargetType {
     
     var rpcMethod: String {
         switch self {
+        case .storage:
+            return "state_getStorage"
         case .blockhash:
             return "chain_getBlockHash"
         case .header:

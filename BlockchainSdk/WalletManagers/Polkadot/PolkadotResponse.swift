@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ScaleCodec
 
 struct PolkadotJsonRpcResponse<T: Codable>: Codable {
     let jsonRpc: String
@@ -41,4 +42,34 @@ struct PolkadotRuntimeVersion: Codable {
 
 struct PolkadotQueriedInfo: Codable {
     let partialFee: String
+}
+
+struct PolkadotAccountInfo: ScaleDecodable {
+    init(from decoder: ScaleDecoder) throws {
+        self.nonce = try decoder.decode()
+        self.consumers = try decoder.decode()
+        self.providers = try decoder.decode()
+        self.sufficients = try decoder.decode()
+        self.data = try decoder.decode()
+    }
+    
+    var nonce: UInt32
+    var consumers: UInt32
+    var providers: UInt32
+    var sufficients: UInt32
+    let data: PolkadotAccountData
+}
+
+struct PolkadotAccountData: ScaleDecodable {
+    init(from decoder: ScaleDecoder) throws {
+        self.free = try decoder.decode(BigUInt.self, .b256)
+        // self.reserved = try decoder.decode(BigUInt.self, .b256)
+        // self.miscFrozen = try decoder.decode(BigUInt.self, .b256)
+        // self.feeFrozen = try decoder.decode(BigUInt.self, .b256)
+    }
+    
+    var free: BigUInt
+    // var reserved: BigUInt
+    // var miscFrozen: BigUInt
+    // var feeFrozen: BigUInt
 }

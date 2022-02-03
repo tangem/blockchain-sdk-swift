@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import ScaleCodec
+import Sodium
 
 class PolkadotNetworkService {
     private let rpcProvider: PolkadotJsonRpcProvider
@@ -16,6 +17,21 @@ class PolkadotNetworkService {
     
     init(rpcProvider: PolkadotJsonRpcProvider) {
         self.rpcProvider = rpcProvider
+    }
+    
+    func getInfo(for address: String) -> AnyPublisher<BigUInt, Error> {
+        Just(())
+            .tryMap { _ in
+                try storageKey(forAddress: address)
+            }
+            .flatMap { key in
+                self.rpcProvider.storage(key: "0x" + key.hexString)
+            }
+            .tryMap {
+                try self.codec.decode(PolkadotAccountInfo.self, from: Data(hexString: $0))
+            }
+            .map(\.data.free)
+            .eraseToAnyPublisher()
     }
     
     func blockchainMeta(for address: String) -> AnyPublisher<PolkadotBlockchainMeta, Error> {
@@ -74,5 +90,25 @@ class PolkadotNetworkService {
         let reversed = Data(data.reversed() + extraBytes)
         
         return try codec.decode(from: reversed)
+    }
+    
+    private func storageKey(forAddress address: String) throws -> Data {
+        guard let base58Decoded = address.base58DecodedData else {
+            throw WalletError.empty
+        }
+        
+        let numberOfChecksumBytes = 2
+        let addressBytes = base58Decoded.dropFirst().dropLast(numberOfChecksumBytes)
+        
+        guard let addressBlake = Sodium().genericHash.hash(message: addressBytes.bytes, outputLength: 16) else {
+            throw WalletError.empty
+        }
+        
+        // XXHash of "System" module and "Account" storage item.
+        let moduleNameHash = Data(hexString: "26aa394eea5630e07c48ae0c9558cef7")
+        let storageNameKeyHash = Data(hexString: "b99d880ec681799c0cf30e8886371da9")
+        
+        let key = moduleNameHash + storageNameKeyHash + addressBlake + addressBytes
+        return key
     }
 }

@@ -22,6 +22,10 @@ class PolkadotJsonRpcProvider: HostProvider {
         self.host = network.url.hostOrUnknown
     }
     
+    func storage(key: String) -> AnyPublisher<String, Error> {
+        requestPublisher(for: .storage(key: key, network: network))
+    }
+    
     func blockhash(_ type: PolkadotBlockhashType) -> AnyPublisher<String, Error> {
         requestPublisher(for: .blockhash(type: type, network: network))
     }
