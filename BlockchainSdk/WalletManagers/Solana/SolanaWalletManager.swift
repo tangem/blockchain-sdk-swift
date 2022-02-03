@@ -79,6 +79,52 @@ extension SolanaWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
+    public func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
+        let transactionFeePublisher = networkService
+            .transactionFee(numberOfSignatures: 1)
+        
+        let accountCreationFeePublisher: AnyPublisher<Decimal, Error>
+        switch amount.type {
+        case .coin:
+            accountCreationFeePublisher = networkService.mainAccountCreationFee()
+        case .token:
+            accountCreationFeePublisher = networkService.tokenAccountCreationFee()
+        case .reserve:
+            return .anyFail(error: BlockchainSdkError.failedToLoadFee)
+        }
+        
+        let accountExistsPublisher: AnyPublisher<Bool, Error> = networkService
+            .accountInfo(accountId: destination)
+            .map { info in
+                switch amount.type {
+                case .coin:
+                    return info.accountExists
+                case .token(let token):
+                    let existingTokenAccount = info.tokensByMint[token.contractAddress]
+                    return existingTokenAccount != nil
+                case .reserve:
+                    return false
+                }
+            }
+            .eraseToAnyPublisher()
+        
+        return Publishers.Zip3(transactionFeePublisher, accountCreationFeePublisher, accountExistsPublisher)
+            .tryMap { [weak self] transactionFee, accountCreationFee, accountExists in
+                guard let self = self else {
+                    throw WalletError.empty
+                }
+                
+                var totalFee = transactionFee
+                if !accountExists {
+                    totalFee += accountCreationFee
+                }
+                
+                let blockchain = self.wallet.blockchain
+                return [Amount(with: blockchain, type: .coin, value: totalFee)]
+            }
+            .eraseToAnyPublisher()
+    }
+    
     private func sendSol(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionID, Error> {
         let destination = transaction.destinationAddress
         
@@ -134,52 +180,6 @@ extension SolanaWalletManager: TransactionSender {
         )
     }
     
-    public func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        let transactionFeePublisher = networkService
-            .transactionFee(numberOfSignatures: 1)
-        
-        let accountCreationFeePublisher: AnyPublisher<Decimal, Error>
-        switch amount.type {
-        case .coin:
-            accountCreationFeePublisher = networkService.mainAccountCreationFee()
-        case .token:
-            accountCreationFeePublisher = networkService.tokenAccountCreationFee()
-        case .reserve:
-            return .anyFail(error: BlockchainSdkError.failedToLoadFee)
-        }
-        
-        let accountExistsPublisher: AnyPublisher<Bool, Error> = networkService
-            .accountInfo(accountId: destination)
-            .map { info in
-                switch amount.type {
-                case .coin:
-                    return info.accountExists
-                case .token(let token):
-                    let existingTokenAccount = info.tokensByMint[token.contractAddress]
-                    return existingTokenAccount != nil
-                case .reserve:
-                    return false
-                }
-            }
-            .eraseToAnyPublisher()
-        
-        return Publishers.Zip3(transactionFeePublisher, accountCreationFeePublisher, accountExistsPublisher)
-            .tryMap { [weak self] transactionFee, accountCreationFee, accountExists in
-                guard let self = self else {
-                    throw WalletError.empty
-                }
-                
-                var totalFee = transactionFee
-                if !accountExists {
-                    totalFee += accountCreationFee
-                }
-                
-                let blockchain = self.wallet.blockchain
-                return [Amount(with: blockchain, type: .coin, value: totalFee)]
-            }
-            .eraseToAnyPublisher()
-    }
-        
     private func associatedTokenAddress(accountAddress: String, mintAddress: String) -> String? {
         guard
             let accountPublicKey = PublicKey(string: accountAddress),
