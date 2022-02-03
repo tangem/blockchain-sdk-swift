@@ -9,6 +9,8 @@
 import Foundation
 import Combine
 import TangemSdk
+import BigInt
+import web3swift
 
 class PolkadotWalletManager: WalletManager {
     private let network: PolkadotNetwork
@@ -22,7 +24,39 @@ class PolkadotWalletManager: WalletManager {
     
     override func update(completion: @escaping (Result<(), Error>) -> Void) {
         // TODO: Get confirmed transactions as well
-        completion(.success(()))
+        cancellable = networkService.getInfo(for: wallet.address)
+            .sink {
+                switch $0 {
+                case .failure(let error):
+                    completion(.failure(error))
+                case .finished:
+                    completion(.success(()))
+                }
+            } receiveValue: {
+                self.updateInfo($0)
+            }
+    }
+    
+    private func updateInfo(_ balance: BigUInt) {
+        let blockchain = network.blockchain
+        let decimals = blockchain.decimalCount
+        guard
+            let formatted = Web3.Utils.formatToPrecision(balance, numberDecimals: decimals, formattingDecimals: decimals, decimalSeparator: ".", fallbackToScientific: false),
+            let value = Decimal(formatted)
+        else {
+            return
+        }
+        
+        wallet.add(amount: .init(with: blockchain, value: value))
+        
+        let currentDate = Date()
+        for (index, transaction) in wallet.transactions.enumerated() {
+            if let date = transaction.date,
+               DateInterval(start: date, end: currentDate).duration > 10
+            {
+                wallet.transactions[index].status = .confirmed
+            }
+        }
     }
 }
 
