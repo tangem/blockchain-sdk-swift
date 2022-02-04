@@ -46,9 +46,9 @@ class PolkadotTransactionBuilder {
     private let signedBit: UInt8 = 0x80
     private let sigTypeEd25519: UInt8 = 0x00
     
-    init(walletPublicKey: Data, blockchain: Blockchain, network: PolkadotNetwork) {
+    init(walletPublicKey: Data, network: PolkadotNetwork) {
         self.walletPublicKey = walletPublicKey
-        self.blockchain = blockchain
+        self.blockchain = network.blockchain
         self.network = network
     }
     
