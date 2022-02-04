@@ -75,7 +75,10 @@ class PolkadotTransactionBuilder {
         
         call.append(balanceTransferCallIndex)
         
-        guard let addressBytes = PolkadotAddress(string: destination)?.bytes(addNullPrefix: true) else {
+        guard
+            let address = PolkadotAddress(string: destination, network: network),
+            let addressBytes = address.bytes(addNullPrefix: true)
+        else {
             throw BlockchainSdkError.failedToConvertPublicKey
         }
         call.append(addressBytes)

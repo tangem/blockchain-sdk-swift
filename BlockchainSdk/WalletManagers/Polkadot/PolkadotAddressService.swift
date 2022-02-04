@@ -21,7 +21,7 @@ class PolkadotAddressService: AddressService {
     }
     
     func validate(_ address: String) -> Bool {
-        PolkadotAddress(string: address) != nil
+        PolkadotAddress(string: address, network: network) != nil
     }
 }
 
@@ -33,15 +33,18 @@ struct PolkadotAddress {
     static private let checksumLength = 2
     static private let ss58prefix = "SS58PRE".data(using: .utf8) ?? Data()
     
-    init?(string: String) {
-        guard Self.isValid(string) else {
+    init?(string: String, network: PolkadotNetwork) {
+        guard Self.isValid(string, in: network) else {
             return nil
         }
         self.string = string
     }
     
     init(publicKey: Data, network: PolkadotNetwork) {
-        var addressData = Data(network.addressPrefix) + publicKey
+        var addressData = Data()
+        
+        addressData.append(network.addressPrefix)
+        addressData.append(publicKey)
         
         let checksumMessage = Self.ss58prefix + addressData
         let checksum = Self.blake2checksum(checksumMessage)
@@ -66,8 +69,15 @@ struct PolkadotAddress {
         return bytes
     }
     
-    static private func isValid(_ address: String) -> Bool {
-        guard let data = address.base58DecodedData else { return false }
+    static private func isValid(_ address: String, in network: PolkadotNetwork) -> Bool {
+        guard let data = address.base58DecodedData else {
+            return false
+        }
+        
+        let networkPrefix = data.prefix(networkLength)
+        guard networkPrefix == network.addressPrefix else {
+            return false
+        }
         
         let expectedChecksum = data.suffix(checksumLength)
         let addressData = data.dropLast(checksumLength)

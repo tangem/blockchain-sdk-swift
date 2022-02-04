@@ -37,14 +37,18 @@ enum PolkadotNetwork: CaseIterable {
     }
     
     // https://wiki.polkadot.network/docs/build-protocol-info#addresses
-    var addressPrefix: UInt8 {
+    var addressPrefix: Data {
+        let byte: UInt8
+        
         switch self {
         case .polkadot:
-            return 0
+            byte = 0
         case .kusama:
-            return 2
+            byte = 2
         case .westend:
-            return 42
+            byte = 42
         }
+        
+        return Data(byte)
     }
 }
