@@ -441,9 +441,9 @@ class AddressesTests: XCTestCase {
         
         XCTAssertEqual(addresses.count, 1)
         XCTAssertNotNil(addressFromString)
-        XCTAssertEqual(addressFromString!.bytes(addNullPrefix: false), publicKey)
+        XCTAssertEqual(addressFromString!.bytes(raw: true), publicKey)
         XCTAssertEqual(addresses.first!.value, expectedAddress)
-        XCTAssertNotEqual(addressFromString!.bytes(addNullPrefix: true), publicKey)
+        XCTAssertNotEqual(addressFromString!.bytes(raw: false), publicKey)
         XCTAssertFalse(otherNetworkAddresses.contains(addressFromString!.string))
     }
 }

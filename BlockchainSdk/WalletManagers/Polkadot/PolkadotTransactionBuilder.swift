@@ -53,8 +53,10 @@ class PolkadotTransactionBuilder {
     }
     
     func buildForSign(amount: Amount, destination: String, meta: PolkadotBlockchainMeta) throws -> Data {
+        let rawAddress = encodingRawAddress(specVersion: meta.specVersion)
+
         var message = Data()
-        message.append(try encodeCall(amount: amount, destination: destination))
+        message.append(try encodeCall(amount: amount, destination: destination, rawAddress: rawAddress))
         message.append(try encodeEraNonceTip(era: meta.era, nonce: meta.nonce, tip: 0))
         message.append(try codec.encode(meta.specVersion))
         message.append(try codec.encode(meta.transactionVersion))
@@ -64,8 +66,10 @@ class PolkadotTransactionBuilder {
     }
     
     func buildForSend(amount: Amount, destination: String, meta: PolkadotBlockchainMeta, signature: Data) throws -> Data {
+        let rawAddress = encodingRawAddress(specVersion: meta.specVersion)
+
         let address = PolkadotAddress(publicKey: walletPublicKey, network: network)
-        guard let addressBytes = address.bytes(addNullPrefix: true) else {
+        guard let addressBytes = address.bytes(raw: rawAddress) else {
             throw BlockchainSdkError.failedToConvertPublicKey
         }
         
@@ -75,7 +79,7 @@ class PolkadotTransactionBuilder {
         transactionData.append(Data(sigTypeEd25519))
         transactionData.append(signature)
         transactionData.append(try encodeEraNonceTip(era: meta.era, nonce: meta.nonce, tip: 0))
-        transactionData.append(try encodeCall(amount: amount, destination: destination))
+        transactionData.append(try encodeCall(amount: amount, destination: destination, rawAddress: rawAddress))
 
         let messageLength = try messageLength(transactionData)
         transactionData = messageLength + transactionData
@@ -83,14 +87,14 @@ class PolkadotTransactionBuilder {
         return transactionData
     }
     
-    private func encodeCall(amount: Amount, destination: String) throws -> Data {
+    private func encodeCall(amount: Amount, destination: String, rawAddress: Bool) throws -> Data {
         var call = Data()
         
         call.append(balanceTransferCallIndex)
         
         guard
             let address = PolkadotAddress(string: destination, network: network),
-            let addressBytes = address.bytes(addNullPrefix: true)
+            let addressBytes = address.bytes(raw: rawAddress)
         else {
             throw BlockchainSdkError.failedToConvertPublicKey
         }
@@ -103,6 +107,17 @@ class PolkadotTransactionBuilder {
         return call
     }
     
+    private func encodingRawAddress(specVersion: UInt32) -> Bool {
+        switch network {
+        case .polkadot:
+            return specVersion < 28
+        case .kusama:
+            return specVersion < 2028
+        case .westend:
+            return false
+        }
+    }
+
     private func encodeEraNonceTip(era: PolkadotBlockchainMeta.Era?, nonce: UInt64, tip: UInt64) throws -> Data {
         var data = Data()
         

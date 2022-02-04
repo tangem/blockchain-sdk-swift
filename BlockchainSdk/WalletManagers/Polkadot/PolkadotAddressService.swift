@@ -54,7 +54,7 @@ struct PolkadotAddress {
     }
     
     // Raw representation (without the prefix) was used in the older protocol versions
-    func bytes(addNullPrefix: Bool) -> Data? {
+    func bytes(raw: Bool) -> Data? {
         guard var bytes = string.base58DecodedData else {
             return nil
         }
@@ -62,7 +62,7 @@ struct PolkadotAddress {
         bytes.removeFirst(Self.networkLength)
         bytes.removeLast(Self.checksumLength)
         
-        if addNullPrefix {
+        if !raw {
             bytes = Data(UInt8(0)) + bytes
         }
         

@@ -99,7 +99,7 @@ class PolkadotNetworkService {
     private func storageKey(forAddress address: String) throws -> Data {
         guard
             let address = PolkadotAddress(string: address, network: rpcProvider.network),
-            let addressBytes = address.bytes(addNullPrefix: false),
+            let addressBytes = address.bytes(raw: true),
             let addressHash = Sodium().genericHash.hash(message: addressBytes.bytes, outputLength: 16)
         else {
             throw WalletError.empty
