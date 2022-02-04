@@ -93,12 +93,9 @@ class PolkadotNetworkService {
     }
     
     private func storageKey(forAddress address: String) throws -> Data {
-        guard let base58Decoded = address.base58DecodedData else {
+        guard let addressBytes = PolkadotAddress(string: address)?.bytes(addNullPrefix: false) else {
             throw WalletError.empty
         }
-        
-        let numberOfChecksumBytes = 2
-        let addressBytes = base58Decoded.dropFirst().dropLast(numberOfChecksumBytes)
         
         guard let addressBlake = Sodium().genericHash.hash(message: addressBytes.bytes, outputLength: 16) else {
             throw WalletError.empty

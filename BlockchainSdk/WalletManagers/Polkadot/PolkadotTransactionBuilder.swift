@@ -75,15 +75,11 @@ class PolkadotTransactionBuilder {
         
         call.append(balanceTransferCallIndex)
         
-        // Raw account ID
-        #warning("TODO")
-        let addressChecksumLength = 2
-        guard let addressData = destination.base58DecodedData?.dropLast(addressChecksumLength) else {
+        guard let addressBytes = PolkadotAddress(string: destination)?.bytes(addNullPrefix: true) else {
             throw BlockchainSdkError.failedToConvertPublicKey
         }
-        #warning("TODO: why 0? why remove first byte?")
-        call.append(Data(UInt8(0)) + addressData.dropFirst())
-                
+        call.append(addressBytes)
+                        
         let decimalValue = amount.value * blockchain.decimalValue
         let intValue = BigUInt((decimalValue.rounded() as NSDecimalNumber).uint64Value)
         call.append(try SCALE.default.encode(intValue, .compact))

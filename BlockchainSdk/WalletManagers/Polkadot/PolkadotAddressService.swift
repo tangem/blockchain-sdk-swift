@@ -11,24 +11,62 @@ import Sodium
 
 class PolkadotAddressService: AddressService {
     private let network: PolkadotNetwork
-    private let checksumLength = 2
-    private let ss58prefix = "SS58PRE".data(using: .utf8) ?? Data()
     
     init(network: PolkadotNetwork) {
         self.network = network
     }
     
     func makeAddress(from walletPublicKey: Data) throws -> String {
-        var addressData = Data(network.addressPrefix) + walletPublicKey
-        
-        let checksumMessage = ss58prefix + addressData
-        let checksum = blake2checksum(checksumMessage)
-        addressData.append(checksum)
-                
-        return String(base58: addressData, alphabet: Base58String.btcAlphabet)
+        PolkadotAddress(publicKey: walletPublicKey, network: network).string
     }
     
     func validate(_ address: String) -> Bool {
+        PolkadotAddress(string: address) != nil
+    }
+}
+
+
+struct PolkadotAddress {
+    let string: String
+
+    static private let networkLength = 1
+    static private let checksumLength = 2
+    static private let ss58prefix = "SS58PRE".data(using: .utf8) ?? Data()
+    
+    init?(string: String) {
+        guard Self.isValid(string) else {
+            return nil
+        }
+        self.string = string
+    }
+    
+    init(publicKey: Data, network: PolkadotNetwork) {
+        var addressData = Data(network.addressPrefix) + publicKey
+        
+        let checksumMessage = Self.ss58prefix + addressData
+        let checksum = Self.blake2checksum(checksumMessage)
+        addressData.append(checksum)
+                
+        self.string = String(base58: addressData, alphabet: Base58String.btcAlphabet)
+    }
+    
+    // Raw representation (without the prefix) was used in the older protocol versions
+    func bytes(addNullPrefix: Bool) -> Data? {
+        guard var bytes = string.base58DecodedData else {
+            return nil
+        }
+        
+        bytes.removeFirst(Self.networkLength)
+        bytes.removeLast(Self.checksumLength)
+        
+        if addNullPrefix {
+            bytes = Data(UInt8(0)) + bytes
+        }
+        
+        return bytes
+    }
+    
+    static private func isValid(_ address: String) -> Bool {
         guard let data = address.base58DecodedData else { return false }
         
         let expectedChecksum = data.suffix(checksumLength)
@@ -39,8 +77,8 @@ class PolkadotAddressService: AddressService {
         
         return checksum == expectedChecksum
     }
-    
-    private func blake2checksum(_ message: Data) -> Data {
+
+    static private func blake2checksum(_ message: Data) -> Data {
         let hash = Data(Sodium().genericHash.hash(message: message.bytes, outputLength: 64) ?? [])
         let checksum = hash.prefix(checksumLength)
         return checksum
