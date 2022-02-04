@@ -54,11 +54,14 @@ class PolkadotTransactionBuilder {
         let extrinsicFormat: UInt8 = 4
         let signedBit: UInt8 = 0x80
         let sigTypeEd25519: UInt8 = 0x00
+        let address = PolkadotAddress(publicKey: walletPublicKey, network: network)
+        guard let addressBytes = address.bytes(addNullPrefix: true) else {
+            throw BlockchainSdkError.failedToConvertPublicKey
+        }
         
         var transactionData = Data()
         transactionData.append(Data(extrinsicFormat | signedBit))
-        #warning("TODO: why 0?")
-        transactionData.append(Data(UInt8(0)) + walletPublicKey)
+        transactionData.append(addressBytes)
         transactionData.append(Data(sigTypeEd25519))
         transactionData.append(signature)
         transactionData.append(try encodeEraNonceTip(era: meta.era, nonce: meta.nonce, tip: 0))
