@@ -41,8 +41,8 @@ class PolkadotNetworkService {
                 let latestBlockNumberPublisher = self.rpcProvider
                     .header(latestBlockHash)
                     .map(\.number)
-                    .tryMap { encodedBlockNumber in
-                        try Self.decodeBigEndian(data: Data(hexString: encodedBlockNumber))
+                    .tryMap { encodedBlockNumber -> UInt64 in
+                        try self.decodeBigEndian(data: Data(hexString: encodedBlockNumber)) ?? 0
                     }
                 
                 return Publishers.Zip(latestBlockHashPublisher, latestBlockNumberPublisher).eraseToAnyPublisher()
@@ -82,14 +82,18 @@ class PolkadotNetworkService {
         rpcProvider.submitExtrinsic("0x" + data.hexString)
     }
     
-    #warning("TODO: better way?")
-    static private func decodeBigEndian(data: Data) throws -> UInt64{
-        let codec = SCALE.default
-        
-        let extraBytes: [UInt8] = Array(repeating: 0, count: max(0, 8 - data.count))
-        let reversed = Data(data.reversed() + extraBytes)
-        
-        return try codec.decode(from: reversed)
+    private func decodeBigEndian<T: FixedWidthInteger>(data: Data) -> T? {
+        let paddingSize = MemoryLayout<T>.size - data.count
+        guard paddingSize >= 0 else {
+            return nil
+        }
+
+        let padding = Data(repeating: UInt8(0), count: paddingSize)
+        let paddedData = padding + data
+
+        return paddedData.withUnsafeBytes {
+            $0.load(as: T.self).bigEndian
+        }
     }
     
     private func storageKey(forAddress address: String) throws -> Data {
