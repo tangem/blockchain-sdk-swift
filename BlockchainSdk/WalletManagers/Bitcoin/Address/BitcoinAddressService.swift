@@ -72,6 +72,8 @@ public class BitcoinLegacyAddressService: AddressService {
     }
     
     public func makeAddress(from walletPublicKey: Data) throws -> String {
+        try walletPublicKey.validateAsSecp256k1Key()
+        
         let publicKey = PublicKey(withAccount: 0,
                                   index: 0,
                                   external: true,

@@ -12,6 +12,8 @@
 //}
 
 import Foundation
+import CryptoKit
+import TangemSdk
 
 extension Data {
 	var doubleSha256: Data {
@@ -25,4 +27,12 @@ extension Data {
 	var sha256Ripemd160: Data {
 		RIPEMD160.hash(message: sha256())
 	}
+    
+    func validateAsEdKey() throws {
+        _ = try Curve25519.Signing.PublicKey(rawRepresentation: self)
+    }
+    
+    func validateAsSecp256k1Key() throws {
+        _ = try Secp256k1Key(with: self)
+    }
 }

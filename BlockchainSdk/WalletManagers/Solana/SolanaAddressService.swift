@@ -10,7 +10,8 @@ import Foundation
 import Solana_Swift
 
 public class SolanaAddressService: AddressService {
-    public func makeAddress(from walletPublicKey: Data) -> String {
+    public func makeAddress(from walletPublicKey: Data) throws -> String {
+        try walletPublicKey.validateAsEdKey()
         return Base58.encode(walletPublicKey.bytes)
     }
     

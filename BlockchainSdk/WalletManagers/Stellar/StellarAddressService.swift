@@ -10,11 +10,10 @@ import Foundation
 import stellarsdk
 
 public class StellarAddressService: AddressService {
-    public func makeAddress(from walletPublicKey: Data) -> String {
-        guard let publicKey = try? PublicKey(Array(walletPublicKey)) else {
-            return ""
-        }
+    public func makeAddress(from walletPublicKey: Data) throws -> String {
+        try walletPublicKey.validateAsEdKey()
         
+        let publicKey = try PublicKey(Array(walletPublicKey))
         let keyPair = KeyPair(publicKey: publicKey)
         return keyPair.accountId
     }

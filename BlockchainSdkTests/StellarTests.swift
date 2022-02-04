@@ -79,7 +79,7 @@ class StellarTests: XCTestCase {
             .store(in: &bag)
 
 
-        waitForExpectations(timeout: 1, handler: nil)
+        waitForExpectations(timeout: 5, handler: nil)
     }
 
 //        @Test

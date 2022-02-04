@@ -23,6 +23,7 @@ public class XRPAddressService: AddressService {
         case .secp256k1:
             key = try Secp256k1Key(with: walletPublicKey).compress()
         case .ed25519:
+            try walletPublicKey.validateAsEdKey()
             key = [UInt8(0xED)] + walletPublicKey
         case .secp256r1:
             fatalError("secp256r1 is not supported by XRP")

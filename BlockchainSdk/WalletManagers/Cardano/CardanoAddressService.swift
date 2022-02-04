@@ -20,7 +20,9 @@ public class CardanoAddressService: AddressService {
         self.shelley = shelley
     }
     
-    public func makeAddresses(from walletPublicKey: Data) -> [Address] {
+    public func makeAddresses(from walletPublicKey: Data) throws -> [Address] {
+        try walletPublicKey.validateAsEdKey()
+        
         if shelley {
             return [
                 CardanoAddress(type: .bech32, value: makeShelleyAddress(from: walletPublicKey)),
@@ -30,8 +32,10 @@ public class CardanoAddressService: AddressService {
         return [makeCardanoAddress(from: walletPublicKey)]
     }
     
-    public func makeAddress(from walletPublicKey: Data) -> String {
-        makeCardanoAddress(from: walletPublicKey).value
+    public func makeAddress(from walletPublicKey: Data) throws -> String {
+        try walletPublicKey.validateAsEdKey()
+        
+        return makeCardanoAddress(from: walletPublicKey).value
     }
     
     public func validate(_ address: String) -> Bool {
