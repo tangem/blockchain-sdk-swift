@@ -33,6 +33,10 @@ class PolkadotTransactionBuilder {
         }
     }
     
+    private let extrinsicFormat: UInt8 = 4
+    private let signedBit: UInt8 = 0x80
+    private let sigTypeEd25519: UInt8 = 0x00
+    
     init(walletPublicKey: Data, blockchain: Blockchain, network: PolkadotNetwork) {
         self.walletPublicKey = walletPublicKey
         self.blockchain = blockchain
@@ -51,9 +55,6 @@ class PolkadotTransactionBuilder {
     }
     
     func buildForSend(amount: Amount, destination: String, meta: PolkadotBlockchainMeta, signature: Data) throws -> Data {
-        let extrinsicFormat: UInt8 = 4
-        let signedBit: UInt8 = 0x80
-        let sigTypeEd25519: UInt8 = 0x00
         let address = PolkadotAddress(publicKey: walletPublicKey, network: network)
         guard let addressBytes = address.bytes(addNullPrefix: true) else {
             throw BlockchainSdkError.failedToConvertPublicKey
