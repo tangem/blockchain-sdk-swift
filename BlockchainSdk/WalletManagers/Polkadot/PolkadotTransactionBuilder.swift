@@ -20,8 +20,17 @@ class PolkadotTransactionBuilder {
         /*
             Polkadot and Kusama indexes are taken from TrustWallet:
             https://github.com/trustwallet/wallet-core/blob/a771f38d3af112db7098730a5b0b9a1a9b65ca86/src/Polkadot/Extrinsic.cpp#L30
-         
+
             Westend index is taken from the transaction made by Fearless iOS app
+
+            This stuff can also be found in the sources. Look for `pallet_balances`.
+
+            Polkadot:
+            https://github.com/paritytech/polkadot/blob/3b68869e14f84b043aa65bd83f9fe44359e4d626/runtime/polkadot/src/lib.rs#L1341
+            Kusama:
+            https://github.com/paritytech/polkadot/blob/3b68869e14f84b043aa65bd83f9fe44359e4d626/runtime/kusama/src/lib.rs#L1375
+            Westend:
+            https://github.com/paritytech/polkadot/blob/3b68869e14f84b043aa65bd83f9fe44359e4d626/runtime/westend/src/lib.rs#L982
         */
         switch network {
         case .polkadot:
