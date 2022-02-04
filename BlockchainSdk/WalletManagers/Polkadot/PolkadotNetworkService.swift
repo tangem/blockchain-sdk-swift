@@ -42,7 +42,7 @@ class PolkadotNetworkService {
                     .header(latestBlockHash)
                     .map(\.number)
                     .tryMap { encodedBlockNumber -> UInt64 in
-                        try self.decodeBigEndian(data: Data(hexString: encodedBlockNumber)) ?? 0
+                        self.decodeBigEndian(data: Data(hexString: encodedBlockNumber)) ?? 0
                     }
                 
                 return Publishers.Zip(latestBlockHashPublisher, latestBlockNumberPublisher).eraseToAnyPublisher()
