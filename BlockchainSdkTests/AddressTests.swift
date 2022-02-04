@@ -385,4 +385,65 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addr_dec[0].value, "0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d")
         XCTAssertEqual("0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d".lowercased(), "0x6eca00c52afc728cdbf42e817d712e175bb23c7d") //without checksum
     }
+    
+    func testPolkadot() {
+        // From trust wallet `PolkadotTests.swift`
+        testSubstrateNetwork(
+            .polkadot,
+            publicKey: Data(hexString: "53d82211c4aadb8c67e1930caef2058a93bc29d7af86bf587fba4aa3b1515037"),
+            expectedAddress: "12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW"
+        )
+        
+        testSubstrateNetwork(
+            .polkadot,
+            publicKey: edKey,
+            expectedAddress: "14cermZiQ83ihmHKkAucgBT2sqiRVvd4rwqBGqrMnowAKYRp"
+        )
+    }
+    
+    func testKusama() {
+        // From trust wallet `KusamaTests.swift`
+        testSubstrateNetwork(
+            .kusama,
+            publicKey: Data(hexString: "e0b3fcccfe0283cc0f8c105c68b5690aab8c5c1692a868e55eaca836c8779085"),
+            expectedAddress: "HewiDTQv92L2bVtkziZC8ASxrFUxr6ajQ62RXAnwQ8FDVmg"
+        )
+        
+        testSubstrateNetwork(
+            .kusama,
+            publicKey: edKey,
+            expectedAddress: "GByNkeXAhoB1t6FZEffRyytAp11cHt7EpwSWD8xiX88tLdQ"
+        )
+    }
+    
+    func testWestend() {
+        testSubstrateNetwork(
+            .westend,
+            publicKey: edKey,
+            expectedAddress: "5FgMiSJeYLnFGEGonXrcY2ct2Dimod4vnT6h7Ys1Eiue9KxK"
+        )
+    }
+    
+    func testSubstrateNetwork(_ network: PolkadotNetwork, publicKey: Data, expectedAddress: String) {
+        let otherNetworks = PolkadotNetwork.allCases.filter { $0 != network }
+        let blockchain = network.blockchain
+        
+        let addresses = try! blockchain.makeAddresses(from: publicKey, with: nil)
+        let addressFromString = PolkadotAddress(string: expectedAddress, network: network)
+        
+        let otherNetworkAddresses = otherNetworks.map {
+            try! $0.blockchain.makeAddresses(from: publicKey, with: nil).first!.value
+        }
+        
+        // TODO: uncomment and check the key in PolkadotAddressService
+//        XCTAssertThrowsError(try blockchain.makeAddresses(from: secpCompressedKey, with: nil))
+//        XCTAssertThrowsError(try blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
+        
+        XCTAssertEqual(addresses.count, 1)
+        XCTAssertNotNil(addressFromString)
+        XCTAssertEqual(addressFromString!.bytes(addNullPrefix: false), publicKey)
+        XCTAssertEqual(addresses.first!.value, expectedAddress)
+        XCTAssertNotEqual(addressFromString!.bytes(addNullPrefix: true), publicKey)
+        XCTAssertFalse(otherNetworkAddresses.contains(addressFromString!.string))
+    }
 }
