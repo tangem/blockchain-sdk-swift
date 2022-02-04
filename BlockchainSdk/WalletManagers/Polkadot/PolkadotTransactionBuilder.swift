@@ -101,7 +101,8 @@ class PolkadotTransactionBuilder {
             let era = encodeEra(era)
             data.append(era)
         } else {
-            #warning("TODO: check")
+            // TODO: This is taken from WalletCore code but it doesn't work.
+            // TODO: RPC error is returned: "Transaction has a bad signature".
             data.append(try codec.encode(UInt64(0), .compact))
         }
         
