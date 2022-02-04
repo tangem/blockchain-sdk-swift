@@ -307,6 +307,15 @@
 		DA570CF927A82322007F34EB /* PolkadotBlockchainMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA570CF727A82322007F34EB /* PolkadotBlockchainMeta.swift */; };
 		DA71441E2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
 		DA71441F2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
+		DA7CA46C27AD3B210041B1A1 /* PolkadotTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */; };
+		DA7CA46D27AD3B210041B1A1 /* PolkadotTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC7C04027A3BB17002F7252 /* PolkadotTransactionBuilder.swift */; };
+		DA7CA46E27AD3B210041B1A1 /* PolkadotResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82434227A2B0C100CFC2C0 /* PolkadotResponse.swift */; };
+		DA7CA46F27AD3B210041B1A1 /* PolkadotWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */; };
+		DA7CA47027AD3B210041B1A1 /* PolkadotNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */; };
+		DA7CA47127AD3B210041B1A1 /* PolkadotNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */; };
+		DA7CA47227AD3B210041B1A1 /* PolkadotAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */; };
+		DA7CA47327AD3B210041B1A1 /* PolkadotJsonRpcProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433C27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift */; };
+		DA7CA47427AD3B210041B1A1 /* PolkadotBlockchainMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA570CF727A82322007F34EB /* PolkadotBlockchainMeta.swift */; };
 		DA82433D27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433C27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift */; };
 		DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */; };
 		DA82434127A2B0AD00CFC2C0 /* PolkadotTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */; };
@@ -323,7 +332,6 @@
 		DAE30DFF279164500056C5A3 /* SolanaWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DFA279164500056C5A3 /* SolanaWalletManager.swift */; };
 		DAE30E00279164500056C5A3 /* SolanaWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DFA279164500056C5A3 /* SolanaWalletManager.swift */; };
 		DAED921F27A150E500F188D7 /* PolkadotAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */; };
-		DAED922027A150E500F188D7 /* PolkadotAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */; };
 		DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */; };
 		DAF0867027A9438C0024312E /* PolkadotNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */; };
 		ED3D33D84D8B747FB3B1D09D /* Pods_BlockchainSdkTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A172F9D47772F23948771418 /* Pods_BlockchainSdkTests.framework */; };
@@ -1530,7 +1538,10 @@
 				5DDD833A25BF0EC900166EA9 /* XrpData.swift in Sources */,
 				5DDD830825BF0E2400166EA9 /* XRPNetworkService.swift in Sources */,
 				5DDD82AE25BF0D2F00166EA9 /* Blockchain.swift in Sources */,
+				DA7CA47327AD3B210041B1A1 /* PolkadotJsonRpcProvider.swift in Sources */,
 				5DDD832F25BF0EC500166EA9 /* Entropy.swift in Sources */,
+				DA7CA46C27AD3B210041B1A1 /* PolkadotTarget.swift in Sources */,
+				DA7CA47027AD3B210041B1A1 /* PolkadotNetworkService.swift in Sources */,
 				5DDD82DF25BF0E0900166EA9 /* StellarTransactionBuilder.swift in Sources */,
 				5DDD828E25BF0CDC00166EA9 /* BlockchainInfoNetworkProvider.swift in Sources */,
 				DAE30DFE279164500056C5A3 /* SolanaAddressService.swift in Sources */,
@@ -1549,6 +1560,7 @@
 				5DDD833725BF0EC900166EA9 /* XRPLResponse.swift in Sources */,
 				B024FB8E2664C57600AEED4C /* EthereumAdditionalInfoProvider.swift in Sources */,
 				5DDD82EF25BF0E1500166EA9 /* BitcoinCashWalletManager.swift in Sources */,
+				DA7CA46D27AD3B210041B1A1 /* PolkadotTransactionBuilder.swift in Sources */,
 				B087283C26134DA100E3FF57 /* MultiNetworkProvider.swift in Sources */,
 				B04AA0442642C8AD0075AE32 /* EthereumJsonRpcProvider.swift in Sources */,
 				5DDD833125BF0EC500166EA9 /* SigningAlgorithm.swift in Sources */,
@@ -1563,6 +1575,8 @@
 				5D740B832625B6E400DE9636 /* RskAddressService.swift in Sources */,
 				5DDD831225BF0E7800166EA9 /* EthereumTarget.swift in Sources */,
 				5D908C5826A6E2B600270FA3 /* BinanceTransactionParams.swift in Sources */,
+				DA7CA47427AD3B210041B1A1 /* PolkadotBlockchainMeta.swift in Sources */,
+				DA7CA47127AD3B210041B1A1 /* PolkadotNetwork.swift in Sources */,
 				B09374B3267089F1001450B0 /* DateFormatter+.swift in Sources */,
 				5DFCE54A274BB88700C1B1A0 /* StellarTests.swift in Sources */,
 				5DDD82C625BF0D7B00166EA9 /* ThenProcessable.swift in Sources */,
@@ -1581,6 +1595,7 @@
 				5DDD82CA25BF0DA100166EA9 /* BlockchairResponses.swift in Sources */,
 				5DDD830525BF0E2400166EA9 /* XRPWalletManager.swift in Sources */,
 				5DDD833425BF0EC900166EA9 /* XRPAccountInfo.swift in Sources */,
+				DA7CA47227AD3B210041B1A1 /* PolkadotAddressService.swift in Sources */,
 				5DDD82E325BF0E0D00166EA9 /* EthereumTransactionBuilder.swift in Sources */,
 				5DDD82BB25BF0D6700166EA9 /* Uint64+.swift in Sources */,
 				5DDD829925BF0D0F00166EA9 /* Data+.swift in Sources */,
@@ -1588,6 +1603,7 @@
 				B03D51AB2629AD5A0029DC43 /* XrpNetworkProvider.swift in Sources */,
 				B0A1D3A02625A16F0013F0BF /* EthereumUtils.swift in Sources */,
 				5DFCE548274BB85B00C1B1A0 /* LitecoinTests.swift in Sources */,
+				DA7CA46E27AD3B210041B1A1 /* PolkadotResponse.swift in Sources */,
 				5DDD82DC25BF0E0900166EA9 /* StellarSdk+.swift in Sources */,
 				5DDD830D25BF0E3400166EA9 /* TezosAddressService.swift in Sources */,
 				5DDD832425BF0EB800166EA9 /* BlockchainInfoTarget.swift in Sources */,
@@ -1601,6 +1617,7 @@
 				5DDD82F825BF0E1D00166EA9 /* DucatusWalletManager.swift in Sources */,
 				5DDD82B125BF0D2F00166EA9 /* Amount.swift in Sources */,
 				5DDD82BC25BF0D6700166EA9 /* CBOR+.swift in Sources */,
+				DA7CA46F27AD3B210041B1A1 /* PolkadotWalletManager.swift in Sources */,
 				5DDD833525BF0EC900166EA9 /* XRPHistoricalTransaction.swift in Sources */,
 				5DDD828C25BF0CDC00166EA9 /* BitcoinTransactionBuilder.swift in Sources */,
 				5DDD833625BF0EC900166EA9 /* XRPCurrentLedgerInfo.swift in Sources */,
@@ -1621,7 +1638,6 @@
 				5DDD82E425BF0E0D00166EA9 /* EthereumNetworkService.swift in Sources */,
 				5DDD833825BF0EC900166EA9 /* XRPWallet.swift in Sources */,
 				DAE30E00279164500056C5A3 /* SolanaWalletManager.swift in Sources */,
-				DAED922027A150E500F188D7 /* PolkadotAddressService.swift in Sources */,
 				5DDD834125BF0ECC00166EA9 /* HTTP.swift in Sources */,
 				5DDD82C125BF0D6C00166EA9 /* RIPEMD160.swift in Sources */,
 				5DDD829025BF0CDC00166EA9 /* BitcoinNetworkService.swift in Sources */,
