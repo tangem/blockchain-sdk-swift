@@ -46,7 +46,6 @@ class PolkadotJsonRpcProvider: HostProvider {
         requestPublisher(for: .runtimeVersion(network: network))
     }
     
-#warning("TODO")
     func submitExtrinsic(_ extrinsic: String) -> AnyPublisher<String, Error> {
         requestPublisher(for: .submitExtrinsic(extrinsic: extrinsic, network: network))
     }
