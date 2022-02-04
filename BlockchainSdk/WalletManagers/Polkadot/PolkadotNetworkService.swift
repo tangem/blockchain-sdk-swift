@@ -100,7 +100,7 @@ class PolkadotNetworkService {
         guard
             let address = PolkadotAddress(string: address, network: rpcProvider.network),
             let addressBytes = address.bytes(addNullPrefix: false),
-            let addressBlake = Sodium().genericHash.hash(message: addressBytes.bytes, outputLength: 16)
+            let addressHash = Sodium().genericHash.hash(message: addressBytes.bytes, outputLength: 16)
         else {
             throw WalletError.empty
         }
@@ -109,7 +109,7 @@ class PolkadotNetworkService {
         let moduleNameHash = Data(hexString: "26aa394eea5630e07c48ae0c9558cef7")
         let storageNameKeyHash = Data(hexString: "b99d880ec681799c0cf30e8886371da9")
         
-        let key = moduleNameHash + storageNameKeyHash + addressBlake + addressBytes
+        let key = moduleNameHash + storageNameKeyHash + addressHash + addressBytes
         return key
     }
 }
