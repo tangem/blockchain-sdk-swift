@@ -23,6 +23,7 @@ public class TezosAddressService: AddressService {
         var key: Data
         switch curve {
         case .ed25519:
+            try walletPublicKey.validateAsEdKey()
             key = walletPublicKey
         case .secp256k1:
             key = try Secp256k1Key(with: walletPublicKey).compress()
