@@ -17,7 +17,8 @@ class PolkadotAddressService: AddressService {
     }
     
     func makeAddress(from walletPublicKey: Data) throws -> String {
-        PolkadotAddress(publicKey: walletPublicKey, network: network).string
+        try walletPublicKey.validateAsEdKey()
+        return PolkadotAddress(publicKey: walletPublicKey, network: network).string
     }
     
     func validate(_ address: String) -> Bool {

@@ -492,9 +492,8 @@ class AddressesTests: XCTestCase {
             try! $0.blockchain.makeAddresses(from: publicKey, with: nil).first!.value
         }
         
-        // TODO: uncomment and check the key in PolkadotAddressService
-//        XCTAssertThrowsError(try blockchain.makeAddresses(from: secpCompressedKey, with: nil))
-//        XCTAssertThrowsError(try blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
+        XCTAssertThrowsError(try blockchain.makeAddresses(from: secpCompressedKey, with: nil))
+        XCTAssertThrowsError(try blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
         
         XCTAssertEqual(addresses.count, 1)
         XCTAssertNotNil(addressFromString)
