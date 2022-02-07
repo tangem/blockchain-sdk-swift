@@ -125,8 +125,6 @@ extension PolkadotWalletManager: TransactionSender {
     }
 }
 
-extension PolkadotWalletManager: ThenProcessable { }
-
 extension PolkadotWalletManager: WithdrawalValidator {
     func validate(_ transaction: Transaction) -> WithdrawalWarning? {
         guard let currentWalletAmount = wallet.amounts[.coin] else {
@@ -149,6 +147,8 @@ extension PolkadotWalletManager: WithdrawalValidator {
         return nil
     }
 }
+
+extension PolkadotWalletManager: ThenProcessable { }
 
 
 // MARK: - Dummy transaction signer

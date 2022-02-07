@@ -154,8 +154,7 @@ class PolkadotTransactionBuilder {
     }
     
     private func messageLength(_ message: Data) throws -> Data {
-        let codec = SCALE.default
-        let length: UInt64 = UInt64(message.count)
+        let length = UInt64(message.count)
         let encoded = try codec.encode(length, .compact)
         return encoded
     }

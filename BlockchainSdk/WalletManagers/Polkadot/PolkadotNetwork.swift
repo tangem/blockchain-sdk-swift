@@ -38,18 +38,18 @@ enum PolkadotNetwork: CaseIterable {
     
     // https://wiki.polkadot.network/docs/build-protocol-info#addresses
     var addressPrefix: Data {
-        let byte: UInt8
+        let prefixByte: UInt8
         
         switch self {
         case .polkadot:
-            byte = 0
+            prefixByte = 0
         case .kusama:
-            byte = 2
+            prefixByte = 2
         case .westend:
-            byte = 42
+            prefixByte = 42
         }
         
-        return Data(byte)
+        return Data(prefixByte)
     }
     
     // https://support.polkadot.network/support/solutions/articles/65000168651-what-is-the-existential-deposit-
