@@ -33,7 +33,7 @@ class PolkadotTests: XCTestCase {
         )
         
         let preImage = try! txBuilder.buildForSign(amount: amount, destination: destination, meta: meta)
-        let signature = try! privateKey.sign(privateKey: privateKey)
+        let signature = try! privateKey.sign(privateKey: privateKey, curve: .ed25519)
         let image = try! txBuilder.buildForSend(amount: amount, destination: destination, meta: meta, signature: signature)
         
         let expectedPreImage = Data(hexString: "05007120f76076bcb0efdf94c7219e116899d0163ea61cb428183d71324eb33b2bce0300943577a5030c001a0000000500000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c35d2143bb808626d63ad7e1cda70fa8697059d670a992e82cd440fbb95ea40351")
@@ -68,7 +68,7 @@ class PolkadotTests: XCTestCase {
         )
         
         let preImage = try! txBuilder.buildForSign(amount: amount, destination: destination, meta: meta)
-        let signature = try! privateKey.sign(privateKey: privateKey)
+        let signature = try! privateKey.sign(privateKey: privateKey, curve: .ed25519)
         let image = try! txBuilder.buildForSend(amount: amount, destination: destination, meta: meta, signature: signature)
         
         let expectedPreImage = Data(hexString: "05008eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c032000000110000000300000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3343a3f4258fd92f5ca6ca5abdf473d86a78b0bcd0dc09c568ca594245cc8c642")
@@ -101,7 +101,7 @@ class PolkadotTests: XCTestCase {
         )
         
         let preImage = try! txBuilder.buildForSign(amount: amount, destination: destination, meta: meta)
-        let signature = try! privateKey.sign(privateKey: privateKey)
+        let signature = try! privateKey.sign(privateKey: privateKey, curve: .ed25519)
         let image = try! txBuilder.buildForSend(amount: amount, destination: destination, meta: meta, signature: signature)
         
         let expectedPreImage = Data(hexString: "0500007120f76076bcb0efdf94c7219e116899d0163ea61cb428183d71324eb33b2bce0700e40b5402050104001c0000000600000091b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c37d5fa17b70251d0806f26156b1b698dfd09e040642fa092595ce0a78e9e84fcd")
