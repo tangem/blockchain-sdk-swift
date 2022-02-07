@@ -75,7 +75,7 @@ DEPENDENCIES:
   - BitcoinCore.swift (from `https://github.com/lazutkin-andrey/bitcoincore.git`, tag `0.0.15`)
   - HDWalletKit (from `https://github.com/lazutkin-andrey/hdwallet.git`, tag `0.3.12`)
   - Moya
-  - ScaleCodec (~> 0.2)
+  - ScaleCodec
   - Sodium
   - Solana.Swift (from `https://github.com/tangem/Solana.Swift`, tag `add-external-signer-1`)
   - stellar-ios-mac-sdk
@@ -171,6 +171,6 @@ SPEC CHECKSUMS:
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 8112b001c8348ba052d4b7d3fe5f0b999680604a
+PODFILE CHECKSUM: 8ed89535b210a1c2be4fc09c3e7dad575bbab579
 
 COCOAPODS: 1.11.2
