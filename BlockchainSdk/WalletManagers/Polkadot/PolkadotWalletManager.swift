@@ -24,7 +24,6 @@ class PolkadotWalletManager: WalletManager {
     }
     
     override func update(completion: @escaping (Result<(), Error>) -> Void) {
-        // TODO: Get confirmed transactions as well
         cancellable = networkService.getInfo(for: wallet.address)
             .sink {
                 switch $0 {
