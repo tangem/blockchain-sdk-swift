@@ -75,6 +75,13 @@
 "xtz_withdrawal_message_ignore" = "No, invia l'intero importo";
 
 
+"dot_existential_deposit_message_warning" = "%@ network has a concept of Existential Deposit. If your account drops below %@ it will be deactivated and any remaining funds will be destroyed. To avoid that you can reduce the amount by %@.";
+
+"dot_existential_deposit_message_reduce" = "Reduce by %@";
+
+"dot_existential_deposit_message_ignore" = "No, send all";
+
+
 "send_validation_invalid_address" = "Indirizzo non valido";
 
 "send_validation_invalid_amount" = "Importo non valido"; //"L'importo supera il saldo";

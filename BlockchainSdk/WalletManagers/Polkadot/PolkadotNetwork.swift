@@ -51,4 +51,17 @@ enum PolkadotNetwork: CaseIterable {
         
         return Data(byte)
     }
+    
+    // https://support.polkadot.network/support/solutions/articles/65000168651-what-is-the-existential-deposit-
+    var existentialDeposit: Amount {
+        switch self {
+        case .polkadot:
+            return Amount(with: blockchain, value: 1)
+        case .kusama:
+            return Amount(with: blockchain, value: 0.0000333333)
+        case .westend:
+            // Arbitrary number, westend doesn't seem to have existential deposit
+            return Amount(with: blockchain, value: 1)
+        }
+    }
 }
