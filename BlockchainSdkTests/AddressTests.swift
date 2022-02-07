@@ -9,6 +9,7 @@
 import Foundation
 import XCTest
 import TangemSdk
+import CryptoKit
 
 class AddressesTests: XCTestCase {
     private let secpPrivKey = Data(hexString: "83686EF30173D2A05FD7E2C8CB30941534376013B903A2122CF4FF3E8668355A")
@@ -445,9 +446,11 @@ class AddressesTests: XCTestCase {
     
     func testPolkadot() {
         // From trust wallet `PolkadotTests.swift`
+        let privateKey = Data(hexString: "0xd65ed4c1a742699b2e20c0c1f1fe780878b1b9f7d387f934fe0a7dc36f1f9008")
+        let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         testSubstrateNetwork(
             .polkadot,
-            publicKey: Data(hexString: "53d82211c4aadb8c67e1930caef2058a93bc29d7af86bf587fba4aa3b1515037"),
+            publicKey: publicKey,
             expectedAddress: "12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW"
         )
         
@@ -460,9 +463,11 @@ class AddressesTests: XCTestCase {
     
     func testKusama() {
         // From trust wallet `KusamaTests.swift`
+        let privateKey = Data(hexString: "0x85fca134b3fe3fd523d8b528608d803890e26c93c86dc3d97b8d59c7b3540c97")
+        let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         testSubstrateNetwork(
             .kusama,
-            publicKey: Data(hexString: "e0b3fcccfe0283cc0f8c105c68b5690aab8c5c1692a868e55eaca836c8779085"),
+            publicKey: publicKey,
             expectedAddress: "HewiDTQv92L2bVtkziZC8ASxrFUxr6ajQ62RXAnwQ8FDVmg"
         )
         
