@@ -13,23 +13,23 @@ enum EthereumTarget: TargetType {
     static let infuraTokenId = 03
     static let coinId = 67
     
-    case balance(address: String, network: EthereumNetwork)
-    case transactions(address: String, network: EthereumNetwork)
-    case pending(address: String, network: EthereumNetwork)
-    case send(transaction: String, network: EthereumNetwork)
-    case tokenBalance(address: String, contractAddress: String, network: EthereumNetwork)
-    case gasLimit(to: String, from: String, data: String?, network: EthereumNetwork)
-    case gasPrice(network: EthereumNetwork)
+    case balance(address: String, url: URL)
+    case transactions(address: String, url: URL)
+    case pending(address: String, url: URL)
+    case send(transaction: String, url: URL)
+    case tokenBalance(address: String, contractAddress: String, url: URL)
+    case gasLimit(to: String, from: String, data: String?, url: URL)
+    case gasPrice(url: URL)
     
     var baseURL: URL {
         switch self {
-        case .balance(_, let network): return network.url
-        case .pending(_, let network): return network.url
-        case .send(_, let network): return network.url
-        case .tokenBalance(_, _, let network): return network.url
-        case .transactions(_, let network): return network.url
-        case .gasLimit(_, _, _, let network): return network.url
-        case .gasPrice(let network): return network.url
+        case .balance(_, let url): return url
+        case .pending(_, let url): return url
+        case .send(_, let url): return url
+        case .tokenBalance(_, _, let url): return url
+        case .transactions(_, let url): return url
+        case .gasLimit(_, _, _, let url): return url
+        case .gasPrice(let url): return url
         }
     }
     
@@ -60,7 +60,7 @@ enum EthereumTarget: TargetType {
             let rawAddress = address.removeHexPrefix()
             let dataValue = ["data": "0x70a08231000000000000000000000000\(rawAddress)", "to": contractAddress]
             params.append(dataValue)
-        case .gasLimit(let to, let from, let data, network: _):
+        case .gasLimit(let to, let from, let data, _):
             var gasLimitParams = [String: String]()
             gasLimitParams["from"] = from
             gasLimitParams["to"] = to

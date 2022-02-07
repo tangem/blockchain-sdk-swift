@@ -248,6 +248,18 @@ public enum Blockchain {
         }
     }
     
+    //Only fot Ethereum compatible blockchains
+    public var chainId: Int? {
+        switch self {
+        case .ethereum: return isTestnet ? 4 : 1
+        case .rsk: return 30
+        case .bsc: return isTestnet ? 97 : 56
+        case .polygon: return isTestnet ? 80001 : 137
+        case .avalanche: return isTestnet ? 43113 : 43114
+        default: return nil
+        }
+    }
+    
     public func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data?) throws -> [Address] {
         let addressService = getAddressService()
         if let multiSigAddressProvider = addressService as? MultisigAddressProvider,
@@ -384,6 +396,36 @@ public enum Blockchain {
             return BitcoinLegacyAddressService(networkParams: DogecoinNetworkParams())
         case .solana:
             return SolanaAddressService()
+        }
+    }
+    
+    //Only fot Ethereum compatible blockchains
+    func getJsonRpcURLs(infuraProjectId: String?) -> [URL]? {
+        switch self {
+        case .ethereum:
+            guard let infuraProjectId = infuraProjectId else {
+                fatalError("infuraProjectId missing")
+            }
+            
+            if isTestnet {
+                return [URL(string:"https://rinkeby.infura.io/v3/\(infuraProjectId)")!]
+            }
+            
+            return [URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
+                    URL(string: "https://eth.tangem.com/")!]
+        case .rsk:
+            return [URL(string: "https://public-node.rsk.co/")!]
+        case .bsc:
+            return isTestnet ? [URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!]
+            : [URL(string: "https://bsc-dataseed.binance.org/")!]
+        case .polygon:
+            return isTestnet ? [URL(string: "https://rpc-mumbai.maticvigil.com/")!]
+            : [URL(string: "https://rpc-mainnet.maticvigil.com/")!]
+        case .avalanche:
+            return isTestnet ? [URL(string: "https://api.avax-test.network/ext/bc/C/rpc")!]
+            : [URL(string: "https://api.avax.network/ext/bc/C/rpc")!]
+        default:
+            return nil
         }
     }
 }

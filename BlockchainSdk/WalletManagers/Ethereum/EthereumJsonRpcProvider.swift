@@ -14,44 +14,44 @@ import Moya
 class EthereumJsonRpcProvider: HostProvider {
     
     var host: String {
-        network.url.hostOrUnknown
+        url.hostOrUnknown
     }
     
     private let provider: MoyaProvider<EthereumTarget> = .init(
         plugins: [NetworkLoggerPlugin()]
     )
-    private let network: EthereumNetwork
+    private let url: URL
     
-    init(network: EthereumNetwork) {
-        self.network = network
+    init(url: URL) {
+        self.url = url
     }
     
     func getBalance(for address: String) -> AnyPublisher<EthereumResponse, Error> {
-        requestPublisher(for: .balance(address: address, network: network))
+        requestPublisher(for: .balance(address: address, url: url))
     }
     
     func getTokenBalance(for address: String, contractAddress: String) -> AnyPublisher<EthereumResponse, Error> {
-        requestPublisher(for: .tokenBalance(address: address, contractAddress: contractAddress, network: network))
+        requestPublisher(for: .tokenBalance(address: address, contractAddress: contractAddress, url: url))
     }
     
     func getTxCount(for address: String) -> AnyPublisher<EthereumResponse, Error> {
-        requestPublisher(for: .transactions(address: address, network: network))
+        requestPublisher(for: .transactions(address: address, url: url))
     }
     
     func getPendingTxCount(for address: String) -> AnyPublisher<EthereumResponse, Error> {
-        requestPublisher(for: .pending(address: address, network: network))
+        requestPublisher(for: .pending(address: address, url: url))
     }
     
     func send(transaction: String) -> AnyPublisher<EthereumResponse, Error> {
-        requestPublisher(for: .send(transaction: transaction, network: network))
+        requestPublisher(for: .send(transaction: transaction, url: url))
     }
     
     func getGasLimit(to: String, from: String, data: String?) -> AnyPublisher<EthereumResponse, Error> {
-        requestPublisher(for: .gasLimit(to: to, from: from, data: data, network: network))
+        requestPublisher(for: .gasLimit(to: to, from: from, data: data, url: url))
     }
     
     func getGasPrice() -> AnyPublisher<EthereumResponse, Error> {
-        requestPublisher(for: .gasPrice(network: network))
+        requestPublisher(for: .gasPrice(url: url))
     }
     
     private func requestPublisher(for target: EthereumTarget) -> AnyPublisher<EthereumResponse, Error> {

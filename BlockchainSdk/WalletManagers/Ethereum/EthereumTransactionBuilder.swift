@@ -13,10 +13,13 @@ import TangemSdk
 
 class EthereumTransactionBuilder {
     private let walletPublicKey: Data
-    private let network: EthereumNetwork
-    init(walletPublicKey: Data, network: EthereumNetwork) throws {
+    private let chainId: BigUInt
+    
+    private var web3Network: Networks { Networks.fromInt(Int(chainId)) }
+    
+    init(walletPublicKey: Data, chainId: Int) throws {
         self.walletPublicKey = try Secp256k1Key(with: walletPublicKey).decompress()
-        self.network = network
+        self.chainId = BigUInt(chainId)
     }
     
     public func buildForSign(transaction: Transaction, nonce: Int, gasLimit: BigUInt) -> (hash: Data, transaction: EthereumTransaction)? {
@@ -47,11 +50,11 @@ class EthereumTransactionBuilder {
                                                     gasLimit: params?.gasLimit ?? gasLimit,
                                                     data: data,
                                                     ignoreCheckSum: transaction.amount.type != .coin,
-                                                    network: network) else {
+                                                    network: web3Network) else {
                                                         return nil
         }
         
-        guard let hashForSign = transaction.hashForSignature(chainID: network.chainId) else {
+        guard let hashForSign = transaction.hashForSignature(chainID: chainId) else {
             return nil
         }
         
@@ -68,7 +71,7 @@ class EthereumTransactionBuilder {
         transaction.r = BigUInt(unmarshalledSignature.r)
         transaction.s = BigUInt(unmarshalledSignature.s)
         
-        let encodedBytesToSend = transaction.encodeForSend(chainID: network.chainId)
+        let encodedBytesToSend = transaction.encodeForSend(chainID: chainId)
         return encodedBytesToSend
     }
     
@@ -88,21 +91,11 @@ class EthereumTransactionBuilder {
         
         let amountData = Data(hex: amountString)
         
-        guard let addressData = EthereumAddress(targetAddress, network: network.web3SwiftNetwork)?.addressData else {
+        guard let addressData = EthereumAddress(targetAddress, network: web3Network)?.addressData else {
             return nil
         }
         let prefixData = Data(hex: "a9059cbb000000000000000000000000")
         return prefixData + addressData + amountData
-    }
-}
-
-extension EthereumNetwork {
-    var web3SwiftNetwork: web3swift.Networks {
-        switch self {
-        case .rsk: return .RSK
-        case .testnet: return .Rinkeby
-        default: return .Mainnet
-        }
     }
 }
 
@@ -115,21 +108,22 @@ extension EthereumTransaction {
         return RLP.encode(fields)
     }
     
-    init?(amount: BigUInt, fee: BigUInt, targetAddress: String, nonce: BigUInt, gasLimit: BigUInt = 21000, data: Data, ignoreCheckSum: Bool, v: BigUInt = 0, r: BigUInt = 0, s: BigUInt = 0, network: EthereumNetwork) {
+    init?(amount: BigUInt, fee: BigUInt, targetAddress: String, nonce: BigUInt, gasLimit: BigUInt = 21000, data: Data, ignoreCheckSum: Bool,
+          v: BigUInt = 0, r: BigUInt = 0, s: BigUInt = 0, network: Networks) {
         let gasPrice = fee / gasLimit
         
-        guard let ethAddress = EthereumAddress(targetAddress, type: .normal, ignoreChecksum: ignoreCheckSum, network: network.web3SwiftNetwork) else {
+        guard let ethAddress = EthereumAddress(targetAddress, type: .normal, ignoreChecksum: ignoreCheckSum, network: network) else {
             return nil
         }
         
-        self.init( nonce: nonce,
-                   gasPrice: gasPrice,
-                   gasLimit: gasLimit,
-                   to: ethAddress,
-                   value: amount,
-                   data: data,
-                   v: v,
-                   r: r,
-                   s: s)
+        self.init(nonce: nonce,
+                  gasPrice: gasPrice,
+                  gasLimit: gasLimit,
+                  to: ethAddress,
+                  value: amount,
+                  data: data,
+                  v: v,
+                  r: r,
+                  s: s)
     }
 }

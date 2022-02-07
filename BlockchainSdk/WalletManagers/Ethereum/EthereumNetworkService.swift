@@ -17,16 +17,16 @@ class EthereumNetworkService: MultiNetworkProvider {
     let providers: [EthereumJsonRpcProvider]
     var currentProviderIndex: Int = 0
     
-    private let network: EthereumNetwork
+    private let decimals: Int
     private let ethereumInfoNetworkProvider: EthereumAdditionalInfoProvider?
     private let blockchairProvider: BlockchairEthNetworkProvider?
     
-    init(network: EthereumNetwork,
+    init(decimals: Int,
          providers: [EthereumJsonRpcProvider],
          blockcypherProvider: BlockcypherNetworkProvider?,
          blockchairProvider: BlockchairEthNetworkProvider?) {
         self.providers = providers
-        self.network = network
+        self.decimals = decimals
         self.ethereumInfoNetworkProvider = blockcypherProvider
         self.blockchairProvider = blockchairProvider
     }
@@ -89,7 +89,7 @@ class EthereumNetworkService: MultiNetworkProvider {
                 }
                 
                 let maxGasLimit = maxLimit ?? fallbackGasLimit!
-                let fees = try self.calculateFee(gasPrice: maxPrice, gasLimit: maxGasLimit, decimalCount: self.network.blockchain.decimalCount)
+                let fees = try self.calculateFee(gasPrice: maxPrice, gasLimit: maxGasLimit, decimalCount: self.decimals)
                 return EthereumFeeResponse(fees: fees, gasLimit: maxGasLimit)
             }
             .eraseToAnyPublisher()
@@ -165,7 +165,7 @@ class EthereumNetworkService: MultiNetworkProvider {
                 .tryMap {[weak self] in
                     guard let self = self else { throw WalletError.empty }
                     
-                    return try EthereumUtils.parseEthereumDecimal(self.getResult(from: $0), decimalsCount: self.network.blockchain.decimalCount)
+                    return try EthereumUtils.parseEthereumDecimal(self.getResult(from: $0), decimalsCount: self.decimals)
                 }
                 .eraseToAnyPublisher()
         }
