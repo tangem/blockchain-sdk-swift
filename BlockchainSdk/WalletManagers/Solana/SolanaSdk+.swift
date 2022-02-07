@@ -110,6 +110,27 @@ extension Api {
         }
         .eraseToAnyPublisher()
     }
+    
+    func getSignatureStatuses(pubkeys: [String], configs: RequestConfiguration? = nil) -> AnyPublisher<[SignatureStatus?], Error> {
+        Deferred {
+            Future { [weak self] promise in
+                guard let self = self else {
+                    promise(.failure(WalletError.empty))
+                    return
+                }
+                
+                self.getSignatureStatuses(pubkeys: pubkeys, configs: configs) {
+                    switch $0 {
+                    case .failure(let error):
+                        promise(.failure(error))
+                    case .success(let statuses):
+                        promise(.success(statuses))
+                    }
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
 }
 
 extension Action {

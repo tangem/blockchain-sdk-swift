@@ -67,11 +67,6 @@ public class WalletManagerFactory {
                            publicKey: Wallet.PublicKey,
                            cardId: String,
                            pairPublicKey: Data? = nil) throws -> WalletManager {
-        
-        if blockchain.curve == .ed25519, publicKey.seedKey.count > 32 || publicKey.blockchainKey.count > 32  {
-            throw BlockchainSdkError.wrongKey
-        }
-        
         let addresses = try blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey)
         let wallet = Wallet(blockchain: blockchain,
                             addresses: addresses,
@@ -249,7 +244,7 @@ public class WalletManagerFactory {
             
         case .solana(let testnet):
             return SolanaWalletManager(wallet: wallet).then {
-                let endpoint: RPCEndpoint = testnet ? .testnetSolana : .mainnetBetaSolana
+                let endpoint: RPCEndpoint = testnet ? .devnetSolana : .mainnetBetaSolana
                 let networkRouter = NetworkingRouter(endpoint: endpoint)
                 let accountStorage = SolanaDummyAccountStorage()
                 

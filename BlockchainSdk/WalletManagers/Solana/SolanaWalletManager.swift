@@ -15,8 +15,9 @@ class SolanaWalletManager: WalletManager {
     var networkService: SolanaNetworkService!
     
     public override func update(completion: @escaping (Result<(), Error>) -> Void) {
-        cancellable = networkService
-            .accountInfo(accountId: wallet.address)
+        let transactionIDs = wallet.transactions.compactMap { $0.hash }
+        
+        cancellable = networkService.getInfo(accountId: wallet.address, transactionIDs: transactionIDs)
             .sink { [unowned self] in
                 switch $0 {
                 case .failure(let error):
@@ -25,18 +26,24 @@ class SolanaWalletManager: WalletManager {
                 case .finished:
                     completion(.success(()))
                 }
-            } receiveValue: { [unowned self] in
-                self.updateWallet($0)
+            } receiveValue: { [unowned self] info in
+                self.updateWallet(info: info)
             }
     }
     
-    private func updateWallet(_ response: SolanaAccountInfoResponse) {
-        self.wallet.add(coinValue: response.balance)
+    private func updateWallet(info: SolanaAccountInfoResponse) {
+        self.wallet.add(coinValue: info.balance)
         
         for cardToken in cardTokens {
             let mintAddress = cardToken.contractAddress
-            let balance = response.tokensByMint[mintAddress]?.balance ?? Decimal(0)
+            let balance = info.tokensByMint[mintAddress]?.balance ?? Decimal(0)
             self.wallet.add(tokenValue: balance, for: cardToken)
+        }
+        
+        for (index, transaction) in wallet.transactions.enumerated() {
+            if let hash = transaction.hash, info.confirmedTransactionIDs.contains(hash) {
+                wallet.transactions[index].status = .confirmed
+            }
         }
     }
 }
@@ -45,69 +52,26 @@ extension SolanaWalletManager: TransactionSender {
     public var allowsFeeSelection: Bool { false }
     
     public func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+        let sendPublisher: AnyPublisher<TransactionID, Error>
         switch transaction.amount.type {
         case .coin:
-            return sendSol(transaction, signer: signer)
+            sendPublisher = sendSol(transaction, signer: signer)
         case .token(let token):
-            return sendSplToken(transaction, token: token, signer: signer)
+            sendPublisher = sendSplToken(transaction, token: token, signer: signer)
         case .reserve:
             return .emptyFail
         }
-    }
-    
-    private func sendSol(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
-        let destination = transaction.destinationAddress
         
-        /*  HACK:
-            The account opening "fee" is not a fee at all, meaning it is not deducted from
-            user's account automatically. Instead, it is an extra amount we HAVE TO provide for the rent
-            during the account's first epoch. If we don't include this amount the node will not open
-            the account and the money will be lost.
-         
-            The account opening fee we returned in getFee is used for display purposes only.
-         */
-        let additionalAmountPublisher = Publishers.Zip(
-            networkService.accountInfo(accountId: destination),
-            networkService.mainAccountCreationFee()
-        )
-            .map { accountInfo, accountCreationFee in
-                accountInfo.accountExists ? 0 : accountCreationFee
-            }
-            .eraseToAnyPublisher()
-        
-        
-        let signer = SolanaTransactionSigner(transactionSigner: signer, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
-
-        return additionalAmountPublisher
-            .flatMap { [weak self] additionalAmount -> AnyPublisher<Void, Error> in
+        return sendPublisher
+            .tryMap { [weak self] transactionID in
                 guard let self = self else {
-                    return .anyFail(error: WalletError.empty)
+                    throw WalletError.empty
                 }
-                
-                let decimalAmount = (transaction.amount.value + additionalAmount) * self.wallet.blockchain.decimalValue
-                let intAmount = (decimalAmount as NSDecimalNumber).uint64Value
-                return self.networkService.sendSol(amount: intAmount, destinationAddress: destination, signer: signer)
+                var sentTransaction = transaction
+                sentTransaction.hash = transactionID
+                self.wallet.add(transaction: sentTransaction)
             }
             .eraseToAnyPublisher()
-    }
-    
-    private func sendSplToken(_ transaction: Transaction, token: Token, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
-        guard
-            let associatedSourceTokenAccountAddress = associatedTokenAddress(accountAddress: transaction.sourceAddress, mintAddress: token.contractAddress)
-        else {
-            return .anyFail(error: BlockchainSdkError.failedToConvertPublicKey)
-        }
-        
-        let amount = NSDecimalNumber(decimal: transaction.amount.value * token.decimalValue).uint64Value
-        let signer = SolanaTransactionSigner(transactionSigner: signer, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
-
-        return networkService.sendSplToken(
-            amount: amount,
-            sourceTokenAddress: associatedSourceTokenAccountAddress,
-            destinationAddress: transaction.destinationAddress,
-            token: token,
-            signer: signer
-        )
     }
     
     public func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
@@ -125,7 +89,7 @@ extension SolanaWalletManager: TransactionSender {
         }
         
         let accountExistsPublisher: AnyPublisher<Bool, Error> = networkService
-            .accountInfo(accountId: destination)
+            .getInfo(accountId: destination, transactionIDs: [])
             .map { info in
                 switch amount.type {
                 case .coin:
@@ -155,7 +119,63 @@ extension SolanaWalletManager: TransactionSender {
             }
             .eraseToAnyPublisher()
     }
+    
+    private func sendSol(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionID, Error> {
+        let destination = transaction.destinationAddress
         
+        /*  HACK:
+            The account opening "fee" is not a fee at all, meaning it is not deducted from
+            user's account automatically. Instead, it is an extra amount we HAVE TO provide for the rent
+            during the account's first epoch. If we don't include this amount the node will not open
+            the account and the money will be lost.
+         
+            The account opening fee we returned in getFee is used for display purposes only.
+         */
+        let additionalAmountPublisher = Publishers.Zip(
+            networkService.getInfo(accountId: destination, transactionIDs: []),
+            networkService.mainAccountCreationFee()
+        )
+            .map { accountInfo, accountCreationFee in
+                accountInfo.accountExists ? 0 : accountCreationFee
+            }
+            .eraseToAnyPublisher()
+        
+        
+        let signer = SolanaTransactionSigner(transactionSigner: signer, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
+
+        return additionalAmountPublisher
+            .flatMap { [weak self] additionalAmount -> AnyPublisher<TransactionID, Error> in
+                guard let self = self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+                
+                let decimalAmount = (transaction.amount.value + additionalAmount) * self.wallet.blockchain.decimalValue
+                let intAmount = (decimalAmount.rounded() as NSDecimalNumber).uint64Value
+                return self.networkService.sendSol(amount: intAmount, destinationAddress: destination, signer: signer)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func sendSplToken(_ transaction: Transaction, token: Token, signer: TransactionSigner) -> AnyPublisher<TransactionID, Error> {
+        guard
+            let associatedSourceTokenAccountAddress = associatedTokenAddress(accountAddress: transaction.sourceAddress, mintAddress: token.contractAddress)
+        else {
+            return .anyFail(error: BlockchainSdkError.failedToConvertPublicKey)
+        }
+        
+        let decimalAmount = transaction.amount.value * token.decimalValue
+        let intAmount = (decimalAmount.rounded() as NSDecimalNumber).uint64Value
+        let signer = SolanaTransactionSigner(transactionSigner: signer, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
+
+        return networkService.sendSplToken(
+            amount: intAmount,
+            sourceTokenAddress: associatedSourceTokenAccountAddress,
+            destinationAddress: transaction.destinationAddress,
+            token: token,
+            signer: signer
+        )
+    }
+    
     private func associatedTokenAddress(accountAddress: String, mintAddress: String) -> String? {
         guard
             let accountPublicKey = PublicKey(string: accountAddress),

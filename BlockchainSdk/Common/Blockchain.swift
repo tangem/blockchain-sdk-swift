@@ -73,13 +73,13 @@ public enum Blockchain {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin:
             return 8
-        case .ethereum, .rsk, .bsc, .polygon:
+        case .ethereum, .rsk, .bsc, .polygon, .avalanche:
             return 18
         case  .cardano, .xrp, .tezos:
             return 6
         case .stellar:
             return 7
-        case .avalanche, .solana:
+        case .solana:
             return 9
         case .polkadot(let testnet):
             return testnet ? 12 : 10
@@ -210,8 +210,10 @@ public enum Blockchain {
         guard curve == .secp256k1 || curve == .ed25519 else { return  nil }
         
         switch self {
-        case .stellar:
+        case .stellar, .solana:
             //Path according to sep-0005. https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md
+            // Solana path consistent with TrustWallet:
+            // https://github.com/trustwallet/wallet-core/blob/456f22d6a8ce8a66ccc73e3b42bcfec5a6afe53a/registry.json#L1013
             return DerivationPath(nodes: [.hardened(BIP44.purpose),
                                           .hardened(coinType),
                                           .hardened(0)])
@@ -299,7 +301,7 @@ public enum Blockchain {
             let baseUrl = testnet ? "https://www.blockchain.com/bch-testnet/address/" : "https://www.blockchain.com/bch/address/"
             return URL(string: baseUrl + address)
         case .cardano:
-            return URL(string: "https://cardanoexplorer.com/address/\(address)")
+            return URL(string: "https://explorer.cardano.org/en/address.html?address=\(address)")
         case .ducatus:
             return URL(string: "https://insight.ducatus.io/#/DUC/mainnet/address/\(address)")
         case .ethereum(let testnet):
@@ -334,7 +336,7 @@ public enum Blockchain {
             let link = baseUrl + address
             return URL(string: link)
         case .avalanche(let testnet):
-            let baseUrl = testnet ? "https://snowtrace.io/address/" : "https://testnet.snowtrace.io/address/"
+            let baseUrl = testnet ? "https://testnet.snowtrace.io/address/" : "https://snowtrace.io/address/"
             let link = baseUrl + address
             return URL(string: link)
         case .solana(let testnet):
