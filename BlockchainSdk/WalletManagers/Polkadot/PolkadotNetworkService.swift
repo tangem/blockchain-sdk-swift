@@ -31,6 +31,18 @@ class PolkadotNetworkService {
                 try self.codec.decode(PolkadotAccountInfo.self, from: Data(hexString: $0))
             }
             .map(\.data.free)
+            .tryCatch { error -> AnyPublisher<BigUInt, Error> in
+                if let walletError = error as? WalletError {
+                    switch walletError {
+                    case .empty:
+                        return .justWithError(output: 0)
+                    default:
+                        break
+                    }
+                }
+                
+                throw error
+            }
             .eraseToAnyPublisher()
     }
     
