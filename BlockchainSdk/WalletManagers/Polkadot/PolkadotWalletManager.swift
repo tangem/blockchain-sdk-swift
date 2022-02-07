@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import CryptoKit
 import TangemSdk
 import BigInt
 import web3swift
@@ -85,7 +86,7 @@ extension PolkadotWalletManager: TransactionSender {
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         networkService.blockchainMeta(for: destination)
             .flatMap { meta in
-                self.sign(amount: amount, destination: destination, meta: meta, signer: DummyTransactionSigner())
+                self.sign(amount: amount, destination: destination, meta: meta, signer: Ed25519DummyTransactionSigner())
             }
             .flatMap { image in
                 self.networkService.fee(for: image)
@@ -152,9 +153,8 @@ extension PolkadotWalletManager: WithdrawalValidator {
 
 // MARK: - Dummy transaction signer
 
-fileprivate class DummyTransactionSigner: TransactionSigner {
+fileprivate class Ed25519DummyTransactionSigner: TransactionSigner {
     private let privateKey = Data(repeating: 0, count: 32)
-    private let curve = EllipticCurve.ed25519
     
     func sign(hashes: [Data], cardId: String, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[Data], Error> {
         Fail(error: WalletError.failedToGetFee).eraseToAnyPublisher()
@@ -163,7 +163,7 @@ fileprivate class DummyTransactionSigner: TransactionSigner {
     func sign(hash: Data, cardId: String, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
         Just<Data>(hash)
             .tryMap { hash in
-                try hash.sign(privateKey: privateKey, curve: curve)
+                try Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).signature(for: hash)
             }
             .eraseToAnyPublisher()
     }
