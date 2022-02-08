@@ -28,6 +28,7 @@ public enum Blockchain {
     case polygon(testnet: Bool)
     case avalanche(testnet: Bool)
     case solana(testnet: Bool)
+    case fantom(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -49,6 +50,8 @@ public enum Blockchain {
             return testnet
         case .solana(let testnet):
             return testnet
+        case .fantom(let testnet):
+            return testnet
         }
     }
     
@@ -69,7 +72,7 @@ public enum Blockchain {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin:
             return 8
-        case .ethereum, .rsk, .bsc, .polygon, .avalanche:
+        case .ethereum, .rsk, .bsc, .polygon, .avalanche, .fantom:
             return 18
         case  .cardano, .xrp, .tezos:
             return 6
@@ -118,26 +121,26 @@ public enum Blockchain {
             return "AVAX"
         case .solana:
             return "SOL"
+        case .fantom:
+            return "FTM"
         }
     }
     
     public var displayName: String {
         let testnetSuffix = " Testnet"
         switch self {
-        case .bitcoinCash(let testnet):
-            return "Bitcoin Cash" + (testnet ? testnetSuffix : "")
+        case .bitcoinCash:
+            return "Bitcoin Cash" + (isTestnet ? testnetSuffix : "")
         case .xrp:
             return "XRP Ledger"
         case .rsk:
             return "\(self)".uppercased()
-        case .bsc(let testnet):
-            return "Binance Smart Chain" + (testnet ? testnetSuffix : "")
-        case .polygon(let testnet):
-            return "Polygon" + (testnet ? testnetSuffix : "")
-        case .avalanche(let testnet):
-            return "Avalanche C-Chain" + (testnet ? testnetSuffix : "")
-        case .solana(let testnet):
-            return "Solana" + (testnet ? testnetSuffix : "")
+        case .bsc:
+            return "Binance Smart Chain" + (isTestnet ? testnetSuffix : "")
+        case .avalanche:
+            return "Avalanche C-Chain" + (isTestnet ? testnetSuffix : "")
+        case .fantom:
+            return isTestnet ? "Fantom Testnet" : "Fantom Opera"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -157,10 +160,8 @@ public enum Blockchain {
             return "Binance Asset"
         case .bsc:
             return "Binance Smart Chain token"
-        case .solana:
-            return "Solana Token"
         default:
-            return displayName
+            return "\(displayName) token"
         }
     }
     
@@ -245,6 +246,37 @@ public enum Blockchain {
         case .polygon: return 966
         case .avalanche: return 9000
         case .solana: return 501
+        case .fantom: return 1007
+        }
+    }
+    
+    public var testnetFaucetURL: URL? {
+        guard isTestnet else { return nil }
+        
+        switch self {
+        case .bitcoin:
+            return URL(string: "https://coinfaucet.eu/en/btc-testnet/")
+        case .ethereum:
+            return URL(string: "https://faucet.rinkeby.io")
+        case .bitcoinCash:
+            // alt
+            // return URL(string: "https://faucet.fullstack.cash")
+            return URL(string: "https://coinfaucet.eu/en/bch-testnet/")
+        case .bsc:
+            return URL(string: "https://testnet.binance.org/faucet-smart")
+        case .binance:
+            return URL(string: "https://docs.binance.org/smart-chain/wallet/binance.html")
+//            return URL(string: "https://docs.binance.org/guides/testnet.html")
+        case .polygon:
+            return URL(string: "https://faucet.matic.network")
+        case .stellar:
+            return URL(string: "https://laboratory.stellar.org/#account-creator?network=test")
+        case .solana:
+            return URL(string: "https://solfaucet.com")
+        case .avalanche:
+            return URL(string: "https://faucet.avax-test.network/")
+        default:
+            return nil
         }
     }
     
@@ -256,7 +288,41 @@ public enum Blockchain {
         case .bsc: return isTestnet ? 97 : 56
         case .polygon: return isTestnet ? 80001 : 137
         case .avalanche: return isTestnet ? 43113 : 43114
+        case .fantom: return isTestnet ? 4002 : 250
         default: return nil
+        }
+    }
+    
+    //Only fot Ethereum compatible blockchains
+    public func getJsonRpcURLs(infuraProjectId: String?) -> [URL]? {
+        switch self {
+        case .ethereum:
+            guard let infuraProjectId = infuraProjectId else {
+                fatalError("infuraProjectId missing")
+            }
+            
+            return isTestnet ? [URL(string:"https://rinkeby.infura.io/v3/\(infuraProjectId)")!]
+            : [URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
+               URL(string: "https://eth.tangem.com/")!]
+        case .rsk:
+            return [URL(string: "https://public-node.rsk.co/")!]
+        case .bsc:
+            return isTestnet ? [URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!]
+            : [URL(string: "https://bsc-dataseed.binance.org/")!]
+        case .polygon:
+            return isTestnet ? [URL(string: "https://rpc-mumbai.maticvigil.com/")!]
+            : [URL(string: "https://rpc-mainnet.maticvigil.com/")!]
+        case .avalanche:
+            return isTestnet ? [URL(string: "https://api.avax-test.network/ext/bc/C/rpc")!]
+            : [URL(string: "https://api.avax.network/ext/bc/C/rpc")!]
+        case .fantom:
+            return isTestnet ? [URL(string: "https://rpc.testnet.fantom.network/")!]
+            : [URL(string: "https://rpc.ftm.tools/")!,
+               URL(string: "https://rpcapi.fantom.network/")!,
+               URL(string: "http://rpc.ankr.tools/ftm")!,
+               URL(string: "https://ftmrpc.ultimatenodes.io/")!]
+        default:
+            return nil
         }
     }
     
@@ -337,6 +403,10 @@ public enum Blockchain {
             let baseUrl = "https://explorer.solana.com/address/"
             let cluster = testnet ? "?cluster=testnet" : ""
             return URL(string: baseUrl + address + cluster)
+        case .fantom:
+            let baseUrl = isTestnet ? "https://testnet.ftmscan.com/address/" : "https://ftmscan.com/address/"
+            let link = baseUrl + address
+            return URL(string: link)
         }
     }
     
@@ -362,6 +432,7 @@ public enum Blockchain {
         case "polygon": return .polygon(testnet: isTestnet)
         case "avalanche": return .avalanche(testnet: isTestnet)
         case "solana": return .solana(testnet: isTestnet)
+        case "fantom": return .fantom(testnet: isTestnet)
         default: return nil
         }
     }
@@ -376,7 +447,7 @@ public enum Blockchain {
             return BitcoinAddressService(networkParams: LitecoinNetworkParams())
         case .stellar:
             return StellarAddressService()
-        case .ethereum, .bsc, .polygon, .avalanche:
+        case .ethereum, .bsc, .polygon, .avalanche, .fantom:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -396,36 +467,6 @@ public enum Blockchain {
             return BitcoinLegacyAddressService(networkParams: DogecoinNetworkParams())
         case .solana:
             return SolanaAddressService()
-        }
-    }
-    
-    //Only fot Ethereum compatible blockchains
-    func getJsonRpcURLs(infuraProjectId: String?) -> [URL]? {
-        switch self {
-        case .ethereum:
-            guard let infuraProjectId = infuraProjectId else {
-                fatalError("infuraProjectId missing")
-            }
-            
-            if isTestnet {
-                return [URL(string:"https://rinkeby.infura.io/v3/\(infuraProjectId)")!]
-            }
-            
-            return [URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
-                    URL(string: "https://eth.tangem.com/")!]
-        case .rsk:
-            return [URL(string: "https://public-node.rsk.co/")!]
-        case .bsc:
-            return isTestnet ? [URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!]
-            : [URL(string: "https://bsc-dataseed.binance.org/")!]
-        case .polygon:
-            return isTestnet ? [URL(string: "https://rpc-mumbai.maticvigil.com/")!]
-            : [URL(string: "https://rpc-mainnet.maticvigil.com/")!]
-        case .avalanche:
-            return isTestnet ? [URL(string: "https://api.avax-test.network/ext/bc/C/rpc")!]
-            : [URL(string: "https://api.avax.network/ext/bc/C/rpc")!]
-        default:
-            return nil
         }
     }
 }
@@ -450,6 +491,7 @@ extension Blockchain: Equatable, Hashable, Codable {
         case .polygon: return "polygon"
         case .avalanche: return "avalanche"
         case .solana: return "solana"
+        case .fantom: return "fantom"
         }
     }
     
@@ -488,6 +530,7 @@ extension Blockchain: Equatable, Hashable, Codable {
         case "polygon", "matic": self = .polygon(testnet: isTestnet)
         case "avalanche": self = .avalanche(testnet: isTestnet)
         case "solana": self = .solana(testnet: isTestnet)
+        case "fantom": self = .fantom(testnet: isTestnet)
         default: throw BlockchainSdkError.decodingFailed
         }
     }
