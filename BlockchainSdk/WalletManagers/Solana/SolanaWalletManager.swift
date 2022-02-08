@@ -87,7 +87,7 @@ extension SolanaWalletManager: TransactionSender {
                 }
                                 
                 let blockchain = self.wallet.blockchain
-                return [Amount(with: blockchain, type: amount.type, value: transactionFee + accountCreationFee)]
+                return [Amount(with: blockchain, type: .coin, value: transactionFee + accountCreationFee)]
             }
             .eraseToAnyPublisher()
     }
