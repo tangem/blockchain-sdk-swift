@@ -275,6 +275,8 @@ public enum Blockchain {
             return URL(string: "https://solfaucet.com")
         case .avalanche:
             return URL(string: "https://faucet.avax-test.network/")
+        case .fantom:
+            return URL(string: "https://faucet.fantom.network")
         default:
             return nil
         }
