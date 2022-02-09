@@ -63,13 +63,7 @@ struct PolkadotAccountInfo: ScaleDecodable {
 struct PolkadotAccountData: ScaleDecodable {
     init(from decoder: ScaleDecoder) throws {
         self.free = try decoder.decode(BigUInt.self, .b256)
-        // self.reserved = try decoder.decode(BigUInt.self, .b256)
-        // self.miscFrozen = try decoder.decode(BigUInt.self, .b256)
-        // self.feeFrozen = try decoder.decode(BigUInt.self, .b256)
     }
     
     var free: BigUInt
-    // var reserved: BigUInt
-    // var miscFrozen: BigUInt
-    // var feeFrozen: BigUInt
 }
