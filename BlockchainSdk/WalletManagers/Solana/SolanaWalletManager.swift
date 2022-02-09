@@ -14,6 +14,10 @@ class SolanaWalletManager: WalletManager {
     var solanaSdk: Solana!
     var networkService: SolanaNetworkService!
     
+    override var currentHost: String {
+        networkService.host
+    }
+    
     public override func update(completion: @escaping (Result<(), Error>) -> Void) {
         let transactionIDs = wallet.transactions.compactMap { $0.hash }
         
