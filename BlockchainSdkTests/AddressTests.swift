@@ -9,6 +9,7 @@
 import Foundation
 import XCTest
 import TangemSdk
+import CryptoKit
 
 class AddressesTests: XCTestCase {
     private let secpPrivKey = Data(hexString: "83686EF30173D2A05FD7E2C8CB30941534376013B903A2122CF4FF3E8668355A")
@@ -441,5 +442,69 @@ class AddressesTests: XCTestCase {
         
         let addrFromTangemKey = try! blockchain.makeAddresses(from: edKey, with: nil).first!
         XCTAssertEqual(addrFromTangemKey.value, "BmAzxn8WLYU3gEw79ATUdSUkMT53MeS5LjapBQB8gTPJ")
+    }
+    
+    func testPolkadot() {
+        // From trust wallet `PolkadotTests.swift`
+        let privateKey = Data(hexString: "0xd65ed4c1a742699b2e20c0c1f1fe780878b1b9f7d387f934fe0a7dc36f1f9008")
+        let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
+        testSubstrateNetwork(
+            .polkadot,
+            publicKey: publicKey,
+            expectedAddress: "12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW"
+        )
+        
+        testSubstrateNetwork(
+            .polkadot,
+            publicKey: edKey,
+            expectedAddress: "14cermZiQ83ihmHKkAucgBT2sqiRVvd4rwqBGqrMnowAKYRp"
+        )
+    }
+    
+    func testKusama() {
+        // From trust wallet `KusamaTests.swift`
+        let privateKey = Data(hexString: "0x85fca134b3fe3fd523d8b528608d803890e26c93c86dc3d97b8d59c7b3540c97")
+        let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
+        testSubstrateNetwork(
+            .kusama,
+            publicKey: publicKey,
+            expectedAddress: "HewiDTQv92L2bVtkziZC8ASxrFUxr6ajQ62RXAnwQ8FDVmg"
+        )
+        
+        testSubstrateNetwork(
+            .kusama,
+            publicKey: edKey,
+            expectedAddress: "GByNkeXAhoB1t6FZEffRyytAp11cHt7EpwSWD8xiX88tLdQ"
+        )
+    }
+    
+    func testWestend() {
+        testSubstrateNetwork(
+            .westend,
+            publicKey: edKey,
+            expectedAddress: "5FgMiSJeYLnFGEGonXrcY2ct2Dimod4vnT6h7Ys1Eiue9KxK"
+        )
+    }
+    
+    func testSubstrateNetwork(_ network: PolkadotNetwork, publicKey: Data, expectedAddress: String) {
+        let otherNetworks = PolkadotNetwork.allCases.filter { $0 != network }
+        let blockchain = network.blockchain
+        
+        let addresses = try! blockchain.makeAddresses(from: publicKey, with: nil)
+        let addressFromString = PolkadotAddress(string: expectedAddress, network: network)
+        
+        let otherNetworkAddresses = otherNetworks.map {
+            try! $0.blockchain.makeAddresses(from: publicKey, with: nil).first!.value
+        }
+        
+        XCTAssertThrowsError(try blockchain.makeAddresses(from: secpCompressedKey, with: nil))
+        XCTAssertThrowsError(try blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
+        
+        XCTAssertEqual(addresses.count, 1)
+        XCTAssertNotNil(addressFromString)
+        XCTAssertEqual(addressFromString!.bytes(raw: true), publicKey)
+        XCTAssertEqual(addresses.first!.value, expectedAddress)
+        XCTAssertNotEqual(addressFromString!.bytes(raw: false), publicKey)
+        XCTAssertFalse(otherNetworkAddresses.contains(addressFromString!.string))
     }
 }
