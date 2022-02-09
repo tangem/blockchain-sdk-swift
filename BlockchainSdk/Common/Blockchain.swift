@@ -152,7 +152,7 @@ public enum Blockchain: Equatable, Hashable {
         case .fantom:
             return isTestnet ? "Fantom" + testnetSuffix : "Fantom Opera"
         case .polkadot:
-            return "Polkadot" + testnetSuffix + (isTestnet ? " (Westend)") : "")
+            return "Polkadot" + testnetSuffix + (isTestnet ? " (Westend)" : "")
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -386,7 +386,7 @@ extension Blockchain {
 // MARK: - Codable
 @available(iOS 13.0, *)
 extension Blockchain: Codable {
-    var codingKey: String {
+    public var codingKey: String {
         switch self {
         case .binance: return "binance"
         case .bitcoin: return "bitcoin"
