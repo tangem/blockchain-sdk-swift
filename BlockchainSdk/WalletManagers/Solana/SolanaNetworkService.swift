@@ -12,10 +12,12 @@ import Solana_Swift
 
 @available(iOS 13.0, *)
 class SolanaNetworkService {
+    let host: String
     private let solanaSdk: Solana
     private let blockchain: Blockchain
     
-    init(solanaSdk: Solana, blockchain: Blockchain) {
+    init(host: String, solanaSdk: Solana, blockchain: Blockchain) {
+        self.host = host
         self.solanaSdk = solanaSdk
         self.blockchain = blockchain
     }
