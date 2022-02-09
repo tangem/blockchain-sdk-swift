@@ -21,8 +21,11 @@ class PolkadotNetworkService {
     
     func getInfo(for address: String) -> AnyPublisher<BigUInt, Error> {
         Just(())
-            .tryMap { _ in
-                try storageKey(forAddress: address)
+            .tryMap { [weak self] _ -> Data in
+                guard let self = self else {
+                    throw WalletError.empty
+                }
+                return try self.storageKey(forAddress: address)
             }
             .flatMap { [weak self] key -> AnyPublisher<String, Error> in
                 guard let self = self else {
