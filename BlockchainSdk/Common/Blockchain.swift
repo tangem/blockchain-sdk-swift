@@ -152,7 +152,7 @@ public enum Blockchain: Equatable, Hashable {
         case .fantom:
             return isTestnet ? "Fantom" + testnetSuffix : "Fantom Opera"
         case .polkadot:
-            return "Polkadot" + testnetSuffix + (testnet ? " (Westend)") : "")
+            return "Polkadot" + testnetSuffix + (isTestnet ? " (Westend)") : "")
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -495,7 +495,7 @@ extension Blockchain {
         case .fantom:
             return URL(string: "https://faucet.fantom.network")
         case .polkadot:
-            return "https://matrix.to/#/!cJFtAIkwxuofiSYkPN:matrix.org?via=matrix.org&via=matrix.parity.io&via=web3.foundation"
+            return URL(string: "https://matrix.to/#/!cJFtAIkwxuofiSYkPN:matrix.org?via=matrix.org&via=matrix.parity.io&via=web3.foundation")
         default:
             return nil
         }
