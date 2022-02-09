@@ -44,7 +44,7 @@ class EthereumTests: XCTestCase {
         let nonce = 15
         
         let walletAddress = try! addressService.makeAddress(from: walletPublicKey)
-        let transactionBuilder = try! EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: .mainnet(projectId: ""))
+        let transactionBuilder = try! EthereumTransactionBuilder(walletPublicKey: walletPublicKey, chainId: 1)
         
         let sendAmount = Amount(with: blockchain, type: .coin, value: sendValue)
         let fee = Amount(with: blockchain, type: .coin, value: feeValue)
@@ -74,7 +74,7 @@ class EthereumTests: XCTestCase {
         let token = Token(symbol: "USDC", contractAddress: contractAddress, decimalCount: 6, blockchain: .ethereum(testnet: false))
         
         let walletAddress = try! addressService.makeAddress(from: walletPublicKey)
-        let transactionBuilder = try! EthereumTransactionBuilder(walletPublicKey: walletPublicKey, network: .mainnet(projectId: ""))
+        let transactionBuilder = try! EthereumTransactionBuilder(walletPublicKey: walletPublicKey, chainId: 1)
         
         let amountToSend = Amount(with: blockchain, type: .token(value: token), value: sendValue)
         let fee = Amount(with: blockchain, type: .coin, value: feeValue)
