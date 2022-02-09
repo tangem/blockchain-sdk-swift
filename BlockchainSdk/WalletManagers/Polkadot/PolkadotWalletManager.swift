@@ -36,7 +36,7 @@ class PolkadotWalletManager: WalletManager {
                 case .finished:
                     completion(.success(()))
                 }
-            } receiveValue: {
+            } receiveValue: { [unowned self] in
                 self.updateInfo($0)
             }
     }
@@ -72,38 +72,55 @@ extension PolkadotWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         networkService
             .blockchainMeta(for: transaction.sourceAddress)
-            .flatMap { meta in
-                self.sign(amount: transaction.amount, destination: transaction.destinationAddress, meta: meta, signer: signer)
+            .flatMap { [weak self] meta -> AnyPublisher<Data, Error> in
+                guard let self = self else {
+                    return .emptyFail
+                }
+                return self.sign(amount: transaction.amount, destination: transaction.destinationAddress, meta: meta, signer: signer)
             }
-            .flatMap { image in
-                self.networkService.submitExtrinsic(data: image)
+            .flatMap { [weak self] image -> AnyPublisher<String, Error> in
+                guard let self = self else {
+                    return .emptyFail
+                }
+                return self.networkService.submitExtrinsic(data: image)
             }
-            .map { transactionID in
+            .tryMap { [weak self] transactionID in
                 var submittedTransaction = transaction
                 submittedTransaction.hash = transactionID
-                self.wallet.transactions.append(submittedTransaction)
+                self?.wallet.transactions.append(submittedTransaction)
             }
             .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        networkService.blockchainMeta(for: destination)
-            .flatMap { meta in
-                self.sign(amount: amount, destination: destination, meta: meta, signer: Ed25519DummyTransactionSigner())
+        let blockchain = wallet.blockchain
+        return networkService.blockchainMeta(for: destination)
+            .flatMap { [weak self] meta -> AnyPublisher<Data, Error> in
+                guard let self = self else {
+                    return .emptyFail
+                }
+                return self.sign(amount: amount, destination: destination, meta: meta, signer: Ed25519DummyTransactionSigner())
             }
-            .flatMap { image in
-                self.networkService.fee(for: image)
+            .flatMap { [weak self] image -> AnyPublisher<UInt64, Error> in
+                guard let self = self else {
+                    return .emptyFail
+                }
+                return self.networkService.fee(for: image)
             }
             .map { intValue in
-                [Amount(with: self.wallet.blockchain, value: Decimal(intValue) / self.wallet.blockchain.decimalValue)]
+                [Amount(with: blockchain, value: Decimal(intValue) / blockchain.decimalValue)]
             }
             .eraseToAnyPublisher()
     }
     
     private func sign(amount: Amount, destination: String, meta: PolkadotBlockchainMeta, signer: TransactionSigner) -> AnyPublisher<Data, Error> {
-        Just(())
-            .tryMap { _ in
-                try self.txBuilder.buildForSign(
+        let wallet = self.wallet
+        return Just(())
+            .tryMap { [weak self] _ in
+                guard let self = self else {
+                    throw WalletError.empty
+                }
+                return try self.txBuilder.buildForSign(
                     amount: amount,
                     destination: destination,
                     meta: meta
@@ -112,12 +129,15 @@ extension PolkadotWalletManager: TransactionSender {
             .flatMap { preImage in
                 signer.sign(
                     hash: preImage,
-                    cardId: self.wallet.cardId,
-                    walletPublicKey: self.wallet.publicKey
+                    cardId: wallet.cardId,
+                    walletPublicKey: wallet.publicKey
                 )
             }
-            .tryMap { signature in
-                try self.txBuilder.buildForSend(
+            .tryMap { [weak self] signature in
+                guard let self = self else {
+                    throw WalletError.empty
+                }
+                return try self.txBuilder.buildForSend(
                     amount: amount,
                     destination: destination,
                     meta: meta,
