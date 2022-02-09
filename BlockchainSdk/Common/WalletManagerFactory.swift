@@ -251,6 +251,17 @@ public class WalletManagerFactory {
                 $0.solanaSdk = Solana(router: networkRouter, accountStorage: accountStorage)
                 $0.networkService = SolanaNetworkService(host: endpoint.url.hostOrUnknown, solanaSdk: $0.solanaSdk, blockchain: blockchain)
             }
+        case .polkadot(let testnet):
+            return makePolkadotWalletManager(network: testnet ? .westend : .polkadot, wallet: wallet)
+        case .kusama:
+            return makePolkadotWalletManager(network: .kusama, wallet: wallet)
+        }
+    }
+    
+    private func makePolkadotWalletManager(network: PolkadotNetwork, wallet: Wallet) -> WalletManager {
+        PolkadotWalletManager(network: network, wallet: wallet).then {
+            $0.networkService = PolkadotNetworkService(rpcProvider: PolkadotJsonRpcProvider(network: network))
+            $0.txBuilder = PolkadotTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, network: network)
         }
     }
 }
