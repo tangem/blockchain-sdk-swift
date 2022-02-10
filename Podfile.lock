@@ -81,8 +81,8 @@ DEPENDENCIES:
   - stellar-ios-mac-sdk
   - SwiftCBOR
   - SwiftyJSON
-  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-129`)
-  - web3swift (from `https://github.com/lazutkin-andrey/web3swift.git`, tag `2.2.7`)
+  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-130`)
+  - web3swift (from `https://github.com/lazutkin-andrey/web3swift.git`, tag `2.2.8`)
 
 SPEC REPOS:
   trunk:
@@ -120,10 +120,10 @@ EXTERNAL SOURCES:
     :tag: add-external-signer-1
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-129
+    :tag: develop-130
   web3swift:
     :git: https://github.com/lazutkin-andrey/web3swift.git
-    :tag: 2.2.7
+    :tag: 2.2.8
 
 CHECKOUT OPTIONS:
   BinanceChain:
@@ -140,10 +140,10 @@ CHECKOUT OPTIONS:
     :tag: add-external-signer-1
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-129
+    :tag: develop-130
   web3swift:
     :git: https://github.com/lazutkin-andrey/web3swift.git
-    :tag: 2.2.7
+    :tag: 2.2.8
 
 SPEC CHECKSUMS:
   Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
@@ -171,6 +171,6 @@ SPEC CHECKSUMS:
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 8ed89535b210a1c2be4fc09c3e7dad575bbab579
+PODFILE CHECKSUM: 45639b981fdb75ecbf9b76eba993ca7781b61712
 
 COCOAPODS: 1.11.2
