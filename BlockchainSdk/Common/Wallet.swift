@@ -14,9 +14,9 @@ public struct Wallet {
     public let blockchain: Blockchain
     public let addresses: [Address]
     public let publicKey: PublicKey
-    public var amounts: [Amount.AmountType:Amount] = [:]
-    public var transactions: [Transaction] = []
-    public var state: WalletState = .created
+    public internal(set) var amounts: [Amount.AmountType:Amount] = [:]
+    public internal(set) var transactions: [Transaction] = []
+    public private(set) var state: WalletState = .created
     
     public var address: String {
         if let address = addresses.first(where: { $0.type == blockchain.defaultAddressType })?.value {
@@ -86,14 +86,14 @@ public struct Wallet {
         amounts = [:]
     }
     
-    mutating func add(coinValue: Decimal) {
+    public mutating func add(coinValue: Decimal) {
         let coinAmount = Amount(with: blockchain,
                                 type: .coin,
                                 value: coinValue)
         add(amount: coinAmount)
     }
     
-    mutating func add(reserveValue: Decimal) {
+    public mutating func add(reserveValue: Decimal) {
         let reserveAmount = Amount(with: blockchain,
                                    type: .reserve,
                                    value: reserveValue)
@@ -101,13 +101,13 @@ public struct Wallet {
     }
     
     @discardableResult
-    mutating func add(tokenValue: Decimal, for token: Token) -> Amount {
+    public mutating func add(tokenValue: Decimal, for token: Token) -> Amount {
         let tokenAmount = Amount(with: token, value: tokenValue)
         add(amount: tokenAmount)
         return tokenAmount
     }
     
-    mutating func add(amount: Amount) {
+    public mutating func add(amount: Amount) {
         amounts[amount.type] = amount
     }
     
