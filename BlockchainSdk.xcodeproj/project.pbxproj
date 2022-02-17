@@ -480,6 +480,7 @@
 		5DF91518253DB7B300B927DD /* TezosAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosAddress.swift; sourceTree = "<group>"; };
 		5DF9151C253DB85500B927DD /* TezosNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosNetworkService.swift; sourceTree = "<group>"; };
 		5DF91520253DB89800B927DD /* TezosTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosTarget.swift; sourceTree = "<group>"; };
+		5DFCBD3527B6C3EC00109595 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5DFCE543274BB08C00C1B1A0 /* BitcoinTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinTests.swift; sourceTree = "<group>"; };
 		5DFCE545274BB0B300C1B1A0 /* EthereumTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTests.swift; sourceTree = "<group>"; };
 		5DFCE547274BB85B00C1B1A0 /* LitecoinTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LitecoinTests.swift; sourceTree = "<group>"; };
@@ -1213,6 +1214,7 @@
 				de,
 				fr,
 				it,
+				ru,
 			);
 			mainGroup = 5D14E4642397B80F00C15FC8;
 			productRefGroup = 5D14E46F2397B80F00C15FC8 /* Products */;
@@ -1664,6 +1666,7 @@
 				B022D30D2537292800D934D7 /* de */,
 				B022D3102537475B00D934D7 /* fr */,
 				5DD1935D25557EC2004AE04D /* it */,
+				5DFCBD3527B6C3EC00109595 /* ru */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
