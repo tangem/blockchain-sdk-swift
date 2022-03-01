@@ -46,7 +46,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
                     throw WalletError.failedToParseNetworkResponse
                 }
                 
-                let satoshiBalance = Decimal(balance) / self.endpoint.blockchain.decimalValue
+                let satoshiBalance = balance / self.endpoint.blockchain.decimalValue
                 
                 var utxo: [BitcoinUnspentOutput] = []
                 var pendingTxRefs: [PendingTransaction] = []
@@ -62,7 +62,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
                     }
                 }
                 
-                if Decimal(uncBalance) / self.endpoint.blockchain.decimalValue != pendingTxRefs.reduce(0, { $0 + $1.value }) {
+                if uncBalance / self.endpoint.blockchain.decimalValue != pendingTxRefs.reduce(0, { $0 + $1.value }) {
                     print("Unconfirmed balance and pending tx refs sum is not equal")
                 }
                 let btcResponse = BitcoinResponse(balance: satoshiBalance, hasUnconfirmed: !pendingTxRefs.isEmpty, pendingTxRefs: pendingTxRefs, unspentOutputs: utxo)
@@ -190,6 +190,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
 extension BlockcypherNetworkProvider: EthereumAdditionalInfoProvider {
     func getEthTxsInfo(address: String) -> AnyPublisher<EthereumTransactionResponse, Error> {
         getFullInfo(address: address)
+            .print()
             .tryMap { [weak self] (response: BlockcypherFullAddressResponse<BlockcypherEthereumTransaction>) -> EthereumTransactionResponse in
                 guard let self = self else { throw WalletError.empty }
                 
@@ -197,7 +198,7 @@ extension BlockcypherNetworkProvider: EthereumAdditionalInfoProvider {
                     throw WalletError.failedToParseNetworkResponse
                 }
                 
-                let ethBalance = Decimal(balance) / self.endpoint.blockchain.decimalValue
+                let ethBalance = balance / self.endpoint.blockchain.decimalValue
                 var pendingTxs: [PendingTransaction] = []
                 
                 var croppedAddress = address

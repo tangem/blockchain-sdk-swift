@@ -12,8 +12,8 @@ import BitcoinCore
 /// Response for standart address request
 struct BlockcypherAddressResponse : Codable {
     let address: String?
-    let balance: Int?
-    let unconfirmedBalance: Int?
+    let balance: Decimal?
+    let unconfirmedBalance: Decimal?
     let txrefs: [BlockcypherTxref]?
     let unconfirmedTxrefs: [BlockcypherTxref]?
     
@@ -26,8 +26,8 @@ struct BlockcypherAddressResponse : Codable {
 /// Response for full address request. This response contain full information about transaction that Blockcypher can provide
 struct BlockcypherFullAddressResponse<EndpointTx: Codable & BlockcypherPendingTxConvertible>: Codable {
     let address: String?
-    let balance: Int?
-    let unconfirmedBalance: Int?
+    let balance: Decimal?
+    let unconfirmedBalance: Decimal?
     let nTx: Int?
     let unconfirmedNTx: Int?
     let txs: [EndpointTx]?
