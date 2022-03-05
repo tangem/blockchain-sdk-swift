@@ -19,15 +19,13 @@ public enum CardanoError: String, Error, LocalizedError {
     }
 }
 
-class CardanoWalletManager: WalletManager {
+class CardanoWalletManager: BaseManager, WalletManager {
     var txBuilder: CardanoTransactionBuilder!
     var networkService: CardanoNetworkProvider!
     
-    override var currentHost: String {
-        networkService.host
-    }
+    var currentHost: String { networkService.host }
     
-    override func update(completion: @escaping (Result<Void, Error>)-> Void) {//check it
+    func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(addresses: wallet.addresses.map { $0.value })
             .sink(receiveCompletion: {[unowned self] completionSubscription in
@@ -90,7 +88,9 @@ extension CardanoWalletManager: TransactionSender {
                     var sendedTx = transaction
                     sendedTx.hash = builderResponse.hash
                     self.wallet.add(transaction: sendedTx)
-                }.eraseToAnyPublisher() ?? .emptyFail
+                }
+                .mapError { SendTxError(error: $0, tx: builderResponse.tx.hexString) }
+                .eraseToAnyPublisher() ?? .emptyFail
             }
             .eraseToAnyPublisher()
             

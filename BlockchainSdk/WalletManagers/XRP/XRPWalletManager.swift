@@ -27,15 +27,13 @@ public enum XRPError: String, Error, LocalizedError {
     }
 }
 
-class XRPWalletManager: WalletManager {
+class XRPWalletManager: BaseManager, WalletManager {
     var txBuilder: XRPTransactionBuilder!
     var networkService: XRPNetworkService!
     
-    override var currentHost: String {
-        networkService.host
-    }
+    var currentHost: String { networkService.host }
     
-    override func update(completion: @escaping (Result<Void, Error>)-> Void) {
+    func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(account: wallet.address)
             .sink(receiveCompletion: {[unowned self]  completionSubscription in
@@ -106,7 +104,9 @@ extension XRPWalletManager: TransactionSender {
                         guard let self = self else { throw WalletError.empty }
                         
                         return self.wallet.add(transaction: transaction)
-                    }.eraseToAnyPublisher() ?? .emptyFail
+                    }
+                    .mapError { SendTxError(error: $0, tx: builderResponse) }
+                    .eraseToAnyPublisher() ?? .emptyFail
             }
             .eraseToAnyPublisher()
     }
