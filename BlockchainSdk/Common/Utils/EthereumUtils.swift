@@ -7,16 +7,19 @@
 //
 
 import Foundation
+import BigInt
+import web3swift
 
 public enum EthereumUtils {
     public static func parseEthereumDecimal(_ string: String, decimalsCount: Int) throws -> Decimal {
         let value = try prepareHexString(string)
         guard let balanceData = asciiHexToData(value),
-              let balanceWei = dataToDecimal(balanceData) else {
+              let balanceEth = dataToDecimal(balanceData, decimalsCount: decimalsCount),
+              !balanceEth.decimalValue.isNaN
+        else {
             throw ETHError.failedToParseTokenBalance
         }
         
-        let balanceEth = balanceWei.dividing(by: NSDecimalNumber(value: 1).multiplying(byPowerOf10: Int16(decimalsCount)))
         return balanceEth as Decimal
     }
     
@@ -29,19 +32,7 @@ public enum EthereumUtils {
         value.removeFirst(2)
         return value
     }
-    
-    private static func dataToDecimal(_ data: Data) -> NSDecimalNumber? {
-        let reversed = data.reversed()
-        var number = NSDecimalNumber(value: 0)
         
-        reversed.enumerated().forEach { (arg) in
-            let (offset, value) = arg
-            number = number.adding(NSDecimalNumber(value: value).multiplying(by: NSDecimalNumber(value: 256).raising(toPower: offset)))
-        }
-        
-        return number
-    }
-    
     private static func asciiHexToData(_ hexString: String) -> Data? {
         var trimmedString = hexString.trimmingCharacters(in: NSCharacterSet(charactersIn: "<> ") as CharacterSet).replacingOccurrences(of: " ", with: "")
         if trimmedString.count % 2 != 0 {
@@ -64,6 +55,15 @@ public enum EthereumUtils {
         }
         
         return Data(data)
+    }
+    
+    private static func dataToDecimal(_ data: Data, decimalsCount: Int) -> NSDecimalNumber? {
+        let integer = BigUInt(data)
+        let formatted = Web3.Utils.formatToPrecision(integer,
+                                                     numberDecimals: decimalsCount,
+                                                     formattingDecimals: decimalsCount,
+                                                     fallbackToScientific: false)
+        return NSDecimalNumber(string: formatted)
     }
     
     private static func isValidHex(_ asciiHex: String) -> Bool {
