@@ -20,6 +20,27 @@ struct BlockchainSdkExampleView: View {
                     Text("Scan card")
                 }
                 
+                Picker("Blockchain", selection: $model.blockchainName) {
+                    Text("Not selected").tag("")
+                    ForEach(model.blockchains, id: \.1) { blockchain in
+                        Text(blockchain.0)
+                            .tag(blockchain.1)
+                    }
+                }
+                .pickerStyle(.menu)
+                
+                Picker("Curve", selection: $model.curve) {
+                    ForEach(model.curves, id: \.self) { curve in
+                        Text(curve.rawValue)
+                            .tag(curve.rawValue)
+                    }
+                }
+                .pickerStyle(.menu)
+                
+                Toggle("Testnet", isOn: $model.isTestnet)
+            }
+            
+            Section("Destination and amount") {
                 TextField("Destination", text: $model.destination)
                     .disableAutocorrection(true)
                     .keyboardType(.alphabet)
