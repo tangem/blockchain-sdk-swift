@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -307,9 +307,17 @@
 		B0ED2012267C9E4500D5C3E5 /* BitcoinTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0ED2010267C9E4500D5C3E5 /* BitcoinTransactionParams.swift */; };
 		B0F9DCA125FB4C9B00C0AF18 /* MultiNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F9DCA025FB4C9B00C0AF18 /* MultiNetworkProvider.swift */; };
 		B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0FF8816264AEA60003E000A /* LitecoinNetworkService.swift */; };
+		BFD88160E080534F13A7C7A6 /* Pods_BlockchainSdkExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C40B45F626B3CA7042657F9 /* Pods_BlockchainSdkExample.framework */; };
 		DA346451279A802E00E77B1D /* SolanaSdk+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA346450279A802E00E77B1D /* SolanaSdk+.swift */; };
 		DA570CEF27A802BE007F34EB /* SolanaError+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA570CEE27A802BE007F34EB /* SolanaError+.swift */; };
 		DA570CF927A82322007F34EB /* PolkadotBlockchainMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA570CF727A82322007F34EB /* PolkadotBlockchainMeta.swift */; };
+		DA59750B27D744A7009F0A1F /* BlockchainSdkExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA59750A27D744A7009F0A1F /* BlockchainSdkExampleApp.swift */; };
+		DA59750D27D744A7009F0A1F /* BlockchainSdkExampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA59750C27D744A7009F0A1F /* BlockchainSdkExampleView.swift */; };
+		DA59750F27D744A9009F0A1F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA59750E27D744A9009F0A1F /* Assets.xcassets */; };
+		DA59751227D744A9009F0A1F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA59751127D744A9009F0A1F /* Preview Assets.xcassets */; };
+		DA59751627D747CD009F0A1F /* BlockchainSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D14E46E2397B80F00C15FC8 /* BlockchainSdk.framework */; platformFilter = ios; };
+		DA59751727D747CD009F0A1F /* BlockchainSdk.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5D14E46E2397B80F00C15FC8 /* BlockchainSdk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DA59751E27D749A9009F0A1F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA59751D27D749A9009F0A1F /* MapKit.framework */; };
 		DA71441E2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
 		DA71441F2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
 		DA7CA46C27AD3B210041B1A1 /* PolkadotTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */; };
@@ -346,10 +354,33 @@
 			remoteGlobalIDString = 5D14E46D2397B80F00C15FC8;
 			remoteInfo = BlockchainSdk;
 		};
+		DA59751827D747CD009F0A1F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5D14E4652397B80F00C15FC8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5D14E46D2397B80F00C15FC8;
+			remoteInfo = BlockchainSdk;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DA59751A27D747CD009F0A1F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				DA59751727D747CD009F0A1F /* BlockchainSdk.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0C79DB7FEDD8D4029AFA208D /* Pods-BlockchainSdk.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.release.xcconfig"; sourceTree = "<group>"; };
+		3452E77A600B278568F13FA9 /* Pods-BlockchainSdkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.release.xcconfig"; sourceTree = "<group>"; };
+		556382E16FB9B2894A77374E /* Pods-BlockchainSdkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.debug.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.debug.xcconfig"; sourceTree = "<group>"; };
 		5D006ACC239950F9008BA04D /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		5D01BCE1243F7F7E0048D1BA /* XrpTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XrpTarget.swift; sourceTree = "<group>"; };
 		5D03D2CF253DE61B009A8A9F /* TezosAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosAddressService.swift; sourceTree = "<group>"; };
@@ -488,6 +519,7 @@
 		5DFF005E2521F771005203FB /* DucatusWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DucatusWalletManager.swift; sourceTree = "<group>"; };
 		7C311A9913C3A9F993C89148 /* Pods-BlockchainSdk.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.debug.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.debug.xcconfig"; sourceTree = "<group>"; };
 		8B8DF7D3E33EA0FFBCE2CCE6 /* Pods-BlockchainSdkTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkTests.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkTests/Pods-BlockchainSdkTests.release.xcconfig"; sourceTree = "<group>"; };
+		8C40B45F626B3CA7042657F9 /* Pods_BlockchainSdkExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdkExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A172F9D47772F23948771418 /* Pods_BlockchainSdkTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdkTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6F5E34B42B2043635FB1F51 /* Pods-BlockchainSdkTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkTests.debug.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkTests/Pods-BlockchainSdkTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B004DABF26416B8A000863A4 /* EthereumResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumResponse.swift; sourceTree = "<group>"; };
@@ -525,6 +557,12 @@
 		DA346450279A802E00E77B1D /* SolanaSdk+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SolanaSdk+.swift"; sourceTree = "<group>"; };
 		DA570CEE27A802BE007F34EB /* SolanaError+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SolanaError+.swift"; sourceTree = "<group>"; };
 		DA570CF727A82322007F34EB /* PolkadotBlockchainMeta.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotBlockchainMeta.swift; sourceTree = "<group>"; };
+		DA59750827D744A7009F0A1F /* BlockchainSdkExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BlockchainSdkExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DA59750A27D744A7009F0A1F /* BlockchainSdkExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainSdkExampleApp.swift; sourceTree = "<group>"; };
+		DA59750C27D744A7009F0A1F /* BlockchainSdkExampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainSdkExampleView.swift; sourceTree = "<group>"; };
+		DA59750E27D744A9009F0A1F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DA59751127D744A9009F0A1F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		DA59751D27D749A9009F0A1F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaNetworkService.swift; sourceTree = "<group>"; };
 		DA7CA47527AD4BD90041B1A1 /* PolkadotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotTests.swift; sourceTree = "<group>"; };
 		DA82433C27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotJsonRpcProvider.swift; sourceTree = "<group>"; };
@@ -560,6 +598,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DA59750527D744A7009F0A1F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DA59751E27D749A9009F0A1F /* MapKit.framework in Frameworks */,
+				DA59751627D747CD009F0A1F /* BlockchainSdk.framework in Frameworks */,
+				BFD88160E080534F13A7C7A6 /* Pods_BlockchainSdkExample.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -579,6 +627,7 @@
 				5D14E4722397B80F00C15FC8 /* Info.plist */,
 				5D14E4702397B80F00C15FC8 /* BlockchainSdk */,
 				5D14E47B2397B80F00C15FC8 /* BlockchainSdkTests */,
+				DA59750927D744A7009F0A1F /* BlockchainSdkExample */,
 				5D14E46F2397B80F00C15FC8 /* Products */,
 				5D14E49A2397B8B000C15FC8 /* Frameworks */,
 				C78C27BD063723008A1058A7 /* Pods */,
@@ -590,6 +639,7 @@
 			children = (
 				5D14E46E2397B80F00C15FC8 /* BlockchainSdk.framework */,
 				5D14E4772397B80F00C15FC8 /* BlockchainSdkTests.xctest */,
+				DA59750827D744A7009F0A1F /* BlockchainSdkExample.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -666,9 +716,11 @@
 		5D14E49A2397B8B000C15FC8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DA59751D27D749A9009F0A1F /* MapKit.framework */,
 				5D14E49B2397B8B000C15FC8 /* TangemSdk.framework */,
 				D1CC9E29B257CD29E6143FDD /* Pods_BlockchainSdk.framework */,
 				A172F9D47772F23948771418 /* Pods_BlockchainSdkTests.framework */,
+				8C40B45F626B3CA7042657F9 /* Pods_BlockchainSdkExample.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1097,8 +1149,29 @@
 				0C79DB7FEDD8D4029AFA208D /* Pods-BlockchainSdk.release.xcconfig */,
 				A6F5E34B42B2043635FB1F51 /* Pods-BlockchainSdkTests.debug.xcconfig */,
 				8B8DF7D3E33EA0FFBCE2CCE6 /* Pods-BlockchainSdkTests.release.xcconfig */,
+				556382E16FB9B2894A77374E /* Pods-BlockchainSdkExample.debug.xcconfig */,
+				3452E77A600B278568F13FA9 /* Pods-BlockchainSdkExample.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		DA59750927D744A7009F0A1F /* BlockchainSdkExample */ = {
+			isa = PBXGroup;
+			children = (
+				DA59750A27D744A7009F0A1F /* BlockchainSdkExampleApp.swift */,
+				DA59750C27D744A7009F0A1F /* BlockchainSdkExampleView.swift */,
+				DA59750E27D744A9009F0A1F /* Assets.xcassets */,
+				DA59751027D744A9009F0A1F /* Preview Content */,
+			);
+			path = BlockchainSdkExample;
+			sourceTree = "<group>";
+		};
+		DA59751027D744A9009F0A1F /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				DA59751127D744A9009F0A1F /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		DAE30DF7279164500056C5A3 /* Solana */ = {
@@ -1185,13 +1258,34 @@
 			productReference = 5D14E4772397B80F00C15FC8 /* BlockchainSdkTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		DA59750727D744A7009F0A1F /* BlockchainSdkExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DA59751527D744A9009F0A1F /* Build configuration list for PBXNativeTarget "BlockchainSdkExample" */;
+			buildPhases = (
+				7A3BF37B26C68CA716F1D867 /* [CP] Check Pods Manifest.lock */,
+				DA59750427D744A7009F0A1F /* Sources */,
+				DA59750527D744A7009F0A1F /* Frameworks */,
+				DA59750627D744A7009F0A1F /* Resources */,
+				DA59751A27D747CD009F0A1F /* Embed Frameworks */,
+				C861D1D43D14FA653934FAAC /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DA59751927D747CD009F0A1F /* PBXTargetDependency */,
+			);
+			name = BlockchainSdkExample;
+			productName = BlockchainSdkExample;
+			productReference = DA59750827D744A7009F0A1F /* BlockchainSdkExample.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		5D14E4652397B80F00C15FC8 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1120;
+				LastSwiftUpdateCheck = 1320;
 				LastUpgradeCheck = 1310;
 				ORGANIZATIONNAME = "Tangem AG";
 				TargetAttributes = {
@@ -1201,6 +1295,9 @@
 					};
 					5D14E4762397B80F00C15FC8 = {
 						CreatedOnToolsVersion = 11.2.1;
+					};
+					DA59750727D744A7009F0A1F = {
+						CreatedOnToolsVersion = 13.2;
 					};
 				};
 			};
@@ -1223,6 +1320,7 @@
 			targets = (
 				5D14E46D2397B80F00C15FC8 /* BlockchainSdk */,
 				5D14E4762397B80F00C15FC8 /* BlockchainSdkTests */,
+				DA59750727D744A7009F0A1F /* BlockchainSdkExample */,
 			);
 		};
 /* End PBXProject section */
@@ -1245,9 +1343,40 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DA59750627D744A7009F0A1F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DA59751227D744A9009F0A1F /* Preview Assets.xcassets in Resources */,
+				DA59750F27D744A9009F0A1F /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		7A3BF37B26C68CA716F1D867 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-BlockchainSdkExample-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		97C1A5193CEF430AFFFE869E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1307,6 +1436,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C861D1D43D14FA653934FAAC /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1648,6 +1794,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DA59750427D744A7009F0A1F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DA59750D27D744A7009F0A1F /* BlockchainSdkExampleView.swift in Sources */,
+				DA59750B27D744A7009F0A1F /* BlockchainSdkExampleApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1655,6 +1810,12 @@
 			isa = PBXTargetDependency;
 			target = 5D14E46D2397B80F00C15FC8 /* BlockchainSdk */;
 			targetProxy = 5D14E4792397B80F00C15FC8 /* PBXContainerItemProxy */;
+		};
+		DA59751927D747CD009F0A1F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = ios;
+			target = 5D14E46D2397B80F00C15FC8 /* BlockchainSdk */;
+			targetProxy = DA59751827D747CD009F0A1F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1895,6 +2056,76 @@
 			};
 			name = Release;
 		};
+		DA59751327D744A9009F0A1F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 556382E16FB9B2894A77374E /* Pods-BlockchainSdkExample.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_ENTITLEMENTS = BlockchainSdkExample/BlockchainSdkExample.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"BlockchainSdkExample/Preview Content\"";
+				DEVELOPMENT_TEAM = 4897UJ6D8C;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BlockchainSdkExample/Info.plist;
+				INFOPLIST_KEY_NFCReaderUsageDescription = "Need NFC";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tangem.BlockchainSdkExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DA59751427D744A9009F0A1F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3452E77A600B278568F13FA9 /* Pods-BlockchainSdkExample.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_ENTITLEMENTS = BlockchainSdkExample/BlockchainSdkExample.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"BlockchainSdkExample/Preview Content\"";
+				DEVELOPMENT_TEAM = 4897UJ6D8C;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BlockchainSdkExample/Info.plist;
+				INFOPLIST_KEY_NFCReaderUsageDescription = "Need NFC";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tangem.BlockchainSdkExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1921,6 +2152,15 @@
 			buildConfigurations = (
 				5D14E4862397B80F00C15FC8 /* Debug */,
 				5D14E4872397B80F00C15FC8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DA59751527D744A9009F0A1F /* Build configuration list for PBXNativeTarget "BlockchainSdkExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DA59751327D744A9009F0A1F /* Debug */,
+				DA59751427D744A9009F0A1F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
