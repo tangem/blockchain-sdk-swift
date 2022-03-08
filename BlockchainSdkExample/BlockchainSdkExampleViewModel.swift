@@ -16,8 +16,8 @@ import TangemSdk
 class BlockchainSdkExampleViewModel: ObservableObject {
     @AppStorage("destination") var destination: String = ""
     @AppStorage("amount") var amountToSend: String = ""
-    @Published var feeDescription: String = ""
-    @Published var transactionResult: String = ""
+    @Published var feeDescription: String = "--"
+    @Published var transactionResult: String = "--"
     @Published var blockchains: [(String, String)] = []
     @Published var curves: [EllipticCurve] = []
     @Published var blockchainName: String = ""
@@ -75,13 +75,13 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     }
     
     func scanCardAndGetInfo() {
-        sdk.scanCard { [weak self] result in
+        sdk.scanCard { [unowned self] result in
             switch result {
             case .failure(let error):
                 print(error)
             case .success(let card):
-                self?.card = card
-                self?.updateWalletManager()
+                self.card = card
+                self.updateWalletManager()
             }
         }
     }
@@ -97,16 +97,16 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         transactionSender?
             .getFee(amount: amount, destination: destination)
             .receive(on: RunLoop.main)
-            .sink { [weak self] in
+            .sink { [unowned self] in
                 switch $0 {
                 case .failure(let error):
                     print(error)
-                    self?.feeDescription = error.localizedDescription
+                    self.feeDescription = error.localizedDescription
                 case .finished:
                     break
                 }
-            } receiveValue: { [weak self] in
-                self?.feeDescription = $0.map { $0.description }.joined(separator: "; ")
+            } receiveValue: { [unowned self] in
+                self.feeDescription = $0.map { $0.description }.joined(separator: "; ")
             }
             .store(in: &bag)
     }
@@ -133,13 +133,13 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             transactionSender?
                 .send(transaction, signer: sdk)
                 .receive(on: RunLoop.main)
-                .sink { [weak self] in
+                .sink { [unowned self] in
                     switch $0 {
                     case .failure(let error):
                         print(error)
-                        self?.transactionResult = error.localizedDescription
+                        self.transactionResult = error.localizedDescription
                     case .finished:
-                        self?.transactionResult = "OK"
+                        self.transactionResult = "OK"
                     }
                 } receiveValue: {
 

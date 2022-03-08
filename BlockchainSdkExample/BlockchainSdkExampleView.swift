@@ -49,7 +49,7 @@ struct BlockchainSdkExampleView: View {
                     .keyboardType(.decimalPad)
             }
             
-            Section {
+            Section("Fees") {
                 Button {
                     model.checkFee()
                 } label: {
@@ -57,10 +57,10 @@ struct BlockchainSdkExampleView: View {
                 }
                 .disabled(model.transactionSender == nil)
                 
-                Text("Fees: " + model.feeDescription)
+                Text(model.feeDescription)
             }
             
-            Section {
+            Section("Transaction") {
                 Button {
                     model.sendTransaction()
                 } label: {
@@ -68,7 +68,7 @@ struct BlockchainSdkExampleView: View {
                 }
                 .disabled(model.transactionSender == nil)
                 
-                Text("TX result:" + model.transactionResult)
+                Text(model.transactionResult)
             }
         }
     }
