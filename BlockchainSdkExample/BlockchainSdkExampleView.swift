@@ -7,29 +7,48 @@
 //
 
 import SwiftUI
-import BlockchainSdk
-import TangemSdk
 
 struct BlockchainSdkExampleView: View {
-    let sdk = TangemSdk()
+    @StateObject var model = BlockchainSdkExampleViewModel()
     
     var body: some View {
-        VStack {
-            Text("Hello, world!")
-                .padding()
-                .onAppear {
-                    let b = Blockchain.ducatus
-                    print(b)
+        Form {
+            Section {
+                Button {
+                    model.scanCardAndGetInfo()
+                } label: {
+                    Text("Scan card")
                 }
-            
-            Button {
-                sdk.scanCard(initialMessage: nil) { result in
-                    print(result)
-                }
-            } label: {
-                Text("Scan card")
+                
+                TextField("Destination", text: $model.destination)
+                    .disableAutocorrection(true)
+                    .keyboardType(.alphabet)
+                
+                TextField("Amount", text: $model.amountToSend)
+                    .keyboardType(.decimalPad)
             }
-
+            
+            Section {
+                Button {
+                    model.checkFee()
+                } label: {
+                    Text("Check fee")
+                }
+                .disabled(model.transactionSender == nil)
+                
+                Text("Fees: " + model.feeDescription)
+            }
+            
+            Section {
+                Button {
+                    model.sendTransaction()
+                } label: {
+                    Text("Send transaction")
+                }
+                .disabled(model.transactionSender == nil)
+                
+                Text("TX result:" + model.transactionResult)
+            }
         }
     }
 }

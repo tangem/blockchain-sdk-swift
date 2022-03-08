@@ -318,6 +318,7 @@
 		DA59751627D747CD009F0A1F /* BlockchainSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D14E46E2397B80F00C15FC8 /* BlockchainSdk.framework */; platformFilter = ios; };
 		DA59751727D747CD009F0A1F /* BlockchainSdk.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5D14E46E2397B80F00C15FC8 /* BlockchainSdk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DA59751E27D749A9009F0A1F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA59751D27D749A9009F0A1F /* MapKit.framework */; };
+		DA59752027D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA59751F27D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift */; };
 		DA71441E2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
 		DA71441F2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
 		DA7CA46C27AD3B210041B1A1 /* PolkadotTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */; };
@@ -563,6 +564,7 @@
 		DA59750E27D744A9009F0A1F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DA59751127D744A9009F0A1F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		DA59751D27D749A9009F0A1F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		DA59751F27D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainSdkExampleViewModel.swift; sourceTree = "<group>"; };
 		DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaNetworkService.swift; sourceTree = "<group>"; };
 		DA7CA47527AD4BD90041B1A1 /* PolkadotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotTests.swift; sourceTree = "<group>"; };
 		DA82433C27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotJsonRpcProvider.swift; sourceTree = "<group>"; };
@@ -1160,6 +1162,7 @@
 			children = (
 				DA59750A27D744A7009F0A1F /* BlockchainSdkExampleApp.swift */,
 				DA59750C27D744A7009F0A1F /* BlockchainSdkExampleView.swift */,
+				DA59751F27D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift */,
 				DA59750E27D744A9009F0A1F /* Assets.xcassets */,
 				DA59751027D744A9009F0A1F /* Preview Content */,
 			);
@@ -1798,6 +1801,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA59752027D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift in Sources */,
 				DA59750D27D744A7009F0A1F /* BlockchainSdkExampleView.swift in Sources */,
 				DA59750B27D744A7009F0A1F /* BlockchainSdkExampleApp.swift in Sources */,
 			);
