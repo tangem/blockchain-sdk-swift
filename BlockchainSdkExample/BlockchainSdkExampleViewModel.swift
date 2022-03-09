@@ -25,6 +25,9 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     @Published var isShelley: Bool = false
     @Published var curve: EllipticCurve = .ed25519
     @Published var sourceAddress: String = "--"
+    
+    let blockchainsWithCurveSelection: [String]
+    let blockchainsWithShelleySelection: [String]
 
     private let sdk: TangemSdk
     private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKey: "", blockcypherTokens: [], infuraProjectId: ""))
@@ -47,6 +50,13 @@ class BlockchainSdkExampleViewModel: ObservableObject {
 
         self.blockchains = Self.blockchainList()
         self.curves = EllipticCurve.allCases.sorted { $0.rawValue < $1.rawValue }
+        self.blockchainsWithCurveSelection = [
+            Blockchain.xrp(curve: .ed25519),
+            Blockchain.tezos(curve: .ed25519),
+        ].map { $0.codingKey }
+        self.blockchainsWithShelleySelection = [
+            Blockchain.cardano(shelley: false),
+        ].map { $0.codingKey }
 
         self.blockchainName = UserDefaults.standard.string(forKey: blockchainNameKey) ?? ""
         self.isTestnet = UserDefaults.standard.bool(forKey: isTestnetKey)

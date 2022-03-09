@@ -30,20 +30,24 @@ struct BlockchainSdkExampleView: View {
                 .disabled(model.transactionSender == nil)
                 .pickerStyle(.menu)
                 
-                Picker("Curve", selection: $model.curve) {
-                    ForEach(model.curves, id: \.self) { curve in
-                        Text(curve.rawValue)
-                            .tag(curve.rawValue)
+                if model.blockchainsWithCurveSelection.contains(model.blockchainName) {
+                    Picker("Curve", selection: $model.curve) {
+                        ForEach(model.curves, id: \.self) { curve in
+                            Text(curve.rawValue)
+                                .tag(curve.rawValue)
+                        }
                     }
+                    .disabled(model.transactionSender == nil)
+                    .pickerStyle(.menu)
                 }
-                .disabled(model.transactionSender == nil)
-                .pickerStyle(.menu)
                 
                 Toggle("Testnet", isOn: $model.isTestnet)
                     .disabled(model.transactionSender == nil)
                 
-                Toggle("Shelley", isOn: $model.isShelley)
-                    .disabled(model.transactionSender == nil)
+                if model.blockchainsWithShelleySelection.contains(model.blockchainName) {
+                    Toggle("Shelley", isOn: $model.isShelley)
+                        .disabled(model.transactionSender == nil)
+                }
             }
             
             Section("Source address") {
