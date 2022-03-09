@@ -27,6 +27,7 @@ struct BlockchainSdkExampleView: View {
                             .tag(blockchain.1)
                     }
                 }
+                .disabled(model.transactionSender == nil)
                 .pickerStyle(.menu)
                 
                 Picker("Curve", selection: $model.curve) {
@@ -35,9 +36,11 @@ struct BlockchainSdkExampleView: View {
                             .tag(curve.rawValue)
                     }
                 }
+                .disabled(model.transactionSender == nil)
                 .pickerStyle(.menu)
                 
                 Toggle("Testnet", isOn: $model.isTestnet)
+                    .disabled(model.transactionSender == nil)
             }
             
             Section("Source address") {
@@ -61,10 +64,10 @@ struct BlockchainSdkExampleView: View {
                 } label: {
                     Text("Check fee")
                 }
-                .disabled(model.transactionSender == nil)
                 
                 Text(model.feeDescription)
             }
+            .disabled(model.transactionSender == nil)
             
             Section("Transaction") {
                 Button {
@@ -72,10 +75,10 @@ struct BlockchainSdkExampleView: View {
                 } label: {
                     Text("Send transaction")
                 }
-                .disabled(model.transactionSender == nil)
                 
                 Text(model.transactionResult)
             }
+            .disabled(model.transactionSender == nil)
         }
     }
 }
