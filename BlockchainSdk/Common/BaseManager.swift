@@ -97,7 +97,7 @@ class BaseManager: WalletProvider {
                 
         let total = amount + fee
         
-        if amount.type == fee.type,
+        if amount.type == fee.type, total.value > 0,
             validate(amount: total) != nil {
             errors.append(.totalExceedsBalance)
         }
