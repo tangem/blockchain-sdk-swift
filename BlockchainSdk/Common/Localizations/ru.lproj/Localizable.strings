@@ -17,6 +17,7 @@
 "xrp_load_reserve_error" = "Не удалось загрузить информацию о резерве";
 "xrp_load_account_error" = "Не удалось загрузить информацию об аккаунте";
 "xrp_missing_reserve_error" = "Не удалось загрузить информацию о резерве";
+"eth_tx_count_parse_error" = "Не удалось определить количество транзакций";
 "eth_balance_parse_error" = "Не удалось определить баланс";
 "failed_to_load_fee_error" = "Не удалось загрузить комиссию из сети";
 "xlm_latest_ledger_error" = "Не удалось получить информацию от блокчейна";

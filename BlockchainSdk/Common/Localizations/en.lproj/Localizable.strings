@@ -17,6 +17,7 @@
 "xrp_load_reserve_error" = "Failed to load reserve";
 "xrp_load_account_error" = "Failed to load account info";
 "xrp_missing_reserve_error" = "Missing reserve";
+"eth_tx_count_parse_error" = "Failed to parse tx count";
 "eth_balance_parse_error" = "Failed to parse the balance";
 "failed_to_load_fee_error" = "Failed to load fee from network";
 "xlm_latest_ledger_error" = "Couldn't find the latest ledger";

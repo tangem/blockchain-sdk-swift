@@ -17,6 +17,7 @@
 "xrp_load_reserve_error" = "Impossibile caricare lo stock";
 "xrp_load_account_error" = "Impossibile caricare le informazioni sull'account";
 "xrp_missing_reserve_error" = "Stock assente";
+"eth_tx_count_parse_error" = "Impossibile analizzare il contatore tx";
 "eth_balance_parse_error" = "Impossibile analizzare il saldo";
 "failed_to_load_fee_error" = "Failed to load fee from network";
 "xlm_latest_ledger_error" = "Impossibile trovare l'ultimo libro mastro";
