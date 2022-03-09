@@ -72,7 +72,7 @@ public enum TransactionStatus: Equatable {
     case confirmed
 }
 
-public struct TransactionErrors: Error, LocalizedError {
+public struct TransactionErrors: Error, LocalizedError, Equatable {
     public let errors: [TransactionError]
     
     public var errorDescription: String? {

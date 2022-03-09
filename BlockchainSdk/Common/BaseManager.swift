@@ -12,7 +12,7 @@ import Combine
 @available(iOS 13.0, *)
 class BaseManager: WalletProvider {
     @Published var wallet: Wallet
-    internal(set) var cardTokens: [Token] = []
+    var cardTokens: [Token] = []
     
     var defaultSourceAddress: String { wallet.address }
     var defaultChangeAddress: String { wallet.address }
