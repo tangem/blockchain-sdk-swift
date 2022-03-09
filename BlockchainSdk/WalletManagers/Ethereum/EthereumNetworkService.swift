@@ -17,16 +17,18 @@ class EthereumNetworkService: MultiNetworkProvider {
     let providers: [EthereumJsonRpcProvider]
     var currentProviderIndex: Int = 0
     
+    private let blockchain: Blockchain
     private let decimals: Int
     private let ethereumInfoNetworkProvider: EthereumAdditionalInfoProvider?
     private let blockchairProvider: BlockchairEthNetworkProvider?
     
-    init(decimals: Int,
+    init(blockchain: Blockchain,
          providers: [EthereumJsonRpcProvider],
          blockcypherProvider: BlockcypherNetworkProvider?,
          blockchairProvider: BlockchairEthNetworkProvider?) {
         self.providers = providers
-        self.decimals = decimals
+        self.blockchain = blockchain
+        self.decimals = blockchain.decimalCount
         self.ethereumInfoNetworkProvider = blockcypherProvider
         self.blockchairProvider = blockchairProvider
     }
@@ -129,8 +131,16 @@ class EthereumNetworkService: MultiNetworkProvider {
                         .tryMap {[weak self] resp -> Decimal in
                             guard let self = self else { throw WalletError.empty }
                             
-                            let result = try self.getResult(from: resp)
-                            return try EthereumUtils.parseEthereumDecimal(result, decimalsCount: token.decimalCount)
+                            let encodedAmount = try self.getResult(from: resp)
+                            do {
+                                return try EthereumUtils.parseEthereumDecimal(encodedAmount, decimalsCount: token.decimalCount)
+                            } catch ETHError.failedToParseBalance {
+                                throw WalletError.failedToParseBalance(
+                                    name: "\(self.blockchain.displayName) \(token.name)",
+                                    encodedAmount: encodedAmount,
+                                    decimalCount: token.decimalCount
+                                )
+                            }
                         }
                         .map { (token, $0) }
                         .eraseToAnyPublisher()
@@ -165,7 +175,16 @@ class EthereumNetworkService: MultiNetworkProvider {
                 .tryMap {[weak self] in
                     guard let self = self else { throw WalletError.empty }
                     
-                    return try EthereumUtils.parseEthereumDecimal(self.getResult(from: $0), decimalsCount: self.decimals)
+                    let encodedAmount = try self.getResult(from: $0)
+                    do {
+                        return try EthereumUtils.parseEthereumDecimal(encodedAmount, decimalsCount: self.decimals)
+                    } catch ETHError.failedToParseBalance {
+                        throw WalletError.failedToParseBalance(
+                            name: self.blockchain.displayName,
+                            encodedAmount: encodedAmount,
+                            decimalCount: self.decimals
+                        )
+                    }
                 }
                 .eraseToAnyPublisher()
         }

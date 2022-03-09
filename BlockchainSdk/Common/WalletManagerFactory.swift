@@ -166,7 +166,7 @@ public class WalletManagerFactory {
                 let blockchair = BlockchairEthNetworkProvider(endpoint: .ethereum(testnet: testnet), apiKey: config.blockchairApiKey)
                 
                 $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, chainId: chainId)
-                $0.networkService = EthereumNetworkService(decimals: blockchain.decimalCount,
+                $0.networkService = EthereumNetworkService(blockchain: blockchain,
                                                            providers: jsonRpcProviders,
                                                            blockcypherProvider: blockcypher,
                                                            blockchairProvider: blockchair)
@@ -179,7 +179,7 @@ public class WalletManagerFactory {
                 let jsonRpcProviders = rpcUrls.map { EthereumJsonRpcProvider(url: $0) }
                 
                 $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, chainId: chainId)
-                $0.networkService = EthereumNetworkService(decimals: blockchain.decimalCount,
+                $0.networkService = EthereumNetworkService(blockchain: blockchain,
                                                            providers: jsonRpcProviders,
                                                            blockcypherProvider: nil,
                                                            blockchairProvider: nil)

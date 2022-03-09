@@ -17,7 +17,7 @@ public enum EthereumUtils {
               let balanceEth = dataToDecimal(balanceData, decimalsCount: decimalsCount),
               !balanceEth.decimalValue.isNaN
         else {
-            throw ETHError.failedToParseTokenBalance
+            throw ETHError.failedToParseBalance
         }
         
         return balanceEth as Decimal
