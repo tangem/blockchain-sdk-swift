@@ -41,6 +41,9 @@ struct BlockchainSdkExampleView: View {
                 
                 Toggle("Testnet", isOn: $model.isTestnet)
                     .disabled(model.transactionSender == nil)
+                
+                Toggle("Shelley", isOn: $model.isShelley)
+                    .disabled(model.transactionSender == nil)
             }
             
             Section("Source address") {

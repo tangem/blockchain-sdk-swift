@@ -22,6 +22,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     @Published var curves: [EllipticCurve] = []
     @Published var blockchainName: String = ""
     @Published var isTestnet: Bool = false
+    @Published var isShelley: Bool = false
     @Published var curve: EllipticCurve = .ed25519
     @Published var sourceAddress: String = "--"
 
@@ -31,6 +32,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     private var blockchain: Blockchain?
     private let blockchainNameKey = "blockchainName"
     private let isTestnetKey = "isTestnet"
+    private let isShelleyKey = "isShelley"
     private let curveKey = "curve"
     @Published private(set) var transactionSender: TransactionSender?
     
@@ -49,11 +51,12 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         self.blockchainName = UserDefaults.standard.string(forKey: blockchainNameKey) ?? ""
         self.isTestnet = UserDefaults.standard.bool(forKey: isTestnetKey)
         self.curve = EllipticCurve(rawValue: UserDefaults.standard.string(forKey: curveKey) ?? "") ?? self.curve
+        self.isShelley = UserDefaults.standard.bool(forKey: isShelleyKey)
         
         $blockchainName
             .sink { [unowned self] in
                 UserDefaults.standard.set($0, forKey: self.blockchainNameKey)
-                self.updateBlockchain(from: $0, isTestnet: isTestnet, curve: curve)
+                self.updateBlockchain(from: $0, isTestnet: isTestnet, curve: curve, isShelley: isShelley)
                 self.updateWalletManager()
             }
             .store(in: &bag)
@@ -61,7 +64,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         $isTestnet
             .sink { [unowned self] in
                 UserDefaults.standard.set($0, forKey: isTestnetKey)
-                self.updateBlockchain(from: blockchainName, isTestnet: $0, curve: curve)
+                self.updateBlockchain(from: blockchainName, isTestnet: $0, curve: curve, isShelley: isShelley)
                 self.updateWalletManager()
             }
             .store(in: &bag)
@@ -69,7 +72,15 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         $curve
             .sink { [unowned self] in
                 UserDefaults.standard.set($0.rawValue, forKey: curveKey)
-                self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: $0)
+                self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: $0, isShelley: isShelley)
+                self.updateWalletManager()
+            }
+            .store(in: &bag)
+        
+        $isShelley
+            .sink { [unowned self] in
+                UserDefaults.standard.set($0, forKey: isShelleyKey)
+                self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: curve, isShelley: $0)
                 self.updateWalletManager()
             }
             .store(in: &bag)
@@ -152,15 +163,21 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         }
     }
     
-    private func updateBlockchain(from blockchainName: String, isTestnet: Bool, curve: EllipticCurve) {
+    private func updateBlockchain(
+        from blockchainName: String,
+        isTestnet: Bool,
+        curve: EllipticCurve,
+        isShelley: Bool
+    ) {
         struct BlockchainInfo: Codable {
             let key: String
             let curve: String
             let testnet: Bool
+            let shelley: Bool
         }
         
         do {
-            let blockchainInfo = BlockchainInfo(key: blockchainName, curve: curve.rawValue, testnet: isTestnet)
+            let blockchainInfo = BlockchainInfo(key: blockchainName, curve: curve.rawValue, testnet: isTestnet, shelley: isShelley)
             let encodedInfo = try JSONEncoder().encode(blockchainInfo)
             self.blockchain = try JSONDecoder().decode(Blockchain.self, from: encodedInfo)
         } catch {
