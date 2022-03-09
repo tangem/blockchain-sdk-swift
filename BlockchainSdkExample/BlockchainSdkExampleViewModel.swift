@@ -23,6 +23,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     @Published var blockchainName: String = ""
     @Published var isTestnet: Bool = false
     @Published var curve: EllipticCurve = .ed25519
+    @Published var sourceAddress: String = "--"
 
     private let sdk: TangemSdk
     private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKey: "", blockcypherTokens: [], infuraProjectId: ""))
@@ -174,6 +175,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             let wallet = card.wallets.first(where: { $0.curve == blockchain.curve })
         else {
             self.transactionSender = nil
+            self.sourceAddress = "--"
             return
         }
 
@@ -181,6 +183,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             let walletManager = try walletManagerFactory.makeWalletManager(cardId: card.cardId, blockchain: blockchain, walletPublicKey: wallet.publicKey)
             if let transactionSender = walletManager as? TransactionSender {
                 self.transactionSender = transactionSender
+                self.sourceAddress = walletManager.wallet.address
             } else {
                 print("Wallet manager cannot send transactions")
             }

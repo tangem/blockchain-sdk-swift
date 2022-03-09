@@ -13,6 +13,9 @@ struct BlockchainSdkExampleApp: App {
     var body: some Scene {
         WindowGroup {
             BlockchainSdkExampleView()
+                .onAppear {
+                    UIScrollView.appearance().keyboardDismissMode = .onDrag
+                }
         }
     }
 }

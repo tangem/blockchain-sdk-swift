@@ -40,10 +40,16 @@ struct BlockchainSdkExampleView: View {
                 Toggle("Testnet", isOn: $model.isTestnet)
             }
             
+            Section("Source address") {
+                Text(model.sourceAddress)
+                    .textSelection(.enabled)
+            }
+            
             Section("Destination and amount") {
                 TextField("Destination", text: $model.destination)
                     .disableAutocorrection(true)
                     .keyboardType(.alphabet)
+                    .truncationMode(.middle)
                 
                 TextField("Amount", text: $model.amountToSend)
                     .keyboardType(.decimalPad)
