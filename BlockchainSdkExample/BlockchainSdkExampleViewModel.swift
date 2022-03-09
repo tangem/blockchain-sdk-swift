@@ -54,6 +54,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         self.isShelley = UserDefaults.standard.bool(forKey: isShelleyKey)
         
         $blockchainName
+            .dropFirst()
             .sink { [unowned self] in
                 UserDefaults.standard.set($0, forKey: self.blockchainNameKey)
                 self.updateBlockchain(from: $0, isTestnet: isTestnet, curve: curve, isShelley: isShelley)
@@ -62,6 +63,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .store(in: &bag)
         
         $isTestnet
+            .dropFirst()
             .sink { [unowned self] in
                 UserDefaults.standard.set($0, forKey: isTestnetKey)
                 self.updateBlockchain(from: blockchainName, isTestnet: $0, curve: curve, isShelley: isShelley)
@@ -70,6 +72,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .store(in: &bag)
         
         $curve
+            .dropFirst()
             .sink { [unowned self] in
                 UserDefaults.standard.set($0.rawValue, forKey: curveKey)
                 self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: $0, isShelley: isShelley)
@@ -78,6 +81,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .store(in: &bag)
         
         $isShelley
+            .dropFirst()
             .sink { [unowned self] in
                 UserDefaults.standard.set($0, forKey: isShelleyKey)
                 self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: curve, isShelley: $0)
@@ -93,6 +97,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                 print(error)
             case .success(let card):
                 self.card = card
+                self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: curve, isShelley: isShelley)
                 self.updateWalletManager()
             }
         }
