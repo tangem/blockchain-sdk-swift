@@ -13,21 +13,31 @@ import Combine
 import TangemSdk
 import Moya
 
-public enum ETHError: String, Error, LocalizedError {
-    case failedToParseTxCount = "eth_tx_count_parse_error"
-    case failedToParseBalance = "eth_balance_parse_error"
-    case failedToParseTokenBalance = "eth_token_balance_parse_error"
+public enum ETHError: Error, LocalizedError, DetailedError {
+    case failedToParseTxCount
+    case failedToParseBalance(value: String, address: String, decimals: Int)
     case failedToParseGasLimit
-    case failedToParseGasPrice
-    case notValidEthereumValue
     case unsupportedFeature
     
     public var errorDescription: String? {
         switch self {
-        case .failedToParseGasLimit:
-            return rawValue
+        case .failedToParseTxCount:
+            return "eth_tx_count_parse_error".localized
+        case .failedToParseBalance:
+            return "eth_balance_parse_error".localized
+        case .failedToParseGasLimit: //TODO: refactor
+            return "failedToParseGasLimit"
+        case .unsupportedFeature:
+            return "unsupportedFeature"
+        }
+    }
+    
+    public var detailedDescription: String? {
+        switch self {
+        case .failedToParseBalance(let value, let address, let decimals):
+            return "value:\(value), address:\(address), decimals:\(decimals)"
         default:
-            return rawValue.localized
+            return nil
         }
     }
 }

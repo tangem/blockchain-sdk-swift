@@ -34,6 +34,7 @@
 		5D304397239A6B960066B8D9 /* String+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D304396239A6B960066B8D9 /* String+.swift */; };
 		5D304399239A8C9C0066B8D9 /* BitcoinAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D304398239A8C9C0066B8D9 /* BitcoinAddressService.swift */; };
 		5D389ECC23ACFDCF00740FE9 /* MoyaProvider+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D389ECB23ACFDCF00740FE9 /* MoyaProvider+Combine.swift */; };
+		5D43DEAC27D91CA100B81343 /* DetailedError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D43DEAB27D91CA100B81343 /* DetailedError.swift */; };
 		5D4B33BC23F6EA0500C93A84 /* BlockchairTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4B33BB23F6EA0500C93A84 /* BlockchairTarget.swift */; };
 		5D4B33BE23F6EA3700C93A84 /* BlockchairResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4B33BD23F6EA3700C93A84 /* BlockchairResponses.swift */; };
 		5D4B33C023F6EA6C00C93A84 /* BlockchairNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4B33BF23F6EA6C00C93A84 /* BlockchairNetworkProvider.swift */; };
@@ -377,6 +378,7 @@
 		5D304396239A6B960066B8D9 /* String+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+.swift"; sourceTree = "<group>"; };
 		5D304398239A8C9C0066B8D9 /* BitcoinAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinAddressService.swift; sourceTree = "<group>"; };
 		5D389ECB23ACFDCF00740FE9 /* MoyaProvider+Combine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MoyaProvider+Combine.swift"; sourceTree = "<group>"; };
+		5D43DEAB27D91CA100B81343 /* DetailedError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedError.swift; sourceTree = "<group>"; };
 		5D4B33BB23F6EA0500C93A84 /* BlockchairTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchairTarget.swift; sourceTree = "<group>"; };
 		5D4B33BD23F6EA3700C93A84 /* BlockchairResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchairResponses.swift; sourceTree = "<group>"; };
 		5D4B33BF23F6EA6C00C93A84 /* BlockchairNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchairNetworkProvider.swift; sourceTree = "<group>"; };
@@ -659,6 +661,7 @@
 				5DEC90C02587A35800826C95 /* BlockchainSdkConfig.swift */,
 				B0AD566325AC8DD50084F924 /* PendingTransaction.swift */,
 				B0F9DCA025FB4C9B00C0AF18 /* MultiNetworkProvider.swift */,
+				5D43DEAB27D91CA100B81343 /* DetailedError.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -1340,6 +1343,7 @@
 				5D7D242C25136254001B9A4F /* WebSocket.swift in Sources */,
 				5DACA361255E98900096BC48 /* MultipleAddressProvider.swift in Sources */,
 				5D7D243325136254001B9A4F /* XRPAddress.swift in Sources */,
+				5D43DEAC27D91CA100B81343 /* DetailedError.swift in Sources */,
 				B0C34958267B83580027CC9D /* BitcoinModels.swift in Sources */,
 				5D4B33C823F72F2700C93A84 /* BitcoinCashWalletManager.swift in Sources */,
 				5D26CEF1243CB9EA00994CC0 /* BlockchainInfoResponse.swift in Sources */,

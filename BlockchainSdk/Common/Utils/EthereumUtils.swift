@@ -9,34 +9,38 @@
 import Foundation
 
 public enum EthereumUtils {
-    public static func parseEthereumDecimal(_ string: String, decimalsCount: Int) throws -> Decimal {
-        let value = try prepareHexString(string)
-        guard let balanceData = asciiHexToData(value),
-              let balanceWei = dataToDecimal(balanceData) else {
-            throw ETHError.failedToParseTokenBalance
+    private static let handler = NSDecimalNumberHandler(roundingMode: .plain, scale: 0,
+                                                        raiseOnExactness: false,  raiseOnOverflow: false,
+                                                        raiseOnUnderflow: false, raiseOnDivideByZero: false)
+    
+    public static func parseEthereumDecimal(_ string: String, decimalsCount: Int) -> Decimal? {
+        guard let balanceData = asciiHexToData(string.removeHexPrefix())  else {
+            return nil
         }
         
-        let balanceEth = balanceWei.dividing(by: NSDecimalNumber(value: 1).multiplying(byPowerOf10: Int16(decimalsCount)))
+        let balanceWei = dataToDecimal(balanceData)
+        if balanceWei.decimalValue.isNaN {
+            return nil
+        }
+        
+        let balanceEth = balanceWei.dividing(by: NSDecimalNumber(value: 1).multiplying(byPowerOf10: Int16(decimalsCount)), withBehavior: handler)
+        if balanceEth.decimalValue.isNaN {
+            return nil
+        }
+        
         return balanceEth as Decimal
     }
     
-    private static func prepareHexString(_ string: String) throws -> String {
-        var value = string
-        guard value.starts(with: "0x") else {
-            throw ETHError.notValidEthereumValue
-        }
-        
-        value.removeFirst(2)
-        return value
-    }
-    
-    private static func dataToDecimal(_ data: Data) -> NSDecimalNumber? {
+    private static func dataToDecimal(_ data: Data) -> NSDecimalNumber {
         let reversed = data.reversed()
         var number = NSDecimalNumber(value: 0)
         
         reversed.enumerated().forEach { (arg) in
             let (offset, value) = arg
-            number = number.adding(NSDecimalNumber(value: value).multiplying(by: NSDecimalNumber(value: 256).raising(toPower: offset)))
+            let decimalValue = NSDecimalNumber(value: value)
+            let multiplier = NSDecimalNumber(value: 256).raising(toPower: offset, withBehavior: handler)
+            let addendum = decimalValue.multiplying(by: multiplier, withBehavior: handler)
+            number = number.adding(addendum, withBehavior: handler)
         }
         
         return number

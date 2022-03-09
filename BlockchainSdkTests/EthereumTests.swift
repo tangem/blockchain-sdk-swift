@@ -90,4 +90,17 @@ class EthereumTests: XCTestCase {
         XCTAssertEqual(expectedHashToSign, transactionToSign?.hash)
         XCTAssertEqual(expectedSignedTransaction, signedTransaction)
     }
+    
+    func testOwerflowParseBalance() {
+      //  let hex = "0x407d73d8a49eeb85d32cf465507dd71d507100c1"
+        let tooBig = "0x01234567890abcdef01234567890abcdef01234501234567890abcdef01234567890abcdef01234501234567890abcdef012345def01234501234567890abcdef012345def01234501234567890abcdef012345def01234501234567890abcdef01234567890abcdef012345"
+        
+        do {
+            let balance = try EthereumUtils.parseEthereumDecimal(tooBig, decimalsCount: 18)
+            print(balance)
+        }
+        catch {
+            print(error)
+        }
+    }
 }

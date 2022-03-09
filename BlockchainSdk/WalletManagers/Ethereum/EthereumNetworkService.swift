@@ -130,7 +130,11 @@ class EthereumNetworkService: MultiNetworkProvider {
                             guard let self = self else { throw WalletError.empty }
                             
                             let result = try self.getResult(from: resp)
-                            return try EthereumUtils.parseEthereumDecimal(result, decimalsCount: token.decimalCount)
+                            guard let value = EthereumUtils.parseEthereumDecimal(result, decimalsCount: token.decimalCount) else {
+                                throw ETHError.failedToParseBalance(value: result, address: token.contractAddress, decimals: token.decimalCount)
+                            }
+                            
+                            return value
                         }
                         .map { (token, $0) }
                         .eraseToAnyPublisher()
@@ -165,7 +169,12 @@ class EthereumNetworkService: MultiNetworkProvider {
                 .tryMap {[weak self] in
                     guard let self = self else { throw WalletError.empty }
                     
-                    return try EthereumUtils.parseEthereumDecimal(self.getResult(from: $0), decimalsCount: self.decimals)
+                    let result = try self.getResult(from: $0)
+                    guard let value = EthereumUtils.parseEthereumDecimal(result, decimalsCount: self.decimals) else {
+                        throw ETHError.failedToParseBalance(value: result, address: address, decimals: self.decimals)
+                    }
+                    
+                    return value
                 }
                 .eraseToAnyPublisher()
         }
