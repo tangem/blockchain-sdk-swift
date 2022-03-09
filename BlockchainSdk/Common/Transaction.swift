@@ -72,8 +72,12 @@ public enum TransactionStatus: Equatable {
     case confirmed
 }
 
-public struct TransactionErrors: Error {
+public struct TransactionErrors: Error, LocalizedError, Equatable {
     public let errors: [TransactionError]
+    
+    public var errorDescription: String? {
+        return errors.first?.localizedDescription
+    }
 }
 
 public enum TransactionError: Error, LocalizedError, Equatable {

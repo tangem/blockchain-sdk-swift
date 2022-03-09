@@ -10,18 +10,17 @@ import Foundation
 import TangemSdk
 import Combine
 
-class BitcoinCashWalletManager: WalletManager {
+class BitcoinCashWalletManager: BaseManager, WalletManager {
     var txBuilder: BitcoinCashTransactionBuilder!
     var networkService: BitcoinCashNetworkService!
     
     var minimalFeePerByte: Decimal { 1 }
     var minimalFee: Decimal { 0.00001 }
     
-    override var currentHost: String {
-        networkService.currentHost
-    }
+    var currentHost: String { networkService.currentHost }
+    var outputsCount: Int? { txBuilder.unspentOutputs?.count }
     
-    override func update(completion: @escaping (Result<Void, Error>)-> Void) {
+    func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(address: self.wallet.address)
             .sink(receiveCompletion: {[unowned self] completionSubscription in
@@ -72,7 +71,9 @@ extension BitcoinCashWalletManager: TransactionSender {
                     guard let self = self else { throw WalletError.empty }
                     
                     self.wallet.add(transaction: transaction)
-                }.eraseToAnyPublisher() ?? .emptyFail
+                }
+                .mapError { SendTxError(error: $0, tx: tx) }
+                .eraseToAnyPublisher() ?? .emptyFail
             }
             .eraseToAnyPublisher()
     }

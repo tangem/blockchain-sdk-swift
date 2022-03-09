@@ -11,16 +11,14 @@ import Combine
 import BinanceChain
 import struct TangemSdk.SignResponse
 
-class BinanceWalletManager: WalletManager {
+class BinanceWalletManager: BaseManager, WalletManager {
     var txBuilder: BinanceTransactionBuilder!
     var networkService: BinanceNetworkService!
     private var latestTxDate: Date?
     
-    override var currentHost: String {
-        networkService.host
-    }
+    var currentHost: String { networkService.host }
     
-    override func update(completion: @escaping (Result<Void, Error>)-> Void) {//check it
+    func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(address: wallet.address)
             .sink(receiveCompletion: {[unowned self] completionSubscription in

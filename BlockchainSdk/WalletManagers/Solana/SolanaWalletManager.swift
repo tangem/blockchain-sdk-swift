@@ -10,15 +10,13 @@ import Foundation
 import Combine
 import Solana_Swift
 
-class SolanaWalletManager: WalletManager {
+class SolanaWalletManager: BaseManager, WalletManager {
     var solanaSdk: Solana!
     var networkService: SolanaNetworkService!
     
-    override var currentHost: String {
-        networkService.host
-    }
+    var currentHost: String { networkService.host }
     
-    public override func update(completion: @escaping (Result<(), Error>) -> Void) {
+    func update(completion: @escaping (Result<(), Error>) -> Void) {
         let transactionIDs = wallet.transactions.compactMap { $0.hash }
         
         cancellable = networkService.getInfo(accountId: wallet.address, transactionIDs: transactionIDs)
