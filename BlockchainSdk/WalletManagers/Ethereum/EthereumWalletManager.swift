@@ -41,21 +41,19 @@ public protocol EthereumTransactionSigner: AnyObject {
     func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error>
 }
 
-class EthereumWalletManager: WalletManager {
+class EthereumWalletManager: BaseManager, WalletManager {
     var txBuilder: EthereumTransactionBuilder!
     var networkService: EthereumNetworkService!
     
     var txCount: Int = -1
     var pendingTxCount: Int = -1
     
-    override var currentHost: String {
-        networkService.host
-    }
+    var currentHost: String { networkService.host }
     
     private var gasLimit: BigUInt? = nil
     private var findTokensSubscription: AnyCancellable? = nil
     
-    override func update(completion: @escaping (Result<Void, Error>)-> Void) {
+    func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(address: wallet.address, tokens: cardTokens)
             .sink(receiveCompletion: {[unowned self] completionSubscription in
@@ -134,7 +132,9 @@ extension EthereumWalletManager: TransactionSender {
                     var tx = transaction
                     tx.hash = sendResponse
                     self.wallet.add(transaction: tx)
-                }.eraseToAnyPublisher() ?? .emptyFail
+                }
+                .mapError { SendTxError(error: $0, tx: tx) }
+                .eraseToAnyPublisher() ?? .emptyFail
             }
             .eraseToAnyPublisher()
     }

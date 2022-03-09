@@ -13,21 +13,19 @@ import TangemSdk
 import BigInt
 import web3swift
 
-class PolkadotWalletManager: WalletManager {
+class PolkadotWalletManager: BaseManager, WalletManager {
     private let network: PolkadotNetwork
     var txBuilder: PolkadotTransactionBuilder!
     var networkService: PolkadotNetworkService!
     
-    override var currentHost: String {
-        network.url.hostOrUnknown
-    }
+    var currentHost: String { network.url.hostOrUnknown }
     
     init(network: PolkadotNetwork, wallet: Wallet) {
         self.network = network
         super.init(wallet: wallet)
     }
     
-    override func update(completion: @escaping (Result<(), Error>) -> Void) {
+    func update(completion: @escaping (Result<(), Error>) -> Void) {
         cancellable = networkService.getInfo(for: wallet.address)
             .sink {
                 switch $0 {
@@ -83,6 +81,8 @@ extension PolkadotWalletManager: TransactionSender {
                     return .emptyFail
                 }
                 return self.networkService.submitExtrinsic(data: image)
+                    .mapError { SendTxError(error: $0, tx: image.hexString) }
+                    .eraseToAnyPublisher()
             }
             .tryMap { [weak self] transactionID in
                 var submittedTransaction = transaction

@@ -26,17 +26,15 @@ public enum StellarError: String, Error, LocalizedError {
     }
 }
 
-class StellarWalletManager: WalletManager {
+class StellarWalletManager: BaseManager, WalletManager {
     var txBuilder: StellarTransactionBuilder!
     var networkService: StellarNetworkService!
     var stellarSdk: StellarSDK!
     private var baseFee: Decimal?
     
-    override var currentHost: String {
-        networkService.host
-    }
-    
-    override func update(completion: @escaping (Result<(), Error>)-> Void)  {
+    var currentHost: String { networkService.host  }
+    var outputsCount: Int? { return 10 }
+    func update(completion: @escaping (Result<(), Error>)-> Void)  {
         cancellable = networkService
             .getInfo(accountId: wallet.address, isAsset: !cardTokens.isEmpty)
             .sink(receiveCompletion: {[unowned self] completionSubscription in
@@ -111,7 +109,9 @@ extension StellarWalletManager: TransactionSender {
                     guard let self = self else { throw WalletError.empty }
                     
                     self.wallet.add(transaction: transaction)
-                } .eraseToAnyPublisher() ?? .emptyFail
+                }
+                .mapError { SendTxError(error: $0, tx: tx) }
+                .eraseToAnyPublisher() ?? .emptyFail
             }
             .eraseToAnyPublisher()
     }
