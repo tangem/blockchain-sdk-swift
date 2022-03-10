@@ -33,6 +33,7 @@
 		5D304394239A6A6B0066B8D9 /* WalletManagerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D304393239A6A6B0066B8D9 /* WalletManagerFactory.swift */; };
 		5D304397239A6B960066B8D9 /* String+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D304396239A6B960066B8D9 /* String+.swift */; };
 		5D304399239A8C9C0066B8D9 /* BitcoinAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D304398239A8C9C0066B8D9 /* BitcoinAddressService.swift */; };
+		5D31EA2D27DA16360031DBEB /* DetailedError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D43DEAB27D91CA100B81343 /* DetailedError.swift */; };
 		5D389ECC23ACFDCF00740FE9 /* MoyaProvider+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D389ECB23ACFDCF00740FE9 /* MoyaProvider+Combine.swift */; };
 		5D43DEAC27D91CA100B81343 /* DetailedError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D43DEAB27D91CA100B81343 /* DetailedError.swift */; };
 		5D4B33BC23F6EA0500C93A84 /* BlockchairTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4B33BB23F6EA0500C93A84 /* BlockchairTarget.swift */; };
@@ -1582,6 +1583,7 @@
 				5DDD831225BF0E7800166EA9 /* EthereumTarget.swift in Sources */,
 				5D908C5826A6E2B600270FA3 /* BinanceTransactionParams.swift in Sources */,
 				DA7CA47427AD3B210041B1A1 /* PolkadotBlockchainMeta.swift in Sources */,
+				5D31EA2D27DA16360031DBEB /* DetailedError.swift in Sources */,
 				DA7CA47127AD3B210041B1A1 /* PolkadotNetwork.swift in Sources */,
 				B09374B3267089F1001450B0 /* DateFormatter+.swift in Sources */,
 				5DFCE54A274BB88700C1B1A0 /* StellarTests.swift in Sources */,

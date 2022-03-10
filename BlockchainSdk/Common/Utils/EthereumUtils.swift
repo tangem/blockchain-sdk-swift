@@ -9,21 +9,19 @@
 import Foundation
 
 public enum EthereumUtils {
-    private static let handler = NSDecimalNumberHandler(roundingMode: .plain, scale: 0,
-                                                        raiseOnExactness: false,  raiseOnOverflow: false,
-                                                        raiseOnUnderflow: false, raiseOnDivideByZero: false)
-    
     public static func parseEthereumDecimal(_ string: String, decimalsCount: Int) -> Decimal? {
         guard let balanceData = asciiHexToData(string.removeHexPrefix())  else {
             return nil
         }
         
-        let balanceWei = dataToDecimal(balanceData)
+        let decimals = Int16(decimalsCount)
+        let handler = makeHandler(with: decimals)
+        let balanceWei = dataToDecimal(balanceData, withBehavior: handler)
         if balanceWei.decimalValue.isNaN {
             return nil
         }
         
-        let balanceEth = balanceWei.dividing(by: NSDecimalNumber(value: 1).multiplying(byPowerOf10: Int16(decimalsCount)), withBehavior: handler)
+        let balanceEth = balanceWei.dividing(by: NSDecimalNumber(value: 1).multiplying(byPowerOf10: decimals), withBehavior: handler)
         if balanceEth.decimalValue.isNaN {
             return nil
         }
@@ -31,7 +29,7 @@ public enum EthereumUtils {
         return balanceEth as Decimal
     }
     
-    private static func dataToDecimal(_ data: Data) -> NSDecimalNumber {
+    private static func dataToDecimal(_ data: Data, withBehavior handler: NSDecimalNumberHandler) -> NSDecimalNumber {
         let reversed = data.reversed()
         var number = NSDecimalNumber(value: 0)
         
@@ -80,5 +78,11 @@ public enum EthereumUtils {
         }
         
         return true
+    }
+    
+    private static func makeHandler(with decimals: Int16) -> NSDecimalNumberHandler {
+        NSDecimalNumberHandler(roundingMode: .plain, scale: decimals,
+                               raiseOnExactness: false,  raiseOnOverflow: false,
+                               raiseOnUnderflow: false, raiseOnDivideByZero: false)
     }
 }
