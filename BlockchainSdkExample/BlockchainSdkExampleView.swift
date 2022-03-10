@@ -27,7 +27,7 @@ struct BlockchainSdkExampleView: View {
                             .tag(blockchain.1)
                     }
                 }
-                .disabled(model.transactionSender == nil)
+                .disabled(model.card == nil)
                 .pickerStyle(.menu)
                 
                 if model.blockchainsWithCurveSelection.contains(model.blockchainName) {
@@ -37,16 +37,16 @@ struct BlockchainSdkExampleView: View {
                                 .tag(curve.rawValue)
                         }
                     }
-                    .disabled(model.transactionSender == nil)
+                    .disabled(model.card == nil)
                     .pickerStyle(.menu)
                 }
                 
                 Toggle("Testnet", isOn: $model.isTestnet)
-                    .disabled(model.transactionSender == nil)
+                    .disabled(model.card == nil)
                 
                 if model.blockchainsWithShelleySelection.contains(model.blockchainName) {
                     Toggle("Shelley", isOn: $model.isShelley)
-                        .disabled(model.transactionSender == nil)
+                        .disabled(model.card == nil)
                 }
             }
             

@@ -31,13 +31,13 @@ class BlockchainSdkExampleViewModel: ObservableObject {
 
     private let sdk: TangemSdk
     private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKey: "", blockcypherTokens: [], infuraProjectId: ""))
-    private var card: Card?
+    @Published private(set) var card: Card?
+    @Published private(set) var transactionSender: TransactionSender?
     private var blockchain: Blockchain?
     private let blockchainNameKey = "blockchainName"
     private let isTestnetKey = "isTestnet"
     private let isShelleyKey = "isShelley"
     private let curveKey = "curve"
-    @Published private(set) var transactionSender: TransactionSender?
     
     private var bag: Set<AnyCancellable> = []
 
@@ -58,7 +58,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             Blockchain.cardano(shelley: false),
         ].map { $0.codingKey }
 
-        self.blockchainName = UserDefaults.standard.string(forKey: blockchainNameKey) ?? ""
+        self.blockchainName = UserDefaults.standard.string(forKey: blockchainNameKey) ?? blockchains.first?.1 ?? ""
         self.isTestnet = UserDefaults.standard.bool(forKey: isTestnetKey)
         self.curve = EllipticCurve(rawValue: UserDefaults.standard.string(forKey: curveKey) ?? "") ?? self.curve
         self.isShelley = UserDefaults.standard.bool(forKey: isShelleyKey)
