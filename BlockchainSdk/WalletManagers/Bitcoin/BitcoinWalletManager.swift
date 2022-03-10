@@ -11,7 +11,7 @@ import TangemSdk
 import Combine
 import BitcoinCore
 
-class BitcoinWalletManager: WalletManager {
+class BitcoinWalletManager: BaseManager, WalletManager {
     var allowsFeeSelection: Bool { true }
     var txBuilder: BitcoinTransactionBuilder!
     var networkService: BitcoinNetworkProvider!
@@ -21,11 +21,10 @@ class BitcoinWalletManager: WalletManager {
     
     var loadedUnspents: [BitcoinUnspentOutput] = []
     
-    override var currentHost: String {
-        networkService.host
-    }
+    var currentHost: String { networkService.host }
+    var outputsCount: Int? { loadedUnspents.count }
     
-    override func update(completion: @escaping (Result<Void, Error>)-> Void)  {
+    func update(completion: @escaping (Result<Void, Error>)-> Void)  {
         cancellable = networkService.getInfo(addresses: wallet.addresses.map{ $0.value })
             .eraseToAnyPublisher()
             .subscribe(on: DispatchQueue.global())
@@ -38,17 +37,6 @@ class BitcoinWalletManager: WalletManager {
                 self.updateWallet(with: response)
                 completion(.success(()))
             })
-    }
-    
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        return networkService.getFee()
-            .tryMap {[weak self] response throws -> [Amount] in
-                guard let self = self else { throw WalletError.empty }
-                
-                return self.processFee(response, amount: amount, destination: destination)
-                
-            }
-            .eraseToAnyPublisher()
     }
     
     func updateWallet(with response: [BitcoinResponse]) {
@@ -66,6 +54,17 @@ class BitcoinWalletManager: WalletManager {
                 $0.pendingTxRefs.forEach { wallet.addPendingTransaction($0) }
             }
         }
+    }
+    
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
+        return networkService.getFee()
+            .tryMap {[weak self] response throws -> [Amount] in
+                guard let self = self else { throw WalletError.empty }
+                
+                return self.processFee(response, amount: amount, destination: destination)
+                
+            }
+            .eraseToAnyPublisher()
     }
     
     private func send(_ transaction: Transaction, signer: TransactionSigner, sequence: Int, isPushingTx: Bool) -> AnyPublisher<Void, Error> {
@@ -101,7 +100,9 @@ class BitcoinWalletManager: WalletManager {
                     var sendedTx = transaction
                     sendedTx.hash = sendResponse
                     self.wallet.add(transaction: sendedTx)
-                }.eraseToAnyPublisher()
+                }
+                .mapError { SendTxError(error: $0, tx: tx) }
+                .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
@@ -236,4 +237,3 @@ extension BitcoinWalletManager: SignatureCountValidator {
 }
 
 extension BitcoinWalletManager: ThenProcessable { }
-

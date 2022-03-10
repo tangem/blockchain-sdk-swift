@@ -11,15 +11,13 @@ import Combine
 import TangemSdk
 import stellarsdk
 
-class TezosWalletManager: WalletManager {
+class TezosWalletManager: BaseManager, WalletManager {
     var txBuilder: TezosTransactionBuilder!
     var networkService: TezosNetworkService!
     
-    override var currentHost: String {
-        networkService.host
-    }
+    var currentHost: String { networkService.host  }
     
-    override func update(completion: @escaping (Result<Void, Error>)-> Void) {
+    func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(address: wallet.address)
             .sink(receiveCompletion: {[unowned self]  completionSubscription in
@@ -98,6 +96,7 @@ extension TezosWalletManager: TransactionSender {
                         
                         self.wallet.add(transaction: transaction)
                     }
+                    .mapError { SendTxError(error: $0, tx: txToSend) }
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
