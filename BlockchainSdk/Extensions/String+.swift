@@ -14,7 +14,11 @@ extension String {
     }
     
     func removeHexPrefix() -> String {
-        return String(self[self.index(self.startIndex, offsetBy: 2)...])
+        if self.lowercased().starts(with: "0x") {
+            return String(self[self.index(self.startIndex, offsetBy: 2)...])
+        }
+        
+        return self
     }
     
     var toUInt8: [UInt8] {
