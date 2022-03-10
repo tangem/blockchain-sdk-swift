@@ -25,6 +25,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     @Published var isShelley: Bool = false
     @Published var curve: EllipticCurve = .ed25519
     @Published var sourceAddress: String = "--"
+    @Published var balance: String = "--"
     
     let blockchainsWithCurveSelection: [String]
     let blockchainsWithShelleySelection: [String]
@@ -32,7 +33,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     private let sdk: TangemSdk
     private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKey: "", blockcypherTokens: [], infuraProjectId: ""))
     @Published private(set) var card: Card?
-    @Published private(set) var transactionSender: TransactionSender?
+    @Published private(set) var walletManager: WalletManager?
     private var blockchain: Blockchain?
     private let blockchainNameKey = "blockchainName"
     private let isTestnetKey = "isTestnet"
@@ -113,15 +114,39 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         }
     }
     
+    func updateBalance() {
+        walletManager?.update { [weak self] result in
+            let balanceDescription: String
+            switch result {
+            case .failure(let error):
+                print(error)
+                balanceDescription = error.localizedDescription
+            case .success:
+                if let balance = self?.walletManager?.wallet.amounts[.coin]?.description {
+                    balanceDescription = balance
+                } else {
+                    balanceDescription = "--"
+                }
+            }
+         
+            DispatchQueue.main.async {
+                self?.balance = balanceDescription
+            }
+        }   
+    }
+    
     func checkFee() {
-        guard let amount = parseAmount() else {
+        guard
+            let amount = parseAmount(),
+            let walletManager = walletManager
+        else {
             feeDescription = "Invalid amount"
             return
         }
         
         feeDescription = ""
         
-        transactionSender?
+        walletManager
             .getFee(amount: amount, destination: destination)
             .receive(on: RunLoop.main)
             .sink { [unowned self] in
@@ -141,41 +166,43 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     func sendTransaction() {
         guard
             let amount = parseAmount(),
-            let blockchain = blockchain
+            let walletManager = walletManager
         else {
             transactionResult = "Invalid amount"
             return
         }
                 
-        let walletManager = transactionSender as! WalletManager
-        walletManager.wallet.add(coinValue: 100)
-        
-        do {
-            let transaction = try walletManager.createTransaction(
-                amount: amount,
-                fee: Amount(with: blockchain, value: 0),
-                destinationAddress: destination
-            ).get()
-            
-            transactionSender?
-                .send(transaction, signer: sdk)
-                .receive(on: RunLoop.main)
-                .sink { [unowned self] in
-                    switch $0 {
-                    case .failure(let error):
-                        print(error)
-                        self.transactionResult = error.localizedDescription
-                    case .finished:
-                        self.transactionResult = "OK"
-                    }
-                } receiveValue: {
-
+        walletManager
+            .getFee(amount: amount, destination: destination)
+            .flatMap { fees -> AnyPublisher<Void, Error> in
+                guard let fee = fees.first else {
+                    return .anyFail(error: WalletError.failedToGetFee)
                 }
-                .store(in: &bag)
-        } catch {
-            print(error)
-            transactionResult = error.localizedDescription
-        }
+                
+                do {
+                    let transaction = try walletManager.createTransaction(
+                        amount: amount,
+                        fee: fee,
+                        destinationAddress: self.destination
+                    )
+                    return walletManager.send(transaction, signer: self.sdk).eraseToAnyPublisher()
+                } catch {
+                    return .anyFail(error: error)
+                }
+            }
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] in
+                switch $0 {
+                case .failure(let error):
+                    print(error)
+                    self.transactionResult = error.localizedDescription
+                case .finished:
+                    self.transactionResult = "OK"
+                }
+            } receiveValue: {
+                
+            }
+            .store(in: &bag)
     }
     
     private func updateBlockchain(
@@ -206,27 +233,25 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             let blockchain = blockchain,
             let wallet = card.wallets.first(where: { $0.curve == blockchain.curve })
         else {
-            self.transactionSender = nil
+            self.walletManager = nil
             self.sourceAddress = "--"
             return
         }
 
         do {
             let walletManager = try walletManagerFactory.makeWalletManager(cardId: card.cardId, blockchain: blockchain, walletPublicKey: wallet.publicKey)
-            if let transactionSender = walletManager as? TransactionSender {
-                self.transactionSender = transactionSender
-                self.sourceAddress = walletManager.wallet.address
-            } else {
-                print("Wallet manager cannot send transactions")
-            }
+            self.walletManager = walletManager
+            self.sourceAddress = walletManager.wallet.address
+            updateBalance()
         } catch {
             print(error)
         }
     }
     
     private func parseAmount() -> Amount? {
+        let numberFormatter = NumberFormatter()
         guard
-            let value = Decimal(string: amountToSend),
+            let value = numberFormatter.number(from: amountToSend)?.decimalValue,
             let blockchain = blockchain
         else {
             return nil

@@ -50,12 +50,25 @@ struct BlockchainSdkExampleView: View {
                 }
             }
             
-            Section("Source address") {
+            Section("Source address and balance") {
                 Text(model.sourceAddress)
                     .textSelection(.enabled)
+                
+                HStack {
+                    Text(model.balance)
+                        .textSelection(.enabled)
+                    
+                    Spacer()
+
+                    Button {
+                        model.updateBalance()
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                    }
+                }
             }
             
-            Section("Destination and amount") {
+            Section("Destination and amount to send") {
                 TextField("Destination", text: $model.destination)
                     .disableAutocorrection(true)
                     .keyboardType(.alphabet)
@@ -74,7 +87,7 @@ struct BlockchainSdkExampleView: View {
                 
                 Text(model.feeDescription)
             }
-            .disabled(model.transactionSender == nil)
+            .disabled(model.walletManager == nil)
             
             Section("Transaction") {
                 Button {
@@ -85,7 +98,7 @@ struct BlockchainSdkExampleView: View {
                 
                 Text(model.transactionResult)
             }
-            .disabled(model.transactionSender == nil)
+            .disabled(model.walletManager == nil)
         }
     }
 }
