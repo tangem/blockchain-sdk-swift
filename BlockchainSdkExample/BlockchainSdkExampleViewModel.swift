@@ -160,7 +160,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             return
         }
         
-        feeDescription = ""
+        feeDescription = "--"
         
         walletManager
             .getFee(amount: amount, destination: destination)
@@ -187,6 +187,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             transactionResult = "Invalid amount"
             return
         }
+        
+        transactionResult = "--"
                 
         walletManager
             .getFee(amount: amount, destination: destination)
@@ -244,13 +246,16 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     }
     
     private func updateWalletManager() {
+        self.walletManager = nil
+        self.sourceAddress = "--"
+        self.feeDescription = "--"
+        self.transactionResult = "--"
+        
         guard
             let card = card,
             let blockchain = blockchain,
             let wallet = card.wallets.first(where: { $0.curve == blockchain.curve })
         else {
-            self.walletManager = nil
-            self.sourceAddress = "--"
             return
         }
 
