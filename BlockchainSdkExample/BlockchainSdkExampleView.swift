@@ -100,6 +100,9 @@ struct BlockchainSdkExampleView: View {
             }
             .disabled(model.walletManager == nil)
         }
+        .onAppear {
+            UIScrollView.appearance().keyboardDismissMode = .onDrag
+        }
     }
 }
 
