@@ -256,6 +256,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         self.sourceAddresses = []
         self.feeDescriptions = []
         self.transactionResult = "--"
+        self.balance = "--"
         
         guard
             let card = card,
