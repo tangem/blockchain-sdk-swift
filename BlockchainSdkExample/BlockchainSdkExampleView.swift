@@ -58,9 +58,11 @@ struct BlockchainSdkExampleView: View {
                         ForEach(model.sourceAddresses, id: \.value) { address in
                             HStack {
                                 VStack(alignment: .leading) {
-                                    Text(address.type.localizedName)
-                                        .font(.caption)
-                                        .foregroundColor(.gray)
+                                    if !address.type.localizedName.isEmpty {
+                                        Text(address.type.localizedName)
+                                            .font(.caption)
+                                            .foregroundColor(.gray)
+                                    }
                                     
                                     Text(address.value)
                                         .lineLimit(1)
