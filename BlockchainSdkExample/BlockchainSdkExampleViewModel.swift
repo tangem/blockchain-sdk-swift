@@ -245,7 +245,14 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         do {
             let blockchainInfo = BlockchainInfo(key: blockchainName, curve: curve.rawValue, testnet: isTestnet, shelley: isShelley)
             let encodedInfo = try JSONEncoder().encode(blockchainInfo)
-            self.blockchain = try JSONDecoder().decode(Blockchain.self, from: encodedInfo)
+            let newBlockchain = try JSONDecoder().decode(Blockchain.self, from: encodedInfo)
+            
+            if let blockchain = blockchain, newBlockchain != blockchain {
+                self.destination = ""
+                self.amountToSend = ""
+            }
+            
+            self.blockchain = newBlockchain
         } catch {
             print(error)
         }
