@@ -14,8 +14,8 @@ import BlockchainSdk
 import TangemSdk
 
 class BlockchainSdkExampleViewModel: ObservableObject {
-    @AppStorage("destination") var destination: String = ""
-    @AppStorage("amount") var amountToSend: String = ""
+    @Published var destination: String = ""
+    @Published var amountToSend: String = ""
     @Published var feeDescription: String = "--"
     @Published var transactionResult: String = "--"
     @Published var blockchains: [(String, String)] = []
@@ -35,6 +35,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     @Published private(set) var card: Card?
     @Published private(set) var walletManager: WalletManager?
     private var blockchain: Blockchain?
+    private let destinationKey = "destination"
+    private let amountKey = "amount"
     private let blockchainNameKey = "blockchainName"
     private let isTestnetKey = "isTestnet"
     private let isShelleyKey = "isShelley"
@@ -59,10 +61,24 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             Blockchain.cardano(shelley: false),
         ].map { $0.codingKey }
 
+        self.destination = UserDefaults.standard.string(forKey: destinationKey) ?? ""
+        self.amountToSend = UserDefaults.standard.string(forKey: amountKey) ?? ""
         self.blockchainName = UserDefaults.standard.string(forKey: blockchainNameKey) ?? blockchains.first?.1 ?? ""
         self.isTestnet = UserDefaults.standard.bool(forKey: isTestnetKey)
         self.curve = EllipticCurve(rawValue: UserDefaults.standard.string(forKey: curveKey) ?? "") ?? self.curve
         self.isShelley = UserDefaults.standard.bool(forKey: isShelleyKey)
+        
+        $destination
+            .sink {
+                UserDefaults.standard.set($0, forKey: self.destinationKey)
+            }
+            .store(in: &bag)
+        
+        $amountToSend
+            .sink {
+                UserDefaults.standard.set($0, forKey: self.amountKey)
+            }
+            .store(in: &bag)
         
         $blockchainName
             .dropFirst()
