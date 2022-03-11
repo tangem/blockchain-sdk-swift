@@ -115,7 +115,7 @@ struct BlockchainSdkExampleView: View {
                         ForEach(model.feeDescriptions, id: \.self) {
                             Text($0)
                         }
-                    }                    
+                    }
                 }
                 .disabled(model.walletManager == nil)
                 
@@ -130,7 +130,7 @@ struct BlockchainSdkExampleView: View {
                 }
                 .disabled(model.walletManager == nil)
             }
-            .navigationBarTitle("Blockchain SDK")
+            .navigationBarTitle("Blockchain SDK", displayMode: .inline)
             .onAppear {
                 UIScrollView.appearance().keyboardDismissMode = .onDrag
             }
