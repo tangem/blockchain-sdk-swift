@@ -212,7 +212,10 @@ extension Blockchain {
             : [URL(string: "https://bsc-dataseed.binance.org/")!]
         case .polygon:
             return isTestnet ? [URL(string: "https://rpc-mumbai.maticvigil.com/")!]
-            : [URL(string: "https://polygon-rpc.com/")!]
+            : [
+                URL(string: "https://polygon-rpc.com/")!,
+                URL(string: "https://rpc-mainnet.maticvigil.com/")!,
+            ]
         case .avalanche:
             return isTestnet ? [URL(string: "https://api.avax-test.network/ext/bc/C/rpc")!]
             : [URL(string: "https://api.avax.network/ext/bc/C/rpc")!]
