@@ -9,99 +9,112 @@
 import SwiftUI
 
 struct BlockchainSdkExampleView: View {
-    @StateObject var model = BlockchainSdkExampleViewModel()
+    @EnvironmentObject var model: BlockchainSdkExampleViewModel
     
     var body: some View {
-        Form {
-            Section {
-                Button {
-                    model.scanCardAndGetInfo()
-                } label: {
-                    Text("Scan card")
-                }
-                
-                Picker("Blockchain", selection: $model.blockchainName) {
-                    Text("Not selected").tag("")
-                    ForEach(model.blockchains, id: \.1) { blockchain in
-                        Text(blockchain.0)
-                            .tag(blockchain.1)
+        NavigationView {
+            Form {
+                Section {
+                    Button {
+                        model.scanCardAndGetInfo()
+                    } label: {
+                        Text("Scan card")
                     }
-                }
-                .disabled(model.card == nil)
-                .pickerStyle(.menu)
-                
-                if model.blockchainsWithCurveSelection.contains(model.blockchainName) {
-                    Picker("Curve", selection: $model.curve) {
-                        ForEach(model.curves, id: \.self) { curve in
-                            Text(curve.rawValue)
-                                .tag(curve.rawValue)
+                    
+                    Picker("Blockchain", selection: $model.blockchainName) {
+                        Text("Not selected").tag("")
+                        ForEach(model.blockchains, id: \.1) { blockchain in
+                            Text(blockchain.0)
+                                .tag(blockchain.1)
                         }
                     }
                     .disabled(model.card == nil)
-                    .pickerStyle(.menu)
-                }
-                
-                Toggle("Testnet", isOn: $model.isTestnet)
-                    .disabled(model.card == nil)
-                
-                if model.blockchainsWithShelleySelection.contains(model.blockchainName) {
-                    Toggle("Shelley", isOn: $model.isShelley)
-                        .disabled(model.card == nil)
-                }
-            }
-            
-            Section(header: Text("Source address and balance")) {
-                Text(model.sourceAddress)
-                    .textSelection(.enabled)
-                
-                HStack {
-                    Text(model.balance)
-                        .textSelection(.enabled)
+                    .modifier(PickerStyleModifier())
                     
-                    Spacer()
-
-                    Button {
-                        model.updateBalance()
-                    } label: {
-                        Image(systemName: "arrow.clockwise")
+                    if model.blockchainsWithCurveSelection.contains(model.blockchainName) {
+                        Picker("Curve", selection: $model.curve) {
+                            ForEach(model.curves, id: \.self) { curve in
+                                Text(curve.rawValue)
+                                    .tag(curve.rawValue)
+                            }
+                        }
+                        .disabled(model.card == nil)
+                        .modifier(PickerStyleModifier())
+                    }
+                    
+                    Toggle("Testnet", isOn: $model.isTestnet)
+                        .disabled(model.card == nil)
+                    
+                    if model.blockchainsWithShelleySelection.contains(model.blockchainName) {
+                        Toggle("Shelley", isOn: $model.isShelley)
+                            .disabled(model.card == nil)
                     }
                 }
-            }
-            
-            Section(header: Text("Destination and amount to send")) {
-                TextField("Destination", text: $model.destination)
-                    .disableAutocorrection(true)
-                    .keyboardType(.alphabet)
-                    .truncationMode(.middle)
                 
-                TextField("Amount", text: $model.amountToSend)
-                    .keyboardType(.decimalPad)
-            }
-            
-            Section(header: Text("Fees")) {
-                Button {
-                    model.checkFee()
-                } label: {
-                    Text("Check fee")
+                Section(header: Text("Source address and balance")) {
+                    Text(model.sourceAddress)
+                    
+                    HStack {
+                        Text(model.balance)
+                        
+                        Spacer()
+                        
+                        Button {
+                            model.updateBalance()
+                        } label: {
+                            Image(systemName: "arrow.clockwise")
+                        }
+                    }
                 }
                 
-                Text(model.feeDescription)
-            }
-            .disabled(model.walletManager == nil)
-            
-            Section(header: Text("Transaction")) {
-                Button {
-                    model.sendTransaction()
-                } label: {
-                    Text("Send transaction")
+                Section(header: Text("Destination and amount to send")) {
+                    TextField("Destination", text: $model.destination)
+                        .disableAutocorrection(true)
+                        .keyboardType(.alphabet)
+                        .truncationMode(.middle)
+                    
+                    TextField("Amount", text: $model.amountToSend)
+                        .keyboardType(.decimalPad)
                 }
                 
-                Text(model.transactionResult)
+                Section(header: Text("Fees")) {
+                    Button {
+                        model.checkFee()
+                    } label: {
+                        Text("Check fee")
+                    }
+                    
+                    Text(model.feeDescription)
+                }
+                .disabled(model.walletManager == nil)
+                
+                Section(header: Text("Transaction")) {
+                    Button {
+                        model.sendTransaction()
+                    } label: {
+                        Text("Send transaction")
+                    }
+                    
+                    Text(model.transactionResult)
+                }
+                .disabled(model.walletManager == nil)
             }
-            .disabled(model.walletManager == nil)
+            .navigationBarTitle("Blockchain SDK")
+            .onAppear {
+                UIScrollView.appearance().keyboardDismissMode = .onDrag
+            }
         }
-        .onAppear {
-            UIScrollView.appearance().keyboardDismissMode = .onDrag
+    }
+}
+
+fileprivate struct PickerStyleModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 14, *) {
+            content
+                .pickerStyle(.menu)
+        } else {
+            content
+                .pickerStyle(.automatic)
         }
     }
 }
