@@ -109,7 +109,13 @@ struct BlockchainSdkExampleView: View {
                         Text("Check fee")
                     }
                     
-                    Text(model.feeDescription)
+                    if model.feeDescriptions.isEmpty {
+                        Text("--")
+                    } else {
+                        ForEach(model.feeDescriptions, id: \.self) {
+                            Text($0)
+                        }
+                    }                    
                 }
                 .disabled(model.walletManager == nil)
                 

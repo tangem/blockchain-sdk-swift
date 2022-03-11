@@ -16,7 +16,7 @@ import TangemSdk
 class BlockchainSdkExampleViewModel: ObservableObject {
     @Published var destination: String = ""
     @Published var amountToSend: String = ""
-    @Published var feeDescription: String = "--"
+    @Published var feeDescriptions: [String] = []
     @Published var transactionResult: String = "--"
     @Published var blockchains: [(String, String)] = []
     @Published var curves: [EllipticCurve] = []
@@ -160,11 +160,11 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             let amount = parseAmount(),
             let walletManager = walletManager
         else {
-            feeDescription = "Invalid amount"
+            feeDescriptions = ["Invalid amount"]
             return
         }
         
-        feeDescription = "--"
+        feeDescriptions = []
         
         walletManager
             .getFee(amount: amount, destination: destination)
@@ -173,12 +173,12 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                 switch $0 {
                 case .failure(let error):
                     print(error)
-                    self.feeDescription = error.localizedDescription
+                    self.feeDescriptions = [error.localizedDescription]
                 case .finished:
                     break
                 }
             } receiveValue: { [unowned self] in
-                self.feeDescription = $0.map { $0.description }.joined(separator: "; ")
+                self.feeDescriptions = $0.map { $0.description }
             }
             .store(in: &bag)
     }
@@ -252,7 +252,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     private func updateWalletManager() {
         self.walletManager = nil
         self.sourceAddresses = []
-        self.feeDescription = "--"
+        self.feeDescriptions = []
         self.transactionResult = "--"
         
         guard
