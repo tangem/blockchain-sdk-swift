@@ -211,8 +211,19 @@ extension Blockchain {
             return isTestnet ? [URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!]
             : [URL(string: "https://bsc-dataseed.binance.org/")!]
         case .polygon:
-            return isTestnet ? [URL(string: "https://rpc-mumbai.maticvigil.com/")!]
-            : [URL(string: "https://rpc-mainnet.maticvigil.com/")!]
+            if isTestnet {
+                return [URL(string: "https://rpc-mumbai.maticvigil.com/")!]
+            } else {
+                // https://docs.polygon.technology/docs/develop/network-details/network/
+                return [
+                    URL(string: "https://polygon-rpc.com")!,
+                    URL(string: "https://rpc-mainnet.matic.network")!,
+                    URL(string: "https://matic-mainnet.chainstacklabs.com")!,
+                    URL(string: "https://rpc-mainnet.maticvigil.com")!,
+                    URL(string: "https://rpc-mainnet.matic.quiknode.pro")!,
+                    URL(string: "https://matic-mainnet-full-rpc.bwarelabs.com")!,
+                ]
+            }
         case .avalanche:
             return isTestnet ? [URL(string: "https://api.avax-test.network/ext/bc/C/rpc")!]
             : [URL(string: "https://api.avax.network/ext/bc/C/rpc")!]
