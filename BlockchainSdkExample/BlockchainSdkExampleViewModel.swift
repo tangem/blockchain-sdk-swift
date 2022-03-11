@@ -24,7 +24,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     @Published var isTestnet: Bool = false
     @Published var isShelley: Bool = false
     @Published var curve: EllipticCurve = .ed25519
-    @Published var sourceAddress: String = "--"
+    @Published var sourceAddresses: [Address] = []
     @Published var balance: String = "--"
     
     let blockchainsWithCurveSelection: [String]
@@ -151,8 +151,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         }   
     }
     
-    func copySourceAddressToClipboard() {
-        UIPasteboard.general.string = sourceAddress
+    func copySourceAddressToClipboard(_ sourceAddress: Address) {
+        UIPasteboard.general.string = sourceAddress.value
     }
     
     func checkFee() {
@@ -251,7 +251,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     
     private func updateWalletManager() {
         self.walletManager = nil
-        self.sourceAddress = "--"
+        self.sourceAddresses = []
         self.feeDescription = "--"
         self.transactionResult = "--"
         
@@ -266,7 +266,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         do {
             let walletManager = try walletManagerFactory.makeWalletManager(cardId: card.cardId, blockchain: blockchain, walletPublicKey: wallet.publicKey)
             self.walletManager = walletManager
-            self.sourceAddress = walletManager.wallet.address
+            self.sourceAddresses = walletManager.wallet.addresses
             updateBalance()
         } catch {
             print(error)

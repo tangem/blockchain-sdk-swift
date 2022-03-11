@@ -52,17 +52,29 @@ struct BlockchainSdkExampleView: View {
                 }
                 
                 Section(header: Text("Source address and balance")) {
-                    HStack {
-                        Text(model.sourceAddress)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                        
-                        Spacer()
-                        
-                        Button {
-                            model.copySourceAddressToClipboard()
-                        } label: {
-                            Image(systemName: "doc.on.doc")
+                    if model.sourceAddresses.isEmpty {
+                        Text("--")
+                    } else {
+                        ForEach(model.sourceAddresses, id: \.value) { address in
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(address.type.localizedName)
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                    
+                                    Text(address.value)
+                                        .lineLimit(1)
+                                        .truncationMode(.middle)
+                                }
+                                
+                                Spacer()
+                                
+                                Button {
+                                    model.copySourceAddressToClipboard(address)
+                                } label: {
+                                    Image(systemName: "doc.on.doc")
+                                }
+                            }
                         }
                     }
                     

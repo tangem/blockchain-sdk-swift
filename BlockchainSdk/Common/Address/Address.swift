@@ -19,7 +19,7 @@ public enum AddressType: Equatable {
 	case bitcoin(type: BitcoinAddressType)
     case cardano(type: CardanoAddressType)
 	
-	var localizedName: String {
+	public var localizedName: String {
 		switch self {
 		case .plain: return ""
 		case .bitcoin(let type): return type.localizedName
