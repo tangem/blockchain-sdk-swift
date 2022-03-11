@@ -151,6 +151,10 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         }   
     }
     
+    func copySourceAddressToClipboard() {
+        UIPasteboard.general.string = sourceAddress
+    }
+    
     func checkFee() {
         guard
             let amount = parseAmount(),

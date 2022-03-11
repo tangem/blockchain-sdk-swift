@@ -52,10 +52,19 @@ struct BlockchainSdkExampleView: View {
                 }
                 
                 Section(header: Text("Source address and balance")) {
-                    Text(model.sourceAddress)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                        .modifier(TextSelectionConditionalModifier())
+                    HStack {
+                        Text(model.sourceAddress)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                        
+                        Spacer()
+                        
+                        Button {
+                            model.copySourceAddressToClipboard()
+                        } label: {
+                            Image(systemName: "doc.on.doc")
+                        }
+                    }
                     
                     HStack {
                         Text(model.balance)
