@@ -158,6 +158,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     }
     
     func checkFee() {
+        feeDescriptions = []
+        
         guard
             let amount = parseAmount(),
             let walletManager = walletManager
@@ -165,8 +167,6 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             feeDescriptions = ["Invalid amount"]
             return
         }
-        
-        feeDescriptions = []
         
         walletManager
             .getFee(amount: amount, destination: destination)
@@ -186,6 +186,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     }
     
     func sendTransaction() {
+        transactionResult = "--"
+
         guard
             let amount = parseAmount(),
             let walletManager = walletManager
@@ -194,8 +196,6 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             return
         }
         
-        transactionResult = "--"
-                
         walletManager
             .getFee(amount: amount, destination: destination)
             .flatMap { fees -> AnyPublisher<Void, Error> in
