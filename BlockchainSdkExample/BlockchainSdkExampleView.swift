@@ -53,9 +53,13 @@ struct BlockchainSdkExampleView: View {
                 
                 Section(header: Text("Source address and balance")) {
                     Text(model.sourceAddress)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                        .modifier(TextSelectionConditionalModifier())
                     
                     HStack {
                         Text(model.balance)
+                            .modifier(TextSelectionConditionalModifier())
                         
                         Spacer()
                         
@@ -118,6 +122,18 @@ fileprivate struct PickerStyleModifier: ViewModifier {
         }
     }
 }
+
+fileprivate struct TextSelectionConditionalModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 15, *) {
+            content
+                .textSelection(.enabled)
+        } else {
+            content
+        }
+    }
+}
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
