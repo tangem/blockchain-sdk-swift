@@ -131,6 +131,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     }
     
     func updateBalance() {
+        balance = "--"
+        
         walletManager?.update { [weak self] result in
             let balanceDescription: String
             switch result {
