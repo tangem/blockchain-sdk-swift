@@ -23,7 +23,7 @@ target 'BlockchainSdk' do
   pod 'web3swift', :git => 'https://github.com/lazutkin-andrey/web3swift.git', :tag => '2.2.8'
   pod 'AnyCodable-FlightSchool'
   pod 'stellar-ios-mac-sdk'
-  pod 'BitcoinCore.swift', :git => 'https://github.com/lazutkin-andrey/bitcoincore.git', :tag => '0.0.15'
+  pod 'BitcoinCore.swift', :git => 'https://github.com/lazutkin-andrey/bitcoincore.git', :tag => '0.0.16'
   #pod 'BitcoinCore.swift', :path => '../bitcoincore'
   pod 'Solana.Swift', :git => 'https://github.com/tangem/Solana.Swift', :tag => 'add-external-signer-1'
   #pod 'Solana.Swift', :path => '../Solana.Swift'
