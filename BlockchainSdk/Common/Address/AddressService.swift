@@ -16,7 +16,7 @@ public protocol AddressService: MultipleAddressProvider {
 extension AddressService {
     public func makeAddresses(from walletPublicKey: Data) throws -> [Address] {
         let value = try makeAddress(from: walletPublicKey)
-        let address = PlainAddress(value: value, localizedName: "", type: .default)
+        let address = PlainAddress(value: value, type: .default)
         return [address]
     }
 }
