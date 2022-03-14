@@ -11,29 +11,33 @@ import Foundation
 public protocol Address {
     var value: String { get }
     var localizedName: String { get }
-	var type: AddressType { get }
+    var type: AddressType { get }
 }
 
 public enum AddressType: Equatable {
-	case plain
-	case bitcoin(type: BitcoinAddressType)
-    case cardano(type: CardanoAddressType)
-	
-	public var localizedName: String {
-		switch self {
-		case .plain: return ""
-		case .bitcoin(let type): return type.localizedName
-        case .cardano(let type): return type.localizedName
-		}
-	}
+    case `default`
+	case legacy
+    
+    public var defaultLocalizedName: String {
+        switch self {
+        case .default:
+            return "address_type_default".localized
+        case .legacy:
+            return "address_type_legacy".localized
+        }
+    }
 }
 
 public struct PlainAddress: Address {
     public let value: String
-	public let type: AddressType = .plain
-    public var localizedName: String { "" }
-    
-    public init(value: String) {
+    public let localizedName: String
+    public let type: AddressType
+}
+
+extension PlainAddress {
+    init(value: String, type: AddressType) {
         self.value = value
+        self.type = type
+        self.localizedName = type.defaultLocalizedName
     }
 }

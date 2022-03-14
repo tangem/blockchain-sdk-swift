@@ -40,20 +40,15 @@ class BitcoinTransactionBuilder {
 
 	init(bitcoinManager: BitcoinManager, addresses: [Address]) {
         self.bitcoinManager = bitcoinManager
-        let scriptAddresses = addresses.map { $0 as? BitcoinScriptAddress }
-        var script: Data?
-        if !scriptAddresses.isEmpty {
-            if let scriptAddress = scriptAddresses.first(where: {
-                if case .bitcoin(let t) = $0?.type {
-                    return t == .bech32
-                }
-                return false
-            }) {
-                script = scriptAddress?.script.data
-            }
-        }
-        walletScripts = scriptAddresses.compactMap { $0?.script }
-        changeScript = script?.sha256()
+        
+        let scriptAddresses = addresses.compactMap { $0 as? BitcoinScriptAddress }
+        let scripts = scriptAddresses.map { $0.script }
+        let defaultScriptData = scriptAddresses
+            .first(where: { $0.type == .default })
+            .map { $0.script.data }
+       
+        walletScripts = scripts
+        changeScript = defaultScriptData?.sha256()
 	}
 	
 	public func buildForSign(transaction: Transaction, sequence: Int?) -> [Data]? {

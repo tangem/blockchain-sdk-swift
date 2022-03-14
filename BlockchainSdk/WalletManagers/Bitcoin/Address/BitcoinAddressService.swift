@@ -33,9 +33,8 @@ public class BitcoinAddressService: AddressService {
         let bech32AddressString = try bech32.makeAddress(from: walletPublicKey)
         let legacyAddressString = try legacy.makeAddress(from: walletPublicKey)
       
-        let bech32Address = BitcoinAddress(type: .bech32, value: bech32AddressString)
-        
-        let legacyAddress = BitcoinAddress(type: .legacy, value: legacyAddressString)
+        let bech32Address = PlainAddress(value: bech32AddressString, type: .default)
+        let legacyAddress = PlainAddress(value: legacyAddressString, type: .legacy)
         
         return [bech32Address, legacyAddress]
     }
@@ -44,10 +43,13 @@ public class BitcoinAddressService: AddressService {
 		guard let script = try create1Of2MultisigOutputScript(firstPublicKey: firstPublicKey, secondPublicKey: secondPublicKey) else {
 			throw BlockchainSdkError.failedToCreateMultisigScript
 		}
+        
 		let legacyAddressString = try legacy.makeMultisigAddress(from: script.data.sha256Ripemd160)
 		let scriptAddress = BitcoinScriptAddress(script: script, value: legacyAddressString, type: .legacy)
+        
 		let bech32AddressString = try bech32.makeMultisigAddress(from: script.data.sha256())
-		let bech32Address = BitcoinScriptAddress(script: script, value: bech32AddressString, type: .bech32)
+		let bech32Address = BitcoinScriptAddress(script: script, value: bech32AddressString, type: .default)
+        
 		return [bech32Address, scriptAddress]
 	}
 	

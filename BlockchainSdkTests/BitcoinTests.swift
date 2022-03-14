@@ -30,10 +30,10 @@ class BitcoinTests: XCTestCase {
         let addresses = try! addressService.makeAddresses(from: walletPublicKey)
         XCTAssertEqual(addresses.count, numberOfAddresses)
         
-        let legacy = addresses.first(where: { $0.type == .bitcoin(type: .legacy) })
+        let legacy = addresses.first(where: { $0.type == .legacy })
         XCTAssertEqual(legacy?.value, expectedLegacyAddress)
         
-        let segwit = addresses.first(where: { $0.type == .bitcoin(type: .bech32) })
+        let segwit = addresses.first(where: { $0.type == .default })
         XCTAssertEqual(segwit?.value, expectedSegwitAddress)
     }
     
@@ -56,10 +56,10 @@ class BitcoinTests: XCTestCase {
         var segwit: Address?
         zip(addresses!, reversedPubkeysAddresses!).forEach {
             XCTAssertEqual($0.value, $1.value)
-            if $0.type == .bitcoin(type: .legacy) {
+            if $0.type == .legacy {
                 legacy = $0
             }
-            if $0.type == .bitcoin(type: .bech32) {
+            if $0.type == .default {
                 segwit = $0
             }
         }
@@ -89,7 +89,7 @@ class BitcoinTests: XCTestCase {
         let destination = "bc1q67dmfccnax59247kshfkxcq6qr53wmwqfa4s28cupktj2amf5jus2j6qvt"
         
         let addresses = try! addressService.makeAddresses(from: pubkey)
-        let segwit = addresses.first(where: { $0.type == .bitcoin(type: .bech32) } )!
+        let segwit = addresses.first(where: { $0.type == .default } )!
         let manager = BitcoinManager(networkParams: networkParams, walletPublicKey: pubkey, compressedWalletPublicKey: compressedPubkey)
         let txBuilder = BitcoinTransactionBuilder(bitcoinManager: manager, addresses: addresses)
         txBuilder.feeRates[feeValue] = 21

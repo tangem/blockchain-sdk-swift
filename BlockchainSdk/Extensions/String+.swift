@@ -21,6 +21,15 @@ extension String {
         return self
     }
     
+    func removeBchPrefix() -> String {
+        if let index = self.firstIndex(where: { $0 == ":" }) {
+            let startIndex = self.index(index, offsetBy: 1)
+            return String(self.suffix(from: startIndex))
+        }
+
+        return self
+    }
+    
     var toUInt8: [UInt8] {
         let v = self.utf8CString.map({ UInt8($0) })
         return Array(v[0 ..< (v.count-1)])

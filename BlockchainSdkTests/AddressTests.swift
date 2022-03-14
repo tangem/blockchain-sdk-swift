@@ -10,6 +10,7 @@ import Foundation
 import XCTest
 import TangemSdk
 import CryptoKit
+import HDWalletKit
 
 class AddressesTests: XCTestCase {
     private let secpPrivKey = Data(hexString: "83686EF30173D2A05FD7E2C8CB30941534376013B903A2122CF4FF3E8668355A")
@@ -27,14 +28,14 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addr_dec.count, 2)
         XCTAssertEqual(addr_comp.count, 2)
         
-        let bech32_dec = addr_dec.first(where: { $0.type == .bitcoin(type: .bech32)})!
-        let bech32_comp = addr_comp.first(where: { $0.type == .bitcoin(type: .bech32)})!
+        let bech32_dec = addr_dec.first(where: { $0.type == .default })!
+        let bech32_comp = addr_comp.first(where: { $0.type == .default})!
         XCTAssertEqual(bech32_dec.value, bech32_comp.value)
         XCTAssertEqual(bech32_dec.value, "bc1qc2zwqqucrqvvtyxfn78ajm8w2sgyjf5edc40am")
         XCTAssertEqual(bech32_dec.localizedName, bech32_comp.localizedName)
         
-        let leg_dec = addr_dec.first(where: { $0.type == .bitcoin(type: .legacy) })!
-        let leg_comp = addr_comp.first(where: { $0.type == .bitcoin(type: .legacy) })!
+        let leg_dec = addr_dec.first(where: { $0.type == .legacy })!
+        let leg_comp = addr_comp.first(where: { $0.type == .legacy })!
         XCTAssertEqual(leg_dec.localizedName, leg_comp.localizedName)
         XCTAssertEqual(leg_dec.value, "1HTBz4DRWpDET1QNMqsWKJ39WyWcwPWexK")
         XCTAssertEqual(leg_comp.value, "1JjXGY5KEcbT35uAo6P9A7DebBn4DXnjdQ")
@@ -50,14 +51,14 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addr_dec.count, 2)
         XCTAssertEqual(addr_comp.count, 2)
         
-        let bech32_dec = addr_dec.first(where: { $0.type == .bitcoin(type: .bech32)})!
-        let bech32_comp = addr_comp.first(where: { $0.type == .bitcoin(type: .bech32)})!
+        let bech32_dec = addr_dec.first(where: { $0.type == .default})!
+        let bech32_comp = addr_comp.first(where: { $0.type == .default})!
         XCTAssertEqual(bech32_dec.value, bech32_comp.value)
         XCTAssertEqual(bech32_dec.localizedName, bech32_comp.localizedName)
         XCTAssertEqual(bech32_dec.value, "tb1qc2zwqqucrqvvtyxfn78ajm8w2sgyjf5e87wuxg") //todo: validate with android
         
-        let leg_dec = addr_dec.first(where: { $0.type == .bitcoin(type: .legacy) })!
-        let leg_comp = addr_comp.first(where: { $0.type == .bitcoin(type: .legacy) })!
+        let leg_dec = addr_dec.first(where: { $0.type == .legacy })!
+        let leg_comp = addr_comp.first(where: { $0.type == .legacy })!
         XCTAssertEqual(leg_dec.localizedName, leg_comp.localizedName)
         XCTAssertEqual(leg_dec.value, "mwy9H7JQKqeVE7sz5Qqt9DFUNy7KtX7wHj") //todo: validate with android
         XCTAssertEqual(leg_comp.value, "myFUZbAJ3e2hpCNnWfMWz2RyTBNm7vdnSQ") //todo: validate with android
@@ -79,8 +80,8 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addr_comp1.count, 2)
         
     
-        XCTAssertEqual(addr_dec.first(where: {$0.type == .bitcoin(type: .bech32)})!.value, "bc1q0u3heda6uhq7fulsqmw40heuh3e76nd9skxngv93uzz3z6xtpjmsrh88wh")
-        XCTAssertEqual(addr_dec.first(where: {$0.type == .bitcoin(type: .legacy)})!.value, "34DmpSKfsvqxgzVVhcEepeX3s67ai4ShPq")
+        XCTAssertEqual(addr_dec.first(where: {$0.type == .default})!.value, "bc1q0u3heda6uhq7fulsqmw40heuh3e76nd9skxngv93uzz3z6xtpjmsrh88wh")
+        XCTAssertEqual(addr_dec.first(where: {$0.type == .legacy})!.value, "34DmpSKfsvqxgzVVhcEepeX3s67ai4ShPq")
         
         for index in 0..<2 {
             XCTAssertEqual(addr_dec[index].value, addr_dec1[index].value)
@@ -107,14 +108,14 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addr_dec.count, 2)
         XCTAssertEqual(addr_comp.count, 2)
         
-        let bech32_dec = addr_dec.first(where: { $0.type == .bitcoin(type: .bech32)})!
-        let bech32_comp = addr_comp.first(where: { $0.type == .bitcoin(type: .bech32)})!
+        let bech32_dec = addr_dec.first(where: { $0.type == .default})!
+        let bech32_comp = addr_comp.first(where: { $0.type == .default})!
         XCTAssertEqual(bech32_dec.value, bech32_comp.value)
         XCTAssertEqual(bech32_dec.value, "ltc1qc2zwqqucrqvvtyxfn78ajm8w2sgyjf5efy0t9t") //todo: validate
         XCTAssertEqual(bech32_dec.localizedName, bech32_comp.localizedName)
         
-        let leg_dec = addr_dec.first(where: { $0.type == .bitcoin(type: .legacy) })!
-        let leg_comp = addr_comp.first(where: { $0.type == .bitcoin(type: .legacy) })!
+        let leg_dec = addr_dec.first(where: { $0.type == .legacy })!
+        let leg_comp = addr_comp.first(where: { $0.type == .legacy })!
         XCTAssertEqual(leg_dec.localizedName, leg_comp.localizedName)
         XCTAssertEqual(leg_dec.value, "Lbg9FGXFbUTHhp6XXyrobK6ujBsu7UE7ww")
         XCTAssertEqual(leg_comp.value, "LcxUXkP9KGqWHtbKyENSS8HQoQ9LK8DQLX")
@@ -198,12 +199,20 @@ class AddressesTests: XCTestCase {
         
         XCTAssertThrowsError(try blockchain.makeAddresses(from: edKey, with: nil))
         
-        XCTAssertEqual(addr_dec.count, 1)
-        XCTAssertEqual(addr_comp.count, 1)
-        XCTAssertEqual(addr_dec[0].value, addr_comp[0].value)
-        XCTAssertEqual(addr_dec[0].localizedName, addr_comp[0].localizedName)
-        XCTAssertEqual(addr_dec[0].type, addr_comp[0].type)
-        XCTAssertEqual(addr_dec[0].value, "bitcoincash:qrpgfcqrnqvp33vsex0clktvae2pqjfxnyxq0ml0zc") //we ignore uncompressed addresses
+        XCTAssertEqual(addr_dec.count, 2)
+        XCTAssertEqual(addr_comp.count, 2)
+        
+        for index in 0..<2 {
+            XCTAssertEqual(addr_dec[index].value, addr_comp[index].value)
+            XCTAssertEqual(addr_dec[index].localizedName, addr_comp[index].localizedName)
+            XCTAssertEqual(addr_dec[index].type, addr_comp[index].type)
+        }
+        
+        let testRemovePrefix = String("bitcoincash:qrpgfcqrnqvp33vsex0clktvae2pqjfxnyxq0ml0zc".removeBchPrefix())
+        XCTAssertEqual(testRemovePrefix, "qrpgfcqrnqvp33vsex0clktvae2pqjfxnyxq0ml0zc")
+        
+        XCTAssertEqual(addr_comp[0].value, "bitcoincash:qrpgfcqrnqvp33vsex0clktvae2pqjfxnyxq0ml0zc") //we ignore uncompressed addresses
+        XCTAssertEqual(addr_comp[1].value, "1JjXGY5KEcbT35uAo6P9A7DebBn4DXnjdQ") //we ignore uncompressed addresses
     }
     
     func testBchTestnet() {
@@ -213,12 +222,14 @@ class AddressesTests: XCTestCase {
         
         XCTAssertThrowsError(try blockchain.makeAddresses(from: edKey, with: nil))
         
-        XCTAssertEqual(addr_dec.count, 1)
-        XCTAssertEqual(addr_comp.count, 1)
-        XCTAssertEqual(addr_dec[0].value, addr_comp[0].value)
-        XCTAssertEqual(addr_dec[0].localizedName, addr_comp[0].localizedName)
-        XCTAssertEqual(addr_dec[0].type, addr_comp[0].type)
-        XCTAssertEqual(addr_dec[0].value, "bitcoincash:qrpgfcqrnqvp33vsex0clktvae2pqjfxnyxq0ml0zc") //we ignore uncompressed addresses
+        for index in 0..<2 {
+            XCTAssertEqual(addr_dec[index].value, addr_comp[index].value)
+            XCTAssertEqual(addr_dec[index].localizedName, addr_comp[index].localizedName)
+            XCTAssertEqual(addr_dec[index].type, addr_comp[index].type)
+        }
+        
+        XCTAssertEqual(addr_comp[0].value, "bchtest:qrpgfcqrnqvp33vsex0clktvae2pqjfxnyzjtuac9y") //we ignore uncompressed addresses
+        XCTAssertEqual(addr_comp[1].value, "myFUZbAJ3e2hpCNnWfMWz2RyTBNm7vdnSQ") //we ignore uncompressed addresses
     }
     
     func testBinance() {
@@ -259,7 +270,7 @@ class AddressesTests: XCTestCase {
         XCTAssertThrowsError(try blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
         
         XCTAssertEqual(addrs.count, 1)
-        XCTAssertEqual(addrs[0].localizedName, CardanoAddressType.legacy.localizedName)
+        XCTAssertEqual(addrs[0].localizedName, AddressType.legacy.defaultLocalizedName)
         XCTAssertEqual(addrs[0].value, "Ae2tdPwUPEZAwboh4Qb8nzwQe6kmT5A3EmGKAKuS6Tcj8UkHy6BpQFnFnND")
     }
     
@@ -271,10 +282,10 @@ class AddressesTests: XCTestCase {
         XCTAssertThrowsError(try blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
         
         XCTAssertEqual(addrs.count, 2)
-        XCTAssertEqual(addrs[1].localizedName, CardanoAddressType.legacy.localizedName)
+        XCTAssertEqual(addrs[1].localizedName, AddressType.legacy.defaultLocalizedName)
         XCTAssertEqual(addrs[1].value, "Ae2tdPwUPEZAwboh4Qb8nzwQe6kmT5A3EmGKAKuS6Tcj8UkHy6BpQFnFnND")
         
-        XCTAssertEqual(addrs[0].localizedName, CardanoAddressType.bech32.localizedName)
+        XCTAssertEqual(addrs[0].localizedName, AddressType.default.defaultLocalizedName)
         XCTAssertEqual(addrs[0].value, "addr1vyq5f2ntspszzu77guh8kg4gkhzerws5t9jd6gg4d222yfsajkfw5")
     }
     

@@ -19,7 +19,7 @@ public struct Wallet {
     public private(set) var state: WalletState = .created
     
     public var address: String {
-        if let address = addresses.first(where: { $0.type == blockchain.defaultAddressType })?.value {
+        if let address = addresses.first(where: { $0.type == .default })?.value {
             return address
         } else {
             return addresses.first!.value
