@@ -187,27 +187,22 @@ public class WalletManagerFactory {
             
         case .bitcoinCash(let testnet):
             return try BitcoinCashWalletManager(wallet: wallet).then {
+                let compressed = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
                 let bitcoinManager = BitcoinManager(networkParams: testnet ? BitcoinCashTestNetworkParams() : BitcoinCashNetworkParams(),
-                                                    walletPublicKey: wallet.publicKey.blockchainKey,
-                                                    compressedWalletPublicKey: try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress(),
-                                                    bip: .bip44)
+                                                    walletPublicKey: compressed,
+                                                    compressedWalletPublicKey: compressed,
+                                                    bip: .bip84)
                 
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
                 
+                //TODO: Add testnet support. Maybe https://developers.cryptoapis.io/technical-documentation/general-information/what-we-support
                 var providers = [AnyBitcoinNetworkProvider]()
                 providers.append(BlockchairNetworkProvider(endpoint: .bitcoinCash,
                                                            apiKey: config.blockchairApiKey)
                                     .eraseToAnyBitcoinNetworkProvider())
                 $0.networkService = BitcoinCashNetworkService(providers: providers)
             }
-            
-            
-//            return try BitcoinCashWalletManager(wallet: wallet).then {
-//                let provider = BlockchairNetworkProvider(endpoint: .bitcoinCash, apiKey: config.blockchairApiKey)
-//                $0.txBuilder = try BitcoinCashTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, isTestnet: testnet)
-//                $0.networkService = BitcoinCashNetworkService(provider: provider)
-//            }
-            
+
         case .binance(let testnet):
             return try BinanceWalletManager(wallet: wallet).then {
                 $0.txBuilder = try BinanceTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, isTestnet: testnet)

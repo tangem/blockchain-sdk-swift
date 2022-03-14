@@ -37,7 +37,7 @@ public class BitcoinCashAddressService: AddressService {
     }
     
     public func validate(_ address: String) -> Bool {
-        cashAddrService.validate(address)
+        cashAddrService.validate(address) || legacyService.validate(address)
     }
 }
 
