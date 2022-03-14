@@ -129,7 +129,7 @@ class AddressesTests: XCTestCase {
         XCTAssertThrowsError(try blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
         
         XCTAssertEqual(addrs.count, 1)
-        XCTAssertEqual(addrs[0].localizedName, "")
+        XCTAssertEqual(addrs[0].localizedName, AddressType.default.defaultLocalizedName)
         XCTAssertEqual(addrs[0].value, "GCP6LOZMY7MDYHNBBBC27WFDJMKB7WH5OJIAXFNRKR7BFON3RKWD3XYA")
     }
     
@@ -141,7 +141,7 @@ class AddressesTests: XCTestCase {
         XCTAssertThrowsError(try blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
         
         XCTAssertEqual(addrs.count, 1)
-        XCTAssertEqual(addrs[0].localizedName, "")
+        XCTAssertEqual(addrs[0].localizedName, AddressType.default.defaultLocalizedName)
         XCTAssertEqual(addrs[0].value, "GCP6LOZMY7MDYHNBBBC27WFDJMKB7WH5OJIAXFNRKR7BFON3RKWD3XYA")
     }
     
@@ -311,7 +311,7 @@ class AddressesTests: XCTestCase {
         XCTAssertThrowsError(try blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
         
         XCTAssertEqual(addrs.count, 1)
-        XCTAssertEqual(addrs[0].localizedName, "")
+        XCTAssertEqual(addrs[0].localizedName, AddressType.default.defaultLocalizedName)
         XCTAssertEqual(addrs[0].value, "rPhmKhkYoMiqC2xqHYhtPLnicWQi85uDf2") //todo: validate
     }
     
@@ -352,7 +352,7 @@ class AddressesTests: XCTestCase {
         XCTAssertThrowsError(try blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
         
         XCTAssertEqual(addrs.count, 1)
-        XCTAssertEqual(addrs[0].localizedName, "")
+        XCTAssertEqual(addrs[0].localizedName, AddressType.default.defaultLocalizedName)
         XCTAssertEqual(addrs[0].value, "tz1VS42nEFHoTayE44ZKANQWNhZ4QbWFV8qd")
     }
     
