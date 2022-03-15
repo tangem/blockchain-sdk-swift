@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import TangemSdk
 
 public struct Token: Hashable, Equatable, Codable {
     public func hash(into hasher: inout Hasher) {
@@ -15,7 +16,8 @@ public struct Token: Hashable, Equatable, Codable {
     }
     
     public static func == (lhs: Token, rhs: Token) -> Bool {
-        lhs.contractAddress.lowercased() == rhs.contractAddress.lowercased()
+        lhs.contractAddress.lowercased() == rhs.contractAddress.lowercased() &&
+        lhs.derivationPath == rhs.derivationPath
     }
     
     public let name: String
@@ -24,14 +26,16 @@ public struct Token: Hashable, Equatable, Codable {
     public let decimalCount: Int
     public let customIconUrl: String?
     public let blockchain: Blockchain
+    public let derivationPath: DerivationPath?
     
-    public init(name: String? = nil, symbol: String, contractAddress: String, decimalCount: Int, customIconUrl: String? = nil, blockchain: Blockchain) {
+    public init(name: String? = nil, symbol: String, contractAddress: String, decimalCount: Int, customIconUrl: String? = nil, blockchain: Blockchain, derivationPath: DerivationPath? = nil) {
         self.name = name ?? symbol
         self.symbol = symbol
         self.contractAddress = contractAddress
         self.decimalCount = decimalCount
         self.customIconUrl = customIconUrl
         self.blockchain = blockchain
+        self.derivationPath = derivationPath ?? blockchain.derivationPath
     }
     
     init(_ blockhairToken: BlockchairToken, blockchain: Blockchain) {
@@ -41,6 +45,7 @@ public struct Token: Hashable, Equatable, Codable {
         self.decimalCount = blockhairToken.decimals
         self.customIconUrl = nil
         self.blockchain = blockchain
+        self.derivationPath = blockchain.derivationPath
     }
 }
 

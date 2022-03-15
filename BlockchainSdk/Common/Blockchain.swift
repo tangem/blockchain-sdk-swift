@@ -243,6 +243,10 @@ extension Blockchain {
 @available(iOS 13.0, *)
 extension Blockchain {
     public var derivationPath: DerivationPath? {
+        derivationPath(coinType: self.coinType)
+    }
+    
+    public func derivationPath(coinType: UInt32) -> DerivationPath? {
         guard curve == .secp256k1 || curve == .ed25519 else { return  nil }
         
         switch self {
