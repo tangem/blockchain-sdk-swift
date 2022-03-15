@@ -11,30 +11,17 @@ import Moya
 import Combine
 import TangemSdk
 
-class BitcoinCashNetworkService {
-    private let provider: BlockchairNetworkProvider
-    
-    var currentHost: String {
-        provider.host
+class BitcoinCashNetworkService: BitcoinNetworkService {
+    override func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
+        super.getInfo(address: addresses[0])
+            .map { [$0] }
+            .eraseToAnyPublisher()
     }
-
-    init(provider: BlockchairNetworkProvider) {
-        self.provider = provider
-    }
-    
-    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        provider.getInfo(address: address.remove(BitcoinCashAddressService.addressPrefix).remove(":"))
-    }
-    
-    func getFee() -> AnyPublisher<BitcoinFee, Error> {
-        return provider.getFee()
-    }
-    
-    func send(transaction: String) -> AnyPublisher<String, Error> {
-        return provider.send(transaction: transaction)
+    override func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
+        super.getInfo(address: address.removeBchPrefix())
     }
 	
-	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-		provider.getSignatureCount(address: address)
+    override func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
+		super.getSignatureCount(address: address.removeBchPrefix()) //TODO: check it!
 	}
 }

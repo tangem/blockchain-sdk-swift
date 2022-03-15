@@ -25,8 +25,8 @@ public class CardanoAddressService: AddressService {
         
         if shelley {
             return [
-                CardanoAddress(type: .bech32, value: makeShelleyAddress(from: walletPublicKey)),
-                CardanoAddress(type: .legacy, value: makeByronAddress(from: walletPublicKey))
+                PlainAddress(value: makeShelleyAddress(from: walletPublicKey), type: .default),
+                PlainAddress(value: makeByronAddress(from: walletPublicKey), type: .legacy)
             ]
         }
         return [makeCardanoAddress(from: walletPublicKey)]
@@ -72,10 +72,10 @@ public class CardanoAddressService: AddressService {
         }
     }
     
-    private func makeCardanoAddress(from pubkey: Data) -> CardanoAddress {
+    private func makeCardanoAddress(from pubkey: Data) -> Address {
         shelley ?
-            CardanoAddress(type: .bech32, value: makeShelleyAddress(from: pubkey)) :
-            CardanoAddress(type: .legacy, value: makeByronAddress(from: pubkey))
+        PlainAddress(value: makeShelleyAddress(from: pubkey), type: .default) :
+        PlainAddress(value: makeByronAddress(from: pubkey), type: .legacy)
     }
     
     private func makeByronAddress(from walletPublicKey: Data) -> String {

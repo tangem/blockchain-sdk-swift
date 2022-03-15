@@ -43,9 +43,9 @@ enum BlockchairEndpoint {
 }
 
 enum BlockchairTarget: TargetType {
-    case address(address: String, endpoint: BlockchairEndpoint = .bitcoinCash, transactionDetails: Bool, apiKey: String)
-    case fee(endpoint: BlockchairEndpoint = .bitcoinCash, apiKey: String)
-    case send(txHex: String, endpoint: BlockchairEndpoint = .bitcoinCash, apiKey: String)
+    case address(address: String, endpoint: BlockchairEndpoint, transactionDetails: Bool, apiKey: String)
+    case fee(endpoint: BlockchairEndpoint, apiKey: String)
+    case send(txHex: String, endpoint: BlockchairEndpoint, apiKey: String)
 
     case txDetails(txHash: String, endpoint: BlockchairEndpoint, apiKey: String)
     case txsDetails(hashes: [String], endpoint: BlockchairEndpoint, apiKey: String)

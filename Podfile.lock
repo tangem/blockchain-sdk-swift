@@ -72,7 +72,7 @@ DEPENDENCIES:
   - AnyCodable-FlightSchool
   - BigInt
   - BinanceChain (from `https://github.com/lazutkin-andrey/swiftbinancechain.git`, tag `0.0.9`)
-  - BitcoinCore.swift (from `https://github.com/lazutkin-andrey/bitcoincore.git`, tag `0.0.15`)
+  - BitcoinCore.swift (from `https://github.com/lazutkin-andrey/bitcoincore.git`, tag `0.0.16`)
   - HDWalletKit (from `https://github.com/lazutkin-andrey/hdwallet.git`, tag `0.3.12`)
   - Moya
   - ScaleCodec
@@ -111,7 +111,7 @@ EXTERNAL SOURCES:
     :tag: 0.0.9
   BitcoinCore.swift:
     :git: https://github.com/lazutkin-andrey/bitcoincore.git
-    :tag: 0.0.15
+    :tag: 0.0.16
   HDWalletKit:
     :git: https://github.com/lazutkin-andrey/hdwallet.git
     :tag: 0.3.12
@@ -131,7 +131,7 @@ CHECKOUT OPTIONS:
     :tag: 0.0.9
   BitcoinCore.swift:
     :git: https://github.com/lazutkin-andrey/bitcoincore.git
-    :tag: 0.0.15
+    :tag: 0.0.16
   HDWalletKit:
     :git: https://github.com/lazutkin-andrey/hdwallet.git
     :tag: 0.3.12
@@ -171,6 +171,6 @@ SPEC CHECKSUMS:
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 2ba621f4b1cff1f9f61e82f0fb9f46478c55bceb
+PODFILE CHECKSUM: 5c490950f6be4c4db2e47208d8c1064e43a113b5
 
 COCOAPODS: 1.11.2

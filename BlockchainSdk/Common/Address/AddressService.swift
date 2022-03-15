@@ -13,10 +13,10 @@ public protocol AddressService: MultipleAddressProvider {
     func validate(_ address: String) -> Bool
 }
 
-
 extension AddressService {
     public func makeAddresses(from walletPublicKey: Data) throws -> [Address] {
-        let address = try makeAddress(from: walletPublicKey)
-        return [PlainAddress(value: address)]
+        let value = try makeAddress(from: walletPublicKey)
+        let address = PlainAddress(value: value, type: .default)
+        return [address]
     }
 }

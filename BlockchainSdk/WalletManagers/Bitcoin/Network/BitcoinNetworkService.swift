@@ -64,7 +64,7 @@ class BitcoinNetworkService: MultiNetworkProvider, BitcoinNetworkProvider {
                 }
             }
             
-            guard min > 0 , norm > 0, priority > 0 else {
+            guard min >= 0, norm >= 0, priority >= 0 else {
                 throw BlockchainSdkError.failedToLoadFee
             }
             return BitcoinFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: norm, prioritySatoshiPerByte: priority)

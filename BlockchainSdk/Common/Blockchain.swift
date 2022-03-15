@@ -242,13 +242,6 @@ extension Blockchain {
 // MARK: - Address creation
 @available(iOS 13.0, *)
 extension Blockchain {
-    public var defaultAddressType: AddressType {
-        switch self {
-        case .bitcoin, .litecoin: return .bitcoin(type: .bech32)
-        default: return .plain
-        }
-    }
-    
     public var derivationPath: DerivationPath? {
         guard curve == .secp256k1 || curve == .ed25519 else { return  nil }
         
@@ -339,7 +332,8 @@ extension Blockchain {
         case .rsk:
             return RskAddressService()
         case .bitcoinCash:
-            return BitcoinCashAddressService()
+            let networkParams: INetwork = isTestnet ? BitcoinCashTestNetworkParams() : BitcoinCashNetworkParams()
+            return BitcoinCashAddressService(networkParams: networkParams)
         case .binance:
             return BinanceAddressService(testnet: isTestnet)
         case .ducatus:
