@@ -177,7 +177,7 @@ class SolanaNetworkService {
             .map { statuses in
                 zip(transactionIDs, statuses)
                     .filter {
-                        guard let status = $0.1 else { return false }
+                        guard let status = $0.1 else { return true }
                         return status.confirmations == nil
                     }
                     .map {
