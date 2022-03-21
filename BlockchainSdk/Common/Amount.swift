@@ -39,6 +39,8 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
         return false
     }
     
+    public var isZero: Bool { isEmpty }
+    
     public var description: String {
         return string()
     }

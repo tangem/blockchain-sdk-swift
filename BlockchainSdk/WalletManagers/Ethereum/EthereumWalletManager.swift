@@ -100,6 +100,13 @@ class EthereumWalletManager: BaseManager, WalletManager {
                 wallet.addDummyPendingTransaction()
             }
         }
+        
+        
+        // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+        if wallet.blockchain == .bsc(testnet: false) {
+            wallet.add(coinValue: 1)
+            wallet.add(tokenValue: 2, for: .init(name: "Tether", symbol: "USDT", contractAddress: "0x55d398326f99059ff775485246999027b3197955", decimalCount: 18, customIconUrl: "https://s3.eu-central-1.amazonaws.com/tangem.api/coins/large/tether.png", blockchain: wallet.blockchain, derivationPath: wallet.derivationPath))
+        }
     }
     
     private func getFixedGasLimit(for amount: Amount) -> BigUInt {
