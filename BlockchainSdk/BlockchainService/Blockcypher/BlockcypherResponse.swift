@@ -89,23 +89,23 @@ extension BlockcypherPendingTxConvertible {
     func toPendingTx(userAddress: String, decimalValue: Decimal) -> PendingTransaction {
         var source: String = .unknown
         var destination: String = .unknown
-        var value: UInt64 = 0
+        var value: Decimal?
         var isIncoming: Bool = false
 
         if let _ = inputs.first(where: { $0.addresses?.contains(userAddress) ?? false } ), let txDestination = outputs.first(where: { !($0.addresses?.contains(userAddress) ?? false) } ) {
             destination = txDestination.addresses?.first ?? .unknown
             source = userAddress
-            value = ((txDestination.value ?? 0).rounded() as NSDecimalNumber).uint64Value
+            value = txDestination.value
         } else if let txDestination = outputs.first(where: { $0.addresses?.contains(userAddress) ?? false } ), let txSource = inputs.first(where: { !($0.addresses?.contains(userAddress) ?? false) } ) {
             isIncoming = true
             destination = userAddress
             source = txSource.addresses?.first ?? .unknown
-            value = ((txDestination.value ?? 0).rounded() as NSDecimalNumber).uint64Value
+            value = txDestination.value
         }
 
         return PendingTransaction(hash: hash,
                                   destination: destination,
-                                  value: Decimal(value) / decimalValue,
+                                  value: (value ?? 0) / decimalValue,
                                   source: source,
                                   fee: fees / decimalValue,
                                   date: received,
