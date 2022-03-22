@@ -177,11 +177,15 @@ extension SolanaWalletManager: TransactionSender {
         
         return Publishers.Zip3(accountCreationFeePublisher, accountExistsPublisher, rentExemptionBalancePublisher)
             .tryMap { accountCreationFee, accountExists, rentExemption in
-                if !accountExists && amount < rentExemption {
-                    return accountCreationFee
-                } else {
+                if accountExists {
                     return 0
                 }
+                
+                if amount.type == .coin && amount >= rentExemption {
+                    return 0
+                }
+
+                return accountCreationFee
             }
             .eraseToAnyPublisher()
     }
