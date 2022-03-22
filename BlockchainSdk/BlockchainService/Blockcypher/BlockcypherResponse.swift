@@ -89,23 +89,23 @@ extension BlockcypherPendingTxConvertible {
     func toPendingTx(userAddress: String, decimalValue: Decimal) -> PendingTransaction {
         var source: String = .unknown
         var destination: String = .unknown
-        var value: UInt64 = 0
+        var value: Decimal?
         var isIncoming: Bool = false
 
         if let _ = inputs.first(where: { $0.addresses?.contains(userAddress) ?? false } ), let txDestination = outputs.first(where: { !($0.addresses?.contains(userAddress) ?? false) } ) {
             destination = txDestination.addresses?.first ?? .unknown
             source = userAddress
-            value = txDestination.value ?? 0
+            value = txDestination.value
         } else if let txDestination = outputs.first(where: { $0.addresses?.contains(userAddress) ?? false } ), let txSource = inputs.first(where: { !($0.addresses?.contains(userAddress) ?? false) } ) {
             isIncoming = true
             destination = userAddress
             source = txSource.addresses?.first ?? .unknown
-            value = txDestination.value ?? 0
+            value = txDestination.value
         }
 
         return PendingTransaction(hash: hash,
                                   destination: destination,
-                                  value: Decimal(value) / decimalValue,
+                                  value: (value ?? 0) / decimalValue,
                                   source: source,
                                   fee: fees / decimalValue,
                                   date: received,
@@ -166,7 +166,7 @@ struct BlockcypherInput: Codable {
 }
 
 struct BlockcypherOutput: Codable {
-    let value: UInt64?
+    let value: Decimal? // UInt64 can overflow with large ETH amounts
     let script: String?
     let addresses: [String]?
     let scriptType: String?
@@ -183,7 +183,7 @@ struct BlockcypherOutput: Codable {
             let recipient = addresses?.first
         else { return nil }
         
-        return BitcoinTransactionOutput(amount: Decimal(amount) / decimals,
+        return BitcoinTransactionOutput(amount: amount / decimals,
                                         recipient: recipient)
     }
 }
@@ -227,7 +227,7 @@ struct BlockcypherBitcoinTx: Codable, BlockcypherPendingTxConvertible {
             return nil
         }
         
-        let btc = BitcoinUnspentOutput(transactionHash: hash, outputIndex: txOutputIndex, amount: value, outputScript: script)
+        let btc = BitcoinUnspentOutput(transactionHash: hash, outputIndex: txOutputIndex, amount: (value.rounded() as NSDecimalNumber).uint64Value, outputScript: script)
         return btc
     }
 }
@@ -236,7 +236,7 @@ struct BlockcypherBitcoinTx: Codable, BlockcypherPendingTxConvertible {
 struct BlockcypherEthereumTransaction: Codable, BlockcypherPendingTxConvertible {
     let blockHeight: Int64
     let hash: String
-    let total: UInt64
+    let total: Decimal // UInt64 can overflow with large ETH amounts
     let fees: Decimal
     let size: Int
     let gasLimit: UInt64
