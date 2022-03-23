@@ -45,6 +45,7 @@ class SolanaNetworkService {
             allowUnfundedRecipient: true,
             signer: signer
         )
+            .retry(1)
             .eraseToAnyPublisher()
     }
     
@@ -58,11 +59,13 @@ class SolanaNetworkService {
             allowUnfundedRecipient: true,
             signer: signer
         )
+            .retry(1)
             .eraseToAnyPublisher()
     }
     
     func transactionFee(numberOfSignatures: Int) -> AnyPublisher<Decimal, Error> {
         solanaSdk.api.getFees(commitment: nil)
+            .retry(1)
             .tryMap { [weak self] fee in
                 guard let self = self else {
                     throw WalletError.empty
@@ -105,6 +108,7 @@ class SolanaNetworkService {
     // This fee is deducted from the main SOL account
     func tokenAccountCreationFee() -> AnyPublisher<Decimal, Error> {
         solanaSdk.action.getCreatingTokenAccountFee()
+            .retry(1)
             .tryMap { [weak self] feeInLamports in
                 guard let self = self else {
                     throw WalletError.empty
@@ -118,6 +122,7 @@ class SolanaNetworkService {
     func minimalBalanceForRentExemption() -> AnyPublisher<Decimal, Error> {
         // The accounts metadata size (128) is already factored in
         solanaSdk.api.getMinimumBalanceForRentExemption(dataLength: 0)
+            .retry(1)
             .tryMap { [weak self] balanceInLamports in
                 guard let self = self else {
                     throw WalletError.empty
@@ -130,6 +135,7 @@ class SolanaNetworkService {
     
     private func mainAccountInfo(accountId: String) -> AnyPublisher<SolanaMainAccountInfoResponse, Error> {
         solanaSdk.api.getAccountInfo(account: accountId, decodedTo: AccountInfo.self)
+            .retry(1)
             .tryMap { info in
                 let lamports = info.lamports
                 let accountInfo = SolanaMainAccountInfoResponse(balance: lamports, accountExists: true)
@@ -157,6 +163,8 @@ class SolanaNetworkService {
         let configs = RequestConfiguration(commitment: "recent", encoding: "jsonParsed")
         
         return solanaSdk.api.getTokenAccountsByOwner(pubkey: accountId, programId: programId, configs: configs)
+            .retry(1)
+            .eraseToAnyPublisher()
     }
     
     private func confirmedTransactions(among transactionIDs: [String]) -> AnyPublisher<[String], Error> {
@@ -165,10 +173,11 @@ class SolanaNetworkService {
         }
         
         return solanaSdk.api.getSignatureStatuses(pubkeys: transactionIDs)
+            .retry(1)
             .map { statuses in
                 zip(transactionIDs, statuses)
                     .filter {
-                        guard let status = $0.1 else { return false }
+                        guard let status = $0.1 else { return true }
                         return status.confirmations == nil
                     }
                     .map {
