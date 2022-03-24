@@ -208,7 +208,7 @@ extension Blockchain {
         }
     }
     
-    //Only fot Ethereum compatible blockchains
+    //Only for Ethereum compatible blockchains
     public func getJsonRpcURLs(infuraProjectId: String?) -> [URL]? {
         switch self {
         case .ethereum:
