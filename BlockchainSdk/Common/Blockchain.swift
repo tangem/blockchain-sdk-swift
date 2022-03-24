@@ -380,7 +380,7 @@ extension Blockchain {
         case .kusama:
             return PolkadotAddressService(network: .kusama)
         case .tron:
-            fatalError()
+            return TronAddressService()
         }
     }
 }
