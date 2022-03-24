@@ -316,6 +316,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .fantom(testnet: false),
             .polkadot(testnet: false),
             .kusama,
+            .tron(testnet: false),
         ]
         
         return blockchains.map { ($0.displayName, $0.codingKey) }
