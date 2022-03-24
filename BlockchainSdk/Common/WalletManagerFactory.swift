@@ -257,6 +257,8 @@ public class WalletManagerFactory {
             return makePolkadotWalletManager(network: testnet ? .westend : .polkadot, wallet: wallet)
         case .kusama:
             return makePolkadotWalletManager(network: .kusama, wallet: wallet)
+        case .tron(let testnet):
+            fatalError()
         }
     }
     
