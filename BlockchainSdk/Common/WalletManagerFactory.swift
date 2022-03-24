@@ -258,8 +258,9 @@ public class WalletManagerFactory {
         case .kusama:
             return makePolkadotWalletManager(network: .kusama, wallet: wallet)
         case .tron(let testnet):
-            return try TronWalletManager(wallet: wallet).then {
-                _ in
+            return TronWalletManager(wallet: wallet).then {
+                let rpcProvider = TronJsonRpcProvider(network: testnet ? .nile : .mainnet)
+                $0.networkService = TronNetworkService(rpcProvider: rpcProvider)
             }
         }
     }

@@ -18,8 +18,15 @@ class TronWalletManager: BaseManager, WalletManager {
         false
     }
     
+    var networkService: TronNetworkService!
+    
     func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        
+        cancellable = networkService.getAccount(for: wallet.address)
+            .sink {
+                print($0)
+            } receiveValue: {
+                print($0)
+            }
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
