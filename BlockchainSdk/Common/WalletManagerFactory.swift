@@ -37,7 +37,7 @@ public class WalletManagerFactory {
         return try makeWalletManager(from: blockchain,
                                      publicKey: .init(seedKey: seedKey,
                                                       derivedKey: derivedKey.publicKey,
-                                                      derivationPath: derivationPath),
+                                                      derivationPath: derivationPath ?? blockchain.derivationPath),
                                      cardId: cardId)
     }
     
