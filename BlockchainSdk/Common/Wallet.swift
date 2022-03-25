@@ -27,7 +27,7 @@ public struct Wallet {
     }
     
     public var isEmpty: Bool {
-        return amounts.filter { $0.key != .reserve && !$0.value.isEmpty }.isEmpty
+        return amounts.filter { $0.key != .reserve && !$0.value.isZero }.isEmpty
     }
     
     public var hasPendingTx: Bool {

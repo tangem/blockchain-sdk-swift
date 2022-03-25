@@ -31,11 +31,13 @@ public class WalletManagerFactory {
     public func makeWalletManager(cardId: String,
                                   blockchain: Blockchain,
                                   seedKey: Data,
-                                  derivedKey: ExtendedPublicKey) throws -> WalletManager {
+                                  derivedKey: ExtendedPublicKey,
+                                  derivationPath: DerivationPath? = nil
+    ) throws -> WalletManager {
         return try makeWalletManager(from: blockchain,
                                      publicKey: .init(seedKey: seedKey,
                                                       derivedKey: derivedKey.publicKey,
-                                                      derivationPath: blockchain.derivationPath),
+                                                      derivationPath: derivationPath ?? blockchain.derivationPath),
                                      cardId: cardId)
     }
     
