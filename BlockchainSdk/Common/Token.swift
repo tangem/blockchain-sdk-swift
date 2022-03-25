@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import TangemSdk
 
 public struct Token: Hashable, Equatable, Codable {
     public func hash(into hasher: inout Hasher) {
