@@ -13,6 +13,7 @@ public struct Token: Hashable, Equatable, Codable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(contractAddress.lowercased())
         hasher.combine(blockchain)
+        hasher.combine(derivationPath)
     }
     
     public static func == (lhs: Token, rhs: Token) -> Bool {
