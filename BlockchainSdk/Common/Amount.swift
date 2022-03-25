@@ -31,15 +31,9 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
     public var value: Decimal
     public let decimals: Int
 
-    public var isEmpty: Bool {
-        if value == 0 {
-            return true
-        }
-        
-        return false
+    public var isZero: Bool {
+        return value == 0
     }
-    
-    public var isZero: Bool { isEmpty }
     
     public var description: String {
         return string()
