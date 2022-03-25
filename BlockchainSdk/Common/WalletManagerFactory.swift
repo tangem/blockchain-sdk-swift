@@ -71,7 +71,6 @@ public class WalletManagerFactory {
                            pairPublicKey: Data? = nil) throws -> WalletManager {
         let addresses = try blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey)
         let wallet = Wallet(blockchain: blockchain,
-                            derivationPath: publicKey.derivationPath ?? blockchain.derivationPath,
                             addresses: addresses,
                             cardId: cardId,
                             publicKey: publicKey)

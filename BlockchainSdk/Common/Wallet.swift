@@ -12,7 +12,6 @@ import TangemSdk
 public struct Wallet {
     public let cardId: String
     public let blockchain: Blockchain
-    public let derivationPath: DerivationPath?
     public let addresses: [Address]
     public let publicKey: PublicKey
     public internal(set) var amounts: [Amount.AmountType:Amount] = [:]
@@ -60,9 +59,8 @@ public struct Wallet {
         return !transactions.filter { $0.status == .unconfirmed && $0.amount.type == amountType }.isEmpty
     }
     
-    internal init(blockchain: Blockchain, derivationPath: DerivationPath? = nil, addresses: [Address], cardId: String, publicKey: PublicKey) {
+    internal init(blockchain: Blockchain, addresses: [Address], cardId: String, publicKey: PublicKey) {
         self.blockchain = blockchain
-        self.derivationPath = derivationPath ?? blockchain.derivationPath
         self.addresses = addresses
         self.publicKey = publicKey
         self.cardId = cardId
