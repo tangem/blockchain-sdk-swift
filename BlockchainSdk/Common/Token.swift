@@ -51,7 +51,7 @@ public struct Token: Hashable, Equatable, Codable {
 }
 
 public extension Token {
-    public var decimalValue: Decimal {
+    var decimalValue: Decimal {
         return pow(Decimal(10), decimalCount)
     }
 }
