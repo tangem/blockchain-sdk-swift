@@ -26,6 +26,8 @@ class TezosTransactionBuilder {
             self.walletPublicKey = try Secp256k1Key(with: walletPublicKey).compress()
         case .secp256r1:
             fatalError("Not implemented")
+        default:
+            fatalError("unsupported curve")
         }
         self.curve = curve
     }

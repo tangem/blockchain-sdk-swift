@@ -176,11 +176,23 @@ public enum Blockchain: Equatable, Hashable {
             return "\(displayName) token"
         }
     }
+    
+    public var canHandleTokens: Bool {
+        switch self {
+        case .ethereum, .bsc, .binance, .polygon,
+                .avalanche, .solana, .fantom:
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 // MARK: - Ethereum based blockchain definition
 @available(iOS 13.0, *)
 extension Blockchain {
+    public var isEvm: Bool { chainId != nil }
+    
     //Only fot Ethereum compatible blockchains
     public var chainId: Int? {
         switch self {
@@ -242,7 +254,7 @@ extension Blockchain {
 // MARK: - Address creation
 @available(iOS 13.0, *)
 extension Blockchain {
-    public var derivationPath: DerivationPath? {
+    public func derivationPath(for style: DerivationStyle = .legacy) -> DerivationPath? {
         guard curve == .secp256k1 || curve == .ed25519 else { return  nil }
         
         switch self {
@@ -251,7 +263,7 @@ extension Blockchain {
             // Solana path consistent with TrustWallet:
             // https://github.com/trustwallet/wallet-core/blob/456f22d6a8ce8a66ccc73e3b42bcfec5a6afe53a/registry.json#L1013
             return DerivationPath(nodes: [.hardened(BIP44.purpose),
-                                          .hardened(coinType),
+                                          .hardened(coinType(for: style)),
                                           .hardened(0)])
         case .cardano(let shelley):
             if !shelley { //We use shelley for all new cards with HD wallets feature
@@ -260,13 +272,13 @@ extension Blockchain {
             
             //Path according to CIP-1852. https://cips.cardano.org/cips/cip1852/
             return DerivationPath(nodes: [.hardened(1852), //purpose
-                                          .hardened(coinType),
+                                          .hardened(coinType(for: style)),
                                           .hardened(0),
                                           .nonHardened(0),
                                           .nonHardened(0)])
         default:
             //Standart bip44
-            let bip44 = BIP44(coinType: coinType,
+            let bip44 = BIP44(coinType: coinType(for: style),
                               account: 0,
                               change: .external,
                               addressIndex: 0)
@@ -275,17 +287,22 @@ extension Blockchain {
         }
     }
     
-    // https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-    public var coinType: UInt32 {
+    public func coinType(for style: DerivationStyle = .legacy) -> UInt32 {
         if isTestnet {
             return 1
+        }
+        
+        let ethCoinType: UInt32 = 60
+        
+        if style == .new, isEvm {
+            return ethCoinType
         }
         
         switch self {
         case .bitcoin, .ducatus: return 0
         case .litecoin: return 2
         case .dogecoin: return 3
-        case .ethereum: return 60
+        case .ethereum: return ethCoinType
         case .bsc: return 9006
         case .bitcoinCash: return 145
         case .binance: return 714

@@ -26,18 +26,27 @@ public class WalletManagerFactory {
     ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
     ///   - seedKey: Public key  of the wallet
     ///   - derivedKey: Derived ExtendedPublicKey by the card
-    ///   - derivationPath: DerivationPath for derivedKey
+    ///   - derivation: DerivationParams
     /// - Returns: WalletManager?
     public func makeWalletManager(cardId: String,
                                   blockchain: Blockchain,
                                   seedKey: Data,
                                   derivedKey: ExtendedPublicKey,
-                                  derivationPath: DerivationPath? = nil
-    ) throws -> WalletManager {
+                                  derivation: DerivationParams) throws -> WalletManager {
+        
+        var derivationPath: DerivationPath? = nil
+        
+        switch derivation {
+        case .default(let derivationStyle):
+            derivationPath = blockchain.derivationPath(for: derivationStyle)
+        case .custom(let path):
+            derivationPath = path
+        }
+        
         return try makeWalletManager(from: blockchain,
                                      publicKey: .init(seedKey: seedKey,
                                                       derivedKey: derivedKey.publicKey,
-                                                      derivationPath: derivationPath ?? blockchain.derivationPath),
+                                                      derivationPath: derivationPath),
                                      cardId: cardId)
     }
     
@@ -256,5 +265,12 @@ public class WalletManagerFactory {
             $0.networkService = PolkadotNetworkService(rpcProvider: PolkadotJsonRpcProvider(network: network))
             $0.txBuilder = PolkadotTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, network: network)
         }
+    }
+}
+
+extension WalletManagerFactory {
+    public enum DerivationParams {
+        case `default`(DerivationStyle)
+        case custom(DerivationPath)
     }
 }

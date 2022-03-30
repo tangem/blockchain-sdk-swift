@@ -22,8 +22,8 @@ class XRPTransactionBuilder {
             key = try Secp256k1Key(with: walletPublicKey).compress()
         case .ed25519:
             key = [UInt8(0xED)] + walletPublicKey
-        case .secp256r1:
-            fatalError("secp256r1 is not supported by XRP")
+        default:
+            fatalError("unsupported curve")
         }
         self.walletPublicKey = key
         self.curve = curve
@@ -40,8 +40,8 @@ class XRPTransactionBuilder {
             return (tx, dataToSign)
         case .secp256k1:
             return  (tx, dataToSign.sha512Half())
-        case .secp256r1:
-            fatalError("secp256r1 is not supported by XRP")
+        default:
+            fatalError("unsupported curve")
         }
     }
     
@@ -52,8 +52,8 @@ class XRPTransactionBuilder {
             sig = signature
         case .secp256k1:
             sig = try Secp256k1Signature(with: signature).serializeDer()
-        case .secp256r1:
-            fatalError("secp256r1 is not supported by XRP")
+        default:
+            fatalError("unsupported curve")
         }
         
         let signedTx = try transaction.sign(signature: sig.toBytes)
