@@ -25,8 +25,8 @@ public class XRPAddressService: AddressService {
         case .ed25519:
             try walletPublicKey.validateAsEdKey()
             key = [UInt8(0xED)] + walletPublicKey
-        case .secp256r1:
-            fatalError("secp256r1 is not supported by XRP")
+        default:
+            fatalError("unsupported curve")
         }
         let input = RIPEMD160.hash(message: key.sha256())
         let buffer = [0x00] + input

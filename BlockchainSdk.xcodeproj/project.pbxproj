@@ -125,6 +125,8 @@
 		5DC7DD6824408266008F83F2 /* XrpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC7DD6724408266008F83F2 /* XrpResponse.swift */; };
 		5DCC817623FAE6D500DFC460 /* AnyPublisher+Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCC817523FAE6D500DFC460 /* AnyPublisher+Response.swift */; };
 		5DCC817823FAE6F700DFC460 /* MoyaPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCC817723FAE6F700DFC460 /* MoyaPublisher.swift */; };
+		5DD1244427F458CE000425D3 /* DerivationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD1244327F458CE000425D3 /* DerivationStyle.swift */; };
+		5DD1244527F486B9000425D3 /* DerivationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD1244327F458CE000425D3 /* DerivationStyle.swift */; };
 		5DD243B327AD194E00556EAC /* SolanaWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DFA279164500056C5A3 /* SolanaWalletManager.swift */; };
 		5DD243B427AD195100556EAC /* SolanaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DF9279164500056C5A3 /* SolanaAddressService.swift */; };
 		5DD243B527AD195300556EAC /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
@@ -495,6 +497,7 @@
 		5DC7DD6724408266008F83F2 /* XrpResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XrpResponse.swift; sourceTree = "<group>"; };
 		5DCC817523FAE6D500DFC460 /* AnyPublisher+Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyPublisher+Response.swift"; sourceTree = "<group>"; };
 		5DCC817723FAE6F700DFC460 /* MoyaPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoyaPublisher.swift; sourceTree = "<group>"; };
+		5DD1244327F458CE000425D3 /* DerivationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationStyle.swift; sourceTree = "<group>"; };
 		5DD1935D25557EC2004AE04D /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5DD831BB244DF5BD00F80CEA /* AddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressService.swift; sourceTree = "<group>"; };
 		5DE3BF96239E6DAB00E8815D /* RIPEMD160.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RIPEMD160.swift; sourceTree = "<group>"; };
@@ -719,6 +722,7 @@
 				5D88838827D3BB8B008744E1 /* WalletError.swift */,
 				5D31EA2E27DA1C910031DBEB /* DetailedError.swift */,
 				5D88838A27D3BBDA008744E1 /* BaseManager.swift */,
+				5DD1244327F458CE000425D3 /* DerivationStyle.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -1512,6 +1516,7 @@
 				5D7D243425136254001B9A4F /* XRPAccountInfo.swift in Sources */,
 				DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */,
 				5D7D243225136254001B9A4F /* XRPWallet.swift in Sources */,
+				5DD1244427F458CE000425D3 /* DerivationStyle.swift in Sources */,
 				5D845514243DEABB0072155E /* AdaliteResponse.swift in Sources */,
 				B0C2C89D25FBCF0200A61622 /* RosettaTarget.swift in Sources */,
 				5D908C5726A6D39C00270FA3 /* BinanceTransactionParams.swift in Sources */,
@@ -1783,6 +1788,7 @@
 				5DDD833625BF0EC900166EA9 /* XRPCurrentLedgerInfo.swift in Sources */,
 				5DDD830C25BF0E3400166EA9 /* TezosFee.swift in Sources */,
 				5DDD82D025BF0DAD00166EA9 /* BitcoreProvider.swift in Sources */,
+				5DD1244527F486B9000425D3 /* DerivationStyle.swift in Sources */,
 				5DDD82B025BF0D2F00166EA9 /* BlockchainSdkConfig.swift in Sources */,
 				5DDD82DD25BF0E0900166EA9 /* StellarNetworkService.swift in Sources */,
 				B0299635265FDAA9009C0481 /* URL+.swift in Sources */,

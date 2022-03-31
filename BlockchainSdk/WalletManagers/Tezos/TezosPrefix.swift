@@ -84,6 +84,8 @@ extension TezosPrefix {
             return PublicKey.secp256k1.bytesValue
         case .secp256r1:
             return PublicKey.p256.bytesValue
+        default:
+            fatalError("unsupported curve")
         }
     }
     
@@ -95,6 +97,8 @@ extension TezosPrefix {
             return Signature.secp256k1.bytesValue
         case .secp256r1:
             return Signature.p256.bytesValue
+        default:
+            fatalError("unsupported curve")
         }
     }
     
@@ -106,6 +110,8 @@ extension TezosPrefix {
             return Address.tz2.bytesValue
         case .secp256r1:
             return Address.tz3.bytesValue
+        default:
+            fatalError("unsupported curve")
         }
     }
 }

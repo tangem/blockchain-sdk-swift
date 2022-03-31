@@ -8,6 +8,7 @@
 
 import XCTest
 import BitcoinCore
+import TangemSdk
 
 class BlockchainSdkTests: XCTestCase {
 
@@ -130,5 +131,26 @@ class BlockchainSdkTests: XCTestCase {
                                         fee: Amount(with: vm.wallet.amounts[.coin]!, value: 8),
                                         destinationAddress: ""),
                throws: TransactionErrors(errors: [.totalExceedsBalance]))
+    }
+    
+    func testDerivationStyle() {
+        let legacy: DerivationStyle = .legacy
+        let new: DerivationStyle = .new
+
+        let fantom: Blockchain = .fantom(testnet: false)
+        XCTAssertEqual(fantom.derivationPath(for: legacy)!.rawPath, "m/44'/1007'/0'/0/0")
+        XCTAssertEqual(fantom.derivationPath(for: new)!.rawPath, "m/44'/60'/0'/0/0")
+       
+        let eth: Blockchain = .ethereum(testnet: false)
+        XCTAssertEqual(eth.derivationPath(for: legacy)!.rawPath, "m/44'/60'/0'/0/0")
+        XCTAssertEqual(eth.derivationPath(for: new)!.rawPath, "m/44'/60'/0'/0/0")
+        
+        let ethTest: Blockchain = .ethereum(testnet: true)
+        XCTAssertEqual(ethTest.derivationPath(for: legacy)!.rawPath, "m/44'/1'/0'/0/0")
+        XCTAssertEqual(ethTest.derivationPath(for: new)!.rawPath, "m/44'/1'/0'/0/0")
+        
+        let xrp: Blockchain = .xrp(curve: .secp256k1)
+        XCTAssertEqual(xrp.derivationPath(for: legacy)!.rawPath, "m/44'/144'/0'/0/0")
+        XCTAssertEqual(xrp.derivationPath(for: new)!.rawPath, "m/44'/144'/0'/0/0")
     }
 }
