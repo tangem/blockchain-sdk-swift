@@ -71,7 +71,7 @@ class EthereumTests: XCTestCase {
         let destinationAddress = "0x7655b9b19ffab8b897f836857dae22a1e7f8d735"
         let nonce = 15
         let contractAddress = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
-        let token = Token(symbol: "USDC", contractAddress: contractAddress, decimalCount: 6, blockchain: .ethereum(testnet: false))
+        let token = Token(name: "USDC Coin", symbol: "USDC", contractAddress: contractAddress, decimalCount: 6)
         
         let walletAddress = try! addressService.makeAddress(from: walletPublicKey)
         let transactionBuilder = try! EthereumTransactionBuilder(walletPublicKey: walletPublicKey, chainId: 1)
