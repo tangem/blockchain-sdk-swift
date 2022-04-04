@@ -38,15 +38,15 @@ class BinanceWalletManager: BaseManager, WalletManager {
         wallet.add(coinValue: coinBalance)
         
         if cardTokens.isEmpty {
-            _ = response.balances
+            response.balances
                 .filter { $0.key != blockchain.currencySymbol }
-                .map { (Token(symbol: $0.key.split(separator: "-").first.map {String($0)} ?? $0.key,
-                              contractAddress: $0.key,
-                              decimalCount: blockchain.decimalCount,
-                              blockchain: blockchain),
-                        $0.value) }
-                .map { token, balance in
-                    wallet.add(tokenValue: balance, for: token)
+                .forEach { response in
+                    let symbol = response.key.split(separator: "-").first.map {String($0)} ?? response.key
+                    let token = Token(name: symbol,
+                                      symbol: symbol,
+                                      contractAddress: response.key,
+                                      decimalCount: blockchain.decimalCount)
+                    wallet.add(tokenValue: response.value, for: token)
                 }
         } else {
             for token in cardTokens {
