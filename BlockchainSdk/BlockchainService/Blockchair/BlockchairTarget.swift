@@ -42,30 +42,35 @@ enum BlockchairEndpoint {
     }
 }
 
-enum BlockchairTarget: TargetType {
-    case address(address: String, endpoint: BlockchairEndpoint, transactionDetails: Bool, apiKey: String)
-    case fee(endpoint: BlockchairEndpoint, apiKey: String)
-    case send(txHex: String, endpoint: BlockchairEndpoint, apiKey: String)
+struct BlockchairTarget: TargetType {
+    enum BlockchairTargetType {
+        case address(address: String, endpoint: BlockchairEndpoint, transactionDetails: Bool)
+        case fee(endpoint: BlockchairEndpoint)
+        case send(txHex: String, endpoint: BlockchairEndpoint)
 
-    case txDetails(txHash: String, endpoint: BlockchairEndpoint, apiKey: String)
-    case txsDetails(hashes: [String], endpoint: BlockchairEndpoint, apiKey: String)
-    case findErc20Tokens(address: String, endpoint: BlockchairEndpoint, apiKey: String)
+        case txDetails(txHash: String, endpoint: BlockchairEndpoint)
+        case txsDetails(hashes: [String], endpoint: BlockchairEndpoint)
+        case findErc20Tokens(address: String, endpoint: BlockchairEndpoint)
+    }
+    
+    let type: BlockchairTargetType
+    let apiKey: String?
     
     var baseURL: URL {
         var endpointString = ""
         
-        switch self {
-        case .address(_, let endpoint, _, _):
+        switch type {
+        case .address(_, let endpoint, _):
             endpointString = endpoint.path
-        case .fee(let endpoint, _):
+        case .fee(let endpoint):
             endpointString = endpoint.path
-        case .send(_, let endpoint, _):
+        case .send(_, let endpoint):
             endpointString = endpoint.path
-        case .txDetails(_, let endpoint, _):
+        case .txDetails(_, let endpoint):
             endpointString = endpoint.path
-        case .txsDetails(_, let endpoint, _):
+        case .txsDetails(_, let endpoint):
             endpointString = endpoint.path
-        case .findErc20Tokens(_, let endpoint, _):
+        case .findErc20Tokens(_, let endpoint):
             endpointString = endpoint.path
         }
         
@@ -73,16 +78,16 @@ enum BlockchairTarget: TargetType {
     }
     
     var path: String {
-        switch self {
-        case .address(let address, _, _, _):
+        switch type {
+        case .address(let address, _, _):
             return "/dashboards/address/\(address)"
         case .fee:
             return "/stats"
         case .send:
             return "/push/transaction"
-        case .txDetails(let hash, _, _):
+        case .txDetails(let hash, _):
             return "/dashboards/transaction/\(hash)"
-        case .txsDetails(let hashes, _, _):
+        case .txsDetails(let hashes, _):
             var path = "/dashboards/transactions/"
             if !hashes.isEmpty {
                 hashes.forEach {
@@ -93,13 +98,13 @@ enum BlockchairTarget: TargetType {
             }
             return path
         
-        case .findErc20Tokens(let address, _, _):
+        case .findErc20Tokens(let address, _):
             return "/dashboards/address/\(address)"
         }
     }
     
     var method: Moya.Method {
-        switch self {
+        switch type {
         case .address, .fee, .txDetails, .txsDetails, .findErc20Tokens:
             return .get
         case .send:
@@ -113,28 +118,29 @@ enum BlockchairTarget: TargetType {
     
     var task: Task {
         var parameters = [String:String]()
-        var key: String
-        switch self {
-        case .address(_, _, let details, let apiKey):
-            key = apiKey
+
+        if let apiKey = apiKey {
+            parameters["key"] = apiKey
+        }
+
+        switch type {
+        case .address(_, _, let details):
             parameters["transaction_details"] = "\(details)"
-        case .fee(_, let apiKey):
-            key = apiKey
-        case .send(let txHex, _, let apiKey):
-            key = apiKey
+        case .fee(_):
+            break
+        case .send(let txHex, _):
             parameters["data"] = txHex
-        case .txDetails(_, _, let apiKey), .txsDetails(_, _, let apiKey):
-            key = apiKey
-        case .findErc20Tokens(_, _, let apiKey):
-            key = apiKey
+        case .txDetails(_, _), .txsDetails(_, _):
+            break
+        case .findErc20Tokens(_, _):
             parameters["erc_20"] = "true"
         }
-        parameters["key"] = key
+        
         return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
     }
     
     var headers: [String: String]? {
-        switch self {
+        switch type {
         case .address, .fee, .txDetails, .txsDetails, .findErc20Tokens:
             return ["Content-Type": "application/json"]
         case .send:

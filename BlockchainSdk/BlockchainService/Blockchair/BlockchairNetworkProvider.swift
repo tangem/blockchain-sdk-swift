@@ -40,7 +40,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     }()
     
     var host: String {
-        BlockchairTarget.fee(endpoint: endpoint, apiKey: "").baseURL.hostOrUnknown
+        BlockchairTarget(type: .fee(endpoint: endpoint), apiKey: nil).baseURL.hostOrUnknown
     }
     
     init(endpoint: BlockchairEndpoint, apiKey: String) {
@@ -49,7 +49,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     }
     
 	func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: true, apiKey: apiKey))
+        publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: true))
             .tryMap { [weak self] json -> (BitcoinResponse, [BlockchairTransactionShort]) in //TODO: refactor to normal JSON
                 guard let self = self else { throw WalletError.empty }
                 
@@ -104,7 +104,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                 }
                 
                 let hashes = resp.1.map { $0.hash }
-                return self.publisher(for: .txsDetails(hashes: hashes, endpoint: self.endpoint, apiKey: self.apiKey))
+                return self.publisher(for: .txsDetails(hashes: hashes, endpoint: self.endpoint))
                     .tryMap { [weak self] json -> BitcoinResponse in
                         guard let self = self else { throw WalletError.empty }
                         
@@ -148,7 +148,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
-		publisher(for: .fee(endpoint: endpoint, apiKey: apiKey))
+		publisher(for: .fee(endpoint: endpoint))
             .tryMap { json throws -> BitcoinFee in
                 let data = json["data"]
                 guard let feePerByteSatoshi = data["suggested_transaction_fee_per_byte_sat"].int  else {
@@ -168,7 +168,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
-		publisher(for: .send(txHex: transaction, endpoint: endpoint, apiKey: apiKey))
+		publisher(for: .send(txHex: transaction, endpoint: endpoint))
             .tryMap { json throws -> String in
                 let data = json["data"]
                 
@@ -186,7 +186,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     }
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: false, apiKey: apiKey))
+		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: false))
 			.tryMap {[weak self] json -> Int in
                 guard let self = self else {  throw WalletError.empty }
                 
@@ -205,7 +205,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
 	}
     
     func getTransactionInfo(hash: String, address: String) -> AnyPublisher<PendingTransaction, Error> {
-        publisher(for: .txDetails(txHash: hash, endpoint: endpoint, apiKey: apiKey))
+        publisher(for: .txDetails(txHash: hash, endpoint: endpoint))
             .tryMap { [weak self] json -> PendingTransaction in
                 guard let self = self else { throw WalletError.empty }
                 
@@ -220,13 +220,65 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
             .mapError { $0 as Error }
             .eraseToAnyPublisher()
     }
-	
-	private func publisher(for target: BlockchairTarget) -> AnyPublisher<JSON, MoyaError> {
-		provider
-			.requestPublisher(target)
-			.filterSuccessfulStatusAndRedirectCodes()
-			.mapSwiftyJSON()
-	}
+    
+    func findErc20Tokens(address: String) -> AnyPublisher<[BlockchairToken], Error> {
+        publisher(for: .findErc20Tokens(address: address, endpoint: endpoint))
+            .tryMap {[weak self] json -> [BlockchairToken] in
+                guard let self = self else { throw WalletError.empty }
+                
+                let addr = self.mapAddressBlock(address, json: json)
+                let tokensObject = addr["layer_2"]["erc_20"]
+                let tokensData = try tokensObject.rawData()
+                let tokens = try JSONDecoder().decode([BlockchairToken].self, from: tokensData)
+                return tokens
+            }
+            .mapError { $0 as Error }
+            .eraseToAnyPublisher()
+    }
+    
+    private func publisher(for type: BlockchairTarget.BlockchairTargetType) -> AnyPublisher<JSON, MoyaError> {
+        return Just(())
+            .setFailureType(to: Error.self)
+            .flatMap { [weak self] _ -> AnyPublisher<JSON, Error> in
+                guard let self = self else {
+                    return .emptyFail
+                }
+                
+                return self.provider
+                    .requestPublisher(BlockchairTarget(type: type, apiKey: nil))
+                    .filterSuccessfulStatusAndRedirectCodes()
+                    .mapSwiftyJSON()
+                    .eraseError()
+                    .catch { [weak self] error -> AnyPublisher<JSON, Error> in
+                        guard let self = self else {
+                            return .emptyFail
+                        }
+                        
+                        if self.paymentRequired(error) {
+                            return self.provider
+                                .requestPublisher(BlockchairTarget(type: type, apiKey: self.apiKey))
+                                .filterSuccessfulStatusAndRedirectCodes()
+                                .mapSwiftyJSON()
+                                .eraseError()
+                        } else {
+                            return Fail(error: error).eraseToAnyPublisher()
+                        }
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .mapError {
+                MoyaError.underlying($0, nil)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func paymentRequired(_ error: Error) -> Bool {
+        if case let MoyaError.statusCode(response) = error, response.statusCode == 402 {
+            return true
+        } else {
+            return false
+        }
+    }
     
     private func getTransactionDetails(from json: JSON) -> BlockchairTransactionDetailed? {
         guard let txData = try? json.rawData(),
