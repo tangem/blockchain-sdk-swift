@@ -23,7 +23,7 @@ class BlockchairEthNetworkProvider {
     }
     
     func findErc20Tokens(address: String) -> AnyPublisher<[BlockchairToken], Error> {
-        publisher(for: .findErc20Tokens(address: address, endpoint: endpoint, apiKey: apiKey))
+        publisher(for: .findErc20Tokens(address: address, endpoint: endpoint))
             .tryMap {[weak self] json -> [BlockchairToken] in
                 guard let self = self else { throw WalletError.empty }
                 
@@ -37,11 +37,48 @@ class BlockchairEthNetworkProvider {
             .eraseToAnyPublisher()
     }
     
-    private func publisher(for target: BlockchairTarget) -> AnyPublisher<JSON, MoyaError> {
-        provider
-            .requestPublisher(target)
-            .filterSuccessfulStatusAndRedirectCodes()
-            .mapSwiftyJSON()
+    private func publisher(for type: BlockchairTarget.BlockchairTargetType) -> AnyPublisher<JSON, MoyaError> {
+        return Just(())
+            .setFailureType(to: Error.self)
+            .flatMap { [weak self] _ -> AnyPublisher<JSON, Error> in
+                guard let self = self else {
+                    return .emptyFail
+                }
+                
+                return self.provider
+                    .requestPublisher(BlockchairTarget(type: type, apiKey: nil))
+                    .filterSuccessfulStatusAndRedirectCodes()
+                    .mapSwiftyJSON()
+                    .eraseError()
+                    .catch { [weak self] error -> AnyPublisher<JSON, Error> in
+                        guard let self = self else {
+                            return .emptyFail
+                        }
+                        
+                        if self.paymentRequired(error) {
+                            return self.provider
+                                .requestPublisher(BlockchairTarget(type: type, apiKey: self.apiKey))
+                                .filterSuccessfulStatusAndRedirectCodes()
+                                .mapSwiftyJSON()
+                                .eraseError()
+                        } else {
+                            return Fail(error: error).eraseToAnyPublisher()
+                        }
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .mapError {
+                return MoyaError.underlying($0, nil)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func paymentRequired(_ error: Error) -> Bool {
+        if case let MoyaError.statusCode(response) = error, response.statusCode == 402 {
+            return true
+        } else {
+            return false
+        }
     }
 }
 
