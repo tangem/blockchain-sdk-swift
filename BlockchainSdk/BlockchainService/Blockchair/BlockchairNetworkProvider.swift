@@ -220,7 +220,21 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
             .mapError { $0 as Error }
             .eraseToAnyPublisher()
     }
-	
+    
+    func findErc20Tokens(address: String) -> AnyPublisher<[BlockchairToken], Error> {
+        publisher(for: .findErc20Tokens(address: address, endpoint: endpoint))
+            .tryMap {[weak self] json -> [BlockchairToken] in
+                guard let self = self else { throw WalletError.empty }
+                
+                let addr = self.mapAddressBlock(address, json: json)
+                let tokensObject = addr["layer_2"]["erc_20"]
+                let tokensData = try tokensObject.rawData()
+                let tokens = try JSONDecoder().decode([BlockchairToken].self, from: tokensData)
+                return tokens
+            }
+            .mapError { $0 as Error }
+            .eraseToAnyPublisher()
+    }
     
     private func publisher(for type: BlockchairTarget.BlockchairTargetType) -> AnyPublisher<JSON, MoyaError> {
         return Just(())
