@@ -146,7 +146,9 @@ public enum Blockchain: Equatable, Hashable {
         case .rsk:
             return "\(self)".uppercased()
         case .bsc:
-            return "Binance Smart Chain" + testnetSuffix
+            return "BNB Smart Chain" + testnetSuffix
+        case .binance:
+            return "BNB Beacon Chain" + testnetSuffix
         case .avalanche:
             return "Avalanche C-Chain" + testnetSuffix
         case .fantom:
