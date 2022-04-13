@@ -271,7 +271,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     private func needRetryWithKey(_ error: Error) -> Bool {
         if case let MoyaError.statusCode(response) = error, currentApiKey == nil {
             switch response.statusCode {
-            case 402, 429, 430, 434, 503:
+            case 402, 429, 430, 434, 503: //https://blockchair.com/api/docs#link_M05
                 self.currentApiKey = apiKey
                 return true
             default:
