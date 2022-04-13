@@ -28,7 +28,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     
     private let endpoint: BlockchairEndpoint
     private let apiKey: String
-    
+    private var currentApiKey: String? = nil
 
     private let jsonDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
@@ -245,7 +245,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                 }
                 
                 return self.provider
-                    .requestPublisher(BlockchairTarget(type: type, apiKey: nil))
+                    .requestPublisher(BlockchairTarget(type: type, apiKey: self.currentApiKey))
                     .filterSuccessfulStatusAndRedirectCodes()
                     .mapSwiftyJSON()
                     .eraseError()
@@ -254,12 +254,8 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                             return .emptyFail
                         }
                         
-                        if self.paymentRequired(error) {
-                            return self.provider
-                                .requestPublisher(BlockchairTarget(type: type, apiKey: self.apiKey))
-                                .filterSuccessfulStatusAndRedirectCodes()
-                                .mapSwiftyJSON()
-                                .eraseError()
+                        if self.needRetryWithKey(error) {
+                            return self.publisher(for: type).eraseError()
                         } else {
                             return Fail(error: error).eraseToAnyPublisher()
                         }
@@ -272,9 +268,15 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
             .eraseToAnyPublisher()
     }
     
-    private func paymentRequired(_ error: Error) -> Bool {
-        if case let MoyaError.statusCode(response) = error, response.statusCode == 402 {
-            return true
+    private func needRetryWithKey(_ error: Error) -> Bool {
+        if case let MoyaError.statusCode(response) = error, currentApiKey == nil {
+            switch response.statusCode {
+            case 402, 429, 430, 434, 503: //https://blockchair.com/api/docs#link_M05
+                self.currentApiKey = apiKey
+                return true
+            default:
+                return false
+            }
         } else {
             return false
         }
