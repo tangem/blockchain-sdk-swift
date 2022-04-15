@@ -78,11 +78,60 @@ extension MultiNetworkProvider {
         currentProviderIndex = 0
     }
     
-        print("MNP LOG: \(text) \(currentProviderIndex + 1)/\(providers.count) - \(host)")
     func log(_ text: String) {
+        MNPLogger.shared.log("MNP LOG: \(text) \(currentProviderIndex + 1)/\(providers.count) - \(host)", level: .error)
     }
 }
 
 protocol HostProvider {
     var host: String { get }
+}
+
+
+
+
+fileprivate var loggerDateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "HH:mm:ss:SSS"
+    return formatter
+}()
+
+fileprivate func logToConsole(_ message: String) {
+    print(loggerDateFormatter.string(from: Date()) + ": " + message)
+}
+
+import TangemSdk
+
+public class MNPLogger: TangemSdkLogger {
+    
+    public static let shared = MNPLogger()
+    
+    private let fileManager = FileManager.default
+    
+    public var scanLogFileData: Data? {
+        try? Data(contentsOf: scanLogsFileUrl)
+    }
+    
+    private var scanLogsFileUrl: URL {
+        fileManager.urls(for: .cachesDirectory, in: .userDomainMask)[0].appendingPathComponent("mnpLogs.txt")
+    }
+    
+    private var isRecordingLogs: Bool = false
+    
+    init() {
+        try? fileManager.removeItem(at: scanLogsFileUrl)
+    }
+    
+    public func log(_ message: String, level: Log.Level) {
+        let formattedMessage = "\(loggerDateFormatter.string(from: Date())): \(message)\n"
+        let messageData = formattedMessage.data(using: .utf8)!
+//        logToConsole(message)
+        if let handler = try? FileHandle(forWritingTo: scanLogsFileUrl) {
+            handler.seekToEndOfFile()
+            handler.write(messageData)
+            handler.closeFile()
+        } else {
+            try? messageData.write(to: scanLogsFileUrl)
+        }
+    }
 }
