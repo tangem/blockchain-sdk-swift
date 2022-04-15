@@ -18,11 +18,14 @@ class BitcoinNetworkService: MultiNetworkProvider, BitcoinNetworkProvider {
     
     init(providers: [AnyBitcoinNetworkProvider]) {
         self.providers = providers
+        self.log("init bitcoin service")
     }
     
     var supportsTransactionPush: Bool { !providers.filter { $0.supportsTransactionPush }.isEmpty }
     
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
+        self.log("get info \(addresses)")
+        return
         providerPublisher {
             $0.getInfo(addresses: addresses)
                 .retry(2)
@@ -31,6 +34,8 @@ class BitcoinNetworkService: MultiNetworkProvider, BitcoinNetworkProvider {
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
+        self.log("get info \(address)")
+        return
         providerPublisher{
             $0.getInfo(address: address)
                 .retry(2)
@@ -39,6 +44,8 @@ class BitcoinNetworkService: MultiNetworkProvider, BitcoinNetworkProvider {
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
+        self.log("get fee")
+        return
         Publishers.MergeMany(providers.map {
             $0.getFee()
                 .retry(2)
@@ -73,17 +80,23 @@ class BitcoinNetworkService: MultiNetworkProvider, BitcoinNetworkProvider {
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
+        self.log("send")
+        return
         providerPublisher {
             $0.send(transaction: transaction)
         }
     }
     
     func push(transaction: String) -> AnyPublisher<String, Error> {
+        self.log("push")
+        return
         providers.first(where: { $0.supportsTransactionPush })?
             .push(transaction: transaction) ?? .anyFail(error: BlockchainSdkError.networkProvidersNotSupportsRbf)
     }
     
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
+        self.log("signature count \(address)")
+        return
         providerPublisher {
             $0.getSignatureCount(address: address)
         }
