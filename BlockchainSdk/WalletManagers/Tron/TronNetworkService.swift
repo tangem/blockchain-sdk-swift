@@ -23,4 +23,8 @@ class TronNetworkService {
     func createTransaction(from source: String, to destination: String, amount: UInt64) -> AnyPublisher<TronTransactionRequest, Error> {
         rpcProvider.createTransaction(from: source, to: destination, amount: amount)
     }
+    
+    func broadcastTransaction(_ transaction: TronTransactionRequest) -> AnyPublisher<TronBroadcastResponse, Error> {
+        rpcProvider.broadcastTransaction(transaction)
+    }
 }

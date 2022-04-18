@@ -30,6 +30,10 @@ class TronJsonRpcProvider: HostProvider {
         requestPublisher(for: .createTransaction(source: source, destination: destination, amount: amount, network: network))
     }
     
+    func broadcastTransaction(_ transaction: TronTransactionRequest) -> AnyPublisher<TronBroadcastResponse, Error> {
+        requestPublisher(for: .broadcastTransaction(transaction: transaction, network: network))
+    }
+    
     private func requestPublisher<T: Codable>(for target: TronTarget) -> AnyPublisher<T, Error> {
         return provider.requestPublisher(target)
             .filterSuccessfulStatusAndRedirectCodes()

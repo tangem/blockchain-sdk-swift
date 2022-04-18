@@ -48,6 +48,10 @@ struct TronTransactionRequest: Codable {
     let visible: Bool
     let txID: String
     let raw_data: RawData
-    let raw_data_hex: String    
+    let raw_data_hex: String
+    var signature: [String]?
 }
 
+struct TronBroadcastResponse: Codable {
+    let result: Bool
+}
