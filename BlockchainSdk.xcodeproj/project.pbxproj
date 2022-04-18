@@ -1215,9 +1215,9 @@
 				DA9F76E827EC8AEB00F0665C /* TronAddressService.swift */,
 				DA9F76EE27EC9BCD00F0665C /* TronNetworkService.swift */,
 				DA9F76F027EC9C8300F0665C /* TronJsonRpcProvider.swift */,
+				DA9F76F427EC9CB400F0665C /* TronTarget.swift */,
 				DA9F76FD27ECA78800F0665C /* TronRequest.swift */,
 				DA9F76F227EC9CA800F0665C /* TronResponse.swift */,
-				DA9F76F427EC9CB400F0665C /* TronTarget.swift */,
 				DA9F76FA27ECA49E00F0665C /* TronNetwork.swift */,
 			);
 			path = Tron;
