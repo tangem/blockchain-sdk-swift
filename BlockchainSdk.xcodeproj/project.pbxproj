@@ -1211,8 +1211,8 @@
 		DA9F76E727EC8AD900F0665C /* Tron */ = {
 			isa = PBXGroup;
 			children = (
-				DA9F76E827EC8AEB00F0665C /* TronAddressService.swift */,
 				DA9F76EB27EC9A2900F0665C /* TronWalletManager.swift */,
+				DA9F76E827EC8AEB00F0665C /* TronAddressService.swift */,
 				DA9F76EE27EC9BCD00F0665C /* TronNetworkService.swift */,
 				DA9F76F027EC9C8300F0665C /* TronJsonRpcProvider.swift */,
 				DA9F76FD27ECA78800F0665C /* TronRequest.swift */,
