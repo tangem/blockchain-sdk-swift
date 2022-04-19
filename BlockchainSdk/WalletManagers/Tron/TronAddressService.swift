@@ -7,21 +7,26 @@
 //
 
 import Foundation
+import TangemSdk
 
 class TronAddressService: AddressService {
     private let prefix: UInt8 = 0x41
+    private let addressLength = 21
     
     init() {
-
+        
     }
     
     func makeAddress(from walletPublicKey: Data) throws -> String {
         try walletPublicKey.validateAsSecp256k1Key()
-
-        let data = walletPublicKey.dropFirst()
+        
+        let decompressedPublicKey = try Secp256k1Key(with: walletPublicKey).decompress()
+        
+        let data = decompressedPublicKey.dropFirst()
         let hash = data.sha3(.keccak256)
-        let addressData = [prefix] + hash.suffix(20)
-
+        
+        let addressData = [prefix] + hash.suffix(addressLength - 1)
+        
         return addressData.base58CheckEncodedString
     }
     
@@ -29,6 +34,7 @@ class TronAddressService: AddressService {
         guard let decoded = address.base58CheckDecodedBytes else {
             return false
         }
-        return decoded.starts(with: [prefix])
+
+        return decoded.starts(with: [prefix]) && decoded.count == addressLength
     }
 }
