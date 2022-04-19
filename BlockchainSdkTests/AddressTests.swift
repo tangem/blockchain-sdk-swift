@@ -527,7 +527,7 @@ class AddressesTests: XCTestCase {
         
         
         let compressedKeyAddress = try! TronAddressService().makeAddress(from: secpCompressedKey)
-        XCTAssertTrue(compressedKeyAddress == "TDow2Zhuea47ysGxTKNZUT3oK12n7SbYTT")
+        XCTAssertTrue(compressedKeyAddress == "TL51KaL2EPoAnPLgnzdZndaTLEbd1P5UzV")
         
         let decompressedKeyAddress = try! TronAddressService().makeAddress(from: secpDecompressedKey)
         XCTAssertTrue(decompressedKeyAddress == "TL51KaL2EPoAnPLgnzdZndaTLEbd1P5UzV")
