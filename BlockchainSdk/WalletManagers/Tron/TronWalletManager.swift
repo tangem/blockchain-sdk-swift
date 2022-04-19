@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import TangemSdk
 
 class TronWalletManager: BaseManager, WalletManager {
     var currentHost: String {
@@ -22,7 +23,7 @@ class TronWalletManager: BaseManager, WalletManager {
     
     func update(completion: @escaping (Result<Void, Error>) -> Void) {
         cancellable = networkService.getAccount(for: wallet.address)
-            .sink {
+            .sink { [unowned self] in
                 switch $0 {
                 case .failure(let error):
                     self.wallet.clearAmounts()
@@ -40,47 +41,80 @@ class TronWalletManager: BaseManager, WalletManager {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         let decimalAmount = transaction.amount.value * wallet.blockchain.decimalValue
         let intAmount = (decimalAmount.rounded() as NSDecimalNumber).uint64Value
-
+        
         return networkService.createTransaction(from: transaction.sourceAddress, to: transaction.destinationAddress, amount: intAmount)
-            .flatMap { request -> AnyPublisher<TronTransactionRequest, Error> in
-                self.sign(request, with: signer)
+            .flatMap { [weak self] request -> AnyPublisher<TronTransactionRequest, Error> in
+                guard let self = self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+                
+                return self.sign(request, with: signer)
             }
-            .flatMap { transaction in
-                self.networkService.broadcastTransaction(transaction)
+            .flatMap { [weak self] transaction -> AnyPublisher<TronBroadcastResponse, Error> in
+                guard let self = self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+                
+                return self.networkService.broadcastTransaction(transaction)
             }
-            .map({ res -> Void in // weak self
-                print(res)
+            .tryMap { broadcastResponse -> Void in
+                guard broadcastResponse.result == true else {
+                    throw WalletError.failedToSendTx
+                }
+                
                 return ()
-            })
+            }
             .eraseToAnyPublisher()
     }
     
     func sign(_ transaction: TronTransactionRequest, with signer: TransactionSigner) -> AnyPublisher<TronTransactionRequest, Error> {
+        let wallet = self.wallet
+        
+        let rawData = Data(hex: transaction.raw_data_hex)
+        let hash = rawData.sha256()
+        
         return Just(())
             .setFailureType(to: Error.self)
-            .flatMap { _ -> AnyPublisher<Data, Error> in // weak self
-                let rawData = Data(hex: transaction.raw_data_hex)
-                let hash = rawData.sha256()
-                return signer.sign(hash: hash, cardId: self.wallet.cardId, walletPublicKey: self.wallet.publicKey)
+            .flatMap { [wallet] _ -> AnyPublisher<Data, Error> in
+                return signer.sign(hash: hash, cardId: wallet.cardId, walletPublicKey: wallet.publicKey)
             }
-            .map({ signature -> TronTransactionRequest in
+            .tryMap { [weak self] signature -> TronTransactionRequest in
+                guard let self = self else {
+                    throw WalletError.empty
+                }
+                
+                let unmarshalledSignature = self.unmarshal(signature, hash: hash).hexString
+                
                 var newTransaction = transaction
-                newTransaction.signature = [signature.hexString]
+                newTransaction.signature = [unmarshalledSignature]
                 return newTransaction
-            })
+            }
             .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        .anyFail(error: WalletError.empty)
+        Just([Amount(with: .tron(testnet: true), value: 0.000001)]).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
     
     private func updateWallet(_ response: TronGetAccountResponse) {
         let blockchain = wallet.blockchain
         wallet.add(amount: Amount(with: blockchain, value: Decimal(response.balance) / blockchain.decimalValue))
     }
+    
+    private func unmarshal(_ signature: Data, hash: Data) -> Data {
+        do {
+            let walletPublicKey = wallet.publicKey.blockchainKey
+            let secpSignature = try Secp256k1Signature(with: signature)
+            let components = try secpSignature.unmarshal(with: walletPublicKey, hash: hash)
+            
+            return components.r + components.s + components.v
+        } catch {
+            print(error)
+            return Data()
+        }
+    }
 }
 
 extension TronWalletManager: ThenProcessable {
-
+    
 }
