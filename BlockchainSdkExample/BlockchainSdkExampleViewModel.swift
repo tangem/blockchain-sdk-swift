@@ -115,6 +115,12 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                 self.updateWalletManager()
             }
             .store(in: &bag)
+
+        if ProcessInfo.processInfo.environment["SCAN_ON_START"] == "1" {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.scanCardAndGetInfo()
+            }
+        }
     }
     
     func scanCardAndGetInfo() {
