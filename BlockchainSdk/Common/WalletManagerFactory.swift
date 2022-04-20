@@ -260,7 +260,7 @@ public class WalletManagerFactory {
         case .tron(let testnet):
             return TronWalletManager(wallet: wallet).then {
                 let rpcProvider = TronJsonRpcProvider(network: testnet ? .nile : .mainnet)
-                $0.networkService = TronNetworkService(rpcProvider: rpcProvider)
+                $0.networkService = TronNetworkService(blockchain: blockchain, rpcProvider: rpcProvider)
             }
         }
     }

@@ -8,6 +8,13 @@
 
 import Foundation
 
+
+struct TronAccountInfo {
+    let balance: Decimal
+    let tokenBalances: [Token: Decimal]
+}
+
+
 struct TronGetAccountRequest: Codable {
     let address: String
     let visible: Bool

@@ -22,7 +22,7 @@ class TronWalletManager: BaseManager, WalletManager {
     var networkService: TronNetworkService!
     
     func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        cancellable = networkService.getAccount(for: wallet.address)
+        cancellable = networkService.accountInfo(for: wallet.address, tokens: cardTokens)
             .sink { [unowned self] in
                 switch $0 {
                 case .failure(let error):
@@ -96,9 +96,13 @@ class TronWalletManager: BaseManager, WalletManager {
         Just([Amount(with: .tron(testnet: true), value: 0.000001)]).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
     
-    private func updateWallet(_ response: TronGetAccountResponse) {
+    private func updateWallet(_ accountInfo: TronAccountInfo) {
         let blockchain = wallet.blockchain
-        wallet.add(amount: Amount(with: blockchain, value: Decimal(response.balance) / blockchain.decimalValue))
+        wallet.add(amount: Amount(with: blockchain, value: accountInfo.balance))
+                   
+        for (token, tokenBalance) in accountInfo.tokenBalances {
+            wallet.add(tokenValue: tokenBalance, for: token)
+        }
     }
     
     private func unmarshal(_ signature: Data, hash: Data) -> Data {

@@ -12,10 +12,27 @@ import BigInt
 import web3swift
 
 class TronNetworkService {
+    private let blockchain: Blockchain
     private let rpcProvider: TronJsonRpcProvider
     
-    init(rpcProvider: TronJsonRpcProvider) {
+    init(blockchain: Blockchain, rpcProvider: TronJsonRpcProvider) {
+        self.blockchain = blockchain
         self.rpcProvider = rpcProvider
+    }
+    
+    func accountInfo(for address: String, tokens: [Token]) -> AnyPublisher<TronAccountInfo, Error> {
+        let blockchain = self.blockchain
+        let tokenBalancePublishers = tokens.map { tokenBalance(address: address, token: $0) }
+        
+        return rpcProvider.getAccount(for: address)
+            .zip(Publishers.MergeMany(tokenBalancePublishers).collect())
+            .map { (accountInfo, tokenInfoList) in
+                let balance = Decimal(accountInfo.balance) / blockchain.decimalValue
+                let tokenBalances = Dictionary(uniqueKeysWithValues: tokenInfoList)
+                
+                return TronAccountInfo(balance: balance, tokenBalances: tokenBalances)
+            }
+            .eraseToAnyPublisher()
     }
     
     func getAccount(for address: String) -> AnyPublisher<TronGetAccountResponse, Error> {
@@ -30,7 +47,7 @@ class TronNetworkService {
         rpcProvider.broadcastTransaction(transaction)
     }
     
-    func tokenBalance(address: String, token: Token) -> AnyPublisher<Decimal, Error> {
+    func tokenBalance(address: String, token: Token) -> AnyPublisher<(Token, Decimal), Error> {
         rpcProvider.tokenBalance(address: address, contractAddress: token.contractAddress)
             .tryMap { response in
                 guard let hexValue = response.constant_result.first else {
@@ -50,8 +67,8 @@ class TronNetworkService {
                 guard let decimalValue = Decimal(formatted) else {
                     throw WalletError.failedToParseNetworkResponse
                 }
-
-                return decimalValue
+                
+                return (token, decimalValue)
             }
             .eraseToAnyPublisher()
     }
