@@ -37,4 +37,17 @@ class TronAddressService: AddressService {
 
         return decoded.starts(with: [prefix]) && decoded.count == addressLength
     }
+    
+    static func toHexForm(_ base58String: String, length: Int?) -> String? {
+        guard let bytes = base58String.base58CheckDecodedBytes else {
+            return nil
+        }
+        
+        let hex = Data(bytes).hex
+        if let length = length {
+            return String(repeating: "0", count: length - hex.count) + hex
+        } else {
+            return hex
+        }
+    }
 }

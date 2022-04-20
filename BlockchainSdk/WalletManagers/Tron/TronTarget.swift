@@ -13,6 +13,7 @@ enum TronTarget: TargetType {
     case getAccount(address: String, network: TronNetwork)
     case createTransaction(source: String, destination: String, amount: UInt64, network: TronNetwork)
     case broadcastTransaction(transaction: TronTransactionRequest, network: TronNetwork)
+    case tokenBalance(address: String, contractAddress: String, network: TronNetwork)
     
     var baseURL: URL {
         switch self {
@@ -21,6 +22,8 @@ enum TronTarget: TargetType {
         case .createTransaction(_, _, _, let network):
             return network.url
         case .broadcastTransaction(_, let network):
+            return network.url
+        case .tokenBalance(_, _, let network):
             return network.url
         }
     }
@@ -33,6 +36,8 @@ enum TronTarget: TargetType {
             return "/wallet/createtransaction"
         case .broadcastTransaction:
             return "/wallet/broadcasttransaction"
+        case .tokenBalance:
+            return "/wallet/triggersmartcontract"
         }
     }
     
@@ -54,6 +59,17 @@ enum TronTarget: TargetType {
                 requestData = try encoder.encode(request)
             case .broadcastTransaction(let transaction, _):
                 requestData = try encoder.encode(transaction)
+            case .tokenBalance(let address, let contractAddress, _):
+                let hexAddress = TronAddressService.toHexForm(address, length: 64) ?? ""
+                
+                let request = TronTriggerSmartContractRequest(
+                    owner_address: address,
+                    contract_address: contractAddress,
+                    function_selector: "balanceOf(address)",
+                    parameter: hexAddress,
+                    visible: true
+                )
+                requestData = try encoder.encode(request)
             }
         } catch {
             print("Failed to encode Tron request data:", error)

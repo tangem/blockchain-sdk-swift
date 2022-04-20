@@ -8,6 +8,8 @@
 
 import Foundation
 import Combine
+import BigInt
+import web3swift
 
 class TronNetworkService {
     private let rpcProvider: TronJsonRpcProvider
@@ -26,5 +28,31 @@ class TronNetworkService {
     
     func broadcastTransaction(_ transaction: TronTransactionRequest) -> AnyPublisher<TronBroadcastResponse, Error> {
         rpcProvider.broadcastTransaction(transaction)
+    }
+    
+    func tokenBalance(address: String, token: Token) -> AnyPublisher<Decimal, Error> {
+        rpcProvider.tokenBalance(address: address, contractAddress: token.contractAddress)
+            .tryMap { response in
+                guard let hexValue = response.constant_result.first else {
+                    throw WalletError.failedToParseNetworkResponse
+                }
+                
+                let bigIntValue = BigUInt(Data(hex: hexValue))
+                
+                let formatted = Web3.Utils.formatToPrecision(
+                    bigIntValue,
+                    numberDecimals: token.decimalCount,
+                    formattingDecimals: token.decimalCount,
+                    decimalSeparator: ".",
+                    fallbackToScientific: false
+                )
+                
+                guard let decimalValue = Decimal(formatted) else {
+                    throw WalletError.failedToParseNetworkResponse
+                }
+
+                return decimalValue
+            }
+            .eraseToAnyPublisher()
     }
 }

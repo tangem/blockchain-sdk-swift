@@ -55,3 +55,15 @@ struct TronTransactionRequest: Codable {
 struct TronBroadcastResponse: Codable {
     let result: Bool
 }
+
+struct TronTriggerSmartContractRequest: Codable {
+    let owner_address: String
+    let contract_address: String
+    let function_selector: String
+    let parameter: String
+    let visible: Bool
+}
+
+struct TronTriggerSmartContractResponse: Codable {
+    let constant_result: [String]
+}
