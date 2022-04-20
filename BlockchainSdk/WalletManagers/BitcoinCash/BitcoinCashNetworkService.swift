@@ -13,7 +13,7 @@ import TangemSdk
 
 class BitcoinCashNetworkService: BitcoinNetworkService {
     override func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
-        super.getInfo(address: addresses[0])
+        super.getInfo(address: addresses[0].removeBchPrefix())
             .map { [$0] }
             .eraseToAnyPublisher()
     }
