@@ -16,7 +16,12 @@ class TronJsonRpcProvider: HostProvider {
     }
 
     private let network: TronNetwork
-    private let provider = MoyaProvider<TronTarget>(plugins: [NetworkLoggerPlugin()])
+    private let provider = MoyaProvider<TronTarget>(plugins: [NetworkLoggerPlugin(configuration: .init(logOptions: [
+        .requestMethod,
+        .requestBody,
+        .successResponseBody,
+        .errorResponseBody
+    ]))])
     
     init(network: TronNetwork) {
         self.network = network
@@ -30,8 +35,16 @@ class TronJsonRpcProvider: HostProvider {
         requestPublisher(for: .createTransaction(source: source, destination: destination, amount: amount, network: network))
     }
     
+    func createTrc20Transaction(from source: String, to destination: String, contractAddress: String, amount: UInt64) -> AnyPublisher<TronSmartContractTransactionRequest, Error> {
+        requestPublisher(for: .createTrc20Transaction(source: source, destination: destination, contractAddress: contractAddress, amount: amount, network: network))
+    }
+    
     func broadcastTransaction(_ transaction: TronTransactionRequest) -> AnyPublisher<TronBroadcastResponse, Error> {
         requestPublisher(for: .broadcastTransaction(transaction: transaction, network: network))
+    }
+    
+    func broadcastTransaction2(_ transaction: TronTransactionRequest2) -> AnyPublisher<TronBroadcastResponse, Error> {
+        requestPublisher(for: .broadcastTransaction2(transaction: transaction, network: network))
     }
     
     func tokenBalance(address: String, contractAddress: String) -> AnyPublisher<TronTriggerSmartContractResponse, Error> {
