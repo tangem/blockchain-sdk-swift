@@ -24,8 +24,28 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     @Published var isTestnet: Bool = false
     @Published var isShelley: Bool = false
     @Published var curve: EllipticCurve = .ed25519
+    @Published var tokenExpanded: Bool = false
+    @Published var tokenSymbol = ""
+    @Published var tokenContractAddress = ""
+    @Published var tokenDecimalPlaces = 0
     @Published var sourceAddresses: [Address] = []
     @Published var balance: String = "--"
+    
+    var tokenSectionName: String {
+        if let enteredToken = self.enteredToken {
+            return "Token (\(enteredToken.symbol))"
+        } else {
+            return "Token"
+        }
+    }
+    
+    var enteredToken: BlockchainSdk.Token? {
+        guard !tokenContractAddress.isEmpty else {
+            return nil
+        }
+        
+        return BlockchainSdk.Token(name: tokenSymbol, symbol: tokenSymbol, contractAddress: tokenContractAddress, decimalCount: tokenDecimalPlaces)
+    }
     
     let blockchainsWithCurveSelection: [String]
     let blockchainsWithShelleySelection: [String]
@@ -41,6 +61,9 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     private let isTestnetKey = "isTestnet"
     private let isShelleyKey = "isShelley"
     private let curveKey = "curve"
+    private let tokenSymbolKey = "tokenSymbol"
+    private let tokenContractAddressKey = "tokenContractAddress"
+    private let tokenDecimalPlacesKey = "tokenDecimalPlaces"
     
     private var bag: Set<AnyCancellable> = []
 
@@ -67,6 +90,9 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         self.isTestnet = UserDefaults.standard.bool(forKey: isTestnetKey)
         self.curve = EllipticCurve(rawValue: UserDefaults.standard.string(forKey: curveKey) ?? "") ?? self.curve
         self.isShelley = UserDefaults.standard.bool(forKey: isShelleyKey)
+        self.tokenSymbol = UserDefaults.standard.string(forKey: tokenSymbolKey) ?? ""
+        self.tokenContractAddress = UserDefaults.standard.string(forKey: tokenContractAddressKey) ?? ""
+        self.tokenDecimalPlaces = UserDefaults.standard.integer(forKey: tokenDecimalPlacesKey)
         
         $destination
             .sink {
@@ -115,6 +141,33 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                 self.updateWalletManager()
             }
             .store(in: &bag)
+        
+        $tokenSymbol
+            .dropFirst()
+            .debounce(for: 1, scheduler: RunLoop.main)
+            .sink { [unowned self] in
+                UserDefaults.standard.set($0, forKey: tokenSymbolKey)
+                self.updateWalletManager()
+            }
+            .store(in: &bag)
+        
+        $tokenContractAddress
+            .dropFirst()
+            .debounce(for: 1, scheduler: RunLoop.main)
+            .sink { [unowned self] in
+                UserDefaults.standard.set($0, forKey: tokenContractAddressKey)
+                self.updateWalletManager()
+            }
+            .store(in: &bag)
+        
+        $tokenDecimalPlaces
+            .dropFirst()
+            .debounce(for: 1, scheduler: RunLoop.main)
+            .sink { [unowned self] in
+                UserDefaults.standard.set($0, forKey: tokenDecimalPlacesKey)
+                self.updateWalletManager()
+            }
+            .store(in: &bag)
 
         if ProcessInfo.processInfo.environment["SCAN_ON_START"] == "1" {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -146,11 +199,23 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                 print(error)
                 balanceDescription = error.localizedDescription
             case .success:
+                var balances: [String] = []
                 if let balance = self?.walletManager?.wallet.amounts[.coin]?.description {
-                    balanceDescription = balance
+                    balances = [balance]
                 } else {
-                    balanceDescription = "--"
+                    balances = ["--"]
                 }
+            
+                let tokens = self?.walletManager?.cardTokens ?? []
+                for token in tokens {
+                    if let tokenAmount = self?.walletManager?.wallet.amounts[.token(value: token)] {
+                        balances.append(tokenAmount.description)
+                    } else {
+                        balances.append("--- \(token.symbol)")
+                    }
+                }
+                
+                balanceDescription = balances.joined(separator: "\n")
             }
          
             DispatchQueue.main.async {
@@ -283,6 +348,9 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             let walletManager = try walletManagerFactory.makeWalletManager(cardId: card.cardId, blockchain: blockchain, walletPublicKey: wallet.publicKey)
             self.walletManager = walletManager
             self.sourceAddresses = walletManager.wallet.addresses
+            if let enteredToken = enteredToken {
+                walletManager.addToken(enteredToken)
+            }
             updateBalance()
         } catch {
             print(error)
@@ -298,7 +366,11 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             return nil
         }
         
-        return Amount(with: blockchain, value: value)
+        if let enteredToken = enteredToken {
+            return Amount(with: enteredToken, value: value)
+        } else {
+            return Amount(with: blockchain, value: value)
+        }
     }
     
     static private func blockchainList() -> [(String, String)] {

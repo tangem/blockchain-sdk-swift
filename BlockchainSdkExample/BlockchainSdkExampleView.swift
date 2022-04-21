@@ -49,6 +49,14 @@ struct BlockchainSdkExampleView: View {
                         Toggle("Shelley", isOn: $model.isShelley)
                             .disabled(model.card == nil)
                     }
+    
+                    if #available(iOS 14.0, *) {
+                        DisclosureGroup(model.tokenSectionName, isExpanded: $model.tokenExpanded) {
+                            TextField("Symbol", text: $model.tokenSymbol)
+                            TextField("Contract address", text: $model.tokenContractAddress)
+                            Stepper("Decimal places \(model.tokenDecimalPlaces)", value: $model.tokenDecimalPlaces, in: 0...24)
+                        }
+                    }
                 }
                 
                 Section(header: Text("Source address and balance")) {
@@ -104,6 +112,17 @@ struct BlockchainSdkExampleView: View {
                         .keyboardType(.decimalPad)
                 }
                 
+                Section(header: Text("Transaction")) {
+                    Button {
+                        model.sendTransaction()
+                    } label: {
+                        Text("Send \(model.enteredToken != nil ? "token" : "coin") transaction")
+                    }
+                    
+                    Text(model.transactionResult)
+                }
+                .disabled(model.walletManager == nil)
+                
                 Section(header: Text("Fees")) {
                     Button {
                         model.checkFee()
@@ -120,19 +139,9 @@ struct BlockchainSdkExampleView: View {
                     }
                 }
                 .disabled(model.walletManager == nil)
-                
-                Section(header: Text("Transaction")) {
-                    Button {
-                        model.sendTransaction()
-                    } label: {
-                        Text("Send transaction")
-                    }
-                    
-                    Text(model.transactionResult)
-                }
-                .disabled(model.walletManager == nil)
             }
             .navigationBarTitle("Blockchain SDK", displayMode: .inline)
+            .navigationBarHidden(true)
             .onAppear {
                 UIScrollView.appearance().keyboardDismissMode = .onDrag
             }
