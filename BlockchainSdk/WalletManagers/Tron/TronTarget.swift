@@ -53,16 +53,15 @@ enum TronTarget: TargetType {
     
     var task: Task {
         let encoder = JSONEncoder()
-        let requestData: Data?
         
         do {
             switch self {
             case .getAccount(let address, _):
                 let request = TronGetAccountRequest(address: address, visible: true)
-                requestData = try encoder.encode(request)
+                return .requestData(try encoder.encode(request))
             case .createTransaction(let source, let destination, let amount, _):
                 let request = TronCreateTransactionRequest(owner_address: source, to_address: destination, amount: amount, visible: true)
-                requestData = try encoder.encode(request)
+                return .requestData(try encoder.encode(request))
             case .createTrc20Transaction(let source, let destination, let contractAddress, let amount, _):
                 let hexAddress = TronAddressService.toHexForm(destination, length: 64) ?? ""
                 let hexAmount = String(repeating: "0", count: 48) + Data(Data(from: amount).reversed()).hex
@@ -77,11 +76,11 @@ enum TronTarget: TargetType {
                     parameter: parameter,
                     visible: true
                 )
-                requestData = try encoder.encode(request)
+                return .requestData(try encoder.encode(request))
             case .broadcastTransaction(let transaction, _):
-                requestData = try encoder.encode(transaction)
+                return .requestData(try encoder.encode(transaction))
             case .broadcastTransaction2(let transaction, _):
-                requestData = try encoder.encode(transaction)
+                return .requestData(try encoder.encode(transaction))
             case .tokenBalance(let address, let contractAddress, _):
                 let hexAddress = TronAddressService.toHexForm(address, length: 64) ?? ""
                 
@@ -94,14 +93,12 @@ enum TronTarget: TargetType {
                     parameter: hexAddress,
                     visible: true
                 )
-                requestData = try encoder.encode(request)
+                return .requestData(try encoder.encode(request))
             }
         } catch {
             print("Failed to encode Tron request data:", error)
             return .requestPlain
         }
-
-        return .requestData(requestData ?? Data())
     }
     
     var headers: [String : String]? {
