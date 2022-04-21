@@ -51,6 +51,10 @@ class TronJsonRpcProvider: HostProvider {
         requestPublisher(for: .tokenBalance(address: address, contractAddress: contractAddress, network: network))
     }
     
+    func tokenTransactionHistory(contractAddress: String) -> AnyPublisher<TronTokenHistoryResponse, Error> {
+        requestPublisher(for: .tokenTransactionHistory(contractAddress: contractAddress, limit: 50, network: network))
+    }
+    
     private func requestPublisher<T: Codable>(for target: TronTarget) -> AnyPublisher<T, Error> {
         return provider.requestPublisher(target)
             .filterSuccessfulStatusAndRedirectCodes()

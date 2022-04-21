@@ -121,3 +121,11 @@ struct TronTriggerSmartContractRequest: Codable {
 struct TronTriggerSmartContractResponse: Codable {
     let constant_result: [String]
 }
+
+struct TronTokenHistoryResponse: Codable {
+    struct Data: Codable {
+        let energy_usage_total: Int
+    }
+    
+    let data: [Data]
+}

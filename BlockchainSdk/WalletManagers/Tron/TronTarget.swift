@@ -16,6 +16,7 @@ enum TronTarget: TargetType {
     case broadcastTransaction(transaction: TronTransactionRequest, network: TronNetwork)
     case broadcastTransaction2(transaction: TronTransactionRequest2, network: TronNetwork)
     case tokenBalance(address: String, contractAddress: String, network: TronNetwork)
+    case tokenTransactionHistory(contractAddress: String, limit: Int, network: TronNetwork)
     
     var baseURL: URL {
         switch self {
@@ -31,6 +32,8 @@ enum TronTarget: TargetType {
             return network.url
         case .tokenBalance(_, _, let network):
             return network.url
+        case .tokenTransactionHistory(_, _, let network):
+            return network.url
         }
     }
     
@@ -44,11 +47,18 @@ enum TronTarget: TargetType {
             return "/wallet/broadcasttransaction"
         case .createTrc20Transaction, .tokenBalance:
             return "/wallet/triggersmartcontract"
+        case .tokenTransactionHistory(let contractAddress, _, _):
+            return "/v1/contracts/\(contractAddress)/transactions"
         }
     }
     
     var method: Moya.Method {
-        return .post
+        switch self {
+        case .tokenTransactionHistory:
+            return .get
+        default:
+            return .post
+        }
     }
     
     var task: Task {
@@ -94,6 +104,12 @@ enum TronTarget: TargetType {
                     visible: true
                 )
                 return .requestData(try encoder.encode(request))
+            case .tokenTransactionHistory(_, let limit, _):
+                let parameters: [_: Any] = [
+                    "only_confirmed": true,
+                    "limit": limit,
+                ]
+                return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
             }
         } catch {
             print("Failed to encode Tron request data:", error)

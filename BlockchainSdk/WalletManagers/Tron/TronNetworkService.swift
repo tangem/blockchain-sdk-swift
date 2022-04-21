@@ -80,4 +80,16 @@ class TronNetworkService {
             }
             .eraseToAnyPublisher()
     }
+    
+    func tokenTransferMaxEnergyUse(contractAddress: String) -> AnyPublisher<Int, Error> {
+        rpcProvider.tokenTransactionHistory(contractAddress: contractAddress)
+            .tryMap {
+                guard let maxEnergyUsage = $0.data.map(\.energy_usage_total).max() else {
+                    throw WalletError.failedToGetFee
+                }
+                
+                return maxEnergyUsage
+            }
+            .eraseToAnyPublisher()
+    }
 }
