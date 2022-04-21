@@ -67,6 +67,7 @@ struct TronTransactionRequest2: Codable {
         let ref_block_hash: String
         let expiration: UInt64
         let timestamp: UInt64
+        let fee_limit: UInt64
     }
     
     struct Contract: Codable {
