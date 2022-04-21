@@ -43,8 +43,16 @@ class TronNetworkService {
         rpcProvider.createTransaction(from: source, to: destination, amount: amount)
     }
     
+    func createTrc20Transaction(from source: String, to destination: String, contractAddress: String, amount: UInt64) -> AnyPublisher<TronSmartContractTransactionRequest, Error> {
+        rpcProvider.createTrc20Transaction(from: source, to: destination, contractAddress: contractAddress, amount: amount)
+    }
+    
     func broadcastTransaction(_ transaction: TronTransactionRequest) -> AnyPublisher<TronBroadcastResponse, Error> {
         rpcProvider.broadcastTransaction(transaction)
+    }
+    
+    func broadcastTransaction2(_ transaction: TronTransactionRequest2) -> AnyPublisher<TronBroadcastResponse, Error> {
+        rpcProvider.broadcastTransaction2(transaction)
     }
     
     func tokenBalance(address: String, token: Token) -> AnyPublisher<(Token, Decimal), Error> {
