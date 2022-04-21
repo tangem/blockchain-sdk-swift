@@ -37,22 +37,9 @@ class BinanceWalletManager: BaseManager, WalletManager {
         let coinBalance = response.balances[blockchain.currencySymbol] ?? 0 //if withdrawal all funds, there is no balance from network
         wallet.add(coinValue: coinBalance)
         
-        if cardTokens.isEmpty {
-            response.balances
-                .filter { $0.key != blockchain.currencySymbol }
-                .forEach { response in
-                    let symbol = response.key.split(separator: "-").first.map {String($0)} ?? response.key
-                    let token = Token(name: symbol,
-                                      symbol: symbol,
-                                      contractAddress: response.key,
-                                      decimalCount: blockchain.decimalCount)
-                    wallet.add(tokenValue: response.value, for: token)
-                }
-        } else {
-            for token in cardTokens {
-                let balance = response.balances[token.contractAddress] ?? 0 //if withdrawal all funds, there is no balance from network
-                wallet.add(tokenValue: balance, for: token)
-            }
+        cardTokens.forEach { token in
+            let balance = response.balances[token.contractAddress] ?? 0 //if withdrawal all funds, there is no balance from network
+            wallet.add(tokenValue: balance, for: token)
         }
         
         txBuilder.binanceWallet.sequence = response.sequence
