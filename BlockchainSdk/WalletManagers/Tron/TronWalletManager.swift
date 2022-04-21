@@ -40,7 +40,7 @@ class TronWalletManager: BaseManager, WalletManager {
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         switch transaction.amount.type {
-        case .reserve:
+        case .coin:
             return sendTrx(transaction, signer: signer)
         case .token(let token):
             return sendTrc20(transaction, token: token, signer: signer)
