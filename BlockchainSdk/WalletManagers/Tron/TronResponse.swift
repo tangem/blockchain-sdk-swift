@@ -13,6 +13,6 @@ struct TronGetAccountResponse: Codable {
 }
 
 struct TronGetAccountResourceResponse: Codable {
-    let freeNetUsed: UInt64
+    let freeNetUsed: UInt64?
     let freeNetLimit: UInt64
 }
