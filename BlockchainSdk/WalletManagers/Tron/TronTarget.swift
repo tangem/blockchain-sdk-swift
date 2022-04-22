@@ -11,6 +11,7 @@ import Moya
 
 enum TronTarget: TargetType {
     case getAccount(address: String, network: TronNetwork)
+    case getAccountResource(address: String, network: TronNetwork)
     case createTransaction(source: String, destination: String, amount: UInt64, network: TronNetwork)
     case createTrc20Transaction(source: String, destination: String, contractAddress: String, amount: UInt64, network: TronNetwork)
     case broadcastTransaction(transaction: TronTransactionRequest, network: TronNetwork)
@@ -21,6 +22,8 @@ enum TronTarget: TargetType {
     var baseURL: URL {
         switch self {
         case .getAccount(_, let network):
+            return network.url
+        case .getAccountResource(_, let network):
             return network.url
         case .createTransaction(_, _, _, let network):
             return network.url
@@ -41,6 +44,8 @@ enum TronTarget: TargetType {
         switch self {
         case .getAccount:
             return "/wallet/getaccount"
+        case .getAccountResource:
+            return "/wallet/getaccountresource"
         case .createTransaction:
             return "/wallet/createtransaction"
         case .broadcastTransaction, .broadcastTransaction2:
@@ -66,7 +71,7 @@ enum TronTarget: TargetType {
         
         do {
             switch self {
-            case .getAccount(let address, _):
+            case .getAccount(let address, _), .getAccountResource(let address, _):
                 let request = TronGetAccountRequest(address: address, visible: true)
                 return .requestData(try encoder.encode(request))
             case .createTransaction(let source, let destination, let amount, _):

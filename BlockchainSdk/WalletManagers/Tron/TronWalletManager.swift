@@ -158,7 +158,7 @@ class TronWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        Just([Amount(with: .tron(testnet: true), value: 0.000001)]).setFailureType(to: Error.self).eraseToAnyPublisher()
+        networkService.getFee(amount: amount, source: wallet.address, destination: destination)
     }
     
     private func updateWallet(_ accountInfo: TronAccountInfo) {

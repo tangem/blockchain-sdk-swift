@@ -31,6 +31,10 @@ class TronJsonRpcProvider: HostProvider {
         requestPublisher(for: .getAccount(address: address, network: network))
     }
     
+    func getAccountResource(for address: String) -> AnyPublisher<TronGetAccountResourceResponse, Error> {
+        requestPublisher(for: .getAccountResource(address: address, network: network))
+    }
+    
     func createTransaction(from source: String, to destination: String, amount: UInt64) -> AnyPublisher<TronTransactionRequest, Error> {
         requestPublisher(for: .createTransaction(source: source, destination: destination, amount: amount, network: network))
     }

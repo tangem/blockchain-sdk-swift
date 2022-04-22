@@ -11,3 +11,8 @@ import Foundation
 struct TronGetAccountResponse: Codable {
     let balance: UInt64
 }
+
+struct TronGetAccountResourceResponse: Codable {
+    let freeNetUsed: UInt64
+    let freeNetLimit: UInt64
+}
