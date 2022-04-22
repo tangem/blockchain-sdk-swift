@@ -92,6 +92,10 @@ class TronNetworkService {
             }
             .eraseToAnyPublisher()
     }
+
+    func getAccountResource(for address: String) -> AnyPublisher<TronGetAccountResourceResponse, Error> {
+        rpcProvider.getAccountResource(for: address)
+    }
     
     func getFee(amount: Amount, source: String, destination: String) -> AnyPublisher<[Amount], Error> {
         switch amount.type {
@@ -112,5 +116,19 @@ class TronNetworkService {
         default:
             return .anyFail(error: WalletError.failedToGetFee)
         }
+    }
+    
+    func accountExists(address: String) -> AnyPublisher<Bool, Error> {
+        rpcProvider.getAccount(for: address)
+            .map { _ in
+                true
+            }
+            .tryCatch { error -> AnyPublisher<Bool, Error> in
+                if case WalletError.failedToParseNetworkResponse = error {
+                    return Just(false).setFailureType(to: Error.self).eraseToAnyPublisher()
+                }
+                throw error
+            }
+            .eraseToAnyPublisher()
     }
 }
