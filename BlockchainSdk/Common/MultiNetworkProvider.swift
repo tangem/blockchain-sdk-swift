@@ -26,7 +26,8 @@ extension MultiNetworkProvider {
     var host: String { provider.host }
     
     func providerPublisher<T>(for requestPublisher: @escaping (_ provider: Provider) -> AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
-        requestPublisher(provider)
+        let currentHost = provider.host
+        return requestPublisher(provider)
             .catch { [weak self] error -> AnyPublisher<T, Error> in
                 guard let self = self else { return .anyFail(error: error) }
                 
@@ -40,7 +41,7 @@ extension MultiNetworkProvider {
                 
                 print("Switchable publisher catched error:", error)
                 
-                if self.needRetry() {
+                if self.needRetry(for: currentHost) {
                     print("Switching to next publisher")
                     return self.providerPublisher(for: requestPublisher)
                 }
@@ -50,7 +51,11 @@ extension MultiNetworkProvider {
             .eraseToAnyPublisher()
     }
     
-    private func needRetry() -> Bool {
+    private func needRetry(for errorHost: String) -> Bool {
+        if errorHost != self.host {
+            return true
+        }
+        
         currentProviderIndex += 1
         if currentProviderIndex < providers.count {
             return true
