@@ -106,6 +106,7 @@ struct TronSmartContractTransactionRequest: Codable {
 
 struct TronBroadcastResponse: Codable {
     let result: Bool
+    let txid: String
 }
 
 struct TronTriggerSmartContractRequest: Codable {
