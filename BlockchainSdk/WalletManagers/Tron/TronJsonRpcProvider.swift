@@ -35,7 +35,7 @@ class TronJsonRpcProvider: HostProvider {
         requestPublisher(for: .getAccountResource(address: address, network: network))
     }
     
-    func createTransaction(from source: String, to destination: String, amount: UInt64) -> AnyPublisher<TronTransactionRequest, Error> {
+    func createTransaction(from source: String, to destination: String, amount: UInt64) -> AnyPublisher<TronTransactionRequest<TrxTransferValue>, Error> {
         requestPublisher(for: .createTransaction(source: source, destination: destination, amount: amount, network: network))
     }
     
@@ -43,12 +43,14 @@ class TronJsonRpcProvider: HostProvider {
         requestPublisher(for: .createTrc20Transaction(source: source, destination: destination, contractAddress: contractAddress, amount: amount, network: network))
     }
     
-    func broadcastTransaction(_ transaction: TronTransactionRequest) -> AnyPublisher<TronBroadcastResponse, Error> {
-        requestPublisher(for: .broadcastTransaction(transaction: transaction, network: network))
-    }
-    
-    func broadcastTransaction2(_ transaction: TronTransactionRequest2) -> AnyPublisher<TronBroadcastResponse, Error> {
-        requestPublisher(for: .broadcastTransaction2(transaction: transaction, network: network))
+    func broadcastTransaction<T: Codable>(_ transaction: TronTransactionRequest<T>) -> AnyPublisher<TronBroadcastResponse, Error> {
+        let json = JSONEncoder()
+        do {
+            let transactionData = try json.encode(transaction)
+            return requestPublisher(for: .broadcastTransaction(transactionData: transactionData, network: network))
+        } catch {
+            return .anyFail(error: WalletError.failedToBuildTx)
+        }
     }
     
     func tokenBalance(address: String, contractAddress: String) -> AnyPublisher<TronTriggerSmartContractResponse, Error> {

@@ -14,8 +14,7 @@ enum TronTarget: TargetType {
     case getAccountResource(address: String, network: TronNetwork)
     case createTransaction(source: String, destination: String, amount: UInt64, network: TronNetwork)
     case createTrc20Transaction(source: String, destination: String, contractAddress: String, amount: UInt64, network: TronNetwork)
-    case broadcastTransaction(transaction: TronTransactionRequest, network: TronNetwork)
-    case broadcastTransaction2(transaction: TronTransactionRequest2, network: TronNetwork)
+    case broadcastTransaction(transactionData: Data, network: TronNetwork)
     case tokenBalance(address: String, contractAddress: String, network: TronNetwork)
     case tokenTransactionHistory(contractAddress: String, limit: Int, network: TronNetwork)
     case getBlockByNum(blockNumber: Int, network: TronNetwork)
@@ -31,8 +30,6 @@ enum TronTarget: TargetType {
         case .createTrc20Transaction(_, _, _, _, let network):
             return network.url
         case .broadcastTransaction(_, let network):
-            return network.url
-        case .broadcastTransaction2(_, let network):
             return network.url
         case .tokenBalance(_, _, let network):
             return network.url
@@ -51,7 +48,7 @@ enum TronTarget: TargetType {
             return "/wallet/getaccountresource"
         case .createTransaction:
             return "/wallet/createtransaction"
-        case .broadcastTransaction, .broadcastTransaction2:
+        case .broadcastTransaction:
             return "/wallet/broadcasttransaction"
         case .createTrc20Transaction, .tokenBalance:
             return "/wallet/triggersmartcontract"
@@ -97,10 +94,8 @@ enum TronTarget: TargetType {
                     visible: true
                 )
                 return .requestData(try encoder.encode(request))
-            case .broadcastTransaction(let transaction, _):
-                return .requestData(try encoder.encode(transaction))
-            case .broadcastTransaction2(let transaction, _):
-                return .requestData(try encoder.encode(transaction))
+            case .broadcastTransaction(let transactionData, _):
+                return .requestData(transactionData)
             case .tokenBalance(let address, let contractAddress, _):
                 let hexAddress = TronAddressService.toHexForm(address, length: 64) ?? ""
                 
