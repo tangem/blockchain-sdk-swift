@@ -89,8 +89,7 @@ struct TronTriggerSmartContractRequest: Codable {
     let owner_address: String
     let contract_address: String
     let function_selector: String
-    let fee_limit: Int64
-    let call_value: Int
+    var fee_limit: UInt64? = nil
     let parameter: String
     let visible: Bool
 }

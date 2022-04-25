@@ -13,7 +13,7 @@ enum TronTarget: TargetType {
     case getAccount(address: String, network: TronNetwork)
     case getAccountResource(address: String, network: TronNetwork)
     case createTransaction(source: String, destination: String, amount: UInt64, network: TronNetwork)
-    case createTrc20Transaction(source: String, destination: String, contractAddress: String, amount: UInt64, network: TronNetwork)
+    case createTrc20Transaction(source: String, destination: String, contractAddress: String, amount: UInt64, feeLimit: UInt64, network: TronNetwork)
     case broadcastTransaction(transactionData: Data, network: TronNetwork)
     case tokenBalance(address: String, contractAddress: String, network: TronNetwork)
     case tokenTransactionHistory(contractAddress: String, limit: Int, network: TronNetwork)
@@ -27,7 +27,7 @@ enum TronTarget: TargetType {
             return network.url
         case .createTransaction(_, _, _, let network):
             return network.url
-        case .createTrc20Transaction(_, _, _, _, let network):
+        case .createTrc20Transaction(_, _, _, _, _, let network):
             return network.url
         case .broadcastTransaction(_, let network):
             return network.url
@@ -79,7 +79,7 @@ enum TronTarget: TargetType {
             case .createTransaction(let source, let destination, let amount, _):
                 let request = TronCreateTransactionRequest(owner_address: source, to_address: destination, amount: amount, visible: true)
                 return .requestData(try encoder.encode(request))
-            case .createTrc20Transaction(let source, let destination, let contractAddress, let amount, _):
+            case .createTrc20Transaction(let source, let destination, let contractAddress, let amount, let feeLimit, _):
                 let hexAddress = TronAddressService.toHexForm(destination, length: 64) ?? ""
                 let hexAmount = String(repeating: "0", count: 48) + Data(Data(from: amount).reversed()).hex
                 let parameter = hexAddress + hexAmount
@@ -88,8 +88,7 @@ enum TronTarget: TargetType {
                     owner_address: source,
                     contract_address: contractAddress,
                     function_selector: "transfer(address,uint256)",
-                    fee_limit: 10000000,
-                    call_value: 0,
+                    fee_limit: feeLimit,
                     parameter: parameter,
                     visible: true
                 )
@@ -103,8 +102,6 @@ enum TronTarget: TargetType {
                     owner_address: address,
                     contract_address: contractAddress,
                     function_selector: "balanceOf(address)",
-                    fee_limit: 10000000,
-                    call_value: 0,
                     parameter: hexAddress,
                     visible: true
                 )

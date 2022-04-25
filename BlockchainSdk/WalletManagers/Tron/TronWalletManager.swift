@@ -37,9 +37,7 @@ class TronWalletManager: BaseManager, WalletManager {
                 case .finished:
                     completion(.success(()))
                 }
-                print($0)
             } receiveValue: { [unowned self] in
-                print($0)
                 self.updateWallet($0)
             }
     }
@@ -104,21 +102,15 @@ class TronWalletManager: BaseManager, WalletManager {
                     return Amount(with: blockchain, value: 1.1)
                 }
                 
-                print(resources, destinationExists, transactionPieces)
-                
                 let additionalDataSize = 69
                 let transactionByteSize = (Data(hex: transactionPieces.0) + Data(hex: transactionPieces.1)).count + additionalDataSize
                 let sunPerTransactionByte = 1000
                 let transactionSizeFee = transactionByteSize * sunPerTransactionByte
-                print(transactionByteSize)
-                
                 
                 let sunPerEnergyUnit = 280
                 let energyFee = estimatedEnergyUse * sunPerEnergyUnit
                 
-                
                 let totalFee = transactionSizeFee + energyFee
-                
                 
                 let remainingBandwidthInSun = (resources.freeNetLimit - (resources.freeNetUsed ?? 0)) * 1000
                 
