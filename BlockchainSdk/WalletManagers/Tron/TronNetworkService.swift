@@ -110,27 +110,6 @@ class TronNetworkService {
         rpcProvider.getAccountResource(for: address)
     }
     
-    func getFee(amount: Amount, source: String, destination: String) -> AnyPublisher<[Amount], Error> {
-        switch amount.type {
-        case .coin:
-            return rpcProvider.getAccountResource(for: source)
-                .flatMap { r  -> AnyPublisher<[Amount], Error> in
-                    print(r)
-                    
-                    return Just([Amount(with: .tron(testnet: true), value: 0.000001)])
-                        .setFailureType(to: Error.self)
-                        .eraseToAnyPublisher()
-                }
-                .eraseToAnyPublisher()
-        case .token(_):
-            return Just([Amount(with: .tron(testnet: true), value: 0.000001)])
-                .setFailureType(to: Error.self)
-                .eraseToAnyPublisher()
-        default:
-            return .anyFail(error: WalletError.failedToGetFee)
-        }
-    }
-    
     func accountExists(address: String) -> AnyPublisher<Bool, Error> {
         rpcProvider.getAccount(for: address)
             .map { _ in
