@@ -18,6 +18,7 @@ enum TronTarget: TargetType {
     case broadcastTransaction2(transaction: TronTransactionRequest2, network: TronNetwork)
     case tokenBalance(address: String, contractAddress: String, network: TronNetwork)
     case tokenTransactionHistory(contractAddress: String, limit: Int, network: TronNetwork)
+    case getBlockByNum(blockNumber: Int, network: TronNetwork)
     
     var baseURL: URL {
         switch self {
@@ -37,6 +38,8 @@ enum TronTarget: TargetType {
             return network.url
         case .tokenTransactionHistory(_, _, let network):
             return network.url
+        case .getBlockByNum(let blockNumber, let network):
+            return network.url
         }
     }
     
@@ -54,6 +57,8 @@ enum TronTarget: TargetType {
             return "/wallet/triggersmartcontract"
         case .tokenTransactionHistory(let contractAddress, _, _):
             return "/v1/contracts/\(contractAddress)/transactions"
+        case .getBlockByNum(let blockNumber, _):
+            return "/walletsolidity/getblockbynum"
         }
     }
     
@@ -113,6 +118,11 @@ enum TronTarget: TargetType {
                 let parameters: [_: Any] = [
                     "only_confirmed": true,
                     "limit": limit,
+                ]
+                return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
+            case .getBlockByNum(let blockNumber, _):
+                let parameters = [
+                    "num": blockNumber,
                 ]
                 return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
             }
