@@ -24,7 +24,11 @@ class TronWalletManager: BaseManager, WalletManager {
     private static let feeSigner = DummySigner()
     
     func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        cancellable = networkService.accountInfo(for: wallet.address, tokens: cardTokens)
+        let transactionIDs = wallet.transactions
+            .filter { $0.status == .unconfirmed }
+            .compactMap { $0.hash }
+        
+        cancellable = networkService.accountInfo(for: wallet.address, tokens: cardTokens, transactionIDs: transactionIDs)
             .sink { [unowned self] in
                 switch $0 {
                 case .failure(let error):
@@ -52,10 +56,14 @@ class TronWalletManager: BaseManager, WalletManager {
         }
         
         return sendPublisher
-            .tryMap { broadcastResponse -> Void in
+            .tryMap { [weak self] broadcastResponse -> Void in
                 guard broadcastResponse.result == true else {
                     throw WalletError.failedToSendTx
                 }
+                
+                var submittedTransaction = transaction
+                submittedTransaction.hash = broadcastResponse.txid
+                self?.wallet.transactions.append(submittedTransaction)
                 
                 return ()
             }
@@ -218,6 +226,12 @@ class TronWalletManager: BaseManager, WalletManager {
         
         for (token, tokenBalance) in accountInfo.tokenBalances {
             wallet.add(tokenValue: tokenBalance, for: token)
+        }
+        
+        for (index, transaction) in wallet.transactions.enumerated() {
+            if let hash = transaction.hash, accountInfo.confirmedTransactionIDs.contains(hash) {
+                wallet.transactions[index].status = .confirmed
+            }
         }
     }
     

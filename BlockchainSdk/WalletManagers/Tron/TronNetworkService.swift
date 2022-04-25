@@ -20,17 +20,20 @@ class TronNetworkService {
         self.rpcProvider = rpcProvider
     }
     
-    func accountInfo(for address: String, tokens: [Token]) -> AnyPublisher<TronAccountInfo, Error> {
+    func accountInfo(for address: String, tokens: [Token], transactionIDs: [String]) -> AnyPublisher<TronAccountInfo, Error> {
         let blockchain = self.blockchain
         let tokenBalancePublishers = tokens.map { tokenBalance(address: address, token: $0) }
+        let confirmedTransactionPublishers = transactionIDs.map { transactionConfirmed(id: $0) }
         
         return rpcProvider.getAccount(for: address)
-            .zip(Publishers.MergeMany(tokenBalancePublishers).collect())
-            .map { (accountInfo, tokenInfoList) in
+            .zip(Publishers.MergeMany(tokenBalancePublishers).collect(),
+            Publishers.MergeMany(confirmedTransactionPublishers).collect())
+            .map { (accountInfo, tokenInfoList, confirmedTransactionList) in
                 let balance = Decimal(accountInfo.balance) / blockchain.decimalValue
                 let tokenBalances = Dictionary(uniqueKeysWithValues: tokenInfoList)
+                let confirmedTransactionIDs = confirmedTransactionList.compactMap { $0 }
                 
-                return TronAccountInfo(balance: balance, tokenBalances: tokenBalances)
+                return TronAccountInfo(balance: balance, tokenBalances: tokenBalances, confirmedTransactionIDs: confirmedTransactionIDs)
             }
             .eraseToAnyPublisher()
     }
@@ -73,6 +76,20 @@ class TronNetworkService {
                 }
                 
                 return (token, decimalValue)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func transactionConfirmed(id: String) -> AnyPublisher<String?, Error> {
+        rpcProvider.transactionInfo(id: id)
+            .map { _ in
+                return id
+            }
+            .tryCatch { error -> AnyPublisher<String?, Error> in
+                if case WalletError.failedToParseNetworkResponse = error {
+                    return Just(nil).setFailureType(to: Error.self).eraseToAnyPublisher()
+                }
+                throw error
             }
             .eraseToAnyPublisher()
     }

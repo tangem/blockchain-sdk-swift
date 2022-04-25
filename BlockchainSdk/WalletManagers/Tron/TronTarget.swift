@@ -17,7 +17,7 @@ enum TronTarget: TargetType {
     case broadcastTransaction(transactionData: Data, network: TronNetwork)
     case tokenBalance(address: String, contractAddress: String, network: TronNetwork)
     case tokenTransactionHistory(contractAddress: String, limit: Int, network: TronNetwork)
-    case getBlockByNum(blockNumber: Int, network: TronNetwork)
+    case getTransactionInfoById(transactionID: String, network: TronNetwork)
     
     var baseURL: URL {
         switch self {
@@ -35,7 +35,7 @@ enum TronTarget: TargetType {
             return network.url
         case .tokenTransactionHistory(_, _, let network):
             return network.url
-        case .getBlockByNum(let blockNumber, let network):
+        case .getTransactionInfoById(_, let network):
             return network.url
         }
     }
@@ -54,8 +54,8 @@ enum TronTarget: TargetType {
             return "/wallet/triggersmartcontract"
         case .tokenTransactionHistory(let contractAddress, _, _):
             return "/v1/contracts/\(contractAddress)/transactions"
-        case .getBlockByNum(let blockNumber, _):
-            return "/walletsolidity/getblockbynum"
+        case .getTransactionInfoById:
+            return "/walletsolidity/gettransactioninfobyid"
         }
     }
     
@@ -115,11 +115,11 @@ enum TronTarget: TargetType {
                     "limit": limit,
                 ]
                 return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
-            case .getBlockByNum(let blockNumber, _):
+            case .getTransactionInfoById(let transactionID, _):
                 let parameters = [
-                    "num": blockNumber,
+                    "value": transactionID,
                 ]
-                return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
+                return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
             }
         } catch {
             print("Failed to encode Tron request data:", error)

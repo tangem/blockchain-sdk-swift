@@ -12,12 +12,17 @@ import Foundation
 struct TronAccountInfo {
     let balance: Decimal
     let tokenBalances: [Token: Decimal]
+    let confirmedTransactionIDs: [String]
 }
 
 
 struct TronGetAccountRequest: Codable {
     let address: String
     let visible: Bool
+}
+
+struct TronTransactionInfo: Codable {
+    let id: String
 }
 
 struct TronCreateTransactionRequest: Codable {
