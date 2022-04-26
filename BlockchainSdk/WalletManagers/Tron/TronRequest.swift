@@ -15,7 +15,6 @@ struct TronAccountInfo {
     let confirmedTransactionIDs: [String]
 }
 
-
 struct TronGetAccountRequest: Codable {
     let address: String
     let visible: Bool
@@ -40,61 +39,6 @@ struct TronBlock: Codable {
     }
     
     let block_header: BlockHeader
-}
-
-struct TronCreateTransactionRequest: Codable {
-    let owner_address: String
-    let to_address: String
-    let amount: UInt64
-    let visible: Bool
-}
-
-struct TronTransactionRequest<T: Codable>: Codable {
-    struct RawData: Codable {
-        let contract: [Contract]
-        let ref_block_bytes: String
-        let ref_block_hash: String
-        let expiration: UInt64
-        let timestamp: UInt64
-        let fee_limit: UInt64?
-    }
-    
-    struct Contract: Codable {
-        let parameter: Parameter
-        let type: String
-    }
-    
-    struct Parameter: Codable {
-        let value: T
-        let type_url: String
-    }
-    
-    let visible: Bool
-    let txID: String
-    let raw_data: RawData
-    let raw_data_hex: String
-    var signature: [String]?
-}
-
-struct TrxTransferValue: Codable {
-    let amount: UInt64
-    let owner_address: String
-    let to_address: String
-}
-
-struct Trc20TransferValue: Codable {
-    let data: String
-    let owner_address: String
-    let contract_address: String
-}
-
-struct TronSmartContractTransactionRequest: Codable {
-    struct Result: Codable {
-        let result: Bool
-    }
-
-    var transaction: TronTransactionRequest<Trc20TransferValue>
-    let result: Result
 }
 
 struct TronBroadcastResponse: Codable {
