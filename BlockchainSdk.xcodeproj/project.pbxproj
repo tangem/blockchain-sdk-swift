@@ -586,6 +586,7 @@
 		DA30812D2817C0C200DE41F1 /* Contracts.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = Contracts.proto; sourceTree = "<group>"; };
 		DA30812E2817C0F900DE41F1 /* Contracts.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Contracts.pb.swift; sourceTree = "<group>"; };
 		DA3081312817EC1A00DE41F1 /* TronTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronTransactionBuilder.swift; sourceTree = "<group>"; };
+		DA30813428182F0C00DE41F1 /* Tron Protobuf.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Tron Protobuf.md"; sourceTree = "<group>"; };
 		DA346450279A802E00E77B1D /* SolanaSdk+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SolanaSdk+.swift"; sourceTree = "<group>"; };
 		DA570CEE27A802BE007F34EB /* SolanaError+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SolanaError+.swift"; sourceTree = "<group>"; };
 		DA570CF727A82322007F34EB /* PolkadotBlockchainMeta.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotBlockchainMeta.swift; sourceTree = "<group>"; };
@@ -1201,6 +1202,7 @@
 		DA3081222817AEB800DE41F1 /* protobuf */ = {
 			isa = PBXGroup;
 			children = (
+				DA30813428182F0C00DE41F1 /* Tron Protobuf.md */,
 				DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */,
 				DA30812E2817C0F900DE41F1 /* Contracts.pb.swift */,
 				DA3081282817BF1D00DE41F1 /* Tron.proto */,
