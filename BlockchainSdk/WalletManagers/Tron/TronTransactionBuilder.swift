@@ -12,35 +12,49 @@ import BinanceChain
 
 class TronTransactionBuilder {
     private let blockchain: Blockchain
+    private let feeLimit: Int64 = 10_000_000
     
     init(blockchain: Blockchain) {
         self.blockchain = blockchain
     }
     
     func buildForSign(amount: Amount, source: String, destination: String, block: TronBlock) -> Protocol_Transaction.raw {
-        let amount = uint64(from: amount)
+        let intAmount = uint64(from: amount)
         
-        let contractParameter = Protocol_TransferContract.with {
-            $0.ownerAddress = TronAddressService.toByteForm(source) ?? Data()
-            $0.toAddress = TronAddressService.toByteForm(destination) ?? Data()
-            $0.amount = amount
-        }
-        
-        print(contractParameter.amount)
-        
-        let contract = Protocol_Transaction.Contract.with {
-            $0.type = .transferContract
-            $0.parameter = try! Google_Protobuf_Any(message: contractParameter)
-        }
+        let contract: Protocol_Transaction.Contract
+        switch amount.type {
+        case .coin:
+            let parameter = Protocol_TransferContract.with {
+                $0.ownerAddress = TronAddressService.toByteForm(source) ?? Data()
+                $0.toAddress = TronAddressService.toByteForm(destination) ?? Data()
+                $0.amount = intAmount
+            }
+            
+            contract = Protocol_Transaction.Contract.with {
+                $0.type = .transferContract
+                $0.parameter = try! Google_Protobuf_Any(message: parameter)
+            }
+        case .token(let token):
+            let functionSelector = "transfer(address,uint256)"
+            let functionSelectorHash = Data(functionSelector.bytes).sha3(.keccak256).prefix(4)
+            
+            let hexAddress = TronAddressService.toByteForm(destination)?.padLeft(length: 32) ?? Data()
+            let hexAmount = Data(Data(from: intAmount).reversed()).padLeft(length: 32)
+            let contractData = functionSelectorHash + hexAddress + hexAmount
+            
+            let parameter = Protocol_TriggerSmartContract.with {
+                $0.contractAddress = TronAddressService.toByteForm(token.contractAddress)!
+                $0.data = contractData
+                $0.ownerAddress = TronAddressService.toByteForm(source) ?? Data()
+            }
 
-//                let blockHeader = Protocol_BlockHeader.raw.with {
-//                    $0.timestamp = 1539295479000
-//                    $0.number = 3111739
-//                    $0.version = 3
-//                    $0.txTrieRoot = Data(hexString: "64288c2db0641316762a99dbb02ef7c90f968b60f9f2e410835980614332f86d")
-//                    $0.parentHash = Data(hexString: "00000000002f7b3af4f5f8b9e23a30c530f719f165b742e7358536b280eead2d")
-//                    $0.witnessAddress = Data(hexString: "415863f6091b8e71766da808b1dd3159790f61de7d")
-//                }
+            contract = Protocol_Transaction.Contract.with {
+                $0.type = .triggerSmartContract
+                $0.parameter = try! Google_Protobuf_Any(message: parameter)
+            }
+        case .reserve:
+            fatalError()
+        }
         
         let blockHeader = Protocol_BlockHeader.raw.with {
             $0.timestamp = block.block_header.raw_data.timestamp
@@ -75,6 +89,7 @@ class TronTransactionBuilder {
             $0.contract = [
                 contract
             ]
+            $0.feeLimit = feeLimit
         }
         
         
@@ -108,5 +123,13 @@ class TronTransactionBuilder {
         let decimalAmount = amount.value * decimalValue
         let intAmount = (decimalAmount.rounded() as NSDecimalNumber).int64Value
         return intAmount
+    }
+}
+
+
+fileprivate extension Data {
+    func padLeft(length: Int) -> Data {
+        let extraLength = Swift.max(0, length - self.count)
+        return Data(repeating: 0, count: extraLength) + self
     }
 }
