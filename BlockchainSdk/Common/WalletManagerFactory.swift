@@ -261,6 +261,7 @@ public class WalletManagerFactory {
             return TronWalletManager(wallet: wallet).then {
                 let rpcProvider = TronJsonRpcProvider(network: testnet ? .nile : .mainnet)
                 $0.networkService = TronNetworkService(blockchain: blockchain, rpcProvider: rpcProvider)
+                $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
             }
         }
     }

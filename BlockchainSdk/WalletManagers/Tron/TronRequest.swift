@@ -28,12 +28,12 @@ struct TronTransactionInfo: Codable {
 struct TronBlock: Codable {
     struct BlockHeader: Codable {
         struct RawData: Codable {
-            let number: Int
+            let number: Int64
             let txTrieRoot: String
             let witness_address: String
             let parentHash: String
-            let version: Int
-            let timestamp: Int
+            let version: Int32
+            let timestamp: Int64
         }
         
         let raw_data: RawData

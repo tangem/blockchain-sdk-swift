@@ -314,6 +314,8 @@
 		DA30812C2817BF4800DE41F1 /* Tron.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */; };
 		DA30812F2817C0F900DE41F1 /* Contracts.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA30812E2817C0F900DE41F1 /* Contracts.pb.swift */; };
 		DA3081302817C0F900DE41F1 /* Contracts.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA30812E2817C0F900DE41F1 /* Contracts.pb.swift */; };
+		DA3081322817EC1A00DE41F1 /* TronTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA3081312817EC1A00DE41F1 /* TronTransactionBuilder.swift */; };
+		DA3081332817EC1A00DE41F1 /* TronTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA3081312817EC1A00DE41F1 /* TronTransactionBuilder.swift */; };
 		DA346451279A802E00E77B1D /* SolanaSdk+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA346450279A802E00E77B1D /* SolanaSdk+.swift */; };
 		DA570CEF27A802BE007F34EB /* SolanaError+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA570CEE27A802BE007F34EB /* SolanaError+.swift */; };
 		DA570CF927A82322007F34EB /* PolkadotBlockchainMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA570CF727A82322007F34EB /* PolkadotBlockchainMeta.swift */; };
@@ -583,6 +585,7 @@
 		DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tron.pb.swift; sourceTree = "<group>"; };
 		DA30812D2817C0C200DE41F1 /* Contracts.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = Contracts.proto; sourceTree = "<group>"; };
 		DA30812E2817C0F900DE41F1 /* Contracts.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Contracts.pb.swift; sourceTree = "<group>"; };
+		DA3081312817EC1A00DE41F1 /* TronTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronTransactionBuilder.swift; sourceTree = "<group>"; };
 		DA346450279A802E00E77B1D /* SolanaSdk+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SolanaSdk+.swift"; sourceTree = "<group>"; };
 		DA570CEE27A802BE007F34EB /* SolanaError+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SolanaError+.swift"; sourceTree = "<group>"; };
 		DA570CF727A82322007F34EB /* PolkadotBlockchainMeta.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotBlockchainMeta.swift; sourceTree = "<group>"; };
@@ -1233,6 +1236,7 @@
 				DA3081222817AEB800DE41F1 /* protobuf */,
 				DA9F76EB27EC9A2900F0665C /* TronWalletManager.swift */,
 				DA9F76E827EC8AEB00F0665C /* TronAddressService.swift */,
+				DA3081312817EC1A00DE41F1 /* TronTransactionBuilder.swift */,
 				DA9F76EE27EC9BCD00F0665C /* TronNetworkService.swift */,
 				DA9F76F027EC9C8300F0665C /* TronJsonRpcProvider.swift */,
 				DA9F76F427EC9CB400F0665C /* TronTarget.swift */,
@@ -1635,6 +1639,7 @@
 				DA82434327A2B0C100CFC2C0 /* PolkadotResponse.swift in Sources */,
 				5D006ACD239950F9008BA04D /* Wallet.swift in Sources */,
 				5DC7DD66244077F2008F83F2 /* XRPWalletManager.swift in Sources */,
+				DA3081322817EC1A00DE41F1 /* TronTransactionBuilder.swift in Sources */,
 				DA71441E2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */,
 				5D7D243E25136254001B9A4F /* SigningAlgorithm.swift in Sources */,
 				DA570CF927A82322007F34EB /* PolkadotBlockchainMeta.swift in Sources */,
@@ -1826,6 +1831,7 @@
 				5DDD82AF25BF0D2F00166EA9 /* BlockchainSdkError.swift in Sources */,
 				5D16096D25921DAF00738AE6 /* Address.swift in Sources */,
 				5DDD828D25BF0CDC00166EA9 /* BitcoinNetworkProvider.swift in Sources */,
+				DA3081332817EC1A00DE41F1 /* TronTransactionBuilder.swift in Sources */,
 				5DDD82CA25BF0DA100166EA9 /* BlockchairResponses.swift in Sources */,
 				5DDD830525BF0E2400166EA9 /* XRPWalletManager.swift in Sources */,
 				5D0906C327DBC0680053B2CD /* BitcoinCashNetworkParams.swift in Sources */,
