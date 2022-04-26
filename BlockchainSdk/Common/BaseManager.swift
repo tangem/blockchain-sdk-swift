@@ -121,7 +121,7 @@ class BaseManager: WalletProvider {
     }
     
     private func validateAmountValue(_ amount: Amount) -> Bool {
-        return amount.value > 0
+        return amount.value >= 0
     }
     
     private func validateAmountTotal(_ amount: Amount) -> Bool {
