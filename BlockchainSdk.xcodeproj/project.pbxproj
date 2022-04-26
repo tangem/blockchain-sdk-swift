@@ -1203,10 +1203,10 @@
 			isa = PBXGroup;
 			children = (
 				DA30813428182F0C00DE41F1 /* Tron Protobuf.md */,
-				DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */,
-				DA30812E2817C0F900DE41F1 /* Contracts.pb.swift */,
 				DA3081282817BF1D00DE41F1 /* Tron.proto */,
 				DA30812D2817C0C200DE41F1 /* Contracts.proto */,
+				DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */,
+				DA30812E2817C0F900DE41F1 /* Contracts.pb.swift */,
 			);
 			path = protobuf;
 			sourceTree = "<group>";
