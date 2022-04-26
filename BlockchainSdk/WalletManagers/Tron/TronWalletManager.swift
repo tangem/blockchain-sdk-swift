@@ -59,12 +59,15 @@ class TronWalletManager: BaseManager, WalletManager {
                 
                 return self.sign(transaction, with: signer, publicKey: self.wallet.publicKey)
             }
+            .tryMap {
+                try $0.serializedData()
+            }
             .flatMap { [weak self] data -> AnyPublisher<TronBroadcastResponse, Error> in
                 guard let self = self else {
                     return .anyFail(error: WalletError.empty)
                 }
                 
-                return self.networkService.broadcastHex(try! data.serializedData())
+                return self.networkService.broadcastHex(data)
             }
             .tryMap { [weak self] broadcastResponse -> Void in
                 guard broadcastResponse.result == true else {
@@ -108,8 +111,8 @@ class TronWalletManager: BaseManager, WalletManager {
                 
                 return self.sign(transaction, with: Self.feeSigner, publicKey: Self.feeSigner.publicKey)
             }
-            .map {
-                try! $0.serializedData()
+            .tryMap {
+                try $0.serializedData()
             }
             .eraseToAnyPublisher()
 
