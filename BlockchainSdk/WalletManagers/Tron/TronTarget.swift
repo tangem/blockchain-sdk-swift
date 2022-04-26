@@ -14,9 +14,6 @@ enum TronTarget: TargetType {
     case getAccountResource(address: String, network: TronNetwork)
     case getNowBlock(network: TronNetwork)
     case broadcastHex(data: Data, network: TronNetwork)
-    case createTransaction(source: String, destination: String, amount: UInt64, network: TronNetwork)
-    case createTrc20Transaction(source: String, destination: String, contractAddress: String, amount: UInt64, feeLimit: UInt64, network: TronNetwork)
-    case broadcastTransaction(transactionData: Data, network: TronNetwork)
     case tokenBalance(address: String, contractAddress: String, network: TronNetwork)
     case tokenTransactionHistory(contractAddress: String, limit: Int, network: TronNetwork)
     case getTransactionInfoById(transactionID: String, network: TronNetwork)
@@ -30,12 +27,6 @@ enum TronTarget: TargetType {
         case .getNowBlock(let network):
             return network.url
         case .broadcastHex(_, let network):
-            return network.url
-        case .createTransaction(_, _, _, let network):
-            return network.url
-        case .createTrc20Transaction(_, _, _, _, _, let network):
-            return network.url
-        case .broadcastTransaction(_, let network):
             return network.url
         case .tokenBalance(_, _, let network):
             return network.url
@@ -56,11 +47,7 @@ enum TronTarget: TargetType {
             return "/wallet/getnowblock"
         case .broadcastHex:
             return "/wallet/broadcasthex"
-        case .createTransaction:
-            return "/wallet/createtransaction"
-        case .broadcastTransaction:
-            return "/wallet/broadcasttransaction"
-        case .createTrc20Transaction, .tokenBalance:
+        case .tokenBalance:
             return "/wallet/triggersmartcontract"
         case .tokenTransactionHistory(let contractAddress, _, _):
             return "/v1/contracts/\(contractAddress)/transactions"
@@ -86,9 +73,6 @@ enum TronTarget: TargetType {
             case .getAccount(let address, _), .getAccountResource(let address, _):
                 let request = TronGetAccountRequest(address: address, visible: true)
                 return .requestData(try encoder.encode(request))
-            case .createTransaction(let source, let destination, let amount, _):
-                let request = TronCreateTransactionRequest(owner_address: source, to_address: destination, amount: amount, visible: true)
-                return .requestData(try encoder.encode(request))
             case .getNowBlock:
                 return .requestPlain
             case .broadcastHex(let data, _):
@@ -96,22 +80,6 @@ enum TronTarget: TargetType {
                     "transaction": data.hex,
                 ]
                 return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
-            case .createTrc20Transaction(let source, let destination, let contractAddress, let amount, let feeLimit, _):
-                let hexAddress = TronAddressService.toHexForm(destination, length: 64) ?? ""
-                let hexAmount = String(repeating: "0", count: 48) + Data(Data(from: amount).reversed()).hex
-                let parameter = hexAddress + hexAmount
-                
-                let request = TronTriggerSmartContractRequest(
-                    owner_address: source,
-                    contract_address: contractAddress,
-                    function_selector: "transfer(address,uint256)",
-                    fee_limit: feeLimit,
-                    parameter: parameter,
-                    visible: true
-                )
-                return .requestData(try encoder.encode(request))
-            case .broadcastTransaction(let transactionData, _):
-                return .requestData(transactionData)
             case .tokenBalance(let address, let contractAddress, _):
                 let hexAddress = TronAddressService.toHexForm(address, length: 64) ?? ""
                 
