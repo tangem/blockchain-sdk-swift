@@ -25,6 +25,23 @@ struct TronTransactionInfo: Codable {
     let id: String
 }
 
+struct TronBlock: Codable {
+    struct BlockHeader: Codable {
+        struct RawData: Codable {
+            let number: Int
+            let txTrieRoot: String
+            let witness_address: String
+            let parentHash: String
+            let version: Int
+            let timestamp: Int
+        }
+        
+        let raw_data: RawData
+    }
+    
+    let block_header: BlockHeader
+}
+
 struct TronCreateTransactionRequest: Codable {
     let owner_address: String
     let to_address: String

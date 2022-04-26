@@ -54,6 +54,10 @@ class TronNetworkService {
         rpcProvider.broadcastTransaction(transaction)
     }
     
+    func broadcastHex(_ data: Data) -> AnyPublisher<TronBroadcastResponse, Error> {
+        rpcProvider.broadcastHex(data)
+    }
+    
     func tokenBalance(address: String, token: Token) -> AnyPublisher<(Token, Decimal), Error> {
         rpcProvider.tokenBalance(address: address, contractAddress: token.contractAddress)
             .tryMap { response in

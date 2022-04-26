@@ -35,6 +35,10 @@ class TronJsonRpcProvider: HostProvider {
         requestPublisher(for: .getAccountResource(address: address, network: network))
     }
     
+    func getNowBlock() -> AnyPublisher<TronBlock, Error> {
+        requestPublisher(for: .getNowBlock(network: network))
+    }
+    
     func createTransaction(from source: String, to destination: String, amount: UInt64) -> AnyPublisher<TronTransactionRequest<TrxTransferValue>, Error> {
         requestPublisher(for: .createTransaction(
             source: source,
@@ -53,6 +57,10 @@ class TronJsonRpcProvider: HostProvider {
             feeLimit: 10_000_000,
             network: network
         ))
+    }
+    
+    func broadcastHex(_ data: Data) -> AnyPublisher<TronBroadcastResponse, Error> {
+        requestPublisher(for: .broadcastHex(data: data, network: network))
     }
     
     func broadcastTransaction<T: Codable>(_ transaction: TronTransactionRequest<T>) -> AnyPublisher<TronBroadcastResponse, Error> {
