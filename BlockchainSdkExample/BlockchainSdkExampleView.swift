@@ -52,6 +52,7 @@ struct BlockchainSdkExampleView: View {
     
                     if #available(iOS 14.0, *) {
                         DisclosureGroup(model.tokenSectionName, isExpanded: $model.tokenExpanded) {
+                            Toggle("Enabled", isOn: $model.tokenEnabled)
                             TextField("Symbol", text: $model.tokenSymbol)
                             TextField("Contract address", text: $model.tokenContractAddress)
                             Stepper("Decimal places \(model.tokenDecimalPlaces)", value: $model.tokenDecimalPlaces, in: 0...24)

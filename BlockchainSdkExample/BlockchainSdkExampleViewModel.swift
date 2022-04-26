@@ -25,6 +25,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     @Published var isShelley: Bool = false
     @Published var curve: EllipticCurve = .ed25519
     @Published var tokenExpanded: Bool = false
+    @Published var tokenEnabled = false
     @Published var tokenSymbol = ""
     @Published var tokenContractAddress = ""
     @Published var tokenDecimalPlaces = 0
@@ -40,6 +41,10 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     }
     
     var enteredToken: BlockchainSdk.Token? {
+        guard tokenEnabled else {
+            return nil
+        }
+        
         guard !tokenContractAddress.isEmpty else {
             return nil
         }
@@ -61,6 +66,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     private let isTestnetKey = "isTestnet"
     private let isShelleyKey = "isShelley"
     private let curveKey = "curve"
+    private let tokenEnabledKey = "tokenEnabled"
     private let tokenSymbolKey = "tokenSymbol"
     private let tokenContractAddressKey = "tokenContractAddress"
     private let tokenDecimalPlacesKey = "tokenDecimalPlaces"
@@ -90,6 +96,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         self.isTestnet = UserDefaults.standard.bool(forKey: isTestnetKey)
         self.curve = EllipticCurve(rawValue: UserDefaults.standard.string(forKey: curveKey) ?? "") ?? self.curve
         self.isShelley = UserDefaults.standard.bool(forKey: isShelleyKey)
+        self.tokenEnabled = UserDefaults.standard.bool(forKey: tokenEnabledKey)
         self.tokenSymbol = UserDefaults.standard.string(forKey: tokenSymbolKey) ?? ""
         self.tokenContractAddress = UserDefaults.standard.string(forKey: tokenContractAddressKey) ?? ""
         self.tokenDecimalPlaces = UserDefaults.standard.integer(forKey: tokenDecimalPlacesKey)
@@ -138,6 +145,15 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .sink { [unowned self] in
                 UserDefaults.standard.set($0, forKey: isShelleyKey)
                 self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: curve, isShelley: $0)
+                self.updateWalletManager()
+            }
+            .store(in: &bag)
+        
+        $tokenEnabled
+            .dropFirst()
+            .debounce(for: 1, scheduler: RunLoop.main)
+            .sink { [unowned self] in
+                UserDefaults.standard.set($0, forKey: tokenEnabledKey)
                 self.updateWalletManager()
             }
             .store(in: &bag)
