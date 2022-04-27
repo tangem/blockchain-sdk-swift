@@ -538,6 +538,8 @@ extension Blockchain {
             return URL(string: "https://faucet.fantom.network")
         case .polkadot:
             return URL(string: "https://matrix.to/#/!cJFtAIkwxuofiSYkPN:matrix.org?via=matrix.org&via=matrix.parity.io&via=web3.foundation")
+        case .tron:
+            return URL(string: "https://nileex.io/join/getJoinPage")!
         default:
             return nil
         }
