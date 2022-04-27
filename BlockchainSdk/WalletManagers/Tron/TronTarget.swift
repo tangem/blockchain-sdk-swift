@@ -66,46 +66,35 @@ enum TronTarget: TargetType {
     }
     
     var task: Task {
-        let encoder = JSONEncoder()
-        
-        do {
-            switch self {
-            case .getAccount(let address, _), .getAccountResource(let address, _):
-                let request = TronGetAccountRequest(address: address, visible: true)
-                return .requestData(try encoder.encode(request))
-            case .getNowBlock:
-                return .requestPlain
-            case .broadcastHex(let data, _):
-                let parameters = [
-                    "transaction": data.hex,
-                ]
-                return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
-            case .tokenBalance(let address, let contractAddress, _):
-                let hexAddress = TronAddressService.toHexForm(address, length: 64) ?? ""
-                
-                let request = TronTriggerSmartContractRequest(
-                    owner_address: address,
-                    contract_address: contractAddress,
-                    function_selector: "balanceOf(address)",
-                    parameter: hexAddress,
-                    visible: true
-                )
-                return .requestData(try encoder.encode(request))
-            case .tokenTransactionHistory(_, let limit, _):
-                let parameters: [_: Any] = [
-                    "only_confirmed": true,
-                    "limit": limit,
-                ]
-                return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
-            case .getTransactionInfoById(let transactionID, _):
-                let parameters = [
-                    "value": transactionID,
-                ]
-                return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
-            }
-        } catch {
-            print("Failed to encode Tron request data:", error)
+        switch self {
+        case .getAccount(let address, _), .getAccountResource(let address, _):
+            let request = TronGetAccountRequest(address: address, visible: true)
+            return .requestJSONEncodable(request)
+        case .getNowBlock:
             return .requestPlain
+        case .broadcastHex(let data, _):
+            let request = TronBroadcastRequest(transaction: data.hex)
+            return .requestJSONEncodable(request)
+        case .tokenBalance(let address, let contractAddress, _):
+            let hexAddress = TronAddressService.toHexForm(address, length: 64) ?? ""
+            
+            let request = TronTriggerSmartContractRequest(
+                owner_address: address,
+                contract_address: contractAddress,
+                function_selector: "balanceOf(address)",
+                parameter: hexAddress,
+                visible: true
+            )
+            return .requestJSONEncodable(request)
+        case .tokenTransactionHistory(_, let limit, _):
+            let parameters: [_: Any] = [
+                "only_confirmed": true,
+                "limit": limit,
+            ]
+            return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
+        case .getTransactionInfoById(let transactionID, _):
+            let request = TronTransactionInfoRequest(value: transactionID)
+            return .requestJSONEncodable(request)
         }
     }
     

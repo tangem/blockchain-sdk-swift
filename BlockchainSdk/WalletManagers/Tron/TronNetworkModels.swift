@@ -1,5 +1,5 @@
 //
-//  TronRequest.swift
+//  TronNetworkModels.swift
 //  BlockchainSdk
 //
 //  Created by Andrey Chukavin on 24.03.2022.
@@ -7,7 +7,6 @@
 //
 
 import Foundation
-
 
 struct TronAccountInfo {
     let balance: Decimal
@@ -20,7 +19,20 @@ struct TronGetAccountRequest: Codable {
     let visible: Bool
 }
 
-struct TronTransactionInfo: Codable {
+struct TronGetAccountResponse: Codable {
+    let balance: UInt64
+}
+
+struct TronGetAccountResourceResponse: Codable {
+    let freeNetUsed: Int?
+    let freeNetLimit: Int
+}
+
+struct TronTransactionInfoRequest: Codable {
+    let value: String
+}
+
+struct TronTransactionInfoResponse: Codable {
     let id: String
 }
 
@@ -39,6 +51,10 @@ struct TronBlock: Codable {
     }
     
     let block_header: BlockHeader
+}
+
+struct TronBroadcastRequest: Codable {
+    let transaction: String
 }
 
 struct TronBroadcastResponse: Codable {
@@ -60,9 +76,9 @@ struct TronTriggerSmartContractResponse: Codable {
 }
 
 struct TronTokenHistoryResponse: Codable {
-    struct Data: Codable {
+    struct TokenHistoryData: Codable {
         let energy_usage_total: Int
     }
     
-    let data: [Data]
+    let data: [TokenHistoryData]
 }

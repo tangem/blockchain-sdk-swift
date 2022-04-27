@@ -10,7 +10,6 @@ import Foundation
 import Combine
 import BigInt
 import web3swift
-import SwiftProtobuf
 
 class TronNetworkService {
     private let blockchain: Blockchain
@@ -28,10 +27,8 @@ class TronNetworkService {
         
         return rpcProvider.getAccount(for: address)
             .zip(Publishers.MergeMany(tokenBalancePublishers).collect(),
-                 rpcProvider.getNowBlock(),
-            Publishers.MergeMany(confirmedTransactionPublishers).collect())
-            .map { (accountInfo, tokenInfoList,b, confirmedTransactionList) in
-                print(b)
+                 Publishers.MergeMany(confirmedTransactionPublishers).collect())
+            .map { (accountInfo, tokenInfoList, confirmedTransactionList) in
                 let balance = Decimal(accountInfo.balance) / blockchain.decimalValue
                 let tokenBalances = Dictionary(uniqueKeysWithValues: tokenInfoList)
                 let confirmedTransactionIDs = confirmedTransactionList.compactMap { $0 }

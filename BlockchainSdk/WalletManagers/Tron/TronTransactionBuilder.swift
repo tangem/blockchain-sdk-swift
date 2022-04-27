@@ -18,11 +18,12 @@ class TronTransactionBuilder {
         self.blockchain = blockchain
     }
     
-    func buildForSign(amount: Amount, source: String, destination: String, block: TronBlock) -> Protocol_Transaction.raw {
-        let intAmount = uint64(from: amount)
+    func buildForSign(amount: Amount, source: String, destination: String, block: TronBlock) throws -> Protocol_Transaction.raw {
+        let intAmount = int64(from: amount)
         
         let contract: Protocol_Transaction.Contract
         let feeLimit: Int64
+        
         switch amount.type {
         case .coin:
             let parameter = Protocol_TransferContract.with {
@@ -31,9 +32,9 @@ class TronTransactionBuilder {
                 $0.amount = intAmount
             }
             
-            contract = Protocol_Transaction.Contract.with {
+            contract = try Protocol_Transaction.Contract.with {
                 $0.type = .transferContract
-                $0.parameter = try! Google_Protobuf_Any(message: parameter)
+                $0.parameter = try Google_Protobuf_Any(message: parameter)
             }
             
             feeLimit = 0
@@ -43,17 +44,18 @@ class TronTransactionBuilder {
             
             let hexAddress = TronAddressService.toByteForm(destination)?.padLeft(length: 32) ?? Data()
             let hexAmount = Data(Data(from: intAmount).reversed()).padLeft(length: 32)
+            
             let contractData = functionSelectorHash + hexAddress + hexAmount
             
             let parameter = Protocol_TriggerSmartContract.with {
-                $0.contractAddress = TronAddressService.toByteForm(token.contractAddress)!
+                $0.contractAddress = TronAddressService.toByteForm(token.contractAddress) ?? Data()
                 $0.data = contractData
                 $0.ownerAddress = TronAddressService.toByteForm(source) ?? Data()
             }
 
-            contract = Protocol_Transaction.Contract.with {
+            contract = try Protocol_Transaction.Contract.with {
                 $0.type = .triggerSmartContract
-                $0.parameter = try! Google_Protobuf_Any(message: parameter)
+                $0.parameter = try Google_Protobuf_Any(message: parameter)
             }
             
             feeLimit = smartContractFeeLimit
@@ -61,47 +63,37 @@ class TronTransactionBuilder {
             fatalError()
         }
         
+        let blockHeaderRawData = block.block_header.raw_data
         let blockHeader = Protocol_BlockHeader.raw.with {
-            $0.timestamp = block.block_header.raw_data.timestamp
-            $0.number = block.block_header.raw_data.number
-            $0.version = block.block_header.raw_data.version
-            $0.txTrieRoot = Data(hex: block.block_header.raw_data.txTrieRoot)
-            $0.parentHash = Data(hex: block.block_header.raw_data.parentHash)
-            $0.witnessAddress = Data(hex: block.block_header.raw_data.witness_address)
+            $0.timestamp = blockHeaderRawData.timestamp
+            $0.number = blockHeaderRawData.number
+            $0.version = blockHeaderRawData.version
+            $0.txTrieRoot = Data(hex: blockHeaderRawData.txTrieRoot)
+            $0.parentHash = Data(hex: blockHeaderRawData.parentHash)
+            $0.witnessAddress = Data(hex: blockHeaderRawData.witness_address)
         }
         
-        let blockData = try! blockHeader.serializedData()
+        let blockData = try blockHeader.serializedData()
         let blockHash = blockData.getSha256()
         let refBlockHash = blockHash[8..<16]
-        print(blockData.hex)
-        print(blockData.getSha256().hexString)
-        print(refBlockHash.hexString)
         
         let number = blockHeader.number
         let numberData = Data(Data(from: number).reversed())
         let refBlockBytes = numberData[6..<8]
         
-        print(Data(numberData.reversed()).hex)
-        print(refBlockBytes.hex)
-        
-        let tenHours: Int64 = 10 * 60 * 60 * 1000
+        let tenHours: Int64 = 10 * 60 * 60 * 1000 // same as WalletCore
         
         let rawData = Protocol_Transaction.raw.with {
             $0.timestamp = blockHeader.timestamp
             $0.expiration = blockHeader.timestamp + tenHours
-            $0.refBlockHash = refBlockHash//Data(hex: "349a4a4774130149")
-            $0.refBlockBytes = refBlockBytes//Data(hex: "bf1f")
+            $0.refBlockHash = refBlockHash
+            $0.refBlockBytes = refBlockBytes
             $0.contract = [
                 contract
             ]
             $0.feeLimit = feeLimit
         }
-        
-        
-//        let transaction = Protocol_Transaction.with {
-//            $0.rawData = rawData
-//            $0.signature = [Data(repeating: 0, count: 65)]
-//        }
+
         return rawData
     }
     
@@ -114,7 +106,7 @@ class TronTransactionBuilder {
     }
     
     
-    private func uint64(from amount: Amount) -> Int64 {
+    private func int64(from amount: Amount) -> Int64 {
         let decimalValue: Decimal
         switch amount.type {
         case .coin:
