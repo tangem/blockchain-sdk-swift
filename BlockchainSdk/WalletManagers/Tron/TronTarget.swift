@@ -87,7 +87,7 @@ enum TronTarget: TargetType {
             )
             return .requestJSONEncodable(request)
         case .tokenTransactionHistory(_, let limit, _):
-            let parameters: [_: Any] = [
+            let parameters: [String: Any] = [
                 "only_confirmed": true,
                 "limit": limit,
             ]
