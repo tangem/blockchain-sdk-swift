@@ -54,8 +54,11 @@ class TronJsonRpcProvider: HostProvider {
         return provider.requestPublisher(target)
             .filterSuccessfulStatusAndRedirectCodes()
             .map(T.self)
-            .catch { _ -> AnyPublisher<T, Error> in
-                return .anyFail(error: WalletError.failedToParseNetworkResponse)
+            .mapError { moyaError in
+                if case .objectMapping = moyaError {
+                    return WalletError.failedToParseNetworkResponse
+                }
+                return moyaError
             }
             .eraseToAnyPublisher()
     }
