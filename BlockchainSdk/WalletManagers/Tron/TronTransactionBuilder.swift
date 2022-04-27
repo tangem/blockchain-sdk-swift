@@ -40,12 +40,12 @@ class TronTransactionBuilder {
             let functionSelector = "transfer(address,uint256)"
             let functionSelectorHash = Data(functionSelector.bytes).sha3(.keccak256).prefix(4)
             
-            let hexAddress = TronAddressService.toByteForm(destination)?.padLeft(length: 32) ?? Data()
+            let addressData = TronAddressService.toByteForm(destination)?.padLeft(length: 32) ?? Data()
             
             let uintAmount = integerValue(from: amount).uint64Value
-            let hexAmount = Data(Data(from: uintAmount).reversed()).padLeft(length: 32)
+            let amountData = Data(Data(from: uintAmount).reversed()).padLeft(length: 32)
             
-            let contractData = functionSelectorHash + hexAddress + hexAmount
+            let contractData = functionSelectorHash + addressData + amountData
             
             let parameter = Tron_TriggerSmartContract.with {
                 $0.contractAddress = TronAddressService.toByteForm(token.contractAddress) ?? Data()
