@@ -2,6 +2,7 @@ lane :test do
 cocoapods
 run_tests(
   workspace: "BlockchainSdk.xcworkspace",
+  scheme: "BlockchainSdk",
   clean: true
 )
 end
