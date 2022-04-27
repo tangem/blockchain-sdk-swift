@@ -18,21 +18,21 @@ class TronTransactionBuilder {
         self.blockchain = blockchain
     }
     
-    func buildForSign(amount: Amount, source: String, destination: String, block: TronBlock) throws -> Protocol_Transaction.raw {
+    func buildForSign(amount: Amount, source: String, destination: String, block: TronBlock) throws -> Tron_Transaction.raw {
         let intAmount = int64(from: amount)
         
-        let contract: Protocol_Transaction.Contract
+        let contract: Tron_Transaction.Contract
         let feeLimit: Int64
         
         switch amount.type {
         case .coin:
-            let parameter = Protocol_TransferContract.with {
+            let parameter = Tron_TransferContract.with {
                 $0.ownerAddress = TronAddressService.toByteForm(source) ?? Data()
                 $0.toAddress = TronAddressService.toByteForm(destination) ?? Data()
                 $0.amount = intAmount
             }
             
-            contract = try Protocol_Transaction.Contract.with {
+            contract = try Tron_Transaction.Contract.with {
                 $0.type = .transferContract
                 $0.parameter = try Google_Protobuf_Any(message: parameter)
             }
@@ -47,13 +47,13 @@ class TronTransactionBuilder {
             
             let contractData = functionSelectorHash + hexAddress + hexAmount
             
-            let parameter = Protocol_TriggerSmartContract.with {
+            let parameter = Tron_TriggerSmartContract.with {
                 $0.contractAddress = TronAddressService.toByteForm(token.contractAddress) ?? Data()
                 $0.data = contractData
                 $0.ownerAddress = TronAddressService.toByteForm(source) ?? Data()
             }
 
-            contract = try Protocol_Transaction.Contract.with {
+            contract = try Tron_Transaction.Contract.with {
                 $0.type = .triggerSmartContract
                 $0.parameter = try Google_Protobuf_Any(message: parameter)
             }
@@ -64,7 +64,7 @@ class TronTransactionBuilder {
         }
         
         let blockHeaderRawData = block.block_header.raw_data
-        let blockHeader = Protocol_BlockHeader.raw.with {
+        let blockHeader = Tron_BlockHeader.raw.with {
             $0.timestamp = blockHeaderRawData.timestamp
             $0.number = blockHeaderRawData.number
             $0.version = blockHeaderRawData.version
@@ -83,7 +83,7 @@ class TronTransactionBuilder {
         
         let tenHours: Int64 = 10 * 60 * 60 * 1000 // same as WalletCore
         
-        let rawData = Protocol_Transaction.raw.with {
+        let rawData = Tron_Transaction.raw.with {
             $0.timestamp = blockHeader.timestamp
             $0.expiration = blockHeader.timestamp + tenHours
             $0.refBlockHash = refBlockHash
@@ -97,8 +97,8 @@ class TronTransactionBuilder {
         return rawData
     }
     
-    func buildForSend(rawData: Protocol_Transaction.raw, signature: Data) -> Protocol_Transaction {
-        let transaction = Protocol_Transaction.with {
+    func buildForSend(rawData: Tron_Transaction.raw, signature: Data) -> Tron_Transaction {
+        let transaction = Tron_Transaction.with {
             $0.rawData = rawData
             $0.signature = [signature]
         }

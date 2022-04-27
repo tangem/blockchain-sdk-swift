@@ -3,7 +3,7 @@ syntax = "proto3";
 import "google/protobuf/any.proto";
 //import "core/Discover.proto";
 
-package protocol;
+package tron;
 
 
 option java_package = "org.tron.protos"; //Specify the name of the package that generated the Java file
