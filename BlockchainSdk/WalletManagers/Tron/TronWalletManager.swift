@@ -120,7 +120,6 @@ class TronWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
-    
     private func signedTransactionData(amount: Amount, source: String, destination: String, signer: TransactionSigner, publicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
         return networkService.getNowBlock()
             .tryMap { [weak self] block -> Tron_Transaction.raw in
