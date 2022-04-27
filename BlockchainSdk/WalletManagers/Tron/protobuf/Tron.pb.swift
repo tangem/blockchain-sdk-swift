@@ -20,7 +20,7 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-enum Tron_AccountType: SwiftProtobuf.Enum {
+enum Protocol_AccountType: SwiftProtobuf.Enum {
   typealias RawValue = Int
   case normal // = 0
   case assetIssue // = 1
@@ -53,9 +53,9 @@ enum Tron_AccountType: SwiftProtobuf.Enum {
 
 #if swift(>=4.2)
 
-extension Tron_AccountType: CaseIterable {
+extension Protocol_AccountType: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [Tron_AccountType] = [
+  static var allCases: [Protocol_AccountType] = [
     .normal,
     .assetIssue,
     .contract,
@@ -65,7 +65,7 @@ extension Tron_AccountType: CaseIterable {
 #endif  // swift(>=4.2)
 
 /// AccountId, (name, address) use name, (null, address) use address, (name, null) use name,
-struct Tron_AccountId {
+struct Protocol_AccountId {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -79,13 +79,13 @@ struct Tron_AccountId {
   init() {}
 }
 
-struct Tron_authority {
+struct Protocol_authority {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var account: Tron_AccountId {
-    get {return _account ?? Tron_AccountId()}
+  var account: Protocol_AccountId {
+    get {return _account ?? Protocol_AccountId()}
     set {_account = newValue}
   }
   /// Returns true if `account` has been explicitly set.
@@ -99,10 +99,10 @@ struct Tron_authority {
 
   init() {}
 
-  fileprivate var _account: Tron_AccountId? = nil
+  fileprivate var _account: Protocol_AccountId? = nil
 }
 
-struct Tron_MarketOrderDetail {
+struct Protocol_MarketOrderDetail {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -120,13 +120,13 @@ struct Tron_MarketOrderDetail {
   init() {}
 }
 
-struct Tron_Transaction {
+struct Protocol_Transaction {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var rawData: Tron_Transaction.raw {
-    get {return _rawData ?? Tron_Transaction.raw()}
+  var rawData: Protocol_Transaction.raw {
+    get {return _rawData ?? Protocol_Transaction.raw()}
     set {_rawData = newValue}
   }
   /// Returns true if `rawData` has been explicitly set.
@@ -137,7 +137,7 @@ struct Tron_Transaction {
   /// only support size = 1,  repeated list here for muti-sig extension
   var signature: [Data] = []
 
-  var ret: [Tron_Transaction.Result] = []
+  var ret: [Protocol_Transaction.Result] = []
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -146,7 +146,7 @@ struct Tron_Transaction {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    var type: Tron_Transaction.Contract.ContractType = .accountCreateContract
+    var type: Protocol_Transaction.Contract.ContractType = .accountCreateContract
 
     var parameter: SwiftProtobuf.Google_Protobuf_Any {
       get {return _parameter ?? SwiftProtobuf.Google_Protobuf_Any()}
@@ -304,9 +304,9 @@ struct Tron_Transaction {
 
     var fee: Int64 = 0
 
-    var ret: Tron_Transaction.Result.code = .sucess
+    var ret: Protocol_Transaction.Result.code = .sucess
 
-    var contractRet: Tron_Transaction.Result.contractResult = .default
+    var contractRet: Protocol_Transaction.Result.contractResult = .default
 
     var assetIssueID: String = String()
 
@@ -326,7 +326,7 @@ struct Tron_Transaction {
 
     var orderID: Data = Data()
 
-    var orderDetails: [Tron_MarketOrderDetail] = []
+    var orderDetails: [Protocol_MarketOrderDetail] = []
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -444,13 +444,13 @@ struct Tron_Transaction {
 
     var expiration: Int64 = 0
 
-    var auths: [Tron_authority] = []
+    var auths: [Protocol_authority] = []
 
     /// data not used
     var data: Data = Data()
 
     ///only support size = 1,  repeated list here for extension
-    var contract: [Tron_Transaction.Contract] = []
+    var contract: [Protocol_Transaction.Contract] = []
 
     /// scripts not used
     var scripts: Data = Data()
@@ -466,14 +466,14 @@ struct Tron_Transaction {
 
   init() {}
 
-  fileprivate var _rawData: Tron_Transaction.raw? = nil
+  fileprivate var _rawData: Protocol_Transaction.raw? = nil
 }
 
 #if swift(>=4.2)
 
-extension Tron_Transaction.Contract.ContractType: CaseIterable {
+extension Protocol_Transaction.Contract.ContractType: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [Tron_Transaction.Contract.ContractType] = [
+  static var allCases: [Protocol_Transaction.Contract.ContractType] = [
     .accountCreateContract,
     .transferContract,
     .transferAssetContract,
@@ -512,17 +512,17 @@ extension Tron_Transaction.Contract.ContractType: CaseIterable {
   ]
 }
 
-extension Tron_Transaction.Result.code: CaseIterable {
+extension Protocol_Transaction.Result.code: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [Tron_Transaction.Result.code] = [
+  static var allCases: [Protocol_Transaction.Result.code] = [
     .sucess,
     .failed,
   ]
 }
 
-extension Tron_Transaction.Result.contractResult: CaseIterable {
+extension Protocol_Transaction.Result.contractResult: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [Tron_Transaction.Result.contractResult] = [
+  static var allCases: [Protocol_Transaction.Result.contractResult] = [
     .default,
     .success,
     .revert,
@@ -544,13 +544,13 @@ extension Tron_Transaction.Result.contractResult: CaseIterable {
 
 #endif  // swift(>=4.2)
 
-struct Tron_BlockHeader {
+struct Protocol_BlockHeader {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var rawData: Tron_BlockHeader.raw {
-    get {return _rawData ?? Tron_BlockHeader.raw()}
+  var rawData: Protocol_BlockHeader.raw {
+    get {return _rawData ?? Protocol_BlockHeader.raw()}
     set {_rawData = newValue}
   }
   /// Returns true if `rawData` has been explicitly set.
@@ -592,19 +592,19 @@ struct Tron_BlockHeader {
 
   init() {}
 
-  fileprivate var _rawData: Tron_BlockHeader.raw? = nil
+  fileprivate var _rawData: Protocol_BlockHeader.raw? = nil
 }
 
 /// block
-struct Tron_Block {
+struct Protocol_Block {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var transactions: [Tron_Transaction] = []
+  var transactions: [Protocol_Transaction] = []
 
-  var blockHeader: Tron_BlockHeader {
-    get {return _blockHeader ?? Tron_BlockHeader()}
+  var blockHeader: Protocol_BlockHeader {
+    get {return _blockHeader ?? Protocol_BlockHeader()}
     set {_blockHeader = newValue}
   }
   /// Returns true if `blockHeader` has been explicitly set.
@@ -616,31 +616,31 @@ struct Tron_Block {
 
   init() {}
 
-  fileprivate var _blockHeader: Tron_BlockHeader? = nil
+  fileprivate var _blockHeader: Protocol_BlockHeader? = nil
 }
 
 #if swift(>=5.5) && canImport(_Concurrency)
-extension Tron_AccountType: @unchecked Sendable {}
-extension Tron_AccountId: @unchecked Sendable {}
-extension Tron_authority: @unchecked Sendable {}
-extension Tron_MarketOrderDetail: @unchecked Sendable {}
-extension Tron_Transaction: @unchecked Sendable {}
-extension Tron_Transaction.Contract: @unchecked Sendable {}
-extension Tron_Transaction.Contract.ContractType: @unchecked Sendable {}
-extension Tron_Transaction.Result: @unchecked Sendable {}
-extension Tron_Transaction.Result.code: @unchecked Sendable {}
-extension Tron_Transaction.Result.contractResult: @unchecked Sendable {}
-extension Tron_Transaction.raw: @unchecked Sendable {}
-extension Tron_BlockHeader: @unchecked Sendable {}
-extension Tron_BlockHeader.raw: @unchecked Sendable {}
-extension Tron_Block: @unchecked Sendable {}
+extension Protocol_AccountType: @unchecked Sendable {}
+extension Protocol_AccountId: @unchecked Sendable {}
+extension Protocol_authority: @unchecked Sendable {}
+extension Protocol_MarketOrderDetail: @unchecked Sendable {}
+extension Protocol_Transaction: @unchecked Sendable {}
+extension Protocol_Transaction.Contract: @unchecked Sendable {}
+extension Protocol_Transaction.Contract.ContractType: @unchecked Sendable {}
+extension Protocol_Transaction.Result: @unchecked Sendable {}
+extension Protocol_Transaction.Result.code: @unchecked Sendable {}
+extension Protocol_Transaction.Result.contractResult: @unchecked Sendable {}
+extension Protocol_Transaction.raw: @unchecked Sendable {}
+extension Protocol_BlockHeader: @unchecked Sendable {}
+extension Protocol_BlockHeader.raw: @unchecked Sendable {}
+extension Protocol_Block: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "tron"
+fileprivate let _protobuf_package = "protocol"
 
-extension Tron_AccountType: SwiftProtobuf._ProtoNameProviding {
+extension Protocol_AccountType: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "Normal"),
     1: .same(proto: "AssetIssue"),
@@ -648,7 +648,7 @@ extension Tron_AccountType: SwiftProtobuf._ProtoNameProviding {
   ]
 }
 
-extension Tron_AccountId: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+extension Protocol_AccountId: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AccountId"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "name"),
@@ -678,7 +678,7 @@ extension Tron_AccountId: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Tron_AccountId, rhs: Tron_AccountId) -> Bool {
+  static func ==(lhs: Protocol_AccountId, rhs: Protocol_AccountId) -> Bool {
     if lhs.name != rhs.name {return false}
     if lhs.address != rhs.address {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -686,7 +686,7 @@ extension Tron_AccountId: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
   }
 }
 
-extension Tron_authority: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+extension Protocol_authority: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".authority"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "account"),
@@ -720,7 +720,7 @@ extension Tron_authority: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Tron_authority, rhs: Tron_authority) -> Bool {
+  static func ==(lhs: Protocol_authority, rhs: Protocol_authority) -> Bool {
     if lhs._account != rhs._account {return false}
     if lhs.permissionName != rhs.permissionName {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -728,7 +728,7 @@ extension Tron_authority: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
   }
 }
 
-extension Tron_MarketOrderDetail: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+extension Protocol_MarketOrderDetail: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".MarketOrderDetail"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "makerOrderId"),
@@ -768,7 +768,7 @@ extension Tron_MarketOrderDetail: SwiftProtobuf.Message, SwiftProtobuf._MessageI
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Tron_MarketOrderDetail, rhs: Tron_MarketOrderDetail) -> Bool {
+  static func ==(lhs: Protocol_MarketOrderDetail, rhs: Protocol_MarketOrderDetail) -> Bool {
     if lhs.makerOrderID != rhs.makerOrderID {return false}
     if lhs.takerOrderID != rhs.takerOrderID {return false}
     if lhs.fillSellQuantity != rhs.fillSellQuantity {return false}
@@ -778,7 +778,7 @@ extension Tron_MarketOrderDetail: SwiftProtobuf.Message, SwiftProtobuf._MessageI
   }
 }
 
-extension Tron_Transaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+extension Protocol_Transaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Transaction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "raw_data"),
@@ -817,7 +817,7 @@ extension Tron_Transaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Tron_Transaction, rhs: Tron_Transaction) -> Bool {
+  static func ==(lhs: Protocol_Transaction, rhs: Protocol_Transaction) -> Bool {
     if lhs._rawData != rhs._rawData {return false}
     if lhs.signature != rhs.signature {return false}
     if lhs.ret != rhs.ret {return false}
@@ -826,8 +826,8 @@ extension Tron_Transaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
   }
 }
 
-extension Tron_Transaction.Contract: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = Tron_Transaction.protoMessageName + ".Contract"
+extension Protocol_Transaction.Contract: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = Protocol_Transaction.protoMessageName + ".Contract"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "type"),
     2: .same(proto: "parameter"),
@@ -875,7 +875,7 @@ extension Tron_Transaction.Contract: SwiftProtobuf.Message, SwiftProtobuf._Messa
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Tron_Transaction.Contract, rhs: Tron_Transaction.Contract) -> Bool {
+  static func ==(lhs: Protocol_Transaction.Contract, rhs: Protocol_Transaction.Contract) -> Bool {
     if lhs.type != rhs.type {return false}
     if lhs._parameter != rhs._parameter {return false}
     if lhs.provider != rhs.provider {return false}
@@ -886,7 +886,7 @@ extension Tron_Transaction.Contract: SwiftProtobuf.Message, SwiftProtobuf._Messa
   }
 }
 
-extension Tron_Transaction.Contract.ContractType: SwiftProtobuf._ProtoNameProviding {
+extension Protocol_Transaction.Contract.ContractType: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "AccountCreateContract"),
     1: .same(proto: "TransferContract"),
@@ -926,8 +926,8 @@ extension Tron_Transaction.Contract.ContractType: SwiftProtobuf._ProtoNameProvid
   ]
 }
 
-extension Tron_Transaction.Result: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = Tron_Transaction.protoMessageName + ".Result"
+extension Protocol_Transaction.Result: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = Protocol_Transaction.protoMessageName + ".Result"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "fee"),
     2: .same(proto: "ret"),
@@ -1011,7 +1011,7 @@ extension Tron_Transaction.Result: SwiftProtobuf.Message, SwiftProtobuf._Message
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Tron_Transaction.Result, rhs: Tron_Transaction.Result) -> Bool {
+  static func ==(lhs: Protocol_Transaction.Result, rhs: Protocol_Transaction.Result) -> Bool {
     if lhs.fee != rhs.fee {return false}
     if lhs.ret != rhs.ret {return false}
     if lhs.contractRet != rhs.contractRet {return false}
@@ -1030,14 +1030,14 @@ extension Tron_Transaction.Result: SwiftProtobuf.Message, SwiftProtobuf._Message
   }
 }
 
-extension Tron_Transaction.Result.code: SwiftProtobuf._ProtoNameProviding {
+extension Protocol_Transaction.Result.code: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "SUCESS"),
     1: .same(proto: "FAILED"),
   ]
 }
 
-extension Tron_Transaction.Result.contractResult: SwiftProtobuf._ProtoNameProviding {
+extension Protocol_Transaction.Result.contractResult: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "DEFAULT"),
     1: .same(proto: "SUCCESS"),
@@ -1058,8 +1058,8 @@ extension Tron_Transaction.Result.contractResult: SwiftProtobuf._ProtoNameProvid
   ]
 }
 
-extension Tron_Transaction.raw: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = Tron_Transaction.protoMessageName + ".raw"
+extension Protocol_Transaction.raw: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = Protocol_Transaction.protoMessageName + ".raw"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "ref_block_bytes"),
     3: .standard(proto: "ref_block_num"),
@@ -1128,7 +1128,7 @@ extension Tron_Transaction.raw: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Tron_Transaction.raw, rhs: Tron_Transaction.raw) -> Bool {
+  static func ==(lhs: Protocol_Transaction.raw, rhs: Protocol_Transaction.raw) -> Bool {
     if lhs.refBlockBytes != rhs.refBlockBytes {return false}
     if lhs.refBlockNum != rhs.refBlockNum {return false}
     if lhs.refBlockHash != rhs.refBlockHash {return false}
@@ -1144,7 +1144,7 @@ extension Tron_Transaction.raw: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
   }
 }
 
-extension Tron_BlockHeader: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+extension Protocol_BlockHeader: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".BlockHeader"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "raw_data"),
@@ -1178,7 +1178,7 @@ extension Tron_BlockHeader: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Tron_BlockHeader, rhs: Tron_BlockHeader) -> Bool {
+  static func ==(lhs: Protocol_BlockHeader, rhs: Protocol_BlockHeader) -> Bool {
     if lhs._rawData != rhs._rawData {return false}
     if lhs.witnessSignature != rhs.witnessSignature {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -1186,8 +1186,8 @@ extension Tron_BlockHeader: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
   }
 }
 
-extension Tron_BlockHeader.raw: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = Tron_BlockHeader.protoMessageName + ".raw"
+extension Protocol_BlockHeader.raw: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = Protocol_BlockHeader.protoMessageName + ".raw"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "timestamp"),
     2: .same(proto: "txTrieRoot"),
@@ -1246,7 +1246,7 @@ extension Tron_BlockHeader.raw: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Tron_BlockHeader.raw, rhs: Tron_BlockHeader.raw) -> Bool {
+  static func ==(lhs: Protocol_BlockHeader.raw, rhs: Protocol_BlockHeader.raw) -> Bool {
     if lhs.timestamp != rhs.timestamp {return false}
     if lhs.txTrieRoot != rhs.txTrieRoot {return false}
     if lhs.parentHash != rhs.parentHash {return false}
@@ -1260,7 +1260,7 @@ extension Tron_BlockHeader.raw: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
   }
 }
 
-extension Tron_Block: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+extension Protocol_Block: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Block"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "transactions"),
@@ -1294,7 +1294,7 @@ extension Tron_Block: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementatio
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Tron_Block, rhs: Tron_Block) -> Bool {
+  static func ==(lhs: Protocol_Block, rhs: Protocol_Block) -> Bool {
     if lhs.transactions != rhs.transactions {return false}
     if lhs._blockHeader != rhs._blockHeader {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

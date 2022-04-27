@@ -20,7 +20,7 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-struct Tron_TransferContract {
+struct Protocol_TransferContract {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -36,7 +36,7 @@ struct Tron_TransferContract {
   init() {}
 }
 
-struct Tron_TriggerSmartContract {
+struct Protocol_TriggerSmartContract {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -59,15 +59,15 @@ struct Tron_TriggerSmartContract {
 }
 
 #if swift(>=5.5) && canImport(_Concurrency)
-extension Tron_TransferContract: @unchecked Sendable {}
-extension Tron_TriggerSmartContract: @unchecked Sendable {}
+extension Protocol_TransferContract: @unchecked Sendable {}
+extension Protocol_TriggerSmartContract: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "tron"
+fileprivate let _protobuf_package = "protocol"
 
-extension Tron_TransferContract: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+extension Protocol_TransferContract: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".TransferContract"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "owner_address"),
@@ -102,7 +102,7 @@ extension Tron_TransferContract: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Tron_TransferContract, rhs: Tron_TransferContract) -> Bool {
+  static func ==(lhs: Protocol_TransferContract, rhs: Protocol_TransferContract) -> Bool {
     if lhs.ownerAddress != rhs.ownerAddress {return false}
     if lhs.toAddress != rhs.toAddress {return false}
     if lhs.amount != rhs.amount {return false}
@@ -111,7 +111,7 @@ extension Tron_TransferContract: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   }
 }
 
-extension Tron_TriggerSmartContract: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+extension Protocol_TriggerSmartContract: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".TriggerSmartContract"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "owner_address"),
@@ -161,7 +161,7 @@ extension Tron_TriggerSmartContract: SwiftProtobuf.Message, SwiftProtobuf._Messa
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Tron_TriggerSmartContract, rhs: Tron_TriggerSmartContract) -> Bool {
+  static func ==(lhs: Protocol_TriggerSmartContract, rhs: Protocol_TriggerSmartContract) -> Bool {
     if lhs.ownerAddress != rhs.ownerAddress {return false}
     if lhs.contractAddress != rhs.contractAddress {return false}
     if lhs.callValue != rhs.callValue {return false}

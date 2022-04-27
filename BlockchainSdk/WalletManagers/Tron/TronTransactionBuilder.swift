@@ -18,12 +18,12 @@ class TronTransactionBuilder {
         self.blockchain = blockchain
     }
     
-    func buildForSign(amount: Amount, source: String, destination: String, block: TronBlock) throws -> Tron_Transaction.raw {
+    func buildForSign(amount: Amount, source: String, destination: String, block: TronBlock) throws -> Protocol_Transaction.raw {
         let contract = try self.contract(amount: amount, source: source, destination: destination)
         let feeLimit = (amount.type == .coin) ? 0 : smartContractFeeLimit
         
         let blockHeaderRawData = block.block_header.raw_data
-        let blockHeader = Tron_BlockHeader.raw.with {
+        let blockHeader = Protocol_BlockHeader.raw.with {
             $0.timestamp = blockHeaderRawData.timestamp
             $0.number = blockHeaderRawData.number
             $0.version = blockHeaderRawData.version
@@ -42,7 +42,7 @@ class TronTransactionBuilder {
         
         let tenHours: Int64 = 10 * 60 * 60 * 1000 // same as WalletCore
         
-        let rawData = Tron_Transaction.raw.with {
+        let rawData = Protocol_Transaction.raw.with {
             $0.timestamp = blockHeader.timestamp
             $0.expiration = blockHeader.timestamp + tenHours
             $0.refBlockHash = refBlockHash
@@ -56,24 +56,24 @@ class TronTransactionBuilder {
         return rawData
     }
     
-    func buildForSend(rawData: Tron_Transaction.raw, signature: Data) -> Tron_Transaction {
-        let transaction = Tron_Transaction.with {
+    func buildForSend(rawData: Protocol_Transaction.raw, signature: Data) -> Protocol_Transaction {
+        let transaction = Protocol_Transaction.with {
             $0.rawData = rawData
             $0.signature = [signature]
         }
         return transaction
     }
     
-    private func contract(amount: Amount, source: String, destination: String) throws -> Tron_Transaction.Contract {
+    private func contract(amount: Amount, source: String, destination: String) throws -> Protocol_Transaction.Contract {
         switch amount.type {
         case .coin:
-            let parameter = Tron_TransferContract.with {
+            let parameter = Protocol_TransferContract.with {
                 $0.ownerAddress = TronAddressService.toByteForm(source) ?? Data()
                 $0.toAddress = TronAddressService.toByteForm(destination) ?? Data()
                 $0.amount = integerValue(from: amount).int64Value
             }
             
-            return try Tron_Transaction.Contract.with {
+            return try Protocol_Transaction.Contract.with {
                 $0.type = .transferContract
                 $0.parameter = try Google_Protobuf_Any(message: parameter)
             }
@@ -88,13 +88,13 @@ class TronTransactionBuilder {
             
             let contractData = functionSelectorHash + addressData + amountData
             
-            let parameter = Tron_TriggerSmartContract.with {
+            let parameter = Protocol_TriggerSmartContract.with {
                 $0.contractAddress = TronAddressService.toByteForm(token.contractAddress) ?? Data()
                 $0.data = contractData
                 $0.ownerAddress = TronAddressService.toByteForm(source) ?? Data()
             }
             
-            return try Tron_Transaction.Contract.with {
+            return try Protocol_Transaction.Contract.with {
                 $0.type = .triggerSmartContract
                 $0.parameter = try Google_Protobuf_Any(message: parameter)
             }

@@ -3,7 +3,7 @@ syntax = "proto3";
 import "google/protobuf/any.proto";
 //import "core/Discover.proto";
 
-package tron;
+package protocol;
 
 
 option java_package = "org.tron.protos"; //Specify the name of the package that generated the Java file
@@ -163,8 +163,8 @@ message Account {
   //Freeze and provide balances to other accounts
   int64 delegated_frozen_balance_for_bandwidth = 42;
 
-  int64 old_tron_power = 46;
-  Frozen tron_power = 47;
+  int64 old_Protocol_power = 46;
+  Frozen Protocol_power = 47;
 
   // this account create time
   int64 create_time = 0x09;

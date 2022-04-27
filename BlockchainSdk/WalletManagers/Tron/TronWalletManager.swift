@@ -122,7 +122,7 @@ class TronWalletManager: BaseManager, WalletManager {
     
     private func signedTransactionData(amount: Amount, source: String, destination: String, signer: TransactionSigner, publicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
         return networkService.getNowBlock()
-            .tryMap { [weak self] block -> Tron_Transaction.raw in
+            .tryMap { [weak self] block -> Protocol_Transaction.raw in
                 guard let self = self else {
                     throw WalletError.empty
                 }
@@ -143,7 +143,7 @@ class TronWalletManager: BaseManager, WalletManager {
                         
                         return self.sign(transactionRaw, with: signer, publicKey: publicKey)
                     }
-                    .tryMap { [weak self] signature -> Tron_Transaction in
+                    .tryMap { [weak self] signature -> Protocol_Transaction in
                         guard let self = self else {
                             throw WalletError.empty
                         }
@@ -159,7 +159,7 @@ class TronWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
-    private func sign(_ transactionRaw: Tron_Transaction.raw, with signer: TransactionSigner, publicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
+    private func sign(_ transactionRaw: Protocol_Transaction.raw, with signer: TransactionSigner, publicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
         let wallet = self.wallet
         
         return Just(())
