@@ -12,7 +12,7 @@ import TangemSdk
 
 class TronWalletManager: BaseManager, WalletManager {
     var currentHost: String {
-        fatalError()
+        networkService.rpcProvider.host
     }
     
     var allowsFeeSelection: Bool {

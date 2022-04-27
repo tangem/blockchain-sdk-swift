@@ -55,7 +55,6 @@ class TronJsonRpcProvider: HostProvider {
             .filterSuccessfulStatusAndRedirectCodes()
             .map(T.self)
             .catch { _ -> AnyPublisher<T, Error> in
-                // TODO
                 return .anyFail(error: WalletError.failedToParseNetworkResponse)
             }
             .eraseToAnyPublisher()

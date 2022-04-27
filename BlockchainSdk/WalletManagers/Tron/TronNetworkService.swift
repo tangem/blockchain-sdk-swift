@@ -12,8 +12,8 @@ import BigInt
 import web3swift
 
 class TronNetworkService {
-    private let blockchain: Blockchain
-    private let rpcProvider: TronJsonRpcProvider
+    let blockchain: Blockchain
+    let rpcProvider: TronJsonRpcProvider
     
     init(blockchain: Blockchain, rpcProvider: TronJsonRpcProvider) {
         self.blockchain = blockchain
