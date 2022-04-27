@@ -38,10 +38,6 @@ class TronNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func getAccount(for address: String) -> AnyPublisher<TronGetAccountResponse, Error> {
-        rpcProvider.getAccount(for: address)
-    }
-    
     func getNowBlock() -> AnyPublisher<TronBlock, Error> {
         rpcProvider.getNowBlock()
     }
@@ -50,7 +46,41 @@ class TronNetworkService {
         rpcProvider.broadcastHex(data)
     }
     
-    func tokenBalance(address: String, token: Token) -> AnyPublisher<(Token, Decimal), Error> {
+    func tokenTransferMaxEnergyUse(contractAddress: String) -> AnyPublisher<Int, Error> {
+        rpcProvider.tokenTransactionHistory(contractAddress: contractAddress)
+            .tryMap {
+                guard let maxEnergyUsage = $0.data.map(\.energy_usage_total).max() else {
+                    throw WalletError.failedToGetFee
+                }
+                
+                return maxEnergyUsage
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func getAccountResource(for address: String) -> AnyPublisher<TronGetAccountResourceResponse, Error> {
+        rpcProvider.getAccountResource(for: address)
+    }
+    
+    func accountExists(address: String) -> AnyPublisher<Bool, Error> {
+        rpcProvider.getAccount(for: address)
+            .map { _ in
+                true
+            }
+            .tryCatch { error -> AnyPublisher<Bool, Error> in
+                if case WalletError.failedToParseNetworkResponse = error {
+                    return Just(false).setFailureType(to: Error.self).eraseToAnyPublisher()
+                }
+                throw error
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func getAccount(for address: String) -> AnyPublisher<TronGetAccountResponse, Error> {
+        rpcProvider.getAccount(for: address)
+    }
+    
+    private func tokenBalance(address: String, token: Token) -> AnyPublisher<(Token, Decimal), Error> {
         rpcProvider.tokenBalance(address: address, contractAddress: token.contractAddress)
             .tryMap { response in
                 guard let hexValue = response.constant_result.first else {
@@ -76,7 +106,7 @@ class TronNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func transactionConfirmed(id: String) -> AnyPublisher<String?, Error> {
+    private func transactionConfirmed(id: String) -> AnyPublisher<String?, Error> {
         rpcProvider.transactionInfo(id: id)
             .map { _ in
                 return id
@@ -84,36 +114,6 @@ class TronNetworkService {
             .tryCatch { error -> AnyPublisher<String?, Error> in
                 if case WalletError.failedToParseNetworkResponse = error {
                     return Just(nil).setFailureType(to: Error.self).eraseToAnyPublisher()
-                }
-                throw error
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    func tokenTransferMaxEnergyUse(contractAddress: String) -> AnyPublisher<Int, Error> {
-        rpcProvider.tokenTransactionHistory(contractAddress: contractAddress)
-            .tryMap {
-                guard let maxEnergyUsage = $0.data.map(\.energy_usage_total).max() else {
-                    throw WalletError.failedToGetFee
-                }
-                
-                return maxEnergyUsage
-            }
-            .eraseToAnyPublisher()
-    }
-
-    func getAccountResource(for address: String) -> AnyPublisher<TronGetAccountResourceResponse, Error> {
-        rpcProvider.getAccountResource(for: address)
-    }
-    
-    func accountExists(address: String) -> AnyPublisher<Bool, Error> {
-        rpcProvider.getAccount(for: address)
-            .map { _ in
-                true
-            }
-            .tryCatch { error -> AnyPublisher<Bool, Error> in
-                if case WalletError.failedToParseNetworkResponse = error {
-                    return Just(false).setFailureType(to: Error.self).eraseToAnyPublisher()
                 }
                 throw error
             }
