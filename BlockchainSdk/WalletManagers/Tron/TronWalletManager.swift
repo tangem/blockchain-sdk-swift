@@ -91,7 +91,7 @@ class TronWalletManager: BaseManager, WalletManager {
         return networkService.getAccountResource(for: wallet.address)
             .zip(networkService.accountExists(address: destination), transactionDataPublisher, maxEnergyUsePublisher)
             .map { (resources, destinationExists, transactionData, maxEnergyUse) -> Amount in
-                if !destinationExists {
+                if !destinationExists && amount.type == .coin {
                     return Amount(with: blockchain, value: 1.1)
                 }
 
