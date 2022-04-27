@@ -22,6 +22,7 @@ message AccountId {
   bytes address = 2;
 }
 
+/*
 // vote message
 message Vote {
   // the super rep address
@@ -126,10 +127,14 @@ message ChainParameters {
     int64 value = 2;
   }
 }
+*/
 
 /* Account */
+/*
 message Account {
+ */
   /* frozen balance */
+/*
   message Frozen {
     int64 frozen_balance = 1; // the frozen trx balance
     int64 expire_time = 2; // the expire time
@@ -213,11 +218,15 @@ message Account {
   Permission witness_permission = 32;
   repeated Permission active_permission = 33;
 }
+*/
 
 /* AccountAsset */
+/*
 message AccountAsset {
+*/
 
   /* frozen balance */
+/*
   message Frozen {
     int64 frozen_balance = 1; // the frozen trx balance
     int64 expire_time = 2; // the expire time
@@ -259,12 +268,14 @@ message DelegatedResource {
   int64 expire_time_for_bandwidth = 5;
   int64 expire_time_for_energy = 6;
 }
+*/
 
 message authority {
   AccountId account = 1;
   bytes permission_name = 2;
 }
 
+/*
 message Permission {
   enum PermissionType {
     Owner = 0;
@@ -330,6 +341,7 @@ message ResourceReceipt {
   int64 net_fee = 6;
   Transaction.Result.contractResult result = 7;
 }
+ */
 
 message MarketOrderDetail {
   bytes makerOrderId = 1;
@@ -447,6 +459,7 @@ message Transaction {
   repeated Result ret = 5;
 }
 
+/*
 message TransactionInfo {
   enum code {
     SUCESS = 0;
@@ -497,6 +510,7 @@ message TransactionSign {
   Transaction transaction = 1;
   bytes privateKey = 2;
 }
+*/
 
 message BlockHeader {
   message raw {
@@ -521,6 +535,7 @@ message Block {
   BlockHeader block_header = 2;
 }
 
+/*
 message ChainInventory {
   message BlockId {
     bytes hash = 1;
@@ -604,6 +619,7 @@ enum ReasonCode {
 message DisconnectMessage {
   ReasonCode reason = 1;
 }
+*/
 /*
 message HelloMessage {
   message BlockId {
@@ -621,6 +637,7 @@ message HelloMessage {
   bytes signature = 8;
 }
 */
+/*
 message InternalTransaction {
   // internalTransaction identity, the root InternalTransaction hash
   // should equals to root transaction id.
@@ -881,3 +898,4 @@ message PBFTCommitResult {
 message SRL {
   repeated bytes srAddress = 1;
 }
+*/
