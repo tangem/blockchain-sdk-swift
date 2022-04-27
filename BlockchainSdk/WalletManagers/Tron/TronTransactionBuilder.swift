@@ -12,7 +12,7 @@ import BinanceChain
 
 class TronTransactionBuilder {
     private let blockchain: Blockchain
-    private let feeLimit: Int64 = 10_000_000
+    private let smartContractFeeLimit: Int64 = 10_000_000
     
     init(blockchain: Blockchain) {
         self.blockchain = blockchain
@@ -22,6 +22,7 @@ class TronTransactionBuilder {
         let intAmount = uint64(from: amount)
         
         let contract: Protocol_Transaction.Contract
+        let feeLimit: Int64
         switch amount.type {
         case .coin:
             let parameter = Protocol_TransferContract.with {
@@ -34,6 +35,8 @@ class TronTransactionBuilder {
                 $0.type = .transferContract
                 $0.parameter = try! Google_Protobuf_Any(message: parameter)
             }
+            
+            feeLimit = 0
         case .token(let token):
             let functionSelector = "transfer(address,uint256)"
             let functionSelectorHash = Data(functionSelector.bytes).sha3(.keccak256).prefix(4)
@@ -52,6 +55,8 @@ class TronTransactionBuilder {
                 $0.type = .triggerSmartContract
                 $0.parameter = try! Google_Protobuf_Any(message: parameter)
             }
+            
+            feeLimit = smartContractFeeLimit
         case .reserve:
             fatalError()
         }
