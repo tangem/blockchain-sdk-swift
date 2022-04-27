@@ -26,6 +26,12 @@ class TronNetworkService {
         let confirmedTransactionPublishers = transactionIDs.map { transactionConfirmed(id: $0) }
         
         return rpcProvider.getAccount(for: address)
+            .tryCatch { error -> AnyPublisher<TronGetAccountResponse, Error> in
+                if case WalletError.failedToParseNetworkResponse = error {
+                    return Just(TronGetAccountResponse(balance: 0)).setFailureType(to: Error.self).eraseToAnyPublisher()
+                }
+                throw error
+            }
             .zip(Publishers.MergeMany(tokenBalancePublishers).collect(),
                  Publishers.MergeMany(confirmedTransactionPublishers).collect())
             .map { (accountInfo, tokenInfoList, confirmedTransactionList) in
