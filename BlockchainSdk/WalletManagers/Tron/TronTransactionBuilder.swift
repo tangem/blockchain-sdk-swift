@@ -19,8 +19,6 @@ class TronTransactionBuilder {
     }
     
     func buildForSign(amount: Amount, source: String, destination: String, block: TronBlock) throws -> Tron_Transaction.raw {
-        let intAmount = int64(from: amount)
-        
         let contract: Tron_Transaction.Contract
         let feeLimit: Int64
         
@@ -29,7 +27,7 @@ class TronTransactionBuilder {
             let parameter = Tron_TransferContract.with {
                 $0.ownerAddress = TronAddressService.toByteForm(source) ?? Data()
                 $0.toAddress = TronAddressService.toByteForm(destination) ?? Data()
-                $0.amount = intAmount
+                $0.amount = integerValue(from: amount).int64Value
             }
             
             contract = try Tron_Transaction.Contract.with {
@@ -43,7 +41,9 @@ class TronTransactionBuilder {
             let functionSelectorHash = Data(functionSelector.bytes).sha3(.keccak256).prefix(4)
             
             let hexAddress = TronAddressService.toByteForm(destination)?.padLeft(length: 32) ?? Data()
-            let hexAmount = Data(Data(from: intAmount).reversed()).padLeft(length: 32)
+            
+            let uintAmount = integerValue(from: amount).uint64Value
+            let hexAmount = Data(Data(from: uintAmount).reversed()).padLeft(length: 32)
             
             let contractData = functionSelectorHash + hexAddress + hexAmount
             
@@ -52,7 +52,7 @@ class TronTransactionBuilder {
                 $0.data = contractData
                 $0.ownerAddress = TronAddressService.toByteForm(source) ?? Data()
             }
-
+            
             contract = try Tron_Transaction.Contract.with {
                 $0.type = .triggerSmartContract
                 $0.parameter = try Google_Protobuf_Any(message: parameter)
@@ -93,7 +93,7 @@ class TronTransactionBuilder {
             ]
             $0.feeLimit = feeLimit
         }
-
+        
         return rawData
     }
     
@@ -106,7 +106,7 @@ class TronTransactionBuilder {
     }
     
     
-    private func int64(from amount: Amount) -> Int64 {
+    private func integerValue(from amount: Amount) -> NSDecimalNumber {
         let decimalValue: Decimal
         switch amount.type {
         case .coin:
@@ -118,8 +118,7 @@ class TronTransactionBuilder {
         }
         
         let decimalAmount = amount.value * decimalValue
-        let intAmount = (decimalAmount.rounded() as NSDecimalNumber).int64Value
-        return intAmount
+        return (decimalAmount.rounded() as NSDecimalNumber)
     }
 }
 
