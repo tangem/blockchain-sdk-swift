@@ -309,6 +309,7 @@
 		B0F9DCA125FB4C9B00C0AF18 /* MultiNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F9DCA025FB4C9B00C0AF18 /* MultiNetworkProvider.swift */; };
 		B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0FF8816264AEA60003E000A /* LitecoinNetworkService.swift */; };
 		BFD88160E080534F13A7C7A6 /* Pods_BlockchainSdkExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C40B45F626B3CA7042657F9 /* Pods_BlockchainSdkExample.framework */; };
+		DA07EFEB28191631008712F1 /* TronTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA07EFEA28191631008712F1 /* TronTests.swift */; };
 		DA11507727DB217200CDC879 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA11507627DB217200CDC879 /* Launch Screen.storyboard */; };
 		DA30812B2817BF3C00DE41F1 /* Tron.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */; };
 		DA30812C2817BF4800DE41F1 /* Tron.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */; };
@@ -578,6 +579,7 @@
 		B0F9DCA025FB4C9B00C0AF18 /* MultiNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiNetworkProvider.swift; sourceTree = "<group>"; };
 		B0FF8816264AEA60003E000A /* LitecoinNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LitecoinNetworkService.swift; sourceTree = "<group>"; };
 		D1CC9E29B257CD29E6143FDD /* Pods_BlockchainSdk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DA07EFEA28191631008712F1 /* TronTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronTests.swift; sourceTree = "<group>"; };
 		DA11507627DB217200CDC879 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		DA3081282817BF1D00DE41F1 /* Tron.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = Tron.proto; sourceTree = "<group>"; };
 		DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tron.pb.swift; sourceTree = "<group>"; };
@@ -705,6 +707,7 @@
 				5DFCE547274BB85B00C1B1A0 /* LitecoinTests.swift */,
 				5DFCE549274BB88700C1B1A0 /* StellarTests.swift */,
 				DA7CA47527AD4BD90041B1A1 /* PolkadotTests.swift */,
+				DA07EFEA28191631008712F1 /* TronTests.swift */,
 				5DE57D99277CAD6100CCA18A /* AddressTests.swift */,
 				5D8FFDD927D8B77400C5993F /* XCTestCase+.swift */,
 			);
@@ -1849,6 +1852,7 @@
 				B06AFAF0261496E600E7AAB0 /* CardanoAddressUtils.swift in Sources */,
 				5DDD82FD25BF0E2000166EA9 /* CardanoTransactionBuilder.swift in Sources */,
 				5DDD82EE25BF0E1500166EA9 /* BitcoinCashNetworkService.swift in Sources */,
+				DA07EFEB28191631008712F1 /* TronTests.swift in Sources */,
 				B04E5569265F721900679EAF /* DogecoinNetworkParams.swift in Sources */,
 				5DE57D9A277CAD6100CCA18A /* AddressTests.swift in Sources */,
 				5DDD82CE25BF0DAD00166EA9 /* BitcoreResponse.swift in Sources */,
