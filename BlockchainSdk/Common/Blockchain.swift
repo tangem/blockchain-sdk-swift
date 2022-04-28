@@ -17,6 +17,7 @@ public enum Blockchain: Equatable, Hashable {
     case litecoin
     case stellar(testnet: Bool)
     case ethereum(testnet: Bool)
+    case ethereumClassic(testnet: Bool)
     case rsk
     case bitcoinCash(testnet: Bool)
     case binance(testnet: Bool)
@@ -42,6 +43,8 @@ public enum Blockchain: Equatable, Hashable {
         case .stellar(let testnet):
             return testnet
         case .ethereum(let testnet), .bsc(let testnet):
+            return testnet
+        case .ethereumClassic(let testnet):
             return testnet
         case .bitcoinCash(let testnet):
             return testnet
@@ -77,7 +80,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin:
             return 8
-        case .ethereum, .rsk, .bsc, .polygon, .avalanche, .fantom:
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom:
             return 18
         case  .cardano, .xrp, .tezos:
             return 6
@@ -102,6 +105,8 @@ public enum Blockchain: Equatable, Hashable {
             return "XLM"
         case .ethereum:
             return "ETH"
+        case .ethereumClassic:
+            return "ETC"
         case .rsk:
             return "RBTC"
         case .bitcoinCash:
@@ -141,6 +146,8 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoinCash:
             return "Bitcoin Cash" + testnetSuffix
+        case .ethereumClassic:
+            return "Ethereum Classic" + testnetSuffix
         case .xrp:
             return "XRP Ledger"
         case .rsk:
@@ -196,9 +203,11 @@ extension Blockchain {
     public var isEvm: Bool { chainId != nil }
     
     //Only fot Ethereum compatible blockchains
+    // https://chainlist.org
     public var chainId: Int? {
         switch self {
         case .ethereum: return isTestnet ? 4 : 1
+        case .ethereumClassic: return isTestnet ? 6 : 61 // https://besu.hyperledger.org/en/stable/Concepts/NetworkID-And-ChainID/
         case .rsk: return 30
         case .bsc: return isTestnet ? 97 : 56
         case .polygon: return isTestnet ? 80001 : 137
@@ -219,6 +228,16 @@ extension Blockchain {
             return isTestnet ? [URL(string:"https://rinkeby.infura.io/v3/\(infuraProjectId)")!]
             : [URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
                URL(string: "https://eth.tangem.com/")!]
+        case .ethereumClassic:
+            if isTestnet {
+                return [
+                    URL(string: "https://www.ethercluster.com/kotti")!
+                ]
+            } else {
+                return [
+                    URL(string: "https://www.ethercluster.com/etc")!
+                ]
+            }
         case .rsk:
             return [URL(string: "https://public-node.rsk.co/")!]
         case .bsc:
@@ -305,6 +324,7 @@ extension Blockchain {
         case .litecoin: return 2
         case .dogecoin: return 3
         case .ethereum: return ethCoinType
+        case .ethereumClassic: return 61
         case .bsc: return 9006
         case .bitcoinCash: return 145
         case .binance: return 714
@@ -346,7 +366,7 @@ extension Blockchain {
             return BitcoinAddressService(networkParams: LitecoinNetworkParams())
         case .stellar:
             return StellarAddressService()
-        case .ethereum, .bsc, .polygon, .avalanche, .fantom:
+        case .ethereum, .ethereumClassic, .bsc, .polygon, .avalanche, .fantom:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -418,6 +438,7 @@ extension Blockchain: Codable {
         case .cardano: return "cardano"
         case .ducatus: return "ducatus"
         case .ethereum: return "ethereum"
+        case .ethereumClassic: return "ethereumClassic"
         case .litecoin: return "litecoin"
         case .rsk: return "rsk"
         case .stellar: return "stellar"
@@ -456,6 +477,7 @@ extension Blockchain: Codable {
         case "bitcoin": self = .bitcoin(testnet: isTestnet)
         case "stellar": self = .stellar(testnet: isTestnet)
         case "ethereum": self = .ethereum(testnet: isTestnet)
+        case "ethereumClassic": self = .ethereumClassic(testnet: isTestnet)
         case "litecoin": self = .litecoin
         case "rsk": self = .rsk
         case "bitcoinCash": self = .bitcoinCash(testnet: isTestnet)
@@ -499,6 +521,8 @@ extension Blockchain {
             return URL(string: "https://coinfaucet.eu/en/btc-testnet/")
         case .ethereum:
             return URL(string: "https://faucet.rinkeby.io")
+        case .ethereumClassic:
+            return URL(string: "https://kottifaucet.me")
         case .bitcoinCash:
             // alt
             // return URL(string: "https://faucet.fullstack.cash")
@@ -545,6 +569,9 @@ extension Blockchain {
             let exploreLink = tokenContractAddress == nil ? baseUrl + address :
             "https://etherscan.io/token/\(tokenContractAddress!)?a=\(address)"
             return URL(string: exploreLink)
+        case .ethereumClassic(let testnet):
+            let network = testnet ? "kotti" : "mainnet"
+            return URL(string: "https://blockscout.com/etc/\(network)/address/\(address)/transactions")!
         case .litecoin:
             return URL(string: "https://blockchair.com/litecoin/address/\(address)")
         case .rsk:
