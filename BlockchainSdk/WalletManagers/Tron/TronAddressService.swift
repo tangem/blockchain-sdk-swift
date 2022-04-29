@@ -16,8 +16,6 @@ class TronAddressService: AddressService {
     init() {}
     
     func makeAddress(from walletPublicKey: Data) throws -> String {
-        try walletPublicKey.validateAsSecp256k1Key()
-        
         let decompressedPublicKey = try Secp256k1Key(with: walletPublicKey).decompress()
         
         let data = decompressedPublicKey.dropFirst()
