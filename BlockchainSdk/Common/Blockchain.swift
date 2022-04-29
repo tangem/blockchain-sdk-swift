@@ -160,8 +160,6 @@ public enum Blockchain: Equatable, Hashable {
             return isTestnet ? "Fantom" + testnetSuffix : "Fantom Opera"
         case .polkadot:
             return "Polkadot" + testnetSuffix + (isTestnet ? " (Westend)" : "")
-        case .tron:
-            return "Tron" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -188,14 +186,8 @@ public enum Blockchain: Equatable, Hashable {
     
     public var canHandleTokens: Bool {
         switch self {
-        case .ethereum,
-                .bsc,
-                .binance,
-                .polygon,
-                .avalanche,
-                .solana,
-                .tron,
-                .fantom:
+        case .ethereum, .bsc, .binance, .polygon,
+                .avalanche, .solana, .fantom, .tron:
             return true
         default:
             return false
