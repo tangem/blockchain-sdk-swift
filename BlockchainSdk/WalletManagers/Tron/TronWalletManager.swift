@@ -216,9 +216,7 @@ class TronWalletManager: BaseManager, WalletManager {
     }
 }
 
-extension TronWalletManager: ThenProcessable {
-    
-}
+extension TronWalletManager: ThenProcessable {}
 
 
 fileprivate class DummySigner: TransactionSigner {
