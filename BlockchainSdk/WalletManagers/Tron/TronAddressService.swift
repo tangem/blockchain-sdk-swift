@@ -13,9 +13,7 @@ class TronAddressService: AddressService {
     private let prefix: UInt8 = 0x41
     private let addressLength = 21
     
-    init() {
-        
-    }
+    init() {}
     
     func makeAddress(from walletPublicKey: Data) throws -> String {
         try walletPublicKey.validateAsSecp256k1Key()
