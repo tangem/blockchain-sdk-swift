@@ -11,6 +11,9 @@ import Combine
 import TangemSdk
 
 class TronWalletManager: BaseManager, WalletManager {
+    var networkService: TronNetworkService!
+    var txBuilder: TronTransactionBuilder!
+    
     var currentHost: String {
         networkService.rpcProvider.host
     }
@@ -18,9 +21,6 @@ class TronWalletManager: BaseManager, WalletManager {
     var allowsFeeSelection: Bool {
         false
     }
-    
-    var networkService: TronNetworkService!
-    var txBuilder: TronTransactionBuilder!
     
     private let feeSigner = DummySigner()
     
