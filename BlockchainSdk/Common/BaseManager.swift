@@ -71,7 +71,7 @@ class BaseManager: WalletProvider {
     }
     
     func validate(fee: Amount) -> TransactionError? {
-        if !validateFeeValue(fee) {
+        if !validateAmountValue(fee) {
             return .invalidFee
         }
         
@@ -124,10 +124,6 @@ class BaseManager: WalletProvider {
         return amount.value >= 0
     }
     
-    private func validateFeeValue(_ fee: Amount) -> Bool {
-        return fee.value >= 0
-    }
-
     private func validateAmountTotal(_ amount: Amount) -> Bool {
         guard let total = wallet.amounts[amount.type],
             total >= amount else {
