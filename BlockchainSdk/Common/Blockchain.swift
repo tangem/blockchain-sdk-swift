@@ -577,7 +577,7 @@ extension Blockchain {
             return URL(string: link)
         case .solana:
             let baseUrl = "https://explorer.solana.com/address/"
-            let cluster = isTestnet ? "?cluster=testnet" : ""
+            let cluster = isTestnet ? "?cluster=devnet" : ""
             return URL(string: baseUrl + address + cluster)
         case .fantom:
             let baseUrl = isTestnet ? "https://testnet.ftmscan.com/address/" : "https://ftmscan.com/address/"
