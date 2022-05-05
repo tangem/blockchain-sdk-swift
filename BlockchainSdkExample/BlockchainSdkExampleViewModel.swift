@@ -395,6 +395,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .litecoin,
             .stellar(testnet: false),
             .ethereum(testnet: false),
+            .ethereumClassic(testnet: false),
             .rsk,
             .bitcoinCash(testnet: false),
             .binance(testnet: false),

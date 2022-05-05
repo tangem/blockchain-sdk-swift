@@ -183,7 +183,7 @@ public class WalletManagerFactory {
                                                            blockchairProvider: blockchair)
             }
             
-        case .rsk, .bsc, .polygon, .avalanche, .fantom:
+        case .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom:
             return try EthereumWalletManager(wallet: wallet).then {
                 let chainId = blockchain.chainId!
                 let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)!
