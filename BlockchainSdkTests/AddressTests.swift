@@ -518,4 +518,21 @@ class AddressesTests: XCTestCase {
         XCTAssertNotEqual(addressFromString!.bytes(raw: false), publicKey)
         XCTAssertFalse(otherNetworkAddresses.contains(addressFromString!.string))
     }
+    
+    func testTron() {
+        // From https://developers.tron.network/docs/account
+        let publicKey1 = Data(hexString: "0404B604296010A55D40000B798EE8454ECCC1F8900E70B1ADF47C9887625D8BAE3866351A6FA0B5370623268410D33D345F63344121455849C9C28F9389ED9731")
+        let address1 = try! TronAddressService().makeAddress(from: publicKey1)
+        XCTAssertTrue(address1 == "TDpBe64DqirkKWj6HWuR1pWgmnhw2wDacE")
+        
+        
+        let compressedKeyAddress = try! TronAddressService().makeAddress(from: secpCompressedKey)
+        XCTAssertTrue(compressedKeyAddress == "TL51KaL2EPoAnPLgnzdZndaTLEbd1P5UzV")
+        
+        let decompressedKeyAddress = try! TronAddressService().makeAddress(from: secpDecompressedKey)
+        XCTAssertTrue(decompressedKeyAddress == "TL51KaL2EPoAnPLgnzdZndaTLEbd1P5UzV")
+        
+        XCTAssertTrue (TronAddressService().validate("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC"))
+        XCTAssertFalse(TronAddressService().validate("RJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC"))
+    }
 }

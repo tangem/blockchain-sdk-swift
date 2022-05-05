@@ -32,6 +32,7 @@ public enum Blockchain: Equatable, Hashable {
     case fantom(testnet: Bool)
     case polkadot(testnet: Bool)
     case kusama
+    case tron(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -57,6 +58,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .polkadot(let testnet):
             return testnet
+        case .tron(let testnet):
+            return testnet
         }
     }
     
@@ -79,7 +82,7 @@ public enum Blockchain: Equatable, Hashable {
             return 8
         case .ethereum, .rsk, .bsc, .polygon, .avalanche, .fantom:
             return 18
-        case  .cardano, .xrp, .tezos:
+        case  .cardano, .xrp, .tezos, .tron:
             return 6
         case .stellar:
             return 7
@@ -132,6 +135,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet ? "WND" : "DOT"
         case .kusama:
             return "KSM"
+        case .tron:
+            return "TRX"
         }
     }
     
@@ -182,7 +187,7 @@ public enum Blockchain: Equatable, Hashable {
     public var canHandleTokens: Bool {
         switch self {
         case .ethereum, .bsc, .binance, .polygon,
-                .avalanche, .solana, .fantom:
+                .avalanche, .solana, .fantom, .tron:
             return true
         default:
             return false
@@ -208,7 +213,7 @@ extension Blockchain {
         }
     }
     
-    //Only fot Ethereum compatible blockchains
+    //Only for Ethereum compatible blockchains
     public func getJsonRpcURLs(infuraProjectId: String?) -> [URL]? {
         switch self {
         case .ethereum:
@@ -319,6 +324,7 @@ extension Blockchain {
         case .fantom: return 1007
         case .polkadot: return 354
         case .kusama: return 434
+        case .tron: return 195
         }
     }
     
@@ -371,6 +377,8 @@ extension Blockchain {
             return PolkadotAddressService(network: isTestnet ? .westend : .polkadot)
         case .kusama:
             return PolkadotAddressService(network: .kusama)
+        case .tron:
+            return TronAddressService()
         }
     }
 }
@@ -431,6 +439,7 @@ extension Blockchain: Codable {
         case .fantom: return "fantom"
         case .polkadot: return "polkadot"
         case .kusama: return "kusama"
+        case .tron: return "tron"
         }
     }
     
@@ -472,6 +481,7 @@ extension Blockchain: Codable {
         case "fantom": self = .fantom(testnet: isTestnet)
         case "polkadot": self = .polkadot(testnet: isTestnet)
         case "kusama": self = .kusama
+        case "tron": self = .tron(testnet: isTestnet)
         default: throw BlockchainSdkError.decodingFailed
         }
     }
@@ -520,6 +530,8 @@ extension Blockchain {
             return URL(string: "https://faucet.fantom.network")
         case .polkadot:
             return URL(string: "https://matrix.to/#/!cJFtAIkwxuofiSYkPN:matrix.org?via=matrix.org&via=matrix.parity.io&via=web3.foundation")
+        case .tron:
+            return URL(string: "https://nileex.io/join/getJoinPage")!
         default:
             return nil
         }
@@ -588,6 +600,9 @@ extension Blockchain {
             return URL(string: "https://\(subdomain).subscan.io/account/\(address)")
         case .kusama:
             return URL(string: "https://kusama.subscan.io/account/\(address)")
+        case .tron:
+            let subdomain = isTestnet ? "nile." : ""
+            return URL(string: "https://\(subdomain)tronscan.org/#/address/\(address)")!
         }
     }
 }
@@ -628,6 +643,7 @@ extension Blockchain {
         case "fantom": return .fantom(testnet: isTestnet)
         case "polkadot": return .polkadot(testnet: isTestnet)
         case "kusama": return .kusama
+        case "tron": return .tron(testnet: isTestnet)
         default: return nil
         }
     }

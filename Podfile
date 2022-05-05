@@ -28,6 +28,7 @@ target 'BlockchainSdk' do
   pod 'Solana.Swift', :git => 'https://github.com/tangem/Solana.Swift', :tag => 'add-external-signer-1'
   #pod 'Solana.Swift', :path => '../Solana.Swift'
   pod 'ScaleCodec'
+  pod 'SwiftProtobuf'
 
   common_pods
 end
