@@ -36,9 +36,6 @@
 "send_error_dust_amount_format" = "Le montant minimal est de %@";
 "send_error_dust_change_format" = "Le monnaie minimal est de %@";
 "send_error_invalid_fee_value" = "Commission non valide";
-"send_error_insufficient_balance" = "Solde insuffisant";
-"send_error_blockchain_internal" = "Erreur interne de la blockchain";
-"send_error_unknown" = "Erreur inconnue";
 "failed_to_find_transaction" = "Transaction not found in pending list";
 "failed_to_find_tx_inputs" = "Failed to find transaction inputs";
 "fee_for_push_tx_not_enough" = "Fee for pushing transaction must be greater than fee for original transaction";

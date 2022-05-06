@@ -36,9 +36,6 @@
 "send_error_dust_amount_format" = "Minimaler Betrag ist %@";
 "send_error_dust_change_format" = "Minimaler Wechselgeld ist %@";
 "send_error_invalid_fee_value" = "Falsche Gebühr";
-"send_error_insufficient_balance" = "Nicht genug Geld";
-"send_error_blockchain_internal" = "Interner Fehler der Blockchain";
-"send_error_unknown" = "Unbekannter Fehler";
 "failed_to_find_transaction" = "Transaction not found in pending list";
 "failed_to_find_tx_inputs" = "Failed to find transaction inputs";
 "fee_for_push_tx_not_enough" = "Fee for pushing transaction must be greater than fee for original transaction";
