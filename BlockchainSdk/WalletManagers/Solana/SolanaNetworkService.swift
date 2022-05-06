@@ -203,7 +203,11 @@ class SolanaNetworkService {
             
             return SolanaTokenAccountInfoResponse(address: address, mint: mint, balance: amount)
         }
-        let tokensByMint = Dictionary(uniqueKeysWithValues: tokens.map { ($0.mint, $0) })
+        
+        let tokenPairs = tokens.map { ($0.mint, $0) }
+        let tokensByMint = Dictionary(tokenPairs) { token1, _ in
+            return token1
+        }
         
         return SolanaAccountInfoResponse(balance: balance, accountExists: accountExists, tokensByMint: tokensByMint, confirmedTransactionIDs: confirmedTransactionIDs)
     }
