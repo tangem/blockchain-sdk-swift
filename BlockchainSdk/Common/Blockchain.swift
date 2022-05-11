@@ -109,7 +109,7 @@ public enum Blockchain: Equatable, Hashable {
             return "LTC"
         case .stellar:
             return "XLM"
-        case .ethereum:
+        case .ethereum, .arbitrum:
             return "ETH"
         case .ethereumClassic:
             return "ETC"
@@ -145,8 +145,6 @@ public enum Blockchain: Equatable, Hashable {
             return "KSM"
         case .tron:
             return "TRX"
-        case .arbitrum:
-            return "ETH"
         }
     }
     
