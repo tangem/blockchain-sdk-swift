@@ -104,12 +104,13 @@ struct BlockchainSdkExampleView: View {
                 }
                 
                 Section(header: Text("Destination and amount to send")) {
-                    TextField("Destination", text: $model.destination)
+                    // Don't change the placeholder to 'Destination', otherwise SwiftUI is going to suggest your address there
+                    TextField("0xABCD01234", text: $model.destination)
                         .disableAutocorrection(true)
                         .keyboardType(.alphabet)
                         .truncationMode(.middle)
                     
-                    TextField("Amount", text: $model.amountToSend)
+                    TextField("0.001", text: $model.amountToSend)
                         .keyboardType(.decimalPad)
                 }
                 
