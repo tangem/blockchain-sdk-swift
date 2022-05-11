@@ -31,6 +31,7 @@ extension Api {
                 }
             }
         }
+        .share()
         .eraseToAnyPublisher()
     }
     
@@ -59,6 +60,7 @@ extension Api {
                 }
             }
         }
+        .share()
         .eraseToAnyPublisher()
     }
     
@@ -80,6 +82,7 @@ extension Api {
                 }
             }
         }
+        .share()
         .eraseToAnyPublisher()
     }
     
@@ -108,6 +111,7 @@ extension Api {
                 }
             }
         }
+        .share()
         .eraseToAnyPublisher()
     }
     
@@ -129,6 +133,7 @@ extension Api {
                 }
             }
         }
+        .share()
         .eraseToAnyPublisher()
     }
 }
@@ -152,6 +157,7 @@ extension Action {
                 }
             }
         }
+        .share()
         .eraseToAnyPublisher()
     }
     
@@ -183,6 +189,7 @@ extension Action {
                 }
             }
         }
+        .share()
         .eraseToAnyPublisher()
     }
     
@@ -220,6 +227,7 @@ extension Action {
                 }
             }
         }
+        .share()
         .eraseToAnyPublisher()
     }
 }
