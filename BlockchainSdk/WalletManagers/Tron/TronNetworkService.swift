@@ -109,6 +109,8 @@ class TronNetworkService {
                 
                 return (token, decimalValue)
             }
+            .replaceError(with: (token, .zero))
+            .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
     
