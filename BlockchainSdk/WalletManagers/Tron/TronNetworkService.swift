@@ -28,14 +28,14 @@ class TronNetworkService {
         return rpcProvider.getAccount(for: address)
             .tryCatch { error -> AnyPublisher<TronGetAccountResponse, Error> in
                 if case WalletError.failedToParseNetworkResponse = error {
-                    return Just(TronGetAccountResponse(balance: 0)).setFailureType(to: Error.self).eraseToAnyPublisher()
+                    return Just(TronGetAccountResponse(balance: 0, address: address)).setFailureType(to: Error.self).eraseToAnyPublisher()
                 }
                 throw error
             }
             .zip(Publishers.MergeMany(tokenBalancePublishers).collect(),
                  Publishers.MergeMany(confirmedTransactionPublishers).collect())
             .map { (accountInfo, tokenInfoList, confirmedTransactionList) in
-                let balance = Decimal(accountInfo.balance) / blockchain.decimalValue
+                let balance = Decimal(accountInfo.balance ?? 0) / blockchain.decimalValue
                 let tokenBalances = Dictionary(uniqueKeysWithValues: tokenInfoList)
                 let confirmedTransactionIDs = confirmedTransactionList.compactMap { $0 }
                 
