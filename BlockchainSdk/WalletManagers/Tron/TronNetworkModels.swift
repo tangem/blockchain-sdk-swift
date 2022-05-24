@@ -20,7 +20,10 @@ struct TronGetAccountRequest: Codable {
 }
 
 struct TronGetAccountResponse: Codable {
-    let balance: UInt64
+    let balance: UInt64?
+    // We don't use this field but we can't have just one optional `balance` field
+    // Otherwise an empty JSON will conform to this structure
+    let address: String
 }
 
 struct TronGetAccountResourceResponse: Codable {
