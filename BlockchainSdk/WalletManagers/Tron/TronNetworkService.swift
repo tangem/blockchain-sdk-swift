@@ -22,7 +22,9 @@ class TronNetworkService {
     
     func accountInfo(for address: String, tokens: [Token], transactionIDs: [String]) -> AnyPublisher<TronAccountInfo, Error> {
         let blockchain = self.blockchain
-        let tokenBalancePublishers = tokens.map { tokenBalance(address: address, token: $0) }
+        let tokenBalancePublishers = tokens.map {
+            tokenBalance(address: address, token: $0).setFailureType(to: Error.self)
+        }
         let confirmedTransactionPublishers = transactionIDs.map { transactionConfirmed(id: $0) }
         
         return rpcProvider.getAccount(for: address)
@@ -86,7 +88,7 @@ class TronNetworkService {
         rpcProvider.getAccount(for: address)
     }
     
-    private func tokenBalance(address: String, token: Token) -> AnyPublisher<(Token, Decimal), Error> {
+    private func tokenBalance(address: String, token: Token) -> AnyPublisher<(Token, Decimal), Never> {
         rpcProvider.tokenBalance(address: address, contractAddress: token.contractAddress)
             .tryMap { response in
                 guard let hexValue = response.constant_result.first else {
@@ -109,6 +111,7 @@ class TronNetworkService {
                 
                 return (token, decimalValue)
             }
+            .replaceError(with: (token, .zero))
             .eraseToAnyPublisher()
     }
     
