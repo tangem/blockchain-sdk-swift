@@ -197,7 +197,8 @@ public enum Blockchain: Equatable, Hashable {
     public var canHandleTokens: Bool {
         switch self {
         case .ethereum, .bsc, .binance, .polygon,
-                .avalanche, .solana, .fantom, .tron, .arbitrum:
+                .avalanche, .solana, .fantom, .tron, .arbitrum,
+                .rsk, .ethereumClassic:
             return true
         default:
             return false
