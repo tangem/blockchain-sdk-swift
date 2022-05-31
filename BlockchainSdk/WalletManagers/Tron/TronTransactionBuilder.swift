@@ -9,7 +9,6 @@
 import Foundation
 import SwiftProtobuf
 import web3swift
-import BigInt
 
 class TronTransactionBuilder {
     private let blockchain: Blockchain
