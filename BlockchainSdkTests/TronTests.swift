@@ -48,14 +48,27 @@ class TronTests: XCTestCase {
                           contractAddress: "TXLAQ63Xg1NAzckPwKHvzw7CSEmLMEqcdj",
                           decimalCount: 6)
         
-        let transactionRaw = try! txBuilder.buildForSign(amount: Amount(with: token, value: 1), source: "TU1BRXbr6EmKmrLL4Kymv7Wp18eYFkRfAF", destination: "TXXxc9NsHndfQ2z9kMKyWpYa5T3QbhKGwn", block: tronBlock)
+        let amountValues: [Decimal] = [
+            1,
+            1000000000000000000,
+        ]
         
-        let signature = Data(hex: "6b5de85a80b2f4f02351f691593fb0e49f14c5cb42451373485357e42d7890cd77ad7bfcb733555c098b992da79dabe5050f5e2db77d9d98f199074222de037701")
-        let transaction = txBuilder.buildForSend(rawData: transactionRaw, signature: signature)
-        let transactionData = try! transaction.serializedData()
+        let transactionDataList = amountValues.map { amountValue -> Data in
+            let transactionRaw = try! txBuilder.buildForSign(amount: Amount(with: token, value: amountValue), source: "TU1BRXbr6EmKmrLL4Kymv7Wp18eYFkRfAF", destination: "TXXxc9NsHndfQ2z9kMKyWpYa5T3QbhKGwn", block: tronBlock)
+            
+            let signature = Data(hex: "6b5de85a80b2f4f02351f691593fb0e49f14c5cb42451373485357e42d7890cd77ad7bfcb733555c098b992da79dabe5050f5e2db77d9d98f199074222de037701")
+            let transaction = txBuilder.buildForSend(rawData: transactionRaw, signature: signature)
+            let transactionData = try! transaction.serializedData()
         
-        let expectedTransactionData = Data(hex: "0ad3010a027b3b2208b21ace8d6ac20e7e40d8abb9bae62c5aae01081f12a9010a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e54726967676572536d617274436f6e747261637412740a1541c5d1c75825b30bb2e2e655798209d56448eb6b5e121541ea51342dabbb928ae1e576bd39eff8aaf070a8c62244a9059cbb000000000000000000000041ec8c5a0fcbb28f14418eed9cf582af0d77e4256e00000000000000000000000000000000000000000000000000000000000f424070d889a4a9e62c900180b4891312416b5de85a80b2f4f02351f691593fb0e49f14c5cb42451373485357e42d7890cd77ad7bfcb733555c098b992da79dabe5050f5e2db77d9d98f199074222de037701")
+            return transactionData
+        }
         
-        XCTAssertEqual(transactionData, expectedTransactionData)
+        
+        let expectedTransactionDataList = [
+            Data(hex: "0ad3010a027b3b2208b21ace8d6ac20e7e40d8abb9bae62c5aae01081f12a9010a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e54726967676572536d617274436f6e747261637412740a1541c5d1c75825b30bb2e2e655798209d56448eb6b5e121541ea51342dabbb928ae1e576bd39eff8aaf070a8c62244a9059cbb000000000000000000000041ec8c5a0fcbb28f14418eed9cf582af0d77e4256e00000000000000000000000000000000000000000000000000000000000f424070d889a4a9e62c900180b4891312416b5de85a80b2f4f02351f691593fb0e49f14c5cb42451373485357e42d7890cd77ad7bfcb733555c098b992da79dabe5050f5e2db77d9d98f199074222de037701"),
+            Data(hex: "0ad3010a027b3b2208b21ace8d6ac20e7e40d8abb9bae62c5aae01081f12a9010a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e54726967676572536d617274436f6e747261637412740a1541c5d1c75825b30bb2e2e655798209d56448eb6b5e121541ea51342dabbb928ae1e576bd39eff8aaf070a8c62244a9059cbb000000000000000000000041ec8c5a0fcbb28f14418eed9cf582af0d77e4256e00000000000000000000000000000000000000000000d3c21bcecceda100000070d889a4a9e62c900180b4891312416b5de85a80b2f4f02351f691593fb0e49f14c5cb42451373485357e42d7890cd77ad7bfcb733555c098b992da79dabe5050f5e2db77d9d98f199074222de037701"),
+        ]
+        
+        XCTAssertEqual(transactionDataList, expectedTransactionDataList)
     }
 }
