@@ -38,7 +38,9 @@ class TronNetworkService {
                  Publishers.MergeMany(confirmedTransactionPublishers).collect())
             .map { (accountInfo, tokenInfoList, confirmedTransactionList) in
                 let balance = Decimal(accountInfo.balance ?? 0) / blockchain.decimalValue
-                let tokenBalances = Dictionary(uniqueKeysWithValues: tokenInfoList)
+                let tokenBalances = Dictionary(tokenInfoList) { token1, _ in
+                    token1
+                }
                 let confirmedTransactionIDs = confirmedTransactionList.compactMap { $0 }
                 
                 return TronAccountInfo(balance: balance, tokenBalances: tokenBalances, confirmedTransactionIDs: confirmedTransactionIDs)
