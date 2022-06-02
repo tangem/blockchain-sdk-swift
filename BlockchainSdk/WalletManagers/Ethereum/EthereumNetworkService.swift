@@ -136,6 +136,13 @@ class EthereumNetworkService: MultiNetworkProvider {
                             
                             return value
                         }
+                        .tryCatch { error -> AnyPublisher<Decimal, Error> in
+                            if let moyaError = error as? MoyaError, case let .objectMapping = moyaError {
+                                return .justWithError(output: 0)
+                            }
+                            
+                            throw error
+                        }
                         .map { (token, $0) }
                         .eraseToAnyPublisher()
                 } ?? .emptyFail
