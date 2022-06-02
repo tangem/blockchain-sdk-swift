@@ -21,14 +21,12 @@ class TronNetworkService {
     }
     
     func accountInfo(for address: String, tokens: [Token], transactionIDs: [String]) -> AnyPublisher<TronAccountInfo, Error> {
-        let blockchain = self.blockchain
-        
-        return Publishers.Zip3(
+        Publishers.Zip3(
             getAccount(for: address),
             tokenBalances(address: address, tokens: tokens),
             confirmedTransactionIDs(ids: transactionIDs)
         )
-        .map { (accountInfo, tokenBalances, confirmedTransactionIDs) in
+        .map { [blockchain] (accountInfo, tokenBalances, confirmedTransactionIDs) in
             let balance = Decimal(accountInfo.balance ?? 0) / blockchain.decimalValue
             return TronAccountInfo(
                 balance: balance,
