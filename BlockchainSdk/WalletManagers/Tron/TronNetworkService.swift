@@ -79,7 +79,9 @@ class TronNetworkService {
         rpcProvider.getAccount(for: address)
             .tryCatch { error -> AnyPublisher<TronGetAccountResponse, Error> in
                 if case WalletError.failedToParseNetworkResponse = error {
-                    return Just(TronGetAccountResponse(balance: 0, address: address)).setFailureType(to: Error.self).eraseToAnyPublisher()
+                    return Just(TronGetAccountResponse(balance: 0, address: address))
+                        .setFailureType(to: Error.self)
+                        .eraseToAnyPublisher()
                 }
                 throw error
             }
