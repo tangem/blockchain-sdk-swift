@@ -84,14 +84,8 @@ class TronTransactionBuilder {
             
             let addressData = TronAddressService.toByteForm(destination)?.padLeft(length: 32) ?? Data()
             
-            let formatter = NumberFormatter()
-            formatter.locale = Locale(identifier: "en_US")
-            formatter.minimumFractionDigits = token.decimalCount
-            formatter.maximumFractionDigits = token.decimalCount
-            
             guard
-                let formattedValue = formatter.string(from: amount.value as NSNumber),
-                let bigIntValue = Web3.Utils.parseToBigUInt(formattedValue, decimals: token.decimalCount)
+                let bigIntValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: token.decimalCount)
             else {
                 throw WalletError.failedToBuildTx
             }
