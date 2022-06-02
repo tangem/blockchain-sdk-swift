@@ -21,29 +21,20 @@ class TronNetworkService {
     }
     
     func accountInfo(for address: String, tokens: [Token], transactionIDs: [String]) -> AnyPublisher<TronAccountInfo, Error> {
-        let blockchain = self.blockchain
-        let tokenBalancePublishers = tokens.map {
-            tokenBalance(address: address, token: $0).setFailureType(to: Error.self)
+        Publishers.Zip3(
+            getAccount(for: address),
+            tokenBalances(address: address, tokens: tokens),
+            confirmedTransactionIDs(ids: transactionIDs)
+        )
+        .map { [blockchain] (accountInfo, tokenBalances, confirmedTransactionIDs) in
+            let balance = Decimal(accountInfo.balance ?? 0) / blockchain.decimalValue
+            return TronAccountInfo(
+                balance: balance,
+                tokenBalances: tokenBalances,
+                confirmedTransactionIDs: confirmedTransactionIDs
+            )
         }
-        let confirmedTransactionPublishers = transactionIDs.map { transactionConfirmed(id: $0) }
-        
-        return rpcProvider.getAccount(for: address)
-            .tryCatch { error -> AnyPublisher<TronGetAccountResponse, Error> in
-                if case WalletError.failedToParseNetworkResponse = error {
-                    return Just(TronGetAccountResponse(balance: 0, address: address)).setFailureType(to: Error.self).eraseToAnyPublisher()
-                }
-                throw error
-            }
-            .zip(Publishers.MergeMany(tokenBalancePublishers).collect(),
-                 Publishers.MergeMany(confirmedTransactionPublishers).collect())
-            .map { (accountInfo, tokenInfoList, confirmedTransactionList) in
-                let balance = Decimal(accountInfo.balance ?? 0) / blockchain.decimalValue
-                let tokenBalances = Dictionary(uniqueKeysWithValues: tokenInfoList)
-                let confirmedTransactionIDs = confirmedTransactionList.compactMap { $0 }
-                
-                return TronAccountInfo(balance: balance, tokenBalances: tokenBalances, confirmedTransactionIDs: confirmedTransactionIDs)
-            }
-            .eraseToAnyPublisher()
+        .eraseToAnyPublisher()
     }
     
     func getNowBlock() -> AnyPublisher<TronBlock, Error> {
@@ -86,6 +77,37 @@ class TronNetworkService {
     
     private func getAccount(for address: String) -> AnyPublisher<TronGetAccountResponse, Error> {
         rpcProvider.getAccount(for: address)
+            .tryCatch { error -> AnyPublisher<TronGetAccountResponse, Error> in
+                if case WalletError.failedToParseNetworkResponse = error {
+                    return Just(TronGetAccountResponse(balance: 0, address: address))
+                        .setFailureType(to: Error.self)
+                        .eraseToAnyPublisher()
+                }
+                throw error
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func tokenBalances(address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error> {
+        tokens
+            .publisher
+            .setFailureType(to: Error.self)
+            .flatMap { [weak self] token -> AnyPublisher<(Token, Decimal), Error> in
+                guard let self = self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+                return self
+                    .tokenBalance(address: address, token: token)
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+            }
+            .collect()
+            .map {
+                $0.reduce(into: [:]) { tokenBalances, tokenBalance in
+                    tokenBalances[tokenBalance.0] = tokenBalance.1
+                }
+            }
+            .eraseToAnyPublisher()
     }
     
     private func tokenBalance(address: String, token: Token) -> AnyPublisher<(Token, Decimal), Never> {
@@ -112,6 +134,27 @@ class TronNetworkService {
                 return (token, decimalValue)
             }
             .replaceError(with: (token, .zero))
+            .eraseToAnyPublisher()
+    }
+    
+    private func confirmedTransactionIDs(ids transactionIDs: [String]) -> AnyPublisher<[String], Error> {
+        transactionIDs
+            .publisher
+            .setFailureType(to: Error.self)
+            .flatMap { [weak self] transactionID -> AnyPublisher<String?, Error> in
+                guard let self = self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+                return self.transactionConfirmed(id: transactionID)
+            }
+            .collect()
+            .map {
+                $0.reduce(into: []) { confirmedTransactionIDs, confirmedTransactionID in
+                    if let confirmedTransactionID = confirmedTransactionID {
+                        confirmedTransactionIDs.append(confirmedTransactionID)
+                    }
+                }
+            }
             .eraseToAnyPublisher()
     }
     
