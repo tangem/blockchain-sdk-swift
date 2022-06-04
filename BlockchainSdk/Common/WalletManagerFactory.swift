@@ -263,6 +263,10 @@ public class WalletManagerFactory {
                 $0.networkService = TronNetworkService(blockchain: blockchain, rpcProvider: rpcProvider)
                 $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
             }
+        case .near(let testnet):
+            return NearWalletManager(wallet: wallet).then {
+                $0.wallet
+            }
         }
     }
     

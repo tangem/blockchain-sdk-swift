@@ -35,6 +35,7 @@ public enum Blockchain: Equatable, Hashable {
     case kusama
     case tron(testnet: Bool)
     case arbitrum(testnet: Bool)
+    case near(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -66,12 +67,14 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .arbitrum(let testnet):
             return testnet
+        case .near(let testnet):
+            return testnet
         }
     }
     
     public var curve: EllipticCurve {
         switch self {
-        case .stellar, .cardano, .solana, .polkadot, .kusama:
+        case .stellar, .cardano, .solana, .polkadot, .kusama, .near:
             return .ed25519
         case .xrp(let curve):
             return curve
@@ -98,6 +101,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet ? 12 : 10
         case .kusama:
             return 12
+        case .near:
+            return 18
         }
     }
     
@@ -145,6 +150,8 @@ public enum Blockchain: Equatable, Hashable {
             return "KSM"
         case .tron:
             return "TRX"
+        case .near:
+            return "NEAR"
         }
     }
     
@@ -170,6 +177,8 @@ public enum Blockchain: Equatable, Hashable {
             return isTestnet ? "Fantom" + testnetSuffix : "Fantom Opera"
         case .polkadot:
             return "Polkadot" + testnetSuffix + (isTestnet ? " (Westend)" : "")
+        case .near:
+            return "Near" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -295,6 +304,11 @@ extension Blockchain {
                     URL(string: "https://node.offchainlabs.com:8547")!,
                 ]
             }
+        case .near(let testnet):
+            if testnet {
+                return [URL(string: "https://rpc.testnet.near.org")!]
+            }
+            return [URL(string: "https://rpc.mainnet.near.org")!]
         default:
             return nil
         }
@@ -370,6 +384,7 @@ extension Blockchain {
         case .kusama: return 434
         case .tron: return 195
         case .arbitrum: return 9001
+        case .near: return 397
         }
     }
     
@@ -424,6 +439,8 @@ extension Blockchain {
             return PolkadotAddressService(network: .kusama)
         case .tron:
             return TronAddressService()
+        case .near:
+            return NearAddressService()
         }
     }
 }
@@ -487,6 +504,7 @@ extension Blockchain: Codable {
         case .kusama: return "kusama"
         case .tron: return "tron"
         case .arbitrum: return "arbitrum"
+        case .near: return "near"
         }
     }
     
@@ -661,6 +679,9 @@ extension Blockchain {
         case .arbitrum(let testnet):
             let subdomain = testnet ? "testnet." : ""
             return URL(string: "https://\(subdomain)arbiscan.io/address/\(address)")!
+        case .near(let testnet):
+            let subdomain = testnet ? "testnet." : ""
+            return URL(string: "https://explorer.\(subdomain)near.org/blocks/\(address)")!
         }
     }
 }
@@ -703,6 +724,7 @@ extension Blockchain {
         case "kusama": return .kusama
         case "tron": return .tron(testnet: isTestnet)
         case "arbitrum": return .arbitrum(testnet: isTestnet)
+        case "near": return .near(testnet: isTestnet)
         default: return nil
         }
     }
