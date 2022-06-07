@@ -593,6 +593,8 @@ extension Blockchain {
             return URL(string: "https://matrix.to/#/!cJFtAIkwxuofiSYkPN:matrix.org?via=matrix.org&via=matrix.parity.io&via=web3.foundation")
         case .tron:
             return URL(string: "https://nileex.io/join/getJoinPage")!
+        case .dash:
+            return URL(string: "https://testnet-faucet.dash.org/")!
         default:
             return nil
         }
