@@ -24,7 +24,7 @@ enum BlockchairEndpoint {
         case .litecoin: return "litecoin"
         case .dogecoin: return "dogecoin"
         case .ethereum(let testnet): return "ethereum" + (testnet ? "/testnet" : "")
-        case .dash(let testnet): return "dash"
+        case .dash: return "dash"
         }
     }
     

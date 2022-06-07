@@ -266,7 +266,7 @@ public class WalletManagerFactory {
         case .dash(let testnet):
             return try DashWalletManager(wallet: wallet).then {
                 let bitcoinManager = BitcoinManager(
-                    networkParams: DogecoinNetworkParams(),
+                    networkParams: DashNetworkParams(),
                     walletPublicKey: wallet.publicKey.blockchainKey,
                     compressedWalletPublicKey: try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress(),
                     bip: .bip44
