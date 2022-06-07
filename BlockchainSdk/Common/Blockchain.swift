@@ -430,8 +430,10 @@ extension Blockchain {
             return PolkadotAddressService(network: .kusama)
         case .tron:
             return TronAddressService()
-        // case .dash(let testnet):
-            // return TronAddressService() // TODO: Address service
+        case .dash:
+            return BitcoinBech32AddressService(
+                networkParams: isTestnet ?  DashTestNetworkParams() : DashNetworkParams()
+            )
         }
     }
 }
