@@ -263,6 +263,23 @@ public class WalletManagerFactory {
                 $0.networkService = TronNetworkService(blockchain: blockchain, rpcProvider: rpcProvider)
                 $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
             }
+        case .dash(let testnet):
+            return try DashWalletManager(wallet: wallet).then {
+                let bitcoinManager = BitcoinManager(
+                    networkParams: DogecoinNetworkParams(),
+                    walletPublicKey: wallet.publicKey.blockchainKey,
+                    compressedWalletPublicKey: try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress(),
+                    bip: .bip44
+                )
+                
+                $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
+                
+                let provider = BlockchairNetworkProvider(endpoint: .dash(testnet: testnet), apiKey: config.blockchairApiKey)
+                
+                $0.networkService = BitcoinNetworkService(
+                    providers: [provider.eraseToAnyBitcoinNetworkProvider()]
+                )
+            }
         }
     }
     

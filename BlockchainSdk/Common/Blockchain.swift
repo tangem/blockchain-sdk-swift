@@ -35,6 +35,7 @@ public enum Blockchain: Equatable, Hashable {
     case kusama
     case tron(testnet: Bool)
     case arbitrum(testnet: Bool)
+    case dash(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -66,6 +67,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .arbitrum(let testnet):
             return testnet
+        case .dash(let testnet):
+            return testnet
         }
     }
     
@@ -84,7 +87,7 @@ public enum Blockchain: Equatable, Hashable {
     
     public var decimalCount: Int {
         switch self {
-        case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin:
+        case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash:
             return 8
         case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum:
             return 18
@@ -145,6 +148,8 @@ public enum Blockchain: Equatable, Hashable {
             return "KSM"
         case .tron:
             return "TRX"
+        case .dash:
+            return "DASH"
         }
     }
     
@@ -198,7 +203,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .ethereum, .bsc, .binance, .polygon,
                 .avalanche, .solana, .fantom, .tron, .arbitrum,
-                .rsk, .ethereumClassic:
+                .rsk, .ethereumClassic, .dash:
             return true
         default:
             return false
@@ -370,6 +375,7 @@ extension Blockchain {
         case .kusama: return 434
         case .tron: return 195
         case .arbitrum: return 9001
+        case .dash: return 5
         }
     }
     
@@ -389,7 +395,7 @@ extension Blockchain {
     
     func getAddressService() -> AddressService {
         switch self {
-        case .bitcoin:
+        case .bitcoin, .dash:
             let network: BitcoinNetwork = isTestnet ? .testnet : .mainnet
             let networkParams = network.networkParams
             return BitcoinAddressService(networkParams: networkParams)
@@ -424,6 +430,8 @@ extension Blockchain {
             return PolkadotAddressService(network: .kusama)
         case .tron:
             return TronAddressService()
+        // case .dash(let testnet):
+            // return TronAddressService() // TODO: Address service
         }
     }
 }
@@ -487,6 +495,7 @@ extension Blockchain: Codable {
         case .kusama: return "kusama"
         case .tron: return "tron"
         case .arbitrum: return "arbitrum"
+        case .dash: return "dash"
         }
     }
     
@@ -661,6 +670,8 @@ extension Blockchain {
         case .arbitrum(let testnet):
             let subdomain = testnet ? "testnet." : ""
             return URL(string: "https://\(subdomain)arbiscan.io/address/\(address)")!
+        case .dash(let testnet):
+            return URL(string: "https://blockchair.com/dash/address/\(address)")!
         }
     }
 }
@@ -703,6 +714,7 @@ extension Blockchain {
         case "kusama": return .kusama
         case "tron": return .tron(testnet: isTestnet)
         case "arbitrum": return .arbitrum(testnet: isTestnet)
+        case "dash": return .dash(testnet: isTestnet)
         default: return nil
         }
     }
