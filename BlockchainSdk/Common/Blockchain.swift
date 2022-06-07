@@ -395,7 +395,7 @@ extension Blockchain {
     
     func getAddressService() -> AddressService {
         switch self {
-        case .bitcoin, .dash:
+        case .bitcoin:
             let network: BitcoinNetwork = isTestnet ? .testnet : .mainnet
             let networkParams = network.networkParams
             return BitcoinAddressService(networkParams: networkParams)
