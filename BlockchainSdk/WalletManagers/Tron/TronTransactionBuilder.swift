@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftProtobuf
+import web3swift
 
 class TronTransactionBuilder {
     private let blockchain: Blockchain
@@ -83,9 +84,13 @@ class TronTransactionBuilder {
             
             let addressData = TronAddressService.toByteForm(destination)?.padLeft(length: 32) ?? Data()
             
-            let uintAmount = integerValue(from: amount).uint64Value
-            let amountData = Data(Data(from: uintAmount).reversed()).padLeft(length: 32)
+            guard
+                let bigIntValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: token.decimalCount)
+            else {
+                throw WalletError.failedToBuildTx
+            }
             
+            let amountData = bigIntValue.serialize().padLeft(length: 32)
             let contractData = functionSelectorHash + addressData + amountData
             
             let parameter = Protocol_TriggerSmartContract.with {

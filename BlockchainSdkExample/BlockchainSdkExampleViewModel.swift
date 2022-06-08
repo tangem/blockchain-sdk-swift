@@ -412,6 +412,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .polkadot(testnet: false),
             .kusama,
             .tron(testnet: false),
+            .arbitrum(testnet: false),
         ]
         
         return blockchains.map { ($0.displayName, $0.codingKey) }

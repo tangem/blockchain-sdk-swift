@@ -34,6 +34,7 @@ public enum Blockchain: Equatable, Hashable {
     case polkadot(testnet: Bool)
     case kusama
     case tron(testnet: Bool)
+    case arbitrum(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -63,6 +64,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .tron(let testnet):
             return testnet
+        case .arbitrum(let testnet):
+            return testnet
         }
     }
     
@@ -83,7 +86,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin:
             return 8
-        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom:
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum:
             return 18
         case  .cardano, .xrp, .tezos, .tron:
             return 6
@@ -106,7 +109,7 @@ public enum Blockchain: Equatable, Hashable {
             return "LTC"
         case .stellar:
             return "XLM"
-        case .ethereum:
+        case .ethereum, .arbitrum:
             return "ETH"
         case .ethereumClassic:
             return "ETC"
@@ -194,7 +197,8 @@ public enum Blockchain: Equatable, Hashable {
     public var canHandleTokens: Bool {
         switch self {
         case .ethereum, .bsc, .binance, .polygon,
-                .avalanche, .solana, .fantom, .tron:
+                .avalanche, .solana, .fantom, .tron, .arbitrum,
+                .rsk, .ethereumClassic:
             return true
         default:
             return false
@@ -218,6 +222,7 @@ extension Blockchain {
         case .polygon: return isTestnet ? 80001 : 137
         case .avalanche: return isTestnet ? 43113 : 43114
         case .fantom: return isTestnet ? 4002 : 250
+        case .arbitrum: return isTestnet ? 421611 : 42161
         default: return nil
         }
     }
@@ -271,6 +276,25 @@ extension Blockchain {
                URL(string: "https://rpcapi.fantom.network/")!,
                URL(string: "http://rpc.ankr.tools/ftm")!,
                URL(string: "https://ftmrpc.ultimatenodes.io/")!]
+        case .arbitrum(let testnet):
+            guard let infuraProjectId = infuraProjectId else {
+                fatalError("infuraProjectId missing")
+            }
+            
+            if testnet {
+                return [
+                    URL(string: "https://rinkeby.arbitrum.io/rpc")!,
+                ]
+            } else {
+                return [
+                    // https://developer.offchainlabs.com/docs/mainnet#connect-your-wallet
+                    URL(string: "https://arb1.arbitrum.io/rpc")!,
+                    URL(string: "https://arbitrum-mainnet.infura.io/v3/\(infuraProjectId)")!,
+                    
+                    // from wallet-core's registry.json
+                    URL(string: "https://node.offchainlabs.com:8547")!,
+                ]
+            }
         default:
             return nil
         }
@@ -345,6 +369,7 @@ extension Blockchain {
         case .polkadot: return 354
         case .kusama: return 434
         case .tron: return 195
+        case .arbitrum: return 9001
         }
     }
     
@@ -372,7 +397,7 @@ extension Blockchain {
             return BitcoinAddressService(networkParams: LitecoinNetworkParams())
         case .stellar:
             return StellarAddressService()
-        case .ethereum, .ethereumClassic, .bsc, .polygon, .avalanche, .fantom:
+        case .ethereum, .ethereumClassic, .bsc, .polygon, .avalanche, .fantom, .arbitrum:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -461,6 +486,7 @@ extension Blockchain: Codable {
         case .polkadot: return "polkadot"
         case .kusama: return "kusama"
         case .tron: return "tron"
+        case .arbitrum: return "arbitrum"
         }
     }
     
@@ -504,6 +530,7 @@ extension Blockchain: Codable {
         case "polkadot": self = .polkadot(testnet: isTestnet)
         case "kusama": self = .kusama
         case "tron": self = .tron(testnet: isTestnet)
+        case "arbitrum": self = .arbitrum(testnet: isTestnet)
         default: throw BlockchainSdkError.decodingFailed
         }
     }
@@ -530,7 +557,8 @@ extension Blockchain {
         case .bitcoin:
             return URL(string: "https://coinfaucet.eu/en/btc-testnet/")
         case .ethereum:
-            return URL(string: "https://faucet.rinkeby.io")
+//            return URL(string: "https://faucet.rinkeby.io")
+            return URL(string: "https://rinkebyfaucet.com")
         case .ethereumClassic:
             return URL(string: "https://kottifaucet.me")
         case .bitcoinCash:
@@ -630,6 +658,9 @@ extension Blockchain {
         case .tron:
             let subdomain = isTestnet ? "nile." : ""
             return URL(string: "https://\(subdomain)tronscan.org/#/address/\(address)")!
+        case .arbitrum(let testnet):
+            let subdomain = testnet ? "testnet." : ""
+            return URL(string: "https://\(subdomain)arbiscan.io/address/\(address)")!
         }
     }
 }
@@ -671,6 +702,7 @@ extension Blockchain {
         case "polkadot": return .polkadot(testnet: isTestnet)
         case "kusama": return .kusama
         case "tron": return .tron(testnet: isTestnet)
+        case "arbitrum": return .arbitrum(testnet: isTestnet)
         default: return nil
         }
     }
