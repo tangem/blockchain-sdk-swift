@@ -39,5 +39,27 @@ struct NearGasPriceBodyObject: Encodable {
     let jsonrpc: String = "2.0"
     let id: String = "dontcare"
     let method: String = NearAPIMethod.gasPrice
+    /// block_height or "block_hash" or null
     let params: [String]? = nil
+}
+
+struct NearAccountInfoBodyObject: Encodable {
+    let jsonrpc: String = "2.0"
+    let id: String = "dontcare"
+    let method: String = "query"
+    let params: NearAccountParameters
+    
+    struct NearAccountParameters: Encodable {
+        let requestType: String = NearAPIMethod.viewAccount
+        let finality = "final"
+        let accountId: String
+    }
+}
+
+struct NearSendTransactionBodyObject: Encodable {
+    let jsonrpc: String = "2.0"
+    let id: String = "dontcare"
+    let method: String = NearAPIMethod.sendTransactionAsync
+    /// SignedTransaction encoded in base64
+    let params: [String]
 }

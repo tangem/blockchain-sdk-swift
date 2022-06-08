@@ -269,6 +269,8 @@
 		65535FE8284E33FB00B8E2B4 /* NearTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65535FE6284E33FB00B8E2B4 /* NearTarget.swift */; };
 		65535FEA284E3F2600B8E2B4 /* NearParametersObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65535FE9284E3F2600B8E2B4 /* NearParametersObject.swift */; };
 		65535FEB284E3F2600B8E2B4 /* NearParametersObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65535FE9284E3F2600B8E2B4 /* NearParametersObject.swift */; };
+		659B032728514C46000900A5 /* NearResponseObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B032628514C46000900A5 /* NearResponseObject.swift */; };
+		659B032828514C46000900A5 /* NearResponseObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B032628514C46000900A5 /* NearResponseObject.swift */; };
 		65B364DD284BF798009ECD0D /* NearAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B364DC284BF798009ECD0D /* NearAddressService.swift */; };
 		65B364DE284BF798009ECD0D /* NearAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B364DC284BF798009ECD0D /* NearAddressService.swift */; };
 		65B36505284E19CB009ECD0D /* NearPublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B36504284E19CB009ECD0D /* NearPublicKey.swift */; };
@@ -562,6 +564,7 @@
 		65535FE2284E2B2800B8E2B4 /* NearErrorResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearErrorResponse.swift; sourceTree = "<group>"; };
 		65535FE6284E33FB00B8E2B4 /* NearTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearTarget.swift; sourceTree = "<group>"; };
 		65535FE9284E3F2600B8E2B4 /* NearParametersObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearParametersObject.swift; sourceTree = "<group>"; };
+		659B032628514C46000900A5 /* NearResponseObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearResponseObject.swift; sourceTree = "<group>"; };
 		65B364DC284BF798009ECD0D /* NearAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearAddressService.swift; sourceTree = "<group>"; };
 		65B36504284E19CB009ECD0D /* NearPublicKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearPublicKey.swift; sourceTree = "<group>"; };
 		65BEDCCD284B9D7400806447 /* NearWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearWalletManager.swift; sourceTree = "<group>"; };
@@ -1175,6 +1178,7 @@
 			children = (
 				65535FE6284E33FB00B8E2B4 /* NearTarget.swift */,
 				65535FE9284E3F2600B8E2B4 /* NearParametersObject.swift */,
+				659B032628514C46000900A5 /* NearResponseObject.swift */,
 			);
 			path = Near;
 			sourceTree = "<group>";
@@ -1636,6 +1640,7 @@
 				5D7D243225136254001B9A4F /* XRPWallet.swift in Sources */,
 				5DD1244427F458CE000425D3 /* DerivationStyle.swift in Sources */,
 				5D845514243DEABB0072155E /* AdaliteResponse.swift in Sources */,
+				659B032728514C46000900A5 /* NearResponseObject.swift in Sources */,
 				B0C2C89D25FBCF0200A61622 /* RosettaTarget.swift in Sources */,
 				65535FEA284E3F2600B8E2B4 /* NearParametersObject.swift in Sources */,
 				5D908C5726A6D39C00270FA3 /* BinanceTransactionParams.swift in Sources */,
@@ -1894,6 +1899,7 @@
 				5DDD828D25BF0CDC00166EA9 /* BitcoinNetworkProvider.swift in Sources */,
 				DA3081332817EC1A00DE41F1 /* TronTransactionBuilder.swift in Sources */,
 				5DDD82CA25BF0DA100166EA9 /* BlockchairResponses.swift in Sources */,
+				659B032828514C46000900A5 /* NearResponseObject.swift in Sources */,
 				5DDD830525BF0E2400166EA9 /* XRPWalletManager.swift in Sources */,
 				5D0906C327DBC0680053B2CD /* BitcoinCashNetworkParams.swift in Sources */,
 				DA9F76FF27ECA78800F0665C /* TronNetworkModels.swift in Sources */,

@@ -11,6 +11,7 @@ import Combine
 import TangemSdk
 
 class NearWalletManager: BaseManager, WalletManager {
+    var networkService: NearNetworkService!
     
     func update(completion: @escaping (Result<Void, Error>) -> Void) {
         

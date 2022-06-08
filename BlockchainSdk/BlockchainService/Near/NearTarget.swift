@@ -10,7 +10,6 @@ import Foundation
 import Moya
 
 struct NearTarget: TargetType {
-    let isTestnet: Bool
     let endpoint: TargetEndpoints
     
     var baseURL: URL {
@@ -88,18 +87,18 @@ struct NearTarget: TargetType {
         
         var task: Moya.Task {
             switch self {
-            case .accessKey(let nearPublicKey):
+            case .accessKey(let nearPublicKey, _):
+                return .requestJSONEncodable(NearRequestAccessViewBodyObject(params: .init(accountId: nearPublicKey.address(), publicKey: nearPublicKey.txPublicKey())))
+            case .accessKeyList(let accountID, _):
                 return .requestPlain
-            case .accessKeyList(let accountID):
-                return .requestPlain
-            case .accountInfo(let accountID):
-                return .requestPlain
-            case .gasPrice(let isTestnet):
-                return .requestPlain
-            case .sendTransaction(let signedTransactionBase64):
-                return .requestPlain
-            case .sendAndAwaitTransaction(let signedTransactionBase64):
-                return .requestPlain
+            case .accountInfo(let accountID, _):
+                return .requestJSONEncodable(NearAccountInfoBodyObject(params: .init(accountId: accountID)))
+            case .gasPrice:
+                return .requestJSONEncodable(NearGasPriceBodyObject())
+            case .sendTransaction(let signedTransactionBase64, _):
+                return .requestJSONEncodable(NearSendTransactionBodyObject(params: [signedTransactionBase64]))
+            case .sendAndAwaitTransaction(let signedTransactionBase64, _):
+                return .requestJSONEncodable(NearSendTransactionBodyObject(params: [signedTransactionBase64]))
             }
         }
         
