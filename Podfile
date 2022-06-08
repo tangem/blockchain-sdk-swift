@@ -29,6 +29,7 @@ target 'BlockchainSdk' do
   #pod 'Solana.Swift', :path => '../Solana.Swift'
   pod 'ScaleCodec'
   pod 'SwiftProtobuf'
+  pod 'Base58Swift', :git => 'https://github.com/gre4ixin/Base58Swift.git', :branch => 'master'
 
   common_pods
 end

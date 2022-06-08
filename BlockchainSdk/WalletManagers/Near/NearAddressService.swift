@@ -7,16 +7,17 @@
 //
 
 import Foundation
-import Solana_Swift
+import Base58Swift
 
 public class NearAddressService: AddressService {
     public func makeAddress(from walletPublicKey: Data) throws -> String {
         try walletPublicKey.validateAsEdKey()
-        return Base58.encode(walletPublicKey.bytes)
+        let nearKey = NearPublicKey(from: walletPublicKey)
+        return nearKey.address()
     }
     
     public func validate(_ address: String) -> Bool {
-        guard !address.isEmpty, address.utf8.count < 32 else { return false }
+        guard !address.isEmpty, address.utf8.count >= 2, address.utf8.count <= 64 else { return false }
         return true
     }
 }

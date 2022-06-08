@@ -304,11 +304,11 @@ extension Blockchain {
                     URL(string: "https://node.offchainlabs.com:8547")!,
                 ]
             }
-        case .near(let testnet):
-            if testnet {
-                return [URL(string: "https://rpc.testnet.near.org")!]
-            }
-            return [URL(string: "https://rpc.mainnet.near.org")!]
+//        case .near(let testnet):
+//            if testnet {
+//                return [URL(string: "https://rpc.testnet.near.org")!]
+//            }
+//            return [URL(string: "https://rpc.mainnet.near.org")!]
         default:
             return nil
         }

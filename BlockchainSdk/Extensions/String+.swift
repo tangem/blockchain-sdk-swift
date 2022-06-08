@@ -57,3 +57,19 @@ extension String: Error, LocalizedError {
         return self
     }
 }
+
+extension String {
+    func toHexEncodedString(uppercase: Bool = true, prefix: String = "", separator: String = "") -> String {
+        return unicodeScalars.map { prefix + .init($0.value, radix: 16, uppercase: uppercase) } .joined(separator: separator)
+    }
+    
+    subscript(value: PartialRangeUpTo<Int>) -> Substring {
+        self[..<index(at: value.upperBound)]
+    }
+}
+
+extension String {
+    private func index(at offset: Int) -> String.Index {
+        index(startIndex, offsetBy: offset)
+    }
+}
