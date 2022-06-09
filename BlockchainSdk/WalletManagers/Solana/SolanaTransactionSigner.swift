@@ -16,17 +16,19 @@ class SolanaTransactionSigner: Signer {
     }
     
     let transactionSigner: TransactionSigner
+    let cardId: String
     let walletPublicKey: Wallet.PublicKey
     
     var subscriptions: Set<AnyCancellable> = []
     
-    init(transactionSigner: TransactionSigner, walletPublicKey: Wallet.PublicKey) {
+    init(transactionSigner: TransactionSigner, cardId: String, walletPublicKey: Wallet.PublicKey) {
         self.transactionSigner = transactionSigner
+        self.cardId = cardId
         self.walletPublicKey = walletPublicKey
     }
     
     func sign(message: Data, completion: @escaping (Result<Data, Error>) -> Void) {
-        transactionSigner.sign(hash: message, walletPublicKey: walletPublicKey)
+        transactionSigner.sign(hash: message, cardId: cardId, walletPublicKey: walletPublicKey)
             .sink { result in
                 switch result {
                 case .failure(let error):

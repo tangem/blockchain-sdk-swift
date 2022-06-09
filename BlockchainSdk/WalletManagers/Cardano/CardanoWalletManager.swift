@@ -73,6 +73,7 @@ extension CardanoWalletManager: TransactionSender {
             let info = try txBuilder.buildForSign(transaction: transaction, walletAmount: walletAmount, isEstimated: false)
             
             return signer.sign(hash: info.hash,
+                               cardId: wallet.cardId,
                                walletPublicKey: self.wallet.publicKey)
                 .tryMap {[weak self] signature -> (tx: Data, hash: String) in
                     guard let self = self else { throw WalletError.empty }

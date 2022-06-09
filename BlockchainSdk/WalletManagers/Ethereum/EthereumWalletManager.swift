@@ -182,6 +182,7 @@ extension EthereumWalletManager: EthereumTransactionSigner {
         }
         
         return signer.sign(hash: txForSign.hash,
+                           cardId: wallet.cardId,
                            walletPublicKey: self.wallet.publicKey)
             .tryMap {[weak self] signature -> String in
                 guard let self = self else { throw WalletError.empty }

@@ -88,6 +88,7 @@ extension StellarWalletManager: TransactionSender {
                 guard let self = self else { return .emptyFail }
                 
                 return signer.sign(hash: buildForSignResponse.hash,
+                                   cardId: self.wallet.cardId,
                                    walletPublicKey: self.wallet.publicKey)
                     .map { return ($0, buildForSignResponse) }.eraseToAnyPublisher()
             }

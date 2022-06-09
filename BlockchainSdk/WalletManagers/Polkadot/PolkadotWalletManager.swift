@@ -129,6 +129,7 @@ extension PolkadotWalletManager: TransactionSender {
             .flatMap { preImage in
                 signer.sign(
                     hash: preImage,
+                    cardId: wallet.cardId,
                     walletPublicKey: wallet.publicKey
                 )
             }
@@ -178,11 +179,11 @@ extension PolkadotWalletManager: ThenProcessable { }
 fileprivate class Ed25519DummyTransactionSigner: TransactionSigner {
     private let privateKey = Data(repeating: 0, count: 32)
     
-    func sign(hashes: [Data], walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[Data], Error> {
+    func sign(hashes: [Data], cardId: String, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[Data], Error> {
         Fail(error: WalletError.failedToGetFee).eraseToAnyPublisher()
     }
     
-    func sign(hash: Data, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
+    func sign(hash: Data, cardId: String, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
         Just<Data>(hash)
             .tryMap { hash in
                 try Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).signature(for: hash)

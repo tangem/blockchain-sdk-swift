@@ -171,7 +171,7 @@ class TronWalletManager: BaseManager, WalletManager {
                 Just(hash)
                     .setFailureType(to: Error.self)
                     .flatMap {
-                        signer.sign(hash: $0, walletPublicKey: publicKey)
+                        signer.sign(hash: $0, cardId: wallet.cardId, walletPublicKey: publicKey)
                     }
                     .tryMap { [weak self] signature -> Data in
                         guard let self = self else {
@@ -230,7 +230,7 @@ fileprivate class DummySigner: TransactionSigner {
         self.privateKey = keyPair.privateKey
     }
         
-    func sign(hash: Data, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
+    func sign(hash: Data, cardId: String, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
         do {
             let signature = try Secp256k1Utils().sign(hash, with: privateKey)
             return Just(signature)
@@ -241,7 +241,7 @@ fileprivate class DummySigner: TransactionSigner {
         }
     }
     
-    func sign(hashes: [Data], walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[Data], Error> {
+    func sign(hashes: [Data], cardId: String, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[Data], Error> {
         fatalError()
     }
 }

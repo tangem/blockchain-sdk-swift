@@ -88,6 +88,7 @@ extension XRPWalletManager: TransactionSender {
                 guard let self = self else { return .emptyFail }
                 
                 return signer.sign(hash: buildResponse.1,
+                                   cardId: self.wallet.cardId,
                                    walletPublicKey: self.wallet.publicKey).map {
                     return (buildResponse.0, $0)
                 }.eraseToAnyPublisher()
