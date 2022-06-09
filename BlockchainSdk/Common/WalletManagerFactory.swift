@@ -22,7 +22,6 @@ public class WalletManagerFactory {
     
     /// Base wallet manager initializer
     /// - Parameters:
-    ///   - cardId: Card's cardId
     ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
     ///   - seedKey: Public key  of the wallet
     ///   - derivedKey: Derived ExtendedPublicKey by the card
@@ -50,7 +49,6 @@ public class WalletManagerFactory {
     
     /// Legacy wallet manager initializer
     /// - Parameters:
-    ///   - cardId: Card's cardId
     ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
     ///   - walletPublicKey: Wallet's publicKey
     /// - Returns: WalletManager
@@ -61,7 +59,6 @@ public class WalletManagerFactory {
     
     /// Wallet manager initializer for twin cards
     /// - Parameters:
-    ///   - cardId: Card's cardId
     ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
     ///   - walletPublicKey: Wallet's publicKey
     public func makeTwinWalletManager(walletPublicKey: Data, pairKey: Data, isTestnet: Bool) throws -> WalletManager {
