@@ -28,8 +28,12 @@ class NearWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        return Just([Amount(with: .near(testnet: false), value: 0)])
-            .setFailureType(to: Error.self)
+        let isTestnet = wallet.blockchain.isTestnet
+        return networkService
+            .gasPrice()
+            .map { gasPrice -> [Amount] in
+                return [Amount(with: .near(testnet: isTestnet), value: Decimal(gasPrice))]
+            }
             .eraseToAnyPublisher()
     }
 }
