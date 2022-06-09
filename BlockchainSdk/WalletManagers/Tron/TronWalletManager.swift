@@ -171,7 +171,7 @@ class TronWalletManager: BaseManager, WalletManager {
                 Just(hash)
                     .setFailureType(to: Error.self)
                     .flatMap {
-                        signer.sign(hash: $0, cardId: wallet.cardId, walletPublicKey: publicKey)
+                        signer.sign(hash: $0, cardId: wallet.signingCardId, walletPublicKey: publicKey)
                     }
                     .tryMap { [weak self] signature -> Data in
                         guard let self = self else {
