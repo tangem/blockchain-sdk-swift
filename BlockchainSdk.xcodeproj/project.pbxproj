@@ -208,6 +208,10 @@
 		EF0DA78828523FAC0081092A /* BitcoinTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFCE543274BB08C00C1B1A0 /* BitcoinTests.swift */; };
 		EF0DA78928523FAC0081092A /* LitecoinTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFCE547274BB85B00C1B1A0 /* LitecoinTests.swift */; };
 		EF0DA78A28523FAC0081092A /* PolkadotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7CA47527AD4BD90041B1A1 /* PolkadotTests.swift */; };
+		EF0DA78B285246850081092A /* DashTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFB30722851E4BD0040A67D /* DashTests.swift */; };
+		EF0DA78C285246A90081092A /* DashMainNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */; };
+		EF0DA78D285246A90081092A /* DashWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF680A72284F524300F6B1BD /* DashWalletManager.swift */; };
+		EF0DA78E285246A90081092A /* DashTestNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1425,7 +1429,7 @@
 				5D54FE1A23E41E5A009FAC2F /* LitecoinNetworkParams.swift in Sources */,
 				5D31EA2F27DA1C910031DBEB /* DetailedError.swift in Sources */,
 				DA9F76EC27EC9A2900F0665C /* TronWalletManager.swift in Sources */,
-				EFFB30752851ECD90040A67D /* DashTestNetworkParams.swift in Sources */,
+				EF0DA78E285246A90081092A /* DashTestNetworkParams.swift in Sources */,
 				5D4B33D923FAAD1B00C93A84 /* BitcoreTarget.swift in Sources */,
 				5DED72BC239FEEEC006D79AE /* BitcoinTransactionBuilder.swift in Sources */,
 				5D8653FC23A8C4A9000DE52D /* StellarTransactionBuilder.swift in Sources */,
@@ -1435,6 +1439,7 @@
 				B0BAEE9825FF1E0400F318A6 /* RosettaBody.swift in Sources */,
 				5D26CEEE243CB95000994CC0 /* BlockcypherTarget.swift in Sources */,
 				5D7D243425136254001B9A4F /* XRPAccountInfo.swift in Sources */,
+				EF0DA78C285246A90081092A /* DashMainNetworkParams.swift in Sources */,
 				DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */,
 				5D7D243225136254001B9A4F /* XRPWallet.swift in Sources */,
 				5DD1244427F458CE000425D3 /* DerivationStyle.swift in Sources */,
@@ -1443,6 +1448,7 @@
 				5D908C5726A6D39C00270FA3 /* BinanceTransactionParams.swift in Sources */,
 				5D7D243825136254001B9A4F /* Entropy.swift in Sources */,
 				5DE3BFA4239FB4E500E8815D /* BitcoinNetworkService.swift in Sources */,
+				EF0DA78D285246A90081092A /* DashWalletManager.swift in Sources */,
 				5D7D243625136254001B9A4F /* XRPAccount.swift in Sources */,
 				5D7D244925136399001B9A4F /* BitcoinfeesResponse.swift in Sources */,
 				DA30812F2817C0F900DE41F1 /* Contracts.pb.swift in Sources */,
@@ -1465,7 +1471,6 @@
 				5DEAFA90244473460032E316 /* Transaction.swift in Sources */,
 				5D977BB623FAEB4500575BE4 /* DucatusNetworkService.swift in Sources */,
 				5D845511243DE9CD0072155E /* CardanoTransactionBuilder.swift in Sources */,
-				EF680A75284F556A00F6B1BD /* DashMainNetworkParams.swift in Sources */,
 				5DED72C423A1315F006D79AE /* StellarWalletManager.swift in Sources */,
 				5D740B802625B42500DE9636 /* RskAddressService.swift in Sources */,
 				5D8653FE23A8E486000DE52D /* StellarSdk+.swift in Sources */,
@@ -1529,7 +1534,6 @@
 				DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */,
 				5D7D243025136254001B9A4F /* XRPKeypair.swift in Sources */,
 				B04E8D5025F8F67F00821CBE /* RosettaNetworkProvider.swift in Sources */,
-				EF680A73284F524300F6B1BD /* DashWalletManager.swift in Sources */,
 				5D845516243DEAC80072155E /* AdaliteTarget.swift in Sources */,
 				5DCC817823FAE6F700DFC460 /* MoyaPublisher.swift in Sources */,
 				5D7D242B25136254001B9A4F /* HTTP.swift in Sources */,
@@ -1587,6 +1591,7 @@
 				EF0DA78528523FAC0081092A /* BlockchainSdkTests.swift in Sources */,
 				EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */,
 				EF0DA78628523FAC0081092A /* XCTestCase+.swift in Sources */,
+				EF0DA78B285246850081092A /* DashTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
