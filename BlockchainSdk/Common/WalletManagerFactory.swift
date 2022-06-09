@@ -32,8 +32,7 @@ public class WalletManagerFactory {
                                   blockchain: Blockchain,
                                   seedKey: Data,
                                   derivedKey: ExtendedPublicKey,
-                                  derivation: DerivationParams,
-                                  canSignWithAnyCard: Bool) throws -> WalletManager {
+                                  derivation: DerivationParams) throws -> WalletManager {
         
         var derivationPath: DerivationPath? = nil
         
@@ -48,8 +47,7 @@ public class WalletManagerFactory {
                                      publicKey: .init(seedKey: seedKey,
                                                       derivedKey: derivedKey.publicKey,
                                                       derivationPath: derivationPath),
-                                     cardId: cardId,
-                                     canSignWithAnyCard: canSignWithAnyCard)
+                                     cardId: cardId)
     }
     
     /// Legacy wallet manager initializer
@@ -58,11 +56,10 @@ public class WalletManagerFactory {
     ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
     ///   - walletPublicKey: Wallet's publicKey
     /// - Returns: WalletManager
-    public func makeWalletManager(cardId: String, blockchain: Blockchain, walletPublicKey: Data, canSignWithAnyCard: Bool) throws -> WalletManager {
+    public func makeWalletManager(cardId: String, blockchain: Blockchain, walletPublicKey: Data) throws -> WalletManager {
         try makeWalletManager(from: blockchain,
                               publicKey: .init(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil),
-                              cardId: cardId,
-                              canSignWithAnyCard: canSignWithAnyCard)
+                              cardId: cardId)
     }
     
     /// Wallet manager initializer for twin cards
@@ -74,20 +71,17 @@ public class WalletManagerFactory {
         try makeWalletManager(from: .bitcoin(testnet: isTestnet),
                               publicKey: .init(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil),
                               cardId: cardId,
-                              canSignWithAnyCard: false,
                               pairPublicKey: pairKey)
     }
     
     func makeWalletManager(from blockchain: Blockchain,
                            publicKey: Wallet.PublicKey,
                            cardId: String,
-                           canSignWithAnyCard: Bool,
                            pairPublicKey: Data? = nil) throws -> WalletManager {
         let addresses = try blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey)
         let wallet = Wallet(blockchain: blockchain,
                             addresses: addresses,
                             cardId: cardId,
-                            canSignWithAnyCard: canSignWithAnyCard,
                             publicKey: publicKey)
         
         switch blockchain {

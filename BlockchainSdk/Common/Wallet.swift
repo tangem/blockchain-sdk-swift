@@ -55,22 +55,15 @@ public struct Wallet {
             .reduce(0, { $0 + $1.amount.value + $1.fee.value })
     }
     
-    public var signingCardId: String? {
-        return canSignWithAnyCard ? nil : cardId
-    }
-   
-    private let canSignWithAnyCard: Bool
-   
     public func hasPendingTx(for amountType: Amount.AmountType) -> Bool {
         return !transactions.filter { $0.status == .unconfirmed && $0.amount.type == amountType }.isEmpty
     }
     
-    internal init(blockchain: Blockchain, addresses: [Address], cardId: String, canSignWithAnyCard: Bool, publicKey: PublicKey) {
+    internal init(blockchain: Blockchain, addresses: [Address], cardId: String, publicKey: PublicKey) {
         self.blockchain = blockchain
         self.addresses = addresses
         self.publicKey = publicKey
         self.cardId = cardId
-        self.canSignWithAnyCard = canSignWithAnyCard
     }
     
     /// Explore URL for specific address
