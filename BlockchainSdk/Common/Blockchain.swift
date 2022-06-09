@@ -431,8 +431,8 @@ extension Blockchain {
         case .tron:
             return TronAddressService()
         case .dash:
-            return BitcoinBech32AddressService(
-                networkParams: isTestnet ?  DashTestNetworkParams() : DashNetworkParams()
+            return BitcoinLegacyAddressService(
+                networkParams: isTestnet ?  DashMainNetworkParams() : DashTestNetworkParams()
             )
         }
     }

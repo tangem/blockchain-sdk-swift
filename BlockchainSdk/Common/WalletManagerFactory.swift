@@ -265,10 +265,11 @@ public class WalletManagerFactory {
             }
         case .dash(let testnet):
             return try DashWalletManager(wallet: wallet).then {
+                let compressed = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
                 let bitcoinManager = BitcoinManager(
-                    networkParams: DashNetworkParams(),
+                    networkParams: testnet ? DashTestNetworkParams() : DashMainNetworkParams(),
                     walletPublicKey: wallet.publicKey.blockchainKey,
-                    compressedWalletPublicKey: try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress(),
+                    compressedWalletPublicKey: compressed,
                     bip: .bip44
                 )
                 
