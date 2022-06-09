@@ -148,8 +148,8 @@ public enum Blockchain: Equatable, Hashable {
             return "KSM"
         case .tron:
             return "TRX"
-        case .dash:
-            return "DASH"
+        case .dash(let testnet):
+            return testnet ? "tDASH" : "DASH"
         }
     }
     
