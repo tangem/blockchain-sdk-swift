@@ -361,7 +361,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         }
 
         do {
-            let walletManager = try walletManagerFactory.makeWalletManager(cardId: card.cardId, blockchain: blockchain, walletPublicKey: wallet.publicKey)
+            let walletManager = try walletManagerFactory.makeWalletManager(cardId: card.cardId, blockchain: blockchain, walletPublicKey: wallet.publicKey, canSignWithAnyCard: false)
             self.walletManager = walletManager
             self.sourceAddresses = walletManager.wallet.addresses
             if let enteredToken = enteredToken {
