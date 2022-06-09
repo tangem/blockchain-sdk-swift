@@ -12,7 +12,7 @@ import Combine
 
 @available(iOS 13.0, *)
 extension TangemSdk: TransactionSigner {
-    public func sign(hashes: [Data], cardId: String, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[Data], Error> {
+    public func sign(hashes: [Data], cardId: String?, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[Data], Error> {
         let future = Future<[Data], Error> {[weak self] promise in
             guard let self = self else {
                 promise(.failure(WalletError.empty))
@@ -32,7 +32,7 @@ extension TangemSdk: TransactionSigner {
         return AnyPublisher(future)
     }
 
-    public func sign(hash: Data, cardId: String, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
+    public func sign(hash: Data, cardId: String?, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
         let future = Future<Data, Error> {[weak self] promise in
             guard let self = self else {
                 promise(.failure(WalletError.empty))
