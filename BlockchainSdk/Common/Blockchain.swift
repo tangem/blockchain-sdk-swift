@@ -432,7 +432,7 @@ extension Blockchain {
             return TronAddressService()
         case .dash:
             return BitcoinLegacyAddressService(
-                networkParams: isTestnet ?  DashMainNetworkParams() : DashTestNetworkParams()
+                networkParams: isTestnet ?  DashTestNetworkParams() : DashMainNetworkParams()
             )
         }
     }
@@ -597,6 +597,12 @@ extension Blockchain {
             return URL(string: "https://nileex.io/join/getJoinPage")!
         case .dash:
             return URL(string: "https://testnet-faucet.dash.org/")!
+            /*
+             https://testnet-faucet.dash.org/ - by Dash Core Group
+             http://faucet.testnet.networks.dash.org - by Dash Core Group
+             http://test.faucet.masternode.io - by coingun
+             http://faucet.test.dash.crowdnode.io - by ndrezza
+             */
         default:
             return nil
         }
@@ -675,7 +681,11 @@ extension Blockchain {
             let subdomain = testnet ? "testnet." : ""
             return URL(string: "https://\(subdomain)arbiscan.io/address/\(address)")!
         case .dash(let testnet):
-            return URL(string: "https://blockchair.com/dash/address/\(address)")!
+            if testnet {
+                return URL(string: "https://testnet-insight.dashevo.org/insight")!
+            } else {
+                return URL(string: "https://blockchair.com/dash/address/\(address)")!
+            }
         }
     }
 }
