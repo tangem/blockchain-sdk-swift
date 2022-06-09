@@ -230,7 +230,7 @@ fileprivate class DummySigner: TransactionSigner {
         self.privateKey = keyPair.privateKey
     }
         
-    func sign(hash: Data, cardId: String?, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
+    func sign(hash: Data, cardId: String, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
         do {
             let signature = try Secp256k1Utils().sign(hash, with: privateKey)
             return Just(signature)
@@ -241,7 +241,7 @@ fileprivate class DummySigner: TransactionSigner {
         }
     }
     
-    func sign(hashes: [Data], cardId: String?, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[Data], Error> {
+    func sign(hashes: [Data], cardId: String, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[Data], Error> {
         fatalError()
     }
 }
