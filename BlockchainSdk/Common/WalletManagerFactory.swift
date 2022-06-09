@@ -185,8 +185,15 @@ public class WalletManagerFactory {
             
         case .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum:
             return try EthereumWalletManager(wallet: wallet).then {
+                let infuraProjectId: String
+                if case .arbitrum = blockchain {
+                    infuraProjectId = config.infuraArbitrumProjectId
+                } else {
+                    infuraProjectId = config.infuraProjectId
+                }
+                
                 let chainId = blockchain.chainId!
-                let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)!
+                let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: infuraProjectId)!
                 let jsonRpcProviders = rpcUrls.map { EthereumJsonRpcProvider(url: $0) }
                 
                 $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, chainId: chainId)
