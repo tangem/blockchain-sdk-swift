@@ -10,6 +10,8 @@ import XCTest
 import stellarsdk
 import Combine
 
+@testable import BlockchainSdk
+
 class StellarTests: XCTestCase {
 
     private let blockchain = Blockchain.stellar(testnet: false)

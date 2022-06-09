@@ -10,6 +10,8 @@ import XCTest
 import BitcoinCore
 import TangemSdk
 
+@testable import BlockchainSdk
+
 class LitecoinTests: XCTestCase {
 
     private let blockchain = Blockchain.litecoin
