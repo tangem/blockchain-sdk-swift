@@ -17,3 +17,15 @@ struct NearGasPriceResponse: Decodable {
         let gasPrice: String
     }
 }
+
+struct NearAccountInfoResponse: Decodable {
+    let jsonrpc: String
+    let result: Result
+    let id: String
+    
+    struct Result: Codable {
+        let amount, locked, codeHash: String
+        let storageUsage, storagePaidAt, blockHeight: Int
+        let blockHash: String
+    }
+}

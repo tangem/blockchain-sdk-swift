@@ -26,13 +26,27 @@ class NearNetworkService {
         self.blockchain = blockchain
     }
     
+    func accountInfo(publicKey: Data) -> AnyPublisher<NearAccountInfoResponse, Error> {
+        let key = NearPublicKey(from: publicKey)
+        return provider
+            .requestPublisher(.init(endpoint: .accountInfo(accountID: key.address(), isTestnet: blockchain.isTestnet)))
+            .map(NearAccountInfoResponse.self, using: decoder)
+            .tryMap({ [weak self] response -> NearAccountInfoResponse in
+                guard let self = self else {
+                    throw WalletError.empty
+                }
+                return response
+            })
+            .eraseToAnyPublisher()
+    }
+    
     func gasPrice() -> AnyPublisher<Int, Error> {
         provider
             .requestPublisher(.init(endpoint: .gasPrice(isTestnet: blockchain.isTestnet)))
             .map(NearGasPriceResponse.self, using: decoder)
             .tryMap({ response in
                 guard let price = Int(response.result.gasPrice) else {
-                    throw WalletError.empty
+                    throw WalletError.failedToGetFee
                 }
                 return price
             })

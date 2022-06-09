@@ -12,9 +12,42 @@ import TangemSdk
 
 class NearWalletManager: BaseManager, WalletManager {
     var networkService: NearNetworkService!
+    var bag = Set<AnyCancellable>()
     
     func update(completion: @escaping (Result<Void, Error>) -> Void) {
+        networkService
+            .accountInfo(publicKey: wallet.publicKey.blockchainKey)
+            .sink { result in
+                switch result {
+                case .finished:
+                    break
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            } receiveValue: { [weak self] response in
+                guard let self = self else {
+                    return
+                }
+                self.updateWallet(info: response)
+                completion(.success(Void()))
+            }.store(in: &bag)
+
+    }
+    
+    private func updateWallet(info: NearAccountInfoResponse) {
+        self.wallet.add(coinValue: Decimal(info.result.amount) ?? Decimal(0))
         
+        for cardToken in cardTokens {
+//            let mintAddress = cardToken.contractAddress
+//            let balance = info.tokensByMint[mintAddress]?.balance ?? Decimal(0)
+//            self.wallet.add(tokenValue: balance, for: cardToken)
+        }
+        
+//        for (index, transaction) in wallet.transactions.enumerated() {
+//            if let hash = transaction.hash, info.confirmedTransactionIDs.contains(hash) {
+//                wallet.transactions[index].status = .confirmed
+//            }
+//        }
     }
     
     var currentHost: String = ""
