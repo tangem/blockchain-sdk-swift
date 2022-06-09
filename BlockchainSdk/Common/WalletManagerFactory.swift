@@ -264,23 +264,7 @@ public class WalletManagerFactory {
                 $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
             }
         case .dash(let testnet):
-            return try DashWalletManager(wallet: wallet).then {
-                let compressed = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
-                let bitcoinManager = BitcoinManager(
-                    networkParams: testnet ? DashTestNetworkParams() : DashMainNetworkParams(),
-                    walletPublicKey: wallet.publicKey.blockchainKey,
-                    compressedWalletPublicKey: compressed,
-                    bip: .bip44
-                )
-                
-                $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
-                
-                let provider = BlockchairNetworkProvider(endpoint: .dash(testnet: testnet), apiKey: config.blockchairApiKey)
-                
-                $0.networkService = BitcoinNetworkService(
-                    providers: [provider.eraseToAnyBitcoinNetworkProvider()]
-                )
-            }
+            return try makeDashWalletManager(testnet: testnet, wallet: wallet)
         }
     }
     
@@ -288,6 +272,31 @@ public class WalletManagerFactory {
         PolkadotWalletManager(network: network, wallet: wallet).then {
             $0.networkService = PolkadotNetworkService(rpcProvider: PolkadotJsonRpcProvider(network: network))
             $0.txBuilder = PolkadotTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, network: network)
+        }
+    }
+    
+    private func makeDashWalletManager(testnet: Bool, wallet: Wallet) throws -> WalletManager {
+        try DashWalletManager(wallet: wallet).then {
+            let compressed = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
+
+            let bitcoinManager = BitcoinManager(
+                networkParams: testnet ? DashTestNetworkParams() : DashMainNetworkParams(),
+                walletPublicKey: wallet.publicKey.blockchainKey,
+                compressedWalletPublicKey: compressed,
+                bip: .bip44
+            )
+            
+            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
+            
+            let blockchairProvider = BlockchairNetworkProvider(endpoint: .dash, apiKey: config.blockchairApiKey)
+            let blockcypherProvider = BlockcypherNetworkProvider(endpoint: .dash, tokens: config.blockcypherTokens)
+            
+            // TODO: Add testnet support throught the https://cryptoapis.io/blockchains/dash
+            
+            $0.networkService = BitcoinNetworkService(
+                providers: [blockchairProvider.eraseToAnyBitcoinNetworkProvider(),
+                            blockcypherProvider.eraseToAnyBitcoinNetworkProvider()]
+            )
         }
     }
 }

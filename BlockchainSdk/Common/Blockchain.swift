@@ -596,13 +596,8 @@ extension Blockchain {
         case .tron:
             return URL(string: "https://nileex.io/join/getJoinPage")!
         case .dash:
-            return URL(string: "https://testnet-faucet.dash.org/")!
-            /*
-             https://testnet-faucet.dash.org/ - by Dash Core Group
-             http://faucet.testnet.networks.dash.org - by Dash Core Group
-             http://test.faucet.masternode.io - by coingun
-             http://faucet.test.dash.crowdnode.io - by ndrezza
-             */
+            return URL(string: "http://faucet.test.dash.crowdnode.io/")!
+            // Or another one https://testnet-faucet.dash.org/ - by Dash Core Group
         default:
             return nil
         }
@@ -680,12 +675,9 @@ extension Blockchain {
         case .arbitrum(let testnet):
             let subdomain = testnet ? "testnet." : ""
             return URL(string: "https://\(subdomain)arbiscan.io/address/\(address)")!
-        case .dash(let testnet):
-            if testnet {
-                return URL(string: "https://testnet-insight.dashevo.org/insight")!
-            } else {
-                return URL(string: "https://blockchair.com/dash/address/\(address)")!
-            }
+        case .dash:
+            let netType = isTestnet ? "testnet" : "mainnet"
+            return URL(string: "https://blockexplorer.one/dash/\(netType)/address/\(address)")
         }
     }
 }

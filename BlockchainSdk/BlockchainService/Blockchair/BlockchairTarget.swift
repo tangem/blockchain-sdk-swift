@@ -15,7 +15,7 @@ enum BlockchairEndpoint {
          litecoin,
          dogecoin,
          ethereum(testnet: Bool),
-         dash(testnet: Bool)
+         dash
     
     var path: String {
         switch self {
@@ -40,8 +40,8 @@ enum BlockchairEndpoint {
             return .ethereum(testnet: testnet)
         case .dogecoin:
             return .dogecoin
-        case .dash(let testnet):
-            return .dash(testnet: testnet)
+        case .dash:
+            return .dash(testnet: false)
         }
     }
 }

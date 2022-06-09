@@ -8,6 +8,8 @@
 
 import BitcoinCore
 
+/// You can find this constants in the class `CMainParams` from
+/// /// https://github.com/dashpay/dash/blob/master/src/chainparams.cpp#L535
 class DashTestNetworkParams: INetwork {
     let protocolVersion: Int32 = 70214
 
@@ -20,6 +22,7 @@ class DashTestNetworkParams: INetwork {
     let bech32PrefixPattern: String = "bc"
     let xPubKey: UInt32 = 0x0488b21e
     let xPrivKey: UInt32 = 0x0488ade4
+    /// Protocol message header bytes
     let magic: UInt32 = 0xcee2caff
     let port: UInt32 = 19999
     let coinType: UInt32 = 1

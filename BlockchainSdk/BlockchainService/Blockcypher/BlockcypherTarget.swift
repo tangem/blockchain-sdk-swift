@@ -11,7 +11,7 @@ import Moya
 
 enum BlockcypherEndpoint {
     case bitcoin(testnet: Bool)
-    case ethereum, litecoin, dogecoin
+    case ethereum, litecoin, dogecoin, dash
     
     var path: String {
         var suffix = "main"
@@ -25,6 +25,7 @@ enum BlockcypherEndpoint {
         case .ethereum: blockchain = "eth"
         case .litecoin: blockchain = "ltc"
         case .dogecoin: blockchain = "doge"
+        case .dash: blockchain = "dash"
         }
         return "\(blockchain)/\(suffix)"
     }
@@ -36,6 +37,7 @@ enum BlockcypherEndpoint {
         case .ethereum: return .ethereum(testnet: false)
         case .litecoin: return .litecoin
         case .dogecoin: return .dogecoin
+        case .dash: return .dash(testnet: false)
         }
     }
 }
