@@ -7,8 +7,6 @@
 //
 
 import Foundation
-import Base58Swift
-import CryptoSwift
 
 /// For Implicit account supports only ED25519 curve
 class NearPublicKey {
@@ -23,7 +21,7 @@ class NearPublicKey {
     }
     
     func rawPublicKey() -> String {
-        return Base58.base58Encode(publicKey)
+        return NearBase58.base58Encode(publicKey)
     }
     
     func txPublicKey() -> String {

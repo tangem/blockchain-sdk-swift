@@ -271,6 +271,8 @@
 		65535FEB284E3F2600B8E2B4 /* NearParametersObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65535FE9284E3F2600B8E2B4 /* NearParametersObject.swift */; };
 		659B032728514C46000900A5 /* NearResponseObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B032628514C46000900A5 /* NearResponseObject.swift */; };
 		659B032828514C46000900A5 /* NearResponseObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B032628514C46000900A5 /* NearResponseObject.swift */; };
+		659B032D28521502000900A5 /* NearBase58.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B032C28521502000900A5 /* NearBase58.swift */; };
+		659B032E28521502000900A5 /* NearBase58.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B032C28521502000900A5 /* NearBase58.swift */; };
 		65B364DD284BF798009ECD0D /* NearAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B364DC284BF798009ECD0D /* NearAddressService.swift */; };
 		65B364DE284BF798009ECD0D /* NearAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B364DC284BF798009ECD0D /* NearAddressService.swift */; };
 		65B36505284E19CB009ECD0D /* NearPublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65B36504284E19CB009ECD0D /* NearPublicKey.swift */; };
@@ -565,6 +567,7 @@
 		65535FE6284E33FB00B8E2B4 /* NearTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearTarget.swift; sourceTree = "<group>"; };
 		65535FE9284E3F2600B8E2B4 /* NearParametersObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearParametersObject.swift; sourceTree = "<group>"; };
 		659B032628514C46000900A5 /* NearResponseObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearResponseObject.swift; sourceTree = "<group>"; };
+		659B032C28521502000900A5 /* NearBase58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearBase58.swift; sourceTree = "<group>"; };
 		65B364DC284BF798009ECD0D /* NearAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearAddressService.swift; sourceTree = "<group>"; };
 		65B36504284E19CB009ECD0D /* NearPublicKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearPublicKey.swift; sourceTree = "<group>"; };
 		65BEDCCD284B9D7400806447 /* NearWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearWalletManager.swift; sourceTree = "<group>"; };
@@ -764,6 +767,7 @@
 		5D14E48B2397B87000C15FC8 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				659B0329285212A0000900A5 /* Base58 */,
 				5DACA35C255E98220096BC48 /* Address */,
 				5D5E058A24FE736E00F04DE1 /* Localizations */,
 				B0A1D39B2625A10B0013F0BF /* Utils */,
@@ -1181,6 +1185,14 @@
 				659B032628514C46000900A5 /* NearResponseObject.swift */,
 			);
 			path = Near;
+			sourceTree = "<group>";
+		};
+		659B0329285212A0000900A5 /* Base58 */ = {
+			isa = PBXGroup;
+			children = (
+				659B032C28521502000900A5 /* NearBase58.swift */,
+			);
+			path = Base58;
 			sourceTree = "<group>";
 		};
 		65BEDCCC284B7BBA00806447 /* Near */ = {
@@ -1648,6 +1660,7 @@
 				5DE3BFA4239FB4E500E8815D /* BitcoinNetworkService.swift in Sources */,
 				5D7D243625136254001B9A4F /* XRPAccount.swift in Sources */,
 				5D7D244925136399001B9A4F /* BitcoinfeesResponse.swift in Sources */,
+				659B032D28521502000900A5 /* NearBase58.swift in Sources */,
 				DA30812F2817C0F900DE41F1 /* Contracts.pb.swift in Sources */,
 				5D0EEE69253EF75200758FDC /* TezosFee.swift in Sources */,
 				5D4B33C223F72C0400C93A84 /* BitcoinCashNetworkService.swift in Sources */,
@@ -1830,6 +1843,7 @@
 				5D16094625921D5C00738AE6 /* EthereumAddressService.swift in Sources */,
 				5DDD82A225BF0D2B00166EA9 /* Token.swift in Sources */,
 				5DDD82EC25BF0E1500166EA9 /* BitcoinCashAddressService.swift in Sources */,
+				659B032E28521502000900A5 /* NearBase58.swift in Sources */,
 				5DFCE546274BB0B300C1B1A0 /* EthereumTests.swift in Sources */,
 				5DDD82DB25BF0E0900166EA9 /* StellarWalletManager.swift in Sources */,
 				5DDD830725BF0E2400166EA9 /* XRPAddressService.swift in Sources */,

@@ -1,8 +1,6 @@
 PODS:
   - Alamofire (5.5.0)
   - AnyCodable-FlightSchool (0.6.2)
-  - Base58Swift (2.1.11):
-    - BigInt (~> 5.2.0)
   - BigInt (5.2.0)
   - BinanceChain (1.0.1-beta):
     - BinanceChain/Core (= 1.0.1-beta)
@@ -72,7 +70,6 @@ PODS:
 DEPENDENCIES:
   - Alamofire
   - AnyCodable-FlightSchool
-  - Base58Swift (from `https://github.com/gre4ixin/Base58Swift.git`, branch `master`)
   - BigInt
   - BinanceChain (from `https://github.com/lazutkin-andrey/swiftbinancechain.git`, tag `0.0.9`)
   - BitcoinCore.swift (from `https://github.com/lazutkin-andrey/bitcoincore.git`, tag `0.0.16`)
@@ -110,9 +107,6 @@ SPEC REPOS:
     - XCGLogger
 
 EXTERNAL SOURCES:
-  Base58Swift:
-    :branch: master
-    :git: https://github.com/gre4ixin/Base58Swift.git
   BinanceChain:
     :git: https://github.com/lazutkin-andrey/swiftbinancechain.git
     :tag: 0.0.9
@@ -133,9 +127,6 @@ EXTERNAL SOURCES:
     :tag: 2.2.9
 
 CHECKOUT OPTIONS:
-  Base58Swift:
-    :commit: 7af060824d684e0c91b70404f046a0c98d69af7c
-    :git: https://github.com/gre4ixin/Base58Swift.git
   BinanceChain:
     :git: https://github.com/lazutkin-andrey/swiftbinancechain.git
     :tag: 0.0.9
@@ -158,7 +149,6 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
   AnyCodable-FlightSchool: ac75ed9bae659e16a41ebfa6c71a663d6f2c111c
-  Base58Swift: 669846028231971422de1bc2c8d86c9b44977cd3
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
   BinanceChain: b77d4c0e496efbf13bdb1f428621480fd52f4ba1
   BitcoinCore.swift: 64ac4e69d9a6ef917bcbb0c23f1324cf57a822fb
@@ -182,6 +172,6 @@ SPEC CHECKSUMS:
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: c852d4f1eb32bee0381e4a154997e443d5e0286c
+PODFILE CHECKSUM: d22c584bd1e403e8857b02a1d2d2b356841a9ce3
 
 COCOAPODS: 1.11.3

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Base58Swift
 
 public class NearAddressService: AddressService {
     public func makeAddress(from walletPublicKey: Data) throws -> String {
