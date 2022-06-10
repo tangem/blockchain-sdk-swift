@@ -29,11 +29,11 @@ struct NearAccountInfoResponse: Decodable {
         let blockHash: String
     }
     
-    static func convertBalance(from rawBalance: String) -> Decimal {
-        let decimals = Int16(24)
+    static func convertBalance(from rawBalance: String, countDecimals: Int) -> Decimal {
+        let decimals = Int16(countDecimals)
         let handler = NearAccountInfoResponse.makeHandler(with: decimals)
         let balance = NSDecimalNumber(string: rawBalance) ?? NSDecimalNumber(0)
-        return balance.dividing(by: NSDecimalNumber(value: 1).multiplying(byPowerOf10: Int16(24), withBehavior: handler))
+        return balance.dividing(by: NSDecimalNumber(value: 1).multiplying(byPowerOf10: Int16(countDecimals), withBehavior: handler)).decimalValue
     }
     
     private static func makeHandler(with decimals: Int16) -> NSDecimalNumberHandler {

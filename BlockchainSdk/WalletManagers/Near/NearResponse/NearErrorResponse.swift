@@ -33,3 +33,33 @@ struct NearInfoError: Decodable {
     let requestedAccountId: String?
     let errorMessage: String?
 }
+
+//MARK: - Account history
+
+struct NearAccountHistoryResponse: Decodable {
+    let jsonrpc: String
+    let result: Result
+    let id: String
+    
+    struct Result: Decodable {
+        let blockHash: String
+        let changes: [NearAccountHistoryChangeElementResponse]
+    }
+}
+
+struct NearAccountHistoryChangeElementResponse: Decodable {
+    let cause: Cause
+    let type: String
+    let change: NearHistoryChangeResponse
+    
+    struct Cause: Decodable {
+        let type: String
+        let txHash, receiptHash: String?
+    }
+}
+
+struct NearHistoryChangeResponse: Decodable {
+    let accountId, amount, locked, codeHash: String
+    let storageUsage, storagePaidAt: Int
+}
+

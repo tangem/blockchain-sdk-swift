@@ -18,8 +18,9 @@ class NearWalletManager: BaseManager, WalletManager {
     var allowsFeeSelection: Bool = false
     
     func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        networkService
-            .accountInfo(publicKey: wallet.publicKey.blockchainKey)
+        let accountInfo = networkService.accountInfo(publicKey: wallet.publicKey.blockchainKey)
+        let accountHistory = networkService.accountHistory(publicKey: wallet.publicKey.blockchainKey)
+        Publishers.Zip(accountInfo, accountHistory)
             .sink { result in
                 switch result {
                 case .finished:
@@ -27,24 +28,18 @@ class NearWalletManager: BaseManager, WalletManager {
                 case .failure(let error):
                     completion(.failure(error))
                 }
-            } receiveValue: { [weak self] response in
+            } receiveValue: { [weak self] info, history in
                 guard let self = self else {
                     return
                 }
-                self.updateWallet(info: response)
+                self.updateWallet(info: info, history: history)
                 completion(.success(Void()))
             }.store(in: &bag)
 
     }
     
-    private func updateWallet(info: NearAccountInfoResponse) {
-        self.wallet.add(coinValue: NearAccountInfoResponse.convertBalance(from: info.result.amount))
-        
-        for cardToken in cardTokens {
-//            let mintAddress = cardToken.contractAddress
-//            let balance = info.tokensByMint[mintAddress]?.balance ?? Decimal(0)
-//            self.wallet.add(tokenValue: balance, for: cardToken)
-        }
+    private func updateWallet(info: NearAccountInfoResponse, history: NearAccountHistoryResponse) {
+        self.wallet.add(coinValue: NearAccountInfoResponse.convertBalance(from: info.result.amount, countDecimals: wallet.blockchain.decimalCount))
         
 //        for (index, transaction) in wallet.transactions.enumerated() {
 //            if let hash = transaction.hash, info.confirmedTransactionIDs.contains(hash) {

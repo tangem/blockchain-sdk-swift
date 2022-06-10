@@ -63,3 +63,16 @@ struct NearSendTransactionBodyObject: Encodable {
     /// SignedTransaction encoded in base64
     let params: [String]
 }
+
+struct NearAccountHistoryBodyObject: Encodable {
+    let jsonrpc: String = "2.0"
+    let id: String = "dontcare"
+    let method: String = NearAPIMethod.experimentalChanges
+    let params: Params
+    
+    struct Params: Encodable {
+        let changesType: String = "account_changes"
+        let accountIds: [String]
+        let finality: String = "final"
+    }
+}

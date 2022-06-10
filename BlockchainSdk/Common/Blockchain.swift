@@ -102,7 +102,7 @@ public enum Blockchain: Equatable, Hashable {
         case .kusama:
             return 12
         case .near:
-            return 18
+            return 24
         }
     }
     

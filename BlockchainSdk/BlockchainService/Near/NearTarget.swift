@@ -42,6 +42,7 @@ struct NearTarget: TargetType {
         case accessKey(nearPublicKey: NearPublicKey, isTestnet: Bool = false)
         case accessKeyList(accountID: String, isTestnet: Bool = false)
         case accountInfo(accountID: String, isTestnet: Bool = false)
+        case accountHistory(accountID: String, isTestnet: Bool = false)
         case gasPrice(isTestnet: Bool = false)
         case sendTransaction(signedTransactionBase64: String, isTestnet: Bool = false)
         case sendAndAwaitTransaction(signedTransactionBase64: String, isTestnet: Bool = false)
@@ -65,6 +66,11 @@ struct NearTarget: TargetType {
                 }
                 return URL(string: "https://rpc.mainnet.near.org")!
             case .accountInfo(_, let isTestnet):
+                if isTestnet {
+                    return URL(string: "https://rpc.testnet.near.org")!
+                }
+                return URL(string: "https://rpc.mainnet.near.org")!
+            case .accountHistory(_, let isTestnet):
                 if isTestnet {
                     return URL(string: "https://rpc.testnet.near.org")!
                 }
@@ -99,6 +105,8 @@ struct NearTarget: TargetType {
                 return .requestPlain
             case .accountInfo(let accountID, _):
                 return .requestCustomJSONEncodable(NearAccountInfoBodyObject(params: .init(accountId: accountID)), encoder: encoder)
+            case .accountHistory(let accountID, _):
+                return .requestCustomJSONEncodable(NearAccountHistoryBodyObject(params: .init(accountIds: [accountID])), encoder: encoder)
             case .gasPrice:
                 return .requestCustomJSONEncodable(NearGasPriceBodyObject(), encoder: encoder)
             case .sendTransaction(let signedTransactionBase64, _):
@@ -118,6 +126,7 @@ struct NearAPIMethod {
     static let viewAccessKey = "view_access_key"
     static let viewAccessKeyList = "view_access_key_list"
     static let viewAccount = "view_account"
+    static let experimentalChanges = "EXPERIMENTAL_changes"
     static let gasPrice = "gas_price"
     static let sendTransactionAsync = "broadcast_tx_async"
     static let sendAndAwaitTransaction = "broadcast_tx_commit"
