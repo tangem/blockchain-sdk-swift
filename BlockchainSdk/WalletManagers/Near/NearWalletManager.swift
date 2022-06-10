@@ -14,6 +14,9 @@ class NearWalletManager: BaseManager, WalletManager {
     var networkService: NearNetworkService!
     var bag = Set<AnyCancellable>()
     
+    var currentHost: String = ""
+    var allowsFeeSelection: Bool = false
+    
     func update(completion: @escaping (Result<Void, Error>) -> Void) {
         networkService
             .accountInfo(publicKey: wallet.publicKey.blockchainKey)
@@ -35,7 +38,7 @@ class NearWalletManager: BaseManager, WalletManager {
     }
     
     private func updateWallet(info: NearAccountInfoResponse) {
-        self.wallet.add(coinValue: Decimal(info.result.amount) ?? Decimal(0))
+        self.wallet.add(coinValue: NearAccountInfoResponse.convertBalance(from: info.result.amount))
         
         for cardToken in cardTokens {
 //            let mintAddress = cardToken.contractAddress
@@ -49,10 +52,6 @@ class NearWalletManager: BaseManager, WalletManager {
 //            }
 //        }
     }
-    
-    var currentHost: String = ""
-    
-    var allowsFeeSelection: Bool = false
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         return Just(Void())

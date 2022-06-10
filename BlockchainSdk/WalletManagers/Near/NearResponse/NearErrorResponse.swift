@@ -28,13 +28,8 @@ struct NearCauseError: Decodable {
 }
 
 struct NearInfoError: Decodable {
-    let blockHash: String
-    let blockHeight: Int
-    let requestedAccountId: String
-    
-    enum CodingKeys: String, CodingKey {
-        case blockHash = "block_hash"
-        case blockHeight = "block_height"
-        case requestedAccountId = "requested_account_id"
-    }
+    let blockHash: String?
+    let blockHeight: Int?
+    let requestedAccountId: String?
+    let errorMessage: String?
 }

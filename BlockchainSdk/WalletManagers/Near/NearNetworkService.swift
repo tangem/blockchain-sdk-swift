@@ -30,12 +30,21 @@ class NearNetworkService {
         let key = NearPublicKey(from: publicKey)
         return provider
             .requestPublisher(.init(endpoint: .accountInfo(accountID: key.address(), isTestnet: blockchain.isTestnet)))
-            .map(NearAccountInfoResponse.self, using: decoder)
             .tryMap({ [weak self] response -> NearAccountInfoResponse in
                 guard let self = self else {
                     throw WalletError.empty
                 }
-                return response
+                if let error = try? self.checkError(data: response.data) {
+                    if error.error.cause.name == "UNKNOWN_ACCOUNT" {
+                        throw WalletError.noAccount(message: "Unknown account")
+                    } else {
+                        throw WalletError.empty
+                    }
+                }
+                guard let nearResponse = try? self.decoder.decode(NearAccountInfoResponse.self, from: response.data) else {
+                    throw WalletError.empty
+                }
+                return nearResponse
             })
             .eraseToAnyPublisher()
     }
@@ -51,5 +60,9 @@ class NearNetworkService {
                 return price
             })
             .eraseToAnyPublisher()
+    }
+    
+    private func checkError(data: Data) throws -> NearErrorResponse {
+        return try decoder.decode(NearErrorResponse.self, from: data)
     }
 }

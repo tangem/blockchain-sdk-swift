@@ -46,6 +46,12 @@ struct NearTarget: TargetType {
         case sendTransaction(signedTransactionBase64: String, isTestnet: Bool = false)
         case sendAndAwaitTransaction(signedTransactionBase64: String, isTestnet: Bool = false)
         
+        var encoder: JSONEncoder {
+            let encoder = JSONEncoder()
+            encoder.keyEncodingStrategy = .convertToSnakeCase
+            return encoder
+        }
+        
         var baseURL: URL {
             switch self {
             case .accessKey(_, let isTestnet):
@@ -88,17 +94,17 @@ struct NearTarget: TargetType {
         var task: Moya.Task {
             switch self {
             case .accessKey(let nearPublicKey, _):
-                return .requestJSONEncodable(NearRequestAccessViewBodyObject(params: .init(accountId: nearPublicKey.address(), publicKey: nearPublicKey.txPublicKey())))
+                return .requestCustomJSONEncodable(NearRequestAccessViewBodyObject(params: .init(accountId: nearPublicKey.address(), publicKey: nearPublicKey.txPublicKey())), encoder: encoder)
             case .accessKeyList(let accountID, _):
                 return .requestPlain
             case .accountInfo(let accountID, _):
-                return .requestJSONEncodable(NearAccountInfoBodyObject(params: .init(accountId: accountID)))
+                return .requestCustomJSONEncodable(NearAccountInfoBodyObject(params: .init(accountId: accountID)), encoder: encoder)
             case .gasPrice:
-                return .requestJSONEncodable(NearGasPriceBodyObject())
+                return .requestCustomJSONEncodable(NearGasPriceBodyObject(), encoder: encoder)
             case .sendTransaction(let signedTransactionBase64, _):
-                return .requestJSONEncodable(NearSendTransactionBodyObject(params: [signedTransactionBase64]))
+                return .requestCustomJSONEncodable(NearSendTransactionBodyObject(params: [signedTransactionBase64]), encoder: encoder)
             case .sendAndAwaitTransaction(let signedTransactionBase64, _):
-                return .requestJSONEncodable(NearSendTransactionBodyObject(params: [signedTransactionBase64]))
+                return .requestCustomJSONEncodable(NearSendTransactionBodyObject(params: [signedTransactionBase64]), encoder: encoder)
             }
         }
         
