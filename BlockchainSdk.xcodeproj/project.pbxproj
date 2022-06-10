@@ -263,6 +263,8 @@
 		5DFCE548274BB85B00C1B1A0 /* LitecoinTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFCE547274BB85B00C1B1A0 /* LitecoinTests.swift */; };
 		5DFCE54A274BB88700C1B1A0 /* StellarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFCE549274BB88700C1B1A0 /* StellarTests.swift */; };
 		5DFF005F2521F772005203FB /* DucatusWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFF005E2521F771005203FB /* DucatusWalletManager.swift */; };
+		650A9DAC285400CE0029B03D /* NearTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650A9DAB285400CE0029B03D /* NearTransactionBuilder.swift */; };
+		650A9DAD285400CE0029B03D /* NearTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650A9DAB285400CE0029B03D /* NearTransactionBuilder.swift */; };
 		65535FE3284E2B2800B8E2B4 /* NearErrorResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65535FE2284E2B2800B8E2B4 /* NearErrorResponse.swift */; };
 		65535FE4284E2B2800B8E2B4 /* NearErrorResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65535FE2284E2B2800B8E2B4 /* NearErrorResponse.swift */; };
 		65535FE7284E33FB00B8E2B4 /* NearTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65535FE6284E33FB00B8E2B4 /* NearTarget.swift */; };
@@ -563,6 +565,7 @@
 		5DFCE547274BB85B00C1B1A0 /* LitecoinTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LitecoinTests.swift; sourceTree = "<group>"; };
 		5DFCE549274BB88700C1B1A0 /* StellarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarTests.swift; sourceTree = "<group>"; };
 		5DFF005E2521F771005203FB /* DucatusWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DucatusWalletManager.swift; sourceTree = "<group>"; };
+		650A9DAB285400CE0029B03D /* NearTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearTransactionBuilder.swift; sourceTree = "<group>"; };
 		65535FE2284E2B2800B8E2B4 /* NearErrorResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearErrorResponse.swift; sourceTree = "<group>"; };
 		65535FE6284E33FB00B8E2B4 /* NearTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearTarget.swift; sourceTree = "<group>"; };
 		65535FE9284E3F2600B8E2B4 /* NearParametersObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearParametersObject.swift; sourceTree = "<group>"; };
@@ -1198,6 +1201,7 @@
 		65BEDCCC284B7BBA00806447 /* Near */ = {
 			isa = PBXGroup;
 			children = (
+				650A9DAB285400CE0029B03D /* NearTransactionBuilder.swift */,
 				65535FE1284E2B1200B8E2B4 /* NearResponse */,
 				65BEDCCD284B9D7400806447 /* NearWalletManager.swift */,
 				65BEDCD0284B9DD800806447 /* NearNetworkService.swift */,
@@ -1709,6 +1713,7 @@
 				5DEAFA942444C5300032E316 /* Token.swift in Sources */,
 				5D557CB023AA888D009B32AF /* Uint64+.swift in Sources */,
 				5D94E56123A381F2009C7482 /* EthereumWalletManager.swift in Sources */,
+				650A9DAC285400CE0029B03D /* NearTransactionBuilder.swift in Sources */,
 				B0BAEE9C25FF1E4200F318A6 /* RosettaData.swift in Sources */,
 				5D8653FA23A8C481000DE52D /* StellarNetworkService.swift in Sources */,
 				5D7D242F25136254001B9A4F /* XRPTransaction.swift in Sources */,
@@ -1848,6 +1853,7 @@
 				5DDD82DB25BF0E0900166EA9 /* StellarWalletManager.swift in Sources */,
 				5DDD830725BF0E2400166EA9 /* XRPAddressService.swift in Sources */,
 				B04AA04A2642C8B70075AE32 /* EthereumResponse.swift in Sources */,
+				650A9DAD285400CE0029B03D /* NearTransactionBuilder.swift in Sources */,
 				B0A63E1026259D03001FDB7A /* EthereumTransactionParams.swift in Sources */,
 				5DDD82AD25BF0D2F00166EA9 /* Transaction.swift in Sources */,
 				5DDD835825BF100100166EA9 /* AnyPublisher+Response.swift in Sources */,

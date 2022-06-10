@@ -10,7 +10,7 @@ import Foundation
 
 struct NearRequestAccessViewBodyObject: Encodable {
     let jsonrpc: String = "2.0"
-    let id: String = "dontcare"
+    let id: String = UUID().uuidString
     let method: String = "query"
     let params: NearAccessViewParameters
     
@@ -24,7 +24,7 @@ struct NearRequestAccessViewBodyObject: Encodable {
 
 struct NearRequestAccessViewListBodyObject: Encodable {
     let jsonrpc: String = "2.0"
-    let id: String = "dontcare"
+    let id: String = UUID().uuidString
     let method: String = "query"
     let params: NearAccessViewParameters
     
@@ -37,7 +37,7 @@ struct NearRequestAccessViewListBodyObject: Encodable {
 
 struct NearGasPriceBodyObject: Encodable {
     let jsonrpc: String = "2.0"
-    let id: String = "dontcare"
+    let id: String = UUID().uuidString
     let method: String = NearAPIMethod.gasPrice
     /// block_height or "block_hash" or null
     let params: [String]? = nil
@@ -45,7 +45,7 @@ struct NearGasPriceBodyObject: Encodable {
 
 struct NearAccountInfoBodyObject: Encodable {
     let jsonrpc: String = "2.0"
-    let id: String = "dontcare"
+    let id: String = UUID().uuidString
     let method: String = "query"
     let params: NearAccountParameters
     
@@ -58,7 +58,7 @@ struct NearAccountInfoBodyObject: Encodable {
 
 struct NearSendTransactionBodyObject: Encodable {
     let jsonrpc: String = "2.0"
-    let id: String = "dontcare"
+    let id: String = UUID().uuidString
     let method: String = NearAPIMethod.sendTransactionAsync
     /// SignedTransaction encoded in base64
     let params: [String]
@@ -66,7 +66,7 @@ struct NearSendTransactionBodyObject: Encodable {
 
 struct NearAccountHistoryBodyObject: Encodable {
     let jsonrpc: String = "2.0"
-    let id: String = "dontcare"
+    let id: String = UUID().uuidString
     let method: String = NearAPIMethod.experimentalChanges
     let params: Params
     
@@ -75,4 +75,11 @@ struct NearAccountHistoryBodyObject: Encodable {
         let accountIds: [String]
         let finality: String = "final"
     }
+}
+
+struct NearLastBlockBodyObject: Encodable {
+    let jsonrpc: String = "2.0"
+    let id: String = UUID().uuidString
+    let method: String = NearAPIMethod.lastBlock
+    let params: [String: String] = ["finality": "final"]
 }

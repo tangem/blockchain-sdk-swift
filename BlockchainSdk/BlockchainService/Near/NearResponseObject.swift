@@ -42,3 +42,60 @@ struct NearAccountInfoResponse: Decodable {
                                raiseOnUnderflow: false, raiseOnDivideByZero: false)
     }
 }
+
+//MARK: - Account history
+
+struct NearAccountHistoryResponse: Decodable {
+    let jsonrpc: String
+    let result: Result
+    let id: String
+    
+    struct Result: Decodable {
+        let blockHash: String
+        let changes: [NearAccountHistoryChangeElementResponse]
+    }
+}
+
+struct NearAccountHistoryChangeElementResponse: Decodable {
+    let cause: Cause
+    let type: String
+    let change: NearHistoryChangeResponse
+    
+    struct Cause: Decodable {
+        let type: String
+        let txHash, receiptHash: String?
+    }
+}
+
+struct NearHistoryChangeResponse: Decodable {
+    let accountId, amount, locked, codeHash: String
+    let storageUsage, storagePaidAt: Int
+}
+
+//MARK: - Access view key list
+struct NearAccessKeyListResponse: Decodable {
+    static let fullAccessPermission: String = "FullAccess"
+    
+    let jsonrpc: String
+    let result: Result
+    let id: String
+    
+    /// Result
+    struct Result: Codable {
+        let blockHash: String
+        let blockHeight: Int
+        let keys: [Key]
+        
+        /// Keys array
+        struct Key: Codable {
+            let accessKey: AccessKey
+            let publicKey: String
+            
+            /// Key access description
+            struct AccessKey: Codable {
+                let nonce: Int
+                let permission: String
+            }
+        }
+    }
+}

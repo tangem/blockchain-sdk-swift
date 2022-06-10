@@ -46,6 +46,7 @@ struct NearTarget: TargetType {
         case gasPrice(isTestnet: Bool = false)
         case sendTransaction(signedTransactionBase64: String, isTestnet: Bool = false)
         case sendAndAwaitTransaction(signedTransactionBase64: String, isTestnet: Bool = false)
+        case lastBlock(isTestnet: Bool = false)
         
         var encoder: JSONEncoder {
             let encoder = JSONEncoder()
@@ -90,6 +91,11 @@ struct NearTarget: TargetType {
                     return URL(string: "https://rpc.testnet.near.org")!
                 }
                 return URL(string: "https://rpc.mainnet.near.org")!
+            case .lastBlock(let isTestnet):
+                if isTestnet {
+                    return URL(string: "https://rpc.testnet.near.org")!
+                }
+                return URL(string: "https://rpc.mainnet.near.org")!
             }
         }
         
@@ -102,7 +108,7 @@ struct NearTarget: TargetType {
             case .accessKey(let nearPublicKey, _):
                 return .requestCustomJSONEncodable(NearRequestAccessViewBodyObject(params: .init(accountId: nearPublicKey.address(), publicKey: nearPublicKey.txPublicKey())), encoder: encoder)
             case .accessKeyList(let accountID, _):
-                return .requestPlain
+                return .requestCustomJSONEncodable(NearRequestAccessViewListBodyObject(params: .init(accountId: accountID)), encoder: encoder)
             case .accountInfo(let accountID, _):
                 return .requestCustomJSONEncodable(NearAccountInfoBodyObject(params: .init(accountId: accountID)), encoder: encoder)
             case .accountHistory(let accountID, _):
@@ -113,6 +119,8 @@ struct NearTarget: TargetType {
                 return .requestCustomJSONEncodable(NearSendTransactionBodyObject(params: [signedTransactionBase64]), encoder: encoder)
             case .sendAndAwaitTransaction(let signedTransactionBase64, _):
                 return .requestCustomJSONEncodable(NearSendTransactionBodyObject(params: [signedTransactionBase64]), encoder: encoder)
+            case .lastBlock:
+                return .requestCustomJSONEncodable(NearLastBlockBodyObject(), encoder: encoder)
             }
         }
         
@@ -130,4 +138,5 @@ struct NearAPIMethod {
     static let gasPrice = "gas_price"
     static let sendTransactionAsync = "broadcast_tx_async"
     static let sendAndAwaitTransaction = "broadcast_tx_commit"
+    static let lastBlock = "block"
 }

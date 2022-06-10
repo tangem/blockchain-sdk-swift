@@ -11,7 +11,6 @@ import Moya
 import Combine
 import BigInt
 
-@available(iOS 13, *)
 class NearNetworkService {
     let provider: MoyaProvider = MoyaProvider<NearTarget>()
     let blockchain: Blockchain
@@ -35,8 +34,8 @@ class NearNetworkService {
                     throw WalletError.empty
                 }
                 if let error = try? self.checkError(data: response.data) {
-                    if error.error.cause.name == "UNKNOWN_ACCOUNT" {
-                        throw WalletError.noAccount(message: "Unknown account")
+                    if error.error.cause.name == NearNetworkError.unknownAccount.rawValue {
+                        throw WalletError.noAccount(message: error.error.message)
                     } else {
                         throw WalletError.empty
                     }
@@ -58,8 +57,8 @@ class NearNetworkService {
                     throw WalletError.empty
                 }
                 if let error = try? self.checkError(data: response.data) {
-                    if error.error.cause.name == "UNKNOWN_ACCOUNT" {
-                        throw WalletError.noAccount(message: "Unknown account")
+                    if error.error.cause.name == NearNetworkError.unknownAccount.rawValue {
+                        throw WalletError.noAccount(message: error.error.message)
                     } else {
                         throw WalletError.empty
                     }
@@ -82,6 +81,29 @@ class NearNetworkService {
                 }
                 return price
             })
+            .eraseToAnyPublisher()
+    }
+    
+    func accessKeyList(publicKey: Data) {
+        let key = NearPublicKey(from: publicKey)
+        provider
+            .requestPublisher(.init(endpoint: .accessKeyList(accountID: key.address(), isTestnet: blockchain.isTestnet)))
+            .tryMap { [weak self] response -> NearAccessKeyListResponse in
+                guard let self = self else {
+                    throw WalletError.empty
+                }
+                if let error = try? self.checkError(data: response.data) {
+                    if error.error.cause.name == NearNetworkError.unknownAccount.rawValue {
+                        throw WalletError.noAccount(message: error.error.message)
+                    } else {
+                        throw WalletError.empty
+                    }
+                }
+                guard let nearResponse = try? self.decoder.decode(NearAccessKeyListResponse.self, from: response.data) else {
+                    throw WalletError.empty
+                }
+                return nearResponse
+            }
             .eraseToAnyPublisher()
     }
     
