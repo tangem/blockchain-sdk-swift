@@ -288,17 +288,22 @@ public class WalletManagerFactory {
             
             $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
             
-            let blockchairProvider = BlockchairNetworkProvider(endpoint: .dash, apiKey: config.blockchairApiKey)
-            let blockcypherProvider = BlockcypherNetworkProvider(endpoint: .dash, tokens: config.blockcypherTokens)
-            let cryptoAPIsNetworkProvider = CryptoAPIsNetworkProvider()
+            var providers: [AnyBitcoinNetworkProvider] = []
+
+            if testnet {
+                providers.append(CryptoAPIsNetworkProvider().eraseToAnyBitcoinNetworkProvider())
+                
+            } else {
+                let blockchairProvider = BlockchairNetworkProvider(endpoint: .dash, apiKey: config.blockchairApiKey)
+                let blockcypherProvider = BlockcypherNetworkProvider(endpoint: .dash, tokens: config.blockcypherTokens)
+                
+                providers.append(blockchairProvider.eraseToAnyBitcoinNetworkProvider())
+                providers.append(blockcypherProvider.eraseToAnyBitcoinNetworkProvider())
+            }
             
             // TODO: Add testnet support throught the https://cryptoapis.io/blockchains/dash
             
-            $0.networkService = BitcoinNetworkService(
-                providers: [blockchairProvider.eraseToAnyBitcoinNetworkProvider(),
-                            blockcypherProvider.eraseToAnyBitcoinNetworkProvider(),
-                            cryptoAPIsNetworkProvider.eraseToAnyBitcoinNetworkProvider()]
-            )
+            $0.networkService = BitcoinNetworkService(providers: providers)
         }
     }
 }
