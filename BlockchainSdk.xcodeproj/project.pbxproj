@@ -212,6 +212,10 @@
 		EF0DA78C285246A90081092A /* DashMainNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */; };
 		EF0DA78D285246A90081092A /* DashWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF680A72284F524300F6B1BD /* DashWalletManager.swift */; };
 		EF0DA78E285246A90081092A /* DashTestNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */; };
+		EF0DA791285337120081092A /* CryptoAPIsTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0DA790285337120081092A /* CryptoAPIsTarget.swift */; };
+		EF0DA79328533C0F0081092A /* CryptoAPIsNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0DA79228533C0F0081092A /* CryptoAPIsNetworkProvider.swift */; };
+		EF0DA79628533DAD0081092A /* CryptoAPIsBaseResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0DA79528533DAD0081092A /* CryptoAPIsBaseResponse.swift */; };
+		EF0DA79828533DD10081092A /* CryptoAPIsDataResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0DA79728533DD10081092A /* CryptoAPIsDataResponse.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -463,6 +467,10 @@
 		DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotAddressService.swift; sourceTree = "<group>"; };
 		DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotWalletManager.swift; sourceTree = "<group>"; };
 		DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetworkService.swift; sourceTree = "<group>"; };
+		EF0DA790285337120081092A /* CryptoAPIsTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsTarget.swift; sourceTree = "<group>"; };
+		EF0DA79228533C0F0081092A /* CryptoAPIsNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsNetworkProvider.swift; sourceTree = "<group>"; };
+		EF0DA79528533DAD0081092A /* CryptoAPIsBaseResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsBaseResponse.swift; sourceTree = "<group>"; };
+		EF0DA79728533DD10081092A /* CryptoAPIsDataResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsDataResponse.swift; sourceTree = "<group>"; };
 		EF680A72284F524300F6B1BD /* DashWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashWalletManager.swift; sourceTree = "<group>"; };
 		EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashMainNetworkParams.swift; sourceTree = "<group>"; };
 		EFFB30722851E4BD0040A67D /* DashTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashTests.swift; sourceTree = "<group>"; };
@@ -687,6 +695,7 @@
 		5D4B33B923F6E9BD00C93A84 /* BlockchainService */ = {
 			isa = PBXGroup;
 			children = (
+				EF0DA78F285336F80081092A /* CryptoAPIs */,
 				5D845512243DEAAE0072155E /* Adalite */,
 				5D7D244125136280001B9A4F /* Bitcoinfees */,
 				5D4B33D623FAACE400C93A84 /* Bitcore */,
@@ -1129,6 +1138,25 @@
 			path = Polkadot;
 			sourceTree = "<group>";
 		};
+		EF0DA78F285336F80081092A /* CryptoAPIs */ = {
+			isa = PBXGroup;
+			children = (
+				EF0DA79428533D920081092A /* ResponseModels */,
+				EF0DA790285337120081092A /* CryptoAPIsTarget.swift */,
+				EF0DA79228533C0F0081092A /* CryptoAPIsNetworkProvider.swift */,
+			);
+			path = CryptoAPIs;
+			sourceTree = "<group>";
+		};
+		EF0DA79428533D920081092A /* ResponseModels */ = {
+			isa = PBXGroup;
+			children = (
+				EF0DA79528533DAD0081092A /* CryptoAPIsBaseResponse.swift */,
+				EF0DA79728533DD10081092A /* CryptoAPIsDataResponse.swift */,
+			);
+			path = ResponseModels;
+			sourceTree = "<group>";
+		};
 		EF680A71284F523100F6B1BD /* Dash */ = {
 			isa = PBXGroup;
 			children = (
@@ -1445,6 +1473,7 @@
 				5DD1244427F458CE000425D3 /* DerivationStyle.swift in Sources */,
 				5D845514243DEABB0072155E /* AdaliteResponse.swift in Sources */,
 				B0C2C89D25FBCF0200A61622 /* RosettaTarget.swift in Sources */,
+				EF0DA79628533DAD0081092A /* CryptoAPIsBaseResponse.swift in Sources */,
 				5D908C5726A6D39C00270FA3 /* BinanceTransactionParams.swift in Sources */,
 				5D7D243825136254001B9A4F /* Entropy.swift in Sources */,
 				5DE3BFA4239FB4E500E8815D /* BitcoinNetworkService.swift in Sources */,
@@ -1474,6 +1503,7 @@
 				5DED72C423A1315F006D79AE /* StellarWalletManager.swift in Sources */,
 				5D740B802625B42500DE9636 /* RskAddressService.swift in Sources */,
 				5D8653FE23A8E486000DE52D /* StellarSdk+.swift in Sources */,
+				EF0DA79828533DD10081092A /* CryptoAPIsDataResponse.swift in Sources */,
 				DA82434127A2B0AD00CFC2C0 /* PolkadotTarget.swift in Sources */,
 				5D26CEF9243CBF2700994CC0 /* BitcoinNetworkProvider.swift in Sources */,
 				5D4B33D523F7DFB400C93A84 /* BinanceTransactionBuilder.swift in Sources */,
@@ -1488,6 +1518,7 @@
 				B0C8222A25F8DA860027E3BF /* CardanoNetworkService.swift in Sources */,
 				B05BF634256F953500B50FD7 /* BitcoinScriptAddress.swift in Sources */,
 				5D7D242A25136254001B9A4F /* WebSocket+Convenience.swift in Sources */,
+				EF0DA791285337120081092A /* CryptoAPIsTarget.swift in Sources */,
 				5DC7DD60243F83E6008F83F2 /* XRPAddressService.swift in Sources */,
 				B0CDFF252641488900B9BA9D /* EthereumJsonRpcProvider.swift in Sources */,
 				B0A63E0D26259D01001FDB7A /* EthereumTransactionParams.swift in Sources */,
@@ -1561,6 +1592,7 @@
 				DAC7C04127A3BB17002F7252 /* PolkadotTransactionBuilder.swift in Sources */,
 				5D88838B27D3BBDA008744E1 /* BaseManager.swift in Sources */,
 				B0ED2011267C9E4500D5C3E5 /* BitcoinTransactionParams.swift in Sources */,
+				EF0DA79328533C0F0081092A /* CryptoAPIsNetworkProvider.swift in Sources */,
 				5D4B33C623F72F1100C93A84 /* BitcoinCashAddressService.swift in Sources */,
 				5D14E4982397B87000C15FC8 /* Blockchain.swift in Sources */,
 				B004DAC026416B8A000863A4 /* EthereumResponse.swift in Sources */,

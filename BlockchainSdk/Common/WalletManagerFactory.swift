@@ -290,12 +290,14 @@ public class WalletManagerFactory {
             
             let blockchairProvider = BlockchairNetworkProvider(endpoint: .dash, apiKey: config.blockchairApiKey)
             let blockcypherProvider = BlockcypherNetworkProvider(endpoint: .dash, tokens: config.blockcypherTokens)
+            let cryptoAPIsNetworkProvider = CryptoAPIsNetworkProvider()
             
             // TODO: Add testnet support throught the https://cryptoapis.io/blockchains/dash
             
             $0.networkService = BitcoinNetworkService(
                 providers: [blockchairProvider.eraseToAnyBitcoinNetworkProvider(),
-                            blockcypherProvider.eraseToAnyBitcoinNetworkProvider()]
+                            blockcypherProvider.eraseToAnyBitcoinNetworkProvider(),
+                            cryptoAPIsNetworkProvider.eraseToAnyBitcoinNetworkProvider()]
             )
         }
     }
