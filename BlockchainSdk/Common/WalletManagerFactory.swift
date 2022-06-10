@@ -291,7 +291,9 @@ public class WalletManagerFactory {
             var providers: [AnyBitcoinNetworkProvider] = []
 
             if testnet {
-                providers.append(CryptoAPIsNetworkProvider().eraseToAnyBitcoinNetworkProvider())
+                let cryptoAPIsProvider = CryptoAPIsNetworkProvider(coinType: .dash, apiKey: config.cryptoAPIsApiKey)
+                
+                providers.append(cryptoAPIsProvider.eraseToAnyBitcoinNetworkProvider())
                 
             } else {
                 let blockchairProvider = BlockchairNetworkProvider(endpoint: .dash, apiKey: config.blockchairApiKey)

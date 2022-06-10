@@ -9,67 +9,37 @@
 import Foundation
 import Moya
 
-enum CryptoAPIsCoinType {
-    case dash
+extension CryptoAPIsProvider.Target: TargetType {
+    var baseURL: URL { CryptoAPIsProvider.host }
     
     var path: String {
-        switch self {
-        case .dash: return "dash"
-        }
-    }
-    
-    var network: String {
-        /// CryptoAPIs uses only for testnet
-        return "testnet"
-    }
-}
-
-struct CryptoAPIsTarget {
-    static let host = URL(string: "https://rest.cryptoapis.io/v2/")!
-    
-    enum Target {
-        case address(address: String, coin: CryptoAPIsCoinType)
-    }
-    
-    let apiKey: String
-    let target: Target
-    
-    
-    init(apiKey: String, target: Target) {
-        self.apiKey = apiKey
-        self.target = target
-    }
-}
- 
-extension CryptoAPIsTarget: TargetType {
-    var baseURL: URL { CryptoAPIsTarget.host }
-    
-    var path: String {
-        switch target {
-        case let .address(address, coin):
-            var endpoint = "blockchain-data"
-            endpoint += "/" + coin.path
-            endpoint += "/" + coin.network
-            endpoint += "/addresses"
-            endpoint += "/" + address
-            return endpoint
+        var path = "blockchain-data"
+        path += "/" + coin.path
+        path += "/" + coin.network
+        
+        switch endpoint {
+        case let .address(address):
+            path += "/addresses"
+            path += "/" + address
+            return path
+            
+        case let .unconfirmedTransactions(address):
+            path += "/address-transactions-unconfirmed"
+            path += "/" + address
+            return path
         }
     }
     
     var method: Moya.Method {
-        switch target {
-        case .address:
+        switch endpoint {
+        case .address, .unconfirmedTransactions:
             return .get
         }
     }
     
-    var sampleData: Data {
-        return Data()
-    }
-    
     var task: Task {
-        switch target {
-        case .address:
+        switch endpoint {
+        case .address, .unconfirmedTransactions:
             return .requestPlain
         }
         
@@ -77,8 +47,8 @@ extension CryptoAPIsTarget: TargetType {
     }
     
     var headers: [String: String]? {
-        switch target {
-        case .address:
+        switch endpoint {
+        case .address, .unconfirmedTransactions:
             return [
                 "Content-Type": "application/json",
                 "X-API-Key": apiKey

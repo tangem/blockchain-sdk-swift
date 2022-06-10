@@ -8,10 +8,6 @@
 
 import Foundation
 
-struct CryptoAPIsDataResponse: Codable {
-    let item: CryptoAPIsAddressResponse?
-}
-
 struct CryptoAPIsAddressResponse: Codable {
     let transactionsCount: Int?
     let confirmedBalance: CryptoAPIsAmount?

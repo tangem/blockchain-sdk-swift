@@ -10,28 +10,20 @@ import Foundation
 import Moya
 import Combine
 
+/// 5991c724d463d8c887660a527809ada3317beb81
+///
 enum CryptoAPIsError: Error {
     case plain
 }
 
 class CryptoAPIsNetworkProvider {
-    let provider = MoyaProvider<CryptoAPIsTarget>()
+    private let provider: CryptoAPIsProvider
     
-
-}
-
-// MARK: - Private
-
-extension CryptoAPIsNetworkProvider {
-    func getBalance(address: String) -> AnyPublisher<CryptoAPIsAddressResponse, Error> {
-        let target = CryptoAPIsTarget(apiKey: "5991c724d463d8c887660a527809ada3317beb81",
-                                      target: .address(address: address, coin: .dash))
-        
-        return provider.requestPublisher(target)
-            .map(CryptoAPIsBaseResponse.self)
-            .compactMap { $0.data?.item }
-            .eraseToAnyPublisher()
-            .eraseError()
+    init(
+        coinType: CryptoAPIsProvider.CoinType,
+        apiKey: String
+    ) {
+        self.provider = CryptoAPIsProvider(apiKey: apiKey, coin: coinType)
     }
 }
 
@@ -40,6 +32,10 @@ extension CryptoAPIsNetworkProvider {
 extension CryptoAPIsNetworkProvider: BitcoinNetworkProvider {
     var supportsTransactionPush: Bool {
         return false
+    }
+    
+    var host: String {
+        CryptoAPIsProvider.host.absoluteString
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
@@ -58,21 +54,40 @@ extension CryptoAPIsNetworkProvider: BitcoinNetworkProvider {
         Result.failure(CryptoAPIsError.plain).publisher.eraseToAnyPublisher()
     }
     
-    var host: String {
-        CryptoAPIsTarget.host.absoluteString
+    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
+        Publishers.Zip(
+            getBalance(address: address),
+            getUnconfirmedTransactions(address: address)
+        ).map { balance, transactions in
+            
+            return BitcoinResponse(
+                balance: balance,
+                hasUnconfirmed: false,
+                pendingTxRefs: transactions.compactMap { $0.asPendingTransaction() } ,
+                unspentOutputs: []
+            )
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - Private
+
+extension CryptoAPIsNetworkProvider {
+    func getBalance(address: String) -> AnyPublisher<Decimal, Error> {
+        provider.request(endpoint: .address(address: address))
+            .map(CryptoAPIsBaseResponse<CryptoAPIsAddressResponse>.self)
+            .compactMap { $0.data?.item?.confirmedBalance?.amount }
+            .compactMap { Decimal($0) }
+            .eraseToAnyPublisher()
+            .eraseError()
     }
     
-    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        getBalance(address: address)
-            .map { response in
-                let balance = Decimal(response.confirmedBalance?.amount ?? "") ?? 0
-                return BitcoinResponse(
-                    balance: balance,
-                    hasUnconfirmed: false,
-                    pendingTxRefs: [],
-                    unspentOutputs: []
-                )
-            }
+    func getUnconfirmedTransactions(address: String) -> AnyPublisher<[CryptoAPIsTransaction], Error> {
+        provider.request(endpoint: .unconfirmedTransactions(address: address))
+            .map(CryptoAPIsBaseResponse<CryptoAPIsTransaction>.self)
+            .compactMap { $0.data?.items }
             .eraseToAnyPublisher()
+            .eraseError()
     }
 }

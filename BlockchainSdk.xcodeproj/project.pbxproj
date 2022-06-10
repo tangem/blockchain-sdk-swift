@@ -216,6 +216,8 @@
 		EF0DA79328533C0F0081092A /* CryptoAPIsNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0DA79228533C0F0081092A /* CryptoAPIsNetworkProvider.swift */; };
 		EF0DA79628533DAD0081092A /* CryptoAPIsBaseResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0DA79528533DAD0081092A /* CryptoAPIsBaseResponse.swift */; };
 		EF0DA79828533DD10081092A /* CryptoAPIsDataResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0DA79728533DD10081092A /* CryptoAPIsDataResponse.swift */; };
+		EF37406B2853579100FD22C9 /* CryptoAPIsMoyaProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF37406A2853579100FD22C9 /* CryptoAPIsMoyaProvider.swift */; };
+		EF37406D28536AC600FD22C9 /* CryptoAPIsTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF37406C28536AC600FD22C9 /* CryptoAPIsTransaction.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -471,6 +473,8 @@
 		EF0DA79228533C0F0081092A /* CryptoAPIsNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsNetworkProvider.swift; sourceTree = "<group>"; };
 		EF0DA79528533DAD0081092A /* CryptoAPIsBaseResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsBaseResponse.swift; sourceTree = "<group>"; };
 		EF0DA79728533DD10081092A /* CryptoAPIsDataResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsDataResponse.swift; sourceTree = "<group>"; };
+		EF37406A2853579100FD22C9 /* CryptoAPIsMoyaProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsMoyaProvider.swift; sourceTree = "<group>"; };
+		EF37406C28536AC600FD22C9 /* CryptoAPIsTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsTransaction.swift; sourceTree = "<group>"; };
 		EF680A72284F524300F6B1BD /* DashWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashWalletManager.swift; sourceTree = "<group>"; };
 		EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashMainNetworkParams.swift; sourceTree = "<group>"; };
 		EFFB30722851E4BD0040A67D /* DashTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashTests.swift; sourceTree = "<group>"; };
@@ -1144,6 +1148,7 @@
 				EF0DA79428533D920081092A /* ResponseModels */,
 				EF0DA790285337120081092A /* CryptoAPIsTarget.swift */,
 				EF0DA79228533C0F0081092A /* CryptoAPIsNetworkProvider.swift */,
+				EF37406A2853579100FD22C9 /* CryptoAPIsMoyaProvider.swift */,
 			);
 			path = CryptoAPIs;
 			sourceTree = "<group>";
@@ -1153,6 +1158,7 @@
 			children = (
 				EF0DA79528533DAD0081092A /* CryptoAPIsBaseResponse.swift */,
 				EF0DA79728533DD10081092A /* CryptoAPIsDataResponse.swift */,
+				EF37406C28536AC600FD22C9 /* CryptoAPIsTransaction.swift */,
 			);
 			path = ResponseModels;
 			sourceTree = "<group>";
@@ -1531,6 +1537,7 @@
 				5D8653FA23A8C481000DE52D /* StellarNetworkService.swift in Sources */,
 				5D7D242F25136254001B9A4F /* XRPTransaction.swift in Sources */,
 				5D304394239A6A6B0066B8D9 /* WalletManagerFactory.swift in Sources */,
+				EF37406D28536AC600FD22C9 /* CryptoAPIsTransaction.swift in Sources */,
 				DA82434327A2B0C100CFC2C0 /* PolkadotResponse.swift in Sources */,
 				5D006ACD239950F9008BA04D /* Wallet.swift in Sources */,
 				5DC7DD66244077F2008F83F2 /* XRPWalletManager.swift in Sources */,
@@ -1549,6 +1556,7 @@
 				5DA6F7BC243F3C0B0040AB4B /* CBOR+.swift in Sources */,
 				5DA163D2273D2146007AA991 /* TezosJsonRpcProvider.swift in Sources */,
 				5DED72BA239FE2F8006D79AE /* Int+.swift in Sources */,
+				EF37406B2853579100FD22C9 /* CryptoAPIsMoyaProvider.swift in Sources */,
 				B06C6793264286390037E7AD /* BlockchairAddressBlockMapper.swift in Sources */,
 				5D26CEF3243CB9FB00994CC0 /* BlockchainInfoTarget.swift in Sources */,
 				5DEC90C12587A35800826C95 /* BlockchainSdkConfig.swift in Sources */,
