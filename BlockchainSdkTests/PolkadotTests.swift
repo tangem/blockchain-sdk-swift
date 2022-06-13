@@ -10,6 +10,8 @@ import XCTest
 import Combine
 import CryptoKit
 
+@testable import BlockchainSdk
+
 class PolkadotTests: XCTestCase {
     // Taken from trust wallet, `SignerTests.cpp`
     
