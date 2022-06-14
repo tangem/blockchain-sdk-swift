@@ -54,7 +54,7 @@ extension CryptoAPIsMoyaProvider {
         }
         
         var network: String {
-            /// CryptoAPIs uses only for testnet
+            /// CryptoAPIs only used for testnet because we have the free version
             return "testnet"
         }
     }
