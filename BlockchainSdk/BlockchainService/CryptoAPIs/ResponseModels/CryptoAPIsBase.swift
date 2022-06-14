@@ -9,9 +9,6 @@
 import Foundation
 
 struct CryptoAPIsBase<T: Codable>: Codable {
-    let apiVersion: String
-    let requestId: String
-    let context: String?
     let data: T
 }
 

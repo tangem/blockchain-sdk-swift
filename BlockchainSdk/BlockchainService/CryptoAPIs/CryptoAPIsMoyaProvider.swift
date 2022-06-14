@@ -22,7 +22,8 @@ class CryptoAPIsMoyaProvider: MoyaProvider<CryptoAPIsMoyaProvider.Target> {
     
     func request(endpoint: Endpoint) -> AnyPublisher<Response, MoyaError> {
         let target = Target(apiKey: apiKey, coin: coin, endpoint: endpoint)
-        return self.requestPublisher(target)
+        return requestPublisher(target)
+                .filterSuccessfulStatusCodes()
     }
 }
 
@@ -38,8 +39,10 @@ extension CryptoAPIsMoyaProvider {
     enum Endpoint {
         case address(address: String)
         case unconfirmedTransactions(address: String)
+        case confirmedTransactions(address: String)
         case unspentOutputs(address: String)
         case fee
+        case push(hex: String)
     }
     
     enum CoinType {
@@ -64,7 +67,14 @@ extension CryptoAPIsMoyaProvider.Target: TargetType {
     var baseURL: URL { CryptoAPIsMoyaProvider.host }
     
     var path: String {
-        var path = "blockchain-data"
+        var path = ""
+        
+        if case .push = endpoint {
+            path += "blockchain-tools"
+        } else {
+            path += "blockchain-data"
+        }
+        
         path += "/" + coin.path
         path += "/" + coin.network
         
@@ -77,6 +87,11 @@ extension CryptoAPIsMoyaProvider.Target: TargetType {
             path += "/address-transactions-unconfirmed"
             path += "/" + address
             return path
+        case let .confirmedTransactions(address):
+            path += "/addresses"
+            path += "/" + address
+            path += "/transactions"
+            return path
         case let .unspentOutputs(address):
             path += "/addresses"
             path += "/" + address
@@ -85,26 +100,37 @@ extension CryptoAPIsMoyaProvider.Target: TargetType {
         case .fee:
             path += "/mempool/fees"
             return path
+        case .push:
+            path += "/transactions/broadcast"
+            return path
         }
     }
     
     var method: Moya.Method {
         switch endpoint {
-        case .address, .unconfirmedTransactions, .unspentOutputs, .fee:
+        case .address, .unconfirmedTransactions, .unspentOutputs, .fee, .confirmedTransactions:
             return .get
+        case .push:
+            return .post
         }
     }
     
     var task: Task {
         switch endpoint {
-        case .address, .unconfirmedTransactions, .unspentOutputs, .fee:
+        case .address, .unconfirmedTransactions, .unspentOutputs, .fee, .confirmedTransactions:
             return .requestPlain
+        case let .push(hex):
+            let requestModel = CryptoAPIsPushTxRequest(signedTransactionHex: hex)
+            let encodable = CryptoAPIsBase<CryptoAPIsBaseItem<CryptoAPIsPushTxRequest>>(
+                data: .init(item: requestModel)
+            )
+            return .requestJSONEncodable(encodable)
         }
     }
     
     var headers: [String: String]? {
         switch endpoint {
-        case .address, .unconfirmedTransactions, .unspentOutputs, .fee:
+        case .address, .unconfirmedTransactions, .unspentOutputs, .fee, .confirmedTransactions, .push:
             return [
                 "Content-Type": "application/json",
                 "X-API-Key": apiKey,

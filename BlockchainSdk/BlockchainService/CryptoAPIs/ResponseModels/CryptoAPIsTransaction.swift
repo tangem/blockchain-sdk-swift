@@ -9,7 +9,7 @@
 import Foundation
 
 /// https://developers.cryptoapis.io/technical-documentation/blockchain-data/unified-endpoints/list-unconfirmed-transactions-by-address
-struct CryptoAPIsTransaction : Codable, TransactionParams {
+struct CryptoAPIsTransaction: Codable, TransactionParams {
     let recipients: [Recipient]
     let senders: [Recipient]
     let timestamp: Date
@@ -23,9 +23,8 @@ extension CryptoAPIsTransaction {
         guard
             let destination = recipients.first,
             let source = senders.first?.address,
-            let vout = blockchainSpecific.vout?.first,
-            let isSpent = vout.isSpent,
-            let value = Decimal(vout.value ?? "")
+            let vout = blockchainSpecific.vout.first,
+            let value = Decimal(vout.value)
         else {
             return nil
         }
@@ -37,43 +36,42 @@ extension CryptoAPIsTransaction {
             source: source,
             fee: nil,
             date: timestamp,
-            isIncoming: !isSpent,
+            isIncoming: !vout.isSpent,
             transactionParams: self
         )
     }
 }
 
 struct BlockchainSpecific: Codable {
-    let locktime: Int?
-    let size: Int?
-    let vSize: Int?
-    let version: Int?
-    let vin: [Vin]?
-    let vout: [Vout]?
+    let locktime: Int
+    let size: Int
+    let version: Int
+    let vin: [Vin]
+    let vout: [Vout]
 }
 
 struct Vin: Codable {
-    let addresses: [String]?
-    let scriptSig: ScriptSig?
-    let sequence: String?
-    let txid: String?
-    let txinwitness: [String]?
+    let addresses: [String]
+    let scriptSig: ScriptSig
+    let sequence: String
+    let txid: String
+    let txinwitness: [String]
     let value: String?
     let vout: Int?
 }
 
 struct Vout: Codable {
-    let isSpent: Bool?
-    let scriptPubKey: ScriptPubKey?
-    let value: String?
+    let isSpent: Bool
+    let scriptPubKey: ScriptPubKey
+    let value: String
 }
 
 struct ScriptPubKey: Codable {
-    let addresses: [String]?
-    let asm: String?
-    let hex: String?
-    let reqSigs: Int?
-    let type: String?
+    let addresses: [String]
+    let asm: String
+    let hex: String
+    let type: String
+    let reqSigs: Int
 }
 
 struct ScriptSig: Codable {

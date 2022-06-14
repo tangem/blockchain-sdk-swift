@@ -20,16 +20,3 @@ struct CryptoAPIsUnspentOutputs: Codable {
     let isConfirmed: Bool
     let timestamp: Date
 }
-
-extension CryptoAPIsUnspentOutputs {
-    func asBitcoinUnspentOutput() -> BitcoinUnspentOutput? {
-        guard let amount = Double(amount) else { return nil }
-        
-        return BitcoinUnspentOutput(
-            transactionHash: transactionId,
-            outputIndex: index,
-            amount: UInt64(amount),
-            outputScript: "p2wpkh" // TODO: Will research
-        )
-    }
-}

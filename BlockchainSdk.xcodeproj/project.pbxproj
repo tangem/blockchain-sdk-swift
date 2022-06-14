@@ -219,6 +219,8 @@
 		EF37406D28536AC600FD22C9 /* CryptoAPIsTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF37406C28536AC600FD22C9 /* CryptoAPIsTransaction.swift */; };
 		EF37406F285875CA00FD22C9 /* CryptoAPIsUnspentOutputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF37406E285875CA00FD22C9 /* CryptoAPIsUnspentOutputs.swift */; };
 		EF374071285882A400FD22C9 /* CryptoAPIsFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF374070285882A400FD22C9 /* CryptoAPIsFee.swift */; };
+		EF374076285A1EED00FD22C9 /* CryptoAPIsPushTxResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF374075285A1EED00FD22C9 /* CryptoAPIsPushTxResponse.swift */; };
+		EF4B41B7285B63E2003911F6 /* CryptoAPIsNetworkProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF4B41B6285B63E2003911F6 /* CryptoAPIsNetworkProviderTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -477,6 +479,8 @@
 		EF37406C28536AC600FD22C9 /* CryptoAPIsTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsTransaction.swift; sourceTree = "<group>"; };
 		EF37406E285875CA00FD22C9 /* CryptoAPIsUnspentOutputs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsUnspentOutputs.swift; sourceTree = "<group>"; };
 		EF374070285882A400FD22C9 /* CryptoAPIsFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsFee.swift; sourceTree = "<group>"; };
+		EF374075285A1EED00FD22C9 /* CryptoAPIsPushTxResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsPushTxResponse.swift; sourceTree = "<group>"; };
+		EF4B41B6285B63E2003911F6 /* CryptoAPIsNetworkProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsNetworkProviderTests.swift; sourceTree = "<group>"; };
 		EF680A72284F524300F6B1BD /* DashWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashWalletManager.swift; sourceTree = "<group>"; };
 		EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashMainNetworkParams.swift; sourceTree = "<group>"; };
 		EFFB30722851E4BD0040A67D /* DashTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashTests.swift; sourceTree = "<group>"; };
@@ -562,6 +566,7 @@
 		5D14E47B2397B80F00C15FC8 /* BlockchainSdkTests */ = {
 			isa = PBXGroup;
 			children = (
+				EF4B41B5285B63C9003911F6 /* Providers */,
 				5D14E47C2397B80F00C15FC8 /* BlockchainSdkTests.swift */,
 				5D14E47E2397B80F00C15FC8 /* Info.plist */,
 				5DFCE543274BB08C00C1B1A0 /* BitcoinTests.swift */,
@@ -1162,8 +1167,17 @@
 				EF37406C28536AC600FD22C9 /* CryptoAPIsTransaction.swift */,
 				EF37406E285875CA00FD22C9 /* CryptoAPIsUnspentOutputs.swift */,
 				EF374070285882A400FD22C9 /* CryptoAPIsFee.swift */,
+				EF374075285A1EED00FD22C9 /* CryptoAPIsPushTxResponse.swift */,
 			);
 			path = ResponseModels;
+			sourceTree = "<group>";
+		};
+		EF4B41B5285B63C9003911F6 /* Providers */ = {
+			isa = PBXGroup;
+			children = (
+				EF4B41B6285B63E2003911F6 /* CryptoAPIsNetworkProviderTests.swift */,
+			);
+			path = Providers;
 			sourceTree = "<group>";
 		};
 		EF680A71284F523100F6B1BD /* Dash */ = {
@@ -1470,6 +1484,7 @@
 				DA9F76EC27EC9A2900F0665C /* TronWalletManager.swift in Sources */,
 				EF0DA78E285246A90081092A /* DashTestNetworkParams.swift in Sources */,
 				5D4B33D923FAAD1B00C93A84 /* BitcoreTarget.swift in Sources */,
+				EF374076285A1EED00FD22C9 /* CryptoAPIsPushTxResponse.swift in Sources */,
 				5DED72BC239FEEEC006D79AE /* BitcoinTransactionBuilder.swift in Sources */,
 				5D8653FC23A8C4A9000DE52D /* StellarTransactionBuilder.swift in Sources */,
 				B044B3A126047F5500D9864F /* RosettaResponse.swift in Sources */,
@@ -1631,6 +1646,7 @@
 				EF0DA78428523FAC0081092A /* EthereumTests.swift in Sources */,
 				EF0DA78A28523FAC0081092A /* PolkadotTests.swift in Sources */,
 				EF0DA78328523FAC0081092A /* AddressTests.swift in Sources */,
+				EF4B41B7285B63E2003911F6 /* CryptoAPIsNetworkProviderTests.swift in Sources */,
 				EF0DA78728523FAC0081092A /* TronTests.swift in Sources */,
 				EF0DA78528523FAC0081092A /* BlockchainSdkTests.swift in Sources */,
 				EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */,

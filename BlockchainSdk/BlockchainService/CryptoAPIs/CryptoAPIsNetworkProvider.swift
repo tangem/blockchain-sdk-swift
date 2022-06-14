@@ -56,14 +56,14 @@ extension CryptoAPIsNetworkProvider: BitcoinNetworkProvider {
             .eraseToAnyPublisher()
     }
     
-    // TODO: Research will be continue
     func send(transaction: String) -> AnyPublisher<String, Error> {
-        Result.failure(CryptoAPIsError.unimplemented).publisher.eraseToAnyPublisher()
+        push(transaction: transaction)
     }
     
-    // TODO: Research will be continue
     func push(transaction: String) -> AnyPublisher<String, Error> {
-        Result.failure(CryptoAPIsError.unimplemented).publisher.eraseToAnyPublisher()
+        sendTransaction(hex: transaction)
+            .map { $0.transactionId }
+            .eraseToAnyPublisher()
     }
     
     // TODO: Research will be continue
@@ -75,13 +75,13 @@ extension CryptoAPIsNetworkProvider: BitcoinNetworkProvider {
         Publishers.CombineLatest3(
             getBalance(address: address),
             getUnconfirmedTransactions(address: address),
-            getUnspentOutputs(address: address)
+            getBitcoinUnspentOutput(address: address)
         ).map { balance, transactions, unspentOutputs in
             return BitcoinResponse(
                 balance: balance,
                 hasUnconfirmed: transactions.isEmpty,
                 pendingTxRefs: transactions.compactMap { $0.asPendingTransaction() } ,
-                unspentOutputs: unspentOutputs.compactMap { $0.asBitcoinUnspentOutput() }
+                unspentOutputs: unspentOutputs
             )
         }
         .eraseToAnyPublisher()
@@ -107,6 +107,14 @@ private extension CryptoAPIsNetworkProvider {
             .eraseError()
     }
     
+    func getConfirmedTransactions(address: String) -> AnyPublisher<[CryptoAPIsTransaction], Error> {
+        provider.request(endpoint: .confirmedTransactions(address: address))
+            .map(CryptoAPIsBase<CryptoAPIsBaseItems<CryptoAPIsTransaction>>.self, using: decoder)
+            .map { $0.data.items }
+            .eraseToAnyPublisher()
+            .eraseError()
+    }
+    
     func getUnspentOutputs(address: String) -> AnyPublisher<[CryptoAPIsUnspentOutputs], Error> {
         provider.request(endpoint: .unspentOutputs(address: address))
             .map(CryptoAPIsBase<CryptoAPIsBaseItems<CryptoAPIsUnspentOutputs>>.self, using: decoder)
@@ -121,5 +129,50 @@ private extension CryptoAPIsNetworkProvider {
             .map { $0.data.item }
             .eraseToAnyPublisher()
             .eraseError()
+    }
+    
+    func getBitcoinUnspentOutput(address: String) -> AnyPublisher<[BitcoinUnspentOutput], Error> {
+        Publishers.CombineLatest(
+            getUnspentOutputs(address: address),
+            getConfirmedTransactions(address: address)
+        ).map { outputs, transactions -> [BitcoinUnspentOutput] in
+            outputs.compactMap { output in
+                guard let tx = transactions.first(where: { $0.transactionId == output.transactionId }),
+                      let amount = Double(output.amount),
+                      let out = tx.blockchainSpecific.vout.first else {
+                    return nil
+                }
+                
+                let satoshi = Decimal(amount).convertToSatoshi(coinRate: pow(10, 8))
+                
+                return BitcoinUnspentOutput(transactionHash: tx.transactionHash,
+                                            outputIndex: output.index,
+                                            amount: UInt64(satoshi),
+                                            outputScript: out.scriptPubKey.hex)
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    func sendTransaction(hex: String) -> AnyPublisher<CryptoAPIsPushTxResponse, Error> {
+        provider.request(endpoint: .push(hex: hex))
+            .map(CryptoAPIsBase<CryptoAPIsBaseItem<CryptoAPIsPushTxResponse>>.self)
+            .map { $0.data.item }
+            .eraseToAnyPublisher()
+            .eraseError()
+    }
+}
+
+extension Decimal {
+    func convertToSatoshi(coinRate: Decimal) -> Int {
+        let coinValue: Decimal = self * coinRate
+
+        let handler = NSDecimalNumberHandler(roundingMode: .plain,
+                                             scale: 0,
+                                             raiseOnExactness: false,
+                                             raiseOnOverflow: false,
+                                             raiseOnUnderflow: false,
+                                             raiseOnDivideByZero: false)
+        return NSDecimalNumber(decimal: coinValue).rounding(accordingToBehavior: handler).intValue
     }
 }

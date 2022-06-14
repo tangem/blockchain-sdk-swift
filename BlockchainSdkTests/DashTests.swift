@@ -88,7 +88,9 @@ class DashTests: XCTestCase {
                 case .finished:
                     expectation.fulfill()
                 }
-            }, receiveValue: { _ in })
+            }, receiveValue: { response in
+                print(response)
+            })
             .store(in: &bag)
         
         waitForExpectations(timeout: 10)
