@@ -82,11 +82,13 @@ class DashTests: XCTestCase {
     
         network.getInfo(address: "yMfdoASh4QEM3zVpZqgXJ8St38X7VWnzp7")
             .sink(receiveCompletion: { completion in
-                print(completion)
-            }, receiveValue: { response in
-                print(response)
-                expectation.fulfill()
-            })
+                switch completion {
+                case let .failure(error):
+                    XCTFail(error.localizedDescription)
+                case .finished:
+                    expectation.fulfill()
+                }
+            }, receiveValue: { _ in })
             .store(in: &bag)
         
         waitForExpectations(timeout: 10)
