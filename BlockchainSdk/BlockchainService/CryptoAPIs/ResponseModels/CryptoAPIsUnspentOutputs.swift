@@ -9,7 +9,7 @@
 import Foundation
 
 /// https://developers.cryptoapis.io/technical-documentation/blockchain-data/unified-endpoints/list-unspent-transaction-outputs-by-address
-struct CryptoAPIsUnspentOutputs : Codable {
+struct CryptoAPIsUnspentOutputs: Codable {
     /// Represents the unique identifier of a transaction, i.e. it could be transactionId
     /// in UTXO-based protocols like Bitcoin, and transaction hash in Ethereum blockchain.
     let transactionId: String
@@ -29,7 +29,7 @@ extension CryptoAPIsUnspentOutputs {
             transactionHash: transactionId,
             outputIndex: index,
             amount: UInt64(amount),
-            outputScript: "outputScript" // TODO: Add outputScript
+            outputScript: "p2wpkh" // TODO: Will research
         )
     }
 }

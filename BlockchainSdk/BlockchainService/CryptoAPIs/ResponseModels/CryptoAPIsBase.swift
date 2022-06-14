@@ -8,18 +8,18 @@
 
 import Foundation
 
-struct CryptoAPIsBase<Data: Codable>: Codable {
+struct CryptoAPIsBase<T: Codable>: Codable {
     let apiVersion: String
     let requestId: String
     let context: String?
-    let data: Data
+    let data: T
 }
 
 struct CryptoAPIsBaseItems<Item: Codable>: Codable {
-    let limit : Int
-    let offset : Int
-    let total : Int
-    let items : [Item]
+    let limit: Int
+    let offset: Int
+    let total: Int
+    let items: [Item]
 }
 
 struct CryptoAPIsBaseItem<Item: Codable>: Codable {

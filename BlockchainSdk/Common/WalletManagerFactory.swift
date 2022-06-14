@@ -288,19 +288,18 @@ public class WalletManagerFactory {
             
             $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
             
-            var providers: [AnyBitcoinNetworkProvider] = []
+            let providers: [AnyBitcoinNetworkProvider]
 
             if testnet {
                 let cryptoAPIsProvider = CryptoAPIsNetworkProvider(coinType: .dash, apiKey: config.cryptoAPIsApiKey)
-                
-                providers.append(cryptoAPIsProvider.eraseToAnyBitcoinNetworkProvider())
+                providers = [cryptoAPIsProvider.eraseToAnyBitcoinNetworkProvider()]
                 
             } else {
                 let blockchairProvider = BlockchairNetworkProvider(endpoint: .dash, apiKey: config.blockchairApiKey)
                 let blockcypherProvider = BlockcypherNetworkProvider(endpoint: .dash, tokens: config.blockcypherTokens)
                 
-                providers.append(blockchairProvider.eraseToAnyBitcoinNetworkProvider())
-                providers.append(blockcypherProvider.eraseToAnyBitcoinNetworkProvider())
+                providers = [blockchairProvider.eraseToAnyBitcoinNetworkProvider(),
+                             blockcypherProvider.eraseToAnyBitcoinNetworkProvider()]
             }
             
             $0.networkService = BitcoinNetworkService(providers: providers)

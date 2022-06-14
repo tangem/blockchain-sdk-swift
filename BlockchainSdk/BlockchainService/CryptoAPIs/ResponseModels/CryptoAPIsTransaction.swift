@@ -43,7 +43,7 @@ extension CryptoAPIsTransaction {
     }
 }
 
-struct BlockchainSpecific : Codable {
+struct BlockchainSpecific: Codable {
     let locktime: Int?
     let size: Int?
     let vSize: Int?

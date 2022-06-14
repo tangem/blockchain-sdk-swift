@@ -73,18 +73,15 @@ extension CryptoAPIsMoyaProvider.Target: TargetType {
             path += "/addresses"
             path += "/" + address
             return path
-            
         case let .unconfirmedTransactions(address):
             path += "/address-transactions-unconfirmed"
             path += "/" + address
             return path
-            
         case let .unspentOutputs(address):
             path += "/addresses"
             path += "/" + address
             path += "/unspent-outputs"
             return path
-            
         case .fee:
             path += "/mempool/fees"
             return path
@@ -110,7 +107,7 @@ extension CryptoAPIsMoyaProvider.Target: TargetType {
         case .address, .unconfirmedTransactions, .unspentOutputs, .fee:
             return [
                 "Content-Type": "application/json",
-                "X-API-Key": apiKey
+                "X-API-Key": apiKey,
             ]
         }
     }
