@@ -1,5 +1,5 @@
 //
-//  CardManager.swift
+//  CommonSigner.swift
 //  BlockchainSdk
 //
 //  Created by Alexander Osokin on 17.12.2019.
