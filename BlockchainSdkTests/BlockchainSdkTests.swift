@@ -10,6 +10,8 @@ import XCTest
 import BitcoinCore
 import TangemSdk
 
+@testable import BlockchainSdk
+
 class BlockchainSdkTests: XCTestCase {
 
     override func setUp() {
