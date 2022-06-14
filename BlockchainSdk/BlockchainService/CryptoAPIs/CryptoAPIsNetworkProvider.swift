@@ -17,13 +17,18 @@ enum CryptoAPIsError: Error {
 }
 
 class CryptoAPIsNetworkProvider {
-    private let provider: CryptoAPIsProvider
+    private let provider: CryptoAPIsMoyaProvider
+    private lazy var decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .secondsSince1970
+        return decoder
+    }()
     
     init(
-        coinType: CryptoAPIsProvider.CoinType,
+        coinType: CryptoAPIsMoyaProvider.CoinType,
         apiKey: String
     ) {
-        self.provider = CryptoAPIsProvider(apiKey: apiKey, coin: coinType)
+        self.provider = CryptoAPIsMoyaProvider(apiKey: apiKey, coin: coinType)
     }
 }
 
@@ -35,7 +40,7 @@ extension CryptoAPIsNetworkProvider: BitcoinNetworkProvider {
     }
     
     var host: String {
-        CryptoAPIsProvider.host.absoluteString
+        CryptoAPIsMoyaProvider.host.absoluteString
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
@@ -55,16 +60,16 @@ extension CryptoAPIsNetworkProvider: BitcoinNetworkProvider {
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        Publishers.Zip(
+        Publishers.CombineLatest3(
             getBalance(address: address),
-            getUnconfirmedTransactions(address: address)
-        ).map { balance, transactions in
-            
+            getUnconfirmedTransactions(address: address),
+            getUnspentOutputs(address: address)
+        ).map { balance, transactions, unspentOutputs in
             return BitcoinResponse(
                 balance: balance,
-                hasUnconfirmed: false,
+                hasUnconfirmed: transactions.isEmpty,
                 pendingTxRefs: transactions.compactMap { $0.asPendingTransaction() } ,
-                unspentOutputs: []
+                unspentOutputs: unspentOutputs.compactMap { $0.asBitcoinUnspentOutput() }
             )
         }
         .eraseToAnyPublisher()
@@ -73,10 +78,11 @@ extension CryptoAPIsNetworkProvider: BitcoinNetworkProvider {
 
 // MARK: - Private
 
-extension CryptoAPIsNetworkProvider {
+private extension CryptoAPIsNetworkProvider {
     func getBalance(address: String) -> AnyPublisher<Decimal, Error> {
         provider.request(endpoint: .address(address: address))
-            .map(CryptoAPIsBaseResponse<CryptoAPIsAddressResponse>.self)
+            .map(CryptoAPIsBase<CryptoAPIsBaseItem<CryptoAPIsAddress>>.self, using: decoder)
+            .print()
             .compactMap { $0.data?.item?.confirmedBalance?.amount }
             .compactMap { Decimal($0) }
             .eraseToAnyPublisher()
@@ -85,7 +91,17 @@ extension CryptoAPIsNetworkProvider {
     
     func getUnconfirmedTransactions(address: String) -> AnyPublisher<[CryptoAPIsTransaction], Error> {
         provider.request(endpoint: .unconfirmedTransactions(address: address))
-            .map(CryptoAPIsBaseResponse<CryptoAPIsTransaction>.self)
+            .map(CryptoAPIsBase<CryptoAPIsBaseItems<CryptoAPIsTransaction>>.self, using: decoder)
+            .print()
+            .compactMap { $0.data?.items }
+            .eraseToAnyPublisher()
+            .eraseError()
+    }
+    
+    func getUnspentOutputs(address: String) -> AnyPublisher<[CryptoAPIsUnspentOutputs], Error> {
+        provider.request(endpoint: .unspentOutputs(address: address))
+            .map(CryptoAPIsBase<CryptoAPIsBaseItems<CryptoAPIsUnspentOutputs>>.self, using: decoder)
+            .print()
             .compactMap { $0.data?.items }
             .eraseToAnyPublisher()
             .eraseError()

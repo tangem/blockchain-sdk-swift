@@ -212,12 +212,12 @@
 		EF0DA78C285246A90081092A /* DashMainNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */; };
 		EF0DA78D285246A90081092A /* DashWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF680A72284F524300F6B1BD /* DashWalletManager.swift */; };
 		EF0DA78E285246A90081092A /* DashTestNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */; };
-		EF0DA791285337120081092A /* CryptoAPIsTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0DA790285337120081092A /* CryptoAPIsTarget.swift */; };
 		EF0DA79328533C0F0081092A /* CryptoAPIsNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0DA79228533C0F0081092A /* CryptoAPIsNetworkProvider.swift */; };
-		EF0DA79628533DAD0081092A /* CryptoAPIsBaseResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0DA79528533DAD0081092A /* CryptoAPIsBaseResponse.swift */; };
+		EF0DA79628533DAD0081092A /* CryptoAPIsBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0DA79528533DAD0081092A /* CryptoAPIsBase.swift */; };
 		EF0DA79828533DD10081092A /* CryptoAPIsDataResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0DA79728533DD10081092A /* CryptoAPIsDataResponse.swift */; };
 		EF37406B2853579100FD22C9 /* CryptoAPIsMoyaProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF37406A2853579100FD22C9 /* CryptoAPIsMoyaProvider.swift */; };
 		EF37406D28536AC600FD22C9 /* CryptoAPIsTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF37406C28536AC600FD22C9 /* CryptoAPIsTransaction.swift */; };
+		EF37406F285875CA00FD22C9 /* CryptoAPIsUnspentOutputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF37406E285875CA00FD22C9 /* CryptoAPIsUnspentOutputs.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -469,12 +469,12 @@
 		DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotAddressService.swift; sourceTree = "<group>"; };
 		DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotWalletManager.swift; sourceTree = "<group>"; };
 		DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetworkService.swift; sourceTree = "<group>"; };
-		EF0DA790285337120081092A /* CryptoAPIsTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsTarget.swift; sourceTree = "<group>"; };
 		EF0DA79228533C0F0081092A /* CryptoAPIsNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsNetworkProvider.swift; sourceTree = "<group>"; };
-		EF0DA79528533DAD0081092A /* CryptoAPIsBaseResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsBaseResponse.swift; sourceTree = "<group>"; };
+		EF0DA79528533DAD0081092A /* CryptoAPIsBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsBase.swift; sourceTree = "<group>"; };
 		EF0DA79728533DD10081092A /* CryptoAPIsDataResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsDataResponse.swift; sourceTree = "<group>"; };
 		EF37406A2853579100FD22C9 /* CryptoAPIsMoyaProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsMoyaProvider.swift; sourceTree = "<group>"; };
 		EF37406C28536AC600FD22C9 /* CryptoAPIsTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsTransaction.swift; sourceTree = "<group>"; };
+		EF37406E285875CA00FD22C9 /* CryptoAPIsUnspentOutputs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsUnspentOutputs.swift; sourceTree = "<group>"; };
 		EF680A72284F524300F6B1BD /* DashWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashWalletManager.swift; sourceTree = "<group>"; };
 		EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashMainNetworkParams.swift; sourceTree = "<group>"; };
 		EFFB30722851E4BD0040A67D /* DashTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashTests.swift; sourceTree = "<group>"; };
@@ -1145,10 +1145,9 @@
 		EF0DA78F285336F80081092A /* CryptoAPIs */ = {
 			isa = PBXGroup;
 			children = (
-				EF0DA79428533D920081092A /* ResponseModels */,
-				EF0DA790285337120081092A /* CryptoAPIsTarget.swift */,
 				EF0DA79228533C0F0081092A /* CryptoAPIsNetworkProvider.swift */,
 				EF37406A2853579100FD22C9 /* CryptoAPIsMoyaProvider.swift */,
+				EF0DA79428533D920081092A /* ResponseModels */,
 			);
 			path = CryptoAPIs;
 			sourceTree = "<group>";
@@ -1156,9 +1155,10 @@
 		EF0DA79428533D920081092A /* ResponseModels */ = {
 			isa = PBXGroup;
 			children = (
-				EF0DA79528533DAD0081092A /* CryptoAPIsBaseResponse.swift */,
+				EF0DA79528533DAD0081092A /* CryptoAPIsBase.swift */,
 				EF0DA79728533DD10081092A /* CryptoAPIsDataResponse.swift */,
 				EF37406C28536AC600FD22C9 /* CryptoAPIsTransaction.swift */,
+				EF37406E285875CA00FD22C9 /* CryptoAPIsUnspentOutputs.swift */,
 			);
 			path = ResponseModels;
 			sourceTree = "<group>";
@@ -1434,6 +1434,7 @@
 				5D4B33D123F7DC7500C93A84 /* BinanceAddressService.swift in Sources */,
 				5D01BCE2243F7F7E0048D1BA /* XrpTarget.swift in Sources */,
 				5D7D242925136254001B9A4F /* XRPLedger.swift in Sources */,
+				EF37406F285875CA00FD22C9 /* CryptoAPIsUnspentOutputs.swift in Sources */,
 				5DF9151D253DB85500B927DD /* TezosNetworkService.swift in Sources */,
 				5DEAFA9224447D350032E316 /* ThenProcessable.swift in Sources */,
 				5DCC817623FAE6D500DFC460 /* AnyPublisher+Response.swift in Sources */,
@@ -1479,7 +1480,7 @@
 				5DD1244427F458CE000425D3 /* DerivationStyle.swift in Sources */,
 				5D845514243DEABB0072155E /* AdaliteResponse.swift in Sources */,
 				B0C2C89D25FBCF0200A61622 /* RosettaTarget.swift in Sources */,
-				EF0DA79628533DAD0081092A /* CryptoAPIsBaseResponse.swift in Sources */,
+				EF0DA79628533DAD0081092A /* CryptoAPIsBase.swift in Sources */,
 				5D908C5726A6D39C00270FA3 /* BinanceTransactionParams.swift in Sources */,
 				5D7D243825136254001B9A4F /* Entropy.swift in Sources */,
 				5DE3BFA4239FB4E500E8815D /* BitcoinNetworkService.swift in Sources */,
@@ -1524,7 +1525,6 @@
 				B0C8222A25F8DA860027E3BF /* CardanoNetworkService.swift in Sources */,
 				B05BF634256F953500B50FD7 /* BitcoinScriptAddress.swift in Sources */,
 				5D7D242A25136254001B9A4F /* WebSocket+Convenience.swift in Sources */,
-				EF0DA791285337120081092A /* CryptoAPIsTarget.swift in Sources */,
 				5DC7DD60243F83E6008F83F2 /* XRPAddressService.swift in Sources */,
 				B0CDFF252641488900B9BA9D /* EthereumJsonRpcProvider.swift in Sources */,
 				B0A63E0D26259D01001FDB7A /* EthereumTransactionParams.swift in Sources */,

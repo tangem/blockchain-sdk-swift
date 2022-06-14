@@ -9,6 +9,7 @@
 import Foundation
 import XCTest
 import BitcoinCore
+import Combine
 
 @testable import BlockchainSdk
 
@@ -17,6 +18,10 @@ class DashTests: XCTestCase {
     private let secpDecompressedKey = Data(hexString: "0441DCD64B5F4A039FC339A16300A833A883B218909F2EBCAF3906651C76842C45E3D67E8D2947E6FEE8B62D3D3B6A4D5F212DA23E478DD69A2C6CCC851F300D80")
     private let secpCompressedKey = Data(hexString: "0241DCD64B5F4A039FC339A16300A833A883B218909F2EBCAF3906651C76842C45")
     
+    private var bag: Set<AnyCancellable> = []
+    
+    // MARK: - Create addresses
+
     func testCreateAddressCompressedMainnet() {
         // given
         let blockchain = Blockchain.dash(testnet: false)
@@ -66,5 +71,24 @@ class DashTests: XCTestCase {
         } catch {
             XCTAssertNil(error)
         }
+    }
+    
+    // MARK: - Network
+    
+    func testNetwork() {
+        let network = CryptoAPIsNetworkProvider(coinType: .dash, apiKey: "5991c724d463d8c887660a527809ada3317beb81")
+        
+        let expectation = expectation(description: "getInfo")
+    
+        network.getInfo(address: "yMfdoASh4QEM3zVpZqgXJ8St38X7VWnzp7")
+            .sink(receiveCompletion: { completion in
+                print(completion)
+            }, receiveValue: { response in
+                print(response)
+                expectation.fulfill()
+            })
+            .store(in: &bag)
+        
+        waitForExpectations(timeout: 10)
     }
 }

@@ -9,7 +9,7 @@
 import Moya
 import Combine
 
-class CryptoAPIsProvider: MoyaProvider<CryptoAPIsProvider.Target> {
+class CryptoAPIsMoyaProvider: MoyaProvider<CryptoAPIsMoyaProvider.Target> {
     static let host = URL(string: "https://rest.cryptoapis.io/v2/")!
     
     let apiKey: String
@@ -28,7 +28,7 @@ class CryptoAPIsProvider: MoyaProvider<CryptoAPIsProvider.Target> {
 
 // MARK: - Types
 
-extension CryptoAPIsProvider {
+extension CryptoAPIsMoyaProvider {
     struct Target {
         let apiKey: String
         let coin: CoinType
@@ -39,6 +39,7 @@ extension CryptoAPIsProvider {
     enum Endpoint {
         case address(address: String)
         case unconfirmedTransactions(address: String)
+        case unspentOutputs(address: String)
     }
     
     enum CoinType {
@@ -53,6 +54,65 @@ extension CryptoAPIsProvider {
         var network: String {
             /// CryptoAPIs uses only for testnet
             return "testnet"
+        }
+    }
+}
+
+// MARK: - TargetType
+
+extension CryptoAPIsMoyaProvider.Target: TargetType {
+    var baseURL: URL { CryptoAPIsMoyaProvider.host }
+    
+    var path: String {
+        var path = "blockchain-data"
+        path += "/" + coin.path
+        path += "/" + coin.network
+        
+        switch endpoint {
+        case let .address(address):
+            path += "/addresses"
+            path += "/" + address
+            return path
+            
+        case let .unconfirmedTransactions(address):
+            path += "/address-transactions-unconfirmed"
+            path += "/" + address
+            return path
+            
+        case let .unspentOutputs(address):
+            path += "/addresses"
+            path += "/" + address
+            path += "/unspent-outputs"
+            return path
+        }
+    }
+    
+    var method: Moya.Method {
+        switch endpoint {
+        case .address, .unconfirmedTransactions, .unspentOutputs:
+            return .get
+        }
+    }
+    
+    var task: Task {
+        switch endpoint {
+        case .address, .unconfirmedTransactions, .unspentOutputs:
+            return .requestPlain
+        }
+        
+//        return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
+    }
+    
+    var headers: [String: String]? {
+        switch endpoint {
+        case .address, .unconfirmedTransactions, .unspentOutputs:
+            return [
+                "Content-Type": "application/json",
+                "X-API-Key": apiKey
+            ]
+            
+//        case .send:
+//            return ["Content-Type": "application/x-www-form-urlencoded"]
         }
     }
 }

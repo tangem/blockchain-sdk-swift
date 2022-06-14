@@ -9,24 +9,23 @@
 import Foundation
 
 struct CryptoAPIsTransaction : Codable, TransactionParams {
-    let recipients : [Recipients]
-    let senders : [Recipients]
-    let timestamp : Date
-    let transactionHash : String
-    let transactionId : String?
-    let blockchainSpecific : BlockchainSpecific?
+    let recipients: [Recipient]
+    let senders: [Recipient]
+    let timestamp: Date
+    let transactionHash: String
+    let transactionId: String?
+    let blockchainSpecific: BlockchainSpecific?
 }
 
 extension CryptoAPIsTransaction {
     func asPendingTransaction() -> PendingTransaction? {
         guard
             let destination = recipients.first,
-            let value = Decimal(destination.amount),
             let source = senders.first?.address,
             let blockchainSpecific = blockchainSpecific,
             let vout = blockchainSpecific.vout?.first,
             let isSpent = vout.isSpent,
-            let value = vout.value
+            let value = Decimal(vout.value ?? "")
         else {
             return nil
         }
@@ -34,7 +33,7 @@ extension CryptoAPIsTransaction {
         return PendingTransaction(
             hash: transactionHash,
             destination: destination.address,
-            value: Decimal(value) ?? 0,
+            value: value,
             source: source,
             fee: nil,
             date: timestamp,
@@ -45,45 +44,45 @@ extension CryptoAPIsTransaction {
 }
 
 struct BlockchainSpecific : Codable {
-    let locktime : Int?
-    let size : Int?
-    let vSize : Int?
-    let version : Int?
-    let vin : [Vin]?
-    let vout : [Vout]?
+    let locktime: Int?
+    let size: Int?
+    let vSize: Int?
+    let version: Int?
+    let vin: [Vin]?
+    let vout: [Vout]?
 }
 
-struct Recipients : Codable {
-    let address : String
-    let amount : String
+struct Vin: Codable {
+    let addresses: [String]?
+    let scriptSig: ScriptSig?
+    let sequence: String?
+    let txid: String?
+    let txinwitness: [String]?
+    let value: String?
+    let vout: Int?
 }
 
-struct ScriptPubKey : Codable {
-    let addresses : [String]?
-    let asm : String?
-    let hex : String?
-    let reqSigs : Int?
-    let type : String?
+struct Vout: Codable {
+    let isSpent: Bool?
+    let scriptPubKey: ScriptPubKey?
+    let value: String?
 }
 
-struct ScriptSig : Codable {
-    let asm : String?
-    let hex : String?
-    let type : String?
+struct ScriptPubKey: Codable {
+    let addresses: [String]?
+    let asm: String?
+    let hex: String?
+    let reqSigs: Int?
+    let type: String?
 }
 
-struct Vin : Codable {
-    let addresses : [String]?
-    let scriptSig : ScriptSig?
-    let sequence : String?
-    let txid : String?
-    let txinwitness : [String]?
-    let value : String?
-    let vout : Int?
+struct ScriptSig: Codable {
+    let asm: String?
+    let hex: String?
+    let type: String?
 }
 
-struct Vout : Codable {
-    let isSpent : Bool?
-    let scriptPubKey : ScriptPubKey?
-    let value : String?
+struct Recipient: Codable {
+    let address: String
+    let amount: String
 }

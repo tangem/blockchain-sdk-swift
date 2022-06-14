@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct CryptoAPIsAddressResponse: Codable {
+struct CryptoAPIsAddress: Codable {
     let transactionsCount: Int?
     let confirmedBalance: CryptoAPIsAmount?
     let totalReceived: CryptoAPIsAmount?

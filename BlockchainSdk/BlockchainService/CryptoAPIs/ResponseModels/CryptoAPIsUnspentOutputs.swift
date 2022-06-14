@@ -1,0 +1,34 @@
+//
+//  CryptoAPIsUnspentOutputs.swift
+//  BlockchainSdk
+//
+//  Created by Sergey Balashov on 14.06.2022.
+//  Copyright © 2022 Tangem AG. All rights reserved.
+//
+
+import Foundation
+
+struct CryptoAPIsUnspentOutputs : Codable {
+    /// Represents the unique identifier of a transaction, i.e. it could be transactionId
+    /// in UTXO-based protocols like Bitcoin, and transaction hash in Ethereum blockchain.
+    let transactionId: String
+    let amount: String
+    let index: Int
+    
+    let address: String?
+    let isConfirmed: Bool?
+    let timestamp: Date?
+}
+
+extension CryptoAPIsUnspentOutputs {
+    func asBitcoinUnspentOutput() -> BitcoinUnspentOutput? {
+        guard let amount = Double(amount) else { return nil }
+        
+        return BitcoinUnspentOutput(
+            transactionHash: transactionId,
+            outputIndex: index,
+            amount: UInt64(amount),
+            outputScript: "outputScript" // TODO: Add outputScript
+        )
+    }
+}
