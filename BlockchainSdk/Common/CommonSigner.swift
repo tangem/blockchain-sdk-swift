@@ -12,15 +12,15 @@ import Combine
 
 @available(iOS 13.0, *)
 public class CommonSigner {
-    public var initialMessage: Message?
     public var cardId: String?
+    public var initialMessage: Message?
     
     private let sdk: TangemSdk
     
-    public init(sdk: TangemSdk, initialMessage: Message? = nil, cardId: String? = nil) {
+    public init(sdk: TangemSdk, cardId: String? = nil, initialMessage: Message? = nil) {
         self.sdk = sdk
-        self.initialMessage = initialMessage
         self.cardId = cardId
+        self.initialMessage = initialMessage
     }
 }
 
