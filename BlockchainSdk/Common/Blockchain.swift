@@ -676,8 +676,8 @@ extension Blockchain {
             let subdomain = testnet ? "testnet." : ""
             return URL(string: "https://\(subdomain)arbiscan.io/address/\(address)")!
         case .dash:
-            let netType = isTestnet ? "testnet" : "mainnet"
-            return URL(string: "https://blockexplorer.one/dash/\(netType)/address/\(address)")
+            let network = isTestnet ? "testnet" : "mainnet"
+            return URL(string: "https://blockexplorer.one/dash/\(network)/address/\(address)")
         }
     }
 }

@@ -303,8 +303,6 @@ public class WalletManagerFactory {
                 providers.append(blockcypherProvider.eraseToAnyBitcoinNetworkProvider())
             }
             
-            // TODO: Add testnet support throught the https://cryptoapis.io/blockchains/dash
-            
             $0.networkService = BitcoinNetworkService(providers: providers)
         }
     }
