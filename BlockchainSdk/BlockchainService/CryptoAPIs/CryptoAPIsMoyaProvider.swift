@@ -32,7 +32,6 @@ extension CryptoAPIsMoyaProvider {
     struct Target {
         let apiKey: String
         let coin: CoinType
-        
         let endpoint: Endpoint
     }
     
@@ -40,7 +39,6 @@ extension CryptoAPIsMoyaProvider {
         case address(address: String)
         case unconfirmedTransactions(address: String)
         case unspentOutputs(address: String)
-        
         case fee
     }
     
