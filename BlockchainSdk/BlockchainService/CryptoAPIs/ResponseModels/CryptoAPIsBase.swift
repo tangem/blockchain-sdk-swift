@@ -9,19 +9,19 @@
 import Foundation
 
 struct CryptoAPIsBase<Data: Codable>: Codable {
-    let apiVersion: String?
-    let requestId: String?
+    let apiVersion: String
+    let requestId: String
     let context: String?
-    let data: Data?
+    let data: Data
 }
 
 struct CryptoAPIsBaseItems<Item: Codable>: Codable {
-    let limit : Int?
-    let offset : Int?
-    let total : Int?
-    let items : [Item]?
+    let limit : Int
+    let offset : Int
+    let total : Int
+    let items : [Item]
 }
 
 struct CryptoAPIsBaseItem<Item: Codable>: Codable {
-    let item: Item?
+    let item: Item
 }

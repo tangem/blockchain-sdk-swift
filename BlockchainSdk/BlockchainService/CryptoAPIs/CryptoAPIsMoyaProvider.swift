@@ -40,6 +40,8 @@ extension CryptoAPIsMoyaProvider {
         case address(address: String)
         case unconfirmedTransactions(address: String)
         case unspentOutputs(address: String)
+        
+        case fee
     }
     
     enum CoinType {
@@ -84,35 +86,34 @@ extension CryptoAPIsMoyaProvider.Target: TargetType {
             path += "/" + address
             path += "/unspent-outputs"
             return path
+            
+        case .fee:
+            path += "/mempool/fees"
+            return path
         }
     }
     
     var method: Moya.Method {
         switch endpoint {
-        case .address, .unconfirmedTransactions, .unspentOutputs:
+        case .address, .unconfirmedTransactions, .unspentOutputs, .fee:
             return .get
         }
     }
     
     var task: Task {
         switch endpoint {
-        case .address, .unconfirmedTransactions, .unspentOutputs:
+        case .address, .unconfirmedTransactions, .unspentOutputs, .fee:
             return .requestPlain
         }
-        
-//        return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
     }
     
     var headers: [String: String]? {
         switch endpoint {
-        case .address, .unconfirmedTransactions, .unspentOutputs:
+        case .address, .unconfirmedTransactions, .unspentOutputs, .fee:
             return [
                 "Content-Type": "application/json",
                 "X-API-Key": apiKey
             ]
-            
-//        case .send:
-//            return ["Content-Type": "application/x-www-form-urlencoded"]
         }
     }
 }

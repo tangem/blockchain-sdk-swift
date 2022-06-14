@@ -8,13 +8,14 @@
 
 import Foundation
 
+/// https://developers.cryptoapis.io/technical-documentation/blockchain-data/unified-endpoints/list-unconfirmed-transactions-by-address
 struct CryptoAPIsTransaction : Codable, TransactionParams {
     let recipients: [Recipient]
     let senders: [Recipient]
     let timestamp: Date
     let transactionHash: String
-    let transactionId: String?
-    let blockchainSpecific: BlockchainSpecific?
+    let transactionId: String
+    let blockchainSpecific: BlockchainSpecific
 }
 
 extension CryptoAPIsTransaction {
@@ -22,7 +23,6 @@ extension CryptoAPIsTransaction {
         guard
             let destination = recipients.first,
             let source = senders.first?.address,
-            let blockchainSpecific = blockchainSpecific,
             let vout = blockchainSpecific.vout?.first,
             let isSpent = vout.isSpent,
             let value = Decimal(vout.value ?? "")

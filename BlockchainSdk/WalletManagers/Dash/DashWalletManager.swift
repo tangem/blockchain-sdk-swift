@@ -8,10 +8,7 @@
 
 import Foundation
 
-class DashWalletManager: BitcoinWalletManager {
-    override var minimalFee: Decimal { 1.0 }
-    override var minimalFeePerByte: Decimal { 1 }
-}
+class DashWalletManager: BitcoinWalletManager {}
 
 extension DashWalletManager: DustRestrictable {
     var dustValue: Amount {

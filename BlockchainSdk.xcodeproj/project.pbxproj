@@ -218,6 +218,7 @@
 		EF37406B2853579100FD22C9 /* CryptoAPIsMoyaProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF37406A2853579100FD22C9 /* CryptoAPIsMoyaProvider.swift */; };
 		EF37406D28536AC600FD22C9 /* CryptoAPIsTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF37406C28536AC600FD22C9 /* CryptoAPIsTransaction.swift */; };
 		EF37406F285875CA00FD22C9 /* CryptoAPIsUnspentOutputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF37406E285875CA00FD22C9 /* CryptoAPIsUnspentOutputs.swift */; };
+		EF374071285882A400FD22C9 /* CryptoAPIsFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF374070285882A400FD22C9 /* CryptoAPIsFee.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -475,6 +476,7 @@
 		EF37406A2853579100FD22C9 /* CryptoAPIsMoyaProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsMoyaProvider.swift; sourceTree = "<group>"; };
 		EF37406C28536AC600FD22C9 /* CryptoAPIsTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsTransaction.swift; sourceTree = "<group>"; };
 		EF37406E285875CA00FD22C9 /* CryptoAPIsUnspentOutputs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsUnspentOutputs.swift; sourceTree = "<group>"; };
+		EF374070285882A400FD22C9 /* CryptoAPIsFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAPIsFee.swift; sourceTree = "<group>"; };
 		EF680A72284F524300F6B1BD /* DashWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashWalletManager.swift; sourceTree = "<group>"; };
 		EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashMainNetworkParams.swift; sourceTree = "<group>"; };
 		EFFB30722851E4BD0040A67D /* DashTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashTests.swift; sourceTree = "<group>"; };
@@ -1159,6 +1161,7 @@
 				EF0DA79728533DD10081092A /* CryptoAPIsDataResponse.swift */,
 				EF37406C28536AC600FD22C9 /* CryptoAPIsTransaction.swift */,
 				EF37406E285875CA00FD22C9 /* CryptoAPIsUnspentOutputs.swift */,
+				EF374070285882A400FD22C9 /* CryptoAPIsFee.swift */,
 			);
 			path = ResponseModels;
 			sourceTree = "<group>";
@@ -1434,6 +1437,7 @@
 				5D4B33D123F7DC7500C93A84 /* BinanceAddressService.swift in Sources */,
 				5D01BCE2243F7F7E0048D1BA /* XrpTarget.swift in Sources */,
 				5D7D242925136254001B9A4F /* XRPLedger.swift in Sources */,
+				EF374071285882A400FD22C9 /* CryptoAPIsFee.swift in Sources */,
 				EF37406F285875CA00FD22C9 /* CryptoAPIsUnspentOutputs.swift in Sources */,
 				5DF9151D253DB85500B927DD /* TezosNetworkService.swift in Sources */,
 				5DEAFA9224447D350032E316 /* ThenProcessable.swift in Sources */,

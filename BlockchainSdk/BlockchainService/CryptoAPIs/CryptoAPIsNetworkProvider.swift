@@ -10,10 +10,8 @@ import Foundation
 import Moya
 import Combine
 
-/// 5991c724d463d8c887660a527809ada3317beb81
-///
 enum CryptoAPIsError: Error {
-    case plain
+    case unimplemented
 }
 
 class CryptoAPIsNetworkProvider {
@@ -44,19 +42,33 @@ extension CryptoAPIsNetworkProvider: BitcoinNetworkProvider {
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
-        Result.failure(CryptoAPIsError.plain).publisher.eraseToAnyPublisher()
+        getFeeRecommendations()
+            .compactMap { fee -> BitcoinFee? in
+                guard let minimal = Decimal(fee.slow),
+                      let normal = Decimal(fee.standard),
+                      let priority = Decimal(fee.fast) else {
+                    return nil
+                }
+
+                return BitcoinFee(
+                    minimalSatoshiPerByte: minimal,
+                    normalSatoshiPerByte: normal,
+                    prioritySatoshiPerByte: priority
+                )
+            }
+            .eraseToAnyPublisher()
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
-        Result.failure(CryptoAPIsError.plain).publisher.eraseToAnyPublisher()
+        Result.failure(CryptoAPIsError.unimplemented).publisher.eraseToAnyPublisher()
     }
     
     func push(transaction: String) -> AnyPublisher<String, Error> {
-        Result.failure(CryptoAPIsError.plain).publisher.eraseToAnyPublisher()
+        Result.failure(CryptoAPIsError.unimplemented).publisher.eraseToAnyPublisher()
     }
     
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-        Result.failure(CryptoAPIsError.plain).publisher.eraseToAnyPublisher()
+        Result.failure(CryptoAPIsError.unimplemented).publisher.eraseToAnyPublisher()
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
@@ -82,9 +94,7 @@ private extension CryptoAPIsNetworkProvider {
     func getBalance(address: String) -> AnyPublisher<Decimal, Error> {
         provider.request(endpoint: .address(address: address))
             .map(CryptoAPIsBase<CryptoAPIsBaseItem<CryptoAPIsAddress>>.self, using: decoder)
-            .print()
-            .compactMap { $0.data?.item?.confirmedBalance?.amount }
-            .compactMap { Decimal($0) }
+            .compactMap { Decimal($0.data.item.confirmedBalance.amount) }
             .eraseToAnyPublisher()
             .eraseError()
     }
@@ -92,8 +102,7 @@ private extension CryptoAPIsNetworkProvider {
     func getUnconfirmedTransactions(address: String) -> AnyPublisher<[CryptoAPIsTransaction], Error> {
         provider.request(endpoint: .unconfirmedTransactions(address: address))
             .map(CryptoAPIsBase<CryptoAPIsBaseItems<CryptoAPIsTransaction>>.self, using: decoder)
-            .print()
-            .compactMap { $0.data?.items }
+            .map { $0.data.items }
             .eraseToAnyPublisher()
             .eraseError()
     }
@@ -101,8 +110,15 @@ private extension CryptoAPIsNetworkProvider {
     func getUnspentOutputs(address: String) -> AnyPublisher<[CryptoAPIsUnspentOutputs], Error> {
         provider.request(endpoint: .unspentOutputs(address: address))
             .map(CryptoAPIsBase<CryptoAPIsBaseItems<CryptoAPIsUnspentOutputs>>.self, using: decoder)
-            .print()
-            .compactMap { $0.data?.items }
+            .map { $0.data.items }
+            .eraseToAnyPublisher()
+            .eraseError()
+    }
+    
+    func getFeeRecommendations() -> AnyPublisher<CryptoAPIsFee, Error> {
+        provider.request(endpoint: .fee)
+            .map(CryptoAPIsBase<CryptoAPIsBaseItem<CryptoAPIsFee>>.self, using: decoder)
+            .map { $0.data.item }
             .eraseToAnyPublisher()
             .eraseError()
     }
