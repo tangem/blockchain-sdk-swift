@@ -75,7 +75,7 @@ class DashTests: XCTestCase {
     
     // MARK: - Network
     
-    func testNetwork() {
+    func testDashCryptoAPIsNetworkProviderGetInfo() {
         let network = CryptoAPIsNetworkProvider(coinType: .dash, apiKey: "5991c724d463d8c887660a527809ada3317beb81")
         
         let expectation = expectation(description: "getInfo")
