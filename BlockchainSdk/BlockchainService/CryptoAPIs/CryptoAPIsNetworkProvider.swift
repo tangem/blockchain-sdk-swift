@@ -22,10 +22,8 @@ class CryptoAPIsNetworkProvider {
         return decoder
     }()
     
-    init(
-        coinType: CryptoAPIsMoyaProvider.CoinType,
-        apiKey: String
-    ) {
+    init(coinType: CryptoAPIsMoyaProvider.CoinType,
+         apiKey: String) {
         self.provider = CryptoAPIsMoyaProvider(apiKey: apiKey, coin: coinType)
     }
 }
@@ -59,14 +57,17 @@ extension CryptoAPIsNetworkProvider: BitcoinNetworkProvider {
             .eraseToAnyPublisher()
     }
     
+    // TODO: Research will be continue
     func send(transaction: String) -> AnyPublisher<String, Error> {
         Result.failure(CryptoAPIsError.unimplemented).publisher.eraseToAnyPublisher()
     }
     
+    // TODO: Research will be continue
     func push(transaction: String) -> AnyPublisher<String, Error> {
         Result.failure(CryptoAPIsError.unimplemented).publisher.eraseToAnyPublisher()
     }
     
+    // TODO: Research will be continue
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
         Result.failure(CryptoAPIsError.unimplemented).publisher.eraseToAnyPublisher()
     }
