@@ -22,8 +22,7 @@ class CryptoAPIsNetworkProvider {
         return decoder
     }()
     
-    init(coinType: CryptoAPIsMoyaProvider.CoinType,
-         apiKey: String) {
+    init(coinType: CryptoAPIsMoyaProvider.CoinType, apiKey: String) {
         self.provider = CryptoAPIsMoyaProvider(apiKey: apiKey, coin: coinType)
     }
 }
