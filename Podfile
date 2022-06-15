@@ -6,7 +6,7 @@ def common_pods
   pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'develop-138'
   # pod 'TangemSdk', :path => '../tangem-sdk-ios'
 
-  pod 'BitcoinCore.swift', :git => 'https://github.com/lazutkin-andrey/bitcoincore.git', :tag => '0.0.16'
+  pod 'BitcoinCore.swift', :git => 'https://github.com/tangem/bitcoincore.git', :tag => '0.0.16'
   # pod 'BitcoinCore.swift', :path => '../bitcoincore'
 end
 
@@ -18,12 +18,12 @@ target 'BlockchainSdk' do
   pod 'Moya'
   pod 'Sodium'
   pod 'SwiftCBOR'
-  pod 'BinanceChain', :git => 'https://github.com/lazutkin-andrey/swiftbinancechain.git', :tag => '0.0.9'
+  pod 'BinanceChain', :git => 'https://github.com/tangem/swiftbinancechain.git', :tag => '0.0.9'
   #pod 'BinanceChain', :path => '../SwiftBinanceChain'
-  pod 'HDWalletKit', :git => 'https://github.com/lazutkin-andrey/hdwallet.git', :tag => '0.3.12'
+  pod 'HDWalletKit', :git => 'https://github.com/tangem/hdwallet.git', :tag => '0.3.12'
   #pod 'HDWalletKit', :path => '../HDWallet'
   #pod 'web3swift', :path => '../web3swift'
-  pod 'web3swift', :git => 'https://github.com/lazutkin-andrey/web3swift.git', :tag => '2.2.9'
+  pod 'web3swift', :git => 'https://github.com/tangem/web3swift.git', :tag => '2.2.9'
   pod 'AnyCodable-FlightSchool'
   pod 'stellar-ios-mac-sdk'
 
