@@ -1,8 +1,14 @@
 lane :test do
-cocoapods
-run_tests(
-  workspace: "BlockchainSdk.xcworkspace",
-  scheme: "BlockchainSdk",
-  clean: true
-)
+  puts "remove Podfile.lock if exist"
+  sh("bash remove-if-exist.sh ../Podfile.lock")
+
+  cocoapods(
+    try_repo_update_on_error: true
+  )
+
+  run_tests(
+    workspace: "BlockchainSdk.xcworkspace",
+    scheme: "BlockchainSdk",
+    clean: true
+  )
 end
