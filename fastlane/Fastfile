@@ -1,6 +1,6 @@
 lane :test do
-  puts "remove Podfile.lock if exist"
-  sh("bash remove-if-exist.sh ../Podfile.lock")
+  puts "remove Podfile.lock"
+  sh("rm -f ../Podfile.lock")
 
   cocoapods(
     try_repo_update_on_error: true
