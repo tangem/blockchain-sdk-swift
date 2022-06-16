@@ -286,6 +286,8 @@ public class WalletManagerFactory {
                 bip: .bip44
             )
             
+            // TODO: Add CryptoAPIs for testnet
+            
             $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
             
             let blockchairProvider = BlockchairNetworkProvider(endpoint: .dash, apiKey: config.blockchairApiKey)

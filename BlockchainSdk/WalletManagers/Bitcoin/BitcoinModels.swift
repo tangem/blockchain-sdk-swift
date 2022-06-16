@@ -54,8 +54,6 @@ struct BitcoinUnspentOutput {
     let transactionHash: String
     let outputIndex: Int
     let amount: UInt64
-    
-    // TODO: What it is?
     let outputScript: String
 }
 

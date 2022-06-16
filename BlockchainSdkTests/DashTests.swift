@@ -72,27 +72,4 @@ class DashTests: XCTestCase {
             XCTAssertNil(error)
         }
     }
-    
-    // MARK: - Network
-    
-    func testDashCryptoAPIsNetworkProviderGetInfo() {
-        let network = CryptoAPIsNetworkProvider(coinType: .dash, apiKey: "5991c724d463d8c887660a527809ada3317beb81")
-        
-        let expectation = expectation(description: "getInfo")
-    
-        network.getInfo(address: "yMfdoASh4QEM3zVpZqgXJ8St38X7VWnzp7")
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case let .failure(error):
-                    XCTFail(error.localizedDescription)
-                case .finished:
-                    expectation.fulfill()
-                }
-            }, receiveValue: { response in
-                print(response)
-            })
-            .store(in: &bag)
-        
-        waitForExpectations(timeout: 10)
-    }
 }
