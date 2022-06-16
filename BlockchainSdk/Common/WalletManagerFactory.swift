@@ -263,8 +263,8 @@ public class WalletManagerFactory {
                 $0.networkService = TronNetworkService(blockchain: blockchain, rpcProvider: rpcProvider)
                 $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
             }
-        case .dash(let testnet):
-            return try makeDashWalletManager(testnet: testnet, wallet: wallet)
+        case .dash:
+            return try makeDashWalletManager(testnet: false, wallet: wallet)
         }
     }
     
@@ -288,21 +288,13 @@ public class WalletManagerFactory {
             
             $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
             
-            let providers: [AnyBitcoinNetworkProvider]
-
-            if testnet {
-                let cryptoAPIsProvider = CryptoAPIsNetworkProvider(coinType: .dash, apiKey: config.cryptoAPIsApiKey)
-                providers = [cryptoAPIsProvider.eraseToAnyBitcoinNetworkProvider()]
-                
-            } else {
-                let blockchairProvider = BlockchairNetworkProvider(endpoint: .dash, apiKey: config.blockchairApiKey)
-                let blockcypherProvider = BlockcypherNetworkProvider(endpoint: .dash, tokens: config.blockcypherTokens)
-                
-                providers = [blockchairProvider.eraseToAnyBitcoinNetworkProvider(),
-                             blockcypherProvider.eraseToAnyBitcoinNetworkProvider()]
-            }
+            let blockchairProvider = BlockchairNetworkProvider(endpoint: .dash, apiKey: config.blockchairApiKey)
+            let blockcypherProvider = BlockcypherNetworkProvider(endpoint: .dash, tokens: config.blockcypherTokens)
             
-            $0.networkService = BitcoinNetworkService(providers: providers)
+            $0.networkService = BitcoinNetworkService(
+                providers: [blockchairProvider.eraseToAnyBitcoinNetworkProvider(),
+                            blockcypherProvider.eraseToAnyBitcoinNetworkProvider()]
+            )
         }
     }
 }
