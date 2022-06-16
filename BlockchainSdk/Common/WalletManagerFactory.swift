@@ -263,8 +263,8 @@ public class WalletManagerFactory {
                 $0.networkService = TronNetworkService(blockchain: blockchain, rpcProvider: rpcProvider)
                 $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
             }
-        case .dash:
-            return try makeDashWalletManager(testnet: false, wallet: wallet)
+        case .dash(let testnet):
+            return try makeDashWalletManager(testnet: testnet, wallet: wallet)
         }
     }
     

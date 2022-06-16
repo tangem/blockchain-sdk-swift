@@ -35,7 +35,7 @@ public enum Blockchain: Equatable, Hashable {
     case kusama
     case tron(testnet: Bool)
     case arbitrum(testnet: Bool)
-    case dash
+    case dash(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -67,8 +67,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .arbitrum(let testnet):
             return testnet
-        case .dash:
-            return false
+        case .dash(let testnet):
+            return testnet
         }
     }
     
@@ -148,8 +148,8 @@ public enum Blockchain: Equatable, Hashable {
             return "KSM"
         case .tron:
             return "TRX"
-        case .dash:
-            return "DASH"
+        case .dash(let testnet):
+            return testnet ? "tDASH" : "DASH"
         }
     }
     
@@ -720,7 +720,7 @@ extension Blockchain {
         case "kusama": return .kusama
         case "tron": return .tron(testnet: isTestnet)
         case "arbitrum": return .arbitrum(testnet: isTestnet)
-        case "dash": return .dash
+        case "dash": return .dash(testnet: isTestnet)
         default: return nil
         }
     }

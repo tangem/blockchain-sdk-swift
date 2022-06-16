@@ -37,7 +37,7 @@ enum BlockcypherEndpoint {
         case .ethereum: return .ethereum(testnet: false)
         case .litecoin: return .litecoin
         case .dogecoin: return .dogecoin
-        case .dash: return .dash
+        case .dash: return .dash(testnet: false)
         }
     }
 }

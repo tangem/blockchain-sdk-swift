@@ -41,7 +41,7 @@ enum BlockchairEndpoint {
         case .dogecoin:
             return .dogecoin
         case .dash:
-            return .dash
+            return .dash(testnet: false)
         }
     }
 }
