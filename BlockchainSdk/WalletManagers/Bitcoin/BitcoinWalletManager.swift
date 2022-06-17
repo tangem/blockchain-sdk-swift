@@ -73,7 +73,6 @@ class BitcoinWalletManager: BaseManager, WalletManager {
         }
         
         return signer.sign(hashes: hashes,
-                           cardId: wallet.cardId,
                            walletPublicKey: self.wallet.publicKey)
             .tryMap {[weak self] signatures -> (String) in
                 guard let self = self else { throw WalletError.empty }
