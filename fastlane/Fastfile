@@ -1,14 +1,8 @@
 lane :test do
-  puts "remove Podfile.lock"
-  sh("rm -f ../Podfile.lock")
-
-  cocoapods(
-    try_repo_update_on_error: true
-  )
-
-  run_tests(
-    workspace: "BlockchainSdk.xcworkspace",
-    scheme: "BlockchainSdk",
-    clean: true
-  )
+cocoapods
+run_tests(
+  workspace: "BlockchainSdk.xcworkspace",
+  scheme: "BlockchainSdk",
+  clean: true
+)
 end
