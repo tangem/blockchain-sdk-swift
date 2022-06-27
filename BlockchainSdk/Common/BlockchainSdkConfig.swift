@@ -12,17 +12,14 @@ public struct BlockchainSdkConfig {
     let blockchairApiKey: String
     let blockcypherTokens: [String]
     let infuraProjectId: String
-    let cryptoAPIsApiKey: String
     
     public init(
         blockchairApiKey: String,
         blockcypherTokens: [String],
-        infuraProjectId: String,
-        cryptoAPIsApiKey: String
+        infuraProjectId: String
     ) {
         self.blockchairApiKey = blockchairApiKey
         self.blockcypherTokens = blockcypherTokens
         self.infuraProjectId = infuraProjectId
-        self.cryptoAPIsApiKey = cryptoAPIsApiKey
     }
 }

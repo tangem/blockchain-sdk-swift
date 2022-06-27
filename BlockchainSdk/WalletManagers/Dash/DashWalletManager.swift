@@ -11,9 +11,3 @@ import Foundation
 class DashWalletManager: BitcoinWalletManager {
     override var minimalFeePerByte: Decimal { 1 }
 }
-
-extension DashWalletManager: DustRestrictable {
-    var dustValue: Amount {
-        Amount(with: wallet.blockchain, value: minimalFee)
-    }
-}

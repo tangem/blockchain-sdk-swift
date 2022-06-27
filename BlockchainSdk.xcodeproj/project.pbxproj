@@ -208,7 +208,6 @@
 		EF0DA78828523FAC0081092A /* BitcoinTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFCE543274BB08C00C1B1A0 /* BitcoinTests.swift */; };
 		EF0DA78928523FAC0081092A /* LitecoinTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFCE547274BB85B00C1B1A0 /* LitecoinTests.swift */; };
 		EF0DA78A28523FAC0081092A /* PolkadotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7CA47527AD4BD90041B1A1 /* PolkadotTests.swift */; };
-		EF0DA78B285246850081092A /* DashTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFB30722851E4BD0040A67D /* DashTests.swift */; };
 		EF0DA78C285246A90081092A /* DashMainNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */; };
 		EF0DA78D285246A90081092A /* DashWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF680A72284F524300F6B1BD /* DashWalletManager.swift */; };
 		EF0DA78E285246A90081092A /* DashTestNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */; };
@@ -465,7 +464,6 @@
 		DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetworkService.swift; sourceTree = "<group>"; };
 		EF680A72284F524300F6B1BD /* DashWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashWalletManager.swift; sourceTree = "<group>"; };
 		EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashMainNetworkParams.swift; sourceTree = "<group>"; };
-		EFFB30722851E4BD0040A67D /* DashTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashTests.swift; sourceTree = "<group>"; };
 		EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashTestNetworkParams.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -558,7 +556,6 @@
 				DA07EFEA28191631008712F1 /* TronTests.swift */,
 				5DE57D99277CAD6100CCA18A /* AddressTests.swift */,
 				5D8FFDD927D8B77400C5993F /* XCTestCase+.swift */,
-				EFFB30722851E4BD0040A67D /* DashTests.swift */,
 			);
 			path = BlockchainSdkTests;
 			sourceTree = "<group>";
@@ -1591,7 +1588,6 @@
 				EF0DA78528523FAC0081092A /* BlockchainSdkTests.swift in Sources */,
 				EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */,
 				EF0DA78628523FAC0081092A /* XCTestCase+.swift in Sources */,
-				EF0DA78B285246850081092A /* DashTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
