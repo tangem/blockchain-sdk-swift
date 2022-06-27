@@ -21,7 +21,7 @@ PODS:
   - BinanceChain/Util (1.0.1-beta)
   - BitcoinCore.swift (0.15.4)
   - CryptoSwift (1.5.1)
-  - HDWalletKit (0.3.5):
+  - HDWalletKit (0.3.6):
     - CryptoSwift
     - secp256k1.swift
   - Moya (15.0.0):
@@ -54,7 +54,7 @@ PODS:
   - SwiftDate (6.3.1)
   - SwiftProtobuf (1.18.0)
   - SwiftyJSON (5.0.1)
-  - TangemSdk (3.3.0)
+  - TangemSdk (3.3.4)
   - TweetNacl (1.0.2)
   - web3swift (2.2.1):
     - BigInt
@@ -82,7 +82,7 @@ DEPENDENCIES:
   - SwiftCBOR
   - SwiftProtobuf
   - SwiftyJSON
-  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-138`)
+  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-152`)
   - web3swift (from `https://github.com/tangem/web3swift.git`, tag `2.2.9`)
 
 SPEC REPOS:
@@ -121,7 +121,7 @@ EXTERNAL SOURCES:
     :tag: add-external-signer-1
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-138
+    :tag: develop-152
   web3swift:
     :git: https://github.com/tangem/web3swift.git
     :tag: 2.2.9
@@ -141,7 +141,7 @@ CHECKOUT OPTIONS:
     :tag: add-external-signer-1
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-138
+    :tag: develop-152
   web3swift:
     :git: https://github.com/tangem/web3swift.git
     :tag: 2.2.9
@@ -153,7 +153,7 @@ SPEC CHECKSUMS:
   BinanceChain: b77d4c0e496efbf13bdb1f428621480fd52f4ba1
   BitcoinCore.swift: 64ac4e69d9a6ef917bcbb0c23f1324cf57a822fb
   CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
-  HDWalletKit: 5f03c82ab8ac7972951feae247780d39823f04ea
+  HDWalletKit: 602ec664633cc6bae1c697e4e17af42efb69bfad
   Moya: 138f0573e53411fb3dc17016add0b748dfbd78ee
   ObjcExceptionBridging: c30e00eb3700467e695faeea30e26e18bd445001
   PromiseKit: ee485df3d4dc570594d7e7aecae6352697dc6a4c
@@ -167,11 +167,11 @@ SPEC CHECKSUMS:
   SwiftDate: 72d28954e8e1c6c1c0f917ccc8005e4f83c7d4b2
   SwiftProtobuf: c3c12645230d9b09c72267e0de89468c5543bd86
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
-  TangemSdk: ac74b567f0d2fc02fb006e8db71b5c92d0e2de8d
+  TangemSdk: 9ea2c230bd616787bdccc5fb3ab36925d06199d4
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 295b05ed6321bdbac3d00c4fe13a792f55517711
+PODFILE CHECKSUM: 699d243cf460e75598fddfb2bfba135c747bc421
 
 COCOAPODS: 1.11.3

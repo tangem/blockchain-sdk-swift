@@ -285,7 +285,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         
         walletManager
             .getFee(amount: amount, destination: destination)
-            .flatMap { fees -> AnyPublisher<Void, Error> in
+            .flatMap { [unowned self] fees -> AnyPublisher<Void, Error> in
                 guard let fee = fees.first else {
                     return .anyFail(error: WalletError.failedToGetFee)
                 }
@@ -296,7 +296,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                         fee: fee,
                         destinationAddress: self.destination
                     )
-                    return walletManager.send(transaction, signer: self.sdk).eraseToAnyPublisher()
+                    let signer = CommonSigner(sdk: self.sdk)
+                    return walletManager.send(transaction, signer: signer).eraseToAnyPublisher()
                 } catch {
                     return .anyFail(error: error)
                 }
@@ -361,7 +362,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         }
 
         do {
-            let walletManager = try walletManagerFactory.makeWalletManager(cardId: card.cardId, blockchain: blockchain, walletPublicKey: wallet.publicKey)
+            let walletManager = try walletManagerFactory.makeWalletManager(blockchain: blockchain, walletPublicKey: wallet.publicKey)
             self.walletManager = walletManager
             self.sourceAddresses = walletManager.wallet.addresses
             if let enteredToken = enteredToken {

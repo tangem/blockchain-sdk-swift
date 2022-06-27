@@ -91,7 +91,7 @@
 		5D8653FA23A8C481000DE52D /* StellarNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653F923A8C481000DE52D /* StellarNetworkService.swift */; };
 		5D8653FC23A8C4A9000DE52D /* StellarTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FB23A8C4A9000DE52D /* StellarTransactionBuilder.swift */; };
 		5D8653FE23A8E486000DE52D /* StellarSdk+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FD23A8E486000DE52D /* StellarSdk+.swift */; };
-		5D86540023A906DF000DE52D /* TangemSdk+TransactionSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FF23A906DF000DE52D /* TangemSdk+TransactionSigner.swift */; };
+		5D86540023A906DF000DE52D /* CommonSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8653FF23A906DF000DE52D /* CommonSigner.swift */; };
 		5D88838927D3BB8B008744E1 /* WalletError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D88838827D3BB8B008744E1 /* WalletError.swift */; };
 		5D88838B27D3BBDA008744E1 /* BaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D88838A27D3BBDA008744E1 /* BaseManager.swift */; };
 		5D88C809256BCD6C00020028 /* XRPTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D88C808256BCD6C00020028 /* XRPTransactionParams.swift */; };
@@ -334,7 +334,7 @@
 		5D8653F923A8C481000DE52D /* StellarNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarNetworkService.swift; sourceTree = "<group>"; };
 		5D8653FB23A8C4A9000DE52D /* StellarTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarTransactionBuilder.swift; sourceTree = "<group>"; };
 		5D8653FD23A8E486000DE52D /* StellarSdk+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StellarSdk+.swift"; sourceTree = "<group>"; };
-		5D8653FF23A906DF000DE52D /* TangemSdk+TransactionSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TangemSdk+TransactionSigner.swift"; sourceTree = "<group>"; };
+		5D8653FF23A906DF000DE52D /* CommonSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonSigner.swift; sourceTree = "<group>"; };
 		5D88838827D3BB8B008744E1 /* WalletError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletError.swift; sourceTree = "<group>"; };
 		5D88838A27D3BBDA008744E1 /* BaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseManager.swift; sourceTree = "<group>"; };
 		5D88C808256BCD6C00020028 /* XRPTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPTransactionParams.swift; sourceTree = "<group>"; };
@@ -597,6 +597,7 @@
 				5D31EA2E27DA1C910031DBEB /* DetailedError.swift */,
 				5D88838A27D3BBDA008744E1 /* BaseManager.swift */,
 				5DD1244327F458CE000425D3 /* DerivationStyle.swift */,
+				5D8653FF23A906DF000DE52D /* CommonSigner.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -651,7 +652,6 @@
 				5DED72B7239FE2E3006D79AE /* Decimal+.swift */,
 				5DED72B9239FE2F8006D79AE /* Int+.swift */,
 				5D94E56623A3946C009C7482 /* Data+.swift */,
-				5D8653FF23A906DF000DE52D /* TangemSdk+TransactionSigner.swift */,
 				5D557CAF23AA888D009B32AF /* Uint64+.swift */,
 				5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */,
 				5D5E058B24FE749D00F04DE1 /* Bundle+.swift */,
@@ -1457,7 +1457,7 @@
 				5D26CEEC243CB92700994CC0 /* BlockcypherResponse.swift in Sources */,
 				5D5E058C24FE749D00F04DE1 /* Bundle+.swift in Sources */,
 				5D845518243DFCE90072155E /* AdaliteNetworkProvider.swift in Sources */,
-				5D86540023A906DF000DE52D /* TangemSdk+TransactionSigner.swift in Sources */,
+				5D86540023A906DF000DE52D /* CommonSigner.swift in Sources */,
 				DAB6548D2796C5F00002A5E8 /* SolanaTransactionSigner.swift in Sources */,
 				5D54FE1E23E4313A009FAC2F /* LitecoinWalletManager.swift in Sources */,
 				5D557CAE23AA771E009B32AF /* EthereumNetworkService.swift in Sources */,
