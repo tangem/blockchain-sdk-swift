@@ -13,7 +13,11 @@ public struct BlockchainSdkConfig {
     let blockcypherTokens: [String]
     let infuraProjectId: String
     
-    public init(blockchairApiKey: String, blockcypherTokens: [String], infuraProjectId: String) {
+    public init(
+        blockchairApiKey: String,
+        blockcypherTokens: [String],
+        infuraProjectId: String
+    ) {
         self.blockchairApiKey = blockchairApiKey
         self.blockcypherTokens = blockcypherTokens
         self.infuraProjectId = infuraProjectId

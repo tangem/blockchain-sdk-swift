@@ -537,4 +537,57 @@ class AddressesTests: XCTestCase {
         XCTAssertTrue (TronAddressService().validate("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC"))
         XCTAssertFalse(TronAddressService().validate("RJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC"))
     }
+    
+    // MARK: - Dash addresses
+
+    func testDashCompressedMainnet() {
+        // given
+        let blockchain = Blockchain.dash(testnet: false)
+        let addressService = blockchain.getAddressService()
+        let expectedAddress = "XtRN6njDCKp3C2VkeyhN1duSRXMkHPGLgH"
+        
+        // when
+        do {
+            let address = try addressService.makeAddress(from: secpCompressedKey)
+            
+            XCTAssertEqual(address, expectedAddress)
+        } catch {
+            XCTAssertNil(error)
+        }
+    }
+    
+    func testDashDecompressedMainnet() {
+        // given
+        let blockchain = Blockchain.dash(testnet: false)
+        let addressService = blockchain.getAddressService()
+        let expectedAddress = "Xs92pJsKUXRpbwzxDjBjApiwMK6JysNntG"
+
+        // when
+        do {
+            let address = try addressService.makeAddress(from: secpDecompressedKey)
+            
+            XCTAssertEqual(address, expectedAddress)
+        } catch {
+            XCTAssertNil(error)
+        }
+    }
+    
+    func testDashTestnet() {
+        // given
+        let blockchain = Blockchain.dash(testnet: true)
+        let addressService = blockchain.getAddressService()
+        let expectedAddress = "yMfdoASh4QEM3zVpZqgXJ8St38X7VWnzp7"
+        let compressedKey = Data(
+            hexString: "021DCF0C1E183089515DF8C86DACE6DA08DC8E1232EA694388E49C3C66EB79A418"
+        )
+        
+        // when
+        do {
+            let address = try addressService.makeAddress(from: compressedKey)
+            
+            XCTAssertEqual(address, expectedAddress)
+        } catch {
+            XCTAssertNil(error)
+        }
+    }
 }
