@@ -130,6 +130,7 @@ struct BlockchairTarget: TargetType {
         switch type {
         case .address(_, _, let details):
             parameters["transaction_details"] = "\(details)"
+            parameters["limit"] = "1000"
         case .fee(_):
             break
         case .send(let txHex, _):
