@@ -76,6 +76,10 @@ extension SolanaWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
+    public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
+        false
+    }
+    
     public func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         let transactionFeePublisher = networkService
             .transactionFee(numberOfSignatures: 1)

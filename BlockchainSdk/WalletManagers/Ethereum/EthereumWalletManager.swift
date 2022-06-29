@@ -150,6 +150,15 @@ extension EthereumWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
+    func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
+        switch self.wallet.blockchain {
+        case .arbitrum:
+            return true
+        default:
+            return false
+        }
+    }
+    
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
         let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
         return networkService.getFee(to: destinationInfo.to,

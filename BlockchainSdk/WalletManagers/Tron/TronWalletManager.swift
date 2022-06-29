@@ -66,6 +66,14 @@ class TronWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
+    func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
+        if case .token = amountType {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         let maxEnergyUsePublisher: AnyPublisher<Int, Error>
 

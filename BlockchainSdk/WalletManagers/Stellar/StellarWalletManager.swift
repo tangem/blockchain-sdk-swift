@@ -112,6 +112,10 @@ extension StellarWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
+    func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
+        false
+    }
+    
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         if let feeValue = self.baseFee {
             let feeAmount = Amount(with: wallet.blockchain, value: feeValue)
