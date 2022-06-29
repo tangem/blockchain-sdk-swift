@@ -179,21 +179,6 @@ public enum Blockchain: Equatable, Hashable {
         }
     }
     
-    public var tokenDisplayName: String {
-        switch self {
-        case .stellar:
-            return "Stellar Asset"
-        case .ethereum:
-            return "Ethereum smart contract token"
-        case .binance:
-            return "Binance Asset"
-        case .bsc:
-            return "Binance Smart Chain token"
-        default:
-            return "\(displayName) token"
-        }
-    }
-    
     public var tokenStandardName: String? {
         switch self {
         case .ethereum: return "ERC20"
