@@ -49,7 +49,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     }
     
 	func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: true))
+        publisher(for: .address(address: address, limit: 1000, endpoint: endpoint, transactionDetails: true))
             .tryMap { [weak self] json -> (BitcoinResponse, [BlockchairTransactionShort]) in //TODO: refactor to normal JSON
                 guard let self = self else { throw WalletError.empty }
                 
@@ -186,7 +186,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     }
 	
 	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-		publisher(for: .address(address: address, endpoint: endpoint, transactionDetails: false))
+		publisher(for: .address(address: address, limit: 1000, endpoint: endpoint, transactionDetails: false))
 			.tryMap {[weak self] json -> Int in
                 guard let self = self else {  throw WalletError.empty }
                 
