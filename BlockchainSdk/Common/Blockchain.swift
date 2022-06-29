@@ -194,6 +194,17 @@ public enum Blockchain: Equatable, Hashable {
         }
     }
     
+    public var tokenStandardName: String? {
+        switch self {
+        case .ethereum: return "ERC20"
+        case .binance: return "BEP2"
+        case .bsc: return "BEP20"
+        case .tron: return "TRC20"
+        default:
+            return nil
+        }
+    }
+    
     public var canHandleTokens: Bool {
         switch self {
         case .ethereum, .bsc, .binance, .polygon,
