@@ -35,6 +35,7 @@ public enum Blockchain: Equatable, Hashable {
     case kusama
     case tron(testnet: Bool)
     case arbitrum(testnet: Bool)
+    case gnosis(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -66,6 +67,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .arbitrum(let testnet):
             return testnet
+        case .gnosis(let testnet):
+            return testnet
         }
     }
     
@@ -86,7 +89,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin:
             return 8
-        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum:
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis:
             return 18
         case  .cardano, .xrp, .tezos, .tron:
             return 6
@@ -145,6 +148,8 @@ public enum Blockchain: Equatable, Hashable {
             return "KSM"
         case .tron:
             return "TRX"
+        case .gnosis:
+            return "GNO"
         }
     }
     
@@ -198,7 +203,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .ethereum, .bsc, .binance, .polygon,
                 .avalanche, .solana, .fantom, .tron, .arbitrum,
-                .rsk, .ethereumClassic:
+                .rsk, .ethereumClassic, .gnosis:
             return true
         default:
             return false
@@ -223,6 +228,7 @@ extension Blockchain {
         case .avalanche: return isTestnet ? 43113 : 43114
         case .fantom: return isTestnet ? 4002 : 250
         case .arbitrum: return isTestnet ? 421611 : 42161
+        case .gnosis: return 100
         default: return nil
         }
     }
@@ -295,6 +301,19 @@ extension Blockchain {
                     URL(string: "https://node.offchainlabs.com:8547")!,
                 ]
             }
+        case .gnosis:
+            return [
+                // from registry.json
+                URL(string: "https://rpc.gnosischain.com")!,
+                
+                // from chainlist.org
+                URL(string: "https://gnosischain-rpc.gateway.pokt.network")!,
+                URL(string: "https://rpc.ankr.com/gnosis")!,
+                URL(string: "https://gnosis-mainnet.public.blastapi.io")!,
+                URL(string: "https://xdai-rpc.gateway.pokt.network")!,
+                URL(string: "https://xdai-archive.blockscout.com")!,
+                URL(string: "https://rpc.gnosischain.com")!,
+            ]
         default:
             return nil
         }
@@ -348,6 +367,7 @@ extension Blockchain {
             return ethCoinType
         }
         
+        // https://github.com/satoshilabs/slips/blob/master/slip-0044.md
         switch self {
         case .bitcoin, .ducatus: return 0
         case .litecoin: return 2
@@ -370,6 +390,7 @@ extension Blockchain {
         case .kusama: return 434
         case .tron: return 195
         case .arbitrum: return 9001
+        case .gnosis: return 700
         }
     }
     
@@ -397,7 +418,7 @@ extension Blockchain {
             return BitcoinAddressService(networkParams: LitecoinNetworkParams())
         case .stellar:
             return StellarAddressService()
-        case .ethereum, .ethereumClassic, .bsc, .polygon, .avalanche, .fantom, .arbitrum:
+        case .ethereum, .ethereumClassic, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -487,6 +508,7 @@ extension Blockchain: Codable {
         case .kusama: return "kusama"
         case .tron: return "tron"
         case .arbitrum: return "arbitrum"
+        case .gnosis: return "gnosis"
         }
     }
     
@@ -661,6 +683,9 @@ extension Blockchain {
         case .arbitrum(let testnet):
             let subdomain = testnet ? "testnet." : ""
             return URL(string: "https://\(subdomain)arbiscan.io/address/\(address)")!
+        case .gnosis(let testnet):
+            let network = testnet ? "testnet" : "mainnet"
+            return URL(string: "https://blockscout.com/xdai/\(network)/address/\(address)")!
         }
     }
 }
