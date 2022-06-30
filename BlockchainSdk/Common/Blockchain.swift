@@ -184,18 +184,14 @@ public enum Blockchain: Equatable, Hashable {
         }
     }
     
-    public var tokenDisplayName: String {
+    public var tokenTypeName: String? {
         switch self {
-        case .stellar:
-            return "Stellar Asset"
-        case .ethereum:
-            return "Ethereum smart contract token"
-        case .binance:
-            return "Binance Asset"
-        case .bsc:
-            return "Binance Smart Chain token"
+        case .ethereum: return "ERC20"
+        case .binance: return "BEP2"
+        case .bsc: return "BEP20"
+        case .tron: return "TRC20"
         default:
-            return "\(displayName) token"
+            return nil
         }
     }
     
@@ -208,6 +204,21 @@ public enum Blockchain: Equatable, Hashable {
         default:
             return false
         }
+    }
+    
+    public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
+        switch self {
+        case .tron:
+            if case .token = amountType {
+                return true
+            }
+        case .arbitrum:
+            return true
+        default:
+            break
+        }
+        
+        return false
     }
 }
 
