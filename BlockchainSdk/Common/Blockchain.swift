@@ -35,6 +35,7 @@ public enum Blockchain: Equatable, Hashable {
     case kusama
     case tron(testnet: Bool)
     case arbitrum(testnet: Bool)
+    case dash(testnet: Bool)
     case gnosis(testnet: Bool)
 
     public var isTestnet: Bool {
@@ -67,6 +68,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .arbitrum(let testnet):
             return testnet
+        case .dash(let testnet):
+            return testnet
         case .gnosis(let testnet):
             return testnet
         }
@@ -87,7 +90,7 @@ public enum Blockchain: Equatable, Hashable {
     
     public var decimalCount: Int {
         switch self {
-        case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin:
+        case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash:
             return 8
         case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis:
             return 18
@@ -148,6 +151,8 @@ public enum Blockchain: Equatable, Hashable {
             return "KSM"
         case .tron:
             return "TRX"
+        case .dash(let testnet):
+            return testnet ? "tDASH" : "DASH"
         case .gnosis:
             return "GNO"
         }
@@ -203,7 +208,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .ethereum, .bsc, .binance, .polygon,
                 .avalanche, .solana, .fantom, .tron, .arbitrum,
-                .rsk, .ethereumClassic, .gnosis:
+                .rsk, .ethereumClassic, .dash, .gnosis:
             return true
         default:
             return false
@@ -390,6 +395,7 @@ extension Blockchain {
         case .kusama: return 434
         case .tron: return 195
         case .arbitrum: return 9001
+        case .dash: return 5
         case .gnosis: return 700
         }
     }
@@ -445,6 +451,10 @@ extension Blockchain {
             return PolkadotAddressService(network: .kusama)
         case .tron:
             return TronAddressService()
+        case .dash:
+            return BitcoinLegacyAddressService(
+                networkParams: isTestnet ?  DashTestNetworkParams() : DashMainNetworkParams()
+            )
         }
     }
 }
@@ -508,6 +518,7 @@ extension Blockchain: Codable {
         case .kusama: return "kusama"
         case .tron: return "tron"
         case .arbitrum: return "arbitrum"
+        case .dash: return "dash"
         case .gnosis: return "gnosis"
         }
     }
@@ -606,6 +617,9 @@ extension Blockchain {
             return URL(string: "https://matrix.to/#/!cJFtAIkwxuofiSYkPN:matrix.org?via=matrix.org&via=matrix.parity.io&via=web3.foundation")
         case .tron:
             return URL(string: "https://nileex.io/join/getJoinPage")!
+        case .dash:
+            return URL(string: "http://faucet.test.dash.crowdnode.io/")!
+            // Or another one https://testnet-faucet.dash.org/ - by Dash Core Group
         default:
             return nil
         }
@@ -683,6 +697,9 @@ extension Blockchain {
         case .arbitrum(let testnet):
             let subdomain = testnet ? "testnet." : ""
             return URL(string: "https://\(subdomain)arbiscan.io/address/\(address)")!
+        case .dash:
+            let network = isTestnet ? "testnet" : "mainnet"
+            return URL(string: "https://blockexplorer.one/dash/\(network)/address/\(address)")
         case .gnosis(let testnet):
             let network = testnet ? "testnet" : "mainnet"
             return URL(string: "https://blockscout.com/xdai/\(network)/address/\(address)")!
@@ -728,6 +745,7 @@ extension Blockchain {
         case "kusama": return .kusama
         case "tron": return .tron(testnet: isTestnet)
         case "arbitrum": return .arbitrum(testnet: isTestnet)
+        case "dash": return .dash(testnet: isTestnet)
         default: return nil
         }
     }
