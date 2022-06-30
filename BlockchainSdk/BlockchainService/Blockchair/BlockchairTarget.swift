@@ -48,7 +48,7 @@ enum BlockchairEndpoint {
 
 struct BlockchairTarget: TargetType {
     enum BlockchairTargetType {
-        case address(address: String, endpoint: BlockchairEndpoint, transactionDetails: Bool)
+        case address(address: String, limit: Int?, endpoint: BlockchairEndpoint, transactionDetails: Bool)
         case fee(endpoint: BlockchairEndpoint)
         case send(txHex: String, endpoint: BlockchairEndpoint)
 
@@ -64,7 +64,7 @@ struct BlockchairTarget: TargetType {
         var endpointString = ""
         
         switch type {
-        case .address(_, let endpoint, _):
+        case .address(_, _, let endpoint, _):
             endpointString = endpoint.path
         case .fee(let endpoint):
             endpointString = endpoint.path
@@ -83,7 +83,7 @@ struct BlockchairTarget: TargetType {
     
     var path: String {
         switch type {
-        case .address(let address, _, _):
+        case .address(let address, _, _, _):
             return "/dashboards/address/\(address)"
         case .fee:
             return "/stats"
@@ -128,8 +128,11 @@ struct BlockchairTarget: TargetType {
         }
 
         switch type {
-        case .address(_, _, let details):
+        case .address(_, let limit, _, let details):
             parameters["transaction_details"] = "\(details)"
+            if let limit = limit {
+                parameters["limit"] = "\(limit)"
+            }
         case .fee(_):
             break
         case .send(let txHex, _):
