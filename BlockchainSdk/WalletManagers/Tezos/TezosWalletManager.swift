@@ -101,10 +101,6 @@ extension TezosWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
-    func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
-        false
-    }
-    
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         networkService
             .checkPublicKeyRevealed(address: wallet.address)

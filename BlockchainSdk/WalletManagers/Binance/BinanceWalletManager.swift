@@ -84,10 +84,6 @@ extension BinanceWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
-    func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
-        false
-    }
-    
     func getFee(amount: Amount,  destination: String) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap {[weak self] feeString throws -> [Amount] in

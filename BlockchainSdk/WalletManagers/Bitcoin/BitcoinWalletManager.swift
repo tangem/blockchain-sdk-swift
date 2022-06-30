@@ -56,10 +56,6 @@ class BitcoinWalletManager: BaseManager, WalletManager {
         }
     }
     
-    func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
-        false
-    }
-    
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         return networkService.getFee()
             .tryMap {[weak self] response throws -> [Amount] in

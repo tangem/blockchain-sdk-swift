@@ -92,10 +92,6 @@ extension PolkadotWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
-    func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
-        false
-    }
-    
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         let blockchain = wallet.blockchain
         return networkService.blockchainMeta(for: destination)

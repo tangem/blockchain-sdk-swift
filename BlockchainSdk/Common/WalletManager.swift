@@ -42,7 +42,6 @@ public protocol TransactionSender {
                            sourceAddress: String?, changeAddress: String?) throws -> Transaction
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error>
-    func isFeeApproximate(for amountType: Amount.AmountType) -> Bool
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error>
     
     func validate(fee: Amount) -> TransactionError?
