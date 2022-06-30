@@ -36,7 +36,7 @@ public enum Blockchain: Equatable, Hashable {
     case tron(testnet: Bool)
     case arbitrum(testnet: Bool)
     case dash(testnet: Bool)
-    case gnosis(testnet: Bool)
+    case gnosis
 
     public var isTestnet: Bool {
         switch self {
@@ -70,8 +70,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .dash(let testnet):
             return testnet
-        case .gnosis(let testnet):
-            return testnet
+        case .gnosis:
+            return false
         }
     }
     
@@ -702,9 +702,8 @@ extension Blockchain {
         case .dash:
             let network = isTestnet ? "testnet" : "mainnet"
             return URL(string: "https://blockexplorer.one/dash/\(network)/address/\(address)")
-        case .gnosis(let testnet):
-            let network = testnet ? "testnet" : "mainnet"
-            return URL(string: "https://blockscout.com/xdai/\(network)/address/\(address)")!
+        case .gnosis:
+            return URL(string: "https://blockscout.com/xdai/mainnet/address/\(address)")!
         }
     }
 }
