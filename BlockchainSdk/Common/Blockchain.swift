@@ -179,7 +179,7 @@ public enum Blockchain: Equatable, Hashable {
         }
     }
     
-    public var tokenStandardName: String? {
+    public var tokenTypeName: String? {
         switch self {
         case .ethereum: return "ERC20"
         case .binance: return "BEP2"
