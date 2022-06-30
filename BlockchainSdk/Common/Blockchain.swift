@@ -200,6 +200,21 @@ public enum Blockchain: Equatable, Hashable {
             return false
         }
     }
+    
+    public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
+        switch self {
+        case .tron:
+            if case .token = amountType {
+                return true
+            }
+        case .arbitrum:
+            return true
+        default:
+            break
+        }
+        
+        return false
+    }
 }
 
 // MARK: - Ethereum based blockchain definition
