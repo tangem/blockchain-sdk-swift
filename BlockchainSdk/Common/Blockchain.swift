@@ -154,7 +154,7 @@ public enum Blockchain: Equatable, Hashable {
         case .dash(let testnet):
             return testnet ? "tDASH" : "DASH"
         case .gnosis:
-            return "GNO"
+            return "xDAI"
         }
     }
     
@@ -519,7 +519,7 @@ extension Blockchain: Codable {
         case .tron: return "tron"
         case .arbitrum: return "arbitrum"
         case .dash: return "dash"
-        case .gnosis: return "gnosis"
+        case .gnosis: return "xdai"
         }
     }
     
