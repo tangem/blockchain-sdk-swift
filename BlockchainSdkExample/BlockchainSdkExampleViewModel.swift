@@ -414,6 +414,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .kusama,
             .tron(testnet: false),
             .arbitrum(testnet: false),
+            .dash(testnet: false),
+            .gnosis(testnet: false),
         ]
         
         return blockchains.map { ($0.displayName, $0.codingKey) }
