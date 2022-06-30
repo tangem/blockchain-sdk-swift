@@ -180,6 +180,8 @@ public enum Blockchain: Equatable, Hashable {
             return isTestnet ? "Fantom" + testnetSuffix : "Fantom Opera"
         case .polkadot:
             return "Polkadot" + testnetSuffix + (isTestnet ? " (Westend)" : "")
+        case .gnosis:
+            return "Gnosis Chain" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
