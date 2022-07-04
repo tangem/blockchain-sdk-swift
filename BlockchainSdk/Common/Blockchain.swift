@@ -36,6 +36,7 @@ public enum Blockchain: Equatable, Hashable {
     case tron(testnet: Bool)
     case arbitrum(testnet: Bool)
     case dash(testnet: Bool)
+    case gnosis
 
     public var isTestnet: Bool {
         switch self {
@@ -69,6 +70,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .dash(let testnet):
             return testnet
+        case .gnosis:
+            return false
         }
     }
     
@@ -89,7 +92,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash:
             return 8
-        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum:
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis:
             return 18
         case  .cardano, .xrp, .tezos, .tron:
             return 6
@@ -150,6 +153,8 @@ public enum Blockchain: Equatable, Hashable {
             return "TRX"
         case .dash(let testnet):
             return testnet ? "tDASH" : "DASH"
+        case .gnosis:
+            return "xDAI"
         }
     }
     
@@ -175,6 +180,8 @@ public enum Blockchain: Equatable, Hashable {
             return isTestnet ? "Fantom" + testnetSuffix : "Fantom Opera"
         case .polkadot:
             return "Polkadot" + testnetSuffix + (isTestnet ? " (Westend)" : "")
+        case .gnosis:
+            return "Gnosis Chain" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -199,7 +206,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .ethereum, .bsc, .binance, .polygon,
                 .avalanche, .solana, .fantom, .tron, .arbitrum,
-                .rsk, .ethereumClassic, .dash:
+                .rsk, .ethereumClassic, .dash, .gnosis:
             return true
         default:
             return false
@@ -239,6 +246,7 @@ extension Blockchain {
         case .avalanche: return isTestnet ? 43113 : 43114
         case .fantom: return isTestnet ? 4002 : 250
         case .arbitrum: return isTestnet ? 421611 : 42161
+        case .gnosis: return 100
         default: return nil
         }
     }
@@ -311,6 +319,19 @@ extension Blockchain {
                     URL(string: "https://node.offchainlabs.com:8547")!,
                 ]
             }
+        case .gnosis:
+            return [
+                // from registry.json
+                URL(string: "https://rpc.gnosischain.com")!,
+                
+                // from chainlist.org
+                URL(string: "https://gnosischain-rpc.gateway.pokt.network")!,
+                URL(string: "https://rpc.ankr.com/gnosis")!,
+                URL(string: "https://gnosis-mainnet.public.blastapi.io")!,
+                URL(string: "https://xdai-rpc.gateway.pokt.network")!,
+                URL(string: "https://xdai-archive.blockscout.com")!,
+                URL(string: "https://rpc.gnosischain.com")!,
+            ]
         default:
             return nil
         }
@@ -364,6 +385,7 @@ extension Blockchain {
             return ethCoinType
         }
         
+        // https://github.com/satoshilabs/slips/blob/master/slip-0044.md
         switch self {
         case .bitcoin, .ducatus: return 0
         case .litecoin: return 2
@@ -387,6 +409,7 @@ extension Blockchain {
         case .tron: return 195
         case .arbitrum: return 9001
         case .dash: return 5
+        case .gnosis: return 700
         }
     }
     
@@ -414,7 +437,7 @@ extension Blockchain {
             return BitcoinAddressService(networkParams: LitecoinNetworkParams())
         case .stellar:
             return StellarAddressService()
-        case .ethereum, .ethereumClassic, .bsc, .polygon, .avalanche, .fantom, .arbitrum:
+        case .ethereum, .ethereumClassic, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -509,6 +532,7 @@ extension Blockchain: Codable {
         case .tron: return "tron"
         case .arbitrum: return "arbitrum"
         case .dash: return "dash"
+        case .gnosis: return "xdai"
         }
     }
     
@@ -689,6 +713,8 @@ extension Blockchain {
         case .dash:
             let network = isTestnet ? "testnet" : "mainnet"
             return URL(string: "https://blockexplorer.one/dash/\(network)/address/\(address)")
+        case .gnosis:
+            return URL(string: "https://blockscout.com/xdai/mainnet/address/\(address)")!
         }
     }
 }
