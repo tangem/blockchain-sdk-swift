@@ -8,7 +8,6 @@
 
 import Foundation
 import BigInt
-import web3swift
 import Combine
 import TangemSdk
 import Moya
