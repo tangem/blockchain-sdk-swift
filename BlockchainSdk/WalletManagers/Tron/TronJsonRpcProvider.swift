@@ -54,7 +54,7 @@ class TronJsonRpcProvider: HostProvider {
         requestPublisher(for: .getTransactionInfoById(transactionID: id, network: network))
     }
     
-    private func requestPublisher<T: Codable>(for target: TronTarget.TronTargetType) -> AnyPublisher<T, Error> {
+    private func requestPublisher<T: Codable>(for target: TronTarget.TronTargetType, apiKey: String? = nil) -> AnyPublisher<T, Error> {
         return provider.requestPublisher(TronTarget(target, tronGridApiKey: currentApiKey))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(T.self)
@@ -64,8 +64,9 @@ class TronJsonRpcProvider: HostProvider {
                     throw error
                 }
                 
-                if self.needRetryWithKey(error) {
-                    return self.requestPublisher(for: target)
+                if self.needRetryWithKey(error) && apiKey == nil {
+                    self.currentApiKey = self.tronGridApiKey
+                    return self.requestPublisher(for: target, apiKey: self.currentApiKey)
                 } else {
                     return Fail(error: error).eraseToAnyPublisher()
                 }
@@ -82,11 +83,10 @@ class TronJsonRpcProvider: HostProvider {
     }
     
     private func needRetryWithKey(_ error: Error) -> Bool {
-        if case let MoyaError.statusCode(response) = error, currentApiKey == nil {
+        if case let MoyaError.statusCode(response) = error {
             // TronGrid returns 503 when service is unavailable, but keep the rest just in case
             switch response.statusCode {
             case 402, 429, 430, 434, 503:
-                self.currentApiKey = tronGridApiKey
                 return true
             default:
                 return false
