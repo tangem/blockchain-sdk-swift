@@ -16,38 +16,40 @@ class TronJsonRpcProvider: HostProvider {
     }
 
     private let network: TronNetwork
+    private let tronGridApiKey: String
     private let provider = MoyaProvider<TronTarget>(plugins: [NetworkLoggerPlugin()])
     
-    init(network: TronNetwork) {
+    init(network: TronNetwork, tronGridApiKey: String) {
         self.network = network
+        self.tronGridApiKey = tronGridApiKey
     }
 
     func getAccount(for address: String) -> AnyPublisher<TronGetAccountResponse, Error> {
-        requestPublisher(for: .getAccount(address: address, network: network))
+        requestPublisher(for: TronTarget(.getAccount(address: address, network: network), tronGridApiKey: tronGridApiKey))
     }
     
     func getAccountResource(for address: String) -> AnyPublisher<TronGetAccountResourceResponse, Error> {
-        requestPublisher(for: .getAccountResource(address: address, network: network))
+        requestPublisher(for: TronTarget(.getAccountResource(address: address, network: network), tronGridApiKey: tronGridApiKey))
     }
     
     func getNowBlock() -> AnyPublisher<TronBlock, Error> {
-        requestPublisher(for: .getNowBlock(network: network))
+        requestPublisher(for: TronTarget(.getNowBlock(network: network), tronGridApiKey: tronGridApiKey))
     }
     
     func broadcastHex(_ data: Data) -> AnyPublisher<TronBroadcastResponse, Error> {
-        requestPublisher(for: .broadcastHex(data: data, network: network))
+        requestPublisher(for: TronTarget(.broadcastHex(data: data, network: network), tronGridApiKey: tronGridApiKey))
     }
     
     func tokenBalance(address: String, contractAddress: String) -> AnyPublisher<TronTriggerSmartContractResponse, Error> {
-        requestPublisher(for: .tokenBalance(address: address, contractAddress: contractAddress, network: network))
+        requestPublisher(for: TronTarget(.tokenBalance(address: address, contractAddress: contractAddress, network: network), tronGridApiKey: tronGridApiKey))
     }
     
     func tokenTransactionHistory(contractAddress: String) -> AnyPublisher<TronTokenHistoryResponse, Error> {
-        requestPublisher(for: .tokenTransactionHistory(contractAddress: contractAddress, limit: 50, network: network))
+        requestPublisher(for: TronTarget(.tokenTransactionHistory(contractAddress: contractAddress, limit: 50, network: network), tronGridApiKey: tronGridApiKey))
     }
     
     func transactionInfo(id: String) -> AnyPublisher<TronTransactionInfoResponse, Error> {
-        requestPublisher(for: .getTransactionInfoById(transactionID: id, network: network))
+        requestPublisher(for: TronTarget(.getTransactionInfoById(transactionID: id, network: network), tronGridApiKey: tronGridApiKey))
     }
     
     private func requestPublisher<T: Codable>(for target: TronTarget) -> AnyPublisher<T, Error> {
