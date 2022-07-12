@@ -19,49 +19,80 @@ class TronJsonRpcProvider: HostProvider {
     private let tronGridApiKey: String
     private let provider = MoyaProvider<TronTarget>(plugins: [NetworkLoggerPlugin()])
     
+    private var currentApiKey: String?
+    
     init(network: TronNetwork, tronGridApiKey: String) {
         self.network = network
         self.tronGridApiKey = tronGridApiKey
     }
 
     func getAccount(for address: String) -> AnyPublisher<TronGetAccountResponse, Error> {
-        requestPublisher(for: TronTarget(.getAccount(address: address, network: network), tronGridApiKey: tronGridApiKey))
+        requestPublisher(for: .getAccount(address: address, network: network))
     }
     
     func getAccountResource(for address: String) -> AnyPublisher<TronGetAccountResourceResponse, Error> {
-        requestPublisher(for: TronTarget(.getAccountResource(address: address, network: network), tronGridApiKey: tronGridApiKey))
+        requestPublisher(for: .getAccountResource(address: address, network: network))
     }
     
     func getNowBlock() -> AnyPublisher<TronBlock, Error> {
-        requestPublisher(for: TronTarget(.getNowBlock(network: network), tronGridApiKey: tronGridApiKey))
+        requestPublisher(for: .getNowBlock(network: network))
     }
     
     func broadcastHex(_ data: Data) -> AnyPublisher<TronBroadcastResponse, Error> {
-        requestPublisher(for: TronTarget(.broadcastHex(data: data, network: network), tronGridApiKey: tronGridApiKey))
+        requestPublisher(for: .broadcastHex(data: data, network: network))
     }
     
     func tokenBalance(address: String, contractAddress: String) -> AnyPublisher<TronTriggerSmartContractResponse, Error> {
-        requestPublisher(for: TronTarget(.tokenBalance(address: address, contractAddress: contractAddress, network: network), tronGridApiKey: tronGridApiKey))
+        requestPublisher(for: .tokenBalance(address: address, contractAddress: contractAddress, network: network))
     }
     
     func tokenTransactionHistory(contractAddress: String) -> AnyPublisher<TronTokenHistoryResponse, Error> {
-        requestPublisher(for: TronTarget(.tokenTransactionHistory(contractAddress: contractAddress, limit: 50, network: network), tronGridApiKey: tronGridApiKey))
+        requestPublisher(for: .tokenTransactionHistory(contractAddress: contractAddress, limit: 50, network: network))
     }
     
     func transactionInfo(id: String) -> AnyPublisher<TronTransactionInfoResponse, Error> {
-        requestPublisher(for: TronTarget(.getTransactionInfoById(transactionID: id, network: network), tronGridApiKey: tronGridApiKey))
+        requestPublisher(for: .getTransactionInfoById(transactionID: id, network: network))
     }
     
-    private func requestPublisher<T: Codable>(for target: TronTarget) -> AnyPublisher<T, Error> {
-        return provider.requestPublisher(target)
+    private func requestPublisher<T: Codable>(for target: TronTarget.TronTargetType) -> AnyPublisher<T, Error> {
+        return provider.requestPublisher(TronTarget(target, tronGridApiKey: currentApiKey))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(T.self)
-            .mapError { moyaError in
-                if case .objectMapping = moyaError {
+            .eraseError()
+            .tryCatch { [weak self] error -> AnyPublisher<T, Error> in
+                guard let self = self else {
+                    throw error
+                }
+                
+                if self.needRetryWithKey(error) {
+                    return self.requestPublisher(for: target)
+                } else {
+                    return Fail(error: error).eraseToAnyPublisher()
+                }
+            }
+            .mapError { error in
+                if let moyaError = error as? MoyaError,
+                   case .objectMapping = moyaError
+                {
                     return WalletError.failedToParseNetworkResponse
                 }
-                return moyaError
+                return error
             }
             .eraseToAnyPublisher()
+    }
+    
+    private func needRetryWithKey(_ error: Error) -> Bool {
+        if case let MoyaError.statusCode(response) = error, currentApiKey == nil {
+            // TronGrid returns 503 when service is unavailable, but keep the rest just in case
+            switch response.statusCode {
+            case 402, 429, 430, 434, 503:
+                self.currentApiKey = tronGridApiKey
+                return true
+            default:
+                return false
+            }
+        } else {
+            return false
+        }
     }
 }
