@@ -11,11 +11,18 @@ import Foundation
 public struct BlockchainSdkConfig {
     let blockchairApiKey: String
     let blockcypherTokens: [String]
+    let tronGridApiKey: String
     let infuraProjectId: String
     
-    public init(blockchairApiKey: String, blockcypherTokens: [String], infuraProjectId: String) {
+    public init(
+        blockchairApiKey: String,
+        blockcypherTokens: [String],
+        tronGridApiKey: String,
+        infuraProjectId: String
+    ) {
         self.blockchairApiKey = blockchairApiKey
         self.blockcypherTokens = blockcypherTokens
+        self.tronGridApiKey = tronGridApiKey
         self.infuraProjectId = infuraProjectId
     }
 }
