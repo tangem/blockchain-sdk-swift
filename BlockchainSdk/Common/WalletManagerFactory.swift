@@ -259,9 +259,10 @@ public class WalletManagerFactory {
             return makePolkadotWalletManager(network: .kusama, wallet: wallet)
         case .tron(let testnet):
             return TronWalletManager(wallet: wallet).then {
+                let network: TronNetwork = testnet ? .nile : .mainnet
                 let providers = [
-                    TronJsonRpcProvider(network: testnet ? .nile : .mainnet, tronGridApiKey: nil),
-                    TronJsonRpcProvider(network: testnet ? .nile : .mainnet, tronGridApiKey: config.tronGridApiKey),
+                    TronJsonRpcProvider(network: network, tronGridApiKey: nil),
+                    TronJsonRpcProvider(network: network, tronGridApiKey: config.tronGridApiKey),
                 ]
                 $0.networkService = TronNetworkService(blockchain: blockchain, providers: providers)
                 $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
