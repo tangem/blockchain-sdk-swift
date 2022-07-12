@@ -80,7 +80,7 @@ struct TronTriggerSmartContractResponse: Codable {
 
 struct TronTokenHistoryResponse: Codable {
     struct TokenHistoryData: Codable {
-        let energy_usage_total: Int
+        let energy_usage_total: Int?
     }
     
     let data: [TokenHistoryData]
