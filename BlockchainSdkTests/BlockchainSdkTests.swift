@@ -10,6 +10,8 @@ import XCTest
 import BitcoinCore
 import TangemSdk
 
+@testable import BlockchainSdk
+
 class BlockchainSdkTests: XCTestCase {
 
     override func setUp() {
@@ -96,7 +98,6 @@ class BlockchainSdkTests: XCTestCase {
     func testTxValidation() {
         let vm: WalletManager = BitcoinWalletManager(wallet: Wallet(blockchain: .bitcoin(testnet: false),
                                                                     addresses: [PlainAddress(value: "adfjbajhfaldfh", type: .default)],
-                                                                    cardId: "",
                                                                     publicKey: .init(seedKey: Data(), derivedKey: nil, derivationPath: nil)))
         
         vm.wallet.add(coinValue: 10)

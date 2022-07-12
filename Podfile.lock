@@ -20,8 +20,8 @@ PODS:
   - BinanceChain/Protobuf (1.0.1-beta)
   - BinanceChain/Util (1.0.1-beta)
   - BitcoinCore.swift (0.15.4)
-  - CryptoSwift (1.4.2)
-  - HDWalletKit (0.3.5):
+  - CryptoSwift (1.5.1)
+  - HDWalletKit (0.3.6):
     - CryptoSwift
     - secp256k1.swift
   - Moya (15.0.0):
@@ -31,14 +31,14 @@ PODS:
   - ObjcExceptionBridging (1.0.1):
     - ObjcExceptionBridging/ObjcExceptionBridging (= 1.0.1)
   - ObjcExceptionBridging/ObjcExceptionBridging (1.0.1)
-  - PromiseKit (6.17.0):
-    - PromiseKit/CorePromise (= 6.17.0)
-    - PromiseKit/Foundation (= 6.17.0)
-    - PromiseKit/UIKit (= 6.17.0)
-  - PromiseKit/CorePromise (6.17.0)
-  - PromiseKit/Foundation (6.17.0):
+  - PromiseKit (6.17.1):
+    - PromiseKit/CorePromise (= 6.17.1)
+    - PromiseKit/Foundation (= 6.17.1)
+    - PromiseKit/UIKit (= 6.17.1)
+  - PromiseKit/CorePromise (6.17.1)
+  - PromiseKit/Foundation (6.17.1):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.17.0):
+  - PromiseKit/UIKit (6.17.1):
     - PromiseKit/CorePromise
   - ScaleCodec (0.2.1):
     - BigInt (~> 5.2)
@@ -54,7 +54,7 @@ PODS:
   - SwiftDate (6.3.1)
   - SwiftProtobuf (1.18.0)
   - SwiftyJSON (5.0.1)
-  - TangemSdk (3.3.0)
+  - TangemSdk (3.3.4)
   - TweetNacl (1.0.2)
   - web3swift (2.2.1):
     - BigInt
@@ -71,9 +71,9 @@ DEPENDENCIES:
   - Alamofire
   - AnyCodable-FlightSchool
   - BigInt
-  - BinanceChain (from `https://github.com/lazutkin-andrey/swiftbinancechain.git`, tag `0.0.9`)
-  - BitcoinCore.swift (from `https://github.com/lazutkin-andrey/bitcoincore.git`, tag `0.0.16`)
-  - HDWalletKit (from `https://github.com/lazutkin-andrey/hdwallet.git`, tag `0.3.12`)
+  - BinanceChain (from `https://github.com/tangem/swiftbinancechain.git`, tag `0.0.9`)
+  - BitcoinCore.swift (from `https://github.com/tangem/bitcoincore.git`, tag `0.0.16`)
+  - HDWalletKit (from `https://github.com/tangem/hdwallet.git`, tag `0.3.12`)
   - Moya
   - ScaleCodec
   - Sodium
@@ -82,8 +82,8 @@ DEPENDENCIES:
   - SwiftCBOR
   - SwiftProtobuf
   - SwiftyJSON
-  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-138`)
-  - web3swift (from `https://github.com/lazutkin-andrey/web3swift.git`, tag `2.2.9`)
+  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-152`)
+  - web3swift (from `https://github.com/tangem/web3swift.git`, tag `2.2.9`)
 
 SPEC REPOS:
   trunk:
@@ -108,42 +108,42 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   BinanceChain:
-    :git: https://github.com/lazutkin-andrey/swiftbinancechain.git
+    :git: https://github.com/tangem/swiftbinancechain.git
     :tag: 0.0.9
   BitcoinCore.swift:
-    :git: https://github.com/lazutkin-andrey/bitcoincore.git
+    :git: https://github.com/tangem/bitcoincore.git
     :tag: 0.0.16
   HDWalletKit:
-    :git: https://github.com/lazutkin-andrey/hdwallet.git
+    :git: https://github.com/tangem/hdwallet.git
     :tag: 0.3.12
   Solana.Swift:
     :git: https://github.com/tangem/Solana.Swift
     :tag: add-external-signer-1
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-138
+    :tag: develop-152
   web3swift:
-    :git: https://github.com/lazutkin-andrey/web3swift.git
+    :git: https://github.com/tangem/web3swift.git
     :tag: 2.2.9
 
 CHECKOUT OPTIONS:
   BinanceChain:
-    :git: https://github.com/lazutkin-andrey/swiftbinancechain.git
+    :git: https://github.com/tangem/swiftbinancechain.git
     :tag: 0.0.9
   BitcoinCore.swift:
-    :git: https://github.com/lazutkin-andrey/bitcoincore.git
+    :git: https://github.com/tangem/bitcoincore.git
     :tag: 0.0.16
   HDWalletKit:
-    :git: https://github.com/lazutkin-andrey/hdwallet.git
+    :git: https://github.com/tangem/hdwallet.git
     :tag: 0.3.12
   Solana.Swift:
     :git: https://github.com/tangem/Solana.Swift
     :tag: add-external-signer-1
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-138
+    :tag: develop-152
   web3swift:
-    :git: https://github.com/lazutkin-andrey/web3swift.git
+    :git: https://github.com/tangem/web3swift.git
     :tag: 2.2.9
 
 SPEC CHECKSUMS:
@@ -152,11 +152,11 @@ SPEC CHECKSUMS:
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
   BinanceChain: b77d4c0e496efbf13bdb1f428621480fd52f4ba1
   BitcoinCore.swift: 64ac4e69d9a6ef917bcbb0c23f1324cf57a822fb
-  CryptoSwift: a532e74ed010f8c95f611d00b8bbae42e9fe7c17
-  HDWalletKit: 5f03c82ab8ac7972951feae247780d39823f04ea
+  CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
+  HDWalletKit: 602ec664633cc6bae1c697e4e17af42efb69bfad
   Moya: 138f0573e53411fb3dc17016add0b748dfbd78ee
   ObjcExceptionBridging: c30e00eb3700467e695faeea30e26e18bd445001
-  PromiseKit: 996202d4cae72b7801b312abef4cd2f995b2978a
+  PromiseKit: ee485df3d4dc570594d7e7aecae6352697dc6a4c
   ScaleCodec: 5d7d0439940c600f49babad6ea265a09377c404b
   secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
   Sodium: 23d11554ecd556196d313cf6130d406dfe7ac6da
@@ -167,11 +167,11 @@ SPEC CHECKSUMS:
   SwiftDate: 72d28954e8e1c6c1c0f917ccc8005e4f83c7d4b2
   SwiftProtobuf: c3c12645230d9b09c72267e0de89468c5543bd86
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
-  TangemSdk: ac74b567f0d2fc02fb006e8db71b5c92d0e2de8d
+  TangemSdk: 9ea2c230bd616787bdccc5fb3ab36925d06199d4
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: d22c584bd1e403e8857b02a1d2d2b356841a9ce3
+PODFILE CHECKSUM: 699d243cf460e75598fddfb2bfba135c747bc421
 
 COCOAPODS: 1.11.3
