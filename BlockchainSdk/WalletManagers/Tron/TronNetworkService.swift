@@ -48,7 +48,7 @@ class TronNetworkService {
     func tokenTransferMaxEnergyUse(contractAddress: String) -> AnyPublisher<Int, Error> {
         rpcProvider.tokenTransactionHistory(contractAddress: contractAddress)
             .tryMap {
-                guard let maxEnergyUsage = $0.data.map(\.energy_usage_total).max() else {
+                guard let maxEnergyUsage = $0.data.compactMap(\.energy_usage_total).max() else {
                     throw WalletError.failedToGetFee
                 }
                 
