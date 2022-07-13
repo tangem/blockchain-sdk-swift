@@ -12,14 +12,12 @@ import Moya
 
 class TronJsonRpcProvider: HostProvider {
     var host: String {
-        network.url.hostOrUnknown
+        network.url.hostOrUnknown + (tronGridApiKey == nil ? "" : " (API KEY)")
     }
 
     private let network: TronNetwork
     private let tronGridApiKey: String?
     private let provider = MoyaProvider<TronTarget>(plugins: [NetworkLoggerPlugin()])
-    
-    private var currentApiKey: String?
     
     init(network: TronNetwork, tronGridApiKey: String?) {
         self.network = network
