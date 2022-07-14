@@ -22,14 +22,12 @@ public class WalletManagerFactory {
     
     /// Base wallet manager initializer
     /// - Parameters:
-    ///   - cardId: Card's cardId
     ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
     ///   - seedKey: Public key  of the wallet
     ///   - derivedKey: Derived ExtendedPublicKey by the card
     ///   - derivation: DerivationParams
     /// - Returns: WalletManager?
-    public func makeWalletManager(cardId: String,
-                                  blockchain: Blockchain,
+    public func makeWalletManager(blockchain: Blockchain,
                                   seedKey: Data,
                                   derivedKey: ExtendedPublicKey,
                                   derivation: DerivationParams) throws -> WalletManager {
@@ -46,42 +44,35 @@ public class WalletManagerFactory {
         return try makeWalletManager(from: blockchain,
                                      publicKey: .init(seedKey: seedKey,
                                                       derivedKey: derivedKey.publicKey,
-                                                      derivationPath: derivationPath),
-                                     cardId: cardId)
+                                                      derivationPath: derivationPath))
     }
     
     /// Legacy wallet manager initializer
     /// - Parameters:
-    ///   - cardId: Card's cardId
     ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
     ///   - walletPublicKey: Wallet's publicKey
     /// - Returns: WalletManager
-    public func makeWalletManager(cardId: String, blockchain: Blockchain, walletPublicKey: Data) throws -> WalletManager {
+    public func makeWalletManager(blockchain: Blockchain, walletPublicKey: Data) throws -> WalletManager {
         try makeWalletManager(from: blockchain,
-                              publicKey: .init(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil),
-                              cardId: cardId)
+                              publicKey: .init(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil))
     }
     
     /// Wallet manager initializer for twin cards
     /// - Parameters:
-    ///   - cardId: Card's cardId
     ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
     ///   - walletPublicKey: Wallet's publicKey
-    public func makeTwinWalletManager(from cardId: String, walletPublicKey: Data, pairKey: Data, isTestnet: Bool) throws -> WalletManager {
+    public func makeTwinWalletManager(walletPublicKey: Data, pairKey: Data, isTestnet: Bool) throws -> WalletManager {
         try makeWalletManager(from: .bitcoin(testnet: isTestnet),
                               publicKey: .init(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil),
-                              cardId: cardId,
                               pairPublicKey: pairKey)
     }
     
     func makeWalletManager(from blockchain: Blockchain,
                            publicKey: Wallet.PublicKey,
-                           cardId: String,
                            pairPublicKey: Data? = nil) throws -> WalletManager {
         let addresses = try blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey)
         let wallet = Wallet(blockchain: blockchain,
                             addresses: addresses,
-                            cardId: cardId,
                             publicKey: publicKey)
         
         switch blockchain {
@@ -183,7 +174,7 @@ public class WalletManagerFactory {
                                                            blockchairProvider: blockchair)
             }
             
-        case .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum:
+        case .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis:
             return try EthereumWalletManager(wallet: wallet).then {
                 let chainId = blockchain.chainId!
                 let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)!
@@ -267,6 +258,8 @@ public class WalletManagerFactory {
                 $0.networkService = TronNetworkService(blockchain: blockchain, providers: providers)
                 $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
             }
+        case .dash(let testnet):
+            return try makeDashWalletManager(testnet: testnet, wallet: wallet)
         }
     }
     
@@ -274,6 +267,31 @@ public class WalletManagerFactory {
         PolkadotWalletManager(network: network, wallet: wallet).then {
             $0.networkService = PolkadotNetworkService(rpcProvider: PolkadotJsonRpcProvider(network: network))
             $0.txBuilder = PolkadotTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, network: network)
+        }
+    }
+    
+    private func makeDashWalletManager(testnet: Bool, wallet: Wallet) throws -> WalletManager {
+        try DashWalletManager(wallet: wallet).then {
+            let compressed = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
+
+            let bitcoinManager = BitcoinManager(
+                networkParams: testnet ? DashTestNetworkParams() : DashMainNetworkParams(),
+                walletPublicKey: wallet.publicKey.blockchainKey,
+                compressedWalletPublicKey: compressed,
+                bip: .bip44
+            )
+            
+            // TODO: Add CryptoAPIs for testnet
+            
+            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
+            
+            let blockchairProvider = BlockchairNetworkProvider(endpoint: .dash, apiKey: config.blockchairApiKey)
+            let blockcypherProvider = BlockcypherNetworkProvider(endpoint: .dash, tokens: config.blockcypherTokens)
+            
+            $0.networkService = BitcoinNetworkService(
+                providers: [blockchairProvider.eraseToAnyBitcoinNetworkProvider(),
+                            blockcypherProvider.eraseToAnyBitcoinNetworkProvider()]
+            )
         }
     }
 }

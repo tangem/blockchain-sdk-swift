@@ -10,6 +10,8 @@ import XCTest
 import BitcoinCore
 import TangemSdk
 
+@testable import BlockchainSdk
+
 class BitcoinTests: XCTestCase {
 
     private let blockchain = Blockchain.bitcoin(testnet: false)
@@ -52,8 +54,8 @@ class BitcoinTests: XCTestCase {
         XCTAssertNotNil(reversedPubkeysAddresses)
         XCTAssertEqual(reversedPubkeysAddresses!.count, numberOfAddresses)
         
-        var legacy: Address?
-        var segwit: Address?
+        var legacy: BlockchainSdk.Address?
+        var segwit: BlockchainSdk.Address?
         zip(addresses!, reversedPubkeysAddresses!).forEach {
             XCTAssertEqual($0.value, $1.value)
             if $0.type == .legacy {

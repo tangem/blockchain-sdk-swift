@@ -8,6 +8,8 @@
 
 import XCTest
 
+@testable import BlockchainSdk
+
 class TronTests: XCTestCase {
     var blockchain: Blockchain!
     var txBuilder: TronTransactionBuilder!

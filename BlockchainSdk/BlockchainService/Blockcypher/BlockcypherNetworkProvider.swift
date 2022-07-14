@@ -139,7 +139,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
     
 
     private func getFullInfo<Tx: Codable>(address: String) -> AnyPublisher<BlockcypherFullAddressResponse<Tx>, MoyaError> {
-        publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, unspentsOnly: true, limit: 30, isFull: true)))
+        publisher(for: BlockcypherTarget(endpoint: self.endpoint, token: self.token, targetType: .address(address: address, unspentsOnly: true, limit: 1000, isFull: true)))
             .map(BlockcypherFullAddressResponse<Tx>.self, using: jsonDecoder)
     }
 

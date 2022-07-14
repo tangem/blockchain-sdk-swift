@@ -10,7 +10,6 @@ import Foundation
 import TangemSdk
 
 public struct Wallet {
-    public let cardId: String
     public let blockchain: Blockchain
     public let addresses: [Address]
     public let publicKey: PublicKey
@@ -59,11 +58,10 @@ public struct Wallet {
         return !transactions.filter { $0.status == .unconfirmed && $0.amount.type == amountType }.isEmpty
     }
     
-    internal init(blockchain: Blockchain, addresses: [Address], cardId: String, publicKey: PublicKey) {
+    internal init(blockchain: Blockchain, addresses: [Address], publicKey: PublicKey) {
         self.blockchain = blockchain
         self.addresses = addresses
         self.publicKey = publicKey
-        self.cardId = cardId
     }
     
     /// Explore URL for specific address

@@ -7,6 +7,7 @@
 //
 
 import XCTest
+@testable import BlockchainSdk
 
 class EthereumTests: XCTestCase {
 

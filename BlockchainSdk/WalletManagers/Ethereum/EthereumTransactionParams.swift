@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import web3swift
 import BigInt
 
 public struct EthereumTransactionParams: TransactionParams {
