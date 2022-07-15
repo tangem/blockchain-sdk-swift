@@ -56,7 +56,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     let blockchainsWithShelleySelection: [String]
 
     private let sdk: TangemSdk
-    private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKey: "", blockcypherTokens: [], infuraProjectId: ""))
+    private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKey: "", blockcypherTokens: [], infuraProjectId: "", tronGridApiKey: ""))
     @Published private(set) var card: Card?
     @Published private(set) var walletManager: WalletManager?
     private var blockchain: Blockchain?

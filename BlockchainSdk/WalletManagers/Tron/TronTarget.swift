@@ -9,17 +9,27 @@
 import Foundation
 import Moya
 
-enum TronTarget: TargetType {
-    case getAccount(address: String, network: TronNetwork)
-    case getAccountResource(address: String, network: TronNetwork)
-    case getNowBlock(network: TronNetwork)
-    case broadcastHex(data: Data, network: TronNetwork)
-    case tokenBalance(address: String, contractAddress: String, network: TronNetwork)
-    case tokenTransactionHistory(contractAddress: String, limit: Int, network: TronNetwork)
-    case getTransactionInfoById(transactionID: String, network: TronNetwork)
+struct TronTarget: TargetType {
+    enum TronTargetType {
+        case getAccount(address: String, network: TronNetwork)
+        case getAccountResource(address: String, network: TronNetwork)
+        case getNowBlock(network: TronNetwork)
+        case broadcastHex(data: Data, network: TronNetwork)
+        case tokenBalance(address: String, contractAddress: String, network: TronNetwork)
+        case tokenTransactionHistory(contractAddress: String, limit: Int, network: TronNetwork)
+        case getTransactionInfoById(transactionID: String, network: TronNetwork)
+    }
+    
+    let type: TronTargetType
+    let tronGridApiKey: String?
+    
+    init(_ type: TronTargetType, tronGridApiKey: String?) {
+        self.type = type
+        self.tronGridApiKey = tronGridApiKey
+    }
     
     var baseURL: URL {
-        switch self {
+        switch type {
         case .getAccount(_, let network):
             return network.url
         case .getAccountResource(_, let network):
@@ -38,7 +48,7 @@ enum TronTarget: TargetType {
     }
     
     var path: String {
-        switch self {
+        switch type {
         case .getAccount:
             return "/wallet/getaccount"
         case .getAccountResource:
@@ -57,7 +67,7 @@ enum TronTarget: TargetType {
     }
     
     var method: Moya.Method {
-        switch self {
+        switch type {
         case .tokenTransactionHistory:
             return .get
         default:
@@ -66,7 +76,7 @@ enum TronTarget: TargetType {
     }
     
     var task: Task {
-        switch self {
+        switch type {
         case .getAccount(let address, _), .getAccountResource(let address, _):
             let request = TronGetAccountRequest(address: address, visible: true)
             return .requestJSONEncodable(request)
@@ -99,9 +109,15 @@ enum TronTarget: TargetType {
     }
     
     var headers: [String : String]? {
-        return [
+        var headers = [
             "Accept": "application/json",
             "Content-Type": "application/json",
         ]
+        
+        if let tronGridApiKey = tronGridApiKey {
+            headers["TRON-PRO-API-KEY"] = tronGridApiKey
+        }
+        
+        return headers
     }
 }

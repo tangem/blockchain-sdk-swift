@@ -15,7 +15,7 @@ class TronWalletManager: BaseManager, WalletManager {
     var txBuilder: TronTransactionBuilder!
     
     var currentHost: String {
-        networkService.rpcProvider.host
+        networkService.host
     }
     
     var allowsFeeSelection: Bool {

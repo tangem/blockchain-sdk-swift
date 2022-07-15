@@ -11,13 +11,15 @@ import Combine
 import BigInt
 import web3swift
 
-class TronNetworkService {
-    let blockchain: Blockchain
-    let rpcProvider: TronJsonRpcProvider
+class TronNetworkService: MultiNetworkProvider {
+    let providers: [TronJsonRpcProvider]
+    var currentProviderIndex: Int = 0
     
-    init(blockchain: Blockchain, rpcProvider: TronJsonRpcProvider) {
+    let blockchain: Blockchain
+    
+    init(blockchain: Blockchain, providers: [TronJsonRpcProvider]) {
         self.blockchain = blockchain
-        self.rpcProvider = rpcProvider
+        self.providers = providers
     }
     
     func accountInfo(for address: String, tokens: [Token], transactionIDs: [String]) -> AnyPublisher<TronAccountInfo, Error> {
@@ -38,54 +40,66 @@ class TronNetworkService {
     }
     
     func getNowBlock() -> AnyPublisher<TronBlock, Error> {
-        rpcProvider.getNowBlock()
+        providerPublisher {
+            $0.getNowBlock()
+        }
     }
     
     func broadcastHex(_ data: Data) -> AnyPublisher<TronBroadcastResponse, Error> {
-        rpcProvider.broadcastHex(data)
+        providerPublisher {
+            $0.broadcastHex(data)
+        }
     }
     
     func tokenTransferMaxEnergyUse(contractAddress: String) -> AnyPublisher<Int, Error> {
-        rpcProvider.tokenTransactionHistory(contractAddress: contractAddress)
-            .tryMap {
-                guard let maxEnergyUsage = $0.data.map(\.energy_usage_total).max() else {
-                    throw WalletError.failedToGetFee
+        providerPublisher {
+            $0.tokenTransactionHistory(contractAddress: contractAddress)
+                .tryMap {
+                    guard let maxEnergyUsage = $0.data.compactMap(\.energy_usage_total).max() else {
+                        throw WalletError.failedToGetFee
+                    }
+                    
+                    return maxEnergyUsage
                 }
-                
-                return maxEnergyUsage
-            }
-            .eraseToAnyPublisher()
+                .eraseToAnyPublisher()
+        }
     }
     
     func getAccountResource(for address: String) -> AnyPublisher<TronGetAccountResourceResponse, Error> {
-        rpcProvider.getAccountResource(for: address)
+        providerPublisher {
+            $0.getAccountResource(for: address)
+        }
     }
     
     func accountExists(address: String) -> AnyPublisher<Bool, Error> {
-        rpcProvider.getAccount(for: address)
-            .map { _ in
-                true
-            }
-            .tryCatch { error -> AnyPublisher<Bool, Error> in
-                if case WalletError.failedToParseNetworkResponse = error {
-                    return Just(false).setFailureType(to: Error.self).eraseToAnyPublisher()
+        providerPublisher {
+            $0.getAccount(for: address)
+                .map { _ in
+                    true
                 }
-                throw error
-            }
-            .eraseToAnyPublisher()
+                .tryCatch { error -> AnyPublisher<Bool, Error> in
+                    if case WalletError.failedToParseNetworkResponse = error {
+                        return Just(false).setFailureType(to: Error.self).eraseToAnyPublisher()
+                    }
+                    throw error
+                }
+                .eraseToAnyPublisher()
+        }
     }
     
     private func getAccount(for address: String) -> AnyPublisher<TronGetAccountResponse, Error> {
-        rpcProvider.getAccount(for: address)
-            .tryCatch { error -> AnyPublisher<TronGetAccountResponse, Error> in
-                if case WalletError.failedToParseNetworkResponse = error {
-                    return Just(TronGetAccountResponse(balance: 0, address: address))
-                        .setFailureType(to: Error.self)
-                        .eraseToAnyPublisher()
+        providerPublisher {
+            $0.getAccount(for: address)
+                .tryCatch { error -> AnyPublisher<TronGetAccountResponse, Error> in
+                    if case WalletError.failedToParseNetworkResponse = error {
+                        return Just(TronGetAccountResponse(balance: 0, address: address))
+                            .setFailureType(to: Error.self)
+                            .eraseToAnyPublisher()
+                    }
+                    throw error
                 }
-                throw error
-            }
-            .eraseToAnyPublisher()
+                .eraseToAnyPublisher()
+        }
     }
     
     private func tokenBalances(address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error> {
@@ -111,30 +125,33 @@ class TronNetworkService {
     }
     
     private func tokenBalance(address: String, token: Token) -> AnyPublisher<(Token, Decimal), Never> {
-        rpcProvider.tokenBalance(address: address, contractAddress: token.contractAddress)
-            .tryMap { response in
-                guard let hexValue = response.constant_result.first else {
-                    throw WalletError.failedToParseNetworkResponse
+        providerPublisher {
+            $0.tokenBalance(address: address, contractAddress: token.contractAddress)
+                .tryMap { response in
+                    guard let hexValue = response.constant_result.first else {
+                        throw WalletError.failedToParseNetworkResponse
+                    }
+                    
+                    let bigIntValue = BigUInt(Data(hex: hexValue))
+                    
+                    let formatted = Web3.Utils.formatToPrecision(
+                        bigIntValue,
+                        numberDecimals: token.decimalCount,
+                        formattingDecimals: token.decimalCount,
+                        decimalSeparator: ".",
+                        fallbackToScientific: false
+                    )
+                    
+                    guard let decimalValue = Decimal(formatted) else {
+                        throw WalletError.failedToParseNetworkResponse
+                    }
+                    
+                    return (token, decimalValue)
                 }
-                
-                let bigIntValue = BigUInt(Data(hex: hexValue))
-                
-                let formatted = Web3.Utils.formatToPrecision(
-                    bigIntValue,
-                    numberDecimals: token.decimalCount,
-                    formattingDecimals: token.decimalCount,
-                    decimalSeparator: ".",
-                    fallbackToScientific: false
-                )
-                
-                guard let decimalValue = Decimal(formatted) else {
-                    throw WalletError.failedToParseNetworkResponse
-                }
-                
-                return (token, decimalValue)
-            }
-            .replaceError(with: (token, .zero))
-            .eraseToAnyPublisher()
+                .eraseToAnyPublisher()
+        }
+        .replaceError(with: (token, .zero))
+        .eraseToAnyPublisher()
     }
     
     private func confirmedTransactionIDs(ids transactionIDs: [String]) -> AnyPublisher<[String], Error> {
@@ -159,16 +176,18 @@ class TronNetworkService {
     }
     
     private func transactionConfirmed(id: String) -> AnyPublisher<String?, Error> {
-        rpcProvider.transactionInfo(id: id)
-            .map { _ in
-                return id
-            }
-            .tryCatch { error -> AnyPublisher<String?, Error> in
-                if case WalletError.failedToParseNetworkResponse = error {
-                    return Just(nil).setFailureType(to: Error.self).eraseToAnyPublisher()
+        providerPublisher {
+            $0.transactionInfo(id: id)
+                .map { _ in
+                    return id
                 }
-                throw error
-            }
-            .eraseToAnyPublisher()
+                .tryCatch { error -> AnyPublisher<String?, Error> in
+                    if case WalletError.failedToParseNetworkResponse = error {
+                        return Just(nil).setFailureType(to: Error.self).eraseToAnyPublisher()
+                    }
+                    throw error
+                }
+                .eraseToAnyPublisher()
+        }
     }
 }
