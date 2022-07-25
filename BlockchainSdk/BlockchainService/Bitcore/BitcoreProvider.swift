@@ -11,7 +11,7 @@ import Moya
 import Combine
 
 class BitcoreProvider {
-    let provider = MoyaProvider<BitcoreTarget>(plugins: [NetworkLoggerPlugin()])
+    private let provider = NetworkProvider<BitcoreTarget>()
     
     var host: String {
         BitcoreTarget.balance(address: "").baseURL.hostOrUnknown

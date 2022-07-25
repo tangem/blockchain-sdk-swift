@@ -13,10 +13,15 @@ import BitcoinCore
 
 class BlockcypherNetworkProvider: BitcoinNetworkProvider {
     var supportsTransactionPush: Bool { false }
+    var host: String {
+        getTarget(for: .fee).baseURL.hostOrUnknown
+    }
     
-    let provider = MoyaProvider<BlockcypherTarget> ()
-    let endpoint: BlockcypherEndpoint
+    private let provider = NetworkProvider<BlockcypherTarget>(
+        configuration: NetworkProviderConfiguration(shouldAddNetworkLogger: false)
+    )
     
+    private let endpoint: BlockcypherEndpoint
     private var token: String? = nil
     private let tokens: [String]
     
@@ -25,10 +30,6 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
         decoder.dateDecodingStrategy = .customISO8601
         return decoder
     }()
-    
-    var host: String {
-        getTarget(for: .fee).baseURL.hostOrUnknown
-    }
     
     init(endpoint: BlockcypherEndpoint, tokens: [String]) {
         self.endpoint = endpoint

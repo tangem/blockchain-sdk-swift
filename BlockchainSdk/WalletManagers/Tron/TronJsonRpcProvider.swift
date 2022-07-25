@@ -17,7 +17,7 @@ class TronJsonRpcProvider: HostProvider {
 
     private let network: TronNetwork
     private let tronGridApiKey: String?
-    private let provider = MoyaProvider<TronTarget>(plugins: [NetworkLoggerPlugin()])
+    private let provider = NetworkProvider<TronTarget>()
     
     init(network: TronNetwork, tronGridApiKey: String?) {
         self.network = network

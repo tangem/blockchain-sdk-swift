@@ -24,7 +24,9 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
         }
     }
     
-    let provider = MoyaProvider<BlockchairTarget>()
+    let provider = NetworkProvider<BlockchairTarget>(
+        configuration: NetworkProviderConfiguration(shouldAddNetworkLogger: false)
+    )
     
     private let endpoint: BlockchairEndpoint
     private let apiKey: String

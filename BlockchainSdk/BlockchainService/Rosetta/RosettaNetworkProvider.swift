@@ -12,13 +12,14 @@ import Moya
 import SwiftCBOR
 
 class RosettaNetworkProvider: CardanoNetworkProvider {
-    
-    private let provider: MoyaProvider<RosettaTarget> = .init()
-    private let baseUrl: RosettaUrl
-    
     var host: String {
         URL(string: baseUrl.rawValue)!.hostOrUnknown
     }
+    
+    private let provider = NetworkProvider<RosettaTarget>(
+        configuration: NetworkProviderConfiguration(shouldAddNetworkLogger: false)
+    )
+    private let baseUrl: RosettaUrl
     
     init(baseUrl: RosettaUrl) {
         self.baseUrl = baseUrl

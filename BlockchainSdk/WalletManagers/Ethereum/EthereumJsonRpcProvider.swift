@@ -12,19 +12,14 @@ import BigInt
 import Moya
 
 class EthereumJsonRpcProvider: HostProvider {
+    let host: String
     
-    var host: String {
-        url.hostOrUnknown
-    }
-    
-    private let provider: MoyaProvider<EthereumTarget> = .init(
-        plugins: [NetworkLoggerPlugin()]
-    )
-    
+    private let provider = NetworkProvider<EthereumTarget>()
     private let url: URL
     
     init(url: URL) {
         self.url = url
+        self.host = url.hostOrUnknown
     }
     
     func getBalance(for address: String) -> AnyPublisher<EthereumResponse, Error> {

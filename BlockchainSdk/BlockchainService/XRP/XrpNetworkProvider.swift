@@ -11,12 +11,14 @@ import Moya
 import Combine
 
 class XRPNetworkProvider: XRPNetworkServiceType, HostProvider {
-    let baseUrl: XrpUrl
-    let provider = MoyaProvider<XrpTarget>()
-    
     var host: String {
         baseUrl.url.hostOrUnknown
     }
+    
+    private let baseUrl: XrpUrl
+    private let provider = NetworkProvider<XrpTarget>(
+        configuration: NetworkProviderConfiguration(shouldAddNetworkLogger: false)
+    )
     
     init(baseUrl: XrpUrl) {
         self.baseUrl = baseUrl

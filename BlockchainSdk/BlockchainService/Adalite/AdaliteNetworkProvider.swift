@@ -13,7 +13,9 @@ import SwiftyJSON
 
 class AdaliteNetworkProvider: CardanoNetworkProvider {
     private let adaliteUrl: AdaliteUrl
-    private let provider = MoyaProvider<AdaliteTarget>()
+    private let provider = NetworkProvider<AdaliteTarget>(
+        configuration: NetworkProviderConfiguration(shouldAddNetworkLogger: false)
+    )
     
     var host: String {
         AdaliteTarget.address(address: "", url: adaliteUrl).baseURL.hostOrUnknown

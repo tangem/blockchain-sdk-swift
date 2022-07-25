@@ -11,7 +11,7 @@ import Combine
 import Moya
 
 class DucatusNetworkService: BitcoinNetworkProvider {
-    let provider =  BitcoreProvider()
+    let provider = BitcoreProvider()
     
     var host: String {
         provider.host

@@ -13,8 +13,10 @@ import Combine
 class TezosJsonRpcProvider: HostProvider {
     var host: String { api.rawValue }
     
-    private let provider = MoyaProvider<TezosTarget>()
     private let api: TezosApi
+    private let provider = NetworkProvider<TezosTarget>(
+        configuration: NetworkProviderConfiguration(shouldAddNetworkLogger: false)
+    )
     
     init(api: TezosApi) {
         self.api = api

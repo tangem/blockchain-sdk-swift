@@ -68,7 +68,3 @@ extension MultiNetworkProvider {
         currentProviderIndex = 0
     }
 }
-
-protocol HostProvider {
-    var host: String { get }
-}
