@@ -14,12 +14,11 @@ class TezosJsonRpcProvider: HostProvider {
     var host: String { api.rawValue }
     
     private let api: TezosApi
-    private let provider = NetworkProvider<TezosTarget>(
-        configuration: NetworkProviderConfiguration(shouldAddNetworkLogger: false)
-    )
+    private let provider: NetworkProvider<TezosTarget>
     
-    init(api: TezosApi) {
+    init(api: TezosApi, configuration: NetworkProviderConfiguration) {
         self.api = api
+        provider = NetworkProvider<TezosTarget>(configuration: configuration)
     }
     
     func getInfo(address: String) -> AnyPublisher<TezosAddressResponse, Error> {
@@ -96,11 +95,11 @@ enum TezosApi: String, CaseIterable {
     case tezosSmartpy = "https://mainnet.smartpy.io"
     case tezosEcad = "https://api.tez.ie/rpc/mainnet"
     
-    func makeProvider() -> TezosJsonRpcProvider {
-        TezosJsonRpcProvider(api: self)
+    func makeProvider(configuration: NetworkProviderConfiguration) -> TezosJsonRpcProvider {
+        TezosJsonRpcProvider(api: self, configuration: configuration)
     }
     
-    static func makeAllProviders() -> [TezosJsonRpcProvider] {
-        TezosApi.allCases.map { $0.makeProvider() }
+    static func makeAllProviders(configuration: NetworkProviderConfiguration) -> [TezosJsonRpcProvider] {
+        TezosApi.allCases.map { $0.makeProvider(configuration: configuration) }
     }
 }

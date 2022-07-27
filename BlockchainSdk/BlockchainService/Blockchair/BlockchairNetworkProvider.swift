@@ -24,10 +24,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
         }
     }
     
-    let provider = NetworkProvider<BlockchairTarget>(
-        configuration: NetworkProviderConfiguration(shouldAddNetworkLogger: false)
-    )
-    
+    private let provider: NetworkProvider<BlockchairTarget>
     private let endpoint: BlockchairEndpoint
     private let apiKey: String
     private var currentApiKey: String? = nil
@@ -45,9 +42,10 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
         BlockchairTarget(type: .fee(endpoint: endpoint), apiKey: nil).baseURL.hostOrUnknown
     }
     
-    init(endpoint: BlockchairEndpoint, apiKey: String) {
+    init(endpoint: BlockchairEndpoint, apiKey: String, configuration: NetworkProviderConfiguration) {
         self.endpoint = endpoint
         self.apiKey = apiKey
+        provider = NetworkProvider<BlockchairTarget>(configuration: configuration)
     }
     
 	func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {

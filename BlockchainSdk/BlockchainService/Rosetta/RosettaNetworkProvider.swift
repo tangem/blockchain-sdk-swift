@@ -16,13 +16,12 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
         URL(string: baseUrl.rawValue)!.hostOrUnknown
     }
     
-    private let provider = NetworkProvider<RosettaTarget>(
-        configuration: NetworkProviderConfiguration(shouldAddNetworkLogger: false)
-    )
+    private let provider: NetworkProvider<RosettaTarget>
     private let baseUrl: RosettaUrl
     
-    init(baseUrl: RosettaUrl) {
+    init(baseUrl: RosettaUrl, configuration: NetworkProviderConfiguration) {
         self.baseUrl = baseUrl
+        provider = NetworkProvider<RosettaTarget>(configuration: configuration)
     }
     
     func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {

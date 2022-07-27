@@ -11,8 +11,12 @@ import Moya
 import Combine
 
 class BitcoreProvider {
-    private let provider = NetworkProvider<BitcoreTarget>()
+    private let provider: NetworkProvider<BitcoreTarget>
     
+    init(configuration: NetworkProviderConfiguration) {
+        provider = NetworkProvider<BitcoreTarget>(configuration: configuration)
+    }
+
     var host: String {
         BitcoreTarget.balance(address: "").baseURL.hostOrUnknown
     }

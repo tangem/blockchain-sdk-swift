@@ -16,12 +16,11 @@ class XRPNetworkProvider: XRPNetworkServiceType, HostProvider {
     }
     
     private let baseUrl: XrpUrl
-    private let provider = NetworkProvider<XrpTarget>(
-        configuration: NetworkProviderConfiguration(shouldAddNetworkLogger: false)
-    )
+    private let provider: NetworkProvider<XrpTarget>
     
-    init(baseUrl: XrpUrl) {
+    init(baseUrl: XrpUrl, configuration: NetworkProviderConfiguration) {
         self.baseUrl = baseUrl
+        provider = NetworkProvider<XrpTarget>(configuration: configuration)
     }
     
     func getFee() -> AnyPublisher<XRPFeeResponse, Error> {

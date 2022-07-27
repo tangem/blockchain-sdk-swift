@@ -8,28 +8,44 @@
 
 import Moya
 
-struct NetworkProviderConfiguration {
-    let shouldAddNetworkLogger: Bool
+public struct NetworkProviderConfiguration {
+    let logger: LoggerType
     let urlSessionConfiguration: URLSessionConfiguration
 
-    init(
-        shouldAddNetworkLogger: Bool = true,
+    public init(
+        logger: LoggerType = .default,
         urlSessionConfiguration: URLSessionConfiguration = .standart
     ) {
-        self.shouldAddNetworkLogger = shouldAddNetworkLogger
+        self.logger = logger
         self.urlSessionConfiguration = urlSessionConfiguration
     }
     
     var plugins: [PluginType] {
-        if shouldAddNetworkLogger {
-            return [NetworkLoggerPlugin()]
+        if let logOptions = logger.logOptions {
+            return [NetworkLoggerPlugin(configuration: .init(logOptions: logOptions))]
         }
         
         return []
     }
 }
 
-private extension URLSessionConfiguration {
+public extension NetworkProviderConfiguration {
+    enum LoggerType {
+        case none
+        case `default`
+        case verbose
+        
+        var logOptions: NetworkLoggerPlugin.Configuration.LogOptions? {
+            switch self {
+            case .none: return nil
+            case .default: return .default
+            case .verbose: return .verbose
+            }
+        }
+    }
+}
+
+public extension URLSessionConfiguration {
     static let standart: URLSessionConfiguration = {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 10

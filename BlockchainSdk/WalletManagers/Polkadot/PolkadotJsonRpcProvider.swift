@@ -14,11 +14,12 @@ class PolkadotJsonRpcProvider: HostProvider {
     let host: String
     let network: PolkadotNetwork
     
-    private let provider = NetworkProvider<PolkadotTarget>()
+    private let provider: NetworkProvider<PolkadotTarget>
     
-    init(network: PolkadotNetwork) {
+    init(network: PolkadotNetwork, configuration: NetworkProviderConfiguration) {
         self.network = network
         self.host = network.url.hostOrUnknown
+        provider = NetworkProvider<PolkadotTarget>(configuration: configuration)
     }
     
     func storage(key: String) -> AnyPublisher<String, Error> {

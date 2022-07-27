@@ -17,10 +17,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
         getTarget(for: .fee).baseURL.hostOrUnknown
     }
     
-    private let provider = NetworkProvider<BlockcypherTarget>(
-        configuration: NetworkProviderConfiguration(shouldAddNetworkLogger: false)
-    )
-    
+    private let provider: NetworkProvider<BlockcypherTarget>
     private let endpoint: BlockcypherEndpoint
     private var token: String? = nil
     private let tokens: [String]
@@ -31,9 +28,10 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
         return decoder
     }()
     
-    init(endpoint: BlockcypherEndpoint, tokens: [String]) {
+    init(endpoint: BlockcypherEndpoint, tokens: [String], configuration: NetworkProviderConfiguration) {
         self.endpoint = endpoint
         self.tokens = tokens
+        provider = NetworkProvider<BlockcypherTarget>(configuration: configuration)
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
