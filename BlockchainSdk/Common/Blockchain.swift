@@ -577,6 +577,8 @@ extension Blockchain: Codable {
         case "kusama": self = .kusama
         case "tron": self = .tron(testnet: isTestnet)
         case "arbitrum": self = .arbitrum(testnet: isTestnet)
+        case "dash": self = .dash(testnet: isTestnet)
+        case "xdai": self = .gnosis
         default: throw BlockchainSdkError.decodingFailed
         }
     }
@@ -758,6 +760,7 @@ extension Blockchain {
         case "tron": return .tron(testnet: isTestnet)
         case "arbitrum": return .arbitrum(testnet: isTestnet)
         case "dash": return .dash(testnet: isTestnet)
+        case "xdai": return .gnosis
         default: return nil
         }
     }
