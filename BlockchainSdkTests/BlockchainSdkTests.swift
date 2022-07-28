@@ -158,54 +158,30 @@ class BlockchainSdkTests: XCTestCase {
     func testCodingKey() {
         // Did you get a compilation error here? If so, add your new blockchain to the array below
         switch Blockchain.bitcoin(testnet: false) {
-        case .bitcoin:
-            break
-        case .litecoin:
-            break
-        case .stellar:
-            break
-        case .ethereum:
-            break
-        case .ethereumClassic:
-            break
-        case .rsk:
-            break
-        case .bitcoinCash:
-            break
-        case .binance:
-            break
-        case .cardano:
-            break
-        case .xrp:
-            break
-        case .ducatus:
-            break
-        case .tezos:
-            break
-        case .dogecoin:
-            break
-        case .bsc:
-            break
-        case .polygon:
-            break
-        case .avalanche:
-            break
-        case .solana:
-            break
-        case .fantom:
-            break
-        case .polkadot:
-            break
-        case .kusama:
-            break
-        case .tron:
-            break
-        case .arbitrum:
-            break
-        case .dash:
-            break
-        case .gnosis:
-            break
+        case .bitcoin: break
+        case .litecoin: break
+        case .stellar: break
+        case .ethereum: break
+        case .ethereumClassic: break
+        case .rsk: break
+        case .bitcoinCash: break
+        case .binance: break
+        case .cardano: break
+        case .xrp: break
+        case .ducatus: break
+        case .tezos: break
+        case .dogecoin: break
+        case .bsc: break
+        case .polygon: break
+        case .avalanche: break
+        case .solana: break
+        case .fantom: break
+        case .polkadot: break
+        case .kusama: break
+        case .tron: break
+        case .arbitrum: break
+        case .dash: break
+        case .gnosis: break
         }
         // Did you get a compilation error here? If so, add your new blockchain to the array below
         
