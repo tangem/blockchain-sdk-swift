@@ -13,13 +13,13 @@ import Moya
 class PolkadotJsonRpcProvider: HostProvider {
     let host: String
     let network: PolkadotNetwork
-    private let provider: MoyaProvider<PolkadotTarget> = .init(plugins: [
-        NetworkLoggerPlugin()
-    ])
     
-    init(network: PolkadotNetwork) {
+    private let provider: NetworkProvider<PolkadotTarget>
+    
+    init(network: PolkadotNetwork, configuration: NetworkProviderConfiguration) {
         self.network = network
         self.host = network.url.hostOrUnknown
+        provider = NetworkProvider<PolkadotTarget>(configuration: configuration)
     }
     
     func storage(key: String) -> AnyPublisher<String, Error> {

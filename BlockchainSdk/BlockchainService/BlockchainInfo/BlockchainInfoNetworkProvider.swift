@@ -11,8 +11,11 @@ import Moya
 import Combine
 
 class BlockchainInfoNetworkProvider: BitcoinNetworkProvider {
+    private let provider: NetworkProvider<BlockchainInfoTarget>
     
-    let provider = MoyaProvider<BlockchainInfoTarget>(plugins: [NetworkLoggerPlugin()])
+    init(configuration: NetworkProviderConfiguration) {
+        provider = NetworkProvider<BlockchainInfoTarget>(configuration: configuration)
+    }
     
     var host: String {
         BlockchainInfoTarget.address(address: "", offset: nil).baseURL.hostOrUnknown

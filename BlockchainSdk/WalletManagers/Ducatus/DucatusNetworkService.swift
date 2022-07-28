@@ -11,14 +11,15 @@ import Combine
 import Moya
 
 class DucatusNetworkService: BitcoinNetworkProvider {
-    let provider =  BitcoreProvider()
+    private let provider: BitcoreProvider
     
-    var host: String {
-        provider.host
-    }
-
+    var host: String { provider.host }
     var supportsTransactionPush: Bool { false }
     
+    init(configuration: NetworkProviderConfiguration) {
+        provider = BitcoreProvider(configuration: configuration)
+    }
+
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         return Publishers.Zip(provider.getBalance(address: address), provider.getUnspents(address: address))
             .tryMap { balance, unspents throws -> BitcoinResponse in

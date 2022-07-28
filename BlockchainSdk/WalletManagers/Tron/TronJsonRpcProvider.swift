@@ -17,11 +17,12 @@ class TronJsonRpcProvider: HostProvider {
 
     private let network: TronNetwork
     private let tronGridApiKey: String?
-    private let provider = MoyaProvider<TronTarget>(plugins: [NetworkLoggerPlugin()])
+    private let provider: NetworkProvider<TronTarget>
     
-    init(network: TronNetwork, tronGridApiKey: String?) {
+    init(network: TronNetwork, tronGridApiKey: String?, configuration: NetworkProviderConfiguration) {
         self.network = network
         self.tronGridApiKey = tronGridApiKey
+        provider = NetworkProvider<TronTarget>(configuration: configuration)
     }
 
     func getAccount(for address: String) -> AnyPublisher<TronGetAccountResponse, Error> {

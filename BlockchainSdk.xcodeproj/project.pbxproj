@@ -211,6 +211,9 @@
 		EF0DA78C285246A90081092A /* DashMainNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */; };
 		EF0DA78D285246A90081092A /* DashWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF680A72284F524300F6B1BD /* DashWalletManager.swift */; };
 		EF0DA78E285246A90081092A /* DashTestNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */; };
+		EF332D17288EACB000AE3C85 /* HostProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D16288EACB000AE3C85 /* HostProvider.swift */; };
+		EF332D19288EAEAC00AE3C85 /* NetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D18288EAEAC00AE3C85 /* NetworkProvider.swift */; };
+		EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -462,6 +465,9 @@
 		DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotAddressService.swift; sourceTree = "<group>"; };
 		DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotWalletManager.swift; sourceTree = "<group>"; };
 		DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetworkService.swift; sourceTree = "<group>"; };
+		EF332D16288EACB000AE3C85 /* HostProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostProvider.swift; sourceTree = "<group>"; };
+		EF332D18288EAEAC00AE3C85 /* NetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProvider.swift; sourceTree = "<group>"; };
+		EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProviderConfiguration.swift; sourceTree = "<group>"; };
 		EF680A72284F524300F6B1BD /* DashWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashWalletManager.swift; sourceTree = "<group>"; };
 		EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashMainNetworkParams.swift; sourceTree = "<group>"; };
 		EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashTestNetworkParams.swift; sourceTree = "<group>"; };
@@ -586,6 +592,7 @@
 		5D14E48B2397B87000C15FC8 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				EF332D15288EAC9000AE3C85 /* API */,
 				5DACA35C255E98220096BC48 /* Address */,
 				5D5E058A24FE736E00F04DE1 /* Localizations */,
 				B0A1D39B2625A10B0013F0BF /* Utils */,
@@ -598,7 +605,6 @@
 				B056729A2570F9DC00A8CB59 /* BlockchainSdkError.swift */,
 				5DEC90C02587A35800826C95 /* BlockchainSdkConfig.swift */,
 				B0AD566325AC8DD50084F924 /* PendingTransaction.swift */,
-				B0F9DCA025FB4C9B00C0AF18 /* MultiNetworkProvider.swift */,
 				5D14E48F2397B87000C15FC8 /* WalletManager.swift */,
 				5D88838827D3BB8B008744E1 /* WalletError.swift */,
 				5D31EA2E27DA1C910031DBEB /* DetailedError.swift */,
@@ -1126,6 +1132,17 @@
 			path = Polkadot;
 			sourceTree = "<group>";
 		};
+		EF332D15288EAC9000AE3C85 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				B0F9DCA025FB4C9B00C0AF18 /* MultiNetworkProvider.swift */,
+				EF332D16288EACB000AE3C85 /* HostProvider.swift */,
+				EF332D18288EAEAC00AE3C85 /* NetworkProvider.swift */,
+				EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */,
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
 		EF680A71284F523100F6B1BD /* Dash */ = {
 			isa = PBXGroup;
 			children = (
@@ -1408,6 +1425,7 @@
 				DA9F76E927EC8AEB00F0665C /* TronAddressService.swift in Sources */,
 				5D304390239A58C90066B8D9 /* BitcoinWalletManager.swift in Sources */,
 				5D4B33DA23FAAD1B00C93A84 /* BitcoreResponse.swift in Sources */,
+				EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */,
 				B0EBBEF2265D0E7700D37141 /* DogecoinNetworkParams.swift in Sources */,
 				5DE3BF99239E722400E8815D /* Base58.swift in Sources */,
 				B0F9DCA125FB4C9B00C0AF18 /* MultiNetworkProvider.swift in Sources */,
@@ -1423,6 +1441,7 @@
 				DA30812B2817BF3C00DE41F1 /* Tron.pb.swift in Sources */,
 				5D4B33C823F72F2700C93A84 /* BitcoinCashWalletManager.swift in Sources */,
 				5D26CEF1243CB9EA00994CC0 /* BlockchainInfoResponse.swift in Sources */,
+				EF332D19288EAEAC00AE3C85 /* NetworkProvider.swift in Sources */,
 				5D54FE1A23E41E5A009FAC2F /* LitecoinNetworkParams.swift in Sources */,
 				5D31EA2F27DA1C910031DBEB /* DetailedError.swift in Sources */,
 				DA9F76EC27EC9A2900F0665C /* TronWalletManager.swift in Sources */,
@@ -1463,6 +1482,7 @@
 				5D03D2D0253DE61B009A8A9F /* TezosAddressService.swift in Sources */,
 				5D5CE0D52625C8EC009023EC /* XrpNetworkProvider.swift in Sources */,
 				5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */,
+				EF332D17288EACB000AE3C85 /* HostProvider.swift in Sources */,
 				5DE3BFA0239FA33800E8815D /* Bech32.swift in Sources */,
 				B04DC62725AC1C50009AA7B3 /* JSONDecoder+.swift in Sources */,
 				5DEAFA90244473460032E316 /* Transaction.swift in Sources */,

@@ -13,14 +13,15 @@ import SwiftyJSON
 
 class AdaliteNetworkProvider: CardanoNetworkProvider {
     private let adaliteUrl: AdaliteUrl
-    private let provider = MoyaProvider<AdaliteTarget>()
+    private let provider: NetworkProvider<AdaliteTarget>
     
     var host: String {
         AdaliteTarget.address(address: "", url: adaliteUrl).baseURL.hostOrUnknown
     }
     
-    init(baseUrl: AdaliteUrl) {
+    init(baseUrl: AdaliteUrl, configuration: NetworkProviderConfiguration) {
         adaliteUrl = baseUrl
+        provider = NetworkProvider<AdaliteTarget>(configuration: configuration)
     }
     
     func send(transaction: Data) -> AnyPublisher<String, Error> {

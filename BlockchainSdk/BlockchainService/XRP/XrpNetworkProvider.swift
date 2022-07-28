@@ -11,15 +11,16 @@ import Moya
 import Combine
 
 class XRPNetworkProvider: XRPNetworkServiceType, HostProvider {
-    let baseUrl: XrpUrl
-    let provider = MoyaProvider<XrpTarget>()
-    
     var host: String {
         baseUrl.url.hostOrUnknown
     }
     
-    init(baseUrl: XrpUrl) {
+    private let baseUrl: XrpUrl
+    private let provider: NetworkProvider<XrpTarget>
+    
+    init(baseUrl: XrpUrl, configuration: NetworkProviderConfiguration) {
         self.baseUrl = baseUrl
+        provider = NetworkProvider<XrpTarget>(configuration: configuration)
     }
     
     func getFee() -> AnyPublisher<XRPFeeResponse, Error> {
