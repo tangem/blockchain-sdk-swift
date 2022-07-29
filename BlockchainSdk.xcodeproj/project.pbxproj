@@ -552,8 +552,8 @@
 		5D14E47B2397B80F00C15FC8 /* BlockchainSdkTests */ = {
 			isa = PBXGroup;
 			children = (
-				5D14E47C2397B80F00C15FC8 /* BlockchainSdkTests.swift */,
 				5D14E47E2397B80F00C15FC8 /* Info.plist */,
+				5D14E47C2397B80F00C15FC8 /* BlockchainSdkTests.swift */,
 				5DFCE543274BB08C00C1B1A0 /* BitcoinTests.swift */,
 				5DFCE545274BB0B300C1B1A0 /* EthereumTests.swift */,
 				5DFCE547274BB85B00C1B1A0 /* LitecoinTests.swift */,
