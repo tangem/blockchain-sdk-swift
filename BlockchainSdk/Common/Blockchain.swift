@@ -221,6 +221,10 @@ public enum Blockchain: Equatable, Hashable {
             }
         case .arbitrum:
             return true
+        case .gnosis:
+            if case .token = amountType {
+                return true
+            }
         default:
             break
         }
