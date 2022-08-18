@@ -605,6 +605,7 @@ extension Blockchain: Codable {
         case "arbitrum": self = .arbitrum(testnet: isTestnet)
         case "dash": self = .dash(testnet: isTestnet)
         case "xdai": self = .gnosis
+        case "optimism": self = .optimism(testnet: isTestnet)
         default: throw BlockchainSdkError.decodingFailed
         }
     }

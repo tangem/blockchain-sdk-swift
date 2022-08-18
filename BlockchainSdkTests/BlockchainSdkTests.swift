@@ -211,6 +211,7 @@ class BlockchainSdkTests: XCTestCase {
             .arbitrum(testnet: false),
             .dash(testnet: false),
             .gnosis,
+            .optimism(testnet: false),
         ]
         
         let encoder = JSONEncoder()
