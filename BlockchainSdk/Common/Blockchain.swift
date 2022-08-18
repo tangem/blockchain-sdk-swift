@@ -37,6 +37,7 @@ public enum Blockchain: Equatable, Hashable {
     case arbitrum(testnet: Bool)
     case dash(testnet: Bool)
     case gnosis
+    case optimism(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -72,6 +73,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .gnosis:
             return false
+        case .optimism(let testnet):
+            return testnet
         }
     }
     
@@ -92,7 +95,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash:
             return 8
-        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis:
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism:
             return 18
         case  .cardano, .xrp, .tezos, .tron:
             return 6
@@ -155,6 +158,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet ? "tDASH" : "DASH"
         case .gnosis:
             return "xDAI"
+        case .optimism:
+            return "OP"
         }
     }
     
@@ -182,6 +187,8 @@ public enum Blockchain: Equatable, Hashable {
             return "Polkadot" + testnetSuffix + (isTestnet ? " (Westend)" : "")
         case .gnosis:
             return "Gnosis Chain" + testnetSuffix
+        case .optimism:
+            return "Optimism" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -206,7 +213,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .ethereum, .bsc, .binance, .polygon,
                 .avalanche, .solana, .fantom, .tron, .arbitrum,
-                .rsk, .ethereumClassic, .dash, .gnosis:
+                .rsk, .ethereumClassic, .dash, .gnosis, .optimism:
             return true
         default:
             return false
@@ -251,6 +258,7 @@ extension Blockchain {
         case .fantom: return isTestnet ? 4002 : 250
         case .arbitrum: return isTestnet ? 421611 : 42161
         case .gnosis: return 100
+        case .optimism: return isTestnet ? 420 : 10
         default: return nil
         }
     }
@@ -336,6 +344,18 @@ extension Blockchain {
                 URL(string: "https://xdai-archive.blockscout.com")!,
                 URL(string: "https://rpc.gnosischain.com")!,
             ]
+        case .optimism(let testnet):
+            if testnet {
+                return [
+                    URL(string: "https://goerli.optimism.io")!
+                ]
+            } else {
+                return [
+                    URL(string: "https://mainnet.optimism.io")!,
+                    URL(string: "https://optimism-mainnet.public.blastapi.io")!,
+                    URL(string: "https://rpc.ankr.com/optimism")!
+                ]
+            }
         default:
             return nil
         }
@@ -414,6 +434,7 @@ extension Blockchain {
         case .arbitrum: return 9001
         case .dash: return 5
         case .gnosis: return 700
+        case .optimism: return 266
         }
     }
     
@@ -441,7 +462,7 @@ extension Blockchain {
             return BitcoinAddressService(networkParams: LitecoinNetworkParams())
         case .stellar:
             return StellarAddressService()
-        case .ethereum, .ethereumClassic, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis:
+        case .ethereum, .ethereumClassic, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -537,6 +558,7 @@ extension Blockchain: Codable {
         case .arbitrum: return "arbitrum"
         case .dash: return "dash"
         case .gnosis: return "xdai"
+        case .optimism: return "optimism"
         }
     }
     
@@ -639,6 +661,8 @@ extension Blockchain {
         case .dash:
             return URL(string: "http://faucet.test.dash.crowdnode.io/")!
             // Or another one https://testnet-faucet.dash.org/ - by Dash Core Group
+        case .optimism:
+            return URL(string: "https://optimismfaucet.xyz")! //another one https://faucet.paradigm.xyz
         default:
             return nil
         }
@@ -721,6 +745,11 @@ extension Blockchain {
             return URL(string: "https://blockexplorer.one/dash/\(network)/address/\(address)")
         case .gnosis:
             return URL(string: "https://blockscout.com/xdai/mainnet/address/\(address)")!
+        case .optimism:
+            if isTestnet {
+                return URL(string: "https://blockscout.com/optimism/goerli/address/\(address)")!
+            }
+            return URL(string: "https://optimistic.etherscan.io/address/\(address)")!
         }
     }
 }
