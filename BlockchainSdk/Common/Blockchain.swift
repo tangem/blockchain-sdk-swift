@@ -347,13 +347,13 @@ extension Blockchain {
         case .optimism(let testnet):
             if testnet {
                 return [
-                    URL(string: "https://goerli.optimism.io")!
+                    URL(string: "https://goerli.optimism.io")!,
                 ]
             } else {
                 return [
                     URL(string: "https://mainnet.optimism.io")!,
                     URL(string: "https://optimism-mainnet.public.blastapi.io")!,
-                    URL(string: "https://rpc.ankr.com/optimism")!
+                    URL(string: "https://rpc.ankr.com/optimism")!,
                 ]
             }
         default:
@@ -434,7 +434,7 @@ extension Blockchain {
         case .arbitrum: return 9001
         case .dash: return 5
         case .gnosis: return 700
-        case .optimism: return 266
+        case .optimism: return 614
         }
     }
     
