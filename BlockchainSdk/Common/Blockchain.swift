@@ -222,13 +222,9 @@ public enum Blockchain: Equatable, Hashable {
     
     public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
         switch self {
-        case .tron:
-            if case .token = amountType {
-                return true
-            }
         case .arbitrum:
             return true
-        case .gnosis:
+        case .fantom, .tron, .gnosis:
             if case .token = amountType {
                 return true
             }
