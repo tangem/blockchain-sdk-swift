@@ -182,6 +182,7 @@ class BlockchainSdkTests: XCTestCase {
         case .arbitrum: break
         case .dash: break
         case .gnosis: break
+        case .optimism: break
         }
         // Did you get a compilation error here? If so, add your new blockchain to the array below
         
@@ -210,6 +211,7 @@ class BlockchainSdkTests: XCTestCase {
             .arbitrum(testnet: false),
             .dash(testnet: false),
             .gnosis,
+            .optimism(testnet: false),
         ]
         
         let encoder = JSONEncoder()
