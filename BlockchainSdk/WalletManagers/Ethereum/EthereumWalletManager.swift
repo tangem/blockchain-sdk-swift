@@ -11,6 +11,7 @@ import BigInt
 import Combine
 import TangemSdk
 import Moya
+import web3swift
 
 public enum ETHError: Error, LocalizedError, DetailedError {
     case failedToParseTxCount
@@ -117,16 +118,23 @@ class EthereumWalletManager: BaseManager, WalletManager {
         return GasLimit.erc20.value
     }
     
-    private func formatDestinationInfo(for destination: String, amount: Amount) -> (to: String, data: String?) {
+    private func formatDestinationInfo(for destination: String, amount: Amount) -> (to: String, value: String?, data: String?) {
         var to = destination
+        var value: String? = nil
         var data: String? = nil
+        
+        if amount.type == .coin,
+           let amountValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: amount.decimals)
+        {
+            value = "0x" + String(amountValue, radix: 16)
+        }
         
         if let token = amount.type.token, let erc20Data = txBuilder.getData(for: amount, targetAddress: destination) {
             to = token.contractAddress
             data = "0x" + erc20Data.hexString
         }
         
-        return (to, data)
+        return (to, value, data)
     }
 }
 
@@ -153,6 +161,7 @@ extension EthereumWalletManager: TransactionSender {
         let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
         return networkService.getFee(to: destinationInfo.to,
                                      from: wallet.address,
+                                     value: destinationInfo.value,
                                      data: destinationInfo.data,
                                      fallbackGasLimit: getFixedGasLimit(for: amount))
             .tryMap {
@@ -205,7 +214,7 @@ extension EthereumWalletManager: EthereumGasLoader {
         let defaultLimit = self.getFixedGasLimit(for: amount)
         
         return networkService
-            .getGasLimit(to: destInfo.to, from: wallet.address, data: destInfo.data)
+            .getGasLimit(to: destInfo.to, from: wallet.address, value: destInfo.value, data: destInfo.data)
             .replaceError(with: defaultLimit)
             .eraseToAnyPublisher()
     }

@@ -43,8 +43,8 @@ class EthereumJsonRpcProvider: HostProvider {
         requestPublisher(for: .send(transaction: transaction, url: url))
     }
     
-    func getGasLimit(to: String, from: String, data: String?) -> AnyPublisher<EthereumResponse, Error> {
-        requestPublisher(for: .gasLimit(to: to, from: from, data: data, url: url))
+    func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumResponse, Error> {
+        requestPublisher(for: .gasLimit(to: to, from: from, value: value, data: data, url: url))
     }
     
     func getGasPrice() -> AnyPublisher<EthereumResponse, Error> {
