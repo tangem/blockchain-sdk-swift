@@ -33,6 +33,8 @@ class StellarWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkService.host  }
     
     private var baseFee: Decimal?
+    private var minChargedFee: Decimal?
+    private var maxChargedFee: Decimal?
     
     func update(completion: @escaping (Result<(), Error>)-> Void)  {
         cancellable = networkService
@@ -50,7 +52,11 @@ class StellarWalletManager: BaseManager, WalletManager {
     
     private func updateWallet(with response: StellarResponse) {
         txBuilder.sequence = response.sequence
+        
         self.baseFee = response.baseFee
+        self.minChargedFee = response.minChargedFee
+        self.maxChargedFee = response.maxChargedFee
+        
         let fullReserve = response.assetBalances.isEmpty ? response.baseReserve * 2 : response.baseReserve * 3
         wallet.add(reserveValue: fullReserve)
         wallet.add(coinValue: response.balance - fullReserve)
@@ -80,7 +86,7 @@ class StellarWalletManager: BaseManager, WalletManager {
 }
 
 extension StellarWalletManager: TransactionSender {
-    var allowsFeeSelection: Bool { false }
+    var allowsFeeSelection: Bool { true }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
         return txBuilder.buildForSign(transaction: transaction)
@@ -113,12 +119,23 @@ extension StellarWalletManager: TransactionSender {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        if let feeValue = self.baseFee {
-            let feeAmount = Amount(with: wallet.blockchain, value: feeValue)
-            return Result.Publisher([feeAmount]).eraseToAnyPublisher()
-        } else {
+        guard
+            let baseFee = self.baseFee,
+            let minChargedFee = self.minChargedFee,
+            let maxChargedFee = self.maxChargedFee
+        else {
             return Fail(error: WalletError.failedToGetFee).eraseToAnyPublisher()
         }
+        
+        let fees = [
+            baseFee,
+            (minChargedFee + maxChargedFee) / 2,
+            maxChargedFee,
+        ].map {
+            Amount(with: wallet.blockchain, value: $0)
+        }
+        
+        return Result.Publisher(fees).eraseToAnyPublisher()
     }
 }
 

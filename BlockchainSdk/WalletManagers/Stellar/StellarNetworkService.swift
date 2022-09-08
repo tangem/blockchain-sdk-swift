@@ -37,8 +37,10 @@ class StellarNetworkService {
     
     public func getInfo(accountId: String, isAsset: Bool) -> AnyPublisher<StellarResponse, Error> {
         return stellarData(accountId: accountId)
-            .tryMap{ (accountResponse, ledgerResponse) throws -> StellarResponse in
+            .tryMap{ (accountResponse, feeStatsResponse, ledgerResponse) throws -> StellarResponse in
                 guard let baseFeeStroops = Decimal(ledgerResponse.baseFeeInStroops),
+                      let minChargedFeeStroops = Decimal(feeStatsResponse.feeCharged.min),
+                      let maxChargedFeeStroops = Decimal(feeStatsResponse.feeCharged.max),
                       let baseReserveStroops = Decimal(ledgerResponse.baseReserveInStroops),
                       let balance = Decimal(accountResponse.balances.first(where: {$0.assetType == AssetTypeAsString.NATIVE})?.balance) else {
                           throw WalletError.failedToParseNetworkResponse
@@ -61,7 +63,12 @@ class StellarNetworkService {
                 let baseFee = baseFeeStroops/divider
                 let baseReserve = baseReserveStroops/divider
                 
+                let minChargedFee = minChargedFeeStroops / divider
+                let maxChargedFee = maxChargedFeeStroops / divider
+                
                 return StellarResponse(baseFee: baseFee,
+                                       minChargedFee: minChargedFee,
+                                       maxChargedFee: maxChargedFee,
                                        baseReserve: baseReserve,
                                        assetBalances: assetBalances,
                                        balance: balance,
@@ -71,8 +78,9 @@ class StellarNetworkService {
             .eraseToAnyPublisher()
     }
     
-    private func stellarData(accountId: String) -> AnyPublisher<(AccountResponse, LedgerResponse), Error> {
-        Publishers.Zip(stellarSdk.accounts.getAccountDetails(accountId: accountId),
+    private func stellarData(accountId: String) -> AnyPublisher<(AccountResponse, FeeStatsResponse, LedgerResponse), Error> {
+        Publishers.Zip3(stellarSdk.accounts.getAccountDetails(accountId: accountId),
+                       stellarSdk.feeStats.getFeeStats(),
                        stellarSdk.ledgers.getLatestLedger())
             .eraseToAnyPublisher()
     }
@@ -104,6 +112,8 @@ extension StellarNetworkService {
 
 struct StellarResponse {
     let baseFee: Decimal
+    let minChargedFee: Decimal
+    let maxChargedFee: Decimal
     let baseReserve: Decimal
     let assetBalances: [StellarAssetResponse]
     let balance: Decimal

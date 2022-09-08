@@ -55,6 +55,27 @@ extension AccountService {
     }
 }
 
+extension FeeStatsService {
+    func getFeeStats() -> AnyPublisher<FeeStatsResponse, Error> {
+        Future<FeeStatsResponse, Error> { [weak self] promise in
+            guard let self = self else {
+                promise(.failure(WalletError.empty))
+                return
+            }
+            
+            self.getFeeStats { response in
+                switch response {
+                case .success(let details):
+                    promise(.success(details))
+                case .failure(let error):
+                    promise(.failure(error))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
 extension LedgersService {
     func getLatestLedger() -> AnyPublisher<LedgerResponse, Error> {
         let future = Future<LedgerResponse, Error> { [weak self] promise in
