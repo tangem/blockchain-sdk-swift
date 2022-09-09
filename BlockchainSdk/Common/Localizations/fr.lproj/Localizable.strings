@@ -26,9 +26,6 @@
 "xtz_withdrawal_message_warning" = "Pour ne pas payer une commission élevée la prochaine fois que vous rechargez votre portefeuille, veuillez réduire le montant de %@ XTZ";
 "xtz_withdrawal_message_reduce" = "Réduire de %@ XTZ";
 "xtz_withdrawal_message_ignore" = "Non, envoyer toute la somme";
-"dot_existential_deposit_message_warning" = "%@ network has a concept of Existential Deposit. If your account drops below %@ it will be deactivated and any remaining funds will be destroyed. To avoid that you can reduce the amount by %@.";
-"dot_existential_deposit_message_reduce" = "Reduce by %@";
-"dot_existential_deposit_message_ignore" = "No, send all";
 "send_validation_invalid_amount" = "Somme incorrecte";
 "send_validation_invalid_total" = "Le total dépasse le solde";
 "send_validation_invalid_fee" = "Les commissions dépassent le solde";

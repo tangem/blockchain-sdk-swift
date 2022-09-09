@@ -26,9 +26,6 @@
 "xtz_withdrawal_message_warning" = "Damit Sie beim nächsten Aufladen Ihrer Brieftasche keine erhöhte Provision zahlen, soll der Betrag um %@ XTZ reduziert werden";
 "xtz_withdrawal_message_reduce" = "Um %@ XTZ reduzieren";
 "xtz_withdrawal_message_ignore" = "Nein, alles senden";
-"dot_existential_deposit_message_warning" = "%@ network has a concept of Existential Deposit. If your account drops below %@ it will be deactivated and any remaining funds will be destroyed. To avoid that you can reduce the amount by %@.";
-"dot_existential_deposit_message_reduce" = "Reduce by %@";
-"dot_existential_deposit_message_ignore" = "No, send all";
 "send_validation_invalid_amount" = "Ungültiger Betrag";
 "send_validation_invalid_total" = "Der Gesamtbetrag geht über die Bilanz hinaus";
 "send_validation_invalid_fee" = "Die Gebühr geht über die Bilanz hinaus";
