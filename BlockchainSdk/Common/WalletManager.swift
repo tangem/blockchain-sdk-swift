@@ -102,3 +102,7 @@ public protocol RentProvider {
     func minimalBalanceForRentExemption() -> AnyPublisher<Amount, Error>
     func rentAmount() -> AnyPublisher<Amount, Error>
 }
+
+public protocol ExistentialDepositProvider {
+    var existentialDeposit: Amount { get }
+}
