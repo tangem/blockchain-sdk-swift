@@ -166,7 +166,7 @@ public class WalletManagerFactory {
                 let stellarSdk = StellarSDK(withHorizonUrl: url)
                 $0.stellarSdk = stellarSdk
                 $0.txBuilder = StellarTransactionBuilder(stellarSdk: stellarSdk, walletPublicKey: wallet.publicKey.blockchainKey, isTestnet: testnet)
-                $0.networkService = StellarNetworkService(stellarSdk: stellarSdk)
+                $0.networkService = StellarNetworkService(blockchain: wallet.blockchain, stellarSdk: stellarSdk)
             }
             
         case .ethereum(let testnet):

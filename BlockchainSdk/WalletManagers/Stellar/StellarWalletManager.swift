@@ -32,10 +32,6 @@ class StellarWalletManager: BaseManager, WalletManager {
     var stellarSdk: StellarSDK!
     var currentHost: String { networkService.host  }
     
-    private var baseFee: Decimal?
-    private var minChargedFee: Decimal?
-    private var maxChargedFee: Decimal?
-    
     func update(completion: @escaping (Result<(), Error>)-> Void)  {
         cancellable = networkService
             .getInfo(accountId: wallet.address, isAsset: !cardTokens.isEmpty)
@@ -52,11 +48,6 @@ class StellarWalletManager: BaseManager, WalletManager {
     
     private func updateWallet(with response: StellarResponse) {
         txBuilder.sequence = response.sequence
-        
-        self.baseFee = response.baseFee
-        self.minChargedFee = response.minChargedFee
-        self.maxChargedFee = response.maxChargedFee
-        
         let fullReserve = response.assetBalances.isEmpty ? response.baseReserve * 2 : response.baseReserve * 3
         wallet.add(reserveValue: fullReserve)
         wallet.add(coinValue: response.balance - fullReserve)
@@ -119,23 +110,7 @@ extension StellarWalletManager: TransactionSender {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        guard
-            let baseFee = self.baseFee,
-            let minChargedFee = self.minChargedFee,
-            let maxChargedFee = self.maxChargedFee
-        else {
-            return Fail(error: WalletError.failedToGetFee).eraseToAnyPublisher()
-        }
-        
-        let fees = [
-            baseFee,
-            (minChargedFee + maxChargedFee) / 2,
-            maxChargedFee,
-        ].map {
-            Amount(with: wallet.blockchain, value: $0)
-        }
-        
-        return Result.Publisher(fees).eraseToAnyPublisher()
+        networkService.getFee()
     }
 }
 
