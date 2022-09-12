@@ -18,7 +18,7 @@ enum EthereumTarget: TargetType {
     case pending(address: String, url: URL)
     case send(transaction: String, url: URL)
     case tokenBalance(address: String, contractAddress: String, url: URL)
-    case gasLimit(to: String, from: String, data: String?, url: URL)
+    case gasLimit(to: String, from: String, value: String?, data: String?, url: URL)
     case gasPrice(url: URL)
     
     var baseURL: URL {
@@ -28,7 +28,7 @@ enum EthereumTarget: TargetType {
         case .send(_, let url): return url
         case .tokenBalance(_, _, let url): return url
         case .transactions(_, let url): return url
-        case .gasLimit(_, _, _, let url): return url
+        case .gasLimit(_, _, _, _, let url): return url
         case .gasPrice(let url): return url
         }
     }
@@ -60,10 +60,13 @@ enum EthereumTarget: TargetType {
             let rawAddress = address.removeHexPrefix()
             let dataValue = ["data": "0x70a08231000000000000000000000000\(rawAddress)", "to": contractAddress]
             params.append(dataValue)
-        case .gasLimit(let to, let from, let data, _):
+        case .gasLimit(let to, let from, let value, let data, _):
             var gasLimitParams = [String: String]()
             gasLimitParams["from"] = from
             gasLimitParams["to"] = to
+            if let value = value {
+                gasLimitParams["value"] = value
+            }
             if let data = data {
                 gasLimitParams["data"] = data
             }

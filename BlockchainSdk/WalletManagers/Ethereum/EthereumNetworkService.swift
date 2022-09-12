@@ -70,10 +70,10 @@ class EthereumNetworkService: MultiNetworkProvider {
             .eraseToAnyPublisher()
     }
     
-    func getFee(to: String, from: String, data: String?, fallbackGasLimit: BigUInt?) -> AnyPublisher<EthereumFeeResponse, Error> {
+    func getFee(to: String, from: String, value: String?, data: String?, fallbackGasLimit: BigUInt?) -> AnyPublisher<EthereumFeeResponse, Error> {
         return Publishers.Zip(
             Publishers.MergeMany(providers.map { parseGas($0.getGasPrice()) }).collect(),
-            Publishers.MergeMany(providers.map { parseGas($0.getGasLimit(to: to, from: from, data: data)) }).collect()
+            Publishers.MergeMany(providers.map { parseGas($0.getGasLimit(to: to, from: from, value: value, data: data)) }).collect()
         )
             .tryMap {[weak self] (result: ([BigUInt], [BigUInt])) -> EthereumFeeResponse in
                 guard let self = self else { throw WalletError.empty }
@@ -107,9 +107,9 @@ class EthereumNetworkService: MultiNetworkProvider {
         }
     }
     
-    func getGasLimit(to: String, from: String, data: String?) -> AnyPublisher<BigUInt, Error> {
+    func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
         providerPublisher {
-            $0.getGasLimit(to: to, from: from, data: data)
+            $0.getGasLimit(to: to, from: from, value: value, data: data)
                 .tryMap {[weak self] in
                     guard let self = self else { throw WalletError.empty }
                     
