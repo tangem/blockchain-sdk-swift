@@ -166,7 +166,7 @@ public class WalletManagerFactory {
                 let stellarSdk = StellarSDK(withHorizonUrl: url)
                 $0.stellarSdk = stellarSdk
                 $0.txBuilder = StellarTransactionBuilder(stellarSdk: stellarSdk, walletPublicKey: wallet.publicKey.blockchainKey, isTestnet: testnet)
-                $0.networkService = StellarNetworkService(blockchain: wallet.blockchain, stellarSdk: stellarSdk)
+                $0.networkService = StellarNetworkService(isTestnet: testnet, stellarSdk: stellarSdk)
             }
             
         case .ethereum(let testnet):
@@ -298,7 +298,7 @@ public class WalletManagerFactory {
                         configuration: config.networkProviderConfiguration
                     ),
                 ]
-                $0.networkService = TronNetworkService(blockchain: blockchain, providers: providers)
+                $0.networkService = TronNetworkService(isTestnet: testnet, providers: providers)
                 $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
             }
         case .dash(let testnet):

@@ -12,15 +12,19 @@ import Combine
 
 @available(iOS 13.0, *)
 class StellarNetworkService {
-    let blockchain: Blockchain
+    let isTestnet: Bool
     let stellarSdk: StellarSDK
     
     var host: String {
         URL(string: stellarSdk.horizonURL)!.hostOrUnknown
     }
     
-    init(blockchain: Blockchain, stellarSdk: StellarSDK) {
-        self.blockchain = blockchain
+    private var blockchain: Blockchain {
+        Blockchain.stellar(testnet: isTestnet)
+    }
+    
+    init(isTestnet: Bool, stellarSdk: StellarSDK) {
+        self.isTestnet = isTestnet
         self.stellarSdk = stellarSdk
     }
     
