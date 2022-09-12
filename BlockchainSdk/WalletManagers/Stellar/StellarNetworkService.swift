@@ -37,7 +37,7 @@ class StellarNetworkService {
     
     public func getInfo(accountId: String, isAsset: Bool) -> AnyPublisher<StellarResponse, Error> {
         return stellarData(accountId: accountId)
-            .tryMap{ (accountResponse, feeStatsResponse, ledgerResponse) throws -> StellarResponse in
+            .tryMap { (accountResponse, feeStatsResponse, ledgerResponse) throws -> StellarResponse in
                 guard let baseFeeStroops = Decimal(ledgerResponse.baseFeeInStroops),
                       let minChargedFeeStroops = Decimal(feeStatsResponse.feeCharged.min),
                       let maxChargedFeeStroops = Decimal(feeStatsResponse.feeCharged.max),
