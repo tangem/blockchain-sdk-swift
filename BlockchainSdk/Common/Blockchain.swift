@@ -671,10 +671,10 @@ extension Blockchain {
             let baseUrl = isTestnet ? "https://testnet-explorer.binance.org/address/" : "https://explorer.binance.org/address/"
             return URL(string: baseUrl + address)
         case .bitcoin:
-            let baseUrl = isTestnet ? "https://www.blockchain.com/btc-testnet/address/" : "https://www.blockchain.com/btc/address/"
+            let baseUrl = isTestnet ? "https://www.blockchair.com/bitcoin/testnet/address/" : "https://www.blockchair.com/bitcoin/address/"
             return URL(string: baseUrl + address)
         case .bitcoinCash:
-            let baseUrl = isTestnet ? "https://www.blockchain.com/bch-testnet/address/" : "https://www.blockchain.com/bch/address/"
+            let baseUrl = isTestnet ? "https://www.blockchain.com/bch-testnet/address/" : "https://www.blockchair.com/bitcoin-cash/address/"
             return URL(string: baseUrl + address)
         case .cardano:
             return URL(string: "https://explorer.cardano.org/en/address.html?address=\(address)")
