@@ -62,7 +62,7 @@ class StellarNetworkService {
                         return StellarAssetResponse(code: code, issuer: issuer, balance: balance)
                     }
                 
-                let divider =  Blockchain.stellar(testnet: false).decimalValue
+                let divider =  Blockchain.stellar(testnet: isTestnet).decimalValue
                 let baseReserve = baseReserveStroops/divider
                 
                 return StellarResponse(baseReserve: baseReserve,
