@@ -15,10 +15,14 @@ class TronNetworkService: MultiNetworkProvider {
     let providers: [TronJsonRpcProvider]
     var currentProviderIndex: Int = 0
     
-    let blockchain: Blockchain
+    let isTestnet: Bool
     
-    init(blockchain: Blockchain, providers: [TronJsonRpcProvider]) {
-        self.blockchain = blockchain
+    private var blockchain: Blockchain {
+        Blockchain.tron(testnet: isTestnet)
+    }
+    
+    init(isTestnet: Bool, providers: [TronJsonRpcProvider]) {
+        self.isTestnet = isTestnet
         self.providers = providers
     }
     
