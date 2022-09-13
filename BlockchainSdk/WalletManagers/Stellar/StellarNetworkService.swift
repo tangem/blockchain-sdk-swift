@@ -43,7 +43,11 @@ class StellarNetworkService {
     
     public func getInfo(accountId: String, isAsset: Bool) -> AnyPublisher<StellarResponse, Error> {
         return stellarData(accountId: accountId)
-            .tryMap{ (accountResponse, ledgerResponse) throws -> StellarResponse in
+            .tryMap{ [weak self] (accountResponse, ledgerResponse) throws -> StellarResponse in
+                guard let self = self else {
+                    throw WalletError.empty
+                }
+                
                 guard let baseReserveStroops = Decimal(ledgerResponse.baseReserveInStroops),
                       let balance = Decimal(accountResponse.balances.first(where: {$0.assetType == AssetTypeAsString.NATIVE})?.balance) else {
                           throw WalletError.failedToParseNetworkResponse
@@ -62,7 +66,7 @@ class StellarNetworkService {
                         return StellarAssetResponse(code: code, issuer: issuer, balance: balance)
                     }
                 
-                let divider =  Blockchain.stellar(testnet: isTestnet).decimalValue
+                let divider =  Blockchain.stellar(testnet: self.isTestnet).decimalValue
                 let baseReserve = baseReserveStroops/divider
                 
                 return StellarResponse(baseReserve: baseReserve,
