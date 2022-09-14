@@ -70,25 +70,21 @@ class EthereumNetworkService: MultiNetworkProvider {
             .eraseToAnyPublisher()
     }
     
-    func getFee(to: String, from: String, value: String?, data: String?, fallbackGasLimit: BigUInt?) -> AnyPublisher<EthereumFeeResponse, Error> {
+    func getFee(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumFeeResponse, Error> {
         return Publishers.Zip(
             Publishers.MergeMany(providers.map { parseGas($0.getGasPrice()) }).collect(),
             Publishers.MergeMany(providers.map { parseGas($0.getGasLimit(to: to, from: from, value: value, data: data)) }).collect()
         )
             .tryMap {[weak self] (result: ([BigUInt], [BigUInt])) -> EthereumFeeResponse in
-                guard let self = self else { throw WalletError.empty }
-                
-                guard !result.0.isEmpty else {
+                guard
+                    let self = self,
+                    !result.0.isEmpty,
+                    let maxPrice = result.0.max(),
+                    let maxGasLimit = result.1.max()
+                else {
                     throw BlockchainSdkError.failedToLoadFee
                 }
                 
-                let maxPrice = result.0.max()!
-                let maxLimit = result.1.max()
-                if maxLimit == nil, fallbackGasLimit == nil {
-                    throw BlockchainSdkError.failedToLoadFee
-                }
-                
-                let maxGasLimit = maxLimit ?? fallbackGasLimit!
                 let fees = try self.calculateFee(gasPrice: maxPrice, gasLimit: maxGasLimit, decimalCount: self.decimals)
                 return EthereumFeeResponse(fees: fees, gasLimit: maxGasLimit)
             }
@@ -253,14 +249,12 @@ class EthereumNetworkService: MultiNetworkProvider {
         return [minDecimal, normalDecimal, maxDecimal]
     }
     
-    private func parseGas(_ publisher: AnyPublisher<EthereumResponse, Error>) -> AnyPublisher<BigUInt, Never> {
+    private func parseGas(_ publisher: AnyPublisher<EthereumResponse, Error>) -> AnyPublisher<BigUInt, Error> {
         publisher.tryMap {[weak self] in
             guard let self = self else { throw WalletError.empty }
             
             return try self.getGas(from: $0)
         }
-        .replaceError(with: 0)
-        .filter { $0 > 0 }
         .eraseToAnyPublisher()
     }
 }
