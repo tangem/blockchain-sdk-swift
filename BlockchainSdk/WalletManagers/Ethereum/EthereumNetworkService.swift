@@ -269,7 +269,7 @@ class EthereumNetworkService: MultiNetworkProvider {
 
 // MARK: - Gas price / gas limit helpers
 
-fileprivate extension AnyPublisher<BigUInt, Error> {
+fileprivate extension AnyPublisher where Output == BigUInt, Failure == Error {
     func toResultPublisher() -> AnyPublisher<Result<BigUInt, Error>, Never> {
         map {
             Result<BigUInt, Error>.success($0)
