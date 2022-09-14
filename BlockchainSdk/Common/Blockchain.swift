@@ -268,8 +268,7 @@ extension Blockchain {
             }
             
             return isTestnet ? [URL(string:"https://rinkeby.infura.io/v3/\(infuraProjectId)")!]
-            : [URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
-               URL(string: "https://eth.tangem.com/")!]
+            : [URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!]
         case .ethereumClassic:
             if isTestnet {
                 return [
