@@ -71,17 +71,27 @@ class EthereumNetworkService: MultiNetworkProvider {
     }
     
     func getFee(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumFeeResponse, Error> {
-        return Publishers.Zip(
-            Publishers.MergeMany(providers.map { parseGas($0.getGasPrice()).toResultPublisher() }).collect(),
-            Publishers.MergeMany(providers.map { parseGas($0.getGasLimit(to: to, from: from, value: value, data: data)).toResultPublisher() }).collect()
-        )
-            .tryMap {[weak self] (results: ([Result<BigUInt, Error>], [Result<BigUInt, Error>])) -> EthereumFeeResponse in
+        let gasPricePublishers = Publishers.MergeMany(
+            providers.map {
+                parseGas($0.getGasPrice()).toResultPublisher()
+            }
+        ).collect()
+        
+        let gasLimitPublishers = Publishers.MergeMany(
+            providers.map {
+                parseGas($0.getGasLimit(to: to, from: from, value: value, data: data)).toResultPublisher()
+                
+            }
+        ).collect()
+        
+        return Publishers.Zip(gasPricePublishers, gasLimitPublishers)
+            .tryMap {[weak self] gasPrices, gasLimits -> EthereumFeeResponse in
                 guard let self = self else {
                     throw BlockchainSdkError.failedToLoadFee
                 }
                 
-                let maxGasPrice = try maxGas(results.0)
-                let maxGasLimit = try maxGas(results.1)
+                let maxGasPrice = try maxGas(gasPrices)
+                let maxGasLimit = try maxGas(gasLimits)
                 
                 let fees = try self.calculateFee(gasPrice: maxGasPrice, gasLimit: maxGasLimit, decimalCount: self.decimals)
                 return EthereumFeeResponse(fees: fees, gasLimit: maxGasLimit)
