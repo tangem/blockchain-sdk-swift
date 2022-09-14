@@ -70,26 +70,30 @@ class EthereumNetworkService: MultiNetworkProvider {
             .eraseToAnyPublisher()
     }
     
-    func getFee(to: String, from: String, value: String?, data: String?, fallbackGasLimit: BigUInt?) -> AnyPublisher<EthereumFeeResponse, Error> {
-        return Publishers.Zip(
-            Publishers.MergeMany(providers.map { parseGas($0.getGasPrice()) }).collect(),
-            Publishers.MergeMany(providers.map { parseGas($0.getGasLimit(to: to, from: from, value: value, data: data)) }).collect()
-        )
-            .tryMap {[weak self] (result: ([BigUInt], [BigUInt])) -> EthereumFeeResponse in
-                guard let self = self else { throw WalletError.empty }
+    func getFee(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumFeeResponse, Error> {
+        let gasPricePublishers = Publishers.MergeMany(
+            providers.map {
+                parseGas($0.getGasPrice()).toResultPublisher()
+            }
+        ).collect()
+        
+        let gasLimitPublishers = Publishers.MergeMany(
+            providers.map {
+                parseGas($0.getGasLimit(to: to, from: from, value: value, data: data)).toResultPublisher()
                 
-                guard !result.0.isEmpty else {
+            }
+        ).collect()
+        
+        return Publishers.Zip(gasPricePublishers, gasLimitPublishers)
+            .tryMap {[weak self] gasPrices, gasLimits -> EthereumFeeResponse in
+                guard let self = self else {
                     throw BlockchainSdkError.failedToLoadFee
                 }
                 
-                let maxPrice = result.0.max()!
-                let maxLimit = result.1.max()
-                if maxLimit == nil, fallbackGasLimit == nil {
-                    throw BlockchainSdkError.failedToLoadFee
-                }
+                let maxGasPrice = try maxGas(gasPrices)
+                let maxGasLimit = try maxGas(gasLimits)
                 
-                let maxGasLimit = maxLimit ?? fallbackGasLimit!
-                let fees = try self.calculateFee(gasPrice: maxPrice, gasLimit: maxGasLimit, decimalCount: self.decimals)
+                let fees = try self.calculateFee(gasPrice: maxGasPrice, gasLimit: maxGasLimit, decimalCount: self.decimals)
                 return EthereumFeeResponse(fees: fees, gasLimit: maxGasLimit)
             }
             .eraseToAnyPublisher()
@@ -253,15 +257,53 @@ class EthereumNetworkService: MultiNetworkProvider {
         return [minDecimal, normalDecimal, maxDecimal]
     }
     
-    private func parseGas(_ publisher: AnyPublisher<EthereumResponse, Error>) -> AnyPublisher<BigUInt, Never> {
+    private func parseGas(_ publisher: AnyPublisher<EthereumResponse, Error>) -> AnyPublisher<BigUInt, Error> {
         publisher.tryMap {[weak self] in
             guard let self = self else { throw WalletError.empty }
             
             return try self.getGas(from: $0)
         }
-        .replaceError(with: 0)
-        .filter { $0 > 0 }
         .eraseToAnyPublisher()
     }
 }
 
+// MARK: - Gas price / gas limit helpers
+
+fileprivate extension AnyPublisher where Output == BigUInt, Failure == Error {
+    func toResultPublisher() -> AnyPublisher<Result<BigUInt, Error>, Never> {
+        map {
+            Result<BigUInt, Error>.success($0)
+        }.catch {
+            Just<Result<BigUInt, Error>>(.failure($0))
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
+fileprivate func maxGas(_ results: [Result<BigUInt, Error>]) throws -> BigUInt {
+    if let maxSuccessValue = results.maxSuccessValue {
+        return maxSuccessValue
+    } else if let firstFailureError = results.firstFailureError {
+        throw firstFailureError
+    } else {
+        throw WalletError.failedToGetFee
+    }
+}
+
+fileprivate extension Array where Element == Result<BigUInt, Error> {
+    var maxSuccessValue: BigUInt? {
+        compactMap {
+            guard case let .success(value) = $0 else { return nil }
+            return value
+        }
+        .max()
+    }
+    
+    var firstFailureError: Error? {
+        compactMap {
+            guard case let .failure(error) = $0 else { return nil }
+            return error
+        }
+        .first
+    }
+}
