@@ -72,20 +72,18 @@ class EthereumNetworkService: MultiNetworkProvider {
     
     func getFee(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumFeeResponse, Error> {
         return Publishers.Zip(
-            Publishers.MergeMany(providers.map { parseGas($0.getGasPrice()) }).collect(),
-            Publishers.MergeMany(providers.map { parseGas($0.getGasLimit(to: to, from: from, value: value, data: data)) }).collect()
+            Publishers.MergeMany(providers.map { parseGas($0.getGasPrice()).toResultPublisher() }).collect(),
+            Publishers.MergeMany(providers.map { parseGas($0.getGasLimit(to: to, from: from, value: value, data: data)).toResultPublisher() }).collect()
         )
-            .tryMap {[weak self] (result: ([BigUInt], [BigUInt])) -> EthereumFeeResponse in
-                guard
-                    let self = self,
-                    !result.0.isEmpty,
-                    let maxPrice = result.0.max(),
-                    let maxGasLimit = result.1.max()
-                else {
+            .tryMap {[weak self] (results: ([Result<BigUInt, Error>], [Result<BigUInt, Error>])) -> EthereumFeeResponse in
+                guard let self = self else {
                     throw BlockchainSdkError.failedToLoadFee
                 }
                 
-                let fees = try self.calculateFee(gasPrice: maxPrice, gasLimit: maxGasLimit, decimalCount: self.decimals)
+                let maxGasPrice = try maxGas(results.0)
+                let maxGasLimit = try maxGas(results.1)
+                
+                let fees = try self.calculateFee(gasPrice: maxGasPrice, gasLimit: maxGasLimit, decimalCount: self.decimals)
                 return EthereumFeeResponse(fees: fees, gasLimit: maxGasLimit)
             }
             .eraseToAnyPublisher()
@@ -259,3 +257,43 @@ class EthereumNetworkService: MultiNetworkProvider {
     }
 }
 
+// MARK: - Gas price / gas limit helpers
+
+fileprivate extension AnyPublisher<BigUInt, Error> {
+    func toResultPublisher() -> AnyPublisher<Result<BigUInt, Error>, Never> {
+        map {
+            Result<BigUInt, Error>.success($0)
+        }.catch {
+            Just<Result<BigUInt, Error>>(.failure($0))
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
+fileprivate func maxGas(_ results: [Result<BigUInt, Error>]) throws -> BigUInt {
+    if let maxSuccessValue = results.maxSuccessValue {
+        return maxSuccessValue
+    } else if let firstFailureError = results.firstFailureError {
+        throw firstFailureError
+    } else {
+        throw WalletError.failedToGetFee
+    }
+}
+
+fileprivate extension Array where Element == Result<BigUInt, Error> {
+    var maxSuccessValue: BigUInt? {
+        compactMap {
+            guard case let .success(value) = $0 else { return nil }
+            return value
+        }
+        .max()
+    }
+    
+    var firstFailureError: Error? {
+        compactMap {
+            guard case let .failure(error) = $0 else { return nil }
+            return error
+        }
+        .first
+    }
+}
