@@ -35,6 +35,7 @@
 "send_validation_amount_exceeds_balance" = "Amount exceeds balance";
 "send_error_dust_amount_format" = "Minimum amount is %@";
 "send_error_dust_change_format" = "Minimum change is %@";
+"send_error_minimum_balance_format" = "Minimum balance is %@";
 "send_error_invalid_fee_value" = "Invalid Fee";
 "failed_to_find_transaction" = "Transaction not found in pending list";
 "failed_to_find_tx_inputs" = "Failed to find transaction inputs";

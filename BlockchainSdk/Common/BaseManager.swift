@@ -115,6 +115,16 @@ class BaseManager: WalletProvider {
             }
         }
         
+        if let minimumBalanceRestrictable = self as? MinimumBalanceRestrictable,
+           let walletAmount = wallet.amounts[amount.type],
+           case .coin = amount.type
+        {
+            let remainderBalance = walletAmount - total
+            if remainderBalance < minimumBalanceRestrictable.minimumBalance && !remainderBalance.isZero {
+                errors.append(.minimumBalance(minimumBalance: minimumBalanceRestrictable.minimumBalance))
+            }
+        }
+        
         if !errors.isEmpty {
             throw TransactionErrors(errors: errors)
         }
