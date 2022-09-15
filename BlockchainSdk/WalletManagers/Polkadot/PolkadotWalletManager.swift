@@ -19,11 +19,7 @@ class PolkadotWalletManager: BaseManager, WalletManager {
     var networkService: PolkadotNetworkService!
     
     var currentHost: String { network.url.hostOrUnknown }
-    
-    var existentialDeposit: Amount {
-        network.existentialDeposit
-    }
-    
+
     init(network: PolkadotNetwork, wallet: Wallet) {
         self.network = network
         super.init(wallet: wallet)
@@ -151,7 +147,11 @@ extension PolkadotWalletManager: TransactionSender {
     }
 }
 
-extension PolkadotWalletManager: ExistentialDepositProvider { }
+extension PolkadotWalletManager: ExistentialDepositProvider {
+    var existentialDeposit: Amount {
+        network.existentialDeposit
+    }
+}
 
 extension PolkadotWalletManager: ThenProcessable { }
 
