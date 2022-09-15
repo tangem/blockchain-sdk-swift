@@ -118,7 +118,7 @@ public enum Blockchain: Equatable, Hashable {
             return "LTC"
         case .stellar:
             return "XLM"
-        case .ethereum, .arbitrum:
+        case .ethereum, .arbitrum, .optimism:
             return "ETH"
         case .ethereumClassic:
             return "ETC"
@@ -158,8 +158,6 @@ public enum Blockchain: Equatable, Hashable {
             return testnet ? "tDASH" : "DASH"
         case .gnosis:
             return "xDAI"
-        case .optimism:
-            return "OP"
         }
     }
     
@@ -222,7 +220,7 @@ public enum Blockchain: Equatable, Hashable {
     
     public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
         switch self {
-        case .arbitrum:
+        case .arbitrum, .stellar, .optimism:
             return true
         case .fantom, .tron, .gnosis:
             if case .token = amountType {
@@ -268,8 +266,7 @@ extension Blockchain {
             }
             
             return isTestnet ? [URL(string:"https://rinkeby.infura.io/v3/\(infuraProjectId)")!]
-            : [URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
-               URL(string: "https://eth.tangem.com/")!]
+            : [URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!]
         case .ethereumClassic:
             if isTestnet {
                 return [
@@ -671,10 +668,10 @@ extension Blockchain {
             let baseUrl = isTestnet ? "https://testnet-explorer.binance.org/address/" : "https://explorer.binance.org/address/"
             return URL(string: baseUrl + address)
         case .bitcoin:
-            let baseUrl = isTestnet ? "https://www.blockchain.com/btc-testnet/address/" : "https://www.blockchain.com/btc/address/"
+            let baseUrl = isTestnet ? "https://www.blockchair.com/bitcoin/testnet/address/" : "https://www.blockchair.com/bitcoin/address/"
             return URL(string: baseUrl + address)
         case .bitcoinCash:
-            let baseUrl = isTestnet ? "https://www.blockchain.com/bch-testnet/address/" : "https://www.blockchain.com/bch/address/"
+            let baseUrl = isTestnet ? "https://www.blockchain.com/bch-testnet/address/" : "https://www.blockchair.com/bitcoin-cash/address/"
             return URL(string: baseUrl + address)
         case .cardano:
             return URL(string: "https://explorer.cardano.org/en/address.html?address=\(address)")

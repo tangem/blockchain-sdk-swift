@@ -7,13 +7,14 @@
 //
 
 import XCTest
+import BigInt
 @testable import BlockchainSdk
 
 class EthereumTests: XCTestCase {
 
     private let addressService = EthereumAddressService()
     private let blockchain = Blockchain.ethereum(testnet: false)
-    private let gasLimit = EthereumWalletManager.GasLimit.default.value
+    private let gasLimit = BigUInt(21000)
     
     override func setUp() {
         super.setUp()

@@ -49,7 +49,7 @@ PODS:
     - Starscream (~> 4.0.0)
     - TweetNacl (~> 1.0.2)
   - Starscream (4.0.4)
-  - stellar-ios-mac-sdk (2.0.7)
+  - stellar-ios-mac-sdk (2.2.3)
   - SwiftCBOR (0.4.4)
   - SwiftDate (6.3.1)
   - SwiftProtobuf (1.18.0)
@@ -162,7 +162,7 @@ SPEC CHECKSUMS:
   Sodium: 23d11554ecd556196d313cf6130d406dfe7ac6da
   Solana.Swift: c86f550e70aeaf1f2171435ef95dca16fc55c950
   Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
-  stellar-ios-mac-sdk: dbace17a64d1e565ddd084a839aea569c672d539
+  stellar-ios-mac-sdk: abb56946a998585fea91250941bd5290b9f2f6a2
   SwiftCBOR: ce5354ec8b660da2d6fc754462881119dbe1f963
   SwiftDate: 72d28954e8e1c6c1c0f917ccc8005e4f83c7d4b2
   SwiftProtobuf: c3c12645230d9b09c72267e0de89468c5543bd86

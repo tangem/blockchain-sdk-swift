@@ -12,13 +12,19 @@ import Combine
 
 @available(iOS 13.0, *)
 class StellarNetworkService {
+    let isTestnet: Bool
     let stellarSdk: StellarSDK
     
     var host: String {
         URL(string: stellarSdk.horizonURL)!.hostOrUnknown
     }
     
-    init(stellarSdk: StellarSDK) {
+    private var blockchain: Blockchain {
+        Blockchain.stellar(testnet: isTestnet)
+    }
+    
+    init(isTestnet: Bool, stellarSdk: StellarSDK) {
+        self.isTestnet = isTestnet
         self.stellarSdk = stellarSdk
     }
     
@@ -37,9 +43,12 @@ class StellarNetworkService {
     
     public func getInfo(accountId: String, isAsset: Bool) -> AnyPublisher<StellarResponse, Error> {
         return stellarData(accountId: accountId)
-            .tryMap{ (accountResponse, ledgerResponse) throws -> StellarResponse in
-                guard let baseFeeStroops = Decimal(ledgerResponse.baseFeeInStroops),
-                      let baseReserveStroops = Decimal(ledgerResponse.baseReserveInStroops),
+            .tryMap{ [weak self] (accountResponse, ledgerResponse) throws -> StellarResponse in
+                guard let self = self else {
+                    throw WalletError.empty
+                }
+                
+                guard let baseReserveStroops = Decimal(ledgerResponse.baseReserveInStroops),
                       let balance = Decimal(accountResponse.balances.first(where: {$0.assetType == AssetTypeAsString.NATIVE})?.balance) else {
                           throw WalletError.failedToParseNetworkResponse
                       }
@@ -57,18 +66,47 @@ class StellarNetworkService {
                         return StellarAssetResponse(code: code, issuer: issuer, balance: balance)
                     }
                 
-                let divider =  Blockchain.stellar(testnet: false).decimalValue
-                let baseFee = baseFeeStroops/divider
+                let divider =  Blockchain.stellar(testnet: self.isTestnet).decimalValue
                 let baseReserve = baseReserveStroops/divider
                 
-                return StellarResponse(baseFee: baseFee,
-                                       baseReserve: baseReserve,
+                return StellarResponse(baseReserve: baseReserve,
                                        assetBalances: assetBalances,
                                        balance: balance,
                                        sequence: sequence)
             }
             .mapError {[weak self] in self?.mapError($0, isAsset: isAsset) ?? WalletError.empty }
             .eraseToAnyPublisher()
+    }
+    
+    public func getFee() -> AnyPublisher<[Amount], Error> {
+        Publishers.Zip(stellarSdk.ledgers.getLatestLedger(),
+                       stellarSdk.feeStats.getFeeStats())
+        .tryMap { [blockchain] (ledger, feeStats) -> [Amount] in
+            guard
+                let baseFeeStroops = Decimal(ledger.baseFeeInStroops),
+                let minChargedFeeStroops = Decimal(feeStats.feeCharged.min),
+                let maxChargedFeeStroops = Decimal(feeStats.feeCharged.max)
+            else {
+                throw WalletError.failedToGetFee
+            }
+
+            let divider =  blockchain.decimalValue
+            
+            let baseFee = baseFeeStroops / divider
+            let minChargedFee = minChargedFeeStroops / divider
+            let maxChargedFee = maxChargedFeeStroops / divider
+            
+            let fees = [
+                baseFee,
+                (minChargedFee + maxChargedFee) / 2,
+                maxChargedFee,
+            ].map {
+                Amount(with: blockchain, value: $0)
+            }
+            
+            return fees
+        }
+        .eraseToAnyPublisher()
     }
     
     private func stellarData(accountId: String) -> AnyPublisher<(AccountResponse, LedgerResponse), Error> {
@@ -103,7 +141,6 @@ extension StellarNetworkService {
 
 
 struct StellarResponse {
-    let baseFee: Decimal
     let baseReserve: Decimal
     let assetBalances: [StellarAssetResponse]
     let balance: Decimal
