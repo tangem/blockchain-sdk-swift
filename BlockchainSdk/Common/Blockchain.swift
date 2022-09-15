@@ -186,7 +186,7 @@ public enum Blockchain: Equatable, Hashable {
         case .gnosis:
             return "Gnosis Chain" + testnetSuffix
         case .optimism:
-            return "Optimism" + testnetSuffix
+            return "Optimistic Ethereum" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
