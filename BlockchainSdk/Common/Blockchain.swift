@@ -118,7 +118,7 @@ public enum Blockchain: Equatable, Hashable {
             return "LTC"
         case .stellar:
             return "XLM"
-        case .ethereum, .arbitrum:
+        case .ethereum, .arbitrum, .optimism:
             return "ETH"
         case .ethereumClassic:
             return "ETC"
@@ -158,8 +158,6 @@ public enum Blockchain: Equatable, Hashable {
             return testnet ? "tDASH" : "DASH"
         case .gnosis:
             return "xDAI"
-        case .optimism:
-            return "OP"
         }
     }
     
@@ -222,7 +220,7 @@ public enum Blockchain: Equatable, Hashable {
     
     public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
         switch self {
-        case .arbitrum, .stellar:
+        case .arbitrum, .stellar, .optimism:
             return true
         case .fantom, .tron, .gnosis:
             if case .token = amountType {
