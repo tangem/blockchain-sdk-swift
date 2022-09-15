@@ -211,7 +211,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .ethereum, .bsc, .binance, .polygon,
                 .avalanche, .solana, .fantom, .tron, .arbitrum,
-                .rsk, .ethereumClassic, .dash, .gnosis, .optimism:
+                .rsk, .ethereumClassic, .gnosis, .optimism:
             return true
         default:
             return false
