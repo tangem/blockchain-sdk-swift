@@ -170,6 +170,12 @@ extension PolkadotWalletManager: WithdrawalValidator {
     }
 }
 
+extension PolkadotWalletManager: MinimumBalanceRestrictable {
+    var minimumBalance: Amount {
+        network.existentialDeposit
+    }
+}
+
 extension PolkadotWalletManager: ThenProcessable { }
 
 

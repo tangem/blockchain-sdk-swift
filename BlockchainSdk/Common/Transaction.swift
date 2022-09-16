@@ -88,6 +88,7 @@ public enum TransactionError: Error, LocalizedError, Equatable {
     case totalExceedsBalance
     case dustAmount(minimumAmount: Amount)
     case dustChange(minimumAmount: Amount)
+    case minimumBalance(minimumBalance: Amount)
         
     public var errorDescription: String? {
         switch self {
@@ -97,6 +98,8 @@ public enum TransactionError: Error, LocalizedError, Equatable {
             return String(format: "send_error_dust_amount_format".localized, minimumAmount.description)
         case .dustChange(let minimumAmount):
            return String(format: "send_error_dust_change_format".localized, minimumAmount.description)
+        case .minimumBalance(let minimumBalance):
+            return String(format: "send_error_minimum_balance_format".localized, minimumBalance.description)
         case .feeExceedsBalance:
             return "send_validation_invalid_fee".localized
         case .invalidAmount:
@@ -119,4 +122,8 @@ extension Array where Element == TransactionError {
 
 protocol DustRestrictable {
     var dustValue: Amount { get }
+}
+
+protocol MinimumBalanceRestrictable {
+    var minimumBalance: Amount { get }
 }

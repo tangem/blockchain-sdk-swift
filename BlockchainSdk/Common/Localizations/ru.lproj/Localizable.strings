@@ -35,6 +35,7 @@
 "send_validation_amount_exceeds_balance" = "Сумма превышает остаток";
 "send_error_dust_amount_format" = "Минимальная сумма: %@";
 "send_error_dust_change_format" = "Минимальная сдача: %@";
+"send_error_minimum_balance_format" = "Минимальный баланс: %@";
 "send_error_invalid_fee_value" = "Неверная комиссия";
 "failed_to_find_transaction" = "Транзакция не найдена в списке неподтвержденных";
 "failed_to_find_tx_inputs" = "Не удалось найти инпуты транзакции";
