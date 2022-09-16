@@ -26,9 +26,6 @@
 "xtz_withdrawal_message_warning" = "To avoid paying an increased commission the next time you top up your wallet, reduce the amount by %@ XTZ";
 "xtz_withdrawal_message_reduce" = "Reduce by %@ XTZ";
 "xtz_withdrawal_message_ignore" = "No, send all";
-"dot_existential_deposit_message_warning" = "%@ network has a concept of Existential Deposit. If your account drops below %@ it will be deactivated and any remaining funds will be destroyed. To avoid that you can reduce the amount by %@.";
-"dot_existential_deposit_message_reduce" = "Reduce by %@";
-"dot_existential_deposit_message_ignore" = "No, send all";
 "send_validation_invalid_amount" = "Invalid amount";
 "send_validation_invalid_total" = "Total amount exceeds balance";
 "send_validation_invalid_fee" = "Fee exceeds balance";

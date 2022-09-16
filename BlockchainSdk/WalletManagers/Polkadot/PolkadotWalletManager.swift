@@ -19,7 +19,7 @@ class PolkadotWalletManager: BaseManager, WalletManager {
     var networkService: PolkadotNetworkService!
     
     var currentHost: String { network.url.hostOrUnknown }
-    
+
     init(network: PolkadotNetwork, wallet: Wallet) {
         self.network = network
         super.init(wallet: wallet)
@@ -147,26 +147,9 @@ extension PolkadotWalletManager: TransactionSender {
     }
 }
 
-extension PolkadotWalletManager: WithdrawalValidator {
-    func validate(_ transaction: Transaction) -> WithdrawalWarning? {
-        guard let currentWalletAmount = wallet.amounts[.coin] else {
-            return nil
-        }
-        
-        let existentialDeposit = network.existentialDeposit
-        let predictedWalletAmount = currentWalletAmount - transaction.amount - transaction.fee
-        
-        if predictedWalletAmount < existentialDeposit {
-            let networkName = network.blockchain.displayName
-            let amountToReduceBy = existentialDeposit - predictedWalletAmount
-            return WithdrawalWarning(
-                warningMessage: String(format: "dot_existential_deposit_message_warning".localized, networkName, existentialDeposit.description, amountToReduceBy.description),
-                reduceMessage: String(format: "dot_existential_deposit_message_reduce".localized, amountToReduceBy.description),
-                ignoreMessage: "dot_existential_deposit_message_ignore".localized,
-                suggestedReduceAmount: amountToReduceBy
-            )
-        }
-        return nil
+extension PolkadotWalletManager: ExistentialDepositProvider {
+    var existentialDeposit: Amount {
+        network.existentialDeposit
     }
 }
 
