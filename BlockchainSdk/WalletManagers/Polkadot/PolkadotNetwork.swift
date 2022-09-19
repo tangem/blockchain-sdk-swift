@@ -60,7 +60,7 @@ enum PolkadotNetwork: CaseIterable {
         case .kusama:
             return Amount(with: blockchain, value: 0.0000333333)
         case .westend:
-            // Arbitrary number, westend doesn't seem to have existential deposit
+            // This value was found experimentally by Alexander Afanasyev
             return Amount(with: blockchain, value: 0.01)
         }
     }
