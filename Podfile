@@ -5,7 +5,7 @@ inhibit_all_warnings!
 def common_pods
   pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'develop-152'
   #pod 'TangemSdk', :path => '../tangem-sdk-ios'
-
+  
   pod 'BitcoinCore.swift', :git => 'https://github.com/tangem/bitcoincore.git', :tag => '0.0.16'
   # pod 'BitcoinCore.swift', :path => '../bitcoincore'
 end
@@ -26,12 +26,12 @@ target 'BlockchainSdk' do
   pod 'web3swift', :git => 'https://github.com/tangem/web3swift.git', :tag => '2.2.9'
   pod 'AnyCodable-FlightSchool'
   pod 'stellar-ios-mac-sdk'
-
+  
   pod 'Solana.Swift', :git => 'https://github.com/tangem/Solana.Swift', :tag => 'add-external-signer-1'
   #pod 'Solana.Swift', :path => '../Solana.Swift'
   pod 'ScaleCodec'
   pod 'SwiftProtobuf'
-
+  
   common_pods
 end
 
@@ -44,16 +44,16 @@ target 'BlockchainSdkExample' do
 end
 
 post_install do |installer|
-	installer.pods_project.targets.each do |target|
-		target.build_configurations.each do |config|
-			if Gem::Version.new('9.0') > Gem::Version.new(config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'])
-				config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
-			end
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      if Gem::Version.new('9.0') > Gem::Version.new(config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'])
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
+      end
       if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
         target.build_configurations.each do |config|
-            config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+          config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
         end
       end
-		end
-	end
+    end
+  end
 end
