@@ -22,11 +22,15 @@ class EthereumTransactionBuilder {
         self.chainId = BigUInt(chainId)
     }
     
-    public func buildForSign(transaction: Transaction, nonce: Int, gasLimit: BigUInt) -> (hash: Data, transaction: EthereumTransaction)? {
+    public func buildForSign(transaction: Transaction, nonce: Int, gasLimit: BigUInt?) -> (hash: Data, transaction: EthereumTransaction)? {
         let params = transaction.params as? EthereumTransactionParams
         let nonceValue = BigUInt(params?.nonce ?? nonce)
         
         guard nonceValue >= 0 else {
+            return nil
+        }
+        
+        guard let gasLimit = params?.gasLimit ?? gasLimit else {
             return nil
         }
         
@@ -47,7 +51,7 @@ class EthereumTransactionBuilder {
                                                     fee: feeValue,
                                                     targetAddress: targetAddr,
                                                     nonce: nonceValue,
-                                                    gasLimit: params?.gasLimit ?? gasLimit,
+                                                    gasLimit: gasLimit,
                                                     data: data,
                                                     ignoreCheckSum: transaction.amount.type != .coin,
                                                     network: web3Network) else {
