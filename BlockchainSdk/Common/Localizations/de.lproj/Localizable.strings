@@ -4,6 +4,7 @@
 "no_account_on_destination_xlm_asset" = "The destination account is not created. To create account send 1+ XLM.";
 "no_account_xrp" = "Laden Sie 10+ XRP auf um ein Konto zu erstellen";
 "no_account_bnb" = "Senden Sie Geld an diese Andresse um ein Konto zu erstellen";
+"no_account_polkadot" = "Destination account is not active. Send %@ or more to activate the account.";
 "common_build_tx_error" = "Transaktion fehlgeschlagen";
 "common_fee_error" = "Erhalt der Gebühr fehlgeschlagen";
 "common_parse_network_response_error" = "Antwort des Netzwerks fehlgeschlagen";

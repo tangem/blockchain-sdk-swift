@@ -68,28 +68,37 @@ extension PolkadotWalletManager: TransactionSender {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
-        networkService
-            .blockchainMeta(for: transaction.sourceAddress)
-            .flatMap { [weak self] meta -> AnyPublisher<Data, Error> in
-                guard let self = self else {
-                    return .emptyFail
-                }
-                return self.sign(amount: transaction.amount, destination: transaction.destinationAddress, meta: meta, signer: signer)
+        Publishers.Zip(
+            networkService.blockchainMeta(for: transaction.sourceAddress),
+            networkService.getInfo(for: transaction.destinationAddress)
+        )
+        .flatMap { [weak self] (meta, destinationBalance) -> AnyPublisher<Data, Error> in
+            guard let self = self else {
+                return .emptyFail
             }
-            .flatMap { [weak self] image -> AnyPublisher<String, Error> in
-                guard let self = self else {
-                    return .emptyFail
-                }
-                return self.networkService.submitExtrinsic(data: image)
-                    .mapError { SendTxError(error: $0, tx: image.hexString) }
-                    .eraseToAnyPublisher()
+            
+            let existentialDeposit = self.network.existentialDeposit
+            if transaction.amount < existentialDeposit && destinationBalance == BigUInt(0) {
+                let message = String(format: "no_account_polkadot".localized, existentialDeposit.description)
+                return Fail(error: WalletError.noAccount(message: message)).eraseToAnyPublisher()
             }
-            .tryMap { [weak self] transactionID in
-                var submittedTransaction = transaction
-                submittedTransaction.hash = transactionID
-                self?.wallet.transactions.append(submittedTransaction)
+            
+            return self.sign(amount: transaction.amount, destination: transaction.destinationAddress, meta: meta, signer: signer)
+        }
+        .flatMap { [weak self] image -> AnyPublisher<String, Error> in
+            guard let self = self else {
+                return .emptyFail
             }
-            .eraseToAnyPublisher()
+            return self.networkService.submitExtrinsic(data: image)
+                .mapError { SendTxError(error: $0, tx: image.hexString) }
+                .eraseToAnyPublisher()
+        }
+        .tryMap { [weak self] transactionID in
+            var submittedTransaction = transaction
+            submittedTransaction.hash = transactionID
+            self?.wallet.transactions.append(submittedTransaction)
+        }
+        .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
