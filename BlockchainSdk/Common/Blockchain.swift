@@ -17,6 +17,8 @@ public enum Blockchain: Equatable, Hashable {
     case litecoin
     case stellar(testnet: Bool)
     case ethereum(testnet: Bool)
+    case ethereumPoW(testnet: Bool)
+    case ethereumFair
     case ethereumClassic(testnet: Bool)
     case rsk
     case bitcoinCash(testnet: Bool)
@@ -75,6 +77,10 @@ public enum Blockchain: Equatable, Hashable {
             return false
         case .optimism(let testnet):
             return testnet
+        case .ethereumPoW(let testnet):
+            return testnet
+        case .ethereumFair:
+            return false
         }
     }
     
@@ -95,7 +101,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash:
             return 8
-        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism:
+        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism:
             return 18
         case  .cardano, .xrp, .tezos, .tron:
             return 6
@@ -158,6 +164,12 @@ public enum Blockchain: Equatable, Hashable {
             return testnet ? "tDASH" : "DASH"
         case .gnosis:
             return "xDAI"
+        case .optimism:
+            return "OP"
+        case .ethereumPoW:
+            return "ETHW"
+        case .ethereumFair:
+            return "ETF"
         }
     }
     
@@ -169,6 +181,10 @@ public enum Blockchain: Equatable, Hashable {
             return "Bitcoin Cash" + testnetSuffix
         case .ethereumClassic:
             return "Ethereum Classic" + testnetSuffix
+        case .ethereumPoW:
+            return "Ethereum PoW" + testnetSuffix
+        case .ethereumFair:
+            return "Ethereum Fair" + testnetSuffix
         case .xrp:
             return "XRP Ledger"
         case .rsk:
@@ -211,7 +227,8 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .ethereum, .bsc, .binance, .polygon,
                 .avalanche, .solana, .fantom, .tron, .arbitrum,
-                .rsk, .ethereumClassic, .gnosis, .optimism:
+                .rsk, .ethereumClassic, .gnosis, .optimism,
+                .ethereumPoW, .ethereumFair:
             return true
         default:
             return false
@@ -219,7 +236,6 @@ public enum Blockchain: Equatable, Hashable {
     }
     
     public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
-        switch self {
         case .arbitrum, .stellar, .optimism:
             return true
         case .fantom, .tron, .gnosis:
@@ -239,12 +255,14 @@ public enum Blockchain: Equatable, Hashable {
 extension Blockchain {
     public var isEvm: Bool { chainId != nil }
     
-    //Only fot Ethereum compatible blockchains
+    // Only fot Ethereum compatible blockchains
     // https://chainlist.org
     public var chainId: Int? {
         switch self {
         case .ethereum: return isTestnet ? 4 : 1
         case .ethereumClassic: return isTestnet ? 6 : 61 // https://besu.hyperledger.org/en/stable/Concepts/NetworkID-And-ChainID/
+        case .ethereumPoW: return isTestnet ? 10002 : 10001
+        case .ethereumFair: return 513100
         case .rsk: return 30
         case .bsc: return isTestnet ? 97 : 56
         case .polygon: return isTestnet ? 80001 : 137
@@ -277,6 +295,14 @@ extension Blockchain {
                     URL(string: "https://www.ethercluster.com/etc")!
                 ]
             }
+        case .ethereumPoW:
+            if isTestnet {
+                return [URL(string: "https://mainnet.ethereumpow.org")!]
+            } else {
+                return [URL(string: "https://iceberg.ethereumpow.org")!]
+            }
+        case .ethereumFair:
+            return [URL(string: "https://rpc.etherfair.org")!]
         case .rsk:
             return [URL(string: "https://public-node.rsk.co/")!]
         case .bsc:
@@ -407,7 +433,7 @@ extension Blockchain {
         case .bitcoin, .ducatus: return 0
         case .litecoin: return 2
         case .dogecoin: return 3
-        case .ethereum: return ethCoinType
+        case .ethereum, .ethereumPoW, .ethereumFair: return ethCoinType
         case .ethereumClassic: return 61
         case .bsc: return 9006
         case .bitcoinCash: return 145
@@ -455,7 +481,8 @@ extension Blockchain {
             return BitcoinAddressService(networkParams: LitecoinNetworkParams())
         case .stellar:
             return StellarAddressService()
-        case .ethereum, .ethereumClassic, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism:
+        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair,
+                .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -552,6 +579,8 @@ extension Blockchain: Codable {
         case .dash: return "dash"
         case .gnosis: return "xdai"
         case .optimism: return "optimism"
+        case .ethereumPoW: return "ethereum-pow-iou"
+        case .ethereumFair: return "ethereumfair"
         }
     }
     
@@ -599,6 +628,8 @@ extension Blockchain: Codable {
         case "dash": self = .dash(testnet: isTestnet)
         case "xdai": self = .gnosis
         case "optimism": self = .optimism(testnet: isTestnet)
+        case "ethereum-pow-iou": self = .ethereumPoW(testnet: isTestnet)
+        case "ethereumfair": self = .ethereumFair
         default: throw BlockchainSdkError.decodingFailed
         }
     }
@@ -629,6 +660,8 @@ extension Blockchain {
             return URL(string: "https://rinkebyfaucet.com")
         case .ethereumClassic:
             return URL(string: "https://kottifaucet.me")
+        case .ethereumPoW:
+            return URL(string: "https://faucet.ethwscan.com")
         case .bitcoinCash:
             // alt
             // return URL(string: "https://faucet.fullstack.cash")
@@ -685,6 +718,14 @@ extension Blockchain {
         case .ethereumClassic(let testnet):
             let network = testnet ? "kotti" : "mainnet"
             return URL(string: "https://blockscout.com/etc/\(network)/address/\(address)/transactions")!
+        case .ethereumPoW(let testnet):
+            if testnet {
+                return URL(string: "http://iceberg.ethwscan.com")
+            } else {
+                return URL(string: "https://mainnet.ethwscan.com")
+            }
+        case .ethereumFair:
+            return URL(string: "https://explorer.etherfair.org")
         case .litecoin:
             return URL(string: "https://blockchair.com/litecoin/address/\(address)")
         case .rsk:
@@ -788,6 +829,8 @@ extension Blockchain {
         case "arbitrum": return .arbitrum(testnet: isTestnet)
         case "dash": return .dash(testnet: isTestnet)
         case "xdai": return .gnosis
+        case "ethereum-pow-iou": return .ethereumPoW(testnet: isTestnet)
+        case "ethereumfair": return .ethereumFair
         default: return nil
         }
     }
