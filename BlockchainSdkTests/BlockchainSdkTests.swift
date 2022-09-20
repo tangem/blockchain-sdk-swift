@@ -183,6 +183,8 @@ class BlockchainSdkTests: XCTestCase {
         case .dash: break
         case .gnosis: break
         case .optimism: break
+        case .ethereumFair: break
+        case .ethereumPoW: break
         }
         // Did you get a compilation error here? If so, add your new blockchain to the array below
         
@@ -212,6 +214,8 @@ class BlockchainSdkTests: XCTestCase {
             .dash(testnet: false),
             .gnosis,
             .optimism(testnet: false),
+            .ethereumFair,
+            .ethereumPoW(testnet: false),
         ]
         
         let encoder = JSONEncoder()
