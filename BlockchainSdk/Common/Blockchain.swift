@@ -40,6 +40,7 @@ public enum Blockchain: Equatable, Hashable {
     case dash(testnet: Bool)
     case gnosis
     case optimism(testnet: Bool)
+    case saltPay
 
     public var isTestnet: Bool {
         switch self {
@@ -81,6 +82,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .ethereumFair:
             return false
+        case .saltPay:
+            return false
         }
     }
     
@@ -101,7 +104,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash:
             return 8
-        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism:
+        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay:
             return 18
         case  .cardano, .xrp, .tezos, .tron:
             return 6
@@ -168,6 +171,8 @@ public enum Blockchain: Equatable, Hashable {
             return "ETHW"
         case .ethereumFair:
             return "ETF"
+        case .saltPay:
+            return "WxDAI"
         }
     }
     
@@ -201,6 +206,8 @@ public enum Blockchain: Equatable, Hashable {
             return "Gnosis Chain" + testnetSuffix
         case .optimism:
             return "Optimistic Ethereum" + testnetSuffix
+        case .saltPay:
+            return "Salt Pay"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -226,7 +233,7 @@ public enum Blockchain: Equatable, Hashable {
         case .ethereum, .bsc, .binance, .polygon,
                 .avalanche, .solana, .fantom, .tron, .arbitrum,
                 .rsk, .ethereumClassic, .gnosis, .optimism,
-                .ethereumPoW, .ethereumFair:
+                .ethereumPoW, .ethereumFair, .saltPay:
             return true
         default:
             return false
@@ -270,6 +277,7 @@ extension Blockchain {
         case .arbitrum: return isTestnet ? 421611 : 42161
         case .gnosis: return 100
         case .optimism: return isTestnet ? 420 : 10
+        case .saltPay: return 300
         default: return nil
         }
     }
@@ -374,6 +382,10 @@ extension Blockchain {
                     URL(string: "https://rpc.ankr.com/optimism")!,
                 ]
             }
+        case .saltPay:
+            return [
+                URL(string: "https://optimism.gnosischain.com")!,
+            ]
         default:
             return nil
         }
@@ -453,6 +465,7 @@ extension Blockchain {
         case .dash: return 5
         case .gnosis: return 700
         case .optimism: return 614
+        case .saltPay: return 614
         }
     }
     
@@ -481,7 +494,7 @@ extension Blockchain {
         case .stellar:
             return StellarAddressService()
         case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair,
-                .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism:
+                .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -580,6 +593,7 @@ extension Blockchain: Codable {
         case .optimism: return "optimism"
         case .ethereumPoW: return "ethereum-pow-iou"
         case .ethereumFair: return "ethereumfair"
+        case .saltPay: return "wxdai"
         }
     }
     
@@ -629,6 +643,7 @@ extension Blockchain: Codable {
         case "optimism": self = .optimism(testnet: isTestnet)
         case "ethereum-pow-iou": self = .ethereumPoW(testnet: isTestnet)
         case "ethereumfair": self = .ethereumFair
+        case "wxdai": self = .saltPay
         default: throw BlockchainSdkError.decodingFailed
         }
     }
@@ -784,6 +799,8 @@ extension Blockchain {
                 return URL(string: "https://blockscout.com/optimism/goerli/address/\(address)")!
             }
             return URL(string: "https://optimistic.etherscan.io/address/\(address)")!
+        case .saltPay:
+            return URL(string: "https://blockscout.com/xdai/optimism/address/\(address)")!
         }
     }
 }
@@ -830,6 +847,7 @@ extension Blockchain {
         case "xdai": return .gnosis
         case "ethereum-pow-iou": return .ethereumPoW(testnet: isTestnet)
         case "ethereumfair": return .ethereumFair
+        case "wxdai": return .saltPay
         default: return nil
         }
     }
