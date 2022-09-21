@@ -298,9 +298,9 @@ extension Blockchain {
             }
         case .ethereumPoW:
             if isTestnet {
-                return [URL(string: "https://mainnet.ethereumpow.org")!]
-            } else {
                 return [URL(string: "https://iceberg.ethereumpow.org")!]
+            } else {
+                return [URL(string: "https://mainnet.ethereumpow.org")!]
             }
         case .ethereumFair:
             return [URL(string: "https://rpc.etherfair.org")!]
@@ -721,12 +721,12 @@ extension Blockchain {
             return URL(string: "https://blockscout.com/etc/\(network)/address/\(address)/transactions")!
         case .ethereumPoW(let testnet):
             if testnet {
-                return URL(string: "http://iceberg.ethwscan.com")
+                return URL(string: "http://iceberg.ethwscan.com/address/\(address)")
             } else {
-                return URL(string: "https://mainnet.ethwscan.com")
+                return URL(string: "https://mainnet.ethwscan.com/address/\(address)")
             }
         case .ethereumFair:
-            return URL(string: "https://explorer.etherfair.org")
+            return URL(string: "https://explorer.etherfair.org/address/\(address)")
         case .litecoin:
             return URL(string: "https://blockchair.com/litecoin/address/\(address)")
         case .rsk:
