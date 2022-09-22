@@ -463,9 +463,8 @@ extension Blockchain {
         case .tron: return 195
         case .arbitrum: return 9001
         case .dash: return 5
-        case .gnosis: return 700
+        case .gnosis, .saltPay: return 700
         case .optimism: return 614
-        case .saltPay: return 614
         }
     }
     
