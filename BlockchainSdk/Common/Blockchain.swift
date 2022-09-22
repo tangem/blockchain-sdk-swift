@@ -293,7 +293,12 @@ extension Blockchain {
                 ]
             } else {
                 return [
-                    URL(string: "https://www.ethercluster.com/etc")!
+                    URL(string: "https://www.ethercluster.com/etc")!,
+                    URL(string: "https://etc.etcdesktop.com")!,
+                    URL(string: "https://blockscout.com/etc/mainnet/api/eth-rpc")!,
+                    URL(string: "https://etc.mytokenpocket.vip")!,
+                    URL(string: "https://besu.etc-network.info")!,
+                    URL(string: "https://geth.etc-network.info")!,
                 ]
             }
         case .ethereumPoW:
