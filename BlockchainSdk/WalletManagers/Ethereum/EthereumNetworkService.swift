@@ -242,10 +242,10 @@ class EthereumNetworkService: MultiNetworkProvider {
         let minValue = gasPrice * gasLimit
         let min = Web3.Utils.formatToEthereumUnits(minValue, toUnits: .eth, decimals: decimalCount, decimalSeparator: ".", fallbackToScientific: false)!
         
-        let normalValue = gasPrice * BigUInt(12) / BigUInt(10) * gasLimit
+        let normalValue = gasPrice * gasLimit * BigUInt(12) / BigUInt(10)
         let normal = Web3.Utils.formatToEthereumUnits(normalValue, toUnits: .eth, decimals: decimalCount, decimalSeparator: ".", fallbackToScientific: false)!
         
-        let maxValue = gasPrice * BigUInt(15) / BigUInt(10) * gasLimit
+        let maxValue = gasPrice * gasLimit * BigUInt(15) / BigUInt(10)
         let max = Web3.Utils.formatToEthereumUnits(maxValue, toUnits: .eth, decimals: decimalCount, decimalSeparator: ".", fallbackToScientific: false)!
         
         guard let minDecimal = Decimal(string: min),
