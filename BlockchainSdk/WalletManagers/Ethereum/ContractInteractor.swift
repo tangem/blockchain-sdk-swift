@@ -15,7 +15,7 @@ public class ContractInteractor {
     private let rpcURL: URL
     private let decimals: Int
     
-    private lazy var defaultOptions: TransactionOptions = { .defaultOptions }()
+    private lazy var defaultOptions: TransactionOptions = .defaultOptions
     
     public init(address: String, abi: String, rpcURL: URL, decimals: Int = 18) {
         self.address = address
@@ -48,11 +48,11 @@ public class ContractInteractor {
         let web3 = try Web3.new(rpcURL)
         
         guard let address = EthereumAddress(self.address) else {
-            throw ContractInteractorError.parseAddressFailed
+            throw ContractInteractorError.failedToParseAddress
         }
         
         guard let contract = web3.contract(abi, at: address, abiVersion: 2) else {
-            throw ContractInteractorError.contractCreateFailed
+            throw ContractInteractorError.failedToCreateContract
         }
         
         return contract
@@ -62,10 +62,9 @@ public class ContractInteractor {
                                  method: String,
                                  parameters: [AnyObject],
                                  type: TransactionType) throws  -> ReadTransaction {
-        
         guard let transaction = type.isRead ? contract.read(method, parameters: parameters) :
                 contract.write(method, parameters: parameters) else {
-            throw ContractInteractorError.txCreateFailed
+            throw ContractInteractorError.failedToCreateTx
         }
         
         return transaction
@@ -79,7 +78,7 @@ public class ContractInteractor {
                 let result = try transaction.call(transactionOptions: transactionOptions)
                 
                 guard let resultValue = result["0"] else {
-                    throw ContractInteractorError.getResultFailed
+                    throw ContractInteractorError.failedToGetResult
                 }
                 
                 completion(.success(resultValue))
@@ -107,10 +106,10 @@ extension ContractInteractor {
 }
 
 public enum ContractInteractorError: String, Error, LocalizedError {
-    case parseAddressFailed
-    case contractCreateFailed
-    case txCreateFailed
-    case getResultFailed
+    case failedToParseAddress
+    case failedToCreateContract
+    case failedToCreateTx
+    case failedToGetResult
     
     public var errorDescription: String? {
         self.rawValue
