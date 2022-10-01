@@ -14,10 +14,29 @@ import Combine
 public protocol WalletManager: WalletProvider, BlockchainDataProvider, TransactionSender {
     var cardTokens: [Token] { get }
     func update(completion: @escaping (Result<Void, Error>) -> Void)
+    func updatePublisher() -> AnyPublisher<Wallet, Error>
     
     func removeToken(_ token: Token)
     func addToken(_ token: Token)
     func addTokens(_ tokens: [Token])
+}
+
+extension WalletManager {
+    func updatePublisher() -> AnyPublisher<Wallet, Error> {
+        Deferred {
+            Future { promise in
+                self.update { result in
+                    switch result {
+                    case .success(let response):
+                        promise(.success(self.wallet))
+                    case .failure(let error):
+                        promise(.failure(error))
+                    }
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
 }
 
 @available(iOS 13.0, *)
@@ -42,7 +61,10 @@ public protocol TransactionSender {
                            sourceAddress: String?, changeAddress: String?) throws -> Transaction
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error>
+    func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
+    
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error>
+    func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error>
     
     func validate(fee: Amount) -> TransactionError?
     func validate(amount: Amount) -> TransactionError?
