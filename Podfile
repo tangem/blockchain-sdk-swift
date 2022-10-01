@@ -23,7 +23,7 @@ target 'BlockchainSdk' do
   pod 'HDWalletKit', :git => 'https://github.com/tangem/hdwallet.git', :tag => '0.3.12'
   #pod 'HDWalletKit', :path => '../HDWallet'
   #pod 'web3swift', :path => '../web3swift'
-  pod 'web3swift', :git => 'https://github.com/tangem/web3swift.git', :tag => '2.2.9'
+  pod 'web3swift', :git => 'https://github.com/tangem/web3swift.git', :tag => '2.2.10'
   pod 'AnyCodable-FlightSchool'
   pod 'stellar-ios-mac-sdk'
   
