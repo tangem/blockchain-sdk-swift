@@ -61,7 +61,6 @@ public protocol TransactionSender {
                            sourceAddress: String?, changeAddress: String?) throws -> Transaction
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error>
-    func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error>
     func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error>

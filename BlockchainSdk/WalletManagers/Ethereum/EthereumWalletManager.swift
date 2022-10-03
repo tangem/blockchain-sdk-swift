@@ -55,6 +55,7 @@ public protocol EthereumTransactionSigner: AnyObject {
 public protocol EthereumTransactionProcessor {
     func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompilledEthereumTransaction, Error>
     func buildForSend(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
+    func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
 }
 
 public struct CompilledEthereumTransaction {
@@ -167,21 +168,6 @@ extension EthereumWalletManager: TransactionSender {
                 }
                 .mapError { SendTxError(error: $0, tx: tx) }
                 .eraseToAnyPublisher() ?? .emptyFail
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error> {
-        buildForSend(transaction)
-            .flatMap {[weak self] serializedTransaction -> AnyPublisher<String, Error> in
-                guard let self = self else {
-                    return .anyFail(error: WalletError.empty)
-                }
-                
-                return self.networkService
-                    .send(transaction: serializedTransaction)
-                    .mapError { SendTxError(error: $0, tx: serializedTransaction) }
-                    .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
@@ -320,5 +306,20 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
         }
         
         return .justWithError(output: "0x\(tx.toHexString())")
+    }
+    
+    func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error> {
+        buildForSend(transaction)
+            .flatMap {[weak self] serializedTransaction -> AnyPublisher<String, Error> in
+                guard let self = self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+                
+                return self.networkService
+                    .send(transaction: serializedTransaction)
+                    .mapError { SendTxError(error: $0, tx: serializedTransaction) }
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
 }
