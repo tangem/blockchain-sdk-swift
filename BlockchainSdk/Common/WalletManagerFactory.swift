@@ -195,7 +195,7 @@ public class WalletManagerFactory {
                                                            blockchairProvider: blockchair)
             }
             
-        case .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .ethereumPoW, .ethereumFair, .saltPay:
+        case .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay:
             return try EthereumWalletManager(wallet: wallet).then {
                 let chainId = blockchain.chainId!
                 let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)!
@@ -210,6 +210,20 @@ public class WalletManagerFactory {
                                                            blockchairProvider: nil)
             }
             
+        case .optimism:
+            return try OptimismWalletManager(wallet: wallet).then {
+                let chainId = blockchain.chainId!
+                let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)!
+                let jsonRpcProviders = rpcUrls.map {
+                    EthereumJsonRpcProvider(url: $0, configuration: config.networkProviderConfiguration)
+                }
+                
+                $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, chainId: chainId)
+                $0.networkService = EthereumNetworkService(decimals: blockchain.decimalCount,
+                                                           providers: jsonRpcProviders,
+                                                           blockcypherProvider: nil,
+                                                           blockchairProvider: nil)
+            }
         case .bitcoinCash(let testnet):
             return try BitcoinCashWalletManager(wallet: wallet).then {
                 let compressed = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
