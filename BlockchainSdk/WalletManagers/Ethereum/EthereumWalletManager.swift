@@ -78,6 +78,27 @@ class EthereumWalletManager: BaseManager, WalletManager {
             })
     }
     
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
+        let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
+        return networkService.getFee(to: destinationInfo.to,
+                                     from: wallet.address,
+                                     value: destinationInfo.value,
+                                     data: destinationInfo.data)
+        .tryMap {
+            guard $0.fees.count == 3 else {
+                throw BlockchainSdkError.failedToLoadFee
+            }
+            self.gasLimit = $0.gasLimit
+            
+            let minAmount = Amount(with: self.wallet.blockchain, value: $0.fees[0])
+            let normalAmount = Amount(with: self.wallet.blockchain, value: $0.fees[1])
+            let maxAmount = Amount(with: self.wallet.blockchain, value: $0.fees[2])
+            
+            return [minAmount, normalAmount, maxAmount]
+        }
+        .eraseToAnyPublisher()
+    }
+    
     private func updateWallet(with response: EthereumInfoResponse) {
         wallet.add(coinValue: response.balance)
         for tokenBalance in response.tokenBalances {
@@ -140,28 +161,6 @@ extension EthereumWalletManager: TransactionSender {
             }
             .eraseToAnyPublisher()
     }
-    
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
-        let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
-        return networkService.getFee(to: destinationInfo.to,
-                                     from: wallet.address,
-                                     value: destinationInfo.value,
-                                     data: destinationInfo.data)
-        .tryMap {
-            guard $0.fees.count == 3 else {
-                throw BlockchainSdkError.failedToLoadFee
-            }
-            self.gasLimit = $0.gasLimit
-            
-            let minAmount = Amount(with: self.wallet.blockchain, value: $0.fees[0])
-            let normalAmount = Amount(with: self.wallet.blockchain, value: $0.fees[1])
-            let maxAmount = Amount(with: self.wallet.blockchain, value: $0.fees[2])
-            
-            return [minAmount, normalAmount, maxAmount]
-        }
-        .eraseToAnyPublisher()
-    }
-    
 }
 
 extension EthereumWalletManager: EthereumTransactionSigner {
