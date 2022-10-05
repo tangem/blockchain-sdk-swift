@@ -17,16 +17,16 @@ class OptimismWalletManager: EthereumWalletManager {
     
     private var gasLimit: BigUInt? = nil
     private let l1FeeContractMethodName: String = "getL1Fee"
-    private var lastL1FeeAmount: Amount?
+    private var lastLayer1FeeAmount: Amount?
     
     private var optimismFeeAddress: String {
         return EthereumAddress("0x420000000000000000000000000000000000000F")!.address
     }
     
     override func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        lastL1FeeAmount = nil
+        lastLayer1FeeAmount = nil
         
-        let l2Fee = super.getFee(amount: amount, destination: destination)
+        let layer2Fee = super.getFee(amount: amount, destination: destination)
         let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
         let tx = txBuilder.buildForSign(transaction: Transaction.dummyTx(blockchain: wallet.blockchain,
                                                                          type: amount.type,
@@ -36,25 +36,25 @@ class OptimismWalletManager: EthereumWalletManager {
             return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
         }
         
-        let l1Fee = getL1Fee(amount: amount, destination: destinationInfo.to, transactionHash: byteArray.toHexString())
+        let layer1Fee = getL1Fee(amount: amount, destination: destinationInfo.to, transactionHash: byteArray.toHexString())
         
         return Publishers
-            .CombineLatest(l2Fee, l1Fee)
-            .tryMap { [weak self] (l2FeeAmounts, l1FeeAmount) in
+            .CombineLatest(layer2Fee, layer1Fee)
+            .tryMap { [weak self] (layer2FeeAmounts, layer1FeeAmount) in
                 guard let self = self else {
                     throw BlockchainSdkError.failedToLoadFee
                 }
-                let minAmount = Amount(with: self.wallet.blockchain, value: l2FeeAmounts[0].value + l1FeeAmount.value)
-                let normalAmount = Amount(with: self.wallet.blockchain, value: l2FeeAmounts[1].value + l1FeeAmount.value)
-                let maxAmount = Amount(with: self.wallet.blockchain, value: l2FeeAmounts[2].value + l1FeeAmount.value)
-                self.lastL1FeeAmount = l1FeeAmount
+                let minAmount = Amount(with: self.wallet.blockchain, value: layer2FeeAmounts[0].value + layer1FeeAmount.value)
+                let normalAmount = Amount(with: self.wallet.blockchain, value: layer2FeeAmounts[1].value + layer1FeeAmount.value)
+                let maxAmount = Amount(with: self.wallet.blockchain, value: layer2FeeAmounts[2].value + layer1FeeAmount.value)
+                self.lastLayer1FeeAmount = layer1FeeAmount
                 
                 return [minAmount, normalAmount, maxAmount]
         }.eraseToAnyPublisher()
     }
     
     override func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
-        guard let transactionWithCorrectFee = try? createTransaction(amount: transaction.amount, fee: Amount(with: wallet.blockchain, value: transaction.fee.value - (lastL1FeeAmount?.value ?? 0)), destinationAddress: transaction.destinationAddress)
+        guard let transactionWithCorrectFee = try? createTransaction(amount: transaction.amount, fee: Amount(with: wallet.blockchain, value: transaction.fee.value - (lastLayer1FeeAmount?.value ?? 0)), destinationAddress: transaction.destinationAddress)
         else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
