@@ -13,16 +13,14 @@ import Moya
 import web3swift
 
 class OptimismWalletManager: EthereumWalletManager {
+    var rpcURL: URL!
+    
     private var gasLimit: BigUInt? = nil
     private let l1FeeContractMethodName: String = "getL1Fee"
     private var lastL1FeeAmount: Amount?
     
     private var optimismFeeAddress: String {
         return EthereumAddress("0x420000000000000000000000000000000000000F")!.address
-    }
-    
-    private var rpcURL: URL {
-        return wallet.blockchain.getJsonRpcURLs(infuraProjectId: "613a0b14833145968b1f656240c7d245")![0]
     }
     
     override func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
