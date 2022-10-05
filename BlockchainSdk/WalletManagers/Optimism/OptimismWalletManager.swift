@@ -36,7 +36,7 @@ class OptimismWalletManager: EthereumWalletManager {
             return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
         }
         
-        let layer1Fee = getL1Fee(amount: amount, destination: destinationInfo.to, transactionHash: byteArray.toHexString())
+        let layer1Fee = getLayer1Fee(amount: amount, destination: destinationInfo.to, transactionHash: byteArray.toHexString())
         
         return Publishers
             .CombineLatest(layer2Fee, layer1Fee)
@@ -66,7 +66,7 @@ class OptimismWalletManager: EthereumWalletManager {
 //MARK: - Private
 
 extension OptimismWalletManager {
-    private func getL1Fee(amount: Amount, destination: String, transactionHash: String) -> AnyPublisher<Amount, Error> {
+    private func getLayer1Fee(amount: Amount, destination: String, transactionHash: String) -> AnyPublisher<Amount, Error> {
         return Deferred {
             Future { [weak self] promise in
                 guard let self = self else { return }
