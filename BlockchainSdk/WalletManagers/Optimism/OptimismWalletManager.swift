@@ -16,7 +16,7 @@ class OptimismWalletManager: EthereumWalletManager {
     var rpcURL: URL!
     
     private var gasLimit: BigUInt? = nil
-    private let l1FeeContractMethodName: String = "getL1Fee"
+    private let layer1FeeContractMethodName: String = "getL1Fee"
     private var lastLayer1FeeAmount: Amount?
     
     private var optimismFeeAddress: String {
@@ -70,9 +70,9 @@ extension OptimismWalletManager {
         return Deferred {
             Future { [weak self] promise in
                 guard let self = self else { return }
-                let contractInteractor = ContractInteractor(address: self.optimismFeeAddress, abi: OptimismL1GasFeeABI, rpcURL: self.rpcURL)
+                let contractInteractor = ContractInteractor(address: self.optimismFeeAddress, abi: OptimismLayer1GasFeeABI, rpcURL: self.rpcURL)
                 let params = [transactionHash] as! [AnyObject]
-                contractInteractor.read(method: self.l1FeeContractMethodName, parameters: params) { result in
+                contractInteractor.read(method: self.layer1FeeContractMethodName, parameters: params) { result in
                     switch result {
                     case .success(let response):
                         if let bigUIntFee = BigUInt("\(response)"),
