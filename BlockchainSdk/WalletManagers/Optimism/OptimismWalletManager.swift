@@ -67,28 +67,20 @@ class OptimismWalletManager: EthereumWalletManager {
 
 extension OptimismWalletManager {
     private func getLayer1Fee(amount: Amount, destination: String, transactionHash: String) -> AnyPublisher<Amount, Error> {
-        return Deferred {
-            Future { [weak self] promise in
-                guard let self = self else { return }
-                let contractInteractor = ContractInteractor(address: self.optimismFeeAddress, abi: OptimismLayer1GasFeeABI, rpcURL: self.rpcURL)
-                let params = [transactionHash] as! [AnyObject]
-                contractInteractor.read(method: self.layer1FeeContractMethodName, parameters: params) { result in
-                    switch result {
-                    case .success(let response):
-                        if let bigUIntFee = BigUInt("\(response)"),
-                           let fee = Web3.Utils.formatToEthereumUnits(bigUIntFee, toUnits: .eth, decimals: 18, decimalSeparator: ".", fallbackToScientific: false),
-                           let decimalFee = Decimal(fee) {
-                            let amount = Amount(with: self.wallet.blockchain, value: decimalFee)
-                            promise(.success(amount))
-                        } else {
-                            promise(.failure(BlockchainSdkError.failedToLoadFee))
-                        }
-                    case .failure(let error):
-                        promise(.failure(error))
-                    }
+        let contractInteractor = ContractInteractor(address: self.optimismFeeAddress, abi: OptimismLayer1GasFeeABI, rpcURL: self.rpcURL)
+        let params = [transactionHash] as! [AnyObject]
+        return contractInteractor
+            .read(method: self.layer1FeeContractMethodName, parameters: params)
+            .tryMap { response in
+                if let bigUIntFee = BigUInt("\(response)"),
+                   let fee = Web3.Utils.formatToEthereumUnits(bigUIntFee, toUnits: .eth, decimals: 18, decimalSeparator: ".", fallbackToScientific: false),
+                   let decimalFee = Decimal(fee) {
+                    let amount = Amount(with: self.wallet.blockchain, value: decimalFee)
+                    return amount
+                } else {
+                    throw BlockchainSdkError.failedToLoadFee
                 }
-            }
-        }.eraseToAnyPublisher()
+            }.eraseToAnyPublisher()
     }
     
     private func formatDestinationInfo(for destination: String, amount: Amount) -> (to: String, value: String?, data: String?) {
