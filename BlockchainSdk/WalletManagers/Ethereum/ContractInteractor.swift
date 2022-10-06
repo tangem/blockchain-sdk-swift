@@ -70,6 +70,7 @@ public class ContractInteractor {
                 guard let self = self else {
                     return
                 }
+                
                 self.write(method: method, parameters: parameters) { result in
                     switch result {
                     case .success(let value):

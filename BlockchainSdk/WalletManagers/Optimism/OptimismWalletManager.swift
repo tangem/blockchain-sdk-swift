@@ -26,23 +26,28 @@ class OptimismWalletManager: EthereumWalletManager {
     override func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         lastLayer1FeeAmount = nil
         
-        let layer2Fee = super.getFee(amount: amount, destination: destination)
-        let tx = txBuilder.buildForSign(transaction: Transaction.dummyTx(blockchain: wallet.blockchain,
-                                                                         type: amount.type,
-                                                                         destinationAddress: destination), nonce: 1, gasLimit: BigUInt(1))
+        let layer2FeePublisher = super.getFee(amount: amount, destination: destination)
+        let transaction = Transaction.dummyTx(blockchain: wallet.blockchain, type: amount.type, destinationAddress: destination)
+        
+        let tx = txBuilder.buildForSign(transaction: transaction,
+                                        nonce: 1,
+                                        gasLimit: BigUInt(1))
         
         guard let byteArray = tx?.transaction.encodeForSend() else {
             return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
         }
         
-        let layer1Fee = getLayer1Fee(amount: amount, destination: destination, transactionHash: byteArray.toHexString())
+        let layer1FeePublisher = getLayer1Fee(amount: amount,
+                                              destination: destination,
+                                              transactionHash: byteArray.toHexString())
         
         return Publishers
-            .CombineLatest(layer2Fee, layer1Fee)
+            .CombineLatest(layer2FeePublisher, layer1FeePublisher)
             .tryMap { [weak self] (layer2FeeAmounts, layer1FeeAmount) in
                 guard let self = self else {
                     throw BlockchainSdkError.failedToLoadFee
                 }
+                
                 let minAmount = Amount(with: self.wallet.blockchain, value: layer2FeeAmounts[0].value + layer1FeeAmount.value)
                 let normalAmount = Amount(with: self.wallet.blockchain, value: layer2FeeAmounts[1].value + layer1FeeAmount.value)
                 let maxAmount = Amount(with: self.wallet.blockchain, value: layer2FeeAmounts[2].value + layer1FeeAmount.value)
@@ -53,7 +58,10 @@ class OptimismWalletManager: EthereumWalletManager {
     }
     
     override func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
-        guard let transactionWithCorrectFee = try? createTransaction(amount: transaction.amount, fee: Amount(with: wallet.blockchain, value: transaction.fee.value - (lastLayer1FeeAmount?.value ?? 0)), destinationAddress: transaction.destinationAddress)
+        let calculatedTransactionFee = transaction.fee.value - (lastLayer1FeeAmount?.value ?? 0)
+        guard let transactionWithCorrectFee = try? createTransaction(amount: transaction.amount,
+                                                                     fee: Amount(with: wallet.blockchain, value: calculatedTransactionFee),
+                                                                     destinationAddress: transaction.destinationAddress)
         else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
@@ -66,14 +74,16 @@ class OptimismWalletManager: EthereumWalletManager {
 
 extension OptimismWalletManager {
     private func getLayer1Fee(amount: Amount, destination: String, transactionHash: String) -> AnyPublisher<Amount, Error> {
-        let contractInteractor = ContractInteractor(address: self.optimismFeeAddress, abi: ContractABI().optimismLayer1GasFeeABI(), rpcURL: self.rpcURL)
+        let contractInteractor = ContractInteractor(address: self.optimismFeeAddress, abi: ContractABI().optimismLayer1GasFeeABI, rpcURL: self.rpcURL)
         let params = [transactionHash] as! [AnyObject]
+        
         return contractInteractor
             .read(method: self.layer1FeeContractMethodName, parameters: params)
             .tryMap { response in
                 if let bigUIntFee = BigUInt("\(response)"),
                    let fee = Web3.Utils.formatToEthereumUnits(bigUIntFee, toUnits: .eth, decimals: 18, decimalSeparator: ".", fallbackToScientific: false),
                    let decimalFee = Decimal(fee) {
+                    
                     let amount = Amount(with: self.wallet.blockchain, value: decimalFee)
                     return amount
                 } else {
