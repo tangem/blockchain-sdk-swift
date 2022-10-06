@@ -199,7 +199,7 @@
 		DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */; };
 		DAF0867027A9438C0024312E /* PolkadotNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */; };
 		DC912D1628E706C400D76628 /* ContractInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC912D1528E706C400D76628 /* ContractInteractor.swift */; };
-		E90FAB5728ECDA2800C6DCBE /* OptimismLayer1GasFeeABI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90FAB5628ECDA2800C6DCBE /* OptimismLayer1GasFeeABI.swift */; };
+		E90FAB5C28EED26600C6DCBE /* ContractABI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90FAB5B28EED26600C6DCBE /* ContractABI.swift */; };
 		E9EECB5328E9F50600899D6C /* OptimismWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EECB5228E9F50600899D6C /* OptimismWalletManager.swift */; };
 		ED3D33D84D8B747FB3B1D09D /* Pods_BlockchainSdkTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A172F9D47772F23948771418 /* Pods_BlockchainSdkTests.framework */; };
 		EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFCE549274BB88700C1B1A0 /* StellarTests.swift */; };
@@ -469,7 +469,7 @@
 		DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotWalletManager.swift; sourceTree = "<group>"; };
 		DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetworkService.swift; sourceTree = "<group>"; };
 		DC912D1528E706C400D76628 /* ContractInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractInteractor.swift; sourceTree = "<group>"; };
-		E90FAB5628ECDA2800C6DCBE /* OptimismLayer1GasFeeABI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismLayer1GasFeeABI.swift; sourceTree = "<group>"; };
+		E90FAB5B28EED26600C6DCBE /* ContractABI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractABI.swift; sourceTree = "<group>"; };
 		E9EECB5228E9F50600899D6C /* OptimismWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismWalletManager.swift; sourceTree = "<group>"; };
 		EF332D16288EACB000AE3C85 /* HostProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostProvider.swift; sourceTree = "<group>"; };
 		EF332D18288EAEAC00AE3C85 /* NetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProvider.swift; sourceTree = "<group>"; };
@@ -1016,6 +1016,7 @@
 			isa = PBXGroup;
 			children = (
 				B0A1D39C2625A1150013F0BF /* EthereumUtils.swift */,
+				E90FAB5B28EED26600C6DCBE /* ContractABI.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -1144,7 +1145,6 @@
 			isa = PBXGroup;
 			children = (
 				E9EECB5228E9F50600899D6C /* OptimismWalletManager.swift */,
-				E90FAB5628ECDA2800C6DCBE /* OptimismLayer1GasFeeABI.swift */,
 			);
 			path = Optimism;
 			sourceTree = "<group>";
@@ -1526,10 +1526,10 @@
 				5DC7DD60243F83E6008F83F2 /* XRPAddressService.swift in Sources */,
 				B0CDFF252641488900B9BA9D /* EthereumJsonRpcProvider.swift in Sources */,
 				B0A63E0D26259D01001FDB7A /* EthereumTransactionParams.swift in Sources */,
-				E90FAB5728ECDA2800C6DCBE /* OptimismLayer1GasFeeABI.swift in Sources */,
 				5D7D243125136254001B9A4F /* XRPHistoricalTransaction.swift in Sources */,
 				B056729B2570F9DC00A8CB59 /* BlockchainSdkError.swift in Sources */,
 				5DEAFA942444C5300032E316 /* Token.swift in Sources */,
+				E90FAB5C28EED26600C6DCBE /* ContractABI.swift in Sources */,
 				5D557CB023AA888D009B32AF /* Uint64+.swift in Sources */,
 				5D94E56123A381F2009C7482 /* EthereumWalletManager.swift in Sources */,
 				DC912D1628E706C400D76628 /* ContractInteractor.swift in Sources */,

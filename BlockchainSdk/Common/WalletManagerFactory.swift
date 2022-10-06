@@ -218,7 +218,7 @@ public class WalletManagerFactory {
                     EthereumJsonRpcProvider(url: $0, configuration: config.networkProviderConfiguration)
                 }
                 
-                $0.rpcURL = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)![0]
+                $0.rpcURL = rpcUrls[0]
                 $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, chainId: chainId)
                 $0.networkService = EthereumNetworkService(decimals: blockchain.decimalCount,
                                                            providers: jsonRpcProviders,

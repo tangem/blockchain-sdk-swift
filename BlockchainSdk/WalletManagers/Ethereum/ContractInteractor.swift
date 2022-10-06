@@ -42,19 +42,13 @@ public class ContractInteractor {
                     return
                 }
                 
-                do {
-                    let contract = try self.makeContract()
-                    let transaction = try self.makeTransaction(from: contract, method: method, parameters: parameters, type: .read)
-                    self.call(transaction: transaction) { result in
-                        switch result {
-                        case .success(let value):
-                            promise(.success(value))
-                        case .failure(let error):
-                            promise(.failure(error))
-                        }
+                self.read(method: method, parameters: parameters) { result in
+                    switch result {
+                    case .success(let value):
+                        promise(.success(value))
+                    case .failure(let error):
+                        promise(.failure(error))
                     }
-                } catch {
-                    promise(.failure(error))
                 }
             }
         }.eraseToAnyPublisher()
@@ -76,20 +70,13 @@ public class ContractInteractor {
                 guard let self = self else {
                     return
                 }
-                
-                do {
-                    let contract = try self.makeContract()
-                    let transaction = try self.makeTransaction(from: contract, method: method, parameters: parameters, type: .write)
-                    self.call(transaction: transaction) { result in
-                        switch result {
-                        case .success(let value):
-                            promise(.success(value))
-                        case .failure(let error):
-                            promise(.failure(error))
-                        }
+                self.write(method: method, parameters: parameters) { result in
+                    switch result {
+                    case .success(let value):
+                        promise(.success(value))
+                    case .failure(let error):
+                        promise(.failure(error))
                     }
-                } catch {
-                    promise(.failure(error))
                 }
             }
         }.eraseToAnyPublisher()

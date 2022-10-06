@@ -27,7 +27,6 @@ class OptimismWalletManager: EthereumWalletManager {
         lastLayer1FeeAmount = nil
         
         let layer2Fee = super.getFee(amount: amount, destination: destination)
-        let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
         let tx = txBuilder.buildForSign(transaction: Transaction.dummyTx(blockchain: wallet.blockchain,
                                                                          type: amount.type,
                                                                          destinationAddress: destination), nonce: 1, gasLimit: BigUInt(1))
@@ -36,7 +35,7 @@ class OptimismWalletManager: EthereumWalletManager {
             return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
         }
         
-        let layer1Fee = getLayer1Fee(amount: amount, destination: destinationInfo.to, transactionHash: byteArray.toHexString())
+        let layer1Fee = getLayer1Fee(amount: amount, destination: destination, transactionHash: byteArray.toHexString())
         
         return Publishers
             .CombineLatest(layer2Fee, layer1Fee)
@@ -67,7 +66,7 @@ class OptimismWalletManager: EthereumWalletManager {
 
 extension OptimismWalletManager {
     private func getLayer1Fee(amount: Amount, destination: String, transactionHash: String) -> AnyPublisher<Amount, Error> {
-        let contractInteractor = ContractInteractor(address: self.optimismFeeAddress, abi: OptimismLayer1GasFeeABI, rpcURL: self.rpcURL)
+        let contractInteractor = ContractInteractor(address: self.optimismFeeAddress, abi: ContractABI().optimismLayer1GasFeeABI(), rpcURL: self.rpcURL)
         let params = [transactionHash] as! [AnyObject]
         return contractInteractor
             .read(method: self.layer1FeeContractMethodName, parameters: params)
@@ -81,24 +80,5 @@ extension OptimismWalletManager {
                     throw BlockchainSdkError.failedToLoadFee
                 }
             }.eraseToAnyPublisher()
-    }
-    
-    private func formatDestinationInfo(for destination: String, amount: Amount) -> (to: String, value: String?, data: String?) {
-        var to = destination
-        var value: String? = nil
-        var data: String? = nil
-        
-        if amount.type == .coin,
-           let amountValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: amount.decimals)
-        {
-            value = "0x" + String(amountValue, radix: 16)
-        }
-        
-        if let token = amount.type.token, let erc20Data = txBuilder.getData(for: amount, targetAddress: destination) {
-            to = token.contractAddress
-            data = "0x" + erc20Data.hexString
-        }
-        
-        return (to, value, data)
     }
 }
