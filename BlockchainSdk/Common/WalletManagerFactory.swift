@@ -173,10 +173,7 @@ public class WalletManagerFactory {
             let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)!
             
             if case .optimism = blockchain {
-                manager = OptimismWalletManager(wallet: wallet)
-                if let manager = manager as? OptimismWalletManager {
-                    manager.rpcURL = rpcUrls[0]
-                }
+                manager = OptimismWalletManager(wallet: wallet, rpcURL: rpcUrls[0])
             } else {
                 manager = EthereumWalletManager(wallet: wallet)
             }

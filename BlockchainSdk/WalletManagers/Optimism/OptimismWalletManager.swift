@@ -23,6 +23,11 @@ class OptimismWalletManager: EthereumWalletManager {
         return EthereumAddress("0x420000000000000000000000000000000000000F")!.address
     }
     
+    init(wallet: Wallet, rpcURL: URL) {
+        self.rpcURL = rpcURL
+        super.init(wallet: wallet)
+    }
+    
     override func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         lastLayer1FeeAmount = nil
         
