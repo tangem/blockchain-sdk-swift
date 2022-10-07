@@ -168,6 +168,7 @@ public class WalletManagerFactory {
                 $0.txBuilder = StellarTransactionBuilder(stellarSdk: stellarSdk, walletPublicKey: wallet.publicKey.blockchainKey, isTestnet: testnet)
                 $0.networkService = StellarNetworkService(isTestnet: testnet, stellarSdk: stellarSdk)
             }
+            
         case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .optimism, .ethereumFair, .saltPay:
             let manager: EthereumWalletManager
             let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)!
@@ -178,24 +179,24 @@ public class WalletManagerFactory {
                 manager = EthereumWalletManager(wallet: wallet)
             }
             
-            let blockcypher: BlockcypherNetworkProvider?
-            let blockchair: BlockchairNetworkProvider?
+            let blockcypherProvider: BlockcypherNetworkProvider?
+            let blockchairProvider: BlockchairNetworkProvider?
             
             if case .ethereum = blockchain {
-                blockcypher = BlockcypherNetworkProvider(
+                blockcypherProvider = BlockcypherNetworkProvider(
                     endpoint: .ethereum,
                     tokens: config.blockcypherTokens,
                     configuration: config.networkProviderConfiguration
                 )
                 
-                blockchair = BlockchairNetworkProvider(
+                blockchairProvider = BlockchairNetworkProvider(
                     endpoint: .ethereum(testnet: blockchain.isTestnet),
                     apiKey: config.blockchairApiKey,
                     configuration: config.networkProviderConfiguration
                 )
             } else {
-                blockcypher = nil
-                blockchair = nil
+                blockcypherProvider = nil
+                blockchairProvider = nil
             }
             
             return try manager.then {
@@ -204,16 +205,13 @@ public class WalletManagerFactory {
                     EthereumJsonRpcProvider(url: $0, configuration: config.networkProviderConfiguration)
                 }
                 
-                if case .ethereum = blockchain {
-                    
-                }
-                
                 $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, chainId: chainId)
                 $0.networkService = EthereumNetworkService(decimals: blockchain.decimalCount,
                                                            providers: jsonRpcProviders,
-                                                           blockcypherProvider: blockcypher,
-                                                           blockchairProvider: blockchair)
+                                                           blockcypherProvider: blockcypherProvider,
+                                                           blockchairProvider: blockchairProvider)
             }
+            
         case .bitcoinCash(let testnet):
             return try BitcoinCashWalletManager(wallet: wallet).then {
                 let compressed = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()

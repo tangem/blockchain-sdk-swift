@@ -13,7 +13,7 @@ import Moya
 import web3swift
 
 class OptimismWalletManager: EthereumWalletManager {
-    var rpcURL: URL!
+    let rpcURL: URL
     
     private var gasLimit: BigUInt? = nil
     private let layer1FeeContractMethodName: String = "getL1Fee"
@@ -88,9 +88,7 @@ extension OptimismWalletManager {
                 if let bigUIntFee = BigUInt("\(response)"),
                    let fee = Web3.Utils.formatToEthereumUnits(bigUIntFee, toUnits: .eth, decimals: 18, decimalSeparator: ".", fallbackToScientific: false),
                    let decimalFee = Decimal(fee) {
-                    
-                    let amount = Amount(with: self.wallet.blockchain, value: decimalFee)
-                    return amount
+                    return Amount(with: self.wallet.blockchain, value: decimalFee)
                 } else {
                     throw BlockchainSdkError.failedToLoadFee
                 }
