@@ -168,62 +168,54 @@ public class WalletManagerFactory {
                 $0.txBuilder = StellarTransactionBuilder(stellarSdk: stellarSdk, walletPublicKey: wallet.publicKey.blockchainKey, isTestnet: testnet)
                 $0.networkService = StellarNetworkService(isTestnet: testnet, stellarSdk: stellarSdk)
             }
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .optimism, .ethereumFair, .saltPay:
+            let manager: EthereumWalletManager
+            let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)!
             
-        case .ethereum(let testnet):
-            return try EthereumWalletManager(wallet: wallet).then {
-                let chainId = blockchain.chainId!
-                let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)!
-                let jsonRpcProviders = rpcUrls.map {
-                    EthereumJsonRpcProvider(url: $0, configuration: config.networkProviderConfiguration)
+            if case .optimism = blockchain {
+                manager = OptimismWalletManager(wallet: wallet)
+                if let manager = manager as? OptimismWalletManager {
+                    manager.rpcURL = rpcUrls[0]
                 }
-                
-                let blockcypher = BlockcypherNetworkProvider(
+            } else {
+                manager = EthereumWalletManager(wallet: wallet)
+            }
+            
+            let blockcypher: BlockcypherNetworkProvider?
+            let blockchair: BlockchairNetworkProvider?
+            
+            if case .ethereum = blockchain {
+                blockcypher = BlockcypherNetworkProvider(
                     endpoint: .ethereum,
                     tokens: config.blockcypherTokens,
                     configuration: config.networkProviderConfiguration
                 )
-                let blockchair = BlockchairNetworkProvider(
-                    endpoint: .ethereum(testnet: testnet),
+                
+                blockchair = BlockchairNetworkProvider(
+                    endpoint: .ethereum(testnet: blockchain.isTestnet),
                     apiKey: config.blockchairApiKey,
                     configuration: config.networkProviderConfiguration
                 )
+            } else {
+                blockcypher = nil
+                blockchair = nil
+            }
+            
+            return try manager.then {
+                let chainId = blockchain.chainId!
+                let jsonRpcProviders = rpcUrls.map {
+                    EthereumJsonRpcProvider(url: $0, configuration: config.networkProviderConfiguration)
+                }
+                
+                if case .ethereum = blockchain {
+                    
+                }
                 
                 $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, chainId: chainId)
                 $0.networkService = EthereumNetworkService(decimals: blockchain.decimalCount,
                                                            providers: jsonRpcProviders,
                                                            blockcypherProvider: blockcypher,
                                                            blockchairProvider: blockchair)
-            }
-            
-        case .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay:
-            return try EthereumWalletManager(wallet: wallet).then {
-                let chainId = blockchain.chainId!
-                let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)!
-                let jsonRpcProviders = rpcUrls.map {
-                    EthereumJsonRpcProvider(url: $0, configuration: config.networkProviderConfiguration)
-                }
-                
-                $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, chainId: chainId)
-                $0.networkService = EthereumNetworkService(decimals: blockchain.decimalCount,
-                                                           providers: jsonRpcProviders,
-                                                           blockcypherProvider: nil,
-                                                           blockchairProvider: nil)
-            }
-            
-        case .optimism:
-            return try OptimismWalletManager(wallet: wallet).then {
-                let chainId = blockchain.chainId!
-                let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)!
-                let jsonRpcProviders = rpcUrls.map {
-                    EthereumJsonRpcProvider(url: $0, configuration: config.networkProviderConfiguration)
-                }
-                
-                $0.rpcURL = rpcUrls[0]
-                $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, chainId: chainId)
-                $0.networkService = EthereumNetworkService(decimals: blockchain.decimalCount,
-                                                           providers: jsonRpcProviders,
-                                                           blockcypherProvider: nil,
-                                                           blockchairProvider: nil)
             }
         case .bitcoinCash(let testnet):
             return try BitcoinCashWalletManager(wallet: wallet).then {
