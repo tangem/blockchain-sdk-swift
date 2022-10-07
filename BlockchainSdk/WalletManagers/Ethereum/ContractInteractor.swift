@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Combine
 import web3swift
 
 public class ContractInteractor {
@@ -33,6 +34,25 @@ public class ContractInteractor {
             completion(.failure(error))
         }
     }
+     
+    public func read(method: String, parameters: [AnyObject]) -> AnyPublisher<Any, Error> {
+        return Deferred {
+            Future { [weak self] promise in
+                guard let self = self else {
+                    return
+                }
+                
+                self.read(method: method, parameters: parameters) { result in
+                    switch result {
+                    case .success(let value):
+                        promise(.success(value))
+                    case .failure(let error):
+                        promise(.failure(error))
+                    }
+                }
+            }
+        }.eraseToAnyPublisher()
+    }
     
     public func write(method: String, parameters: [AnyObject], completion: @escaping (Result<Any, Error>) -> Void) {
         do {
@@ -42,6 +62,25 @@ public class ContractInteractor {
         } catch {
             completion(.failure(error))
         }
+    }
+    
+    public func write(method: String, parameters: [AnyObject]) -> AnyPublisher<Any, Error> {
+        return Deferred {
+            Future { [weak self] promise in
+                guard let self = self else {
+                    return
+                }
+                
+                self.write(method: method, parameters: parameters) { result in
+                    switch result {
+                    case .success(let value):
+                        promise(.success(value))
+                    case .failure(let error):
+                        promise(.failure(error))
+                    }
+                }
+            }
+        }.eraseToAnyPublisher()
     }
     
     private func makeContract() throws -> web3.web3contract {

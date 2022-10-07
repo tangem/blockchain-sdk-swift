@@ -169,36 +169,38 @@ public class WalletManagerFactory {
                 $0.networkService = StellarNetworkService(isTestnet: testnet, stellarSdk: stellarSdk)
             }
             
-        case .ethereum(let testnet):
-            return try EthereumWalletManager(wallet: wallet).then {
-                let chainId = blockchain.chainId!
-                let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)!
-                let jsonRpcProviders = rpcUrls.map {
-                    EthereumJsonRpcProvider(url: $0, configuration: config.networkProviderConfiguration)
-                }
-                
-                let blockcypher = BlockcypherNetworkProvider(
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .optimism, .ethereumFair, .saltPay:
+            let manager: EthereumWalletManager
+            let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)!
+            
+            if case .optimism = blockchain {
+                manager = OptimismWalletManager(wallet: wallet, rpcURL: rpcUrls[0])
+            } else {
+                manager = EthereumWalletManager(wallet: wallet)
+            }
+            
+            let blockcypherProvider: BlockcypherNetworkProvider?
+            let blockchairProvider: BlockchairNetworkProvider?
+            
+            if case .ethereum = blockchain {
+                blockcypherProvider = BlockcypherNetworkProvider(
                     endpoint: .ethereum,
                     tokens: config.blockcypherTokens,
                     configuration: config.networkProviderConfiguration
                 )
-                let blockchair = BlockchairNetworkProvider(
-                    endpoint: .ethereum(testnet: testnet),
+                
+                blockchairProvider = BlockchairNetworkProvider(
+                    endpoint: .ethereum(testnet: blockchain.isTestnet),
                     apiKey: config.blockchairApiKey,
                     configuration: config.networkProviderConfiguration
                 )
-                
-                $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, chainId: chainId)
-                $0.networkService = EthereumNetworkService(decimals: blockchain.decimalCount,
-                                                           providers: jsonRpcProviders,
-                                                           blockcypherProvider: blockcypher,
-                                                           blockchairProvider: blockchair)
+            } else {
+                blockcypherProvider = nil
+                blockchairProvider = nil
             }
             
-        case .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .ethereumPoW, .ethereumFair, .saltPay:
-            return try EthereumWalletManager(wallet: wallet).then {
+            return try manager.then {
                 let chainId = blockchain.chainId!
-                let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)!
                 let jsonRpcProviders = rpcUrls.map {
                     EthereumJsonRpcProvider(url: $0, configuration: config.networkProviderConfiguration)
                 }
@@ -206,8 +208,8 @@ public class WalletManagerFactory {
                 $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, chainId: chainId)
                 $0.networkService = EthereumNetworkService(decimals: blockchain.decimalCount,
                                                            providers: jsonRpcProviders,
-                                                           blockcypherProvider: nil,
-                                                           blockchairProvider: nil)
+                                                           blockcypherProvider: blockcypherProvider,
+                                                           blockchairProvider: blockchairProvider)
             }
             
         case .bitcoinCash(let testnet):
