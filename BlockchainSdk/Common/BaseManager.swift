@@ -40,10 +40,10 @@ class BaseManager: WalletProvider {
     }
     
     func createTransaction(amount: Amount,
-                                  fee: Amount,
-                                  destinationAddress: String,
-                                  sourceAddress: String? = nil,
-                                  changeAddress: String? = nil) throws -> Transaction {
+                           fee: Amount,
+                           destinationAddress: String,
+                           sourceAddress: String?,
+                           changeAddress: String?) throws -> Transaction {
         let transaction = Transaction(amount: amount,
                                       fee: fee,
                                       sourceAddress: sourceAddress ?? defaultSourceAddress,

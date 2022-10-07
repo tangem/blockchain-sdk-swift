@@ -63,7 +63,6 @@ public protocol TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error>
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error>
-    func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error>
     
     func validate(fee: Amount) -> TransactionError?
     func validate(amount: Amount) -> TransactionError?

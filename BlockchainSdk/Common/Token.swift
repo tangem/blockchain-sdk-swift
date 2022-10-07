@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import TangemSdk
 
 public struct Token: Hashable, Equatable, Codable {
     public var id: String?
@@ -23,6 +24,14 @@ public struct Token: Hashable, Equatable, Codable {
         self.contractAddress = contractAddress
         self.decimalCount = decimalCount
         self.customIconUrl = customIconUrl
+    }
+    
+    public init(_ sdkToken: WalletData.Token) {
+        self.name = sdkToken.name
+        self.symbol = sdkToken.symbol
+        self.contractAddress = sdkToken.contractAddress
+        self.decimalCount = sdkToken.decimals
+        self.customIconUrl = nil
     }
     
     init(_ blockhairToken: BlockchairToken, blockchain: Blockchain) {

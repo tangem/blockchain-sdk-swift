@@ -55,6 +55,7 @@ public protocol EthereumTransactionSigner: AnyObject {
 public protocol EthereumTransactionProcessor {
     func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompilledEthereumTransaction, Error>
     func buildForSend(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
+    func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error>
     func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
 }
 
@@ -175,11 +176,6 @@ extension EthereumWalletManager: TransactionSender {
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
         let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
         return getFee(to: destinationInfo.to, value: destinationInfo.value, data: destinationInfo.data)
-    }
-    
-    func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error> {
-        let value = amount.flatMap { formatValue($0) }
-        return getFee(to: to, value: value, data: data)
     }
     
     private func getFee(to: String, value: String?, data: String?) -> AnyPublisher<[Amount], Error> {
@@ -306,6 +302,11 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
         }
         
         return .justWithError(output: "0x\(tx.toHexString())")
+    }
+    
+    func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error> {
+        let value = amount.flatMap { formatValue($0) }
+        return getFee(to: to, value: value, data: data)
     }
     
     func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error> {

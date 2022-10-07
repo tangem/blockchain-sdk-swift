@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import BigInt
+import web3swift
 
 public struct Amount: CustomStringConvertible, Equatable, Comparable {
     public enum AmountType {
@@ -31,6 +33,18 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
     public var value: Decimal
     public let decimals: Int
 
+    public var bigUIntValue: BigUInt? {
+        if isZero {
+            return BigUInt.zero
+        }
+        
+        if value == Decimal.greatestFiniteMagnitude {
+            return BigUInt(2).power(256) - 1
+        }
+        
+        return Web3.Utils.parseToBigUInt("\(value)", decimals: decimals)
+    }
+    
     public var isZero: Bool {
         return value == 0
     }
@@ -106,13 +120,6 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
     }
     
 }
-
-public extension Amount {
-    static func zeroCoin(for blockchain: Blockchain) -> Amount {
-        .init(with: blockchain, type: .coin, value: 0)
-    }
-}
-
 extension Amount.AmountType: Equatable, Hashable {
     public func hash(into hasher: inout Hasher) {
         switch self {
@@ -146,5 +153,13 @@ extension Amount.AmountType: Equatable, Hashable {
 extension Amount {
     static func dummyCoin(for blockchain: Blockchain) -> Amount {
         Amount(with: blockchain, type: .coin, value: 0)
+    }
+    
+    public static func zeroCoin(for blockchain: Blockchain) -> Amount {
+        .init(with: blockchain, type: .coin, value: 0)
+    }
+    
+    public static func maxCoin(for blockchain: Blockchain) -> Amount {
+        .init(with: blockchain, type: .coin, value: Decimal.greatestFiniteMagnitude)
     }
 }
