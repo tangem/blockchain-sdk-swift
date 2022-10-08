@@ -135,8 +135,9 @@ class BaseManager: WalletProvider {
     }
     
     private func validateAmountTotal(_ amount: Amount) -> Bool {
-        guard let total = wallet.amounts[amount.type],
-            total >= amount else {
+        let total = wallet.amounts[amount.type] ?? Amount(with: amount, value: 0)
+        
+        guard total >= amount else {
             return false
         }
         

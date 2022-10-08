@@ -53,6 +53,7 @@ public protocol EthereumTransactionSigner: AnyObject {
 }
 
 public protocol EthereumTransactionProcessor {
+    var initialNonce: Int { get }
     func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompilledEthereumTransaction, Error>
     func buildForSend(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
     func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error>
@@ -76,7 +77,7 @@ public struct SignedEthereumTransaction {
     }
 }
 
-class EthereumWalletManager: BaseManager, WalletManager {
+class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSigner {
     var txBuilder: EthereumTransactionBuilder!
     var networkService: EthereumNetworkService!
     
@@ -102,8 +103,55 @@ class EthereumWalletManager: BaseManager, WalletManager {
             })
     }
     
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
+        let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
+        return getFee(to: destinationInfo.to, value: destinationInfo.value, data: destinationInfo.data)
+    }
+    
+    private func getFee(to: String, value: String?, data: String?) -> AnyPublisher<[Amount], Error> {
+        return networkService.getFee(to: to,
+                                     from: wallet.address,
+                                     value: value,
+                                     data: data)
+        .tryMap {
+            guard $0.fees.count == 3 else {
+                throw BlockchainSdkError.failedToLoadFee
+            }
+            self.gasLimit = $0.gasLimit
+            
+            let minAmount = Amount(with: self.wallet.blockchain, value: $0.fees[0])
+            let normalAmount = Amount(with: self.wallet.blockchain, value: $0.fees[1])
+            let maxAmount = Amount(with: self.wallet.blockchain, value: $0.fees[2])
+            
+            return [minAmount, normalAmount, maxAmount]
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
+        guard let txForSign = txBuilder.buildForSign(transaction: transaction,
+                                                     nonce: txCount,
+                                                     gasLimit: gasLimit) else {
+            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+        }
+        
+        return signer.sign(hash: txForSign.hash,
+                           walletPublicKey: self.wallet.publicKey)
+        .tryMap {[weak self] signature -> String in
+            guard let self = self else { throw WalletError.empty }
+            
+            guard let tx = self.txBuilder.buildForSend(transaction: txForSign.transaction, hash: txForSign.hash, signature: signature) else {
+                throw WalletError.failedToBuildTx
+            }
+            
+            return "0x\(tx.toHexString())"
+        }
+        .eraseToAnyPublisher()
+    }
+    
     private func updateWallet(with response: EthereumInfoResponse) {
         wallet.add(coinValue: response.balance)
+        print("!!! \(response.balance)")
         for tokenBalance in response.tokenBalances {
             wallet.add(tokenValue: tokenBalance.value, for: tokenBalance.key)
         }
@@ -172,54 +220,6 @@ extension EthereumWalletManager: TransactionSender {
             }
             .eraseToAnyPublisher()
     }
-    
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
-        let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
-        return getFee(to: destinationInfo.to, value: destinationInfo.value, data: destinationInfo.data)
-    }
-    
-    private func getFee(to: String, value: String?, data: String?) -> AnyPublisher<[Amount], Error> {
-        return networkService.getFee(to: to,
-                                     from: wallet.address,
-                                     value: value,
-                                     data: data)
-        .tryMap {
-            guard $0.fees.count == 3 else {
-                throw BlockchainSdkError.failedToLoadFee
-            }
-            self.gasLimit = $0.gasLimit
-            
-            let minAmount = Amount(with: self.wallet.blockchain, value: $0.fees[0])
-            let normalAmount = Amount(with: self.wallet.blockchain, value: $0.fees[1])
-            let maxAmount = Amount(with: self.wallet.blockchain, value: $0.fees[2])
-            
-            return [minAmount, normalAmount, maxAmount]
-        }
-        .eraseToAnyPublisher()
-    }
-}
-
-extension EthereumWalletManager: EthereumTransactionSigner {
-    func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
-        guard let txForSign = txBuilder.buildForSign(transaction: transaction,
-                                                     nonce: txCount,
-                                                     gasLimit: gasLimit) else {
-            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
-        }
-        
-        return signer.sign(hash: txForSign.hash,
-                           walletPublicKey: self.wallet.publicKey)
-        .tryMap {[weak self] signature -> String in
-            guard let self = self else { throw WalletError.empty }
-            
-            guard let tx = self.txBuilder.buildForSend(transaction: txForSign.transaction, hash: txForSign.hash, signature: signature) else {
-                throw WalletError.failedToBuildTx
-            }
-            
-            return "0x\(tx.toHexString())"
-        }
-        .eraseToAnyPublisher()
-    }
 }
 
 extension EthereumWalletManager: EthereumGasLoader {
@@ -283,6 +283,10 @@ extension EthereumWalletManager: TokenFinder {
 }
 
 extension EthereumWalletManager: EthereumTransactionProcessor {
+    var initialNonce: Int {
+        self.txCount
+    }
+    
     func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompilledEthereumTransaction, Error> {
         guard let txForSign = txBuilder.buildForSign(transaction: transaction,
                                                      nonce: txCount,

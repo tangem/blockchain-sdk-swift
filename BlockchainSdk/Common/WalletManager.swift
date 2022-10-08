@@ -59,11 +59,8 @@ public protocol TransactionSender {
     var allowsFeeSelection: Bool {get}
     func createTransaction(amount: Amount, fee: Amount, destinationAddress: String,
                            sourceAddress: String?, changeAddress: String?) throws -> Transaction
-    
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error>
-    
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error>
-    
     func validate(fee: Amount) -> TransactionError?
     func validate(amount: Amount) -> TransactionError?
 }

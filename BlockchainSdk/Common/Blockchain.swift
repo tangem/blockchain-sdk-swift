@@ -266,7 +266,7 @@ extension Blockchain {
     // https://chainlist.org
     public var chainId: Int? {
         switch self {
-        case .ethereum: return isTestnet ? 4 : 1
+        case .ethereum: return isTestnet ? 5 : 1
         case .ethereumClassic: return isTestnet ? 6 : 61 // https://besu.hyperledger.org/en/stable/Concepts/NetworkID-And-ChainID/
         case .ethereumPoW: return isTestnet ? 10002 : 10001
         case .ethereumFair: return 513100
@@ -275,7 +275,7 @@ extension Blockchain {
         case .polygon: return isTestnet ? 80001 : 137
         case .avalanche: return isTestnet ? 43113 : 43114
         case .fantom: return isTestnet ? 4002 : 250
-        case .arbitrum: return isTestnet ? 421611 : 42161
+        case .arbitrum: return isTestnet ? 421613 : 42161
         case .gnosis: return 100
         case .optimism: return isTestnet ? 420 : 10
         case .saltPay: return isTestnet ? 100100 : 300
@@ -291,7 +291,7 @@ extension Blockchain {
                 fatalError("infuraProjectId missing")
             }
             
-            return isTestnet ? [URL(string:"https://rinkeby.infura.io/v3/\(infuraProjectId)")!]
+            return isTestnet ? [URL(string:"https://goerli.infura.io/v3/\(infuraProjectId)")!]
             : [URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!]
         case .ethereumClassic:
             if isTestnet {
@@ -351,7 +351,7 @@ extension Blockchain {
             
             if testnet {
                 return [
-                    URL(string: "https://rinkeby.arbitrum.io/rpc")!,
+                    URL(string: "https://goerli-rollup.arbitrum.io/rpc")!,
                 ]
             } else {
                 return [
@@ -681,8 +681,7 @@ extension Blockchain {
         case .bitcoin:
             return URL(string: "https://coinfaucet.eu/en/btc-testnet/")
         case .ethereum:
-//            return URL(string: "https://faucet.rinkeby.io")
-            return URL(string: "https://rinkebyfaucet.com")
+            return URL(string: "https://goerlifaucet.com")
         case .ethereumClassic:
             return URL(string: "https://kottifaucet.me")
         case .ethereumPoW:
@@ -738,7 +737,7 @@ extension Blockchain {
         case .ducatus:
             return URL(string: "https://insight.ducatus.io/#/DUC/mainnet/address/\(address)")
         case .ethereum:
-            let baseUrl = isTestnet ? "https://rinkeby.etherscan.io/address/" : "https://etherscan.io/address/"
+            let baseUrl = isTestnet ? "https://goerli.etherscan.io/address/" : "https://etherscan.io/address/"
             let exploreLink = tokenContractAddress == nil ? baseUrl + address :
             "https://etherscan.io/token/\(tokenContractAddress!)?a=\(address)"
             return URL(string: exploreLink)
@@ -800,8 +799,10 @@ extension Blockchain {
             let subdomain = isTestnet ? "nile." : ""
             return URL(string: "https://\(subdomain)tronscan.org/#/address/\(address)")!
         case .arbitrum(let testnet):
-            let subdomain = testnet ? "testnet." : ""
-            return URL(string: "https://\(subdomain)arbiscan.io/address/\(address)")!
+            if isTestnet {
+                return URL(string: "https://goerli-rollup-explorer.arbitrum.io/address/\(address)")!
+            }
+            return URL(string: "https://arbiscan.io/address/\(address)")!
         case .dash:
             let network = isTestnet ? "testnet" : "mainnet"
             return URL(string: "https://blockexplorer.one/dash/\(network)/address/\(address)")
