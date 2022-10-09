@@ -274,7 +274,7 @@ public class WalletManagerFactory {
             
         case .solana(let testnet):
             return SolanaWalletManager(wallet: wallet).then {
-                let endpoint: RPCEndpoint = testnet ? .devnetSolana : .mainnetBetaSolana
+                let endpoint: RPCEndpoint = testnet ? .devnetSolana : .ankr
                 let networkRouter = NetworkingRouter(endpoint: endpoint)
                 let accountStorage = SolanaDummyAccountStorage()
                 
