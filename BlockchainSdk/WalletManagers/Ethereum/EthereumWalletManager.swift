@@ -151,7 +151,6 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
     
     private func updateWallet(with response: EthereumInfoResponse) {
         wallet.add(coinValue: response.balance)
-        print("!!! \(response.balance)")
         for tokenBalance in response.tokenBalances {
             wallet.add(tokenValue: tokenBalance.value, for: tokenBalance.key)
         }
