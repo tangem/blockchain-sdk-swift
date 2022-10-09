@@ -26,7 +26,8 @@ public struct Token: Hashable, Equatable, Codable {
         self.customIconUrl = customIconUrl
     }
     
-    public init(_ sdkToken: WalletData.Token) {
+    public init(_ sdkToken: WalletData.Token, id: String? = nil) {
+        self.id = id
         self.name = sdkToken.name
         self.symbol = sdkToken.symbol
         self.contractAddress = sdkToken.contractAddress

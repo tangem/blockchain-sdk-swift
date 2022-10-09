@@ -82,7 +82,7 @@ DEPENDENCIES:
   - SwiftCBOR
   - SwiftProtobuf
   - SwiftyJSON
-  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-152`)
+  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-166`)
   - web3swift (from `https://github.com/tangem/web3swift.git`, tag `2.2.10`)
 
 SPEC REPOS:
@@ -121,7 +121,7 @@ EXTERNAL SOURCES:
     :tag: add-external-signer-1
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-152
+    :tag: develop-166
   web3swift:
     :git: https://github.com/tangem/web3swift.git
     :tag: 2.2.10
@@ -141,7 +141,7 @@ CHECKOUT OPTIONS:
     :tag: add-external-signer-1
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-152
+    :tag: develop-166
   web3swift:
     :git: https://github.com/tangem/web3swift.git
     :tag: 2.2.10
@@ -172,6 +172,6 @@ SPEC CHECKSUMS:
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: a56d019aaeac3702fa2dc314b3a7a5ff30253a72
+PODFILE CHECKSUM: 09098ecd702092f646f45ea76acef57749f67dfb
 
 COCOAPODS: 1.11.3

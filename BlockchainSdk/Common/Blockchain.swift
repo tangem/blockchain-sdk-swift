@@ -165,14 +165,12 @@ public enum Blockchain: Equatable, Hashable {
             return "TRX"
         case .dash(let testnet):
             return testnet ? "tDASH" : "DASH"
-        case .gnosis:
+        case .gnosis, .saltPay:
             return "xDAI"
         case .ethereumPoW:
             return "ETHW"
         case .ethereumFair:
             return "ETF"
-        case .saltPay:
-            return "WxDAI"
         }
     }
     
@@ -604,7 +602,7 @@ extension Blockchain: Codable {
         case .optimism: return "optimism"
         case .ethereumPoW: return "ethereum-pow-iou"
         case .ethereumFair: return "ethereumfair"
-        case .saltPay: return "wxdai"
+        case .saltPay: return "sxdai"
         }
     }
     
@@ -654,7 +652,7 @@ extension Blockchain: Codable {
         case "optimism": self = .optimism(testnet: isTestnet)
         case "ethereum-pow-iou": self = .ethereumPoW(testnet: isTestnet)
         case "ethereumfair": self = .ethereumFair
-        case "wxdai": self = .saltPay(testnet: isTestnet)
+        case "sxdai": self = .saltPay(testnet: isTestnet)
         default: throw BlockchainSdkError.decodingFailed
         }
     }
@@ -865,7 +863,7 @@ extension Blockchain {
         case "xdai": return .gnosis
         case "ethereum-pow-iou": return .ethereumPoW(testnet: isTestnet)
         case "ethereumfair": return .ethereumFair
-        case "wxdai": return .saltPay(testnet: isTestnet)
+        case "sxdai": return .saltPay(testnet: isTestnet)
         default: return nil
         }
     }
