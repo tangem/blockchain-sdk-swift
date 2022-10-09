@@ -10,6 +10,10 @@ import Foundation
 import Combine
 import Solana_Swift
 
+extension RPCEndpoint {
+    public static let ankr = RPCEndpoint(url: URL(string: "https://rpc.ankr.com/solana")!, urlWebSocket: URL(string: "ws://rpc.ankr.com/solana")!, network: .mainnetBeta)
+}
+
 extension Api {
     func getFees(
         commitment: Commitment? = nil
