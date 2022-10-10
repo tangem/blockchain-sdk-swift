@@ -28,17 +28,17 @@ extension Data {
         return prefix + self
     }
     
-	var doubleSha256: Data {
-		sha256().sha256()
-	}
-	
-	var ripemd160: Data {
-		RIPEMD160.hash(message: self)
-	}
-	
-	var sha256Ripemd160: Data {
-		RIPEMD160.hash(message: sha256())
-	}
+    var doubleSha256: Data {
+        sha256().sha256()
+    }
+    
+    var ripemd160: Data {
+        RIPEMD160.hash(message: self)
+    }
+    
+    var sha256Ripemd160: Data {
+        RIPEMD160.hash(message: sha256())
+    }
     
     func validateAsEdKey() throws {
         _ = try Curve25519.Signing.PublicKey(rawRepresentation: self)
