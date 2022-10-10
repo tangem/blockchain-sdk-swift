@@ -16,17 +16,29 @@ import CryptoKit
 import TangemSdk
 
 extension Data {
-	var doubleSha256: Data {
-		sha256().sha256()
-	}
-	
-	var ripemd160: Data {
-		RIPEMD160.hash(message: self)
-	}
-	
-	var sha256Ripemd160: Data {
-		RIPEMD160.hash(message: sha256())
-	}
+    public func aligned(to length: Int = 32) -> Data {
+        let bytesCount = self.count
+        
+        guard bytesCount < length else {
+            return self
+        }
+        
+        let prefix = Data(repeating: 0, count: 32 - bytesCount)
+        
+        return prefix + self
+    }
+    
+    var doubleSha256: Data {
+        sha256().sha256()
+    }
+    
+    var ripemd160: Data {
+        RIPEMD160.hash(message: self)
+    }
+    
+    var sha256Ripemd160: Data {
+        RIPEMD160.hash(message: sha256())
+    }
     
     func validateAsEdKey() throws {
         _ = try Curve25519.Signing.PublicKey(rawRepresentation: self)

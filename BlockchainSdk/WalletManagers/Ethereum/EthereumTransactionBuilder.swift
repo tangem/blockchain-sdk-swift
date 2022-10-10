@@ -34,8 +34,7 @@ class EthereumTransactionBuilder {
             return nil
         }
         
-        guard let feeValue = Web3.Utils.parseToBigUInt("\(transaction.fee.value)", decimals: transaction.fee.decimals),
-            let amountValue = Web3.Utils.parseToBigUInt("\(transaction.amount.value)", decimals: transaction.amount.decimals) else {
+        guard let feeValue = transaction.fee.bigUIntValue, let amountValue = transaction.amount.bigUIntValue else {
                 return nil
         }
         
@@ -46,6 +45,7 @@ class EthereumTransactionBuilder {
         guard let targetAddr = transaction.amount.type == .coin ? transaction.destinationAddress: transaction.contractAddress else {
             return nil
         }
+        
         
         guard let transaction = EthereumTransaction(amount: transaction.amount.type == .coin ? amountValue : BigUInt.zero,
                                                     fee: feeValue,
@@ -84,20 +84,14 @@ class EthereumTransactionBuilder {
             return Data()
         }
         
-        guard let amountValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: amount.decimals) else {
+        guard let amountData = amount.encoded else {
             return nil
         }
-        
-        var amountString = String(amountValue, radix: 16).remove("0X")
-        while amountString.count < 64 {
-            amountString = "0" + amountString
-        }
-        
-        let amountData = Data(hex: amountString)
         
         guard let addressData = EthereumAddress(targetAddress, network: web3Network)?.addressData else {
             return nil
         }
+        
         let prefixData = Data(hex: "a9059cbb000000000000000000000000")
         return prefixData + addressData + amountData
     }

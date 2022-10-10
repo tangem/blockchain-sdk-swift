@@ -52,6 +52,31 @@ public protocol EthereumTransactionSigner: AnyObject {
     func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error>
 }
 
+public protocol EthereumTransactionProcessor {
+    var initialNonce: Int { get }
+    func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompiledEthereumTransaction, Error>
+    func buildForSend(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
+    func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error>
+    func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
+}
+
+public struct CompiledEthereumTransaction {
+    public let transaction: EthereumTransaction
+    public let hash: Data
+}
+
+public struct SignedEthereumTransaction {
+    public let transaction: EthereumTransaction
+    public let hash: Data
+    public let signature: Data
+    
+    public init(compiledTransaction: CompiledEthereumTransaction, signature: Data) {
+        self.transaction = compiledTransaction.transaction
+        self.hash = compiledTransaction.hash
+        self.signature = signature
+    }
+}
+
 class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSigner {
     var txBuilder: EthereumTransactionBuilder!
     var networkService: EthereumNetworkService!
@@ -80,10 +105,14 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
         let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
-        return networkService.getFee(to: destinationInfo.to,
+        return getFee(to: destinationInfo.to, value: destinationInfo.value, data: destinationInfo.data)
+    }
+    
+    private func getFee(to: String, value: String?, data: String?) -> AnyPublisher<[Amount], Error> {
+        return networkService.getFee(to: to,
                                      from: wallet.address,
-                                     value: destinationInfo.value,
-                                     data: destinationInfo.data)
+                                     value: value,
+                                     data: data)
         .tryMap {
             guard $0.fees.count == 3 else {
                 throw BlockchainSdkError.failedToLoadFee
@@ -93,8 +122,9 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
             let minAmount = Amount(with: self.wallet.blockchain, value: $0.fees[0])
             let normalAmount = Amount(with: self.wallet.blockchain, value: $0.fees[1])
             let maxAmount = Amount(with: self.wallet.blockchain, value: $0.fees[2])
-            
-            return [minAmount, normalAmount, maxAmount]
+            let feeArray = [minAmount, normalAmount, maxAmount]
+            print("Fee: \(feeArray)")
+            return feeArray
         }
         .eraseToAnyPublisher()
     }
@@ -125,6 +155,7 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
         for tokenBalance in response.tokenBalances {
             wallet.add(tokenValue: tokenBalance.value, for: tokenBalance.key)
         }
+       
         txCount = response.txCount
         pendingTxCount = response.pendingTxCount
         
@@ -149,10 +180,8 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
         var value: String? = nil
         var data: String? = nil
         
-        if amount.type == .coin,
-           let amountValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: amount.decimals)
-        {
-            value = "0x" + String(amountValue, radix: 16)
+        if amount.type == .coin {
+            value = amount.encoded?.hexString
         }
         
         if let token = amount.type.token, let erc20Data = txBuilder.getData(for: amount, targetAddress: destination) {
@@ -241,5 +270,52 @@ extension EthereumWalletManager: TokenFinder {
                 
                 completion(.success(tokensAdded))
             })
+    }
+}
+
+extension EthereumWalletManager: EthereumTransactionProcessor {
+    var initialNonce: Int {
+        self.txCount
+    }
+    
+    func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompiledEthereumTransaction, Error> {
+        guard let txForSign = txBuilder.buildForSign(transaction: transaction,
+                                                     nonce: txCount,
+                                                     gasLimit: gasLimit) else {
+            return .anyFail(error: WalletError.failedToBuildTx)
+        }
+        
+        let compiled = CompiledEthereumTransaction(transaction: txForSign.transaction, hash: txForSign.hash)
+        return .justWithError(output: compiled)
+    }
+    
+    func buildForSend(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error> {
+        guard let tx = txBuilder.buildForSend(transaction: transaction.transaction,
+                                              hash: transaction.hash,
+                                              signature: transaction.signature) else {
+            return .anyFail(error: WalletError.failedToBuildTx)
+        }
+        
+        return .justWithError(output: "0x\(tx.toHexString())")
+    }
+    
+    func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error> {
+        let value = amount.flatMap { $0.encoded?.hexString }
+        return getFee(to: to, value: value, data: data)
+    }
+    
+    func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error> {
+        buildForSend(transaction)
+            .flatMap {[weak self] serializedTransaction -> AnyPublisher<String, Error> in
+                guard let self = self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+                
+                return self.networkService
+                    .send(transaction: serializedTransaction)
+                    .mapError { SendTxError(error: $0, tx: serializedTransaction) }
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
 }

@@ -40,10 +40,10 @@ class BaseManager: WalletProvider {
     }
     
     func createTransaction(amount: Amount,
-                                  fee: Amount,
-                                  destinationAddress: String,
-                                  sourceAddress: String? = nil,
-                                  changeAddress: String? = nil) throws -> Transaction {
+                           fee: Amount,
+                           destinationAddress: String,
+                           sourceAddress: String?,
+                           changeAddress: String?) throws -> Transaction {
         let transaction = Transaction(amount: amount,
                                       fee: fee,
                                       sourceAddress: sourceAddress ?? defaultSourceAddress,
@@ -135,8 +135,9 @@ class BaseManager: WalletProvider {
     }
     
     private func validateAmountTotal(_ amount: Amount) -> Bool {
-        guard let total = wallet.amounts[amount.type],
-            total >= amount else {
+        let total = wallet.amounts[amount.type] ?? Amount(with: amount, value: 0)
+        
+        guard total >= amount else {
             return false
         }
         
