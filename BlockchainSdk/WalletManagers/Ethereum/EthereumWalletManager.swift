@@ -54,13 +54,13 @@ public protocol EthereumTransactionSigner: AnyObject {
 
 public protocol EthereumTransactionProcessor {
     var initialNonce: Int { get }
-    func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompilledEthereumTransaction, Error>
+    func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompiledEthereumTransaction, Error>
     func buildForSend(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
     func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error>
     func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
 }
 
-public struct CompilledEthereumTransaction {
+public struct CompiledEthereumTransaction {
     public let transaction: EthereumTransaction
     public let hash: Data
 }
@@ -70,9 +70,9 @@ public struct SignedEthereumTransaction {
     public let hash: Data
     public let signature: Data
     
-    public init(compilledTransaction: CompilledEthereumTransaction, signature: Data) {
-        self.transaction = compilledTransaction.transaction
-        self.hash = compilledTransaction.hash
+    public init(compiledTransaction: CompiledEthereumTransaction, signature: Data) {
+        self.transaction = compiledTransaction.transaction
+        self.hash = compiledTransaction.hash
         self.signature = signature
     }
 }
@@ -153,7 +153,9 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
         wallet.add(coinValue: response.balance)
         for tokenBalance in response.tokenBalances {
             wallet.add(tokenValue: tokenBalance.value, for: tokenBalance.key)
+            wallet.add(tokenValue: 10, for: tokenBalance.key)
         }
+       
         txCount = response.txCount
         pendingTxCount = response.pendingTxCount
         
@@ -173,24 +175,14 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
         }
     }
     
-    private func formatValue(_ amount: Amount) -> String? {
-        guard let amountValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: amount.decimals) else {
-            return nil
-        }
-        
-        let value = "0x" + String(amountValue, radix: 16)
-        return value
-    }
-    
     private func formatDestinationInfo(for destination: String, amount: Amount) -> (to: String, value: String?, data: String?) {
         var to = destination
         var value: String? = nil
         var data: String? = nil
         
         if amount.type == .coin {
-            value = formatValue(amount)
+            value = amount.encoded?.hexString
         }
-
         
         if let token = amount.type.token, let erc20Data = txBuilder.getData(for: amount, targetAddress: destination) {
             to = token.contractAddress
@@ -286,14 +278,14 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
         self.txCount
     }
     
-    func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompilledEthereumTransaction, Error> {
+    func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompiledEthereumTransaction, Error> {
         guard let txForSign = txBuilder.buildForSign(transaction: transaction,
                                                      nonce: txCount,
                                                      gasLimit: gasLimit) else {
             return .anyFail(error: WalletError.failedToBuildTx)
         }
         
-        let compilled = CompilledEthereumTransaction(transaction: txForSign.transaction, hash: txForSign.hash)
+        let compilled = CompiledEthereumTransaction(transaction: txForSign.transaction, hash: txForSign.hash)
         return .justWithError(output: compilled)
     }
     
@@ -308,7 +300,7 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
     }
     
     func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error> {
-        let value = amount.flatMap { formatValue($0) }
+        let value = amount.flatMap { $0.encoded?.hexString }
         return getFee(to: to, value: value, data: data)
     }
     

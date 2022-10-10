@@ -45,6 +45,16 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
         return Web3.Utils.parseToBigUInt("\(value)", decimals: decimals)
     }
     
+    public var encoded: Data? {
+        guard let bigUIntValue = bigUIntValue else {
+            return nil
+        }
+        
+        let amountString = String(bigUIntValue, radix: 16).remove("0X")
+        let amountData = Data(hex: amountString).aligned()
+        return amountData
+    }
+    
     public var isZero: Bool {
         return value == 0
     }

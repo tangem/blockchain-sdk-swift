@@ -84,20 +84,14 @@ class EthereumTransactionBuilder {
             return Data()
         }
         
-        guard let amountValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: amount.decimals) else {
+        guard let amountData = amount.encoded else {
             return nil
         }
-        
-        var amountString = String(amountValue, radix: 16).remove("0X")
-        while amountString.count < 64 {
-            amountString = "0" + amountString
-        }
-        
-        let amountData = Data(hex: amountString)
         
         guard let addressData = EthereumAddress(targetAddress, network: web3Network)?.addressData else {
             return nil
         }
+        
         let prefixData = Data(hex: "a9059cbb000000000000000000000000")
         return prefixData + addressData + amountData
     }

@@ -16,6 +16,18 @@ import CryptoKit
 import TangemSdk
 
 extension Data {
+    public func aligned(to length: Int = 32) -> Data {
+        let bytesCount = self.count
+        
+        guard bytesCount < length else {
+            return self
+        }
+        
+        let prefix = Data(repeating: 0, count: 32 - bytesCount)
+        
+        return prefix + self
+    }
+    
 	var doubleSha256: Data {
 		sha256().sha256()
 	}
