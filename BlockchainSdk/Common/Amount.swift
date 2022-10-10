@@ -41,7 +41,7 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
         if value == Decimal.greatestFiniteMagnitude {
             return BigUInt(2).power(256) - 1
         }
-        
+
         return Web3.Utils.parseToBigUInt("\(value)", decimals: decimals)
     }
     
@@ -50,8 +50,7 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
             return nil
         }
         
-        let amountString = String(bigUIntValue, radix: 16).remove("0X")
-        let amountData = Data(hex: amountString).aligned()
+        let amountData = bigUIntValue.serialize().aligned()
         return amountData
     }
     
