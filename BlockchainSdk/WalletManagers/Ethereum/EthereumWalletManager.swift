@@ -122,8 +122,9 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
             let minAmount = Amount(with: self.wallet.blockchain, value: $0.fees[0])
             let normalAmount = Amount(with: self.wallet.blockchain, value: $0.fees[1])
             let maxAmount = Amount(with: self.wallet.blockchain, value: $0.fees[2])
-            
-            return [minAmount, normalAmount, maxAmount]
+            let feeArray = [minAmount, normalAmount, maxAmount]
+            print("Fee: \(feeArray)")
+            return feeArray
         }
         .eraseToAnyPublisher()
     }
