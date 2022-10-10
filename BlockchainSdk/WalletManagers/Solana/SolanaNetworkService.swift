@@ -10,7 +10,6 @@ import Foundation
 import Combine
 import Solana_Swift
 
-
 @available(iOS 13.0, *)
 class SolanaNetworkService: MultiNetworkProvider {
     var currentProviderIndex: Int = 0
