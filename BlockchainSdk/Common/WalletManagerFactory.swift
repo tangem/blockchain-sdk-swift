@@ -274,12 +274,27 @@ public class WalletManagerFactory {
             
         case .solana(let testnet):
             return SolanaWalletManager(wallet: wallet).then {
-                let endpoint: RPCEndpoint = testnet ? .devnetSolana : .ankr
-                let networkRouter = NetworkingRouter(endpoint: endpoint)
-                let accountStorage = SolanaDummyAccountStorage()
+                let endpoints: [RPCEndpoint]
+                if testnet {
+                    endpoints = [
+                        .devnetSolana,
+                    ]
+                } else {
+                    endpoints = [
+                        .ankr,
+                        .mainnetBetaSerum,
+                        .mainnetBetaSolana,
+                    ]
+                }
                 
-                $0.solanaSdk = Solana(router: networkRouter, accountStorage: accountStorage)
-                $0.networkService = SolanaNetworkService(host: endpoint.url.hostOrUnknown, solanaSdk: $0.solanaSdk, blockchain: blockchain)
+                let solanaSdks: [Solana] = endpoints.map {
+                    let networkRouter = NetworkingRouter(endpoint: $0)
+                    let accountStorage = SolanaDummyAccountStorage()
+                    
+                    return Solana(router: networkRouter, accountStorage: accountStorage)
+                }
+                
+                $0.networkService = SolanaNetworkService(solanaSdks: solanaSdks, blockchain: blockchain)
             }
         case .polkadot(let testnet):
             return makePolkadotWalletManager(network: testnet ? .westend : .polkadot, wallet: wallet)

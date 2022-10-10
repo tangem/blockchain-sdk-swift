@@ -77,7 +77,7 @@ DEPENDENCIES:
   - Moya
   - ScaleCodec
   - Sodium
-  - Solana.Swift (from `https://github.com/tangem/Solana.Swift`, tag `add-external-signer-1`)
+  - Solana.Swift (from `https://github.com/tangem/Solana.Swift`, tag `add-external-signer-3`)
   - stellar-ios-mac-sdk
   - SwiftCBOR
   - SwiftProtobuf
@@ -118,7 +118,7 @@ EXTERNAL SOURCES:
     :tag: 0.3.12
   Solana.Swift:
     :git: https://github.com/tangem/Solana.Swift
-    :tag: add-external-signer-1
+    :tag: add-external-signer-3
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-166
@@ -138,7 +138,7 @@ CHECKOUT OPTIONS:
     :tag: 0.3.12
   Solana.Swift:
     :git: https://github.com/tangem/Solana.Swift
-    :tag: add-external-signer-1
+    :tag: add-external-signer-3
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-166
@@ -172,6 +172,6 @@ SPEC CHECKSUMS:
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 09098ecd702092f646f45ea76acef57749f67dfb
+PODFILE CHECKSUM: 29a88f7cc614e1d0d9ecb2dd60336ede59c32d59
 
 COCOAPODS: 1.11.3
