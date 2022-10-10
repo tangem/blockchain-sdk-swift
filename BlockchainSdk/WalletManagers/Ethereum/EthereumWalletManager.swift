@@ -153,7 +153,6 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
         wallet.add(coinValue: response.balance)
         for tokenBalance in response.tokenBalances {
             wallet.add(tokenValue: tokenBalance.value, for: tokenBalance.key)
-            wallet.add(tokenValue: 10, for: tokenBalance.key)
         }
        
         txCount = response.txCount
