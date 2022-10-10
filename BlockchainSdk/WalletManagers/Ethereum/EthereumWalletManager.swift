@@ -285,8 +285,8 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
             return .anyFail(error: WalletError.failedToBuildTx)
         }
         
-        let compilled = CompiledEthereumTransaction(transaction: txForSign.transaction, hash: txForSign.hash)
-        return .justWithError(output: compilled)
+        let compiled = CompiledEthereumTransaction(transaction: txForSign.transaction, hash: txForSign.hash)
+        return .justWithError(output: compiled)
     }
     
     func buildForSend(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error> {
