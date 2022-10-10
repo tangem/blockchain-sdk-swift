@@ -287,20 +287,14 @@ public class WalletManagerFactory {
                     ]
                 }
                 
-                var hosts: [String] = []
-                var solanaSdks: [Solana] = []
-                
-                for endpoint in endpoints {
-                    let networkRouter = NetworkingRouter(endpoint: endpoint)
+                let solanaSdks: [Solana] = endpoints.map {
+                    let networkRouter = NetworkingRouter(endpoint: $0)
                     let accountStorage = SolanaDummyAccountStorage()
                     
-                    let solanaSdk = Solana(router: networkRouter, accountStorage: accountStorage)
-                    
-                    hosts.append(endpoint.url.hostOrUnknown)
-                    solanaSdks.append(solanaSdk)
+                    return Solana(router: networkRouter, accountStorage: accountStorage)
                 }
                 
-                $0.networkService = SolanaNetworkService(hosts: hosts, solanaSdks: solanaSdks, blockchain: blockchain)
+                $0.networkService = SolanaNetworkService(solanaSdks: solanaSdks, blockchain: blockchain)
             }
         case .polkadot(let testnet):
             return makePolkadotWalletManager(network: testnet ? .westend : .polkadot, wallet: wallet)

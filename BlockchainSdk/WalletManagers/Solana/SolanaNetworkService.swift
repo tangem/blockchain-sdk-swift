@@ -10,28 +10,15 @@ import Foundation
 import Combine
 import Solana_Swift
 
-extension Solana: HostProvider {
-    // This is just to conform to the protocol. The host itself is handled by the SolanaNetworkService
-    var host: String {
-        ""
-    }
-}
 
 @available(iOS 13.0, *)
 class SolanaNetworkService: MultiNetworkProvider {
-    let providers: [Solana]
-    
     var currentProviderIndex: Int = 0
-    
-    var host: String {
-        hosts[currentProviderIndex]
-    }
-    
-    private let hosts: [String]
+        
+    let providers: [Solana]
     private let blockchain: Blockchain
     
-    init(hosts: [String], solanaSdks: [Solana], blockchain: Blockchain) {
-        self.hosts = hosts
+    init(solanaSdks: [Solana], blockchain: Blockchain) {
         self.providers = solanaSdks
         self.blockchain = blockchain
     }
