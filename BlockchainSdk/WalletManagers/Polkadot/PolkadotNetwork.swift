@@ -68,7 +68,9 @@ enum PolkadotNetwork: CaseIterable {
         case .polkadot:
             return Amount(with: blockchain, value: 1)
         case .kusama:
-            return Amount(with: blockchain, value: 0.0000333333)
+            // This value was ALSO found experimentally, just like the one on the Westend.
+            // It is different from what official documentation is telling us.
+            return Amount(with: blockchain, value: 0.000033333333)
         case .westend:
             // This value was found experimentally by sending transactions with different values to inactive accounts.
             // This is the lowest amount that activates an account on the Westend network.
