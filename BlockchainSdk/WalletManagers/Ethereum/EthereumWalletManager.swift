@@ -181,12 +181,12 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
         var data: String? = nil
         
         if amount.type == .coin {
-            value = amount.encoded?.hexString
+            value = amount.encoded?.hexString.addHexPrefix()
         }
         
         if let token = amount.type.token, let erc20Data = txBuilder.getData(for: amount, targetAddress: destination) {
             to = token.contractAddress
-            data = "0x" + erc20Data.hexString
+            data = erc20Data.hexString.addHexPrefix()
         }
         
         return (to, value, data)
@@ -300,7 +300,7 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
     }
     
     func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error> {
-        let value = amount.flatMap { $0.encoded?.hexString }
+        let value = amount.flatMap { $0.encoded?.hexString.addHexPrefix() }
         return getFee(to: to, value: value, data: data)
     }
     
