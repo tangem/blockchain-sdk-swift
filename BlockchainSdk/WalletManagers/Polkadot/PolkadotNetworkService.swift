@@ -13,7 +13,6 @@ import Sodium
 
 class PolkadotNetworkService: MultiNetworkProvider {
     var currentProviderIndex: Int = 0
-    
     let providers: [PolkadotJsonRpcProvider]
     
     private let network: PolkadotNetwork

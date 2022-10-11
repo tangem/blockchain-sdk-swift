@@ -11,14 +11,13 @@ import Combine
 import Moya
 
 class PolkadotJsonRpcProvider: HostProvider {
-    let host: String
-    let url: URL
-    
+    var host: String { url.hostOrUnknown }
+
+    private let url: URL
     private let provider: NetworkProvider<PolkadotTarget>
     
     init(url: URL, configuration: NetworkProviderConfiguration) {
         self.url = url
-        self.host = url.hostOrUnknown
         provider = NetworkProvider<PolkadotTarget>(configuration: configuration)
     }
     
