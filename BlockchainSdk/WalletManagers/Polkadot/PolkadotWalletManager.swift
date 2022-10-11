@@ -18,7 +18,7 @@ class PolkadotWalletManager: BaseManager, WalletManager {
     var txBuilder: PolkadotTransactionBuilder!
     var networkService: PolkadotNetworkService!
     
-    var currentHost: String { network.url.hostOrUnknown }
+    var currentHost: String { networkService.host }
 
     init(network: PolkadotNetwork, wallet: Wallet) {
         self.network = network

@@ -11,43 +11,42 @@ import Combine
 import Moya
 
 class PolkadotJsonRpcProvider: HostProvider {
-    let host: String
-    let network: PolkadotNetwork
-    
+    var host: String { url.hostOrUnknown }
+
+    private let url: URL
     private let provider: NetworkProvider<PolkadotTarget>
     
-    init(network: PolkadotNetwork, configuration: NetworkProviderConfiguration) {
-        self.network = network
-        self.host = network.url.hostOrUnknown
+    init(url: URL, configuration: NetworkProviderConfiguration) {
+        self.url = url
         provider = NetworkProvider<PolkadotTarget>(configuration: configuration)
     }
     
     func storage(key: String) -> AnyPublisher<String, Error> {
-        requestPublisher(for: .storage(key: key, network: network))
+        requestPublisher(for: .storage(key: key, url: url))
     }
     
     func blockhash(_ type: PolkadotBlockhashType) -> AnyPublisher<String, Error> {
-        requestPublisher(for: .blockhash(type: type, network: network))
+        requestPublisher(for: .blockhash(type: type, url: url))
     }
     
     func header(_ blockhash: String) -> AnyPublisher<PolkadotHeader, Error> {
-        requestPublisher(for: .header(hash: blockhash, network: network))
+        requestPublisher(for: .header(hash: blockhash, url: url))
     }
     
     func accountNextIndex(_ address: String) -> AnyPublisher<UInt64, Error> {
-        requestPublisher(for: .accountNextIndex(address: address, network: network))
+        requestPublisher(for: .accountNextIndex(address: address, url: url))
     }
     
     func queryInfo(_ extrinsic: String) -> AnyPublisher<PolkadotQueriedInfo, Error> {
-        requestPublisher(for: .queryInfo(extrinsic: extrinsic, network: network))
+        requestPublisher(for: .queryInfo(extrinsic: extrinsic, url: url))
     }
     
     func runtimeVersion() -> AnyPublisher<PolkadotRuntimeVersion, Error> {
-        requestPublisher(for: .runtimeVersion(network: network))
+        requestPublisher(for: .runtimeVersion(url: url))
     }
     
     func submitExtrinsic(_ extrinsic: String) -> AnyPublisher<String, Error> {
-        requestPublisher(for: .submitExtrinsic(extrinsic: extrinsic, network: network))
+        requestPublisher(for: .submitExtrinsic(extrinsic: extrinsic, url: url))
     }
     
     private func requestPublisher<T: Codable>(for target: PolkadotTarget) -> AnyPublisher<T, Error> {

@@ -25,14 +25,24 @@ enum PolkadotNetwork: CaseIterable {
     }
     
     // https://wiki.polkadot.network/docs/maintain-endpoints#test-networks
-    var url: URL {
+    var urls: [URL] {
         switch self {
         case .polkadot:
-            return URL(string: "https://rpc.polkadot.io")!
+            return [
+                URL(string: "https://rpc.polkadot.io")!,
+                URL(string: "https://polkadot.api.onfinality.io/public-ws")!,
+                URL(string: "https://polkadot-rpc.dwellir.com")!,
+            ]
         case .kusama:
-            return URL(string: "https://kusama-rpc.polkadot.io")!
+            return [
+                URL(string: "https://kusama-rpc.polkadot.io")!,
+                URL(string: "https://kusama.api.onfinality.io/public-ws")!,
+                URL(string: "https://kusama-rpc.dwellir.com")!,
+            ]
         case .westend:
-            return URL(string: "https://westend-rpc.polkadot.io")!
+            return [
+                URL(string: "https://westend-rpc.polkadot.io")!,
+            ]
         }
     }
     

@@ -15,23 +15,23 @@ enum PolkadotBlockhashType {
 }
 
 enum PolkadotTarget: TargetType {
-    case storage(key: String, network: PolkadotNetwork)
-    case blockhash(type: PolkadotBlockhashType, network: PolkadotNetwork)
-    case header(hash: String, network: PolkadotNetwork)
-    case accountNextIndex(address: String, network: PolkadotNetwork)
-    case runtimeVersion(network: PolkadotNetwork)
-    case queryInfo(extrinsic: String, network: PolkadotNetwork)
-    case submitExtrinsic(extrinsic: String, network: PolkadotNetwork)
+    case storage(key: String, url: URL)
+    case blockhash(type: PolkadotBlockhashType, url: URL)
+    case header(hash: String, url: URL)
+    case accountNextIndex(address: String, url: URL)
+    case runtimeVersion(url: URL)
+    case queryInfo(extrinsic: String, url: URL)
+    case submitExtrinsic(extrinsic: String, url: URL)
     
     var baseURL: URL {
         switch self {
-        case .storage(_, let network): return network.url
-        case .blockhash(_, let network): return network.url
-        case .header(_, let network): return network.url
-        case .accountNextIndex(_, let network): return network.url
-        case .runtimeVersion(let network): return network.url
-        case .queryInfo(_, let network): return network.url
-        case .submitExtrinsic(_, let network): return network.url
+        case .storage(_, let url): return url
+        case .blockhash(_, let url): return url
+        case .header(_, let url): return url
+        case .accountNextIndex(_, let url): return url
+        case .runtimeVersion(let url): return url
+        case .queryInfo(_, let url): return url
+        case .submitExtrinsic(_, let url): return url
         }
     }
     
