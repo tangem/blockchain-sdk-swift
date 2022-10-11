@@ -11,100 +11,110 @@ import Combine
 import ScaleCodec
 import Sodium
 
-class PolkadotNetworkService {
-    private let rpcProvider: PolkadotJsonRpcProvider
+class PolkadotNetworkService: MultiNetworkProvider {
+    var currentProviderIndex: Int = 0
+    
+    let providers: [PolkadotJsonRpcProvider]
+    
+    private let network: PolkadotNetwork
     private let codec = SCALE.default
     
-    init(rpcProvider: PolkadotJsonRpcProvider) {
-        self.rpcProvider = rpcProvider
+    init(rpcProvider: PolkadotJsonRpcProvider, network: PolkadotNetwork) {
+        self.providers = [rpcProvider]
+        self.network = network
     }
     
     func getInfo(for address: String) -> AnyPublisher<BigUInt, Error> {
-        Just(())
-            .tryMap { [weak self] _ -> Data in
-                guard let self = self else {
-                    throw WalletError.empty
-                }
-                return try self.storageKey(forAddress: address)
-            }
-            .flatMap { [weak self] key -> AnyPublisher<String, Error> in
-                guard let self = self else {
-                    return .emptyFail
-                }
-                return self.rpcProvider.storage(key: "0x" + key.hexString)
-            }
-            .tryMap { [weak self] storage -> PolkadotAccountInfo in
-                guard let self = self else {
-                    throw WalletError.empty
-                }
-                return try self.codec.decode(PolkadotAccountInfo.self, from: Data(hexString: storage))
-            }
-            .map(\.data.free)
-            .tryCatch { error -> AnyPublisher<BigUInt, Error> in
-                if let walletError = error as? WalletError {
-                    switch walletError {
-                    case .empty:
-                        return .justWithError(output: 0)
-                    default:
-                        break
+        providerPublisher { provider in
+            Just(())
+                .tryMap { [weak self] _ -> Data in
+                    guard let self = self else {
+                        throw WalletError.empty
                     }
+                    return try self.storageKey(forAddress: address)
                 }
-                
-                throw error
-            }
-            .eraseToAnyPublisher()
+                .flatMap { [weak self] key -> AnyPublisher<String, Error> in
+                    return provider.storage(key: "0x" + key.hexString)
+                }
+                .tryMap { [weak self] storage -> PolkadotAccountInfo in
+                    guard let self = self else {
+                        throw WalletError.empty
+                    }
+                    return try self.codec.decode(PolkadotAccountInfo.self, from: Data(hexString: storage))
+                }
+                .map(\.data.free)
+                .tryCatch { error -> AnyPublisher<BigUInt, Error> in
+                    if let walletError = error as? WalletError {
+                        switch walletError {
+                        case .empty:
+                            return .justWithError(output: 0)
+                        default:
+                            break
+                        }
+                    }
+                    
+                    throw error
+                }
+                .eraseToAnyPublisher()
+        }
     }
     
     func blockchainMeta(for address: String) -> AnyPublisher<PolkadotBlockchainMeta, Error> {
-        let latestBlockPublisher: AnyPublisher<(String, UInt64), Error> = rpcProvider.blockhash(.latest)
-            .flatMap { [weak self] latestBlockHash -> AnyPublisher<(String, UInt64), Error> in
-                guard let self = self else {
-                    return .emptyFail
-                }
-                
-                let latestBlockHashPublisher = Just(latestBlockHash).setFailureType(to: Error.self)
-                let latestBlockNumberPublisher = self.rpcProvider
-                    .header(latestBlockHash)
-                    .map(\.number)
-                    .tryMap { encodedBlockNumber -> UInt64 in
-                        Self.decodeBigEndian(data: Data(hexString: encodedBlockNumber)) ?? 0
+        providerPublisher { provider in
+            let latestBlockPublisher: AnyPublisher<(String, UInt64), Error> = provider.blockhash(.latest)
+                .flatMap { [weak self] latestBlockHash -> AnyPublisher<(String, UInt64), Error> in
+                    guard let self = self else {
+                        return .emptyFail
                     }
-                
-                return Publishers.Zip(latestBlockHashPublisher, latestBlockNumberPublisher).eraseToAnyPublisher()
+                    
+                    let latestBlockHashPublisher = Just(latestBlockHash).setFailureType(to: Error.self)
+                    let latestBlockNumberPublisher = self.provider
+                        .header(latestBlockHash)
+                        .map(\.number)
+                        .tryMap { encodedBlockNumber -> UInt64 in
+                            Self.decodeBigEndian(data: Data(hexString: encodedBlockNumber)) ?? 0
+                        }
+                    
+                    return Publishers.Zip(latestBlockHashPublisher, latestBlockNumberPublisher).eraseToAnyPublisher()
+                }
+                .eraseToAnyPublisher()
+            
+            
+            return Publishers.Zip4(
+                provider.blockhash(.genesis), latestBlockPublisher,
+                provider.accountNextIndex(address),
+                provider.runtimeVersion()
+            ).map { genesisHash, latestBlockInfo, nextIndex, runtimeVersion in
+                PolkadotBlockchainMeta(
+                    specVersion: runtimeVersion.specVersion,
+                    transactionVersion: runtimeVersion.transactionVersion,
+                    genesisHash: genesisHash,
+                    blockHash: latestBlockInfo.0,
+                    nonce: nextIndex,
+                    era: .init(blockNumber: latestBlockInfo.1, period: 64)
+                )
             }
             .eraseToAnyPublisher()
-        
-        
-        return Publishers.Zip4(
-            rpcProvider.blockhash(.genesis), latestBlockPublisher,
-            rpcProvider.accountNextIndex(address),
-            rpcProvider.runtimeVersion()
-        ).map { genesisHash, latestBlockInfo, nextIndex, runtimeVersion in
-            PolkadotBlockchainMeta(
-                specVersion: runtimeVersion.specVersion,
-                transactionVersion: runtimeVersion.transactionVersion,
-                genesisHash: genesisHash,
-                blockHash: latestBlockInfo.0,
-                nonce: nextIndex,
-                era: .init(blockNumber: latestBlockInfo.1, period: 64)
-            )
         }
-        .eraseToAnyPublisher()
     }
     
     func fee(for extrinsic: Data) -> AnyPublisher<UInt64, Error> {
-        rpcProvider.queryInfo("0x" + extrinsic.hexString)
-            .tryMap {
-                guard let fee = UInt64($0.partialFee) else {
-                    throw WalletError.failedToGetFee
+        providerPublisher { provider in
+            provider.queryInfo("0x" + extrinsic.hexString)
+                .tryMap {
+                    guard let fee = UInt64($0.partialFee) else {
+                        throw WalletError.failedToGetFee
+                    }
+                    return fee
                 }
-                return fee
-            }
-            .eraseToAnyPublisher()
+                .eraseToAnyPublisher()
+        }
     }
     
     func submitExtrinsic(data: Data) -> AnyPublisher<String, Error> {
-        rpcProvider.submitExtrinsic("0x" + data.hexString)
+        providerPublisher { provider in
+            provider.submitExtrinsic("0x" + data.hexString)
+        }
     }
     
     static private func decodeBigEndian<T: FixedWidthInteger>(data: Data) -> T? {
@@ -123,7 +133,7 @@ class PolkadotNetworkService {
     
     private func storageKey(forAddress address: String) throws -> Data {
         guard
-            let address = PolkadotAddress(string: address, network: rpcProvider.network),
+            let address = PolkadotAddress(string: address, network: network),
             let addressBytes = address.bytes(raw: true),
             let addressHash = Sodium().genericHash.hash(message: addressBytes.bytes, outputLength: 16)
         else {
