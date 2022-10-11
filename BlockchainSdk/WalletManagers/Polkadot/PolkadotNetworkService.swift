@@ -19,8 +19,8 @@ class PolkadotNetworkService: MultiNetworkProvider {
     private let network: PolkadotNetwork
     private let codec = SCALE.default
     
-    init(rpcProvider: PolkadotJsonRpcProvider, network: PolkadotNetwork) {
-        self.providers = [rpcProvider]
+    init(providers: [PolkadotJsonRpcProvider], network: PolkadotNetwork) {
+        self.providers = providers
         self.network = network
     }
     
@@ -33,7 +33,7 @@ class PolkadotNetworkService: MultiNetworkProvider {
                     }
                     return try self.storageKey(forAddress: address)
                 }
-                .flatMap { [weak self] key -> AnyPublisher<String, Error> in
+                .flatMap { key -> AnyPublisher<String, Error> in
                     return provider.storage(key: "0x" + key.hexString)
                 }
                 .tryMap { [weak self] storage -> PolkadotAccountInfo in
