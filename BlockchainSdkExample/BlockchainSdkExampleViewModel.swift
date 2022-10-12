@@ -56,7 +56,11 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     let blockchainsWithShelleySelection: [String]
 
     private let sdk: TangemSdk
-    private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKey: "", blockcypherTokens: [], infuraProjectId: "", tronGridApiKey: ""))
+    private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKey: "",
+                                                                          blockcypherTokens: [],
+                                                                          infuraProjectId: "",
+                                                                          tronGridApiKey: "",
+                                                                          networkProviderConfiguration: .init(logger: .verbose)))
     @Published private(set) var card: Card?
     @Published private(set) var walletManager: WalletManager?
     private var blockchain: Blockchain?
@@ -416,7 +420,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .arbitrum(testnet: false),
             .dash(testnet: false),
             .gnosis,
-            .saltPay(testnet: false)
+            .saltPay(testnet: false),
+            .optimism(testnet: false)
         ]
         
         return blockchains.map { ($0.displayName, $0.codingKey) }
