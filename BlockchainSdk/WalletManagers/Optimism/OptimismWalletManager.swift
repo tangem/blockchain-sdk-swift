@@ -44,7 +44,7 @@ class OptimismWalletManager: EthereumWalletManager {
         
         let layer1FeePublisher = getLayer1Fee(amount: amount,
                                               destination: destination,
-                                              transactionHash: byteArray.toHexString())
+                                              transactionHash: byteArray.toHexString().addHexPrefix())
         
         return Publishers
             .CombineLatest(layer2FeePublisher, layer1FeePublisher)

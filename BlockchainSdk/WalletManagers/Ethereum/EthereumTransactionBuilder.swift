@@ -84,7 +84,7 @@ class EthereumTransactionBuilder {
             return Data()
         }
         
-        guard let amountData = amount.encoded else {
+        guard let amountData = amount.encodedAligned else {
             return nil
         }
         

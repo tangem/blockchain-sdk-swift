@@ -50,8 +50,13 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
             return nil
         }
         
-        let amountData = bigUIntValue.serialize().aligned()
+        let amountData = bigUIntValue.serialize()
         return amountData
+    }
+    
+    /// For transaction data.
+    public var encodedAligned: Data? {
+        encoded?.aligned()
     }
     
     public var isZero: Bool {
