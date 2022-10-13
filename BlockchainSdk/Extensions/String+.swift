@@ -30,6 +30,10 @@ extension String {
         return self
     }
     
+    func stripLeadingZeroes() -> String {
+        self.replacingOccurrences(of: "^0+", with: "", options: .regularExpression)
+    }
+    
     var toUInt8: [UInt8] {
         let v = self.utf8CString.map({ UInt8($0) })
         return Array(v[0 ..< (v.count-1)])
