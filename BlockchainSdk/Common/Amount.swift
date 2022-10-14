@@ -54,6 +54,14 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
         return amountData
     }
     
+    public var encodedForSend: String? {
+        if isZero {
+            return "0x0"
+        }
+        
+        return encoded?.hexString.stripLeadingZeroes().addHexPrefix()
+    }
+    
     /// For transaction data.
     public var encodedAligned: Data? {
         encoded?.aligned()
