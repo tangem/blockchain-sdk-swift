@@ -88,7 +88,7 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
         self.value = value
     }
     
-    public func string(with decimals: Int? = nil) -> String {
+    public func string(with decimals: Int? = nil, roundingMode: NSDecimalNumber.RoundingMode = .down) -> String {
         let decimalsCount = decimals ?? self.decimals
         let formatter = NumberFormatter()
         formatter.locale = Locale.current
@@ -98,7 +98,7 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
         formatter.alwaysShowsDecimalSeparator = true
         formatter.maximumFractionDigits = decimalsCount
         formatter.minimumFractionDigits = 2
-        let rounded = value.rounded(scale: decimalsCount)
+        let rounded = value.rounded(scale: decimalsCount, roundingMode: roundingMode)
         return formatter.string(from: rounded as NSDecimalNumber) ??
             "\(rounded) \(currencySymbol)"
     }
