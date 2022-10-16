@@ -641,4 +641,34 @@ class AddressesTests: XCTestCase {
         XCTAssertFalse(addressService.validate("8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae"))
     }
     
+    func testRavencoinCompressedMainNet() {
+        let blockchain = Blockchain.ravencoin(testnet: false)
+        let addressService = blockchain.getAddressService()
+        let expectedAddress = "RT1iM3xbqSQ276GNGGNGFdYrMTEeq4hXRH"
+
+        // when
+        do {
+            let address = try addressService.makeAddress(from: secpCompressedKey)
+            
+            XCTAssertEqual(address, expectedAddress)
+        } catch {
+            XCTAssertNil(error)
+        }
+    }
+    
+    func testRavencoinDecompressedMainNet() {
+        let blockchain = Blockchain.ravencoin(testnet: false)
+        let addressService = blockchain.getAddressService()
+        // https://ravencoin.network/api/addr/RRjP4a6i7e1oX1mZq1rdQpNMHEyDdSQVNi/balance
+        let expectedAddress = "RRjP4a6i7e1oX1mZq1rdQpNMHEyDdSQVNi"
+
+        // when
+        do {
+            let address = try addressService.makeAddress(from: secpDecompressedKey)
+            
+            XCTAssertEqual(address, expectedAddress)
+        } catch {
+            XCTAssertNil(error)
+        }
+    }
 }

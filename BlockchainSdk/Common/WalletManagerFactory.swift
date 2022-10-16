@@ -414,6 +414,8 @@ public class WalletManagerFactory {
             )
         case .dash(let testnet):
             return try makeDashWalletManager(testnet: testnet, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
+        case .ravencoin(let testnet):
+            return try makeRavencoinWalletManager(testnet: testnet, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
         }
         
     }
@@ -483,6 +485,39 @@ public class WalletManagerFactory {
         }
         
         return providers
+    }
+    
+    private func makeRavencoinWalletManager(testnet: Bool, wallet: Wallet, networkProviderConfiguration: NetworkProviderConfiguration) throws -> WalletManager {
+        try RavencoinWalletManager(wallet: wallet).then {
+            let compressed = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
+
+            let bitcoinManager = BitcoinManager(
+                networkParams: testnet ? DashTestNetworkParams() : DashMainNetworkParams(),
+                walletPublicKey: wallet.publicKey.blockchainKey,
+                compressedWalletPublicKey: compressed,
+                bip: .bip44
+            )
+            
+            // TODO: Add CryptoAPIs for testnet
+            
+            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
+            
+            let blockchairProvider = BlockchairNetworkProvider(
+                endpoint: .dash,
+                apiKey: config.blockchairApiKey,
+                configuration: config.networkProviderConfiguration
+            )
+            let blockcypherProvider = BlockcypherNetworkProvider(
+                endpoint: .dash,
+                tokens: config.blockcypherTokens,
+                configuration: config.networkProviderConfiguration
+            )
+            
+            $0.networkService = BitcoinNetworkService(
+                providers: [blockchairProvider.eraseToAnyBitcoinNetworkProvider(),
+                            blockcypherProvider.eraseToAnyBitcoinNetworkProvider()]
+            )
+        }
     }
 }
 
