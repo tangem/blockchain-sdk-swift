@@ -9,16 +9,36 @@
 import Foundation
 
 struct RavencoinAddressResponse: Decodable {
-    let addrStr: String?
-    let balances : [String]
+    let addrStr: String
+    let balances : [Balance]
+    
+    let balance: Decimal
+    let balanceSat: Decimal
+    
     let tags : [String]
     let frozen : [String]
-    let balance : String?
-    let totalReceived : String?
-    let totalSent : String?
-    let unconfirmedBalance : Int?
-    let unconfirmedBalanceSat : Int?
-    let unconfirmedTxApperances : Int?
-    let txApperances : Int?
-    let transactions : [String]
+    
+    let totalReceived: Decimal
+    let totalReceivedSat: Decimal
+    
+    let totalSent: Decimal
+    let totalSentSat: Decimal
+    
+    let unconfirmedBalance: Decimal
+    let unconfirmedBalanceSat: Decimal
+    let unconfirmedTxApperances: Decimal
+    let txApperances: Decimal
+    let transactions: [String]
+}
+
+extension RavencoinAddressResponse {
+    struct Balance : Decodable {
+        let rvn : RVN
+    }
+    
+    struct RVN: Decodable {
+        let totalReceived: Decimal
+        let totalSpent: Decimal
+        let balance: Decimal
+    }
 }

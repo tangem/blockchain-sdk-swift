@@ -254,8 +254,8 @@
 		EF3B582228F9663D00C93810 /* RavencoinWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B582128F9663D00C93810 /* RavencoinWalletManager.swift */; };
 		EF3B582428F9675700C93810 /* RavencoinMainNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B582328F9675700C93810 /* RavencoinMainNetworkParams.swift */; };
 		EF3B582628F97B3D00C93810 /* RavencoinTestNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B582528F97B3D00C93810 /* RavencoinTestNetworkParams.swift */; };
-		EF6E110B28FBEF7100EDF31E /* RavencoinNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF6E110A28FBEF7100EDF31E /* RavencoinNetworkService.swift */; };
-		EF6E110D28FBF04900EDF31E /* RavencoinProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF6E110C28FBF04900EDF31E /* RavencoinProvider.swift */; };
+		EF6E110B28FBEF7100EDF31E /* RavencoinNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF6E110A28FBEF7100EDF31E /* RavencoinNetworkProvider.swift */; };
+		EF6E110D28FBF04900EDF31E /* RavencoinTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF6E110C28FBF04900EDF31E /* RavencoinTarget.swift */; };
 		EF6E111228FBF56800EDF31E /* RavencoinAddressResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF6E111128FBF56800EDF31E /* RavencoinAddressResponse.swift */; };
 /* End PBXBuildFile section */
 
@@ -559,6 +559,8 @@
 		EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSendResult.swift; sourceTree = "<group>"; };
 		EF6E110A28FBEF7100EDF31E /* RavencoinNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RavencoinNetworkService.swift; sourceTree = "<group>"; };
 		EF6E110C28FBF04900EDF31E /* RavencoinProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RavencoinProvider.swift; sourceTree = "<group>"; };
+		EF6E110A28FBEF7100EDF31E /* RavencoinNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RavencoinNetworkProvider.swift; sourceTree = "<group>"; };
+		EF6E110C28FBF04900EDF31E /* RavencoinTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RavencoinTarget.swift; sourceTree = "<group>"; };
 		EF6E111128FBF56800EDF31E /* RavencoinAddressResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RavencoinAddressResponse.swift; sourceTree = "<group>"; };
 		EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashTestNetworkParams.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1450,8 +1452,8 @@
 		EF6E111028FBF52500EDF31E /* Ravencoin */ = {
 			isa = PBXGroup;
 			children = (
-				EF6E110A28FBEF7100EDF31E /* RavencoinNetworkService.swift */,
-				EF6E110C28FBF04900EDF31E /* RavencoinProvider.swift */,
+				EF6E110A28FBEF7100EDF31E /* RavencoinNetworkProvider.swift */,
+				EF6E110C28FBF04900EDF31E /* RavencoinTarget.swift */,
 				EF6E111128FBF56800EDF31E /* RavencoinAddressResponse.swift */,
 			);
 			path = Ravencoin;
@@ -1845,6 +1847,7 @@
 				E93532CE292D0E86008FD979 /* BlockBookUtxoProvider.swift in Sources */,
 				EF9F9088299F8B70006F638F /* ETHError.swift in Sources */,
 				EF6E110D28FBF04900EDF31E /* RavencoinProvider.swift in Sources */,
+				EF6E110D28FBF04900EDF31E /* RavencoinTarget.swift in Sources */,
 				EF332D17288EACB000AE3C85 /* HostProvider.swift in Sources */,
 				5DE3BFA0239FA33800E8815D /* Bech32.swift in Sources */,
 				B00FBED82996A1A300FDB874 /* BlockscoutNetworkProvider.swift in Sources */,
@@ -1925,7 +1928,7 @@
 				5DEAFA8E244472CD0032E316 /* Amount.swift in Sources */,
 				2D9A91A729BB8C2E00476EA6 /* TrustWalletAddressService.swift in Sources */,
 				DA9F76FB27ECA49F00F0665C /* TronNetwork.swift in Sources */,
-				EF6E110B28FBEF7100EDF31E /* RavencoinNetworkService.swift in Sources */,
+				EF6E110B28FBEF7100EDF31E /* RavencoinNetworkProvider.swift in Sources */,
 				5DC7DD62244077D7008F83F2 /* XRPNetworkService.swift in Sources */,
 				EF3B582228F9663D00C93810 /* RavencoinWalletManager.swift in Sources */,
 				DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */,

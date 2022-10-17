@@ -497,25 +497,16 @@ public class WalletManagerFactory {
                 compressedWalletPublicKey: compressed,
                 bip: .bip44
             )
-            
-            // TODO: Add CryptoAPIs for testnet
-            
-            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
-            
-            let blockchairProvider = BlockchairNetworkProvider(
-                endpoint: .dash,
-                apiKey: config.blockchairApiKey,
-                configuration: config.networkProviderConfiguration
+
+            $0.txBuilder = BitcoinTransactionBuilder(
+                bitcoinManager: bitcoinManager,
+                addresses: wallet.addresses
             )
-            let blockcypherProvider = BlockcypherNetworkProvider(
-                endpoint: .dash,
-                tokens: config.blockcypherTokens,
-                configuration: config.networkProviderConfiguration
-            )
+            
+            let provider = RavencoinNetworkProvider(isTestnet: testnet)
             
             $0.networkService = BitcoinNetworkService(
-                providers: [blockchairProvider.eraseToAnyBitcoinNetworkProvider(),
-                            blockcypherProvider.eraseToAnyBitcoinNetworkProvider()]
+                providers: [provider.eraseToAnyBitcoinNetworkProvider()]
             )
         }
     }
