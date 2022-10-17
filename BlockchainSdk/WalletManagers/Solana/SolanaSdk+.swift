@@ -10,14 +10,15 @@ import Foundation
 import Combine
 import Solana_Swift
 
-extension Solana: HostProvider {
-    var host: String {
-        router.endpoint.url.hostOrUnknown
-    }
-}
-
 extension RPCEndpoint {
     public static let ankr = RPCEndpoint(url: URL(string: "https://rpc.ankr.com/solana")!, urlWebSocket: URL(string: "ws://rpc.ankr.com/solana")!, network: .mainnetBeta)
+    public static func quiknodeProd(apiKey: String) -> RPCEndpoint {
+        .init(
+            url: URL(string: "https://still-dawn-thunder.solana-mainnet.discover.quiknode.pro/\(apiKey)")!,
+            urlWebSocket: URL(string: "wss://still-dawn-thunder.solana-mainnet.discover.quiknode.pro/\(apiKey)")!,
+            network: .mainnetBeta
+        )
+    }
 }
 
 extension Api {
