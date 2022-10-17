@@ -20,7 +20,8 @@ struct RavencoinTarget {
 
 extension RavencoinTarget: TargetType {
     var headers: [String : String]? {
-        ["Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"]
+        /// Hack that api is work
+        ["User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"]
     }
 
     var baseURL: URL {
