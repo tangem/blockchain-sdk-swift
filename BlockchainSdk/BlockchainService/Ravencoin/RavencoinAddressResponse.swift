@@ -10,13 +10,13 @@ import Foundation
 
 struct RavencoinAddressResponse: Decodable {
     let addrStr: String
-    let balances : [Balance]
+//    let balances: [Balance]
     
     let balance: Decimal
     let balanceSat: Decimal
     
-    let tags : [String]
-    let frozen : [String]
+//    let tags: [String]
+//    let frozen: [String]
     
     let totalReceived: Decimal
     let totalReceivedSat: Decimal
@@ -33,7 +33,7 @@ struct RavencoinAddressResponse: Decodable {
 
 extension RavencoinAddressResponse {
     struct Balance : Decodable {
-        let rvn : RVN
+        let RNV: RVN
     }
     
     struct RVN: Decodable {
