@@ -28,7 +28,7 @@ struct RavencoinAddressResponse: Decodable {
     let unconfirmedBalanceSat: Decimal
     let unconfirmedTxApperances: Decimal
     let txApperances: Decimal
-    let transactions: [String]
+    let transactions: [String]?
 }
 
 extension RavencoinAddressResponse {
