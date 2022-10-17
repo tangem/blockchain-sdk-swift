@@ -13,6 +13,7 @@ public struct BlockchainSdkConfig {
     let blockcypherTokens: [String]
     let infuraProjectId: String
     let tronGridApiKey: String
+    let quiknodeApiKey: String
     let networkProviderConfiguration: NetworkProviderConfiguration
     
     public init(
@@ -20,12 +21,14 @@ public struct BlockchainSdkConfig {
         blockcypherTokens: [String],
         infuraProjectId: String,
         tronGridApiKey: String,
+        quiknodeApiKey: String,
         networkProviderConfiguration: NetworkProviderConfiguration = .init()
     ) {
         self.blockchairApiKey = blockchairApiKey
         self.blockcypherTokens = blockcypherTokens
         self.infuraProjectId = infuraProjectId
         self.tronGridApiKey = tronGridApiKey
+        self.quiknodeApiKey = quiknodeApiKey
         self.networkProviderConfiguration = networkProviderConfiguration
     }
 }

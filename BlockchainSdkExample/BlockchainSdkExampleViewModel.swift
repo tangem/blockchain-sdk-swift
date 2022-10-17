@@ -60,6 +60,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                                                                           blockcypherTokens: [],
                                                                           infuraProjectId: "",
                                                                           tronGridApiKey: "",
+                                                                          quiknodeApiKey: "",
                                                                           networkProviderConfiguration: .init(logger: .verbose)))
     @Published private(set) var card: Card?
     @Published private(set) var walletManager: WalletManager?
