@@ -19,7 +19,10 @@ struct RavencoinTarget {
 }
 
 extension RavencoinTarget: TargetType {
-    var headers: [String : String]? { nil }
+    var headers: [String : String]? {
+        ["Accept": "application/json"]
+    }
+
     var baseURL: URL {
         if isTestnet {
             return URL(string: "https://testnet.ravencoin.network/api/")!
