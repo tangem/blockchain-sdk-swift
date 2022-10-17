@@ -20,7 +20,7 @@ struct RavencoinTarget {
 
 extension RavencoinTarget: TargetType {
     var headers: [String : String]? {
-        ["Accept": "application/json"]
+        ["Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"]
     }
 
     var baseURL: URL {
