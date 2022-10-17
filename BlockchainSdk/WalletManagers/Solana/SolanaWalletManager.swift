@@ -11,6 +11,7 @@ import Combine
 import Solana_Swift
 
 class SolanaWalletManager: BaseManager, WalletManager {
+    var solanaSdk: Solana!
     var networkService: SolanaNetworkService!
     
     var currentHost: String { networkService.host }

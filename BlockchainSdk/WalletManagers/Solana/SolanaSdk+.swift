@@ -10,12 +10,6 @@ import Foundation
 import Combine
 import Solana_Swift
 
-extension Solana: HostProvider {
-    var host: String {
-        router.endpoint.url.hostOrUnknown
-    }
-}
-
 extension RPCEndpoint {
     public static let ankr = RPCEndpoint(url: URL(string: "https://rpc.ankr.com/solana")!, urlWebSocket: URL(string: "ws://rpc.ankr.com/solana")!, network: .mainnetBeta)
 }
