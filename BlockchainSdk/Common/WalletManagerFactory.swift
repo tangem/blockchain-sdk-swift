@@ -274,7 +274,7 @@ public class WalletManagerFactory {
             
         case .solana(let testnet):
             return SolanaWalletManager(wallet: wallet).then {
-                let endpoint: RPCEndpoint = testnet ? .devnetSolana : .quiknodeProd(apiKey: config.quiknodeApiKey)
+                let endpoint: RPCEndpoint = testnet ? .devnetSolana : .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain)
                 let networkRouter = NetworkingRouter(endpoint: endpoint)
                 let accountStorage = SolanaDummyAccountStorage()
                 

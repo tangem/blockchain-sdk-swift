@@ -12,10 +12,10 @@ import Solana_Swift
 
 extension RPCEndpoint {
     public static let ankr = RPCEndpoint(url: URL(string: "https://rpc.ankr.com/solana")!, urlWebSocket: URL(string: "ws://rpc.ankr.com/solana")!, network: .mainnetBeta)
-    public static func quiknodeProd(apiKey: String) -> RPCEndpoint {
+    public static func quiknode(apiKey: String, subdomain: String) -> RPCEndpoint {
         .init(
-            url: URL(string: "https://still-dawn-thunder.solana-mainnet.discover.quiknode.pro/\(apiKey)")!,
-            urlWebSocket: URL(string: "wss://still-dawn-thunder.solana-mainnet.discover.quiknode.pro/\(apiKey)")!,
+            url: URL(string: "https://\(subdomain).solana-mainnet.discover.quiknode.pro/\(apiKey)")!,
+            urlWebSocket: URL(string: "wss://\(subdomain).solana-mainnet.discover.quiknode.pro/\(apiKey)")!,
             network: .mainnetBeta
         )
     }
