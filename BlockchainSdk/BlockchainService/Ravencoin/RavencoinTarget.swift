@@ -18,6 +18,8 @@ struct RavencoinTarget {
     let target: RavencoinTargetType
 }
 
+// https://api.ravencoin.org/api/tx/send
+
 extension RavencoinTarget: TargetType {
     var headers: [String : String]? {
         /// Hack that api is work
@@ -37,6 +39,8 @@ extension RavencoinTarget: TargetType {
         switch target {
         case let .addressInfo(address):
             return "addr/\(address)"
+        case .send:
+            return "tx/send"
         }
     }
     
@@ -44,6 +48,8 @@ extension RavencoinTarget: TargetType {
         switch target {
         case .addressInfo:
             return .get
+        case .send:
+            return .post
         }
     }
     
@@ -51,6 +57,12 @@ extension RavencoinTarget: TargetType {
         switch target {
         case .addressInfo:
             return .requestParameters(parameters: ["noTxList" : "1"], encoding: URLEncoding.default)
+        case let .send(tx):
+            return .requestCompositeParameters(
+                bodyParameters: ["rawtx": tx],
+                bodyEncoding: JSONEncoding.default,
+                urlParameters: [:]
+            )
         }
     }
 }
@@ -58,5 +70,6 @@ extension RavencoinTarget: TargetType {
 extension RavencoinTarget {
     enum RavencoinTargetType {
         case addressInfo(_ address: String)
+        case send(tx: String)
     }
 }

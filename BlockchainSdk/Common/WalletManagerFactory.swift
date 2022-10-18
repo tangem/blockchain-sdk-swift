@@ -492,7 +492,7 @@ public class WalletManagerFactory {
             let compressed = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
 
             let bitcoinManager = BitcoinManager(
-                networkParams: testnet ? DashTestNetworkParams() : DashMainNetworkParams(),
+                networkParams: testnet ? RavencoinTestNetworkParams() : RavencoinMainNetworkParams(),
                 walletPublicKey: wallet.publicKey.blockchainKey,
                 compressedWalletPublicKey: compressed,
                 bip: .bip44
