@@ -41,18 +41,31 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
-        .emptyFail
+        let fee = BitcoinFee(
+            minimalSatoshiPerByte: 10,
+            normalSatoshiPerByte: 10,
+            prioritySatoshiPerByte: 10
+        )
+        
+        return .justWithError(output: fee)
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
-        .emptyFail
+        let target = RavencoinTarget(isTestnet: isTestnet, target: .send(tx: transaction))
+        
+        return provider.requestPublisher(target)
+            .filterSuccessfulStatusCodes()
+            .eraseError()
+            .print("send(transaction)")
+            .map { _ in transaction }
+            .eraseToAnyPublisher()
     }
     
     func push(transaction: String) -> AnyPublisher<String, Error> {
-        .emptyFail
+        Fail(error: BlockchainSdkError.notImplemented).eraseToAnyPublisher()
     }
     
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-        .emptyFail
+        Fail(error: BlockchainSdkError.notImplemented).eraseToAnyPublisher()
     }
 }
