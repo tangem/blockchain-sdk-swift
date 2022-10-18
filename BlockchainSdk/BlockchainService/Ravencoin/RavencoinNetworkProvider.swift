@@ -42,9 +42,9 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
         let fee = BitcoinFee(
-            minimalSatoshiPerByte: 10,
-            normalSatoshiPerByte: 10,
-            prioritySatoshiPerByte: 10
+            minimalSatoshiPerByte: 0.00001,
+            normalSatoshiPerByte: 0.00001,
+            prioritySatoshiPerByte: 0.00001
         )
         
         return .justWithError(output: fee)
