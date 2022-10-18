@@ -99,7 +99,7 @@ public enum TransactionError: Error, LocalizedError, Equatable {
         case .dustChange(let minimumAmount):
            return String(format: "send_error_dust_change_format".localized, minimumAmount.description)
         case .minimumBalance(let minimumBalance):
-            return String(format: "send_error_minimum_balance_format".localized, minimumBalance.description)
+            return String(format: "send_error_minimum_balance_format".localized, minimumBalance.string(roundingMode: .plain))
         case .feeExceedsBalance:
             return "send_validation_invalid_fee".localized
         case .invalidAmount:
