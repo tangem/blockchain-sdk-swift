@@ -26,7 +26,7 @@ class TronTests: XCTestCase {
             )
         )
     )
-    
+
     override func setUp() {
         self.blockchain = Blockchain.tron(testnet: true)
         self.txBuilder = TronTransactionBuilder(blockchain: blockchain)
@@ -34,7 +34,7 @@ class TronTests: XCTestCase {
     
     func testTrxTransfer() {
         let transactionRaw = try! txBuilder.buildForSign(amount: Amount(with: blockchain, value: 1), source: "TU1BRXbr6EmKmrLL4Kymv7Wp18eYFkRfAF", destination: "TXXxc9NsHndfQ2z9kMKyWpYa5T3QbhKGwn", block: tronBlock)
-        
+
         let signature = Data(hex: "6b5de85a80b2f4f02351f691593fb0e49f14c5cb42451373485357e42d7890cd77ad7bfcb733555c098b992da79dabe5050f5e2db77d9d98f199074222de037701")
         let transaction = txBuilder.buildForSend(rawData: transactionRaw, signature: signature)
         let transactionData = try! transaction.serializedData()

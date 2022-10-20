@@ -160,14 +160,12 @@ class TronWalletManager: BaseManager, WalletManager {
     }
     
     private func sign(_ transactionRaw: Protocol_Transaction.raw, with signer: TransactionSigner, publicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
-        let wallet = self.wallet
-        
-        return Just(())
+        Just(())
             .setFailureType(to: Error.self)
             .tryMap {
                 try transactionRaw.serializedData().sha256()
             }
-            .flatMap { [wallet] hash -> AnyPublisher<Data, Error> in
+            .flatMap { hash -> AnyPublisher<Data, Error> in
                 Just(hash)
                     .setFailureType(to: Error.self)
                     .flatMap {
