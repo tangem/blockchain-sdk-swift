@@ -24,20 +24,30 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        let target = RavencoinTarget(isTestnet: isTestnet, target: .addressInfo(address))
-        return provider.requestPublisher(target)
-            .filterSuccessfulStatusCodes()
-            .map(RavencoinAddressResponse.self)
-            .eraseError()
-            .map { ravencoinResponse -> BitcoinResponse in
-                BitcoinResponse(
-                    balance: ravencoinResponse.balance,
-                    hasUnconfirmed: ravencoinResponse.unconfirmedTxApperances > 0,
-                    pendingTxRefs: [],
-                    unspentOutputs: []
+        Publishers.CombineLatest(
+            getAddressInfo(for: address),
+            getTransactions(for: address)
+        )
+        .map { (addressInfo, transactions) -> BitcoinResponse in
+            let outputs = transactions.txs.map { transaction in
+                transaction.vout!
+                BitcoinUnspentOutput(
+                    transactionHash: <#T##String#>,
+                    outputIndex: <#T##Int#>,
+                    amount: <#T##UInt64#>,
+                    outputScript: <#T##String#>
                 )
+                
             }
-            .eraseToAnyPublisher()
+            
+            BitcoinResponse(
+                balance: addressInfo.balance,
+                hasUnconfirmed: addressInfo.unconfirmedTxApperances > 0,
+                pendingTxRefs: [],
+                unspentOutputs: []
+            )
+        }
+        .eraseToAnyPublisher()
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
@@ -67,5 +77,27 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
     
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
         Fail(error: BlockchainSdkError.notImplemented).eraseToAnyPublisher()
+    }
+}
+
+private extension RavencoinNetworkProvider {
+    func getAddressInfo(for address: String) -> AnyPublisher<RavencoinAddressResponse, Error> {
+        let target = RavencoinTarget(isTestnet: isTestnet, target: .addressInfo(address))
+        
+        return provider.requestPublisher(target)
+            .filterSuccessfulStatusCodes()
+            .map(RavencoinAddressResponse.self)
+            .eraseError()
+            .eraseToAnyPublisher()
+    }
+    
+    func getTransactions(for address: String) -> AnyPublisher<RavencoinTransactionsResponse, Error> {
+        let target = RavencoinTarget(isTestnet: isTestnet, target: .txs(address))
+
+        return provider.requestPublisher(target)
+            .filterSuccessfulStatusCodes()
+            .map(RavencoinTransactionsResponse.self)
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 }

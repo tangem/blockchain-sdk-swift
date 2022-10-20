@@ -19,6 +19,7 @@ struct RavencoinTarget {
 }
 
 // https://api.ravencoin.org/api/tx/send
+// https://api.ravencoin.org/api/txs?address=R9evUf3dCSfzdjuRJgvBxAnjA7TPjDYjPo
 
 extension RavencoinTarget: TargetType {
     var headers: [String : String]? {
@@ -41,12 +42,14 @@ extension RavencoinTarget: TargetType {
             return "addr/\(address)"
         case .send:
             return "tx/send"
+        case .txs:
+            return "txs"
         }
     }
     
     var method: Moya.Method {
         switch target {
-        case .addressInfo:
+        case .addressInfo, .txs:
             return .get
         case .send:
             return .post
@@ -55,8 +58,13 @@ extension RavencoinTarget: TargetType {
     
     var task: Moya.Task {
         switch target {
+        case let .txs(address):
+            return .requestParameters(parameters: ["address" : address],
+                                      encoding: URLEncoding.default)
+            
         case .addressInfo:
-            return .requestParameters(parameters: ["noTxList" : "1"], encoding: URLEncoding.default)
+            return .requestParameters(parameters: ["noTxList" : "1"],
+                                      encoding: URLEncoding.default)
         case let .send(tx):
             return .requestCompositeParameters(
                 bodyParameters: ["rawtx": tx],
@@ -71,5 +79,6 @@ extension RavencoinTarget {
     enum RavencoinTargetType {
         case addressInfo(_ address: String)
         case send(tx: String)
+        case txs(_ address: String)
     }
 }
