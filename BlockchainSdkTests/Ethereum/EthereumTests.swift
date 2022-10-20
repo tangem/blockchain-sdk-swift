@@ -11,7 +11,6 @@ import BigInt
 @testable import BlockchainSdk
 
 class EthereumTests: XCTestCase {
-
     private let addressService = EthereumAddressService()
     private let blockchain = Blockchain.ethereum(testnet: false)
     private let gasLimit = BigUInt(21000)
@@ -81,7 +80,7 @@ class EthereumTests: XCTestCase {
         
         let expectedHashToSign = Data(hex: "2F47B058A0C4A91EC6E26372FA926ACB899235D7A639565B4FC82C7A9356D6C5")
         let expectedSignedTransaction = Data(hex: "F8A90F856EDF2A079E82520894A0B86991C6218B36C1D19D4A2E9EB0CE3606EB4880B844A9059CBB0000000000000000000000007655B9B19FFAB8B897F836857DAE22A1E7F8D735000000000000000000000000000000000000000000000000016345785D8A000025A0F408C40F8D8B4A40E35502355C87FBBF218EC9ECB036D42DAA6211EAD4498A6FA0437FF17D34D33F054E29702C07176A127CA1118CAA1470EA6CB15D49EC13F3F5")
-
+        
         let transactionToSign = transactionBuilder.buildForSign(transaction: transaction, nonce: nonce, gasLimit: gasLimit)
         XCTAssertNotNil(transactionToSign)
         sizeTester.testTxSize(transactionToSign?.hash)

@@ -15,7 +15,7 @@ import CryptoKit
 class PolkadotTests: XCTestCase {
     // Taken from trust wallet, `SignerTests.cpp`
     private let sizeTester = TransactionSizeTesterUtility()
-
+    
     func testTransaction9fd062() {
         let privateKey = Data(hexString: "70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
@@ -37,7 +37,7 @@ class PolkadotTests: XCTestCase {
         
         let preImage = try! txBuilder.buildForSign(amount: amount, destination: destination, meta: meta)
         sizeTester.testTxSize(preImage)
-
+        
         let signature = try! signEd25519(message: preImage, privateKey: privateKey)
         let image = try! txBuilder.buildForSend(amount: amount, destination: destination, meta: meta, signature: signature)
         
@@ -74,7 +74,7 @@ class PolkadotTests: XCTestCase {
         
         let preImage = try! txBuilder.buildForSign(amount: amount, destination: destination, meta: meta)
         sizeTester.testTxSize(preImage)
-
+        
         let signature = try! signEd25519(message: preImage, privateKey: privateKey)
         let image = try! txBuilder.buildForSend(amount: amount, destination: destination, meta: meta, signature: signature)
         
@@ -109,7 +109,7 @@ class PolkadotTests: XCTestCase {
         
         let preImage = try! txBuilder.buildForSign(amount: amount, destination: destination, meta: meta)
         sizeTester.testTxSize(preImage)
-
+        
         let signature = try! signEd25519(message: preImage, privateKey: privateKey)
         let image = try! txBuilder.buildForSend(amount: amount, destination: destination, meta: meta, signature: signature)
         

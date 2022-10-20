@@ -17,23 +17,23 @@ private let raisedError = SolanaError.other("Just tx size test")
 final class SolanaTests: XCTestCase {
     private class CoinSigner: TransactionSigner {
         private let sizeTester = TransactionSizeTesterUtility()
-
+        
         func sign(hashes: [Data], walletPublicKey: BlockchainSdk.Wallet.PublicKey) -> AnyPublisher<[Data], Error> {
             sizeTester.testTxSizes(hashes)
             return Fail(error: raisedError)
                 .eraseToAnyPublisher()
         }
-
+        
         func sign(hash: Data, walletPublicKey: BlockchainSdk.Wallet.PublicKey) -> AnyPublisher<Data, Error> {
             sizeTester.testTxSize(hash)
             return Fail(error: raisedError)
                 .eraseToAnyPublisher()
         }
     }
-
+    
     private class TokenSigner: TransactionSigner {
         private let sizeTester = TransactionSizeTesterUtility()
-
+        
         func sign(hashes: [Data], walletPublicKey: BlockchainSdk.Wallet.PublicKey) -> AnyPublisher<[Data], Error> {
             hashes.forEach {
                 _ = sign(hash: $0, walletPublicKey: walletPublicKey)
@@ -41,7 +41,7 @@ final class SolanaTests: XCTestCase {
             return Fail(error: raisedError)
                 .eraseToAnyPublisher()
         }
-
+        
         func sign(hash: Data, walletPublicKey: BlockchainSdk.Wallet.PublicKey) -> AnyPublisher<Data, Error> {
             XCTAssertTrue(sizeTester.isValidForCos4_52AndAbove(hash))
             XCTAssertFalse(sizeTester.isValidForCosBelow4_52(hash))
@@ -50,21 +50,21 @@ final class SolanaTests: XCTestCase {
                 .eraseToAnyPublisher()
         }
     }
-
+    
     private var networkingRouter: NetworkingRouter!
     private var solanaSdk: Solana!
     private var manager: SolanaWalletManager!
-
+    
     private var bag = Set<AnyCancellable>()
-
+    
     private let network: RPCEndpoint = .devnetSolana
     private let walletPubKey = Data(hex: "B148CC30B144E8F214AE5754C753C40A9BF2A3359DB4246E03C6A2F61A82C282")
     private let address = "Cw3YcfqzRSa7xT7ecpR5E4FKDQU6aaxz5cWje366CZbf"
     private let blockchain = Blockchain.solana(testnet: false)
-
+    
     private let coinSigner = CoinSigner()
     private let tokenSigner = TokenSigner()
-
+    
     override func setUp() {
         super.setUp()
         networkingRouter = .init(endpoint: network)
@@ -79,19 +79,19 @@ final class SolanaTests: XCTestCase {
         manager.solanaSdk = solanaSdk
         manager.networkService = SolanaNetworkService(host: network.url.hostOrUnknown, solanaSdk: solanaSdk, blockchain: blockchain)
     }
-
+    
     func testCoinTransactionSize() {
         let transaction = Transaction.dummyTx(blockchain: blockchain,
                                               type: .coin,
                                               sourceAddress: manager.wallet.address,
                                               destinationAddress: "BmAzxn8WLYU3gEw79ATUdSUkMT53MeS5LjapBQB8gTPJ")
-
+        
         let expected = expectation(description: "Waiting for response")
-
+        
         processResult(manager.send(transaction, signer: coinSigner), expectationToFill: expected)
         waitForExpectations(timeout: 10)
     }
-
+    
     func testTokenTransactionSize() {
         let transaction = Transaction.dummyTx(blockchain: blockchain,
                                               type: .token(value: .init(name: "Solanax",
@@ -101,28 +101,28 @@ final class SolanaTests: XCTestCase {
                                               sourceAddress: manager.wallet.address,
                                               destinationAddress: "BmAzxn8WLYU3gEw79ATUdSUkMT53MeS5LjapBQB8gTPJ")
         let expected = expectation(description: "Waiting for response")
-
+        
         processResult(manager.send(transaction, signer: tokenSigner), expectationToFill: expected)
         waitForExpectations(timeout: 10)
     }
-
+    
     private func processResult(_ publisher: AnyPublisher<Void, Error>, expectationToFill: XCTestExpectation) {
         bag.insert(
             publisher.sink(receiveCompletion: { completion in
                 defer {
                     expectationToFill.fulfill()
                 }
-
+                
                 guard case .failure(let error) = completion else {
                     XCTFail("Wrong complition received")
                     return
                 }
-
+                
                 guard let castedError = error as? SolanaError else {
                     XCTFail("Wrong error returned from manager")
                     return
                 }
-
+                
                 XCTAssertEqual(castedError, raisedError)
             }, receiveValue: {
                 XCTFail("Test shouldn't receive value")
@@ -140,6 +140,4 @@ extension SolanaError: Equatable {
             return false
         }
     }
-
-
 }

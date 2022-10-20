@@ -13,7 +13,6 @@ import TangemSdk
 @testable import BlockchainSdk
 
 class LitecoinTests: XCTestCase {
-
     private let blockchain = Blockchain.litecoin
     private let networkParams =  LitecoinNetworkParams()
     private let sizeTester = TransactionSizeTesterUtility()
@@ -35,7 +34,7 @@ class LitecoinTests: XCTestCase {
         let walletPubkey = Data(hex: "04AC17063C443E9DC00C090733A0A76FF18A322D8484495FDF65BE5922EA6C1F5EDC0A802D505BFF664E32E9082DC934D60A4B4E83572A0818F1D73F8FB4D100EA")
         let compressedPubkey = try! Secp256k1Key(with: walletPubkey).compress()
         XCTAssertNotNil(compressedPubkey)
-            
+        
         let signature1 = Data(hex: "F4E41BBE57B306529EBE797ABCE8CBA399F391B0804B8CD52C329F398E815FB4E7C314437399CB915AA9580458DDC2440EA3E6121CC2D6B5F5C67232B5B60C54")
         let signature2 = Data(hex: "B6DC3A0163FADB5B4FF70F1BD8165C03CC7D474C45942B81B841BE2E747CE30105AF501D55D1BA6E433745F3AD04243EEF53435AD32AA2E523DC413F1F5D7BCC")
         
@@ -52,10 +51,10 @@ class LitecoinTests: XCTestCase {
         let txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinCoreManager, addresses: addresses)
         txBuilder.feeRates[feeValue] = feeRate
         txBuilder.unspentOutputs =
-            [
-                BitcoinUnspentOutput(transactionHash: "bcacfe1bc1323e8e421486e4b334b91163925d7edd87133673c3efbd4e3fedae", outputIndex: 0, amount: 10000, outputScript: "76a914ccd4649cdb4c9f8fdb54869cff112a4e75fda2bb88ac"),
-                BitcoinUnspentOutput(transactionHash: "fa16fbd7f8a150dc723091fd2305eaa07189e869f9133bf3d429efc5ef3f86ff", outputIndex: 0, amount: 10000, outputScript: "76a914ccd4649cdb4c9f8fdb54869cff112a4e75fda2bb88ac")
-            ]
+        [
+            BitcoinUnspentOutput(transactionHash: "bcacfe1bc1323e8e421486e4b334b91163925d7edd87133673c3efbd4e3fedae", outputIndex: 0, amount: 10000, outputScript: "76a914ccd4649cdb4c9f8fdb54869cff112a4e75fda2bb88ac"),
+            BitcoinUnspentOutput(transactionHash: "fa16fbd7f8a150dc723091fd2305eaa07189e869f9133bf3d429efc5ef3f86ff", outputIndex: 0, amount: 10000, outputScript: "76a914ccd4649cdb4c9f8fdb54869cff112a4e75fda2bb88ac")
+        ]
         
         let amountToSend = Amount(with: blockchain, type: .coin, value: sendValue)
         let feeAmount = Amount(with: blockchain, type: .coin, value: feeValue)

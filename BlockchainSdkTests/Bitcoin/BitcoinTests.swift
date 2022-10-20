@@ -13,7 +13,6 @@ import TangemSdk
 @testable import BlockchainSdk
 
 class BitcoinTests: XCTestCase {
-
     private let blockchain = Blockchain.bitcoin(testnet: false)
     private let networkParams = BitcoinNetwork.mainnet.networkParams
     private lazy var addressService = BitcoinAddressService(networkParams: networkParams)
