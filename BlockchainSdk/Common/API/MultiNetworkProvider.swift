@@ -51,6 +51,8 @@ extension MultiNetworkProvider {
             .eraseToAnyPublisher()
     }
     
+    // NOTE: There also copy of this behaviour in the wild, if you want to update something
+    // in the code, don't forget to update also Solano.Swift framework, class NetworkingRouter
     private func needRetry(for errorHost: String) -> Bool {
         if errorHost != self.host {
             return true

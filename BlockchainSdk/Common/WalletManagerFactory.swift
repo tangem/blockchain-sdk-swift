@@ -274,12 +274,19 @@ public class WalletManagerFactory {
             
         case .solana(let testnet):
             return SolanaWalletManager(wallet: wallet).then {
-                let endpoint: RPCEndpoint = testnet ? .devnetSolana : .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain)
-                let networkRouter = NetworkingRouter(endpoint: endpoint)
+                let endpoints: [RPCEndpoint] = testnet ?
+                [.devnetSolana, .devnetGenesysGo, .testnetSolana] :
+                [
+                    .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain),
+                    .ankr,
+                    .mainnetBetaSolana,
+                    .mainnetBetaSerum
+                ]
+                let networkRouter = NetworkingRouter(endpoints: endpoints)
                 let accountStorage = SolanaDummyAccountStorage()
                 
                 $0.solanaSdk = Solana(router: networkRouter, accountStorage: accountStorage)
-                $0.networkService = SolanaNetworkService(host: endpoint.url.hostOrUnknown, solanaSdk: $0.solanaSdk, blockchain: blockchain)
+                $0.networkService = SolanaNetworkService(host: endpoints[0].url.hostOrUnknown, solanaSdk: $0.solanaSdk, blockchain: blockchain)
             }
         case .polkadot(let testnet):
             return makePolkadotWalletManager(network: testnet ? .westend : .polkadot, wallet: wallet)
