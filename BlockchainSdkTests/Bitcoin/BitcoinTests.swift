@@ -13,15 +13,10 @@ import TangemSdk
 @testable import BlockchainSdk
 
 class BitcoinTests: XCTestCase {
-
     private let blockchain = Blockchain.bitcoin(testnet: false)
     private let networkParams = BitcoinNetwork.mainnet.networkParams
     private lazy var addressService = BitcoinAddressService(networkParams: networkParams)
-    
-    override func setUp() {
-        super.setUp()
-        continueAfterFailure = false
-    }
+    private let sizeTester = TransactionSizeTesterUtility()
     
     func testBtcAddress() {
         let walletPublicKey = Data(hex: "046DB397495FA03FE263EE4021B77C49496E5C7DB8266E6E33A03D5B3A370C3D6D744A863B14DE2457D82BEE322416523E336530760C4533AEE980F4A4CDB9A98D")
@@ -110,6 +105,7 @@ class BitcoinTests: XCTestCase {
         let expectedSignedTransaction = Data(hex:  "01000000000102DF05DDAF1B9E0D7A36672DA32986499F5EC8B3946429D16E1CD6736CF4A3FECF0100000000FAFFFFFFEF0788C82E89047D926062A41C8500C4FE896069E95C37251D6B8CEED67A908B0000000000FAFFFFFF02005A620200000000220020D79BB4E313E9A85557D685D363601A00E9176DC04F6B051F1C0D97257769A4B9AF04B90000000000160014309A0C6EFA0DA7966D5C42DC5A928F6BAF0E47EF02463043021F325BF907137BB6ED0A84D78C12F9680DD57AE374F45D43CDC7068ABF56F5B902203C08BC1F9CD1E91E7A496DA2ECD54597B11AE0DDA4F6672235853C0CEF6BF8B40121036DB397495FA03FE263EE4021B77C49496E5C7DB8266E6E33A03D5B3A370C3D6D02483045022100ED59AEECB1AC0BAF31B6D84BB51C060DBBC3E0321EEEE6FADEBF073099629A9A02207247306451FD78488B1AAE38391DA6CAA72B52D2E6D9359F9C682EFCBF388B070121036DB397495FA03FE263EE4021B77C49496E5C7DB8266E6E33A03D5B3A370C3D6D00000000")
         
         let buildToSignResult = txBuilder.buildForSign(transaction: transaction, sequence: 4294967290)!
+        sizeTester.testTxSizes(buildToSignResult)
         let signedTx = txBuilder.buildForSend(transaction: transaction, signatures: [signature1, signature2], sequence: 4294967290)
         XCTAssertEqual(buildToSignResult[0].hexString, expectedHashToSign1.hexString)
         XCTAssertEqual(buildToSignResult[1].hexString, expectedHashToSign2.hexString)

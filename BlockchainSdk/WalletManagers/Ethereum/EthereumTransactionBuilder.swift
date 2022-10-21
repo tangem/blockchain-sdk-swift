@@ -35,7 +35,7 @@ class EthereumTransactionBuilder {
         }
         
         guard let feeValue = transaction.fee.bigUIntValue, let amountValue = transaction.amount.bigUIntValue else {
-                return nil
+            return nil
         }
         
         guard let data = params?.data ?? getData(for: transaction.amount, targetAddress: transaction.destinationAddress) else {
@@ -55,7 +55,7 @@ class EthereumTransactionBuilder {
                                                     data: data,
                                                     ignoreCheckSum: transaction.amount.type != .coin,
                                                     network: web3Network) else {
-                                                        return nil
+            return nil
         }
         
         guard let hashForSign = transaction.hashForSignature(chainID: chainId) else {

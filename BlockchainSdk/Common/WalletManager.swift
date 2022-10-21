@@ -27,7 +27,7 @@ extension WalletManager {
             Future { promise in
                 self.update { result in
                     switch result {
-                    case .success(let response):
+                    case .success:
                         promise(.success(self.wallet))
                     case .failure(let error):
                         promise(.failure(error))

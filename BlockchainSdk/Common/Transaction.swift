@@ -42,12 +42,15 @@ public struct Transaction {
         self.hash = hash
     }
     
-    public static func dummyTx(blockchain: Blockchain, type: Amount.AmountType, destinationAddress: String) -> Transaction {
+    public static func dummyTx(blockchain: Blockchain,
+                               type: Amount.AmountType,
+                               sourceAddress: String = .unknown,
+                               destinationAddress: String) -> Transaction {
         Transaction(amount: Amount(with: blockchain, type: type, value: 0),
                     fee: Amount(with: blockchain, type: type, value: 0),
-                    sourceAddress: .unknown,
+                    sourceAddress: sourceAddress,
                     destinationAddress: destinationAddress,
-                    changeAddress: .unknown)
+                    changeAddress: sourceAddress)
     }
 }
 
