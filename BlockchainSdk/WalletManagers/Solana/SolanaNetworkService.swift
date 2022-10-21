@@ -12,14 +12,18 @@ import Solana_Swift
 
 @available(iOS 13.0, *)
 class SolanaNetworkService {
-    let host: String
+    var host: String {
+        hostProvider.host
+    }
+    
     private let solanaSdk: Solana
     private let blockchain: Blockchain
+    private let hostProvider: HostProvider
     
-    init(host: String, solanaSdk: Solana, blockchain: Blockchain) {
-        self.host = host
+    init(solanaSdk: Solana, blockchain: Blockchain, hostProvider: HostProvider) {
         self.solanaSdk = solanaSdk
         self.blockchain = blockchain
+        self.hostProvider = hostProvider
     }
     
     func getInfo(accountId: String, transactionIDs: [String]) -> AnyPublisher<SolanaAccountInfoResponse, Error> {

@@ -77,7 +77,7 @@ final class SolanaTests: XCTestCase {
                                              derivationPath: nil))
         manager = .init(wallet: wallet)
         manager.solanaSdk = solanaSdk
-        manager.networkService = SolanaNetworkService(host: network.url.hostOrUnknown, solanaSdk: solanaSdk, blockchain: blockchain)
+        manager.networkService = SolanaNetworkService(solanaSdk: solanaSdk, blockchain: blockchain, hostProvider: networkingRouter)
     }
     
     func testCoinTransactionSize() {

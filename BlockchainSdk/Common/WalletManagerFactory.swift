@@ -275,7 +275,7 @@ public class WalletManagerFactory {
         case .solana(let testnet):
             return SolanaWalletManager(wallet: wallet).then {
                 let endpoints: [RPCEndpoint] = testnet ?
-                [.devnetSolana, .devnetGenesysGo, .testnetSolana] :
+                [.devnetSolana, .devnetGenesysGo] :
                 [
                     .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain),
                     .ankr,
@@ -286,7 +286,7 @@ public class WalletManagerFactory {
                 let accountStorage = SolanaDummyAccountStorage()
                 
                 $0.solanaSdk = Solana(router: networkRouter, accountStorage: accountStorage)
-                $0.networkService = SolanaNetworkService(host: endpoints[0].url.hostOrUnknown, solanaSdk: $0.solanaSdk, blockchain: blockchain)
+                $0.networkService = SolanaNetworkService(solanaSdk: $0.solanaSdk, blockchain: blockchain, hostProvider: networkRouter)
             }
         case .polkadot(let testnet):
             return makePolkadotWalletManager(network: testnet ? .westend : .polkadot, wallet: wallet)
