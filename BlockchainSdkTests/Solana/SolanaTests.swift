@@ -67,7 +67,7 @@ final class SolanaTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        networkingRouter = .init(endpoint: network)
+        networkingRouter = .init(endpoints: [.devnetSolana, .devnetGenesysGo, .testnetSolana])
         solanaSdk = .init(router: networkingRouter, accountStorage: SolanaDummyAccountStorage())
         let addrs = try! blockchain.makeAddresses(from: walletPubKey, with: nil)
         let wallet = Wallet(blockchain: blockchain,
@@ -77,7 +77,7 @@ final class SolanaTests: XCTestCase {
                                              derivationPath: nil))
         manager = .init(wallet: wallet)
         manager.solanaSdk = solanaSdk
-        manager.networkService = SolanaNetworkService(host: network.url.hostOrUnknown, solanaSdk: solanaSdk, blockchain: blockchain)
+        manager.networkService = SolanaNetworkService(solanaSdk: solanaSdk, blockchain: blockchain, hostProvider: networkingRouter)
     }
     
     func testCoinTransactionSize() {
