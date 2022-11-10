@@ -32,8 +32,13 @@ class OptimismWalletManager: EthereumWalletManager {
         lastLayer1FeeAmount = nil
         
         let layer2FeePublisher = super.getFee(amount: amount, destination: destination)
-        let transaction = Transaction.dummyTx(blockchain: wallet.blockchain, type: amount.type, destinationAddress: destination)
-        
+        let transaction = Transaction(amount: Amount(with: wallet.blockchain, type: amount.type, value: 0.1),
+                                      fee: Amount(with: wallet.blockchain, type: amount.type, value: 0.1),
+                                      sourceAddress: wallet.address,
+                                      destinationAddress: destination,
+                                      changeAddress: wallet.address,
+                                      contractAddress: amount.type.token?.contractAddress)
+
         let tx = txBuilder.buildForSign(transaction: transaction,
                                         nonce: 1,
                                         gasLimit: BigUInt(1))
