@@ -280,7 +280,6 @@ public class WalletManagerFactory {
                     .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain),
                     .ankr,
                     .mainnetBetaSolana,
-                    .mainnetBetaSerum
                 ]
                 let networkRouter = NetworkingRouter(endpoints: endpoints)
                 let accountStorage = SolanaDummyAccountStorage()
