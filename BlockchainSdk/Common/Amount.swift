@@ -75,6 +75,18 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
         return string()
     }
     
+    public init(
+        type: AmountType,
+        currencySymbol: String,
+        value: Decimal,
+        decimals: Int
+    ) {
+        self.type = type
+        self.currencySymbol = currencySymbol
+        self.value = value
+        self.decimals = decimals
+    }
+    
     public init(with blockchain: Blockchain, type: AmountType = .coin, value: Decimal) {
         self.type = type
         currencySymbol = type.token?.symbol ?? blockchain.currencySymbol
