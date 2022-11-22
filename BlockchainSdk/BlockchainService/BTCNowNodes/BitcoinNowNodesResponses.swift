@@ -69,4 +69,5 @@ struct BitcoinNowNodesUnspentTxResponse: Decodable {
     let lockTime: Int?
     let height: Int?
     let coinbase: Bool?
+    let scriptPubKey: String?
 }

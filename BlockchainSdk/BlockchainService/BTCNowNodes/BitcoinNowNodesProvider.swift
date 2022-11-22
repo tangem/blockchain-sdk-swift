@@ -24,16 +24,17 @@ class BitcoinNowNodesProvider: BitcoinNetworkProvider {
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        addressData(walletAddress: address)
-            .tryMap { addressResponse in
+        Publishers
+            .Zip(addressData(walletAddress: address), unspentTxData(walletAddress: address))
+            .tryMap { (addressResponse, unspentTxResponse) in
                 let transactions = addressResponse.transactions
                 let unspentOutputs = transactions
                     .map { response in
                         var outputs = [BitcoinUnspentOutput]()
                         let filteredResponse = response.vout.filter({ $0.addresses.contains(address) && $0.spent == nil })
                         filteredResponse.forEach {
-                            outputs.append(BitcoinUnspentOutput(transactionHash: response.blockHash, outputIndex: $0.n, amount: UInt64($0.value) ?? 0, outputScript: ""))
-                            
+                            let scriptPubKey = unspentTxResponse.first(where: { $0.txid == response.txid })?.scriptPubKey ?? ""
+                            outputs.append(BitcoinUnspentOutput(transactionHash: response.blockHash, outputIndex: $0.n, amount: UInt64($0.value) ?? 0, outputScript: scriptPubKey))
                         }
                         return outputs
                     }

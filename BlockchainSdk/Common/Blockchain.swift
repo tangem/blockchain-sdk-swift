@@ -290,7 +290,7 @@ extension Blockchain {
             }
             // TODO: - Add getblock api key
             return isTestnet ? [URL(string:"https://goerli.infura.io/v3/\(infuraProjectId)")!]
-            : [URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")! /*, URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")! */]
+            : [URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")!]
         case .ethereumClassic:
             if isTestnet {
                 return [
