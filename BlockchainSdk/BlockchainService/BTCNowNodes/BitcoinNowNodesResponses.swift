@@ -56,7 +56,7 @@ struct BitcoinNowNodesAddressResponse: Decodable {
         let hex: String
         let addresses: [String]
         let isAddress: Bool
-        let spent: Bool
+        let spent: Bool?
         let isOwn: Bool?
     }
 }

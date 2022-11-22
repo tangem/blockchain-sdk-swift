@@ -62,7 +62,7 @@ struct BitcoinNowNodesTarget: TargetType {
             let body = try! JSONEncoder().encode(BTCFeeParameters())
             return .requestCompositeData(bodyData: body, urlParameters: [:])
         case .address(let walletAddress):
-            return .requestParameters(parameters: ["details": "txs", "pageSize": 5], encoding: URLEncoding.default)
+            return .requestParameters(parameters: ["details": "txs"], encoding: URLEncoding.default)
         }
     }
     

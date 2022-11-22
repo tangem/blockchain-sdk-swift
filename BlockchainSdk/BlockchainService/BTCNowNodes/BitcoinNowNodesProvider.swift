@@ -24,20 +24,55 @@ class BitcoinNowNodesProvider: BitcoinNetworkProvider {
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        Publishers
-            .Zip(addressData(walletAddress: address), unspentTxData(walletAddress: address))
-            .tryMap { (addressResponse, unspentTxResponse) in
-                let unspentOutputs = unspentTxResponse.map { response in
-                    BitcoinUnspentOutput(transactionHash: response.txid, outputIndex: response.vout, amount: UInt64(response.value) ?? 0, outputScript: "")
-                }
-                
-                addressResponse.transactions.map { tx in
-                    if tx.confirmations == 0 {
-                        PendingTransaction(hash: tx.hex, destination: "", value: Decimal(string: tx.value) ?? 0, source: addressResponse.address, fee: Decimal(string: tx.fees), date: <#T##Date#>, isIncoming: <#T##Bool#>, transactionParams: <#T##TransactionParams?#>)
+        addressData(walletAddress: address)
+            .tryMap { addressResponse in
+                let transactions = addressResponse.transactions
+                let unspentOutputs = transactions
+                    .map { response in
+                        var outputs = [BitcoinUnspentOutput]()
+                        let filteredResponse = response.vout.filter({ $0.addresses.contains(address) && $0.spent == nil })
+                        filteredResponse.forEach {
+                            outputs.append(BitcoinUnspentOutput(transactionHash: response.blockHash, outputIndex: $0.n, amount: UInt64($0.value) ?? 0, outputScript: ""))
+                            
+                        }
+                        return outputs
                     }
-                }
+                    .reduce([BitcoinUnspentOutput](), +)
                 
-                return BitcoinResponse(balance: Decimal(string: addressResponse.balance) ?? 0, hasUnconfirmed: addressResponse.unconfirmedTxs != 0, pendingTxRefs: [], unspentOutputs: unspentOutputs)
+                let pendingRefs = addressResponse.transactions
+                    .filter({ $0.confirmations == 0 })
+                    .map { tx in
+                        var source: String = .unknown
+                        var destination: String = .unknown
+                        var value: Decimal?
+                        var isIncoming: Bool = false
+                        
+                        if let _ = tx.vin.first(where: { $0.addresses.contains(address) }), let txDestination = tx.vout.first(where: { $0.addresses.contains(address) }) {
+                            destination = txDestination.addresses.first ?? .unknown
+                            source = address
+                            value = Decimal(string: txDestination.value) ?? 0
+                        } else if let txDestination = tx.vout.first(where: { $0.addresses.contains(address) }), let txSources = tx.vin.first(where: { $0.addresses.contains(address) }) {
+                            isIncoming = true
+                            destination = address
+                            source = txSources.addresses.first ?? .unknown
+                            value = Decimal(string: txDestination.value) ?? 0
+                        }
+                        
+                        let bitcoinInputs = tx.vin.compactMap { input in
+                            BitcoinInput(sequence: input.sequence, address: address, outputIndex: input.n, outputValue: 0, prevHash: input.hex)
+                        }
+                        
+                        return PendingTransaction(hash: tx.hex,
+                                                  destination: destination,
+                                                  value: (value ?? 0) / Blockchain.bitcoin(testnet: false).decimalValue,
+                                                  source: source,
+                                                  fee: Decimal(string: tx.fees),
+                                                  date: Date(), // ???
+                                                  isIncoming: isIncoming,
+                                                  transactionParams: BitcoinTransactionParams(inputs: bitcoinInputs))
+                    }
+                
+                return BitcoinResponse(balance: Decimal(string: addressResponse.balance) ?? 0, hasUnconfirmed: addressResponse.unconfirmedTxs != 0, pendingTxRefs: pendingRefs, unspentOutputs: unspentOutputs)
             }
             .eraseToAnyPublisher()
     }
