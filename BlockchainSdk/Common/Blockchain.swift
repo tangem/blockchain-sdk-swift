@@ -282,15 +282,15 @@ extension Blockchain {
     }
     
     //Only for Ethereum compatible blockchains
-    public func getJsonRpcURLs(infuraProjectId: String?) -> [URL]? {
+    public func getJsonRpcURLs(infuraProjectId: String?, nowNodesApiKey: String?) -> [URL]? {
         switch self {
         case .ethereum:
-            guard let infuraProjectId = infuraProjectId else {
+            guard let infuraProjectId, let nowNodesApiKey else {
                 fatalError("infuraProjectId missing")
             }
-            
+            // TODO: - Add getblock api key
             return isTestnet ? [URL(string:"https://goerli.infura.io/v3/\(infuraProjectId)")!]
-            : [URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!]
+            : [URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")! /*, URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")! */]
         case .ethereumClassic:
             if isTestnet {
                 return [

@@ -91,14 +91,19 @@ public class WalletManagerFactory {
                     providers.append(BlockchainInfoNetworkProvider(configuration: config.networkProviderConfiguration)
                                         .eraseToAnyBitcoinNetworkProvider())
                 }
-                providers.append(BlockchairNetworkProvider(endpoint: .bitcoin(testnet: testnet),
-                                                           apiKey: config.blockchairApiKey,
-                                                           configuration: config.networkProviderConfiguration)
-                                    .eraseToAnyBitcoinNetworkProvider())
-                providers.append(BlockcypherNetworkProvider(endpoint: .bitcoin(testnet: testnet),
-                                                            tokens: config.blockcypherTokens,
-                                                            configuration: config.networkProviderConfiguration)
-                                    .eraseToAnyBitcoinNetworkProvider())
+                
+                providers.append(BitcoinNowNodesProvider(configuration: config.networkProviderConfiguration,
+                                                         apiKey: config.nownodesApiKey)
+                    .eraseToAnyBitcoinNetworkProvider())
+                
+//                providers.append(BlockchairNetworkProvider(endpoint: .bitcoin(testnet: testnet),
+//                                                           apiKey: config.blockchairApiKey,
+//                                                           configuration: config.networkProviderConfiguration)
+//                                    .eraseToAnyBitcoinNetworkProvider())
+//                providers.append(BlockcypherNetworkProvider(endpoint: .bitcoin(testnet: testnet),
+//                                                            tokens: config.blockcypherTokens,
+//                                                            configuration: config.networkProviderConfiguration)
+//                                    .eraseToAnyBitcoinNetworkProvider())
                 
                 $0.networkService = BitcoinNetworkService(providers: providers)
             }
@@ -171,7 +176,7 @@ public class WalletManagerFactory {
             
         case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .optimism, .ethereumFair, .saltPay:
             let manager: EthereumWalletManager
-            let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)!
+            let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId, nowNodesApiKey: config.nownodesApiKey)!
             
             if case .optimism = blockchain {
                 manager = OptimismWalletManager(wallet: wallet, rpcURL: rpcUrls[0])
@@ -277,11 +282,15 @@ public class WalletManagerFactory {
                 let endpoints: [RPCEndpoint] = testnet ?
                 [.devnetSolana, .devnetGenesysGo] :
                 [
-                    .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain),
-                    .ankr,
-                    .mainnetBetaSolana,
+//                    .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain),
+//                    .ankr,
+//                    .mainnetBetaSolana,
+                    .nowNodesMainBeta
                 ]
-                let networkRouter = NetworkingRouter(endpoints: endpoints)
+                
+                let configuration = URLSessionConfiguration.default
+                configuration.httpAdditionalHeaders = ["api-key": config.nownodesApiKey]
+                let networkRouter = NetworkingRouter(endpoints: endpoints, session: URLSession(configuration: configuration))
                 let accountStorage = SolanaDummyAccountStorage()
                 
                 $0.solanaSdk = Solana(router: networkRouter, accountStorage: accountStorage)

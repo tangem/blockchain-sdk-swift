@@ -19,6 +19,7 @@ extension RPCEndpoint {
             network: .mainnetBeta
         )
     }
+    public static let nowNodesMainBeta = RPCEndpoint(url: URL(string: "https://sol.nownodes.io")!, urlWebSocket: URL(string: "wss://sol.nownodes.io")!, network: .mainnetBeta)
 }
 
 extension Api {
