@@ -16,11 +16,13 @@ class BitcoinNowNodesProvider: BitcoinNetworkProvider {
     }
 
     private let apiKey: String
+    private let isTestnet: Bool
     private let provider: NetworkProvider<BitcoinNowNodesTarget>
     
-    init(configuration: NetworkProviderConfiguration, apiKey: String) {
+    init(configuration: NetworkProviderConfiguration, apiKey: String, isTestnet: Bool = false) {
         self.apiKey = apiKey
         self.provider = NetworkProvider<BitcoinNowNodesTarget>(configuration: configuration)
+        self.isTestnet = isTestnet
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
@@ -80,7 +82,7 @@ class BitcoinNowNodesProvider: BitcoinNetworkProvider {
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
         provider
-            .requestPublisher(BitcoinNowNodesTarget(endpoint: .fees, apiKey: apiKey))
+            .requestPublisher(BitcoinNowNodesTarget(endpoint: .fees, apiKey: apiKey, isTestnet: isTestnet))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(BlockchainInfoFeeResponse.self)
             .tryMap { response throws -> BitcoinFee in
@@ -95,7 +97,7 @@ class BitcoinNowNodesProvider: BitcoinNetworkProvider {
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
         provider
-            .requestPublisher(BitcoinNowNodesTarget(endpoint: .send(txHex: transaction), apiKey: apiKey))
+            .requestPublisher(BitcoinNowNodesTarget(endpoint: .send(txHex: transaction), apiKey: apiKey, isTestnet: isTestnet))
             .filterSuccessfulStatusAndRedirectCodes()
             .mapNotEmptyString()
             .eraseError()
@@ -114,7 +116,7 @@ class BitcoinNowNodesProvider: BitcoinNetworkProvider {
     
     private func addressData(walletAddress: String) -> AnyPublisher<BitcoinNowNodesAddressResponse, Error> {
         provider
-            .requestPublisher(BitcoinNowNodesTarget(endpoint: .address(walletAddress: walletAddress), apiKey: apiKey))
+            .requestPublisher(BitcoinNowNodesTarget(endpoint: .address(walletAddress: walletAddress), apiKey: apiKey, isTestnet: isTestnet))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(BitcoinNowNodesAddressResponse.self)
             .eraseError()
@@ -123,7 +125,7 @@ class BitcoinNowNodesProvider: BitcoinNetworkProvider {
     
     private func unspentTxData(walletAddress: String) -> AnyPublisher<[BitcoinNowNodesUnspentTxResponse], Error> {
         provider
-            .requestPublisher(BitcoinNowNodesTarget(endpoint: .txUnspents(walletAddress: walletAddress), apiKey: apiKey))
+            .requestPublisher(BitcoinNowNodesTarget(endpoint: .txUnspents(walletAddress: walletAddress), apiKey: apiKey, isTestnet: isTestnet))
             .filterSuccessfulStatusAndRedirectCodes()
             .map([BitcoinNowNodesUnspentTxResponse].self)
             .eraseError()

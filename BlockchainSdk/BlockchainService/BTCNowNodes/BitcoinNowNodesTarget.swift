@@ -20,13 +20,14 @@ struct BitcoinNowNodesTarget: TargetType {
     
     let endpoint: Endpoint
     let apiKey: String
+    var isTestnet: Bool = false
     
     var baseURL: URL {
         switch endpoint {
         case .fees:
             return URL(string: "https://api.blockchain.info")!
         default:
-            return URL(string: "https://btcbook.nownodes.io/")!
+            return URL(string: "https://\(isTestnet ? "btcbook-testnet" : "btcbook").nownodes.io/")!
         }
     }
     
