@@ -286,11 +286,11 @@ extension Blockchain {
         switch self {
         case .ethereum:
             guard let infuraProjectId, let nowNodesApiKey else {
-                fatalError("infuraProjectId missing")
+                fatalError("infuraProjectId or NowNodes api key missing")
             }
             // TODO: - Add getblock api key
-            return isTestnet ? [URL(string:"https://goerli.infura.io/v3/\(infuraProjectId)")!]
-            : [URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")!]
+            return isTestnet ? [URL(string: "https://eth-ropsten.nownodes.io/\(nowNodesApiKey)")!, URL(string:"https://goerli.infura.io/v3/\(infuraProjectId)")!]
+            : [URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")!, URL(string: "https://eth.getblock.io/mainnet/")!]
         case .ethereumClassic:
             if isTestnet {
                 return [
@@ -307,19 +307,24 @@ extension Blockchain {
                 ]
             }
         case .ethereumPoW:
+            guard let nowNodesApiKey else { return [] }
             if isTestnet {
                 return [URL(string: "https://iceberg.ethereumpow.org")!]
             } else {
-                return [URL(string: "https://mainnet.ethereumpow.org")!]
+                return [URL(string: "https://ethw.nownodes.io\(nowNodesApiKey)")!, URL(string: "https://mainnet.ethereumpow.org")!]
             }
         case .ethereumFair:
             return [URL(string: "https://rpc.etherfair.org")!]
         case .rsk:
             return [URL(string: "https://public-node.rsk.co/")!]
         case .bsc:
+            guard let nowNodesApiKey else {
+                fatalError("NowNodes api key missing")
+            }
             return isTestnet ? [URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!]
-            : [URL(string: "https://bsc-dataseed.binance.org/")!]
+            : [URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")! /*URL(string: "https://bsc-dataseed.binance.org/")!*/]
         case .polygon:
+            guard let nowNodesApiKey else { return [] }
             if isTestnet {
                 return [URL(string: "https://rpc-mumbai.maticvigil.com/")!]
             } else {
@@ -331,17 +336,21 @@ extension Blockchain {
                     URL(string: "https://rpc-mainnet.maticvigil.com")!,
                     URL(string: "https://rpc-mainnet.matic.quiknode.pro")!,
                     URL(string: "https://matic-mainnet-full-rpc.bwarelabs.com")!,
+                    URL(string: "https://matic.nownodes.io/\(nowNodesApiKey)")!,
                 ]
             }
         case .avalanche:
+            guard let nowNodesApiKey else { return [] }
             return isTestnet ? [URL(string: "https://api.avax-test.network/ext/bc/C/rpc")!]
-            : [URL(string: "https://api.avax.network/ext/bc/C/rpc")!]
+            : [URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)")!, URL(string: "https://api.avax.network/ext/bc/C/rpc")!]
         case .fantom:
+            guard let nowNodesApiKey else { return [] }
             return isTestnet ? [URL(string: "https://rpc.testnet.fantom.network/")!]
             : [URL(string: "https://rpc.ftm.tools/")!,
                URL(string: "https://rpcapi.fantom.network/")!,
                URL(string: "http://rpc.ankr.tools/ftm")!,
-               URL(string: "https://ftmrpc.ultimatenodes.io/")!]
+               URL(string: "https://ftmrpc.ultimatenodes.io/")!,
+               URL(string: "https://ftm.nownodes.io/\(nowNodesApiKey)")!,]
         case .arbitrum(let testnet):
             guard let infuraProjectId = infuraProjectId else {
                 fatalError("infuraProjectId missing")
@@ -375,6 +384,7 @@ extension Blockchain {
                 URL(string: "https://rpc.gnosischain.com")!,
             ]
         case .optimism(let testnet):
+            guard let nowNodesApiKey else { return [] }
             if testnet {
                 return [
                     URL(string: "https://goerli.optimism.io")!,
@@ -384,6 +394,7 @@ extension Blockchain {
                     URL(string: "https://mainnet.optimism.io")!,
                     URL(string: "https://optimism-mainnet.public.blastapi.io")!,
                     URL(string: "https://rpc.ankr.com/optimism")!,
+                    URL(string: "https://optimism.nownodes.io/\(nowNodesApiKey)")!,
                 ]
             }
         case .saltPay(let testnet):

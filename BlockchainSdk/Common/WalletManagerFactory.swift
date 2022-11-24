@@ -89,21 +89,21 @@ public class WalletManagerFactory {
                 var providers = [AnyBitcoinNetworkProvider]()
                 if !testnet {
                     providers.append(BlockchainInfoNetworkProvider(configuration: config.networkProviderConfiguration)
-                                        .eraseToAnyBitcoinNetworkProvider())
+                        .eraseToAnyBitcoinNetworkProvider())
                 }
                 
                 providers.append(BitcoinNowNodesProvider(configuration: config.networkProviderConfiguration,
                                                          apiKey: config.nownodesApiKey, isTestnet: testnet)
                     .eraseToAnyBitcoinNetworkProvider())
                 
-//                providers.append(BlockchairNetworkProvider(endpoint: .bitcoin(testnet: testnet),
-//                                                           apiKey: config.blockchairApiKey,
-//                                                           configuration: config.networkProviderConfiguration)
-//                                    .eraseToAnyBitcoinNetworkProvider())
-//                providers.append(BlockcypherNetworkProvider(endpoint: .bitcoin(testnet: testnet),
-//                                                            tokens: config.blockcypherTokens,
-//                                                            configuration: config.networkProviderConfiguration)
-//                                    .eraseToAnyBitcoinNetworkProvider())
+                //                providers.append(BlockchairNetworkProvider(endpoint: .bitcoin(testnet: testnet),
+                //                                                           apiKey: config.blockchairApiKey,
+                //                                                           configuration: config.networkProviderConfiguration)
+                //                                    .eraseToAnyBitcoinNetworkProvider())
+                //                providers.append(BlockcypherNetworkProvider(endpoint: .bitcoin(testnet: testnet),
+                //                                                            tokens: config.blockcypherTokens,
+                //                                                            configuration: config.networkProviderConfiguration)
+                //                                    .eraseToAnyBitcoinNetworkProvider())
                 
                 $0.networkService = BitcoinNetworkService(providers: providers)
             }
@@ -121,11 +121,11 @@ public class WalletManagerFactory {
                 providers.append(BlockchairNetworkProvider(endpoint: .litecoin,
                                                            apiKey: config.blockchairApiKey,
                                                            configuration: config.networkProviderConfiguration)
-                                    .eraseToAnyBitcoinNetworkProvider())
+                    .eraseToAnyBitcoinNetworkProvider())
                 providers.append(BlockcypherNetworkProvider(endpoint: .litecoin,
                                                             tokens: config.blockcypherTokens,
                                                             configuration: config.networkProviderConfiguration)
-                                    .eraseToAnyBitcoinNetworkProvider())
+                    .eraseToAnyBitcoinNetworkProvider())
                 
                 $0.networkService = LitecoinNetworkService(providers: providers)
             }
@@ -167,7 +167,7 @@ public class WalletManagerFactory {
             
         case .stellar(let testnet):
             return StellarWalletManager(wallet: wallet).then {
-                let url = testnet ? "https://horizon-testnet.stellar.org" : "https://horizon.stellar.org"
+                let url = testnet ? "https://horizon-testnet.stellar.org" : "https://xlm.nownodes.io/\(config.nownodesApiKey)"
                 let stellarSdk = StellarSDK(withHorizonUrl: url)
                 $0.stellarSdk = stellarSdk
                 $0.txBuilder = StellarTransactionBuilder(stellarSdk: stellarSdk, walletPublicKey: wallet.publicKey.blockchainKey, isTestnet: testnet)
@@ -206,8 +206,13 @@ public class WalletManagerFactory {
             
             return try manager.then {
                 let chainId = blockchain.chainId!
-                let jsonRpcProviders = rpcUrls.map {
-                    EthereumJsonRpcProvider(url: $0, configuration: config.networkProviderConfiguration)
+                let jsonRpcProviders: [EthereumJsonRpcProvider]
+                jsonRpcProviders = rpcUrls.map {
+                    EthereumJsonRpcProvider(url: $0,
+                                            targetBuilder: EvmTargetBuilder(baseURL: $0,
+                                                                            blockchain: blockchain,
+                                                                            apiKey: config.getBlockApiKey),
+                                            configuration: config.networkProviderConfiguration)
                 }
                 
                 $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, chainId: chainId)
@@ -236,7 +241,7 @@ public class WalletManagerFactory {
                 ).eraseToAnyBitcoinNetworkProvider())
                 $0.networkService = BitcoinCashNetworkService(providers: providers)
             }
-
+            
         case .binance(let testnet):
             return try BinanceWalletManager(wallet: wallet).then {
                 $0.txBuilder = try BinanceTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, isTestnet: testnet)
@@ -282,9 +287,9 @@ public class WalletManagerFactory {
                 let endpoints: [RPCEndpoint] = testnet ?
                 [.devnetSolana, .devnetGenesysGo] :
                 [
-//                    .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain),
-//                    .ankr,
-//                    .mainnetBetaSolana,
+                    //                    .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain),
+                    //                    .ankr,
+                    //                    .mainnetBetaSolana,
                     .nowNodesMainBeta
                 ]
                 
@@ -336,7 +341,7 @@ public class WalletManagerFactory {
     private func makeDashWalletManager(testnet: Bool, wallet: Wallet) throws -> WalletManager {
         try DashWalletManager(wallet: wallet).then {
             let compressed = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
-
+            
             let bitcoinManager = BitcoinManager(
                 networkParams: testnet ? DashTestNetworkParams() : DashMainNetworkParams(),
                 walletPublicKey: wallet.publicKey.blockchainKey,

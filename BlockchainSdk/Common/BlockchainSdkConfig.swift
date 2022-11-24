@@ -13,6 +13,7 @@ public struct BlockchainSdkConfig {
     let blockcypherTokens: [String]
     let infuraProjectId: String
     let nownodesApiKey: String
+    let getBlockApiKey: String
     let tronGridApiKey: String
     let quiknodeApiKey: String
     let quiknodeSubdomain: String
@@ -23,6 +24,7 @@ public struct BlockchainSdkConfig {
         blockcypherTokens: [String],
         infuraProjectId: String,
         nownodesApiKey: String,
+        getBlockApiKey: String,
         tronGridApiKey: String,
         quiknodeApiKey: String,
         quiknodeSubdomain: String,
@@ -32,6 +34,7 @@ public struct BlockchainSdkConfig {
         self.blockcypherTokens = blockcypherTokens
         self.infuraProjectId = infuraProjectId
         self.nownodesApiKey = nownodesApiKey
+        self.getBlockApiKey = getBlockApiKey
         self.tronGridApiKey = tronGridApiKey
         self.quiknodeApiKey = quiknodeApiKey
         self.quiknodeSubdomain = quiknodeSubdomain
