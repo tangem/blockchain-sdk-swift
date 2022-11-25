@@ -79,7 +79,7 @@ extension XRPWalletManager: TransactionSender {
                       }
                 
                 if !isAccountCreated && transaction.amount.value < walletReserve {
-                    throw String(format: "xrp_target_not_created_format".localized, walletReserve.description)
+                    throw String(format: "send_error_no_target_account".localized, walletReserve.description)
                 }
                 
                 return buldResponse
