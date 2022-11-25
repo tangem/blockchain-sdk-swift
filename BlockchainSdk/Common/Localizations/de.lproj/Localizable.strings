@@ -13,7 +13,7 @@
 "common_failed_to_load_token_balance" = "Failed to load %@ token balance";
 "cardano_missing_unspents" = "keine unverbraucht";
 "cardano_low_ada" = "Betrag absenden, die Änderung darf nicht unter 1 ADA liegen";
-"send_error_no_target_account" = "Das Zielkonto ist nicht erstellt. Der abzusendende Betrag soll %@ XRP + Gebühr oder mehr sein";
+"send_error_no_target_account" = "Das Zielkonto ist nicht erstellt. Der abzusendende Betrag soll %@ + Gebühr oder mehr sein";
 "xrp_load_unconfirmed_error" = "Aufladen der unbestätigten Bilanz fehlgeschlagen";
 "xrp_load_reserve_error" = "Aufladen der Reserve fehlgeschlagen";
 "xrp_load_account_error" = "Aufladen der Kontoinformation fehlgeschlagen";
