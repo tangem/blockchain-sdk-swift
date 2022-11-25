@@ -13,7 +13,7 @@
 "common_failed_to_load_token_balance" = "Failed to load %@ token balance";
 "cardano_missing_unspents" = "Assenti fondi non spesi";
 "cardano_low_ada" = "L'importo inviato e il cambio non può essere inferiore a 1 ADA";
-"xrp_target_not_created_format" = "Il conto totale non è stato creato L'importo da inviare deve essere %@ XRP + commissione o maggiore";
+"send_error_no_target_account" = "Il conto totale non è stato creato L'importo da inviare deve essere %@ + commissione o maggiore";
 "xrp_load_unconfirmed_error" = "Impossibile caricare il saldo non confermato";
 "xrp_load_reserve_error" = "Impossibile caricare lo stock";
 "xrp_load_account_error" = "Impossibile caricare le informazioni sull'account";

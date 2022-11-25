@@ -13,7 +13,7 @@
 "common_failed_to_load_token_balance" = "Failed to load %@ token balance";
 "cardano_missing_unspents" = "Missing unspents";
 "cardano_low_ada" = "Sent amount and change cannot be less than 1 ADA";
-"xrp_target_not_created_format" = "Target account is not created. Amount to send should be %@ XRP + fee or more";
+"send_error_no_target_account" = "Target account is not created. Amount to send should be %@ + fee or more";
 "xrp_load_unconfirmed_error" = "Failed to load unconfirmed balance";
 "xrp_load_reserve_error" = "Failed to load reserve";
 "xrp_load_account_error" = "Failed to load account info";

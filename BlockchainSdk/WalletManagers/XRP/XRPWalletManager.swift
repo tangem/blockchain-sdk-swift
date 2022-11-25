@@ -73,13 +73,13 @@ extension XRPWalletManager: TransactionSender {
             .tryMap{[weak self] isAccountCreated -> (XRPTransaction, Data) in
                 guard let self = self else { throw WalletError.empty }
                 
-                guard let walletReserve = self.wallet.amounts[.reserve]?.value,
+                guard let walletReserve = self.wallet.amounts[.reserve],
                       let buldResponse = try self.txBuilder.buildForSign(transaction: transaction) else {
                           throw XRPError.missingReserve
                       }
                 
-                if !isAccountCreated && transaction.amount.value < walletReserve {
-                    throw String(format: "xrp_target_not_created_format".localized, walletReserve.description)
+                if !isAccountCreated && transaction.amount.value < walletReserve.value {
+                    throw String(format: "send_error_no_target_account".localized, walletReserve.description)
                 }
                 
                 return buldResponse
