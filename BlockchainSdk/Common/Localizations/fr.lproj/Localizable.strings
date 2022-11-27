@@ -17,11 +17,11 @@
 "xrp_load_unconfirmed_error" = "Échec de téléchargement du solde non confirmé";
 "xrp_load_reserve_error" = "Échec de téléchargement de la réserve";
 "xrp_load_account_error" = "Échec de téléchargement des informations sur le compte";
-"xrp_missing_reserve_error" = "Il n’y a pas de réserve";
+"xrp_missing_reserve_error" = "Il n'y a pas de réserve";
 "eth_tx_count_parse_error" = "Échec d'analyse du compteur de transactions";
 "eth_balance_parse_error" = "Échec d'analyse du solde";
 "failed_to_load_fee_error" = "Failed to load fee from network";
-"xlm_latest_ledger_error" = "Le dernier livre n’a pas été trouvé";
+"xlm_latest_ledger_error" = "Le dernier livre n'a pas été trouvé";
 "xlm_requires_memo_error" = "Mémo est requis";
 "xlm_empty_response_error" = "Réponse vide";
 "xtz_withdrawal_message_warning" = "Pour ne pas payer une commission élevée la prochaine fois que vous rechargez votre portefeuille, veuillez réduire le montant de %@ XTZ";
