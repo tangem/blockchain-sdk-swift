@@ -90,7 +90,7 @@ struct BitcoinGetBlockTarget: TargetType {
     var headers: [String : String]? {
         switch endpoint {
         case .send, .address, .txDetails, .txUnspents:
-            return ["api-key": apiKey]
+            return ["x-api-key": apiKey]
         default:
             return ["Content-Type": "application/json"]
         }

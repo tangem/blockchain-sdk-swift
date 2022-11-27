@@ -16,43 +16,43 @@ struct EvmTargetBuilder {
     func balance(address: String) -> EvmRawTarget {
         EvmRawTarget(apiKey: apiKey,
                      baseURL: baseURL,
-                     task: .requestParameters(parameters: buildParameters(for: .balance(address: address)), encoding: JSONEncoding.default))
+                     parameters: buildParameters(for: .balance(address: address)))
     }
     
     func transactions(address: String) -> EvmRawTarget {
         EvmRawTarget(apiKey: apiKey,
                      baseURL: baseURL,
-                     task: .requestParameters(parameters: buildParameters(for: .transactions(address: address)), encoding: JSONEncoding.default))
+                     parameters: buildParameters(for: .transactions(address: address)))
     }
     
     func pending(address: String) -> EvmRawTarget {
         EvmRawTarget(apiKey: apiKey,
                      baseURL: baseURL,
-                     task: .requestParameters(parameters: buildParameters(for: .pending(address: address)), encoding: JSONEncoding.default))
+                     parameters: buildParameters(for: .pending(address: address)))
     }
     
     func send(transaction: String) -> EvmRawTarget {
         EvmRawTarget(apiKey: apiKey,
                      baseURL: baseURL,
-                     task: .requestParameters(parameters: buildParameters(for: .send(transaction: transaction)), encoding: JSONEncoding.default))
+                     parameters: buildParameters(for: .send(transaction: transaction)))
     }
     
     func tokenBalance(address: String, contractAddress: String) -> EvmRawTarget {
         EvmRawTarget(apiKey: apiKey,
                      baseURL: baseURL,
-                     task: .requestParameters(parameters: buildParameters(for: .tokenBalance(address: address, contractAddress: contractAddress)), encoding: JSONEncoding.default))
+                     parameters: buildParameters(for: .tokenBalance(address: address, contractAddress: contractAddress)))
     }
     
     func gasLimit(to: String, from: String, value: String?, data: String?) -> EvmRawTarget {
         EvmRawTarget(apiKey: apiKey,
                      baseURL: baseURL,
-                     task: .requestParameters(parameters: buildParameters(for: .gasLimit(to: to, from: from, value: value, data: data)), encoding: JSONEncoding.default))
+                     parameters: buildParameters(for: .gasLimit(to: to, from: from, value: value, data: data)))
     }
     
     func gasPrice() -> EvmRawTarget {
         EvmRawTarget(apiKey: apiKey,
                      baseURL: baseURL,
-                     task: .requestParameters(parameters: buildParameters(for: .gasPrice), encoding: JSONEncoding.default))
+                     parameters: buildParameters(for: .gasPrice))
     }
 }
 

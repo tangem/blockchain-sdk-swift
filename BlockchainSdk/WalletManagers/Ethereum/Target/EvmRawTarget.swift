@@ -12,7 +12,11 @@ struct EvmRawTarget: TargetType {
     let apiKey: String?
     
     var baseURL: URL
-    var task: Moya.Task
+    var parameters: [String: Any]
+    
+    var task: Moya.Task {
+        .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
+    }
     
     var path: String = ""
     var method: Moya.Method = .post

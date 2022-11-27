@@ -202,9 +202,9 @@
 		DC912D1628E706C400D76628 /* ContractInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC912D1528E706C400D76628 /* ContractInteractor.swift */; };
 		E90FAB5C28EED26600C6DCBE /* ContractABI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90FAB5B28EED26600C6DCBE /* ContractABI.swift */; };
 		E93532CE292D0E86008FD979 /* BitcoinNowNodesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9941ACA2927B07300399DE3 /* BitcoinNowNodesProvider.swift */; };
-		E93532DD292FD383008FD979 /* EvmRawTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E93532DA292FD383008FD979 /* EvmRawTarget.swift */; };
-		E93532DE292FD383008FD979 /* EvmTargetBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E93532DB292FD383008FD979 /* EvmTargetBuilder.swift */; };
-		E93532DF292FD383008FD979 /* EthereumTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E93532DC292FD383008FD979 /* EthereumTarget.swift */; };
+		E93532E32930ED03008FD979 /* EvmTargetBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E93532E02930ED03008FD979 /* EvmTargetBuilder.swift */; };
+		E93532E52930ED03008FD979 /* EvmRawTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E93532E22930ED03008FD979 /* EvmRawTarget.swift */; };
+		E93532E72930EE58008FD979 /* BitcoinGetBlockProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E93532E62930EE58008FD979 /* BitcoinGetBlockProvider.swift */; };
 		E95D95152929872B0068F876 /* BitcoinNowNodesResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = E95D95142929872B0068F876 /* BitcoinNowNodesResponses.swift */; };
 		E95D9518292ABDD80068F876 /* BitcoinGetBlockTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E95D9517292ABDD80068F876 /* BitcoinGetBlockTarget.swift */; };
 		E95D951A292AC17C0068F876 /* BitcoinGetBlockResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = E95D9519292AC17C0068F876 /* BitcoinGetBlockResponses.swift */; };
@@ -481,9 +481,9 @@
 		DC912D1528E706C400D76628 /* ContractInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractInteractor.swift; sourceTree = "<group>"; };
 		DCE3379A28F2B7260029A6F5 /* BlockchainSdkExample.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = BlockchainSdkExample.entitlements; sourceTree = "<group>"; };
 		E90FAB5B28EED26600C6DCBE /* ContractABI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractABI.swift; sourceTree = "<group>"; };
-		E93532DA292FD383008FD979 /* EvmRawTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EvmRawTarget.swift; sourceTree = "<group>"; };
-		E93532DB292FD383008FD979 /* EvmTargetBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EvmTargetBuilder.swift; sourceTree = "<group>"; };
-		E93532DC292FD383008FD979 /* EthereumTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumTarget.swift; sourceTree = "<group>"; };
+		E93532E02930ED03008FD979 /* EvmTargetBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EvmTargetBuilder.swift; path = BlockchainSdk/WalletManagers/Ethereum/Target/EvmTargetBuilder.swift; sourceTree = SOURCE_ROOT; };
+		E93532E22930ED03008FD979 /* EvmRawTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EvmRawTarget.swift; path = BlockchainSdk/WalletManagers/Ethereum/Target/EvmRawTarget.swift; sourceTree = SOURCE_ROOT; };
+		E93532E62930EE58008FD979 /* BitcoinGetBlockProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinGetBlockProvider.swift; sourceTree = "<group>"; };
 		E95D95142929872B0068F876 /* BitcoinNowNodesResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinNowNodesResponses.swift; sourceTree = "<group>"; };
 		E95D9517292ABDD80068F876 /* BitcoinGetBlockTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinGetBlockTarget.swift; sourceTree = "<group>"; };
 		E95D9519292AC17C0068F876 /* BitcoinGetBlockResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinGetBlockResponses.swift; sourceTree = "<group>"; };
@@ -1240,9 +1240,8 @@
 		E93532D9292FD383008FD979 /* Targets */ = {
 			isa = PBXGroup;
 			children = (
-				E93532DA292FD383008FD979 /* EvmRawTarget.swift */,
-				E93532DB292FD383008FD979 /* EvmTargetBuilder.swift */,
-				E93532DC292FD383008FD979 /* EthereumTarget.swift */,
+				E93532E22930ED03008FD979 /* EvmRawTarget.swift */,
+				E93532E02930ED03008FD979 /* EvmTargetBuilder.swift */,
 			);
 			path = Targets;
 			sourceTree = "<group>";
@@ -1252,6 +1251,7 @@
 			children = (
 				E95D9517292ABDD80068F876 /* BitcoinGetBlockTarget.swift */,
 				E95D9519292AC17C0068F876 /* BitcoinGetBlockResponses.swift */,
+				E93532E62930EE58008FD979 /* BitcoinGetBlockProvider.swift */,
 			);
 			path = BTCGetBlock;
 			sourceTree = "<group>";
@@ -1588,7 +1588,6 @@
 				EF332D19288EAEAC00AE3C85 /* NetworkProvider.swift in Sources */,
 				5D54FE1A23E41E5A009FAC2F /* LitecoinNetworkParams.swift in Sources */,
 				5D31EA2F27DA1C910031DBEB /* DetailedError.swift in Sources */,
-				E93532DE292FD383008FD979 /* EvmTargetBuilder.swift in Sources */,
 				DA9F76EC27EC9A2900F0665C /* TronWalletManager.swift in Sources */,
 				EF0DA78E285246A90081092A /* DashTestNetworkParams.swift in Sources */,
 				5D4B33D923FAAD1B00C93A84 /* BitcoreTarget.swift in Sources */,
@@ -1620,6 +1619,7 @@
 				5D88C80B256BCDBB00020028 /* StellarTransactionParams.swift in Sources */,
 				5D88838927D3BB8B008744E1 /* WalletError.swift in Sources */,
 				5DE3BF9E239FA2F400E8815D /* SegWitBech32.swift in Sources */,
+				E93532E32930ED03008FD979 /* EvmTargetBuilder.swift in Sources */,
 				5D6DEAB6243CC09A00510EC8 /* EthereumTransactionBuilder.swift in Sources */,
 				DA9F76F527EC9CB400F0665C /* TronTarget.swift in Sources */,
 				5D7D243525136254001B9A4F /* XRPAmount.swift in Sources */,
@@ -1644,6 +1644,7 @@
 				5D4B33D523F7DFB400C93A84 /* BinanceTransactionBuilder.swift in Sources */,
 				5D26CEEC243CB92700994CC0 /* BlockcypherResponse.swift in Sources */,
 				5D5E058C24FE749D00F04DE1 /* Bundle+.swift in Sources */,
+				E93532E52930ED03008FD979 /* EvmRawTarget.swift in Sources */,
 				5D845518243DFCE90072155E /* AdaliteNetworkProvider.swift in Sources */,
 				5D86540023A906DF000DE52D /* CommonSigner.swift in Sources */,
 				DAB6548D2796C5F00002A5E8 /* SolanaTransactionSigner.swift in Sources */,
@@ -1686,7 +1687,6 @@
 				5DA163D2273D2146007AA991 /* TezosJsonRpcProvider.swift in Sources */,
 				5DED72BA239FE2F8006D79AE /* Int+.swift in Sources */,
 				B06C6793264286390037E7AD /* BlockchairAddressBlockMapper.swift in Sources */,
-				E93532DF292FD383008FD979 /* EthereumTarget.swift in Sources */,
 				5D26CEF3243CB9FB00994CC0 /* BlockchainInfoTarget.swift in Sources */,
 				5DEC90C12587A35800826C95 /* BlockchainSdkConfig.swift in Sources */,
 				5D7D243925136254001B9A4F /* IssuedAmount.swift in Sources */,
@@ -1699,6 +1699,7 @@
 				5DEAFA8E244472CD0032E316 /* Amount.swift in Sources */,
 				DA9F76FB27ECA49F00F0665C /* TronNetwork.swift in Sources */,
 				5DC7DD62244077D7008F83F2 /* XRPNetworkService.swift in Sources */,
+				E93532E72930EE58008FD979 /* BitcoinGetBlockProvider.swift in Sources */,
 				DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */,
 				5D7D243025136254001B9A4F /* XRPKeypair.swift in Sources */,
 				B04E8D5025F8F67F00821CBE /* RosettaNetworkProvider.swift in Sources */,
@@ -1715,7 +1716,6 @@
 				DAED921F27A150E500F188D7 /* PolkadotAddressService.swift in Sources */,
 				5D4B33CD23F7DC0400C93A84 /* BinanceWalletManager.swift in Sources */,
 				5D0906C227DBB7A10053B2CD /* BitcoinCashNetworkParams.swift in Sources */,
-				E93532DD292FD383008FD979 /* EvmRawTarget.swift in Sources */,
 				B07EE8B225AC1504009DB163 /* DateFormatter+.swift in Sources */,
 				5D557CB523ACCAD2009B32AF /* BlockcypherNetworkProvider.swift in Sources */,
 				5D7D243725136254001B9A4F /* XRPCurrentLedgerInfo.swift in Sources */,
