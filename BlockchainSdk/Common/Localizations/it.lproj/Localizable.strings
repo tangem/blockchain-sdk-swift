@@ -2,7 +2,7 @@
 "no_account_xlm_asset" = "Per creare un account, invia 1.5+ XLM a questo indirizzo";
 "no_trustline_xlm_asset" = "The destination account does not have a trustline for the asset being sent.";
 "no_account_on_destination_xlm_asset" = "The destination account is not created. To create account send 1+ XLM.";
-"no_account_xrp" = "Scarica %@+ %@ per creare un account";
+"no_account_generic" = "Scarica %@+ %@ per creare un account";
 "no_account_bnb" = "Per creare un account, invia fondi a questo indirizzo";
 "no_account_polkadot" = "Destination account is not active. Send %@ or more to activate the account.";
 "common_build_tx_error" = "Impossibile creare la transazione";
