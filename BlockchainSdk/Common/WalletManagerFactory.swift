@@ -96,15 +96,15 @@ public class WalletManagerFactory {
                                                          apiKey: config.nownodesApiKey, isTestnet: testnet)
                     .eraseToAnyBitcoinNetworkProvider())
                 
-                //                providers.append(BlockchairNetworkProvider(endpoint: .bitcoin(testnet: testnet),
-                //                                                           apiKey: config.blockchairApiKey,
-                //                                                           configuration: config.networkProviderConfiguration)
-                //                                    .eraseToAnyBitcoinNetworkProvider())
-                //                providers.append(BlockcypherNetworkProvider(endpoint: .bitcoin(testnet: testnet),
-                //                                                            tokens: config.blockcypherTokens,
-                //                                                            configuration: config.networkProviderConfiguration)
-                //                                    .eraseToAnyBitcoinNetworkProvider())
-                
+                providers.append(BlockchairNetworkProvider(endpoint: .bitcoin(testnet: testnet),
+                                                           apiKey: config.blockchairApiKey,
+                                                           configuration: config.networkProviderConfiguration)
+                                    .eraseToAnyBitcoinNetworkProvider())
+                providers.append(BlockcypherNetworkProvider(endpoint: .bitcoin(testnet: testnet),
+                                                            tokens: config.blockcypherTokens,
+                                                            configuration: config.networkProviderConfiguration)
+                                    .eraseToAnyBitcoinNetworkProvider())
+
                 $0.networkService = BitcoinNetworkService(providers: providers)
             }
             
