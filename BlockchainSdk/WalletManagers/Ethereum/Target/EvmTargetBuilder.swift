@@ -128,7 +128,7 @@ extension EvmTargetBuilder {
     private func prefix() -> String {
         switch blockchain {
         case .bsc, .ethereum, .avalanche, .ethereumClassic, .ethereumPoW, .fantom, .optimism, .polygon:
-            if baseURL.absoluteString.contains("nownodes") || baseURL.absoluteString.contains("getblock") {
+            if baseURL.absoluteString.contains("nownodes") {
                 return blockchain.currencySymbol.lowercased()
             } else {
                 return "eth"

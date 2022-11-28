@@ -304,6 +304,7 @@ extension Blockchain {
                     URL(string: "https://etc.mytokenpocket.vip")!,
                     URL(string: "https://besu.etc-network.info")!,
                     URL(string: "https://geth.etc-network.info")!,
+                    URL(string: "https://etc.getblock.io/mainnet/")!,
                 ]
             }
         case .ethereumPoW:
@@ -316,13 +317,13 @@ extension Blockchain {
         case .ethereumFair:
             return [URL(string: "https://rpc.etherfair.org")!]
         case .rsk:
-            return [URL(string: "https://public-node.rsk.co/")!]
+            return [URL(string: "https://public-node.rsk.co/")!, URL(string: "https://rsk.getblock.io/mainnet/")!]
         case .bsc:
             guard let nowNodesApiKey else {
                 fatalError("NowNodes api key missing")
             }
             return isTestnet ? [URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!]
-            : [URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")! /*URL(string: "https://bsc-dataseed.binance.org/")!*/]
+            : [URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")!, URL(string: "https://bsc.getblock.io/mainnet/")!, URL(string: "https://bsc-dataseed.binance.org/")!]
         case .polygon:
             guard let nowNodesApiKey else { return [] }
             if isTestnet {
@@ -337,12 +338,13 @@ extension Blockchain {
                     URL(string: "https://rpc-mainnet.matic.quiknode.pro")!,
                     URL(string: "https://matic-mainnet-full-rpc.bwarelabs.com")!,
                     URL(string: "https://matic.nownodes.io/\(nowNodesApiKey)")!,
+                    URL(string: "https://matic.getblock.io/mainnet/")!,
                 ]
             }
         case .avalanche:
             guard let nowNodesApiKey else { return [] }
             return isTestnet ? [URL(string: "https://api.avax-test.network/ext/bc/C/rpc")!]
-            : [URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)")!, URL(string: "https://api.avax.network/ext/bc/C/rpc")!]
+            : [URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)")!, URL(string: "https://avax.getblock.io/mainnet/ext/bc/C/rpc")!, URL(string: "https://api.avax.network/ext/bc/C/rpc")!]
         case .fantom:
             guard let nowNodesApiKey else { return [] }
             return isTestnet ? [URL(string: "https://rpc.testnet.fantom.network/")!]
@@ -382,6 +384,7 @@ extension Blockchain {
                 URL(string: "https://xdai-rpc.gateway.pokt.network")!,
                 URL(string: "https://xdai-archive.blockscout.com")!,
                 URL(string: "https://rpc.gnosischain.com")!,
+                URL(string: "https://gno.getblock.io/mainnet/")!,
             ]
         case .optimism(let testnet):
             guard let nowNodesApiKey else { return [] }
@@ -395,6 +398,7 @@ extension Blockchain {
                     URL(string: "https://optimism-mainnet.public.blastapi.io")!,
                     URL(string: "https://rpc.ankr.com/optimism")!,
                     URL(string: "https://optimism.nownodes.io/\(nowNodesApiKey)")!,
+                    URL(string: "https://optimism.getblock.io/mainnet/")!,
                 ]
             }
         case .saltPay(let testnet):
