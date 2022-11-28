@@ -10,7 +10,7 @@ import Foundation
 import Moya
 
 struct BitcoinNowNodesTarget: TargetType {
-    enum Endpoint {
+    enum Request {
         case address(walletAddress: String)
         case send(txHex: String)
         case txDetails(txHash: String)
@@ -18,12 +18,12 @@ struct BitcoinNowNodesTarget: TargetType {
         case fees
     }
     
-    let endpoint: Endpoint
+    let request: Request
     let apiKey: String
     var isTestnet: Bool = false
     
     var baseURL: URL {
-        switch endpoint {
+        switch request {
         case .fees:
             return URL(string: "https://api.blockchain.info")!
         default:
@@ -32,7 +32,7 @@ struct BitcoinNowNodesTarget: TargetType {
     }
     
     var path: String {
-        switch endpoint {
+        switch request {
         case .address(let walletAddress):
             return "api/v2/address/\(walletAddress)"
         case .send(let txHex):
@@ -47,7 +47,7 @@ struct BitcoinNowNodesTarget: TargetType {
     }
     
     var method: Moya.Method {
-        switch endpoint {
+        switch request {
         case .send, .address, .txUnspents:
             return .get
         case .txDetails, .fees:
@@ -56,7 +56,7 @@ struct BitcoinNowNodesTarget: TargetType {
     }
     
     var task: Moya.Task {
-        switch endpoint {
+        switch request {
         case .txDetails, .send, .txUnspents:
             return .requestPlain
         case .fees:
@@ -68,7 +68,7 @@ struct BitcoinNowNodesTarget: TargetType {
     }
     
     var headers: [String : String]? {
-        switch endpoint {
+        switch request {
         case .send, .address, .txDetails, .txUnspents:
             return ["api-key": apiKey]
         default:

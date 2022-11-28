@@ -287,10 +287,10 @@ public class WalletManagerFactory {
                 let endpoints: [RPCEndpoint] = testnet ?
                 [.devnetSolana, .devnetGenesysGo] :
                 [
-                    //                    .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain),
-                    //                    .ankr,
-                    //                    .mainnetBetaSolana,
-                    .nowNodesMainBeta
+//                    .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain),
+//                    .ankr,
+//                    .mainnetBetaSolana,
+                    .nowNodesMainBeta,
                 ]
                 
                 let configuration = URLSessionConfiguration.default
