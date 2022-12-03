@@ -12,17 +12,32 @@ import SwiftyJSON
 import Combine
 import TangemSdk
 
-public enum StellarError: String, Error, LocalizedError {
-    case emptyResponse = "xlm_empty_response_error"
-    case requiresMemo = "xlm_requires_memo_error"
-    case failedToFindLatestLedger = "xlm_latest_ledger_error"
-    case xlmCreateAccount = "no_account_xlm"
-    case assetCreateAccount = "no_account_xlm_asset"
-    case assetNoAccountOnDestination = "no_account_on_destination_xlm_asset"
-    case assetNoTrustline = "no_trustline_xlm_asset"
+public enum StellarError: Error, LocalizedError {
+    case emptyResponse
+    case requiresMemo
+    case failedToFindLatestLedger
+    case xlmCreateAccount
+    case assetCreateAccount
+    case assetNoAccountOnDestination
+    case assetNoTrustline
     
     public var errorDescription: String? {
-        return self.rawValue.localized
+        switch self {
+        case .emptyResponse:
+            return "xlm_empty_response_error".localized
+        case .requiresMemo:
+            return "xlm_requires_memo_error".localized
+        case .failedToFindLatestLedger:
+            return "xlm_latest_ledger_error".localized
+        case .xlmCreateAccount:
+            return "no_account_generic".localized(["1", "XLM"])
+        case .assetCreateAccount:
+            return "no_account_generic".localized(["1.5", "XLM"])
+        case .assetNoAccountOnDestination:
+            return "no_account_on_destination_xlm_asset".localized
+        case .assetNoTrustline:
+            return "no_trustline_xlm_asset".localized
+        }
     }
 }
 

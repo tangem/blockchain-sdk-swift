@@ -118,7 +118,8 @@ class StellarNetworkService {
     private func mapError(_ error: Error, isAsset: Bool? = nil) -> Error {
         if let horizonError = error as? HorizonRequestError {
             if case .notFound = horizonError, let isAsset = isAsset {
-                return WalletError.noAccount(message: isAsset ? "no_account_xlm_asset".localized : "no_account_xlm".localized)
+                let error: StellarError = isAsset ? .assetCreateAccount : .xlmCreateAccount
+                return WalletError.noAccount(message: error.localizedDescription)
             } else {
                 return horizonError.parseError()
             }
