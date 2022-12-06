@@ -58,6 +58,7 @@ public protocol EthereumTransactionProcessor {
     func buildForSend(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
     func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error>
     func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
+    func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<String, Error>
 }
 
 public struct CompiledEthereumTransaction {
@@ -316,5 +317,9 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
+    }
+
+    func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<String, Error> {
+        networkService.getAllowance(from: from, to: to, contractAddress: contractAddress)
     }
 }

@@ -11,21 +11,34 @@ import Moya
 public struct NetworkProviderConfiguration {
     let logger: LoggerType
     let urlSessionConfiguration: URLSessionConfiguration
+    let credentials: Credentials?
 
     public init(
         logger: LoggerType = .default,
-        urlSessionConfiguration: URLSessionConfiguration = .standart
+        urlSessionConfiguration: URLSessionConfiguration = .standart,
+        credentials: Credentials? = nil
     ) {
         self.logger = logger
         self.urlSessionConfiguration = urlSessionConfiguration
+        self.credentials = credentials
     }
     
     var plugins: [PluginType] {
+        var plugins: [PluginType] = []
+
         if let logOptions = logger.logOptions {
-            return [NetworkLoggerPlugin(configuration: .init(logOptions: logOptions))]
+            plugins.append(NetworkLoggerPlugin(configuration: .init(logOptions: logOptions)))
+        }
+
+        if let credentials {
+            plugins.append(CredentialsPlugin { _ -> URLCredential? in
+                    .init(user: credentials.user,
+                          password: credentials.password,
+                          persistence: .none)
+            })
         }
         
-        return []
+        return plugins
     }
 }
 
