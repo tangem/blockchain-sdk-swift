@@ -168,10 +168,11 @@ class EthereumNetworkService: MultiNetworkProvider {
     func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<String, Error> {
         providerPublisher {
             $0.getAllowance(from: from, to: to, contractAddress: contractAddress)
-                .tryMap {[weak self] in
+                .tryMap { [weak self] in
                     guard let self = self else { throw WalletError.empty }
 
-                    return try self.getResult(from: $0) }
+                    return try self.getResult(from: $0)
+                  }
                 .eraseToAnyPublisher()
         }
     }
