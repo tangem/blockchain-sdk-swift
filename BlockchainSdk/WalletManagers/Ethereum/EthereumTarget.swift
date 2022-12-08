@@ -18,6 +18,7 @@ enum EthereumTarget: TargetType {
     case pending(address: String, url: URL)
     case send(transaction: String, url: URL)
     case tokenBalance(address: String, contractAddress: String, url: URL)
+    case getAllowance(from: String, to: String, contractAddress: String, url: URL)
     case gasLimit(to: String, from: String, value: String?, data: String?, url: URL)
     case gasPrice(url: URL)
     
@@ -27,6 +28,7 @@ enum EthereumTarget: TargetType {
         case .pending(_, let url): return url
         case .send(_, let url): return url
         case .tokenBalance(_, _, let url): return url
+        case .getAllowance(_, _, _, let url): return url
         case .transactions(_, let url): return url
         case .gasLimit(_, _, _, _, let url): return url
         case .gasPrice(let url): return url
@@ -57,8 +59,12 @@ enum EthereumTarget: TargetType {
         case .send(let transaction, _):
             params.append(transaction)
         case .tokenBalance(let address, let contractAddress, _):
-            let rawAddress = address.removeHexPrefix()
-            let dataValue = ["data": "0x70a08231000000000000000000000000\(rawAddress)", "to": contractAddress]
+            let rawAddress = address.serialize()
+            let dataValue = ["data": "0x70a08231\(rawAddress)", "to": contractAddress]
+            params.append(dataValue)
+        case .getAllowance(let fromAddress, let toAddress, let contractAddress, _):
+            let dataValue = ["data": "0xdd62ed3e\(fromAddress.serialize())\(toAddress.serialize())",
+                             "to": contractAddress]
             params.append(dataValue)
         case .gasLimit(let to, let from, let value, let data, _):
             var gasLimitParams = [String: String]()
@@ -92,7 +98,7 @@ enum EthereumTarget: TargetType {
         case .balance: return "eth_getBalance"
         case .transactions, .pending: return "eth_getTransactionCount"
         case .send: return "eth_sendRawTransaction"
-        case .tokenBalance: return "eth_call"
+        case .tokenBalance, .getAllowance: return "eth_call"
         case .gasLimit: return "eth_estimateGas"
         case .gasPrice: return "eth_gasPrice"
         }
@@ -100,7 +106,7 @@ enum EthereumTarget: TargetType {
     
     private var blockParams: String? {
         switch self {
-        case .balance, .transactions, .tokenBalance: return "latest"
+        case .balance, .transactions, .tokenBalance, .getAllowance: return "latest"
         case .pending: return "pending"
         case .send, .gasLimit, .gasPrice: return nil
         }

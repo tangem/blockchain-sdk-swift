@@ -50,6 +50,10 @@ class EthereumJsonRpcProvider: HostProvider {
     func getGasPrice() -> AnyPublisher<EthereumResponse, Error> {
         requestPublisher(for: .gasPrice(url: url))
     }
+
+    func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<EthereumResponse, Error> {
+        requestPublisher(for: .getAllowance(from: from, to: to, contractAddress: contractAddress, url: url))
+    }
     
     private func requestPublisher(for target: EthereumTarget) -> AnyPublisher<EthereumResponse, Error> {
         provider.requestPublisher(target)
