@@ -11,6 +11,8 @@ import Combine
 
 class BitcoinNowNodesProvider: BitcoinNetworkProvider {
     var supportsTransactionPush: Bool { false }
+    
+    #warning("TODO")
     var host: String {
         ""
     }
