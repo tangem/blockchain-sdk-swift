@@ -1,8 +1,6 @@
-"no_account_xlm" = "Um ein Konto zu erstellen, senden Sie 1+ XLM an diese Adresse";
-"no_account_xlm_asset" = "Um ein Konto zu erstellen, senden Sie 1.5+ XLM an diese Adresse";
 "no_trustline_xlm_asset" = "The destination account does not have a trustline for the asset being sent.";
 "no_account_on_destination_xlm_asset" = "The destination account is not created. To create account send 1+ XLM.";
-"no_account_xrp" = "Laden Sie 10+ XRP auf um ein Konto zu erstellen";
+"no_account_generic" = "Laden Sie %@+ %@ auf um ein Konto zu erstellen";
 "no_account_bnb" = "Senden Sie Geld an diese Andresse um ein Konto zu erstellen";
 "no_account_polkadot" = "Destination account is not active. Send %@ or more to activate the account.";
 "common_build_tx_error" = "Transaktion fehlgeschlagen";
@@ -13,7 +11,7 @@
 "common_failed_to_load_token_balance" = "Failed to load %@ token balance";
 "cardano_missing_unspents" = "keine unverbraucht";
 "cardano_low_ada" = "Betrag absenden, die Änderung darf nicht unter 1 ADA liegen";
-"xrp_target_not_created_format" = "Das Zielkonto ist nicht erstellt. Der abzusendende Betrag soll %@ XRP + Gebühr oder mehr sein";
+"send_error_no_target_account" = "Das Zielkonto ist nicht erstellt. Der abzusendende Betrag soll %@ + Gebühr oder mehr sein";
 "xrp_load_unconfirmed_error" = "Aufladen der unbestätigten Bilanz fehlgeschlagen";
 "xrp_load_reserve_error" = "Aufladen der Reserve fehlgeschlagen";
 "xrp_load_account_error" = "Aufladen der Kontoinformation fehlgeschlagen";

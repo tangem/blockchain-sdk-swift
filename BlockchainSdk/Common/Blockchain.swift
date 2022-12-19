@@ -40,7 +40,7 @@ public enum Blockchain: Equatable, Hashable {
     case dash(testnet: Bool)
     case gnosis
     case optimism(testnet: Bool)
-    case saltPay(testnet: Bool)
+    case saltPay
 
     public var isTestnet: Bool {
         switch self {
@@ -276,7 +276,7 @@ extension Blockchain {
         case .arbitrum: return isTestnet ? 421613 : 42161
         case .gnosis: return 100
         case .optimism: return isTestnet ? 420 : 10
-        case .saltPay: return isTestnet ? 100100 : 300
+        case .saltPay: return 29313331
         default: return nil
         }
     }
@@ -401,16 +401,10 @@ extension Blockchain {
                     URL(string: "https://optimism.getblock.io/mainnet/")!,
                 ]
             }
-        case .saltPay(let testnet):
-            if testnet {
-                return [
-                    URL(string: "https://rpc-chiado.gnosistestnet.com")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://optimism.gnosischain.com")!,
-                ]
-            }
+        case .saltPay:
+            return [
+                URL(string: "https://rpc.bicoccachain.net")!,
+            ]
         default:
             return nil
         }
@@ -469,7 +463,7 @@ extension Blockchain {
         case .bitcoin, .ducatus: return 0
         case .litecoin: return 2
         case .dogecoin: return 3
-        case .ethereum, .ethereumPoW, .ethereumFair: return ethCoinType
+        case .ethereum, .ethereumPoW, .ethereumFair, .saltPay: return ethCoinType
         case .ethereumClassic: return 61
         case .bsc: return 9006
         case .bitcoinCash: return 145
@@ -488,7 +482,7 @@ extension Blockchain {
         case .tron: return 195
         case .arbitrum: return 9001
         case .dash: return 5
-        case .gnosis, .saltPay: return 700
+        case .gnosis: return 700
         case .optimism: return 614
         }
     }
@@ -667,7 +661,7 @@ extension Blockchain: Codable {
         case "optimism": self = .optimism(testnet: isTestnet)
         case "ethereum-pow-iou": self = .ethereumPoW(testnet: isTestnet)
         case "ethereumfair": self = .ethereumFair
-        case "sxdai": self = .saltPay(testnet: isTestnet)
+        case "sxdai": self = .saltPay
         default: throw BlockchainSdkError.decodingFailed
         }
     }
@@ -727,8 +721,6 @@ extension Blockchain {
             // Or another one https://testnet-faucet.dash.org/ - by Dash Core Group
         case .optimism:
             return URL(string: "https://optimismfaucet.xyz")! //another one https://faucet.paradigm.xyz
-        case .saltPay:
-            return URL(string: "https://gnosisfaucet.com")!
         default:
             return nil
         }
@@ -811,7 +803,7 @@ extension Blockchain {
         case .tron:
             let subdomain = isTestnet ? "nile." : ""
             return URL(string: "https://\(subdomain)tronscan.org/#/address/\(address)")!
-        case .arbitrum(let testnet):
+        case .arbitrum:
             if isTestnet {
                 return URL(string: "https://goerli-rollup-explorer.arbitrum.io/address/\(address)")!
             }
@@ -827,11 +819,7 @@ extension Blockchain {
             }
             return URL(string: "https://optimistic.etherscan.io/address/\(address)")!
         case .saltPay:
-            if isTestnet {
-                URL(string: "https://blockscout-chiado.gnosistestnet.com/address/\(address)")! //TODO: TBD
-            }
-            
-            return URL(string: "https://blockscout.com/xdai/optimism/address/\(address)")!
+            return URL(string: "https://blockscout.bicoccachain.net/address/\(address)")!
         }
     }
 }
@@ -878,7 +866,7 @@ extension Blockchain {
         case "xdai": return .gnosis
         case "ethereum-pow-iou": return .ethereumPoW(testnet: isTestnet)
         case "ethereumfair": return .ethereumFair
-        case "sxdai": return .saltPay(testnet: isTestnet)
+        case "sxdai": return .saltPay
         default: return nil
         }
     }

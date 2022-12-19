@@ -43,6 +43,12 @@ struct EvmTargetBuilder {
                      parameters: buildParameters(for: .tokenBalance(address: address, contractAddress: contractAddress)))
     }
     
+    func getAllowance(from source: String, to destination: String, contractAddress: String) -> EvmRawTarget {
+        EvmRawTarget(apiKey: apiKey,
+                     baseURL: baseURL,
+                     parameters: buildParameters(for: .getAllowance(from: source, to: destination, contractAddress: contractAddress)))
+    }
+    
     func gasLimit(to: String, from: String, value: String?, data: String?) -> EvmRawTarget {
         EvmRawTarget(apiKey: apiKey,
                      baseURL: baseURL,
@@ -63,6 +69,7 @@ extension EvmTargetBuilder {
         case pending(address: String)
         case send(transaction: String)
         case tokenBalance(address: String, contractAddress: String)
+        case getAllowance(from: String, to: String, contractAddress: String)
         case gasLimit(to: String, from: String, value: String?, data: String?)
         case gasPrice
     }
@@ -83,6 +90,10 @@ extension EvmTargetBuilder {
         case .tokenBalance(let address, let contractAddress):
             let rawAddress = address.removeHexPrefix()
             let dataValue = ["data": "0x70a08231000000000000000000000000\(rawAddress)", "to": contractAddress]
+            params.append(dataValue)
+        case .getAllowance(let fromAddress, let toAddress, let contractAddress):
+            let dataValue = ["data": "0xdd62ed3e\(fromAddress.serialize())\(toAddress.serialize())",
+                             "to": contractAddress]
             params.append(dataValue)
         case .gasLimit(let to, let from, let value, let data):
             var gasLimitParams = [String: String]()
@@ -111,7 +122,7 @@ extension EvmTargetBuilder {
         case .balance: return "\(prefix())_getBalance"
         case .transactions, .pending: return "\(prefix())_getTransactionCount"
         case .send: return "\(prefix())_sendRawTransaction"
-        case .tokenBalance: return "\(prefix())_call"
+        case .tokenBalance, .getAllowance: return "\(prefix())_call"
         case .gasLimit: return "\(prefix())_estimateGas"
         case .gasPrice: return "\(prefix())_gasPrice"
         }
@@ -119,7 +130,7 @@ extension EvmTargetBuilder {
     
     private func blockParamerers(for request: EvmRequest) -> String? {
         switch request {
-        case .balance, .transactions, .tokenBalance: return "latest"
+        case .balance, .transactions, .tokenBalance, .getAllowance: return "latest"
         case .pending: return "pending"
         case .send, .gasLimit, .gasPrice: return nil
         }

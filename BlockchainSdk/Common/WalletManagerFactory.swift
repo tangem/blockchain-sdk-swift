@@ -74,7 +74,9 @@ public class WalletManagerFactory {
         let wallet = Wallet(blockchain: blockchain,
                             addresses: addresses,
                             publicKey: publicKey)
-        
+
+        let networkProviderConfiguration = config.networkProviderConfiguration(for: blockchain)
+
         switch blockchain {
         case .bitcoin(let testnet):
             return try BitcoinWalletManager(wallet: wallet).then {
@@ -88,21 +90,21 @@ public class WalletManagerFactory {
                 
                 var providers = [AnyBitcoinNetworkProvider]()
                 if !testnet {
-                    providers.append(BlockchainInfoNetworkProvider(configuration: config.networkProviderConfiguration)
+                    providers.append(BlockchainInfoNetworkProvider(configuration: config.defaultNetworkProviderConfiguration)
                         .eraseToAnyBitcoinNetworkProvider())
                 }
                 
-                providers.append(BitcoinNowNodesProvider(configuration: config.networkProviderConfiguration,
+                providers.append(BitcoinNowNodesProvider(configuration: config.defaultNetworkProviderConfiguration,
                                                          apiKey: config.nownodesApiKey, isTestnet: testnet)
                     .eraseToAnyBitcoinNetworkProvider())
                 
                 providers.append(BlockchairNetworkProvider(endpoint: .bitcoin(testnet: testnet),
                                                            apiKey: config.blockchairApiKey,
-                                                           configuration: config.networkProviderConfiguration)
+                                                           configuration: networkProviderConfiguration)
                                     .eraseToAnyBitcoinNetworkProvider())
                 providers.append(BlockcypherNetworkProvider(endpoint: .bitcoin(testnet: testnet),
                                                             tokens: config.blockcypherTokens,
-                                                            configuration: config.networkProviderConfiguration)
+                                                            configuration: networkProviderConfiguration)
                                     .eraseToAnyBitcoinNetworkProvider())
 
                 $0.networkService = BitcoinNetworkService(providers: providers)
@@ -120,11 +122,11 @@ public class WalletManagerFactory {
                 var providers = [AnyBitcoinNetworkProvider]()
                 providers.append(BlockchairNetworkProvider(endpoint: .litecoin,
                                                            apiKey: config.blockchairApiKey,
-                                                           configuration: config.networkProviderConfiguration)
+                                                           configuration: config.defaultNetworkProviderConfiguration)
                     .eraseToAnyBitcoinNetworkProvider())
                 providers.append(BlockcypherNetworkProvider(endpoint: .litecoin,
                                                             tokens: config.blockcypherTokens,
-                                                            configuration: config.networkProviderConfiguration)
+                                                            configuration: config.defaultNetworkProviderConfiguration)
                     .eraseToAnyBitcoinNetworkProvider())
                 
                 $0.networkService = LitecoinNetworkService(providers: providers)
@@ -143,13 +145,13 @@ public class WalletManagerFactory {
                     BlockchairNetworkProvider(
                         endpoint: .dogecoin,
                         apiKey: config.blockchairApiKey,
-                        configuration: config.networkProviderConfiguration
+                        configuration: networkProviderConfiguration
                     )
                     .eraseToAnyBitcoinNetworkProvider(),
                     BlockcypherNetworkProvider(
                         endpoint: .dogecoin,
                         tokens: config.blockcypherTokens,
-                        configuration: config.networkProviderConfiguration
+                        configuration: networkProviderConfiguration
                     )
                     .eraseToAnyBitcoinNetworkProvider()
                 ]
@@ -162,7 +164,7 @@ public class WalletManagerFactory {
                 let bitcoinManager = BitcoinManager(networkParams: DucatusNetworkParams(), walletPublicKey: wallet.publicKey.blockchainKey, compressedWalletPublicKey: try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress(), bip: .bip44)
                 
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
-                $0.networkService = DucatusNetworkService(configuration: config.networkProviderConfiguration)
+                $0.networkService = DucatusNetworkService(configuration: networkProviderConfiguration)
             }
             
         case .stellar(let testnet):
@@ -191,13 +193,13 @@ public class WalletManagerFactory {
                 blockcypherProvider = BlockcypherNetworkProvider(
                     endpoint: .ethereum,
                     tokens: config.blockcypherTokens,
-                    configuration: config.networkProviderConfiguration
+                    configuration: networkProviderConfiguration
                 )
                 
                 blockchairProvider = BlockchairNetworkProvider(
                     endpoint: .ethereum(testnet: blockchain.isTestnet),
                     apiKey: config.blockchairApiKey,
-                    configuration: config.networkProviderConfiguration
+                    configuration: networkProviderConfiguration
                 )
             } else {
                 blockcypherProvider = nil
@@ -212,7 +214,7 @@ public class WalletManagerFactory {
                                             targetBuilder: EvmTargetBuilder(baseURL: $0,
                                                                             blockchain: blockchain,
                                                                             apiKey: config.getBlockApiKey),
-                                            configuration: config.networkProviderConfiguration)
+                                            configuration: config.defaultNetworkProviderConfiguration)
                 }
                 
                 $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, chainId: chainId)
@@ -237,7 +239,7 @@ public class WalletManagerFactory {
                 providers.append(BlockchairNetworkProvider(
                     endpoint: .bitcoinCash,
                     apiKey: config.blockchairApiKey,
-                    configuration: config.networkProviderConfiguration
+                    configuration: networkProviderConfiguration
                 ).eraseToAnyBitcoinNetworkProvider())
                 $0.networkService = BitcoinCashNetworkService(providers: providers)
             }
@@ -254,11 +256,11 @@ public class WalletManagerFactory {
                 let service = CardanoNetworkService(providers: [
                     AdaliteNetworkProvider(
                         baseUrl: .main,
-                        configuration: config.networkProviderConfiguration
+                        configuration: networkProviderConfiguration
                     ).eraseToAnyCardanoNetworkProvider(),
                     RosettaNetworkProvider(
                         baseUrl: .tangemRosetta,
-                        configuration: config.networkProviderConfiguration
+                        configuration: networkProviderConfiguration
                     ).eraseToAnyCardanoNetworkProvider()
                 ])
                 $0.networkService = service
@@ -268,9 +270,9 @@ public class WalletManagerFactory {
             return try XRPWalletManager(wallet: wallet).then {
                 $0.txBuilder = try XRPTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, curve: curve)
                 $0.networkService = XRPNetworkService(providers: [
-                    XRPNetworkProvider(baseUrl: .xrpLedgerFoundation, configuration: config.networkProviderConfiguration),
-                    XRPNetworkProvider(baseUrl: .ripple, configuration: config.networkProviderConfiguration),
-                    XRPNetworkProvider(baseUrl: .rippleReserve, configuration: config.networkProviderConfiguration)
+                    XRPNetworkProvider(baseUrl: .xrpLedgerFoundation, configuration: networkProviderConfiguration),
+                    XRPNetworkProvider(baseUrl: .ripple, configuration: networkProviderConfiguration),
+                    XRPNetworkProvider(baseUrl: .rippleReserve, configuration: networkProviderConfiguration)
                 ])
             }
             
@@ -278,7 +280,7 @@ public class WalletManagerFactory {
             return try TezosWalletManager(wallet: wallet).then {
                 $0.txBuilder = try TezosTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, curve: curve)
                 $0.networkService = TezosNetworkService(
-                    providers: TezosApi.makeAllProviders(configuration: config.networkProviderConfiguration)
+                    providers: TezosApi.makeAllProviders(configuration: networkProviderConfiguration)
                 )
             }
             
@@ -302,9 +304,9 @@ public class WalletManagerFactory {
                 $0.networkService = SolanaNetworkService(solanaSdk: $0.solanaSdk, blockchain: blockchain, hostProvider: networkRouter)
             }
         case .polkadot(let testnet):
-            return makePolkadotWalletManager(network: testnet ? .westend : .polkadot, wallet: wallet)
+            return makePolkadotWalletManager(network: testnet ? .westend : .polkadot, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
         case .kusama:
-            return makePolkadotWalletManager(network: .kusama, wallet: wallet)
+            return makePolkadotWalletManager(network: .kusama, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
         case .tron(let testnet):
             return TronWalletManager(wallet: wallet).then {
                 let network: TronNetwork = testnet ? .nile : .mainnet
@@ -312,33 +314,37 @@ public class WalletManagerFactory {
                     TronJsonRpcProvider(
                         network: network,
                         tronGridApiKey: nil,
-                        configuration: config.networkProviderConfiguration
+                        configuration: networkProviderConfiguration
                     ),
                     TronJsonRpcProvider(
                         network: network,
                         tronGridApiKey: config.tronGridApiKey,
-                        configuration: config.networkProviderConfiguration
+                        configuration: networkProviderConfiguration
                     ),
                 ]
                 $0.networkService = TronNetworkService(isTestnet: testnet, providers: providers)
                 $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
             }
         case .dash(let testnet):
-            return try makeDashWalletManager(testnet: testnet, wallet: wallet)
+            return try makeDashWalletManager(testnet: testnet, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
         }
     }
     
-    private func makePolkadotWalletManager(network: PolkadotNetwork, wallet: Wallet) -> WalletManager {
+    private func makePolkadotWalletManager(network: PolkadotNetwork,
+                                           wallet: Wallet,
+                                           networkProviderConfiguration: NetworkProviderConfiguration) -> WalletManager {
         PolkadotWalletManager(network: network, wallet: wallet).then {
             let providers = network.urls.map { url in
-                PolkadotJsonRpcProvider(url: url, configuration: config.networkProviderConfiguration)
+                PolkadotJsonRpcProvider(url: url, configuration: networkProviderConfiguration)
             }
             $0.networkService = PolkadotNetworkService(providers: providers, network: network)
             $0.txBuilder = PolkadotTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, network: network)
         }
     }
     
-    private func makeDashWalletManager(testnet: Bool, wallet: Wallet) throws -> WalletManager {
+    private func makeDashWalletManager(testnet: Bool,
+                                       wallet: Wallet,
+                                       networkProviderConfiguration: NetworkProviderConfiguration) throws -> WalletManager {
         try DashWalletManager(wallet: wallet).then {
             let compressed = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
             
@@ -356,12 +362,12 @@ public class WalletManagerFactory {
             let blockchairProvider = BlockchairNetworkProvider(
                 endpoint: .dash,
                 apiKey: config.blockchairApiKey,
-                configuration: config.networkProviderConfiguration
+                configuration: networkProviderConfiguration
             )
             let blockcypherProvider = BlockcypherNetworkProvider(
                 endpoint: .dash,
                 tokens: config.blockcypherTokens,
-                configuration: config.networkProviderConfiguration
+                configuration: networkProviderConfiguration
             )
             
             $0.networkService = BitcoinNetworkService(

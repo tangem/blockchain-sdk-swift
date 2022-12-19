@@ -217,7 +217,7 @@ class BlockchainSdkTests: XCTestCase {
             .optimism(testnet: false),
             .ethereumFair,
             .ethereumPoW(testnet: false),
-            .saltPay(testnet: false),
+            .saltPay,
         ]
         
         let encoder = JSONEncoder()

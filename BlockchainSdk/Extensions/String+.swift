@@ -42,6 +42,10 @@ extension String {
     func capitalizingFirstLetter() -> String {
         return prefix(1).capitalized + dropFirst()
     }
+
+    func serialize() -> String {
+        Data(hexString: self).aligned().hexString
+    }
     
     mutating func capitalizeFirstLetter() {
         self = self.capitalizingFirstLetter()
@@ -49,6 +53,14 @@ extension String {
     
     var localized: String {
         return NSLocalizedString(self, bundle: .blockchainBundle, comment: "")
+    }
+    
+    func localized(_ arguments: [CVarArg]) -> String {
+        return String(format: localized, arguments: arguments)
+    }
+
+    func localized(_ arguments: CVarArg) -> String {
+        return String(format: localized, arguments)
     }
     
     public static var unknown: String {

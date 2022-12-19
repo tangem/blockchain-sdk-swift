@@ -1,8 +1,6 @@
-"no_account_xlm" = "Per creare un account, invia 1+ XLM a questo indirizzo";
-"no_account_xlm_asset" = "Per creare un account, invia 1.5+ XLM a questo indirizzo";
 "no_trustline_xlm_asset" = "The destination account does not have a trustline for the asset being sent.";
 "no_account_on_destination_xlm_asset" = "The destination account is not created. To create account send 1+ XLM.";
-"no_account_xrp" = "Scarica 10+ XRP per creare un account";
+"no_account_generic" = "Scarica %@+ %@ per creare un account";
 "no_account_bnb" = "Per creare un account, invia fondi a questo indirizzo";
 "no_account_polkadot" = "Destination account is not active. Send %@ or more to activate the account.";
 "common_build_tx_error" = "Impossibile creare la transazione";
@@ -13,7 +11,7 @@
 "common_failed_to_load_token_balance" = "Failed to load %@ token balance";
 "cardano_missing_unspents" = "Assenti fondi non spesi";
 "cardano_low_ada" = "L'importo inviato e il cambio non può essere inferiore a 1 ADA";
-"xrp_target_not_created_format" = "Il conto totale non è stato creato L'importo da inviare deve essere %@ XRP + commissione o maggiore";
+"send_error_no_target_account" = "Il conto totale non è stato creato L'importo da inviare deve essere %@ + commissione o maggiore";
 "xrp_load_unconfirmed_error" = "Impossibile caricare il saldo non confermato";
 "xrp_load_reserve_error" = "Impossibile caricare lo stock";
 "xrp_load_account_error" = "Impossibile caricare le informazioni sull'account";

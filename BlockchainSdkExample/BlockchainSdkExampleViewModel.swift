@@ -59,10 +59,12 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKey: "",
                                                                           blockcypherTokens: [],
                                                                           infuraProjectId: "",
+                                                                          nownodesApiKey: "",
+                                                                          getBlockApiKey: "",
                                                                           tronGridApiKey: "",
                                                                           quiknodeApiKey: "",
                                                                           quiknodeSubdomain: "",
-                                                                          networkProviderConfiguration: .init(logger: .verbose)))
+                                                                          defaultNetworkProviderConfiguration: .init(logger: .verbose)))
     @Published private(set) var card: Card?
     @Published private(set) var walletManager: WalletManager?
     private var blockchain: Blockchain?
@@ -422,7 +424,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .arbitrum(testnet: false),
             .dash(testnet: false),
             .gnosis,
-            .saltPay(testnet: false),
+            .saltPay,
             .optimism(testnet: false)
         ]
         

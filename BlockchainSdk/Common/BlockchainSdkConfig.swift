@@ -17,8 +17,9 @@ public struct BlockchainSdkConfig {
     let tronGridApiKey: String
     let quiknodeApiKey: String
     let quiknodeSubdomain: String
-    let networkProviderConfiguration: NetworkProviderConfiguration
-    
+    let defaultNetworkProviderConfiguration: NetworkProviderConfiguration
+    let networkProviderConfigurations: [Blockchain: NetworkProviderConfiguration]
+
     public init(
         blockchairApiKey: String,
         blockcypherTokens: [String],
@@ -28,7 +29,8 @@ public struct BlockchainSdkConfig {
         tronGridApiKey: String,
         quiknodeApiKey: String,
         quiknodeSubdomain: String,
-        networkProviderConfiguration: NetworkProviderConfiguration = .init()
+        defaultNetworkProviderConfiguration: NetworkProviderConfiguration = .init(),
+        networkProviderConfigurations: [Blockchain: NetworkProviderConfiguration] = [:]
     ) {
         self.blockchairApiKey = blockchairApiKey
         self.blockcypherTokens = blockcypherTokens
@@ -38,6 +40,11 @@ public struct BlockchainSdkConfig {
         self.tronGridApiKey = tronGridApiKey
         self.quiknodeApiKey = quiknodeApiKey
         self.quiknodeSubdomain = quiknodeSubdomain
-        self.networkProviderConfiguration = networkProviderConfiguration
+        self.defaultNetworkProviderConfiguration = defaultNetworkProviderConfiguration
+        self.networkProviderConfigurations = networkProviderConfigurations
+    }
+
+    func networkProviderConfiguration(for blockchain: Blockchain) -> NetworkProviderConfiguration {
+        networkProviderConfigurations[blockchain] ?? defaultNetworkProviderConfiguration
     }
 }
