@@ -19,30 +19,29 @@ struct BlockBookTarget: TargetType {
     }
     
     let request: Request
+    let serviceProvider: BlockBookService
+    let blockchain: Blockchain
     let apiKey: String
     var isTestnet: Bool = false
     
     var baseURL: URL {
-        switch request {
-        case .fees:
-            return URL(string: "https://btc.nownodes.io")!
-        default:
-            return URL(string: "https://\(isTestnet ? "btcbook-testnet" : "btcbook").nownodes.io/")!
-        }
+        URL(string: serviceProvider.domain(for: request, blockchain: blockchain))!
     }
     
     var path: String {
+        let basePath = serviceProvider.path(for: request)
+        
         switch request {
         case .address(let walletAddress):
-            return "api/v2/address/\(walletAddress)"
+            return basePath + "/address/\(walletAddress)"
         case .send(let txHex):
-            return "api/v2/sendtx/\(txHex)"
+            return basePath + "/sendtx/\(txHex)"
         case .txDetails(let txHash):
-            return "api/v2/tx/\(txHash)"
+            return basePath + "/tx/\(txHash)"
         case .txUnspents(let walletAddress):
-            return "api/v2/utxo/\(walletAddress)"
+            return basePath + "/utxo/\(walletAddress)"
         case .fees:
-            return ""
+            return basePath
         }
     }
     

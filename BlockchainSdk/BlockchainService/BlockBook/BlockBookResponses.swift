@@ -49,7 +49,7 @@ struct BlockBookAddressResponse: Decodable {
         let vout: Int?
         let isOwn: Bool?
     }
-
+    
     struct Vout: Codable {
         let value: String
         let n: Int

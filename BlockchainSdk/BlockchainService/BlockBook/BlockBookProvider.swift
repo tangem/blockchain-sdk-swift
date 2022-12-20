@@ -12,17 +12,19 @@ import Combine
 class BlockBookProvider: BitcoinNetworkProvider {
     var supportsTransactionPush: Bool { false }
     
-    #warning("TODO")
+#warning("TODO")
     var host: String {
         ""
     }
-
+    
     private let blockchain: Blockchain
+    private let serviceProvider: BlockBookService
     private let apiKey: String
     private let provider: NetworkProvider<BlockBookTarget>
     
-    init(blockchain: Blockchain, configuration: NetworkProviderConfiguration, apiKey: String) {
+    init(blockchain: Blockchain, serviceProvider: BlockBookService, configuration: NetworkProviderConfiguration, apiKey: String) {
         self.blockchain = blockchain
+        self.serviceProvider = serviceProvider
         self.apiKey = apiKey
         self.provider = NetworkProvider<BlockBookTarget>(configuration: configuration)
     }
@@ -32,7 +34,7 @@ class BlockBookProvider: BitcoinNetworkProvider {
             .Zip(addressData(walletAddress: address), unspentTxData(walletAddress: address))
             .tryMap { (addressResponse, unspentTxResponse) in
                 let transactions = addressResponse.transactions ?? []
-
+                
                 let outputScript = transactions
                     .compactMap { transaction in
                         transaction.vout.first {
@@ -100,7 +102,7 @@ class BlockBookProvider: BitcoinNetworkProvider {
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
         provider
-            .requestPublisher(BlockBookTarget(request: .fees, apiKey: apiKey, isTestnet: blockchain.isTestnet))
+            .requestPublisher(target(for: .fees))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(BlockBookFeeResponse.self)
             .map(\.result.feerate)
@@ -111,7 +113,7 @@ class BlockBookProvider: BitcoinNetworkProvider {
                 let min = (Decimal(0.8) * feeRate).rounded(roundingMode: .down)
                 let normal = feeRate
                 let max = (Decimal(1.2) * feeRate).rounded(roundingMode: .down)
-
+                
                 return BitcoinFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: normal, prioritySatoshiPerByte: max)
             }
             .eraseToAnyPublisher()
@@ -119,7 +121,7 @@ class BlockBookProvider: BitcoinNetworkProvider {
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
         provider
-            .requestPublisher(BlockBookTarget(request: .send(txHex: transaction), apiKey: apiKey, isTestnet: blockchain.isTestnet))
+            .requestPublisher(target(for: .send(txHex: transaction)))
             .filterSuccessfulStatusAndRedirectCodes()
             .mapNotEmptyString()
             .eraseError()
@@ -140,7 +142,7 @@ class BlockBookProvider: BitcoinNetworkProvider {
     
     private func addressData(walletAddress: String) -> AnyPublisher<BlockBookAddressResponse, Error> {
         provider
-            .requestPublisher(BlockBookTarget(request: .address(walletAddress: walletAddress), apiKey: apiKey, isTestnet: blockchain.isTestnet))
+            .requestPublisher(target(for: .address(walletAddress: walletAddress)))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(BlockBookAddressResponse.self)
             .eraseError()
@@ -149,10 +151,14 @@ class BlockBookProvider: BitcoinNetworkProvider {
     
     private func unspentTxData(walletAddress: String) -> AnyPublisher<[BlockBookUnspentTxResponse], Error> {
         provider
-            .requestPublisher(BlockBookTarget(request: .txUnspents(walletAddress: walletAddress), apiKey: apiKey, isTestnet: blockchain.isTestnet))
+            .requestPublisher(target(for: .txUnspents(walletAddress: walletAddress)))
             .filterSuccessfulStatusAndRedirectCodes()
             .map([BlockBookUnspentTxResponse].self)
             .eraseError()
             .eraseToAnyPublisher()
+    }
+    
+    private func target(for request: BlockBookTarget.Request) -> BlockBookTarget {
+        BlockBookTarget(request: request, serviceProvider: serviceProvider, blockchain: blockchain, apiKey: apiKey)
     }
 }
