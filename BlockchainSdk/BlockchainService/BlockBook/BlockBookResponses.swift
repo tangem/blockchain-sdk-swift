@@ -19,9 +19,9 @@ struct BlockBookAddressResponse: Decodable {
     let unconfirmedBalance: String
     let unconfirmedTxs: Int
     let txs: Int
-    let transactions: [Transaction]
+    let transactions: [Transaction]?
     
-    struct Transaction: Codable {
+    struct Transaction: Decodable {
         let txid: String
         let version: Int
         let vin: [Vin]
@@ -38,7 +38,7 @@ struct BlockBookAddressResponse: Decodable {
         let hex: String
     }
     
-    struct Vin: Codable {
+    struct Vin: Decodable {
         let txid: String
         let sequence: Int
         let n: Int
@@ -70,4 +70,12 @@ struct BlockBookUnspentTxResponse: Decodable {
     let height: Int?
     let coinbase: Bool?
     let scriptPubKey: String?
+}
+
+struct BlockBookFeeResponse: Decodable {
+    struct Result: Decodable {
+        let feerate: Double
+    }
+    
+    let result: Result
 }

@@ -25,7 +25,7 @@ struct BlockBookTarget: TargetType {
     var baseURL: URL {
         switch request {
         case .fees:
-            return URL(string: "https://api.blockchain.info")!
+            return URL(string: "https://btc.nownodes.io")!
         default:
             return URL(string: "https://\(isTestnet ? "btcbook-testnet" : "btcbook").nownodes.io/")!
         }
@@ -60,41 +60,20 @@ struct BlockBookTarget: TargetType {
         case .txDetails, .send, .txUnspents:
             return .requestPlain
         case .fees:
-            let body = try! JSONEncoder().encode(BTCFeeParameters())
-            return .requestCompositeData(bodyData: body, urlParameters: [:])
-        case .address(let walletAddress):
+            return .requestJSONEncodable(BitcoinNodeEstimateSmartFeeParameters())
+        case .address:
             return .requestParameters(parameters: ["details": "txs"], encoding: URLEncoding.default)
         }
     }
     
     var headers: [String : String]? {
-        switch request {
-        case .send, .address, .txDetails, .txUnspents:
-            return ["api-key": apiKey]
-        default:
-            return ["Content-Type": "application/json"]
-        }
+        ["api-key": apiKey]
     }
 }
 
-fileprivate struct BTCFeeParameters: Encodable {
-    enum Param: Encodable {
-        case integer(Int)
-        case stringArray([String])
-
-        func encode(to encoder: Encoder) throws {
-            var container = encoder.singleValueContainer()
-            switch self {
-            case .integer(let x):
-                try container.encode(x)
-            case .stringArray(let x):
-                try container.encode(x)
-            }
-        }
-    }
-    
+fileprivate struct BitcoinNodeEstimateSmartFeeParameters: Encodable {
     let jsonrpc = "2.0"
-    let id: String = "nownodes"
-    let method: String = "getblockstats"
-    let params: [Param] = [.integer(1000), .stringArray(["minfeerate", "avgfeerate"])]
+    let id = "nownodes"
+    let method = "estimatesmartfee"
+    let params = [1000]
 }

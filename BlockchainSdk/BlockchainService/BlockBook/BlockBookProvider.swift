@@ -17,34 +17,46 @@ class BlockBookProvider: BitcoinNetworkProvider {
         ""
     }
 
+    private let blockchain: Blockchain
     private let apiKey: String
-    private let isTestnet: Bool
     private let provider: NetworkProvider<BlockBookTarget>
     
-    init(configuration: NetworkProviderConfiguration, apiKey: String, isTestnet: Bool = false) {
+    init(blockchain: Blockchain, configuration: NetworkProviderConfiguration, apiKey: String) {
+        self.blockchain = blockchain
         self.apiKey = apiKey
         self.provider = NetworkProvider<BlockBookTarget>(configuration: configuration)
-        self.isTestnet = isTestnet
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         Publishers
             .Zip(addressData(walletAddress: address), unspentTxData(walletAddress: address))
             .tryMap { (addressResponse, unspentTxResponse) in
-                let transactions = addressResponse.transactions
+                let transactions = addressResponse.transactions ?? []
+
+                let outputScript = transactions
+                    .compactMap { transaction in
+                        transaction.vout.first {
+                            $0.addresses.contains(address)
+                        }
+                    }
+                    .map { vout in
+                        vout.hex
+                    }
+                    .first
+                
                 let unspentOutputs = transactions
                     .map { response in
                         var outputs = [BitcoinUnspentOutput]()
                         let filteredResponse = response.vout.filter({ $0.addresses.contains(address) && $0.spent == nil })
                         filteredResponse.forEach {
-                            let scriptPubKey = unspentTxResponse.first(where: { $0.txid == response.txid })?.scriptPubKey ?? ""
-                            outputs.append(BitcoinUnspentOutput(transactionHash: response.blockHash, outputIndex: $0.n, amount: UInt64($0.value) ?? 0, outputScript: scriptPubKey))
+                            guard let outputScript = outputScript else { return }
+                            outputs.append(BitcoinUnspentOutput(transactionHash: response.blockHash, outputIndex: $0.n, amount: UInt64($0.value) ?? 0, outputScript: outputScript))
                         }
                         return outputs
                     }
                     .reduce([BitcoinUnspentOutput](), +)
                 
-                let pendingRefs = addressResponse.transactions
+                let pendingRefs = transactions
                     .filter({ $0.confirmations == 0 })
                     .map { tx in
                         var source: String = .unknown
@@ -79,29 +91,35 @@ class BlockBookProvider: BitcoinNetworkProvider {
                                                   transactionParams: BitcoinTransactionParams(inputs: bitcoinInputs))
                     }
                 
-                return BitcoinResponse(balance: Decimal(string: addressResponse.balance) ?? 0, hasUnconfirmed: addressResponse.unconfirmedTxs != 0, pendingTxRefs: pendingRefs, unspentOutputs: unspentOutputs)
+                let balance = (Decimal(string: addressResponse.balance) ?? 0) / self.blockchain.decimalValue
+                
+                return BitcoinResponse(balance: balance, hasUnconfirmed: addressResponse.unconfirmedTxs != 0, pendingTxRefs: pendingRefs, unspentOutputs: unspentOutputs)
             }
             .eraseToAnyPublisher()
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
         provider
-            .requestPublisher(BlockBookTarget(request: .fees, apiKey: apiKey, isTestnet: isTestnet))
+            .requestPublisher(BlockBookTarget(request: .fees, apiKey: apiKey, isTestnet: blockchain.isTestnet))
             .filterSuccessfulStatusAndRedirectCodes()
-            .map(BlockchainInfoFeeResponse.self)
-            .tryMap { response throws -> BitcoinFee in
-                let min = Decimal(response.regular)
-                let normal = (Decimal(response.regular) * Decimal(1.2)).rounded(roundingMode: .down)
-                let priority = Decimal(response.priority)
-                
-                return BitcoinFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: normal, prioritySatoshiPerByte: priority)
+            .map(BlockBookFeeResponse.self)
+            .map(\.result.feerate)
+            .map { [weak self] in
+                return Decimal($0) * (self?.blockchain.decimalValue ?? 0)
+            }
+            .tryMap { feeRate throws -> BitcoinFee in
+                let min = (Decimal(0.8) * feeRate).rounded(roundingMode: .down)
+                let normal = feeRate
+                let max = (Decimal(1.2) * feeRate).rounded(roundingMode: .down)
+
+                return BitcoinFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: normal, prioritySatoshiPerByte: max)
             }
             .eraseToAnyPublisher()
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
         provider
-            .requestPublisher(BlockBookTarget(request: .send(txHex: transaction), apiKey: apiKey, isTestnet: isTestnet))
+            .requestPublisher(BlockBookTarget(request: .send(txHex: transaction), apiKey: apiKey, isTestnet: blockchain.isTestnet))
             .filterSuccessfulStatusAndRedirectCodes()
             .mapNotEmptyString()
             .eraseError()
@@ -122,7 +140,7 @@ class BlockBookProvider: BitcoinNetworkProvider {
     
     private func addressData(walletAddress: String) -> AnyPublisher<BlockBookAddressResponse, Error> {
         provider
-            .requestPublisher(BlockBookTarget(request: .address(walletAddress: walletAddress), apiKey: apiKey, isTestnet: isTestnet))
+            .requestPublisher(BlockBookTarget(request: .address(walletAddress: walletAddress), apiKey: apiKey, isTestnet: blockchain.isTestnet))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(BlockBookAddressResponse.self)
             .eraseError()
