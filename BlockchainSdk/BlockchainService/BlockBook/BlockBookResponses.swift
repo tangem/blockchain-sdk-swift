@@ -1,5 +1,5 @@
 //
-//  BTCNowNodesResponses.swift
+//  BlockBookResponses.swift
 //  BlockchainSdk
 //
 //  Created by Pavel Grechikhin on 20.11.2022.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct BitcoinNowNodesAddressResponse: Decodable {
+struct BlockBookAddressResponse: Decodable {
     let page: Int
     let totalPages: Int
     let itemsOnPage: Int
@@ -44,8 +44,8 @@ struct BitcoinNowNodesAddressResponse: Decodable {
         let n: Int
         let addresses: [String]
         let isAddress: Bool
-        let value: String
-        let hex: String
+        let value: String?
+        let hex: String?
         let vout: Int?
         let isOwn: Bool?
     }
@@ -61,7 +61,7 @@ struct BitcoinNowNodesAddressResponse: Decodable {
     }
 }
 
-struct BitcoinNowNodesUnspentTxResponse: Decodable {
+struct BlockBookUnspentTxResponse: Decodable {
     let txid: String
     let vout: Int
     let value: String

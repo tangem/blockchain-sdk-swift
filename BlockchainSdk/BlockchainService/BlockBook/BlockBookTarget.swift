@@ -1,5 +1,5 @@
 //
-//  NowNodesBTCTarget.swift
+//  BlockBookTarget.swift
 //  BlockchainSdk
 //
 //  Created by Pavel Grechikhin on 18.11.2022.
@@ -9,7 +9,7 @@
 import Foundation
 import Moya
 
-struct BitcoinNowNodesTarget: TargetType {
+struct BlockBookTarget: TargetType {
     enum Request {
         case address(walletAddress: String)
         case send(txHex: String)

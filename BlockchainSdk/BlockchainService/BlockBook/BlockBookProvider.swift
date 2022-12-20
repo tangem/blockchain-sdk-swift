@@ -1,5 +1,5 @@
 //
-//  NowNodesBTCProvider.swift
+//  BlockBookProvider.swift
 //  BlockchainSdk
 //
 //  Created by Pavel Grechikhin on 18.11.2022.
@@ -9,7 +9,7 @@
 import Foundation
 import Combine
 
-class BitcoinNowNodesProvider: BitcoinNetworkProvider {
+class BlockBookProvider: BitcoinNetworkProvider {
     var supportsTransactionPush: Bool { false }
     
     #warning("TODO")
@@ -19,11 +19,11 @@ class BitcoinNowNodesProvider: BitcoinNetworkProvider {
 
     private let apiKey: String
     private let isTestnet: Bool
-    private let provider: NetworkProvider<BitcoinNowNodesTarget>
+    private let provider: NetworkProvider<BlockBookTarget>
     
     init(configuration: NetworkProviderConfiguration, apiKey: String, isTestnet: Bool = false) {
         self.apiKey = apiKey
-        self.provider = NetworkProvider<BitcoinNowNodesTarget>(configuration: configuration)
+        self.provider = NetworkProvider<BlockBookTarget>(configuration: configuration)
         self.isTestnet = isTestnet
     }
     
@@ -63,8 +63,10 @@ class BitcoinNowNodesProvider: BitcoinNetworkProvider {
                             value = Decimal(string: txDestination.value) ?? 0
                         }
                         
-                        let bitcoinInputs = tx.vin.compactMap { input in
-                            BitcoinInput(sequence: input.sequence, address: address, outputIndex: input.n, outputValue: 0, prevHash: input.hex)
+                        let bitcoinInputs: [BitcoinInput] = tx.vin.compactMap { input in
+                            guard let hex = input.hex else { return nil }
+                            
+                            return BitcoinInput(sequence: input.sequence, address: address, outputIndex: input.n, outputValue: 0, prevHash: hex)
                         }
                         
                         return PendingTransaction(hash: tx.hex,
@@ -84,7 +86,7 @@ class BitcoinNowNodesProvider: BitcoinNetworkProvider {
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
         provider
-            .requestPublisher(BitcoinNowNodesTarget(request: .fees, apiKey: apiKey, isTestnet: isTestnet))
+            .requestPublisher(BlockBookTarget(request: .fees, apiKey: apiKey, isTestnet: isTestnet))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(BlockchainInfoFeeResponse.self)
             .tryMap { response throws -> BitcoinFee in
@@ -99,7 +101,7 @@ class BitcoinNowNodesProvider: BitcoinNetworkProvider {
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
         provider
-            .requestPublisher(BitcoinNowNodesTarget(request: .send(txHex: transaction), apiKey: apiKey, isTestnet: isTestnet))
+            .requestPublisher(BlockBookTarget(request: .send(txHex: transaction), apiKey: apiKey, isTestnet: isTestnet))
             .filterSuccessfulStatusAndRedirectCodes()
             .mapNotEmptyString()
             .eraseError()
@@ -118,20 +120,20 @@ class BitcoinNowNodesProvider: BitcoinNetworkProvider {
             .eraseToAnyPublisher()
     }
     
-    private func addressData(walletAddress: String) -> AnyPublisher<BitcoinNowNodesAddressResponse, Error> {
+    private func addressData(walletAddress: String) -> AnyPublisher<BlockBookAddressResponse, Error> {
         provider
-            .requestPublisher(BitcoinNowNodesTarget(request: .address(walletAddress: walletAddress), apiKey: apiKey, isTestnet: isTestnet))
+            .requestPublisher(BlockBookTarget(request: .address(walletAddress: walletAddress), apiKey: apiKey, isTestnet: isTestnet))
             .filterSuccessfulStatusAndRedirectCodes()
-            .map(BitcoinNowNodesAddressResponse.self)
+            .map(BlockBookAddressResponse.self)
             .eraseError()
             .eraseToAnyPublisher()
     }
     
-    private func unspentTxData(walletAddress: String) -> AnyPublisher<[BitcoinNowNodesUnspentTxResponse], Error> {
+    private func unspentTxData(walletAddress: String) -> AnyPublisher<[BlockBookUnspentTxResponse], Error> {
         provider
-            .requestPublisher(BitcoinNowNodesTarget(request: .txUnspents(walletAddress: walletAddress), apiKey: apiKey, isTestnet: isTestnet))
+            .requestPublisher(BlockBookTarget(request: .txUnspents(walletAddress: walletAddress), apiKey: apiKey, isTestnet: blockchain.isTestnet))
             .filterSuccessfulStatusAndRedirectCodes()
-            .map([BitcoinNowNodesUnspentTxResponse].self)
+            .map([BlockBookUnspentTxResponse].self)
             .eraseError()
             .eraseToAnyPublisher()
     }

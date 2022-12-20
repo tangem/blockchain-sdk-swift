@@ -94,14 +94,14 @@ public class WalletManagerFactory {
                         .eraseToAnyBitcoinNetworkProvider())
                 }
                 
-                providers.append(BitcoinNowNodesProvider(configuration: config.defaultNetworkProviderConfiguration,
-                                                         apiKey: config.nownodesApiKey, isTestnet: testnet)
+                providers.append(BlockBookProvider(configuration: config.defaultNetworkProviderConfiguration,
+                                                   apiKey: config.nownodesApiKey, isTestnet: testnet)
                     .eraseToAnyBitcoinNetworkProvider())
                 
                 providers.append(BlockchairNetworkProvider(endpoint: .bitcoin(testnet: testnet),
                                                            apiKey: config.blockchairApiKey,
                                                            configuration: networkProviderConfiguration)
-                                    .eraseToAnyBitcoinNetworkProvider())
+                    .eraseToAnyBitcoinNetworkProvider())
                 providers.append(BlockcypherNetworkProvider(endpoint: .bitcoin(testnet: testnet),
                                                             tokens: config.blockcypherTokens,
                                                             configuration: networkProviderConfiguration)

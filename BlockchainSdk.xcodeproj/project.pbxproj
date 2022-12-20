@@ -202,11 +202,11 @@
 		DC63F266293F243200F953EF /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC63F265293F243200F953EF /* Credentials.swift */; };
 		DC912D1628E706C400D76628 /* ContractInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC912D1528E706C400D76628 /* ContractInteractor.swift */; };
 		E90FAB5C28EED26600C6DCBE /* ContractABI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90FAB5B28EED26600C6DCBE /* ContractABI.swift */; };
-		E93532CE292D0E86008FD979 /* BitcoinNowNodesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9941ACA2927B07300399DE3 /* BitcoinNowNodesProvider.swift */; };
+		E93532CE292D0E86008FD979 /* BlockBookProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9941ACA2927B07300399DE3 /* BlockBookProvider.swift */; };
 		E93532E32930ED03008FD979 /* EvmTargetBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E93532E02930ED03008FD979 /* EvmTargetBuilder.swift */; };
 		E93532E52930ED03008FD979 /* EvmRawTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E93532E22930ED03008FD979 /* EvmRawTarget.swift */; };
-		E95D95152929872B0068F876 /* BitcoinNowNodesResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = E95D95142929872B0068F876 /* BitcoinNowNodesResponses.swift */; };
-		E9941AC92927846B00399DE3 /* BitcoinNowNodesTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9941AC82927846B00399DE3 /* BitcoinNowNodesTarget.swift */; };
+		E95D95152929872B0068F876 /* BlockBookResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = E95D95142929872B0068F876 /* BlockBookResponses.swift */; };
+		E9941AC92927846B00399DE3 /* BlockBookTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9941AC82927846B00399DE3 /* BlockBookTarget.swift */; };
 		E9EECB5328E9F50600899D6C /* OptimismWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EECB5228E9F50600899D6C /* OptimismWalletManager.swift */; };
 		ED3D33D84D8B747FB3B1D09D /* Pods_BlockchainSdkTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A172F9D47772F23948771418 /* Pods_BlockchainSdkTests.framework */; };
 		EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFCE549274BB88700C1B1A0 /* StellarTests.swift */; };
@@ -482,9 +482,9 @@
 		E90FAB5B28EED26600C6DCBE /* ContractABI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractABI.swift; sourceTree = "<group>"; };
 		E93532E02930ED03008FD979 /* EvmTargetBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EvmTargetBuilder.swift; path = BlockchainSdk/WalletManagers/Ethereum/Target/EvmTargetBuilder.swift; sourceTree = SOURCE_ROOT; };
 		E93532E22930ED03008FD979 /* EvmRawTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EvmRawTarget.swift; path = BlockchainSdk/WalletManagers/Ethereum/Target/EvmRawTarget.swift; sourceTree = SOURCE_ROOT; };
-		E95D95142929872B0068F876 /* BitcoinNowNodesResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinNowNodesResponses.swift; sourceTree = "<group>"; };
-		E9941AC82927846B00399DE3 /* BitcoinNowNodesTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinNowNodesTarget.swift; sourceTree = "<group>"; };
-		E9941ACA2927B07300399DE3 /* BitcoinNowNodesProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinNowNodesProvider.swift; sourceTree = "<group>"; };
+		E95D95142929872B0068F876 /* BlockBookResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookResponses.swift; sourceTree = "<group>"; };
+		E9941AC82927846B00399DE3 /* BlockBookTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookTarget.swift; sourceTree = "<group>"; };
+		E9941ACA2927B07300399DE3 /* BlockBookProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookProvider.swift; sourceTree = "<group>"; };
 		E9EECB5228E9F50600899D6C /* OptimismWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismWalletManager.swift; sourceTree = "<group>"; };
 		EF332D16288EACB000AE3C85 /* HostProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostProvider.swift; sourceTree = "<group>"; };
 		EF332D18288EAEAC00AE3C85 /* NetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProvider.swift; sourceTree = "<group>"; };
@@ -713,10 +713,10 @@
 		5D4B33B923F6E9BD00C93A84 /* BlockchainService */ = {
 			isa = PBXGroup;
 			children = (
-				E9941AC72927845C00399DE3 /* BTCNowNodes */,
 				5D845512243DEAAE0072155E /* Adalite */,
 				5D7D244125136280001B9A4F /* Bitcoinfees */,
 				5D4B33D623FAACE400C93A84 /* Bitcore */,
+				E9941AC72927845C00399DE3 /* BlockBook */,
 				5D26CEEF243CB9D300994CC0 /* BlockchainInfo */,
 				5D4B33BA23F6E9EF00C93A84 /* Blockchair */,
 				5D26CEEA243CB91200994CC0 /* Blockcypher */,
@@ -1242,14 +1242,14 @@
 			path = Targets;
 			sourceTree = "<group>";
 		};
-		E9941AC72927845C00399DE3 /* BTCNowNodes */ = {
+		E9941AC72927845C00399DE3 /* BlockBook */ = {
 			isa = PBXGroup;
 			children = (
-				E9941AC82927846B00399DE3 /* BitcoinNowNodesTarget.swift */,
-				E9941ACA2927B07300399DE3 /* BitcoinNowNodesProvider.swift */,
-				E95D95142929872B0068F876 /* BitcoinNowNodesResponses.swift */,
+				E9941AC82927846B00399DE3 /* BlockBookTarget.swift */,
+				E9941ACA2927B07300399DE3 /* BlockBookProvider.swift */,
+				E95D95142929872B0068F876 /* BlockBookResponses.swift */,
 			);
-			path = BTCNowNodes;
+			path = BlockBook;
 			sourceTree = "<group>";
 		};
 		E9EECB5128E9F4F700899D6C /* Optimism */ = {
@@ -1563,7 +1563,7 @@
 				5D88C809256BCD6C00020028 /* XRPTransactionParams.swift in Sources */,
 				5DED72C623A13377006D79AE /* StellarAddressService.swift in Sources */,
 				5D7D242C25136254001B9A4F /* WebSocket.swift in Sources */,
-				E9941AC92927846B00399DE3 /* BitcoinNowNodesTarget.swift in Sources */,
+				E9941AC92927846B00399DE3 /* BlockBookTarget.swift in Sources */,
 				5DACA361255E98900096BC48 /* MultipleAddressProvider.swift in Sources */,
 				5D7D243325136254001B9A4F /* XRPAddress.swift in Sources */,
 				B0C34958267B83580027CC9D /* BitcoinModels.swift in Sources */,
@@ -1613,7 +1613,7 @@
 				5D03D2D0253DE61B009A8A9F /* TezosAddressService.swift in Sources */,
 				5D5CE0D52625C8EC009023EC /* XrpNetworkProvider.swift in Sources */,
 				5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */,
-				E93532CE292D0E86008FD979 /* BitcoinNowNodesProvider.swift in Sources */,
+				E93532CE292D0E86008FD979 /* BlockBookProvider.swift in Sources */,
 				EF332D17288EACB000AE3C85 /* HostProvider.swift in Sources */,
 				5DE3BFA0239FA33800E8815D /* Bech32.swift in Sources */,
 				B04DC62725AC1C50009AA7B3 /* JSONDecoder+.swift in Sources */,
@@ -1668,7 +1668,7 @@
 				DAE30DFD279164500056C5A3 /* SolanaAddressService.swift in Sources */,
 				5D26CEF6243CBA4300994CC0 /* EstimateFeeTarget.swift in Sources */,
 				5DA6F7BC243F3C0B0040AB4B /* CBOR+.swift in Sources */,
-				E95D95152929872B0068F876 /* BitcoinNowNodesResponses.swift in Sources */,
+				E95D95152929872B0068F876 /* BlockBookResponses.swift in Sources */,
 				5DA163D2273D2146007AA991 /* TezosJsonRpcProvider.swift in Sources */,
 				5DED72BA239FE2F8006D79AE /* Int+.swift in Sources */,
 				B06C6793264286390037E7AD /* BlockchairAddressBlockMapper.swift in Sources */,
