@@ -77,9 +77,14 @@ class BlockBookProvider: BitcoinNetworkProvider {
                         }
                         
                         let bitcoinInputs: [BitcoinInput] = tx.vin.compactMap { input in
-                            guard let hex = input.hex else { return nil }
+                            guard
+                                let hex = input.hex,
+                                let sequence = input.sequence
+                            else {
+                                return nil
+                            }
                             
-                            return BitcoinInput(sequence: input.sequence, address: address, outputIndex: input.n, outputValue: 0, prevHash: hex)
+                            return BitcoinInput(sequence: sequence, address: address, outputIndex: input.n, outputValue: 0, prevHash: hex)
                         }
                         
                         return PendingTransaction(hash: tx.hex,
