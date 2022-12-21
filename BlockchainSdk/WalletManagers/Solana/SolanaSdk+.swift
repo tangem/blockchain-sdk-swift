@@ -12,6 +12,15 @@ import Solana_Swift
 
 extension RPCEndpoint {
     public static let ankr = RPCEndpoint(url: URL(string: "https://rpc.ankr.com/solana")!, urlWebSocket: URL(string: "ws://rpc.ankr.com/solana")!, network: .mainnetBeta)
+    public static func nowNodes(apiKey: String) -> RPCEndpoint {
+        RPCEndpoint(
+            url: URL(string: "https://sol.nownodes.io")!,
+            urlWebSocket: URL(string: "wss://sol.nownodes.io")!,
+            network: .mainnetBeta,
+            apiKeyHeaderName: "api-key",
+            apiKeyHeaderValue: apiKey
+        )
+    }
     public static func quiknode(apiKey: String, subdomain: String) -> RPCEndpoint {
         .init(
             url: URL(string: "https://\(subdomain).solana-mainnet.discover.quiknode.pro/\(apiKey)")!,
@@ -19,7 +28,6 @@ extension RPCEndpoint {
             network: .mainnetBeta
         )
     }
-    public static let nowNodesMainBeta = RPCEndpoint(url: URL(string: "https://sol.nownodes.io")!, urlWebSocket: URL(string: "wss://sol.nownodes.io")!, network: .mainnetBeta)
 }
 
 extension Api {

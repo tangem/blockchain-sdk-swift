@@ -287,18 +287,22 @@ public class WalletManagerFactory {
             
         case .solana(let testnet):
             return SolanaWalletManager(wallet: wallet).then {
-                let endpoints: [RPCEndpoint] = testnet ?
-                [.devnetSolana, .devnetGenesysGo] :
-                [
-//                    .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain),
-//                    .ankr,
-//                    .mainnetBetaSolana,
-                    .nowNodesMainBeta,
-                ]
+                let endpoints: [RPCEndpoint]
+                if testnet {
+                    endpoints = [
+                        .devnetSolana,
+                        .devnetGenesysGo,
+                    ]
+                } else {
+                    endpoints = [
+                        .nowNodes(apiKey: config.nownodesApiKey),
+                        .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain),
+                        .ankr,
+                        .mainnetBetaSolana,
+                    ]
+                }
                 
-                let configuration = URLSessionConfiguration.default
-                configuration.httpAdditionalHeaders = ["api-key": config.nownodesApiKey]
-                let networkRouter = NetworkingRouter(endpoints: endpoints, session: URLSession(configuration: configuration))
+                let networkRouter = NetworkingRouter(endpoints: endpoints)
                 let accountStorage = SolanaDummyAccountStorage()
                 
                 $0.solanaSdk = Solana(router: networkRouter, accountStorage: accountStorage)
