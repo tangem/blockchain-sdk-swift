@@ -12,9 +12,8 @@ import Combine
 class BlockBookProvider: BitcoinNetworkProvider {
     var supportsTransactionPush: Bool { false }
     
-#warning("TODO")
     var host: String {
-        ""
+        serviceProvider.host
     }
     
     private let blockchain: Blockchain

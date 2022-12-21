@@ -11,7 +11,33 @@ import Foundation
 enum BlockBookService {
     case nownodes
     case getblock
-
+    
+    var host: String {
+        switch self {
+        case .nownodes:
+            return "nownodes.io"
+        case .getblock:
+            return "getblock.io"
+        }
+    }
+    
+    func domain(for request: BlockBookTarget.Request, blockchain: Blockchain) -> String {
+        let currencySymbolPrefix = blockchain.currencySymbol.lowercased()
+        
+        switch request {
+        case .fees:
+            return "https://\(currencySymbolPrefix).\(host)"
+        default:
+            switch self {
+            case .nownodes:
+                let testnetSuffix = blockchain.isTestnet ? "-testnet" : ""
+                return "https://\(currencySymbolPrefix)book\(testnetSuffix).\(host)"
+            case .getblock:
+                return "https://\(currencySymbolPrefix).\(host)"
+            }
+        }
+    }
+    
     func path(for request: BlockBookTarget.Request) -> String {
         switch request {
         case .fees:
@@ -27,28 +53,6 @@ enum BlockBookService {
                 return "/api/v2"
             case .getblock:
                 return "/mainnet/blockbook/api/v2"
-            }
-        }
-    }
-
-    func domain(for request: BlockBookTarget.Request, blockchain: Blockchain) -> String {
-        let currencySymbolPrefix = blockchain.currencySymbol.lowercased()
-        
-        switch request {
-        case .fees:
-            switch self {
-            case .nownodes:
-                return "https://\(currencySymbolPrefix).nownodes.io"
-            case .getblock:
-                return "https://\(currencySymbolPrefix).getblock.io"
-            }
-        default:
-            switch self {
-            case .nownodes:
-                let testnetSuffix = blockchain.isTestnet ? "-testnet" : ""
-                return "https://\(currencySymbolPrefix)book\(testnetSuffix).nownodes.io"
-            case .getblock:
-                return "https://\(currencySymbolPrefix).getblock.io"
             }
         }
     }

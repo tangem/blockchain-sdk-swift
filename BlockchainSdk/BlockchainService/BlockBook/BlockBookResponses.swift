@@ -40,7 +40,7 @@ struct BlockBookAddressResponse: Decodable {
     
     struct Vin: Decodable {
         let txid: String
-        let sequence: Int
+        let sequence: Int?
         let n: Int
         let addresses: [String]
         let isAddress: Bool
