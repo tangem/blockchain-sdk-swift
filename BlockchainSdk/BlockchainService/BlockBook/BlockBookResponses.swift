@@ -26,7 +26,7 @@ struct BlockBookAddressResponse: Decodable {
         let version: Int
         let vin: [Vin]
         let vout: [Vout]
-        let blockHash: String
+        let blockHash: String?
         let blockHeight: Int
         let confirmations: Int
         let blockTime: Int
