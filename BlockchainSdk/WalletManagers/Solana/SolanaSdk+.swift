@@ -21,6 +21,15 @@ extension RPCEndpoint {
             apiKeyHeaderValue: apiKey
         )
     }
+    public static func getBlock(apiKey: String) -> RPCEndpoint {
+        RPCEndpoint(
+            url: URL(string: "https://sol.getblock.io/mainnet")!,
+            urlWebSocket: URL(string: "wss://sol.getblock.io/mainnet")!,
+            network: .mainnetBeta,
+            apiKeyHeaderName: "x-api-key",
+            apiKeyHeaderValue: apiKey
+        )
+    }
     public static func quiknode(apiKey: String, subdomain: String) -> RPCEndpoint {
         .init(
             url: URL(string: "https://\(subdomain).solana-mainnet.discover.quiknode.pro/\(apiKey)")!,

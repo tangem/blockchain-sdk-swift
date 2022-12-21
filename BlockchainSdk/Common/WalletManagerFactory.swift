@@ -296,6 +296,7 @@ public class WalletManagerFactory {
                 } else {
                     endpoints = [
                         .nowNodes(apiKey: config.nownodesApiKey),
+                        .getBlock(apiKey: config.getBlockApiKey),
                         .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain),
                         .ankr,
                         .mainnetBetaSolana,
