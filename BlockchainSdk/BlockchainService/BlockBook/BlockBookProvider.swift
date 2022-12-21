@@ -57,41 +57,60 @@ class BlockBookProvider: BitcoinNetworkProvider {
                     }
                     .reduce([BitcoinUnspentOutput](), +)
                 
-                let pendingRefs = transactions
+                let pendingRefs: [PendingTransaction] = transactions
                     .filter({ $0.confirmations == 0 })
-                    .map { tx in
-                        var source: String = .unknown
-                        var destination: String = .unknown
-                        var value: Decimal?
-                        var isIncoming: Bool = false
+                    .compactMap { tx -> PendingTransaction? in
+                        let source: String?
+                        let destination: String
+                        let value: Decimal?
+                        let isIncoming: Bool
                         
                         if let _ = tx.vin.first(where: { $0.addresses.contains(address) }), let txDestination = tx.vout.first(where: { $0.addresses.contains(address) }) {
+                            isIncoming = false
                             destination = txDestination.addresses.first ?? .unknown
                             source = address
-                            value = Decimal(string: txDestination.value) ?? 0
-                        } else if let txDestination = tx.vout.first(where: { $0.addresses.contains(address) }), let txSources = tx.vin.first(where: { $0.addresses.contains(address) }) {
+                            value = Decimal(string: txDestination.value)
+                        } else if let txDestination = tx.vout.first(where: { $0.addresses.contains(address) }), !tx.vin.contains(where: { $0.addresses.contains(address) }), let txSource = tx.vin.first {
                             isIncoming = true
                             destination = address
-                            source = txSources.addresses.first ?? .unknown
-                            value = Decimal(string: txDestination.value) ?? 0
+                            source = txSource.addresses.first
+                            value = Decimal(string: txDestination.value)
+                        } else {
+                            return nil
                         }
                         
-                        let bitcoinInputs: [BitcoinInput] = tx.vin.compactMap { input in
+                        let bitcoinInputs: [BitcoinInput] = tx.vin.compactMap { input -> BitcoinInput? in
                             guard
-                                let hex = input.hex,
+                                let address = input.addresses.first,
+                                let value = UInt64(input.value ?? ""),
+                                let outputIndex = input.vout,
                                 let sequence = input.sequence
                             else {
                                 return nil
                             }
                             
-                            return BitcoinInput(sequence: sequence, address: address, outputIndex: input.n, outputValue: 0, prevHash: hex)
+                            return BitcoinInput(sequence: sequence, address: address, outputIndex: outputIndex, outputValue: value, prevHash: input.txid)
                         }
                         
-                        return PendingTransaction(hash: tx.hex,
+                        let fee: Decimal?
+                        if let fetchedFees = Decimal(string: tx.fees) {
+                            fee = fetchedFees / self.blockchain.decimalValue
+                        } else {
+                            fee = nil
+                        }
+                        
+                        guard
+                            let source = source,
+                            let value = value
+                        else {
+                            return nil
+                        }
+                        
+                        return PendingTransaction(hash: tx.txid,
                                                   destination: destination,
-                                                  value: (value ?? 0) / Blockchain.bitcoin(testnet: false).decimalValue,
+                                                  value: value / self.blockchain.decimalValue,
                                                   source: source,
-                                                  fee: Decimal(string: tx.fees),
+                                                  fee: fee,
                                                   date: Date(), // ???
                                                   isIncoming: isIncoming,
                                                   transactionParams: BitcoinTransactionParams(inputs: bitcoinInputs))
