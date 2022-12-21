@@ -51,7 +51,7 @@ class BlockBookProvider: BitcoinNetworkProvider {
                         let filteredResponse = response.vout.filter({ $0.addresses.contains(address) && $0.spent == nil })
                         filteredResponse.forEach {
                             guard let outputScript = outputScript else { return }
-                            outputs.append(BitcoinUnspentOutput(transactionHash: response.blockHash, outputIndex: $0.n, amount: UInt64($0.value) ?? 0, outputScript: outputScript))
+                            outputs.append(BitcoinUnspentOutput(transactionHash: response.txid, outputIndex: $0.n, amount: UInt64($0.value) ?? 0, outputScript: outputScript))
                         }
                         return outputs
                     }
