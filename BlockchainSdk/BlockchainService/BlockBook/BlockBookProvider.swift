@@ -106,12 +106,14 @@ class BlockBookProvider: BitcoinNetworkProvider {
                             return nil
                         }
                         
+                        let date = Date(timeIntervalSince1970: Double(tx.blockTime))
+                        
                         return PendingTransaction(hash: tx.txid,
                                                   destination: destination,
                                                   value: value / self.blockchain.decimalValue,
                                                   source: source,
                                                   fee: fee,
-                                                  date: Date(), // ???
+                                                  date: date,
                                                   isIncoming: isIncoming,
                                                   transactionParams: BitcoinTransactionParams(inputs: bitcoinInputs))
                     }
