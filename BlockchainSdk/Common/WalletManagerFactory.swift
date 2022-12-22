@@ -95,9 +95,9 @@ public class WalletManagerFactory {
                 }
                 
                 providers.append(BlockBookProvider(blockchain: blockchain,
-                                                   serviceProvider: .nownodes,
+                                                   serviceProvider: .nowNodes,
                                                    configuration: config.defaultNetworkProviderConfiguration,
-                                                   apiKey: config.nownodesApiKey)
+                                                   apiKey: config.nowNodesApiKey)
                     .eraseToAnyBitcoinNetworkProvider())
                 providers.append(BlockchairNetworkProvider(endpoint: .bitcoin(testnet: testnet),
                                                            apiKey: config.blockchairApiKey,
@@ -170,7 +170,7 @@ public class WalletManagerFactory {
             
         case .stellar(let testnet):
             return StellarWalletManager(wallet: wallet).then {
-                let url = testnet ? "https://horizon-testnet.stellar.org" : "https://xlm.nownodes.io/\(config.nownodesApiKey)"
+                let url = testnet ? "https://horizon-testnet.stellar.org" : "https://xlm.nownodes.io/\(config.nowNodesApiKey)"
                 let stellarSdk = StellarSDK(withHorizonUrl: url)
                 $0.stellarSdk = stellarSdk
                 $0.txBuilder = StellarTransactionBuilder(stellarSdk: stellarSdk, walletPublicKey: wallet.publicKey.blockchainKey, isTestnet: testnet)
@@ -181,7 +181,7 @@ public class WalletManagerFactory {
             let manager: EthereumWalletManager
             let endpoints = blockchain.getJsonRpcEndpoints(
                 infuraProjectId: config.infuraProjectId,
-                nowNodesApiKey: config.nownodesApiKey,
+                nowNodesApiKey: config.nowNodesApiKey,
                 getBlockApiKey: config.getBlockApiKey
             )!
             
@@ -300,7 +300,7 @@ public class WalletManagerFactory {
                     ]
                 } else {
                     endpoints = [
-                        .nowNodes(apiKey: config.nownodesApiKey),
+                        .nowNodes(apiKey: config.nowNodesApiKey),
                         .getBlock(apiKey: config.getBlockApiKey),
                         .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain),
                         .ankr,

@@ -9,14 +9,14 @@
 import Foundation
 
 enum BlockBookService {
-    case nownodes
-    case getblock
+    case nowNodes
+    case getBlock
     
     var host: String {
         switch self {
-        case .nownodes:
+        case .nowNodes:
             return "nownodes.io"
-        case .getblock:
+        case .getBlock:
             return "getblock.io"
         }
     }
@@ -29,10 +29,10 @@ enum BlockBookService {
             return "https://\(currencySymbolPrefix).\(host)"
         default:
             switch self {
-            case .nownodes:
+            case .nowNodes:
                 let testnetSuffix = blockchain.isTestnet ? "-testnet" : ""
                 return "https://\(currencySymbolPrefix)book\(testnetSuffix).\(host)"
-            case .getblock:
+            case .getBlock:
                 return "https://\(currencySymbolPrefix).\(host)"
             }
         }
@@ -42,16 +42,16 @@ enum BlockBookService {
         switch request {
         case .fees:
             switch self {
-            case .nownodes:
+            case .nowNodes:
                 return ""
-            case .getblock:
+            case .getBlock:
                 return "/mainnet"
             }
         default:
             switch self {
-            case .nownodes:
+            case .nowNodes:
                 return "/api/v2"
-            case .getblock:
+            case .getBlock:
                 return "/mainnet/blockbook/api/v2"
             }
         }
