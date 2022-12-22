@@ -26,8 +26,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     
     private let provider: NetworkProvider<BlockchairTarget>
     private let endpoint: BlockchairEndpoint
-    private let apiKey: String
-    private var currentApiKey: String? = nil
+    private let apiKey: String?
 
     private let jsonDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
@@ -42,7 +41,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
         BlockchairTarget(type: .fee(endpoint: endpoint), apiKey: nil).baseURL.hostOrUnknown
     }
     
-    init(endpoint: BlockchairEndpoint, apiKey: String, configuration: NetworkProviderConfiguration) {
+    init(endpoint: BlockchairEndpoint, apiKey: String?, configuration: NetworkProviderConfiguration) {
         self.endpoint = endpoint
         self.apiKey = apiKey
         provider = NetworkProvider<BlockchairTarget>(configuration: configuration)
@@ -237,49 +236,10 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     }
     
     private func publisher(for type: BlockchairTarget.BlockchairTargetType) -> AnyPublisher<JSON, MoyaError> {
-        return Just(())
-            .setFailureType(to: Error.self)
-            .flatMap { [weak self] _ -> AnyPublisher<JSON, Error> in
-                guard let self = self else {
-                    return .emptyFail
-                }
-                
-                return self.provider
-                    .requestPublisher(BlockchairTarget(type: type, apiKey: self.currentApiKey))
-                    .filterSuccessfulStatusAndRedirectCodes()
-                    .mapSwiftyJSON()
-                    .eraseError()
-                    .catch { [weak self] error -> AnyPublisher<JSON, Error> in
-                        guard let self = self else {
-                            return .emptyFail
-                        }
-                        
-                        if self.needRetryWithKey(error) {
-                            return self.publisher(for: type).eraseError()
-                        } else {
-                            return Fail(error: error).eraseToAnyPublisher()
-                        }
-                    }
-                    .eraseToAnyPublisher()
-            }
-            .mapError {
-                MoyaError.underlying($0, nil)
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    private func needRetryWithKey(_ error: Error) -> Bool {
-        if case let MoyaError.statusCode(response) = error, currentApiKey == nil {
-            switch response.statusCode {
-            case 402, 429, 430, 434, 503: //https://blockchair.com/api/docs#link_M05
-                self.currentApiKey = apiKey
-                return true
-            default:
-                return false
-            }
-        } else {
-            return false
-        }
+        provider
+            .requestPublisher(BlockchairTarget(type: type, apiKey: apiKey))
+            .filterSuccessfulStatusAndRedirectCodes()
+            .mapSwiftyJSON()
     }
     
     private func getTransactionDetails(from json: JSON) -> BlockchairTransactionDetailed? {
