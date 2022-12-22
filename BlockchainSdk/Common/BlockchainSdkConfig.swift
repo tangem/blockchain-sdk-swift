@@ -9,7 +9,7 @@
 import Foundation
 
 public struct BlockchainSdkConfig {
-    let blockchairApiKey: String
+    let blockchairApiKeys: [String]
     let blockcypherTokens: [String]
     let infuraProjectId: String
     let nowNodesApiKey: String
@@ -21,7 +21,7 @@ public struct BlockchainSdkConfig {
     let networkProviderConfigurations: [Blockchain: NetworkProviderConfiguration]
 
     public init(
-        blockchairApiKey: String,
+        blockchairApiKeys: [String],
         blockcypherTokens: [String],
         infuraProjectId: String,
         nowNodesApiKey: String,
@@ -32,7 +32,7 @@ public struct BlockchainSdkConfig {
         defaultNetworkProviderConfiguration: NetworkProviderConfiguration = .init(),
         networkProviderConfigurations: [Blockchain: NetworkProviderConfiguration] = [:]
     ) {
-        self.blockchairApiKey = blockchairApiKey
+        self.blockchairApiKeys = blockchairApiKeys
         self.blockcypherTokens = blockcypherTokens
         self.infuraProjectId = infuraProjectId
         self.nowNodesApiKey = nowNodesApiKey

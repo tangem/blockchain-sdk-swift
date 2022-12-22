@@ -56,11 +56,11 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     let blockchainsWithShelleySelection: [String]
 
     private let sdk: TangemSdk
-    private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKey: "",
+    private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKeys: [],
                                                                           blockcypherTokens: [],
                                                                           infuraProjectId: "",
-                                                                          getBlockApiKey: "",
                                                                           nowNodesApiKey: "",
+                                                                          getBlockApiKey: "",
                                                                           tronGridApiKey: "",
                                                                           quiknodeApiKey: "",
                                                                           quiknodeSubdomain: "",
