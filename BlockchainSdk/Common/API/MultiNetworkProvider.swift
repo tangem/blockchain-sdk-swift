@@ -54,7 +54,7 @@ extension MultiNetworkProvider {
     // NOTE: There also copy of this behaviour in the wild, if you want to update something
     // in the code, don't forget to update also Solano.Swift framework, class NetworkingRouter
     private func needRetry(for errorHost: String) -> Bool {
-        if errorHost != self.host {
+        if errorHost != self.host { // Do not switch the provider, if it was switched already
             return true
         }
         
