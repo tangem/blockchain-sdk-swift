@@ -895,7 +895,6 @@
 			isa = PBXGroup;
 			children = (
 				B0CDFF242641488900B9BA9D /* EthereumJsonRpcProvider.swift */,
-				DA656FCB2954B5220092CC61 /* EthereumTarget.swift */,
 				5D557CAD23AA771E009B32AF /* EthereumNetworkService.swift */,
 				B004DABF26416B8A000863A4 /* EthereumResponse.swift */,
 				5D94E56023A381F2009C7482 /* EthereumWalletManager.swift */,
@@ -903,6 +902,7 @@
 				B0A63E0C26259D01001FDB7A /* EthereumTransactionParams.swift */,
 				5D6DEAB5243CC09A00510EC8 /* EthereumTransactionBuilder.swift */,
 				B04DC65D25AC6538009AA7B3 /* EthereumAdditionalInfoProvider.swift */,
+				DA656FCB2954B5220092CC61 /* EthereumTarget.swift */,
 				DC912D1528E706C400D76628 /* ContractInteractor.swift */,
 			);
 			path = Ethereum;
