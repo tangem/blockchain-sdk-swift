@@ -112,12 +112,12 @@ extension EvmTargetBuilder {
     
     private func evmMethod(for request: EvmRequest) -> String {
         switch request {
-        case .balance: return "\(prefix())_getBalance"
-        case .transactions, .pending: return "\(prefix())_getTransactionCount"
-        case .send: return "\(prefix())_sendRawTransaction"
-        case .tokenBalance, .getAllowance: return "\(prefix())_call"
-        case .gasLimit: return "\(prefix())_estimateGas"
-        case .gasPrice: return "\(prefix())_gasPrice"
+        case .balance: return "eth_getBalance"
+        case .transactions, .pending: return "eth_getTransactionCount"
+        case .send: return "eth_sendRawTransaction"
+        case .tokenBalance, .getAllowance: return "eth_call"
+        case .gasLimit: return "eth_estimateGas"
+        case .gasPrice: return "eth_gasPrice"
         }
     }
     
@@ -126,21 +126,6 @@ extension EvmTargetBuilder {
         case .balance, .transactions, .tokenBalance, .getAllowance: return "latest"
         case .pending: return "pending"
         case .send, .gasLimit, .gasPrice: return nil
-        }
-    }
-    
-    private func prefix() -> String {
-        switch blockchain {
-        case .bsc, .ethereum, .avalanche, .ethereumClassic, .ethereumPoW, .fantom, .optimism, .polygon:
-            if baseURL.absoluteString.contains("nownodes") {
-                return blockchain.currencySymbol.lowercased()
-            } else {
-                return "eth"
-            }
-        case .ethereumFair, .arbitrum, .gnosis, .rsk:
-            return "eth"
-        default:
-            fatalError()
         }
     }
 }
