@@ -26,9 +26,8 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     
     private let provider: NetworkProvider<BlockchairTarget>
     private let endpoint: BlockchairEndpoint
-    private let apiKey: String
-    private var currentApiKey: String? = nil
-
+    private let apiKey: String?
+    
     private let jsonDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -42,13 +41,13 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
         BlockchairTarget(type: .fee(endpoint: endpoint), apiKey: nil).baseURL.hostOrUnknown
     }
     
-    init(endpoint: BlockchairEndpoint, apiKey: String, configuration: NetworkProviderConfiguration) {
+    init(endpoint: BlockchairEndpoint, apiKey: String?, configuration: NetworkProviderConfiguration) {
         self.endpoint = endpoint
         self.apiKey = apiKey
         provider = NetworkProvider<BlockchairTarget>(configuration: configuration)
     }
     
-	func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
+    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         publisher(for: .address(address: address, limit: 1000, endpoint: endpoint, transactionDetails: true))
             .tryMap { [weak self] json -> (BitcoinResponse, [BlockchairTransactionShort]) in //TODO: refactor to normal JSON
                 guard let self = self else { throw WalletError.empty }
@@ -64,22 +63,22 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                 
                 guard let transactionsData = try? addr["transactions"].rawData(),
                       let transactions: [BlockchairTransactionShort] = try? self.jsonDecoder.decode([BlockchairTransactionShort].self, from: transactionsData) else {
-                        throw WalletError.failedToParseNetworkResponse
+                    throw WalletError.failedToParseNetworkResponse
                 }
                 
                 guard let utxoData = try? addr["utxo"].rawData(),
                       let utxos: [BlockchairUtxo] = try? self.jsonDecoder.decode([BlockchairUtxo].self, from: utxoData) else {
-                        throw WalletError.failedToParseNetworkResponse
+                    throw WalletError.failedToParseNetworkResponse
                 }
                 
                 // Unspents with blockId lower than or equal 1 is not currently available
                 // This unspents related to transaction in Mempool and are pending. We should ignore this unspents
                 let utxs: [BitcoinUnspentOutput] = utxos.compactMap { utxo -> BitcoinUnspentOutput?  in
                     guard let hash = utxo.transactionHash,
-                        let n = utxo.index,
-                        let val = utxo.value,
-                        let blockId = utxo.blockId,
-                        blockId > 1
+                          let n = utxo.index,
+                          let val = utxo.value,
+                          let blockId = utxo.blockId,
+                          blockId > 1
                     else {
                         return nil
                     }
@@ -135,7 +134,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                             return pendingTx
                         }
                         
-//                        let basicTxs = pendingBtcTxs.map { $0.toBasicTx(userAddress: address) }
+                        //                        let basicTxs = pendingBtcTxs.map { $0.toBasicTx(userAddress: address) }
                         
                         return BitcoinResponse(balance: Decimal(utxos.reduce(0, { $0 + $1.amount })) / self.endpoint.blockchain.decimalValue,
                                                hasUnconfirmed: oldResp.hasUnconfirmed,
@@ -148,7 +147,7 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
-		publisher(for: .fee(endpoint: endpoint))
+        publisher(for: .fee(endpoint: endpoint))
             .tryMap { json throws -> BitcoinFee in
                 let data = json["data"]
                 guard let feePerByteSatoshi = data["suggested_transaction_fee_per_byte_sat"].int  else {
@@ -158,17 +157,17 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                 let normal = Decimal(feePerByteSatoshi)
                 let min = (Decimal(0.8) * normal).rounded(roundingMode: .down)
                 let max = (Decimal(1.2) * normal).rounded(roundingMode: .down)
-
+                
                 let fee = BitcoinFee(minimalSatoshiPerByte: min,
-                                 normalSatoshiPerByte: normal,
-                                 prioritySatoshiPerByte: max)
+                                     normalSatoshiPerByte: normal,
+                                     prioritySatoshiPerByte: max)
                 return fee
-        }
-        .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
-		publisher(for: .send(txHex: transaction, endpoint: endpoint))
+        publisher(for: .send(txHex: transaction, endpoint: endpoint))
             .tryMap { json throws -> String in
                 let data = json["data"]
                 
@@ -176,33 +175,33 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
                     throw WalletError.failedToParseNetworkResponse
                 }
                 
-               return hash
-        }
-        .eraseToAnyPublisher()
+                return hash
+            }
+            .eraseToAnyPublisher()
     }
     
     func push(transaction: String) -> AnyPublisher<String, Error> {
         send(transaction: transaction)
     }
-	
-	func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-		publisher(for: .address(address: address, limit: 1000, endpoint: endpoint, transactionDetails: false))
-			.tryMap {[weak self] json -> Int in
+    
+    func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
+        publisher(for: .address(address: address, limit: 1000, endpoint: endpoint, transactionDetails: false))
+            .tryMap {[weak self] json -> Int in
                 guard let self = self else {  throw WalletError.empty }
                 
                 let addr = self.mapAddressBlock(address, json: json)
-				let address = addr["address"]
-				
-				guard
-					let outputCount = address["output_count"].int,
-					let unspentOutputCount = address["unspent_output_count"].int
-				else { return 0 }
-				
-				return outputCount - unspentOutputCount
-			}
-			.mapError { $0 as Error }
-			.eraseToAnyPublisher()
-	}
+                let address = addr["address"]
+                
+                guard
+                    let outputCount = address["output_count"].int,
+                    let unspentOutputCount = address["unspent_output_count"].int
+                else { return 0 }
+                
+                return outputCount - unspentOutputCount
+            }
+            .mapError { $0 as Error }
+            .eraseToAnyPublisher()
+    }
     
     func getTransactionInfo(hash: String, address: String) -> AnyPublisher<PendingTransaction, Error> {
         publisher(for: .txDetails(txHash: hash, endpoint: endpoint))
@@ -237,49 +236,10 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     }
     
     private func publisher(for type: BlockchairTarget.BlockchairTargetType) -> AnyPublisher<JSON, MoyaError> {
-        return Just(())
-            .setFailureType(to: Error.self)
-            .flatMap { [weak self] _ -> AnyPublisher<JSON, Error> in
-                guard let self = self else {
-                    return .emptyFail
-                }
-                
-                return self.provider
-                    .requestPublisher(BlockchairTarget(type: type, apiKey: self.currentApiKey))
-                    .filterSuccessfulStatusAndRedirectCodes()
-                    .mapSwiftyJSON()
-                    .eraseError()
-                    .catch { [weak self] error -> AnyPublisher<JSON, Error> in
-                        guard let self = self else {
-                            return .emptyFail
-                        }
-                        
-                        if self.needRetryWithKey(error) {
-                            return self.publisher(for: type).eraseError()
-                        } else {
-                            return Fail(error: error).eraseToAnyPublisher()
-                        }
-                    }
-                    .eraseToAnyPublisher()
-            }
-            .mapError {
-                MoyaError.underlying($0, nil)
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    private func needRetryWithKey(_ error: Error) -> Bool {
-        if case let MoyaError.statusCode(response) = error, currentApiKey == nil {
-            switch response.statusCode {
-            case 402, 429, 430, 434, 503: //https://blockchair.com/api/docs#link_M05
-                self.currentApiKey = apiKey
-                return true
-            default:
-                return false
-            }
-        } else {
-            return false
-        }
+        provider
+            .requestPublisher(BlockchairTarget(type: type, apiKey: apiKey))
+            .filterSuccessfulStatusAndRedirectCodes()
+            .mapSwiftyJSON()
     }
     
     private func getTransactionDetails(from json: JSON) -> BlockchairTransactionDetailed? {
