@@ -91,7 +91,7 @@ public class WalletManagerFactory {
                 var providers = [AnyBitcoinNetworkProvider]()
                 if !testnet {
                     providers.append(BlockchainInfoNetworkProvider(configuration: networkProviderConfiguration)
-                                        .eraseToAnyBitcoinNetworkProvider())
+                        .eraseToAnyBitcoinNetworkProvider())
                 }
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .bitcoin(testnet: testnet),
                                                                             configuration: networkProviderConfiguration,
@@ -100,7 +100,7 @@ public class WalletManagerFactory {
                 providers.append(BlockcypherNetworkProvider(endpoint: .bitcoin(testnet: testnet),
                                                             tokens: config.blockcypherTokens,
                                                             configuration: networkProviderConfiguration)
-                                    .eraseToAnyBitcoinNetworkProvider())
+                    .eraseToAnyBitcoinNetworkProvider())
                 
                 $0.networkService = BitcoinNetworkService(providers: providers)
             }
@@ -122,7 +122,7 @@ public class WalletManagerFactory {
                 providers.append(BlockcypherNetworkProvider(endpoint: .litecoin,
                                                             tokens: config.blockcypherTokens,
                                                             configuration: networkProviderConfiguration)
-                                    .eraseToAnyBitcoinNetworkProvider())
+                    .eraseToAnyBitcoinNetworkProvider())
                 
                 $0.networkService = LitecoinNetworkService(providers: providers)
             }
