@@ -66,7 +66,9 @@ struct BlockBookTarget: TargetType {
     }
     
     var headers: [String : String]? {
-        ["api-key": apiKey]
+        [
+            Constants.nowNodesApiKeyHeaderName: apiKey,
+        ]
     }
 }
 

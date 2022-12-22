@@ -21,7 +21,7 @@ extension Solana_Swift.RPCEndpoint {
             url: URL(string: "https://sol.nownodes.io")!,
             urlWebSocket: URL(string: "wss://sol.nownodes.io")!,
             network: .mainnetBeta,
-            apiKeyHeaderName: "api-key",
+            apiKeyHeaderName: Constants.nowNodesApiKeyHeaderName,
             apiKeyHeaderValue: apiKey
         )
     }
@@ -30,7 +30,7 @@ extension Solana_Swift.RPCEndpoint {
             url: URL(string: "https://sol.getblock.io/mainnet")!,
             urlWebSocket: URL(string: "wss://sol.getblock.io/mainnet")!,
             network: .mainnetBeta,
-            apiKeyHeaderName: "x-api-key",
+            apiKeyHeaderName: Constants.getBlockApiKeyHeaderName,
             apiKeyHeaderValue: apiKey
         )
     }

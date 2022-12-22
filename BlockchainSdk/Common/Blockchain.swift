@@ -292,13 +292,13 @@ extension Blockchain {
             if isTestnet {
                 return [
                     RPCEndpoint(url: URL(string: "https://eth-goerli.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://eth.getblock.io/testnet")!, apiKeyHeaderName: "x-api-key", apiKeyHeaderValue: getBlockApiKey),
+                    RPCEndpoint(url: URL(string: "https://eth.getblock.io/testnet")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://goerli.infura.io/v3/\(infuraProjectId)")!),
                 ]
             } else {
                 return [
                     RPCEndpoint(url: URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://eth.getblock.io/mainnet/")!, apiKeyHeaderName: "x-api-key", apiKeyHeaderValue: getBlockApiKey),
+                    RPCEndpoint(url: URL(string: "https://eth.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!),
                 ]
             }
@@ -309,7 +309,7 @@ extension Blockchain {
                 ]
             } else {
                 return [
-                    RPCEndpoint(url: URL(string: "https://etc.getblock.io/mainnet/")!, apiKeyHeaderName: "x-api-key", apiKeyHeaderValue: getBlockApiKey),
+                    RPCEndpoint(url: URL(string: "https://etc.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://www.ethercluster.com/etc")!),
                     RPCEndpoint(url: URL(string: "https://etc.etcdesktop.com")!),
                     RPCEndpoint(url: URL(string: "https://blockscout.com/etc/mainnet/api/eth-rpc")!),
@@ -335,7 +335,7 @@ extension Blockchain {
             ]
         case .rsk:
             return [
-                RPCEndpoint(url: URL(string: "https://rsk.getblock.io/mainnet/")!, apiKeyHeaderName: "x-api-key", apiKeyHeaderValue: getBlockApiKey),
+                RPCEndpoint(url: URL(string: "https://rsk.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                 RPCEndpoint(url: URL(string: "https://public-node.rsk.co/")!),
             ]
         case .bsc:
@@ -346,7 +346,7 @@ extension Blockchain {
             } else {
                 return [
                     RPCEndpoint(url: URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://bsc.getblock.io/mainnet/")!, apiKeyHeaderName: "x-api-key", apiKeyHeaderValue: getBlockApiKey),
+                    RPCEndpoint(url: URL(string: "https://bsc.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://bsc-dataseed.binance.org/")!),
                 ]
             }
@@ -359,7 +359,7 @@ extension Blockchain {
                 // https://docs.polygon.technology/docs/develop/network-details/network/
                 return [
                     RPCEndpoint(url: URL(string: "https://matic.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://matic.getblock.io/mainnet/")!, apiKeyHeaderName: "x-api-key", apiKeyHeaderValue: getBlockApiKey),
+                    RPCEndpoint(url: URL(string: "https://matic.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://polygon-rpc.com")!),
                     RPCEndpoint(url: URL(string: "https://rpc-mainnet.matic.network")!),
                     RPCEndpoint(url: URL(string: "https://matic-mainnet.chainstacklabs.com")!),
@@ -376,7 +376,7 @@ extension Blockchain {
             } else {
                 return [
                     RPCEndpoint(url: URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://avax.getblock.io/mainnet/ext/bc/C/rpc")!, apiKeyHeaderName: "x-api-key", apiKeyHeaderValue: getBlockApiKey),
+                    RPCEndpoint(url: URL(string: "https://avax.getblock.io/mainnet/ext/bc/C/rpc")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://api.avax.network/ext/bc/C/rpc")!),
                 ]
             }
@@ -388,7 +388,7 @@ extension Blockchain {
             } else {
                 return [
                     RPCEndpoint(url: URL(string: "https://ftm.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://ftm.getblock.io/mainnet")!, apiKeyHeaderName: "x-api-key", apiKeyHeaderValue: getBlockApiKey),
+                    RPCEndpoint(url: URL(string: "https://ftm.getblock.io/mainnet")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://rpc.ftm.tools/")!),
                     RPCEndpoint(url: URL(string: "https://rpcapi.fantom.network/")!),
                     RPCEndpoint(url: URL(string: "http://rpc.ankr.tools/ftm")!),
@@ -412,7 +412,7 @@ extension Blockchain {
             }
         case .gnosis:
             return [
-                RPCEndpoint(url: URL(string: "https://gno.getblock.io/mainnet/")!, apiKeyHeaderName: "x-api-key", apiKeyHeaderValue: getBlockApiKey),
+                RPCEndpoint(url: URL(string: "https://gno.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                 
                 // from registry.json
                 RPCEndpoint(url: URL(string: "https://rpc.gnosischain.com")!),
@@ -433,7 +433,7 @@ extension Blockchain {
             } else {
                 return [
                     RPCEndpoint(url: URL(string: "https://optimism.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://optimism.getblock.io/mainnet/")!, apiKeyHeaderName: "x-api-key", apiKeyHeaderValue: getBlockApiKey),
+                    RPCEndpoint(url: URL(string: "https://optimism.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://mainnet.optimism.io")!),
                     RPCEndpoint(url: URL(string: "https://optimism-mainnet.public.blastapi.io")!),
                     RPCEndpoint(url: URL(string: "https://rpc.ankr.com/optimism")!),
