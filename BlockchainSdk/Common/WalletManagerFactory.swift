@@ -179,10 +179,14 @@ public class WalletManagerFactory {
             
         case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .optimism, .ethereumFair, .saltPay:
             let manager: EthereumWalletManager
-            let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId, nowNodesApiKey: config.nownodesApiKey)!
+            let endpoints = blockchain.getJsonRpcEndpoints(
+                infuraProjectId: config.infuraProjectId,
+                nowNodesApiKey: config.nownodesApiKey,
+                getBlockApiKey: config.getBlockApiKey
+            )!
             
             if case .optimism = blockchain {
-                manager = OptimismWalletManager(wallet: wallet, rpcURL: rpcUrls[0])
+                manager = OptimismWalletManager(wallet: wallet, rpcURL: endpoints[0].url)
             } else {
                 manager = EthereumWalletManager(wallet: wallet)
             }
@@ -210,11 +214,12 @@ public class WalletManagerFactory {
             return try manager.then {
                 let chainId = blockchain.chainId!
                 let jsonRpcProviders: [EthereumJsonRpcProvider]
-                jsonRpcProviders = rpcUrls.map {
-                    EthereumJsonRpcProvider(url: $0,
-                                            targetBuilder: EvmTargetBuilder(baseURL: $0,
+                jsonRpcProviders = endpoints.map {
+                    EthereumJsonRpcProvider(url: $0.url,
+                                            targetBuilder: EvmTargetBuilder(baseURL: $0.url,
                                                                             blockchain: blockchain,
-                                                                            apiKey: config.getBlockApiKey),
+                                                                            apiKeyHeaderName: $0.apiKeyHeaderName,
+                                                                            apiKeyHeaderValue: $0.apiKeyHeaderValue),
                                             configuration: config.defaultNetworkProviderConfiguration)
                 }
                 
@@ -287,7 +292,7 @@ public class WalletManagerFactory {
             
         case .solana(let testnet):
             return SolanaWalletManager(wallet: wallet).then {
-                let endpoints: [RPCEndpoint]
+                let endpoints: [Solana_Swift.RPCEndpoint]
                 if testnet {
                     endpoints = [
                         .devnetSolana,

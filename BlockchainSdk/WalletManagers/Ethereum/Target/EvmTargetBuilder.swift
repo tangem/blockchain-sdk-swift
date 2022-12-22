@@ -11,54 +11,47 @@ import Moya
 struct EvmTargetBuilder {
     let baseURL: URL
     let blockchain: Blockchain
-    var apiKey: String?
+    
+    let apiKeyHeaderName: String?
+    let apiKeyHeaderValue: String?
     
     func balance(address: String) -> EvmRawTarget {
-        EvmRawTarget(apiKey: apiKey,
-                     baseURL: baseURL,
-                     parameters: buildParameters(for: .balance(address: address)))
+        target(for: .balance(address: address))
     }
     
     func transactions(address: String) -> EvmRawTarget {
-        EvmRawTarget(apiKey: apiKey,
-                     baseURL: baseURL,
-                     parameters: buildParameters(for: .transactions(address: address)))
+        target(for: .transactions(address: address))
     }
     
     func pending(address: String) -> EvmRawTarget {
-        EvmRawTarget(apiKey: apiKey,
-                     baseURL: baseURL,
-                     parameters: buildParameters(for: .pending(address: address)))
+        target(for: .pending(address: address))
     }
     
     func send(transaction: String) -> EvmRawTarget {
-        EvmRawTarget(apiKey: apiKey,
-                     baseURL: baseURL,
-                     parameters: buildParameters(for: .send(transaction: transaction)))
+        target(for: .send(transaction: transaction))
     }
     
     func tokenBalance(address: String, contractAddress: String) -> EvmRawTarget {
-        EvmRawTarget(apiKey: apiKey,
-                     baseURL: baseURL,
-                     parameters: buildParameters(for: .tokenBalance(address: address, contractAddress: contractAddress)))
+        target(for: .tokenBalance(address: address, contractAddress: contractAddress))
     }
     
     func getAllowance(from source: String, to destination: String, contractAddress: String) -> EvmRawTarget {
-        EvmRawTarget(apiKey: apiKey,
-                     baseURL: baseURL,
-                     parameters: buildParameters(for: .getAllowance(from: source, to: destination, contractAddress: contractAddress)))
+        target(for: .getAllowance(from: source, to: destination, contractAddress: contractAddress))
     }
     
     func gasLimit(to: String, from: String, value: String?, data: String?) -> EvmRawTarget {
-        EvmRawTarget(apiKey: apiKey,
-                     baseURL: baseURL,
-                     parameters: buildParameters(for: .gasLimit(to: to, from: from, value: value, data: data)))
+        target(for: .gasLimit(to: to, from: from, value: value, data: data))
     }
     
     func gasPrice() -> EvmRawTarget {
-        EvmRawTarget(apiKey: apiKey,
+        target(for: .gasPrice)
+    }
+    
+    private func target(for request: EvmRequest) -> EvmRawTarget {
+        EvmRawTarget(apiKeyHeaderName: apiKeyHeaderName,
+                     apiKeyHeaderValue: apiKeyHeaderValue,
                      baseURL: baseURL,
-                     parameters: buildParameters(for: .gasPrice))
+                     parameters: buildParameters(for: request))
     }
 }
 

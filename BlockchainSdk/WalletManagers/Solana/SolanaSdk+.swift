@@ -10,10 +10,14 @@ import Foundation
 import Combine
 import Solana_Swift
 
-extension RPCEndpoint {
-    public static let ankr = RPCEndpoint(url: URL(string: "https://rpc.ankr.com/solana")!, urlWebSocket: URL(string: "ws://rpc.ankr.com/solana")!, network: .mainnetBeta)
-    public static func nowNodes(apiKey: String) -> RPCEndpoint {
-        RPCEndpoint(
+extension Solana_Swift.RPCEndpoint {
+    public static let ankr = Solana_Swift.RPCEndpoint(
+        url: URL(string: "https://rpc.ankr.com/solana")!,
+        urlWebSocket: URL(string: "ws://rpc.ankr.com/solana")!,
+        network: .mainnetBeta
+    )
+    public static func nowNodes(apiKey: String) -> Solana_Swift.RPCEndpoint {
+        Solana_Swift.RPCEndpoint(
             url: URL(string: "https://sol.nownodes.io")!,
             urlWebSocket: URL(string: "wss://sol.nownodes.io")!,
             network: .mainnetBeta,
@@ -21,8 +25,8 @@ extension RPCEndpoint {
             apiKeyHeaderValue: apiKey
         )
     }
-    public static func getBlock(apiKey: String) -> RPCEndpoint {
-        RPCEndpoint(
+    public static func getBlock(apiKey: String) -> Solana_Swift.RPCEndpoint {
+        Solana_Swift.RPCEndpoint(
             url: URL(string: "https://sol.getblock.io/mainnet")!,
             urlWebSocket: URL(string: "wss://sol.getblock.io/mainnet")!,
             network: .mainnetBeta,
@@ -30,8 +34,8 @@ extension RPCEndpoint {
             apiKeyHeaderValue: apiKey
         )
     }
-    public static func quiknode(apiKey: String, subdomain: String) -> RPCEndpoint {
-        .init(
+    public static func quiknode(apiKey: String, subdomain: String) -> Solana_Swift.RPCEndpoint {
+        Solana_Swift.RPCEndpoint(
             url: URL(string: "https://\(subdomain).solana-mainnet.discover.quiknode.pro/\(apiKey)")!,
             urlWebSocket: URL(string: "wss://\(subdomain).solana-mainnet.discover.quiknode.pro/\(apiKey)")!,
             network: .mainnetBeta

@@ -9,7 +9,8 @@ import Foundation
 import Moya
 
 struct EvmRawTarget: TargetType {
-    let apiKey: String?
+    let apiKeyHeaderName: String?
+    let apiKeyHeaderValue: String?
     
     var baseURL: URL
     var parameters: [String: Any]
@@ -22,8 +23,14 @@ struct EvmRawTarget: TargetType {
     var method: Moya.Method = .post
     
     var headers: [String : String]? {
-        guard let apiKey else { return ["Content-Type": "application/json"] }
+        var headers = [
+            "Content-Type": "application/json",
+        ]
         
-        return baseURL.absoluteString.contains("getblock.io") ? ["x-api-key": apiKey, "Content-Type": "application/json"] : ["Content-Type": "application/json"]
+        if let apiKeyHeaderName, let apiKeyHeaderValue {
+            headers[apiKeyHeaderName] = apiKeyHeaderValue
+        }
+        
+        return headers
     }
 }
