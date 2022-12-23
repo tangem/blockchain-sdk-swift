@@ -10,7 +10,6 @@ import Foundation
 import Moya
 
 struct EthereumTarget: TargetType {
-    static let infuraTokenId = 03
     static let coinId = 67
 
     enum EthereumTargetType {
