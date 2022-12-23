@@ -13,8 +13,8 @@ public struct BlockchainSdkConfig {
     let blockcypherTokens: [String]
     let infuraProjectId: String
     let tronGridApiKey: String
-    let quiknodeApiKey: String
-    let quiknodeSubdomain: String
+    let quickNodeSolanaCredentials: QuickNodeCredentials
+    let quickNodeBscCredentials: QuickNodeCredentials
     let defaultNetworkProviderConfiguration: NetworkProviderConfiguration
     let networkProviderConfigurations: [Blockchain: NetworkProviderConfiguration]
 
@@ -23,8 +23,8 @@ public struct BlockchainSdkConfig {
         blockcypherTokens: [String],
         infuraProjectId: String,
         tronGridApiKey: String,
-        quiknodeApiKey: String,
-        quiknodeSubdomain: String,
+        quickNodeSolanaCredentials: QuickNodeCredentials,
+        quickNodeBscCredentials: QuickNodeCredentials,
         defaultNetworkProviderConfiguration: NetworkProviderConfiguration = .init(),
         networkProviderConfigurations: [Blockchain: NetworkProviderConfiguration] = [:]
     ) {
@@ -32,13 +32,25 @@ public struct BlockchainSdkConfig {
         self.blockcypherTokens = blockcypherTokens
         self.infuraProjectId = infuraProjectId
         self.tronGridApiKey = tronGridApiKey
-        self.quiknodeApiKey = quiknodeApiKey
-        self.quiknodeSubdomain = quiknodeSubdomain
+        self.quickNodeSolanaCredentials = quickNodeSolanaCredentials
+        self.quickNodeBscCredentials = quickNodeBscCredentials
         self.defaultNetworkProviderConfiguration = defaultNetworkProviderConfiguration
         self.networkProviderConfigurations = networkProviderConfigurations
     }
 
     func networkProviderConfiguration(for blockchain: Blockchain) -> NetworkProviderConfiguration {
         networkProviderConfigurations[blockchain] ?? defaultNetworkProviderConfiguration
+    }
+}
+
+public extension BlockchainSdkConfig {
+    struct QuickNodeCredentials {
+        let apiKey: String
+        let subdomain: String
+        
+        public init(apiKey: String, subdomain: String) {
+            self.apiKey = apiKey
+            self.subdomain = subdomain
+        }
     }
 }

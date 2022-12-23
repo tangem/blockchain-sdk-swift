@@ -56,12 +56,12 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     let blockchainsWithShelleySelection: [String]
 
     private let sdk: TangemSdk
-    private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKey: "",
+    private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKeys: [],
                                                                           blockcypherTokens: [],
                                                                           infuraProjectId: "",
                                                                           tronGridApiKey: "",
-                                                                          quiknodeApiKey: "",
-                                                                          quiknodeSubdomain: "",
+                                                                          quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
+                                                                          quickNodeBscCredentials: .init(apiKey: "", subdomain: ""),
                                                                           defaultNetworkProviderConfiguration: .init(logger: .verbose)))
     @Published private(set) var card: Card?
     @Published private(set) var walletManager: WalletManager?

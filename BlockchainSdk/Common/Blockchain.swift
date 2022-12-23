@@ -282,7 +282,7 @@ extension Blockchain {
     }
     
     //Only for Ethereum compatible blockchains
-    public func getJsonRpcURLs(infuraProjectId: String?) -> [URL]? {
+    public func getJsonRpcURLs(infuraProjectId: String?, quickNodeBscCredentials: BlockchainSdkConfig.QuickNodeCredentials?) -> [URL]? {
         switch self {
         case .ethereum:
             guard let infuraProjectId = infuraProjectId else {
@@ -317,8 +317,20 @@ extension Blockchain {
         case .rsk:
             return [URL(string: "https://public-node.rsk.co/")!]
         case .bsc:
-            return isTestnet ? [URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!]
-            : [URL(string: "https://bsc-dataseed.binance.org/")!]
+            guard let quickNodeBscCredentials else {
+                fatalError("BSC QuickNode keys are missing")
+            }
+            
+            if isTestnet {
+                return [
+                    URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://bsc-dataseed.binance.org/")!,
+                    URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)/")!,
+                ]
+            }
         case .polygon:
             if isTestnet {
                 return [URL(string: "https://rpc-mumbai.maticvigil.com/")!]
