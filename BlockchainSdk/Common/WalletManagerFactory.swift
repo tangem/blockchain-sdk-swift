@@ -96,6 +96,12 @@ public class WalletManagerFactory {
                                                    apiKey: config.nowNodesApiKey)
                     .eraseToAnyBitcoinNetworkProvider())
                 
+                providers.append(BlockBookProvider(blockchain: blockchain,
+                                                   serviceProvider: .getBlock,
+                                                   configuration: config.defaultNetworkProviderConfiguration,
+                                                   apiKey: config.getBlockApiKey)
+                    .eraseToAnyBitcoinNetworkProvider())
+                
                 if !testnet {
                     providers.append(BlockchainInfoNetworkProvider(configuration: networkProviderConfiguration)
                         .eraseToAnyBitcoinNetworkProvider())
@@ -122,6 +128,19 @@ public class WalletManagerFactory {
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
                 
                 var providers = [AnyBitcoinNetworkProvider]()
+                
+                providers.append(BlockBookProvider(blockchain: blockchain,
+                                                   serviceProvider: .nowNodes,
+                                                   configuration: config.defaultNetworkProviderConfiguration,
+                                                   apiKey: config.nowNodesApiKey)
+                    .eraseToAnyBitcoinNetworkProvider())
+                
+                providers.append(BlockBookProvider(blockchain: blockchain,
+                                                   serviceProvider: .getBlock,
+                                                   configuration: config.defaultNetworkProviderConfiguration,
+                                                   apiKey: config.getBlockApiKey)
+                    .eraseToAnyBitcoinNetworkProvider())
+                
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .litecoin,
                                                                             configuration: networkProviderConfiguration,
                                                                             apiKeys: config.blockchairApiKeys))
@@ -144,6 +163,19 @@ public class WalletManagerFactory {
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
                 
                 var providers = [AnyBitcoinNetworkProvider]()
+                
+                providers.append(BlockBookProvider(blockchain: blockchain,
+                                                   serviceProvider: .nowNodes,
+                                                   configuration: config.defaultNetworkProviderConfiguration,
+                                                   apiKey: config.nowNodesApiKey)
+                    .eraseToAnyBitcoinNetworkProvider())
+                
+                providers.append(BlockBookProvider(blockchain: blockchain,
+                                                   serviceProvider: .getBlock,
+                                                   configuration: config.defaultNetworkProviderConfiguration,
+                                                   apiKey: config.getBlockApiKey)
+                    .eraseToAnyBitcoinNetworkProvider())
+                
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .dogecoin,
                                                                             configuration: networkProviderConfiguration,
                                                                             apiKeys: config.blockchairApiKeys))
@@ -232,6 +264,19 @@ public class WalletManagerFactory {
                 
                 //TODO: Add testnet support. Maybe https://developers.cryptoapis.io/technical-documentation/general-information/what-we-support
                 var providers = [AnyBitcoinNetworkProvider]()
+                
+                providers.append(BlockBookProvider(blockchain: blockchain,
+                                                   serviceProvider: .nowNodes,
+                                                   configuration: config.defaultNetworkProviderConfiguration,
+                                                   apiKey: config.nowNodesApiKey)
+                    .eraseToAnyBitcoinNetworkProvider())
+                
+                providers.append(BlockBookProvider(blockchain: blockchain,
+                                                   serviceProvider: .getBlock,
+                                                   configuration: config.defaultNetworkProviderConfiguration,
+                                                   apiKey: config.getBlockApiKey)
+                    .eraseToAnyBitcoinNetworkProvider())
+                
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .bitcoinCash,
                                                                             configuration: networkProviderConfiguration,
                                                                             apiKeys: config.blockchairApiKeys))
@@ -360,6 +405,18 @@ public class WalletManagerFactory {
             $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
             
             var providers: [AnyBitcoinNetworkProvider] = []
+            
+            providers.append(BlockBookProvider(blockchain: .dash(testnet: testnet),
+                                               serviceProvider: .nowNodes,
+                                               configuration: config.defaultNetworkProviderConfiguration,
+                                               apiKey: config.nowNodesApiKey)
+                .eraseToAnyBitcoinNetworkProvider())
+            
+            providers.append(BlockBookProvider(blockchain: .dash(testnet: testnet),
+                                               serviceProvider: .getBlock,
+                                               configuration: config.defaultNetworkProviderConfiguration,
+                                               apiKey: config.getBlockApiKey)
+                .eraseToAnyBitcoinNetworkProvider())
             
             providers.append(contentsOf: makeBlockchairNetworkProviders(for: .dash,
                                                                         configuration: networkProviderConfiguration,
