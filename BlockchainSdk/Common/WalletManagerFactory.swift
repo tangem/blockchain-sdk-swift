@@ -170,7 +170,7 @@ public class WalletManagerFactory {
             
         case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .optimism, .ethereumFair, .saltPay:
             let manager: EthereumWalletManager
-            let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId, bscQuiknodeApiKey: config.bscQuiknodeApiKey, bscQuiknodeSubdomain: config.bscQuiknodeSubdomain)!
+            let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId, quickNodeBscCredentials: config.quickNodeBscCredentials)!
             
             if case .optimism = blockchain {
                 manager = OptimismWalletManager(wallet: wallet, rpcURL: rpcUrls[0])
@@ -267,7 +267,7 @@ public class WalletManagerFactory {
                 let endpoints: [RPCEndpoint] = testnet ?
                 [.devnetSolana, .devnetGenesysGo] :
                 [
-                    .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain),
+                    .quiknode(apiKey: config.quickNodeSolanaCredentials.apiKey, subdomain: config.quickNodeSolanaCredentials.subdomain),
                     .ankr,
                     .mainnetBetaSolana,
                 ]
