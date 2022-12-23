@@ -178,10 +178,12 @@ public class WalletManagerFactory {
         case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .optimism, .ethereumFair, .saltPay:
             let manager: EthereumWalletManager
             let endpoints = blockchain.getJsonRpcEndpoints(
-                infuraProjectId: config.infuraProjectId,
-                nowNodesApiKey: config.nowNodesApiKey,
-                getBlockApiKey: config.getBlockApiKey,
-                quickNodeBscCredentials: config.quickNodeBscCredentials
+                keys: EthereumApiKeys(
+                    infuraProjectId: config.infuraProjectId,
+                    nowNodesApiKey: config.nowNodesApiKey,
+                    getBlockApiKey: config.getBlockApiKey,
+                    quickNodeBscCredentials: config.quickNodeBscCredentials
+                )
             )!
             
             if case .optimism = blockchain {
