@@ -38,7 +38,9 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
     }()
     
     var host: String {
-        BlockchairTarget(type: .fee(endpoint: endpoint), apiKey: nil).baseURL.hostOrUnknown
+        let baseUrl = "https://api.blockchair.com/"
+        let suffix = apiKey?.sha256() ?? "nil"
+        return "\(baseUrl)_\(suffix)"
     }
     
     init(endpoint: BlockchairEndpoint, apiKey: String?, configuration: NetworkProviderConfiguration) {
