@@ -180,7 +180,8 @@ public class WalletManagerFactory {
             let endpoints = blockchain.getJsonRpcEndpoints(
                 infuraProjectId: config.infuraProjectId,
                 nowNodesApiKey: config.nowNodesApiKey,
-                getBlockApiKey: config.getBlockApiKey
+                getBlockApiKey: config.getBlockApiKey,
+                quickNodeBscCredentials: config.quickNodeBscCredentials
             )!
             
             if case .optimism = blockchain {
@@ -288,7 +289,7 @@ public class WalletManagerFactory {
                     endpoints = [
                         .nowNodes(apiKey: config.nowNodesApiKey),
                         .getBlock(apiKey: config.getBlockApiKey),
-                        .quiknode(apiKey: config.quiknodeApiKey, subdomain: config.quiknodeSubdomain),
+                        .quiknode(apiKey: config.quickNodeSolanaCredentials.apiKey, subdomain: config.quickNodeSolanaCredentials.subdomain),
                         .ankr,
                         .mainnetBetaSolana,
                     ]

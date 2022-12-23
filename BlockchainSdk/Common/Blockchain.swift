@@ -282,11 +282,11 @@ extension Blockchain {
     }
     
     //Only for Ethereum compatible blockchains
-    public func getJsonRpcEndpoints(infuraProjectId: String?, nowNodesApiKey: String?, getBlockApiKey: String?) -> [RPCEndpoint]? {
+    public func getJsonRpcEndpoints(infuraProjectId: String?, nowNodesApiKey: String?, getBlockApiKey: String?, quickNodeBscCredentials: BlockchainSdkConfig.QuickNodeCredentials?) -> [RPCEndpoint]? {
         guard let infuraProjectId, let nowNodesApiKey, let getBlockApiKey else {
             fatalError("infuraProjectId, NowNodes, GetBlock api key is missing")
         }
-        
+
         switch self {
         case .ethereum:
             if isTestnet {
@@ -339,6 +339,10 @@ extension Blockchain {
                 RPCEndpoint(url: URL(string: "https://public-node.rsk.co/")!),
             ]
         case .bsc:
+            guard let quickNodeBscCredentials else {
+                fatalError("BSC QuickNode keys are missing")
+            }
+            
             if isTestnet {
                 return [
                     RPCEndpoint(url: URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!),
@@ -348,6 +352,8 @@ extension Blockchain {
                     RPCEndpoint(url: URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")!),
                     RPCEndpoint(url: URL(string: "https://bsc.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://bsc-dataseed.binance.org/")!),
+                    RPCEndpoint(url: URL(string: "https://bsc-dataseed.binance.org/")!),
+                    RPCEndpoint(url: URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)/")!),
                 ]
             }
         case .polygon:
