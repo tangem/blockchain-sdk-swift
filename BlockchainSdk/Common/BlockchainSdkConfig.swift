@@ -15,6 +15,8 @@ public struct BlockchainSdkConfig {
     let tronGridApiKey: String
     let quiknodeApiKey: String
     let quiknodeSubdomain: String
+    let bscQuiknodeApiKey: String
+    let bscQuiknodeSubdomain: String
     let defaultNetworkProviderConfiguration: NetworkProviderConfiguration
     let networkProviderConfigurations: [Blockchain: NetworkProviderConfiguration]
 
@@ -25,6 +27,8 @@ public struct BlockchainSdkConfig {
         tronGridApiKey: String,
         quiknodeApiKey: String,
         quiknodeSubdomain: String,
+        bscQuiknodeApiKey: String,
+        bscQuiknodeSubdomain: String,
         defaultNetworkProviderConfiguration: NetworkProviderConfiguration = .init(),
         networkProviderConfigurations: [Blockchain: NetworkProviderConfiguration] = [:]
     ) {
@@ -34,6 +38,8 @@ public struct BlockchainSdkConfig {
         self.tronGridApiKey = tronGridApiKey
         self.quiknodeApiKey = quiknodeApiKey
         self.quiknodeSubdomain = quiknodeSubdomain
+        self.bscQuiknodeApiKey = bscQuiknodeApiKey
+        self.bscQuiknodeSubdomain = bscQuiknodeSubdomain
         self.defaultNetworkProviderConfiguration = defaultNetworkProviderConfiguration
         self.networkProviderConfigurations = networkProviderConfigurations
     }

@@ -170,7 +170,7 @@ public class WalletManagerFactory {
             
         case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .optimism, .ethereumFair, .saltPay:
             let manager: EthereumWalletManager
-            let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId)!
+            let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId, bscQuiknodeApiKey: config.bscQuiknodeApiKey, bscQuiknodeSubdomain: config.bscQuiknodeSubdomain)!
             
             if case .optimism = blockchain {
                 manager = OptimismWalletManager(wallet: wallet, rpcURL: rpcUrls[0])
