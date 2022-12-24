@@ -81,13 +81,12 @@ class BlockBookProvider: BitcoinNetworkProvider {
                             guard
                                 let address = input.addresses.first,
                                 let value = UInt64(input.value ?? ""),
-                                let outputIndex = input.vout,
-                                let sequence = input.sequence
+                                let outputIndex = input.vout
                             else {
                                 return nil
                             }
                             
-                            return BitcoinInput(sequence: sequence, address: address, outputIndex: outputIndex, outputValue: value, prevHash: input.txid)
+                            return BitcoinInput(sequence: input.n, address: address, outputIndex: outputIndex, outputValue: value, prevHash: input.txid)
                         }
                         
                         let fee: Decimal?
