@@ -95,15 +95,16 @@ public class WalletManagerFactory {
                                                    configuration: config.defaultNetworkProviderConfiguration)
                     .eraseToAnyBitcoinNetworkProvider())
                 
-                providers.append(BlockBookProvider(blockchain: blockchain,
-                                                   serviceProvider: .getBlock(apiKey: config.getBlockApiKey),
-                                                   configuration: config.defaultNetworkProviderConfiguration)
-                    .eraseToAnyBitcoinNetworkProvider())
-                
                 if !testnet {
+                    providers.append(BlockBookProvider(blockchain: blockchain,
+                                                       serviceProvider: .getBlock(apiKey: config.getBlockApiKey),
+                                                       configuration: config.defaultNetworkProviderConfiguration)
+                        .eraseToAnyBitcoinNetworkProvider())
+                
                     providers.append(BlockchainInfoNetworkProvider(configuration: networkProviderConfiguration)
                         .eraseToAnyBitcoinNetworkProvider())
                 }
+    
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .bitcoin(testnet: testnet),
                                                                             configuration: networkProviderConfiguration,
                                                                             apiKeys: config.blockchairApiKeys))
@@ -259,15 +260,17 @@ public class WalletManagerFactory {
                 //TODO: Add testnet support. Maybe https://developers.cryptoapis.io/technical-documentation/general-information/what-we-support
                 var providers = [AnyBitcoinNetworkProvider]()
                 
-                providers.append(BlockBookProvider(blockchain: blockchain,
-                                                   serviceProvider: .nowNodes(apiKey: config.nowNodesApiKey),
-                                                   configuration: config.defaultNetworkProviderConfiguration)
-                    .eraseToAnyBitcoinNetworkProvider())
-                
-                providers.append(BlockBookProvider(blockchain: blockchain,
-                                                   serviceProvider: .getBlock(apiKey: config.getBlockApiKey),
-                                                   configuration: config.defaultNetworkProviderConfiguration)
-                    .eraseToAnyBitcoinNetworkProvider())
+                if !testnet {
+                    providers.append(BlockBookProvider(blockchain: blockchain,
+                                                       serviceProvider: .nowNodes(apiKey: config.nowNodesApiKey),
+                                                       configuration: config.defaultNetworkProviderConfiguration)
+                        .eraseToAnyBitcoinNetworkProvider())
+                    
+                    providers.append(BlockBookProvider(blockchain: blockchain,
+                                                       serviceProvider: .getBlock(apiKey: config.getBlockApiKey),
+                                                       configuration: config.defaultNetworkProviderConfiguration)
+                        .eraseToAnyBitcoinNetworkProvider())
+                }
                 
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .bitcoinCash,
                                                                             configuration: networkProviderConfiguration,
