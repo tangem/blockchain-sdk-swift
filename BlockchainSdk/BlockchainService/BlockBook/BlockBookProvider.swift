@@ -43,23 +43,32 @@ class BlockBookProvider: BitcoinNetworkProvider {
                     }
                     .first
                 
-                let unspentOutputs = transactions
+                let unspentOutputs: [BitcoinUnspentOutput] = transactions
                     .filter {
                         $0.confirmations > 0
                     }
-                    .map { response in
-                        var outputs = [BitcoinUnspentOutput]()
-                        let filteredResponse = response.vout.filter({ $0.addresses.contains(address) && $0.spent == nil })
-                        filteredResponse.forEach {
-                            guard let outputScript = outputScript else { return }
-                            outputs.append(BitcoinUnspentOutput(transactionHash: response.txid, outputIndex: $0.n, amount: UInt64($0.value) ?? 0, outputScript: outputScript))
+                    .map { transaction in
+                        let utxos = transaction.vout.filter { $0.addresses.contains(address) && $0.spent == nil }
+
+                        return utxos.compactMap {
+                            guard let outputScript = outputScript else {
+                                return nil
+                            }
+
+                            return BitcoinUnspentOutput(
+                                transactionHash: transaction.txid,
+                                outputIndex: $0.n,
+                                amount: UInt64($0.value) ?? 0,
+                                outputScript: outputScript
+                            )
                         }
-                        return outputs
                     }
-                    .reduce([BitcoinUnspentOutput](), +)
+                    .reduce([], +)
                 
-                let pendingRefs: [PendingTransaction] = transactions
-                    .filter({ $0.confirmations == 0 })
+                let pendingTxRefs: [PendingTransaction] = transactions
+                    .filter {
+                        $0.confirmations == 0
+                    }
                     .compactMap { tx -> PendingTransaction? in
                         let source: String?
                         let destination: String?
@@ -89,7 +98,13 @@ class BlockBookProvider: BitcoinNetworkProvider {
                                 return nil
                             }
                             
-                            return BitcoinInput(sequence: input.n, address: address, outputIndex: outputIndex, outputValue: value, prevHash: input.txid)
+                            return BitcoinInput(
+                                sequence: input.n,
+                                address: address,
+                                outputIndex: outputIndex,
+                                outputValue: value,
+                                prevHash: input.txid
+                            )
                         }
                         
                         let fee: Decimal?
@@ -120,8 +135,14 @@ class BlockBookProvider: BitcoinNetworkProvider {
                     }
                 
                 let balance = (Decimal(string: addressResponse.balance) ?? 0) / self.blockchain.decimalValue
+                let hasUnconfirmed = addressResponse.unconfirmedTxs != 0
                 
-                return BitcoinResponse(balance: balance, hasUnconfirmed: addressResponse.unconfirmedTxs != 0, pendingTxRefs: pendingRefs, unspentOutputs: unspentOutputs)
+                return BitcoinResponse(
+                    balance: balance,
+                    hasUnconfirmed: hasUnconfirmed,
+                    pendingTxRefs: pendingTxRefs,
+                    unspentOutputs: unspentOutputs
+                )
             }
             .eraseToAnyPublisher()
     }
