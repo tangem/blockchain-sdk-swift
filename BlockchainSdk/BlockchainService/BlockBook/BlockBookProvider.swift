@@ -59,15 +59,15 @@ class BlockBookProvider: BitcoinNetworkProvider {
                     .filter({ $0.confirmations == 0 })
                     .compactMap { tx -> PendingTransaction? in
                         let source: String?
-                        let destination: String
+                        let destination: String?
                         let value: Decimal?
                         let isIncoming: Bool
                         
-                        if let _ = tx.vin.first(where: { $0.addresses.contains(address) }), let txDestination = tx.vout.first(where: { $0.addresses.contains(address) }) {
+                        if tx.vin.contains(where: { $0.addresses.contains(address) }), let destinationUtxo = tx.vout.first(where: { !$0.addresses.contains(address) }) {
                             isIncoming = false
-                            destination = txDestination.addresses.first ?? .unknown
+                            destination = destinationUtxo.addresses.first
                             source = address
-                            value = Decimal(string: txDestination.value)
+                            value = Decimal(string: destinationUtxo.value)
                         } else if let txDestination = tx.vout.first(where: { $0.addresses.contains(address) }), !tx.vin.contains(where: { $0.addresses.contains(address) }), let txSource = tx.vin.first {
                             isIncoming = true
                             destination = address
@@ -98,8 +98,9 @@ class BlockBookProvider: BitcoinNetworkProvider {
                         }
                         
                         guard
-                            let source = source,
-                            let value = value
+                            let source,
+                            let destination,
+                            let value
                         else {
                             return nil
                         }
