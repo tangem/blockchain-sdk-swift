@@ -9,8 +9,26 @@
 import Foundation
 
 enum BlockBookService {
-    case nowNodes
-    case getBlock
+    case nowNodes(apiKey: String)
+    case getBlock(apiKey: String)
+    
+    var apiKeyValue: String {
+        switch self {
+        case .nowNodes(let apiKey):
+            return apiKey
+        case .getBlock(let apiKey):
+            return apiKey
+        }
+    }
+    
+    var apiKeyName: String {
+        switch self {
+        case .nowNodes:
+            return Constants.nowNodesApiKeyHeaderName
+        case .getBlock:
+            return Constants.getBlockApiKeyHeaderName
+        }
+    }
     
     var host: String {
         switch self {

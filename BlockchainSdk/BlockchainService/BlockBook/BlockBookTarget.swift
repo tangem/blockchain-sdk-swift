@@ -21,7 +21,6 @@ struct BlockBookTarget: TargetType {
     let request: Request
     let serviceProvider: BlockBookService
     let blockchain: Blockchain
-    let apiKey: String
     var isTestnet: Bool = false
     
     var baseURL: URL {
@@ -67,7 +66,7 @@ struct BlockBookTarget: TargetType {
     
     var headers: [String : String]? {
         [
-            Constants.nowNodesApiKeyHeaderName: apiKey,
+            serviceProvider.apiKeyName: serviceProvider.apiKeyValue,
         ]
     }
 }

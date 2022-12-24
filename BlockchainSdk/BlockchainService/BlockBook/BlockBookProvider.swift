@@ -18,13 +18,11 @@ class BlockBookProvider: BitcoinNetworkProvider {
     
     private let blockchain: Blockchain
     private let serviceProvider: BlockBookService
-    private let apiKey: String
     private let provider: NetworkProvider<BlockBookTarget>
     
-    init(blockchain: Blockchain, serviceProvider: BlockBookService, configuration: NetworkProviderConfiguration, apiKey: String) {
+    init(blockchain: Blockchain, serviceProvider: BlockBookService, configuration: NetworkProviderConfiguration) {
         self.blockchain = blockchain
         self.serviceProvider = serviceProvider
-        self.apiKey = apiKey
         self.provider = NetworkProvider<BlockBookTarget>(configuration: configuration)
     }
     
@@ -184,6 +182,6 @@ class BlockBookProvider: BitcoinNetworkProvider {
     }
     
     private func target(for request: BlockBookTarget.Request) -> BlockBookTarget {
-        BlockBookTarget(request: request, serviceProvider: serviceProvider, blockchain: blockchain, apiKey: apiKey)
+        BlockBookTarget(request: request, serviceProvider: serviceProvider, blockchain: blockchain)
     }
 }
