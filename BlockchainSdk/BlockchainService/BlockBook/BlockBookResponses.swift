@@ -30,8 +30,6 @@ struct BlockBookAddressResponse: Decodable {
         let blockHeight: Int
         let confirmations: Int
         let blockTime: Int
-        let size: Int
-        let vsize: Int
         let value: String
         let valueIn: String
         let fees: String
