@@ -44,6 +44,9 @@ class BlockBookProvider: BitcoinNetworkProvider {
                     .first
                 
                 let unspentOutputs = transactions
+                    .filter {
+                        $0.confirmations > 0
+                    }
                     .map { response in
                         var outputs = [BitcoinUnspentOutput]()
                         let filteredResponse = response.vout.filter({ $0.addresses.contains(address) && $0.spent == nil })
