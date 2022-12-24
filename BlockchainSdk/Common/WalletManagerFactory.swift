@@ -195,7 +195,7 @@ public class WalletManagerFactory {
             
         case .stellar(let testnet):
             return StellarWalletManager(wallet: wallet).then {
-                let url = testnet ? "https://horizon-testnet.stellar.org" : "https://xlm.nownodes.io/\(config.nowNodesApiKey)"
+                let url = testnet ? "https://horizon-testnet.stellar.org" : "https://horizon.stellar.org"
                 let stellarSdk = StellarSDK(withHorizonUrl: url)
                 $0.stellarSdk = stellarSdk
                 $0.txBuilder = StellarTransactionBuilder(stellarSdk: stellarSdk, walletPublicKey: wallet.publicKey.blockchainKey, isTestnet: testnet)
