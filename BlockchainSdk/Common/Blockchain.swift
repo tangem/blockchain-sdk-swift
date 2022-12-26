@@ -735,7 +735,8 @@ extension Blockchain {
             let baseUrl = isTestnet ? "https://www.blockchain.com/bch-testnet/address/" : "https://www.blockchair.com/bitcoin-cash/address/"
             return URL(string: baseUrl + address)
         case .cardano:
-            return URL(string: "https://explorer.cardano.org/en/address.html?address=\(address)")
+            let baseUrl = "https://www.blockchair.com/cardano/address/"
+            return URL(string: baseUrl + address)
         case .ducatus:
             return URL(string: "https://insight.ducatus.io/#/DUC/mainnet/address/\(address)")
         case .ethereum:
