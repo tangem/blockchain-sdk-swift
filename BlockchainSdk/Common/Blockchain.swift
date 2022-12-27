@@ -293,7 +293,6 @@ extension Blockchain {
             if isTestnet {
                 return [
                     RPCEndpoint(url: URL(string: "https://eth-goerli.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://eth.getblock.io/testnet")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://goerli.infura.io/v3/\(infuraProjectId)")!),
                 ]
             } else {
