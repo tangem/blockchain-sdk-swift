@@ -1,5 +1,5 @@
 //
-//  BlockBookProvider.swift
+//  BlockBookUtxoProvider.swift
 //  BlockchainSdk
 //
 //  Created by Pavel Grechikhin on 18.11.2022.
@@ -9,7 +9,7 @@
 import Foundation
 import Combine
 
-class BlockBookProvider: BitcoinNetworkProvider {
+class BlockBookUtxoProvider: BitcoinNetworkProvider {
     var supportsTransactionPush: Bool { false }
     
     var host: String {
