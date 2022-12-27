@@ -51,11 +51,13 @@ class BlockBookUtxoProvider: BitcoinNetworkProvider {
             .requestPublisher(target(for: .fees))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(BlockBookFeeResponse.self)
-            .map(\.result.feerate)
-            .map { [weak self] in
-                return Decimal($0) * (self?.blockchain.decimalValue ?? 0)
-            }
-            .tryMap { feeRate throws -> BitcoinFee in
+            .tryMap { [weak self] in
+                guard let self else {
+                    throw WalletError.empty
+                }
+                
+                let feeRate = Decimal($0.result.feerate) * self.blockchain.decimalValue
+                
                 let min = (Decimal(0.8) * feeRate).rounded(roundingMode: .down)
                 let normal = feeRate
                 let max = (Decimal(1.2) * feeRate).rounded(roundingMode: .down)
@@ -75,7 +77,7 @@ class BlockBookUtxoProvider: BitcoinNetworkProvider {
     }
     
     func push(transaction: String) -> AnyPublisher<String, Error> {
-        send(transaction: transaction)
+        .anyFail(error: "RBF not supported")
     }
     
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
