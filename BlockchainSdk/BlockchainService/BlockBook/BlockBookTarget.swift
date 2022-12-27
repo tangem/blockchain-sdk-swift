@@ -11,10 +11,10 @@ import Moya
 
 struct BlockBookTarget: TargetType {
     enum Request {
-        case address(walletAddress: String)
+        case address(address: String)
         case send(txHex: String)
         case txDetails(txHash: String)
-        case txUnspents(walletAddress: String)
+        case txUnspents(address: String)
         case fees
     }
     
@@ -31,14 +31,14 @@ struct BlockBookTarget: TargetType {
         let basePath = serviceProvider.path(for: request)
         
         switch request {
-        case .address(let walletAddress):
-            return basePath + "/address/\(walletAddress)"
+        case .address(let address):
+            return basePath + "/address/\(address)"
         case .send(let txHex):
             return basePath + "/sendtx/\(txHex)"
         case .txDetails(let txHash):
             return basePath + "/tx/\(txHash)"
-        case .txUnspents(let walletAddress):
-            return basePath + "/utxo/\(walletAddress)"
+        case .txUnspents(let address):
+            return basePath + "/utxo/\(address)"
         case .fees:
             return basePath
         }

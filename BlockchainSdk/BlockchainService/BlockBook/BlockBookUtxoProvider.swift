@@ -28,7 +28,7 @@ class BlockBookUtxoProvider: BitcoinNetworkProvider {
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         Publishers
-            .Zip(addressData(walletAddress: address), unspentTxData(walletAddress: address))
+            .Zip(addressData(address: address), unspentTxData(address: address))
             .tryMap { [weak self] (addressResponse, unspentTxResponse) in
                 guard let self else {
                     throw WalletError.empty
@@ -84,25 +84,25 @@ class BlockBookUtxoProvider: BitcoinNetworkProvider {
     }
     
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-        addressData(walletAddress: address)
+        addressData(address: address)
             .tryMap {
                 $0.txs + $0.unconfirmedTxs
             }
             .eraseToAnyPublisher()
     }
     
-    private func addressData(walletAddress: String) -> AnyPublisher<BlockBookAddressResponse, Error> {
+    private func addressData(address: String) -> AnyPublisher<BlockBookAddressResponse, Error> {
         provider
-            .requestPublisher(target(for: .address(walletAddress: walletAddress)))
+            .requestPublisher(target(for: .address(address: address)))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(BlockBookAddressResponse.self)
             .eraseError()
             .eraseToAnyPublisher()
     }
     
-    private func unspentTxData(walletAddress: String) -> AnyPublisher<[BlockBookUnspentTxResponse], Error> {
+    private func unspentTxData(address: String) -> AnyPublisher<[BlockBookUnspentTxResponse], Error> {
         provider
-            .requestPublisher(target(for: .txUnspents(walletAddress: walletAddress)))
+            .requestPublisher(target(for: .txUnspents(address: address)))
             .filterSuccessfulStatusAndRedirectCodes()
             .map([BlockBookUnspentTxResponse].self)
             .eraseError()
