@@ -348,7 +348,6 @@ extension Blockchain {
                     RPCEndpoint(url: URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")!),
                     RPCEndpoint(url: URL(string: "https://bsc.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://bsc-dataseed.binance.org/")!),
-                    RPCEndpoint(url: URL(string: "https://bsc-dataseed.binance.org/")!),
                     RPCEndpoint(url: URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)/")!),
                 ]
             }
