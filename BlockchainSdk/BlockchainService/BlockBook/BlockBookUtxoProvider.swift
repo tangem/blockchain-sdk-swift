@@ -162,14 +162,12 @@ class BlockBookUtxoProvider: BitcoinNetworkProvider {
                     return nil
                 }
                 
-                let date = Date(timeIntervalSince1970: Double(tx.blockTime))
-                
                 return PendingTransaction(hash: tx.txid,
                                           destination: destination,
                                           value: value / self.blockchain.decimalValue,
                                           source: source,
                                           fee: fetchedFees / self.blockchain.decimalValue,
-                                          date: date,
+                                          date: Date(timeIntervalSince1970: Double(tx.blockTime)),
                                           isIncoming: isIncoming,
                                           transactionParams: BitcoinTransactionParams(inputs: bitcoinInputs))
             }
