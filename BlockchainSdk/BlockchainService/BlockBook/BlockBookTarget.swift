@@ -14,7 +14,7 @@ struct BlockBookTarget: TargetType {
         case address(address: String)
         case send(txHex: String)
         case txDetails(txHash: String)
-        case txUnspents(address: String)
+        case utxo(address: String)
         case fees
     }
     
@@ -37,7 +37,7 @@ struct BlockBookTarget: TargetType {
             return basePath + "/sendtx/\(txHex)"
         case .txDetails(let txHash):
             return basePath + "/tx/\(txHash)"
-        case .txUnspents(let address):
+        case .utxo(let address):
             return basePath + "/utxo/\(address)"
         case .fees:
             return basePath
@@ -46,7 +46,7 @@ struct BlockBookTarget: TargetType {
     
     var method: Moya.Method {
         switch request {
-        case .send, .address, .txUnspents:
+        case .send, .address, .utxo:
             return .get
         case .txDetails, .fees:
             return .post
@@ -55,7 +55,7 @@ struct BlockBookTarget: TargetType {
     
     var task: Moya.Task {
         switch request {
-        case .txDetails, .send, .txUnspents:
+        case .txDetails, .send, .utxo:
             return .requestPlain
         case .fees:
             return .requestJSONEncodable(BitcoinNodeEstimateSmartFeeParameters())

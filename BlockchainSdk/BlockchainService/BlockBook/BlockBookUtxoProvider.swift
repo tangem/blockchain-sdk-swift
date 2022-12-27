@@ -102,7 +102,7 @@ class BlockBookUtxoProvider: BitcoinNetworkProvider {
     
     private func unspentTxData(address: String) -> AnyPublisher<[BlockBookUnspentTxResponse], Error> {
         provider
-            .requestPublisher(target(for: .txUnspents(address: address)))
+            .requestPublisher(target(for: .utxo(address: address)))
             .filterSuccessfulStatusAndRedirectCodes()
             .map([BlockBookUnspentTxResponse].self)
             .eraseError()
