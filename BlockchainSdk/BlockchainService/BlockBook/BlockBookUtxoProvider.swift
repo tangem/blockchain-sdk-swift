@@ -36,16 +36,11 @@ class BlockBookUtxoProvider: BitcoinNetworkProvider {
                 
                 let transactions = addressResponse.transactions ?? []
                 
-                let balance = (Decimal(string: addressResponse.balance) ?? 0) / self.blockchain.decimalValue
-                let hasUnconfirmed = addressResponse.unconfirmedTxs != 0
-                let pendingTxRefs = self.pendingTransactions(from: transactions, address: address)
-                let unspentOutputs = self.unspentOutputs(from: unspentTxResponse, transactions: transactions, address: address)
-                
                 return BitcoinResponse(
-                    balance: balance,
-                    hasUnconfirmed: hasUnconfirmed,
-                    pendingTxRefs: pendingTxRefs,
-                    unspentOutputs: unspentOutputs
+                    balance: (Decimal(string: addressResponse.balance) ?? 0) / self.blockchain.decimalValue,
+                    hasUnconfirmed: addressResponse.unconfirmedTxs != 0,
+                    pendingTxRefs: self.pendingTransactions(from: transactions, address: address),
+                    unspentOutputs: self.unspentOutputs(from: unspentTxResponse, transactions: transactions, address: address)
                 )
             }
             .eraseToAnyPublisher()
