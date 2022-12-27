@@ -21,7 +21,6 @@ struct BlockBookTarget: TargetType {
     let request: Request
     let serviceProvider: BlockBookService
     let blockchain: Blockchain
-    var isTestnet: Bool = false
     
     var baseURL: URL {
         URL(string: serviceProvider.domain(for: request, blockchain: blockchain))!
