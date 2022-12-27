@@ -73,7 +73,7 @@ struct BlockBookTarget: TargetType {
 // Use node API directly, without BlockBook 
 fileprivate struct BitcoinNodeEstimateSmartFeeParameters: Encodable {
     let jsonrpc = "2.0"
-    let id = "nownodes"
+    let id = "id"
     let method = "estimatesmartfee"
     let params = [1000]
 }
