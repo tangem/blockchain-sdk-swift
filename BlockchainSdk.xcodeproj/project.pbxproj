@@ -207,7 +207,7 @@
 		DC63F266293F243200F953EF /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC63F265293F243200F953EF /* Credentials.swift */; };
 		DC912D1628E706C400D76628 /* ContractInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC912D1528E706C400D76628 /* ContractInteractor.swift */; };
 		E90FAB5C28EED26600C6DCBE /* ContractABI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90FAB5B28EED26600C6DCBE /* ContractABI.swift */; };
-		E93532CE292D0E86008FD979 /* BlockBookProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9941ACA2927B07300399DE3 /* BlockBookProvider.swift */; };
+		E93532CE292D0E86008FD979 /* BlockBookUtxoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9941ACA2927B07300399DE3 /* BlockBookUtxoProvider.swift */; };
 		E95D95152929872B0068F876 /* BlockBookResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = E95D95142929872B0068F876 /* BlockBookResponses.swift */; };
 		E9941AC92927846B00399DE3 /* BlockBookTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9941AC82927846B00399DE3 /* BlockBookTarget.swift */; };
 		E9EECB5328E9F50600899D6C /* OptimismWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EECB5228E9F50600899D6C /* OptimismWalletManager.swift */; };
@@ -490,7 +490,7 @@
 		E90FAB5B28EED26600C6DCBE /* ContractABI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractABI.swift; sourceTree = "<group>"; };
 		E95D95142929872B0068F876 /* BlockBookResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookResponses.swift; sourceTree = "<group>"; };
 		E9941AC82927846B00399DE3 /* BlockBookTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookTarget.swift; sourceTree = "<group>"; };
-		E9941ACA2927B07300399DE3 /* BlockBookProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookProvider.swift; sourceTree = "<group>"; };
+		E9941ACA2927B07300399DE3 /* BlockBookUtxoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookUtxoProvider.swift; sourceTree = "<group>"; };
 		E9EECB5228E9F50600899D6C /* OptimismWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismWalletManager.swift; sourceTree = "<group>"; };
 		EF332D16288EACB000AE3C85 /* HostProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostProvider.swift; sourceTree = "<group>"; };
 		EF332D18288EAEAC00AE3C85 /* NetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProvider.swift; sourceTree = "<group>"; };
@@ -1247,7 +1247,7 @@
 			children = (
 				E9941AC82927846B00399DE3 /* BlockBookTarget.swift */,
 				DA656FC52952091A0092CC61 /* BlockBookService.swift */,
-				E9941ACA2927B07300399DE3 /* BlockBookProvider.swift */,
+				E9941ACA2927B07300399DE3 /* BlockBookUtxoProvider.swift */,
 				E95D95142929872B0068F876 /* BlockBookResponses.swift */,
 			);
 			path = BlockBook;
@@ -1614,7 +1614,7 @@
 				5D03D2D0253DE61B009A8A9F /* TezosAddressService.swift in Sources */,
 				5D5CE0D52625C8EC009023EC /* XrpNetworkProvider.swift in Sources */,
 				5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */,
-				E93532CE292D0E86008FD979 /* BlockBookProvider.swift in Sources */,
+				E93532CE292D0E86008FD979 /* BlockBookUtxoProvider.swift in Sources */,
 				EF332D17288EACB000AE3C85 /* HostProvider.swift in Sources */,
 				5DE3BFA0239FA33800E8815D /* Bech32.swift in Sources */,
 				B04DC62725AC1C50009AA7B3 /* JSONDecoder+.swift in Sources */,
