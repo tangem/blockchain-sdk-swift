@@ -247,6 +247,14 @@ public enum Blockchain: Equatable, Hashable {
             if case .token = amountType {
                 return true
             }
+        case .ethereumPoW:
+            if case .token = amountType {
+                return true
+            }
+        case .avalanche:
+            if case .token = amountType {
+                return true
+            }
         default:
             break
         }
