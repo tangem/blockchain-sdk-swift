@@ -389,8 +389,8 @@ extension RIPEMD160 {
         var key = key
         key.count = 64 // Truncate to 64 bytes or fill-up with zeros.
         
-        let outerKeyPad = Data(bytes: key.map { $0 ^ 0x5c })
-        let innerKeyPad = Data(bytes: key.map { $0 ^ 0x36 })
+        let outerKeyPad = Data(key.map { $0 ^ 0x5c })
+        let innerKeyPad = Data(key.map { $0 ^ 0x36 })
         
         var innerMd = RIPEMD160()
         innerMd.update(data: innerKeyPad)
