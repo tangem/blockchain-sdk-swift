@@ -47,9 +47,9 @@ class StellarNetworkService {
                 guard let self = self else {
                     throw WalletError.empty
                 }
-                
-                guard let baseReserveStroops = Decimal(ledgerResponse.baseReserveInStroops),
-                      let balance = Decimal(accountResponse.balances.first(where: {$0.assetType == AssetTypeAsString.NATIVE})?.balance) else {
+
+                let baseReserveStroops = Decimal(ledgerResponse.baseReserveInStroops)
+                guard let balance = Decimal(accountResponse.balances.first(where: {$0.assetType == AssetTypeAsString.NATIVE})?.balance) else {
                           throw WalletError.failedToParseNetworkResponse
                       }
                 
@@ -82,9 +82,8 @@ class StellarNetworkService {
         Publishers.Zip(stellarSdk.ledgers.getLatestLedger(),
                        stellarSdk.feeStats.getFeeStats())
         .tryMap { [blockchain] (ledger, feeStats) -> [Amount] in
-            guard
-                let baseFeeStroops = Decimal(ledger.baseFeeInStroops),
-                let minChargedFeeStroops = Decimal(feeStats.feeCharged.min),
+            let baseFeeStroops = Decimal(ledger.baseFeeInStroops)
+            guard let minChargedFeeStroops = Decimal(feeStats.feeCharged.min),
                 let maxChargedFeeStroops = Decimal(feeStats.feeCharged.max)
             else {
                 throw WalletError.failedToGetFee

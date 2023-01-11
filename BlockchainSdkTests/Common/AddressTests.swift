@@ -295,7 +295,15 @@ class AddressesTests: XCTestCase {
         let blockchain = Blockchain.xrp(curve: .secp256k1)
         let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
         let addr_comp = try! blockchain.makeAddresses(from: secpCompressedKey, with: nil)
-        
+
+        for address in addr_dec {
+            XCTAssertEqual(blockchain.validate(address: address.value), true)
+        }
+
+        for address in addr_comp {
+            XCTAssertEqual(blockchain.validate(address: address.value), true)
+        }
+
         XCTAssertThrowsError(try blockchain.makeAddresses(from: edKey, with: nil))
         
         XCTAssertEqual(addr_dec.count, 1)
@@ -308,7 +316,11 @@ class AddressesTests: XCTestCase {
     func testXrpEd() {
         let blockchain = Blockchain.xrp(curve: .ed25519)
         let addrs = try! blockchain.makeAddresses(from: edKey, with: nil)
-        
+
+        for address in addrs {
+            XCTAssertEqual(blockchain.validate(address: address.value), true)
+        }
+
         XCTAssertThrowsError(try blockchain.makeAddresses(from: secpCompressedKey, with: nil))
         XCTAssertThrowsError(try blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
         

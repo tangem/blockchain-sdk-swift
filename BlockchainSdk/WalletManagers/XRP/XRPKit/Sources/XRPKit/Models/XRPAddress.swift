@@ -49,7 +49,7 @@ public struct XRPAddress {
                 
         if check == [UInt8](Data(concatenated).sha256().sha256().prefix(through: 3)) {
             let data = Data(tagBytes)
-            let _tag: UInt64 = data.withUnsafeBytes { $0.pointee }
+            let _tag: UInt64 = data.withUnsafeBytes { $0.load(as: UInt64.self) }
             let tag: UInt32? = flags == 0x00 ? nil : UInt32(String(_tag))!
             
             if prefix == [0x05, 0x44] { // mainnet
