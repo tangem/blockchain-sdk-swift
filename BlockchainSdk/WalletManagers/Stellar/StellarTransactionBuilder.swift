@@ -29,7 +29,7 @@ class StellarTransactionBuilder {
     
     public func buildForSign(transaction: Transaction) -> AnyPublisher<(hash: Data, transaction: stellarsdk.TransactionXDR), Error> {
         guard let destinationKeyPair = try? KeyPair(accountId: transaction.destinationAddress),
-            let sourceKeyPair = try? KeyPair(accountId: transaction.sourceAddress) else {
+              let sourceKeyPair = try? KeyPair(accountId: transaction.sourceAddress) else {
             return Fail(error: WalletError.failedToBuildTx)
                 .eraseToAnyPublisher()
         }
@@ -51,7 +51,7 @@ class StellarTransactionBuilder {
                                                                             destinationAccountId: transaction.destinationAddress,
                                                                             asset: Asset(type: AssetType.ASSET_TYPE_NATIVE)!,
                                                                             amount: transaction.amount.value ) :
-                        CreateAccountOperation(sourceAccountId: nil, destination: destinationKeyPair, startBalance: transaction.amount.value)
+                    CreateAccountOperation(sourceAccountId: nil, destination: destinationKeyPair, startBalance: transaction.amount.value)
                     
                     return try self.serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo)
                     
@@ -115,14 +115,14 @@ class StellarTransactionBuilder {
     
     private func serializeOperation(_ operation: stellarsdk.Operation, sourceKeyPair: KeyPair, memo: Memo) throws -> (hash: Data, transaction: stellarsdk.TransactionXDR) {
         guard let xdrOperation = try? operation.toXDR(),
-            let seqNumber = sequence else {
+              let seqNumber = sequence else {
             throw WalletError.failedToBuildTx
         }
         
         let currentTime = specificTxTime ?? Date().timeIntervalSince1970
         let minTime = currentTime - 60.0
         let maxTime = currentTime + 60.0
-
+        
         let cond: PreconditionsXDR = useTimebounds ? .time(TimeBoundsXDR(minTime: UInt64(minTime), maxTime: UInt64(maxTime))) : .none
         let tx = TransactionXDR(sourceAccount: sourceKeyPair.publicKey,
                                 seqNum: seqNumber + 1,

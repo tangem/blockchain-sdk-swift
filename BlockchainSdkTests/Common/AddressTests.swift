@@ -19,7 +19,7 @@ class AddressesTests: XCTestCase {
     private let secpDecompressedKey = Data(hexString: "0441DCD64B5F4A039FC339A16300A833A883B218909F2EBCAF3906651C76842C45E3D67E8D2947E6FEE8B62D3D3B6A4D5F212DA23E478DD69A2C6CCC851F300D80")
     private let secpCompressedKey = Data(hexString: "0241DCD64B5F4A039FC339A16300A833A883B218909F2EBCAF3906651C76842C45")
     private let edKey = Data(hex: "9FE5BB2CC7D83C1DA10845AFD8A34B141FD8FD72500B95B1547E12B9BB8AAC3D")
-  
+
     func testBtc() {
         let blockchain = Blockchain.bitcoin(testnet: false)
         let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: nil)
@@ -67,7 +67,7 @@ class AddressesTests: XCTestCase {
     }
     
     func testBtcTwin() {
-       // let secpPairPrivKey = Data(hexString: "997D79C06B72E8163D1B9FCE6DA0D2ABAA15B85E52C6032A087342BAD98E5316")
+        // let secpPairPrivKey = Data(hexString: "997D79C06B72E8163D1B9FCE6DA0D2ABAA15B85E52C6032A087342BAD98E5316")
         let secpPairDecompressedKey = Data(hexString: "042A5741873B88C383A7CFF4AA23792754B5D20248F1A24DF1DAC35641B3F97D8936D318D49FE06E3437E31568B338B340F4E6DF5184E1EC5840F2B7F4596902AE")
         let secpPairCompressedKey = Data(hexString: "022A5741873B88C383A7CFF4AA23792754B5D20248F1A24DF1DAC35641B3F97D89")
         
@@ -81,7 +81,7 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addr_comp.count, 2)
         XCTAssertEqual(addr_comp1.count, 2)
         
-    
+
         XCTAssertEqual(addr_dec.first(where: {$0.type == .default})!.value, "bc1q0u3heda6uhq7fulsqmw40heuh3e76nd9skxngv93uzz3z6xtpjmsrh88wh")
         XCTAssertEqual(addr_dec.first(where: {$0.type == .legacy})!.value, "34DmpSKfsvqxgzVVhcEepeX3s67ai4ShPq")
         
