@@ -419,6 +419,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .polkadot(testnet: false),
             .kusama,
             .tron(testnet: false),
+            .ton(testnet: false),
             .arbitrum(testnet: false),
             .dash(testnet: false),
             .gnosis,

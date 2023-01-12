@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftUI
+import TangemSdk
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

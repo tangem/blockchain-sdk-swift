@@ -36,6 +36,7 @@ public enum Blockchain: Equatable, Hashable {
     case polkadot(testnet: Bool)
     case kusama
     case tron(testnet: Bool)
+    case ton(testnet: Bool)
     case arbitrum(testnet: Bool)
     case dash(testnet: Bool)
     case gnosis
@@ -70,6 +71,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .tron(let testnet):
             return testnet
+        case .ton(let testnet):
+            return testnet
         case .arbitrum(let testnet):
             return testnet
         case .dash(let testnet):
@@ -89,7 +92,7 @@ public enum Blockchain: Equatable, Hashable {
     
     public var curve: EllipticCurve {
         switch self {
-        case .stellar, .cardano, .solana, .polkadot, .kusama:
+        case .stellar, .cardano, .solana, .polkadot, .kusama, .ton:
             return .ed25519
         case .xrp(let curve):
             return curve
@@ -110,7 +113,7 @@ public enum Blockchain: Equatable, Hashable {
             return 6
         case .stellar:
             return 7
-        case .solana:
+        case .solana, .ton:
             return 9
         case .polkadot(let testnet):
             return testnet ? 12 : 10
@@ -163,6 +166,8 @@ public enum Blockchain: Equatable, Hashable {
             return "KSM"
         case .tron:
             return "TRX"
+        case .ton:
+            return "TON"
         case .dash(let testnet):
             return testnet ? "tDASH" : "DASH"
         case .gnosis, .saltPay:
@@ -221,6 +226,7 @@ public enum Blockchain: Equatable, Hashable {
         case .binance: return "BEP2"
         case .bsc: return "BEP20"
         case .tron: return "TRC20"
+        case .ton: return "TON"
         default:
             return nil
         }
@@ -477,6 +483,7 @@ extension Blockchain {
         case .polkadot: return 354
         case .kusama: return 434
         case .tron: return 195
+        case .ton: return 607
         case .arbitrum: return 9001
         case .dash: return 5
         case .gnosis: return 700
@@ -536,6 +543,8 @@ extension Blockchain {
             return PolkadotAddressService(network: .kusama)
         case .tron:
             return TronAddressService()
+        case .ton:
+            return TONAddressService()
         case .dash:
             return BitcoinLegacyAddressService(
                 networkParams: isTestnet ?  DashTestNetworkParams() : DashMainNetworkParams()
@@ -602,6 +611,7 @@ extension Blockchain: Codable {
         case .polkadot: return "polkadot"
         case .kusama: return "kusama"
         case .tron: return "tron"
+        case .ton: return "ton"
         case .arbitrum: return "arbitrum"
         case .dash: return "dash"
         case .gnosis: return "xdai"
@@ -652,6 +662,7 @@ extension Blockchain: Codable {
         case "polkadot": self = .polkadot(testnet: isTestnet)
         case "kusama": self = .kusama
         case "tron": self = .tron(testnet: isTestnet)
+        case "ton": self = .ton(testnet: isTestnet)
         case "arbitrum": self = .arbitrum(testnet: isTestnet)
         case "dash": self = .dash(testnet: isTestnet)
         case "xdai": self = .gnosis
@@ -801,6 +812,9 @@ extension Blockchain {
         case .tron:
             let subdomain = isTestnet ? "nile." : ""
             return URL(string: "https://\(subdomain)tronscan.org/#/address/\(address)")!
+        case .ton:
+            let subdomain = isTestnet ? "testnet" : ""
+            return URL(string: "https://\(subdomain).tonscan.org/address/\(address)")
         case .arbitrum:
             if isTestnet {
                 return URL(string: "https://goerli-rollup-explorer.arbitrum.io/address/\(address)")!
@@ -859,6 +873,7 @@ extension Blockchain {
         case "polkadot": return .polkadot(testnet: isTestnet)
         case "kusama": return .kusama
         case "tron": return .tron(testnet: isTestnet)
+        case "ton": return .ton(testnet: isTestnet)
         case "arbitrum": return .arbitrum(testnet: isTestnet)
         case "dash": return .dash(testnet: isTestnet)
         case "xdai": return .gnosis
