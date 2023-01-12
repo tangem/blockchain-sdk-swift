@@ -3,7 +3,7 @@ use_frameworks!
 inhibit_all_warnings!
 
 def common_pods
-  pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'develop-197'
+  pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'develop-198'
   #pod 'TangemSdk', :path => '../tangem-sdk-ios'
   
   pod 'BitcoinCore.swift', :git => 'https://github.com/tangem/bitcoincore.git', :tag => '0.0.16'
@@ -44,14 +44,31 @@ target 'BlockchainSdkExample' do
 end
 
 post_install do |installer|
+
+  installer.pods_project.build_configurations.each do |config|
+      if config.name.include?("Debug")
+          config.build_settings['GCC_OPTIMIZATION_LEVEL'] = '0'
+          config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Onone'
+          config.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
+          config.build_settings['ENABLE_TESTABILITY'] = 'YES'
+          config.build_settings['SWIFT_COMPILATION_MODE'] = 'Incremental'
+      end
+
+      config.build_settings['DEAD_CODE_STRIPPING'] = 'YES'
+  end
+
+
   installer.pods_project.targets.each do |target|
+
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
-      if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
-        target.build_configurations.each do |config|
-          config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
-        end
+    end
+
+    if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
+      target.build_configurations.each do |config|
+        config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
       end
     end
+
   end
 end
