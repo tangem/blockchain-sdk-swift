@@ -18,6 +18,9 @@ public protocol TransactionBuilder {
         contractAddress: String?,
         changeAddress: String?
     ) throws -> Transaction
+    
+    func validate(fee: Amount) -> TransactionError?
+    func validate(amount: Amount) -> TransactionError?
 }
 
 @available(iOS 13.0, *)

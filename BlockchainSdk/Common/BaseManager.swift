@@ -66,6 +66,30 @@ extension BaseManager: TransactionBuilder {
         try validateTransaction(amount: amount, fee: fee)
         return transaction
     }
+    
+    func validate(amount: Amount) -> TransactionError? {
+        if !validateAmountValue(amount) {
+            return .invalidAmount
+        }
+        
+        if !validateAmountTotal(amount) {
+            return .amountExceedsBalance
+        }
+        
+        return nil
+    }
+    
+    func validate(fee: Amount) -> TransactionError? {
+        if !validateAmountValue(fee) {
+            return .invalidFee
+        }
+        
+        if !validateAmountTotal(fee) {
+            return .feeExceedsBalance
+        }
+        
+        return nil
+    }
 }
 
 // MARK: - Validation
@@ -117,30 +141,6 @@ private extension BaseManager {
         if !errors.isEmpty {
             throw TransactionErrors(errors: errors)
         }
-    }
-    
-    func validate(amount: Amount) -> TransactionError? {
-        if !validateAmountValue(amount) {
-            return .invalidAmount
-        }
-        
-        if !validateAmountTotal(amount) {
-            return .amountExceedsBalance
-        }
-        
-        return nil
-    }
-    
-    func validate(fee: Amount) -> TransactionError? {
-        if !validateAmountValue(fee) {
-            return .invalidFee
-        }
-        
-        if !validateAmountTotal(fee) {
-            return .feeExceedsBalance
-        }
-        
-        return nil
     }
     
     func validateAmountValue(_ amount: Amount) -> Bool {
