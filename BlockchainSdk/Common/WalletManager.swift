@@ -11,7 +11,7 @@ import TangemSdk
 import Combine
 
 @available(iOS 13.0, *)
-public protocol WalletManager: WalletProvider, BlockchainDataProvider, TransactionSender, TransactionBuilder {
+public protocol WalletManager: WalletProvider, BlockchainDataProvider, TransactionSender, TransactionCreator {
     var cardTokens: [Token] { get }
     func update(completion: @escaping (Result<Void, Error>) -> Void)
     func updatePublisher() -> AnyPublisher<Wallet, Error>

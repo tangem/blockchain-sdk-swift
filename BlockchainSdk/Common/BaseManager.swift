@@ -40,16 +40,16 @@ class BaseManager: WalletProvider {
     }
 }
 
-// MARK: - TransactionBuilder
+// MARK: - TransactionCreator
 
-extension BaseManager: TransactionBuilder {
+extension BaseManager: TransactionCreator {
     func createTransaction(
         amount: Amount,
         fee: Amount,
         destinationAddress: String,
         sourceAddress: String?,
-        contractAddress: String?,
-        changeAddress: String?
+        changeAddress: String?,
+        contractAddress: String?
     ) throws -> Transaction {
         let transaction = Transaction(
             amount: amount,

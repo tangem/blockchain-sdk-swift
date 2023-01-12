@@ -1,5 +1,5 @@
 //
-//  TransactionBuilder.swift
+//  TransactionCreator.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 12.01.2023.
@@ -9,14 +9,14 @@
 import Foundation
 
 @available(iOS 13.0, *)
-public protocol TransactionBuilder {
+public protocol TransactionCreator {
     func createTransaction(
         amount: Amount,
         fee: Amount,
         destinationAddress: String,
         sourceAddress: String?,
-        contractAddress: String?,
-        changeAddress: String?
+        changeAddress: String?,
+        contractAddress: String?
     ) throws -> Transaction
     
     func validate(fee: Amount) -> TransactionError?
@@ -24,22 +24,22 @@ public protocol TransactionBuilder {
 }
 
 @available(iOS 13.0, *)
-public extension TransactionBuilder {
+public extension TransactionCreator {
     func createTransaction(
         amount: Amount,
         fee: Amount,
         destinationAddress: String,
         sourceAddress: String? = nil,
-        contractAddress: String? = nil,
-        changeAddress: String? = nil
+        changeAddress: String? = nil,
+        contractAddress: String? = nil
     ) throws -> Transaction {
         try self.createTransaction(
             amount: amount,
             fee: fee,
             destinationAddress: destinationAddress,
             sourceAddress: sourceAddress,
-            contractAddress: contractAddress,
-            changeAddress: changeAddress
+            changeAddress: changeAddress,
+            contractAddress: contractAddress
         )
     }
 }
