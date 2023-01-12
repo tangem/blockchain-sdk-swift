@@ -56,8 +56,6 @@
 		5D65D5C9260B261F00F84BED /* TezosPrefix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D65D5C8260B261F00F84BED /* TezosPrefix.swift */; };
 		5D6DEAB6243CC09A00510EC8 /* EthereumTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6DEAB5243CC09A00510EC8 /* EthereumTransactionBuilder.swift */; };
 		5D740B802625B42500DE9636 /* RskAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D740B7F2625B42500DE9636 /* RskAddressService.swift */; };
-		5D7D242725136254001B9A4F /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 5D7D240925136254001B9A4F /* LICENSE */; };
-		5D7D242825136254001B9A4F /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5D7D240A25136254001B9A4F /* README.md */; };
 		5D7D242925136254001B9A4F /* XRPLedger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7D240E25136254001B9A4F /* XRPLedger.swift */; };
 		5D7D242A25136254001B9A4F /* WebSocket+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7D240F25136254001B9A4F /* WebSocket+Convenience.swift */; };
 		5D7D242B25136254001B9A4F /* HTTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7D241025136254001B9A4F /* HTTP.swift */; };
@@ -1407,8 +1405,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5D7D242825136254001B9A4F /* README.md in Resources */,
-				5D7D242725136254001B9A4F /* LICENSE in Resources */,
 				5D5E058724FE72D900F04DE1 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2025,7 +2021,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = BlockchainSdkExample/BlockchainSdkExample.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"BlockchainSdkExample/Preview Content\"";
 				DEVELOPMENT_TEAM = 4897UJ6D8C;
 				ENABLE_PREVIEWS = YES;
@@ -2063,7 +2059,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = BlockchainSdkExample/BlockchainSdkExample.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"BlockchainSdkExample/Preview Content\"";
 				DEVELOPMENT_TEAM = 4897UJ6D8C;
 				ENABLE_PREVIEWS = YES;

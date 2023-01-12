@@ -31,15 +31,16 @@ Use BlockchainSdk for Tangem wallet integration
   s.ios.deployment_target = '13.0'
 
   s.source_files = 'BlockchainSdk/**/*'
-  
-  # s.resource_bundles = {
-  #   'TangemSdk' => ['TangemSdk/Assets/*.png']
-  # }
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
 
   s.resource_bundles = { 'BlockchainSdk' => ['BlockchainSdk/Common/Localizations/*.lproj/*.strings']}
+
+  s.exclude_files = 'BlockchainSdk/WalletManagers/XRP/XRPKit/README.md', 
+		    'BlockchainSdk/WalletManagers/XRP/XRPKit/LICENSE',
+		    'BlockchainSdk/WalletManagers/Tron/protobuf/Tron Protobuf.md',
+		    'BlockchainSdk/WalletManagers/Tron/protobuf/Contracts.proto',
+		    'BlockchainSdk/WalletManagers/Tron/protobuf/Tron.proto'
+
 
   s.dependency 'BigInt'
   s.dependency 'SwiftyJSON'

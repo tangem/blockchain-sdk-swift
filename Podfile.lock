@@ -49,7 +49,7 @@ PODS:
     - Starscream (~> 4.0.0)
     - TweetNacl (~> 1.0.2)
   - Starscream (4.0.4)
-  - stellar-ios-mac-sdk (2.2.3)
+  - stellar-ios-mac-sdk (2.2.5)
   - SwiftCBOR (0.4.4)
   - SwiftDate (6.3.1)
   - SwiftProtobuf (1.18.0)
@@ -82,7 +82,7 @@ DEPENDENCIES:
   - SwiftCBOR
   - SwiftProtobuf
   - SwiftyJSON
-  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-166`)
+  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-198`)
   - web3swift (from `https://github.com/tangem/web3swift.git`, tag `2.2.10`)
 
 SPEC REPOS:
@@ -121,7 +121,7 @@ EXTERNAL SOURCES:
     :tag: add-external-signer-7
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-166
+    :tag: develop-198
   web3swift:
     :git: https://github.com/tangem/web3swift.git
     :tag: 2.2.10
@@ -137,11 +137,11 @@ CHECKOUT OPTIONS:
     :git: https://github.com/tangem/hdwallet.git
     :tag: 0.3.12
   Solana.Swift:
+    :commit: 1b81ca2bf16b42751b53ec467589b5289f4986e8
     :git: https://github.com/tangem/Solana.Swift
-    :tag: add-external-signer-7
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-166
+    :tag: develop-198
   web3swift:
     :git: https://github.com/tangem/web3swift.git
     :tag: 2.2.10
@@ -160,9 +160,9 @@ SPEC CHECKSUMS:
   ScaleCodec: 5d7d0439940c600f49babad6ea265a09377c404b
   secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
   Sodium: 23d11554ecd556196d313cf6130d406dfe7ac6da
-  Solana.Swift: 81d52fee263fded11b0d4e7859863ae489fe753e
+  Solana.Swift: f72466e11f836aa8ccb840d780f39c69a9289c97
   Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
-  stellar-ios-mac-sdk: abb56946a998585fea91250941bd5290b9f2f6a2
+  stellar-ios-mac-sdk: a6199f37910fc6481d17f317c11ccd3fdac542a1
   SwiftCBOR: ce5354ec8b660da2d6fc754462881119dbe1f963
   SwiftDate: 72d28954e8e1c6c1c0f917ccc8005e4f83c7d4b2
   SwiftProtobuf: c3c12645230d9b09c72267e0de89468c5543bd86
@@ -172,6 +172,6 @@ SPEC CHECKSUMS:
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 86a361b1d99db1e8322163adc8929ec0269990a5
+PODFILE CHECKSUM: c1c3e3818fabedcb2b5a145fe79b03d281902758
 
 COCOAPODS: 1.11.3

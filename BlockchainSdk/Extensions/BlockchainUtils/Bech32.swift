@@ -87,7 +87,7 @@ public class Bech32 {
             return ""
         }
         
-        var combined = Data(bytes: convertedValues)
+        var combined = Data(convertedValues)
         let checksum = createChecksum(hrp: hrp, values: combined)
         combined.append(checksum)
         guard let hrpBytes = hrp.data(using: .utf8) else { return "" }
