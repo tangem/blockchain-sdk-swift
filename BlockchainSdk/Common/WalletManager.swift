@@ -11,7 +11,7 @@ import TangemSdk
 import Combine
 
 @available(iOS 13.0, *)
-public protocol WalletManager: WalletProvider, BlockchainDataProvider, TransactionSender {
+public protocol WalletManager: WalletProvider, BlockchainDataProvider, TransactionSender, TransactionBuilder {
     var cardTokens: [Token] { get }
     func update(completion: @escaping (Result<Void, Error>) -> Void)
     func updatePublisher() -> AnyPublisher<Wallet, Error>
@@ -57,12 +57,8 @@ extension BlockchainDataProvider {
 @available(iOS 13.0, *)
 public protocol TransactionSender {
     var allowsFeeSelection: Bool {get}
-    func createTransaction(amount: Amount, fee: Amount, destinationAddress: String,
-                           sourceAddress: String?, changeAddress: String?) throws -> Transaction
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error>
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error>
-    func validate(fee: Amount) -> TransactionError?
-    func validate(amount: Amount) -> TransactionError?
 }
 
 public struct SendTxError: Error, LocalizedError {
@@ -71,14 +67,6 @@ public struct SendTxError: Error, LocalizedError {
     
     public var errorDescription: String? {
         error.localizedDescription
-    }
-}
-
-public extension TransactionSender {
-    func createTransaction(amount: Amount, fee: Amount, destinationAddress: String,
-                           sourceAddress: String? = nil, changeAddress: String? = nil) throws -> Transaction {
-        try self.createTransaction(amount: amount, fee: fee, destinationAddress: destinationAddress,
-                                   sourceAddress: sourceAddress, changeAddress: changeAddress)
     }
 }
 
