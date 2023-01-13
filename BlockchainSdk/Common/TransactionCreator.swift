@@ -21,8 +21,8 @@ public protocol TransactionCreator {
         status: TransactionStatus
     ) throws -> Transaction
     
-    func validate(fee: Amount) -> TransactionError?
-    func validate(amount: Amount) -> TransactionError?
+    func validate(fee: Amount) throws
+    func validate(amount: Amount) throws
 }
 
 @available(iOS 13.0, *)

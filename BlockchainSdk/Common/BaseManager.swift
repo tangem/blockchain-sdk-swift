@@ -69,28 +69,24 @@ extension BaseManager: TransactionCreator {
         return transaction
     }
     
-    func validate(amount: Amount) -> TransactionError? {
+    func validate(amount: Amount) throws {
         if !validateAmountValue(amount) {
-            return .invalidAmount
+            throw TransactionError.invalidAmount
         }
         
         if !validateAmountTotal(amount) {
-            return .amountExceedsBalance
+            throw TransactionError.amountExceedsBalance
         }
-        
-        return nil
     }
     
-    func validate(fee: Amount) -> TransactionError? {
+    func validate(fee: Amount) throws {
         if !validateAmountValue(fee) {
-            return .invalidFee
+            throw TransactionError.invalidFee
         }
         
         if !validateAmountTotal(fee) {
-            return .feeExceedsBalance
+            throw TransactionError.feeExceedsBalance
         }
-        
-        return nil
     }
 }
 
@@ -100,20 +96,27 @@ private extension BaseManager {
     func validateTransaction(amount: Amount, fee: Amount?) throws {
         var errors = [TransactionError]()
         
-        let amountError = validate(amount: amount)
+        do {
+            try validate(amount: amount)
+        } catch let error as TransactionError {
+            errors.append(error)
+        }
         
         guard let fee = fee else {
-            errors.appendIfNotNil(amountError)
             throw TransactionErrors(errors: errors)
         }
         
-        errors.appendIfNotNil(validate(fee: fee))
-        errors.appendIfNotNil(amountError)
+        do {
+            try validate(fee: fee)
+        } catch let error as TransactionError {
+            errors.append(error)
+        }
                 
         let total = amount + fee
         
-        if amount.type == fee.type, total.value > 0,
-            validate(amount: total) != nil {
+        if amount.type == fee.type,
+           total.value > 0,
+            (try? validate(amount: total)) != nil {
             errors.append(.totalExceedsBalance)
         }
         
