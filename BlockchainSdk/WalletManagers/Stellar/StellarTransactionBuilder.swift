@@ -1,5 +1,5 @@
 //
-//  Stellart=TransactionCreator.swift
+//  Stellart=TransactionBuilder.swift
 //  BlockchainSdk
 //
 //  Created by Alexander Osokin on 17.12.2019.
