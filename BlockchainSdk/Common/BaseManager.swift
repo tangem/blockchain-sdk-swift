@@ -46,10 +46,12 @@ extension BaseManager: TransactionCreator {
     func createTransaction(
         amount: Amount,
         fee: Amount,
+        sourceAddress: String? = nil,
         destinationAddress: String,
-        sourceAddress: String?,
-        changeAddress: String?,
-        contractAddress: String?
+        changeAddress: String? = nil,
+        contractAddress: String? = nil,
+        date: Date = Date(),
+        status: TransactionStatus = .unconfirmed
     ) throws -> Transaction {
         let transaction = Transaction(
             amount: amount,
@@ -58,8 +60,8 @@ extension BaseManager: TransactionCreator {
             destinationAddress: destinationAddress,
             changeAddress: changeAddress ?? defaultChangeAddress,
             contractAddress: contractAddress ?? amount.type.token?.contractAddress,
-            date: Date(),
-            status: .unconfirmed,
+            date: date,
+            status: status,
             hash: nil
         )
         

@@ -13,10 +13,12 @@ public protocol TransactionCreator {
     func createTransaction(
         amount: Amount,
         fee: Amount,
-        destinationAddress: String,
         sourceAddress: String?,
+        destinationAddress: String,
         changeAddress: String?,
-        contractAddress: String?
+        contractAddress: String?,
+        date: Date,
+        status: TransactionStatus
     ) throws -> Transaction
     
     func validate(fee: Amount) -> TransactionError?
@@ -28,18 +30,22 @@ public extension TransactionCreator {
     func createTransaction(
         amount: Amount,
         fee: Amount,
-        destinationAddress: String,
         sourceAddress: String? = nil,
+        destinationAddress: String,
         changeAddress: String? = nil,
-        contractAddress: String? = nil
+        contractAddress: String? = nil,
+        date: Date = Date(),
+        status: TransactionStatus = .unconfirmed
     ) throws -> Transaction {
         try self.createTransaction(
             amount: amount,
             fee: fee,
-            destinationAddress: destinationAddress,
             sourceAddress: sourceAddress,
+            destinationAddress: destinationAddress,
             changeAddress: changeAddress,
-            contractAddress: contractAddress
+            contractAddress: contractAddress,
+            date: date,
+            status: status
         )
     }
 }
