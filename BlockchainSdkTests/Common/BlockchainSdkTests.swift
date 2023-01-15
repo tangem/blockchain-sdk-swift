@@ -179,6 +179,7 @@ class BlockchainSdkTests: XCTestCase {
         case .polkadot: break
         case .kusama: break
         case .tron: break
+        case .ton: break
         case .arbitrum: break
         case .dash: break
         case .gnosis: break

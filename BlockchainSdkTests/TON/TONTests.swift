@@ -21,7 +21,7 @@ class TONTests: XCTestCase {
     }
     
     func testValidateCorrectAddress() {
-        
+        XCTAssertTrue(addressService.validate("EQBzvZk8lobyrPW9Sf3vsXNYjpW-ixFqNtwyP9_RUkwLNbi0"))
     }
     
     func testValidateCorrectAddressWithChecksum() {
