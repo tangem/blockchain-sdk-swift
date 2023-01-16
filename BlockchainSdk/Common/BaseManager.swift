@@ -120,8 +120,14 @@ private extension BaseManager {
                 
         let total = amount + fee
         
-        if amount.type == fee.type, total.value > 0,
-           (try? validate(amount: total)) == nil {
+        var totalError: TransactionError?
+        do {
+            try validate(amount: total)
+        } catch let error as TransactionError {
+            totalError = error
+        }
+
+        if amount.type == fee.type, total.value > 0, totalError != nil {
             errors.append(.totalExceedsBalance)
         }
         
