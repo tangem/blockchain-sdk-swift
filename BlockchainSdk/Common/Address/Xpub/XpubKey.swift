@@ -29,7 +29,7 @@ public struct XpubKey: Equatable {
         self.publicKey = publicKey
 
         if depth == 0 && (parentFingerprint.contains(where: { $0 != 0 }) || childNumber != 0) {
-            throw XpubError.decodingFailed
+            throw XpubError.wrongKey
         }
 
         _ = try Secp256k1Key(with: publicKey)
