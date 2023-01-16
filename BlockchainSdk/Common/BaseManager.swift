@@ -96,27 +96,32 @@ private extension BaseManager {
     func validateTransaction(amount: Amount, fee: Amount?) throws {
         var errors = [TransactionError]()
         
+        var amountError: TransactionError?
         do {
             try validate(amount: amount)
         } catch let error as TransactionError {
-            errors.append(error)
+            amountError = error
         }
         
         guard let fee = fee else {
+            errors.appendIfNotNil(amountError)
             throw TransactionErrors(errors: errors)
         }
         
+        var feeError: TransactionError?
         do {
             try validate(fee: fee)
         } catch let error as TransactionError {
-            errors.append(error)
+            feeError = error
         }
+        
+        errors.appendIfNotNil(feeError)
+        errors.appendIfNotNil(amountError)
                 
         let total = amount + fee
         
-        if amount.type == fee.type,
-           total.value > 0,
-            (try? validate(amount: total)) != nil {
+        if amount.type == fee.type, total.value > 0,
+           (try? validate(amount: total)) == nil {
             errors.append(.totalExceedsBalance)
         }
         
