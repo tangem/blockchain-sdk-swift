@@ -31,7 +31,7 @@ struct XpubSerializer {
         data += compressedKey
         
         guard data.count == Constants.dataLength else {
-            throw XpubSerializerError.wrongLength
+            throw XpubError.wrongLength
         }
 
         let resultString = Array(data).base58CheckEncodedString
@@ -40,17 +40,17 @@ struct XpubSerializer {
 
     func deserialize(from xpubString: String) throws -> XpubKey {
         guard let data = xpubString.base58CheckDecodedData else {
-            throw XpubSerializerError.decodingFailed
+            throw XpubError.decodingFailed
         }
 
         guard data.count == Constants.dataLength else {
-            throw XpubSerializerError.wrongLength
+            throw XpubError.wrongLength
         }
 
         let decodedVersion = UInt32(data.prefix(4).toInt())
 
         guard decodedVersion == version.rawValue else {
-            throw XpubSerializerError.wrongVersion
+            throw XpubError.wrongVersion
         }
 
         let depth = data.dropFirst(4).prefix(1).toInt()
@@ -58,11 +58,6 @@ struct XpubSerializer {
         let childNumber = UInt32(data.dropFirst(9).prefix(4).toInt())
         let chainCode = data.dropFirst(13).prefix(32)
         let compressedKey = data.suffix(33)
-
-        if depth == 0 && (parentFingerprint.contains(where: { $0 != 0 }) || childNumber != 0) {
-            throw XpubSerializerError.decodingFailed
-        }
-        _  = try Secp256k1Key(with: compressedKey)
 
         let xpub = try XpubKey(depth: depth,
                                parentFingerprint: parentFingerprint,
@@ -75,14 +70,6 @@ struct XpubSerializer {
 }
 
 extension XpubSerializer {
-    public enum XpubSerializerError: String, Error, LocalizedError {
-        case wrongLength
-        case decodingFailed
-        case wrongVersion
-
-        var errorDescription: String? { rawValue }
-    }
-
     enum Constants {
         static let dataLength: Int = 78
     }
