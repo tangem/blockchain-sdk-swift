@@ -24,30 +24,7 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        Publishers.CombineLatest(
-            getAddressInfo(for: address),
-            getTransactions(for: address)
-        )
-        .map { (addressInfo, transactions) -> BitcoinResponse in
-            let outputs = transactions.txs.map { transaction in
-                transaction.vout!
-                BitcoinUnspentOutput(
-                    transactionHash: <#T##String#>,
-                    outputIndex: <#T##Int#>,
-                    amount: <#T##UInt64#>,
-                    outputScript: <#T##String#>
-                )
-                
-            }
-            
-            BitcoinResponse(
-                balance: addressInfo.balance,
-                hasUnconfirmed: addressInfo.unconfirmedTxApperances > 0,
-                pendingTxRefs: [],
-                unspentOutputs: []
-            )
-        }
-        .eraseToAnyPublisher()
+        Fail(error: NSError(domain: "TBD", code: -1)).eraseToAnyPublisher()
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
