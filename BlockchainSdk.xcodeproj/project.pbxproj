@@ -162,6 +162,11 @@
 		B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0FF8816264AEA60003E000A /* LitecoinNetworkService.swift */; };
 		BFD88160E080534F13A7C7A6 /* Pods_BlockchainSdkExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C40B45F626B3CA7042657F9 /* Pods_BlockchainSdkExample.framework */; };
 		DA11507727DB217200CDC879 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA11507627DB217200CDC879 /* Launch Screen.storyboard */; };
+		DA2E76FB29769BDD001FF957 /* XpubKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2E76F729769BDC001FF957 /* XpubKey.swift */; };
+		DA2E76FC29769BDD001FF957 /* XpubError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2E76F829769BDC001FF957 /* XpubError.swift */; };
+		DA2E76FD29769BDD001FF957 /* XpubVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2E76F929769BDC001FF957 /* XpubVersion.swift */; };
+		DA2E76FE29769BDD001FF957 /* XpubSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2E76FA29769BDC001FF957 /* XpubSerializer.swift */; };
+		DA2E770029769BF6001FF957 /* TransactionCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */; };
 		DA30812B2817BF3C00DE41F1 /* Tron.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */; };
 		DA30812F2817C0F900DE41F1 /* Contracts.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA30812E2817C0F900DE41F1 /* Contracts.pb.swift */; };
 		DA3081322817EC1A00DE41F1 /* TronTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA3081312817EC1A00DE41F1 /* TronTransactionBuilder.swift */; };
@@ -439,6 +444,11 @@
 		D1CC9E29B257CD29E6143FDD /* Pods_BlockchainSdk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA07EFEA28191631008712F1 /* TronTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronTests.swift; sourceTree = "<group>"; };
 		DA11507627DB217200CDC879 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		DA2E76F729769BDC001FF957 /* XpubKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XpubKey.swift; sourceTree = "<group>"; };
+		DA2E76F829769BDC001FF957 /* XpubError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XpubError.swift; sourceTree = "<group>"; };
+		DA2E76F929769BDC001FF957 /* XpubVersion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XpubVersion.swift; sourceTree = "<group>"; };
+		DA2E76FA29769BDC001FF957 /* XpubSerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XpubSerializer.swift; sourceTree = "<group>"; };
+		DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionCreator.swift; sourceTree = "<group>"; };
 		DA3081282817BF1D00DE41F1 /* Tron.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = Tron.proto; sourceTree = "<group>"; };
 		DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tron.pb.swift; sourceTree = "<group>"; };
 		DA30812D2817C0C200DE41F1 /* Contracts.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = Contracts.proto; sourceTree = "<group>"; };
@@ -641,6 +651,7 @@
 				DC63F265293F243200F953EF /* Credentials.swift */,
 				DA656FC9295454C10092CC61 /* Constants.swift */,
 				DAD65BAF2955F201003B3E8D /* EthereumApiKeys.swift */,
+				DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -922,6 +933,7 @@
 		5DACA35C255E98220096BC48 /* Address */ = {
 			isa = PBXGroup;
 			children = (
+				DA2E76F629769BDC001FF957 /* Xpub */,
 				5DD831BB244DF5BD00F80CEA /* AddressService.swift */,
 				5DACA35A255E97FE0096BC48 /* Address.swift */,
 				5DACA360255E98900096BC48 /* MultipleAddressProvider.swift */,
@@ -1157,6 +1169,17 @@
 				3452E77A600B278568F13FA9 /* Pods-BlockchainSdkExample.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		DA2E76F629769BDC001FF957 /* Xpub */ = {
+			isa = PBXGroup;
+			children = (
+				DA2E76F729769BDC001FF957 /* XpubKey.swift */,
+				DA2E76F829769BDC001FF957 /* XpubError.swift */,
+				DA2E76F929769BDC001FF957 /* XpubVersion.swift */,
+				DA2E76FA29769BDC001FF957 /* XpubSerializer.swift */,
+			);
+			path = Xpub;
 			sourceTree = "<group>";
 		};
 		DA3081222817AEB800DE41F1 /* protobuf */ = {
@@ -1551,10 +1574,12 @@
 				5D304390239A58C90066B8D9 /* BitcoinWalletManager.swift in Sources */,
 				5D4B33DA23FAAD1B00C93A84 /* BitcoreResponse.swift in Sources */,
 				EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */,
+				DA2E770029769BF6001FF957 /* TransactionCreator.swift in Sources */,
 				B0EBBEF2265D0E7700D37141 /* DogecoinNetworkParams.swift in Sources */,
 				5DE3BF99239E722400E8815D /* Base58.swift in Sources */,
 				B0F9DCA125FB4C9B00C0AF18 /* MultiNetworkProvider.swift in Sources */,
 				5D7D243B25136254001B9A4F /* URandom.swift in Sources */,
+				DA2E76FC29769BDD001FF957 /* XpubError.swift in Sources */,
 				B06AFAEF261496E600E7AAB0 /* CardanoAddressUtils.swift in Sources */,
 				DA346451279A802E00E77B1D /* SolanaSdk+.swift in Sources */,
 				5D88C809256BCD6C00020028 /* XRPTransactionParams.swift in Sources */,
@@ -1602,6 +1627,7 @@
 				5D88C80B256BCDBB00020028 /* StellarTransactionParams.swift in Sources */,
 				5D88838927D3BB8B008744E1 /* WalletError.swift in Sources */,
 				5DE3BF9E239FA2F400E8815D /* SegWitBech32.swift in Sources */,
+				DA2E76FD29769BDD001FF957 /* XpubVersion.swift in Sources */,
 				5D6DEAB6243CC09A00510EC8 /* EthereumTransactionBuilder.swift in Sources */,
 				DA9F76F527EC9CB400F0665C /* TronTarget.swift in Sources */,
 				5D7D243525136254001B9A4F /* XRPAmount.swift in Sources */,
@@ -1662,12 +1688,14 @@
 				DA9F76F127EC9C8300F0665C /* TronJsonRpcProvider.swift in Sources */,
 				5D4B33BC23F6EA0500C93A84 /* BlockchairTarget.swift in Sources */,
 				5D94E56723A3946C009C7482 /* Data+.swift in Sources */,
+				DA2E76FE29769BDD001FF957 /* XpubSerializer.swift in Sources */,
 				B0AD566425AC8DD50084F924 /* PendingTransaction.swift in Sources */,
 				DAE30DFD279164500056C5A3 /* SolanaAddressService.swift in Sources */,
 				5D26CEF6243CBA4300994CC0 /* EstimateFeeTarget.swift in Sources */,
 				5DA6F7BC243F3C0B0040AB4B /* CBOR+.swift in Sources */,
 				E95D95152929872B0068F876 /* BlockBookResponses.swift in Sources */,
 				5DA163D2273D2146007AA991 /* TezosJsonRpcProvider.swift in Sources */,
+				DA2E76FB29769BDD001FF957 /* XpubKey.swift in Sources */,
 				5DED72BA239FE2F8006D79AE /* Int+.swift in Sources */,
 				B06C6793264286390037E7AD /* BlockchairAddressBlockMapper.swift in Sources */,
 				DA656FC62952091A0092CC61 /* BlockBookService.swift in Sources */,

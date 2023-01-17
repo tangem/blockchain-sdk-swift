@@ -38,67 +38,90 @@ class BaseManager: WalletProvider {
     func addTokens(_ tokens: [Token]) {
         tokens.forEach { addToken($0) }
     }
-    
-    func createTransaction(amount: Amount,
-                           fee: Amount,
-                           destinationAddress: String,
-                           sourceAddress: String?,
-                           changeAddress: String?) throws -> Transaction {
-        let transaction = Transaction(amount: amount,
-                                      fee: fee,
-                                      sourceAddress: sourceAddress ?? defaultSourceAddress,
-                                      destinationAddress: destinationAddress,
-                                      changeAddress: changeAddress ?? defaultChangeAddress,
-                                      contractAddress: amount.type.token?.contractAddress,
-                                      date: Date(),
-                                      status: .unconfirmed,
-                                      hash: nil)
+}
+
+// MARK: - TransactionCreator
+
+extension BaseManager: TransactionCreator {
+    func createTransaction(
+        amount: Amount,
+        fee: Amount,
+        sourceAddress: String? = nil,
+        destinationAddress: String,
+        changeAddress: String? = nil,
+        contractAddress: String? = nil,
+        date: Date = Date(),
+        status: TransactionStatus = .unconfirmed
+    ) throws -> Transaction {
+        let transaction = Transaction(
+            amount: amount,
+            fee: fee,
+            sourceAddress: sourceAddress ?? defaultSourceAddress,
+            destinationAddress: destinationAddress,
+            changeAddress: changeAddress ?? defaultChangeAddress,
+            contractAddress: contractAddress ?? amount.type.token?.contractAddress,
+            date: date,
+            status: status,
+            hash: nil
+        )
         
         try validateTransaction(amount: amount, fee: fee)
         return transaction
     }
     
-    func validate(amount: Amount) -> TransactionError? {
+    func validate(amount: Amount) throws {
         if !validateAmountValue(amount) {
-            return .invalidAmount
+            throw TransactionError.invalidAmount
         }
         
         if !validateAmountTotal(amount) {
-            return .amountExceedsBalance
+            throw TransactionError.amountExceedsBalance
         }
-        
-        return nil
     }
     
-    func validate(fee: Amount) -> TransactionError? {
+    func validate(fee: Amount) throws {
         if !validateAmountValue(fee) {
-            return .invalidFee
+            throw TransactionError.invalidFee
         }
         
         if !validateAmountTotal(fee) {
-            return .feeExceedsBalance
+            throw TransactionError.feeExceedsBalance
         }
-        
-        return nil
     }
-    
+}
+
+// MARK: - Validation
+
+private extension BaseManager {
     func validateTransaction(amount: Amount, fee: Amount?) throws {
         var errors = [TransactionError]()
         
-        let amountError = validate(amount: amount)
+        do {
+            try validate(amount: amount)
+        } catch let error as TransactionError {
+            errors.append(error)
+        }
         
         guard let fee = fee else {
-            errors.appendIfNotNil(amountError)
             throw TransactionErrors(errors: errors)
         }
         
-        errors.appendIfNotNil(validate(fee: fee))
-        errors.appendIfNotNil(amountError)
+        do {
+            try validate(fee: fee)
+        } catch let error as TransactionError {
+            errors.append(error)
+        }
                 
         let total = amount + fee
         
-        if amount.type == fee.type, total.value > 0,
-            validate(amount: total) != nil {
+        var totalError: TransactionError?
+        do {
+            try validate(amount: total)
+        } catch let error as TransactionError {
+            totalError = error
+        }
+
+        if amount.type == fee.type, total.value > 0, totalError != nil {
             errors.append(.totalExceedsBalance)
         }
         
@@ -130,11 +153,11 @@ class BaseManager: WalletProvider {
         }
     }
     
-    private func validateAmountValue(_ amount: Amount) -> Bool {
+    func validateAmountValue(_ amount: Amount) -> Bool {
         return amount.value >= 0
     }
     
-    private func validateAmountTotal(_ amount: Amount) -> Bool {
+    func validateAmountTotal(_ amount: Amount) -> Bool {
         let total = wallet.amounts[amount.type] ?? Amount(with: amount, value: 0)
         
         guard total >= amount else {
