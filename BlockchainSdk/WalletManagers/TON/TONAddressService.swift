@@ -34,49 +34,69 @@ import TangemSdk
 public class TONAddressService: AddressService {
     
     public func makeAddress(from walletPublicKey: Data) throws -> String {
-        print(walletPublicKey.hexDescription)
-        print(walletPublicKey.map { Byte($0) })
-        print(walletPublicKey.count)
+        try walletPublicKey.validateAsEdKey()
+
+        var combineAddress = Data()
+        combineAddress.append(Byte(AddressTag.BOUNCEABLE.rawValue))
+        combineAddress.append(Byte(0x00))
+        combineAddress.append(walletPublicKey.bytes, count: walletPublicKey.bytes.count)
+        let checksum = crc16(data: combineAddress.bytes)
+        combineAddress.append(contentsOf: checksum.data.bytes)
         
-        return walletPublicKey.hexString
-//        try walletPublicKey.validateAsEdKey()
-//
-//        var combineAddress = Data()
-//        combineAddress.append(Byte(AddressTag.NON_BOUNCEABLE.rawValue))
-//        combineAddress.append(Byte(0x00))
-//        combineAddress.append(walletPublicKey.map { Byte($0) }, count: walletPublicKey.count)
-//        let checksum = combineAddress.crc16()
-//        combineAddress.append(checksum)
-//
-//        print(combineAddress.base64EncodedString())
-//        print(walletPublicKey.base64EncodedString())
-//
-//        return combineAddress.base64EncodedString()
+        print(walletPublicKey.hexString)
+        print(combineAddress.bytes)
+        print(combineAddress.bytes.count)
+
+        return combineAddress.base64EncodedString()
     }
     
     public func validate(_ address: String) -> Bool {
-//        guard
-//            address.count == 48,
-//            let rawData = Data(base64EncodedURLSafe: address),
-//            rawData.count == 36
-//        else {
-//            return false
-//        }
+        guard
+            address.count == 48,
+            let rawData = Data(base64EncodedURLSafe: address),
+            rawData.count == 36
+        else {
+            return false
+        }
         
-//        let addrData = rawData[0...33]
-//        let crcData = rawData[34...35]
-//        let calcedCrc = addrData.crc16()
+        let addrData = rawData[0...33]
+        let crcData = rawData[34...35]
+        let calcedCrc = self.crc16(data: addrData.bytes).bigEndian.data.bytes
         
-//        print(addrData.crc16())
-//
-//        let hashPart = addrData.subdata(in: 2..<34)
-//
-//        print(hashPart.map { Byte($0) })
-//        print(hashPart.hex)
+        if (!(calcedCrc[0] == crcData.bytes[0] && calcedCrc[1] == crcData.bytes[1])) {
+            return false
+        }
         
         return true
     }
     
+    // MARK: - Private Implementation
+    
+    private func crc16(data: [UInt8]) -> UInt16 {
+        // Calculate checksum for existing bytes
+        var crc: UInt16 = 0x0000;
+        let polynomial: UInt16 = 0x1021;
+        
+        for byte in data {
+            for bitidx in 0..<8 {
+                let bit = ((byte >> (7 - bitidx) & 1) == 1)
+                let c15 = ((crc >> 15 & 1) == 1)
+                crc <<= 1
+                if c15 ^ bit {
+                    crc ^= polynomial;
+                }
+            }
+        }
+        
+        return crc & 0xffff;
+    }
+    
+}
+
+public extension Bool {
+    static func ^ (left: Bool, right: Bool) -> Bool {
+        return left != right
+    }
 }
 
 public extension Data {
@@ -100,11 +120,6 @@ public extension TONAddressService {
         case BOUNCEABLE = 0x11
         case NON_BOUNCEABLE = 0x51
         case TEST_ONLY = 0x80
-    }
-    
-    enum WorkchainType: Int {
-        case Masterchain = -1
-        case Basechain = 0
     }
     
     struct Address {
