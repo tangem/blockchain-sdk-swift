@@ -53,6 +53,12 @@ public struct Wallet {
         pendingOutgoingTransactions
             .reduce(0, { $0 + $1.amount.value + $1.fee.value })
     }
+
+    public var xpubKey: String? {
+        guard let key = publicKey.xpubKey else { return nil }
+
+        return try? key.serialize(for: blockchain.isTestnet ? XpubVersion.testnet : XpubVersion.mainnet)
+    }
     
     public func hasPendingTx(for amountType: Amount.AmountType) -> Bool {
         return !transactions.filter { $0.status == .unconfirmed && $0.amount.type == amountType }.isEmpty
@@ -177,11 +183,21 @@ extension Wallet {
     public struct PublicKey: Codable, Hashable {
         public let seedKey: Data
         public let derivationPath: DerivationPath?
-        private let derivedKey: Data?
+
+        public var xpubKey: XpubKey? {
+            guard let derivedKey else {
+                return nil
+            }
+
+            return try? .init(chainCode: derivedKey.chainCode,
+                              publicKey: derivedKey.publicKey)
+        }
+
+        private let derivedKey: ExtendedPublicKey?
+
+        public var blockchainKey: Data { derivedKey?.publicKey ?? seedKey }
         
-        public var blockchainKey: Data { derivedKey ?? seedKey }
-        
-        public init(seedKey: Data, derivedKey: Data?, derivationPath: DerivationPath?) {
+        public init(seedKey: Data, derivedKey: ExtendedPublicKey?, derivationPath: DerivationPath?) {
             self.seedKey = seedKey
             self.derivedKey = derivedKey
             self.derivationPath = derivationPath
