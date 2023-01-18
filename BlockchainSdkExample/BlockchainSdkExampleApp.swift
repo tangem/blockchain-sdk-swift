@@ -17,13 +17,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let model = BlockchainSdkExampleViewModel()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        let contentView = BlockchainSdkExampleView()
-            .environmentObject(model)
-
-        let window = UIWindow()
-        window.rootViewController = UIHostingController(rootView: contentView)
-        self.window = window
-        window.makeKeyAndVisible()
+        let wallet = try! TONWallet(publicKey: Data(hexString: "258A89B60CCE7EB3339BF4DB8A8DA8153AA2B6489D22CC594E50FDF626DA7AF5"), wc: 0)
+        print("----")
+        
+//        let contentView = BlockchainSdkExampleView()
+//            .environmentObject(model)
+//
+//        let window = UIWindow()
+//        window.rootViewController = UIHostingController(rootView: contentView)
+//        self.window = window
+//        window.makeKeyAndVisible()
 
         return true
     }
