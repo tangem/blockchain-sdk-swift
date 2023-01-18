@@ -9,9 +9,7 @@
 import Foundation
 import Combine
 
-class BlockBookUtxoProvider: BitcoinNetworkProvider {
-    var supportsTransactionPush: Bool { false }
-    
+class BlockBookUtxoProvider {
     var host: String {
         serviceProvider.host
     }
@@ -24,68 +22,6 @@ class BlockBookUtxoProvider: BitcoinNetworkProvider {
         self.blockchain = blockchain
         self.serviceProvider = serviceProvider
         self.provider = NetworkProvider<BlockBookTarget>(configuration: configuration)
-    }
-    
-    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        Publishers
-            .Zip(addressData(address: address), unspentTxData(address: address))
-            .tryMap { [weak self] (addressResponse, unspentTxResponse) in
-                guard let self else {
-                    throw WalletError.empty
-                }
-                
-                let transactions = addressResponse.transactions ?? []
-                
-                return BitcoinResponse(
-                    balance: (Decimal(string: addressResponse.balance) ?? 0) / self.blockchain.decimalValue,
-                    hasUnconfirmed: addressResponse.unconfirmedTxs != 0,
-                    pendingTxRefs: self.pendingTransactions(from: transactions, address: address),
-                    unspentOutputs: self.unspentOutputs(from: unspentTxResponse, transactions: transactions, address: address)
-                )
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    func getFee() -> AnyPublisher<BitcoinFee, Error> {
-        provider
-            .requestPublisher(target(for: .fees))
-            .filterSuccessfulStatusAndRedirectCodes()
-            .map(BlockBookFeeResponse.self)
-            .tryMap { [weak self] in
-                guard let self else {
-                    throw WalletError.empty
-                }
-                
-                let feeRate = Decimal($0.result.feerate) * self.blockchain.decimalValue
-                
-                let min = (Decimal(0.8) * feeRate).rounded(roundingMode: .down)
-                let normal = feeRate
-                let max = (Decimal(1.2) * feeRate).rounded(roundingMode: .down)
-                
-                return BitcoinFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: normal, prioritySatoshiPerByte: max)
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    func send(transaction: String) -> AnyPublisher<String, Error> {
-        provider
-            .requestPublisher(target(for: .send(txHex: transaction)))
-            .filterSuccessfulStatusAndRedirectCodes()
-            .mapNotEmptyString()
-            .eraseError()
-            .eraseToAnyPublisher()
-    }
-    
-    func push(transaction: String) -> AnyPublisher<String, Error> {
-        .anyFail(error: "RBF not supported")
-    }
-    
-    func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-        addressData(address: address)
-            .tryMap {
-                $0.txs + $0.unconfirmedTxs
-            }
-            .eraseToAnyPublisher()
     }
     
     private func addressData(address: String) -> AnyPublisher<BlockBookAddressResponse, Error> {
@@ -199,5 +135,71 @@ class BlockBookUtxoProvider: BitcoinNetworkProvider {
                 outputScript: outputScript
             )
         }
+    }
+}
+
+extension BlockBookUtxoProvider: BitcoinNetworkProvider {
+    var supportsTransactionPush: Bool { false }
+    
+    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
+        Publishers
+            .Zip(addressData(address: address), unspentTxData(address: address))
+            .tryMap { [weak self] (addressResponse, unspentTxResponse) in
+                guard let self else {
+                    throw WalletError.empty
+                }
+                
+                let transactions = addressResponse.transactions ?? []
+                
+                return BitcoinResponse(
+                    balance: (Decimal(string: addressResponse.balance) ?? 0) / self.blockchain.decimalValue,
+                    hasUnconfirmed: addressResponse.unconfirmedTxs != 0,
+                    pendingTxRefs: self.pendingTransactions(from: transactions, address: address),
+                    unspentOutputs: self.unspentOutputs(from: unspentTxResponse, transactions: transactions, address: address)
+                )
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func getFee() -> AnyPublisher<BitcoinFee, Error> {
+        provider
+            .requestPublisher(target(for: .fees))
+            .filterSuccessfulStatusAndRedirectCodes()
+            .map(BlockBookFeeResponse.self)
+            .tryMap { [weak self] in
+                guard let self else {
+                    throw WalletError.empty
+                }
+                
+                let feeRate = Decimal($0.result.feerate) * self.blockchain.decimalValue
+                
+                let min = (Decimal(0.8) * feeRate).rounded(roundingMode: .down)
+                let normal = feeRate
+                let max = (Decimal(1.2) * feeRate).rounded(roundingMode: .down)
+                
+                return BitcoinFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: normal, prioritySatoshiPerByte: max)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func send(transaction: String) -> AnyPublisher<String, Error> {
+        provider
+            .requestPublisher(target(for: .send(txHex: transaction)))
+            .filterSuccessfulStatusAndRedirectCodes()
+            .mapNotEmptyString()
+            .eraseError()
+            .eraseToAnyPublisher()
+    }
+    
+    func push(transaction: String) -> AnyPublisher<String, Error> {
+        .anyFail(error: "RBF not supported")
+    }
+    
+    func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
+        addressData(address: address)
+            .tryMap {
+                $0.txs + $0.unconfirmedTxs
+            }
+            .eraseToAnyPublisher()
     }
 }
