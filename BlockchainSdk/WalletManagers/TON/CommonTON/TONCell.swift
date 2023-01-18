@@ -18,7 +18,7 @@ struct TONCell {
     // MARK: - Properties
     
     var bytes: Array<UInt8> = []
-    var refs: Array<UInt8> = []
+    var refs: [UInt8] = []
     var isExotic: Bool = false
     
     static func oneFromBoc(_ serializedBoc: Array<UInt8>) throws -> TONCell {
@@ -37,52 +37,72 @@ struct TONCell {
      */
     static func deserializeBoc(_ serializedBoc: Array<UInt8>) throws -> [TONCell] {
         let header = try parseBocHeader(serializedBoc: serializedBoc)
-        let cells_data = header.cells_data
-        var cells_array: Array<UInt8> = []
+        var cells_data = header.cells_data
+        var cells_array: Array<TONCell> = []
         
         for _ in 0..<header.cells_num {
             let dd = try deserializeCellData(cells_data, header.size_bytes);
-//            cells_data = dd.1;
-//            cells_array.push(dd.cell);
+            cells_data = dd.1;
+            cells_array.append(dd.0);
+        }
+
+        for ci in stride(from: header.cells_num - 1, to: 0, by: -1) {
+            var c = cells_array[ci]
+            
+            for ri in 0..<c.refs.count {
+                var r = c.refs[ri]
+                
+                if r < ci {
+                    throw NSError()
+                }
+            
+//                c.refs[ri] = cells_array[r];
+            }
         }
         
-        return []
+        var root_cells: Array<TONCell> = []
+        
+        for ri in header.root_list {
+            root_cells.append(cells_array[ri])
+        }
+        
+        return root_cells
     }
     
     static func deserializeCellData(_ cellData: Array<UInt8>, _ referenceIndexSize: Int) throws -> (TONCell, Array<UInt8>) {
-        var cellData = cellData
-        
         if cellData.count < 2 {
             throw NSError()
         }
+        
+        var cellData = cellData
         
         let d1 = cellData[0]
         let d2 = cellData[1]
         cellData = Array(cellData[2..<cellData.count])
         
-        let level = floor(Float(d1 / 32))
         let isExotic = d1 & 8
         let refNum = d1 % 8
-        let dataBytesize = Int(ceil(Float(d2 / 2)))
-        let fullfilledBytes = ((d2 % 2) == 0)
+        let dataBytesize = lroundf(Float(d2) / 2)
+        let copyDataBytesize = dataBytesize > 0 ? dataBytesize : 1
         
         var cell = TONCell()
         cell.isExotic = isExotic != 0
         
-        if cellData.count < (dataBytesize + (referenceIndexSize * Int(refNum))) {
+        let compareValue = copyDataBytesize + referenceIndexSize * Int(refNum)
+        
+        if cellData.count < compareValue {
             throw NSError()
         }
         
-        let cellDataClice = Array(cellData[0..<dataBytesize])
-        cell.bytes.append(contentsOf: cellData[0..<dataBytesize])
-        cellData = Array(cellData[dataBytesize..<cellData.count])
+        cell.bytes.append(contentsOf: cellData[0..<copyDataBytesize])
+        cellData = Array(cellData[copyDataBytesize..<cellData.count])
         
         for _ in 0..<refNum {
-            cell.refs.append(readNBytesUIntFromArray(referenceIndexSize, cellData))
+            cell.refs.append(UInt8(readNBytesUIntFromArray(referenceIndexSize, cellData)))
             cellData = Array(cellData[referenceIndexSize..<cellData.count])
         }
         
-        throw NSError()
+        return (cell, cellData)
     }
     
 }
