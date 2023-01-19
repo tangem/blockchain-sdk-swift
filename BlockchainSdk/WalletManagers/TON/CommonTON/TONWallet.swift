@@ -14,7 +14,6 @@ private let CellBocWallet = "B5EE9C72410214010002D4000114FF00F4A413F4BCF2C80B010
 public class TONWallet: TONContract {
     
     public init(publicKey: Data, wc: Int = 0) throws {
-        print(publicKey.map { Byte($0) })
         try super.init(
             options: .init(
                 code: TONCell.oneFromBoc(Data(hexString: CellBocWallet).bytes),
@@ -23,5 +22,7 @@ public class TONWallet: TONContract {
             )
         )
     }
+    
+    
     
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct TONAddress {
+public struct TONAddress {
     
     /// Validate TON Address
     /// - Parameter anyForm: Форма адреса в формате строки

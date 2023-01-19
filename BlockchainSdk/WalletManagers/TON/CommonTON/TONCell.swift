@@ -13,13 +13,19 @@ let reachBocMagicPrefix = Data(hex: "b5ee9c72").bytes
 let leanBocMagicPrefix = Data(hex: "68ff65f3").bytes
 let leanBocMagicPrefixCRC = Data(hex: "acc3a728").bytes
 
-struct TONCell {
+public final class TONCell {
     
     // MARK: - Properties
     
-    var bytes: Array<UInt8> = []
-    var refs: [UInt8] = []
-    var isExotic: Bool = false
+    var bytes: Array<UInt8>
+    var refs: Array<TONCell>
+    var isExotic: Bool
+    
+    init(bytes: Array<UInt8> = [], refs: Array<TONCell> = [], isExotic: Bool = false) {
+        self.bytes = bytes
+        self.refs = refs
+        self.isExotic = isExotic
+    }
     
     static func oneFromBoc(_ serializedBoc: Array<UInt8>) throws -> TONCell {
         let cells = try deserializeBoc(serializedBoc)
@@ -45,18 +51,18 @@ struct TONCell {
             cells_data = dd.1;
             cells_array.append(dd.0);
         }
-
-        for ci in stride(from: header.cells_num - 1, to: 0, by: -1) {
-            var c = cells_array[ci]
-            
+        
+        for ci in stride(from: header.cells_num - 1, to: -1, by: -1) {
+            let c = cells_array[ci]
             for ri in 0..<c.refs.count {
-                var r = c.refs[ri]
+                if let r = c.refs[ri].bytes.first {
+                    if r < ci {
+                        throw NSError()
+                    }
                 
-                if r < ci {
-                    throw NSError()
+                    let refValue = cells_array[Int(r)]
+                    c.refs[ri] = refValue
                 }
-            
-//                c.refs[ri] = cells_array[r];
             }
         }
         
@@ -83,9 +89,10 @@ struct TONCell {
         let isExotic = d1 & 8
         let refNum = d1 % 8
         let dataBytesize = lroundf(Float(d2) / 2)
+        let fullfilledBytes = ((d2 % 2) == 0);
         let copyDataBytesize = dataBytesize > 0 ? dataBytesize : 1
         
-        var cell = TONCell()
+        let cell = TONCell()
         cell.isExotic = isExotic != 0
         
         let compareValue = copyDataBytesize + referenceIndexSize * Int(refNum)
@@ -94,11 +101,15 @@ struct TONCell {
             throw NSError()
         }
         
-        cell.bytes.append(contentsOf: cellData[0..<copyDataBytesize])
+        try cell.bytes.append(contentsOf: setTopUppedArray(Array(cellData[0..<copyDataBytesize]), fullfilledBytes))
         cellData = Array(cellData[copyDataBytesize..<cellData.count])
         
         for _ in 0..<refNum {
-            cell.refs.append(UInt8(readNBytesUIntFromArray(referenceIndexSize, cellData)))
+            cell.refs.append(
+                .init(
+                    bytes: [UInt8(readNBytesUIntFromArray(referenceIndexSize, cellData))]
+                )
+            )
             cellData = Array(cellData[referenceIndexSize..<cellData.count])
         }
         
@@ -108,11 +119,6 @@ struct TONCell {
 }
 
 extension TONCell {
-    
-//    private func compare(_ b1: Array<UInt8>, _ b2: Array<UInt8>) -> Int? {
-//        guard b1.count == b2.count else { return nil }
-//        return Int(sodium_compare(b1, b2, b1.count))
-//    }
     
     static func parseBocHeader(serializedBoc: Array<UInt8>) throws -> TONCellBocHeader {
         var serializedBoc = serializedBoc
@@ -252,6 +258,52 @@ extension TONCell {
             res += Int(ui8array[c])
         }
         return res
+    }
+    
+    private static func setTopUppedArray(_ array: Array<UInt8>, _ fullfilledBytes: Bool = true) throws -> Array<UInt8> {
+        let length = array.count * 8;
+        var array = array
+        var cursor = length
+        
+        if (fullfilledBytes || length == 0) {
+            return array
+        } else {
+            var foundEndBit = false
+            
+            for _ in 0..<7 {
+                cursor -= 1
+                if array.get(cursor) {
+                    guard cursor < length else {
+                        throw NSError()
+                    }
+                    
+                    foundEndBit = true
+                    try array.off(cursor)
+                    return array
+                }
+            }
+            
+            if !foundEndBit {
+                throw NSError()
+            }
+        }
+    }
+}
+
+extension Array where Element == UInt8 {
+    
+    func checkRange(_ n: Int) throws {
+        if n > self.count {
+            throw NSError()
+        }
+    }
+    
+    func get(_ n: Int) -> Bool {
+        return (self[(n / 8) | 0] & (1 << (7 - (n % 8)))) > 0
+    }
+    
+    mutating func off(_ n: Int) throws {
+        self[(n / 8) | 0] &= ~(1 << (7 - (n % 8)))
     }
     
 }
