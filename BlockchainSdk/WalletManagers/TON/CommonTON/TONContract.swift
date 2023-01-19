@@ -11,6 +11,7 @@ import Foundation
 public struct TONContractOption {
     public let code: TONCell?
     public let address: TONAddress?
+    public let walletId: String?
     public let wc: Int?
 }
 
@@ -65,10 +66,7 @@ open class TONContract {
      * @return {Cell} cell contains contract data
      */
     func createDataCell() throws -> TONCell {
-        var cell = TONCell()
-        cell.bytes = [UInt8](repeating: 0, count: 32)
-        cell.bits.writeUint(this.options.walletId, 32);
-        return cell
+        return TONCell()
     }
 
     /**
@@ -77,9 +75,9 @@ open class TONContract {
      */
     public func createStateInit() throws -> TONStateInit {
         let codeCell = try self.createCodeCell()
-        let dataCell = try self.createDataCell();
+        let dataCell = try self.createDataCell()
         let stateInit = try TONContract.createStateInit(code: codeCell, data: dataCell);
-        
+        let stateInitHash = try stateInit.hash()
         throw NSError()
     }
 
@@ -94,8 +92,28 @@ open class TONContract {
      * @param ticktock  {null}
      * @return {Cell}
      */
-    static func createStateInit(code: TONCell, data: TONCell) throws -> TONStateInit {
-        throw NSError()
+    static func createStateInit(
+        code: TONCell?,
+        data: TONCell?,
+        library: TONCell? = nil,
+        splitDepth: TONCell? = nil,
+        ticktock: TONCell? = nil
+    ) throws -> TONCell {
+        if library != nil, splitDepth != nil, ticktock != nil {
+            throw NSError()
+        }
+
+        let stateInit = TONCell()
+        
+        if let code = code {
+            stateInit.refs.append(code)
+        }
+        
+        if let data = data {
+            stateInit.refs.append(data)
+        }
+        
+        return stateInit
     }
     
 }

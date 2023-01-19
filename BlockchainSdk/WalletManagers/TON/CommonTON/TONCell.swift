@@ -17,12 +17,12 @@ public final class TONCell {
     
     // MARK: - Properties
     
-    var bytes: Array<UInt8>
+    var bits: Array<UInt8>
     var refs: Array<TONCell>
     var isExotic: Bool
     
-    init(bytes: Array<UInt8> = [], refs: Array<TONCell> = [], isExotic: Bool = false) {
-        self.bytes = bytes
+    init(bits: Array<UInt8> = [], refs: Array<TONCell> = [], isExotic: Bool = false) {
+        self.bits = bits
         self.refs = refs
         self.isExotic = isExotic
     }
@@ -55,7 +55,7 @@ public final class TONCell {
         for ci in stride(from: header.cells_num - 1, to: -1, by: -1) {
             let c = cells_array[ci]
             for ri in 0..<c.refs.count {
-                if let r = c.refs[ri].bytes.first {
+                if let r = c.refs[ri].bits.first {
                     if r < ci {
                         throw NSError()
                     }
@@ -101,13 +101,13 @@ public final class TONCell {
             throw NSError()
         }
         
-        try cell.bytes.append(contentsOf: setTopUppedArray(Array(cellData[0..<copyDataBytesize]), fullfilledBytes))
+        try cell.bits.append(contentsOf: setTopUppedArray(Array(cellData[0..<copyDataBytesize]), fullfilledBytes))
         cellData = Array(cellData[copyDataBytesize..<cellData.count])
         
         for _ in 0..<refNum {
             cell.refs.append(
                 .init(
-                    bytes: [UInt8(readNBytesUIntFromArray(referenceIndexSize, cellData))]
+                    bits: [UInt8(readNBytesUIntFromArray(referenceIndexSize, cellData))]
                 )
             )
             cellData = Array(cellData[referenceIndexSize..<cellData.count])
@@ -290,20 +290,26 @@ extension TONCell {
     }
 }
 
-extension Array where Element == UInt8 {
+extension TONCell {
     
-    func checkRange(_ n: Int) throws {
-        if n > self.count {
-            throw NSError()
-        }
+    func hash() throws -> Array<UInt8> {
+        try self.getMaxDepthAsArray().sha256()
     }
     
-    func get(_ n: Int) -> Bool {
-        return (self[(n / 8) | 0] & (1 << (7 - (n % 8)))) > 0
+    /**
+         * @return {Promise<Uint8Array>}
+         */
+    func getRepr() throws -> Array<UInt8> {
+        throw NSError()
     }
     
-    mutating func off(_ n: Int) throws {
-        self[(n / 8) | 0] &= ~(1 << (7 - (n % 8)))
+    /**
+     * @private
+     * @return {Uint8Array}
+     */
+    func getMaxDepthAsArray() throws -> Array<UInt8> {
+        print()
+        throw NSError()
     }
     
 }

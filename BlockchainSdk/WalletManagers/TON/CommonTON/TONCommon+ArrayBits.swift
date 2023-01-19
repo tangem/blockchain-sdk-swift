@@ -1,0 +1,97 @@
+//
+//  TONCommon+ArrayBits.swift
+//  BlockchainSdk
+//
+//  Created by skibinalexander on 19.01.2023.
+//  Copyright © 2023 Tangem AG. All rights reserved.
+//
+
+import Foundation
+
+extension Array where Element == UInt8 {
+    
+    func checkRange(_ n: Int) throws {
+        if n > self.count {
+            throw NSError()
+        }
+    }
+    
+    func get(_ n: Int) -> Bool {
+        return (self[(n / 8) | 0] & (1 << (7 - (n % 8)))) > 0
+    }
+    
+    mutating func on(_ n: Int) throws {
+        self[(n / 8) | 0] |= 1 << (7 - (n % 8));
+    }
+    
+    mutating func off(_ n: Int) throws {
+        self[(n / 8) | 0] &= ~(1 << (7 - (n % 8)))
+    }
+    
+}
+
+extension Array where Element == Bit {
+    
+    func bytes() -> [UInt8] {
+        let bits = self
+        let numBits = bits.count
+        let numBytes = (numBits + 7)/8
+        var bytes = [UInt8](repeating: 0, count: numBytes)
+
+        for (index, bit) in bits.enumerated() {
+            if bit == .one {
+                bytes[index / 8] += 1 << (7 - index % 8)
+            }
+        }
+
+        return bytes
+    }
+    
+}
+
+extension FixedWidthInteger {
+    
+    var bits: [Bit] {
+        // Make variable
+        var bytes = self
+        // Fill an array of bits with zeros to the fixed width integer length
+        var bits = [Bit](repeating: .zero, count: self.bitWidth)
+        // Run through each bit (LSB first)
+        for i in 0..<self.bitWidth {
+            let currentBit = bytes & 0x01
+            if currentBit != 0 {
+                bits[i] = .one
+            }
+
+            bytes >>= 1
+        }
+
+        return bits
+    }
+    
+}
+
+extension BinaryInteger {
+    
+    var binaryDescription: String {
+        var binaryString = ""
+        var internalNumber = self
+        var counter = 0
+
+        for _ in (1...self.bitWidth) {
+            binaryString.insert(contentsOf: "\(internalNumber & 1)", at: binaryString.startIndex)
+            internalNumber >>= 1
+            counter += 1
+            if counter % 4 == 0 {
+                binaryString.insert(contentsOf: " ", at: binaryString.startIndex)
+            }
+        }
+
+        return binaryString
+    }
+    
+}
+
+extension Bool {
+    
+}

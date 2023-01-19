@@ -14,7 +14,7 @@ public struct TONAddress {
     /// - Parameter anyForm: Форма адреса в формате строки
     static func isValid(anyForm: String) -> Bool {
         do {
-            let address = try TONAddress(anyForm)
+            let _ = try TONAddress(anyForm)
             return true
         } catch {
             return false
