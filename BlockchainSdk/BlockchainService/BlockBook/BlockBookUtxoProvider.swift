@@ -52,25 +52,6 @@ class BlockBookUtxoProvider {
                 $0.confirmations == 0
             }
             .compactMap { tx -> PendingTransaction? in
-                let source: String?
-                let destination: String?
-                let value: Decimal?
-                let isIncoming: Bool
-                
-                if tx.vin.contains(where: { $0.addresses.contains(address) }), let destinationUtxo = tx.vout.first(where: { !$0.addresses.contains(address) }) {
-                    isIncoming = false
-                    destination = destinationUtxo.addresses.first
-                    source = address
-                    value = Decimal(string: destinationUtxo.value)
-                } else if let txDestination = tx.vout.first(where: { $0.addresses.contains(address) }), !tx.vin.contains(where: { $0.addresses.contains(address) }), let txSource = tx.vin.first {
-                    isIncoming = true
-                    destination = address
-                    source = txSource.addresses.first
-                    value = Decimal(string: txDestination.value)
-                } else {
-                    return nil
-                }
-                
                 let bitcoinInputs: [BitcoinInput] = tx.vin.compactMap { input -> BitcoinInput? in
                     guard
                         let address = input.addresses.first,
@@ -90,23 +71,54 @@ class BlockBookUtxoProvider {
                 }
                 
                 guard
-                    let fetchedFees = Decimal(string: tx.fees),
-                    let source,
-                    let destination,
-                    let value
+                    let pendingTransactionInfo = pendingTransactionInfo(from: tx, address: address),
+                    let fetchedFees = Decimal(string: tx.fees)
                 else {
                     return nil
                 }
-                
+
                 return PendingTransaction(hash: tx.txid,
-                                          destination: destination,
-                                          value: value / self.blockchain.decimalValue,
-                                          source: source,
+                                          destination: pendingTransactionInfo.destination,
+                                          value: pendingTransactionInfo.value / self.blockchain.decimalValue,
+                                          source: pendingTransactionInfo.source,
                                           fee: fetchedFees / self.blockchain.decimalValue,
                                           date: Date(timeIntervalSince1970: Double(tx.blockTime)),
-                                          isIncoming: isIncoming,
+                                          isIncoming: pendingTransactionInfo.isIncoming,
                                           transactionParams: BitcoinTransactionParams(inputs: bitcoinInputs))
             }
+    }
+    
+    private func pendingTransactionInfo(from tx: BlockBookAddressResponse.Transaction, address: String) -> PendingTransactionInfo? {
+        if tx.vin.contains(where: { $0.addresses.contains(address) }), let destinationUtxo = tx.vout.first(where: { !$0.addresses.contains(address) }) {
+            guard let destination = destinationUtxo.addresses.first,
+                  let value = Decimal(string: destinationUtxo.value)
+            else {
+                return nil
+            }
+            
+            return PendingTransactionInfo(
+                isIncoming: false,
+                source: address,
+                destination: destination,
+                value: value
+            )
+        } else if let txDestination = tx.vout.first(where: { $0.addresses.contains(address) }), !tx.vin.contains(where: { $0.addresses.contains(address) }), let txSource = tx.vin.first {
+            guard
+                let source = txSource.addresses.first,
+                let value = Decimal(string: txDestination.value)
+            else {
+                return nil
+            }
+            
+            return PendingTransactionInfo(
+                isIncoming: true,
+                source: source,
+                destination: address,
+                value: value
+            )
+        } else {
+            return nil
+        }
     }
     
     private func unspentOutputs(from utxos: [BlockBookUnspentTxResponse], transactions: [BlockBookAddressResponse.Transaction], address: String) -> [BitcoinUnspentOutput] {
@@ -201,5 +213,14 @@ extension BlockBookUtxoProvider: BitcoinNetworkProvider {
                 $0.txs + $0.unconfirmedTxs
             }
             .eraseToAnyPublisher()
+    }
+}
+
+fileprivate extension BlockBookUtxoProvider {
+    struct PendingTransactionInfo {
+        let isIncoming: Bool
+        let source: String
+        let destination: String
+        let value: Decimal
     }
 }
