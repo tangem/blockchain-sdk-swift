@@ -15,7 +15,9 @@ struct BlockBookAddressResponse: Decodable {
     let unconfirmedTxs: Int
     let txs: Int
     let transactions: [Transaction]?
-    
+}
+
+extension BlockBookAddressResponse {
     struct Transaction: Decodable {
         let txid: String
         let version: Int
