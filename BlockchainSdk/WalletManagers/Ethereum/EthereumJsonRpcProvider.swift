@@ -61,10 +61,10 @@ class EthereumJsonRpcProvider: HostProvider {
         requestPublisher(for: .getAllowance(from: from, to: to, contractAddress: contractAddress))
     }
     
-    private func requestPublisher(for target: EthereumTarget.EthereumTargetType) -> AnyPublisher<EthereumResponse, Error> {
+    private func requestPublisher(for targetType: EthereumTarget.EthereumTargetType) -> AnyPublisher<EthereumResponse, Error> {
         provider.requestPublisher(
             EthereumTarget(
-                targetType: target,
+                targetType: targetType,
                 baseURL: url,
                 apiKeyHeaderName: apiKeyHeaderName,
                 apiKeyHeaderValue: apiKeyHeaderValue
