@@ -11,17 +11,6 @@ import Moya
 
 struct EthereumTarget: TargetType {
     static let coinId = 67
-
-    enum EthereumTargetType {
-        case balance(address: String)
-        case transactions(address: String)
-        case pending(address: String)
-        case send(transaction: String)
-        case tokenBalance(address: String, contractAddress: String)
-        case getAllowance(from: String, to: String, contractAddress: String)
-        case gasLimit(to: String, from: String, value: String?, data: String?)
-        case gasPrice
-    }
     
     let targetType: EthereumTargetType
     let baseURL: URL
@@ -110,5 +99,18 @@ struct EthereumTarget: TargetType {
         case .pending: return "pending"
         case .send, .gasLimit, .gasPrice: return nil
         }
+    }
+}
+
+extension EthereumTarget {
+    enum EthereumTargetType {
+        case balance(address: String)
+        case transactions(address: String)
+        case pending(address: String)
+        case send(transaction: String)
+        case tokenBalance(address: String, contractAddress: String)
+        case getAllowance(from: String, to: String, contractAddress: String)
+        case gasLimit(to: String, from: String, value: String?, data: String?)
+        case gasPrice
     }
 }
