@@ -233,11 +233,18 @@ public class WalletManagerFactory {
             
             return try manager.then {
                 let chainId = blockchain.chainId!
+
                 let jsonRpcProviders = endpoints.map {
-                    EthereumJsonRpcProvider(url: $0.url,
-                                            apiKeyHeaderName: $0.apiKeyHeaderName,
-                                            apiKeyHeaderValue: $0.apiKeyHeaderValue,
-                                            configuration: networkProviderConfiguration)
+                    var additionalHeaders: [String: String] = [:]
+                    if let apiKeyHeaderName = $0.apiKeyHeaderName, let apiKeyHeaderValue = $0.apiKeyHeaderValue {
+                        additionalHeaders[apiKeyHeaderName] = apiKeyHeaderValue
+                    }
+                    
+                    return EthereumJsonRpcProvider(
+                        url: $0.url,
+                        additionalHeaders: additionalHeaders,
+                        configuration: networkProviderConfiguration
+                    )
                 }
                 
                 $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, chainId: chainId)

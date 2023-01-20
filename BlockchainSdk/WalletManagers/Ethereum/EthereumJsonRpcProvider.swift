@@ -16,15 +16,12 @@ class EthereumJsonRpcProvider: HostProvider {
     
     private let provider: NetworkProvider<EthereumTarget>
     private let url: URL
-    
-    private let apiKeyHeaderName: String?
-    private let apiKeyHeaderValue: String?
-    
-    init(url: URL, apiKeyHeaderName: String?, apiKeyHeaderValue: String?, configuration: NetworkProviderConfiguration) {
+    private let additionalHeaders: [String: String]
+
+    init(url: URL, additionalHeaders: [String: String], configuration: NetworkProviderConfiguration) {
         self.url = url
         self.host = url.hostOrUnknown
-        self.apiKeyHeaderName = apiKeyHeaderName
-        self.apiKeyHeaderValue = apiKeyHeaderValue
+        self.additionalHeaders = additionalHeaders
         
         provider = NetworkProvider<EthereumTarget>(configuration: configuration)
     }
@@ -66,8 +63,7 @@ class EthereumJsonRpcProvider: HostProvider {
             EthereumTarget(
                 targetType: targetType,
                 baseURL: url,
-                apiKeyHeaderName: apiKeyHeaderName,
-                apiKeyHeaderValue: apiKeyHeaderValue
+                additionalHeaders: additionalHeaders
             )
         )
         .filterSuccessfulStatusAndRedirectCodes()

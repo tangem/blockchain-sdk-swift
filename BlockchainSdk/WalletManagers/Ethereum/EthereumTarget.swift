@@ -15,8 +15,7 @@ struct EthereumTarget: TargetType {
     let targetType: EthereumTargetType
     let baseURL: URL
     
-    let apiKeyHeaderName: String?
-    let apiKeyHeaderValue: String?
+    let additionalHeaders: [String: String]
     
     var path: String {
         return ""
@@ -75,8 +74,8 @@ struct EthereumTarget: TargetType {
             "Content-Type": "application/json",
         ]
         
-        if let apiKeyHeaderName, let apiKeyHeaderValue {
-            headers[apiKeyHeaderName] = apiKeyHeaderValue
+        for (additionalHeaderName, additionalHeaderValue) in additionalHeaders {
+            headers[additionalHeaderName] = additionalHeaderValue
         }
         
         return headers
