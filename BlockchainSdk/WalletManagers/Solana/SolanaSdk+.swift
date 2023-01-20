@@ -16,6 +16,7 @@ extension Solana_Swift.RPCEndpoint {
         urlWebSocket: URL(string: "ws://rpc.ankr.com/solana")!,
         network: .mainnetBeta
     )
+    
     public static func nowNodes(apiKey: String) -> Solana_Swift.RPCEndpoint {
         Solana_Swift.RPCEndpoint(
             url: URL(string: "https://sol.nownodes.io")!,
@@ -25,6 +26,7 @@ extension Solana_Swift.RPCEndpoint {
             apiKeyHeaderValue: apiKey
         )
     }
+    
     public static func getBlock(apiKey: String) -> Solana_Swift.RPCEndpoint {
         Solana_Swift.RPCEndpoint(
             url: URL(string: "https://sol.getblock.io/mainnet")!,
@@ -34,6 +36,7 @@ extension Solana_Swift.RPCEndpoint {
             apiKeyHeaderValue: apiKey
         )
     }
+    
     public static func quiknode(apiKey: String, subdomain: String) -> Solana_Swift.RPCEndpoint {
         Solana_Swift.RPCEndpoint(
             url: URL(string: "https://\(subdomain).solana-mainnet.discover.quiknode.pro/\(apiKey)")!,
