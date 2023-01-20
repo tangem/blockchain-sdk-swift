@@ -580,7 +580,6 @@
 				5D4B33B923F6E9BD00C93A84 /* BlockchainService */,
 				5D304395239A6B880066B8D9 /* Extensions */,
 				5D14E4712397B80F00C15FC8 /* BlockchainSdk.h */,
-				DA656FC729543AC40092CC61 /* RPCEndpoint.swift */,
 			);
 			path = BlockchainSdk;
 			sourceTree = "<group>";
@@ -1289,6 +1288,7 @@
 				EF332D16288EACB000AE3C85 /* HostProvider.swift */,
 				EF332D18288EAEAC00AE3C85 /* NetworkProvider.swift */,
 				EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */,
+				DA656FC729543AC40092CC61 /* RPCEndpoint.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
