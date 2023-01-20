@@ -45,7 +45,7 @@ public enum ETHError: Error, LocalizedError, DetailedError {
 @available(iOS 13.0, *)
 public protocol EthereumGasLoader: AnyObject {
     func getGasPrice() -> AnyPublisher<BigUInt, Error>
-    func getGasLimit(amount: Amount, destination: String) -> AnyPublisher<BigUInt, Error>
+    func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error>
 }
 
 public protocol EthereumTransactionSigner: AnyObject {
@@ -219,11 +219,9 @@ extension EthereumWalletManager: EthereumGasLoader {
         networkService.getGasPrice()
     }
     
-    func getGasLimit(amount: Amount, destination: String) -> AnyPublisher<BigUInt, Error> {
-        let destInfo = formatDestinationInfo(for: destination, amount: amount)
-        
+    func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
         return networkService
-            .getGasLimit(to: destInfo.to, from: wallet.address, value: destInfo.value, data: destInfo.data)
+            .getGasLimit(to: to, from: from, value: value, data: data)
             .eraseToAnyPublisher()
     }
 }
