@@ -10,14 +10,6 @@ import Foundation
 import Moya
 
 struct BlockBookTarget: TargetType {
-    enum Request {
-        case address(address: String)
-        case send(txHex: String)
-        case txDetails(txHash: String)
-        case utxo(address: String)
-        case fees
-    }
-    
     let request: Request
     let serviceProvider: BlockBookService
     let blockchain: Blockchain
@@ -67,6 +59,16 @@ struct BlockBookTarget: TargetType {
         [
             serviceProvider.apiKeyName: serviceProvider.apiKeyValue,
         ]
+    }
+}
+
+extension BlockBookTarget {
+    enum Request {
+        case address(address: String)
+        case send(txHex: String)
+        case txDetails(txHash: String)
+        case utxo(address: String)
+        case fees
     }
 }
 
