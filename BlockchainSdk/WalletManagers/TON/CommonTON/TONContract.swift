@@ -105,6 +105,21 @@ open class TONContract {
 
         let stateInit = TONCell()
         
+        let isSplitDepth: Bit = library == nil ? .zero : .one
+        let isTicktock: Bit = ticktock == nil ? .zero : .one
+        let isLibrary: Bit = library == nil ? .zero : .one
+        let isCode: Bit = code == nil ? .zero : .one
+        let isData: Bit = data == nil ? .zero : .one
+        
+        stateInit.bytes.append(
+            contentsOf: [
+                isSplitDepth,
+                isTicktock,
+                isCode, isData,
+                isLibrary
+            ].bytes()
+        )
+        
         if let code = code {
             stateInit.refs.append(code)
         }

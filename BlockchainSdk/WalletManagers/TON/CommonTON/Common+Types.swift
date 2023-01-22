@@ -1,14 +1,18 @@
 //
-//  TONCommon+ArrayBits.swift
+//  Common+Types.swift
 //  BlockchainSdk
 //
-//  Created by skibinalexander on 19.01.2023.
+//  Created by skibinalexander on 22.01.2023.
 //  Copyright © 2023 Tangem AG. All rights reserved.
 //
 
 import Foundation
 
 extension Array where Element == UInt8 {
+    
+    var cursor: Int {
+        return self.count
+    }
     
     func checkRange(_ n: Int) throws {
         if n > self.count {
@@ -26,6 +30,10 @@ extension Array where Element == UInt8 {
     
     mutating func off(_ n: Int) throws {
         self[(n / 8) | 0] &= ~(1 << (7 - (n % 8)))
+    }
+    
+    func getTopUppedArray() -> Array<UInt8> {
+        return [52]
     }
     
 }
@@ -71,6 +79,28 @@ extension FixedWidthInteger {
     
 }
 
+extension UInt8 {
+    
+    var nonZeroBits: [Bit] {
+        // Make variable
+        var bytes = self
+        // Fill an array of bits with zeros to the fixed width integer length
+        var bits = [Bit](repeating: .zero, count: self.trailingZeroBitCount)
+        // Run through each bit (LSB first)
+        for i in 0..<self.nonzeroBitCount {
+            let currentBit = bytes & 0x01
+            if currentBit != 0 {
+                bits[i] = .one
+            }
+
+            bytes >>= 1
+        }
+
+        return bits
+    }
+    
+}
+
 extension BinaryInteger {
     
     var binaryDescription: String {
@@ -92,6 +122,39 @@ extension BinaryInteger {
     
 }
 
-extension Bool {
+extension Int {
+    var data: Data {
+        var int = self
+        return Data(bytes: &int, count: MemoryLayout<Int>.size)
+    }
+}
+
+extension UInt8 {
+    var data: Data {
+        var int = self
+        return Data(bytes: &int, count: MemoryLayout<UInt8>.size)
+    }
+}
+
+extension UInt16 {
+    var data: Data {
+        var int = self
+        return Data(bytes: &int, count: MemoryLayout<UInt16>.size)
+    }
+}
+
+extension UInt32 {
+    var data: Data {
+        var int = self
+        return Data(bytes: &int, count: MemoryLayout<UInt32>.size)
+    }
     
+    var byteArrayLittleEndian: [UInt8] {
+        return [
+            UInt8((self & 0xFF000000) >> 24),
+            UInt8((self & 0x00FF0000) >> 16),
+            UInt8((self & 0x0000FF00) >> 8),
+            UInt8(self & 0x000000FF)
+        ]
+    }
 }

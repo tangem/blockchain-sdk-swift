@@ -15,17 +15,39 @@ let leanBocMagicPrefixCRC = Data(hex: "acc3a728").bytes
 
 public final class TONCell {
     
+    // MARK: - Data Sets
+    
+    struct TONCellBocHeader {
+        let has_idx: UInt8
+        let hash_crc32: UInt8
+        let has_cache_bits: UInt8
+        let flags: UInt8
+        let size_bytes: Int
+        let off_bytes: Int
+        let cells_num: Int
+        let roots_num: Int
+        let absent_num: Int
+        let tot_cells_size: Int
+        let root_list: [Int]
+        let index: Bool
+        let cells_data: [UInt8]
+    }
+    
     // MARK: - Properties
     
-    var bits: Array<UInt8>
+    var bytes: Array<TonCellBytes>
     var refs: Array<TONCell>
     var isExotic: Bool
     
-    init(bits: Array<UInt8> = [], refs: Array<TONCell> = [], isExotic: Bool = false) {
-        self.bits = bits
+    // MARK: - Init
+    
+    init(bytes: Array<TonCellBytes> = [], refs: Array<TONCell> = [], isExotic: Bool = false) {
+        self.bytes = bytes
         self.refs = refs
         self.isExotic = isExotic
     }
+    
+    // MARK: - Static
     
     static func oneFromBoc(_ serializedBoc: Array<UInt8>) throws -> TONCell {
         let cells = try deserializeBoc(serializedBoc)
@@ -55,7 +77,7 @@ public final class TONCell {
         for ci in stride(from: header.cells_num - 1, to: -1, by: -1) {
             let c = cells_array[ci]
             for ri in 0..<c.refs.count {
-                if let r = c.refs[ri].bits.first {
+                if let r = c.refs[ri].bytes.first {
                     if r < ci {
                         throw NSError()
                     }
@@ -101,13 +123,13 @@ public final class TONCell {
             throw NSError()
         }
         
-        try cell.bits.append(contentsOf: setTopUppedArray(Array(cellData[0..<copyDataBytesize]), fullfilledBytes))
+        try cell.bytes.append(contentsOf: setTopUppedArray(Array(cellData[0..<copyDataBytesize]), fullfilledBytes))
         cellData = Array(cellData[copyDataBytesize..<cellData.count])
         
         for _ in 0..<refNum {
             cell.refs.append(
                 .init(
-                    bits: [UInt8(readNBytesUIntFromArray(referenceIndexSize, cellData))]
+                    bytes: [UInt8(readNBytesUIntFromArray(referenceIndexSize, cellData))]
                 )
             )
             cellData = Array(cellData[referenceIndexSize..<cellData.count])
@@ -288,19 +310,39 @@ extension TONCell {
             }
         }
     }
+    
+    func getTopUppedArray() -> Array<UInt8> {
+        return [52]
+    }
+    
 }
 
 extension TONCell {
     
     func hash() throws -> Array<UInt8> {
-        try self.getMaxDepthAsArray().sha256()
+        return try getRepr().sha256()
     }
     
     /**
-         * @return {Promise<Uint8Array>}
-         */
+     * @return {Promise<Uint8Array>}
+     */
     func getRepr() throws -> Array<UInt8> {
-        throw NSError()
+        var reprArray = [[UInt8]]()
+        var hashArray = [UInt8]()
+        
+        try reprArray.append(getDataWithDescriptors())
+        
+        for ref in refs {
+            try reprArray.append(ref.getMaxDepthAsArray())
+        }
+        
+        for ref in refs {
+            try hashArray.append(contentsOf: ref.hash())
+        }
+        
+        let x = hashArray
+        
+        return x
     }
     
     /**
@@ -308,24 +350,82 @@ extension TONCell {
      * @return {Uint8Array}
      */
     func getMaxDepthAsArray() throws -> Array<UInt8> {
-        print()
-        throw NSError()
+        let maxDepth = getMaxDepth()
+        var d = [UInt8](repeating: 0, count: 2)
+        d[1] = UInt8(maxDepth % 256)
+        d[0] = UInt8(floor(Double(maxDepth / 256)))
+        return d
     }
     
-}
-
-struct TONCellBocHeader {
-    let has_idx: UInt8
-    let hash_crc32: UInt8
-    let has_cache_bits: UInt8
-    let flags: UInt8
-    let size_bytes: Int
-    let off_bytes: Int
-    let cells_num: Int
-    let roots_num: Int
-    let absent_num: Int
-    let tot_cells_size: Int
-    let root_list: [Int]
-    let index: Bool
-    let cells_data: [UInt8]
+    /**
+     * @return {Uint8Array}
+     */
+    func getDataWithDescriptors() throws -> Array<UInt8> {
+        let d1 = try getRefsDescriptor()
+        let d2 = try getBitsDescriptor()
+        let tuBits = bytes.getTopUppedArray()
+        let result = d1 + d2 + tuBits
+        return result
+    }
+    
+    func getRefsDescriptor() throws -> Array<UInt8> {
+        var d1 = [UInt8](repeating: 0, count: 1)
+        guard let ref = (refs.count + (0 * 8) + getMaxLevel() * 32).data.bytes.first else {
+            throw NSError()
+        }
+        
+        d1[0] = ref
+        
+        return d1
+    }
+    
+    /**
+     * @return {Uint8Array}
+     */
+    func getBitsDescriptor() throws -> Array<UInt8> {
+//        let cursor = self.bytes.map {
+//            let val = 8 - UInt8($0).nonzeroBitCount
+//            return val
+//        }.reduce(0, +)
+//        
+        
+        var d2 = [UInt8](repeating: 0, count: 1)
+        let bitsCursor = lroundf(Float(bytes.cursor * 8)) + 1
+        let lround = lroundf(Float(bitsCursor) / 8) > 0 ? lroundf(Float(bitsCursor) / 8) : 1
+        let floor = floor(Float((bytes.cursor * 8) / 8))
+        d2[0] = UInt8(lround) + UInt8(floor)
+        return d2
+    }
+    
+    /**
+     * @return {number}
+     */
+    func getMaxLevel() -> Int {
+        var maxLevel = 0
+        
+        for r in refs {
+            if r.getMaxLevel() > maxLevel {
+                maxLevel = r.getMaxLevel()
+            }
+        }
+        
+        return maxLevel
+    }
+    
+    func getMaxDepth() -> Int {
+        var maxDepth = 0
+        
+        if refs.count > 0 {
+            for ref in refs {
+                if (ref.getMaxDepth() > maxDepth) {
+                    maxDepth = ref.getMaxDepth()
+                }
+            }
+            
+            maxDepth = maxDepth + 1
+        }
+        
+        return maxDepth
+    }
+    
 }
