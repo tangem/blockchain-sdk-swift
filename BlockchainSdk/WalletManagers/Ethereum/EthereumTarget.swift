@@ -70,15 +70,11 @@ struct EthereumTarget: TargetType {
     }
     
     var headers: [String : String]? {
-        var headers = [
+        let standardHeaders = [
             "Content-Type": "application/json",
         ]
         
-        for (additionalHeaderName, additionalHeaderValue) in additionalHeaders {
-            headers[additionalHeaderName] = additionalHeaderValue
-        }
-        
-        return headers
+        return standardHeaders.merging(additionalHeaders) { current, _ in current }
     }
     
     private var ethMethod: String {
