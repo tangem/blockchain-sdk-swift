@@ -38,7 +38,7 @@ public class TonCellRaw {
         self.cursor = copy.cursor
     }
     
-    // MARK: - Implementation
+    // MARK: - Update Implementation
     
     func fill(bytes: Array<UInt8>) {
         self.rawValue = bytes
@@ -55,7 +55,9 @@ public class TonCellRaw {
         }
     }
     
-    func reWrite(bytes: Array<UInt8>) {
+    // MARK: - Writing Implementation
+    
+    func rewrite(bytes: Array<UInt8>) {
         self.rawValue = bytes
     }
     
@@ -95,7 +97,7 @@ public class TonCellRaw {
         let s = num.bits[0..<bitLength]
         
         for i in 0..<bitLength {
-            try self.writeBit(s[i] == .one)
+            try self.write(bit: s[i] == .one)
         }
     }
     
@@ -103,13 +105,44 @@ public class TonCellRaw {
      * Write bit and increase cursor
      * @param b  {boolean | number}
      */
-    func writeBit(_ b: Bool) throws {
-        if b {
+    func write(bit: Bool) throws {
+        if bit {
             try on(cursor)
         } else {
             try off(cursor)
         }
         cursor = cursor + 1
+    }
+    
+    /**
+     * Write signed int
+     * @param number  {number | BN}
+     * @param bitLength  {number}  size of int in bits
+     */
+    func write(int: Int, _ bitLength: Int) throws {
+        throw NSError()
+//        number = new BN(number);
+//        if (bitLength == 1) {
+//            if (number == -1) {
+//                this.writeBit(true);
+//                return;
+//            }
+//            if (number == 0) {
+//                this.writeBit(false);
+//                return;
+//            }
+//            throw Error("Bitlength is too small for number");
+//        } else {
+//            if (number.isNeg()) {
+//                this.writeBit(true);
+//                const b = new BN(2);
+//                const nb = b.pow(new BN(bitLength - 1));
+//                this.writeUint(nb.add(number), bitLength - 1);
+//            } else {
+//                this.writeBit(false);
+//                this.writeUint(number, bitLength - 1);
+//            }
+//        }
     }
     
     /**
@@ -150,6 +183,7 @@ public class TonCellRaw {
     
     // Set / Get TopUpped Array
     
+    ///
     func setTopUppedArray(_ array: Array<UInt8>, fullfilledBytes: Bool = true) throws {
         let length = array.count * 8
         self.rawValue = array
@@ -192,8 +226,25 @@ public class TonCellRaw {
             }
         }
         
-        ret.reWrite(bytes: Array(ret.bytes[0..<tuRound]))
+        ret.rewrite(bytes: Array(ret.bytes[0..<tuRound]))
         return ret.bytes
+    }
+    
+    //addr_none$00 = MsgAddressExt;
+    //addr_std$10 anycast:(Maybe Anycast)
+    // workchain_id:int8 address:uint256 = MsgAddressInt;
+    /**
+     * @param address {Address | null}
+     */
+    func write(address: TONAddress? = nil) throws {
+        if let address = address {
+            try write(uint: 2, 2)
+            try write(uint: 0, 1)
+            try write(int: address.wc, 8)
+            write(bytes: address.hashPart.bytes)
+        } else {
+            try write(uint: 0, 2)
+        }
     }
     
 }

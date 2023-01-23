@@ -112,10 +112,10 @@ public struct TONAddress {
         if !isUserFriendly {
             return "\(wc):\(hashPart.hexString)"
         } else {
-            var tag: UInt8 = isBounceable ? AddressTag.BOUNCEABLE.rawValue : AddressTag.NON_BOUNCEABLE.rawValue
+            var tag: UInt8 = isBounceable ? TONAddressTag.BOUNCEABLE.rawValue : TONAddressTag.NON_BOUNCEABLE.rawValue
             
             if (isTestOnly) {
-                tag |= AddressTag.TEST_ONLY.rawValue
+                tag |= TONAddressTag.TEST_ONLY.rawValue
             }
 
             var addr = [UInt8]()

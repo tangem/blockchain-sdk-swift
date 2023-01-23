@@ -139,4 +139,35 @@ open class TONContract {
         return stateInit
     }
     
+    //ext_in_msg_info$10 src:MsgAddressExt dest:MsgAddressInt
+    //import_fee:Grams = CommonMsgInfo;
+    /**
+     * @param dest  {Address | string}
+     * @param src  {Address | string}
+     * @param importFee  {number | BN}
+     * @return {Cell}
+     */
+    static func createExternalMessageHeader(
+        dest: String,
+        src: String,
+        importFee: Int = 0
+    ) throws -> TONCell {
+        throw NSError()
+    }
+    
+    /**
+     * Create CommonMsgInfo contains header, stateInit, body
+     * @param header {Cell}
+     * @param stateInit?  {Cell}
+     * @param body?  {Cell}
+     * @return {Cell}
+     */
+    static func createCommonMsgInfo(
+        header: TONCell?,
+        stateInit: TONCell? = nil,
+        body: TONCell? = nil
+    ) throws -> TONCell {
+        throw NSError()
+    }
+    
 }

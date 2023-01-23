@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let model = BlockchainSdkExampleViewModel()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        let wallet = try! TONWallet(publicKey: Data(hexString: "258A89B60CCE7EB3339BF4DB8A8DA8153AA2B6489D22CC594E50FDF626DA7AF5"))
+        let wallet = try! TONWallet(publicKey: Data(hexString: "995b3e6c86d4126f52a19115ea30d869da0b2e5502a19db1855eeb13081b870b"))
         let addr = try! wallet.getAddress()
         print(addr.toString(isUserFriendly: true, isUrlSafe: true, isBounceable: true))
         print("----")

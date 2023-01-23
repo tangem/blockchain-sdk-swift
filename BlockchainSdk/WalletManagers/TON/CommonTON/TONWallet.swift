@@ -44,4 +44,41 @@ public class TONWallet: TONContract {
         return cell
     }
     
+    /**
+     * @param secretKey {Uint8Array}  nacl.KeyPair.secretKey
+     * @param address   {Address | string}
+     * @param amount    {BN | number} in nanograms
+     * @param seqno {number}
+     * @param payload?   {string | Uint8Array | Cell}
+     * @param sendMode?  {number}
+     * @param dummySignature?    {boolean}
+     * @param stateInit? {Cell}
+     * @param expireAt? {number}
+     * @return {Promise<{address: Address, signature: Uint8Array, message: Cell, cell: Cell, body: Cell, resultMessage: Cell}>}
+     */
+    func createTransferMessage(
+        address: String,
+        amount: Int,
+        seqno: Int,
+        payload: String? = nil,
+        sendMode: Int = 3,
+        dummySignature: Bool = false,
+        stateInit: TONCell? = nil,
+        expireAt: UInt64
+    ) throws {
+        
+    }
+    
+    /**
+     * @protected
+     * @param   seqno?   {number}
+     * @return {Cell}
+     */
+    func createSigningMessage(seqno: Int?) throws -> TONCell {
+        let seqno = seqno == nil ? 0 : seqno!
+        let cell = TONCell()
+        try cell.raw.write(int: seqno, 32)
+        return cell
+    }
+    
 }

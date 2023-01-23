@@ -20,6 +20,7 @@
 		2DB43938296FF3BE00CBBB1E /* TONNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB43937296FF3BE00CBBB1E /* TONNetwork.swift */; };
 		2DB4393D296FF77F00CBBB1E /* TONAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB4393C296FF77F00CBBB1E /* TONAddressService.swift */; };
 		2DB43941297002E900CBBB1E /* TONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB43940297002E900CBBB1E /* TONTests.swift */; };
+		2DE1ACA9297ECD650080B1BA /* Bool+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE1ACA8297ECD650080B1BA /* Bool+.swift */; };
 		5D006ACD239950F9008BA04D /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D006ACC239950F9008BA04D /* Wallet.swift */; };
 		5D01BCE2243F7F7E0048D1BA /* XrpTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D01BCE1243F7F7E0048D1BA /* XrpTarget.swift */; };
 		5D03D2D0253DE61B009A8A9F /* TezosAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D03D2CF253DE61B009A8A9F /* TezosAddressService.swift */; };
@@ -285,6 +286,7 @@
 		2DB43937296FF3BE00CBBB1E /* TONNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONNetwork.swift; sourceTree = "<group>"; };
 		2DB4393C296FF77F00CBBB1E /* TONAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONAddressService.swift; sourceTree = "<group>"; };
 		2DB43940297002E900CBBB1E /* TONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONTests.swift; sourceTree = "<group>"; };
+		2DE1ACA8297ECD650080B1BA /* Bool+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bool+.swift"; sourceTree = "<group>"; };
 		3452E77A600B278568F13FA9 /* Pods-BlockchainSdkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.release.xcconfig"; sourceTree = "<group>"; };
 		556382E16FB9B2894A77374E /* Pods-BlockchainSdkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.debug.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.debug.xcconfig"; sourceTree = "<group>"; };
 		5D006ACC239950F9008BA04D /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
@@ -760,6 +762,7 @@
 				5D304396239A6B960066B8D9 /* String+.swift */,
 				5DED72B7239FE2E3006D79AE /* Decimal+.swift */,
 				5DED72B9239FE2F8006D79AE /* Int+.swift */,
+				2DE1ACA8297ECD650080B1BA /* Bool+.swift */,
 				5D94E56623A3946C009C7482 /* Data+.swift */,
 				5D557CAF23AA888D009B32AF /* Uint64+.swift */,
 				5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */,
@@ -1681,6 +1684,7 @@
 				5D7D243525136254001B9A4F /* XRPAmount.swift in Sources */,
 				B04DC65E25AC6538009AA7B3 /* EthereumAdditionalInfoProvider.swift in Sources */,
 				5D65D5C9260B261F00F84BED /* TezosPrefix.swift in Sources */,
+				2DE1ACA9297ECD650080B1BA /* Bool+.swift in Sources */,
 				5D03D2D0253DE61B009A8A9F /* TezosAddressService.swift in Sources */,
 				5D5CE0D52625C8EC009023EC /* XrpNetworkProvider.swift in Sources */,
 				5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */,
