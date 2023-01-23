@@ -18,10 +18,10 @@ class BlockBookUtxoProvider {
     private let config: BlockBookConfig
     private let provider: NetworkProvider<BlockBookTarget>
     
-    init(blockchain: Blockchain, config: BlockBookConfig, configuration: NetworkProviderConfiguration) {
+    init(blockchain: Blockchain, blockBookConfig: BlockBookConfig, networkConfiguration: NetworkProviderConfiguration) {
         self.blockchain = blockchain
-        self.config = config
-        self.provider = NetworkProvider<BlockBookTarget>(configuration: configuration)
+        self.config = blockBookConfig
+        self.provider = NetworkProvider<BlockBookTarget>(configuration: networkConfiguration)
     }
     
     private func addressData(address: String) -> AnyPublisher<BlockBookAddressResponse, Error> {
