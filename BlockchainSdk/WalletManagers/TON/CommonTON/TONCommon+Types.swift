@@ -186,3 +186,11 @@ extension StringProtocol {
         return result
     }
 }
+
+extension String {
+    
+    func generateTONAddress() throws -> TONAddress {
+        return try .init(self)
+    }
+    
+}

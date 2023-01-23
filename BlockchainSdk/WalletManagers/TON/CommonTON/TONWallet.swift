@@ -60,13 +60,17 @@ public class TONWallet: TONContract {
         address: String,
         amount: Int,
         seqno: Int,
-        payload: String? = nil,
         sendMode: Int = 3,
         dummySignature: Bool = false,
         stateInit: TONCell? = nil,
         expireAt: UInt64
     ) throws {
-        
+        let payloadCell = TONCell()
+        payloadCell.raw.fill(bytes: [UInt8](repeating: 0, count:128))
+        let orderHeader = try TONContract.createInternalMessageHeader(
+            dest: address,
+            src: self.address!.toString()
+        )
     }
     
     /**

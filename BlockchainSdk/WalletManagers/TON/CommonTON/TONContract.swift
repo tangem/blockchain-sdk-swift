@@ -139,6 +139,12 @@ open class TONContract {
         return stateInit
     }
     
+}
+
+// MARK: - Create Message Implementation
+
+extension TONContract {
+    
     //ext_in_msg_info$10 src:MsgAddressExt dest:MsgAddressInt
     //import_fee:Grams = CommonMsgInfo;
     /**
@@ -153,6 +159,51 @@ open class TONContract {
         importFee: Int = 0
     ) throws -> TONCell {
         throw NSError()
+    }
+    
+    //int_msg_info$0 ihr_disabled:Bool bounce:Bool
+    //src:MsgAddressInt dest:MsgAddressInt
+    //value:CurrencyCollection ihr_fee:Grams fwd_fee:Grams
+    //created_lt:uint64 created_at:uint32 = CommonMsgInfo;
+    /**
+     * @param dest  {Address | string}
+     * @param gramValue  {number | BN}
+     * @param ihrDisabled  {boolean}
+     * @param bounce  {null | boolean}
+     * @param bounced {boolean}
+     * @param src  {Address | string}
+     * @param currencyCollection  {null}
+     * @param ihrFees  {number | BN}
+     * @param fwdFees  {number | BN}
+     * @param createdLt  {number | BN}
+     * @param createdAt  {number | BN}
+     * @return {Cell}
+     */
+    static func createInternalMessageHeader(
+        dest: String,
+        gramValue: Int = 0,
+        ihrDisabled: Bool = true,
+        bounce: Bool? = nil,
+        bounced: Bool = false,
+        src: String,
+        ihrFees: Int = 0,
+        fwdFees: Int = 0,
+        createdLt: UInt64 = 0,
+        createdAt: UInt64 = 0
+    ) throws -> TONCell {
+        let message = TONCell()
+        try message.raw.write(bit: false)
+        try message.raw.write(bit: ihrDisabled)
+        
+        if let bounce = bounce {
+            try message.raw.write(bit: bounce)
+        } else {
+            try message.raw.write(bit: dest.generateTONAddress().isBounceable);
+        }
+        
+        // MARK: - TODO
+        
+        return message
     }
     
     /**

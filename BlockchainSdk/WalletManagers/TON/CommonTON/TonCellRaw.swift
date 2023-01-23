@@ -102,6 +102,15 @@ public class TonCellRaw {
     }
     
     /**
+     * Write unsigned int
+     * @param number  {number | BN}
+     * @param bitLength  {number}  size of uint in bits
+     */
+    func write(uint8 num: UInt8, _ bitLength: Int) throws {
+        try write(uint: UInt(num), 8)
+    }
+    
+    /**
      * Write bit and increase cursor
      * @param b  {boolean | number}
      */
