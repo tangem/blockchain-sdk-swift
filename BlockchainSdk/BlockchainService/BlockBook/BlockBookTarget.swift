@@ -11,7 +11,7 @@ import Moya
 
 struct BlockBookTarget: TargetType {
     let request: Request
-    let serviceProvider: BlockBookService
+    let serviceProvider: BlockBookConfig
     let blockchain: Blockchain
     
     var baseURL: URL {

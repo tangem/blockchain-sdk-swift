@@ -1,5 +1,5 @@
 //
-//  BlockBookService.swift
+//  BlockBookConfig.swift
 //  BlockchainSdk
 //
 //  Created by Andrey Chukavin on 20.12.2022.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol BlockBookService {
+protocol BlockBookConfig {
     var apiKeyValue: String { get }
     var apiKeyName: String { get }
     var host: String { get }

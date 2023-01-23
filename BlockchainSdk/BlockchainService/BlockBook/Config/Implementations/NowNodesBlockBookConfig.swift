@@ -1,5 +1,5 @@
 //
-//  GetBlockBlockBookConfig.swift
+//  NowNodesBlockBookConfig.swift
 //  BlockchainSdk
 //
 //  Created by Andrey Chukavin on 20.01.2023.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct GetBlockBlockBookConfig {
+struct NowNodesBlockBookConfig {
     private let apiKey: String
     
     init(apiKey: String) {
@@ -16,17 +16,17 @@ struct GetBlockBlockBookConfig {
     }
 }
 
-extension GetBlockBlockBookConfig: BlockBookService {
+extension NowNodesBlockBookConfig: BlockBookConfig {
     var apiKeyValue: String {
         return apiKey
     }
     
     var apiKeyName: String {
-        return Constants.getBlockApiKeyHeaderName
+        return Constants.nowNodesApiKeyHeaderName
     }
     
     var host: String {
-        return "getblock.io"
+        return "nownodes.io"
     }
     
     func domain(for request: BlockBookTarget.Request, blockchain: Blockchain) -> String {
@@ -36,16 +36,17 @@ extension GetBlockBlockBookConfig: BlockBookService {
         case .fees:
             return "https://\(currencySymbolPrefix).\(host)"
         default:
-            return "https://\(currencySymbolPrefix).\(host)"
+            let testnetSuffix = blockchain.isTestnet ? "-testnet" : ""
+            return "https://\(currencySymbolPrefix)book\(testnetSuffix).\(host)"
         }
     }
     
     func path(for request: BlockBookTarget.Request) -> String {
         switch request {
         case .fees:
-            return "/mainnet"
+            return ""
         default:
-            return "/mainnet/blockbook/api/v2"
+            return "/api/v2"
         }
     }
 }

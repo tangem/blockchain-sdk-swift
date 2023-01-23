@@ -182,7 +182,7 @@
 		DA59751727D747CD009F0A1F /* BlockchainSdk.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5D14E46E2397B80F00C15FC8 /* BlockchainSdk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DA59751E27D749A9009F0A1F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA59751D27D749A9009F0A1F /* MapKit.framework */; };
 		DA59752027D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA59751F27D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift */; };
-		DA656FC62952091A0092CC61 /* BlockBookService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA656FC52952091A0092CC61 /* BlockBookService.swift */; };
+		DA656FC62952091A0092CC61 /* BlockBookConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA656FC52952091A0092CC61 /* BlockBookConfig.swift */; };
 		DA656FC829543AC40092CC61 /* RPCEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA656FC729543AC40092CC61 /* RPCEndpoint.swift */; };
 		DA656FCA295454C10092CC61 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA656FC9295454C10092CC61 /* Constants.swift */; };
 		DA656FCC2954B5220092CC61 /* EthereumTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA656FCB2954B5220092CC61 /* EthereumTarget.swift */; };
@@ -468,7 +468,7 @@
 		DA59751127D744A9009F0A1F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		DA59751D27D749A9009F0A1F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		DA59751F27D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainSdkExampleViewModel.swift; sourceTree = "<group>"; };
-		DA656FC52952091A0092CC61 /* BlockBookService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookService.swift; sourceTree = "<group>"; };
+		DA656FC52952091A0092CC61 /* BlockBookConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookConfig.swift; sourceTree = "<group>"; };
 		DA656FC729543AC40092CC61 /* RPCEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RPCEndpoint.swift; sourceTree = "<group>"; };
 		DA656FC9295454C10092CC61 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		DA656FCB2954B5220092CC61 /* EthereumTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTarget.swift; sourceTree = "<group>"; };
@@ -1174,13 +1174,13 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		DA18C4A7297AC62600EC4C05 /* Configs */ = {
+		DA18C4A7297AC62600EC4C05 /* Implementations */ = {
 			isa = PBXGroup;
 			children = (
 				DA18C4A8297AC63600EC4C05 /* NowNodesBlockBookConfig.swift */,
 				DAB87CB0297ADCDC00FF30EB /* GetBlockBlockBookConfig.swift */,
 			);
-			path = Configs;
+			path = Implementations;
 			sourceTree = "<group>";
 		};
 		DA2E76F629769BDC001FF957 /* Xpub */ = {
@@ -1226,6 +1226,15 @@
 				DA59751127D744A9009F0A1F /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		DA6381F0297E9BCF001FE5AB /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				DA18C4A7297AC62600EC4C05 /* Implementations */,
+				DA656FC52952091A0092CC61 /* BlockBookConfig.swift */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		DA9F76E727EC8AD900F0665C /* Tron */ = {
@@ -1278,9 +1287,8 @@
 		E9941AC72927845C00399DE3 /* BlockBook */ = {
 			isa = PBXGroup;
 			children = (
-				DA18C4A7297AC62600EC4C05 /* Configs */,
+				DA6381F0297E9BCF001FE5AB /* Config */,
 				E9941AC82927846B00399DE3 /* BlockBookTarget.swift */,
-				DA656FC52952091A0092CC61 /* BlockBookService.swift */,
 				E9941ACA2927B07300399DE3 /* BlockBookUtxoProvider.swift */,
 				E95D95142929872B0068F876 /* BlockBookResponses.swift */,
 			);
@@ -1714,7 +1722,7 @@
 				DA2E76FB29769BDD001FF957 /* XpubKey.swift in Sources */,
 				5DED72BA239FE2F8006D79AE /* Int+.swift in Sources */,
 				B06C6793264286390037E7AD /* BlockchairAddressBlockMapper.swift in Sources */,
-				DA656FC62952091A0092CC61 /* BlockBookService.swift in Sources */,
+				DA656FC62952091A0092CC61 /* BlockBookConfig.swift in Sources */,
 				5D26CEF3243CB9FB00994CC0 /* BlockchainInfoTarget.swift in Sources */,
 				5DEC90C12587A35800826C95 /* BlockchainSdkConfig.swift in Sources */,
 				5D7D243925136254001B9A4F /* IssuedAmount.swift in Sources */,

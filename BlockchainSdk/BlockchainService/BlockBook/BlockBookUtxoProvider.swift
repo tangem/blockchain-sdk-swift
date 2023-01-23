@@ -15,10 +15,10 @@ class BlockBookUtxoProvider {
     }
     
     private let blockchain: Blockchain
-    private let serviceProvider: BlockBookService
+    private let serviceProvider: BlockBookConfig
     private let provider: NetworkProvider<BlockBookTarget>
     
-    init(blockchain: Blockchain, serviceProvider: BlockBookService, configuration: NetworkProviderConfiguration) {
+    init(blockchain: Blockchain, serviceProvider: BlockBookConfig, configuration: NetworkProviderConfiguration) {
         self.blockchain = blockchain
         self.serviceProvider = serviceProvider
         self.provider = NetworkProvider<BlockBookTarget>(configuration: configuration)
