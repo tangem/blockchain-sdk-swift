@@ -10,8 +10,8 @@ import Foundation
 
 extension Array where Element == UInt8 {
     
-    var cursor: Int {
-        return self.count
+    var bitsCount: Int {
+        self.map { $0.getBits().count }.reduce(0, +)
     }
     
     func checkRange(_ n: Int) throws {
@@ -30,10 +30,6 @@ extension Array where Element == UInt8 {
     
     mutating func off(_ n: Int) throws {
         self[(n / 8) | 0] &= ~(1 << (7 - (n % 8)))
-    }
-    
-    func getTopUppedArray() -> Array<UInt8> {
-        return [52]
     }
     
 }
@@ -77,17 +73,13 @@ extension FixedWidthInteger {
         return bits
     }
     
-}
-
-extension UInt8 {
-    
-    var nonZeroBits: [Bit] {
+    func getBits() -> [Bit] {
         // Make variable
         var bytes = self
         // Fill an array of bits with zeros to the fixed width integer length
-        var bits = [Bit](repeating: .zero, count: self.trailingZeroBitCount)
+        var bits = [Bit](repeating: .zero, count: self.bitWidth)
         // Run through each bit (LSB first)
-        for i in 0..<self.nonzeroBitCount {
+        for i in 0..<self.bitWidth {
             let currentBit = bytes & 0x01
             if currentBit != 0 {
                 bits[i] = .one
@@ -157,4 +149,16 @@ extension UInt32 {
             UInt8(self & 0x000000FF)
         ]
     }
+}
+
+/**
+ * @param a {Uint8Array}
+ * @param b {Uint8Array}
+ * @return {Uint8Array}
+ */
+func concatBytes(_ a: Array<UInt8>, _ b: Array<UInt8>) -> Array<UInt8> {
+    var c = Array<UInt8>()
+    c.append(contentsOf: a)
+    c.append(contentsOf: b)
+    return c
 }

@@ -66,7 +66,7 @@ open class TONContract {
      * @return {Cell} cell contains contract data
      */
     func createDataCell() throws -> TONCell {
-        return TONCell()
+        return TONCell(raw: .init())
     }
 
     /**
@@ -111,13 +111,13 @@ open class TONContract {
         let isCode: Bit = code == nil ? .zero : .one
         let isData: Bit = data == nil ? .zero : .one
         
-        stateInit.bytes.append(
-            contentsOf: [
+        stateInit.raw.write(
+            bits: [
                 isSplitDepth,
                 isTicktock,
                 isCode, isData,
                 isLibrary
-            ].bytes()
+            ]
         )
         
         if let code = code {

@@ -35,10 +35,10 @@ public class TONWallet: TONContract {
     
     override func createDataCell() throws -> TONCell {
         let cell = TONCell()    
-        cell.bytes.append(contentsOf: [Bit](repeating: .zero, count: 32).bytes())
-        cell.bytes.append(contentsOf: Int32(CellWalletId)!.bits.reversed().bytes()) // TODO: - Проверить верность заполнения идентификатора бит / байт
-        cell.bytes.append(contentsOf: publicKey.bytes)
-        cell.bytes.append(contentsOf: [Bit](repeating: .zero, count: 1).bytes())
+        cell.raw.write(bytes: [Bit](repeating: .zero, count: 32).bytes())
+        cell.raw.write(bytes: Int32(CellWalletId)!.bits.reversed().bytes()) // TODO: - Проверить верность заполнения идентификатора бит / байт
+        cell.raw.write(bytes: publicKey.bytes)
+        cell.raw.write(bytes: [Bit](repeating: .zero, count: 1).bytes())
         return cell
     }
     
