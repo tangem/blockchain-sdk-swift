@@ -11,15 +11,15 @@ import Moya
 
 struct BlockBookTarget: TargetType {
     let request: Request
-    let serviceProvider: BlockBookConfig
+    let config: BlockBookConfig
     let blockchain: Blockchain
     
     var baseURL: URL {
-        URL(string: serviceProvider.domain(for: request, blockchain: blockchain))!
+        URL(string: config.domain(for: request, blockchain: blockchain))!
     }
     
     var path: String {
-        let basePath = serviceProvider.path(for: request)
+        let basePath = config.path(for: request)
         
         switch request {
         case .address(let address):
@@ -57,7 +57,7 @@ struct BlockBookTarget: TargetType {
     
     var headers: [String : String]? {
         [
-            serviceProvider.apiKeyName: serviceProvider.apiKeyValue,
+            config.apiKeyName: config.apiKeyValue,
         ]
     }
 }

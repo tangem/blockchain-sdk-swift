@@ -11,16 +11,16 @@ import Combine
 
 class BlockBookUtxoProvider {
     var host: String {
-        serviceProvider.host
+        config.host
     }
     
     private let blockchain: Blockchain
-    private let serviceProvider: BlockBookConfig
+    private let config: BlockBookConfig
     private let provider: NetworkProvider<BlockBookTarget>
     
-    init(blockchain: Blockchain, serviceProvider: BlockBookConfig, configuration: NetworkProviderConfiguration) {
+    init(blockchain: Blockchain, config: BlockBookConfig, configuration: NetworkProviderConfiguration) {
         self.blockchain = blockchain
-        self.serviceProvider = serviceProvider
+        self.config = config
         self.provider = NetworkProvider<BlockBookTarget>(configuration: configuration)
     }
     
@@ -43,7 +43,7 @@ class BlockBookUtxoProvider {
     }
     
     private func target(for request: BlockBookTarget.Request) -> BlockBookTarget {
-        BlockBookTarget(request: request, serviceProvider: serviceProvider, blockchain: blockchain)
+        BlockBookTarget(request: request, config: config, blockchain: blockchain)
     }
     
     private func pendingTransactions(from transactions: [BlockBookAddressResponse.Transaction], address: String) -> [PendingTransaction] {
