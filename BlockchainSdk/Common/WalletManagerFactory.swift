@@ -91,13 +91,13 @@ public class WalletManagerFactory {
                 var providers = [AnyBitcoinNetworkProvider]()
                 
                 providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                   serviceProvider: NowNodesBlockBookService(apiKey: config.nowNodesApiKey),
+                                                   serviceProvider: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
                                                    configuration: networkProviderConfiguration)
                     .eraseToAnyBitcoinNetworkProvider())
                 
                 if !testnet {
                     providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                       serviceProvider: GetBlockBlockBookService(apiKey: config.getBlockApiKey),
+                                                       serviceProvider: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
                                                        configuration: networkProviderConfiguration)
                         .eraseToAnyBitcoinNetworkProvider())
                 
@@ -129,12 +129,12 @@ public class WalletManagerFactory {
                 var providers = [AnyBitcoinNetworkProvider]()
                 
                 providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                   serviceProvider: NowNodesBlockBookService(apiKey: config.nowNodesApiKey),
+                                                   serviceProvider: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
                                                    configuration: networkProviderConfiguration)
                     .eraseToAnyBitcoinNetworkProvider())
                 
                 providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                   serviceProvider: GetBlockBlockBookService(apiKey: config.getBlockApiKey),
+                                                   serviceProvider: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
                                                    configuration: networkProviderConfiguration)
                     .eraseToAnyBitcoinNetworkProvider())
                 
@@ -162,12 +162,12 @@ public class WalletManagerFactory {
                 var providers = [AnyBitcoinNetworkProvider]()
                 
                 providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                   serviceProvider: NowNodesBlockBookService(apiKey: config.nowNodesApiKey),
+                                                   serviceProvider: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
                                                    configuration: networkProviderConfiguration)
                     .eraseToAnyBitcoinNetworkProvider())
                 
                 providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                   serviceProvider: GetBlockBlockBookService(apiKey: config.getBlockApiKey),
+                                                   serviceProvider: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
                                                    configuration: networkProviderConfiguration)
                     .eraseToAnyBitcoinNetworkProvider())
                 
@@ -269,12 +269,12 @@ public class WalletManagerFactory {
                 
                 if !testnet {
                     providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                       serviceProvider: NowNodesBlockBookService(apiKey: config.nowNodesApiKey),
+                                                       serviceProvider: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
                                                        configuration: networkProviderConfiguration)
                         .eraseToAnyBitcoinNetworkProvider())
                     
                     providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                       serviceProvider: GetBlockBlockBookService(apiKey: config.getBlockApiKey),
+                                                       serviceProvider: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
                                                        configuration: networkProviderConfiguration)
                         .eraseToAnyBitcoinNetworkProvider())
                 }
@@ -409,12 +409,12 @@ public class WalletManagerFactory {
             var providers: [AnyBitcoinNetworkProvider] = []
             
             providers.append(BlockBookUtxoProvider(blockchain: .dash(testnet: testnet),
-                                               serviceProvider: NowNodesBlockBookService(apiKey: config.nowNodesApiKey),
+                                               serviceProvider: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
                                                configuration: networkProviderConfiguration)
                 .eraseToAnyBitcoinNetworkProvider())
             
             providers.append(BlockBookUtxoProvider(blockchain: .dash(testnet: testnet),
-                                               serviceProvider: GetBlockBlockBookService(apiKey: config.getBlockApiKey),
+                                               serviceProvider: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
                                                configuration: networkProviderConfiguration)
                 .eraseToAnyBitcoinNetworkProvider())
             

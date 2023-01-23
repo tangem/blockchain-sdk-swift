@@ -1,5 +1,5 @@
 //
-//  GetBlockBlockBookService.swift
+//  GetBlockBlockBookConfig.swift
 //  BlockchainSdk
 //
 //  Created by Andrey Chukavin on 20.01.2023.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct GetBlockBlockBookService {
+struct GetBlockBlockBookConfig {
     private let apiKey: String
     
     init(apiKey: String) {
@@ -16,7 +16,7 @@ struct GetBlockBlockBookService {
     }
 }
 
-extension GetBlockBlockBookService: BlockBookService {
+extension GetBlockBlockBookConfig: BlockBookService {
     var apiKeyValue: String {
         return apiKey
     }

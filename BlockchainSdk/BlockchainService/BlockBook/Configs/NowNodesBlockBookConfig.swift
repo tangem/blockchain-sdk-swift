@@ -1,5 +1,5 @@
 //
-//  NowNodesBlockBookService.swift
+//  NowNodesBlockBookConfig.swift
 //  BlockchainSdk
 //
 //  Created by Andrey Chukavin on 20.01.2023.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct NowNodesBlockBookService {
+struct NowNodesBlockBookConfig {
     private let apiKey: String
     
     init(apiKey: String) {
@@ -16,7 +16,7 @@ struct NowNodesBlockBookService {
     }
 }
 
-extension NowNodesBlockBookService: BlockBookService {
+extension NowNodesBlockBookConfig: BlockBookService {
     var apiKeyValue: String {
         return apiKey
     }
