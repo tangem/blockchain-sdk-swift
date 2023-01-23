@@ -6,6 +6,7 @@
 //  Copyright © 2023 Tangem AG. All rights reserved.
 //
 
+import CryptoSwift
 import Foundation
 
 extension Array where Element == UInt8 {
@@ -55,11 +56,11 @@ extension Array where Element == Bit {
 
 extension FixedWidthInteger {
     
-    var bits: [Bit] {
+    var bits: [CryptoSwift.Bit] {
         // Make variable
         var bytes = self
         // Fill an array of bits with zeros to the fixed width integer length
-        var bits = [Bit](repeating: .zero, count: self.bitWidth)
+        var bits = [CryptoSwift.Bit](repeating: .zero, count: self.bitWidth)
         // Run through each bit (LSB first)
         for i in 0..<self.bitWidth {
             let currentBit = bytes & 0x01

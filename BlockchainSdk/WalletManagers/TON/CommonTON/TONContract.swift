@@ -6,6 +6,7 @@
 //  Copyright © 2023 Tangem AG. All rights reserved.
 //
 
+import CryptoSwift
 import TangemSdk
 import Foundation
 
@@ -23,6 +24,12 @@ public struct TONStateInit {
 }
 
 open class TONContract {
+    
+    // MARK: - Typealias
+    
+    typealias Bit = CryptoSwift.Bit
+    
+    // MARK: - Public Properties
     
     public var options: TONContractOption?
     public var address: TONAddress?
@@ -117,7 +124,7 @@ open class TONContract {
         let isCode: Bit = code == nil ? .zero : .one
         let isData: Bit = data == nil ? .zero : .one
         
-        try stateInit.raw.append(
+        try stateInit.raw.write(
             bits: [
                 isSplitDepth,
                 isTicktock,
@@ -133,8 +140,6 @@ open class TONContract {
         if let data = data {
             stateInit.refs.append(data)
         }
-        
-        stateInit.raw.append(bytes: [UInt8](repeating: 0, count: 127))
         
         return stateInit
     }

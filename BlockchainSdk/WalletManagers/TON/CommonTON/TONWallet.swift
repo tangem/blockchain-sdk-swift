@@ -35,11 +35,9 @@ public class TONWallet: TONContract {
     
     override func createDataCell() throws -> TONCell {
         let cell = TONCell()
-        cell.raw.append(bytes: [UInt8](repeating: 0, count: 4))
         try cell.raw.write(uint: 0, 32)
-        cell.raw.write(bytes: Int32(CellWalletId)!.bits.reversed().bytes()) // TODO: - Проверить верность заполнения идентификатора бит / байт
-        cell.raw.write(bytes: publicKey.bytes)
-        cell.raw.append(bytes: [UInt8](repeating: 0, count: 88))
+        try cell.raw.write(bits: Int32(CellWalletId)!.bits.reversed())
+        try cell.raw.write(bytes: publicKey.bytes)
         try cell.raw.write(uint: 0, 1)
         return cell
     }
@@ -66,7 +64,7 @@ public class TONWallet: TONContract {
         expireAt: UInt64
     ) throws {
         let payloadCell = TONCell()
-        payloadCell.raw.fill(bytes: [UInt8](repeating: 0, count:128))
+        
         let orderHeader = try TONContract.createInternalMessageHeader(
             dest: address,
             src: self.address!.toString()

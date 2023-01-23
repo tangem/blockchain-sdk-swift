@@ -11,6 +11,10 @@ import Foundation
 
 public class TonCellRaw {
     
+    // MARK: - Typealias
+    
+    typealias Bit = CryptoSwift.Bit
+    
     // MARK: - Public Properties
     
     var bytes: Array<UInt8> {
@@ -29,30 +33,13 @@ public class TonCellRaw {
     
     // MARK: - Init
     
-    init(_ rawValue: Array<UInt8> = []) {
-        self.rawValue = rawValue
+    init(_ rawValue: Array<UInt8>? = nil) {
+        self.rawValue = rawValue ?? [UInt8](repeating: 0, count: 128)
     }
     
     init(_ copy: TonCellRaw) {
         self.rawValue = copy.bytes
         self.cursor = copy.cursor
-    }
-    
-    // MARK: - Update Implementation
-    
-    func fill(bytes: Array<UInt8>) {
-        self.rawValue = bytes
-    }
-    
-    func append(bytes: Array<UInt8>) {
-        self.rawValue.append(contentsOf: bytes)
-    }
-    
-    func append(bits: [Bit]) throws {
-        self.rawValue.append(contentsOf: bits.bytes())
-        try bits.forEach {
-            try self.write(bit: $0)
-        }
     }
     
     // MARK: - Writing Implementation
@@ -61,9 +48,10 @@ public class TonCellRaw {
         self.rawValue = bytes
     }
     
-    func write(bytes: Array<UInt8>) {
-        rawValue.append(contentsOf: bytes)
-        cursor = cursor + bytes.bitsCount
+    func write(bytes: Array<UInt8>) throws {
+        for byte in bytes {
+            try write(bits: byte.bits())
+        }
     }
     
     func write(bits: [Bit]) throws {
@@ -94,10 +82,8 @@ public class TonCellRaw {
             throw NSError()
         }
         
-        let s = num.bits[0..<bitLength]
-        
-        for i in 0..<bitLength {
-            try self.write(bit: s[i] == .one)
+        for i in num.bits[0..<bitLength] {
+            try self.write(bit: i == .one)
         }
     }
     
@@ -250,7 +236,7 @@ public class TonCellRaw {
             try write(uint: 2, 2)
             try write(uint: 0, 1)
             try write(int: address.wc, 8)
-            write(bytes: address.hashPart.bytes)
+            try write(bytes: address.hashPart.bytes)
         } else {
             try write(uint: 0, 2)
         }
