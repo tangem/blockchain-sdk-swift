@@ -44,16 +44,90 @@ public struct TONAddress {
         }
     }
     
+    /**
+     * @private
+     * @param addressString {string}
+     * @return {{isTestOnly: boolean, workchain: number, hashPart: Uint8Array, isBounceable: boolean}}
+     */
+    static func parseFriendlyAddress(_ addressString: String) throws -> TONAddress {
+        guard addressString.count == 48 else {
+            throw NSError()
+        }
+        
+        guard
+            let data = Data(base64EncodedURLSafe: addressString),
+            data.count == 36
+        else {
+            throw NSError()
+        }
+        
+        let addrData = Array(data.bytes[0..<34])
+        let crcData = Array(data.bytes[34..<36])
+        let calcedCrc = crc16(data: addrData).bigEndian.data.bytes
+
+        if (!(calcedCrc[0] == crcData[0] && calcedCrc[1] == crcData[1])) {
+            throw NSError()
+        }
+
+        var tag = addrData[0]
+        var isTestOnly = false
+        var isBounceable = false
+        
+        if ((tag & TONAddressTag.TEST_ONLY.rawValue) != 0) {
+            isTestOnly = true
+            tag = tag ^ TONAddressTag.TEST_ONLY.rawValue
+        }
+        
+        if tag != TONAddressTag.BOUNCEABLE.rawValue, tag != TONAddressTag.NON_BOUNCEABLE.rawValue {
+            throw NSError()
+        }
+
+        isBounceable = tag == TONAddressTag.BOUNCEABLE.rawValue
+
+        var workchain: Int = 0
+        
+        workchain = addrData[1] == 0xff ? -1 : Int(addrData[1])
+        
+        if workchain != 0, workchain != -1 {
+            throw NSError()
+        }
+
+        let hashPart = addrData[2..<34]
+
+        return TONAddress(
+            isTestOnly: isTestOnly,
+            isBounceable: isBounceable,
+            workchain: workchain,
+            hashPart: Data(hashPart)
+        )
+    }
+    
     // MARK: - Properties
     
-    let wc: Int
-    let hashPart: Data
-    let isTestOnly: Bool
-    let isUserFriendly: Bool
-    let isBounceable: Bool
-    let isUrlSafe: Bool
+    var wc: Int
+    var hashPart: Data
+    var isTestOnly: Bool
+    var isUserFriendly: Bool
+    var isBounceable: Bool
+    var isUrlSafe: Bool
     
     // MARK: - Init
+               
+    init (
+        isTestOnly: Bool,
+        isUserFriendly: Bool = false,
+        isBounceable: Bool,
+        workchain: Int,
+        hashPart: Data,
+        isUrlSafe: Bool = true
+    ) {
+        self.wc = workchain
+        self.hashPart = hashPart
+        self.isTestOnly = isTestOnly
+        self.isUserFriendly = false
+        self.isBounceable = isBounceable
+        self.isUrlSafe = isUrlSafe
+    }
     
     init(_ anyForm: TONAddress) throws {
         self.wc = anyForm.wc
@@ -85,7 +159,13 @@ public struct TONAddress {
             self.isBounceable = false
             self.isUrlSafe = false
         } else {
-            throw NSError()
+            self.isUserFriendly = true
+            let parseResult = try TONAddress.parseFriendlyAddress(anyForm)
+            self.wc = parseResult.wc
+            self.hashPart = parseResult.hashPart
+            self.isTestOnly = parseResult.isTestOnly
+            self.isBounceable = parseResult.isBounceable
+            self.isUrlSafe = parseResult.isUrlSafe
         }
     }
     

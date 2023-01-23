@@ -206,8 +206,7 @@ extension TONContract {
             try message.raw.write(bit: dest.generateTONAddress().isBounceable);
         }
         
-        // MARK: - TODO
-        
+        try message.raw.write(bit: bounced)
         return message
     }
     

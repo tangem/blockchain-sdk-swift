@@ -54,7 +54,7 @@ public class TONWallet: TONContract {
      * @param expireAt? {number}
      * @return {Promise<{address: Address, signature: Uint8Array, message: Cell, cell: Cell, body: Cell, resultMessage: Cell}>}
      */
-    func createTransferMessage(
+    public func createTransferMessage(
         address: String,
         amount: Int,
         seqno: Int,
@@ -67,8 +67,10 @@ public class TONWallet: TONContract {
         
         let orderHeader = try TONContract.createInternalMessageHeader(
             dest: address,
-            src: self.address!.toString()
+            src: "EQBzvZk8lobyrPW9Sf3vsXNYjpW-ixFqNtwyP9-RUkwLNbi0"
         )
+        
+        throw NSError()
     }
     
     /**
