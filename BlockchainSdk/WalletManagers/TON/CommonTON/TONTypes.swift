@@ -9,8 +9,8 @@
 import Foundation
 
 enum AdressLen: Int {
-    case b64UserFriendlyAddressLen = 48;
-    case userFriendlyAddressLen = 36;
+    case b64UserFriendlyAddressLen = 48
+    case userFriendlyAddressLen = 36
 }
 
 enum AddressTag : UInt8 {

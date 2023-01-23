@@ -40,6 +40,21 @@ public class TonCellRaw {
     
     // MARK: - Implementation
     
+    func fill(bytes: Array<UInt8>) {
+        self.rawValue = bytes
+    }
+    
+    func append(bytes: Array<UInt8>) {
+        self.rawValue.append(contentsOf: bytes)
+    }
+    
+    func append(bits: [Bit]) throws {
+        self.rawValue.append(contentsOf: bits.bytes())
+        try bits.forEach {
+            try self.write(bit: $0)
+        }
+    }
+    
     func reWrite(bytes: Array<UInt8>) {
         self.rawValue = bytes
     }
@@ -49,9 +64,10 @@ public class TonCellRaw {
         cursor = cursor + bytes.bitsCount
     }
     
-    func write(bits: [Bit]) {
-        rawValue.append(contentsOf: bits.bytes())
-        cursor = cursor + bits.count
+    func write(bits: [Bit]) throws {
+        try bits.forEach {
+            try self.write(bit: $0)
+        }
     }
     
     func write(bit: Bit) throws {
@@ -62,6 +78,37 @@ public class TonCellRaw {
             try on(cursor)
         }
         
+        cursor = cursor + 1
+    }
+    
+    /**
+     * Write unsigned int
+     * @param number  {number | BN}
+     * @param bitLength  {number}  size of uint in bits
+     */
+    func write(uint num: UInt, _ bitLength: Int) throws {
+        if bitLength == 0 || num.bits[0..<bitLength].count > bitLength {
+            if num == 0 { return }
+            throw NSError()
+        }
+        
+        let s = num.bits[0..<bitLength]
+        
+        for i in 0..<bitLength {
+            try self.writeBit(s[i] == .one)
+        }
+    }
+    
+    /**
+     * Write bit and increase cursor
+     * @param b  {boolean | number}
+     */
+    func writeBit(_ b: Bool) throws {
+        if b {
+            try on(cursor)
+        } else {
+            try off(cursor)
+        }
         cursor = cursor + 1
     }
     
@@ -133,7 +180,7 @@ public class TonCellRaw {
     func getTopUppedArray() throws -> Array<UInt8> {
         let ret = TonCellRaw(self)
 
-        let tuRound = (lroundf(Float(ret.cursor) / 8) > 0 ? lroundf(Float(cursor) / 8) : 1)
+        let tuRound = Int(ceilf(Float(cursor) / 8))
         var tu = (tuRound * 8) - ret.cursor
         
         if tu > 0 {

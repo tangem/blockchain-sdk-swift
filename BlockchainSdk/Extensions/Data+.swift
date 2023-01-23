@@ -48,3 +48,23 @@ extension Data {
         _ = try Secp256k1Key(with: self)
     }
 }
+
+public extension Data {
+    
+    func base64EncodedURLSafe(options: Base64DecodingOptions = []) -> String {
+        let string = self.base64EncodedString()
+        return string
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+        
+    }
+    
+    init?(base64EncodedURLSafe string: String, options: Base64DecodingOptions = []) {
+        let string = string
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+
+        self.init(base64Encoded: string, options: options)
+    }
+    
+}

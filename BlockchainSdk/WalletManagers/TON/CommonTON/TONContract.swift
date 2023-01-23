@@ -6,6 +6,7 @@
 //  Copyright © 2023 Tangem AG. All rights reserved.
 //
 
+import TangemSdk
 import Foundation
 
 public struct TONContractOption {
@@ -78,7 +79,12 @@ open class TONContract {
         let dataCell = try self.createDataCell()
         let stateInit = try TONContract.createStateInit(code: codeCell, data: dataCell);
         let stateInitHash = try stateInit.hash()
-        throw NSError()
+        
+        return try TONStateInit(
+            code: codeCell,
+            address: .init("\(self.options?.wc ?? 0):\(Data(stateInitHash).hexString)"),
+            wc: options?.wc ?? 0
+        )
     }
 
     // _ split_depth:(Maybe (## 5)) special:(Maybe TickTock)
@@ -111,7 +117,7 @@ open class TONContract {
         let isCode: Bit = code == nil ? .zero : .one
         let isData: Bit = data == nil ? .zero : .one
         
-        stateInit.raw.write(
+        try stateInit.raw.append(
             bits: [
                 isSplitDepth,
                 isTicktock,
@@ -127,6 +133,8 @@ open class TONContract {
         if let data = data {
             stateInit.refs.append(data)
         }
+        
+        stateInit.raw.append(bytes: [UInt8](repeating: 0, count: 127))
         
         return stateInit
     }

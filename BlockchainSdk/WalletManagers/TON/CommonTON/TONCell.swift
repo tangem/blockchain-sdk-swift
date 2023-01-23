@@ -92,21 +92,20 @@ public final class TONCell {
         
         let isExotic = d1 & 8
         let refNum = d1 % 8
-        let dataBytesize = lroundf(Float(d2) / 2)
+        let dataBytesize = Int(ceilf(Float(d2) / 2))
         let fullfilledBytes = ((d2 % 2) == 0);
-        let copyDataBytesize = dataBytesize > 0 ? dataBytesize : 1
         
         let cell = TONCell(raw: .init())
         cell.isExotic = isExotic != 0
         
-        let compareValue = copyDataBytesize + referenceIndexSize * Int(refNum)
+        let compareValue = dataBytesize + referenceIndexSize * Int(refNum)
         
         if cellData.count < compareValue {
             throw NSError()
         }
         
-        try cell.raw.setTopUppedArray(Array(cellData[0..<copyDataBytesize]), fullfilledBytes: fullfilledBytes)
-        cellData = Array(cellData[copyDataBytesize..<cellData.count])
+        try cell.raw.setTopUppedArray(Array(cellData[0..<dataBytesize]), fullfilledBytes: fullfilledBytes)
+        cellData = Array(cellData[dataBytesize..<cellData.count])
         
         for _ in 0..<refNum {
             cell.refs.append(
@@ -264,35 +263,6 @@ extension TONCell {
         return res
     }
     
-    private static func setTopUppedArray(_ array: Array<UInt8>, _ fullfilledBytes: Bool = true) throws -> Array<UInt8> {
-        let length = array.count * 8;
-        var array = array
-        var cursor = length
-        
-        if (fullfilledBytes || length == 0) {
-            return array
-        } else {
-            var foundEndBit = false
-            
-            for _ in 0..<7 {
-                cursor -= 1
-                if array.get(cursor) {
-                    guard cursor < length else {
-                        throw NSError()
-                    }
-                    
-                    foundEndBit = true
-                    try array.off(cursor)
-                    return array
-                }
-            }
-            
-            if !foundEndBit {
-                throw NSError()
-            }
-        }
-    }
-    
 }
 
 extension TONCell {
@@ -362,7 +332,7 @@ extension TONCell {
      */
     func getBitsDescriptor() throws -> Array<UInt8> {
         var d2 = [UInt8](repeating: 0, count: 1)
-        let lround = ceilf(Float(raw.cursor) / 8) > 0 ? ceilf(Float(raw.cursor) / 8) : 1
+        let lround = ceilf(Float(raw.cursor) / 8)
         let floor = floor(Float(raw.cursor / 8))
         d2[0] = UInt8(lround) + UInt8(floor)
         return d2
