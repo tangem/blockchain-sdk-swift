@@ -57,6 +57,7 @@ struct BlockBookTarget: TargetType {
     
     var headers: [String : String]? {
         [
+            "Content-Type": "application/json",
             config.apiKeyName: config.apiKeyValue,
         ]
     }
