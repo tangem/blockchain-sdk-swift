@@ -9,6 +9,7 @@
 import Foundation
 
 extension Int {
+    
     /// return 2 bytes of integer. LittleEndian format
     public var bytes2LE: Data {
         let clamped = UInt16(clamping: self)
@@ -27,5 +28,10 @@ extension Int {
     public var bytes8LE: Data {
         let data = withUnsafeBytes(of: self) { Data($0) }
         return data
+    }
+    
+    /// Hexdecimal string of self value
+    public var hex: String {
+        String(format:"%02X", self)
     }
 }

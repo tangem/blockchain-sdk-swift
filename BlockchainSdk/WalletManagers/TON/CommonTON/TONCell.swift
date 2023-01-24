@@ -29,6 +29,15 @@ public final class TONCell {
         self.isExotic = isExotic
     }
     
+    // MARK: - Implementations
+    
+    ///
+    func write(cell: TONCell) throws {
+        // XXX we do not check that there are anough place in cell
+        try self.raw.write(bytes: cell.raw.bytes, cell.raw.cursor)
+        self.refs.append(contentsOf: cell.refs)
+    }
+    
     // MARK: - Static
     
     static func oneFromBoc(_ serializedBoc: Array<UInt8>) throws -> TONCell {

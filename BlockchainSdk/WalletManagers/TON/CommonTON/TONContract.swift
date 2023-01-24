@@ -81,7 +81,7 @@ open class TONContract {
      * @protected
      * @return {Promise<{stateInit: Cell, address: Address, code: Cell, data: Cell}>}
      */
-    public func createStateInit() throws -> TONStateInit {
+    func createStateInit() throws -> TONStateInit {
         let codeCell = try self.createCodeCell()
         let dataCell = try self.createDataCell()
         let stateInit = try TONContract.createStateInit(code: codeCell, data: dataCell);
@@ -93,6 +93,20 @@ open class TONContract {
             wc: options?.wc ?? 0
         )
     }
+    
+    /**
+     * @protected
+     * @param   seqno?   {number}
+     * @return {Cell}
+     */
+    func createSigningMessage(seqno: Int?) throws -> TONCell {
+        let seqno = seqno ?? 0
+        let cell = TONCell()
+        try cell.raw.write(uint: UInt(seqno), 32);
+        return cell
+    }
+    
+    // MARK: - Static Implementation
 
     // _ split_depth:(Maybe (## 5)) special:(Maybe TickTock)
     // code:(Maybe ^Cell) data:(Maybe ^Cell)
@@ -193,8 +207,8 @@ extension TONContract {
         src: String,
         ihrFees: Int = 0,
         fwdFees: Int = 0,
-        createdLt: UInt64 = 0,
-        createdAt: UInt64 = 0
+        createdLt: UInt = 0,
+        createdAt: UInt = 0
     ) throws -> TONCell {
         let message = TONCell()
         try message.raw.write(bit: false)
@@ -207,6 +221,18 @@ extension TONContract {
         }
         
         try message.raw.write(bit: bounced)
+        
+        let srcAddress = try? TONAddress.parseFriendlyAddress(src)
+        let dstAddress = try TONAddress.parseFriendlyAddress(dest)
+        
+        try message.raw.write(address: nil)
+        try message.raw.write(address: dstAddress)
+        try message.raw.write(grams: gramValue)
+        try message.raw.write(bit: false)
+        try message.raw.write(grams: ihrFees)
+        try message.raw.write(grams: fwdFees)
+        try message.raw.write(uint: createdLt, 64)
+        try message.raw.write(uint: createdAt, 32)
         return message
     }
     
@@ -218,11 +244,43 @@ extension TONContract {
      * @return {Cell}
      */
     static func createCommonMsgInfo(
-        header: TONCell?,
+        header: TONCell,
         stateInit: TONCell? = nil,
         body: TONCell? = nil
     ) throws -> TONCell {
-        throw NSError()
+        let commonMsgInfo = TONCell()
+        try commonMsgInfo.write(cell: header)
+
+        if let stateInit = stateInit {
+            try commonMsgInfo.raw.write(bit: true)
+            //-1:  need at least one bit for body
+            // TODO we also should check for free refs here
+            // TODO: temporary always push in ref because WalletQueryParser can parse only ref
+            if false && (commonMsgInfo.raw.getFreeBits() - 1 >= stateInit.raw.getUsedBits()) {
+                try commonMsgInfo.raw.write(bit: false)
+                try commonMsgInfo.write(cell: stateInit)
+            } else {
+                try commonMsgInfo.raw.write(bit: true)
+                commonMsgInfo.refs.append(stateInit)
+            }
+        } else {
+            try commonMsgInfo.raw.write(bit: false)
+        }
+        
+        // TODO we also should check for free refs here
+        if let body = body {
+            if commonMsgInfo.raw.getFreeBits() >= body.raw.getUsedBits() {
+                try commonMsgInfo.raw.write(bit: false)
+                try commonMsgInfo.write(cell: body)
+            } else {
+                try commonMsgInfo.raw.write(bit: true)
+                commonMsgInfo.refs.append(body)
+            }
+        } else {
+            try commonMsgInfo.raw.write(bit: false)
+        }
+        
+        return commonMsgInfo
     }
     
 }

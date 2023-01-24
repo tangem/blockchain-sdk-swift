@@ -25,7 +25,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         try! wallet.createTransferMessage(
             address: "EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2",
             amount: 100,
-            seqno: 323,
+            payload: nil,
+            seqno: 324,
             expireAt: UInt64()
         )
         

@@ -57,6 +57,7 @@ public class TONWallet: TONContract {
     public func createTransferMessage(
         address: String,
         amount: Int,
+        payload: String? = nil,
         seqno: Int,
         sendMode: Int = 3,
         dummySignature: Bool = false,
@@ -67,22 +68,58 @@ public class TONWallet: TONContract {
         
         let orderHeader = try TONContract.createInternalMessageHeader(
             dest: address,
-            src: "EQBzvZk8lobyrPW9Sf3vsXNYjpW-ixFqNtwyP9-RUkwLNbi0"
+            gramValue: 1,
+            src: "EQBzvZk8lobyrPW9Sf3vsXNYjpW-ixFqNtwyP9_RUkwLNbi0"
         )
+        
+        let order = try TONContract.createCommonMsgInfo(
+            header: orderHeader,
+            stateInit: stateInit,
+            body: payloadCell
+        )
+        
+        let signingMessage = try createSigningMessage(
+            seqno: seqno,
+            expireAt: expireAt
+        );
+        
+        try signingMessage.raw.write(int: sendMode, 8)
+        signingMessage.refs.append(order)
         
         throw NSError()
     }
     
     /**
-     * @protected
+     * @override
+     * @private
      * @param   seqno?   {number}
+     * @param   expireAt? {number}
+     * @param   withoutOp? {boolean}
      * @return {Cell}
      */
-    func createSigningMessage(seqno: Int?) throws -> TONCell {
-        let seqno = seqno == nil ? 0 : seqno!
-        let cell = TONCell()
-        try cell.raw.write(int: seqno, 32)
-        return cell
+    func createSigningMessage(seqno: Int?, expireAt: UInt64?, withoutOp: Bool? = nil) throws -> TONCell {
+        let seqno = seqno ?? 0
+        let expireAt = expireAt ?? (floor(Date.now / 1e3) + 60)
+        
+        let message = TONCell()
+        try message.raw.write(uint: self.options.walletId, 32)
+        
+        if (seqno == 0) {
+            // message.bits.writeInt(-1, 32);// todo: dont work
+            for _ in 0..<32 {
+                try message.raw.write(bit: 1);
+            }
+        } else {
+            try message.raw.write(uint: expireAt, 32);
+        }
+        
+        try message.raw.write(uint: seqno, 32)
+        
+        if !withoutOp {
+            try message.raw.write(uint: 0, 8); // op
+        }
+        
+        return message
     }
     
 }

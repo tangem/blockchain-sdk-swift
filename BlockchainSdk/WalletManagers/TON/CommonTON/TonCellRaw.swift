@@ -54,6 +54,18 @@ public class TonCellRaw {
         }
     }
     
+    func write(bytes: Array<UInt8>, _ bitLength: Int) throws {
+        for byte in bytes {
+            try byte.bits().forEach {
+                guard self.cursor < bitLength else {
+                    return
+                }
+                
+                try self.write(bit: $0)
+            }
+        }
+    }
+    
     func write(bits: [Bit]) throws {
         try bits.forEach {
             try self.write(bit: $0)
@@ -77,12 +89,12 @@ public class TonCellRaw {
      * @param bitLength  {number}  size of uint in bits
      */
     func write(uint num: UInt, _ bitLength: Int) throws {
-        if bitLength == 0 || num.bits[0..<bitLength].count > bitLength {
+        if bitLength == 0 || num.bits[0..<bitLength].reversed().count > bitLength {
             if num == 0 { return }
             throw NSError()
         }
         
-        for i in num.bits[0..<bitLength] {
+        for i in num.bits[0..<bitLength].reversed() {
             try self.write(bit: i == .one)
         }
     }
@@ -114,30 +126,36 @@ public class TonCellRaw {
      * @param number  {number | BN}
      * @param bitLength  {number}  size of int in bits
      */
-    func write(int: Int, _ bitLength: Int) throws {
-        throw NSError()
-//        number = new BN(number);
-//        if (bitLength == 1) {
-//            if (number == -1) {
-//                this.writeBit(true);
-//                return;
-//            }
-//            if (number == 0) {
-//                this.writeBit(false);
-//                return;
-//            }
-//            throw Error("Bitlength is too small for number");
-//        } else {
-//            if (number.isNeg()) {
-//                this.writeBit(true);
-//                const b = new BN(2);
-//                const nb = b.pow(new BN(bitLength - 1));
-//                this.writeUint(nb.add(number), bitLength - 1);
-//            } else {
-//                this.writeBit(false);
-//                this.writeUint(number, bitLength - 1);
-//            }
-//        }
+    func write(int num: Int, _ bitLength: Int) throws {
+        if bitLength == 1 {
+            if num == -1 {
+                try write(bit: true)
+                return
+            }
+            if num == 0 {
+                try write(bit: false)
+                return
+            }
+            
+            throw NSError()
+        } else {
+            if num > 0 {
+                throw NSError()
+            } else {
+                try write(bit: false)
+                try write(uint: UInt(num), bitLength - 1)
+            }
+        }
+    }
+    
+    /**
+     * write another BitString to this BitString
+     * @param anotherBitString  {BitString}
+     */
+    func write(bit string: String) throws {
+        try string.forEach {
+            try self.write(bit: $0 == "1")
+        }
     }
     
     /**
@@ -174,6 +192,20 @@ public class TonCellRaw {
      */
     func positiion(_ n: Int) throws -> Bool {
         return (rawValue[(n / 8) | 0] & (1 << (7 - (n % 8)))) > 0
+    }
+    
+    /**
+     * @return {number}
+     */
+    func getFreeBits() -> Int {
+        return (rawValue.count * 8) - cursor
+    }
+    
+    /**
+     * @return {number}
+     */
+    func getUsedBits() -> Int {
+        return cursor
     }
     
     // Set / Get TopUpped Array
@@ -225,9 +257,6 @@ public class TonCellRaw {
         return ret.bytes
     }
     
-    //addr_none$00 = MsgAddressExt;
-    //addr_std$10 anycast:(Maybe Anycast)
-    // workchain_id:int8 address:uint256 = MsgAddressInt;
     /**
      * @param address {Address | null}
      */
@@ -239,6 +268,19 @@ public class TonCellRaw {
             try write(bytes: address.hashPart.bytes)
         } else {
             try write(uint: 0, 2)
+        }
+    }
+    
+    /**
+     * @param amount  {number | BN} in nanograms
+     */
+    func write(grams amount: Int) throws {
+        if amount == 0 {
+            try write(uint: 0, 4)
+        } else {
+            let l = ceilf(Float(amount.hex.count) / 2)
+            try write(uint: UInt(l), 4);
+            try write(uint: UInt(amount), Int(l) * 8);
         }
     }
     
