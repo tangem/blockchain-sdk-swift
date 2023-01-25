@@ -9,25 +9,30 @@
 import CryptoSwift
 import Foundation
 
-private let CellBocWallet = "B5EE9C72410214010002D4000114FF00F4A413F4BCF2C80B010201200203020148040504F8F28308D71820D31FD31FD31F02F823BBF264ED44D0D31FD31FD3FFF404D15143BAF2A15151BAF2A205F901541064F910F2A3F80024A4C8CB1F5240CB1F5230CBFF5210F400C9ED54F80F01D30721C0009F6C519320D74A96D307D402FB00E830E021C001E30021C002E30001C0039130E30D03A4C8CB1F12CB1FCBFF1011121302E6D001D0D3032171B0925F04E022D749C120925F04E002D31F218210706C7567BD22821064737472BDB0925F05E003FA403020FA4401C8CA07CBFFC9D0ED44D0810140D721F404305C810108F40A6FA131B3925F07E005D33FC8258210706C7567BA923830E30D03821064737472BA925F06E30D06070201200809007801FA00F40430F8276F2230500AA121BEF2E0508210706C7567831EB17080185004CB0526CF1658FA0219F400CB6917CB1F5260CB3F20C98040FB0006008A5004810108F45930ED44D0810140D720C801CF16F400C9ED540172B08E23821064737472831EB17080185005CB055003CF1623FA0213CB6ACB1FCB3FC98040FB00925F03E20201200A0B0059BD242B6F6A2684080A06B90FA0218470D4080847A4937D29910CE6903E9FF9837812801B7810148987159F31840201580C0D0011B8C97ED44D0D70B1F8003DB29DFB513420405035C87D010C00B23281F2FFF274006040423D029BE84C600201200E0F0019ADCE76A26840206B90EB85FFC00019AF1DF6A26840106B90EB858FC0006ED207FA00D4D422F90005C8CA0715CBFFC9D077748018C8CB05CB0222CF165005FA0214CB6B12CCCCC973FB00C84014810108F451F2A7020070810108D718FA00D33FC8542047810108F451F2A782106E6F746570748018C8CB05CB025006CF165004FA0214CB6A12CB1FCB3FC973FB0002006C810108D718FA00D33F305224810108F459F2A782106473747270748018C8CB05CB025005CF165003FA0213CB6ACB1F12CB3FC973FB00000AF400C9ED54696225E5"
-
-private let CellWalletId = "698983191"
-
 public class TONWallet: TONContract {
     
-    /// Публичный ключ кошелька
-    var publicKey: Data
+    /// Wallet public key
+    public var publicKey: Data
+    
+    /// Signer for build transaction
+    public weak var signer: TONSigner?
     
     // MARK: - Init
     
-    public init(publicKey: Data, walletId: String? = nil, wc: Int = 0) throws {
+    public init(
+        publicKey: Data,
+        signer: TONSigner?,
+        walletId: UInt32? = nil,
+        wc: Int = 0
+    ) throws {
         self.publicKey = publicKey
+        self.signer = signer
         
         try super.init(
             options: .init(
-                code: TONCell.oneFromBoc(Data(hexString: CellBocWallet).bytes),
+                code: TONCell.oneFromBoc(Data(hexString: TONCellBocWallet).bytes),
                 address: nil,
-                walletId: walletId ?? CellWalletId + String(wc),
+                walletId: walletId ?? (TONCellWalletId + UInt32(wc)),
                 wc: wc
             )
         )
@@ -36,7 +41,7 @@ public class TONWallet: TONContract {
     override func createDataCell() throws -> TONCell {
         let cell = TONCell()
         try cell.raw.write(uint: 0, 32)
-        try cell.raw.write(bits: Int32(CellWalletId)!.bits.reversed())
+        try cell.raw.write(bits: TONCellWalletId.bits.reversed())
         try cell.raw.write(bytes: publicKey.bytes)
         try cell.raw.write(uint: 0, 1)
         return cell
@@ -62,14 +67,14 @@ public class TONWallet: TONContract {
         sendMode: Int = 3,
         dummySignature: Bool = false,
         stateInit: TONCell? = nil,
-        expireAt: UInt64
-    ) throws {
+        expireAt: UInt? = nil
+    ) throws -> TONCell {
         let payloadCell = TONCell()
         
         let orderHeader = try TONContract.createInternalMessageHeader(
             dest: address,
             gramValue: 1,
-            src: "EQBzvZk8lobyrPW9Sf3vsXNYjpW-ixFqNtwyP9_RUkwLNbi0"
+            src: getAddress().toString(isUserFriendly: true, isUrlSafe: true, isBounceable: true)
         )
         
         let order = try TONContract.createCommonMsgInfo(
@@ -81,13 +86,24 @@ public class TONWallet: TONContract {
         let signingMessage = try createSigningMessage(
             seqno: seqno,
             expireAt: expireAt
-        );
+        )
         
         try signingMessage.raw.write(int: sendMode, 8)
         signingMessage.refs.append(order)
         
+        return signingMessage
+    }
+    
+    public func signTransferMessage(_ signingMessage: TONCell, _ seqno: Int) throws -> TONExternalMessage {
+        let res = try self.createExternalMessage(
+            signingMessage: signingMessage,
+            seqno: seqno
+        )
+        
         throw NSError()
     }
+    
+    // MARK: - Private Implementation
     
     /**
      * @override
@@ -97,29 +113,85 @@ public class TONWallet: TONContract {
      * @param   withoutOp? {boolean}
      * @return {Cell}
      */
-    func createSigningMessage(seqno: Int?, expireAt: UInt64?, withoutOp: Bool? = nil) throws -> TONCell {
+    func createSigningMessage(seqno: Int?, expireAt: UInt?, withoutOp: Bool? = nil) throws -> TONCell {
         let seqno = seqno ?? 0
-        let expireAt = expireAt ?? (floor(Date.now / 1e3) + 60)
+        let expireAt = expireAt ?? (UInt(floor((Date().timeIntervalSince1970) / 1e3)) + 60)
         
         let message = TONCell()
-        try message.raw.write(uint: self.options.walletId, 32)
         
-        if (seqno == 0) {
-            // message.bits.writeInt(-1, 32);// todo: dont work
-            for _ in 0..<32 {
-                try message.raw.write(bit: 1);
-            }
-        } else {
-            try message.raw.write(uint: expireAt, 32);
+        guard let walletId = self.options?.walletId else {
+            throw NSError()
         }
         
-        try message.raw.write(uint: seqno, 32)
+        try message.raw.write(uint: UInt(walletId), 32)
         
-        if !withoutOp {
-            try message.raw.write(uint: 0, 8); // op
+        if seqno == 0 {
+            // message.bits.writeInt(-1, 32);// todo: dont work
+            for _ in 0..<32 {
+                try message.raw.write(int: 1, 1)
+            }
+        } else {
+            try message.raw.write(uint: expireAt, 32)
+        }
+        
+        try message.raw.write(int: seqno, 32)
+        
+        if withoutOp == nil {
+            try message.raw.write(uint: 0, 8) // op
         }
         
         return message
+    }
+    
+    /**
+     * @protected
+     * @param signingMessage {Cell}
+     * @param secretKey {Uint8Array}  nacl.KeyPair.secretKey
+     * @param seqno {number}
+     * @param dummySignature?    {boolean}
+     * @return {Promise<{address: Address, signature: Uint8Array, message: Cell, cell: Cell, body: Cell, resultMessage: Cell}>}
+     */
+    func createExternalMessage(
+        signingMessage: TONCell,
+        seqno: Int,
+        dummySignature: Bool = false
+    ) throws  -> TONExternalMessage {
+        let signMsgHash = try signingMessage.hash()
+        let signature = dummySignature ? [UInt8](repeating: 0, count: 64) : [UInt8](repeating: 0, count: 64)
+        
+        let body = TONCell()
+        try body.raw.write(bytes: signature)
+        try body.write(cell: signingMessage)
+        
+        var stateInit: TONCell?
+        var code: TONCell?
+        var data: TONCell?
+
+        if seqno == 0 {
+            let deploy = try createStateInit()
+            stateInit = deploy.stateInit
+            code = deploy.code
+            data = deploy.data
+        }
+        
+        let selfAddress = try self.getAddress()
+        let header = try TONContract.createExternalMessageHeader(dest: selfAddress)
+        
+        let resultMessage = try TONContract.createCommonMsgInfo(
+            header: header,
+            stateInit: stateInit,
+            body: body
+        )
+        
+        return .init(
+            address: selfAddress,
+            message: resultMessage,
+            body: body,
+            signature: signature,
+            stateInit: stateInit,
+            code: code,
+            data: data
+        )
     }
     
 }

@@ -54,10 +54,10 @@ public class TonCellRaw {
         }
     }
     
-    func write(bytes: Array<UInt8>, _ bitLength: Int) throws {
+    func write(bytes: Array<UInt8>, _ limit: Int) throws {
         for byte in bytes {
             try byte.bits().forEach {
-                guard self.cursor < bitLength else {
+                guard self.cursor < limit else {
                     return
                 }
                 
@@ -139,11 +139,11 @@ public class TonCellRaw {
             
             throw NSError()
         } else {
-            if num > 0 {
+            if num < 0 {
                 throw NSError()
             } else {
                 try write(bit: false)
-                try write(uint: UInt(num), bitLength - 1)
+                try write(uint: UInt(num), bitLength-1)
             }
         }
     }

@@ -10,19 +10,6 @@ import CryptoSwift
 import TangemSdk
 import Foundation
 
-public struct TONContractOption {
-    public let code: TONCell?
-    public let address: TONAddress?
-    public let walletId: String?
-    public let wc: Int?
-}
-
-public struct TONStateInit {
-    public let code: TONCell
-    public let address: TONAddress
-    public let wc: Int
-}
-
 open class TONContract {
     
     // MARK: - Typealias
@@ -88,9 +75,10 @@ open class TONContract {
         let stateInitHash = try stateInit.hash()
         
         return try TONStateInit(
-            code: codeCell,
+            stateInit: stateInit,
             address: .init("\(self.options?.wc ?? 0):\(Data(stateInitHash).hexString)"),
-            wc: options?.wc ?? 0
+            code: codeCell,
+            data: dataCell
         )
     }
     
@@ -163,27 +151,6 @@ open class TONContract {
 // MARK: - Create Message Implementation
 
 extension TONContract {
-    
-    //ext_in_msg_info$10 src:MsgAddressExt dest:MsgAddressInt
-    //import_fee:Grams = CommonMsgInfo;
-    /**
-     * @param dest  {Address | string}
-     * @param src  {Address | string}
-     * @param importFee  {number | BN}
-     * @return {Cell}
-     */
-    static func createExternalMessageHeader(
-        dest: String,
-        src: String,
-        importFee: Int = 0
-    ) throws -> TONCell {
-        throw NSError()
-    }
-    
-    //int_msg_info$0 ihr_disabled:Bool bounce:Bool
-    //src:MsgAddressInt dest:MsgAddressInt
-    //value:CurrencyCollection ihr_fee:Grams fwd_fee:Grams
-    //created_lt:uint64 created_at:uint32 = CommonMsgInfo;
     /**
      * @param dest  {Address | string}
      * @param gramValue  {number | BN}
@@ -233,6 +200,25 @@ extension TONContract {
         try message.raw.write(grams: fwdFees)
         try message.raw.write(uint: createdLt, 64)
         try message.raw.write(uint: createdAt, 32)
+        return message
+    }
+    
+    /**
+     * @param dest  {Address | string}
+     * @param src  {Address | string}
+     * @param importFee  {number | BN}
+     * @return {Cell}
+     */
+    static func createExternalMessageHeader(
+        dest: TONAddress,
+        src: TONAddress? = nil,
+        importFee: Int = 0
+    ) throws -> TONCell {
+        let message = TONCell()
+        try message.raw.write(uint: 2, 2)
+        try message.raw.write(address: src)
+        try message.raw.write(address: dest)
+        try message.raw.write(grams: importFee)
         return message
     }
     

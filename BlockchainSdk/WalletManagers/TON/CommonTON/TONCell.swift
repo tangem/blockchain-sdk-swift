@@ -34,7 +34,7 @@ public final class TONCell {
     ///
     func write(cell: TONCell) throws {
         // XXX we do not check that there are anough place in cell
-        try self.raw.write(bytes: cell.raw.bytes, cell.raw.cursor)
+        try self.raw.write(bytes: cell.raw.bytes, self.raw.cursor + cell.raw.cursor)
         self.refs.append(contentsOf: cell.refs)
     }
     

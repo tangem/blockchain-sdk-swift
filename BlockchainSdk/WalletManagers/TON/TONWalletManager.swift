@@ -14,8 +14,12 @@ final class TONWalletManager: BaseManager, WalletManager {
     
     // MARK: - Properties
     
-    var currentHost: String { TONNetwork.testnet.url.path }
+    var currentHost: String { TONNetwork.mainnet.url.path }
     var allowsFeeSelection: Bool { false }
+    
+    // MARK: - Properties
+    
+    private(set) lazy var txBuilder = try? TONTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey)
     
     // MARK: - Implementation
     
@@ -24,11 +28,32 @@ final class TONWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
-        fatalError()
+        guard let txForSign = try? txBuilder?.buildForSign(transaction: transaction, signer: signer) else {
+            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+        }
+        
+        do {
+            return try signer.sign(
+                hash: Data(txForSign.hash()),
+                walletPublicKey: wallet.publicKey
+            )
+            .tryMap { [weak self] signature -> TONExternalMessage? in
+                guard let self = self else { throw WalletError.failedToBuildTx }
+                return try self.txBuilder?.buildForSend(signingMessage: txForSign, seqno: 333)
+            }
+            .tryMap { externalMessage in
+                guard let externalMessage = externalMessage else { throw WalletError.failedToBuildTx }
+                print(externalMessage)
+                throw WalletError.empty
+            }
+            .eraseToAnyPublisher()
+        } catch {
+            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+        }
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        fatalError()
+        return Fail(error: WalletError.failedToGetFee).eraseToAnyPublisher()
     }
     
 }
