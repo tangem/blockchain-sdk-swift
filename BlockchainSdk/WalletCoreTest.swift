@@ -7,3 +7,14 @@
 //
 
 import Foundation
+//import WalletCore
+
+struct WalletCoreTest {
+    func test() {
+//        print("Testing wallet-core")
+        
+//        let wallet = HDWallet(strength: 128, passphrase: "")
+//        let address = wallet?.getAddressForCoin(coin: .polkadot)
+//        print(address ?? "empty")
+    }
+}

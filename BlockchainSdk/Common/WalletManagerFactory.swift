@@ -18,6 +18,8 @@ public class WalletManagerFactory {
     
     public init(config: BlockchainSdkConfig) {
         self.config = config
+        
+        WalletCoreTest().test()        
     }
     
     /// Base wallet manager initializer
