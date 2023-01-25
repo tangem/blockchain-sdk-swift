@@ -140,8 +140,8 @@ class PolkadotNetworkService: MultiNetworkProvider {
         }
         
         // XXHash of "System" module and "Account" storage item.
-        let moduleNameHash = Data(hexString: "26aa394eea5630e07c48ae0c9558cef7")
-        let storageNameKeyHash = Data(hexString: "b99d880ec681799c0cf30e8886371da9")
+        let moduleNameHash = Data(hex: "26aa394eea5630e07c48ae0c9558cef7")
+        let storageNameKeyHash = Data(hex: "b99d880ec681799c0cf30e8886371da9")
         
         let key = moduleNameHash + storageNameKeyHash + addressHash + addressBytes
         return key
