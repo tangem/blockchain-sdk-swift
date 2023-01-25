@@ -51,6 +51,24 @@ public final class TONCell {
     }
     
     /**
+     * create boc bytearray
+     * @param has_idx? {boolean}
+     * @param hash_crc32?  {boolean}
+     * @param has_cache_bits?  {boolean}
+     * @param flags? {number}
+     * @return {Promise<Uint8Array>}
+     */
+    public func toBoc(has_idx: Bool = true, hash_crc32: Bool = true, has_cache_bits: Bool = false, flags: Int = 0) throws -> Array<UInt8> {
+        var root_cell = self
+
+        var allcells = try root_cell.treeWalk()
+        let topologicalOrder = allcells.0[0]
+        let cellsIndex = allcells.0[1]
+
+        return []
+    }
+    
+    /**
      * @param serializedBoc  {string | Uint8Array} hex or bytearray
      * @return {Cell[]} root cells
      */
@@ -376,6 +394,26 @@ extension TONCell {
         }
         
         return maxDepth
+    }
+    
+    func treeWalk() throws -> ([(Array<UInt8>, TONCell)], Dictionary<Int, Array<UInt8>>){
+        return try treeWalk(self, [], [:]);
+    }
+    
+    /**
+     * @param cell  {Cell}
+     * @param topologicalOrderArray array of pairs: cellHash: Uint8Array, cell: Cell, ...
+     * @param indexHashmap cellHash: Uint8Array -> cellIndex: number
+     * @return {[[], {}]} topologicalOrderArray and indexHashmap
+     */
+    func treeWalk(
+        _ cell: TONCell,
+        _ topologicalOrderArray: [(Array<UInt8>, TONCell)],
+        _ indexHashmap: Dictionary<Int, Array<UInt8>>,
+        _ parentHash: Dictionary<Int, Array<UInt8>>? = nil
+    ) throws -> ([(Array<UInt8>, TONCell)], Dictionary<Int, Array<UInt8>>) {
+        let cellHash = try cell.hash()
+        throw NSError()
     }
     
 }

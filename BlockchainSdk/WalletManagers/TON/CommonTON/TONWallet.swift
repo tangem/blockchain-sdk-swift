@@ -95,12 +95,10 @@ public class TONWallet: TONContract {
     }
     
     public func signTransferMessage(_ signingMessage: TONCell, _ seqno: Int) throws -> TONExternalMessage {
-        let res = try self.createExternalMessage(
+        try self.createExternalMessage(
             signingMessage: signingMessage,
             seqno: seqno
         )
-        
-        throw NSError()
     }
     
     // MARK: - Private Implementation
@@ -127,8 +125,8 @@ public class TONWallet: TONContract {
         
         if seqno == 0 {
             // message.bits.writeInt(-1, 32);// todo: dont work
-            for _ in 0..<32 {
-                try message.raw.write(int: 1, 1)
+            try [Int](repeating: 1, count: 32).forEach {
+                try message.raw.write(int: $0, 1)
             }
         } else {
             try message.raw.write(uint: expireAt, 32)

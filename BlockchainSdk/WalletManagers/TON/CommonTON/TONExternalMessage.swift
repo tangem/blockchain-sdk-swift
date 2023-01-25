@@ -11,25 +11,25 @@ import Foundation
 public struct TONExternalMessage {
     
     /// Wallet address model
-    let address: TONAddress
+    public let address: TONAddress
     
     /// Result external message
     /// Old wallet_send_generate_external_message
-    let message: TONCell
+    public let message: TONCell
     
     /// Body of data external message
-    let body: TONCell
+    public let body: TONCell
     
     /// Signature of signing transaction
-    let signature: Array<UInt8>
+    public let signature: Array<UInt8>
     
     /// StateInit cell of wallet
-    let stateInit: TONCell?
+    public let stateInit: TONCell?
     
     /// Code cell of wallet
-    let code: TONCell?
+    public let code: TONCell?
     
     /// Data cell of wallet
-    let data: TONCell?
+    public let data: TONCell?
     
 }
