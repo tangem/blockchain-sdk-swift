@@ -8,6 +8,7 @@
 
 import CryptoSwift
 import Foundation
+import TweetNacl
 
 public class TONWallet: TONContract {
     
@@ -155,7 +156,10 @@ public class TONWallet: TONContract {
         dummySignature: Bool = false
     ) throws  -> TONExternalMessage {
         let signMsgHash = try signingMessage.hash()
-        let signature = dummySignature ? [UInt8](repeating: 0, count: 64) : [UInt8](repeating: 0, count: 64)
+        let signature = try dummySignature ? [UInt8](repeating: 0, count: 64) : NaclSign.signDetached(
+            message: Data(signMsgHash),
+            secretKey: Data(hex: "3bab423792cc6d5df5efc96eb800af9c83ac9761548e5c1f472e63ac5a406de6995b3e6c86d4126f52a19115ea30d869da0b2e5502a19db1855eeb13081b870b")
+        ).bytes
         
         let body = TONCell()
         try body.raw.write(bytes: signature)

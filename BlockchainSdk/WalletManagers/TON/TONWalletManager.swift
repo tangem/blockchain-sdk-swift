@@ -39,7 +39,7 @@ final class TONWalletManager: BaseManager, WalletManager {
             )
             .tryMap { [weak self] signature -> TONExternalMessage? in
                 guard let self = self else { throw WalletError.failedToBuildTx }
-                return try self.txBuilder?.buildForSend(signingMessage: txForSign, seqno: 333)
+                return try self.txBuilder?.buildForSend(signingMessage: txForSign, seqno: 339)
             }
             .tryMap { externalMessage in
                 guard let externalMessage = externalMessage else { throw WalletError.failedToBuildTx }

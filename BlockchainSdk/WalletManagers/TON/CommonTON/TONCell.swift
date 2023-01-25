@@ -51,6 +51,16 @@ public final class TONCell {
     }
     
     /**
+     * @private
+     * @param cellsIndex
+     * @param refSize
+     * @return {Promise<number>}
+     */
+    func bocSerializationSize(_ cellsIndex: Dictionary<Array<UInt8>, Int>, _ refSize: Int) throws -> Int {
+        throw NSError()
+    }
+    
+    /**
      * create boc bytearray
      * @param has_idx? {boolean}
      * @param hash_crc32?  {boolean}
@@ -62,12 +72,24 @@ public final class TONCell {
         var root_cell = self
 
         var allcells = try root_cell.treeWalk()
-        let topologicalOrder = allcells.0[0]
-        let cellsIndex = allcells.0[1]
-
+        let topologicalOrder = allcells.0
+        let cellsIndex = allcells.1
+        
+        let cells_num = topologicalOrder.count
+        let s = String(cells_num, radix: 2).count
+        let s_bytes = Int(min(ceilf(Float(s) / 8), 1))
+        var full_size = 0
+        var sizeIndex: [Int] = []
+        
+        for cell_info in topologicalOrder {
+            //TODO it should be async map or async for
+            sizeIndex.append(full_size)
+            try full_size = full_size + cell_info.1.bocSerializationSize(cellsIndex, s_bytes);
+        }
+        
         return []
     }
-    
+
     /**
      * @param serializedBoc  {string | Uint8Array} hex or bytearray
      * @return {Cell[]} root cells
@@ -396,8 +418,32 @@ extension TONCell {
         return maxDepth
     }
     
-    func treeWalk() throws -> ([(Array<UInt8>, TONCell)], Dictionary<Int, Array<UInt8>>){
-        return try treeWalk(self, [], [:]);
+    ///
+    func treeWalk() throws -> ([(Array<UInt8>, TONCell)], Dictionary<Array<UInt8>, Int>) {
+        return try treeWalk(self, [], [:], nil);
+    }
+    
+    ///
+    func moveToTheEnd(
+        indexHashmap: inout Dictionary<Array<UInt8>, Int>,
+        topologicalOrderArray: [(Array<UInt8>, TONCell)],
+        target: Array<UInt8>
+    ) throws {
+        // TODO: - Check verify
+        guard let targetIndex = indexHashmap[target] else { return }
+        
+        indexHashmap.forEach { (key, value) in
+            if value > targetIndex {
+                indexHashmap[key] = value - 1
+            }
+        }
+        
+        indexHashmap[target] = topologicalOrderArray.count - 1
+//        let data = topologicalOrderArray[targetIndex..<1].0
+                                         
+//        for subCell in data.1.refs {
+//            try moveToTheEnd(indexHashmap, topologicalOrderArray, subCell.hash())
+//        }
     }
     
     /**
@@ -409,11 +455,23 @@ extension TONCell {
     func treeWalk(
         _ cell: TONCell,
         _ topologicalOrderArray: [(Array<UInt8>, TONCell)],
-        _ indexHashmap: Dictionary<Int, Array<UInt8>>,
-        _ parentHash: Dictionary<Int, Array<UInt8>>? = nil
-    ) throws -> ([(Array<UInt8>, TONCell)], Dictionary<Int, Array<UInt8>>) {
+        _ indexHashmap: Dictionary<Array<UInt8>, Int>,
+        _ parentHash: Array<UInt8>? = nil
+    ) throws -> ([(Array<UInt8>, TONCell)], Dictionary<Array<UInt8>, Int>) {
+        var indexHashmap = indexHashmap
+        var topologicalOrderArray = topologicalOrderArray
         let cellHash = try cell.hash()
-        throw NSError()
+        
+        indexHashmap[cellHash] = topologicalOrderArray.count
+        topologicalOrderArray.append((cellHash, cell))
+        
+        for subCell in cell.refs {
+            let res = try treeWalk(subCell, topologicalOrderArray, indexHashmap, cellHash)
+            topologicalOrderArray = res.0
+            indexHashmap = res.1
+        }
+        
+        return (topologicalOrderArray, indexHashmap)
     }
     
 }
