@@ -15,19 +15,14 @@ public class TONWallet: TONContract {
     /// Wallet public key
     public var publicKey: Data
     
-    /// Signer for build transaction
-    public weak var signer: TONSigner?
-    
     // MARK: - Init
     
     public init(
         publicKey: Data,
-        signer: TONSigner?,
         walletId: UInt32? = nil,
         wc: Int = 0
     ) throws {
         self.publicKey = publicKey
-        self.signer = signer
         
         try super.init(
             options: .init(

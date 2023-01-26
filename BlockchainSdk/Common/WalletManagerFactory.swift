@@ -300,7 +300,13 @@ public class WalletManagerFactory {
                 $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
             }
         case .ton(testnet: let testnet):
-            return TONWalletManager(wallet: wallet)
+            return TONWalletManager(
+                wallet: wallet,
+                provider: TONNetworkProvider(
+                    host: TONNetwork(testnet).host,
+                    provider: .init(configuration: networkProviderConfiguration)
+                )
+            )
         case .dash(let testnet):
             return try makeDashWalletManager(testnet: testnet, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
         }

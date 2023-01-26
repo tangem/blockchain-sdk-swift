@@ -12,12 +12,20 @@ enum TONNetwork {
     case mainnet
     case testnet
     
-    var url: URL {
+    var host: String {
         switch self {
         case .mainnet:
-            return URL(string: "https://tonapi.io/")!
+            return "https://toncenter.com/api/v2/"
         case .testnet:
-            return URL(string: "https://testnet.tonapi.io/")!
+            return "https://testnet.toncenter.com/api/v2/"
         }
+    }
+    
+    var url: URL {
+        return URL(string: self.host)!
+    }
+    
+    init(_ testnet: Bool) {
+        self = testnet ? .testnet : .mainnet
     }
 }

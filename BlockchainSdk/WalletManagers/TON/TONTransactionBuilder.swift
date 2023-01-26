@@ -17,7 +17,7 @@ struct TONTransactionBuilder {
     // MARK: - Init
     
     init(walletPublicKey: Data) throws {
-        self.wallet = try .init(publicKey: walletPublicKey, signer: nil)
+        self.wallet = try .init(publicKey: walletPublicKey)
     }
     
     // MARK: - Implementation

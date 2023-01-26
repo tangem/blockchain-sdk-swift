@@ -31,14 +31,21 @@ public final class TONCell {
         self.isExotic = isExotic
     }
     
-    // MARK: - Implementations
+    // MARK: - Common Implementation
     
-    ///
+    /// Write any Cells content data
+    /// - Parameter cell: Cell model
     func write(cell: TONCell) throws {
         // XXX we do not check that there are anough place in cell
         try self.raw.write(bytes: cell.raw.bytes, self.raw.cursor + cell.raw.cursor)
         self.refs.append(contentsOf: cell.refs)
     }
+    
+}
+
+// MARK: - Boc Implementations
+
+extension TONCell {
     
     // MARK: - Static
     
@@ -115,9 +122,9 @@ public final class TONCell {
         _ has_cache_bits: Bool = false,
         _ flags: Int = 0
     ) throws -> Array<UInt8> {
-        var root_cell = self
+        let root_cell = self
 
-        var allcells = try root_cell.treeWalk()
+        let allcells = try root_cell.treeWalk()
         let topologicalOrder = allcells.0
         let cellsIndex = allcells.1
         
@@ -378,6 +385,14 @@ extension TONCell {
         
     }
     
+}
+
+// MARK: - Helpers
+
+extension TONCell {
+    
+    // MARK: - Static
+    
     private static func compareBytes(_ a: Array<UInt8>, _ b: Array<UInt8>) -> Bool {
         return a.toHexString() == b.toHexString()
     }
@@ -391,9 +406,7 @@ extension TONCell {
         return res
     }
     
-}
-
-extension TONCell {
+    // MARK: - Local
     
     func hash() throws -> Array<UInt8> {
         return try getRepr().sha256()
@@ -508,21 +521,7 @@ extension TONCell {
         topologicalOrderArray: [(Array<UInt8>, TONCell)],
         target: Array<UInt8>
     ) throws {
-        // TODO: - Check verify
-        guard let targetIndex = indexHashmap[target] else { return }
-        
-        indexHashmap.forEach { (key, value) in
-            if value > targetIndex {
-                indexHashmap[key] = value - 1
-            }
-        }
-        
-        indexHashmap[target] = topologicalOrderArray.count - 1
-//        let data = topologicalOrderArray[targetIndex..<1].0
-                                         
-//        for subCell in data.1.refs {
-//            try moveToTheEnd(indexHashmap, topologicalOrderArray, subCell.hash())
-//        }
+        throw TONError.exception("Not implemented, see tonweb reosources!")
     }
     
     /**

@@ -51,14 +51,14 @@ public struct TONAddress {
      */
     static func parseFriendlyAddress(_ addressString: String) throws -> TONAddress {
         guard addressString.count == 48 else {
-            throw NSError()
+            throw TONError.exception("User-friendly address should contain strictly 48 characters")
         }
         
         guard
             let data = Data(base64EncodedURLSafe: addressString),
             data.count == 36
         else {
-            throw NSError()
+            throw TONError.exception("Unknown address type: byte length is not equal to 36")
         }
         
         let addrData = Array(data.bytes[0..<34])
@@ -66,7 +66,7 @@ public struct TONAddress {
         let calcedCrc = crc16(data: addrData).bigEndian.data.bytes
 
         if (!(calcedCrc[0] == crcData[0] && calcedCrc[1] == crcData[1])) {
-            throw NSError()
+            throw TONError.exception("Wrong crc16 hashsum")
         }
 
         var tag = addrData[0]
@@ -79,7 +79,7 @@ public struct TONAddress {
         }
         
         if tag != TONAddressTag.BOUNCEABLE.rawValue, tag != TONAddressTag.NON_BOUNCEABLE.rawValue {
-            throw NSError()
+            throw TONError.exception("Unknown address tag")
         }
 
         isBounceable = tag == TONAddressTag.BOUNCEABLE.rawValue
@@ -89,16 +89,16 @@ public struct TONAddress {
         workchain = addrData[1] == 0xff ? -1 : Int(addrData[1])
         
         if workchain != 0, workchain != -1 {
-            throw NSError()
+            throw TONError.exception("Invalid address wc")
         }
 
-        let hashPart = addrData[2..<34]
+        let hashPart = Data(Array(addrData[2..<34]))
 
         return TONAddress(
             isTestOnly: isTestOnly,
             isBounceable: isBounceable,
             workchain: workchain,
-            hashPart: Data(hashPart)
+            hashPart: hashPart
         )
     }
     

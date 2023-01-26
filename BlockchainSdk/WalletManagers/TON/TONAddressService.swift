@@ -34,6 +34,22 @@ import TangemSdk
 public class TONAddressService: AddressService {
     
     public func makeAddress(from walletPublicKey: Data) throws -> String {
+        let adress = try TONWallet(publicKey: walletPublicKey)
+            .getAddress()
+            .toString(isUserFriendly: true, isUrlSafe: true, isBounceable: true)
+        return adress
+    }
+    
+    public func validate(_ address: String) -> Bool {
+        do {
+            return try TONAddress.isValid(anyForm: address)
+        } catch {
+            return false
+        }
+    }
+    
+}
+
 //        try walletPublicKey.validateAsEdKey()
 //
 //        var combineAddress = Data()
@@ -48,12 +64,3 @@ public class TONAddressService: AddressService {
 //        print(combineAddress.bytes.count)
 //
 //        return combineAddress.base64EncodedString()
-        
-        return ""
-    }
-    
-    public func validate(_ address: String) -> Bool {
-        return false
-    }
-    
-}

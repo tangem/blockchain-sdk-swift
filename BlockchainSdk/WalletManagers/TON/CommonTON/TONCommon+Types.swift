@@ -12,7 +12,7 @@ import Foundation
 extension Array where Element == UInt8 {
     
     var bitsCount: Int {
-        self.map { $0.getBits().count }.reduce(0, +)
+        self.map { $0.bits.count }.reduce(0, +)
     }
     
     func checkRange(_ n: Int) throws {
@@ -74,45 +74,6 @@ extension FixedWidthInteger {
         return bits
     }
     
-    func getBits() -> [Bit] {
-        // Make variable
-        var bytes = self
-        // Fill an array of bits with zeros to the fixed width integer length
-        var bits = [Bit](repeating: .zero, count: self.bitWidth)
-        // Run through each bit (LSB first)
-        for i in 0..<self.bitWidth {
-            let currentBit = bytes & 0x01
-            if currentBit != 0 {
-                bits[i] = .one
-            }
-
-            bytes >>= 1
-        }
-
-        return bits
-    }
-    
-}
-
-extension BinaryInteger {
-    
-    var binaryDescription: String {
-        var binaryString = ""
-        var internalNumber = self
-        var counter = 0
-
-        for _ in (1...self.bitWidth) {
-            binaryString.insert(contentsOf: "\(internalNumber & 1)", at: binaryString.startIndex)
-            internalNumber >>= 1
-            counter += 1
-            if counter % 4 == 0 {
-                binaryString.insert(contentsOf: " ", at: binaryString.startIndex)
-            }
-        }
-
-        return binaryString
-    }
-    
 }
 
 extension Int {
@@ -137,6 +98,7 @@ extension UInt16 {
 }
 
 extension UInt32 {
+    
     var data: Data {
         var int = self
         return Data(bytes: &int, count: MemoryLayout<UInt32>.size)
@@ -150,6 +112,7 @@ extension UInt32 {
             UInt8(self & 0x000000FF)
         ]
     }
+    
 }
 
 /**

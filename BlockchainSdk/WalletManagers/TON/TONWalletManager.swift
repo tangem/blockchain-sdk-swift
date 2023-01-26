@@ -14,17 +14,42 @@ final class TONWalletManager: BaseManager, WalletManager {
     
     // MARK: - Properties
     
-    var currentHost: String { TONNetwork.mainnet.url.path }
+    var currentHost: String { provider.host }
     var allowsFeeSelection: Bool { false }
     
-    // MARK: - Properties
+    // MARK: - Private Properties
     
-    private(set) lazy var txBuilder = try? TONTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey)
+    private var provider: TONNetworkProvider!
+    private lazy var txBuilder = try? TONTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey)
+    
+    // MARK: - Init
+    
+    init(wallet: Wallet, provider: TONNetworkProvider) {
+        self.provider = provider
+        super.init(wallet: wallet)
+    }
     
     // MARK: - Implementation
     
     func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        
+        do {
+            cancellable = try provider.getBalanceWallet(
+                address: TONWallet(publicKey: wallet.publicKey.blockchainKey)
+                    .getAddress()
+                    .toString(isUserFriendly: true, isUrlSafe: true, isBounceable: true)
+                )
+                .sink(receiveCompletion: {[unowned self]  completionSubscription in
+                    if case let .failure(error) = completionSubscription {
+                        self.wallet.amounts = [:]
+                        completion(.failure(error))
+                    }
+                }, receiveValue: { [unowned self] response in
+                    wallet.add(coinValue: Decimal(response))
+                    completion(.success(()))
+                })
+        } catch {
+            completion(.failure(WalletError.failedToParseNetworkResponse))
+        }
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
@@ -53,7 +78,7 @@ final class TONWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        return Fail(error: WalletError.failedToGetFee).eraseToAnyPublisher()
+        try provider.getFee(with: "").eraseToAnyPublisher()
     }
     
 }
