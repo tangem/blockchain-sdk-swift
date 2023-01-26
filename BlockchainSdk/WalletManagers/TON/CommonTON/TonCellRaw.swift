@@ -37,7 +37,11 @@ public class TonCellRaw {
         self.rawValue = rawValue ?? [UInt8](repeating: 0, count: 128)
     }
     
-    init(_ copy: TonCellRaw) {
+    init(length: Int?) {
+        self.rawValue = [UInt8](repeating: 0, count: Int(ceilf(Float(length ?? 0) / 8)))
+    }
+    
+    init(copy: TonCellRaw) {
         self.rawValue = copy.bytes
         self.cursor = copy.cursor
     }
@@ -104,7 +108,7 @@ public class TonCellRaw {
      * @param number  {number | BN}
      * @param bitLength  {number}  size of uint in bits
      */
-    func write(uint8 num: UInt8, _ bitLength: Int) throws {
+    func write(uint8 num: UInt8) throws {
         try write(uint: UInt(num), 8)
     }
     
@@ -239,7 +243,7 @@ public class TonCellRaw {
     
     ///
     func getTopUppedArray() throws -> Array<UInt8> {
-        let ret = TonCellRaw(self)
+        let ret = TonCellRaw(copy: self)
 
         let tuRound = Int(ceilf(Float(cursor) / 8))
         var tu = (tuRound * 8) - ret.cursor

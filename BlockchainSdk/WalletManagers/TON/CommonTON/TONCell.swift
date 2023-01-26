@@ -15,6 +15,8 @@ let leanBocMagicPrefixCRC = Data(hex: "acc3a728").bytes
 
 public final class TONCell {
     
+    typealias Bit = CryptoSwift.Bit
+    
     // MARK: - Properties
     
     var raw: TonCellRaw
@@ -54,10 +56,49 @@ public final class TONCell {
      * @private
      * @param cellsIndex
      * @param refSize
+     * @return {Promise<Uint8Array>}
+     */
+    func serializeForBoc(_ cellsIndex: Dictionary<Array<UInt8>, Int>, _ refSize: Int) throws -> Array<UInt8> {
+        var reprArray = [[UInt8]]()
+
+        try reprArray.append(contentsOf: [getDataWithDescriptors()])
+        
+        guard isExplicitlyStoredHashes() == 0 else {
+            throw TONError.exception("Cell hashes explicit storing is not implemented")
+        }
+        
+        for ref in refs {
+            let refHash = try ref.hash()
+            
+            if let refIndexInt = cellsIndex[refHash] {
+                var refIndexHex = String(refIndexInt, radix: 16)
+                
+                if ((refIndexHex.count % 2) != 0) {
+                    refIndexHex = "0" + refIndexHex
+                }
+                
+                let reference = Data(hex: refIndexHex).bytes
+                reprArray.append(contentsOf: [reference])
+            }
+        }
+        
+        var x = [UInt8]()
+        
+        for k in reprArray {
+            x = concatBytes(x, k);
+        }
+        
+        return x
+    }
+    
+    /**
+     * @private
+     * @param cellsIndex
+     * @param refSize
      * @return {Promise<number>}
      */
     func bocSerializationSize(_ cellsIndex: Dictionary<Array<UInt8>, Int>, _ refSize: Int) throws -> Int {
-        throw NSError()
+        try serializeForBoc(cellsIndex, refSize).count
     }
     
     /**
@@ -68,7 +109,12 @@ public final class TONCell {
      * @param flags? {number}
      * @return {Promise<Uint8Array>}
      */
-    public func toBoc(has_idx: Bool = true, hash_crc32: Bool = true, has_cache_bits: Bool = false, flags: Int = 0) throws -> Array<UInt8> {
+    public func toBoc(
+        _ has_idx: Bool = true,
+        _ hash_crc32: Bool = true,
+        _ has_cache_bits: Bool = false,
+        _ flags: Int = 0
+    ) throws -> Array<UInt8> {
         var root_cell = self
 
         var allcells = try root_cell.treeWalk()
@@ -87,7 +133,40 @@ public final class TONCell {
             try full_size = full_size + cell_info.1.bocSerializationSize(cellsIndex, s_bytes);
         }
         
-        return []
+        let offset_bits = String(full_size, radix: 2).count
+        let offset_bytes = Int(max(ceilf(Float(offset_bits) / 8), 1))
+        
+        let serialization = TonCellRaw(length: (1023 + 32 * 4 + 32 * 3) * topologicalOrder.count)
+        
+        try serialization.write(bytes: reachBocMagicPrefix)
+        try serialization.write(bits: [has_idx.bit, hash_crc32.bit, has_cache_bits.bit])
+        try serialization.write(uint: UInt(flags), 2)
+        try serialization.write(uint: UInt(s_bytes), 3);
+        try serialization.write(uint8: UInt8(offset_bytes))
+        try serialization.write(uint: UInt(cells_num), s_bytes * 8);
+        try serialization.write(uint: UInt(1), s_bytes * 8); // One root for now
+        try serialization.write(uint: 0, s_bytes * 8); // Complete BOCs only
+        try serialization.write(uint: UInt(full_size), offset_bytes * 8);
+        try serialization.write(uint: 0, s_bytes * 8); // Root shoulh have index 0
+        
+        if has_idx {
+            try topologicalOrder.enumerated().forEach { index, _ in
+                try serialization.write(uint: UInt(sizeIndex[index]), offset_bytes * 8)
+            }
+        }
+        
+        for cell_info in topologicalOrder {
+            let refcell_ser = try cell_info.1.serializeForBoc(cellsIndex, s_bytes)
+            try serialization.write(bytes: refcell_ser)
+        }
+        
+        var ser_arr = try serialization.getTopUppedArray()
+        
+        if (hash_crc32) {
+            ser_arr = concatBytes(ser_arr, ser_arr.crc32c().data.bytes);
+        }
+        
+        return ser_arr
     }
 
     /**
@@ -472,6 +551,13 @@ extension TONCell {
         }
         
         return (topologicalOrderArray, indexHashmap)
+    }
+    
+    /**
+     * @return {number}
+     */
+    func isExplicitlyStoredHashes() -> Int {
+        return 0
     }
     
 }

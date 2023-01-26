@@ -35,7 +35,7 @@ extension Array where Element == UInt8 {
     
 }
 
-extension Array where Element == Bit {
+extension Array where Element == CryptoSwift.Bit {
     
     func bytes() -> [UInt8] {
         let bits = self
@@ -192,6 +192,14 @@ extension String {
     
     func generateTONAddress() throws -> TONAddress {
         return try .init(self)
+    }
+    
+}
+
+extension Bool {
+    
+    var bit: CryptoSwift.Bit {
+        return self ? .one : .zero
     }
     
 }
