@@ -59,6 +59,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKeys: [],
                                                                           blockcypherTokens: [],
                                                                           infuraProjectId: "",
+                                                                          nowNodesApiKey: "",
+                                                                          getBlockApiKey: "",
                                                                           tronGridApiKey: "",
                                                                           quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
                                                                           quickNodeBscCredentials: .init(apiKey: "", subdomain: ""),

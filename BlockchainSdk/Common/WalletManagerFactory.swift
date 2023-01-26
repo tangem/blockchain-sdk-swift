@@ -74,9 +74,9 @@ public class WalletManagerFactory {
         let wallet = Wallet(blockchain: blockchain,
                             addresses: addresses,
                             publicKey: publicKey)
-
+        
         let networkProviderConfiguration = config.networkProviderConfiguration(for: blockchain)
-
+        
         switch blockchain {
         case .bitcoin(let testnet):
             return try BitcoinWalletManager(wallet: wallet).then {
@@ -89,14 +89,26 @@ public class WalletManagerFactory {
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
                 
                 var providers = [AnyBitcoinNetworkProvider]()
+                
+                providers.append(BlockBookUtxoProvider(blockchain: blockchain,
+                                                       blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
+                                                       networkConfiguration: networkProviderConfiguration)
+                    .eraseToAnyBitcoinNetworkProvider())
+                
                 if !testnet {
+                    providers.append(BlockBookUtxoProvider(blockchain: blockchain,
+                                                           blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
+                                                           networkConfiguration: networkProviderConfiguration)
+                        .eraseToAnyBitcoinNetworkProvider())
+                    
                     providers.append(BlockchainInfoNetworkProvider(configuration: networkProviderConfiguration)
                         .eraseToAnyBitcoinNetworkProvider())
                 }
+                
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .bitcoin(testnet: testnet),
                                                                             configuration: networkProviderConfiguration,
                                                                             apiKeys: config.blockchairApiKeys))
-
+                
                 providers.append(BlockcypherNetworkProvider(endpoint: .bitcoin(testnet: testnet),
                                                             tokens: config.blockcypherTokens,
                                                             configuration: networkProviderConfiguration)
@@ -115,10 +127,21 @@ public class WalletManagerFactory {
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
                 
                 var providers = [AnyBitcoinNetworkProvider]()
+                
+                providers.append(BlockBookUtxoProvider(blockchain: blockchain,
+                                                       blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
+                                                       networkConfiguration: networkProviderConfiguration)
+                    .eraseToAnyBitcoinNetworkProvider())
+                
+                providers.append(BlockBookUtxoProvider(blockchain: blockchain,
+                                                       blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
+                                                       networkConfiguration: networkProviderConfiguration)
+                    .eraseToAnyBitcoinNetworkProvider())
+                
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .litecoin,
                                                                             configuration: networkProviderConfiguration,
                                                                             apiKeys: config.blockchairApiKeys))
-
+                
                 providers.append(BlockcypherNetworkProvider(endpoint: .litecoin,
                                                             tokens: config.blockcypherTokens,
                                                             configuration: networkProviderConfiguration)
@@ -135,19 +158,30 @@ public class WalletManagerFactory {
                                                     bip: .bip44)
                 
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
-
+                
                 var providers = [AnyBitcoinNetworkProvider]()
+                
+                providers.append(BlockBookUtxoProvider(blockchain: blockchain,
+                                                       blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
+                                                       networkConfiguration: networkProviderConfiguration)
+                    .eraseToAnyBitcoinNetworkProvider())
+                
+                providers.append(BlockBookUtxoProvider(blockchain: blockchain,
+                                                       blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
+                                                       networkConfiguration: networkProviderConfiguration)
+                    .eraseToAnyBitcoinNetworkProvider())
+                
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .dogecoin,
                                                                             configuration: networkProviderConfiguration,
                                                                             apiKeys: config.blockchairApiKeys))
-
+                
                 providers.append(BlockcypherNetworkProvider(
                     endpoint: .dogecoin,
                     tokens: config.blockcypherTokens,
                     configuration: networkProviderConfiguration
                 )
                     .eraseToAnyBitcoinNetworkProvider())
-
+                
                 $0.networkService = BitcoinNetworkService(providers: providers)
             }
             
@@ -170,10 +204,17 @@ public class WalletManagerFactory {
             
         case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .optimism, .ethereumFair, .saltPay:
             let manager: EthereumWalletManager
-            let rpcUrls = blockchain.getJsonRpcURLs(infuraProjectId: config.infuraProjectId, quickNodeBscCredentials: config.quickNodeBscCredentials)!
+            let endpoints = blockchain.getJsonRpcEndpoints(
+                keys: EthereumApiKeys(
+                    infuraProjectId: config.infuraProjectId,
+                    nowNodesApiKey: config.nowNodesApiKey,
+                    getBlockApiKey: config.getBlockApiKey,
+                    quickNodeBscCredentials: config.quickNodeBscCredentials
+                )
+            )!
             
             if case .optimism = blockchain {
-                manager = OptimismWalletManager(wallet: wallet, rpcURL: rpcUrls[0])
+                manager = OptimismWalletManager(wallet: wallet, rpcURL: endpoints[0].url)
             } else {
                 manager = EthereumWalletManager(wallet: wallet)
             }
@@ -192,8 +233,18 @@ public class WalletManagerFactory {
             
             return try manager.then {
                 let chainId = blockchain.chainId!
-                let jsonRpcProviders = rpcUrls.map {
-                    EthereumJsonRpcProvider(url: $0, configuration: networkProviderConfiguration)
+                
+                let jsonRpcProviders = endpoints.map {
+                    var additionalHeaders: [String: String] = [:]
+                    if let apiKeyHeaderName = $0.apiKeyHeaderName, let apiKeyHeaderValue = $0.apiKeyHeaderValue {
+                        additionalHeaders[apiKeyHeaderName] = apiKeyHeaderValue
+                    }
+                    
+                    return EthereumJsonRpcProvider(
+                        url: $0.url,
+                        additionalHeaders: additionalHeaders,
+                        configuration: networkProviderConfiguration
+                    )
                 }
                 
                 $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, chainId: chainId)
@@ -215,13 +266,26 @@ public class WalletManagerFactory {
                 
                 //TODO: Add testnet support. Maybe https://developers.cryptoapis.io/technical-documentation/general-information/what-we-support
                 var providers = [AnyBitcoinNetworkProvider]()
+                
+                if !testnet {
+                    providers.append(BlockBookUtxoProvider(blockchain: blockchain,
+                                                           blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
+                                                           networkConfiguration: networkProviderConfiguration)
+                        .eraseToAnyBitcoinNetworkProvider())
+                    
+                    providers.append(BlockBookUtxoProvider(blockchain: blockchain,
+                                                           blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
+                                                           networkConfiguration: networkProviderConfiguration)
+                        .eraseToAnyBitcoinNetworkProvider())
+                }
+                
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .bitcoinCash,
                                                                             configuration: networkProviderConfiguration,
                                                                             apiKeys: config.blockchairApiKeys))
-
+                
                 $0.networkService = BitcoinCashNetworkService(providers: providers)
             }
-
+            
         case .binance(let testnet):
             return try BinanceWalletManager(wallet: wallet).then {
                 $0.txBuilder = try BinanceTransactionBuilder(walletPublicKey: wallet.publicKey.blockchainKey, isTestnet: testnet)
@@ -264,13 +328,22 @@ public class WalletManagerFactory {
             
         case .solana(let testnet):
             return SolanaWalletManager(wallet: wallet).then {
-                let endpoints: [RPCEndpoint] = testnet ?
-                [.devnetSolana, .devnetGenesysGo] :
-                [
-                    .quiknode(apiKey: config.quickNodeSolanaCredentials.apiKey, subdomain: config.quickNodeSolanaCredentials.subdomain),
-                    .ankr,
-                    .mainnetBetaSolana,
-                ]
+                let endpoints: [Solana_Swift.RPCEndpoint]
+                if testnet {
+                    endpoints = [
+                        .devnetSolana,
+                        .devnetGenesysGo,
+                    ]
+                } else {
+                    endpoints = [
+                        .nowNodes(apiKey: config.nowNodesApiKey),
+                        .getBlock(apiKey: config.getBlockApiKey),
+                        .quiknode(apiKey: config.quickNodeSolanaCredentials.apiKey, subdomain: config.quickNodeSolanaCredentials.subdomain),
+                        .ankr,
+                        .mainnetBetaSolana,
+                    ]
+                }
+                
                 let networkRouter = NetworkingRouter(endpoints: endpoints)
                 let accountStorage = SolanaDummyAccountStorage()
                 
@@ -321,7 +394,7 @@ public class WalletManagerFactory {
                                        networkProviderConfiguration: NetworkProviderConfiguration) throws -> WalletManager {
         try DashWalletManager(wallet: wallet).then {
             let compressed = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
-
+            
             let bitcoinManager = BitcoinManager(
                 networkParams: testnet ? DashTestNetworkParams() : DashMainNetworkParams(),
                 walletPublicKey: wallet.publicKey.blockchainKey,
@@ -332,13 +405,23 @@ public class WalletManagerFactory {
             // TODO: Add CryptoAPIs for testnet
             
             $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
-
+            
             var providers: [AnyBitcoinNetworkProvider] = []
-
+            
+            providers.append(BlockBookUtxoProvider(blockchain: .dash(testnet: testnet),
+                                                   blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
+                                                   networkConfiguration: networkProviderConfiguration)
+                .eraseToAnyBitcoinNetworkProvider())
+            
+            providers.append(BlockBookUtxoProvider(blockchain: .dash(testnet: testnet),
+                                                   blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
+                                                   networkConfiguration: networkProviderConfiguration)
+                .eraseToAnyBitcoinNetworkProvider())
+            
             providers.append(contentsOf: makeBlockchairNetworkProviders(for: .dash,
                                                                         configuration: networkProviderConfiguration,
                                                                         apiKeys: config.blockchairApiKeys))
-
+            
             providers.append(BlockcypherNetworkProvider(endpoint: .dash,
                                                         tokens: config.blockcypherTokens,
                                                         configuration: networkProviderConfiguration)
@@ -347,15 +430,15 @@ public class WalletManagerFactory {
             $0.networkService = BitcoinNetworkService(providers: providers)
         }
     }
-
+    
     private func makeBlockchairNetworkProviders(for endpoint: BlockchairEndpoint, configuration: NetworkProviderConfiguration, apiKeys: [String]) -> [AnyBitcoinNetworkProvider] {
         let apiKeys: [String?] = [nil] + apiKeys
-
+        
         let providers = apiKeys.map {
             BlockchairNetworkProvider(endpoint: endpoint, apiKey: $0, configuration: configuration)
                 .eraseToAnyBitcoinNetworkProvider()
         }
-
+        
         return providers
     }
 }
