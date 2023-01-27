@@ -167,13 +167,13 @@ extension TONContract {
      */
     static func createInternalMessageHeader(
         dest: String,
-        gramValue: Int = 0,
+        gramValue: UInt = 0,
         ihrDisabled: Bool = true,
         bounce: Bool? = nil,
         bounced: Bool = false,
         src: String,
-        ihrFees: Int = 0,
-        fwdFees: Int = 0,
+        ihrFees: UInt = 0,
+        fwdFees: UInt = 0,
         createdLt: UInt = 0,
         createdAt: UInt = 0
     ) throws -> TONCell {
@@ -212,7 +212,7 @@ extension TONContract {
     static func createExternalMessageHeader(
         dest: TONAddress,
         src: TONAddress? = nil,
-        importFee: Int = 0
+        importFee: UInt = 0
     ) throws -> TONCell {
         let message = TONCell()
         try message.raw.write(uint: 2, 2)

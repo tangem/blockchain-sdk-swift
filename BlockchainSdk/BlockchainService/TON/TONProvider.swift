@@ -69,17 +69,24 @@ struct TONNetworkProvider: HostProvider {
     /// Get estimate sending transaction Fee
     /// - Parameter boc: Bag of Cells wallet transaction for destination
     /// - Returns: Fees or Error
-    func getFee(by boc: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(by message: TONExternalMessage) -> AnyPublisher<[Amount], Error> {
         provider.requestPublisher(
             .init(
                 host: host,
-                targetType: .estimateFee(boc: "")
+                targetType: .estimateFee(message: message)
             )
         )
         .filterSuccessfulStatusAndRedirectCodes()
-        .map(TONProviderResponse<String>.self)
+        .map(TONProviderResponse<TONFee>.self)
         .tryMap { response in
-            throw WalletError.failedToParseNetworkResponse
+            let inFwd = Amount(with: blockchain, value: response.result.source_fees.in_fwd_fee / blockchain.decimalValue)
+            let fwd = Amount(with: blockchain, value: response.result.source_fees.fwd_fee / blockchain.decimalValue)
+            let storage = Amount(with: blockchain, value: response.result.source_fees.storage_fee / blockchain.decimalValue)
+            let gas = Amount(with: blockchain, value: response.result.source_fees.gas_fee / blockchain.decimalValue)
+            
+            return [
+                inFwd, fwd, storage, gas
+            ]
         }
         .eraseToAnyPublisher()
     }

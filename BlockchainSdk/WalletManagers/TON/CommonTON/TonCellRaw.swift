@@ -278,7 +278,7 @@ public class TonCellRaw {
     /**
      * @param amount  {number | BN} in nanograms
      */
-    func write(grams amount: Int) throws {
+    func write(grams amount: UInt) throws {
         if amount == 0 {
             try write(uint: 0, 4)
         } else {

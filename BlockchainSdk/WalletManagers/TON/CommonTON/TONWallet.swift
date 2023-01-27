@@ -8,7 +8,6 @@
 
 import CryptoSwift
 import Foundation
-import TweetNacl
 
 public class TONWallet: TONContract {
     
@@ -57,7 +56,7 @@ public class TONWallet: TONContract {
      */
     public func createTransferMessage(
         address: String,
-        amount: Int,
+        amount: UInt,
         payload: String? = nil,
         seqno: Int,
         sendMode: Int = 3,
@@ -69,7 +68,7 @@ public class TONWallet: TONContract {
         
         let orderHeader = try TONContract.createInternalMessageHeader(
             dest: address,
-            gramValue: 1,
+            gramValue: amount,
             src: getAddress().toString(isUserFriendly: true, isUrlSafe: true, isBounceable: true)
         )
         
@@ -90,9 +89,10 @@ public class TONWallet: TONContract {
         return signingMessage
     }
     
-    public func signTransferMessage(_ signingMessage: TONCell, _ seqno: Int) throws -> TONExternalMessage {
+    public func signTransferMessage(_ signingMessage: TONCell, _ seqno: Int, signature: Array<UInt8>) throws -> TONExternalMessage {
         try self.createExternalMessage(
             signingMessage: signingMessage,
+            signature: signature,
             seqno: seqno
         )
     }
@@ -147,14 +147,11 @@ public class TONWallet: TONContract {
      */
     func createExternalMessage(
         signingMessage: TONCell,
+        signature: Array<UInt8>,
         seqno: Int,
         dummySignature: Bool = false
     ) throws  -> TONExternalMessage {
         let signMsgHash = try signingMessage.hash()
-        let signature = try dummySignature ? [UInt8](repeating: 0, count: 64) : NaclSign.signDetached(
-            message: Data(signMsgHash),
-            secretKey: Data(hex: "3bab423792cc6d5df5efc96eb800af9c83ac9761548e5c1f472e63ac5a406de6995b3e6c86d4126f52a19115ea30d869da0b2e5502a19db1855eeb13081b870b")
-        ).bytes
         
         let body = TONCell()
         try body.raw.write(bytes: signature)
