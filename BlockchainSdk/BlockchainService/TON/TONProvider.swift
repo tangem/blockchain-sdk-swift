@@ -21,12 +21,15 @@ struct TONNetworkProvider: HostProvider {
     /// Network provider of blockchain
     private(set) var provider: NetworkProvider<TONProvirerTarget>
     
+    /// Blockchain model inject from factory
+    private(set) var blockchain: Blockchain
+    
     // MARK: - Implementation
     
     /// Fetch balance wallet by address
     /// - Parameter address: UserFriendly TON address wallet
     /// - Returns: Balance wallet adress or Error
-    func getBalanceWallet(address: String) -> AnyPublisher<UInt, Error> {
+    func getBalanceWallet(address: String) -> AnyPublisher<Decimal, Error> {
         provider.requestPublisher(
             .init(
                 host: host,
@@ -36,10 +39,10 @@ struct TONNetworkProvider: HostProvider {
         .filterSuccessfulStatusAndRedirectCodes()
         .map(TONProviderResponse<String>.self)
         .tryMap { response in
-            guard let result = UInt(response.result) else {
+            guard let result = Decimal(response.result) else {
                 throw WalletError.failedToParseNetworkResponse
             }
-            return result
+            return result / blockchain.decimalValue
         }
         .eraseToAnyPublisher()
         
@@ -49,7 +52,18 @@ struct TONNetworkProvider: HostProvider {
     /// - Parameter address: Wallet address
     /// - Returns: Integer number of sequence
     func getSeqno(by address: String) -> AnyPublisher<Int, Error> {
-        
+        provider.requestPublisher(
+            .init(
+                host: host,
+                targetType: .seqno
+            )
+        )
+        .filterSuccessfulStatusAndRedirectCodes()
+        .map(TONProviderResponse<Int>.self)
+        .tryMap { response in
+            throw WalletError.failedToParseNetworkResponse
+        }
+        .eraseToAnyPublisher()
     }
     
     /// Get estimate sending transaction Fee
@@ -59,7 +73,7 @@ struct TONNetworkProvider: HostProvider {
         provider.requestPublisher(
             .init(
                 host: host,
-                targetType: .estimateFee
+                targetType: .estimateFee(boc: "")
             )
         )
         .filterSuccessfulStatusAndRedirectCodes()

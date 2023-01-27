@@ -304,7 +304,8 @@ public class WalletManagerFactory {
                 wallet: wallet,
                 provider: TONNetworkProvider(
                     host: TONNetwork(testnet).host,
-                    provider: .init(configuration: networkProviderConfiguration)
+                    provider: .init(configuration: networkProviderConfiguration),
+                    blockchain: blockchain
                 )
             )
         case .dash(let testnet):

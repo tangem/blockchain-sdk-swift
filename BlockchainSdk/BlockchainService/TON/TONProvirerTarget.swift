@@ -11,12 +11,6 @@ import Moya
 
 struct TONProvirerTarget: TargetType {
     
-    public enum TargetType {
-        case estimateFee(boc: String )
-        case getBalance(address: String)
-        case seqno
-    }
-    
     // MARK: - Properties
     
     private(set) var host: String
@@ -69,10 +63,20 @@ struct TONProvirerTarget: TargetType {
         var headers = [
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "X-API-KEY": ""
+            "X-API-KEY": "21e8fb0fa0b6a4dcb14524489fd22c8b8904209fa9df19b227d7b8b30ca22de9"
         ]
         
         return headers
+    }
+    
+}
+
+extension TONProvirerTarget {
+    
+    public enum TargetType {
+        case estimateFee(boc: String )
+        case getBalance(address: String)
+        case seqno
     }
     
 }

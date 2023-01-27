@@ -32,24 +32,15 @@ final class TONWalletManager: BaseManager, WalletManager {
     // MARK: - Implementation
     
     func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        do {
-            cancellable = try provider.getBalanceWallet(
-                address: TONWallet(publicKey: wallet.publicKey.blockchainKey)
-                    .getAddress()
-                    .toString(isUserFriendly: true, isUrlSafe: true, isBounceable: true)
-                )
-                .sink(receiveCompletion: {[unowned self]  completionSubscription in
-                    if case let .failure(error) = completionSubscription {
-                        self.wallet.amounts = [:]
-                        completion(.failure(error))
-                    }
-                }, receiveValue: { [unowned self] response in
-                    wallet.add(coinValue: Decimal(response))
-                    completion(.success(()))
-                })
-        } catch {
-            completion(.failure(WalletError.failedToParseNetworkResponse))
-        }
+        cancellable = provider.getBalanceWallet(address: wallet.address)
+            .sink(receiveCompletion: {[unowned self]  completionSubscription in
+                if case let .failure(error) = completionSubscription {
+                    self.wallet.amounts = [:]
+                    completion(.failure(error))
+                }
+            }, receiveValue: { [unowned self] response in
+                self.update(by: response, completion)
+            })
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
@@ -78,7 +69,14 @@ final class TONWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        try provider.getFee(with: "").eraseToAnyPublisher()
+        provider.getFee(by: "").eraseToAnyPublisher()
+    }
+    
+    // MARK: - Private Implementation
+    
+    private func update(by response: Decimal, _ completion: @escaping (Result<Void, Error>) -> Void) {
+        wallet.add(coinValue: response)
+        completion(.success(()))
     }
     
 }
