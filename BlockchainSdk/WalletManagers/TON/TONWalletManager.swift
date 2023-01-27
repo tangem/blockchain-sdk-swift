@@ -48,9 +48,13 @@ final class TONWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
-        guard let txForSign = try? txBuilder?.buildForSign(transaction: transaction) else {
+        guard let txForSign = try? txBuilder?.buildForDeploy() else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
+        
+//        guard let txForDeploy = try? txBuilder?.buildForDeploy() else {
+//            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+//        }
         
         do {
             return try signer.sign(
@@ -58,23 +62,28 @@ final class TONWalletManager: BaseManager, WalletManager {
                 walletPublicKey: wallet.publicKey
             )
             .tryMap { [weak self] signature -> TONExternalMessage? in
-                let dummySignature = true
-                let signature = try dummySignature ? Data([UInt8](repeating: 0, count: 64)) : NaclSign.signDetached(
+                let signature = try NaclSign.signDetached(
                     message: Data(txForSign.hash()),
-                    secretKey: Data(hex: "3bab423792cc6d5df5efc96eb800af9c83ac9761548e5c1f472e63ac5a406de6995b3e6c86d4126f52a19115ea30d869da0b2e5502a19db1855eeb13081b870b")
+                    secretKey: Data(
+                        hex: ""
+                    )
                 )
-                
                 
                 guard let self = self else { throw WalletError.failedToBuildTx }
-                return try self.txBuilder?.buildForSend(
-                    signingMessage: txForSign,
-                    signature: signature
-                )
+                return try self.txBuilder?
+                    .buildForSignDeploy(
+                        signingMessage: txForSign,
+                        signature: signature
+                    )
             }
-            .tryMap { externalMessage in
-                guard let externalMessage = externalMessage else { throw WalletError.failedToBuildTx }
-                print(externalMessage)
-                throw WalletError.empty
+            .flatMap { [weak self] externalMessage -> AnyPublisher<Void, Error> in
+                guard let externalMessage = externalMessage else {
+                    return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+                }
+                
+                return self?.provider.send(message: externalMessage).tryMap { [weak self] _ in
+                    return
+                }.eraseToAnyPublisher() ?? .emptyFail
             }
             .eraseToAnyPublisher()
         } catch {
@@ -93,7 +102,7 @@ final class TONWalletManager: BaseManager, WalletManager {
     // MARK: - Private Implementation
     
     private func update(by response: Decimal, _ completion: @escaping (Result<Void, Error>) -> Void) {
-        txBuilder?.seqno = 348
+        txBuilder?.seqno = 85143
         wallet.add(coinValue: response)
         completion(.success(()))
     }

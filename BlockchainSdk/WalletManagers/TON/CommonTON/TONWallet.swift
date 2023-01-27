@@ -107,7 +107,7 @@ public class TONWallet: TONContract {
      * @param   withoutOp? {boolean}
      * @return {Cell}
      */
-    func createSigningMessage(seqno: Int?, expireAt: UInt?, withoutOp: Bool? = nil) throws -> TONCell {
+    func createSigningMessage(seqno: Int? = 0, expireAt: UInt?, withoutOp: Bool? = nil) throws -> TONCell {
         let seqno = seqno ?? 0
         let expireAt = expireAt ?? (UInt(floor((Date().timeIntervalSince1970) / 1e3)) + 60)
         
@@ -138,21 +138,52 @@ public class TONWallet: TONContract {
     }
     
     /**
+     * External message for initialization
+     * @param secretKey  {Uint8Array} nacl.KeyPair.secretKey
+     * @return {{address: Address, message: Cell, body: Cell, sateInit: Cell, code: Cell, data: Cell}}
+     */
+    func createInitExternalMessage(
+        signingMessage: TONCell,
+        signature: Array<UInt8>,
+        seqno: Int
+    ) throws -> TONExternalMessage {
+        let stateInit = try createStateInit()
+
+        let body = TONCell()
+        try body.raw.write(bytes: signature)
+        try body.write(cell: signingMessage)
+
+        let header = try TONContract.createExternalMessageHeader(dest: stateInit.address)
+        
+        let externalMessage = try TONContract.createCommonMsgInfo(
+            header: header,
+            stateInit: stateInit.stateInit,
+            body: body
+        )
+
+        return .init(
+            address: stateInit.address,
+            message: externalMessage,
+            body: body,
+            signature: signature,
+            stateInit: stateInit.stateInit,
+            code: stateInit.code,
+            data: stateInit.data
+        )
+    }
+    
+    /**
      * @protected
      * @param signingMessage {Cell}
      * @param secretKey {Uint8Array}  nacl.KeyPair.secretKey
      * @param seqno {number}
-     * @param dummySignature?    {boolean}
      * @return {Promise<{address: Address, signature: Uint8Array, message: Cell, cell: Cell, body: Cell, resultMessage: Cell}>}
      */
     func createExternalMessage(
         signingMessage: TONCell,
         signature: Array<UInt8>,
-        seqno: Int,
-        dummySignature: Bool = false
+        seqno: Int
     ) throws  -> TONExternalMessage {
-        let signMsgHash = try signingMessage.hash()
-        
         let body = TONCell()
         try body.raw.write(bytes: signature)
         try body.write(cell: signingMessage)

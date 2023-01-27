@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct TONFee: Decodable {
+struct TONFee: Decodable {
     
     /// Fees model
     let source_fees: SourceFees
@@ -18,7 +18,7 @@ public struct TONFee: Decodable {
 
 extension TONFee {
     
-    public struct SourceFees: Decodable {
+    struct SourceFees: Decodable {
         /// Is a charge for importing messages from outside the blockchain.
         /// Every time you make a transaction, it must be delivered to the validators who will process it.
         let in_fwd_fee: Decimal
@@ -36,3 +36,5 @@ extension TONFee {
     }
     
 }
+
+struct TONSendBoc: Decodable {}

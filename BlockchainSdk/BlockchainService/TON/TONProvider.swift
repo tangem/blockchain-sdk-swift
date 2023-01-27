@@ -91,4 +91,20 @@ struct TONNetworkProvider: HostProvider {
         .eraseToAnyPublisher()
     }
     
+    func send(message: TONExternalMessage) -> AnyPublisher<Void, Error> {
+        provider.requestPublisher(
+            .init(
+                host: host,
+                targetType: .sendBoc(message: message)
+            )
+        )
+        .filterSuccessfulStatusAndRedirectCodes()
+        .map(TONProviderResponse<TONSendBoc>.self)
+        .tryMap { _ in
+            print("success")
+            return Void()
+        }
+        .eraseToAnyPublisher()
+    }
+    
 }

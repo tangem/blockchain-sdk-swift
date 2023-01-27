@@ -70,9 +70,7 @@ struct TONProvirerTarget: TargetType {
         case .seqno:
             break
         case .sendBoc(let message):
-            let boc = try? Data(message.message.toBoc(false)).base64EncodedString()
-            print(boc ?? "")
-            parameters["body"] = boc
+            parameters["boc"] = try? Data(message.message.toBoc(false)).base64EncodedString()
         }
         
         return .requestParameters(parameters: parameters, encoding: encoding)
