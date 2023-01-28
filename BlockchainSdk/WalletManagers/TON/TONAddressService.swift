@@ -10,6 +10,7 @@ import Foundation
 import CryptoKit
 import SwiftCBOR
 import TangemSdk
+import TweetNacl
 
 /*
  "User-friendly" address is obtained by generating:
@@ -33,6 +34,8 @@ import TangemSdk
 
 public class TONAddressService: AddressService {
     
+    let keyPair = try! NaclSign.KeyPair.keyPair(fromSecretKey: Data(hex: "89c22612ff7344ef2ce17e14866cb52beda0c3bb09c2259d9801d63e182c4417968ffcd0678f3f898e20ae03c64c01ee84965e53b0812eb54ed9c96a76709c1a"))
+    
     public func makeAddress(from walletPublicKey: Data) throws -> String {
         let adress = try TONWallet(publicKey: walletPublicKey)
             .getAddress()
@@ -42,25 +45,10 @@ public class TONAddressService: AddressService {
     
     public func validate(_ address: String) -> Bool {
         do {
-            return try TONAddress.isValid(anyForm: address)
+            return TONAddress.isValid(anyForm: address)
         } catch {
             return false
         }
     }
     
 }
-
-//        try walletPublicKey.validateAsEdKey()
-//
-//        var combineAddress = Data()
-//        combineAddress.append(Byte(AddressTag.BOUNCEABLE.rawValue))
-//        combineAddress.append(Byte(0x00))
-//        combineAddress.append(walletPublicKey.bytes, count: walletPublicKey.bytes.count)
-//        let checksum = crc16(data: combineAddress.bytes)
-//        combineAddress.append(contentsOf: checksum.data.bytes)
-//
-//        print(walletPublicKey.hexString)
-//        print(combineAddress.bytes)
-//        print(combineAddress.bytes.count)
-//
-//        return combineAddress.base64EncodedString()

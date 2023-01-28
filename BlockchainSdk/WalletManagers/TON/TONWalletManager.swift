@@ -23,6 +23,8 @@ final class TONWalletManager: BaseManager, WalletManager {
     private var provider: TONNetworkProvider!
     private lazy var txBuilder = try? TONTransactionBuilder(wallet: wallet)
     
+    let keyPair = try! NaclSign.KeyPair.keyPair(fromSecretKey: Data(hex: "89c22612ff7344ef2ce17e14866cb52beda0c3bb09c2259d9801d63e182c4417968ffcd0678f3f898e20ae03c64c01ee84965e53b0812eb54ed9c96a76709c1a"))
+    
     // MARK: - Init
     
     init(wallet: Wallet, provider: TONNetworkProvider) {
@@ -48,13 +50,9 @@ final class TONWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
-        guard let txForSign = try? txBuilder?.buildForDeploy() else {
+        guard let txForSign = try? txBuilder?.buildForSign(transaction: transaction) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
-        
-//        guard let txForDeploy = try? txBuilder?.buildForDeploy() else {
-//            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
-//        }
         
         do {
             return try signer.sign(
@@ -62,19 +60,8 @@ final class TONWalletManager: BaseManager, WalletManager {
                 walletPublicKey: wallet.publicKey
             )
             .tryMap { [weak self] signature -> TONExternalMessage? in
-                let signature = try NaclSign.signDetached(
-                    message: Data(txForSign.hash()),
-                    secretKey: Data(
-                        hex: ""
-                    )
-                )
-                
                 guard let self = self else { throw WalletError.failedToBuildTx }
-                return try self.txBuilder?
-                    .buildForSignDeploy(
-                        signingMessage: txForSign,
-                        signature: signature
-                    )
+                return try self.txBuilder?.buildForSend(signingMessage: txForSign, signature: signature)
             }
             .flatMap { [weak self] externalMessage -> AnyPublisher<Void, Error> in
                 guard let externalMessage = externalMessage else {
@@ -102,9 +89,9 @@ final class TONWalletManager: BaseManager, WalletManager {
     // MARK: - Private Implementation
     
     private func update(by response: Decimal, _ completion: @escaping (Result<Void, Error>) -> Void) {
-        txBuilder?.seqno = 85143
         wallet.add(coinValue: response)
         completion(.success(()))
     }
     
 }
+                

@@ -114,15 +114,15 @@ public class TONWallet: TONContract {
         let message = TONCell()
         
         guard let walletId = self.options?.walletId else {
-            throw NSError()
+            throw TONError.exception("TON WalletID is empty")
         }
         
         try message.raw.write(uint: UInt(walletId), 32)
         
         if seqno == 0 {
             // message.bits.writeInt(-1, 32);// todo: dont work
-            try [Int](repeating: 1, count: 32).forEach {
-                try message.raw.write(int: $0, 1)
+            try [Int](repeating: 1, count: 32).forEach { _ in
+                try message.raw.write(bit: .one)
             }
         } else {
             try message.raw.write(uint: expireAt, 32)
@@ -144,8 +144,7 @@ public class TONWallet: TONContract {
      */
     func createInitExternalMessage(
         signingMessage: TONCell,
-        signature: Array<UInt8>,
-        seqno: Int
+        signature: Array<UInt8>
     ) throws -> TONExternalMessage {
         let stateInit = try createStateInit()
 

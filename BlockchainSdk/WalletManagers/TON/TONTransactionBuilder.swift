@@ -7,49 +7,26 @@
 //
 
 import Foundation
+import TweetNacl
 
 struct TONTransactionBuilder {
     
     // MARK: - Properties
     
-    var wallet: TONWallet?
-    var seqno: Int = 0
+    private var blockchain: Blockchain
+    private var wallet: TONWallet?
+    private var seqno: Int = 3
+    
+    let keyPair = try! NaclSign.KeyPair.keyPair(fromSecretKey: Data(hex: "89c22612ff7344ef2ce17e14866cb52beda0c3bb09c2259d9801d63e182c4417968ffcd0678f3f898e20ae03c64c01ee84965e53b0812eb54ed9c96a76709c1a"))
     
     // MARK: - Init
     
     init(wallet: Wallet) throws {
-//        self.wallet = try .init(publicKey: wallet.publicKey.blockchainKey)
-        self.wallet = try .init(publicKey: Data(hex: "995b3e6c86d4126f52a19115ea30d869da0b2e5502a19db1855eeb13081b870b"))
+        self.wallet = try .init(publicKey: wallet.publicKey.blockchainKey)
+        self.blockchain = wallet.blockchain
     }
     
     // MARK: - Implementation
-    
-    public func buildForDeploy() throws -> TONCell {
-        guard let signingMessage = try self.wallet?.createSigningMessage(
-            seqno: 0,
-            expireAt: 1674850800
-        ) else {
-            throw WalletError.failedToBuildTx
-        }
-        
-        return signingMessage
-    }
-    
-    /// Build for sign transaction in form TON Cell
-    /// - Parameters:
-    ///   - transaction: Transaction model
-    /// - Returns: Blockchain Cell
-    public func buildForSignDeploy(signingMessage: TONCell, signature: Data) throws -> TONExternalMessage {
-        guard let externalMessage = try self.wallet?.createInitExternalMessage(
-            signingMessage: signingMessage,
-            signature: signature.bytes,
-            seqno: seqno
-        ) else {
-            throw WalletError.failedToBuildTx
-        }
-        
-        return externalMessage
-    }
     
     /// Build external message TON blockchain for estimate fee with dummy signature
     /// - Parameters:
@@ -59,7 +36,7 @@ struct TONTransactionBuilder {
     public func buildForEstimateFee(amount: Amount, destination: String) throws -> TONExternalMessage {
         guard let signingMessage = try self.wallet?.createTransferMessage(
             address: destination,
-            amount: (amount.value as NSDecimalNumber).uintValue,
+            amount: ((amount.value * blockchain.decimalValue) as NSDecimalNumber).uintValue,
             seqno: seqno,
             dummySignature: true
         ) else {
@@ -84,9 +61,8 @@ struct TONTransactionBuilder {
     public func buildForSign(transaction: Transaction) throws -> TONCell {
         guard let signingMessage = try self.wallet?.createTransferMessage(
             address: transaction.destinationAddress,
-            amount: 100,
-            seqno: seqno,
-            expireAt: 1675004992
+            amount: ((transaction.amount.value * blockchain.decimalValue) as NSDecimalNumber).uintValue,
+            seqno: seqno
         ) else {
             throw WalletError.failedToBuildTx
         }
