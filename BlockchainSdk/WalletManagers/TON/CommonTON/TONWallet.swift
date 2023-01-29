@@ -54,7 +54,7 @@ public class TONWallet: TONContract {
      * @param expireAt? {number}
      * @return {Promise<{address: Address, signature: Uint8Array, message: Cell, cell: Cell, body: Cell, resultMessage: Cell}>}
      */
-    public func createTransferMessage(
+    func createTransferMessage(
         address: String,
         amount: UInt,
         payload: String? = nil,
@@ -89,7 +89,7 @@ public class TONWallet: TONContract {
         return signingMessage
     }
     
-    public func signTransferMessage(_ signingMessage: TONCell, _ seqno: Int, signature: Array<UInt8>) throws -> TONExternalMessage {
+    func signTransferMessage(_ signingMessage: TONCell, _ seqno: Int, signature: Array<UInt8>) throws -> TONExternalMessage {
         try self.createExternalMessage(
             signingMessage: signingMessage,
             signature: signature,

@@ -9,7 +9,7 @@
 import CryptoSwift
 import Foundation
 
-public class TonCellRaw {
+final class TonCellRaw: RawRepresentable {
     
     // MARK: - Typealias
     
@@ -29,9 +29,13 @@ public class TonCellRaw {
     
     // MARK: - Private Properties
     
-    private var rawValue: Array<UInt8>
+    var rawValue: Array<UInt8>
     
     // MARK: - Init
+    
+    init?(rawValue: Array<UInt8>) {
+        self.rawValue = rawValue
+    }
     
     init(_ rawValue: Array<UInt8>? = nil) {
         self.rawValue = rawValue ?? [UInt8](repeating: 0, count: 128)

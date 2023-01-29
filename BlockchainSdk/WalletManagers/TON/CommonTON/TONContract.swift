@@ -18,15 +18,15 @@ open class TONContract {
     
     // MARK: - Public Properties
     
-    public var options: TONContractOption?
-    public var address: TONAddress?
-    public var wc: Int?
+    var options: TONContractOption?
+    var address: TONAddress?
+    var wc: Int?
     
     /**
      * @param provider    {HttpProvider}
      * @param options    {{code?: Cell, address?: Address | string, wc?: number}}
      */
-    public init(options: TONContractOption) {
+    init(options: TONContractOption) {
         self.options = options
         self.address = options.address
         self.wc = self.address?.wc ?? 0
@@ -35,7 +35,7 @@ open class TONContract {
     /**
      * @return {Promise<Address>}
      */
-    public func getAddress() throws -> TONAddress {
+    func getAddress() throws -> TONAddress {
         if let address = self.address {
             return address
         } else {

@@ -13,7 +13,7 @@ let reachBocMagicPrefix = Data(hex: "b5ee9c72").bytes
 let leanBocMagicPrefix = Data(hex: "68ff65f3").bytes
 let leanBocMagicPrefixCRC = Data(hex: "acc3a728").bytes
 
-public final class TONCell {
+final class TONCell {
     
     typealias Bit = CryptoSwift.Bit
     

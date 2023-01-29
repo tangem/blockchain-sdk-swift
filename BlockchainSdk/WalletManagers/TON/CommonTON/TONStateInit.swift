@@ -9,8 +9,8 @@
 import Foundation
 
 public struct TONStateInit {
-    public let stateInit: TONCell
-    public let address: TONAddress
-    public let code: TONCell
-    public let data: TONCell
+    let stateInit: TONCell
+    let address: TONAddress
+    let code: TONCell
+    let data: TONCell
 }

@@ -15,7 +15,7 @@ struct TONTransactionBuilder {
     
     private var blockchain: Blockchain
     private var wallet: TONWallet?
-    private var seqno: Int = 3
+    private var seqno: Int = 5
     
     let keyPair = try! NaclSign.KeyPair.keyPair(fromSecretKey: Data(hex: "89c22612ff7344ef2ce17e14866cb52beda0c3bb09c2259d9801d63e182c4417968ffcd0678f3f898e20ae03c64c01ee84965e53b0812eb54ed9c96a76709c1a"))
     
@@ -62,7 +62,8 @@ struct TONTransactionBuilder {
         guard let signingMessage = try self.wallet?.createTransferMessage(
             address: transaction.destinationAddress,
             amount: ((transaction.amount.value * blockchain.decimalValue) as NSDecimalNumber).uintValue,
-            seqno: seqno
+            seqno: seqno,
+            expireAt: 1675189180
         ) else {
             throw WalletError.failedToBuildTx
         }

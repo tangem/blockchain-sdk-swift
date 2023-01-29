@@ -8,9 +8,9 @@
 
 import Foundation
 
-public struct TONContractOption {
-    public let code: TONCell?
-    public let address: TONAddress?
-    public let walletId: UInt32?
-    public let wc: Int?
+struct TONContractOption {
+    let code: TONCell?
+    let address: TONAddress?
+    let walletId: UInt32?
+    let wc: Int?
 }
