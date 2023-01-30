@@ -44,11 +44,10 @@ public struct TONAddress {
         }
     }
     
-    /**
-     * @private
-     * @param addressString {string}
-     * @return {{isTestOnly: boolean, workchain: number, hashPart: Uint8Array, isBounceable: boolean}}
-     */
+    
+    /// Parse address form in User-Friendly address
+    /// - Parameter addressString: Any form address of wallet
+    /// - Returns: TONAddress form {isTestOnly: boolean, workchain: number, hashPart: Uint8Array, isBounceable: boolean}
     static func parseFriendlyAddress(_ addressString: String) throws -> TONAddress {
         guard addressString.count == 48 else {
             throw TONError.exception("User-friendly address should contain strictly 48 characters")

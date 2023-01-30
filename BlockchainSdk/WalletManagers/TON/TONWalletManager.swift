@@ -9,7 +9,6 @@
 import Foundation
 import Combine
 import TangemSdk
-import TweetNacl
 
 final class TONWalletManager: BaseManager, WalletManager {
     
@@ -22,8 +21,6 @@ final class TONWalletManager: BaseManager, WalletManager {
     
     private var provider: TONNetworkProvider!
     private lazy var txBuilder = try? TONTransactionBuilder(wallet: wallet)
-    
-    let keyPair = try! NaclSign.KeyPair.keyPair(fromSecretKey: Data(hex: "89c22612ff7344ef2ce17e14866cb52beda0c3bb09c2259d9801d63e182c4417968ffcd0678f3f898e20ae03c64c01ee84965e53b0812eb54ed9c96a76709c1a"))
     
     // MARK: - Init
     
