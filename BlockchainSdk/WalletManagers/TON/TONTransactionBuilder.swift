@@ -14,7 +14,7 @@ struct TONTransactionBuilder {
     
     private var blockchain: Blockchain
     private var wallet: TONWallet?
-    private var seqno: Int = 6
+    private var seqno: Int = 8
     
     // MARK: - Init
     
