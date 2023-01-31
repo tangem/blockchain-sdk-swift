@@ -61,7 +61,7 @@ struct TONTransactionBuilder {
             address: transaction.destinationAddress,
             amount: ((transaction.amount.value * blockchain.decimalValue) as NSDecimalNumber).uintValue,
             seqno: seqno,
-            expireAt: 1676907035
+            expireAt: 1682006419
         ) else {
             throw WalletError.failedToBuildTx
         }

@@ -74,7 +74,7 @@ class TONNetworkService: MultiNetworkProvider {
                 return provider
                     .getFee(
                         address: message.address.toString(),
-                        body: try? Data(message.body.toBoc(false)).base64EncodedString()
+                        body: try? Data(message.message.toBoc(false)).base64EncodedString()
                     )
                     .tryMap { [weak self] fee in
                         guard let self = self else {
