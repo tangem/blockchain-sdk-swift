@@ -67,7 +67,7 @@ extension PolkadotWalletManager: TransactionSender {
         false
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         Publishers.Zip(
             networkService.blockchainMeta(for: transaction.sourceAddress),
             networkService.getInfo(for: transaction.destinationAddress)
@@ -97,6 +97,8 @@ extension PolkadotWalletManager: TransactionSender {
             var submittedTransaction = transaction
             submittedTransaction.hash = transactionID
             self?.wallet.transactions.append(submittedTransaction)
+            
+            return TransactionSendResult(hash: transactionID)
         }
         .eraseToAnyPublisher()
     }
