@@ -49,7 +49,7 @@ extension Data {
     }
 }
 
-public extension Data {
+extension Data {
     
     func base64EncodedURLSafe(options: Base64DecodingOptions = []) -> String {
         let string = self.base64EncodedString()
@@ -65,6 +65,18 @@ public extension Data {
             .replacingOccurrences(of: "_", with: "/")
 
         self.init(base64Encoded: string, options: options)
+    }
+    
+}
+
+extension Data {
+    
+    init?(optional bytes: Array<UInt8>?) {
+        guard bytes == nil else {
+            return nil
+        }
+        
+        self = Data(bytes ?? [])
     }
     
 }

@@ -70,6 +70,7 @@ public class WalletManagerFactory {
     func makeWalletManager(from blockchain: Blockchain,
                            publicKey: Wallet.PublicKey,
                            pairPublicKey: Data? = nil) throws -> WalletManager {
+        
         let addresses = try blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey)
         let wallet = Wallet(blockchain: blockchain,
                             addresses: addresses,
@@ -373,14 +374,16 @@ public class WalletManagerFactory {
                 $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
             }
         case .ton(testnet: let testnet):
-            return TONWalletManager(
+            let assemblyInput = BlockchainAssemblyFactoryInput(
+                blockchain: blockchain,
+                blockchainConfig: config,
+                publicKey: publicKey,
+                pairPublicKey: pairPublicKey,
                 wallet: wallet,
-                provider: TONNetworkProvider(
-                    host: TONNetwork(testnet).host,
-                    provider: .init(configuration: networkProviderConfiguration),
-                    blockchain: blockchain
-                )
+                networkConfig: networkProviderConfiguration
             )
+            
+            return try TONBlockchainAssemblyFactory().assembly(with: assemblyInput)
         case .dash(let testnet):
             return try makeDashWalletManager(testnet: testnet, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
         }

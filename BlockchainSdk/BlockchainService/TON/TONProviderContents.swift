@@ -8,17 +8,31 @@
 
 import Foundation
 
-struct TONFee: Decodable {
+struct TONWalletInfo: Codable {
     
-    /// Fees model
-    let source_fees: SourceFees
+    /// Is chain transaction wallet
+    let wallet: Bool
+    
+    /// Balance in string value
+    let balance: String
+    
+    /// State of wallet
+    let account_state: String
+    
+    /// Sequence number transations
+    let seqno: Int
+    
+    /// Identifier type wallet
+    let wallet_id: UInt
+    
+    /// Type of wallet
+    let wallet_type: String
     
 }
 
-
-extension TONFee {
+struct TONFee: Codable {
     
-    struct SourceFees: Decodable {
+    struct SourceFees: Codable {
         /// Is a charge for importing messages from outside the blockchain.
         /// Every time you make a transaction, it must be delivered to the validators who will process it.
         let in_fwd_fee: Decimal
@@ -35,6 +49,24 @@ extension TONFee {
         let fwd_fee: Decimal
     }
     
+    // MARK: - Properties
+    
+    /// Fees model
+    let source_fees: SourceFees
+    
 }
 
-struct TONSendBoc: Decodable {}
+struct TONSendBoc: Codable {}
+
+struct TONSeqno: Codable {
+    
+    struct Stack: Codable {
+        let num: String
+    }
+    
+    // MARK: - Properties
+    
+    /// Container seqno number
+    let stack: [[Stack]]
+    
+}

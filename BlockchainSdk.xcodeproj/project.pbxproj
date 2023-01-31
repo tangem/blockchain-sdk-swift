@@ -29,6 +29,11 @@
 		2D3943102987FF5300FBEA9C /* TONProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D39430B2987FF5300FBEA9C /* TONProvider.swift */; };
 		2D3943132987FF5F00FBEA9C /* TONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3943122987FF5F00FBEA9C /* TONTests.swift */; };
 		2D3943152987FFAB00FBEA9C /* Bool+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3943142987FFAB00FBEA9C /* Bool+.swift */; };
+		2D640FEA298963AC00B16FA8 /* TONProviderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D640FE9298963AC00B16FA8 /* TONProviderRequest.swift */; };
+		2DE4585829891BB000AA3C61 /* TONNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE4585729891BB000AA3C61 /* TONNetworkService.swift */; };
+		2DE4585A2989217E00AA3C61 /* TONBlockchainAssemblyFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE458592989217E00AA3C61 /* TONBlockchainAssemblyFactory.swift */; };
+		2DE4585D298929EE00AA3C61 /* BitcoinBlockchainAssemblyFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE4585C298929EE00AA3C61 /* BitcoinBlockchainAssemblyFactory.swift */; };
+		2DE4585F2989304300AA3C61 /* BlockchainAssemblyFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE4585E2989304300AA3C61 /* BlockchainAssemblyFactory.swift */; };
 		5D006ACD239950F9008BA04D /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D006ACC239950F9008BA04D /* Wallet.swift */; };
 		5D01BCE2243F7F7E0048D1BA /* XrpTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D01BCE1243F7F7E0048D1BA /* XrpTarget.swift */; };
 		5D03D2D0253DE61B009A8A9F /* TezosAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D03D2CF253DE61B009A8A9F /* TezosAddressService.swift */; };
@@ -311,6 +316,11 @@
 		2D39430B2987FF5300FBEA9C /* TONProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProvider.swift; sourceTree = "<group>"; };
 		2D3943122987FF5F00FBEA9C /* TONTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONTests.swift; sourceTree = "<group>"; };
 		2D3943142987FFAB00FBEA9C /* Bool+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bool+.swift"; sourceTree = "<group>"; };
+		2D640FE9298963AC00B16FA8 /* TONProviderRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONProviderRequest.swift; sourceTree = "<group>"; };
+		2DE4585729891BB000AA3C61 /* TONNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONNetworkService.swift; sourceTree = "<group>"; };
+		2DE458592989217E00AA3C61 /* TONBlockchainAssemblyFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONBlockchainAssemblyFactory.swift; sourceTree = "<group>"; };
+		2DE4585C298929EE00AA3C61 /* BitcoinBlockchainAssemblyFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinBlockchainAssemblyFactory.swift; sourceTree = "<group>"; };
+		2DE4585E2989304300AA3C61 /* BlockchainAssemblyFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainAssemblyFactory.swift; sourceTree = "<group>"; };
 		3452E77A600B278568F13FA9 /* Pods-BlockchainSdkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.release.xcconfig"; sourceTree = "<group>"; };
 		556382E16FB9B2894A77374E /* Pods-BlockchainSdkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.debug.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.debug.xcconfig"; sourceTree = "<group>"; };
 		5D006ACC239950F9008BA04D /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
@@ -620,11 +630,10 @@
 		2D3943062987FF5300FBEA9C /* TON */ = {
 			isa = PBXGroup;
 			children = (
-				2D3943072987FF5300FBEA9C /* TONProviderContents.swift */,
-				2D3943082987FF5300FBEA9C /* TONProviderResponse.swift */,
-				2D3943092987FF5300FBEA9C /* TONProvirerTarget.swift */,
+				2D640FEB29896F7900B16FA8 /* TonCenterProvider */,
 				2D39430A2987FF5300FBEA9C /* TONNetwork.swift */,
-				2D39430B2987FF5300FBEA9C /* TONProvider.swift */,
+				2DE4585729891BB000AA3C61 /* TONNetworkService.swift */,
+				2D3943072987FF5300FBEA9C /* TONProviderContents.swift */,
 			);
 			path = TON;
 			sourceTree = "<group>";
@@ -635,6 +644,27 @@
 				2D3943122987FF5F00FBEA9C /* TONTests.swift */,
 			);
 			path = TON;
+			sourceTree = "<group>";
+		};
+		2D640FEB29896F7900B16FA8 /* TonCenterProvider */ = {
+			isa = PBXGroup;
+			children = (
+				2D640FE9298963AC00B16FA8 /* TONProviderRequest.swift */,
+				2D3943082987FF5300FBEA9C /* TONProviderResponse.swift */,
+				2D3943092987FF5300FBEA9C /* TONProvirerTarget.swift */,
+				2D39430B2987FF5300FBEA9C /* TONProvider.swift */,
+			);
+			path = TonCenterProvider;
+			sourceTree = "<group>";
+		};
+		2DE4585B2989218100AA3C61 /* BlockchainAssemblyFactories */ = {
+			isa = PBXGroup;
+			children = (
+				2DE458592989217E00AA3C61 /* TONBlockchainAssemblyFactory.swift */,
+				2DE4585C298929EE00AA3C61 /* BitcoinBlockchainAssemblyFactory.swift */,
+				2DE4585E2989304300AA3C61 /* BlockchainAssemblyFactory.swift */,
+			);
+			path = BlockchainAssemblyFactories;
 			sourceTree = "<group>";
 		};
 		5D01BCE0243F7F6F0048D1BA /* XRP */ = {
@@ -751,6 +781,7 @@
 				DA656FC9295454C10092CC61 /* Constants.swift */,
 				DAD65BAF2955F201003B3E8D /* EthereumApiKeys.swift */,
 				DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */,
+				2DE4585B2989218100AA3C61 /* BlockchainAssemblyFactories */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -1679,6 +1710,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DE4585F2989304300AA3C61 /* BlockchainAssemblyFactory.swift in Sources */,
 				5D4B33D123F7DC7500C93A84 /* BinanceAddressService.swift in Sources */,
 				5D01BCE2243F7F7E0048D1BA /* XrpTarget.swift in Sources */,
 				5D7D242925136254001B9A4F /* XRPLedger.swift in Sources */,
@@ -1692,6 +1724,7 @@
 				5DC7DD64244077E4008F83F2 /* XRPTransactionBuilder.swift in Sources */,
 				DAF0867027A9438C0024312E /* PolkadotNetworkService.swift in Sources */,
 				DA9F76E927EC8AEB00F0665C /* TronAddressService.swift in Sources */,
+				2DE4585829891BB000AA3C61 /* TONNetworkService.swift in Sources */,
 				5D304390239A58C90066B8D9 /* BitcoinWalletManager.swift in Sources */,
 				5D4B33DA23FAAD1B00C93A84 /* BitcoreResponse.swift in Sources */,
 				EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */,
@@ -1788,6 +1821,7 @@
 				DAB6548D2796C5F00002A5E8 /* SolanaTransactionSigner.swift in Sources */,
 				5D54FE1E23E4313A009FAC2F /* LitecoinWalletManager.swift in Sources */,
 				5D557CAE23AA771E009B32AF /* EthereumNetworkService.swift in Sources */,
+				2DE4585A2989217E00AA3C61 /* TONBlockchainAssemblyFactory.swift in Sources */,
 				DA9F76FE27ECA78800F0665C /* TronNetworkModels.swift in Sources */,
 				2D3942FE2987FF4300FBEA9C /* TONWallet.swift in Sources */,
 				B0C8222A25F8DA860027E3BF /* CardanoNetworkService.swift in Sources */,
@@ -1811,6 +1845,7 @@
 				5D304394239A6A6B0066B8D9 /* WalletManagerFactory.swift in Sources */,
 				DA82434327A2B0C100CFC2C0 /* PolkadotResponse.swift in Sources */,
 				5D006ACD239950F9008BA04D /* Wallet.swift in Sources */,
+				2DE4585D298929EE00AA3C61 /* BitcoinBlockchainAssemblyFactory.swift in Sources */,
 				5DC7DD66244077F2008F83F2 /* XRPWalletManager.swift in Sources */,
 				2D3943102987FF5300FBEA9C /* TONProvider.swift in Sources */,
 				DA3081322817EC1A00DE41F1 /* TronTransactionBuilder.swift in Sources */,
@@ -1870,6 +1905,7 @@
 				B07EE8B225AC1504009DB163 /* DateFormatter+.swift in Sources */,
 				2D3943152987FFAB00FBEA9C /* Bool+.swift in Sources */,
 				5D557CB523ACCAD2009B32AF /* BlockcypherNetworkProvider.swift in Sources */,
+				2D640FEA298963AC00B16FA8 /* TONProviderRequest.swift in Sources */,
 				5D7D243725136254001B9A4F /* XRPCurrentLedgerInfo.swift in Sources */,
 				5DD831BC244DF5BD00F80CEA /* AddressService.swift in Sources */,
 				DA656FCA295454C10092CC61 /* Constants.swift in Sources */,

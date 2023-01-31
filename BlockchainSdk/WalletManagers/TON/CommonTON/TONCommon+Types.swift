@@ -166,3 +166,11 @@ extension Bool {
     }
     
 }
+
+extension TONCell {
+    
+    func hashData() throws -> Data {
+        try Data(self.hash())
+    }
+    
+}

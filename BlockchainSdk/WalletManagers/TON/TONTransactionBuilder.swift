@@ -12,9 +12,10 @@ struct TONTransactionBuilder {
     
     // MARK: - Properties
     
+    var seqno: Int = 0
+    
     private var blockchain: Blockchain
     private var wallet: TONWallet?
-    private var seqno: Int = 8
     
     // MARK: - Init
     
@@ -60,7 +61,7 @@ struct TONTransactionBuilder {
             address: transaction.destinationAddress,
             amount: ((transaction.amount.value * blockchain.decimalValue) as NSDecimalNumber).uintValue,
             seqno: seqno,
-            expireAt: 1677493902
+            expireAt: 1676907035
         ) else {
             throw WalletError.failedToBuildTx
         }
