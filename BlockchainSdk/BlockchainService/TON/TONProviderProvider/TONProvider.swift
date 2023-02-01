@@ -14,24 +14,45 @@ struct TONProvider: HostProvider {
     // MARK: - HostProvider
     
     /// Blockchain API host
-    private(set) var host: String
+    var host: String {
+        node.endpoint.url.path
+    }
+    
+    /// Configuration connection node for provider
+    private(set) var node: TONNetworkNode
     
     // MARK: - Properties
     
     /// Network provider of blockchain
     private(set) var network: NetworkProvider<TONProviderTarget>
     
+    // MARK: - Init
+    
+    init?(
+        nodeName: TONNodeName,
+        config: BlockchainSdkConfig,
+        network: NetworkProvider<TONProviderTarget>,
+        isTestnet: Bool
+    ) {
+        guard let node = TONNetworkNode(config: config, nodeName: nodeName, isTestnet: isTestnet) else {
+            return nil
+        }
+        
+        self.node = node
+        self.network = network
+    }
+    
     // MARK: - Implementation
     
     func getInfoWallet(address: String) -> AnyPublisher<TONWalletInfo, Error> {
-        requestPublisher(for: .init(host: host, targetType: .getInfo(address: address)))
+        requestPublisher(for: .init(node: node, targetType: .getInfo(address: address)))
     }
     
     /// Fetch balance wallet by address
     /// - Parameter address: UserFriendly TON address wallet
     /// - Returns: String balance wallet adress or Error
     func getBalanceWallet(address: String) -> AnyPublisher<String, Error> {
-        requestPublisher(for: .init(host: host, targetType: .getBalance(address: address)))
+        requestPublisher(for: .init(node: node, targetType: .getBalance(address: address)))
         
     }
     
@@ -39,7 +60,7 @@ struct TONProvider: HostProvider {
     /// - Parameter boc: Bag of Cells wallet transaction for destination
     /// - Returns: Fees or Error
     func getFee(address: String, body: String?) -> AnyPublisher<TONFee, Error> {
-        requestPublisher(for: .init(host: host, targetType: .estimateFee(address: address, body: body)))
+        requestPublisher(for: .init(node: node, targetType: .estimateFee(address: address, body: body)))
     }
     
     /// Get estimate sending transaction Fee
@@ -48,7 +69,7 @@ struct TONProvider: HostProvider {
     func getFeeWithCode(address: String, body: String?, code: String?, data: String?) -> AnyPublisher<TONFee, Error> {
         requestPublisher(
             for: .init(
-                host: host,
+                node: node,
                 targetType: .estimateFeeWithCode(address: address, body: body, initCode: code, initData: data)
             )
         )
@@ -56,7 +77,7 @@ struct TONProvider: HostProvider {
     
     func send(message: String) -> AnyPublisher<TONSendBoc, Error> {
         requestPublisher(
-            for: .init(host: host, targetType: .sendBoc(message: message))
+            for: .init(node: node, targetType: .sendBoc(message: message))
         )
     }
     

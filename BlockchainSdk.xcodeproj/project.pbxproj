@@ -32,7 +32,6 @@
 		2D640FEA298963AC00B16FA8 /* TONProviderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D640FE9298963AC00B16FA8 /* TONProviderRequest.swift */; };
 		2DE4585829891BB000AA3C61 /* TONNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE4585729891BB000AA3C61 /* TONNetworkService.swift */; };
 		2DE4585A2989217E00AA3C61 /* TONBlockchainAssemblyFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE458592989217E00AA3C61 /* TONBlockchainAssemblyFactory.swift */; };
-		2DE4585D298929EE00AA3C61 /* BitcoinBlockchainAssemblyFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE4585C298929EE00AA3C61 /* BitcoinBlockchainAssemblyFactory.swift */; };
 		2DE4585F2989304300AA3C61 /* BlockchainAssemblyFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE4585E2989304300AA3C61 /* BlockchainAssemblyFactory.swift */; };
 		5D006ACD239950F9008BA04D /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D006ACC239950F9008BA04D /* Wallet.swift */; };
 		5D01BCE2243F7F7E0048D1BA /* XrpTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D01BCE1243F7F7E0048D1BA /* XrpTarget.swift */; };
@@ -319,7 +318,6 @@
 		2D640FE9298963AC00B16FA8 /* TONProviderRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONProviderRequest.swift; sourceTree = "<group>"; };
 		2DE4585729891BB000AA3C61 /* TONNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONNetworkService.swift; sourceTree = "<group>"; };
 		2DE458592989217E00AA3C61 /* TONBlockchainAssemblyFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONBlockchainAssemblyFactory.swift; sourceTree = "<group>"; };
-		2DE4585C298929EE00AA3C61 /* BitcoinBlockchainAssemblyFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinBlockchainAssemblyFactory.swift; sourceTree = "<group>"; };
 		2DE4585E2989304300AA3C61 /* BlockchainAssemblyFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainAssemblyFactory.swift; sourceTree = "<group>"; };
 		3452E77A600B278568F13FA9 /* Pods-BlockchainSdkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.release.xcconfig"; sourceTree = "<group>"; };
 		556382E16FB9B2894A77374E /* Pods-BlockchainSdkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.debug.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.debug.xcconfig"; sourceTree = "<group>"; };
@@ -661,7 +659,6 @@
 			isa = PBXGroup;
 			children = (
 				2DE458592989217E00AA3C61 /* TONBlockchainAssemblyFactory.swift */,
-				2DE4585C298929EE00AA3C61 /* BitcoinBlockchainAssemblyFactory.swift */,
 				2DE4585E2989304300AA3C61 /* BlockchainAssemblyFactory.swift */,
 			);
 			path = BlockchainAssemblyFactories;
@@ -1845,7 +1842,6 @@
 				5D304394239A6A6B0066B8D9 /* WalletManagerFactory.swift in Sources */,
 				DA82434327A2B0C100CFC2C0 /* PolkadotResponse.swift in Sources */,
 				5D006ACD239950F9008BA04D /* Wallet.swift in Sources */,
-				2DE4585D298929EE00AA3C61 /* BitcoinBlockchainAssemblyFactory.swift in Sources */,
 				5DC7DD66244077F2008F83F2 /* XRPWalletManager.swift in Sources */,
 				2D3943102987FF5300FBEA9C /* TONProvider.swift in Sources */,
 				DA3081322817EC1A00DE41F1 /* TronTransactionBuilder.swift in Sources */,

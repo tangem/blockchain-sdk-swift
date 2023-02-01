@@ -22,10 +22,24 @@ struct TONBlockchainAssemblyFactory: BlockchainAssemblyFactoryProtocol {
             service: .init(
                 providers: [
                     TONProvider(
-                        host: TONNetworkUrl(isTestnet).host,
-                        network: .init(configuration: input.networkConfig)
+                        nodeName: .toncenter,
+                        config: input.blockchainConfig,
+                        network: .init(configuration: input.networkConfig),
+                        isTestnet: isTestnet
+                    ),
+                    TONProvider(
+                        nodeName: .getblock,
+                        config: input.blockchainConfig,
+                        network: .init(configuration: input.networkConfig),
+                        isTestnet: isTestnet
+                    ),
+                    TONProvider(
+                        nodeName: .nownodes,
+                        config: input.blockchainConfig,
+                        network: .init(configuration: input.networkConfig),
+                        isTestnet: isTestnet
                     )
-                ],
+                ].compactMap({$0}),
                 blockchain: input.blockchain
             )
         )

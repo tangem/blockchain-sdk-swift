@@ -13,13 +13,13 @@ struct TONProviderTarget: TargetType {
     
     // MARK: - Properties
     
-    private(set) var host: String
+    private(set) var node: TONNetworkNode
     private(set) var targetType: TargetType
     
     // MARK: - TargetType
     
     var baseURL: URL {
-        return URL(string: host)!
+        return node.endpoint.url
     }
     
     var path: String {
@@ -70,11 +70,21 @@ struct TONProviderTarget: TargetType {
     }
     
     var headers: [String : String]? {
-        return [
+        var headers: [String : String] = [
             "Accept": "application/json",
-            "Content-Type": "application/json",
-            "X-API-KEY": "21e8fb0fa0b6a4dcb14524489fd22c8b8904209fa9df19b227d7b8b30ca22de9"
+            "Content-Type": "application/json"
         ]
+        
+        switch node.nodeName {
+        case .toncenter:
+            headers[node.endpoint.apiKeyHeaderName ?? ""] = node.endpoint.apiKeyHeaderValue ?? ""
+        case .getblock:
+            break
+        case .nownodes:
+            break
+        }
+        
+        return headers
     }
     
 }
