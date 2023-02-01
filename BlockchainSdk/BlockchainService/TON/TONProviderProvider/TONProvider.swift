@@ -19,7 +19,7 @@ struct TONProvider: HostProvider {
     // MARK: - Properties
     
     /// Network provider of blockchain
-    private(set) var network: NetworkProvider<TONProvirerTarget>
+    private(set) var network: NetworkProvider<TONProviderTarget>
     
     // MARK: - Implementation
     
@@ -62,7 +62,7 @@ struct TONProvider: HostProvider {
     
     // MARK: - Private Implementation
     
-    private func requestPublisher<T: Codable>(for target: TONProvirerTarget) -> AnyPublisher<T, Error> {
+    private func requestPublisher<T: Codable>(for target: TONProviderTarget) -> AnyPublisher<T, Error> {
         return network.requestPublisher(target)
             .filterSuccessfulStatusAndRedirectCodes()
             .map(TONProviderResponse<T>.self)

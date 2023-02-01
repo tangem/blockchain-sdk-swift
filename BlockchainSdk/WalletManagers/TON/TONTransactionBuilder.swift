@@ -60,8 +60,7 @@ struct TONTransactionBuilder {
         guard let signingMessage = try self.wallet?.createTransferMessage(
             address: transaction.destinationAddress,
             amount: ((transaction.amount.value * blockchain.decimalValue) as NSDecimalNumber).uintValue,
-            seqno: seqno,
-            expireAt: 1682006419
+            seqno: seqno
         ) else {
             throw WalletError.failedToBuildTx
         }

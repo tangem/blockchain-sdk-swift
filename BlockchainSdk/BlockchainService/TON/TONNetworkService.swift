@@ -98,7 +98,7 @@ class TONNetworkService: MultiNetworkProvider {
     func send(message: TONExternalMessage) -> AnyPublisher<Void, Error> {
         providerPublisher { provider in
             provider
-                .send(message: (try? Data(message.body.toBoc(false)))?.base64EncodedString() ?? "")
+                .send(message: (try? Data(message.message.toBoc(false)))?.base64EncodedString() ?? "")
                 .tryMap { _ in return () }
                 .eraseToAnyPublisher()
         }

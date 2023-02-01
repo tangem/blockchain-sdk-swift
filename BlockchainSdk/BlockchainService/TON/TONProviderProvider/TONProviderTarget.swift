@@ -1,5 +1,5 @@
 //
-//  TONProvirerTarget.swift
+//  TONProviderTarget.swift
 //  BlockchainSdk
 //
 //  Created by skibinalexander on 26.01.2023.
@@ -9,7 +9,7 @@
 import Foundation
 import Moya
 
-struct TONProvirerTarget: TargetType {
+struct TONProviderTarget: TargetType {
     
     // MARK: - Properties
     
@@ -79,7 +79,7 @@ struct TONProvirerTarget: TargetType {
     
 }
 
-extension TONProvirerTarget {
+extension TONProviderTarget {
     
     public enum TargetType {
         case getInfo(address: String)

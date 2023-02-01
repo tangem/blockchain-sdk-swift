@@ -22,7 +22,7 @@ struct TONBlockchainAssemblyFactory: BlockchainAssemblyFactoryProtocol {
             service: .init(
                 providers: [
                     TONProvider(
-                        host: TONNetwork(isTestnet).host,
+                        host: TONNetworkUrl(isTestnet).host,
                         network: .init(configuration: input.networkConfig)
                     )
                 ],

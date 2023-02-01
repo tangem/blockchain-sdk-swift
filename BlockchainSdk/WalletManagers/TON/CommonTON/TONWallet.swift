@@ -80,7 +80,7 @@ public class TONWallet: TONContract {
         
         let signingMessage = try createSigningMessage(
             seqno: seqno,
-            expireAt: expireAt
+            expireAt: expireAt ?? UInt(Date().addingTimeInterval(1 * 60).timeIntervalSince1970)
         )
         
         try signingMessage.raw.write(int: sendMode, 8)

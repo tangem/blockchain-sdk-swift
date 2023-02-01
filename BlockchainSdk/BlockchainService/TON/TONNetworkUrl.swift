@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum TONNetwork {
+enum TONNetworkUrl {
     case mainnet
     case testnet
     
