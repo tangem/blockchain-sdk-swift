@@ -43,7 +43,7 @@ class TronWalletManager: BaseManager, WalletManager {
             }
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         return signedTransactionData(amount: transaction.amount, source: wallet.address, destination: transaction.destinationAddress, signer: signer, publicKey: wallet.publicKey)
             .flatMap { [weak self] data -> AnyPublisher<TronBroadcastResponse, Error> in
                 guard let self = self else {
@@ -52,7 +52,7 @@ class TronWalletManager: BaseManager, WalletManager {
                 
                 return self.networkService.broadcastHex(data)
             }
-            .tryMap { [weak self] broadcastResponse -> Void in
+            .tryMap { [weak self] broadcastResponse -> TransactionSendResult in
                 guard broadcastResponse.result == true else {
                     throw WalletError.failedToSendTx
                 }
@@ -61,7 +61,7 @@ class TronWalletManager: BaseManager, WalletManager {
                 submittedTransaction.hash = broadcastResponse.txid
                 self?.wallet.transactions.append(submittedTransaction)
                 
-                return ()
+                return TransactionSendResult(hash: broadcastResponse.txid)
             }
             .eraseToAnyPublisher()
     }

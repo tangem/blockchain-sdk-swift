@@ -94,7 +94,7 @@ class StellarWalletManager: BaseManager, WalletManager {
 extension StellarWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         return txBuilder.buildForSign(transaction: transaction)
             .flatMap {[weak self] buildForSignResponse -> AnyPublisher<(Data, (hash: Data, transaction: stellarsdk.TransactionXDR)), Error> in
                 guard let self = self else { return .emptyFail }
@@ -112,11 +112,13 @@ extension StellarWalletManager: TransactionSender {
                 
                 return tx
             }
-            .flatMap {[weak self] tx -> AnyPublisher<Void, Error> in
+            .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
                 self?.networkService.send(transaction: tx).tryMap {[weak self] sendResponse in
                     guard let self = self else { throw WalletError.empty }
                     
                     self.wallet.add(transaction: transaction)
+                    
+                    return TransactionSendResult(hash: tx)
                 }
                 .mapError { SendTxError(error: $0, tx: tx) }
                 .eraseToAnyPublisher() ?? .emptyFail

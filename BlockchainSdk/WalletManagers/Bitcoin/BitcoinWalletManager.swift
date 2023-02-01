@@ -67,7 +67,7 @@ class BitcoinWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
-    private func send(_ transaction: Transaction, signer: TransactionSigner, sequence: Int, isPushingTx: Bool) -> AnyPublisher<Void, Error> {
+    private func send(_ transaction: Transaction, signer: TransactionSigner, sequence: Int, isPushingTx: Bool) -> AnyPublisher<TransactionSendResult, Error> {
         guard let hashes = txBuilder.buildForSign(transaction: transaction, sequence: sequence) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
@@ -83,7 +83,7 @@ class BitcoinWalletManager: BaseManager, WalletManager {
                 
                 return tx.toHexString()
             }
-            .flatMap {[weak self] tx -> AnyPublisher<Void, Error> in
+            .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
                 guard let self = self else { return .emptyFail }
                 
                 let txHashPublisher: AnyPublisher<String, Error>
@@ -99,6 +99,7 @@ class BitcoinWalletManager: BaseManager, WalletManager {
                     var sendedTx = transaction
                     sendedTx.hash = sendResponse
                     self.wallet.add(transaction: sendedTx)
+                    return TransactionSendResult(hash: sendResponse)
                 }
                 .mapError { SendTxError(error: $0, tx: tx) }
                 .eraseToAnyPublisher()
@@ -146,7 +147,7 @@ class BitcoinWalletManager: BaseManager, WalletManager {
 
 @available(iOS 13.0, *)
 extension BitcoinWalletManager: TransactionSender {
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         txBuilder.unspentOutputs = loadedUnspents
         return send(transaction, signer: signer, sequence: SequenceValues.default.rawValue, isPushingTx: false)
     }
@@ -222,6 +223,8 @@ extension BitcoinWalletManager: TransactionPusher {
         txBuilder.unspentOutputs = outputs
         
         return send(newTransaction, signer: signer, sequence: sequence + 1, isPushingTx: true)
+            .map { _ in Void() }
+            .eraseToAnyPublisher()
     }
 }
 

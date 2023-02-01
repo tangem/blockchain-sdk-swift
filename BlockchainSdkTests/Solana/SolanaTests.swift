@@ -106,7 +106,7 @@ final class SolanaTests: XCTestCase {
         waitForExpectations(timeout: 10)
     }
     
-    private func processResult(_ publisher: AnyPublisher<Void, Error>, expectationToFill: XCTestExpectation) {
+    private func processResult(_ publisher: AnyPublisher<TransactionSendResult, Error>, expectationToFill: XCTestExpectation) {
         bag.insert(
             publisher.sink(receiveCompletion: { completion in
                 defer {
@@ -124,7 +124,7 @@ final class SolanaTests: XCTestCase {
                 }
                 
                 XCTAssertEqual(castedError, raisedError)
-            }, receiveValue: {
+            }, receiveValue: { _ in
                 XCTFail("Test shouldn't receive value")
             })
         )
