@@ -32,9 +32,18 @@ struct TONProviderContent {
         init(from decoder: Decoder) throws {
             let container: KeyedDecodingContainer<TONProviderContent.Info.CodingKeys> = try decoder.container(keyedBy: TONProviderContent.Info.CodingKeys.self)
             self.wallet = try container.decode(Bool.self, forKey: TONProviderContent.Info.CodingKeys.wallet)
-            self.balance = try container.decode(String.self, forKey: TONProviderContent.Info.CodingKeys.balance)
+            self.balance = try Self.mapBalance(from: decoder)
             self.account_state = try container.decode(TONProviderContent.AccountState.self, forKey: TONProviderContent.Info.CodingKeys.account_state)
             self.seqno = try container.decodeIfPresent(Int.self, forKey: TONProviderContent.Info.CodingKeys.seqno)
+        }
+        
+        // MARK: - Info Private Implementation
+        
+        private static func mapBalance(from decoder: Decoder) throws -> String {
+            let container: KeyedDecodingContainer<TONProviderContent.Info.CodingKeys> = try decoder.container(keyedBy: TONProviderContent.Info.CodingKeys.self)
+            let strValue = try? container.decode(String.self, forKey: TONProviderContent.Info.CodingKeys.balance)
+            let intValue = try? container.decode(Int.self, forKey: TONProviderContent.Info.CodingKeys.balance)
+            return strValue ?? String(intValue ?? 0)
         }
         
     }

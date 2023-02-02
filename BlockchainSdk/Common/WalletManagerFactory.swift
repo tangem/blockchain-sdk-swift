@@ -383,7 +383,7 @@ public class WalletManagerFactory {
                 networkConfig: networkProviderConfiguration
             )
             
-            return try TONBlockchainAssemblyFactory().assembly(with: assemblyInput)
+            return try TONBlockchainAssemblyFactory().assembly(with: assemblyInput, isTestnet: testnet)
         case .dash(let testnet):
             return try makeDashWalletManager(testnet: testnet, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
         }

@@ -20,7 +20,7 @@ struct TONBlockchainAssemblyFactory: BlockchainAssemblyFactoryProtocol {
         try TONWalletManager(
             wallet: input.wallet,
             service: .init(
-                providers: TONNodeName.allCases.map {
+                providers: TONNodeName.allCases.sorted().map {
                     TONProvider(
                         nodeName: $0,
                         config: input.blockchainConfig,
