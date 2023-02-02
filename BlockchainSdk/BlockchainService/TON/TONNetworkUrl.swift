@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum TONNodeName {
+enum TONNodeName: CaseIterable {
     case toncenter
     case getblock
     case nownodes

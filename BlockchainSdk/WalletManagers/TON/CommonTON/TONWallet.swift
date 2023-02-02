@@ -33,6 +33,8 @@ public class TONWallet: TONContract {
         )
     }
     
+    /// Create Init Data Cell wallet contract
+    /// - Returns: TONCell model init data cell
     override func createDataCell() throws -> TONCell {
         let cell = TONCell()
         try cell.raw.write(uint: 0, 32)
@@ -42,18 +44,17 @@ public class TONWallet: TONContract {
         return cell
     }
     
-    /**
-     * @param secretKey {Uint8Array}  nacl.KeyPair.secretKey
-     * @param address   {Address | string}
-     * @param amount    {BN | number} in nanograms
-     * @param seqno {number}
-     * @param payload?   {string | Uint8Array | Cell}
-     * @param sendMode?  {number}
-     * @param dummySignature?    {boolean}
-     * @param stateInit? {Cell}
-     * @param expireAt? {number}
-     * @return {Promise<{address: Address, signature: Uint8Array, message: Cell, cell: Cell, body: Cell, resultMessage: Cell}>}
-     */
+    /// Create transfer message TON coin for desination address
+    /// - Parameters:
+    ///   - address: Desintation address wallet
+    ///   - amount: Amount of TON coin
+    ///   - payload: Payload for message or any data transaction
+    ///   - seqno: Sequnce number transaction
+    ///   - sendMode: Sending model
+    ///   - dummySignature: Is fake signature
+    ///   - stateInit: State Init transaction
+    ///   - expireAt: ExpireAt timstamp
+    /// - Returns: TONCell model of transaction sending message
     func createTransferMessage(
         address: String,
         amount: UInt,
@@ -68,7 +69,7 @@ public class TONWallet: TONContract {
         
         let orderHeader = try TONContract.createInternalMessageHeader(
             dest: address,
-            gramValue: amount,
+            gramValue: amount, bounce: false,
             src: getAddress().toString(isUserFriendly: true, isUrlSafe: true, isBounceable: true)
         )
         
@@ -89,6 +90,12 @@ public class TONWallet: TONContract {
         return signingMessage
     }
     
+    /// Sign transfer message TON coin for destination address
+    /// - Parameters:
+    ///   - signingMessage: Model of transfer message
+    ///   - seqno: Sequnce number transaction
+    ///   - signature: Sign signature message
+    /// - Returns: TONCell model of transaction signing message
     func signTransferMessage(_ signingMessage: TONCell, _ seqno: Int, signature: Array<UInt8>) throws -> TONExternalMessage {
         try self.createExternalMessage(
             signingMessage: signingMessage,
@@ -107,7 +114,7 @@ public class TONWallet: TONContract {
      * @param   withoutOp? {boolean}
      * @return {Cell}
      */
-    func createSigningMessage(seqno: Int? = 0, expireAt: UInt?, withoutOp: Bool? = nil) throws -> TONCell {
+    private func createSigningMessage(seqno: Int? = 0, expireAt: UInt?, withoutOp: Bool? = nil) throws -> TONCell {
         let seqno = seqno ?? 0
         let expireAt = expireAt ?? (UInt(floor((Date().timeIntervalSince1970) / 1e3)) + 60)
         

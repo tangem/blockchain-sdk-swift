@@ -21,6 +21,7 @@ final class TONWalletManager: BaseManager, WalletManager {
     
     private var service: TONNetworkService
     private var txBuilder: TONTransactionBuilder
+    private var isAvailable: Bool = true
     
     // MARK: - Init
     
@@ -42,8 +43,8 @@ final class TONWalletManager: BaseManager, WalletManager {
                         completion(.failure(error))
                     }
                 },
-                receiveValue: { [unowned self] result in
-                    self.update(by: result, completion)
+                receiveValue: { [unowned self] info in
+                    self.update(by: info, completion)
                 }
             )
     }
@@ -74,6 +75,15 @@ final class TONWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
+        guard isAvailable else {
+            return Just(()).tryMap { _ in
+                return [
+                    Amount(with: .ton(testnet: false), value: 0)
+                ]
+            }
+            .eraseToAnyPublisher()
+        }
+        
         guard let txForEstimateFee = try? txBuilder.buildForEstimateFee(amount: amount, destination: destination) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
@@ -83,9 +93,10 @@ final class TONWalletManager: BaseManager, WalletManager {
     
     // MARK: - Private Implementation
     
-    private func update(by info: (Decimal, Int), _ completion: @escaping (Result<Void, Error>) -> Void) {
-        wallet.add(coinValue: info.0)
-        txBuilder.seqno = info.1
+    private func update(by info: TONWalletInfo, _ completion: @escaping (Result<Void, Error>) -> Void) {
+        wallet.add(coinValue: info.balance)
+        txBuilder.seqno = info.seqno
+        isAvailable = info.isAvailable
         completion(.success(()))
     }
     

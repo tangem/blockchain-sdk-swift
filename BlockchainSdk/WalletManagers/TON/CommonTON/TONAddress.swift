@@ -48,7 +48,11 @@ public struct TONAddress {
     /// Parse address form in User-Friendly address
     /// - Parameter addressString: Any form address of wallet
     /// - Returns: TONAddress form {isTestOnly: boolean, workchain: number, hashPart: Uint8Array, isBounceable: boolean}
-    static func parseFriendlyAddress(_ addressString: String) throws -> TONAddress {
+    static func parseFriendlyAddress(_ addressString: String?) throws -> TONAddress? {
+        guard let addressString = addressString else {
+            return nil
+        }
+        
         guard addressString.count == 48 else {
             throw TONError.exception("User-friendly address should contain strictly 48 characters")
         }
@@ -159,7 +163,11 @@ public struct TONAddress {
             self.isUrlSafe = false
         } else {
             self.isUserFriendly = true
-            let parseResult = try TONAddress.parseFriendlyAddress(anyForm)
+            
+            guard let parseResult = try TONAddress.parseFriendlyAddress(anyForm) else {
+                throw TONError.exception("TON Address must be not nil")
+            }
+            
             self.wc = parseResult.wc
             self.hashPart = parseResult.hashPart
             self.isTestOnly = parseResult.isTestOnly

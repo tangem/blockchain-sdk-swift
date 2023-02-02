@@ -44,7 +44,7 @@ struct TONProvider: HostProvider {
     
     // MARK: - Implementation
     
-    func getInfoWallet(address: String) -> AnyPublisher<TONWalletInfo, Error> {
+    func getInfoWallet(address: String) -> AnyPublisher<TONProviderContent.Info, Error> {
         requestPublisher(for: .init(node: node, targetType: .getInfo(address: address)))
     }
     
@@ -59,14 +59,14 @@ struct TONProvider: HostProvider {
     /// Get estimate sending transaction Fee
     /// - Parameter boc: Bag of Cells wallet transaction for destination
     /// - Returns: Fees or Error
-    func getFee(address: String, body: String?) -> AnyPublisher<TONFee, Error> {
+    func getFee(address: String, body: String?) -> AnyPublisher<TONProviderContent.Fee, Error> {
         requestPublisher(for: .init(node: node, targetType: .estimateFee(address: address, body: body)))
     }
     
     /// Get estimate sending transaction Fee
     /// - Parameter boc: Bag of Cells wallet transaction for destination
     /// - Returns: Fees or Error
-    func getFeeWithCode(address: String, body: String?, code: String?, data: String?) -> AnyPublisher<TONFee, Error> {
+    func getFeeWithCode(address: String, body: String?, code: String?, data: String?) -> AnyPublisher<TONProviderContent.Fee, Error> {
         requestPublisher(
             for: .init(
                 node: node,
@@ -75,7 +75,7 @@ struct TONProvider: HostProvider {
         )
     }
     
-    func send(message: String) -> AnyPublisher<TONSendBoc, Error> {
+    func send(message: String) -> AnyPublisher<TONProviderContent.SendBoc, Error> {
         requestPublisher(
             for: .init(node: node, targetType: .sendBoc(message: message))
         )

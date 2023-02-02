@@ -189,10 +189,10 @@ extension TONContract {
         
         try message.raw.write(bit: bounced)
         
-        let srcAddress = try? TONAddress.parseFriendlyAddress(src)
+        let srcAddress = try TONAddress.parseFriendlyAddress(src)
         let dstAddress = try TONAddress.parseFriendlyAddress(dest)
         
-        try message.raw.write(address: nil)
+        try message.raw.write(address: srcAddress)
         try message.raw.write(address: dstAddress)
         try message.raw.write(grams: gramValue)
         try message.raw.write(bit: false)

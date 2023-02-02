@@ -20,26 +20,14 @@ struct TONBlockchainAssemblyFactory: BlockchainAssemblyFactoryProtocol {
         try TONWalletManager(
             wallet: input.wallet,
             service: .init(
-                providers: [
+                providers: TONNodeName.allCases.map {
                     TONProvider(
-                        nodeName: .toncenter,
-                        config: input.blockchainConfig,
-                        network: .init(configuration: input.networkConfig),
-                        isTestnet: isTestnet
-                    ),
-                    TONProvider(
-                        nodeName: .getblock,
-                        config: input.blockchainConfig,
-                        network: .init(configuration: input.networkConfig),
-                        isTestnet: isTestnet
-                    ),
-                    TONProvider(
-                        nodeName: .nownodes,
+                        nodeName: $0,
                         config: input.blockchainConfig,
                         network: .init(configuration: input.networkConfig),
                         isTestnet: isTestnet
                     )
-                ].compactMap({$0}),
+                }.compactMap({$0}),
                 blockchain: input.blockchain
             )
         )

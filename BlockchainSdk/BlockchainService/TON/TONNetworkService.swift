@@ -28,7 +28,7 @@ class TONNetworkService: MultiNetworkProvider {
     
     // MARK: - Implementation
     
-    func getInfoWallet(address: String) -> AnyPublisher<(Decimal, Int), Error> {
+    func getInfoWallet(address: String) -> AnyPublisher<TONWalletInfo, Error> {
         providerPublisher { provider in
             provider
                 .getInfoWallet(address: address)
@@ -41,7 +41,11 @@ class TONNetworkService: MultiNetworkProvider {
                         throw WalletError.failedToParseNetworkResponse
                     }
                     
-                    return (decimalBalance / self.blockchain.decimalValue, walletInfo.seqno)
+                    return TONWalletInfo(
+                        balance: decimalBalance / self.blockchain.decimalValue,
+                        seqno: walletInfo.seqno ?? 0,
+                        isAvailable: walletInfo.account_state == .active
+                    )
                 }
                 .eraseToAnyPublisher()
         }
@@ -62,11 +66,9 @@ class TONNetworkService: MultiNetworkProvider {
                             throw WalletError.empty
                         }
                         
+                        
                         return [
-                            .init(with: .ton(testnet: self.blockchain.isTestnet), value: (fee.source_fees.in_fwd_fee / self.blockchain.decimalValue)),
-                            .init(with: .ton(testnet: self.blockchain.isTestnet), value: (fee.source_fees.storage_fee / self.blockchain.decimalValue)),
-                            .init(with: .ton(testnet: self.blockchain.isTestnet), value: (fee.source_fees.fwd_fee / self.blockchain.decimalValue)),
-                            .init(with: .ton(testnet: self.blockchain.isTestnet), value: (fee.source_fees.gas_fee / self.blockchain.decimalValue))
+                            .init(with: .ton(testnet: self.blockchain.isTestnet), value: (fee.source_fees.allFee / self.blockchain.decimalValue))
                         ]
                     }
                     .eraseToAnyPublisher()
@@ -84,10 +86,7 @@ class TONNetworkService: MultiNetworkProvider {
                         print(fee)
                         
                         return [
-                            .init(with: .ton(testnet: self.blockchain.isTestnet), value: (fee.source_fees.in_fwd_fee / self.blockchain.decimalValue)),
-                            .init(with: .ton(testnet: self.blockchain.isTestnet), value: (fee.source_fees.storage_fee / self.blockchain.decimalValue)),
-                            .init(with: .ton(testnet: self.blockchain.isTestnet), value: (fee.source_fees.fwd_fee / self.blockchain.decimalValue)),
-                            .init(with: .ton(testnet: self.blockchain.isTestnet), value: (fee.source_fees.gas_fee / self.blockchain.decimalValue))
+                            .init(with: .ton(testnet: self.blockchain.isTestnet), value: (fee.source_fees.allFee / self.blockchain.decimalValue))
                         ]
                     }
                     .eraseToAnyPublisher()
