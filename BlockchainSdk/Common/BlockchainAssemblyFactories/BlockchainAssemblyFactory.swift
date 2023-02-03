@@ -26,11 +26,11 @@ protocol BlockchainAssemblyFactoryProtocol {
     /// Access to factory make factory blockchain
     /// - Parameter blockchain: Blockchain enum type
     /// - Returns: Is assembly result
-    func canAssembly(blockchain: Blockchain, isTestnet: Bool) -> Bool
+    func canAssembly(blockchain: Blockchain) -> Bool
     
     /// Blockchain assembly method
     /// - Parameter input: Input data factory
     /// - Returns: Blockchain result
-    func assembly(with input: BlockchainAssemblyFactoryInput, isTestnet: Bool) throws -> AssemblyWallet
+    func assembly(with input: BlockchainAssemblyFactoryInput) throws -> AssemblyWallet
     
 }

@@ -115,11 +115,6 @@ extension UInt32 {
     
 }
 
-/**
- * @param a {Uint8Array}
- * @param b {Uint8Array}
- * @return {Uint8Array}
- */
 func concatBytes(_ a: Array<UInt8>, _ b: Array<UInt8>) -> Array<UInt8> {
     var c = Array<UInt8>()
     c.append(contentsOf: a)

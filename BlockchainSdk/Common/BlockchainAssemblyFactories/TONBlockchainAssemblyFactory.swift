@@ -12,11 +12,11 @@ import TangemSdk
 
 struct TONBlockchainAssemblyFactory: BlockchainAssemblyFactoryProtocol {
     
-    func canAssembly(blockchain: Blockchain, isTestnet: Bool = false) -> Bool {
-        return blockchain == .ton(testnet: isTestnet)
+    func canAssembly(blockchain: Blockchain) -> Bool {
+        return blockchain == .ton(testnet: blockchain.isTestnet)
     }
     
-    func assembly(with input: BlockchainAssemblyFactoryInput, isTestnet: Bool = false) throws -> AssemblyWallet {
+    func assembly(with input: BlockchainAssemblyFactoryInput) throws -> AssemblyWallet {
         try TONWalletManager(
             wallet: input.wallet,
             service: .init(
@@ -25,7 +25,7 @@ struct TONBlockchainAssemblyFactory: BlockchainAssemblyFactoryProtocol {
                         nodeName: $0,
                         config: input.blockchainConfig,
                         network: .init(configuration: input.networkConfig),
-                        isTestnet: isTestnet
+                        isTestnet: input.blockchain.isTestnet
                     )
                 }.compactMap({$0}),
                 blockchain: input.blockchain

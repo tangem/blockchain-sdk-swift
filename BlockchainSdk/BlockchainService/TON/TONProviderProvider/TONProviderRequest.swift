@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// Base TON provider request
 struct TONProviderRequest<P: Encodable>: Encodable {
     
     enum Method: String, Encodable {

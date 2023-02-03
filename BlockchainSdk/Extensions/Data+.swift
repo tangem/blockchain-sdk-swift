@@ -80,3 +80,23 @@ extension Data {
     }
     
 }
+
+//polynomial 0x1021
+func crc16(data: [UInt8]) -> UInt16 {
+    // Calculate checksum for existing bytes
+    var crc: UInt16 = 0x0000;
+    let polynomial: UInt16 = 0x1021;
+    
+    for byte in data {
+        for bitidx in 0..<8 {
+            let bit = ((byte >> (7 - bitidx) & 1) == 1)
+            let c15 = ((crc >> 15 & 1) == 1)
+            crc <<= 1
+            if c15 ^ bit {
+                crc ^= polynomial;
+            }
+        }
+    }
+    
+    return crc & 0xffff;
+}

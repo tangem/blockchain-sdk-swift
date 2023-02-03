@@ -146,13 +146,13 @@ public struct TONAddress {
             let arr = anyForm.components(separatedBy: ":")
             
             guard arr.count == 2 else {
-                throw NSError()
+                throw TONError.exception("Invalid address -> \(anyForm)")
             }
             
             let hexPath = arr[1]
             
             guard let wc = Int(arr[0]), (wc == 0 || wc == -1), hexPath.count == 64 else {
-                throw NSError()
+                throw TONError.exception("Invalid workchain or Invalid address hex -> \(anyForm)")
             }
             
             self.wc = wc
@@ -222,23 +222,4 @@ public struct TONAddress {
         }
     }
     
-}
-
-private func crc16(data: [UInt8]) -> UInt16 {
-    // Calculate checksum for existing bytes
-    var crc: UInt16 = 0x0000;
-    let polynomial: UInt16 = 0x1021;
-    
-    for byte in data {
-        for bitidx in 0..<8 {
-            let bit = ((byte >> (7 - bitidx) & 1) == 1)
-            let c15 = ((crc >> 15 & 1) == 1)
-            crc <<= 1
-            if c15 ^ bit {
-                crc ^= polynomial;
-            }
-        }
-    }
-    
-    return crc & 0xffff;
 }

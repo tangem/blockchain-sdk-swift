@@ -17,7 +17,7 @@
 		2D3942FE2987FF4300FBEA9C /* TONWallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3942EF2987FF4300FBEA9C /* TONWallet.swift */; };
 		2D3942FF2987FF4300FBEA9C /* TONCommon+Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3942F02987FF4300FBEA9C /* TONCommon+Types.swift */; };
 		2D3943002987FF4300FBEA9C /* TONContractOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3942F12987FF4300FBEA9C /* TONContractOption.swift */; };
-		2D3943012987FF4300FBEA9C /* TONTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3942F22987FF4300FBEA9C /* TONTypes.swift */; };
+		2D3943012987FF4300FBEA9C /* TONConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3942F22987FF4300FBEA9C /* TONConstants.swift */; };
 		2D3943022987FF4300FBEA9C /* TONAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3942F32987FF4300FBEA9C /* TONAddress.swift */; };
 		2D3943032987FF4300FBEA9C /* TONCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3942F42987FF4300FBEA9C /* TONCell.swift */; };
 		2D3943042987FF4300FBEA9C /* TONAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3942F52987FF4300FBEA9C /* TONAddressService.swift */; };
@@ -304,7 +304,7 @@
 		2D3942EF2987FF4300FBEA9C /* TONWallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONWallet.swift; sourceTree = "<group>"; };
 		2D3942F02987FF4300FBEA9C /* TONCommon+Types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TONCommon+Types.swift"; sourceTree = "<group>"; };
 		2D3942F12987FF4300FBEA9C /* TONContractOption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONContractOption.swift; sourceTree = "<group>"; };
-		2D3942F22987FF4300FBEA9C /* TONTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONTypes.swift; sourceTree = "<group>"; };
+		2D3942F22987FF4300FBEA9C /* TONConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONConstants.swift; sourceTree = "<group>"; };
 		2D3942F32987FF4300FBEA9C /* TONAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONAddress.swift; sourceTree = "<group>"; };
 		2D3942F42987FF4300FBEA9C /* TONCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONCell.swift; sourceTree = "<group>"; };
 		2D3942F52987FF4300FBEA9C /* TONAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONAddressService.swift; sourceTree = "<group>"; };
@@ -621,7 +621,7 @@
 				2D3942EF2987FF4300FBEA9C /* TONWallet.swift */,
 				2D3942F02987FF4300FBEA9C /* TONCommon+Types.swift */,
 				2D3942F12987FF4300FBEA9C /* TONContractOption.swift */,
-				2D3942F22987FF4300FBEA9C /* TONTypes.swift */,
+				2D3942F22987FF4300FBEA9C /* TONConstants.swift */,
 				2D3942F32987FF4300FBEA9C /* TONAddress.swift */,
 				2D3942F42987FF4300FBEA9C /* TONCell.swift */,
 			);
@@ -1745,7 +1745,7 @@
 				5DACA361255E98900096BC48 /* MultipleAddressProvider.swift in Sources */,
 				5D7D243325136254001B9A4F /* XRPAddress.swift in Sources */,
 				B0C34958267B83580027CC9D /* BitcoinModels.swift in Sources */,
-				2D3943012987FF4300FBEA9C /* TONTypes.swift in Sources */,
+				2D3943012987FF4300FBEA9C /* TONConstants.swift in Sources */,
 				DA30812B2817BF3C00DE41F1 /* Tron.pb.swift in Sources */,
 				5D4B33C823F72F2700C93A84 /* BitcoinCashWalletManager.swift in Sources */,
 				5D26CEF1243CB9EA00994CC0 /* BlockchainInfoResponse.swift in Sources */,

@@ -8,11 +8,15 @@
 
 import Foundation
 
+/// Transaction builder for TON wallet
 struct TONTransactionBuilder {
     
     // MARK: - Properties
     
+    /// Sequence number of transactions
     var seqno: Int = 0
+    
+    // MARK: - Private Properties
     
     private var blockchain: Blockchain
     private var wallet: TONWallet?

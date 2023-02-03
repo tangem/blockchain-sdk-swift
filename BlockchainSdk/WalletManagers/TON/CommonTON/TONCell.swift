@@ -33,6 +33,12 @@ final class TONCell {
     
     // MARK: - Common Implementation
     
+    /// Obtain hash value of TONCell
+    /// - Returns: Bytes array
+    func hash() throws -> Array<UInt8> {
+        return try getRepr().sha256()
+    }
+    
     /// Write any Cells content data
     /// - Parameter cell: Cell model
     func write(cell: TONCell) throws {
@@ -59,13 +65,10 @@ extension TONCell {
         return cells[0]
     }
     
-    /**
-     * @private
-     * @param cellsIndex
-     * @param refSize
-     * @return {Promise<Uint8Array>}
-     */
-    func serializeForBoc(_ cellsIndex: Dictionary<Array<UInt8>, Int>, _ refSize: Int) throws -> Array<UInt8> {
+    func serializeForBoc(
+        _ cellsIndex: Dictionary<Array<UInt8>, Int>,
+        _ refSize: Int
+    ) throws -> Array<UInt8> {
         var reprArray = [[UInt8]]()
 
         try reprArray.append(contentsOf: [getDataWithDescriptors()])
@@ -98,24 +101,13 @@ extension TONCell {
         return x
     }
     
-    /**
-     * @private
-     * @param cellsIndex
-     * @param refSize
-     * @return {Promise<number>}
-     */
-    func bocSerializationSize(_ cellsIndex: Dictionary<Array<UInt8>, Int>, _ refSize: Int) throws -> Int {
+    func bocSerializationSize(
+        _ cellsIndex: Dictionary<Array<UInt8>, Int>,
+        _ refSize: Int
+    ) throws -> Int {
         try serializeForBoc(cellsIndex, refSize).count
     }
     
-    /**
-     * create boc bytearray
-     * @param has_idx? {boolean}
-     * @param hash_crc32?  {boolean}
-     * @param has_cache_bits?  {boolean}
-     * @param flags? {number}
-     * @return {Promise<Uint8Array>}
-     */
     public func toBoc(
         _ has_idx: Bool = true,
         _ hash_crc32: Bool = true,
@@ -196,7 +188,7 @@ extension TONCell {
             for ri in 0..<c.refs.count {
                 if let r = c.refs[ri].raw.bytes.first {
                     if r < ci {
-                        throw NSError()
+                        throw TONError.exception("Topological order is broken")
                     }
                 
                     let refValue = cells_array[Int(r)]
@@ -216,7 +208,7 @@ extension TONCell {
     
     static func deserializeCellData(_ cellData: Array<UInt8>, _ referenceIndexSize: Int) throws -> (TONCell, Array<UInt8>) {
         if cellData.count < 2 {
-            throw NSError()
+            throw TONError.exception("Not enough bytes to encode cell descriptors")
         }
         
         var cellData = cellData
@@ -236,7 +228,7 @@ extension TONCell {
         let compareValue = dataBytesize + referenceIndexSize * Int(refNum)
         
         if cellData.count < compareValue {
-            throw NSError()
+            throw TONError.exception("Not enough bytes to encode cell data")
         }
         
         try cell.raw.setTopUppedArray(Array(cellData[0..<dataBytesize]), fullfilledBytes: fullfilledBytes)
@@ -258,6 +250,9 @@ extension TONCell {
 
 extension TONCell {
     
+    /// Parse bag of cells header
+    /// - Parameter serializedBoc: Bytes array boc
+    /// - Returns: Header boc
     static func parseBocHeader(serializedBoc: Array<UInt8>) throws -> TONCellBocHeader {
         var serializedBoc = serializedBoc
         let inputData = serializedBoc // Save copy for crc32
@@ -408,13 +403,6 @@ extension TONCell {
     
     // MARK: - Local
     
-    func hash() throws -> Array<UInt8> {
-        return try getRepr().sha256()
-    }
-    
-    /**
-     * @return {Promise<Uint8Array>}
-     */
     func getRepr() throws -> Array<UInt8> {
         var reprArray = [[UInt8]]()
         
@@ -438,10 +426,6 @@ extension TONCell {
         return x
     }
     
-    /**
-     * @private
-     * @return {Uint8Array}
-     */
     func getMaxDepthAsArray() throws -> Array<UInt8> {
         let maxDepth = getMaxDepth()
         var d = [UInt8](repeating: 0, count: 2)
@@ -450,9 +434,7 @@ extension TONCell {
         return d
     }
     
-    /**
-     * @return {Uint8Array}
-     */
+    
     func getDataWithDescriptors() throws -> Array<UInt8> {
         let d1 = try getRefsDescriptor()
         let d2 = try getBitsDescriptor()
@@ -468,9 +450,7 @@ extension TONCell {
         return d1
     }
     
-    /**
-     * @return {Uint8Array}
-     */
+    
     func getBitsDescriptor() throws -> Array<UInt8> {
         var d2 = [UInt8](repeating: 0, count: 1)
         let lround = ceilf(Float(raw.cursor) / 8)
@@ -479,9 +459,6 @@ extension TONCell {
         return d2
     }
     
-    /**
-     * @return {number}
-     */
     func getMaxLevel() -> Int {
         var maxLevel = 0
         
@@ -494,6 +471,8 @@ extension TONCell {
         return maxLevel
     }
     
+    /// Get Depth refs
+    /// - Returns: Depts value
     func getMaxDepth() -> Int {
         var maxDepth = 0
         
@@ -510,7 +489,7 @@ extension TONCell {
         return maxDepth
     }
     
-    ///
+    /// Obtain treewalk by first implement
     func treeWalk() throws -> ([(Array<UInt8>, TONCell)], Dictionary<Array<UInt8>, Int>) {
         return try treeWalk(self, [], [:], nil);
     }
@@ -524,12 +503,13 @@ extension TONCell {
         throw TONError.exception("Not implemented, see tonweb reosources!")
     }
     
-    /**
-     * @param cell  {Cell}
-     * @param topologicalOrderArray array of pairs: cellHash: Uint8Array, cell: Cell, ...
-     * @param indexHashmap cellHash: Uint8Array -> cellIndex: number
-     * @return {[[], {}]} topologicalOrderArray and indexHashmap
-     */
+    /// Get treewalk
+    /// - Parameters:
+    ///   - cell: Cell of data
+    ///   - topologicalOrderArray: topologicalOrderArray array of pairs: cellHash: Uint8Array, cell: Cell, ...
+    ///   - indexHashmap: indexHashmap cellHash: Uint8Array -> cellIndex: number
+    ///   - parentHash: none
+    /// - Returns: topologicalOrderArray and indexHashmap
     func treeWalk(
         _ cell: TONCell,
         _ topologicalOrderArray: [(Array<UInt8>, TONCell)],
@@ -552,9 +532,6 @@ extension TONCell {
         return (topologicalOrderArray, indexHashmap)
     }
     
-    /**
-     * @return {number}
-     */
     func isExplicitlyStoredHashes() -> Int {
         return 0
     }

@@ -8,13 +8,16 @@
 
 import Foundation
 
+/// TON provider content of Response
 struct TONProviderContent {
     
+    /// Account state model
     enum AccountState: String, Codable {
         case active
         case uninitialized
     }
     
+    /// Info state model
     struct Info: Codable {
         
         /// Is chain transaction wallet
@@ -47,7 +50,8 @@ struct TONProviderContent {
         }
         
     }
-
+    
+    /// Fee agregate model
     struct Fee: Codable {
         
         struct SourceFees: Codable {
@@ -81,9 +85,11 @@ struct TONProviderContent {
         let source_fees: SourceFees
         
     }
-
+    
+    /// Response decode send boc model
     struct SendBoc: Codable {}
-
+    
+    /// Sequence number model
     struct Seqno: Codable {
         
         struct Stack: Codable {

@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// Base TON provider response
 struct TONProviderResponse<R: Decodable>: Decodable {
     
     /// Success status
