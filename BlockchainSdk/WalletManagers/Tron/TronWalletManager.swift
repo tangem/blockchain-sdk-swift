@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import TangemSdk
+import WalletCore
 
 class TronWalletManager: BaseManager, WalletManager {
     var networkService: TronNetworkService!
@@ -78,13 +79,14 @@ class TronWalletManager: BaseManager, WalletManager {
             maxEnergyUsePublisher = networkService.tokenTransferMaxEnergyUse(contractAddress: token.contractAddress)
         }
         
-        let transactionDataPublisher = signedTransactionData(
-            amount: amount,
-            source: wallet.address,
-            destination: destination,
-            signer: feeSigner,
-            publicKey: feeSigner.publicKey
-        )
+        let transactionDataPublisher = Just<Data>(Data(hex: "11")).setFailureType(to: Error.self).eraseToAnyPublisher()
+//        let transactionDataPublisher = signedTransactionData(
+//            amount: amount,
+//            source: wallet.address,
+//            destination: destination,
+//            signer: feeSigner,
+//            publicKey: feeSigner.publicKey
+//        )
 
         let blockchain = self.wallet.blockchain
 
@@ -122,40 +124,21 @@ class TronWalletManager: BaseManager, WalletManager {
     
     private func signedTransactionData(amount: Amount, source: String, destination: String, signer: TransactionSigner, publicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
         return networkService.getNowBlock()
-            .tryMap { [weak self] block -> Protocol_Transaction.raw in
+            .receive(on: DispatchQueue.global())
+            .tryMap { [weak self] block -> Data in
                 guard let self = self else {
                     throw WalletError.empty
                 }
                 
-                return try self.txBuilder.buildForSign(amount: amount, source: source, destination: destination, block: block)
-            }
-            .flatMap { [weak self] transactionRaw -> AnyPublisher<Data, Error> in
-                guard let self = self else {
-                    return .anyFail(error: WalletError.empty)
-                }
+                let input = try self.txBuilder.input(amount: amount, source: source, destination: destination, block: block)
                 
-                return Just(())
-                    .setFailureType(to: Error.self)
-                    .flatMap { [weak self] _ -> AnyPublisher<Data, Error> in
-                        guard let self = self else {
-                            return .anyFail(error: WalletError.empty)
-                        }
-                        
-                        return self.sign(transactionRaw, with: signer, publicKey: publicKey)
-                    }
-                    .tryMap { [weak self] signature -> Protocol_Transaction in
-                        guard let self = self else {
-                            throw WalletError.empty
-                        }
-                        
-                        return self.txBuilder.buildForSend(rawData: transactionRaw, signature: signature)
-                    }
-                    .tryMap {
-                        try $0.serializedData()
-                    }
-                    .eraseToAnyPublisher()
+                let walletCoreSigner = WalletCoreSigner(sdkSigner: signer, publicKey: self.wallet.publicKey)
+                var output: TronSigningOutput = AnySigner.signExternally(input: input, coin: .tron, signer: walletCoreSigner)
+
+                output.signature = self.unmarshal(output.signature, hash: output.id, publicKey: self.wallet.publicKey)
+                
+                return self.txBuilder.transaction(amount: amount, source: source, destination: destination, input: input, output: output)
             }
-            
             .eraseToAnyPublisher()
     }
     
