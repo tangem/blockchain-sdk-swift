@@ -10,7 +10,7 @@ import Foundation
 import Combine
 import TangemSdk
 
-struct BlockchainAssemblyFactoryInput {
+struct BlockchainAssemblyInput {
     let blockchain: Blockchain
     let blockchainConfig: BlockchainSdkConfig
     let publicKey: Wallet.PublicKey
@@ -21,7 +21,7 @@ struct BlockchainAssemblyFactoryInput {
 
 typealias AssemblyWallet = BaseManager & WalletManager
 
-protocol BlockchainAssemblyFactoryProtocol {
+protocol BlockchainAssemblyProtocol {
     
     /// Access to factory make factory blockchain
     /// - Parameter blockchain: Blockchain enum type
@@ -31,6 +31,6 @@ protocol BlockchainAssemblyFactoryProtocol {
     /// Blockchain assembly method
     /// - Parameter input: Input data factory
     /// - Returns: Blockchain result
-    func assembly(with input: BlockchainAssemblyFactoryInput) throws -> AssemblyWallet
+    func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet
     
 }

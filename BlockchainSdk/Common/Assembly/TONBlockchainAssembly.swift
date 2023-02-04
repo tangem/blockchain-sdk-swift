@@ -10,13 +10,13 @@ import Foundation
 import Combine
 import TangemSdk
 
-struct TONBlockchainAssemblyFactory: BlockchainAssemblyFactoryProtocol {
+struct TONBlockchainAssembly: BlockchainAssemblyProtocol {
     
     func canAssembly(blockchain: Blockchain) -> Bool {
         return blockchain == .ton(testnet: blockchain.isTestnet)
     }
     
-    func assembly(with input: BlockchainAssemblyFactoryInput) throws -> AssemblyWallet {
+    func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         try TONWalletManager(
             wallet: input.wallet,
             service: .init(

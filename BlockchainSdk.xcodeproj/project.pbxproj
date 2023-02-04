@@ -32,9 +32,8 @@
 		2D640FEA298963AC00B16FA8 /* TONProviderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D640FE9298963AC00B16FA8 /* TONProviderRequest.swift */; };
 		2D640FED298BAF0A00B16FA8 /* TONWalletInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D640FEC298BAF0A00B16FA8 /* TONWalletInfo.swift */; };
 		2D640FF3298EF0A500B16FA8 /* BlockchainAssemblyFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D640FF1298EF0A500B16FA8 /* BlockchainAssemblyFactory.swift */; };
-		2D640FF4298EF0A500B16FA8 /* TONBlockchainAssemblyFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D640FF2298EF0A500B16FA8 /* TONBlockchainAssemblyFactory.swift */; };
-		2DE4585A2989217E00AA3C61 /* TONBlockchainAssemblyFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE458592989217E00AA3C61 /* TONBlockchainAssemblyFactory.swift */; };
-		2DE4585F2989304300AA3C61 /* BlockchainAssemblyFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE4585E2989304300AA3C61 /* BlockchainAssemblyFactory.swift */; };
+		2D640FF4298EF0A500B16FA8 /* TONBlockchainAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D640FF2298EF0A500B16FA8 /* TONBlockchainAssembly.swift */; };
+		2D640FF5298EF28D00B16FA8 /* TONNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE4585729891BB000AA3C61 /* TONNetworkService.swift */; };
 		5D006ACD239950F9008BA04D /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D006ACC239950F9008BA04D /* Wallet.swift */; };
 		5D01BCE2243F7F7E0048D1BA /* XrpTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D01BCE1243F7F7E0048D1BA /* XrpTarget.swift */; };
 		5D03D2D0253DE61B009A8A9F /* TezosAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D03D2CF253DE61B009A8A9F /* TezosAddressService.swift */; };
@@ -321,7 +320,7 @@
 		2D640FE9298963AC00B16FA8 /* TONProviderRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONProviderRequest.swift; sourceTree = "<group>"; };
 		2D640FEC298BAF0A00B16FA8 /* TONWalletInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONWalletInfo.swift; sourceTree = "<group>"; };
 		2D640FF1298EF0A500B16FA8 /* BlockchainAssemblyFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockchainAssemblyFactory.swift; sourceTree = "<group>"; };
-		2D640FF2298EF0A500B16FA8 /* TONBlockchainAssemblyFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONBlockchainAssemblyFactory.swift; sourceTree = "<group>"; };
+		2D640FF2298EF0A500B16FA8 /* TONBlockchainAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONBlockchainAssembly.swift; sourceTree = "<group>"; };
 		2DE4585729891BB000AA3C61 /* TONNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONNetworkService.swift; sourceTree = "<group>"; };
 		2DE458592989217E00AA3C61 /* TONBlockchainAssemblyFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONBlockchainAssemblyFactory.swift; sourceTree = "<group>"; };
 		2DE4585E2989304300AA3C61 /* BlockchainAssemblyFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainAssemblyFactory.swift; sourceTree = "<group>"; };
@@ -677,7 +676,7 @@
 			isa = PBXGroup;
 			children = (
 				2D640FF1298EF0A500B16FA8 /* BlockchainAssemblyFactory.swift */,
-				2D640FF2298EF0A500B16FA8 /* TONBlockchainAssemblyFactory.swift */,
+				2D640FF2298EF0A500B16FA8 /* TONBlockchainAssembly.swift */,
 			);
 			path = Assembly;
 			sourceTree = "<group>";
@@ -1728,7 +1727,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DE4585F2989304300AA3C61 /* BlockchainAssemblyFactory.swift in Sources */,
 				5D4B33D123F7DC7500C93A84 /* BinanceAddressService.swift in Sources */,
 				5D01BCE2243F7F7E0048D1BA /* XrpTarget.swift in Sources */,
 				5D7D242925136254001B9A4F /* XRPLedger.swift in Sources */,
@@ -1788,7 +1786,7 @@
 				5D7D243225136254001B9A4F /* XRPWallet.swift in Sources */,
 				5DD1244427F458CE000425D3 /* DerivationStyle.swift in Sources */,
 				5D845514243DEABB0072155E /* AdaliteResponse.swift in Sources */,
-				2D640FF4298EF0A500B16FA8 /* TONBlockchainAssemblyFactory.swift in Sources */,
+				2D640FF4298EF0A500B16FA8 /* TONBlockchainAssembly.swift in Sources */,
 				B0C2C89D25FBCF0200A61622 /* RosettaTarget.swift in Sources */,
 				5D908C5726A6D39C00270FA3 /* BinanceTransactionParams.swift in Sources */,
 				5D7D243825136254001B9A4F /* Entropy.swift in Sources */,
@@ -1840,7 +1838,6 @@
 				DAB6548D2796C5F00002A5E8 /* SolanaTransactionSigner.swift in Sources */,
 				5D54FE1E23E4313A009FAC2F /* LitecoinWalletManager.swift in Sources */,
 				5D557CAE23AA771E009B32AF /* EthereumNetworkService.swift in Sources */,
-				2DE4585A2989217E00AA3C61 /* TONBlockchainAssemblyFactory.swift in Sources */,
 				DA9F76FE27ECA78800F0665C /* TronNetworkModels.swift in Sources */,
 				2D3942FE2987FF4300FBEA9C /* TONWallet.swift in Sources */,
 				B0C8222A25F8DA860027E3BF /* CardanoNetworkService.swift in Sources */,
@@ -1862,6 +1859,7 @@
 				DC63F266293F243200F953EF /* Credentials.swift in Sources */,
 				5D7D242F25136254001B9A4F /* XRPTransaction.swift in Sources */,
 				5D304394239A6A6B0066B8D9 /* WalletManagerFactory.swift in Sources */,
+				2D640FF5298EF28D00B16FA8 /* TONNetworkService.swift in Sources */,
 				DA82434327A2B0C100CFC2C0 /* PolkadotResponse.swift in Sources */,
 				5D006ACD239950F9008BA04D /* Wallet.swift in Sources */,
 				5DC7DD66244077F2008F83F2 /* XRPWalletManager.swift in Sources */,

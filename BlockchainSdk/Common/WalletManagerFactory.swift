@@ -373,8 +373,8 @@ public class WalletManagerFactory {
                 $0.networkService = TronNetworkService(isTestnet: testnet, providers: providers)
                 $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
             }
-        case .ton(testnet: let testnet):
-            let assemblyInput = BlockchainAssemblyFactoryInput(
+        case .ton:
+            let assemblyInput = BlockchainAssemblyInput(
                 blockchain: blockchain,
                 blockchainConfig: config,
                 publicKey: publicKey,
@@ -383,7 +383,7 @@ public class WalletManagerFactory {
                 networkConfig: networkProviderConfiguration
             )
             
-            return try TONBlockchainAssemblyFactory().assembly(with: assemblyInput)
+            return try TONBlockchainAssembly().assembly(with: assemblyInput)
         case .dash(let testnet):
             return try makeDashWalletManager(testnet: testnet, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
         }
