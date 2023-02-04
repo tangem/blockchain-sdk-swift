@@ -65,7 +65,10 @@ final class TONWalletManager: BaseManager, WalletManager {
                     }
 
                     return self?.service
-                        .send(message: externalMessage).tryMap {_ in return }
+                        .send(message: externalMessage).tryMap { [weak self] _ in
+                            self?.wallet.add(transaction: transaction)
+                            return
+                        }
                         .eraseToAnyPublisher() ?? .emptyFail
                 }
                 .eraseToAnyPublisher()
@@ -78,7 +81,7 @@ final class TONWalletManager: BaseManager, WalletManager {
         guard isAvailable else {
             return Just(()).tryMap { _ in
                 return [
-                    Amount(with: .ton(testnet: false), value: 0)
+                    Amount(with: wallet.blockchain, value: 0)
                 ]
             }
             .eraseToAnyPublisher()

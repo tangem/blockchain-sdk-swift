@@ -17,7 +17,7 @@ extension Array where Element == UInt8 {
     
     func checkRange(_ n: Int) throws {
         if n > self.count {
-            throw NSError()
+            throw TONError.empty
         }
     }
     
