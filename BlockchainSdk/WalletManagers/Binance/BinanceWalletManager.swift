@@ -57,7 +57,7 @@ class BinanceWalletManager: BaseManager, WalletManager {
 extension BinanceWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { false }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         guard let msg = txBuilder.buildForSign(transaction: transaction) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
@@ -73,12 +73,13 @@ extension BinanceWalletManager: TransactionSender {
                 }
                 return tx
             }
-            .flatMap {[weak self] tx -> AnyPublisher<Void, Error> in
+            .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
                 self?.networkService.send(transaction: tx).tryMap {[weak self] response in
                     guard let self = self else { throw WalletError.empty }
-                    
                     self.wallet.add(transaction: transaction)
                     self.latestTxDate = Date()
+                    return TransactionSendResult(hash: response.tx.txHash)
+
                 }.eraseToAnyPublisher() ?? .emptyFail
             }
             .eraseToAnyPublisher()
