@@ -22,19 +22,18 @@ open class TONContract {
     var address: TONAddress?
     var wc: Int?
     
-    /**
-     * @param provider    {HttpProvider}
-     * @param options    {{code?: Cell, address?: Address | string, wc?: number}}
-     */
+    // MARK: - Init
+    
+    /// Init Contract state
+    /// - Parameter options:  {{code?: Cell, address?: Address | string, wc?: number}}
     init(options: TONContractOption) {
         self.options = options
         self.address = options.address
         self.wc = self.address?.wc ?? 0
     }
+    
+    // MARK: - Base Implementation
 
-    /**
-     * @return {Promise<Address>}
-     */
     func getAddress() throws -> TONAddress {
         if let address = self.address {
             return address
@@ -43,31 +42,20 @@ open class TONContract {
         }
     }
 
-    /**
-     * @private
-     * @return {Cell} cell contains contact code
-     */
     func createCodeCell() throws -> TONCell {
         guard let code = self.options?.code else {
-            throw NSError()
+            throw TONError.exception("Contract: options.code is not defined")
         }
         
         return code
     }
 
-    /**
-     * Method to override
-     * @protected
-     * @return {Cell} cell contains contract data
-     */
+
     func createDataCell() throws -> TONCell {
         return TONCell(raw: .init())
     }
 
-    /**
-     * @protected
-     * @return {Promise<{stateInit: Cell, address: Address, code: Cell, data: Cell}>}
-     */
+    
     func createStateInit() throws -> TONStateInit {
         let codeCell = try self.createCodeCell()
         let dataCell = try self.createDataCell()
@@ -82,11 +70,9 @@ open class TONContract {
         )
     }
     
-    /**
-     * @protected
-     * @param   seqno?   {number}
-     * @return {Cell}
-     */
+    /// Dummy create signing message
+    /// - Parameter seqno: Number of sequence
+    /// - Returns: TONCell message
     func createSigningMessage(seqno: Int?) throws -> TONCell {
         let seqno = seqno ?? 0
         let cell = TONCell()
@@ -94,19 +80,20 @@ open class TONContract {
         return cell
     }
     
-    // MARK: - Static Implementation
+}
 
-    // _ split_depth:(Maybe (## 5)) special:(Maybe TickTock)
-    // code:(Maybe ^Cell) data:(Maybe ^Cell)
-    // library:(Maybe ^Cell) = StateInit;
-    /**
-     * @param code  {Cell}
-     * @param data  {Cell}
-     * @param library {null}
-     * @param splitDepth {null}
-     * @param ticktock  {null}
-     * @return {Cell}
-     */
+// MARK: - Create Message Implementation & State Init
+
+extension TONContract {
+    
+    /// Create state init TONCell
+    /// - Parameters:
+    ///   - code: Code cell
+    ///   - data: Data cell
+    ///   - library: -
+    ///   - splitDepth: -
+    ///   - ticktock: -
+    /// - Returns: TONCell state init
     static func createStateInit(
         code: TONCell?,
         data: TONCell?,
@@ -115,7 +102,7 @@ open class TONContract {
         ticktock: TONCell? = nil
     ) throws -> TONCell {
         if library != nil, splitDepth != nil, ticktock != nil {
-            throw NSError()
+            throw TONError.exception("State init is not implemented")
         }
 
         let stateInit = TONCell()
@@ -146,25 +133,19 @@ open class TONContract {
         return stateInit
     }
     
-}
-
-// MARK: - Create Message Implementation
-
-extension TONContract {
-    /**
-     * @param dest  {Address | string}
-     * @param gramValue  {number | BN}
-     * @param ihrDisabled  {boolean}
-     * @param bounce  {null | boolean}
-     * @param bounced {boolean}
-     * @param src  {Address | string}
-     * @param currencyCollection  {null}
-     * @param ihrFees  {number | BN}
-     * @param fwdFees  {number | BN}
-     * @param createdLt  {number | BN}
-     * @param createdAt  {number | BN}
-     * @return {Cell}
-     */
+    /// Create internal message
+    /// - Parameters:
+    ///   - dest: Destination address wallet
+    ///   - gramValue: Value of coins
+    ///   - ihrDisabled: -
+    ///   - bounce: Non refaund coin sending type
+    ///   - bounced: -
+    ///   - src: Source address
+    ///   - ihrFees: -
+    ///   - fwdFees: -
+    ///   - createdLt: -
+    ///   - createdAt: -
+    /// - Returns: TONCell value message
     static func createInternalMessageHeader(
         dest: String,
         gramValue: UInt = 0,
@@ -203,12 +184,12 @@ extension TONContract {
         return message
     }
     
-    /**
-     * @param dest  {Address | string}
-     * @param src  {Address | string}
-     * @param importFee  {number | BN}
-     * @return {Cell}
-     */
+    /// Create external message header
+    /// - Parameters:
+    ///   - dest: Destination address value
+    ///   - src: Source address value
+    ///   - importFee: -
+    /// - Returns: TONCell header value
     static func createExternalMessageHeader(
         dest: TONAddress,
         src: TONAddress? = nil,
@@ -222,13 +203,12 @@ extension TONContract {
         return message
     }
     
-    /**
-     * Create CommonMsgInfo contains header, stateInit, body
-     * @param header {Cell}
-     * @param stateInit?  {Cell}
-     * @param body?  {Cell}
-     * @return {Cell}
-     */
+    /// Create common message info
+    /// - Parameters:
+    ///   - header: Header cell
+    ///   - stateInit: State init cell
+    ///   - body: Body cell
+    /// - Returns: Message TONCell
     static func createCommonMsgInfo(
         header: TONCell,
         stateInit: TONCell? = nil,

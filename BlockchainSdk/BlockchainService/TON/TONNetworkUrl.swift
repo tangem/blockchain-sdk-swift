@@ -9,10 +9,20 @@
 import Foundation
 
 enum TONNodeName: Int, CaseIterable {
+    
+    /// Toncenter API JRPC
+    /// Fast and reliable HTTP API for The Open Network
     case toncenter
+    
+    /// Getblock.io
+    /// Superior Node Infrastructure for Building dApps
     case getblock
+    
+    /// NowNodes.io
+    /// Full Nodes and Block Explorers
     case nownodes
     
+    /// Check verify
     var hasTestnent: Bool {
         switch self {
         case .toncenter:
@@ -25,7 +35,7 @@ enum TONNodeName: Int, CaseIterable {
     func isAvailable(with config: BlockchainSdkConfig) -> Bool {
         switch self {
         case .toncenter:
-            return true
+            return config.toncenterApiKey.isEmpty
         case .getblock:
             return !config.getBlockApiKey.isEmpty
         case .nownodes:
@@ -53,7 +63,7 @@ struct TONNetworkNode {
             return RPCEndpoint(
                 url: url,
                 apiKeyHeaderName: Constants.toncenterApiKeyHeaderName,
-                apiKeyHeaderValue: isTestnet ? "53b83aa857cacc8d29ec0df8cfb000fd814b972fa89f1b15ba0220af11b51a33" :  "21e8fb0fa0b6a4dcb14524489fd22c8b8904209fa9df19b227d7b8b30ca22de9"
+                apiKeyHeaderValue: config.toncenterApiKey
             )
         case .getblock:
             return RPCEndpoint(

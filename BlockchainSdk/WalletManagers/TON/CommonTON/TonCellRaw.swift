@@ -131,6 +131,27 @@ final class TonCellRaw: RawRepresentable {
 
 extension TonCellRaw {
     
+    func write(address: TONAddress? = nil) throws {
+        if let address = address {
+            try write(uint: 2, 2)
+            try write(uint: 0, 1)
+            try write(int: address.wc, 8)
+            try write(bytes: address.hashPart.bytes)
+        } else {
+            try write(uint: 0, 2)
+        }
+    }
+    
+    func write(grams amount: UInt) throws {
+        if amount == 0 {
+            try write(uint: 0, 4)
+        } else {
+            let l = ceilf(Float(amount.hex.count) / 2)
+            try write(uint: UInt(l), 4);
+            try write(uint: UInt(amount), Int(l) * 8);
+        }
+    }
+    
     func rewrite(bytes: Array<UInt8>) {
         self.rawValue = bytes
     }
@@ -184,17 +205,6 @@ extension TonCellRaw {
             try self.write(bit: i == .one)
         }
     }
-    func write(uint8 num: UInt8) throws {
-        try write(uint: UInt(num), 8)
-    }
-    func write(bit: Bool) throws {
-        if bit {
-            try on(cursor)
-        } else {
-            try off(cursor)
-        }
-        cursor = cursor + 1
-    }
     
     /// Write signed int
     /// - Parameters:
@@ -222,30 +232,22 @@ extension TonCellRaw {
         }
     }
     
+    func write(uint8 num: UInt8) throws {
+        try write(uint: UInt(num), 8)
+    }
+    
+    func write(bit: Bool) throws {
+        if bit {
+            try on(cursor)
+        } else {
+            try off(cursor)
+        }
+        cursor = cursor + 1
+    }
+    
     func write(bit string: String) throws {
         try string.forEach {
             try self.write(bit: $0 == "1")
-        }
-    }
-    
-    func write(address: TONAddress? = nil) throws {
-        if let address = address {
-            try write(uint: 2, 2)
-            try write(uint: 0, 1)
-            try write(int: address.wc, 8)
-            try write(bytes: address.hashPart.bytes)
-        } else {
-            try write(uint: 0, 2)
-        }
-    }
-    
-    func write(grams amount: UInt) throws {
-        if amount == 0 {
-            try write(uint: 0, 4)
-        } else {
-            let l = ceilf(Float(amount.hex.count) / 2)
-            try write(uint: UInt(l), 4);
-            try write(uint: UInt(amount), Int(l) * 8);
         }
     }
     

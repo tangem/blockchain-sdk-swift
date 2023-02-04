@@ -59,7 +59,7 @@ extension TONCell {
         let cells = try deserializeBoc(serializedBoc)
         
         guard !cells.isEmpty else {
-            throw NSError()
+            throw TONError.exception("Expected 1 root cell but have")
         }
         
         return cells[0]
@@ -294,7 +294,7 @@ extension TONCell {
         serializedBoc = Array(serializedBoc[1..<serializedBoc.count])
         
         if serializedBoc.count < (1 + 5 * size_bytes) {
-            throw NSError()
+            throw TONError.empty
         }
         
         let offset_bytes = Int(serializedBoc[0])
@@ -309,7 +309,7 @@ extension TONCell {
         serializedBoc = Array(serializedBoc[offset_bytes..<serializedBoc.count])
         
         if serializedBoc.count < roots_num * size_bytes {
-            throw NSError()
+            throw TONError.empty
         }
         
         var root_list: [Int] = []
@@ -323,7 +323,7 @@ extension TONCell {
         
         if has_idx != 0 {
             if serializedBoc.count < offset_bytes * cells_num {
-                throw NSError()
+                throw TONError.empty
             }
             
             var index: [Int] = []
@@ -335,7 +335,7 @@ extension TONCell {
         }
         
         if serializedBoc.count < tot_cells_size {
-            throw NSError()
+            throw TONError.empty
         }
         
         let cells_data = Array(serializedBoc[0..<tot_cells_size])
@@ -343,14 +343,14 @@ extension TONCell {
         
         if hash_crc32 != 0 {
             if serializedBoc.count < 4 {
-                throw NSError()
+                throw TONError.empty
             }
             
             let crc32 = Checksum.crc32c(Array(inputData[0..<inputData.count - 4]))
             let byteCrcUInt8 = Array(withUnsafeBytes(of: crc32.bigEndian) { Array($0) }.reversed())
             
             if (!compareBytes(byteCrcUInt8, Array(serializedBoc[0..<4]))) {
-                throw NSError()
+                throw TONError.empty
             }
             
             serializedBoc = Array(serializedBoc[4..<serializedBoc.count])
@@ -358,7 +358,7 @@ extension TONCell {
         }
         
         if serializedBoc.count > 0 {
-            throw NSError()
+            throw TONError.empty
         }
         
         return TONCellBocHeader(
