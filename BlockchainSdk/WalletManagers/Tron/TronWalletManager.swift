@@ -146,30 +146,6 @@ class TronWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
-    private func sign(_ transactionRaw: Protocol_Transaction.raw, with signer: TransactionSigner, publicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
-        Just(())
-            .setFailureType(to: Error.self)
-            .tryMap {
-                try transactionRaw.serializedData().sha256()
-            }
-            .flatMap { hash -> AnyPublisher<Data, Error> in
-                Just(hash)
-                    .setFailureType(to: Error.self)
-                    .flatMap {
-                        signer.sign(hash: $0, walletPublicKey: publicKey)
-                    }
-                    .tryMap { [weak self] signature -> Data in
-                        guard let self = self else {
-                            throw WalletError.empty
-                        }
-                        
-                        return self.unmarshal(signature, hash: hash, publicKey: publicKey)
-                    }
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
-    }
-    
     private func updateWallet(_ accountInfo: TronAccountInfo) {
         wallet.add(amount: Amount(with: wallet.blockchain, value: accountInfo.balance))
         
