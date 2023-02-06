@@ -28,6 +28,11 @@ struct TONTransactionBuilder {
         self.blockchain = wallet.blockchain
     }
     
+    init(publicKey: Data, blockchain: Blockchain) throws {
+        self.wallet = try .init(publicKey: publicKey)
+        self.blockchain = blockchain
+    }
+    
     // MARK: - Implementation
     
     /// Build external message TON blockchain for estimate fee with dummy signature

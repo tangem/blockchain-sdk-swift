@@ -14,23 +14,11 @@ public struct TONAddress {
     /// Validate TON Address
     /// - Parameter anyForm: Форма адреса в формате строки
     static func isValid(anyForm: String) -> Bool {
-        guard
-            anyForm.count == 48,
-            let rawData = Data(base64EncodedURLSafe: anyForm),
-            rawData.count == 36
-        else {
-            return false
+        if let _ = try? parseFriendlyAddress(anyForm) {
+            return true
+        } else {
+            return (try? TONAddress(anyForm)) != nil
         }
-        
-        let addrData = rawData[0...33]
-        let crcData = rawData[34...35]
-        let calcedCrc = crc16(data: addrData.bytes).bigEndian.data.bytes
-        
-        if (!(calcedCrc[0] == crcData.bytes[0] && calcedCrc[1] == crcData.bytes[1])) {
-            return false
-        }
-        
-        return true
     }
     
     /// Validate TON Address
