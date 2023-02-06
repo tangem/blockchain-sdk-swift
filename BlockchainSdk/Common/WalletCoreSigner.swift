@@ -35,11 +35,11 @@ public class WalletCoreSigner: Signer {
             
             self.signSubscription = self.sdkSigner.sign(hash: data, walletPublicKey: self.publicKey)
                 .sink { completion in
-                    group.leave()
-                    
                     if case .failure(let error) = completion {
                         self.error = error
                     }
+                    
+                    group.leave()
                 } receiveValue: { data in
                     signedData = data
                 }
