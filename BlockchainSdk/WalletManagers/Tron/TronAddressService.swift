@@ -23,13 +23,11 @@ class TronAddressService: AddressService {
             throw BlockchainSdkError.wrongKey
         }
         
-        let address = AnyAddress(publicKey: publicKey, coin: .tron)
-        return address.description
+        return AnyAddress(publicKey: publicKey, coin: .tron).description
     }
     
     func validate(_ address: String) -> Bool {
-        let tronAddress = AnyAddress(string: address, coin: .tron)
-        return tronAddress != nil
+        return AnyAddress(string: address, coin: .tron) != nil
     }
     
     static func toByteForm(_ base58String: String) -> Data? {
