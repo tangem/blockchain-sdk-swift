@@ -11,7 +11,7 @@ import Combine
 import TangemSdk
 import WalletCore
 
-public class WalletCoreSigner: Signer {
+class WalletCoreSigner: Signer {
     private(set) var error: Error?
     
     private let sdkSigner: TransactionSigner

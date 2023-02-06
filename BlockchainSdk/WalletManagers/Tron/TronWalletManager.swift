@@ -45,7 +45,9 @@ class TronWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
-        return signedTransactionData(amount: transaction.amount, source: wallet.address, destination: transaction.destinationAddress, signer: signer, publicKey: wallet.publicKey)
+        let walletCoreSigner = WalletCoreSigner(sdkSigner: signer, publicKey: self.wallet.publicKey)
+        
+        return signedTransactionData(amount: transaction.amount, source: wallet.address, destination: transaction.destinationAddress, signer: walletCoreSigner, publicKey: wallet.publicKey)
             .flatMap { [weak self] data -> AnyPublisher<TronBroadcastResponse, Error> in
                 guard let self = self else {
                     return .anyFail(error: WalletError.empty)
@@ -69,7 +71,7 @@ class TronWalletManager: BaseManager, WalletManager {
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         let maxEnergyUsePublisher: AnyPublisher<Int, Error>
-
+        
         switch amount.type {
         case .reserve:
             return .anyFail(error: WalletError.failedToGetFee)
@@ -79,36 +81,35 @@ class TronWalletManager: BaseManager, WalletManager {
             maxEnergyUsePublisher = networkService.tokenTransferMaxEnergyUse(contractAddress: token.contractAddress)
         }
         
-        let transactionDataPublisher = Just<Data>(Data(hex: "11")).setFailureType(to: Error.self).eraseToAnyPublisher()
-//        let transactionDataPublisher = signedTransactionData(
-//            amount: amount,
-//            source: wallet.address,
-//            destination: destination,
-//            signer: feeSigner,
-//            publicKey: feeSigner.publicKey
-//        )
-
+        let transactionDataPublisher = signedTransactionData(
+            amount: amount,
+            source: wallet.address,
+            destination: destination,
+            signer: feeSigner,
+            publicKey: feeSigner.publicKey
+        )
+        
         let blockchain = self.wallet.blockchain
-
+        
         return networkService.getAccountResource(for: wallet.address)
             .zip(networkService.accountExists(address: destination), transactionDataPublisher, maxEnergyUsePublisher)
             .map { (resources, destinationExists, transactionData, maxEnergyUse) -> Amount in
                 if !destinationExists && amount.type == .coin {
                     return Amount(with: blockchain, value: 1.1)
                 }
-
+                
                 let sunPerBandwidthPoint = 1000
-
+                
                 let additionalDataSize = 64
                 let transactionSizeFee = sunPerBandwidthPoint * (transactionData.count + additionalDataSize)
-
+                
                 let sunPerEnergyUnit = 280
                 let maxEnergyFee = maxEnergyUse * sunPerEnergyUnit
-
+                
                 let totalFee = transactionSizeFee + maxEnergyFee
-
+                
                 let remainingBandwidthInSun = (resources.freeNetLimit - (resources.freeNetUsed ?? 0)) * sunPerBandwidthPoint
-
+                
                 if totalFee <= remainingBandwidthInSun {
                     return .zeroCoin(for: blockchain)
                 } else {
@@ -122,7 +123,7 @@ class TronWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
-    private func signedTransactionData(amount: Amount, source: String, destination: String, signer: TransactionSigner, publicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
+    private func signedTransactionData(amount: Amount, source: String, destination: String, signer: Signer, publicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
         return networkService.getNowBlock()
             .receive(on: DispatchQueue.global())
             .tryMap { [weak self] block -> Data in
@@ -132,14 +133,13 @@ class TronWalletManager: BaseManager, WalletManager {
                 
                 let input = try self.txBuilder.input(amount: amount, source: source, destination: destination, block: block)
                 
-                let walletCoreSigner = WalletCoreSigner(sdkSigner: signer, publicKey: self.wallet.publicKey)
-                var output: TronSigningOutput = AnySigner.signExternally(input: input, coin: .tron, signer: walletCoreSigner)
+                var output: TronSigningOutput = AnySigner.signExternally(input: input, coin: .tron, signer: signer)
                 
-                if let error = walletCoreSigner.error {
+                if let error = signer.error {
                     throw error
                 }
-
-                output.signature = self.unmarshal(output.signature, hash: output.id, publicKey: self.wallet.publicKey)
+                
+                output.signature = self.unmarshal(output.signature, hash: output.id, publicKey: publicKey)
                 
                 return try self.txBuilder.transaction(amount: amount, source: source, destination: destination, input: input, output: output)
             }
@@ -180,9 +180,11 @@ class TronWalletManager: BaseManager, WalletManager {
 extension TronWalletManager: ThenProcessable {}
 
 
-fileprivate class DummySigner: TransactionSigner {
+fileprivate class DummySigner: Signer {
     let privateKey: Data
     let publicKey: Wallet.PublicKey
+    
+    private(set) var error: Error?
     
     init() {
         let keyPair = try! Secp256k1Utils().generateKeyPair()
@@ -190,19 +192,14 @@ fileprivate class DummySigner: TransactionSigner {
         self.publicKey = Wallet.PublicKey(seedKey: compressedPublicKey, derivedKey: nil, derivationPath: nil)
         self.privateKey = keyPair.privateKey
     }
-        
-    func sign(hash: Data, walletPublicKey: Wallet.PublicKey) -> AnyPublisher<Data, Error> {
-        do {
-            let signature = try Secp256k1Utils().sign(hash, with: privateKey)
-            return Just(signature)
-                .setFailureType(to: Error.self)
-                .eraseToAnyPublisher()
-        } catch {
-            return .anyFail(error: error)
-        }
-    }
     
-    func sign(hashes: [Data], walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[Data], Error> {
-        fatalError()
+    func sign(_ data: Data) -> Data {
+        do {
+            return try Secp256k1Utils().sign(data, with: privateKey)
+        } catch {
+            print("Failed to sign transaction with dummy signer: \(error)")
+            self.error = error
+            return Data()
+        }
     }
 }
