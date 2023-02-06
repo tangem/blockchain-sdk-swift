@@ -49,7 +49,7 @@ final class TONWalletManager: BaseManager, WalletManager {
             )
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         do {
             let txForSignCell = try txBuilder.buildForSign(transaction: transaction)
 
@@ -59,7 +59,7 @@ final class TONWalletManager: BaseManager, WalletManager {
                     guard let self = self else { throw WalletError.failedToBuildTx }
                     return try self.txBuilder.buildForSend(signingMessage: txForSignCell, signature: signature)
                 }
-                .flatMap { [weak self] externalMessage -> AnyPublisher<Void, Error> in
+                .flatMap { [weak self] externalMessage -> AnyPublisher<TransactionSendResult, Error> in
                     guard let externalMessage = externalMessage else {
                         return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
                     }
@@ -67,7 +67,7 @@ final class TONWalletManager: BaseManager, WalletManager {
                     return self?.service
                         .send(message: externalMessage).tryMap { [weak self] _ in
                             self?.wallet.add(transaction: transaction)
-                            return
+                            return TransactionSendResult(hash: "")
                         }
                         .eraseToAnyPublisher() ?? .emptyFail
                 }
