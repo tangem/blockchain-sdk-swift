@@ -18,6 +18,7 @@ struct TONProviderRequest<P: Encodable>: Encodable {
         case getWalletInformation
         case estimateFee
         case sendBoc
+        case sendBocReturnHash
     }
     
     // MARK: - Properties

@@ -65,9 +65,10 @@ final class TONWalletManager: BaseManager, WalletManager {
                     }
 
                     return self?.service
-                        .send(message: externalMessage).tryMap { [weak self] _ in
+                        .send(message: externalMessage)
+                        .tryMap { [weak self] hash in
                             self?.wallet.add(transaction: transaction)
-                            return TransactionSendResult(hash: "")
+                            return TransactionSendResult(hash: hash)
                         }
                         .eraseToAnyPublisher() ?? .emptyFail
                 }

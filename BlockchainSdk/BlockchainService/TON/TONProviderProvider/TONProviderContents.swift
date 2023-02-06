@@ -87,7 +87,12 @@ struct TONProviderContent {
     }
     
     /// Response decode send boc model
-    struct SendBoc: Codable {}
+    struct SendBoc: Codable {
+        
+        /// Transaction Hash 
+        let hash: String
+        
+    }
     
     /// Sequence number model
     struct Seqno: Codable {

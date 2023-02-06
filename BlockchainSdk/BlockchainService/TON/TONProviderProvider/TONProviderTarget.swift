@@ -64,6 +64,12 @@ struct TONProviderTarget: TargetType {
                 method: .sendBoc,
                 params: ["boc": message]
             )
+        case .sendBocReturnHash(let message):
+            jrpcRequest = TONProviderRequest(
+                id: UUID().uuidString,
+                method: .sendBocReturnHash,
+                params: ["boc": message]
+            )
         }
         
         return .requestParameters(parameters: (try? jrpcRequest?.asDictionary()) ?? [:], encoding: JSONEncoding.default)
@@ -97,6 +103,7 @@ extension TONProviderTarget {
         case estimateFeeWithCode(address: String, body: String?, initCode: String?, initData: String?)
         case getBalance(address: String)
         case sendBoc(message: String)
+        case sendBocReturnHash(message: String)
     }
     
 }

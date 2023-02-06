@@ -77,7 +77,7 @@ struct TONProvider: HostProvider {
     
     func send(message: String) -> AnyPublisher<TONProviderContent.SendBoc, Error> {
         requestPublisher(
-            for: .init(node: node, targetType: .sendBoc(message: message))
+            for: .init(node: node, targetType: .sendBocReturnHash(message: message))
         )
     }
     
