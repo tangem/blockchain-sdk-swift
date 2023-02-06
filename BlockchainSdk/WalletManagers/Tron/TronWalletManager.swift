@@ -141,7 +141,7 @@ class TronWalletManager: BaseManager, WalletManager {
 
                 output.signature = self.unmarshal(output.signature, hash: output.id, publicKey: self.wallet.publicKey)
                 
-                return self.txBuilder.transaction(amount: amount, source: source, destination: destination, input: input, output: output)
+                return try self.txBuilder.transaction(amount: amount, source: source, destination: destination, input: input, output: output)
             }
             .eraseToAnyPublisher()
     }
