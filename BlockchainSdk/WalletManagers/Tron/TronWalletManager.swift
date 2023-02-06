@@ -134,6 +134,10 @@ class TronWalletManager: BaseManager, WalletManager {
                 
                 let walletCoreSigner = WalletCoreSigner(sdkSigner: signer, publicKey: self.wallet.publicKey)
                 var output: TronSigningOutput = AnySigner.signExternally(input: input, coin: .tron, signer: walletCoreSigner)
+                
+                if let error = walletCoreSigner.error {
+                    throw error
+                }
 
                 output.signature = self.unmarshal(output.signature, hash: output.id, publicKey: self.wallet.publicKey)
                 

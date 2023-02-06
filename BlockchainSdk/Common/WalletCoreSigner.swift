@@ -12,6 +12,8 @@ import TangemSdk
 import WalletCore
 
 public class WalletCoreSigner: Signer {
+    private(set) var error: Error?
+    
     private let sdkSigner: TransactionSigner
     private let publicKey: Wallet.PublicKey
     
@@ -32,8 +34,12 @@ public class WalletCoreSigner: Signer {
             group.enter()
             
             self.signSubscription = self.sdkSigner.sign(hash: data, walletPublicKey: self.publicKey)
-                .sink { _ in
+                .sink { completion in
                     group.leave()
+                    
+                    if case .failure(let error) = completion {
+                        self.error = error
+                    }
                 } receiveValue: { data in
                     signedData = data
                 }
@@ -44,6 +50,6 @@ public class WalletCoreSigner: Signer {
         operation.start()
         operation.waitUntilFinished()
 
-        return signedData!
+        return signedData ?? Data()
     }
 }
