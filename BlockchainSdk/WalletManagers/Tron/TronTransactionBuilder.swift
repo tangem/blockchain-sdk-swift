@@ -23,7 +23,7 @@ class TronTransactionBuilder {
     func input(amount: Amount, source: String, destination: String, block: TronBlock) throws -> TronSigningInput {
         let dummyPrivateKeyData = Data(repeating: 7, count: 32)
         let expirationInterval: Int64 = 10 * 60 * 60 * 1000
-        let contract = try self.contract2(amount: amount, source: source, destination: destination)
+        let contract = try self.contract(amount: amount, source: source, destination: destination)
         let feeLimit = (amount.type == .coin) ? 0 : smartContractFeeLimit
         
         let input = TronSigningInput.with {
@@ -48,7 +48,9 @@ class TronTransactionBuilder {
     }
     
     func transaction(amount: Amount, source: String, destination: String, input: TronSigningInput, output: TronSigningOutput) throws -> Data {
-        let contract = try self.contract(amount: amount, source: source, destination: destination)
+        guard let contract = try input.transaction.contractOneof?.toProtocolContract() else {
+            throw WalletError.failedToBuildTx
+        }
         
         let protocolTransaction = Protocol_Transaction.with {
             $0.rawData = Protocol_Transaction.raw.with {
@@ -57,61 +59,16 @@ class TronTransactionBuilder {
                 $0.timestamp = input.transaction.timestamp
                 $0.expiration = input.transaction.expiration
                 $0.feeLimit = input.transaction.feeLimit
-                $0.contract = [
-                    contract
-                ]
+                $0.contract = [contract]
             }
             
             $0.signature = [output.signature]
         }
         
-        return try! protocolTransaction.serializedData()
+        return try protocolTransaction.serializedData()
     }
     
-    private func contract(amount: Amount, source: String, destination: String) throws -> Protocol_Transaction.Contract {
-        switch amount.type {
-        case .coin:
-            let parameter = Protocol_TransferContract.with {
-                $0.ownerAddress = TronAddressService.toByteForm(source) ?? Data()
-                $0.toAddress = TronAddressService.toByteForm(destination) ?? Data()
-                $0.amount = integerValue(from: amount).int64Value
-            }
-            
-            return try Protocol_Transaction.Contract.with {
-                $0.type = .transferContract
-                $0.parameter = try Google_Protobuf_Any(message: parameter)
-            }
-        case .token(let token):
-            let functionSelector = "transfer(address,uint256)"
-            let functionSelectorHash = Data(functionSelector.bytes).sha3(.keccak256).prefix(4)
-            
-            let addressData = TronAddressService.toByteForm(destination)?.padLeft(length: 32) ?? Data()
-            
-            guard
-                let bigIntValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: token.decimalCount)
-            else {
-                throw WalletError.failedToBuildTx
-            }
-            
-            let amountData = bigIntValue.serialize().padLeft(length: 32)
-            let contractData = functionSelectorHash + addressData + amountData
-            
-            let parameter = Protocol_TriggerSmartContract.with {
-                $0.contractAddress = TronAddressService.toByteForm(token.contractAddress) ?? Data()
-                $0.data = contractData
-                $0.ownerAddress = TronAddressService.toByteForm(source) ?? Data()
-            }
-            
-            return try Protocol_Transaction.Contract.with {
-                $0.type = .triggerSmartContract
-                $0.parameter = try Google_Protobuf_Any(message: parameter)
-            }
-        case .reserve:
-            fatalError()
-        }
-    }
-    
-    private func contract2(amount: Amount, source: String, destination: String) throws -> TW_Tron_Proto_Transaction.OneOf_ContractOneof {
+    private func contract(amount: Amount, source: String, destination: String) throws -> TW_Tron_Proto_Transaction.OneOf_ContractOneof {
         switch amount.type {
         case .coin:
             let parameter = TronTransferContract.with {
@@ -168,5 +125,36 @@ fileprivate extension Data {
     func padLeft(length: Int) -> Data {
         let extraLength = Swift.max(0, length - self.count)
         return Data(repeating: 0, count: extraLength) + self
+    }
+}
+
+fileprivate extension TW_Tron_Proto_Transaction.OneOf_ContractOneof {
+    func toProtocolContract() throws -> Protocol_Transaction.Contract {
+        switch self {
+        case .transfer(let trustWalletParameters):
+            let message = Protocol_TransferContract.with {
+                $0.ownerAddress = TronAddressService.toByteForm(trustWalletParameters.ownerAddress) ?? Data()
+                $0.toAddress = TronAddressService.toByteForm(trustWalletParameters.toAddress) ?? Data()
+                $0.amount = trustWalletParameters.amount
+            }
+            
+            return try Protocol_Transaction.Contract.with {
+                $0.type = .transferContract
+                $0.parameter = try Google_Protobuf_Any(message: message)
+            }
+        case .triggerSmartContract(let trustWalletParameters):
+            let message = Protocol_TriggerSmartContract.with {
+                $0.contractAddress = TronAddressService.toByteForm(trustWalletParameters.contractAddress) ?? Data()
+                $0.ownerAddress = TronAddressService.toByteForm(trustWalletParameters.ownerAddress) ?? Data()
+                $0.data = trustWalletParameters.data
+            }
+            
+            return try Protocol_Transaction.Contract.with {
+                $0.type = .triggerSmartContract
+                $0.parameter = try Google_Protobuf_Any(message: message)
+            }
+        default:
+            throw WalletError.failedToBuildTx
+        }
     }
 }
