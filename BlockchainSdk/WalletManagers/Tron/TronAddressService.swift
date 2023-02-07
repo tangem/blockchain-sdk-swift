@@ -8,6 +8,7 @@
 
 import Foundation
 import TangemSdk
+import WalletCore
 
 class TronAddressService: AddressService {
     private let prefix: UInt8 = 0x41
@@ -18,20 +19,15 @@ class TronAddressService: AddressService {
     func makeAddress(from walletPublicKey: Data) throws -> String {
         let decompressedPublicKey = try Secp256k1Key(with: walletPublicKey).decompress()
         
-        let data = decompressedPublicKey.dropFirst()
-        let hash = data.sha3(.keccak256)
+        guard let publicKey = PublicKey(data: decompressedPublicKey, type: .secp256k1Extended) else {
+            throw BlockchainSdkError.wrongKey
+        }
         
-        let addressData = [prefix] + hash.suffix(addressLength - 1)
-        
-        return addressData.base58CheckEncodedString
+        return AnyAddress(publicKey: publicKey, coin: .tron).description
     }
     
     func validate(_ address: String) -> Bool {
-        guard let decoded = address.base58CheckDecodedBytes else {
-            return false
-        }
-
-        return decoded.starts(with: [prefix]) && decoded.count == addressLength
+        return AnyAddress(string: address, coin: .tron) != nil
     }
     
     static func toByteForm(_ base58String: String) -> Data? {

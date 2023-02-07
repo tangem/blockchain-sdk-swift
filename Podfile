@@ -32,8 +32,6 @@ target 'BlockchainSdk' do
   pod 'ScaleCodec'
   pod 'SwiftProtobuf'
   
-  pod 'TrustWalletCore', '3.1.10'
-  
   common_pods
 end
 

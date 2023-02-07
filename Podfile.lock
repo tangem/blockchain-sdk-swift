@@ -55,12 +55,6 @@ PODS:
   - SwiftProtobuf (1.18.0)
   - SwiftyJSON (5.0.1)
   - TangemSdk (3.3.4)
-  - TrustWalletCore (3.1.10):
-    - TrustWalletCore/Core (= 3.1.10)
-  - TrustWalletCore/Core (3.1.10):
-    - TrustWalletCore/Types
-  - TrustWalletCore/Types (3.1.10):
-    - SwiftProtobuf
   - TweetNacl (1.0.2)
   - web3swift (2.2.1):
     - BigInt
@@ -89,7 +83,6 @@ DEPENDENCIES:
   - SwiftProtobuf
   - SwiftyJSON
   - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-198`)
-  - TrustWalletCore (= 3.1.10)
   - web3swift (from `https://github.com/tangem/web3swift.git`, tag `2.2.10`)
 
 SPEC REPOS:
@@ -110,7 +103,6 @@ SPEC REPOS:
     - SwiftDate
     - SwiftProtobuf
     - SwiftyJSON
-    - TrustWalletCore
     - TweetNacl
     - XCGLogger
 
@@ -176,11 +168,10 @@ SPEC CHECKSUMS:
   SwiftProtobuf: c3c12645230d9b09c72267e0de89468c5543bd86
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
   TangemSdk: 9ea2c230bd616787bdccc5fb3ab36925d06199d4
-  TrustWalletCore: 9a0893d370196226a8c371c2b29575399e326f78
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: ecdab43c934a4cdf5c7436495c899eb857e86f63
+PODFILE CHECKSUM: c1c3e3818fabedcb2b5a145fe79b03d281902758
 
 COCOAPODS: 1.11.3
