@@ -66,7 +66,7 @@ class XRPWalletManager: BaseManager, WalletManager {
 extension XRPWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         let addressDecoded = (try? XRPAddress.decodeXAddress(xAddress: transaction.destinationAddress))?.rAddress ?? transaction.destinationAddress
         return networkService
             .checkAccountCreated(account: addressDecoded)
@@ -97,12 +97,14 @@ extension XRPWalletManager: TransactionSender {
 
                 return try self.txBuilder.buildForSend(transaction: response.0, signature: response.1)
             }
-            .flatMap{[weak self] builderResponse -> AnyPublisher<Void, Error> in
+            .flatMap{[weak self] builderResponse -> AnyPublisher<TransactionSendResult, Error> in
                 self?.networkService.send(blob: builderResponse)
                     .tryMap{[weak self] response in
                         guard let self = self else { throw WalletError.empty }
                         
-                        return self.wallet.add(transaction: transaction)
+                        self.wallet.add(transaction: transaction)
+                        
+                        return TransactionSendResult(hash: builderResponse)
                     }
                     .mapError { SendTxError(error: $0, tx: builderResponse) }
                     .eraseToAnyPublisher() ?? .emptyFail

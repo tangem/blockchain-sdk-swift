@@ -64,7 +64,7 @@ class CardanoWalletManager: BaseManager, WalletManager {
 extension CardanoWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { false }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         guard let walletAmount = wallet.amounts[.coin]?.value else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
@@ -80,13 +80,15 @@ extension CardanoWalletManager: TransactionSender {
                     let tx = try self.txBuilder.buildForSend(bodyItem: info.bodyItem, signature: signature)
                     return (tx, info.hash.hexString)
             }
-            .flatMap {[weak self] builderResponse -> AnyPublisher<Void, Error> in
+            .flatMap {[weak self] builderResponse -> AnyPublisher<TransactionSendResult, Error> in
                 self?.networkService.send(transaction: builderResponse.tx).tryMap {[weak self] response in
                     guard let self = self else { throw WalletError.empty }
                     
                     var sendedTx = transaction
                     sendedTx.hash = builderResponse.hash
                     self.wallet.add(transaction: sendedTx)
+
+                    return TransactionSendResult(hash: builderResponse.hash)
                 }
                 .mapError { SendTxError(error: $0, tx: builderResponse.tx.hexString) }
                 .eraseToAnyPublisher() ?? .emptyFail

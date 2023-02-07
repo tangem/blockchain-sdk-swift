@@ -197,15 +197,16 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
 extension EthereumWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         sign(transaction, signer: signer)
-            .flatMap {[weak self] tx -> AnyPublisher<Void, Error> in
+            .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
                 self?.networkService.send(transaction: tx).tryMap {[weak self] sendResponse in
                     guard let self = self else { throw WalletError.empty }
                     
                     var tx = transaction
                     tx.hash = sendResponse
                     self.wallet.add(transaction: tx)
+                    return TransactionSendResult(hash: sendResponse)
                 }
                 .mapError { SendTxError(error: $0, tx: tx) }
                 .eraseToAnyPublisher() ?? .emptyFail

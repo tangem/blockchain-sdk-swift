@@ -47,7 +47,7 @@ extension TezosWalletManager: TransactionSender {
         false
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         guard let contents = txBuilder.buildContents(transaction: transaction) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
@@ -84,7 +84,7 @@ extension TezosWalletManager: TransactionSender {
                     .map { _ in (forgedContents, signature) }
                     .eraseToAnyPublisher()
             }
-            .flatMap {[weak self] (forgedContents, signature) -> AnyPublisher<Void, Error> in
+            .flatMap {[weak self] (forgedContents, signature) -> AnyPublisher<TransactionSendResult, Error> in
                 guard let self = self else { return .emptyFail }
                 
                 let txToSend = self.txBuilder.buildToSend(signature: signature, forgedContents: forgedContents)
@@ -94,6 +94,7 @@ extension TezosWalletManager: TransactionSender {
                         guard let self = self else { throw WalletError.empty }
                         
                         self.wallet.add(transaction: transaction)
+                        return TransactionSendResult(hash: txToSend)
                     }
                     .mapError { SendTxError(error: $0, tx: txToSend) }
                     .eraseToAnyPublisher()

@@ -57,7 +57,7 @@ extension BlockchainDataProvider {
 @available(iOS 13.0, *)
 public protocol TransactionSender {
     var allowsFeeSelection: Bool {get}
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error>
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error>
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error>
 }
 

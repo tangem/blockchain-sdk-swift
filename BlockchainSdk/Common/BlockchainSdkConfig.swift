@@ -12,6 +12,8 @@ public struct BlockchainSdkConfig {
     let blockchairApiKeys: [String]
     let blockcypherTokens: [String]
     let infuraProjectId: String
+    let nowNodesApiKey: String
+    let getBlockApiKey: String
     let tronGridApiKey: String
     let quickNodeSolanaCredentials: QuickNodeCredentials
     let quickNodeBscCredentials: QuickNodeCredentials
@@ -22,6 +24,8 @@ public struct BlockchainSdkConfig {
         blockchairApiKeys: [String],
         blockcypherTokens: [String],
         infuraProjectId: String,
+        nowNodesApiKey: String,
+        getBlockApiKey: String,
         tronGridApiKey: String,
         quickNodeSolanaCredentials: QuickNodeCredentials,
         quickNodeBscCredentials: QuickNodeCredentials,
@@ -31,6 +35,8 @@ public struct BlockchainSdkConfig {
         self.blockchairApiKeys = blockchairApiKeys
         self.blockcypherTokens = blockcypherTokens
         self.infuraProjectId = infuraProjectId
+        self.nowNodesApiKey = nowNodesApiKey
+        self.getBlockApiKey = getBlockApiKey
         self.tronGridApiKey = tronGridApiKey
         self.quickNodeSolanaCredentials = quickNodeSolanaCredentials
         self.quickNodeBscCredentials = quickNodeBscCredentials

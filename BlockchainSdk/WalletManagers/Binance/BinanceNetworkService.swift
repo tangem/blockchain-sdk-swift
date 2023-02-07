@@ -83,8 +83,8 @@ class BinanceNetworkService {
         return AnyPublisher(future)
     }
     
-    func send(transaction: Message) -> AnyPublisher<Bool, Error> {
-        let future = Future<Bool,Error> {[weak self] promise in
+    func send(transaction: Message) -> AnyPublisher<BinanceChain.Response, Error> {
+        let future = Future<BinanceChain.Response,Error> {[weak self] promise in
             guard let self = self else {
                 promise(.failure(WalletError.empty))
                 return
@@ -95,15 +95,13 @@ class BinanceNetworkService {
                     promise(.failure(error))
                     return
                 }
-                promise(.success(true))
+
+                promise(.success(response))
             }
         }
         return AnyPublisher(future)
     }
-    
-
 }
-
 
 extension BinanceChain.Response {
     func getError() -> Error? {

@@ -9,31 +9,13 @@
 import Foundation
 import Moya
 
-enum EthereumTarget: TargetType {
-    static let infuraTokenId = 03
+struct EthereumTarget: TargetType {
     static let coinId = 67
     
-    case balance(address: String, url: URL)
-    case transactions(address: String, url: URL)
-    case pending(address: String, url: URL)
-    case send(transaction: String, url: URL)
-    case tokenBalance(address: String, contractAddress: String, url: URL)
-    case getAllowance(from: String, to: String, contractAddress: String, url: URL)
-    case gasLimit(to: String, from: String, value: String?, data: String?, url: URL)
-    case gasPrice(url: URL)
+    let targetType: EthereumTargetType
+    let baseURL: URL
     
-    var baseURL: URL {
-        switch self {
-        case .balance(_, let url): return url
-        case .pending(_, let url): return url
-        case .send(_, let url): return url
-        case .tokenBalance(_, _, let url): return url
-        case .getAllowance(_, _, _, let url): return url
-        case .transactions(_, let url): return url
-        case .gasLimit(_, _, _, _, let url): return url
-        case .gasPrice(let url): return url
-        }
-    }
+    let additionalHeaders: [String: String]
     
     var path: String {
         return ""
@@ -43,8 +25,6 @@ enum EthereumTarget: TargetType {
         return .post
     }
     
-    var sampleData: Data { Data() }
-    
     var task: Task {
         var parameters: [String: Any] = [
             "jsonrpc": "2.0",
@@ -53,20 +33,20 @@ enum EthereumTarget: TargetType {
         ]
         
         var params: [Any] = []
-        switch self {
-        case .balance(let address, _), .transactions(let address, _), .pending(let address, _):
+        switch targetType {
+        case .balance(let address), .transactions(let address), .pending(let address):
             params.append(address)
-        case .send(let transaction, _):
+        case .send(let transaction):
             params.append(transaction)
-        case .tokenBalance(let address, let contractAddress, _):
+        case .tokenBalance(let address, let contractAddress):
             let rawAddress = address.serialize()
             let dataValue = ["data": "0x70a08231\(rawAddress)", "to": contractAddress]
             params.append(dataValue)
-        case .getAllowance(let fromAddress, let toAddress, let contractAddress, _):
+        case .getAllowance(let fromAddress, let toAddress, let contractAddress):
             let dataValue = ["data": "0xdd62ed3e\(fromAddress.serialize())\(toAddress.serialize())",
                              "to": contractAddress]
             params.append(dataValue)
-        case .gasLimit(let to, let from, let value, let data, _):
+        case .gasLimit(let to, let from, let value, let data):
             var gasLimitParams = [String: String]()
             gasLimitParams["from"] = from
             gasLimitParams["to"] = to
@@ -90,11 +70,15 @@ enum EthereumTarget: TargetType {
     }
     
     var headers: [String : String]? {
-        return ["Content-Type": "application/json"]
+        let standardHeaders = [
+            "Content-Type": "application/json",
+        ]
+        
+        return standardHeaders.merging(additionalHeaders) { current, _ in current }
     }
     
     private var ethMethod: String {
-        switch self {
+        switch targetType {
         case .balance: return "eth_getBalance"
         case .transactions, .pending: return "eth_getTransactionCount"
         case .send: return "eth_sendRawTransaction"
@@ -105,10 +89,23 @@ enum EthereumTarget: TargetType {
     }
     
     private var blockParams: String? {
-        switch self {
+        switch targetType {
         case .balance, .transactions, .tokenBalance, .getAllowance: return "latest"
         case .pending: return "pending"
         case .send, .gasLimit, .gasPrice: return nil
         }
+    }
+}
+
+extension EthereumTarget {
+    enum EthereumTargetType {
+        case balance(address: String)
+        case transactions(address: String)
+        case pending(address: String)
+        case send(transaction: String)
+        case tokenBalance(address: String, contractAddress: String)
+        case getAllowance(from: String, to: String, contractAddress: String)
+        case gasLimit(to: String, from: String, value: String?, data: String?)
+        case gasPrice
     }
 }

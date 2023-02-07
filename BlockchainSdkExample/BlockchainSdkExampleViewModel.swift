@@ -59,6 +59,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKeys: [],
                                                                           blockcypherTokens: [],
                                                                           infuraProjectId: "",
+                                                                          nowNodesApiKey: "",
+                                                                          getBlockApiKey: "",
                                                                           tronGridApiKey: "",
                                                                           quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
                                                                           quickNodeBscCredentials: .init(apiKey: "", subdomain: ""),
@@ -291,7 +293,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         
         walletManager
             .getFee(amount: amount, destination: destination)
-            .flatMap { [unowned self] fees -> AnyPublisher<Void, Error> in
+            .flatMap { [unowned self] fees -> AnyPublisher<TransactionSendResult, Error> in
                 guard let fee = fees.first else {
                     return .anyFail(error: WalletError.failedToGetFee)
                 }
@@ -317,7 +319,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                 case .finished:
                     self.transactionResult = "OK"
                 }
-            } receiveValue: {
+            } receiveValue: { _ in
                 
             }
             .store(in: &bag)
