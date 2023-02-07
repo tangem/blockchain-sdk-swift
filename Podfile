@@ -32,7 +32,7 @@ target 'BlockchainSdk' do
   pod 'ScaleCodec'
   pod 'SwiftProtobuf'
   
-  pod 'TweetNacl', '~> 1.0.0'
+  pod 'TrustWalletCore', '3.1.10'
   
   common_pods
 end

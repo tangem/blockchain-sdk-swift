@@ -19,7 +19,7 @@ struct TONBlockchainAssemblyFactory: BlockchainAssemblyFactoryProtocol {
     func assembly(with input: BlockchainAssemblyFactoryInput) throws -> AssemblyWallet {
         try TONWalletManager(
             wallet: input.wallet,
-            service: .init(
+            networkService: .init(
                 providers: TONNodeName.allCases.sorted().map {
                     TONProvider(
                         nodeName: $0,
