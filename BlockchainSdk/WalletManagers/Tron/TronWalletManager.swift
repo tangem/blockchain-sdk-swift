@@ -45,7 +45,7 @@ class TronWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
-        let walletCoreSigner = WalletCoreSigner(sdkSigner: signer, publicKey: self.wallet.publicKey)
+        let walletCoreSigner = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey)
         
         return signedTransactionData(amount: transaction.amount, source: wallet.address, destination: transaction.destinationAddress, signer: walletCoreSigner, publicKey: wallet.publicKey)
             .flatMap { [weak self] data -> AnyPublisher<TronBroadcastResponse, Error> in
@@ -86,7 +86,7 @@ class TronWalletManager: BaseManager, WalletManager {
             source: wallet.address,
             destination: destination,
             signer: feeSigner,
-            publicKey: feeSigner.publicKey
+            publicKey: feeSigner.walletPublicKey
         )
         
         let blockchain = self.wallet.blockchain
@@ -161,7 +161,7 @@ class TronWalletManager: BaseManager, WalletManager {
     }
     
     private func unmarshal(_ signatureData: Data, hash: Data, publicKey: Wallet.PublicKey) -> Data {
-        guard publicKey != feeSigner.publicKey else {
+        guard publicKey != feeSigner.walletPublicKey else {
             return signatureData + Data(0)
         }
         
@@ -181,15 +181,19 @@ extension TronWalletManager: ThenProcessable {}
 
 
 fileprivate class DummySigner: Signer {
-    let privateKey: Data
-    let publicKey: Wallet.PublicKey
+    let walletPublicKey: Wallet.PublicKey
+    
+    var publicKey: Data {
+        walletPublicKey.blockchainKey
+    }
     
     private(set) var error: Error?
+    private let privateKey: Data
     
     init() {
         let keyPair = try! Secp256k1Utils().generateKeyPair()
         let compressedPublicKey = try! Secp256k1Key(with: keyPair.publicKey).compress()
-        self.publicKey = Wallet.PublicKey(seedKey: compressedPublicKey, derivedKey: nil, derivationPath: nil)
+        self.walletPublicKey = Wallet.PublicKey(seedKey: compressedPublicKey, derivedKey: nil, derivationPath: nil)
         self.privateKey = keyPair.privateKey
     }
     
@@ -201,5 +205,9 @@ fileprivate class DummySigner: Signer {
             self.error = error
             return Data()
         }
+    }
+    
+    func sign(_ data: [Data]) -> [Data] {
+        fatalError()
     }
 }

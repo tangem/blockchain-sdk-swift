@@ -12,20 +12,28 @@ import TangemSdk
 import WalletCore
 
 class WalletCoreSigner: Signer {
+    var publicKey: Data {
+        walletPublicKey.blockchainKey
+    }
+    
     private(set) var error: Error?
     
     private let sdkSigner: TransactionSigner
-    private let publicKey: Wallet.PublicKey
+    private let walletPublicKey: Wallet.PublicKey
     
     private var signSubscription: AnyCancellable?
     
-    public init(sdkSigner: TransactionSigner, publicKey: Wallet.PublicKey) {
+    public init(sdkSigner: TransactionSigner, walletPublicKey: Wallet.PublicKey) {
         self.sdkSigner = sdkSigner
-        self.publicKey = publicKey
+        self.walletPublicKey = walletPublicKey
     }
     
-    public func sign(_ data: Data) -> Data {
-        var signedData: Data?
+    func sign(_ data: Data) -> Data {
+        sign([data]).first ?? Data()
+    }
+    
+    public func sign(_ data: [Data]) -> [Data] {
+        var signedData: [Data] = []
         
         let operation = BlockOperation { [weak self] in
             guard let self else { return }
@@ -33,7 +41,7 @@ class WalletCoreSigner: Signer {
             let group = DispatchGroup()
             group.enter()
             
-            self.signSubscription = self.sdkSigner.sign(hash: data, walletPublicKey: self.publicKey)
+            self.signSubscription = self.sdkSigner.sign(hashes: data, walletPublicKey: self.walletPublicKey)
                 .sink { completion in
                     if case .failure(let error) = completion {
                         self.error = error
@@ -49,7 +57,7 @@ class WalletCoreSigner: Signer {
         
         operation.start()
         operation.waitUntilFinished()
-
-        return signedData ?? Data()
+        
+        return signedData
     }
 }
