@@ -20,7 +20,7 @@ class TronTransactionBuilder {
         self.blockchain = blockchain
     }
     
-    func input(amount: Amount, source: String, destination: String, block: TronBlock) throws -> TronSigningInput {
+    func buildforSign(amount: Amount, source: String, destination: String, block: TronBlock) throws -> TronSigningInput {
         let dummyPrivateKeyData = Data(repeating: 7, count: 32)
         let expirationInterval: Int64 = 10 * 60 * 60 * 1000
         let contract = try self.contract(amount: amount, source: source, destination: destination)
@@ -47,7 +47,7 @@ class TronTransactionBuilder {
         return input
     }
     
-    func transaction(amount: Amount, source: String, destination: String, input: TronSigningInput, output: TronSigningOutput) throws -> Data {
+    func buildForSend(input: TronSigningInput, output: TronSigningOutput) throws -> Data {
         guard let contract = try input.transaction.contractOneof?.toProtocolContract() else {
             throw WalletError.failedToBuildTx
         }

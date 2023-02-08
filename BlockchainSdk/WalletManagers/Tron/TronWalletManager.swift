@@ -131,7 +131,7 @@ class TronWalletManager: BaseManager, WalletManager {
                     throw WalletError.empty
                 }
                 
-                let input = try self.txBuilder.input(amount: amount, source: source, destination: destination, block: block)
+                let input = try self.txBuilder.buildforSign(amount: amount, source: source, destination: destination, block: block)
                 
                 var output: TronSigningOutput = AnySigner.signExternally(input: input, coin: .tron, signer: signer)
                 
@@ -141,7 +141,7 @@ class TronWalletManager: BaseManager, WalletManager {
                 
                 output.signature = self.unmarshal(output.signature, hash: output.id, publicKey: publicKey)
                 
-                return try self.txBuilder.transaction(amount: amount, source: source, destination: destination, input: input, output: output)
+                return try self.txBuilder.buildForSend(input: input, output: output)
             }
             .eraseToAnyPublisher()
     }
