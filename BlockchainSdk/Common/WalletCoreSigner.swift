@@ -23,7 +23,7 @@ class WalletCoreSigner: Signer {
     
     private var signSubscription: AnyCancellable?
     
-    public init(sdkSigner: TransactionSigner, walletPublicKey: Wallet.PublicKey) {
+    init(sdkSigner: TransactionSigner, walletPublicKey: Wallet.PublicKey) {
         self.sdkSigner = sdkSigner
         self.walletPublicKey = walletPublicKey
     }
@@ -32,7 +32,7 @@ class WalletCoreSigner: Signer {
         sign([data]).first ?? Data()
     }
     
-    public func sign(_ data: [Data]) -> [Data] {
+    func sign(_ data: [Data]) -> [Data] {
         var signedData: [Data] = []
         
         let operation = BlockOperation { [weak self] in
