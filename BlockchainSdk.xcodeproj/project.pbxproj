@@ -254,6 +254,7 @@
 		EF3B582228F9663D00C93810 /* RavencoinWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B582128F9663D00C93810 /* RavencoinWalletManager.swift */; };
 		EF3B582428F9675700C93810 /* RavencoinMainNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B582328F9675700C93810 /* RavencoinMainNetworkParams.swift */; };
 		EF3B582628F97B3D00C93810 /* RavencoinTestNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B582528F97B3D00C93810 /* RavencoinTestNetworkParams.swift */; };
+		EF92E2AE2994314E00DD9B06 /* NowNodesBlockConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF92E2AD2994314E00DD9B06 /* NowNodesBlockConfig.swift */; };
 		EFBA17FE2988623F00C23955 /* TransactionSendResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */; };
 /* End PBXBuildFile section */
 
@@ -554,6 +555,7 @@
 		EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashMainNetworkParams.swift; sourceTree = "<group>"; };
 		EF9F9085299F88D1006F638F /* EthereumWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumWalletManager.swift; sourceTree = "<group>"; };
 		EF9F9087299F8B70006F638F /* ETHError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ETHError.swift; sourceTree = "<group>"; };
+		EF92E2AD2994314E00DD9B06 /* NowNodesBlockConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowNodesBlockConfig.swift; sourceTree = "<group>"; };
 		EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSendResult.swift; sourceTree = "<group>"; };
 		EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashTestNetworkParams.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1286,6 +1288,7 @@
 			children = (
 				DA18C4A8297AC63600EC4C05 /* NowNodesBlockBookConfig.swift */,
 				DAB87CB0297ADCDC00FF30EB /* GetBlockBlockBookConfig.swift */,
+				EF92E2AD2994314E00DD9B06 /* NowNodesBlockConfig.swift */,
 			);
 			path = Implementations;
 			sourceTree = "<group>";
@@ -1917,6 +1920,7 @@
 				B04E8D5025F8F67F00821CBE /* RosettaNetworkProvider.swift in Sources */,
 				EF3B582628F97B3D00C93810 /* RavencoinTestNetworkParams.swift in Sources */,
 				5D845516243DEAC80072155E /* AdaliteTarget.swift in Sources */,
+				EF92E2AE2994314E00DD9B06 /* NowNodesBlockConfig.swift in Sources */,
 				5DCC817823FAE6F700DFC460 /* MoyaPublisher.swift in Sources */,
 				5D7D242B25136254001B9A4F /* HTTP.swift in Sources */,
 				5D7D242E25136254001B9A4F /* XrpData.swift in Sources */,
