@@ -11,7 +11,11 @@ import TangemSdk
 
 struct TronWalletAssembly: BlockchainAssemblyProtocol {
     
-    func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func canAssembly(blockchain: Blockchain) -> Bool {
+        blockchain == .tron(testnet: blockchain.isTestnet)
+    }
+    
+    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         return TronWalletManager(wallet: input.wallet).then {
             let network: TronNetwork = input.blockchain.isTestnet ? .nile : .mainnet
             let providers = [

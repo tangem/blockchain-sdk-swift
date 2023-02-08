@@ -13,7 +13,11 @@ import BitcoinCore
 
 struct BinanceWalletAssembly: BlockchainAssemblyProtocol {
     
-    func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func canAssembly(blockchain: Blockchain) -> Bool {
+        blockchain == .binance(testnet: blockchain.isTestnet)
+    }
+    
+    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         return try BinanceWalletManager(wallet: input.wallet).then {
             $0.txBuilder = try BinanceTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, isTestnet: input.blockchain.isTestnet)
             $0.networkService = BinanceNetworkService(isTestNet: input.blockchain.isTestnet)

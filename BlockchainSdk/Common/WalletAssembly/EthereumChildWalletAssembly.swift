@@ -13,7 +13,16 @@ import BitcoinCore
 
 struct EthereumChildWalletAssembly: BlockchainAssemblyProtocol {
     
-    func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func canAssembly(blockchain: Blockchain) -> Bool {
+        switch blockchain {
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .optimism, .ethereumFair, .saltPay:
+            return true
+        default:
+            return false
+        }
+    }
+    
+    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         let manager: EthereumWalletManager
         let endpoints = input.blockchain.getJsonRpcEndpoints(
             keys: EthereumApiKeys(
@@ -33,11 +42,7 @@ struct EthereumChildWalletAssembly: BlockchainAssemblyProtocol {
         let blockcypherProvider: BlockcypherNetworkProvider?
         
         if case .ethereum = input.blockchain {
-            blockcypherProvider = BlockcypherNetworkProvider(
-                endpoint: .ethereum,
-                tokens: input.blockchainConfig.blockcypherTokens,
-                configuration: input.networkConfig
-            )
+            blockcypherProvider = makeBlockcypherNetworkProvider(endpoint: .ethereum, with: input)
         } else {
             blockcypherProvider = nil
         }

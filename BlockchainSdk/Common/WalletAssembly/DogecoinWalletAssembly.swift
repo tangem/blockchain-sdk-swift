@@ -13,7 +13,11 @@ import BitcoinCore
 
 struct DogecoinWalletAssembly: BlockchainAssemblyProtocol {
     
-    func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func canAssembly(blockchain: Blockchain) -> Bool {
+        return blockchain == .dogecoin
+    }
+    
+    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         return try DogecoinWalletManager(wallet: input.wallet).then {
             let bitcoinManager = BitcoinManager(networkParams: DogecoinNetworkParams(),
                                                 walletPublicKey: input.wallet.publicKey.blockchainKey,
@@ -24,26 +28,16 @@ struct DogecoinWalletAssembly: BlockchainAssemblyProtocol {
             
             var providers = [AnyBitcoinNetworkProvider]()
             
-            providers.append(BlockBookUtxoProvider(blockchain: input.blockchain,
-                                                   blockBookConfig: NowNodesBlockBookConfig(apiKey: input.blockchainConfig.nowNodesApiKey),
-                                                   networkConfiguration: input.networkConfig)
-                .eraseToAnyBitcoinNetworkProvider())
+            providers.append(makeBlockBookUtxoProvider(with: input, for: .NowNodes).eraseToAnyBitcoinNetworkProvider())
+            providers.append(makeBlockBookUtxoProvider(with: input, for: .GetBlock).eraseToAnyBitcoinNetworkProvider())
             
-            providers.append(BlockBookUtxoProvider(blockchain: input.blockchain,
-                                                   blockBookConfig: GetBlockBlockBookConfig(apiKey: input.blockchainConfig.getBlockApiKey),
-                                                   networkConfiguration: input.networkConfig)
-                .eraseToAnyBitcoinNetworkProvider())
-            
-            providers.append(contentsOf: makeBlockchairNetworkProviders(for: .dogecoin,
-                                                                        configuration: input.networkConfig,
-                                                                        apiKeys: input.blockchainConfig.blockchairApiKeys))
-            
-            providers.append(BlockcypherNetworkProvider(
-                endpoint: .dogecoin,
-                tokens: input.blockchainConfig.blockcypherTokens,
-                configuration: input.networkConfig
+            providers.append(
+                contentsOf: makeBlockchairNetworkProviders(endpoint: .dogecoin, with: input)
             )
-                .eraseToAnyBitcoinNetworkProvider())
+            
+            providers.append(
+                makeBlockcypherNetworkProvider(endpoint: .dogecoin, with: input).eraseToAnyBitcoinNetworkProvider()
+            )
             
             $0.networkService = BitcoinNetworkService(providers: providers)
         }

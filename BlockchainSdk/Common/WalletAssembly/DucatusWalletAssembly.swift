@@ -13,7 +13,11 @@ import BitcoinCore
 
 struct DucatusWalletAssembly: BlockchainAssemblyProtocol {
     
-    func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func canAssembly(blockchain: Blockchain) -> Bool {
+        blockchain == .ducatus
+    }
+    
+    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         return try DucatusWalletManager(wallet: input.wallet).then {
             let bitcoinManager = BitcoinManager(networkParams: DucatusNetworkParams(), walletPublicKey: input.wallet.publicKey.blockchainKey, compressedWalletPublicKey: try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress(), bip: .bip44)
             

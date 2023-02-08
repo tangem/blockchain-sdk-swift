@@ -14,7 +14,11 @@ import Solana_Swift
 
 struct SolanaWalletAssembly: BlockchainAssemblyProtocol {
     
-    func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func canAssembly(blockchain: Blockchain) -> Bool {
+        blockchain == .solana(testnet: blockchain.isTestnet)
+    }
+    
+    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         return SolanaWalletManager(wallet: input.wallet).then {
             let endpoints: [Solana_Swift.RPCEndpoint]
             if input.blockchain.isTestnet {

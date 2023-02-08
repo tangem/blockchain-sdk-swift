@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2D72F23E2993CB9B00906527 /* BlockchainAssemblyFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D72F23C2993CB9B00906527 /* BlockchainAssemblyFactory.swift */; };
+		2D72F23E2993CB9B00906527 /* BlockchainAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D72F23C2993CB9B00906527 /* BlockchainAssembly.swift */; };
 		2D72F2412993CBD100906527 /* BitcoinWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D72F2402993CBD100906527 /* BitcoinWalletAssembly.swift */; };
 		2D72F2432993D79E00906527 /* LitecoinWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D72F2422993D79E00906527 /* LitecoinWalletAssembly.swift */; };
 		2D72F2452993D8AE00906527 /* DogecoinWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D72F2442993D8AE00906527 /* DogecoinWalletAssembly.swift */; };
@@ -285,7 +285,7 @@
 
 /* Begin PBXFileReference section */
 		0C79DB7FEDD8D4029AFA208D /* Pods-BlockchainSdk.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.release.xcconfig"; sourceTree = "<group>"; };
-		2D72F23C2993CB9B00906527 /* BlockchainAssemblyFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockchainAssemblyFactory.swift; sourceTree = "<group>"; };
+		2D72F23C2993CB9B00906527 /* BlockchainAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockchainAssembly.swift; sourceTree = "<group>"; };
 		2D72F2402993CBD100906527 /* BitcoinWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinWalletAssembly.swift; sourceTree = "<group>"; };
 		2D72F2422993D79E00906527 /* LitecoinWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LitecoinWalletAssembly.swift; sourceTree = "<group>"; };
 		2D72F2442993D8AE00906527 /* DogecoinWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogecoinWalletAssembly.swift; sourceTree = "<group>"; };
@@ -705,7 +705,7 @@
 				5D304393239A6A6B0066B8D9 /* WalletManagerFactory.swift */,
 				B056729A2570F9DC00A8CB59 /* BlockchainSdkError.swift */,
 				5DEC90C02587A35800826C95 /* BlockchainSdkConfig.swift */,
-				2D72F23C2993CB9B00906527 /* BlockchainAssemblyFactory.swift */,
+				2D72F23C2993CB9B00906527 /* BlockchainAssembly.swift */,
 				B0AD566325AC8DD50084F924 /* PendingTransaction.swift */,
 				5D14E48F2397B87000C15FC8 /* WalletManager.swift */,
 				5D88838827D3BB8B008744E1 /* WalletError.swift */,
@@ -1791,7 +1791,7 @@
 				B0AD566425AC8DD50084F924 /* PendingTransaction.swift in Sources */,
 				DAE30DFD279164500056C5A3 /* SolanaAddressService.swift in Sources */,
 				5D26CEF6243CBA4300994CC0 /* EstimateFeeTarget.swift in Sources */,
-				2D72F23E2993CB9B00906527 /* BlockchainAssemblyFactory.swift in Sources */,
+				2D72F23E2993CB9B00906527 /* BlockchainAssembly.swift in Sources */,
 				5DA6F7BC243F3C0B0040AB4B /* CBOR+.swift in Sources */,
 				E95D95152929872B0068F876 /* BlockBookResponses.swift in Sources */,
 				5DA163D2273D2146007AA991 /* TezosJsonRpcProvider.swift in Sources */,

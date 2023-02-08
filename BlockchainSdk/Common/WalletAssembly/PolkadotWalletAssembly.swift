@@ -8,12 +8,14 @@
 
 import Foundation
 import TangemSdk
-import stellarsdk
-import BitcoinCore
 
 struct PolkadotWalletAssembly: BlockchainAssemblyProtocol {
     
-    func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func canAssembly(blockchain: Blockchain) -> Bool {
+        blockchain == .polkadot(testnet: blockchain.isTestnet)
+    }
+    
+    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         let network: PolkadotNetwork = input.blockchain.isTestnet ? .westend : .polkadot
         
         return PolkadotWalletManager(network: network, wallet: input.wallet).then {

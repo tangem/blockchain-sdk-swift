@@ -11,7 +11,11 @@ import TangemSdk
 
 struct KusumaWalletAssembly: BlockchainAssemblyProtocol {
     
-    func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func canAssembly(blockchain: Blockchain) -> Bool {
+        blockchain == .kusama
+    }
+    
+    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         let network: PolkadotNetwork = input.blockchain.isTestnet ? .westend : .polkadot
         
         return PolkadotWalletManager(network: network, wallet: input.wallet).then {

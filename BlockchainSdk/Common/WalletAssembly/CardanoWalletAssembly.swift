@@ -14,7 +14,12 @@ import BitcoinCore
 struct CardanoWalletAssembly: BlockchainAssemblyProtocol {
     
     // TODO: - Проверить shelly
-    func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func canAssembly(blockchain: Blockchain) -> Bool {
+        blockchain == .cardano(shelley: false)
+    }
+    
+    // TODO: - Проверить shelly
+    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         return CardanoWalletManager(wallet: input.wallet).then {
             $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, shelleyCard: false)
             let service = CardanoNetworkService(providers: [
