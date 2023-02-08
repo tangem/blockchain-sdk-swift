@@ -32,15 +32,8 @@ enum TONNodeName: Int, CaseIterable {
         }
     }
     
-    func isAvailable(with config: BlockchainSdkConfig) -> Bool {
-        switch self {
-        case .toncenter:
-            return config.toncenterApiKey.isEmpty
-        case .getblock:
-            return !config.getBlockApiKey.isEmpty
-        case .nownodes:
-            return !config.nowNodesApiKey.isEmpty
-        }
+    func isAvailable(with apiKey: String?) -> Bool {
+        return !(apiKey?.isEmpty ?? true)
     }
     
 }
@@ -51,7 +44,7 @@ extension TONNodeName: Comparable {
 
 struct TONNetworkNode {
     
-    var config: BlockchainSdkConfig
+    var apiKeyValue: String
     var nodeName: TONNodeName
     var isTestnet: Bool
     
@@ -63,25 +56,25 @@ struct TONNetworkNode {
             return RPCEndpoint(
                 url: url,
                 apiKeyHeaderName: Constants.toncenterApiKeyHeaderName,
-                apiKeyHeaderValue: config.toncenterApiKey
+                apiKeyHeaderValue: apiKeyValue
             )
         case .getblock:
             return RPCEndpoint(
-                url: URL(string: "https://ton.getblock.io/\(config.getBlockApiKey)/mainnet")!,
+                url: URL(string: "https://ton.getblock.io/\(apiKeyValue)/mainnet")!,
                 apiKeyHeaderName: Constants.getBlockApiKeyHeaderName,
-                apiKeyHeaderValue: config.getBlockApiKey
+                apiKeyHeaderValue: apiKeyValue
             )
         case .nownodes:
             return RPCEndpoint(
-                url: URL(string: "https://ton.nownodes.io/\(config.nowNodesApiKey)")!
+                url: URL(string: "https://ton.nownodes.io/\(apiKeyValue)")!
             )
         }
     }
     
     // TODO: - Только ключ
     
-    init?(config: BlockchainSdkConfig, nodeName: TONNodeName, isTestnet: Bool) {
-        guard nodeName.isAvailable(with: config) else {
+    init?(apiKeyValue: String?, nodeName: TONNodeName, isTestnet: Bool) {
+        guard nodeName.isAvailable(with: apiKeyValue) else {
             return nil
         }
         
@@ -92,7 +85,7 @@ struct TONNetworkNode {
             }
         }
         
-        self.config = config
+        self.apiKeyValue = apiKeyValue ?? ""
         self.nodeName = nodeName
         self.isTestnet = isTestnet
     }

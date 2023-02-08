@@ -34,7 +34,22 @@ struct TONProvider: HostProvider {
         network: NetworkProvider<TONProviderTarget>,
         isTestnet: Bool
     ) {
-        guard let node = TONNetworkNode(config: config, nodeName: nodeName, isTestnet: isTestnet) else {
+        var apiKeyValue: String?
+        
+        switch nodeName {
+        case .toncenter:
+            apiKeyValue = config.toncenterApiKey
+        case .getblock:
+            apiKeyValue = config.getBlockApiKey
+        case .nownodes:
+            apiKeyValue = config.nowNodesApiKey
+        }
+        
+        guard let node = TONNetworkNode(
+            apiKeyValue: apiKeyValue,
+            nodeName: nodeName,
+            isTestnet: isTestnet
+        ) else {
             return nil
         }
         
