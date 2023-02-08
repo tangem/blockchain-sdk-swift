@@ -15,9 +15,9 @@ import HDWalletKit
 @testable import BlockchainSdk
 
 class AddressesTests: XCTestCase {
-    private let secpPrivKey = Data(hexString: "83686EF30173D2A05FD7E2C8CB30941534376013B903A2122CF4FF3E8668355A")
-    private let secpDecompressedKey = Data(hexString: "0441DCD64B5F4A039FC339A16300A833A883B218909F2EBCAF3906651C76842C45E3D67E8D2947E6FEE8B62D3D3B6A4D5F212DA23E478DD69A2C6CCC851F300D80")
-    private let secpCompressedKey = Data(hexString: "0241DCD64B5F4A039FC339A16300A833A883B218909F2EBCAF3906651C76842C45")
+    private let secpPrivKey = Data(hex: "83686EF30173D2A05FD7E2C8CB30941534376013B903A2122CF4FF3E8668355A")
+    private let secpDecompressedKey = Data(hex: "0441DCD64B5F4A039FC339A16300A833A883B218909F2EBCAF3906651C76842C45E3D67E8D2947E6FEE8B62D3D3B6A4D5F212DA23E478DD69A2C6CCC851F300D80")
+    private let secpCompressedKey = Data(hex: "0241DCD64B5F4A039FC339A16300A833A883B218909F2EBCAF3906651C76842C45")
     private let edKey = Data(hex: "9FE5BB2CC7D83C1DA10845AFD8A34B141FD8FD72500B95B1547E12B9BB8AAC3D")
 
     func testBtc() {
@@ -67,9 +67,9 @@ class AddressesTests: XCTestCase {
     }
     
     func testBtcTwin() {
-        // let secpPairPrivKey = Data(hexString: "997D79C06B72E8163D1B9FCE6DA0D2ABAA15B85E52C6032A087342BAD98E5316")
-        let secpPairDecompressedKey = Data(hexString: "042A5741873B88C383A7CFF4AA23792754B5D20248F1A24DF1DAC35641B3F97D8936D318D49FE06E3437E31568B338B340F4E6DF5184E1EC5840F2B7F4596902AE")
-        let secpPairCompressedKey = Data(hexString: "022A5741873B88C383A7CFF4AA23792754B5D20248F1A24DF1DAC35641B3F97D89")
+        // let secpPairPrivKey = Data(hex: "997D79C06B72E8163D1B9FCE6DA0D2ABAA15B85E52C6032A087342BAD98E5316")
+        let secpPairDecompressedKey = Data(hex: "042A5741873B88C383A7CFF4AA23792754B5D20248F1A24DF1DAC35641B3F97D8936D318D49FE06E3437E31568B338B340F4E6DF5184E1EC5840F2B7F4596902AE")
+        let secpPairCompressedKey = Data(hex: "022A5741873B88C383A7CFF4AA23792754B5D20248F1A24DF1DAC35641B3F97D89")
         
         let blockchain = Blockchain.bitcoin(testnet: false) //no testnet for twins
         let addr_dec = try! blockchain.makeAddresses(from: secpDecompressedKey, with: secpPairDecompressedKey)
@@ -449,7 +449,7 @@ class AddressesTests: XCTestCase {
     }
     
     func testSolana() {
-        let key = Data(hexString: "0300000000000000000000000000000000000000000000000000000000000000")
+        let key = Data(hex: "0300000000000000000000000000000000000000000000000000000000000000")
         let blockchain = Blockchain.solana(testnet: false)
         let blockchain1 = Blockchain.solana(testnet: true)
         let addrs = try! blockchain.makeAddresses(from: key, with: nil)
@@ -471,7 +471,7 @@ class AddressesTests: XCTestCase {
     
     func testPolkadot() {
         // From trust wallet `PolkadotTests.swift`
-        let privateKey = Data(hexString: "0xd65ed4c1a742699b2e20c0c1f1fe780878b1b9f7d387f934fe0a7dc36f1f9008")
+        let privateKey = Data(hex: "0xd65ed4c1a742699b2e20c0c1f1fe780878b1b9f7d387f934fe0a7dc36f1f9008")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         testSubstrateNetwork(
             .polkadot,
@@ -488,7 +488,7 @@ class AddressesTests: XCTestCase {
     
     func testKusama() {
         // From trust wallet `KusamaTests.swift`
-        let privateKey = Data(hexString: "0x85fca134b3fe3fd523d8b528608d803890e26c93c86dc3d97b8d59c7b3540c97")
+        let privateKey = Data(hex: "0x85fca134b3fe3fd523d8b528608d803890e26c93c86dc3d97b8d59c7b3540c97")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         testSubstrateNetwork(
             .kusama,
@@ -535,7 +535,7 @@ class AddressesTests: XCTestCase {
     
     func testTron() {
         // From https://developers.tron.network/docs/account
-        let publicKey1 = Data(hexString: "0404B604296010A55D40000B798EE8454ECCC1F8900E70B1ADF47C9887625D8BAE3866351A6FA0B5370623268410D33D345F63344121455849C9C28F9389ED9731")
+        let publicKey1 = Data(hex: "0404B604296010A55D40000B798EE8454ECCC1F8900E70B1ADF47C9887625D8BAE3866351A6FA0B5370623268410D33D345F63344121455849C9C28F9389ED9731")
         let address1 = try! TronAddressService().makeAddress(from: publicKey1)
         XCTAssertTrue(address1 == "TDpBe64DqirkKWj6HWuR1pWgmnhw2wDacE")
         
@@ -590,7 +590,7 @@ class AddressesTests: XCTestCase {
         let addressService = blockchain.getAddressService()
         let expectedAddress = "yMfdoASh4QEM3zVpZqgXJ8St38X7VWnzp7"
         let compressedKey = Data(
-            hexString: "021DCF0C1E183089515DF8C86DACE6DA08DC8E1232EA694388E49C3C66EB79A418"
+            hex: "021DCF0C1E183089515DF8C86DACE6DA08DC8E1232EA694388E49C3C66EB79A418"
         )
         
         // when
