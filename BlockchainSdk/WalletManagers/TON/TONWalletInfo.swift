@@ -8,6 +8,7 @@
 
 import Foundation
 
+/// Union for use logic info TON wallet
 public struct TONWalletInfo {
     
     /// Wallet balance

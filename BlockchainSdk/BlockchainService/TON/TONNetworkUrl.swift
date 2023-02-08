@@ -78,6 +78,8 @@ struct TONNetworkNode {
         }
     }
     
+    // TODO: - Только ключ
+    
     init?(config: BlockchainSdkConfig, nodeName: TONNodeName, isTestnet: Bool) {
         guard nodeName.isAvailable(with: config) else {
             return nil

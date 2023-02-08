@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import TangemSdk
+import WalletCore
 
 final class TONWalletManager: BaseManager, WalletManager {
     
@@ -50,53 +51,57 @@ final class TONWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-//        do {
-//            let txForSignCell = try txBuilder.buildForSign(transaction: transaction)
-//
-//            return try signer
-//                .sign(hash: txForSignCell.hashData(), walletPublicKey: wallet.publicKey)
-//                .tryMap { [weak self] signature -> TONExternalMessage? in
-//                    guard let self = self else { throw WalletError.failedToBuildTx }
-//                    return try self.txBuilder.buildForSend(signingMessage: txForSignCell, signature: signature)
-//                }
-//                .flatMap { [weak self] externalMessage -> AnyPublisher<TransactionSendResult, Error> in
-//                    guard let externalMessage = externalMessage else {
-//                        return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
-//                    }
-//
-//                    return self?.networkService
-//                        .send(message: externalMessage)
-//                        .tryMap { [weak self] hash in
-//                            self?.wallet.add(transaction: transaction)
-//                            return TransactionSendResult(hash: hash)
-//                        }
-//                        .eraseToAnyPublisher() ?? .emptyFail
-//                }
-//                .eraseToAnyPublisher()
-//        } catch {
-//            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
-//        }
-        
-        return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+        Just(())
+            .receive(on: DispatchQueue.global())
+            .tryMap { [weak self] _ -> String in
+                guard let self = self else {
+                    throw WalletError.failedToBuildTx
+                }
+                
+                let input = try self.txBuilder.buildForSign(transaction: transaction)
+                return try self.buildTransaction(input: input, with: signer)
+            }
+            .flatMap { [weak self] message -> AnyPublisher<String, Error> in
+                guard let self = self else {
+                    return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+                }
+                
+                return self.networkService.send(message: message)
+            }
+            .map { [weak self] hash in
+                self?.wallet.add(transaction: transaction)
+                return TransactionSendResult(hash: hash)
+            }
+            .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-//        guard isAvailable else {
-//            return Just(()).tryMap { _ in
-//                return [
-//                    Amount(with: wallet.blockchain, value: 0)
-//                ]
-//            }
-//            .eraseToAnyPublisher()
-//        }
-//
-//        guard let txForEstimateFee = try? txBuilder.buildForEstimateFee(amount: amount, destination: destination) else {
-//            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
-//        }
-//
-//        return networkService.getFee(message: txForEstimateFee).eraseToAnyPublisher()
+        guard isAvailable else {
+            return Just(()).tryMap { _ in
+                return [
+                    Amount(with: wallet.blockchain, value: 0)
+                ]
+            }
+            .eraseToAnyPublisher()
+        }
         
-        return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+        return Just(())
+            .tryMap { [weak self] _ -> String in
+                guard let self = self else {
+                    throw WalletError.failedToBuildTx
+                }
+                
+                let input = try self.txBuilder.buildForSign(amount: amount, destination: destination)
+                return try self.buildTransaction(input: input)
+            }
+            .flatMap { [weak self] message -> AnyPublisher<[Amount], Error> in
+                guard let self = self else {
+                    return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+                }
+                
+                return self.networkService.getFee(address: self.wallet.address, message: message)
+            }
+            .eraseToAnyPublisher()
     }
     
     // MARK: - Private Implementation
@@ -108,5 +113,22 @@ final class TONWalletManager: BaseManager, WalletManager {
         completion(.success(()))
     }
     
+    private func buildTransaction(input: TheOpenNetworkSigningInput, with signer: TransactionSigner? = nil) throws -> String {
+        var output: TheOpenNetworkSigningOutput!
+        
+        if let signer = signer {
+            let coreSigner = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey)
+            
+            if let error = coreSigner.error {
+                throw error
+            }
+            
+            output = AnySigner.signExternally(input: input, coin: .ton, signer: coreSigner)
+        } else {
+            output = AnySigner.sign(input: input, coin: .ton)
+        }
+        
+        return try self.txBuilder.buildForSend(output: output)
+    }
+    
 }
-                

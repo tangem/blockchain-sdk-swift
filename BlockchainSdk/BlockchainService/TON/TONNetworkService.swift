@@ -51,53 +51,32 @@ class TONNetworkService: MultiNetworkProvider {
         }
     }
     
-    func getFee(message: TONExternalMessage) -> AnyPublisher<[Amount], Error> {
+    func getFee(address: String, message: String) -> AnyPublisher<[Amount], Error> {
         providerPublisher { provider in
-            if message.code != nil {
-                return provider
-                    .getFeeWithCode(
-                        address: message.address.toString(),
-                        body: try? Data(optional: message.body.toBoc(false))?.base64EncodedString(),
-                        code: try? Data(optional: message.code?.toBoc(false))?.base64EncodedString(),
-                        data: try? Data(optional: message.data?.toBoc(false))?.base64EncodedString()
-                    )
-                    .tryMap { [weak self] fee in
-                        guard let self = self else {
-                            throw WalletError.empty
-                        }
-                        
-                        
-                        return [
-                            .init(with: .ton(testnet: self.blockchain.isTestnet), value: (fee.source_fees.allFee / self.blockchain.decimalValue))
-                        ]
+            provider
+                .getFee(
+                    address: address,
+                    body: message
+                )
+                .tryMap { [weak self] fee in
+                    guard let self = self else {
+                        throw WalletError.empty
                     }
-                    .eraseToAnyPublisher()
-            } else {
-                return provider
-                    .getFee(
-                        address: message.address.toString(),
-                        body: try? Data(message.message.toBoc(false)).base64EncodedString()
-                    )
-                    .tryMap { [weak self] fee in
-                        guard let self = self else {
-                            throw WalletError.empty
-                        }
-                        
-                        print(fee)
-                        
-                        return [
-                            .init(with: .ton(testnet: self.blockchain.isTestnet), value: (fee.source_fees.allFee / self.blockchain.decimalValue))
-                        ]
-                    }
-                    .eraseToAnyPublisher()
-            }
+                    
+                    print(fee)
+                    
+                    return [
+                        .init(with: .ton(testnet: self.blockchain.isTestnet), value: (fee.source_fees.allFee / self.blockchain.decimalValue))
+                    ]
+                }
+                .eraseToAnyPublisher()
         }
     }
     
-    func send(message: TONExternalMessage) -> AnyPublisher<String, Error> {
+    func send(message: String) -> AnyPublisher<String, Error> {
         return providerPublisher { provider in
             provider
-                .send(message: (try? Data(message.message.toBoc(false)))?.base64EncodedString() ?? "")
+                .send(message: message)
                 .tryMap { result in
                     return result.hash
                 }
