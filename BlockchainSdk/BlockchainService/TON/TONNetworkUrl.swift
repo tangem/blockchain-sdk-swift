@@ -33,7 +33,12 @@ enum TONNodeName: Int, CaseIterable {
     }
     
     func isAvailable(with apiKey: String?) -> Bool {
-        return !(apiKey?.isEmpty ?? true)
+        switch self {
+        case .toncenter:
+            return true
+        default:
+            return !(apiKey?.isEmpty ?? true)
+        }
     }
     
 }
