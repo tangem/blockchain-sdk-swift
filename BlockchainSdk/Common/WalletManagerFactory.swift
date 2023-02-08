@@ -502,11 +502,14 @@ public class WalletManagerFactory {
                 bitcoinManager: bitcoinManager,
                 addresses: wallet.addresses
             )
-            
-            let provider = RavencoinNetworkProvider(isTestnet: testnet)
-            
+
             $0.networkService = BitcoinNetworkService(
-                providers: [provider.eraseToAnyBitcoinNetworkProvider()]
+                providers: [
+                    BlockBookUtxoProvider(blockchain: .ravencoin(testnet: testnet),
+                                          blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
+                                          networkConfiguration: networkProviderConfiguration)
+                    .eraseToAnyBitcoinNetworkProvider()
+                ]
             )
         }
     }
