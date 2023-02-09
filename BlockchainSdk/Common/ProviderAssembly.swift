@@ -10,17 +10,6 @@ import Foundation
 
 struct ProviderAssembly {
     
-    func makeBlockchairNetworkProviders(for endpoint: BlockchairEndpoint, configuration: NetworkProviderConfiguration, apiKeys: [String]) -> [AnyBitcoinNetworkProvider] {
-        let apiKeys: [String?] = [nil] + apiKeys
-        
-        let providers = apiKeys.map {
-            BlockchairNetworkProvider(endpoint: endpoint, apiKey: $0, configuration: configuration)
-                .eraseToAnyBitcoinNetworkProvider()
-        }
-        
-        return providers
-    }
-    
     func makeBlockBookUtxoProvider(with input: BlockchainAssemblyInput, for type: BlockBookProviderType) -> BlockBookUtxoProvider {
         switch type {
         case .NowNodes:
@@ -56,6 +45,19 @@ struct ProviderAssembly {
             configuration: input.networkConfig,
             apiKeys: input.blockchainConfig.blockchairApiKeys
         )
+    }
+    
+    // MARK: - Private Implementation
+    
+    private func makeBlockchairNetworkProviders(for endpoint: BlockchairEndpoint, configuration: NetworkProviderConfiguration, apiKeys: [String]) -> [AnyBitcoinNetworkProvider] {
+        let apiKeys: [String?] = [nil] + apiKeys
+        
+        let providers = apiKeys.map {
+            BlockchairNetworkProvider(endpoint: endpoint, apiKey: $0, configuration: configuration)
+                .eraseToAnyBitcoinNetworkProvider()
+        }
+        
+        return providers
     }
     
 }
