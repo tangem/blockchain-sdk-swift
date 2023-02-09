@@ -17,25 +17,6 @@ public class WalletManagerFactory {
     
     private let config: BlockchainSdkConfig
     
-    private let assembly: [BlockchainAssemblyProtocol.Type] = [
-        BitcoinBlockchainAssembly.self,
-        LitecoinWalletAssembly.self,
-        DogecoinWalletAssembly.self,
-        DucatusWalletAssembly.self,
-        StellarWalletAssembly.self,
-        EthereumChildWalletAssembly.self,
-        BitcoinCashWalletAssembly.self,
-        BinanceWalletAssembly.self,
-        CardanoWalletAssembly.self,
-        XRPWalletAssembly.self,
-        TezosWalletAssembly.self,
-        SolanaWalletAssembly.self,
-        PolkadotWalletAssembly.self,
-        KusumaWalletAssembly.self,
-        TronWalletAssembly.self,
-        DashWalletAssembly.self
-    ]
-    
     // MARK: - Init
     
     public init(config: BlockchainSdkConfig) {
@@ -89,8 +70,6 @@ public class WalletManagerFactory {
                               pairPublicKey: pairKey)
     }
     
-    
-    
     // MARK: - Private Implementation
     
     /// Private implementation facroty creation wallet manager
@@ -103,27 +82,20 @@ public class WalletManagerFactory {
                            publicKey: Wallet.PublicKey,
                            pairPublicKey: Data? = nil) throws -> WalletManager {
         
-        guard let walletManager = try assembly
-            .first(where: { $0.canAssembly(blockchain: blockchain) })?
-            .assembly(
-                with: .init(
+        return try blockchain.assembly.make(
+            with: .init(
+                blockchain: blockchain,
+                blockchainConfig: config,
+                publicKey: publicKey,
+                pairPublicKey: pairPublicKey,
+                wallet: Wallet(
                     blockchain: blockchain,
-                    blockchainConfig: config,
-                    publicKey: publicKey,
-                    pairPublicKey: pairPublicKey,
-                    wallet: Wallet(
-                        blockchain: blockchain,
-                        addresses: blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey),
-                        publicKey: publicKey
-                    ),
-                    networkConfig: config.networkProviderConfiguration(for: blockchain)
-                )
+                    addresses: blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey),
+                    publicKey: publicKey
+                ),
+                networkConfig: config.networkProviderConfiguration(for: blockchain)
             )
-        else {
-            throw WalletError.empty
-        }
-        
-        return walletManager
+        )
     }
 }
 

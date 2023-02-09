@@ -8,16 +8,10 @@
 
 import Foundation
 import TangemSdk
-import stellarsdk
-import BitcoinCore
 
-struct XRPWalletAssembly: BlockchainAssemblyProtocol {
+struct XRPWalletAssembly: WalletAssemblyProtocol {
     
-    static func canAssembly(blockchain: Blockchain) -> Bool {
-        blockchain == .xrp(curve: blockchain.curve)
-    }
-    
-    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         return try XRPWalletManager(wallet: input.wallet).then {
             $0.txBuilder = try XRPTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, curve: input.blockchain.curve)
             $0.networkService = XRPNetworkService(providers: [

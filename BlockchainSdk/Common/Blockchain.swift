@@ -100,6 +100,15 @@ public enum Blockchain: Equatable, Hashable {
         }
     }
     
+    public var shelly: Bool {
+        switch self {
+        case .cardano(let shelley):
+            return shelley
+        default:
+            return false
+        }
+    }
+    
     public var decimalCount: Int {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash:
@@ -910,4 +919,45 @@ extension Blockchain {
         default: return nil
         }
     }
+}
+
+extension Blockchain {
+    
+    var assembly: WalletAssemblyProtocol.Type {
+        switch self {
+        case .bitcoin:
+            return BitcoinWalletAssembly.self
+        case .litecoin:
+            return LitecoinWalletAssembly.self
+        case .dogecoin:
+            return DogecoinWalletAssembly.self
+        case .ducatus:
+            return DucatusWalletAssembly.self
+        case .stellar:
+            return StellarWalletAssembly.self
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .optimism, .ethereumFair, .saltPay:
+            return EthereumWalletAssembly.self
+        case .bitcoinCash:
+            return BitcoinCashWalletAssembly.self
+        case .binance:
+            return BinanceWalletAssembly.self
+        case .cardano:
+            return CardanoWalletAssembly.self
+        case .xrp:
+            return XRPWalletAssembly.self
+        case .tezos:
+            return TezosWalletAssembly.self
+        case .solana:
+            return SolanaWalletAssembly.self
+        case .polkadot:
+            return PolkadotWalletAssembly.self
+        case .kusama:
+            return KusumaWalletAssembly.self
+        case .tron:
+            return TronWalletAssembly.self
+        case .dash:
+            return DashWalletAssembly.self
+        }
+    }
+    
 }

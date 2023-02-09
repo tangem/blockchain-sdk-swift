@@ -8,16 +8,11 @@
 
 import Foundation
 import TangemSdk
-import stellarsdk
 import BitcoinCore
 
-struct TezosWalletAssembly: BlockchainAssemblyProtocol {
+struct TezosWalletAssembly: WalletAssemblyProtocol {
     
-    static func canAssembly(blockchain: Blockchain) -> Bool {
-        blockchain == .tezos(curve: blockchain.curve)
-    }
-    
-    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         return try TezosWalletManager(wallet: input.wallet).then {
             $0.txBuilder = try TezosTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, curve: input.blockchain.curve)
             $0.networkService = TezosNetworkService(

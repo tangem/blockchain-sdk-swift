@@ -8,17 +8,11 @@
 
 import Foundation
 import TangemSdk
-import stellarsdk
-import BitcoinCore
 import Solana_Swift
 
-struct SolanaWalletAssembly: BlockchainAssemblyProtocol {
+struct SolanaWalletAssembly: WalletAssemblyProtocol {
     
-    static func canAssembly(blockchain: Blockchain) -> Bool {
-        blockchain == .solana(testnet: blockchain.isTestnet)
-    }
-    
-    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         return SolanaWalletManager(wallet: input.wallet).then {
             let endpoints: [Solana_Swift.RPCEndpoint]
             if input.blockchain.isTestnet {

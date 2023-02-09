@@ -8,20 +8,12 @@
 
 import Foundation
 import TangemSdk
-import stellarsdk
-import BitcoinCore
 
-struct CardanoWalletAssembly: BlockchainAssemblyProtocol {
+struct CardanoWalletAssembly: WalletAssemblyProtocol {
     
-    // TODO: - Проверить shelly
-    static func canAssembly(blockchain: Blockchain) -> Bool {
-        blockchain == .cardano(shelley: false)
-    }
-    
-    // TODO: - Проверить shelly
-    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         return CardanoWalletManager(wallet: input.wallet).then {
-            $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, shelleyCard: false)
+            $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, shelleyCard: input.blockchain.shelly)
             let service = CardanoNetworkService(providers: [
                 AdaliteNetworkProvider(
                     baseUrl: .main,

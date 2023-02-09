@@ -10,13 +10,9 @@ import Foundation
 import TangemSdk
 import BitcoinCore
 
-struct LitecoinWalletAssembly: BlockchainAssemblyProtocol {
+struct LitecoinWalletAssembly: WalletAssemblyProtocol {
     
-    static func canAssembly(blockchain: Blockchain) -> Bool {
-        return blockchain == .litecoin
-    }
-    
-    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         return try LitecoinWalletManager(wallet: input.wallet).then {
             let bitcoinManager = BitcoinManager(networkParams: LitecoinNetworkParams(),
                                                 walletPublicKey: input.wallet.publicKey.blockchainKey,
@@ -27,15 +23,15 @@ struct LitecoinWalletAssembly: BlockchainAssemblyProtocol {
             
             var providers = [AnyBitcoinNetworkProvider]()
             
-            providers.append(makeBlockBookUtxoProvider(with: input, for: .NowNodes).eraseToAnyBitcoinNetworkProvider())
-            providers.append(makeBlockBookUtxoProvider(with: input, for: .GetBlock).eraseToAnyBitcoinNetworkProvider())
+            providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .NowNodes).eraseToAnyBitcoinNetworkProvider())
+            providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .GetBlock).eraseToAnyBitcoinNetworkProvider())
             
             providers.append(
-                contentsOf: makeBlockchairNetworkProviders(endpoint: .litecoin, with: input)
+                contentsOf: providerAssembly.makeBlockchairNetworkProviders(endpoint: .litecoin, with: input)
             )
             
             providers.append(
-                makeBlockcypherNetworkProvider(endpoint: .litecoin, with: input).eraseToAnyBitcoinNetworkProvider()
+                providerAssembly.makeBlockcypherNetworkProvider(endpoint: .litecoin, with: input).eraseToAnyBitcoinNetworkProvider()
             )
             
             $0.networkService = LitecoinNetworkService(providers: providers)

@@ -8,16 +8,11 @@
 
 import Foundation
 import TangemSdk
-import stellarsdk
 import BitcoinCore
 
-struct DogecoinWalletAssembly: BlockchainAssemblyProtocol {
+struct DogecoinWalletAssembly: WalletAssemblyProtocol {
     
-    static func canAssembly(blockchain: Blockchain) -> Bool {
-        return blockchain == .dogecoin
-    }
-    
-    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         return try DogecoinWalletManager(wallet: input.wallet).then {
             let bitcoinManager = BitcoinManager(networkParams: DogecoinNetworkParams(),
                                                 walletPublicKey: input.wallet.publicKey.blockchainKey,
@@ -28,15 +23,15 @@ struct DogecoinWalletAssembly: BlockchainAssemblyProtocol {
             
             var providers = [AnyBitcoinNetworkProvider]()
             
-            providers.append(makeBlockBookUtxoProvider(with: input, for: .NowNodes).eraseToAnyBitcoinNetworkProvider())
-            providers.append(makeBlockBookUtxoProvider(with: input, for: .GetBlock).eraseToAnyBitcoinNetworkProvider())
+            providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .NowNodes).eraseToAnyBitcoinNetworkProvider())
+            providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .GetBlock).eraseToAnyBitcoinNetworkProvider())
             
             providers.append(
-                contentsOf: makeBlockchairNetworkProviders(endpoint: .dogecoin, with: input)
+                contentsOf: providerAssembly.makeBlockchairNetworkProviders(endpoint: .dogecoin, with: input)
             )
             
             providers.append(
-                makeBlockcypherNetworkProvider(endpoint: .dogecoin, with: input).eraseToAnyBitcoinNetworkProvider()
+                providerAssembly.makeBlockcypherNetworkProvider(endpoint: .dogecoin, with: input).eraseToAnyBitcoinNetworkProvider()
             )
             
             $0.networkService = BitcoinNetworkService(providers: providers)

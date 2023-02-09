@@ -3,13 +3,9 @@ import TangemSdk
 import stellarsdk
 import BitcoinCore
 
-struct BitcoinBlockchainAssembly: BlockchainAssemblyProtocol {
+struct BitcoinWalletAssembly: WalletAssemblyProtocol {
     
-    static func canAssembly(blockchain: Blockchain) -> Bool {
-        return blockchain == .bitcoin(testnet: blockchain.isTestnet)
-    }
-    
-    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         return try BitcoinWalletManager(wallet: input.wallet).then {
             let network: BitcoinNetwork = input.blockchain.isTestnet ? .testnet : .mainnet
             let bitcoinManager = BitcoinManager(networkParams: network.networkParams,
@@ -22,22 +18,22 @@ struct BitcoinBlockchainAssembly: BlockchainAssemblyProtocol {
             var providers = [AnyBitcoinNetworkProvider]()
             
             
-            providers.append(makeBlockBookUtxoProvider(with: input, for: .NowNodes).eraseToAnyBitcoinNetworkProvider())
+            providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .NowNodes).eraseToAnyBitcoinNetworkProvider())
             
             if !input.blockchain.isTestnet {
-                providers.append(makeBlockBookUtxoProvider(with: input, for: .GetBlock).eraseToAnyBitcoinNetworkProvider())
-                providers.append(makeInfoNetworkProvider(with: input).eraseToAnyBitcoinNetworkProvider())
+                providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .GetBlock).eraseToAnyBitcoinNetworkProvider())
+                providers.append(providerAssembly.makeInfoNetworkProvider(with: input).eraseToAnyBitcoinNetworkProvider())
             }
             
             providers.append(
-                contentsOf: makeBlockchairNetworkProviders(
+                contentsOf: providerAssembly.makeBlockchairNetworkProviders(
                     endpoint: .bitcoin(testnet: input.blockchain.isTestnet),
                     with: input
                 )
             )
             
             providers.append(
-                makeBlockcypherNetworkProvider(
+                providerAssembly.makeBlockcypherNetworkProvider(
                     endpoint: .bitcoin(testnet: input.blockchain.isTestnet),
                     with: input
                 )

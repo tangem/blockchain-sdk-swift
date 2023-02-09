@@ -9,13 +9,9 @@
 import Foundation
 import TangemSdk
 
-struct PolkadotWalletAssembly: BlockchainAssemblyProtocol {
+struct PolkadotWalletAssembly: WalletAssemblyProtocol {
     
-    static func canAssembly(blockchain: Blockchain) -> Bool {
-        blockchain == .polkadot(testnet: blockchain.isTestnet)
-    }
-    
-    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         let network: PolkadotNetwork = input.blockchain.isTestnet ? .westend : .polkadot
         
         return PolkadotWalletManager(network: network, wallet: input.wallet).then {

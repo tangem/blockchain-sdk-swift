@@ -10,13 +10,9 @@ import Foundation
 import TangemSdk
 import BitcoinCore
 
-struct DashWalletAssembly: BlockchainAssemblyProtocol {
+struct DashWalletAssembly: WalletAssemblyProtocol {
     
-    static func canAssembly(blockchain: Blockchain) -> Bool {
-        blockchain == .dash(testnet: blockchain.isTestnet)
-    }
-    
-    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         try DashWalletManager(wallet: input.wallet).then {
             let compressed = try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress()
             
@@ -33,10 +29,10 @@ struct DashWalletAssembly: BlockchainAssemblyProtocol {
             
             var providers: [AnyBitcoinNetworkProvider] = []
             
-            providers.append(makeBlockBookUtxoProvider(with: input, for: .NowNodes).eraseToAnyBitcoinNetworkProvider())
-            providers.append(makeBlockBookUtxoProvider(with: input, for: .GetBlock).eraseToAnyBitcoinNetworkProvider())
-            providers.append(contentsOf: makeBlockchairNetworkProviders(endpoint: .dash, with: input))
-            providers.append(makeBlockcypherNetworkProvider(endpoint: .dash, with: input).eraseToAnyBitcoinNetworkProvider())
+            providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .NowNodes).eraseToAnyBitcoinNetworkProvider())
+            providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .GetBlock).eraseToAnyBitcoinNetworkProvider())
+            providers.append(contentsOf: providerAssembly.makeBlockchairNetworkProviders(endpoint: .dash, with: input))
+            providers.append(providerAssembly.makeBlockcypherNetworkProvider(endpoint: .dash, with: input).eraseToAnyBitcoinNetworkProvider())
             
             $0.networkService = BitcoinNetworkService(providers: providers)
         }

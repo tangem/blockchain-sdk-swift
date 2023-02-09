@@ -8,16 +8,10 @@
 
 import Foundation
 import TangemSdk
-import stellarsdk
-import BitcoinCore
 
-struct BinanceWalletAssembly: BlockchainAssemblyProtocol {
+struct BinanceWalletAssembly: WalletAssemblyProtocol {
     
-    static func canAssembly(blockchain: Blockchain) -> Bool {
-        blockchain == .binance(testnet: blockchain.isTestnet)
-    }
-    
-    static func assembly(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         return try BinanceWalletManager(wallet: input.wallet).then {
             $0.txBuilder = try BinanceTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, isTestnet: input.blockchain.isTestnet)
             $0.networkService = BinanceNetworkService(isTestNet: input.blockchain.isTestnet)
