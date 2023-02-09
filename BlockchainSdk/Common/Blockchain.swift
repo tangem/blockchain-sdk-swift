@@ -921,6 +921,9 @@ extension Blockchain {
     }
 }
 
+// MARK: - Assembly type
+
+@available(iOS 13.0, *)
 extension Blockchain {
     
     var assembly: WalletAssemblyProtocol.Type {
