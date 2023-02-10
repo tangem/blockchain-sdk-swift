@@ -1348,6 +1348,7 @@
 			buildConfigurationList = 5D14E4822397B80F00C15FC8 /* Build configuration list for PBXNativeTarget "BlockchainSdk" */;
 			buildPhases = (
 				97C1A5193CEF430AFFFE869E /* [CP] Check Pods Manifest.lock */,
+				DA35AFF52996C9C400C33CA6 /* Sort localization strings */,
 				5D14E4692397B80F00C15FC8 /* Headers */,
 				5D14E46A2397B80F00C15FC8 /* Sources */,
 				5D14E46B2397B80F00C15FC8 /* Frameworks */,
@@ -1387,6 +1388,7 @@
 			buildConfigurationList = DA59751527D744A9009F0A1F /* Build configuration list for PBXNativeTarget "BlockchainSdkExample" */;
 			buildPhases = (
 				7A3BF37B26C68CA716F1D867 /* [CP] Check Pods Manifest.lock */,
+				DA35AFF62996CA0600C33CA6 /* Sort localization strings */,
 				DA59750427D744A7009F0A1F /* Sources */,
 				DA59750527D744A7009F0A1F /* Frameworks */,
 				DA59750627D744A7009F0A1F /* Resources */,
@@ -1578,6 +1580,42 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		DA35AFF52996C9C400C33CA6 /* Sort localization strings */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Sort localization strings";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "./sort-strings.sh\n";
+		};
+		DA35AFF62996CA0600C33CA6 /* Sort localization strings */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Sort localization strings";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "./sort-strings.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
