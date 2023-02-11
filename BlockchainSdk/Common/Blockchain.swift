@@ -433,7 +433,6 @@ extension Blockchain {
                 RPCEndpoint(url: URL(string: "https://gnosis-mainnet.public.blastapi.io")!),
                 RPCEndpoint(url: URL(string: "https://xdai-rpc.gateway.pokt.network")!),
                 RPCEndpoint(url: URL(string: "https://xdai-archive.blockscout.com")!),
-                RPCEndpoint(url: URL(string: "https://rpc.gnosischain.com")!),
             ]
         case .optimism(let testnet):
             if testnet {
