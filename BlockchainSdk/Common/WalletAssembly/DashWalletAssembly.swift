@@ -23,14 +23,12 @@ struct DashWalletAssembly: WalletAssemblyProtocol {
                 bip: .bip44
             )
             
-            // TODO: Add CryptoAPIs for testnet
-            
             $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
             
             var providers: [AnyBitcoinNetworkProvider] = []
             
-            providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .NowNodes).eraseToAnyBitcoinNetworkProvider())
-            providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .GetBlock).eraseToAnyBitcoinNetworkProvider())
+            providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
+            providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider())
             providers.append(contentsOf: providerAssembly.makeBlockchairNetworkProviders(endpoint: .dash, with: input))
             providers.append(providerAssembly.makeBlockcypherNetworkProvider(endpoint: .dash, with: input).eraseToAnyBitcoinNetworkProvider())
             

@@ -7,25 +7,20 @@
 //
 
 import Foundation
-import Combine
 import TangemSdk
 
 typealias AssemblyWallet = WalletManager
 
+/// Input data for assembly wallet manager
 struct BlockchainAssemblyInput {
     let blockchain: Blockchain
     let blockchainConfig: BlockchainSdkConfig
-    let publicKey: Wallet.PublicKey
     let pairPublicKey: Data?
     let wallet: Wallet
     let networkConfig: NetworkProviderConfiguration
 }
 
-enum BlockBookProviderType {
-    case NowNodes
-    case GetBlock
-}
-
+/// Main assembly wallet manager interface
 protocol WalletAssemblyProtocol {
     
     /// Assembly to access any providers

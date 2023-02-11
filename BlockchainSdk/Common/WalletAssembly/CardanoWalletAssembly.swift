@@ -13,7 +13,7 @@ struct CardanoWalletAssembly: WalletAssemblyProtocol {
     
     static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         return CardanoWalletManager(wallet: input.wallet).then {
-            $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, shelleyCard: input.blockchain.shelly)
+            $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, shelleyCard: input.blockchain.shelley)
             let service = CardanoNetworkService(providers: [
                 AdaliteNetworkProvider(
                     baseUrl: .main,

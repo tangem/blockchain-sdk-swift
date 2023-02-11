@@ -12,13 +12,13 @@ struct ProviderAssembly {
     
     func makeBlockBookUtxoProvider(with input: BlockchainAssemblyInput, for type: BlockBookProviderType) -> BlockBookUtxoProvider {
         switch type {
-        case .NowNodes:
+        case .nowNodes:
             return BlockBookUtxoProvider(
                 blockchain: input.blockchain,
                 blockBookConfig: GetBlockBlockBookConfig(apiKey: input.blockchainConfig.getBlockApiKey),
                 networkConfiguration: input.networkConfig
             )
-        case .GetBlock:
+        case .getBlock:
             return BlockBookUtxoProvider(
                 blockchain: input.blockchain,
                 blockBookConfig: GetBlockBlockBookConfig(apiKey: input.blockchainConfig.getBlockApiKey),
@@ -40,24 +40,12 @@ struct ProviderAssembly {
     }
     
     func makeBlockchairNetworkProviders(endpoint: BlockchairEndpoint, with input: BlockchainAssemblyInput) -> [AnyBitcoinNetworkProvider] {
-        return makeBlockchairNetworkProviders(
-            for: endpoint,
-            configuration: input.networkConfig,
-            apiKeys: input.blockchainConfig.blockchairApiKeys
-        )
-    }
-    
-    // MARK: - Private Implementation
-    
-    private func makeBlockchairNetworkProviders(for endpoint: BlockchairEndpoint, configuration: NetworkProviderConfiguration, apiKeys: [String]) -> [AnyBitcoinNetworkProvider] {
-        let apiKeys: [String?] = [nil] + apiKeys
+        let apiKeys: [String?] = [nil] + input.blockchainConfig.blockchairApiKeys
         
-        let providers = apiKeys.map {
-            BlockchairNetworkProvider(endpoint: endpoint, apiKey: $0, configuration: configuration)
+        return apiKeys.map {
+            BlockchairNetworkProvider(endpoint: endpoint, apiKey: $0, configuration: input.networkConfig)
                 .eraseToAnyBitcoinNetworkProvider()
         }
-        
-        return providers
     }
     
 }

@@ -86,7 +86,6 @@ public class WalletManagerFactory {
             with: .init(
                 blockchain: blockchain,
                 blockchainConfig: config,
-                publicKey: publicKey,
                 pairPublicKey: pairPublicKey,
                 wallet: Wallet(
                     blockchain: blockchain,

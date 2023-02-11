@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D4D464D299837EE00E15BFC /* BlockBookProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D464C299837EE00E15BFC /* BlockBookProviderType.swift */; };
 		2D72F23E2993CB9B00906527 /* WalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D72F23C2993CB9B00906527 /* WalletAssembly.swift */; };
 		2D72F2412993CBD100906527 /* BitcoinWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D72F2402993CBD100906527 /* BitcoinWalletAssembly.swift */; };
 		2D72F2432993D79E00906527 /* LitecoinWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D72F2422993D79E00906527 /* LitecoinWalletAssembly.swift */; };
@@ -286,6 +287,7 @@
 
 /* Begin PBXFileReference section */
 		0C79DB7FEDD8D4029AFA208D /* Pods-BlockchainSdk.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.release.xcconfig"; sourceTree = "<group>"; };
+		2D4D464C299837EE00E15BFC /* BlockBookProviderType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookProviderType.swift; sourceTree = "<group>"; };
 		2D72F23C2993CB9B00906527 /* WalletAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletAssembly.swift; sourceTree = "<group>"; };
 		2D72F2402993CBD100906527 /* BitcoinWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinWalletAssembly.swift; sourceTree = "<group>"; };
 		2D72F2422993D79E00906527 /* LitecoinWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LitecoinWalletAssembly.swift; sourceTree = "<group>"; };
@@ -708,6 +710,7 @@
 				B056729A2570F9DC00A8CB59 /* BlockchainSdkError.swift */,
 				5DEC90C02587A35800826C95 /* BlockchainSdkConfig.swift */,
 				2D72F23C2993CB9B00906527 /* WalletAssembly.swift */,
+				2D4D464C299837EE00E15BFC /* BlockBookProviderType.swift */,
 				2D72F2622994F9AE00906527 /* ProviderAssembly.swift */,
 				B0AD566325AC8DD50084F924 /* PendingTransaction.swift */,
 				5D14E48F2397B87000C15FC8 /* WalletManager.swift */,
@@ -1732,6 +1735,7 @@
 				5D65D5C9260B261F00F84BED /* TezosPrefix.swift in Sources */,
 				5D03D2D0253DE61B009A8A9F /* TezosAddressService.swift in Sources */,
 				2D72F2552993DE3800906527 /* TezosWalletAssembly.swift in Sources */,
+				2D4D464D299837EE00E15BFC /* BlockBookProviderType.swift in Sources */,
 				5D5CE0D52625C8EC009023EC /* XrpNetworkProvider.swift in Sources */,
 				5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */,
 				E93532CE292D0E86008FD979 /* BlockBookUtxoProvider.swift in Sources */,

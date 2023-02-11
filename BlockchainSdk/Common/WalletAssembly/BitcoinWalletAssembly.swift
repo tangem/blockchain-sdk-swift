@@ -18,10 +18,10 @@ struct BitcoinWalletAssembly: WalletAssemblyProtocol {
             var providers = [AnyBitcoinNetworkProvider]()
             
             
-            providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .NowNodes).eraseToAnyBitcoinNetworkProvider())
+            providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
             
             if !input.blockchain.isTestnet {
-                providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .GetBlock).eraseToAnyBitcoinNetworkProvider())
+                providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider())
                 providers.append(providerAssembly.makeInfoNetworkProvider(with: input).eraseToAnyBitcoinNetworkProvider())
             }
             

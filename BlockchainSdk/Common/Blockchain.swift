@@ -100,7 +100,7 @@ public enum Blockchain: Equatable, Hashable {
         }
     }
     
-    public var shelly: Bool {
+    public var shelley: Bool {
         switch self {
         case .cardano(let shelley):
             return shelley

@@ -27,8 +27,8 @@ struct BitcoinCashWalletAssembly: WalletAssemblyProtocol {
             var providers = [AnyBitcoinNetworkProvider]()
             
             if !input.blockchain.isTestnet {
-                providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .NowNodes).eraseToAnyBitcoinNetworkProvider())
-                providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .GetBlock).eraseToAnyBitcoinNetworkProvider())
+                providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
+                providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider())
             }
             
             providers.append(
