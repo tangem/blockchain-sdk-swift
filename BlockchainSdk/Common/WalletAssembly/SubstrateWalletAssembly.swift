@@ -1,5 +1,5 @@
 //
-//  PolkadotWalletAssembly.swift
+//  KusumaWalletAssembly.swift
 //  BlockchainSdk
 //
 //  Created by skibinalexander on 08.02.2023.
@@ -9,10 +9,12 @@
 import Foundation
 import TangemSdk
 
-struct PolkadotWalletAssembly: WalletAssemblyProtocol {
+struct SubstrateWalletAssembly: WalletAssemblyProtocol {
     
     static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
-        let network: PolkadotNetwork = input.blockchain.isTestnet ? .westend : .polkadot
+        guard let network = PolkadotNetwork.allCases.first(where: { $0.blockchain == input.blockchain }) else {
+            throw WalletError.empty
+        }
         
         return PolkadotWalletManager(network: network, wallet: input.wallet).then {
             let providers = network.urls.map { url in

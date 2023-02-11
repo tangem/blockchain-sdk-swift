@@ -951,10 +951,8 @@ extension Blockchain {
             return TezosWalletAssembly.self
         case .solana:
             return SolanaWalletAssembly.self
-        case .polkadot:
-            return PolkadotWalletAssembly.self
-        case .kusama:
-            return KusumaWalletAssembly.self
+        case .polkadot, .kusama:
+            return SubstrateWalletAssembly.self
         case .tron:
             return TronWalletAssembly.self
         case .dash:
