@@ -17,7 +17,7 @@ target 'BlockchainSdk' do
   pod 'Alamofire'
   pod 'Moya'
   pod 'Sodium'
-  pod 'SwiftCBOR', '0.4.5'
+  pod 'SwiftCBOR'
   pod 'BinanceChain', :git => 'https://github.com/tangem/swiftbinancechain.git', :tag => '0.0.9'
   #pod 'BinanceChain', :path => '../SwiftBinanceChain'
   pod 'HDWalletKit', :git => 'https://github.com/tangem/hdwallet.git', :tag => '0.3.12'
@@ -25,7 +25,7 @@ target 'BlockchainSdk' do
   #pod 'web3swift', :path => '../web3swift'
   pod 'web3swift', :git => 'https://github.com/tangem/web3swift.git', :tag => '2.2.10'
   pod 'AnyCodable-FlightSchool'
-  pod 'stellar-ios-mac-sdk', '2.2.5'
+  pod 'stellar-ios-mac-sdk'
   
   pod 'Solana.Swift', :git => 'https://github.com/tangem/Solana.Swift', :tag => 'add-external-signer-7'
 #  pod 'Solana.Swift', :path => '../Solana.Swift'
