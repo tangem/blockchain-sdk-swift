@@ -376,7 +376,7 @@ extension Blockchain {
                 ]
             } else {
                 return [
-                    RPCEndpoint(url: URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)")!),
+                    RPCEndpoint(url: URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)/ext/bc/C/rpc")!),
                     RPCEndpoint(url: URL(string: "https://avax.getblock.io/mainnet/ext/bc/C/rpc")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://api.avax.network/ext/bc/C/rpc")!),
                 ]
@@ -433,7 +433,7 @@ extension Blockchain {
             } else {
                 return [
                     RPCEndpoint(url: URL(string: "https://optimism.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://optimism.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
+                    RPCEndpoint(url: URL(string: "https://op.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://mainnet.optimism.io")!),
                     RPCEndpoint(url: URL(string: "https://optimism-mainnet.public.blastapi.io")!),
                     RPCEndpoint(url: URL(string: "https://rpc.ankr.com/optimism")!),
