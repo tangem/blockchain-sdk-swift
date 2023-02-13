@@ -322,3 +322,69 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
         networkService.getAllowance(from: from, to: to, contractAddress: contractAddress)
     }
 }
+
+extension EthereumWalletManager: TransactionHistoryLoader {
+    func loadTransactionHistory(address: String, blockchain: Blockchain, amountType: Amount.AmountType) -> AnyPublisher<[Transaction], Error> {
+        networkService.loadTransactionHistory(for: address)
+            .map { [weak self] (blockscoutTransctions: [BlockscoutTransaction]) -> [Transaction] in
+                guard let self else { return [] }
+                
+                let token: Token? = amountType.token
+                let decimalCount: Int = token?.decimalCount ?? blockchain.decimalCount
+                let currencySymbol: String = token?.symbol ?? blockchain.currencySymbol
+                
+                let transactions: [Transaction] = blockscoutTransctions.compactMap {
+                    guard
+                        let amountDecimal = Decimal($0.value),
+                        let gasPriceDecimal = Decimal($0.gasPrice),
+                        let spentGas = Decimal($0.gasUsed)
+                    else { return nil }
+                    
+                    switch amountType {
+                    case .coin:
+                        guard $0.contractAddress.isEmpty else {
+                            return nil
+                        }
+                    case .token(let token):
+                        guard $0.contractAddress == token.contractAddress else {
+                            return nil
+                        }
+                        break
+                    case .reserve:
+                        return nil
+                    }
+                    
+                    let timestamp = TimeInterval($0.timeStamp) ?? Date().timeIntervalSince1970
+                    let date = Date(timeIntervalSince1970: timestamp)
+                    let confirmationsCount = Int($0.confirmations) ?? 0
+                    let amount = Amount(
+                        type: amountType,
+                        currencySymbol: currencySymbol,
+                        value: amountDecimal / pow(10, decimalCount),
+                        decimals: decimalCount
+                    )
+                    let fee = Amount(
+                        type: amountType,
+                        currencySymbol: blockchain.currencySymbol,
+                        value: (gasPriceDecimal * spentGas) / pow(10, decimalCount),
+                        decimals: blockchain.decimalCount
+                    )
+                    
+                    return Transaction(
+                        amount: amount,
+                        fee: fee,
+                        sourceAddress: $0.from,
+                        destinationAddress: $0.to,
+                        changeAddress: .unknown,
+                        date: date,
+                        status: confirmationsCount > 0 ? .confirmed : .unconfirmed,
+                        hash: $0.hash
+                    )
+                }
+                
+                self.wallet.setTransactionHistoryList(transactions)
+                return transactions
+            }
+            .eraseToAnyPublisher()
+    }
+}

@@ -231,6 +231,14 @@ public class WalletManagerFactory {
                 blockcypherProvider = nil
             }
             
+            
+            let blockscoutProvider: BlockscoutNetworkProvider?
+            if case .saltPay = blockchain {
+                blockscoutProvider = BlockscoutNetworkProvider(configuration: .init(credentials: config.blockscoutCredentials))
+            } else {
+                blockscoutProvider = nil
+            }
+            
             return try manager.then {
                 let chainId = blockchain.chainId!
                 
@@ -251,7 +259,8 @@ public class WalletManagerFactory {
                 $0.networkService = EthereumNetworkService(decimals: blockchain.decimalCount,
                                                            providers: jsonRpcProviders,
                                                            blockcypherProvider: blockcypherProvider,
-                                                           blockchairProvider: nil) //TODO: TBD Do we need the TokenFinder feature?
+                                                           blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
+                                                           blockscoutProvider: blockscoutProvider)
             }
             
         case .bitcoinCash(let testnet):

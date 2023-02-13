@@ -20,15 +20,18 @@ class EthereumNetworkService: MultiNetworkProvider {
     private let decimals: Int
     private let ethereumInfoNetworkProvider: EthereumAdditionalInfoProvider?
     private let blockchairProvider: BlockchairNetworkProvider?
+    private let blockscoutProvider: BlockscoutNetworkProvider?
     
     init(decimals: Int,
          providers: [EthereumJsonRpcProvider],
          blockcypherProvider: BlockcypherNetworkProvider?,
-         blockchairProvider: BlockchairNetworkProvider?) {
+         blockchairProvider: BlockchairNetworkProvider?,
+         blockscoutProvider: BlockscoutNetworkProvider?) {
         self.providers = providers
         self.decimals = decimals
         self.ethereumInfoNetworkProvider = blockcypherProvider
         self.blockchairProvider = blockchairProvider
+        self.blockscoutProvider = blockscoutProvider
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
@@ -175,6 +178,14 @@ class EthereumNetworkService: MultiNetworkProvider {
                   }
                 .eraseToAnyPublisher()
         }
+    }
+    
+    func loadTransactionHistory(for address: String) -> AnyPublisher<[BlockscoutTransaction], Error> {
+        guard let blockscoutProvider = blockscoutProvider else {
+            return Fail(error: ETHError.unsupportedFeature).eraseToAnyPublisher()
+        }
+        
+        return blockscoutProvider.loadTransactionHistory(for: address)
     }
     
     // MARK: - Private functions
