@@ -21,16 +21,6 @@ extension Solana_Swift.RPCEndpoint {
         )
     }
     
-    public static func getBlock(apiKey: String) -> Solana_Swift.RPCEndpoint {
-        Solana_Swift.RPCEndpoint(
-            url: URL(string: "https://sol.getblock.io/mainnet")!,
-            urlWebSocket: URL(string: "wss://sol.getblock.io/mainnet")!,
-            network: .mainnetBeta,
-            apiKeyHeaderName: Constants.getBlockApiKeyHeaderName,
-            apiKeyHeaderValue: apiKey
-        )
-    }
-    
     public static func quiknode(apiKey: String, subdomain: String) -> Solana_Swift.RPCEndpoint {
         Solana_Swift.RPCEndpoint(
             url: URL(string: "https://\(subdomain).solana-mainnet.discover.quiknode.pro/\(apiKey)")!,
