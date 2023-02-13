@@ -349,7 +349,6 @@ extension EthereumWalletManager: TransactionHistoryLoader {
                         guard $0.contractAddress == token.contractAddress else {
                             return nil
                         }
-                        break
                     case .reserve:
                         return nil
                     }
