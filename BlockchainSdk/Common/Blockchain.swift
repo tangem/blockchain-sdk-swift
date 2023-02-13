@@ -392,8 +392,8 @@ extension Blockchain {
                     RPCEndpoint(url: URL(string: "https://ftm.getblock.io/mainnet")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://rpc.ftm.tools/")!),
                     RPCEndpoint(url: URL(string: "https://rpcapi.fantom.network/")!),
-                    RPCEndpoint(url: URL(string: "http://rpc.ankr.tools/ftm")!),
                     RPCEndpoint(url: URL(string: "https://ftmrpc.ultimatenodes.io/")!),
+                    RPCEndpoint(url: URL(string: "https://rpc.ankr.com/fantom")!),
                 ]
             }
         case .arbitrum(let testnet):
@@ -420,10 +420,10 @@ extension Blockchain {
                 
                 // from chainlist.org
                 RPCEndpoint(url: URL(string: "https://gnosischain-rpc.gateway.pokt.network")!),
-                RPCEndpoint(url: URL(string: "https://rpc.ankr.com/gnosis")!),
                 RPCEndpoint(url: URL(string: "https://gnosis-mainnet.public.blastapi.io")!),
                 RPCEndpoint(url: URL(string: "https://xdai-rpc.gateway.pokt.network")!),
                 RPCEndpoint(url: URL(string: "https://xdai-archive.blockscout.com")!),
+                RPCEndpoint(url: URL(string: "https://rpc.ankr.com/gnosis")!),
             ]
         case .optimism(let testnet):
             if testnet {
