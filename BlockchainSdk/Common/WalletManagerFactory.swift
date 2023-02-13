@@ -339,7 +339,6 @@ public class WalletManagerFactory {
                         .nowNodes(apiKey: config.nowNodesApiKey),
                         .getBlock(apiKey: config.getBlockApiKey),
                         .quiknode(apiKey: config.quickNodeSolanaCredentials.apiKey, subdomain: config.quickNodeSolanaCredentials.subdomain),
-                        .ankr,
                         .mainnetBetaSolana,
                     ]
                 }
