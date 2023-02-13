@@ -337,7 +337,9 @@ extension EthereumWalletManager: TransactionHistoryLoader {
                     guard
                         let amountDecimal = Decimal($0.value),
                         let gasPriceDecimal = Decimal($0.gasPrice),
-                        let spentGas = Decimal($0.gasUsed)
+                        let spentGas = Decimal($0.gasUsed),
+                        let timestamp = TimeInterval($0.timeStamp),
+                        let confirmationsCount = Int($0.confirmations)
                     else { return nil }
                     
                     switch amountType {
@@ -353,9 +355,7 @@ extension EthereumWalletManager: TransactionHistoryLoader {
                         return nil
                     }
                     
-                    let timestamp = TimeInterval($0.timeStamp) ?? Date().timeIntervalSince1970
                     let date = Date(timeIntervalSince1970: timestamp)
-                    let confirmationsCount = Int($0.confirmations) ?? 0
                     let amount = Amount(
                         type: amountType,
                         currencySymbol: currencySymbol,
@@ -381,9 +381,11 @@ extension EthereumWalletManager: TransactionHistoryLoader {
                     )
                 }
                 
-                self.wallet.setTransactionHistoryList(transactions)
                 return transactions
             }
+            .handleEvents(receiveOutput: { [weak self] transactions in
+                self?.wallet.setTransactionHistoryList(transactions)
+            })
             .eraseToAnyPublisher()
     }
 }
