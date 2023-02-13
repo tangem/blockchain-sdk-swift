@@ -376,7 +376,7 @@ extension Blockchain {
                 ]
             } else {
                 return [
-                    RPCEndpoint(url: URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)")!),
+                    RPCEndpoint(url: URL(string: "https://avax.nownodes.io/ext/bc/C/rpc")!, apiKeyHeaderName: Constants.nowNodesApiKeyHeaderName, apiKeyHeaderValue: nowNodesApiKey),
                     RPCEndpoint(url: URL(string: "https://avax.getblock.io/mainnet/ext/bc/C/rpc")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://api.avax.network/ext/bc/C/rpc")!),
                 ]
