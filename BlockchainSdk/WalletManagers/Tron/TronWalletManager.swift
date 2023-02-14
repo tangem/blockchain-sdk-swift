@@ -105,7 +105,8 @@ class TronWalletManager: BaseManager, WalletManager {
                 let additionalDataSize = 64
                 let transactionSizeFee = sunPerBandwidthPoint * (transactionData.count + additionalDataSize)
 
-                let maxEnergyFee = Int(ceil(Double(maxEnergyUse * chainParameters.sunPerEnergyUnit) * (1 + dynamicEnergyMaxFactor)))
+                let sunPerEnergyUnit = chainParameters.sunPerEnergyUnit
+                let maxEnergyFee = Int(ceil(Double(maxEnergyUse * sunPerEnergyUnit) * (1 + dynamicEnergyMaxFactor)))
 
                 let totalFee = transactionSizeFee + maxEnergyFee
 
