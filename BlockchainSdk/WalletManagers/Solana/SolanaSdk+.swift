@@ -11,28 +11,12 @@ import Combine
 import Solana_Swift
 
 extension Solana_Swift.RPCEndpoint {
-    public static let ankr = Solana_Swift.RPCEndpoint(
-        url: URL(string: "https://rpc.ankr.com/solana")!,
-        urlWebSocket: URL(string: "ws://rpc.ankr.com/solana")!,
-        network: .mainnetBeta
-    )
-    
     public static func nowNodes(apiKey: String) -> Solana_Swift.RPCEndpoint {
         Solana_Swift.RPCEndpoint(
             url: URL(string: "https://sol.nownodes.io")!,
             urlWebSocket: URL(string: "wss://sol.nownodes.io")!,
             network: .mainnetBeta,
             apiKeyHeaderName: Constants.nowNodesApiKeyHeaderName,
-            apiKeyHeaderValue: apiKey
-        )
-    }
-    
-    public static func getBlock(apiKey: String) -> Solana_Swift.RPCEndpoint {
-        Solana_Swift.RPCEndpoint(
-            url: URL(string: "https://sol.getblock.io/mainnet")!,
-            urlWebSocket: URL(string: "wss://sol.getblock.io/mainnet")!,
-            network: .mainnetBeta,
-            apiKeyHeaderName: Constants.getBlockApiKeyHeaderName,
             apiKeyHeaderValue: apiKey
         )
     }

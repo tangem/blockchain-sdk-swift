@@ -382,7 +382,7 @@ extension Blockchain {
                 ]
             } else {
                 return [
-                    RPCEndpoint(url: URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)")!),
+                    RPCEndpoint(url: URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)/ext/bc/C/rpc")!),
                     RPCEndpoint(url: URL(string: "https://avax.getblock.io/mainnet/ext/bc/C/rpc")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://api.avax.network/ext/bc/C/rpc")!),
                 ]
@@ -398,8 +398,8 @@ extension Blockchain {
                     RPCEndpoint(url: URL(string: "https://ftm.getblock.io/mainnet")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://rpc.ftm.tools/")!),
                     RPCEndpoint(url: URL(string: "https://rpcapi.fantom.network/")!),
-                    RPCEndpoint(url: URL(string: "http://rpc.ankr.tools/ftm")!),
                     RPCEndpoint(url: URL(string: "https://ftmrpc.ultimatenodes.io/")!),
+                    RPCEndpoint(url: URL(string: "https://rpc.ankr.com/fantom")!),
                 ]
             }
         case .arbitrum(let testnet):
@@ -426,11 +426,10 @@ extension Blockchain {
                 
                 // from chainlist.org
                 RPCEndpoint(url: URL(string: "https://gnosischain-rpc.gateway.pokt.network")!),
-                RPCEndpoint(url: URL(string: "https://rpc.ankr.com/gnosis")!),
                 RPCEndpoint(url: URL(string: "https://gnosis-mainnet.public.blastapi.io")!),
                 RPCEndpoint(url: URL(string: "https://xdai-rpc.gateway.pokt.network")!),
                 RPCEndpoint(url: URL(string: "https://xdai-archive.blockscout.com")!),
-                RPCEndpoint(url: URL(string: "https://rpc.gnosischain.com")!),
+                RPCEndpoint(url: URL(string: "https://rpc.ankr.com/gnosis")!),
             ]
         case .optimism(let testnet):
             if testnet {
@@ -440,7 +439,7 @@ extension Blockchain {
             } else {
                 return [
                     RPCEndpoint(url: URL(string: "https://optimism.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://optimism.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
+                    RPCEndpoint(url: URL(string: "https://op.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
                     RPCEndpoint(url: URL(string: "https://mainnet.optimism.io")!),
                     RPCEndpoint(url: URL(string: "https://optimism-mainnet.public.blastapi.io")!),
                     RPCEndpoint(url: URL(string: "https://rpc.ankr.com/optimism")!),
