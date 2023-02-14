@@ -26,6 +26,23 @@ class TronNetworkService: MultiNetworkProvider {
         self.providers = providers
     }
     
+    func getEnergyFee() -> AnyPublisher<Int, Error> {
+        providerPublisher {
+            $0.getChainParameters()
+                .tryMap {
+                    guard
+                        let chainParameter = $0.chainParameter.first(where: { chainParameter in chainParameter.key == "getEnergyFee" }),
+                        let value = chainParameter.value
+                    else {
+                        throw WalletError.failedToGetFee
+                    }
+                    
+                    return value
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+    
     func accountInfo(for address: String, tokens: [Token], transactionIDs: [String]) -> AnyPublisher<TronAccountInfo, Error> {
         Publishers.Zip3(
             getAccount(for: address),

@@ -24,6 +24,10 @@ class TronJsonRpcProvider: HostProvider {
         self.tronGridApiKey = tronGridApiKey
         provider = NetworkProvider<TronTarget>(configuration: configuration)
     }
+    
+    func getChainParameters() -> AnyPublisher<TronGetChainParametersResponse, Error> {
+        requestPublisher(for: .getChainParameters(network: network))
+    }
 
     func getAccount(for address: String) -> AnyPublisher<TronGetAccountResponse, Error> {
         requestPublisher(for: .getAccount(address: address, network: network))

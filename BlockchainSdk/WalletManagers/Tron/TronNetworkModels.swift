@@ -8,6 +8,15 @@
 
 import Foundation
 
+struct TronGetChainParametersResponse: Codable {
+    let chainParameter: [TronChainParameter]
+}
+
+struct TronChainParameter: Codable {
+    let key: String
+    let value: Int?
+}
+
 struct TronAccountInfo {
     let balance: Decimal
     let tokenBalances: [Token: Decimal]
