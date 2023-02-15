@@ -61,11 +61,6 @@ public protocol TransactionSender {
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error>
 }
 
-@available(iOS 13.0, *)
-public protocol TransactionHistoryLoader {
-    func loadTransactionHistory(address: String, blockchain: Blockchain, amountType: Amount.AmountType) -> AnyPublisher<[Transaction], Error>
-}
-
 public struct SendTxError: Error, LocalizedError {
     public let error: Error
     public let tx: String

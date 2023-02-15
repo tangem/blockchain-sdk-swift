@@ -20,18 +20,18 @@ class EthereumNetworkService: MultiNetworkProvider {
     private let decimals: Int
     private let ethereumInfoNetworkProvider: EthereumAdditionalInfoProvider?
     private let blockchairProvider: BlockchairNetworkProvider?
-    private let blockscoutProvider: BlockscoutNetworkProvider?
+    private let transactionHistoryProvider: TransactionHistoryProvider?
     
     init(decimals: Int,
          providers: [EthereumJsonRpcProvider],
          blockcypherProvider: BlockcypherNetworkProvider?,
          blockchairProvider: BlockchairNetworkProvider?,
-         blockscoutProvider: BlockscoutNetworkProvider?) {
+         transactionHistoryProvider: TransactionHistoryProvider?) {
         self.providers = providers
         self.decimals = decimals
         self.ethereumInfoNetworkProvider = blockcypherProvider
         self.blockchairProvider = blockchairProvider
-        self.blockscoutProvider = blockscoutProvider
+        self.transactionHistoryProvider = transactionHistoryProvider
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
@@ -58,7 +58,11 @@ class EthereumNetworkService: MultiNetworkProvider {
             .flatMap { [weak self] resp -> AnyPublisher<EthereumInfoResponse, Error> in
                 guard let self = self else { return .emptyFail }
                 
-                guard let provider = self.ethereumInfoNetworkProvider, resp.pendingTxCount > 0 else {
+                guard
+                    let provider = self.ethereumInfoNetworkProvider,
+                    resp.pendingTxCount > 0,
+                    self.transactionHistoryProvider == nil // We don't wan't to load pending txs if history is available
+                else {
                     return .justWithError(output: resp)
                 }
                 
@@ -180,14 +184,6 @@ class EthereumNetworkService: MultiNetworkProvider {
         }
     }
     
-    func loadTransactionHistory(for address: String) -> AnyPublisher<[BlockscoutTransaction], Error> {
-        guard let blockscoutProvider = blockscoutProvider else {
-            return Fail(error: ETHError.unsupportedFeature).eraseToAnyPublisher()
-        }
-        
-        return blockscoutProvider.loadTransactionHistory(for: address)
-    }
-    
     // MARK: - Private functions
     
     private func getBalance(_ address: String) -> AnyPublisher<Decimal, Error> {
@@ -287,6 +283,16 @@ class EthereumNetworkService: MultiNetworkProvider {
             return try self.getGas(from: $0)
         }
         .eraseToAnyPublisher()
+    }
+}
+
+extension EthereumNetworkService: TransactionHistoryProvider {
+    func loadTransactionHistory(address: String) -> AnyPublisher<[TransactionHistoryRecordConvertible], Error> {
+        guard let historyProvider = transactionHistoryProvider else {
+            return Fail(error: ETHError.unsupportedFeature).eraseToAnyPublisher()
+        }
+        
+        return historyProvider.loadTransactionHistory(address: address)
     }
 }
 

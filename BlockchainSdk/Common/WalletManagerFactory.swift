@@ -231,12 +231,11 @@ public class WalletManagerFactory {
                 blockcypherProvider = nil
             }
             
-            
-            let blockscoutProvider: BlockscoutNetworkProvider?
-            if case .saltPay = blockchain {
-                blockscoutProvider = BlockscoutNetworkProvider(configuration: .init(credentials: config.blockscoutCredentials))
-            } else {
-                blockscoutProvider = nil
+            // TODO: Move this generation into assembly.
+            var transactionHistoryProvider: TransactionHistoryProvider?
+            if blockchain.canLoadTransactionHistory {
+                // This should be decided by each assembly
+                transactionHistoryProvider = BlockscoutNetworkProvider(configuration: .init(credentials: config.blockscoutCredentials))
             }
             
             return try manager.then {
@@ -260,7 +259,7 @@ public class WalletManagerFactory {
                                                            providers: jsonRpcProviders,
                                                            blockcypherProvider: blockcypherProvider,
                                                            blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
-                                                           blockscoutProvider: blockscoutProvider)
+                                                           transactionHistoryProvider: transactionHistoryProvider)
             }
             
         case .bitcoinCash(let testnet):

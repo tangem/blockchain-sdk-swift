@@ -11,7 +11,7 @@ import Moya
 
 enum BlockscoutTarget: TargetType {
     
-    case transactionHistory(address: String)
+    case tokenTransfersHistory(address: String, contractAddress: String?)
     
     var baseURL: URL { URL(string: "https://blockscout.bicoccachain.net/api")! }
     
@@ -20,13 +20,19 @@ enum BlockscoutTarget: TargetType {
     var method: Moya.Method { .get }
     
     var task: Moya.Task {
-        var parameters = [String:String]()
+        var parameters = [
+            "module": "account",
+            "action": action
+        ]
+        parameters["module"] = "account"
         
         switch self {
-        case .transactionHistory(let address):
-            parameters["module"] = "account"
-            parameters["action"] = "txList"
+        case .tokenTransfersHistory(let address, let contractAddress):
             parameters["address"] = address
+            
+            if let contractAddress {
+                parameters["contractaddress"] = contractAddress
+            }
         }
         
         return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
@@ -34,4 +40,9 @@ enum BlockscoutTarget: TargetType {
     
     var headers: [String : String]? { nil }
     
+    private var action: String {
+        switch self {
+        case .tokenTransfersHistory: return "tokentx"
+        }
+    }
 }

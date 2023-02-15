@@ -160,18 +160,22 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
         txCount = response.txCount
         pendingTxCount = response.pendingTxCount
         
-        if !response.pendingTxs.isEmpty {
-            wallet.transactions.removeAll()
-            response.pendingTxs.forEach {
-                wallet.addPendingTransaction($0)
-            }
-        } else if txCount == pendingTxCount {
-            for  index in wallet.transactions.indices {
-                wallet.transactions[index].status = .confirmed
-            }
-        } else {
-            if wallet.transactions.isEmpty {
-                wallet.addDummyPendingTransaction()
+        // TODO: This should be removed when integrating transaction history for all blockchains
+        // If we can load transaction history for specified blockchain - we can ignore loading pending txs
+        if !wallet.blockchain.canLoadTransactionHistory {
+            if !response.pendingTxs.isEmpty {
+                wallet.transactions.removeAll()
+                response.pendingTxs.forEach {
+                    wallet.addPendingTransaction($0)
+                }
+            } else if txCount == pendingTxCount {
+                for  index in wallet.transactions.indices {
+                    wallet.transactions[index].status = .confirmed
+                }
+            } else {
+                if wallet.transactions.isEmpty {
+                    wallet.addDummyPendingTransaction()
+                }
             }
         }
     }
@@ -324,63 +328,51 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
 }
 
 extension EthereumWalletManager: TransactionHistoryLoader {
-    func loadTransactionHistory(address: String, blockchain: Blockchain, amountType: Amount.AmountType) -> AnyPublisher<[Transaction], Error> {
-        networkService.loadTransactionHistory(for: address)
-            .map { [weak self] (blockscoutTransctions: [BlockscoutTransaction]) -> [Transaction] in
+    func loadTransactionHistory() -> AnyPublisher<[Transaction], Error> {
+        return networkService.loadTransactionHistory(address: wallet.address)
+            .map { [weak self] transactionRecords in
                 guard let self else { return [] }
                 
-                let token: Token? = amountType.token
-                let decimalCount: Int = token?.decimalCount ?? blockchain.decimalCount
-                let currencySymbol: String = token?.symbol ?? blockchain.currencySymbol
+                // Convert to dictionary for faster lookup
+                var tokens = [String: Token]()
+                self.cardTokens.forEach { tokens[$0.contractAddress] = $0 }
+                let blockchain = self.wallet.blockchain
                 
-                let transactions: [Transaction] = blockscoutTransctions.compactMap {
-                    guard
-                        let amountDecimal = Decimal($0.value),
-                        let gasPriceDecimal = Decimal($0.gasPrice),
-                        let spentGas = Decimal($0.gasUsed),
-                        let timestamp = TimeInterval($0.timeStamp),
-                        let confirmationsCount = Int($0.confirmations)
-                    else { return nil }
+                let transactions: [Transaction] = transactionRecords.compactMap {
                     
-                    switch amountType {
-                    case .coin:
-                        guard $0.contractAddress.isEmpty else {
+                    let decimalCount: Int
+                    let amountType: Amount.AmountType
+                    
+                    // It is Token if transaction contain contract address
+                    if let contractAddress = $0.tokenContractAddress {
+                        // Is this token added to user token list?
+                        guard let token = tokens[contractAddress] else {
                             return nil
                         }
-                    case .token(let token):
-                        guard $0.contractAddress == token.contractAddress else {
-                            return nil
-                        }
-                    case .reserve:
-                        return nil
+                        
+                        amountType = .token(value: token)
+                        decimalCount = token.decimalCount
+                    } else { // This is coin ransaction
+                        decimalCount = blockchain.decimalCount
+                        amountType = .coin
                     }
                     
-                    let date = Date(timeIntervalSince1970: timestamp)
-                    let amount = Amount(
-                        type: amountType,
-                        currencySymbol: currencySymbol,
-                        value: amountDecimal / pow(10, decimalCount),
-                        decimals: decimalCount
-                    )
-                    let fee = Amount(
-                        type: amountType,
-                        currencySymbol: blockchain.currencySymbol,
-                        value: (gasPriceDecimal * spentGas) / pow(10, decimalCount),
-                        decimals: blockchain.decimalCount
-                    )
+                    guard
+                        let amountDecimals = $0.amount(decimalCount: decimalCount),
+                        let feeDecimals = $0.fee(decimalCount: decimalCount)
+                    else { return nil }
                     
                     return Transaction(
-                        amount: amount,
-                        fee: fee,
-                        sourceAddress: $0.from,
-                        destinationAddress: $0.to,
+                        amount: Amount(with: blockchain, type: amountType, value: amountDecimals),
+                        fee: Amount(with: blockchain, value: feeDecimals),
+                        sourceAddress: $0.sourceAddress,
+                        destinationAddress: $0.destinationAddress,
                         changeAddress: .unknown,
-                        date: date,
-                        status: confirmationsCount > 0 ? .confirmed : .unconfirmed,
+                        date: $0.date,
+                        status: $0.status,
                         hash: $0.hash
                     )
                 }
-                
                 return transactions
             }
             .handleEvents(receiveOutput: { [weak self] transactions in
