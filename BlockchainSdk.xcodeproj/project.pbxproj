@@ -183,7 +183,6 @@
 		DA59751E27D749A9009F0A1F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA59751D27D749A9009F0A1F /* MapKit.framework */; };
 		DA59752027D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA59751F27D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift */; };
 		DA656FC62952091A0092CC61 /* BlockBookConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA656FC52952091A0092CC61 /* BlockBookConfig.swift */; };
-		DA656FC829543AC40092CC61 /* RPCEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA656FC729543AC40092CC61 /* RPCEndpoint.swift */; };
 		DA656FCA295454C10092CC61 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA656FC9295454C10092CC61 /* Constants.swift */; };
 		DA656FCC2954B5220092CC61 /* EthereumTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA656FCB2954B5220092CC61 /* EthereumTarget.swift */; };
 		DA71441E2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
@@ -470,7 +469,6 @@
 		DA59751D27D749A9009F0A1F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		DA59751F27D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainSdkExampleViewModel.swift; sourceTree = "<group>"; };
 		DA656FC52952091A0092CC61 /* BlockBookConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookConfig.swift; sourceTree = "<group>"; };
-		DA656FC729543AC40092CC61 /* RPCEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RPCEndpoint.swift; sourceTree = "<group>"; };
 		DA656FC9295454C10092CC61 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		DA656FCB2954B5220092CC61 /* EthereumTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTarget.swift; sourceTree = "<group>"; };
 		DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaNetworkService.swift; sourceTree = "<group>"; };
@@ -1314,7 +1312,6 @@
 				EF332D16288EACB000AE3C85 /* HostProvider.swift */,
 				EF332D18288EAEAC00AE3C85 /* NetworkProvider.swift */,
 				EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */,
-				DA656FC729543AC40092CC61 /* RPCEndpoint.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -1671,7 +1668,6 @@
 				5DE3BFA0239FA33800E8815D /* Bech32.swift in Sources */,
 				B04DC62725AC1C50009AA7B3 /* JSONDecoder+.swift in Sources */,
 				5DEAFA90244473460032E316 /* Transaction.swift in Sources */,
-				DA656FC829543AC40092CC61 /* RPCEndpoint.swift in Sources */,
 				5D977BB623FAEB4500575BE4 /* DucatusNetworkService.swift in Sources */,
 				5D845511243DE9CD0072155E /* CardanoTransactionBuilder.swift in Sources */,
 				5DED72C423A1315F006D79AE /* StellarWalletManager.swift in Sources */,

@@ -322,7 +322,7 @@ public class WalletManagerFactory {
             
         case .solana(let testnet):
             return SolanaWalletManager(wallet: wallet).then {
-                let endpoints: [Solana_Swift.RPCEndpoint]
+                let endpoints: [RPCEndpoint]
                 if testnet {
                     endpoints = [
                         .devnetSolana,
