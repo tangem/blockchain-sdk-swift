@@ -61,7 +61,7 @@ class EthereumNetworkService: MultiNetworkProvider {
                 guard
                     let provider = self.ethereumInfoNetworkProvider,
                     resp.pendingTxCount > 0,
-                    self.transactionHistoryProvider == nil // We don't wan't to load pending txs if history is available
+                    self.transactionHistoryProvider == nil // We don't want to load pending txs if history is available
                 else {
                     return .justWithError(output: resp)
                 }

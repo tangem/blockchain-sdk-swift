@@ -912,7 +912,7 @@ extension Blockchain {
 }
 
 extension Blockchain {
-    var canLoadTransactionHistory: Bool {
+    public var canLoadTransactionHistory: Bool {
         switch self {
         case .saltPay:
             return true

@@ -334,17 +334,16 @@ extension EthereumWalletManager: TransactionHistoryLoader {
                 guard let self else { return [] }
                 
                 // Convert to dictionary for faster lookup
-                var tokens = [String: Token]()
-                self.cardTokens.forEach { tokens[$0.contractAddress] = $0 }
+                let tokens: [String: Token] = self.cardTokens.reduce(into: [:]) { $0[$1.contractAddress] = $1 }
                 let blockchain = self.wallet.blockchain
                 
-                let transactions: [Transaction] = transactionRecords.compactMap {
+                let transactions: [Transaction] = transactionRecords.compactMap { transactionRecord in
                     
                     let decimalCount: Int
                     let amountType: Amount.AmountType
                     
                     // It is Token if transaction contain contract address
-                    if let contractAddress = $0.tokenContractAddress {
+                    if let contractAddress = transactionRecord.tokenContractAddress {
                         // Is this token added to user token list?
                         guard let token = tokens[contractAddress] else {
                             return nil
@@ -353,24 +352,24 @@ extension EthereumWalletManager: TransactionHistoryLoader {
                         amountType = .token(value: token)
                         decimalCount = token.decimalCount
                     } else { // This is coin ransaction
-                        decimalCount = blockchain.decimalCount
                         amountType = .coin
+                        decimalCount = blockchain.decimalCount
                     }
                     
                     guard
-                        let amountDecimals = $0.amount(decimalCount: decimalCount),
-                        let feeDecimals = $0.fee(decimalCount: decimalCount)
+                        let amountDecimals = transactionRecord.amount(decimalCount: decimalCount),
+                        let feeDecimals = transactionRecord.fee(decimalCount: decimalCount)
                     else { return nil }
                     
                     return Transaction(
                         amount: Amount(with: blockchain, type: amountType, value: amountDecimals),
                         fee: Amount(with: blockchain, value: feeDecimals),
-                        sourceAddress: $0.sourceAddress,
-                        destinationAddress: $0.destinationAddress,
+                        sourceAddress: transactionRecord.sourceAddress,
+                        destinationAddress: transactionRecord.destinationAddress,
                         changeAddress: .unknown,
-                        date: $0.date,
-                        status: $0.status,
-                        hash: $0.hash
+                        date: transactionRecord.date,
+                        status: transactionRecord.status,
+                        hash: transactionRecord.hash
                     )
                 }
                 return transactions

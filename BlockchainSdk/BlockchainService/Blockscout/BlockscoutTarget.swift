@@ -24,7 +24,6 @@ enum BlockscoutTarget: TargetType {
             "module": "account",
             "action": action
         ]
-        parameters["module"] = "account"
         
         switch self {
         case .tokenTransfersHistory(let address, let contractAddress):
