@@ -19,7 +19,7 @@ struct BlockscoutTransaction: Decodable {
     let blockNumber: String
     let confirmations: String
     let contractAddress: String
-    /// Gas limit in WEI
+    /// Gas limit in Wei
     let gas: String
     let gasPrice: String
     let gasUsed: String
@@ -27,7 +27,7 @@ struct BlockscoutTransaction: Decodable {
     let hash: String
     let from: String
     let to: String
-    /// Sent amount in WEI
+    /// Sent amount in Wei
     let value: String
     let timeStamp: String
     let nonce: String
