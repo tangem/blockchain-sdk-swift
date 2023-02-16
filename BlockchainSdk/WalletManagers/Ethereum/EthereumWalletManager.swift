@@ -160,18 +160,22 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
         txCount = response.txCount
         pendingTxCount = response.pendingTxCount
         
-        if !response.pendingTxs.isEmpty {
-            wallet.transactions.removeAll()
-            response.pendingTxs.forEach {
-                wallet.addPendingTransaction($0)
-            }
-        } else if txCount == pendingTxCount {
-            for  index in wallet.transactions.indices {
-                wallet.transactions[index].status = .confirmed
-            }
-        } else {
-            if wallet.transactions.isEmpty {
-                wallet.addDummyPendingTransaction()
+        // TODO: This should be removed when integrating transaction history for all blockchains
+        // If we can load transaction history for specified blockchain - we can ignore loading pending txs
+        if !wallet.blockchain.canLoadTransactionHistory {
+            if !response.pendingTxs.isEmpty {
+                wallet.transactions.removeAll()
+                response.pendingTxs.forEach {
+                    wallet.addPendingTransaction($0)
+                }
+            } else if txCount == pendingTxCount {
+                for  index in wallet.transactions.indices {
+                    wallet.transactions[index].status = .confirmed
+                }
+            } else {
+                if wallet.transactions.isEmpty {
+                    wallet.addDummyPendingTransaction()
+                }
             }
         }
     }
@@ -320,5 +324,59 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
 
     func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<String, Error> {
         networkService.getAllowance(from: from, to: to, contractAddress: contractAddress)
+    }
+}
+
+extension EthereumWalletManager: TransactionHistoryLoader {
+    func loadTransactionHistory() -> AnyPublisher<[Transaction], Error> {
+        return networkService.loadTransactionHistory(address: wallet.address)
+            .map { [weak self] transactionRecords in
+                guard let self else { return [] }
+                
+                // Convert to dictionary for faster lookup
+                let tokens: [String: Token] = self.cardTokens.reduce(into: [:]) { $0[$1.contractAddress] = $1 }
+                let blockchain = self.wallet.blockchain
+                
+                let transactions: [Transaction] = transactionRecords.compactMap { transactionRecord in
+                    
+                    let decimalCount: Int
+                    let amountType: Amount.AmountType
+                    
+                    // It is Token if transaction contain contract address
+                    if let contractAddress = transactionRecord.tokenContractAddress {
+                        // Is this token added to user token list?
+                        guard let token = tokens[contractAddress] else {
+                            return nil
+                        }
+                        
+                        amountType = .token(value: token)
+                        decimalCount = token.decimalCount
+                    } else { // This is coin ransaction
+                        amountType = .coin
+                        decimalCount = blockchain.decimalCount
+                    }
+                    
+                    guard
+                        let amountDecimals = transactionRecord.amount(decimalCount: decimalCount),
+                        let feeDecimals = transactionRecord.fee(decimalCount: decimalCount)
+                    else { return nil }
+                    
+                    return Transaction(
+                        amount: Amount(with: blockchain, type: amountType, value: amountDecimals),
+                        fee: Amount(with: blockchain, value: feeDecimals),
+                        sourceAddress: transactionRecord.sourceAddress,
+                        destinationAddress: transactionRecord.destinationAddress,
+                        changeAddress: .unknown,
+                        date: transactionRecord.date,
+                        status: transactionRecord.status,
+                        hash: transactionRecord.hash
+                    )
+                }
+                return transactions
+            }
+            .handleEvents(receiveOutput: { [weak self] transactions in
+                self?.wallet.setTransactionHistoryList(transactions)
+            })
+            .eraseToAnyPublisher()
     }
 }

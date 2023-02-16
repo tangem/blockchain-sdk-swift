@@ -64,6 +64,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                                                                           tronGridApiKey: "",
                                                                           quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
                                                                           quickNodeBscCredentials: .init(apiKey: "", subdomain: ""),
+                                                                          blockscoutCredentials: .init(login: "", password: ""),
                                                                           defaultNetworkProviderConfiguration: .init(logger: .verbose)))
     @Published private(set) var card: Card?
     @Published private(set) var walletManager: WalletManager?

@@ -231,6 +231,13 @@ public class WalletManagerFactory {
                 blockcypherProvider = nil
             }
             
+            // TODO: Move this generation into assembly.
+            var transactionHistoryProvider: TransactionHistoryProvider?
+            if blockchain.canLoadTransactionHistory {
+                // This should be decided by each assembly
+                transactionHistoryProvider = BlockscoutNetworkProvider(configuration: .init(credentials: config.blockscoutCredentials))
+            }
+            
             return try manager.then {
                 let chainId = blockchain.chainId!
                 
@@ -251,7 +258,8 @@ public class WalletManagerFactory {
                 $0.networkService = EthereumNetworkService(decimals: blockchain.decimalCount,
                                                            providers: jsonRpcProviders,
                                                            blockcypherProvider: blockcypherProvider,
-                                                           blockchairProvider: nil) //TODO: TBD Do we need the TokenFinder feature?
+                                                           blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
+                                                           transactionHistoryProvider: transactionHistoryProvider)
             }
             
         case .bitcoinCash(let testnet):

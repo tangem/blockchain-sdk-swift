@@ -169,6 +169,10 @@ public struct Wallet {
         transactions.append(tx)
     }
     
+    mutating func setTransactionHistoryList(_ transactions: [Transaction]) {
+        self.transactions = transactions
+    }
+    
     mutating func remove(token: Token) {
         amounts[.token(value: token)] = nil
     }
