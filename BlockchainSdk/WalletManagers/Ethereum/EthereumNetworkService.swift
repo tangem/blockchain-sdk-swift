@@ -72,6 +72,8 @@ class EthereumNetworkService: MultiNetworkProvider {
                         newResp.pendingTxs = ethResponse.pendingTxs
                         return newResp
                     }
+                    .replaceError(with: resp)
+                    .setFailureType(to: Error.self)
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
