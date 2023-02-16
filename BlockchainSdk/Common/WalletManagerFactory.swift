@@ -214,7 +214,7 @@ public class WalletManagerFactory {
             )!
             
             if case .optimism = blockchain {
-                manager = OptimismWalletManager(wallet: wallet, rpcURL: endpoints[0].url)
+                manager = OptimismWalletManager(wallet: wallet, rpcURL: endpoints[0])
             } else {
                 manager = EthereumWalletManager(wallet: wallet)
             }
@@ -242,14 +242,8 @@ public class WalletManagerFactory {
                 let chainId = blockchain.chainId!
                 
                 let jsonRpcProviders = endpoints.map {
-                    var additionalHeaders: [String: String] = [:]
-                    if let apiKeyHeaderName = $0.apiKeyHeaderName, let apiKeyHeaderValue = $0.apiKeyHeaderValue {
-                        additionalHeaders[apiKeyHeaderName] = apiKeyHeaderValue
-                    }
-                    
                     return EthereumJsonRpcProvider(
-                        url: $0.url,
-                        additionalHeaders: additionalHeaders,
+                        url: $0,
                         configuration: networkProviderConfiguration
                     )
                 }
@@ -324,7 +318,7 @@ public class WalletManagerFactory {
             
         case .solana(let testnet):
             return SolanaWalletManager(wallet: wallet).then {
-                let endpoints: [Solana_Swift.RPCEndpoint]
+                let endpoints: [RPCEndpoint]
                 if testnet {
                     endpoints = [
                         .devnetSolana,

@@ -10,9 +10,9 @@ import Foundation
 import Combine
 import Solana_Swift
 
-extension Solana_Swift.RPCEndpoint {
-    public static func nowNodes(apiKey: String) -> Solana_Swift.RPCEndpoint {
-        Solana_Swift.RPCEndpoint(
+extension RPCEndpoint {
+    public static func nowNodes(apiKey: String) -> RPCEndpoint {
+        RPCEndpoint(
             url: URL(string: "https://sol.nownodes.io")!,
             urlWebSocket: URL(string: "wss://sol.nownodes.io")!,
             network: .mainnetBeta,
@@ -21,8 +21,8 @@ extension Solana_Swift.RPCEndpoint {
         )
     }
     
-    public static func quiknode(apiKey: String, subdomain: String) -> Solana_Swift.RPCEndpoint {
-        Solana_Swift.RPCEndpoint(
+    public static func quiknode(apiKey: String, subdomain: String) -> RPCEndpoint {
+        RPCEndpoint(
             url: URL(string: "https://\(subdomain).solana-mainnet.discover.quiknode.pro/\(apiKey)")!,
             urlWebSocket: URL(string: "wss://\(subdomain).solana-mainnet.discover.quiknode.pro/\(apiKey)")!,
             network: .mainnetBeta
