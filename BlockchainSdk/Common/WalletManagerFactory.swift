@@ -267,18 +267,6 @@ public class WalletManagerFactory {
                 //TODO: Add testnet support. Maybe https://developers.cryptoapis.io/technical-documentation/general-information/what-we-support
                 var providers = [AnyBitcoinNetworkProvider]()
                 
-                if !testnet {
-                    providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                           blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
-                                                           networkConfiguration: networkProviderConfiguration)
-                        .eraseToAnyBitcoinNetworkProvider())
-                    
-                    providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                           blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
-                                                           networkConfiguration: networkProviderConfiguration)
-                        .eraseToAnyBitcoinNetworkProvider())
-                }
-                
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .bitcoinCash,
                                                                             configuration: networkProviderConfiguration,
                                                                             apiKeys: config.blockchairApiKeys))
