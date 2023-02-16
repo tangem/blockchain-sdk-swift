@@ -63,7 +63,7 @@ struct TronTarget: TargetType {
         case .broadcastHex:
             return "/wallet/broadcasthex"
         case .tokenBalance:
-            return "/wallet/triggersmartcontract"
+            return "/wallet/triggerconstantcontract"
         case .tokenTransactionHistory(let contractAddress, _, _):
             return "/v1/contracts/\(contractAddress)/transactions"
         case .getTransactionInfoById:
