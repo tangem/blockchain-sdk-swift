@@ -35,7 +35,7 @@ public protocol EthereumTransactionProcessor {
 }
 
 @available(iOS 13.0, *)
-protocol EthereumNetworkProvider {
+public protocol EthereumNetworkProvider {
     func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error>
 }
 
