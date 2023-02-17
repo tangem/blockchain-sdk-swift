@@ -23,14 +23,15 @@ public struct Transaction {
     public internal(set) var hash: String? = nil
     public var params: TransactionParams? = nil
     
-    internal init(amount: Amount, fee: Amount,
-                  sourceAddress: String,
-                  destinationAddress: String,
-                  changeAddress: String,
-                  contractAddress: String? = nil,
-                  date: Date? = nil,
-                  status: TransactionStatus = .unconfirmed,
-                  hash: String? = nil) {
+    public init(amount: Amount,
+                fee: Amount,
+                sourceAddress: String,
+                destinationAddress: String,
+                changeAddress: String,
+                contractAddress: String? = nil,
+                date: Date? = nil,
+                status: TransactionStatus = .unconfirmed,
+                hash: String? = nil) {
         self.amount = amount
         self.fee = fee
         self.sourceAddress = sourceAddress
