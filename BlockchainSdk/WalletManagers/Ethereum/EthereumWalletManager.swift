@@ -2,8 +2,8 @@
 //  EthereumWalletManager.swift
 //  BlockchainSdk
 //
-//  Created by Sergey Balashov on 17.02.2023.
-//  Copyright © 2023 Tangem AG. All rights reserved.
+//  Created by Alexander Osokin on 13.12.2019.
+//  Copyright © 2019 Tangem AG. All rights reserved.
 //
 
 import Foundation
@@ -13,7 +13,7 @@ import TangemSdk
 import Moya
 import web3swift
 
-class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSigner, ThenProcessable {
+class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, EthereumTransactionSigner {
     var txBuilder: EthereumTransactionBuilder!
     var networkService: EthereumNetworkService!
     
@@ -24,12 +24,11 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
     
     private var gasLimit: BigUInt? = nil
     private var findTokensSubscription: AnyCancellable? = nil
+
+
+    // MARK: - EthereumTransactionSigner
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
-        let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
-        return getFee(to: destinationInfo.to, value: destinationInfo.value, data: destinationInfo.data)
-    }
-    
+    // It can't be into extension because it method overrided in OptimismWalletManager
     func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
         guard let txForSign = txBuilder.buildForSign(transaction: transaction,
                                                      nonce: txCount,
@@ -49,6 +48,14 @@ class EthereumWalletManager: BaseManager, WalletManager, EthereumTransactionSign
             return "0x\(tx.toHexString())"
         }
         .eraseToAnyPublisher()
+    }
+    
+    // MARK: - TransactionSender
+    
+    // It can't be into extension because it method overrided in OptimismWalletManager
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
+        let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
+        return getFee(to: destinationInfo.to, value: destinationInfo.value, data: destinationInfo.data)
     }
 }
 

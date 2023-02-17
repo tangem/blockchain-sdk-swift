@@ -1,5 +1,5 @@
 //
-//  EthereumWalletManagerProtocols.swift.swift
+//  EthereumWalletManagerProtocols.swift
 //  BlockchainSdk
 //
 //  Created by Alexander Osokin on 13.12.2019.
