@@ -105,15 +105,12 @@ class EthereumNetworkService: MultiNetworkProvider {
                 let fees = try self.calculateFee(gasPrice: maxGasPrice, gasLimit: maxGasLimit, decimalCount: self.decimals)
                 return EthereumFeeResponse(fees: fees, gasLimit: maxGasLimit)
             }
-            .mapError {
-                error in
-                
+            .mapError { error in
                 if let moyaError = error as? MoyaError,
                    let responseData = moyaError.response?.data,
                    let ethereumResponse = try? JSONDecoder().decode(EthereumResponse.self, from: responseData),
                    let errorMessage = ethereumResponse.error?.message,
-                   errorMessage.contains("gas required exceeds allowance", ignoreCase: true)
-                {
+                   errorMessage.contains("gas required exceeds allowance", ignoreCase: true) {
                     return ETHError.gasRequiredExceedsAllowance
                 }
                 
