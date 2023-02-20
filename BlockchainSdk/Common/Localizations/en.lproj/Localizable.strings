@@ -10,6 +10,7 @@
 "common_parse_network_response_error" = "Failed to parse network response";
 "common_send_tx_error" = "Failed to send transaction";
 "eth_balance_parse_error" = "Failed to parse the balance";
+"eth_gas_required_exceeds_allowance" = "Not enough funds for the transaction. Please top up your account.";
 "eth_tx_count_parse_error" = "Failed to parse tx count";
 "failed_to_find_transaction" = "Transaction not found in pending list";
 "failed_to_find_tx_inputs" = "Failed to find transaction inputs";

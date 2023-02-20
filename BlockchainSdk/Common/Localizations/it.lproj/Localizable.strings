@@ -10,6 +10,7 @@
 "common_parse_network_response_error" = "Impossibile analizzare la risposta di rete";
 "common_send_tx_error" = "Impossibile inviare la transazione";
 "eth_balance_parse_error" = "Impossibile analizzare il saldo";
+"eth_gas_required_exceeds_allowance" = "Not enough funds for the transaction. Please top up your account.";
 "eth_tx_count_parse_error" = "Impossibile analizzare il contatore tx";
 "failed_to_find_transaction" = "Transaction not found in pending list";
 "failed_to_find_tx_inputs" = "Failed to find transaction inputs";
