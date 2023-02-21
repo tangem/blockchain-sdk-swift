@@ -10,8 +10,20 @@ import Foundation
 
 public enum EthereumUtils {
     public static func parseEthereumDecimal(_ string: String, decimalsCount: Int) -> Decimal? {
-        guard let balanceData = asciiHexToData(string.removeHexPrefix())  else {
+        guard let data = asciiHexToData(string.removeHexPrefix()) else {
             return nil
+        }
+        
+        // Some contracts (namely vBUSD) send 32 bytes of balance plus 64 bytes of zeroes
+        let standardBalancePayloadLength = 32
+        
+        let balanceData: Data
+        if data.count > standardBalancePayloadLength,
+           data.suffix(from: standardBalancePayloadLength).allSatisfy({ $0 == 0 })
+        {
+            balanceData = data.prefix(standardBalancePayloadLength)
+        } else {
+            balanceData = data
         }
         
         let decimals = Int16(decimalsCount)
