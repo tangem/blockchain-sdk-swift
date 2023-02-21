@@ -433,7 +433,6 @@ extension Blockchain {
             } else {
                 return [
                     URL(string: "https://optimism.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://op.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
                     URL(string: "https://mainnet.optimism.io")!,
                     URL(string: "https://optimism-mainnet.public.blastapi.io")!,
                     URL(string: "https://rpc.ankr.com/optimism")!,
