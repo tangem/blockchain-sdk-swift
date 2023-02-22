@@ -25,18 +25,13 @@ public class ContractInteractor {
         self.decimals = decimals
     }
     
-    private func read(method: String, parameters: [AnyObject], completion: @escaping (Result<Any, Error>) -> Void) {
-        // Make sure to call web3 methods from a non-GUI thread because it runs requests asynchronously
-        DispatchQueue.global().async { [weak self] in
-            guard let self else { return }
-            
-            do {
-                let contract = try self.makeContract()
-                let transaction = try self.makeTransaction(from: contract, method: method, parameters: parameters, type: .read)
-                self.call(transaction: transaction, completion: completion)
-            } catch {
-                completion(.failure(error))
-            }
+    public func read(method: String, parameters: [AnyObject], completion: @escaping (Result<Any, Error>) -> Void) {
+        do {
+            let contract = try makeContract()
+            let transaction = try makeTransaction(from: contract, method: method, parameters: parameters, type: .read)
+            call(transaction: transaction, completion: completion)
+        } catch {
+            completion(.failure(error))
         }
     }
      
@@ -60,17 +55,12 @@ public class ContractInteractor {
     }
     
     public func write(method: String, parameters: [AnyObject], completion: @escaping (Result<Any, Error>) -> Void) {
-        // Make sure to call web3 methods from a non-GUI thread because it runs requests asynchronously
-        DispatchQueue.global().async { [weak self] in
-            guard let self else { return }
-            
-            do {
-                let contract = try self.makeContract()
-                let transaction = try self.makeTransaction(from: contract, method: method, parameters: parameters, type: .write)
-                self.call(transaction: transaction, completion: completion)
-            } catch {
-                completion(.failure(error))
-            }
+        do {
+            let contract = try makeContract()
+            let transaction = try makeTransaction(from: contract, method: method, parameters: parameters, type: .write)
+            call(transaction: transaction, completion: completion)
+        } catch {
+            completion(.failure(error))
         }
     }
     
@@ -122,16 +112,18 @@ public class ContractInteractor {
     private func call(transaction: ReadTransaction, completion: @escaping (Result<Any, Error>) -> Void) {
         let transactionOptions = defaultOptions
         
-        do {
-            let result = try transaction.call(transactionOptions: transactionOptions)
-            
-            guard let resultValue = result["0"] else {
-                throw ContractInteractorError.failedToGetResult
+        DispatchQueue.global().async {
+            do {
+                let result = try transaction.call(transactionOptions: transactionOptions)
+                
+                guard let resultValue = result["0"] else {
+                    throw ContractInteractorError.failedToGetResult
+                }
+                
+                completion(.success(resultValue))
+            } catch {
+                completion(.failure(error))
             }
-            
-            completion(.success(resultValue))
-        } catch {
-            completion(.failure(error))
         }
     }
 }
