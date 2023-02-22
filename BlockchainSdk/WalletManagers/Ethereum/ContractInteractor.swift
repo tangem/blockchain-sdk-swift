@@ -27,7 +27,7 @@ public class ContractInteractor {
     
     private func read(method: String, parameters: [AnyObject], completion: @escaping (Result<Any, Error>) -> Void) {
         // Make sure to call web3 methods from a non-GUI thread because it runs requests asynchronously
-        DispatchQueue.global().async { [weak self] in
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self else { return }
             
             do {
@@ -61,7 +61,7 @@ public class ContractInteractor {
     
     public func write(method: String, parameters: [AnyObject], completion: @escaping (Result<Any, Error>) -> Void) {
         // Make sure to call web3 methods from a non-GUI thread because it runs requests asynchronously
-        DispatchQueue.global().async { [weak self] in
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self else { return }
             
             do {
