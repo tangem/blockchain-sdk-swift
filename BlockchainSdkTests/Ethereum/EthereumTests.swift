@@ -99,8 +99,8 @@ class EthereumTests: XCTestCase {
         // vBUSD contract sends extra zeros
         let vBUSDHexWithExtraZeros = "0x0000000000000000000000000000000000000000000000000000005a8c504ec900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
         let vBUSDHexWithoutExtraZeros = "0x0000000000000000000000000000000000000000000000000000005a8c504ec9"
-        print(EthereumUtils.parseEthereumDecimal(vBUSDHexWithExtraZeros,    decimalsCount: 18)!.description, "0.000000388901129929")
-        print(EthereumUtils.parseEthereumDecimal(vBUSDHexWithoutExtraZeros, decimalsCount: 18)!.description, "0.000000388901129929")
+        XCTAssertEqual(EthereumUtils.parseEthereumDecimal(vBUSDHexWithExtraZeros,    decimalsCount: 18)!.description, "0.000000388901129929")
+        XCTAssertEqual(EthereumUtils.parseEthereumDecimal(vBUSDHexWithoutExtraZeros, decimalsCount: 18)!.description, "0.000000388901129929")
         
         let tooBig = "0x01234567890abcdef01234567890abcdef01234501234567890abcdef01234567890abcdef01234501234567890abcdef012345def01234501234567890abcdef012345def01234501234567890abcdef012345def01234501234567890abcdef01234567890abcdef012345"
         XCTAssertNil(EthereumUtils.parseEthereumDecimal(tooBig, decimalsCount: 18))

@@ -19,8 +19,7 @@ public enum EthereumUtils {
         
         let balanceData: Data
         if data.count > standardBalancePayloadLength,
-           data.suffix(from: standardBalancePayloadLength).allSatisfy({ $0 == 0 })
-        {
+           data.suffix(from: standardBalancePayloadLength).allSatisfy({ $0 == 0 }) {
             balanceData = data.prefix(standardBalancePayloadLength)
         } else {
             balanceData = data
