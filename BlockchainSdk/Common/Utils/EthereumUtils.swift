@@ -14,15 +14,16 @@ public enum EthereumUtils {
             return nil
         }
         
-        // Some contracts (namely vBUSD) send 32 bytes of balance plus 64 bytes of zeroes
-        let standardBalancePayloadLength = 32
+        // ERC-20 standard defines balanceOf function as returning uint256. Don't accept anything else.
+        let uint256Size = 32
         
         let balanceData: Data
-        if data.count > standardBalancePayloadLength,
-           data.suffix(from: standardBalancePayloadLength).allSatisfy({ $0 == 0 }) {
-            balanceData = data.prefix(standardBalancePayloadLength)
-        } else {
+        if data.count <= uint256Size {
             balanceData = data
+        } else if data.suffix(from: uint256Size).allSatisfy({ $0 == 0 }) {
+            balanceData = data.prefix(uint256Size)
+        } else {
+            return nil
         }
         
         let decimals = Int16(decimalsCount)

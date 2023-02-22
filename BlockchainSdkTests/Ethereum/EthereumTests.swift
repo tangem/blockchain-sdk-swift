@@ -102,6 +102,7 @@ class EthereumTests: XCTestCase {
         XCTAssertEqual(EthereumUtils.parseEthereumDecimal(vBUSDHexWithExtraZeros,    decimalsCount: 18)!.description, "0.000000388901129929")
         XCTAssertEqual(EthereumUtils.parseEthereumDecimal(vBUSDHexWithoutExtraZeros, decimalsCount: 18)!.description, "0.000000388901129929")
         
+        // This is rubbish and we don't expect to receive this but at least it should not throw exceptions
         let tooBig = "0x01234567890abcdef01234567890abcdef01234501234567890abcdef01234567890abcdef01234501234567890abcdef012345def01234501234567890abcdef012345def01234501234567890abcdef012345def01234501234567890abcdef01234567890abcdef012345"
         XCTAssertNil(EthereumUtils.parseEthereumDecimal(tooBig, decimalsCount: 18))
     }
