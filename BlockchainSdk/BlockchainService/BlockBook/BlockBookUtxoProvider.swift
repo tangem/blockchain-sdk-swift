@@ -183,6 +183,10 @@ extension BlockBookUtxoProvider: BitcoinNetworkProvider {
                     throw WalletError.empty
                 }
                 
+                if $0.result.feerate <= 0 {
+                    throw BlockchainSdkError.failedToLoadFee
+                }
+                
                 let feeRate = Decimal($0.result.feerate) * self.blockchain.decimalValue
                 
                 let min = (Decimal(0.8) * feeRate).rounded(roundingMode: .down)
