@@ -79,6 +79,6 @@ fileprivate struct BitcoinNodeEstimateSmartFeeParameters: Encodable {
     let id = "id"
     let method = "estimatesmartfee"
     let params = [
-        1000 // Number of blocks to consider
+        25 // Number of blocks that we want the transaction to be confirmed within
     ]
 }
