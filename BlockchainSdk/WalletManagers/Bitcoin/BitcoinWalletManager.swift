@@ -110,9 +110,9 @@ class BitcoinWalletManager: BaseManager, WalletManager {
     private func processFee(_ response: BitcoinFee, amount: Amount, destination: String) -> [Amount] {
         // Don't remove `.rounded` from here, intValue can sometimes go crazy
         // e.g. with the Decimal of (662701 / 3), producing 0 integer
-        var minRate = (max(response.minimalSatoshiPerByte, minimalFeePerByte).rounded(roundingMode: .down) as NSDecimalNumber).intValue
-        var normalRate = (max(response.normalSatoshiPerByte, minimalFeePerByte).rounded(roundingMode: .down) as NSDecimalNumber).intValue
-        var maxRate = (max(response.prioritySatoshiPerByte, minimalFeePerByte).rounded(roundingMode: .down) as NSDecimalNumber).intValue
+        var minRate = (max(response.minimalSatoshiPerByte, minimalFeePerByte).rounded(roundingMode: .up) as NSDecimalNumber).intValue
+        var normalRate = (max(response.normalSatoshiPerByte, minimalFeePerByte).rounded(roundingMode: .up) as NSDecimalNumber).intValue
+        var maxRate = (max(response.prioritySatoshiPerByte, minimalFeePerByte).rounded(roundingMode: .up) as NSDecimalNumber).intValue
         
         var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: false, changeScript: nil, sequence: .max)
         var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: false, changeScript: nil, sequence: .max)

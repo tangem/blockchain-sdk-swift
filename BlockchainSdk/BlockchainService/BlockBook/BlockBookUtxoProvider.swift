@@ -189,9 +189,9 @@ extension BlockBookUtxoProvider: BitcoinNetworkProvider {
                 
                 let feeRate = Decimal($0.result.feerate) * self.blockchain.decimalValue
                 
-                let min = (Decimal(0.8) * feeRate).rounded(roundingMode: .down)
-                let normal = feeRate
-                let max = (Decimal(1.2) * feeRate).rounded(roundingMode: .down)
+                let min = (Decimal(0.8) * feeRate).rounded(roundingMode: .up)
+                let normal = feeRate.rounded(roundingMode: .up)
+                let max = (Decimal(1.2) * feeRate).rounded(roundingMode: .up)
                 
                 return BitcoinFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: normal, prioritySatoshiPerByte: max)
             }
