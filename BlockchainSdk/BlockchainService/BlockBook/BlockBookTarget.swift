@@ -48,8 +48,8 @@ struct BlockBookTarget: TargetType {
         switch request {
         case .txDetails, .send, .utxo:
             return .requestPlain
-        case .fees:
-            return .requestJSONEncodable(BitcoinNodeEstimateSmartFeeParameters())
+        case .fees(let confirmationBlocks):
+            return .requestJSONEncodable(BitcoinNodeEstimateSmartFeeParameters(confirmationBlocks: confirmationBlocks))
         case .address:
             return .requestParameters(parameters: ["details": "txs"], encoding: URLEncoding.default)
         }
@@ -69,7 +69,7 @@ extension BlockBookTarget {
         case send(txHex: String)
         case txDetails(txHash: String)
         case utxo(address: String)
-        case fees
+        case fees(confirmationBlocks: Int)
     }
 }
 
@@ -78,7 +78,9 @@ fileprivate struct BitcoinNodeEstimateSmartFeeParameters: Encodable {
     let jsonrpc = "2.0"
     let id = "id"
     let method = "estimatesmartfee"
-    let params = [
-        25 // Number of blocks that we want the transaction to be confirmed within
-    ]
+    let params: [Int]
+    
+    init(confirmationBlocks: Int) {
+        self.params = [confirmationBlocks]
+    }
 }
