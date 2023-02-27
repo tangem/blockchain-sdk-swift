@@ -187,11 +187,12 @@ extension BlockBookUtxoProvider: BitcoinNetworkProvider {
                     throw BlockchainSdkError.failedToLoadFee
                 }
                 
-                let feeRate = Decimal($0.result.feerate) * self.blockchain.decimalValue
+                let bytesInKiloByte: Decimal = 1024
+                let feeRatePerByte = Decimal($0.result.feerate) * self.blockchain.decimalValue / bytesInKiloByte
                 
-                let min = (Decimal(0.8) * feeRate).rounded(roundingMode: .up)
-                let normal = feeRate.rounded(roundingMode: .up)
-                let max = (Decimal(1.2) * feeRate).rounded(roundingMode: .up)
+                let min = (Decimal(0.8) * feeRatePerByte).rounded(roundingMode: .up)
+                let normal = feeRatePerByte.rounded(roundingMode: .up)
+                let max = (Decimal(1.2) * feeRatePerByte).rounded(roundingMode: .up)
                 
                 return BitcoinFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: normal, prioritySatoshiPerByte: max)
             }
