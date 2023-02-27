@@ -128,6 +128,7 @@ public class WalletManagerFactory {
                 
                 var providers = [AnyBitcoinNetworkProvider]()
                 
+                /*
                 providers.append(BlockBookUtxoProvider(blockchain: blockchain,
                                                        blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
                                                        networkConfiguration: networkProviderConfiguration)
@@ -137,6 +138,7 @@ public class WalletManagerFactory {
                                                        blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
                                                        networkConfiguration: networkProviderConfiguration)
                     .eraseToAnyBitcoinNetworkProvider())
+                 */
                 
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .litecoin,
                                                                             configuration: networkProviderConfiguration,
@@ -161,6 +163,7 @@ public class WalletManagerFactory {
                 
                 var providers = [AnyBitcoinNetworkProvider]()
                 
+                /*
                 providers.append(BlockBookUtxoProvider(blockchain: blockchain,
                                                        blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
                                                        networkConfiguration: networkProviderConfiguration)
@@ -170,6 +173,7 @@ public class WalletManagerFactory {
                                                        blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
                                                        networkConfiguration: networkProviderConfiguration)
                     .eraseToAnyBitcoinNetworkProvider())
+                 */
                 
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .dogecoin,
                                                                             configuration: networkProviderConfiguration,
