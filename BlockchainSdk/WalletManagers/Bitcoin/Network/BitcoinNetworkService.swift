@@ -42,7 +42,10 @@ class BitcoinNetworkService: MultiNetworkProvider, BitcoinNetworkProvider {
         Publishers.MergeMany(providers.map {
             $0.getFee()
                 .retry(2)
-                .replaceError(with: BitcoinFee(minimalSatoshiPerByte: 0, normalSatoshiPerByte: 0, prioritySatoshiPerByte: 0))
+                .catch { _ in
+                    Empty()
+                        .setFailureType(to: Error.self)
+                }
                 .eraseToAnyPublisher()
         })
         .collect()
