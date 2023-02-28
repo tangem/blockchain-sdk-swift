@@ -9,7 +9,7 @@
 import Foundation
 
 class DogecoinWalletManager: BitcoinWalletManager {
-    override var minimalFee: Decimal { 1.0 }
+    override var minimalFee: Decimal { 0.01 }
     override var minimalFeePerByte: Decimal { 1 }
 }
 
