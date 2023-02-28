@@ -54,10 +54,10 @@ class DogecoinWalletManager: BitcoinWalletManager {
             return .anyFail(error: BlockchainSdkError.failedToLoadFee)
         }
         
-        let normalSatoshiFee = Decimal(integerLiteral: satoshiPerByteInteger * transactionSize) / wallet.blockchain.decimalValue
+        let minSatoshiFee = Decimal(integerLiteral: satoshiPerByteInteger * transactionSize) / wallet.blockchain.decimalValue
 
-        let minSatoshiFee = normalSatoshiFee * 0.8
-        let maxSatoshiFee = normalSatoshiFee * 1.2
+        let normalSatoshiFee = minSatoshiFee * 10
+        let maxSatoshiFee = minSatoshiFee * 100
         
         let feeAmounts = [minSatoshiFee, normalSatoshiFee, maxSatoshiFee]
             .map {
