@@ -12,15 +12,18 @@ import TangemSdk
 
 class DogecoinWalletManager: BitcoinWalletManager {
     override var minimalFee: Decimal { 0.01 }
-    override var minimalFeePerByte: Decimal { 1 }
+    override var minimalFeePerByte: Decimal {
+        let dogePerKiloByte: Decimal = 0.01
+        let bytesInKiloByte: Decimal = 1024
+        
+        return dogePerKiloByte / bytesInKiloByte
+    }
     
     override func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         // https://github.com/dogecoin/dogecoin/blob/master/doc/fee-recommendation.md
         
-        let dogePerKiloByte: Decimal = 0.01
-        let bytesInKiloByte: Decimal = 1024
-
-        let satoshiPerByte = dogePerKiloByte * wallet.blockchain.decimalValue / bytesInKiloByte
+        let satoshiPerByte = minimalFeePerByte * wallet.blockchain.decimalValue
+        
         let satoshiPerByteInteger = (satoshiPerByte.rounded(roundingMode: .up) as NSDecimalNumber).intValue
         
         let transactionSize: Int
