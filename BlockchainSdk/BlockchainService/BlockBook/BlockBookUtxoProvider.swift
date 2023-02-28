@@ -163,6 +163,7 @@ class BlockBookUtxoProvider {
                     throw BlockchainSdkError.failedToLoadFee
                 }
                 
+                // estimatesmartfee returns fee in currency per kilobyte
                 let bytesInKiloByte: Decimal = 1024
                 let feeRatePerByte = Decimal($0.result.feerate) * self.blockchain.decimalValue / bytesInKiloByte
                 
@@ -196,6 +197,8 @@ extension BlockBookUtxoProvider: BitcoinNetworkProvider {
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
+        // Number of blocks we want the transaction to be confirmed in.
+        // The lower the number the bigger the fee returned by 'estimatesmartfee'.
         let confirmationBlocks = [10, 5, 1]
         
         return Publishers.MergeMany(confirmationBlocks.map {
