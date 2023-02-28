@@ -204,7 +204,7 @@ extension BlockBookUtxoProvider: BitcoinNetworkProvider {
         .collect()
         .map { $0.sorted() }
         .tryMap { fees -> BitcoinFee in
-            guard fees.count == 3 else {
+            guard fees.count == confirmationBlocks.count else {
                 throw BlockchainSdkError.failedToLoadFee
             }
             
