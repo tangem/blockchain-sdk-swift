@@ -36,10 +36,8 @@ class DogecoinWalletManager: BitcoinWalletManager {
                 changeScript: changeScript
             )
             
-            let signer = DummySigner()
-            let signatures = try hashes.map {
-                try signer.sign(hash: $0, walletPublicKey: signer.publicKey)
-            }
+            let secpSignatureSize = 64
+            let signatures = hashes.map { _ in Data(repeating: 1, count: secpSignatureSize) }
             
             let transactionData = try txBuilder.bitcoinManager.buildForSend(
                 target: destination,
@@ -73,22 +71,5 @@ class DogecoinWalletManager: BitcoinWalletManager {
 extension DogecoinWalletManager: DustRestrictable {
     var dustValue: Amount {
         .init(with: wallet.blockchain, value: minimalFee)
-    }
-}
-
-fileprivate class DummySigner {
-    let privateKey: Data
-    let publicKey: Wallet.PublicKey
-    
-    init() {
-        let keyPair = try! Secp256k1Utils().generateKeyPair()
-        let compressedPublicKey = try! Secp256k1Key(with: keyPair.publicKey).compress()
-        self.publicKey = Wallet.PublicKey(seedKey: compressedPublicKey, derivedKey: nil, derivationPath: nil)
-        self.privateKey = keyPair.privateKey
-    }
-    
-    func sign(hash: Data, walletPublicKey: Wallet.PublicKey) throws -> Data {
-        let signature = try Secp256k1Utils().sign(hash, with: privateKey)
-        return signature
     }
 }
