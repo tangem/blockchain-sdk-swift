@@ -54,6 +54,8 @@ class DogecoinWalletManager: BitcoinWalletManager {
         
         let minSatoshiFee = Decimal(integerLiteral: satoshiPerByteInteger * transactionSize) / wallet.blockchain.decimalValue
 
+        // Minimal fee is too small, increase it several times fold to make the transaction confirm faster.
+        // It's still going to be under 1 DOGE
         let normalSatoshiFee = minSatoshiFee * 10
         let maxSatoshiFee = minSatoshiFee * 100
         
