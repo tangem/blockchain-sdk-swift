@@ -50,21 +50,24 @@ class BitcoinNetworkService: MultiNetworkProvider, BitcoinNetworkProvider {
         })
         .collect()
         .tryMap { feeList -> BitcoinFee in
-            var min: Decimal = 0
-            var norm: Decimal = 0
-            var priority: Decimal = 0
+            let min: Decimal
+            let norm: Decimal
+            let priority: Decimal
             
-            if feeList.count > 2 {
+            switch feeList.count {
+            case 0:
+                throw BlockchainSdkError.failedToLoadFee
+            case 1:
+                guard let feeItem = feeList.first else { throw BlockchainSdkError.failedToLoadFee }
+
+                min = feeItem.minimalSatoshiPerByte
+                norm = feeItem.normalSatoshiPerByte
+                priority = feeItem.prioritySatoshiPerByte
+            default:
                 let divider = Decimal(feeList.count - 1)
                 min = feeList.map { $0.minimalSatoshiPerByte }.sorted().dropFirst().reduce(0, +) / divider
                 norm = feeList.map { $0.normalSatoshiPerByte }.sorted().dropFirst().reduce(0, +) / divider
                 priority = feeList.map { $0.prioritySatoshiPerByte }.sorted().dropFirst().reduce(0, +) / divider
-            } else {
-                feeList.forEach {
-                    min = max($0.minimalSatoshiPerByte, min)
-                    norm = max($0.normalSatoshiPerByte, norm)
-                    priority = max($0.prioritySatoshiPerByte, priority)
-                }
             }
             
             guard min >= 0, norm >= 0, priority >= 0 else {
