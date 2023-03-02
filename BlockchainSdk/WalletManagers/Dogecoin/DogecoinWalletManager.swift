@@ -22,9 +22,8 @@ class DogecoinWalletManager: BitcoinWalletManager {
     override func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         // https://github.com/dogecoin/dogecoin/blob/master/doc/fee-recommendation.md
         
-        let satoshiPerByte = minimalFeePerByte * wallet.blockchain.decimalValue
-        
-        let satoshiPerByteInteger = (satoshiPerByte.rounded(roundingMode: .up) as NSDecimalNumber).intValue
+        let recommendedSatoshiPerByteDecimal = minimalFeePerByte * wallet.blockchain.decimalValue
+        let recommendedSatoshiPerByte = (recommendedSatoshiPerByteDecimal.rounded(roundingMode: .up) as NSDecimalNumber).intValue
         
         let transactionSize: Int
         do {
@@ -32,7 +31,7 @@ class DogecoinWalletManager: BitcoinWalletManager {
             let hashes = try txBuilder.bitcoinManager.buildForSign(
                 target: destination,
                 amount: amount.value,
-                feeRate: satoshiPerByteInteger,
+                feeRate: recommendedSatoshiPerByte,
                 changeScript: changeScript
             )
             
@@ -42,7 +41,7 @@ class DogecoinWalletManager: BitcoinWalletManager {
             let transactionData = try txBuilder.bitcoinManager.buildForSend(
                 target: destination,
                 amount: amount.value,
-                feeRate: satoshiPerByteInteger,
+                feeRate: recommendedSatoshiPerByte,
                 derSignatures: signatures,
                 changeScript: changeScript
             )
@@ -52,17 +51,29 @@ class DogecoinWalletManager: BitcoinWalletManager {
             return .anyFail(error: BlockchainSdkError.failedToLoadFee)
         }
         
-        let minSatoshiFee = Decimal(integerLiteral: satoshiPerByteInteger * transactionSize) / wallet.blockchain.decimalValue
+        func fee(for rate: Int) -> Decimal {
+            return Decimal(integerLiteral: rate * transactionSize) / wallet.blockchain.decimalValue
+        }
 
         // Minimal fee is too small, increase it several times fold to make the transaction confirm faster.
         // It's still going to be under 1 DOGE
-        let normalSatoshiFee = minSatoshiFee * 10
-        let maxSatoshiFee = minSatoshiFee * 100
+        let minRate = recommendedSatoshiPerByte
+        let normalRate = recommendedSatoshiPerByte * 10
+        let maxRate = recommendedSatoshiPerByte * 100
         
-        let feeAmounts = [minSatoshiFee, normalSatoshiFee, maxSatoshiFee]
+        let minFee = fee(for: minRate)
+        let normalFee = fee(for: normalRate)
+        let maxFee = fee(for: maxRate)
+
+        let feeAmounts = [minFee, normalFee, maxFee]
             .map {
                 Amount(with: wallet.blockchain, value: $0)
             }
+        
+        txBuilder.feeRates = [:]
+        txBuilder.feeRates[minFee] = minRate
+        txBuilder.feeRates[normalFee] = normalRate
+        txBuilder.feeRates[maxFee] = maxRate
         
         return Just(feeAmounts)
             .setFailureType(to: Error.self)
