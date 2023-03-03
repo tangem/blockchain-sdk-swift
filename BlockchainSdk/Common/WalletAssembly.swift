@@ -9,7 +9,7 @@
 import Foundation
 import TangemSdk
 
-typealias AssemblyWallet = WalletManager
+typealias WalletAssembly = WalletManager
 
 /// Input data for assembly wallet manager
 struct BlockchainAssemblyInput {
@@ -31,7 +31,7 @@ protocol WalletAssemblyProtocol {
     /// Blockchain assembly method
     /// - Parameter input: Input data factory
     /// - Returns: Blockchain result
-    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet
+    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly
     
 }
 

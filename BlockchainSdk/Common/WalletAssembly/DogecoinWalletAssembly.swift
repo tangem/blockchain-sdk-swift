@@ -12,7 +12,7 @@ import BitcoinCore
 
 struct DogecoinWalletAssembly: WalletAssemblyProtocol {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
         return try DogecoinWalletManager(wallet: input.wallet).then {
             let bitcoinManager = BitcoinManager(networkParams: DogecoinNetworkParams(),
                                                 walletPublicKey: input.wallet.publicKey.blockchainKey,

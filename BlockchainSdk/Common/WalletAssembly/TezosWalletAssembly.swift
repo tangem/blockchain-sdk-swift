@@ -12,7 +12,7 @@ import BitcoinCore
 
 struct TezosWalletAssembly: WalletAssemblyProtocol {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
         return try TezosWalletManager(wallet: input.wallet).then {
             $0.txBuilder = try TezosTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, curve: input.blockchain.curve)
             $0.networkService = TezosNetworkService(

@@ -13,7 +13,7 @@ import BitcoinCore
 
 struct EthereumWalletAssembly: WalletAssemblyProtocol {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
         let manager: EthereumWalletManager
         let endpoints = input.blockchain.getJsonRpcEndpoints(
             keys: EthereumApiKeys(

@@ -12,7 +12,7 @@ import stellarsdk
 
 struct StellarWalletAssembly: WalletAssemblyProtocol {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
         return StellarWalletManager(wallet: input.wallet).then {
             let url = input.blockchain.isTestnet ? "https://horizon-testnet.stellar.org" : "https://horizon.stellar.org"
             let stellarSdk = StellarSDK(withHorizonUrl: url)

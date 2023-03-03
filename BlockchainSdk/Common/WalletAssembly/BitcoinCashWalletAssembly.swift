@@ -13,7 +13,7 @@ import BitcoinCore
 
 struct BitcoinCashWalletAssembly: WalletAssemblyProtocol {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
         return try BitcoinCashWalletManager(wallet: input.wallet).then {
             let compressed = try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress()
             let bitcoinManager = BitcoinManager(networkParams: input.blockchain.isTestnet ? BitcoinCashTestNetworkParams() : BitcoinCashNetworkParams(),

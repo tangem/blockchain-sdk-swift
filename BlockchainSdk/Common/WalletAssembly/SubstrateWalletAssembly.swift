@@ -11,7 +11,7 @@ import TangemSdk
 
 struct SubstrateWalletAssembly: WalletAssemblyProtocol {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
         guard let network = PolkadotNetwork.allCases.first(where: { $0.blockchain == input.blockchain }) else {
             throw WalletError.empty
         }

@@ -12,7 +12,7 @@ import BitcoinCore
 
 struct DashWalletAssembly: WalletAssemblyProtocol {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
         try DashWalletManager(wallet: input.wallet).then {
             let compressed = try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress()
             

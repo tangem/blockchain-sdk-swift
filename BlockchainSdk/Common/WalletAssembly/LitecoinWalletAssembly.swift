@@ -12,7 +12,7 @@ import BitcoinCore
 
 struct LitecoinWalletAssembly: WalletAssemblyProtocol {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
+    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
         return try LitecoinWalletManager(wallet: input.wallet).then {
             let bitcoinManager = BitcoinManager(networkParams: LitecoinNetworkParams(),
                                                 walletPublicKey: input.wallet.publicKey.blockchainKey,
