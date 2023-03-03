@@ -22,7 +22,6 @@ public enum BlockchainSdkError: Int, LocalizedError {
     case networkProvidersNotSupportsRbf
     case wrongKey
     case wrongDerivationPath
-    case failedToCreateAddress
 	
 	public var errorDescription: String? {
 		switch self {
