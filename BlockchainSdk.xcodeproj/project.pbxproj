@@ -7,10 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2D3E7788299293200044FC92 /* SwiftProtobuf.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D3E7785299293140044FC92 /* SwiftProtobuf.xcframework */; };
-		2D3E7789299293200044FC92 /* SwiftProtobuf.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2D3E7785299293140044FC92 /* SwiftProtobuf.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		2D3E778A299293220044FC92 /* WalletCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D3E7784299293140044FC92 /* WalletCore.xcframework */; };
-		2D3E778B299293220044FC92 /* WalletCore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2D3E7784299293140044FC92 /* WalletCore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2D3E779E299293470044FC92 /* TONWalletInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E778D299293470044FC92 /* TONWalletInfo.swift */; };
 		2D3E779F299293470044FC92 /* TONTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E778E299293470044FC92 /* TONTransactionBuilder.swift */; };
 		2D3E77A1299293470044FC92 /* TONError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E7791299293470044FC92 /* TONError.swift */; };
@@ -279,8 +275,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				2D3E7789299293200044FC92 /* SwiftProtobuf.xcframework in Embed Frameworks */,
-				2D3E778B299293220044FC92 /* WalletCore.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -300,8 +294,6 @@
 
 /* Begin PBXFileReference section */
 		0C79DB7FEDD8D4029AFA208D /* Pods-BlockchainSdk.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.release.xcconfig"; sourceTree = "<group>"; };
-		2D3E7784299293140044FC92 /* WalletCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = WalletCore.xcframework; sourceTree = "<group>"; };
-		2D3E7785299293140044FC92 /* SwiftProtobuf.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = SwiftProtobuf.xcframework; sourceTree = "<group>"; };
 		2D3E778D299293470044FC92 /* TONWalletInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONWalletInfo.swift; sourceTree = "<group>"; };
 		2D3E778E299293470044FC92 /* TONTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONTransactionBuilder.swift; sourceTree = "<group>"; };
 		2D3E7791299293470044FC92 /* TONError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONError.swift; sourceTree = "<group>"; };
@@ -570,9 +562,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2D3E778A299293220044FC92 /* WalletCore.xcframework in Frameworks */,
 				88095B618D07D706BB871FE6 /* Pods_BlockchainSdk.framework in Frameworks */,
-				2D3E7788299293200044FC92 /* SwiftProtobuf.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -663,8 +653,6 @@
 			isa = PBXGroup;
 			children = (
 				5D14E4722397B80F00C15FC8 /* Info.plist */,
-				2D3E7785299293140044FC92 /* SwiftProtobuf.xcframework */,
-				2D3E7784299293140044FC92 /* WalletCore.xcframework */,
 				5D14E4702397B80F00C15FC8 /* BlockchainSdk */,
 				5D14E47B2397B80F00C15FC8 /* BlockchainSdkTests */,
 				DA59750927D744A7009F0A1F /* BlockchainSdkExample */,
