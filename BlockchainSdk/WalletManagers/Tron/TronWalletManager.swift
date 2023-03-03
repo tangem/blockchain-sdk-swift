@@ -68,7 +68,7 @@ class TronWalletManager: BaseManager, WalletManager {
             }
             .eraseToAnyPublisher()
     }
-    
+
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         let maxEnergyUsePublisher: AnyPublisher<Int, Error>
         
@@ -88,28 +88,28 @@ class TronWalletManager: BaseManager, WalletManager {
             signer: feeSigner,
             publicKey: feeSigner.walletPublicKey
         )
-        
+
         let blockchain = self.wallet.blockchain
-        
+
         return networkService.getAccountResource(for: wallet.address)
             .zip(networkService.accountExists(address: destination), transactionDataPublisher, maxEnergyUsePublisher)
             .map { (resources, destinationExists, transactionData, maxEnergyUse) -> Amount in
                 if !destinationExists && amount.type == .coin {
                     return Amount(with: blockchain, value: 1.1)
                 }
-                
+
                 let sunPerBandwidthPoint = 1000
-                
+
                 let additionalDataSize = 64
                 let transactionSizeFee = sunPerBandwidthPoint * (transactionData.count + additionalDataSize)
-                
+
                 let sunPerEnergyUnit = 280
                 let maxEnergyFee = maxEnergyUse * sunPerEnergyUnit
-                
+
                 let totalFee = transactionSizeFee + maxEnergyFee
-                
+
                 let remainingBandwidthInSun = (resources.freeNetLimit - (resources.freeNetUsed ?? 0)) * sunPerBandwidthPoint
-                
+
                 if totalFee <= remainingBandwidthInSun {
                     return .zeroCoin(for: blockchain)
                 } else {
