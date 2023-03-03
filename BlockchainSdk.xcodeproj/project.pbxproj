@@ -210,6 +210,10 @@
 		DAED921F27A150E500F188D7 /* PolkadotAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */; };
 		DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */; };
 		DAF0867027A9438C0024312E /* PolkadotNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */; };
+		DAF44836299FDEDC00036110 /* SwiftProtobuf.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAF44833299FDEC900036110 /* SwiftProtobuf.xcframework */; };
+		DAF44837299FDEDC00036110 /* SwiftProtobuf.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DAF44833299FDEC900036110 /* SwiftProtobuf.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DAF44839299FDEDD00036110 /* WalletCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAF44832299FDEC900036110 /* WalletCore.xcframework */; };
+		DAF4483A299FDEDD00036110 /* WalletCore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DAF44832299FDEC900036110 /* WalletCore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DC63F266293F243200F953EF /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC63F265293F243200F953EF /* Credentials.swift */; };
 		DC912D1628E706C400D76628 /* ContractInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC912D1528E706C400D76628 /* ContractInteractor.swift */; };
 		E90FAB5C28EED26600C6DCBE /* ContractABI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90FAB5B28EED26600C6DCBE /* ContractABI.swift */; };
@@ -260,6 +264,18 @@
 			dstSubfolderSpec = 10;
 			files = (
 				DA59751727D747CD009F0A1F /* BlockchainSdk.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DAF44838299FDEDC00036110 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				DAF44837299FDEDC00036110 /* SwiftProtobuf.xcframework in Embed Frameworks */,
+				DAF4483A299FDEDD00036110 /* WalletCore.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -498,6 +514,8 @@
 		DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotAddressService.swift; sourceTree = "<group>"; };
 		DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotWalletManager.swift; sourceTree = "<group>"; };
 		DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetworkService.swift; sourceTree = "<group>"; };
+		DAF44832299FDEC900036110 /* WalletCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = WalletCore.xcframework; path = "wallet-core-binaries-ios/WalletCore.xcframework"; sourceTree = SOURCE_ROOT; };
+		DAF44833299FDEC900036110 /* SwiftProtobuf.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SwiftProtobuf.xcframework; path = "wallet-core-binaries-ios/SwiftProtobuf.xcframework"; sourceTree = SOURCE_ROOT; };
 		DC63F265293F243200F953EF /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		DC912D1528E706C400D76628 /* ContractInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractInteractor.swift; sourceTree = "<group>"; };
 		DCE3379A28F2B7260029A6F5 /* BlockchainSdkExample.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = BlockchainSdkExample.entitlements; sourceTree = "<group>"; };
@@ -520,7 +538,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DAF44839299FDEDD00036110 /* WalletCore.xcframework in Frameworks */,
 				88095B618D07D706BB871FE6 /* Pods_BlockchainSdk.framework in Frameworks */,
+				DAF44836299FDEDC00036110 /* SwiftProtobuf.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -582,6 +602,7 @@
 		5D14E4702397B80F00C15FC8 /* BlockchainSdk */ = {
 			isa = PBXGroup;
 			children = (
+				DAF44831299FDEAC00036110 /* WalletCoreFrameworks */,
 				5D14E48B2397B87000C15FC8 /* Common */,
 				5D14E4892397B87000C15FC8 /* WalletManagers */,
 				5D4B33B923F6E9BD00C93A84 /* BlockchainService */,
@@ -1280,6 +1301,15 @@
 			path = Polkadot;
 			sourceTree = "<group>";
 		};
+		DAF44831299FDEAC00036110 /* WalletCoreFrameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DAF44833299FDEC900036110 /* SwiftProtobuf.xcframework */,
+				DAF44832299FDEC900036110 /* WalletCore.xcframework */,
+			);
+			name = WalletCoreFrameworks;
+			sourceTree = "<group>";
+		};
 		E9941AC72927845C00399DE3 /* BlockBook */ = {
 			isa = PBXGroup;
 			children = (
@@ -1344,6 +1374,7 @@
 				5D14E46A2397B80F00C15FC8 /* Sources */,
 				5D14E46B2397B80F00C15FC8 /* Frameworks */,
 				5D14E46C2397B80F00C15FC8 /* Resources */,
+				DAF44838299FDEDC00036110 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1970,7 +2001,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7C311A9913C3A9F993C89148 /* Pods-BlockchainSdk.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -1999,7 +2029,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0C79DB7FEDD8D4029AFA208D /* Pods-BlockchainSdk.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
