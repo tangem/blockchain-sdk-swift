@@ -199,7 +199,7 @@ extension BlockBookUtxoProvider: BitcoinNetworkProvider {
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
         // Number of blocks we want the transaction to be confirmed in.
         // The lower the number the bigger the fee returned by 'estimatesmartfee'.
-        let confirmationBlocks = [10, 5, 1]
+        let confirmationBlocks = [8, 4, 1]
         
         return Publishers.MergeMany(confirmationBlocks.map {
             getFeeRatePerByte(for: $0)
