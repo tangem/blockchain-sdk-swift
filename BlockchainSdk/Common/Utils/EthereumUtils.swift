@@ -10,7 +10,19 @@ import Foundation
 
 public enum EthereumUtils {
     public static func parseEthereumDecimal(_ string: String, decimalsCount: Int) -> Decimal? {
-        guard let balanceData = asciiHexToData(string.removeHexPrefix())  else {
+        guard let data = asciiHexToData(string.removeHexPrefix()) else {
+            return nil
+        }
+        
+        // ERC-20 standard defines balanceOf function as returning uint256. Don't accept anything else.
+        let uint256Size = 32
+        
+        let balanceData: Data
+        if data.count <= uint256Size {
+            balanceData = data
+        } else if data.suffix(from: uint256Size).allSatisfy({ $0 == 0 }) {
+            balanceData = data.prefix(uint256Size)
+        } else {
             return nil
         }
         

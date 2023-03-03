@@ -20,15 +20,18 @@ class EthereumNetworkService: MultiNetworkProvider {
     private let decimals: Int
     private let ethereumInfoNetworkProvider: EthereumAdditionalInfoProvider?
     private let blockchairProvider: BlockchairNetworkProvider?
+    private let transactionHistoryProvider: TransactionHistoryProvider?
     
     init(decimals: Int,
          providers: [EthereumJsonRpcProvider],
          blockcypherProvider: BlockcypherNetworkProvider?,
-         blockchairProvider: BlockchairNetworkProvider?) {
+         blockchairProvider: BlockchairNetworkProvider?,
+         transactionHistoryProvider: TransactionHistoryProvider?) {
         self.providers = providers
         self.decimals = decimals
         self.ethereumInfoNetworkProvider = blockcypherProvider
         self.blockchairProvider = blockchairProvider
+        self.transactionHistoryProvider = transactionHistoryProvider
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
@@ -55,7 +58,11 @@ class EthereumNetworkService: MultiNetworkProvider {
             .flatMap { [weak self] resp -> AnyPublisher<EthereumInfoResponse, Error> in
                 guard let self = self else { return .emptyFail }
                 
-                guard let provider = self.ethereumInfoNetworkProvider, resp.pendingTxCount > 0 else {
+                guard
+                    let provider = self.ethereumInfoNetworkProvider,
+                    resp.pendingTxCount > 0,
+                    self.transactionHistoryProvider == nil // We don't want to load pending txs if history is available
+                else {
                     return .justWithError(output: resp)
                 }
                 
@@ -65,6 +72,8 @@ class EthereumNetworkService: MultiNetworkProvider {
                         newResp.pendingTxs = ethResponse.pendingTxs
                         return newResp
                     }
+                    .replaceError(with: resp)
+                    .setFailureType(to: Error.self)
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
@@ -95,6 +104,17 @@ class EthereumNetworkService: MultiNetworkProvider {
                 
                 let fees = try self.calculateFee(gasPrice: maxGasPrice, gasLimit: maxGasLimit, decimalCount: self.decimals)
                 return EthereumFeeResponse(fees: fees, gasLimit: maxGasLimit)
+            }
+            .mapError { error in
+                if let moyaError = error as? MoyaError,
+                   let responseData = moyaError.response?.data,
+                   let ethereumResponse = try? JSONDecoder().decode(EthereumResponse.self, from: responseData),
+                   let errorMessage = ethereumResponse.error?.message,
+                   errorMessage.contains("gas required exceeds allowance", ignoreCase: true) {
+                    return ETHError.gasRequiredExceedsAllowance
+                }
+                
+                return error
             }
             .eraseToAnyPublisher()
     }
@@ -276,6 +296,16 @@ class EthereumNetworkService: MultiNetworkProvider {
             return try self.getGas(from: $0)
         }
         .eraseToAnyPublisher()
+    }
+}
+
+extension EthereumNetworkService: TransactionHistoryProvider {
+    func loadTransactionHistory(address: String) -> AnyPublisher<[TransactionHistoryRecordConvertible], Error> {
+        guard let historyProvider = transactionHistoryProvider else {
+            return Fail(error: ETHError.unsupportedFeature).eraseToAnyPublisher()
+        }
+        
+        return historyProvider.loadTransactionHistory(address: address)
     }
 }
 

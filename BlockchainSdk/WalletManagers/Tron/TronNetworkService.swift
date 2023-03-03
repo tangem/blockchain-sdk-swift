@@ -26,6 +26,25 @@ class TronNetworkService: MultiNetworkProvider {
         self.providers = providers
     }
     
+    func chainParameters() -> AnyPublisher<TronChainParameters, Error> {
+        providerPublisher {
+            $0.getChainParameters()
+                .tryMap {
+                    guard
+                        let energyFeeChainParameter = $0.chainParameter.first(where: { $0.key == "getEnergyFee" }),
+                        let energyFee = energyFeeChainParameter.value,
+                        let dynamicEnergyMaxFactorChainParameter = $0.chainParameter.first(where: { $0.key == "getDynamicEnergyMaxFactor" }),
+                        let dynamicEnergyMaxFactor = dynamicEnergyMaxFactorChainParameter.value
+                    else {
+                        throw WalletError.failedToParseNetworkResponse
+                    }
+                    
+                    return TronChainParameters(sunPerEnergyUnit: energyFee, dynamicEnergyMaxFactor: dynamicEnergyMaxFactor)
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+    
     func accountInfo(for address: String, tokens: [Token], transactionIDs: [String]) -> AnyPublisher<TronAccountInfo, Error> {
         Publishers.Zip3(
             getAccount(for: address),

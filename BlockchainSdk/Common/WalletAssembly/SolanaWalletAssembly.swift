@@ -14,7 +14,7 @@ struct SolanaWalletAssembly: WalletAssemblyProtocol {
     
     static func make(with input: BlockchainAssemblyInput) throws -> AssemblyWallet {
         return SolanaWalletManager(wallet: input.wallet).then {
-            let endpoints: [Solana_Swift.RPCEndpoint]
+            let endpoints: [RPCEndpoint]
             if input.blockchain.isTestnet {
                 endpoints = [
                     .devnetSolana,
@@ -23,12 +23,10 @@ struct SolanaWalletAssembly: WalletAssemblyProtocol {
             } else {
                 endpoints = [
                     .nowNodes(apiKey: input.blockchainConfig.nowNodesApiKey),
-                    .getBlock(apiKey: input.blockchainConfig.getBlockApiKey),
                     .quiknode(
                         apiKey: input.blockchainConfig.quickNodeSolanaCredentials.apiKey,
                         subdomain: input.blockchainConfig.quickNodeSolanaCredentials.subdomain
                     ),
-                    .ankr,
                     .mainnetBetaSolana,
                 ]
             }

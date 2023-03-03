@@ -23,6 +23,8 @@ class OptimismWalletManager: EthereumWalletManager {
         return EthereumAddress("0x420000000000000000000000000000000000000F")!.address
     }
     
+    private lazy var contractInteractor = ContractInteractor(address: self.optimismFeeAddress, abi: ContractABI().optimismLayer1GasFeeABI, rpcURL: self.rpcURL)
+    
     init(wallet: Wallet, rpcURL: URL) {
         self.rpcURL = rpcURL
         super.init(wallet: wallet)
@@ -69,13 +71,14 @@ class OptimismWalletManager: EthereumWalletManager {
     
     override func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
         let calculatedTransactionFee = transaction.fee.value - (lastLayer1FeeAmount?.value ?? 0)
-        guard let transactionWithCorrectFee = try? createTransaction(amount: transaction.amount,
+        guard var transactionWithCorrectFee = try? createTransaction(amount: transaction.amount,
                                                                      fee: Amount(with: wallet.blockchain, value: calculatedTransactionFee),
                                                                      destinationAddress: transaction.destinationAddress)
         else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
+        transactionWithCorrectFee.params = transaction.params
         return super.sign(transactionWithCorrectFee, signer: signer)
     }
 }
@@ -84,7 +87,6 @@ class OptimismWalletManager: EthereumWalletManager {
 
 extension OptimismWalletManager {
     private func getLayer1Fee(amount: Amount, destination: String, transactionHash: String) -> AnyPublisher<Amount, Error> {
-        let contractInteractor = ContractInteractor(address: self.optimismFeeAddress, abi: ContractABI().optimismLayer1GasFeeABI, rpcURL: self.rpcURL)
         let params = [transactionHash] as! [AnyObject]
         
         return contractInteractor

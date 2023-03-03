@@ -291,7 +291,7 @@ extension Blockchain {
     }
     
     //Only for Ethereum compatible blockchains
-    public func getJsonRpcEndpoints(keys: EthereumApiKeys) -> [RPCEndpoint]? {
+    public func getJsonRpcEndpoints(keys: EthereumApiKeys) -> [URL]? {
         let infuraProjectId = keys.infuraProjectId
         let nowNodesApiKey = keys.nowNodesApiKey
         let getBlockApiKey = keys.getBlockApiKey
@@ -301,156 +301,155 @@ extension Blockchain {
         case .ethereum:
             if isTestnet {
                 return [
-                    RPCEndpoint(url: URL(string: "https://eth-goerli.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://goerli.infura.io/v3/\(infuraProjectId)")!),
+                    URL(string: "https://eth-goerli.nownodes.io/\(nowNodesApiKey)")!,
+                    URL(string: "https://goerli.infura.io/v3/\(infuraProjectId)")!,
                 ]
             } else {
                 return [
-                    RPCEndpoint(url: URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://eth.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
-                    RPCEndpoint(url: URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!),
+                    URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")!,
+                    URL(string: "https://eth.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                    URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
                 ]
             }
         case .ethereumClassic:
             if isTestnet {
                 return [
-                    RPCEndpoint(url: URL(string: "https://www.ethercluster.com/kotti")!),
+                    URL(string: "https://www.ethercluster.com/kotti")!,
                 ]
             } else {
                 return [
-                    RPCEndpoint(url: URL(string: "https://etc.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
-                    RPCEndpoint(url: URL(string: "https://www.ethercluster.com/etc")!),
-                    RPCEndpoint(url: URL(string: "https://etc.etcdesktop.com")!),
-                    RPCEndpoint(url: URL(string: "https://blockscout.com/etc/mainnet/api/eth-rpc")!),
-                    RPCEndpoint(url: URL(string: "https://etc.mytokenpocket.vip")!),
-                    RPCEndpoint(url: URL(string: "https://besu.etc-network.info")!),
-                    RPCEndpoint(url: URL(string: "https://geth.etc-network.info")!),
+                    URL(string: "https://etc.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                    URL(string: "https://www.ethercluster.com/etc")!,
+                    URL(string: "https://etc.etcdesktop.com")!,
+                    URL(string: "https://blockscout.com/etc/mainnet/api/eth-rpc")!,
+                    URL(string: "https://etc.mytokenpocket.vip")!,
+                    URL(string: "https://besu.etc-network.info")!,
+                    URL(string: "https://geth.etc-network.info")!,
                 ]
             }
         case .ethereumPoW:
             if isTestnet {
                 return [
-                    RPCEndpoint(url: URL(string: "https://iceberg.ethereumpow.org")!),
+                    URL(string: "https://iceberg.ethereumpow.org")!,
                 ]
             } else {
                 return [
-                    RPCEndpoint(url: URL(string: "https://ethw.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://mainnet.ethereumpow.org")!),
+                    URL(string: "https://ethw.nownodes.io/\(nowNodesApiKey)")!,
+                    URL(string: "https://mainnet.ethereumpow.org")!,
                 ]
             }
         case .ethereumFair:
             return [
-                RPCEndpoint(url: URL(string: "https://rpc.etherfair.org")!),
+                URL(string: "https://rpc.etherfair.org")!,
             ]
         case .rsk:
             return [
-                RPCEndpoint(url: URL(string: "https://rsk.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
-                RPCEndpoint(url: URL(string: "https://public-node.rsk.co/")!),
+                URL(string: "https://rsk.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                URL(string: "https://public-node.rsk.co/")!,
             ]
         case .bsc:
             if isTestnet {
                 return [
-                    RPCEndpoint(url: URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!),
+                    URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!,
                 ]
             } else {
                 return [
-                    RPCEndpoint(url: URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://bsc.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
-                    RPCEndpoint(url: URL(string: "https://bsc-dataseed.binance.org/")!),
-                    RPCEndpoint(url: URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)/")!),
+                    URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")!,
+                    URL(string: "https://bsc.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                    URL(string: "https://bsc-dataseed.binance.org/")!,
+                    URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)/")!,
                 ]
             }
         case .polygon:
             if isTestnet {
                 return [
-                    RPCEndpoint(url: URL(string: "https://rpc-mumbai.maticvigil.com/")!),
+                    URL(string: "https://rpc-mumbai.maticvigil.com/")!,
                 ]
             } else {
                 // https://docs.polygon.technology/docs/develop/network-details/network/
                 return [
-                    RPCEndpoint(url: URL(string: "https://matic.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://matic.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
-                    RPCEndpoint(url: URL(string: "https://polygon-rpc.com")!),
-                    RPCEndpoint(url: URL(string: "https://rpc-mainnet.matic.network")!),
-                    RPCEndpoint(url: URL(string: "https://matic-mainnet.chainstacklabs.com")!),
-                    RPCEndpoint(url: URL(string: "https://rpc-mainnet.maticvigil.com")!),
-                    RPCEndpoint(url: URL(string: "https://rpc-mainnet.matic.quiknode.pro")!),
-                    RPCEndpoint(url: URL(string: "https://matic-mainnet-full-rpc.bwarelabs.com")!),
+                    URL(string: "https://matic.nownodes.io/\(nowNodesApiKey)")!,
+                    URL(string: "https://matic.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                    URL(string: "https://polygon-rpc.com")!,
+                    URL(string: "https://rpc-mainnet.matic.network")!,
+                    URL(string: "https://matic-mainnet.chainstacklabs.com")!,
+                    URL(string: "https://rpc-mainnet.maticvigil.com")!,
+                    URL(string: "https://rpc-mainnet.matic.quiknode.pro")!,
+                    URL(string: "https://matic-mainnet-full-rpc.bwarelabs.com")!,
                 ]
             }
         case .avalanche:
             if isTestnet {
                 return [
-                    RPCEndpoint(url: URL(string: "https://api.avax-test.network/ext/bc/C/rpc")!),
+                    URL(string: "https://api.avax-test.network/ext/bc/C/rpc")!,
                 ]
             } else {
                 return [
-                    RPCEndpoint(url: URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://avax.getblock.io/mainnet/ext/bc/C/rpc")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
-                    RPCEndpoint(url: URL(string: "https://api.avax.network/ext/bc/C/rpc")!),
+                    URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)/ext/bc/C/rpc")!,
+                    URL(string: "https://avax.getblock.io/mainnet/ext/bc/C/rpc?api_key=\(getBlockApiKey)")!,
+                    URL(string: "https://api.avax.network/ext/bc/C/rpc")!,
                 ]
             }
         case .fantom:
             if isTestnet {
                 return [
-                    RPCEndpoint(url: URL(string: "https://rpc.testnet.fantom.network/")!),
+                    URL(string: "https://rpc.testnet.fantom.network/")!,
                 ]
             } else {
                 return [
-                    RPCEndpoint(url: URL(string: "https://ftm.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://ftm.getblock.io/mainnet")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
-                    RPCEndpoint(url: URL(string: "https://rpc.ftm.tools/")!),
-                    RPCEndpoint(url: URL(string: "https://rpcapi.fantom.network/")!),
-                    RPCEndpoint(url: URL(string: "http://rpc.ankr.tools/ftm")!),
-                    RPCEndpoint(url: URL(string: "https://ftmrpc.ultimatenodes.io/")!),
+                    URL(string: "https://ftm.nownodes.io/\(nowNodesApiKey)")!,
+                    URL(string: "https://ftm.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                    URL(string: "https://rpc.ftm.tools/")!,
+                    URL(string: "https://rpcapi.fantom.network/")!,
+                    URL(string: "https://ftmrpc.ultimatenodes.io/")!,
+                    URL(string: "https://rpc.ankr.com/fantom")!,
                 ]
             }
         case .arbitrum(let testnet):
             if testnet {
                 return [
-                    RPCEndpoint(url: URL(string: "https://goerli-rollup.arbitrum.io/rpc")!),
+                    URL(string: "https://goerli-rollup.arbitrum.io/rpc")!,
                 ]
             } else {
                 return [
                     // https://developer.offchainlabs.com/docs/mainnet#connect-your-wallet
-                    RPCEndpoint(url: URL(string: "https://arb1.arbitrum.io/rpc")!),
-                    RPCEndpoint(url: URL(string: "https://arbitrum-mainnet.infura.io/v3/\(infuraProjectId)")!),
+                    URL(string: "https://arb1.arbitrum.io/rpc")!,
+                    URL(string: "https://arbitrum-mainnet.infura.io/v3/\(infuraProjectId)")!,
                     
                     // from wallet-core's registry.json
-                    RPCEndpoint(url: URL(string: "https://node.offchainlabs.com:8547")!),
+                    URL(string: "https://node.offchainlabs.com:8547")!,
                 ]
             }
         case .gnosis:
             return [
-                RPCEndpoint(url: URL(string: "https://gno.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
+                URL(string: "https://gno.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
                 
                 // from registry.json
-                RPCEndpoint(url: URL(string: "https://rpc.gnosischain.com")!),
+                URL(string: "https://rpc.gnosischain.com")!,
                 
                 // from chainlist.org
-                RPCEndpoint(url: URL(string: "https://gnosischain-rpc.gateway.pokt.network")!),
-                RPCEndpoint(url: URL(string: "https://rpc.ankr.com/gnosis")!),
-                RPCEndpoint(url: URL(string: "https://gnosis-mainnet.public.blastapi.io")!),
-                RPCEndpoint(url: URL(string: "https://xdai-rpc.gateway.pokt.network")!),
-                RPCEndpoint(url: URL(string: "https://xdai-archive.blockscout.com")!),
+                URL(string: "https://gnosischain-rpc.gateway.pokt.network")!,
+                URL(string: "https://gnosis-mainnet.public.blastapi.io")!,
+                URL(string: "https://xdai-rpc.gateway.pokt.network")!,
+                URL(string: "https://xdai-archive.blockscout.com")!,
+                URL(string: "https://rpc.ankr.com/gnosis")!,
             ]
         case .optimism(let testnet):
             if testnet {
                 return [
-                    RPCEndpoint(url: URL(string: "https://goerli.optimism.io")!),
+                    URL(string: "https://goerli.optimism.io")!,
                 ]
             } else {
                 return [
-                    RPCEndpoint(url: URL(string: "https://optimism.nownodes.io/\(nowNodesApiKey)")!),
-                    RPCEndpoint(url: URL(string: "https://optimism.getblock.io/mainnet/")!, apiKeyHeaderName: Constants.getBlockApiKeyHeaderName, apiKeyHeaderValue: getBlockApiKey),
-                    RPCEndpoint(url: URL(string: "https://mainnet.optimism.io")!),
-                    RPCEndpoint(url: URL(string: "https://optimism-mainnet.public.blastapi.io")!),
-                    RPCEndpoint(url: URL(string: "https://rpc.ankr.com/optimism")!),
+                    URL(string: "https://optimism.nownodes.io/\(nowNodesApiKey)")!,
+                    URL(string: "https://mainnet.optimism.io")!,
+                    URL(string: "https://optimism-mainnet.public.blastapi.io")!,
+                    URL(string: "https://rpc.ankr.com/optimism")!,
                 ]
             }
         case .saltPay:
             return [
-                RPCEndpoint(url: URL(string: "https://rpc.bicoccachain.net")!),
+                URL(string: "https://rpc.bicoccachain.net")!,
             ]
         default:
             return nil
@@ -916,6 +915,17 @@ extension Blockchain {
         case "ethereumfair": return .ethereumFair
         case "sxdai": return .saltPay
         default: return nil
+        }
+    }
+}
+
+extension Blockchain {
+    public var canLoadTransactionHistory: Bool {
+        switch self {
+        case .saltPay:
+            return true
+        default:
+            return false
         }
     }
 }

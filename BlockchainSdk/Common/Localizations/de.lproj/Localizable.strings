@@ -10,6 +10,7 @@
 "common_parse_network_response_error" = "Antwort des Netzwerks fehlgeschlagen";
 "common_send_tx_error" = "Absenden der Transaktion fehlgeschlagen";
 "eth_balance_parse_error" = "Analyse der Bilanz fehlgeschlagen";
+"eth_gas_required_exceeds_allowance" = "Not enough funds for the transaction. Please top up your account.";
 "eth_tx_count_parse_error" = "Analyse tx Berechnung fehlgeschlagen";
 "failed_to_find_transaction" = "Transaction not found in pending list";
 "failed_to_find_tx_inputs" = "Failed to find transaction inputs";

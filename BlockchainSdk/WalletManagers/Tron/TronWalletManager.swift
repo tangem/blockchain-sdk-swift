@@ -87,21 +87,26 @@ class TronWalletManager: BaseManager, WalletManager {
         )
 
         let blockchain = self.wallet.blockchain
-
-        return networkService.getAccountResource(for: wallet.address)
-            .zip(networkService.accountExists(address: destination), transactionDataPublisher, maxEnergyUsePublisher)
-            .map { (resources, destinationExists, transactionData, maxEnergyUse) -> Amount in
+        
+        return Publishers.Zip(maxEnergyUsePublisher, networkService.chainParameters())
+            .zip(networkService.accountExists(address: destination), transactionDataPublisher, networkService.getAccountResource(for: wallet.address))
+            .map { (networkParameters, destinationExists, transactionData, resources) -> Amount in
+                let (maxEnergyUse, chainParameters) = networkParameters
+                
                 if !destinationExists && amount.type == .coin {
                     return Amount(with: blockchain, value: 1.1)
                 }
 
                 let sunPerBandwidthPoint = 1000
 
+                let dynamicEnergyMaxFactorPrecision: Double = 10_000
+                let dynamicEnergyMaxFactor = Double(chainParameters.dynamicEnergyMaxFactor) / dynamicEnergyMaxFactorPrecision
+
                 let additionalDataSize = 64
                 let transactionSizeFee = sunPerBandwidthPoint * (transactionData.count + additionalDataSize)
 
-                let sunPerEnergyUnit = 280
-                let maxEnergyFee = maxEnergyUse * sunPerEnergyUnit
+                let sunPerEnergyUnit = chainParameters.sunPerEnergyUnit
+                let maxEnergyFee = Int(ceil(Double(maxEnergyUse * sunPerEnergyUnit) * (1 + dynamicEnergyMaxFactor)))
 
                 let totalFee = transactionSizeFee + maxEnergyFee
 

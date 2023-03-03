@@ -25,7 +25,7 @@ struct EthereumWalletAssembly: WalletAssemblyProtocol {
         )!
         
         if case .optimism = input.blockchain {
-            manager = OptimismWalletManager(wallet: input.wallet, rpcURL: endpoints[0].url)
+            manager = OptimismWalletManager(wallet: input.wallet, rpcURL: endpoints[0])
         } else {
             manager = EthereumWalletManager(wallet: input.wallet)
         }
@@ -33,23 +33,28 @@ struct EthereumWalletAssembly: WalletAssemblyProtocol {
         let blockcypherProvider: BlockcypherNetworkProvider?
         
         if case .ethereum = input.blockchain {
-            blockcypherProvider = providerAssembly.makeBlockcypherNetworkProvider(endpoint: .ethereum, with: input)
+            blockcypherProvider = BlockcypherNetworkProvider(
+                endpoint: .ethereum,
+                tokens: input.blockchainConfig.blockcypherTokens,
+                configuration: input.networkConfig
+            )
         } else {
             blockcypherProvider = nil
+        }
+        
+        // TODO: Move this generation into assembly.
+        var transactionHistoryProvider: TransactionHistoryProvider?
+        if input.blockchain.canLoadTransactionHistory {
+            // This should be decided by each assembly
+            transactionHistoryProvider = BlockscoutNetworkProvider(configuration: .init(credentials: input.blockchainConfig.blockscoutCredentials))
         }
         
         return try manager.then {
             let chainId = input.blockchain.chainId!
             
             let jsonRpcProviders = endpoints.map {
-                var additionalHeaders: [String: String] = [:]
-                if let apiKeyHeaderName = $0.apiKeyHeaderName, let apiKeyHeaderValue = $0.apiKeyHeaderValue {
-                    additionalHeaders[apiKeyHeaderName] = apiKeyHeaderValue
-                }
-                
                 return EthereumJsonRpcProvider(
-                    url: $0.url,
-                    additionalHeaders: additionalHeaders,
+                    url: $0,
                     configuration: input.networkConfig
                 )
             }
@@ -58,7 +63,8 @@ struct EthereumWalletAssembly: WalletAssemblyProtocol {
             $0.networkService = EthereumNetworkService(decimals: input.blockchain.decimalCount,
                                                        providers: jsonRpcProviders,
                                                        blockcypherProvider: blockcypherProvider,
-                                                       blockchairProvider: nil) //TODO: TBD Do we need the TokenFinder feature?
+                                                       blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
+                                                       transactionHistoryProvider: transactionHistoryProvider)
         }
     }
     

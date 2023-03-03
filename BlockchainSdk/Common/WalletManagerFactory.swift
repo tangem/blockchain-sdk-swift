@@ -14,10 +14,7 @@ import Solana_Swift
 
 @available(iOS 13.0, *)
 public class WalletManagerFactory {
-    
     private let config: BlockchainSdkConfig
-    
-    // MARK: - Init
     
     public init(config: BlockchainSdkConfig) {
         self.config = config
@@ -72,16 +69,10 @@ public class WalletManagerFactory {
     
     // MARK: - Private Implementation
     
-    /// Private implementation facroty creation wallet manager
-    /// - Parameters:
-    ///   - blockchain: Type of blockchain
-    ///   - publicKey: Public key wallet
-    ///   - pairPublicKey: Optional data pair public key
-    /// - Returns: WalletManager model
     private func makeWalletManager(from blockchain: Blockchain,
                            publicKey: Wallet.PublicKey,
-                           pairPublicKey: Data? = nil) throws -> WalletManager {
-        
+                           pairPublicKey: Data? = nil
+    ) throws -> WalletManager {
         return try blockchain.assembly.make(
             with: .init(
                 blockchain: blockchain,
