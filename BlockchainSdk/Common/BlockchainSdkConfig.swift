@@ -18,6 +18,7 @@ public struct BlockchainSdkConfig {
     let toncenterApiKey: String
     let quickNodeSolanaCredentials: QuickNodeCredentials
     let quickNodeBscCredentials: QuickNodeCredentials
+    let blockscoutCredentials: NetworkProviderConfiguration.Credentials
     let defaultNetworkProviderConfiguration: NetworkProviderConfiguration
     let networkProviderConfigurations: [Blockchain: NetworkProviderConfiguration]
 
@@ -31,6 +32,7 @@ public struct BlockchainSdkConfig {
         toncenterApiKey: String,
         quickNodeSolanaCredentials: QuickNodeCredentials,
         quickNodeBscCredentials: QuickNodeCredentials,
+        blockscoutCredentials: NetworkProviderConfiguration.Credentials,
         defaultNetworkProviderConfiguration: NetworkProviderConfiguration = .init(),
         networkProviderConfigurations: [Blockchain: NetworkProviderConfiguration] = [:]
     ) {
@@ -43,6 +45,7 @@ public struct BlockchainSdkConfig {
         self.toncenterApiKey = toncenterApiKey
         self.quickNodeSolanaCredentials = quickNodeSolanaCredentials
         self.quickNodeBscCredentials = quickNodeBscCredentials
+        self.blockscoutCredentials = blockscoutCredentials
         self.defaultNetworkProviderConfiguration = defaultNetworkProviderConfiguration
         self.networkProviderConfigurations = networkProviderConfigurations
     }

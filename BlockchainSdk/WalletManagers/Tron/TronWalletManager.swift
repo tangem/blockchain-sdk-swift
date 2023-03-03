@@ -71,7 +71,7 @@ class TronWalletManager: BaseManager, WalletManager {
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         let maxEnergyUsePublisher: AnyPublisher<Int, Error>
-        
+
         switch amount.type {
         case .reserve:
             return .anyFail(error: WalletError.failedToGetFee)
@@ -88,28 +88,33 @@ class TronWalletManager: BaseManager, WalletManager {
             signer: feeSigner,
             publicKey: feeSigner.walletPublicKey
         )
-        
+
         let blockchain = self.wallet.blockchain
         
-        return networkService.getAccountResource(for: wallet.address)
-            .zip(networkService.accountExists(address: destination), transactionDataPublisher, maxEnergyUsePublisher)
-            .map { (resources, destinationExists, transactionData, maxEnergyUse) -> Amount in
+        return Publishers.Zip(maxEnergyUsePublisher, networkService.chainParameters())
+            .zip(networkService.accountExists(address: destination), transactionDataPublisher, networkService.getAccountResource(for: wallet.address))
+            .map { (networkParameters, destinationExists, transactionData, resources) -> Amount in
+                let (maxEnergyUse, chainParameters) = networkParameters
+                
                 if !destinationExists && amount.type == .coin {
                     return Amount(with: blockchain, value: 1.1)
                 }
-                
+
                 let sunPerBandwidthPoint = 1000
-                
+
+                let dynamicEnergyMaxFactorPrecision: Double = 10_000
+                let dynamicEnergyMaxFactor = Double(chainParameters.dynamicEnergyMaxFactor) / dynamicEnergyMaxFactorPrecision
+
                 let additionalDataSize = 64
                 let transactionSizeFee = sunPerBandwidthPoint * (transactionData.count + additionalDataSize)
-                
-                let sunPerEnergyUnit = 280
-                let maxEnergyFee = maxEnergyUse * sunPerEnergyUnit
-                
+
+                let sunPerEnergyUnit = chainParameters.sunPerEnergyUnit
+                let maxEnergyFee = Int(ceil(Double(maxEnergyUse * sunPerEnergyUnit) * (1 + dynamicEnergyMaxFactor)))
+
                 let totalFee = transactionSizeFee + maxEnergyFee
-                
+
                 let remainingBandwidthInSun = (resources.freeNetLimit - (resources.freeNetUsed ?? 0)) * sunPerBandwidthPoint
-                
+
                 if totalFee <= remainingBandwidthInSun {
                     return .zeroCoin(for: blockchain)
                 } else {
@@ -131,7 +136,7 @@ class TronWalletManager: BaseManager, WalletManager {
                     throw WalletError.empty
                 }
                 
-                let input = try self.txBuilder.input(amount: amount, source: source, destination: destination, block: block)
+                let input = try self.txBuilder.buildforSign(amount: amount, source: source, destination: destination, block: block)
                 
                 var output: TronSigningOutput = AnySigner.signExternally(input: input, coin: .tron, signer: signer)
                 
@@ -141,7 +146,7 @@ class TronWalletManager: BaseManager, WalletManager {
                 
                 output.signature = self.unmarshal(output.signature, hash: output.id, publicKey: publicKey)
                 
-                return try self.txBuilder.transaction(amount: amount, source: source, destination: destination, input: input, output: output)
+                return try self.txBuilder.buildForSend(input: input, output: output)
             }
             .eraseToAnyPublisher()
     }

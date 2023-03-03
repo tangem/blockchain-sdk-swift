@@ -57,7 +57,7 @@ final class SolanaTests: XCTestCase {
     
     private var bag = Set<AnyCancellable>()
     
-    private let network: Solana_Swift.RPCEndpoint = .devnetSolana
+    private let network: RPCEndpoint = .devnetSolana
     private let walletPubKey = Data(hex: "B148CC30B144E8F214AE5754C753C40A9BF2A3359DB4246E03C6A2F61A82C282")
     private let address = "Cw3YcfqzRSa7xT7ecpR5E4FKDQU6aaxz5cWje366CZbf"
     private let blockchain = Blockchain.solana(testnet: false)

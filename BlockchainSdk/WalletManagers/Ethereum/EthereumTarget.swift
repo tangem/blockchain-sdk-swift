@@ -15,8 +15,6 @@ struct EthereumTarget: TargetType {
     let targetType: EthereumTargetType
     let baseURL: URL
     
-    let additionalHeaders: [String: String]
-    
     var path: String {
         return ""
     }
@@ -70,11 +68,9 @@ struct EthereumTarget: TargetType {
     }
     
     var headers: [String : String]? {
-        let standardHeaders = [
+        [
             "Content-Type": "application/json",
         ]
-        
-        return standardHeaders.merging(additionalHeaders) { current, _ in current }
     }
     
     private var ethMethod: String {

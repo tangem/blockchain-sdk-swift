@@ -13,14 +13,13 @@ import WalletCore
 
 class TronTransactionBuilder {
     private let blockchain: Blockchain
-    // Taken from 50 USDT transactions, average is 88TRX, median is 15TRX, keep it on the safe side
-    private let smartContractFeeLimit: Int64 = 40_000_000
+    private let smartContractFeeLimit: Int64 = 100_000_000
     
     init(blockchain: Blockchain) {
         self.blockchain = blockchain
     }
     
-    func input(amount: Amount, source: String, destination: String, block: TronBlock) throws -> TronSigningInput {
+    func buildforSign(amount: Amount, source: String, destination: String, block: TronBlock) throws -> TronSigningInput {
         let dummyPrivateKeyData = Data(repeating: 7, count: 32)
         let expirationInterval: Int64 = 10 * 60 * 60 * 1000
         let contract = try self.contract(amount: amount, source: source, destination: destination)
@@ -47,7 +46,7 @@ class TronTransactionBuilder {
         return input
     }
     
-    func transaction(amount: Amount, source: String, destination: String, input: TronSigningInput, output: TronSigningOutput) throws -> Data {
+    func buildForSend(input: TronSigningInput, output: TronSigningOutput) throws -> Data {
         guard let contract = try input.transaction.contractOneof?.toProtocolContract() else {
             throw WalletError.failedToBuildTx
         }

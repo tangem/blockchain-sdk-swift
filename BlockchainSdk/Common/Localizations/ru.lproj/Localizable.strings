@@ -10,6 +10,7 @@
 "common_parse_network_response_error" = "Не удалось проанализировать сетевой ответ";
 "common_send_tx_error" = "Не удалось отправить транзакцию";
 "eth_balance_parse_error" = "Не удалось определить баланс";
+"eth_gas_required_exceeds_allowance" = "Недостаточно средств для совершения транзакции. Пожалуйста, пополните свой аккаунт.";
 "eth_tx_count_parse_error" = "Не удалось определить количество транзакций";
 "failed_to_find_transaction" = "Транзакция не найдена в списке неподтвержденных";
 "failed_to_find_tx_inputs" = "Не удалось найти инпуты транзакции";
