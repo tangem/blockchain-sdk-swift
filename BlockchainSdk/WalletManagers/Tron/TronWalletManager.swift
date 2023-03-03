@@ -68,10 +68,10 @@ class TronWalletManager: BaseManager, WalletManager {
             }
             .eraseToAnyPublisher()
     }
-
+    
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         let maxEnergyUsePublisher: AnyPublisher<Int, Error>
-        
+
         switch amount.type {
         case .reserve:
             return .anyFail(error: WalletError.failedToGetFee)
