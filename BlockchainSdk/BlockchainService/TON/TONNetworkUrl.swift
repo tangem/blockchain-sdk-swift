@@ -43,6 +43,20 @@ enum TONNodeName: Int, CaseIterable {
     
 }
 
+struct TONEndpoint {
+    public let url: URL
+    
+    public let apiKeyHeaderName: String?
+    public let apiKeyHeaderValue: String?
+    
+    public init(url: URL, apiKeyHeaderName: String? = nil, apiKeyHeaderValue: String? = nil) {
+        self.url = url
+        
+        self.apiKeyHeaderName = apiKeyHeaderName
+        self.apiKeyHeaderValue = apiKeyHeaderValue
+    }
+}
+
 extension TONNodeName: Comparable {
     static func <(lhs: TONNodeName, rhs: TONNodeName) -> Bool { lhs.rawValue < rhs.rawValue }
 }
@@ -53,24 +67,24 @@ struct TONNetworkNode {
     var nodeName: TONNodeName
     var isTestnet: Bool
     
-    var endpoint: RPCEndpoint {
+    var endpoint: TONEndpoint {
         switch nodeName {
         case .toncenter:
             let url = isTestnet ? URL(string: "https://testnet.toncenter.com/api/v2/")! : URL(string: "https://toncenter.com/api/v2/")!
             
-            return RPCEndpoint(
+            return TONEndpoint(
                 url: url,
                 apiKeyHeaderName: Constants.toncenterApiKeyHeaderName,
                 apiKeyHeaderValue: apiKeyValue
             )
         case .getblock:
-            return RPCEndpoint(
+            return TONEndpoint(
                 url: URL(string: "https://ton.getblock.io/\(apiKeyValue)/mainnet")!,
                 apiKeyHeaderName: Constants.getBlockApiKeyHeaderName,
                 apiKeyHeaderValue: apiKeyValue
             )
         case .nownodes:
-            return RPCEndpoint(
+            return TONEndpoint(
                 url: URL(string: "https://ton.nownodes.io/\(apiKeyValue)")!
             )
         }
