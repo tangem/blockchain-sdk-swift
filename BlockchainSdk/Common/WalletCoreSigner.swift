@@ -11,6 +11,9 @@ import Combine
 import TangemSdk
 import WalletCore
 
+// This class implements a bridge between Tangem SDK and TrustWallet's WalletCore library
+// It is implemented with several restrictions in mind, mainly lack of compatibility between
+// C++ and Swift exceptions and the way async/await functions work
 class WalletCoreSigner: Signer {
     var publicKey: Data {
         walletPublicKey.blockchainKey
@@ -33,6 +36,10 @@ class WalletCoreSigner: Signer {
     }
     
     func sign(_ data: [Data]) -> [Data] {
+        // We need this function to freeze the current thread until the TangemSDK operation is complete.
+        // We need this because async/await concepts are not compatible between C++ and Swift.
+        // Because this function freezes the current thread make sure to call WalletCore's AnySigner from a non-GUI thread.
+        
         var signedData: [Data] = []
         
         let operation = BlockOperation { [weak self] in
