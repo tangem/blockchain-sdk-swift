@@ -11,6 +11,7 @@ import Moya
 
 struct TronTarget: TargetType {
     enum TronTargetType {
+        case getChainParameters(network: TronNetwork)
         case getAccount(address: String, network: TronNetwork)
         case getAccountResource(address: String, network: TronNetwork)
         case getNowBlock(network: TronNetwork)
@@ -30,6 +31,8 @@ struct TronTarget: TargetType {
     
     var baseURL: URL {
         switch type {
+        case .getChainParameters(let network):
+            return network.url
         case .getAccount(_, let network):
             return network.url
         case .getAccountResource(_, let network):
@@ -49,6 +52,8 @@ struct TronTarget: TargetType {
     
     var path: String {
         switch type {
+        case .getChainParameters:
+            return "/wallet/getchainparameters"
         case .getAccount:
             return "/wallet/getaccount"
         case .getAccountResource:
@@ -58,7 +63,7 @@ struct TronTarget: TargetType {
         case .broadcastHex:
             return "/wallet/broadcasthex"
         case .tokenBalance:
-            return "/wallet/triggersmartcontract"
+            return "/wallet/triggerconstantcontract"
         case .tokenTransactionHistory(let contractAddress, _, _):
             return "/v1/contracts/\(contractAddress)/transactions"
         case .getTransactionInfoById:
@@ -77,6 +82,8 @@ struct TronTarget: TargetType {
     
     var task: Task {
         switch type {
+        case .getChainParameters:
+            return .requestPlain
         case .getAccount(let address, _), .getAccountResource(let address, _):
             let request = TronGetAccountRequest(address: address, visible: true)
             return .requestJSONEncodable(request)

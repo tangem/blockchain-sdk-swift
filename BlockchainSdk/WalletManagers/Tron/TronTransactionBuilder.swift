@@ -13,8 +13,7 @@ import WalletCore
 
 class TronTransactionBuilder {
     private let blockchain: Blockchain
-    // Taken from 50 USDT transactions, average is 88TRX, median is 15TRX, keep it on the safe side
-    private let smartContractFeeLimit: Int64 = 40_000_000
+    private let smartContractFeeLimit: Int64 = 100_000_000
     
     init(blockchain: Blockchain) {
         self.blockchain = blockchain
