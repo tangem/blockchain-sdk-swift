@@ -119,6 +119,18 @@ class EthereumNetworkService: MultiNetworkProvider {
             .eraseToAnyPublisher()
     }
     
+    func getTxCount(_ address: String) -> AnyPublisher<Int, Error> {
+       providerPublisher { provider in
+           provider.getTxCount(for: address)
+               .tryMap {[weak self] in
+                   guard let self = self else { throw WalletError.empty }
+                   
+                   return try self.getTxCount(from: $0)
+               }
+               .eraseToAnyPublisher()
+       }
+   }
+    
     func getGasPrice() -> AnyPublisher<BigUInt, Error> {
         providerPublisher {
             $0.getGasPrice()
@@ -211,18 +223,6 @@ class EthereumNetworkService: MultiNetworkProvider {
                     }
                     
                     return value
-                }
-                .eraseToAnyPublisher()
-        }
-    }
-    
-    private func getTxCount(_ address: String) -> AnyPublisher<Int, Error> {
-        providerPublisher { provider in
-            provider.getTxCount(for: address)
-                .tryMap {[weak self] in
-                    guard let self = self else { throw WalletError.empty }
-                    
-                    return try self.getTxCount(from: $0)
                 }
                 .eraseToAnyPublisher()
         }
