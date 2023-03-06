@@ -1621,6 +1621,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "find . -name 'Localizable.strings' -not -path './Pods/*' -exec sort {} -o {} \\;\n";
+			showEnvVarsInLog = 0;
 		};
 		DA35AFF62996CA0600C33CA6 /* Sort localization strings */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1638,7 +1639,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "./sort-strings.sh\n";
+			shellScript = "find . -name 'Localizable.strings' -not -path './Pods/*' -exec sort {} -o {} \\;\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
