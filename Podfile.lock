@@ -50,7 +50,7 @@ PODS:
     - TweetNacl (~> 1.0.2)
   - Starscream (4.0.4)
   - stellar-ios-mac-sdk (2.2.5)
-  - SwiftCBOR (0.4.4)
+  - SwiftCBOR (0.4.5)
   - SwiftDate (6.3.1)
   - SwiftProtobuf (1.18.0)
   - SwiftyJSON (5.0.1)
@@ -163,7 +163,7 @@ SPEC CHECKSUMS:
   Solana.Swift: 81d52fee263fded11b0d4e7859863ae489fe753e
   Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
   stellar-ios-mac-sdk: a6199f37910fc6481d17f317c11ccd3fdac542a1
-  SwiftCBOR: ce5354ec8b660da2d6fc754462881119dbe1f963
+  SwiftCBOR: ac340b74d3b2cf1f8884bb748bd09875848e3873
   SwiftDate: 72d28954e8e1c6c1c0f917ccc8005e4f83c7d4b2
   SwiftProtobuf: c3c12645230d9b09c72267e0de89468c5543bd86
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e

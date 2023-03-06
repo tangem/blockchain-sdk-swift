@@ -128,6 +128,7 @@ public class WalletManagerFactory {
                 
                 var providers = [AnyBitcoinNetworkProvider]()
                 
+                /*
                 providers.append(BlockBookUtxoProvider(blockchain: blockchain,
                                                        blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
                                                        networkConfiguration: networkProviderConfiguration)
@@ -137,6 +138,7 @@ public class WalletManagerFactory {
                                                        blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
                                                        networkConfiguration: networkProviderConfiguration)
                     .eraseToAnyBitcoinNetworkProvider())
+                 */
                 
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .litecoin,
                                                                             configuration: networkProviderConfiguration,
@@ -161,6 +163,7 @@ public class WalletManagerFactory {
                 
                 var providers = [AnyBitcoinNetworkProvider]()
                 
+                /*
                 providers.append(BlockBookUtxoProvider(blockchain: blockchain,
                                                        blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
                                                        networkConfiguration: networkProviderConfiguration)
@@ -170,6 +173,7 @@ public class WalletManagerFactory {
                                                        blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
                                                        networkConfiguration: networkProviderConfiguration)
                     .eraseToAnyBitcoinNetworkProvider())
+                 */
                 
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .dogecoin,
                                                                             configuration: networkProviderConfiguration,
@@ -214,7 +218,7 @@ public class WalletManagerFactory {
             )!
             
             if case .optimism = blockchain {
-                manager = OptimismWalletManager(wallet: wallet, rpcURL: endpoints[0].url)
+                manager = OptimismWalletManager(wallet: wallet, rpcURL: endpoints[0])
             } else {
                 manager = EthereumWalletManager(wallet: wallet)
             }
@@ -231,18 +235,19 @@ public class WalletManagerFactory {
                 blockcypherProvider = nil
             }
             
+            // TODO: Move this generation into assembly.
+            var transactionHistoryProvider: TransactionHistoryProvider?
+            if blockchain.canLoadTransactionHistory {
+                // This should be decided by each assembly
+                transactionHistoryProvider = BlockscoutNetworkProvider(configuration: .init(credentials: config.blockscoutCredentials))
+            }
+            
             return try manager.then {
                 let chainId = blockchain.chainId!
                 
                 let jsonRpcProviders = endpoints.map {
-                    var additionalHeaders: [String: String] = [:]
-                    if let apiKeyHeaderName = $0.apiKeyHeaderName, let apiKeyHeaderValue = $0.apiKeyHeaderValue {
-                        additionalHeaders[apiKeyHeaderName] = apiKeyHeaderValue
-                    }
-                    
                     return EthereumJsonRpcProvider(
-                        url: $0.url,
-                        additionalHeaders: additionalHeaders,
+                        url: $0,
                         configuration: networkProviderConfiguration
                     )
                 }
@@ -251,7 +256,8 @@ public class WalletManagerFactory {
                 $0.networkService = EthereumNetworkService(decimals: blockchain.decimalCount,
                                                            providers: jsonRpcProviders,
                                                            blockcypherProvider: blockcypherProvider,
-                                                           blockchairProvider: nil) //TODO: TBD Do we need the TokenFinder feature?
+                                                           blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
+                                                           transactionHistoryProvider: transactionHistoryProvider)
             }
             
         case .bitcoinCash(let testnet):
@@ -266,18 +272,6 @@ public class WalletManagerFactory {
                 
                 //TODO: Add testnet support. Maybe https://developers.cryptoapis.io/technical-documentation/general-information/what-we-support
                 var providers = [AnyBitcoinNetworkProvider]()
-                
-                if !testnet {
-                    providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                           blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
-                                                           networkConfiguration: networkProviderConfiguration)
-                        .eraseToAnyBitcoinNetworkProvider())
-                    
-                    providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                           blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
-                                                           networkConfiguration: networkProviderConfiguration)
-                        .eraseToAnyBitcoinNetworkProvider())
-                }
                 
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .bitcoinCash,
                                                                             configuration: networkProviderConfiguration,
@@ -328,7 +322,7 @@ public class WalletManagerFactory {
             
         case .solana(let testnet):
             return SolanaWalletManager(wallet: wallet).then {
-                let endpoints: [Solana_Swift.RPCEndpoint]
+                let endpoints: [RPCEndpoint]
                 if testnet {
                     endpoints = [
                         .devnetSolana,
@@ -337,9 +331,7 @@ public class WalletManagerFactory {
                 } else {
                     endpoints = [
                         .nowNodes(apiKey: config.nowNodesApiKey),
-                        .getBlock(apiKey: config.getBlockApiKey),
                         .quiknode(apiKey: config.quickNodeSolanaCredentials.apiKey, subdomain: config.quickNodeSolanaCredentials.subdomain),
-                        .ankr,
                         .mainnetBetaSolana,
                     ]
                 }
