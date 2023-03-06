@@ -34,6 +34,7 @@ Use BlockchainSdk for Tangem wallet integration
 
 
   s.resource_bundles = { 'BlockchainSdk' => ['BlockchainSdk/Common/Localizations/*.lproj/*.strings']}
+  s.vendored_frameworks = 'wallet-core-binaries-ios/SwiftProtobuf.xcframework', 'wallet-core-binaries-ios/WalletCore.xcframework'
 
   s.exclude_files = 'BlockchainSdk/WalletManagers/XRP/XRPKit/README.md', 
 		    'BlockchainSdk/WalletManagers/XRP/XRPKit/LICENSE',
