@@ -57,7 +57,6 @@ Use BlockchainSdk for Tangem wallet integration
   s.dependency 'Solana.Swift'
   s.dependency 'ScaleCodec'
 
-  s.dependency = 'SwiftProtobuf.xcframework'
-  s.dependency = 'WalletCore.xcframework'
+  s.vendored_frameworks = '**/wallet-core-binaries-ios/SwiftProtobuf.xcframework', '**/wallet-core-binaries-ios/WalletCore.xcframework'
 
 end
