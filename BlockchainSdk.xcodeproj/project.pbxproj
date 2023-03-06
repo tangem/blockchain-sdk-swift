@@ -1620,7 +1620,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "./sort-strings.sh\n";
+			shellScript = "find . -name 'Localizable.strings' -not -path './Pods/*' -exec sort {} -o {} \\;\n";
 		};
 		DA35AFF62996CA0600C33CA6 /* Sort localization strings */ = {
 			isa = PBXShellScriptBuildPhase;
