@@ -65,6 +65,10 @@ extension EthereumWalletManager: EthereumNetworkProvider {
     func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error> {
         networkService.getTokensBalance(address, tokens: tokens)
     }
+    
+    func getTxCount(_ address: String) -> AnyPublisher<Int, Error> {
+        networkService.getTxCount(address)
+    }
 }
 
 // MARK: - WalletManager
