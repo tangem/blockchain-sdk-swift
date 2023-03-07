@@ -41,6 +41,7 @@ public enum Blockchain: Equatable, Hashable {
     case gnosis
     case optimism(testnet: Bool)
     case saltPay
+    case kaspa
     
     public var isTestnet: Bool {
         switch self {
@@ -84,6 +85,8 @@ public enum Blockchain: Equatable, Hashable {
             return false
         case .saltPay:
             return false
+        case .kaspa:
+            return false
         }
     }
     
@@ -102,7 +105,7 @@ public enum Blockchain: Equatable, Hashable {
     
     public var decimalCount: Int {
         switch self {
-        case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash:
+        case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash, .kaspa:
             return 8
         case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay:
             return 18
@@ -171,6 +174,8 @@ public enum Blockchain: Equatable, Hashable {
             return "ETHW"
         case .ethereumFair:
             return "ETF"
+        case .kaspa:
+            return "KAS"
         }
     }
     
@@ -521,6 +526,7 @@ extension Blockchain {
         case .dash: return 5
         case .gnosis: return 700
         case .optimism: return 614
+        case .kaspa: return 111111
         }
     }
     
@@ -580,6 +586,8 @@ extension Blockchain {
             return BitcoinLegacyAddressService(
                 networkParams: isTestnet ?  DashTestNetworkParams() : DashMainNetworkParams()
             )
+        case .kaspa:
+            return KaspaAddressService()
         }
     }
 }
@@ -649,6 +657,7 @@ extension Blockchain: Codable {
         case .ethereumPoW: return "ethereum-pow-iou"
         case .ethereumFair: return "ethereumfair"
         case .saltPay: return "sxdai"
+        case .kaspa: return "kaspa"
         }
     }
     
@@ -699,6 +708,7 @@ extension Blockchain: Codable {
         case "ethereum-pow-iou": self = .ethereumPoW(testnet: isTestnet)
         case "ethereumfair": self = .ethereumFair
         case "sxdai": self = .saltPay
+        case "kaspa": self = .kaspa
         default: throw BlockchainSdkError.decodingFailed
         }
     }
@@ -758,6 +768,8 @@ extension Blockchain {
             // Or another one https://testnet-faucet.dash.org/ - by Dash Core Group
         case .optimism:
             return URL(string: "https://optimismfaucet.xyz")! //another one https://faucet.paradigm.xyz
+        case .kaspa:
+            return URL(string: "https://faucet.kaspanet.io")!
         default:
             return nil
         }
@@ -858,6 +870,8 @@ extension Blockchain {
             return URL(string: "https://optimistic.etherscan.io/address/\(address)")!
         case .saltPay:
             return URL(string: "https://blockscout.bicoccachain.net/address/\(address)")!
+        case .kaspa:
+            return URL(string: "https://explorer.kaspa.org/addresses/\(address)")!
         }
     }
 }

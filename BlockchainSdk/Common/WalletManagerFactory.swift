@@ -372,6 +372,8 @@ public class WalletManagerFactory {
             }
         case .dash(let testnet):
             return try makeDashWalletManager(testnet: testnet, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
+        case .kaspa:
+            return try makeDashWalletManager(testnet: false, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
         }
     }
     
