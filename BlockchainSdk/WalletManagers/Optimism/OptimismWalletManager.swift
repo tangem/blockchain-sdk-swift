@@ -13,20 +13,11 @@ import Moya
 import web3swift
 
 class OptimismWalletManager: EthereumWalletManager {
-    let rpcURL: URL
-    
-    private var gasLimit: BigUInt? = nil
-    private let layer1FeeContractMethodName: String = "getL1Fee"
     private var lastLayer1FeeAmount: Amount?
-    
-    private var optimismFeeAddress: String {
-        return EthereumAddress("0x420000000000000000000000000000000000000F")!.address
-    }
-    
-    private lazy var contractInteractor = ContractInteractor(address: self.optimismFeeAddress, abi: ContractABI().optimismLayer1GasFeeABI, rpcURL: self.rpcURL)
+    private let contractInteractor: OptimismContractInteractor
     
     init(wallet: Wallet, rpcURL: URL) {
-        self.rpcURL = rpcURL
+        self.contractInteractor = OptimismContractInteractor(rpcURL: rpcURL)
         super.init(wallet: wallet)
     }
     
@@ -87,10 +78,8 @@ class OptimismWalletManager: EthereumWalletManager {
 
 extension OptimismWalletManager {
     private func getLayer1Fee(amount: Amount, destination: String, transactionHash: String) -> AnyPublisher<Amount, Error> {
-        let params = [transactionHash] as! [AnyObject]
-        
-        return contractInteractor
-            .read(method: self.layer1FeeContractMethodName, parameters: params)
+        contractInteractor
+            .read(method: .getL1Fee(data: transactionHash))
             .tryMap { response in
                 if let bigUIntFee = BigUInt("\(response)"),
                    let fee = Web3.Utils.formatToEthereumUnits(bigUIntFee, toUnits: .eth, decimals: 18, decimalSeparator: ".", fallbackToScientific: false),
