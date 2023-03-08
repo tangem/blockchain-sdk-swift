@@ -46,17 +46,27 @@ class EthereumTransactionBuilder {
             return nil
         }
         
+
         
-        guard let transaction = EthereumTransaction(amount: transaction.amount.type == .coin ? amountValue : BigUInt.zero,
-                                                    fee: feeValue,
-                                                    targetAddress: targetAddr,
-                                                    nonce: nonceValue,
-                                                    gasLimit: gasLimit,
-                                                    data: data,
-                                                    ignoreCheckSum: transaction.amount.type != .coin,
-                                                    network: web3Network) else {
+        guard let ethAddress = EthereumAddress(targetAddr,
+                                               type: .normal,
+                                               ignoreChecksum: transaction.amount.type != .coin,
+                                               network: web3Network) else {
             return nil
         }
+        
+        
+        let gasPrice = params?.gasPrice ?? feeValue / gasLimit
+        
+        let transaction = EthereumTransaction(nonce: nonceValue,
+                                              gasPrice: gasPrice,
+                                              gasLimit: gasLimit,
+                                              to: ethAddress,
+                                              value: transaction.amount.type == .coin ? amountValue : .zero,
+                                              data: data,
+                                              v: 0,
+                                              r: 0,
+                                              s: 0)
         
         guard let hashForSign = transaction.hashForSignature(chainID: chainId) else {
             return nil

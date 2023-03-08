@@ -13,7 +13,7 @@ import TangemSdk
 import Moya
 import web3swift
 
-class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, EthereumTransactionSigner, EthereumGasLoader {
+class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, EthereumTransactionSigner {
     var txBuilder: EthereumTransactionBuilder!
     var networkService: EthereumNetworkService!
     
@@ -50,16 +50,17 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Ethere
         .eraseToAnyPublisher()
     }
     
-    // MARK: - TransactionSender
+    // MARK: - EthereumTransactionProcessor
     
     // It can't be into extension because it method overrided in OptimismWalletManager
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
-        let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
-        return getFee(to: destinationInfo.to, value: destinationInfo.value, data: destinationInfo.data)
+    func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error> {
+        getFee(to: to, value: amount?.encodedForSend, data: data)
     }
-    
-    // MARK: - EthereumGasLoader
-    
+}
+
+// MARK: - EthereumGasLoader
+
+extension EthereumWalletManager: EthereumGasLoader {
     func getGasPrice() -> AnyPublisher<BigUInt, Error> {
         networkService.getGasPrice()
     }
@@ -177,6 +178,11 @@ extension EthereumWalletManager {
 extension EthereumWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
+        let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
+        return getFee(to: destinationInfo.to, value: destinationInfo.value, data: destinationInfo.data)
+    }
+    
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         sign(transaction, signer: signer)
             .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
@@ -191,6 +197,20 @@ extension EthereumWalletManager: TransactionSender {
                 .mapError { SendTxError(error: $0, tx: tx) }
                 .eraseToAnyPublisher() ?? .emptyFail
             }
+            .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - EthereumGasLoader
+
+extension EthereumWalletManager: EthereumGasLoader {
+    func getGasPrice() -> AnyPublisher<BigUInt, Error> {
+        networkService.getGasPrice()
+    }
+    
+    func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
+        return networkService
+            .getGasLimit(to: to, from: from, value: value, data: data)
             .eraseToAnyPublisher()
     }
 }
@@ -269,10 +289,6 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
         }
         
         return .justWithError(output: "0x\(tx.toHexString())")
-    }
-    
-    func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error> {
-        getFee(to: to, value: amount?.encodedForSend, data: data)
     }
     
     func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error> {

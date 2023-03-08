@@ -250,6 +250,7 @@
 		EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */; };
 		EF9F9086299F88D1006F638F /* EthereumWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9F9085299F88D1006F638F /* EthereumWalletManager.swift */; };
 		EF9F9088299F8B70006F638F /* ETHError.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9F9087299F8B70006F638F /* ETHError.swift */; };
+		EFB0AB0F29C072910026F7F7 /* OptimismGasLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB0AB0E29C072910026F7F7 /* OptimismGasLoader.swift */; };
 		EFBA17FE2988623F00C23955 /* TransactionSendResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */; };
 		EFF5BA8429B881440070694A /* OptimismContractInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF5BA8329B881440070694A /* OptimismContractInteractor.swift */; };
 /* End PBXBuildFile section */
@@ -548,6 +549,7 @@
 		EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashMainNetworkParams.swift; sourceTree = "<group>"; };
 		EF9F9085299F88D1006F638F /* EthereumWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumWalletManager.swift; sourceTree = "<group>"; };
 		EF9F9087299F8B70006F638F /* ETHError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ETHError.swift; sourceTree = "<group>"; };
+		EFB0AB0E29C072910026F7F7 /* OptimismGasLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismGasLoader.swift; sourceTree = "<group>"; };
 		EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSendResult.swift; sourceTree = "<group>"; };
 		EFF5BA8329B881440070694A /* OptimismContractInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismContractInteractor.swift; sourceTree = "<group>"; };
 		EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashTestNetworkParams.swift; sourceTree = "<group>"; };
@@ -1401,6 +1403,7 @@
 			children = (
 				E9EECB5228E9F50600899D6C /* OptimismWalletManager.swift */,
 				EFF5BA8329B881440070694A /* OptimismContractInteractor.swift */,
+				EFB0AB0E29C072910026F7F7 /* OptimismGasLoader.swift */,
 			);
 			path = Optimism;
 			sourceTree = "<group>";
@@ -1748,6 +1751,7 @@
 				5D7D243B25136254001B9A4F /* URandom.swift in Sources */,
 				DA2E76FC29769BDD001FF957 /* XpubError.swift in Sources */,
 				B06AFAEF261496E600E7AAB0 /* CardanoAddressUtils.swift in Sources */,
+				EFB0AB0F29C072910026F7F7 /* OptimismGasLoader.swift in Sources */,
 				B05F1E64299BD23500E27E32 /* TransactionHistoryLoader.swift in Sources */,
 				DA346451279A802E00E77B1D /* SolanaSdk+.swift in Sources */,
 				5D88C809256BCD6C00020028 /* XRPTransactionParams.swift in Sources */,
