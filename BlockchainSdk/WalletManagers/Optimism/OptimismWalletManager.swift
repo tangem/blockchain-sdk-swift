@@ -22,7 +22,7 @@ class OptimismWalletManager: EthereumWalletManager {
     }
     
     override func getGasPrice() -> AnyPublisher<BigUInt, Error> {
-        Publishers.CombineLatest(super.getGasPrice(), getLayer1GasPrice())
+        Publishers.CombineLatest(super.getGasPrice().print("getGasPrice"), getLayer1GasPrice().print("getGasPriceL1"))
             .map(+)
             .eraseToAnyPublisher()
     }
@@ -32,16 +32,12 @@ class OptimismWalletManager: EthereumWalletManager {
             return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
         }
         
-        return contractInteractor
-            .read(method: .getL1GasUsed(data: data))
-            .tryMap { response in
-                if let bigUIntPrice = BigUInt("\(response)") {
-                    return bigUIntPrice + 2100
-                }
-                
-                throw BlockchainSdkError.failedToLoadFee
-            }
-            .eraseToAnyPublisher()
+        return Publishers.CombineLatest(
+            super.getGasLimit(to: to, from: from, value: value, data: data).print("getGasLimit"),
+            getLayer1GasLimit(data: data).print("getGasLimitL1")
+        )
+        .map(+)
+        .eraseToAnyPublisher()
     }
     
     override func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
@@ -103,6 +99,23 @@ extension OptimismWalletManager {
     private func getLayer1GasPrice() -> AnyPublisher<BigUInt, Error> {
         contractInteractor
             .read(method: .l1BaseFee)
+            .tryMap { response in
+                if let bigUIntPrice = BigUInt("\(response)") {
+                    return bigUIntPrice
+                }
+                
+                throw BlockchainSdkError.failedToLoadFee
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func getLayer1GasLimit(data: String?) -> AnyPublisher<BigUInt, Error> {
+        guard let data = data else {
+            return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
+        }
+        
+        return contractInteractor
+            .read(method: .getL1GasUsed(data: data))
             .tryMap { response in
                 if let bigUIntPrice = BigUInt("\(response)") {
                     return bigUIntPrice
