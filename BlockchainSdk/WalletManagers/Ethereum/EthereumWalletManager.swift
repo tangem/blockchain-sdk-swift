@@ -292,9 +292,15 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
             .eraseToAnyPublisher()
     }
 
-    func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<Decimal?, Error> {
+    func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<Decimal, Error> {
         networkService.getAllowance(from: from, to: to, contractAddress: contractAddress)
-            .map { EthereumUtils.parseEthereumDecimal($0, decimalsCount: 0) }
+            .tryMap { response in
+                if let allowance = EthereumUtils.parseEthereumDecimal(response, decimalsCount: 0) {
+                    return allowance
+                }
+
+                throw ETHError.failedToParseAllowance
+            }
             .eraseToAnyPublisher()
     }
 }

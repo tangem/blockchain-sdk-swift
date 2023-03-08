@@ -9,7 +9,9 @@
 "common_fee_error" = "獲取費用失敗";
 "common_parse_network_response_error" = "無法解析網絡回應";
 "common_send_tx_error" = "發送交易失敗";
+"eth_allowance_parse_error" = "Failed to parse the allowance";
 "eth_balance_parse_error" = "解析餘額失敗";
+"eth_gas_required_exceeds_allowance" = "沒有足夠的資金進行交易。請先入金";
 "eth_tx_count_parse_error" = "無法解析 tx 計數";
 "failed_to_find_transaction" = "在待定列表中找不到交易";
 "failed_to_find_tx_inputs" = "找不到交易輸入";

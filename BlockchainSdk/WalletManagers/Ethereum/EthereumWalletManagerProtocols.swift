@@ -31,7 +31,7 @@ public protocol EthereumTransactionProcessor {
     func buildForSend(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
     func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error>
     func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
-    func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<Decimal?, Error>
+    func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<Decimal, Error>
 }
 
 @available(iOS 13.0, *)
