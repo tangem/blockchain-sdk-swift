@@ -21,6 +21,29 @@ class OptimismWalletManager: EthereumWalletManager {
         super.init(wallet: wallet)
     }
     
+    override func getGasPrice() -> AnyPublisher<BigUInt, Error> {
+        Publishers.CombineLatest(super.getGasPrice(), getLayer1GasPrice())
+            .map(+)
+            .eraseToAnyPublisher()
+    }
+    
+    override func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
+        guard let data = data else {
+            return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
+        }
+        
+        return contractInteractor
+            .read(method: .getL1GasUsed(data: data))
+            .tryMap { response in
+                if let bigUIntPrice = BigUInt("\(response)") {
+                    return bigUIntPrice + 2100
+                }
+                
+                throw BlockchainSdkError.failedToLoadFee
+            }
+            .eraseToAnyPublisher()
+    }
+    
     override func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         lastLayer1FeeAmount = nil
         
@@ -77,6 +100,19 @@ class OptimismWalletManager: EthereumWalletManager {
 //MARK: - Private
 
 extension OptimismWalletManager {
+    private func getLayer1GasPrice() -> AnyPublisher<BigUInt, Error> {
+        contractInteractor
+            .read(method: .l1BaseFee)
+            .tryMap { response in
+                if let bigUIntPrice = BigUInt("\(response)") {
+                    return bigUIntPrice
+                }
+                
+                throw BlockchainSdkError.failedToLoadFee
+            }
+            .eraseToAnyPublisher()
+    }
+    
     private func getLayer1Fee(amount: Amount, destination: String, transactionHash: String) -> AnyPublisher<Amount, Error> {
         contractInteractor
             .read(method: .getL1Fee(data: transactionHash))

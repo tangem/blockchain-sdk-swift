@@ -31,8 +31,13 @@ struct OptimismContractInteractor {
 
 extension OptimismContractInteractor {
     enum ContractMethod {
+        /// Return a value which equal result the `getL1GasUsed` multiplied on `l1BaseFee`
         case getL1Fee(data: String)
+
+        /// Like the gasLimit related the transaction data size
         case getL1GasUsed(data: String)
+        
+        /// Like the gasPrice
         case l1BaseFee
         
         var name: String {
