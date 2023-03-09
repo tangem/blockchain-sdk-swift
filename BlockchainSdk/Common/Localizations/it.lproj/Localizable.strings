@@ -9,7 +9,6 @@
 "common_fee_error" = "Impossibile ottenere la commissione";
 "common_parse_network_response_error" = "Impossibile analizzare la risposta di rete";
 "common_send_tx_error" = "Impossibile inviare la transazione";
-"eth_allowance_parse_error" = "Failed to parse the allowance";
 "eth_balance_parse_error" = "Impossibile analizzare il saldo";
 "eth_gas_required_exceeds_allowance" = "Not enough funds for the transaction. Please top up your account.";
 "eth_tx_count_parse_error" = "Impossibile analizzare il contatore tx";
