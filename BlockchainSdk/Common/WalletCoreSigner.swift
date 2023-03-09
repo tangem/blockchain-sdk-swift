@@ -5,7 +5,6 @@
 //  Created by Andrey Chukavin on 03.02.2023.
 //  Copyright © 2023 Tangem AG. All rights reserved.
 //
-
 import Combine
 
 import TangemSdk
@@ -18,6 +17,8 @@ class WalletCoreSigner: Signer {
     var publicKey: Data {
         walletPublicKey.blockchainKey
     }
+    
+    private let signQueue = DispatchQueue(label: "com.signer.queue", qos: .userInitiated)
     
     private(set) var error: Error?
     
@@ -62,8 +63,10 @@ class WalletCoreSigner: Signer {
             group.wait()
         }
         
-        operation.start()
-        operation.waitUntilFinished()
+        signQueue.sync {
+            operation.start()
+            operation.waitUntilFinished()
+        }
         
         return signedData
     }
