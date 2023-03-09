@@ -356,24 +356,18 @@ public class WalletManagerFactory {
         case .tron(let testnet):
             return TronWalletManager(wallet: wallet).then {
                 let network: TronNetwork = testnet ? .nile : .mainnet
-                var providers: [TronJsonRpcProvider] = [
+                let providers = [
                     TronJsonRpcProvider(
                         network: network,
                         tronGridApiKey: nil,
                         configuration: networkProviderConfiguration
                     ),
+                    TronJsonRpcProvider(
+                        network: network,
+                        tronGridApiKey: config.tronGridApiKey,
+                        configuration: networkProviderConfiguration
+                    ),
                 ]
-                
-                if !config.tronGridApiKey.isEmpty {
-                    providers.append(
-                        TronJsonRpcProvider(
-                            network: network,
-                            tronGridApiKey: config.tronGridApiKey,
-                            configuration: networkProviderConfiguration
-                        )
-                    )
-                }
-                
                 $0.networkService = TronNetworkService(isTestnet: testnet, providers: providers)
                 $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
             }
