@@ -60,6 +60,7 @@ post_install do |installer|
       config.build_settings['DEAD_CODE_STRIPPING'] = 'YES'
   end
 
+  # Need for use for TangemWalletCore in tangem-app-ios
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
