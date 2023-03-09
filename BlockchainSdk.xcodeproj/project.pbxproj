@@ -41,6 +41,7 @@
 		2D4C1EB229B2834B005E8AC0 /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4C1E9629B2834B005E8AC0 /* Wallet.swift */; };
 		2D4C1EB329B2834B005E8AC0 /* WalletManagerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4C1E9729B2834B005E8AC0 /* WalletManagerFactory.swift */; };
 		2D4C1EB429B2834B005E8AC0 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2D4C1E9929B2834B005E8AC0 /* Localizable.strings */; };
+		2D9A918829BA760E00476EA6 /* TronTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918729BA760E00476EA6 /* TronTests.swift */; };
 		5D01BCE2243F7F7E0048D1BA /* XrpTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D01BCE1243F7F7E0048D1BA /* XrpTarget.swift */; };
 		5D03D2D0253DE61B009A8A9F /* TezosAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D03D2CF253DE61B009A8A9F /* TezosAddressService.swift */; };
 		5D0906C227DBB7A10053B2CD /* BitcoinCashNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0906C127DBB7A10053B2CD /* BitcoinCashNetworkParams.swift */; };
@@ -339,6 +340,7 @@
 		2D4C1E9D29B2834B005E8AC0 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		2D4C1E9E29B2834B005E8AC0 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		2D4C1E9F29B2834B005E8AC0 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2D9A918729BA760E00476EA6 /* TronTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TronTests.swift; sourceTree = "<group>"; };
 		3452E77A600B278568F13FA9 /* Pods-BlockchainSdkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.release.xcconfig"; sourceTree = "<group>"; };
 		556382E16FB9B2894A77374E /* Pods-BlockchainSdkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.debug.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.debug.xcconfig"; sourceTree = "<group>"; };
 		5D006ACC239950F9008BA04D /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
@@ -751,6 +753,14 @@
 			path = Localizations;
 			sourceTree = "<group>";
 		};
+		2D9A918629BA760E00476EA6 /* Tron */ = {
+			isa = PBXGroup;
+			children = (
+				2D9A918729BA760E00476EA6 /* TronTests.swift */,
+			);
+			path = Tron;
+			sourceTree = "<group>";
+		};
 		5D01BCE0243F7F6F0048D1BA /* XRP */ = {
 			isa = PBXGroup;
 			children = (
@@ -800,6 +810,7 @@
 		5D14E47B2397B80F00C15FC8 /* BlockchainSdkTests */ = {
 			isa = PBXGroup;
 			children = (
+				5D14E47E2397B80F00C15FC8 /* Info.plist */,
 				B00DEAC728FEE5E00077CD19 /* Bitcoin */,
 				B00DEACC28FEE6070077CD19 /* Common */,
 				B00DEAC828FEE5E90077CD19 /* Ethereum */,
@@ -808,7 +819,7 @@
 				B00DEAC628FEE5D20077CD19 /* Polkadot */,
 				B00DEAC528FEE5C60077CD19 /* Solana */,
 				B00DEAC928FEE5F40077CD19 /* Stellar */,
-				5D14E47E2397B80F00C15FC8 /* Info.plist */,
+				2D9A918629BA760E00476EA6 /* Tron */,
 			);
 			path = BlockchainSdkTests;
 			sourceTree = "<group>";
@@ -2024,6 +2035,7 @@
 				EF0DA78828523FAC0081092A /* BitcoinTests.swift in Sources */,
 				EF0DA78428523FAC0081092A /* EthereumTests.swift in Sources */,
 				EF0DA78A28523FAC0081092A /* PolkadotTests.swift in Sources */,
+				2D9A918829BA760E00476EA6 /* TronTests.swift in Sources */,
 				EF0DA78328523FAC0081092A /* AddressTests.swift in Sources */,
 				EF0DA78528523FAC0081092A /* BlockchainSdkTests.swift in Sources */,
 				B00DEAD3290008910077CD19 /* SolanaTests.swift in Sources */,
