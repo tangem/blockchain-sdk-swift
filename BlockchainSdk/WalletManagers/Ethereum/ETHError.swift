@@ -12,6 +12,7 @@ public enum ETHError: Error, LocalizedError, DetailedError {
     case failedToParseTxCount
     case failedToParseBalance(value: String, address: String, decimals: Int)
     case failedToParseGasLimit
+    case failedToParseAllowance
     case gasRequiredExceedsAllowance
     case unsupportedFeature
     
@@ -21,8 +22,10 @@ public enum ETHError: Error, LocalizedError, DetailedError {
             return "eth_tx_count_parse_error".localized
         case .failedToParseBalance:
             return "eth_balance_parse_error".localized
-        case .failedToParseGasLimit: //TODO: refactor
+        case .failedToParseGasLimit: // TODO: refactor
             return "failedToParseGasLimit"
+        case .failedToParseAllowance:
+            return "failedToParseAllowance"
         case .gasRequiredExceedsAllowance:
             return "eth_gas_required_exceeds_allowance".localized
         case .unsupportedFeature:
