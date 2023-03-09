@@ -232,10 +232,6 @@
 		DAED921F27A150E500F188D7 /* PolkadotAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */; };
 		DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */; };
 		DAF0867027A9438C0024312E /* PolkadotNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */; };
-		DAF44836299FDEDC00036110 /* SwiftProtobuf.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAF44833299FDEC900036110 /* SwiftProtobuf.xcframework */; };
-		DAF44837299FDEDC00036110 /* SwiftProtobuf.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DAF44833299FDEC900036110 /* SwiftProtobuf.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		DAF44839299FDEDD00036110 /* WalletCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAF44832299FDEC900036110 /* WalletCore.xcframework */; };
-		DAF4483A299FDEDD00036110 /* WalletCore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DAF44832299FDEC900036110 /* WalletCore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DC63F266293F243200F953EF /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC63F265293F243200F953EF /* Credentials.swift */; };
 		DC912D1628E706C400D76628 /* ContractInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC912D1528E706C400D76628 /* ContractInteractor.swift */; };
 		E93532CE292D0E86008FD979 /* BlockBookUtxoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9941ACA2927B07300399DE3 /* BlockBookUtxoProvider.swift */; };
@@ -294,8 +290,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				DAF44837299FDEDC00036110 /* SwiftProtobuf.xcframework in Embed Frameworks */,
-				DAF4483A299FDEDD00036110 /* WalletCore.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -578,8 +572,6 @@
 		DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotAddressService.swift; sourceTree = "<group>"; };
 		DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotWalletManager.swift; sourceTree = "<group>"; };
 		DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetworkService.swift; sourceTree = "<group>"; };
-		DAF44832299FDEC900036110 /* WalletCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = WalletCore.xcframework; path = "wallet-core-binaries-ios/WalletCore.xcframework"; sourceTree = SOURCE_ROOT; };
-		DAF44833299FDEC900036110 /* SwiftProtobuf.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SwiftProtobuf.xcframework; path = "wallet-core-binaries-ios/SwiftProtobuf.xcframework"; sourceTree = SOURCE_ROOT; };
 		DC63F265293F243200F953EF /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		DC912D1528E706C400D76628 /* ContractInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractInteractor.swift; sourceTree = "<group>"; };
 		DCE3379A28F2B7260029A6F5 /* BlockchainSdkExample.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = BlockchainSdkExample.entitlements; sourceTree = "<group>"; };
@@ -604,9 +596,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DAF44839299FDEDD00036110 /* WalletCore.xcframework in Frameworks */,
 				88095B618D07D706BB871FE6 /* Pods_BlockchainSdk.framework in Frameworks */,
-				DAF44836299FDEDC00036110 /* SwiftProtobuf.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -798,7 +788,6 @@
 		5D14E4702397B80F00C15FC8 /* BlockchainSdk */ = {
 			isa = PBXGroup;
 			children = (
-				DAF44831299FDEAC00036110 /* WalletCoreFrameworks */,
 				5D14E48B2397B87000C15FC8 /* Common */,
 				5D14E4892397B87000C15FC8 /* WalletManagers */,
 				5D4B33B923F6E9BD00C93A84 /* BlockchainService */,
@@ -1476,15 +1465,6 @@
 			path = Polkadot;
 			sourceTree = "<group>";
 		};
-		DAF44831299FDEAC00036110 /* WalletCoreFrameworks */ = {
-			isa = PBXGroup;
-			children = (
-				DAF44833299FDEC900036110 /* SwiftProtobuf.xcframework */,
-				DAF44832299FDEC900036110 /* WalletCore.xcframework */,
-			);
-			name = WalletCoreFrameworks;
-			sourceTree = "<group>";
-		};
 		E9941AC72927845C00399DE3 /* BlockBook */ = {
 			isa = PBXGroup;
 			children = (
@@ -1533,6 +1513,7 @@
 			buildConfigurationList = 5D14E4822397B80F00C15FC8 /* Build configuration list for PBXNativeTarget "BlockchainSdk" */;
 			buildPhases = (
 				97C1A5193CEF430AFFFE869E /* [CP] Check Pods Manifest.lock */,
+				DA35AFF52996C9C400C33CA6 /* Sort localization strings */,
 				5D14E4692397B80F00C15FC8 /* Headers */,
 				5D14E46A2397B80F00C15FC8 /* Sources */,
 				5D14E46B2397B80F00C15FC8 /* Frameworks */,
@@ -1573,6 +1554,7 @@
 			buildConfigurationList = DA59751527D744A9009F0A1F /* Build configuration list for PBXNativeTarget "BlockchainSdkExample" */;
 			buildPhases = (
 				7A3BF37B26C68CA716F1D867 /* [CP] Check Pods Manifest.lock */,
+				DA35AFF62996CA0600C33CA6 /* Sort localization strings */,
 				DA59750427D744A7009F0A1F /* Sources */,
 				DA59750527D744A7009F0A1F /* Frameworks */,
 				DA59750627D744A7009F0A1F /* Resources */,
@@ -1764,6 +1746,43 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		DA35AFF52996C9C400C33CA6 /* Sort localization strings */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Sort localization strings";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "find . -name 'Localizable.strings' -not -path './Pods/*' -exec sort {} -o {} \\;\n";
+			showEnvVarsInLog = 0;
+		};
+		DA35AFF62996CA0600C33CA6 /* Sort localization strings */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Sort localization strings";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "find . -name 'Localizable.strings' -not -path './Pods/*' -exec sort {} -o {} \\;\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

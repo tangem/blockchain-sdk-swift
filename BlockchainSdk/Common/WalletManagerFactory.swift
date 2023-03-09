@@ -78,6 +78,8 @@ public class WalletManagerFactory {
         
         let networkProviderConfiguration = config.networkProviderConfiguration(for: blockchain)
         
+        let useBlockBookUtxoApis = config.useBlockBookUtxoApis
+        
         switch blockchain {
         case .bitcoin(let testnet):
             return try BitcoinWalletManager(wallet: wallet).then {
@@ -91,16 +93,20 @@ public class WalletManagerFactory {
                 
                 var providers = [AnyBitcoinNetworkProvider]()
                 
-                providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                       blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
-                                                       networkConfiguration: networkProviderConfiguration)
-                    .eraseToAnyBitcoinNetworkProvider())
-                
-                if !testnet {
+                if useBlockBookUtxoApis {
                     providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                           blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
+                                                           blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
                                                            networkConfiguration: networkProviderConfiguration)
                         .eraseToAnyBitcoinNetworkProvider())
+                }
+                
+                if !testnet {
+                    if useBlockBookUtxoApis {
+                        providers.append(BlockBookUtxoProvider(blockchain: blockchain,
+                                                               blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
+                                                               networkConfiguration: networkProviderConfiguration)
+                            .eraseToAnyBitcoinNetworkProvider())
+                    }
                     
                     providers.append(BlockchainInfoNetworkProvider(configuration: networkProviderConfiguration)
                         .eraseToAnyBitcoinNetworkProvider())
@@ -129,17 +135,17 @@ public class WalletManagerFactory {
                 
                 var providers = [AnyBitcoinNetworkProvider]()
                 
-                /*
-                providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                       blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
-                                                       networkConfiguration: networkProviderConfiguration)
-                    .eraseToAnyBitcoinNetworkProvider())
-                
-                providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                       blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
-                                                       networkConfiguration: networkProviderConfiguration)
-                    .eraseToAnyBitcoinNetworkProvider())
-                 */
+                if useBlockBookUtxoApis {
+                    providers.append(BlockBookUtxoProvider(blockchain: blockchain,
+                                                           blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
+                                                           networkConfiguration: networkProviderConfiguration)
+                        .eraseToAnyBitcoinNetworkProvider())
+                    
+                    providers.append(BlockBookUtxoProvider(blockchain: blockchain,
+                                                           blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
+                                                           networkConfiguration: networkProviderConfiguration)
+                        .eraseToAnyBitcoinNetworkProvider())
+                }
                 
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .litecoin,
                                                                             configuration: networkProviderConfiguration,
@@ -164,17 +170,17 @@ public class WalletManagerFactory {
                 
                 var providers = [AnyBitcoinNetworkProvider]()
                 
-                /*
-                providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                       blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
-                                                       networkConfiguration: networkProviderConfiguration)
-                    .eraseToAnyBitcoinNetworkProvider())
-                
-                providers.append(BlockBookUtxoProvider(blockchain: blockchain,
-                                                       blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
-                                                       networkConfiguration: networkProviderConfiguration)
-                    .eraseToAnyBitcoinNetworkProvider())
-                 */
+                if useBlockBookUtxoApis {
+                    providers.append(BlockBookUtxoProvider(blockchain: blockchain,
+                                                           blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
+                                                           networkConfiguration: networkProviderConfiguration)
+                        .eraseToAnyBitcoinNetworkProvider())
+                    
+                    providers.append(BlockBookUtxoProvider(blockchain: blockchain,
+                                                           blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
+                                                           networkConfiguration: networkProviderConfiguration)
+                        .eraseToAnyBitcoinNetworkProvider())
+                }
                 
                 providers.append(contentsOf: makeBlockchairNetworkProviders(for: .dogecoin,
                                                                             configuration: networkProviderConfiguration,
@@ -418,15 +424,17 @@ public class WalletManagerFactory {
             
             var providers: [AnyBitcoinNetworkProvider] = []
             
-            providers.append(BlockBookUtxoProvider(blockchain: .dash(testnet: testnet),
-                                                   blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
-                                                   networkConfiguration: networkProviderConfiguration)
-                .eraseToAnyBitcoinNetworkProvider())
-            
-            providers.append(BlockBookUtxoProvider(blockchain: .dash(testnet: testnet),
-                                                   blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
-                                                   networkConfiguration: networkProviderConfiguration)
-                .eraseToAnyBitcoinNetworkProvider())
+            if config.useBlockBookUtxoApis {
+                providers.append(BlockBookUtxoProvider(blockchain: .dash(testnet: testnet),
+                                                       blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
+                                                       networkConfiguration: networkProviderConfiguration)
+                    .eraseToAnyBitcoinNetworkProvider())
+                
+                providers.append(BlockBookUtxoProvider(blockchain: .dash(testnet: testnet),
+                                                       blockBookConfig: GetBlockBlockBookConfig(apiKey: config.getBlockApiKey),
+                                                       networkConfiguration: networkProviderConfiguration)
+                    .eraseToAnyBitcoinNetworkProvider())
+            }
             
             providers.append(contentsOf: makeBlockchairNetworkProviders(for: .dash,
                                                                         configuration: networkProviderConfiguration,
