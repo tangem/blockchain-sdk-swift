@@ -18,6 +18,8 @@ class WalletCoreSigner: Signer {
         walletPublicKey.blockchainKey
     }
     
+    private let signQueue = DispatchQueue(label: "com.signer.queue", qos: .userInitiated)
+    
     private(set) var error: Error?
     
     private let sdkSigner: TransactionSigner
@@ -61,8 +63,10 @@ class WalletCoreSigner: Signer {
             group.wait()
         }
         
-        operation.start()
-        operation.waitUntilFinished()
+        signQueue.sync {
+            operation.start()
+            operation.waitUntilFinished()
+        }
         
         return signedData
     }
