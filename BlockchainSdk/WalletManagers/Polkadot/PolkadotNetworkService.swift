@@ -90,7 +90,7 @@ class PolkadotNetworkService: MultiNetworkProvider {
                     genesisHash: genesisHash,
                     blockHash: latestBlockInfo.0,
                     nonce: nextIndex,
-                    era: .init(blockNumber: latestBlockInfo.1, period: 64)
+                    era: nil
                 )
             }
             .eraseToAnyPublisher()
