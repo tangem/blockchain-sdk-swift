@@ -28,5 +28,5 @@ class DogecoinNetworkParams: INetwork {
         "seed.doger.dogecoin.com"
     ]
     
-    let dustRelayTxFee: Int = 100000000
+    let dustRelayTxFee: Int = 1_000_000 // 0.01 DOGE
 }

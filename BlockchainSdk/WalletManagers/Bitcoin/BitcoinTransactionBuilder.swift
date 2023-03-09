@@ -35,7 +35,7 @@ class BitcoinTransactionBuilder {
 	var feeRates: [Decimal: Int] = [:]
     var bitcoinManager: BitcoinManager
     
-    private var changeScript: Data?
+    private(set) var changeScript: Data?
 	private let walletScripts: [HDWalletScript]
 
 	init(bitcoinManager: BitcoinManager, addresses: [Address]) {

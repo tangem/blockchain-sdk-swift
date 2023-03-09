@@ -148,6 +148,29 @@ class BlockBookUtxoProvider {
             )
         }
     }
+    
+    private func getFeeRatePerByte(for confirmationBlocks: Int) -> AnyPublisher<Decimal, Error> {
+        provider
+            .requestPublisher(target(for: .fees(confirmationBlocks: confirmationBlocks)))
+            .filterSuccessfulStatusAndRedirectCodes()
+            .map(BlockBookFeeResponse.self)
+            .tryMap { [weak self] in
+                guard let self else {
+                    throw WalletError.empty
+                }
+                
+                if $0.result.feerate <= 0 {
+                    throw BlockchainSdkError.failedToLoadFee
+                }
+                
+                // estimatesmartfee returns fee in currency per kilobyte
+                let bytesInKiloByte: Decimal = 1024
+                let feeRatePerByte = Decimal($0.result.feerate) * self.blockchain.decimalValue / bytesInKiloByte
+                
+                return feeRatePerByte.rounded(roundingMode: .up)
+            }
+            .eraseToAnyPublisher()
+    }
 }
 
 extension BlockBookUtxoProvider: BitcoinNetworkProvider {
@@ -174,24 +197,27 @@ extension BlockBookUtxoProvider: BitcoinNetworkProvider {
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
-        provider
-            .requestPublisher(target(for: .fees))
-            .filterSuccessfulStatusAndRedirectCodes()
-            .map(BlockBookFeeResponse.self)
-            .tryMap { [weak self] in
-                guard let self else {
-                    throw WalletError.empty
-                }
-                
-                let feeRate = Decimal($0.result.feerate) * self.blockchain.decimalValue
-                
-                let min = (Decimal(0.8) * feeRate).rounded(roundingMode: .down)
-                let normal = feeRate
-                let max = (Decimal(1.2) * feeRate).rounded(roundingMode: .down)
-                
-                return BitcoinFee(minimalSatoshiPerByte: min, normalSatoshiPerByte: normal, prioritySatoshiPerByte: max)
+        // Number of blocks we want the transaction to be confirmed in.
+        // The lower the number the bigger the fee returned by 'estimatesmartfee'.
+        let confirmationBlocks = [8, 4, 1]
+        
+        return Publishers.MergeMany(confirmationBlocks.map {
+            getFeeRatePerByte(for: $0)
+        })
+        .collect()
+        .map { $0.sorted() }
+        .tryMap { fees -> BitcoinFee in
+            guard fees.count == confirmationBlocks.count else {
+                throw BlockchainSdkError.failedToLoadFee
             }
-            .eraseToAnyPublisher()
+            
+            return BitcoinFee(
+                minimalSatoshiPerByte: fees[0],
+                normalSatoshiPerByte: fees[1],
+                prioritySatoshiPerByte: fees[2]
+            )
+        }
+        .eraseToAnyPublisher()
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
