@@ -59,12 +59,6 @@ struct TONProviderTarget: TargetType {
                 method: .estimateFee,
                 params: ["address": address, "body": body]
             )
-        case .estimateFeeWithCode(let address, let body, let initCode, let initData):
-            jrpcRequest = TONProviderRequest(
-                id: UUID().uuidString,
-                method: .estimateFee,
-                params: ["address": address, "body": body, "init_code": initCode, "init_data": initData]
-            )
         case .sendBoc(let message):
             jrpcRequest = TONProviderRequest(
                 id: UUID().uuidString,
@@ -102,7 +96,6 @@ extension TONProviderTarget {
     public enum TargetType {
         case getInfo(address: String)
         case estimateFee(address: String, body: String?)
-        case estimateFeeWithCode(address: String, body: String?, initCode: String?, initData: String?)
         case getBalance(address: String)
         case sendBoc(message: String)
         case sendBocReturnHash(message: String)
