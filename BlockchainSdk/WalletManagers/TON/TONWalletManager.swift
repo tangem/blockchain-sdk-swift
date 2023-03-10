@@ -112,7 +112,7 @@ final class TONWalletManager: BaseManager, WalletManager {
     }
     
     private func buildTransaction(input: TheOpenNetworkSigningInput, with signer: TransactionSigner? = nil) throws -> String {
-        let output: TheOpenNetworkSigningOutput!
+        let output: TheOpenNetworkSigningOutput
         
         if let signer = signer {
             let coreSigner = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey)
