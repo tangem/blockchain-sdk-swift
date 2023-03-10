@@ -44,7 +44,7 @@ class TONNetworkService: MultiNetworkProvider {
                     return TONWalletInfo(
                         balance: decimalBalance / self.blockchain.decimalValue,
                         sequenceNumber: walletInfo.seqno ?? 0,
-                        isAvailable: walletInfo.account_state == .active
+                        isAvailable: walletInfo.accountState == .active
                     )
                 }
                 .eraseToAnyPublisher()

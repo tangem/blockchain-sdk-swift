@@ -21,7 +21,7 @@ enum TONProviderContent {
         let balance: String
         
         /// State of wallet
-        let account_state: AccountState
+        let accountState: AccountState
         
         /// Sequence number transations
         let seqno: Int?
@@ -30,7 +30,7 @@ enum TONProviderContent {
             let container: KeyedDecodingContainer<TONProviderContent.Info.CodingKeys> = try decoder.container(keyedBy: TONProviderContent.Info.CodingKeys.self)
             self.wallet = try container.decode(Bool.self, forKey: TONProviderContent.Info.CodingKeys.wallet)
             self.balance = try Self.mapBalance(from: decoder)
-            self.account_state = try container.decode(TONProviderContent.AccountState.self, forKey: TONProviderContent.Info.CodingKeys.account_state)
+            self.accountState = try container.decode(TONProviderContent.AccountState.self, forKey: TONProviderContent.Info.CodingKeys.accountState)
             self.seqno = try container.decodeIfPresent(Int.self, forKey: TONProviderContent.Info.CodingKeys.seqno)
         }
         
