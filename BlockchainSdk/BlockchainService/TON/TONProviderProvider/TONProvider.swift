@@ -29,27 +29,10 @@ struct TONProvider: HostProvider {
     // MARK: - Init
     
     init?(
-        endpointType: TONEndpointType,
-        config: BlockchainSdkConfig,
-        network: NetworkProvider<TONProviderTarget>,
-        isTestnet: Bool
+        node: TONNetworkNode?,
+        network: NetworkProvider<TONProviderTarget>
     ) {
-        let apiKeyValue: String
-        
-        switch endpointType {
-        case .toncenter:
-            apiKeyValue = config.tonCenterApiKey
-        case .getblock:
-            apiKeyValue = config.getBlockApiKey
-        case .nownodes:
-            apiKeyValue = config.nowNodesApiKey
-        }
-        
-        guard let node = TONNetworkNode(
-            apiKeyValue: apiKeyValue,
-            endpointType: endpointType,
-            isTestnet: isTestnet
-        ) else {
+        guard let node = node else {
             return nil
         }
         
@@ -62,7 +45,7 @@ struct TONProvider: HostProvider {
     /// Fetch full information about wallet address
     /// - Parameter address: UserFriendly TON address wallet
     /// - Returns: Model full information
-    func getInfo(address: String) -> AnyPublisher<TONProviderContent.Info, Error> {
+    func getInfo(address: String) -> AnyPublisher<TONModels.Info, Error> {
         requestPublisher(for: .init(node: node, targetType: .getInfo(address: address)))
     }
     
@@ -78,14 +61,14 @@ struct TONProvider: HostProvider {
     /// - Parameter address: Wallet address
     /// - Parameter body: Body of message cell TON blockchain
     /// - Returns: Fees or Error
-    func getFee(address: String, body: String?) -> AnyPublisher<TONProviderContent.Fee, Error> {
+    func getFee(address: String, body: String?) -> AnyPublisher<TONModels.Fee, Error> {
         requestPublisher(for: .init(node: node, targetType: .estimateFee(address: address, body: body)))
     }
     
     /// Send transaction data message for raw cell TON
     /// - Parameter message: String data if cell message
     /// - Returns: Result of hash transaction
-    func send(message: String) -> AnyPublisher<TONProviderContent.SendBoc, Error> {
+    func send(message: String) -> AnyPublisher<TONModels.SendBoc, Error> {
         requestPublisher(
             for: .init(node: node, targetType: .sendBocReturnHash(message: message))
         )

@@ -60,8 +60,8 @@ class TONNetworkService: MultiNetworkProvider {
                         throw WalletError.empty
                     }
                     
-                    let fee = fee.source_fees.allFee / self.blockchain.decimalValue
-                    return [Amount(with: .ton(testnet: self.blockchain.isTestnet), value: fee)]
+                    let fee = fee.source_fees.totalFee / self.blockchain.decimalValue
+                    return [Amount(with: self.blockchain, value: fee)]
                 }
                 .eraseToAnyPublisher()
         }
@@ -71,9 +71,7 @@ class TONNetworkService: MultiNetworkProvider {
         return providerPublisher { provider in
             provider
                 .send(message: message)
-                .map {
-                    $0.hash
-                }
+                .map(\.hash)
                 .eraseToAnyPublisher()
         }
     }

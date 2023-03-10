@@ -372,23 +372,41 @@ public class WalletManagerFactory {
                 $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
             }
         case .ton(testnet: let testnet):
+            let providers: [TONProvider?] = [
+                TONProvider(
+                    node: .init(
+                        apiKeyValue: config.tonCenterApiKey,
+                        endpointType: .toncenter,
+                        isTestnet: testnet
+                    ),
+                    network: .init(configuration: networkProviderConfiguration)
+                ),
+                TONProvider(
+                    node: .init(
+                        apiKeyValue: config.getBlockApiKey,
+                        endpointType: .getblock,
+                        isTestnet: testnet
+                    ),
+                    network: .init(configuration: networkProviderConfiguration)
+                ),
+                TONProvider(
+                    node: .init(
+                        apiKeyValue: config.nowNodesApiKey,
+                        endpointType: .nownodes,
+                        isTestnet: testnet
+                    ),
+                    network: .init(configuration: networkProviderConfiguration)
+                ),
+            ]
+            
             return try TONWalletManager(
                 wallet: wallet,
-                networkService: .init(
-                    providers: TONEndpointType.allCases.map {
-                        TONProvider(
-                            endpointType: $0,
-                            config: config,
-                            network: .init(configuration: networkProviderConfiguration),
-                            isTestnet: testnet
-                        )
-                    }.compactMap({$0}),
-                    blockchain: blockchain
-                )
+                networkService: .init(providers: providers.compactMap({ $0 }), blockchain: blockchain)
             )
         case .dash(let testnet):
             return try makeDashWalletManager(testnet: testnet, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
         }
+        
     }
     
     private func makePolkadotWalletManager(network: PolkadotNetwork,

@@ -28,7 +28,7 @@ enum TONEndpointType: Int, CaseIterable {
         case .toncenter:
             return true
         case .getblock, .nownodes:
-            return !(apiKey?.isEmpty ?? true)
+            return apiKey?.isEmpty == false
         }
     }
     

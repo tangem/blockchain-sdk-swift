@@ -46,7 +46,7 @@ final class TONWalletManager: BaseManager, WalletManager {
                     }
                 },
                 receiveValue: { [unowned self] info in
-                    self.update(by: info, completion: completion)
+                    self.update(with: info, completion: completion)
                 }
             )
     }
@@ -78,12 +78,9 @@ final class TONWalletManager: BaseManager, WalletManager {
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         guard isAvailable else {
-            return Just(()).tryMap { _ in
-                return [
-                    Amount.zeroCoin(for: wallet.blockchain)
-                ]
-            }
-            .eraseToAnyPublisher()
+            return Just([Amount.zeroCoin(for: wallet.blockchain)])
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
         }
         
         return Just(())
@@ -107,7 +104,7 @@ final class TONWalletManager: BaseManager, WalletManager {
     
     // MARK: - Private Implementation
     
-    private func update(by info: TONWalletInfo, completion: @escaping (Result<Void, Error>) -> Void) {
+    private func update(with info: TONWalletInfo, completion: @escaping (Result<Void, Error>) -> Void) {
         wallet.add(coinValue: info.balance)
         txBuilder.sequenceNumber = info.sequenceNumber
         isAvailable = info.isAvailable
