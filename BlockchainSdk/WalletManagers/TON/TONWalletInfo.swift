@@ -15,7 +15,7 @@ public struct TONWalletInfo {
     let balance: Decimal
     
     /// Sequence number last transaction
-    let seqno: Int
+    let sequenceNumber: Int
     
     /// Wallet availability
     let isAvailable: Bool

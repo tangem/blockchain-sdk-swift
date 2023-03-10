@@ -30,18 +30,4 @@ extension Int {
         return data
     }
     
-    /// Hexdecimal string of self value
-    public var hex: String {
-        String(format:"%02X", self)
-    }
-    
-}
-
-extension UInt {
-    
-    /// Hexdecimal string of self value
-    public var hex: String {
-        String(format:"%02X", self)
-    }
-    
 }

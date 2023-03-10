@@ -16,7 +16,7 @@ final class TONTransactionBuilder {
     // MARK: - Properties
     
     /// Sequence number of transactions
-    var seqno: Int = 0
+    var sequenceNumber: Int = 0
     
     // MARK: - Private Properties
     
@@ -30,14 +30,6 @@ final class TONTransactionBuilder {
     
     // MARK: - Implementation
     
-    /// Build input for sign transaction form Transaction
-    /// - Parameters:
-    ///   - transaction: Transaction model
-    /// - Returns: TheOpenNetworkSigningInput for sign transaction with external signer
-    public func buildForSign(transaction: Transaction) throws -> TheOpenNetworkSigningInput {
-        try self.buildForSign(amount: transaction.amount, destination: transaction.destinationAddress)
-    }
-    
     /// Build input for sign transaction from Parameters
     /// - Parameters:
     ///   - amount: Amount transaction
@@ -47,10 +39,9 @@ final class TONTransactionBuilder {
         return try self.input(amount: amount, destination: destination)
     }
     
-    /// Build for send transaction with signed signature and execute TON external message
+    /// Build for send transaction obtain external message output
     /// - Parameters:
-    ///   - signingMessage: Message for signing
-    ///   - signature: Signature of signing
+    ///   - output: TW output of message
     /// - Returns: External message for TON blockchain
     public func buildForSend(output: TheOpenNetworkSigningOutput) throws -> String {
         return output.encoded
@@ -66,6 +57,7 @@ final class TONTransactionBuilder {
     private func input(amount: Amount, destination: String) throws -> TheOpenNetworkSigningInput {
         let transfer = try self.transfer(amount: amount, destination: destination)
         
+        // Sign input with dummy key of Curve25519 private key
         let input = TheOpenNetworkSigningInput.with {
             $0.transfer = transfer
             $0.privateKey = Curve25519.Signing.PrivateKey().rawRepresentation
@@ -84,7 +76,7 @@ final class TONTransactionBuilder {
             $0.walletVersion = TheOpenNetworkWalletVersion.walletV4R2
             $0.dest = destination
             $0.amount = ((amount.value * wallet.blockchain.decimalValue) as NSDecimalNumber).uint64Value
-            $0.sequenceNumber = UInt32(seqno)
+            $0.sequenceNumber = UInt32(sequenceNumber)
             $0.mode = UInt32(TheOpenNetworkSendMode.payFeesSeparately.rawValue | TheOpenNetworkSendMode.ignoreActionPhaseErrors.rawValue)
             $0.expireAt = UInt32(Date().addingTimeInterval(1 * 60).timeIntervalSince1970)
          }

@@ -19,12 +19,12 @@ struct TONProvider: HostProvider {
     }
     
     /// Configuration connection node for provider
-    private(set) var node: TONNetworkNode
+    private let node: TONNetworkNode
     
     // MARK: - Properties
     
     /// Network provider of blockchain
-    private(set) var network: NetworkProvider<TONProviderTarget>
+    private let network: NetworkProvider<TONProviderTarget>
     
     // MARK: - Init
     
@@ -59,6 +59,9 @@ struct TONProvider: HostProvider {
     
     // MARK: - Implementation
     
+    /// Fetch full information about wallet address
+    /// - Parameter address: UserFriendly TON address wallet
+    /// - Returns: Model full information
     func getInfo(address: String) -> AnyPublisher<TONProviderContent.Info, Error> {
         requestPublisher(for: .init(node: node, targetType: .getInfo(address: address)))
     }
@@ -90,6 +93,9 @@ struct TONProvider: HostProvider {
         )
     }
     
+    /// Send transaction data message for raw cell TON
+    /// - Parameter message: String data if cell message
+    /// - Returns: Result of hash transaction
     func send(message: String) -> AnyPublisher<TONProviderContent.SendBoc, Error> {
         requestPublisher(
             for: .init(node: node, targetType: .sendBocReturnHash(message: message))

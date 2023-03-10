@@ -48,10 +48,6 @@ struct TONEndpoint {
     }
 }
 
-extension TONEndpointType: Comparable {
-    static func <(lhs: TONEndpointType, rhs: TONEndpointType) -> Bool { lhs.rawValue < rhs.rawValue }
-}
-
 struct TONNetworkNode {
     
     let apiKeyValue: String

@@ -16,10 +16,6 @@ extension Decimal {
         return Array(bytes8)
     }
     
-    var uInt: UInt {
-        return NSDecimalNumber(decimal: self).uintValue
-    }
-    
     init?(_ string: String?) {
         guard let string = string else {
             return nil

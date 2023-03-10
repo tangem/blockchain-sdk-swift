@@ -602,4 +602,34 @@ class AddressesTests: XCTestCase {
             XCTAssertNil(error)
         }
     }
+    
+    func testTON() {
+        let blockchain = Blockchain.ton(testnet: true)
+        let addressService = blockchain.getAddressService()
+        
+        let walletPubkey1 = Data(hex: "e7287a82bdcd3a5c2d0ee2150ccbc80d6a00991411fb44cd4d13cef46618aadb")
+        let expectedAddress1 = "EQBqoh0pqy6zIksGZFMLdqV5Q2R7rzlTO0Durz6OnUgKrYeu"
+        XCTAssertEqual(try! addressService.makeAddress(from: walletPubkey1), expectedAddress1)
+        
+        let walletPubkey2 = Data(hex: "258A89B60CCE7EB3339BF4DB8A8DA8153AA2B6489D22CC594E50FDF626DA7AF5")
+        let expectedAddress2 = "EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2"
+        XCTAssertEqual(try! addressService.makeAddress(from: walletPubkey2), expectedAddress2)
+        
+        let walletPubkey3 = Data(hex: "f42c77f931bea20ec5d0150731276bbb2e2860947661245b2319ef8133ee8d41")
+        let expectedAddress3 = "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q"
+        XCTAssertEqual(try! addressService.makeAddress(from: walletPubkey3), expectedAddress3)
+    }
+    
+    func testTONValidateCorrectAddress() {
+        let blockchain = Blockchain.ton(testnet: true)
+        let addressService = blockchain.getAddressService()
+        
+        XCTAssertTrue(addressService.validate("EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2"))
+        XCTAssertTrue(addressService.validate("EQAGDzFFIxJswaBU5Rqaz5H5dKUBGYEMhL44fpLtIdWbjkBo"))
+        XCTAssertTrue(addressService.validate("EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG"))
+        XCTAssertTrue(addressService.validate("0:8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae"))
+        XCTAssertTrue(addressService.validate("0:66fbe3c5c03bf5c82792f904c9f8bf28894a6aa3d213d41c20569b654aadedb3"))
+        XCTAssertFalse(addressService.validate("8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae"))
+    }
+    
 }

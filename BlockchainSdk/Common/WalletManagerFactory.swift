@@ -375,7 +375,7 @@ public class WalletManagerFactory {
             return try TONWalletManager(
                 wallet: wallet,
                 networkService: .init(
-                    providers: TONEndpointType.allCases.sorted().map {
+                    providers: TONEndpointType.allCases.map {
                         TONProvider(
                             endpointType: $0,
                             config: config,

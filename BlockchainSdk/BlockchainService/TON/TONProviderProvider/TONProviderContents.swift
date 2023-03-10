@@ -9,7 +9,7 @@
 import Foundation
 
 /// TON provider content of Response
-struct TONProviderContent {
+enum TONProviderContent {
     
     /// Info state model
     struct Info: Codable {

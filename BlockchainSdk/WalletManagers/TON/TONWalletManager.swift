@@ -28,7 +28,7 @@ final class TONWalletManager: BaseManager, WalletManager {
     
     init(wallet: Wallet, networkService: TONNetworkService) throws {
         self.networkService = networkService
-        self.txBuilder = try .init(wallet: wallet)
+        self.txBuilder = .init(wallet: wallet)
         super.init(wallet: wallet)
     }
     
@@ -45,7 +45,7 @@ final class TONWalletManager: BaseManager, WalletManager {
                     }
                 },
                 receiveValue: { [unowned self] info in
-                    self.update(by: info, completion)
+                    self.update(by: info, completion: completion)
                 }
             )
     }
@@ -58,7 +58,7 @@ final class TONWalletManager: BaseManager, WalletManager {
                     throw WalletError.failedToBuildTx
                 }
                 
-                let input = try self.txBuilder.buildForSign(transaction: transaction)
+                let input = try self.txBuilder.buildForSign(amount: transaction.amount, destination: transaction.destinationAddress)
                 return try self.buildTransaction(input: input, with: signer)
             }
             .flatMap { [weak self] message -> AnyPublisher<String, Error> in
@@ -79,7 +79,7 @@ final class TONWalletManager: BaseManager, WalletManager {
         guard isAvailable else {
             return Just(()).tryMap { _ in
                 return [
-                    Amount(with: wallet.blockchain, value: 0)
+                    Amount.zeroCoin(for: wallet.blockchain)
                 ]
             }
             .eraseToAnyPublisher()
@@ -106,15 +106,15 @@ final class TONWalletManager: BaseManager, WalletManager {
     
     // MARK: - Private Implementation
     
-    private func update(by info: TONWalletInfo, _ completion: @escaping (Result<Void, Error>) -> Void) {
+    private func update(by info: TONWalletInfo, completion: @escaping (Result<Void, Error>) -> Void) {
         wallet.add(coinValue: info.balance)
-        txBuilder.seqno = info.seqno
+        txBuilder.sequenceNumber = info.sequenceNumber
         isAvailable = info.isAvailable
         completion(.success(()))
     }
     
     private func buildTransaction(input: TheOpenNetworkSigningInput, with signer: TransactionSigner? = nil) throws -> String {
-        var output: TheOpenNetworkSigningOutput!
+        let output: TheOpenNetworkSigningOutput!
         
         if let signer = signer {
             let coreSigner = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey)

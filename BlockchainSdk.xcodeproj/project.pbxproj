@@ -19,7 +19,6 @@
 		2D3E77BB299293540044FC92 /* TONProviderTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E77B4299293540044FC92 /* TONProviderTarget.swift */; };
 		2D3E77BC299293540044FC92 /* TONProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E77B5299293540044FC92 /* TONProvider.swift */; };
 		2D3E77BD299293540044FC92 /* TONProviderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E77B6299293540044FC92 /* TONProviderRequest.swift */; };
-		2D3E77BF2992936A0044FC92 /* Bool+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E77BE2992936A0044FC92 /* Bool+.swift */; };
 		2D4C1EA029B2834B005E8AC0 /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4C1E8029B2834A005E8AC0 /* Address.swift */; };
 		2D4C1EA129B2834B005E8AC0 /* MultipleAddressProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4C1E8129B2834A005E8AC0 /* MultipleAddressProvider.swift */; };
 		2D4C1EA229B2834B005E8AC0 /* AddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4C1E8229B2834A005E8AC0 /* AddressService.swift */; };
@@ -309,7 +308,6 @@
 		2D3E77B4299293540044FC92 /* TONProviderTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProviderTarget.swift; sourceTree = "<group>"; };
 		2D3E77B5299293540044FC92 /* TONProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProvider.swift; sourceTree = "<group>"; };
 		2D3E77B6299293540044FC92 /* TONProviderRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProviderRequest.swift; sourceTree = "<group>"; };
-		2D3E77BE2992936A0044FC92 /* Bool+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bool+.swift"; sourceTree = "<group>"; };
 		2D3E77C1299293870044FC92 /* BlockchainAssemblyFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockchainAssemblyFactory.swift; sourceTree = "<group>"; };
 		2D3E77C2299293870044FC92 /* TONBlockchainAssemblyFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONBlockchainAssemblyFactory.swift; sourceTree = "<group>"; };
 		2D4C1E8029B2834A005E8AC0 /* Address.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
@@ -913,7 +911,6 @@
 			isa = PBXGroup;
 			children = (
 				B0C2C86625FBA10E00A61622 /* AnyPublisher+.swift */,
-				2D3E77BE2992936A0044FC92 /* Bool+.swift */,
 				5D5E058B24FE749D00F04DE1 /* Bundle+.swift */,
 				5DA6F7BB243F3C0B0040AB4B /* CBOR+.swift */,
 				5D94E56623A3946C009C7482 /* Data+.swift */,
@@ -1989,7 +1986,6 @@
 				5D4B33C623F72F1100C93A84 /* BitcoinCashAddressService.swift in Sources */,
 				2D3E77B7299293540044FC92 /* TONNetworkService.swift in Sources */,
 				5D14E4982397B87000C15FC8 /* Blockchain.swift in Sources */,
-				2D3E77BF2992936A0044FC92 /* Bool+.swift in Sources */,
 				B004DAC026416B8A000863A4 /* EthereumResponse.swift in Sources */,
 				B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */,
 				DAE30DFF279164500056C5A3 /* SolanaWalletManager.swift in Sources */,
