@@ -20,7 +20,7 @@ public class TrustWalletAddressService: AddressService {
         self.coin = coin
     }
     
-    /// Generate user-friendly address of wallet by public key
+    /// Generate address of wallet by public key
     /// - Parameter walletPublicKey: Data public key wallet
     /// - Returns: User-friendly address
     public func makeAddress(from walletPublicKey: Data) throws -> String {
@@ -31,7 +31,7 @@ public class TrustWalletAddressService: AddressService {
         return AnyAddress(publicKey: publicKey, coin: .ton).description
     }
     
-    /// Validate address TON wallet with any form
+    /// Validate address wallet with any form
     /// - Parameter address: Any form address wallet
     /// - Returns: Result of validate
     public func validate(_ address: String) -> Bool {
