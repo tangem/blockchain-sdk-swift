@@ -9,7 +9,6 @@
 import Foundation
 
 extension Int {
-    
     /// return 2 bytes of integer. LittleEndian format
     public var bytes2LE: Data {
         let clamped = UInt16(clamping: self)
