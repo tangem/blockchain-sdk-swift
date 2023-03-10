@@ -63,9 +63,9 @@ extension TONNodeName: Comparable {
 
 struct TONNetworkNode {
     
-    var apiKeyValue: String
-    var nodeName: TONNodeName
-    var isTestnet: Bool
+    let apiKeyValue: String
+    let nodeName: TONNodeName
+    let isTestnet: Bool
     
     var endpoint: TONEndpoint {
         switch nodeName {
@@ -90,18 +90,14 @@ struct TONNetworkNode {
         }
     }
     
-    // TODO: - Только ключ
-    
     init?(apiKeyValue: String?, nodeName: TONNodeName, isTestnet: Bool) {
         guard nodeName.isAvailable(with: apiKeyValue) else {
             return nil
         }
         
         // Verify available testnet node
-        if isTestnet {
-            guard nodeName.hasTestnent else {
-                return nil
-            }
+        if isTestnet, nodeName.hasTestnent {
+            return nil
         }
         
         self.apiKeyValue = apiKeyValue ?? ""

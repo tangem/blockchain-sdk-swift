@@ -11,18 +11,6 @@ import Foundation
 /// Base TON provider request
 struct TONProviderRequest<P: Encodable>: Encodable {
     
-    enum Method: String, Encodable {
-        case getAddressInformation
-        case getAddressBalance
-        case runGetMethod
-        case getWalletInformation
-        case estimateFee
-        case sendBoc
-        case sendBocReturnHash
-    }
-    
-    // MARK: - Properties
-    
     /// Identifier request
     let id: String
     
@@ -37,3 +25,16 @@ struct TONProviderRequest<P: Encodable>: Encodable {
     
 }
 
+extension TONProviderRequest {
+    
+    enum Method: String, Encodable {
+        case getAddressInformation
+        case getAddressBalance
+        case runGetMethod
+        case getWalletInformation
+        case estimateFee
+        case sendBoc
+        case sendBocReturnHash
+    }
+    
+}

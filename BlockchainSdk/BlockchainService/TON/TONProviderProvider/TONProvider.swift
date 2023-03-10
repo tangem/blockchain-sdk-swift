@@ -34,7 +34,7 @@ struct TONProvider: HostProvider {
         network: NetworkProvider<TONProviderTarget>,
         isTestnet: Bool
     ) {
-        var apiKeyValue: String?
+        let apiKeyValue: String
         
         switch nodeName {
         case .toncenter:
