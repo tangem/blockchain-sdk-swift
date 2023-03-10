@@ -13,18 +13,20 @@ import WalletCore
 public class TrustWalletAddressService: AddressService {
     
     private let coin: Blockchain
+    private let publicKeyType: PublicKeyType
     
     // MARK: - Init
     
-    public init(coin: Blockchain) {
+    public init(coin: Blockchain, publicKeyType: PublicKeyType) {
         self.coin = coin
+        self.publicKeyType = publicKeyType
     }
     
     /// Generate address of wallet by public key
     /// - Parameter walletPublicKey: Data public key wallet
     /// - Returns: User-friendly address
     public func makeAddress(from walletPublicKey: Data) throws -> String {
-        guard let publicKey = PublicKey(data: walletPublicKey, type: .ed25519) else {
+        guard let publicKey = PublicKey(data: walletPublicKey, type: publicKeyType) else {
             throw TONError.exception("Not created public key")
         }
         
