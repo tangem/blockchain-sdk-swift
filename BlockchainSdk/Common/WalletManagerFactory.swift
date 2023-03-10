@@ -401,7 +401,10 @@ public class WalletManagerFactory {
             
             return try TONWalletManager(
                 wallet: wallet,
-                networkService: .init(providers: providers, blockchain: blockchain)
+                networkService: .init(
+                    providers: providers,
+                    blockchain: blockchain
+                )
             )
         case .dash(let testnet):
             return try makeDashWalletManager(testnet: testnet, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
