@@ -36,7 +36,7 @@ final class TONWalletManager: BaseManager, WalletManager {
     
     func update(completion: @escaping (Result<Void, Error>) -> Void) {
         cancellable = networkService
-            .getInfoWallet(address: wallet.address)
+            .getInfo(address: wallet.address)
             .sink(
                 receiveCompletion: { [unowned self] completionSubscription in
                     if case let .failure(error) = completionSubscription {

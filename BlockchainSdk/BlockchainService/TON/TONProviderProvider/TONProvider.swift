@@ -15,7 +15,7 @@ struct TONProvider: HostProvider {
     
     /// Blockchain API host
     var host: String {
-        node.endpoint.url.path
+        node.endpoint.url.hostOrUnknown
     }
     
     /// Configuration connection node for provider
@@ -29,16 +29,16 @@ struct TONProvider: HostProvider {
     // MARK: - Init
     
     init?(
-        nodeName: TONNodeName,
+        endpointType: TONEndpointType,
         config: BlockchainSdkConfig,
         network: NetworkProvider<TONProviderTarget>,
         isTestnet: Bool
     ) {
         let apiKeyValue: String
         
-        switch nodeName {
+        switch endpointType {
         case .toncenter:
-            apiKeyValue = config.toncenterApiKey
+            apiKeyValue = config.tonCenterApiKey
         case .getblock:
             apiKeyValue = config.getBlockApiKey
         case .nownodes:
@@ -47,7 +47,7 @@ struct TONProvider: HostProvider {
         
         guard let node = TONNetworkNode(
             apiKeyValue: apiKeyValue,
-            nodeName: nodeName,
+            endpointType: endpointType,
             isTestnet: isTestnet
         ) else {
             return nil
@@ -59,7 +59,7 @@ struct TONProvider: HostProvider {
     
     // MARK: - Implementation
     
-    func getInfoWallet(address: String) -> AnyPublisher<TONProviderContent.Info, Error> {
+    func getInfo(address: String) -> AnyPublisher<TONProviderContent.Info, Error> {
         requestPublisher(for: .init(node: node, targetType: .getInfo(address: address)))
     }
     

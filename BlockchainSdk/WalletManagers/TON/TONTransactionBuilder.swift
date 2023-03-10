@@ -20,11 +20,11 @@ final class TONTransactionBuilder {
     
     // MARK: - Private Properties
     
-    private var wallet: Wallet
+    private let wallet: Wallet
     
     // MARK: - Init
     
-    init(wallet: Wallet) throws {
+    init(wallet: Wallet) {
         self.wallet = wallet
     }
     

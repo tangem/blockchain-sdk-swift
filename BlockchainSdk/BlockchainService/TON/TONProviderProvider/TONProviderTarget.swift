@@ -13,8 +13,15 @@ struct TONProviderTarget: TargetType {
     
     // MARK: - Properties
     
-    private(set) var node: TONNetworkNode
-    private(set) var targetType: TargetType
+    private let node: TONNetworkNode
+    private let targetType: TargetType
+    
+    // MARK: - Init
+    
+    init(node: TONNetworkNode, targetType: TargetType) {
+        self.node = node
+        self.targetType = targetType
+    }
     
     // MARK: - TargetType
     
@@ -31,7 +38,7 @@ struct TONProviderTarget: TargetType {
     }
     
     var task: Moya.Task {
-        var jrpcRequest: TONProviderRequest<Dictionary<String, String?>>?
+        let jrpcRequest: TONProviderRequest<Dictionary<String, String?>>
         
         switch targetType {
         case .getInfo(let address):
@@ -72,7 +79,7 @@ struct TONProviderTarget: TargetType {
             )
         }
         
-        return .requestParameters(parameters: (try? jrpcRequest?.asDictionary()) ?? [:], encoding: JSONEncoding.default)
+        return .requestParameters(parameters: (try? jrpcRequest.asDictionary()) ?? [:], encoding: JSONEncoding.default)
     }
     
     var headers: [String : String]? {
@@ -81,13 +88,8 @@ struct TONProviderTarget: TargetType {
             "Content-Type": "application/json"
         ]
         
-        switch node.nodeName {
-        case .toncenter:
+        if let apiKeyHeaderValue = node.endpoint.apiKeyHeaderValue {
             headers[node.endpoint.apiKeyHeaderName ?? ""] = node.endpoint.apiKeyHeaderValue ?? ""
-        case .getblock:
-            break
-        case .nownodes:
-            break
         }
         
         return headers

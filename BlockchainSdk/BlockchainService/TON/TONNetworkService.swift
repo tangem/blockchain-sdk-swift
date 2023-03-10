@@ -28,10 +28,10 @@ class TONNetworkService: MultiNetworkProvider {
     
     // MARK: - Implementation
     
-    func getInfoWallet(address: String) -> AnyPublisher<TONWalletInfo, Error> {
+    func getInfo(address: String) -> AnyPublisher<TONWalletInfo, Error> {
         providerPublisher { provider in
             provider
-                .getInfoWallet(address: address)
+                .getInfo(address: address)
                 .tryMap { [weak self] walletInfo in
                     guard let self = self else {
                         throw WalletError.empty
@@ -54,10 +54,7 @@ class TONNetworkService: MultiNetworkProvider {
     func getFee(address: String, message: String) -> AnyPublisher<[Amount], Error> {
         providerPublisher { provider in
             provider
-                .getFee(
-                    address: address,
-                    body: message
-                )
+                .getFee(address: address, body: message)
                 .tryMap { [weak self] fee in
                     guard let self = self else {
                         throw WalletError.empty

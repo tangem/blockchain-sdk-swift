@@ -8,21 +8,12 @@
 
 import Foundation
 
-enum TONNodeName: Int, CaseIterable {
-    
-    /// Toncenter API JRPC
-    /// Fast and reliable HTTP API for The Open Network
+enum TONEndpointType: Int, CaseIterable {
     case toncenter
-    
-    /// Getblock.io
-    /// Superior Node Infrastructure for Building dApps
     case getblock
-    
-    /// NowNodes.io
-    /// Full Nodes and Block Explorers
     case nownodes
     
-    /// Check verify
+    /// Is support testnet type endpoint
     var hasTestnent: Bool {
         switch self {
         case .toncenter:
@@ -57,18 +48,18 @@ struct TONEndpoint {
     }
 }
 
-extension TONNodeName: Comparable {
-    static func <(lhs: TONNodeName, rhs: TONNodeName) -> Bool { lhs.rawValue < rhs.rawValue }
+extension TONEndpointType: Comparable {
+    static func <(lhs: TONEndpointType, rhs: TONEndpointType) -> Bool { lhs.rawValue < rhs.rawValue }
 }
 
 struct TONNetworkNode {
     
     let apiKeyValue: String
-    let nodeName: TONNodeName
+    let endpointType: TONEndpointType
     let isTestnet: Bool
     
     var endpoint: TONEndpoint {
-        switch nodeName {
+        switch endpointType {
         case .toncenter:
             let url = isTestnet ? URL(string: "https://testnet.toncenter.com/api/v2/")! : URL(string: "https://toncenter.com/api/v2/")!
             
@@ -78,30 +69,24 @@ struct TONNetworkNode {
                 apiKeyHeaderValue: apiKeyValue
             )
         case .getblock:
-            return TONEndpoint(
-                url: URL(string: "https://ton.getblock.io/\(apiKeyValue)/mainnet")!,
-                apiKeyHeaderName: Constants.getBlockApiKeyHeaderName,
-                apiKeyHeaderValue: apiKeyValue
-            )
+            return TONEndpoint(url: URL(string: "https://ton.getblock.io/\(apiKeyValue)/mainnet")!)
         case .nownodes:
-            return TONEndpoint(
-                url: URL(string: "https://ton.nownodes.io/\(apiKeyValue)")!
-            )
+            return TONEndpoint(url: URL(string: "https://ton.nownodes.io/\(apiKeyValue)")!)
         }
     }
     
-    init?(apiKeyValue: String?, nodeName: TONNodeName, isTestnet: Bool) {
-        guard nodeName.isAvailable(with: apiKeyValue) else {
+    init?(apiKeyValue: String?, endpointType: TONEndpointType, isTestnet: Bool) {
+        guard endpointType.isAvailable(with: apiKeyValue) else {
             return nil
         }
         
         // Verify available testnet node
-        if isTestnet, nodeName.hasTestnent {
+        if isTestnet, endpointType.hasTestnent {
             return nil
         }
         
         self.apiKeyValue = apiKeyValue ?? ""
-        self.nodeName = nodeName
+        self.endpointType = endpointType
         self.isTestnet = isTestnet
     }
     
