@@ -36,7 +36,7 @@ enum TONNodeName: Int, CaseIterable {
         switch self {
         case .toncenter:
             return true
-        default:
+        case .getblock, .nownodes:
             return !(apiKey?.isEmpty ?? true)
         }
     }

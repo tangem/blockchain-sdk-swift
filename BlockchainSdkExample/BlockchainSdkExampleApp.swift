@@ -8,8 +8,6 @@
 
 import UIKit
 import SwiftUI
-import TangemSdk
-import BlockchainSdk
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

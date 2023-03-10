@@ -20,15 +20,15 @@ final class TONWalletManager: BaseManager, WalletManager {
     
     // MARK: - Private Properties
 
-    private var networkService: TONNetworkService
-    private var txBuilder: TONTransactionBuilder
+    private let networkService: TONNetworkService
+    private let txBuilder: TONTransactionBuilder
     private var isAvailable: Bool = true
     
     // MARK: - Init
     
     init(wallet: Wallet, networkService: TONNetworkService) throws {
         self.networkService = networkService
-        self.txBuilder = try! .init(wallet: wallet)
+        self.txBuilder = try .init(wallet: wallet)
         super.init(wallet: wallet)
     }
     
