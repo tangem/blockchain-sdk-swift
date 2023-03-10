@@ -12,26 +12,6 @@ enum TONEndpointType: Int, CaseIterable {
     case toncenter
     case getblock
     case nownodes
-    
-    /// Is support testnet type endpoint
-    var hasTestnent: Bool {
-        switch self {
-        case .toncenter:
-            return true
-        case .getblock, .nownodes:
-            return false
-        }
-    }
-    
-    func isAvailable(with apiKey: String?) -> Bool {
-        switch self {
-        case .toncenter:
-            return true
-        case .getblock, .nownodes:
-            return apiKey?.isEmpty == false
-        }
-    }
-    
 }
 
 struct TONEndpoint {
@@ -71,16 +51,7 @@ struct TONNetworkNode {
         }
     }
     
-    init?(apiKeyValue: String?, endpointType: TONEndpointType, isTestnet: Bool) {
-        guard endpointType.isAvailable(with: apiKeyValue) else {
-            return nil
-        }
-        
-        // Verify available testnet node
-        if isTestnet, !endpointType.hasTestnent {
-            return nil
-        }
-        
+    init(apiKeyValue: String?, endpointType: TONEndpointType, isTestnet: Bool) {
         self.apiKeyValue = apiKeyValue ?? ""
         self.endpointType = endpointType
         self.isTestnet = isTestnet

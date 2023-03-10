@@ -28,16 +28,12 @@ struct TONProvider: HostProvider {
     
     // MARK: - Init
     
-    init?(
-        node: TONNetworkNode?,
-        network: NetworkProvider<TONProviderTarget>
+    init(
+        node: TONNetworkNode,
+        networkConfig: NetworkProviderConfiguration
     ) {
-        guard let node = node else {
-            return nil
-        }
-        
         self.node = node
-        self.network = network
+        self.network = .init(configuration: networkConfig)
     }
     
     // MARK: - Implementation

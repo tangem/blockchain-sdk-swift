@@ -49,7 +49,7 @@ enum TONModels {
     struct Fee: Codable {
         
         /// Fees model
-        let source_fees: SourceFees
+        let sourceFees: SourceFees
         
     }
     
@@ -83,23 +83,23 @@ extension TONModels {
         
         /// Is a charge for importing messages from outside the blockchain.
         /// Every time you make a transaction, it must be delivered to the validators who will process it.
-        let in_fwd_fee: Decimal
+        let inFwdFee: Decimal
         
         /// Is the amount you pay for storing a smart contract in the blockchain.
         /// In fact, you pay for every second the smart contract is stored on the blockchain.
-        let storage_fee: Decimal
+        let storageFee: Decimal
         
         /// Is the amount you pay for executing code in the virtual machine.
         /// The larger the code, the more fees must be paid.
-        let gas_fee: Decimal
+        let gasFee: Decimal
         
         /// Stands for a charge for sending messages outside the TON
-        let fwd_fee: Decimal
+        let fwdFee: Decimal
         
         // MARK: - Helper
         
         var totalFee: Decimal {
-            in_fwd_fee + storage_fee + gas_fee + fwd_fee
+            inFwdFee + storageFee + gasFee + fwdFee
         }
         
     }

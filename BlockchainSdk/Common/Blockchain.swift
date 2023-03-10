@@ -588,7 +588,7 @@ extension Blockchain {
                 networkParams: isTestnet ?  DashTestNetworkParams() : DashMainNetworkParams()
             )
         case .ton:
-            return TrustWalletAddressService(coin: .ton(testnet: isTestnet), publicKeyType: .ed25519)
+            return TrustWalletAddressService(coin: .ton, publicKeyType: .ed25519)
         }
     }
 }

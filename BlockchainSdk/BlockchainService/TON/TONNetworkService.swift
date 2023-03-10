@@ -60,7 +60,7 @@ class TONNetworkService: MultiNetworkProvider {
                         throw WalletError.empty
                     }
                     
-                    let fee = fee.source_fees.totalFee / self.blockchain.decimalValue
+                    let fee = fee.sourceFees.totalFee / self.blockchain.decimalValue
                     return [Amount(with: self.blockchain, value: fee)]
                 }
                 .eraseToAnyPublisher()

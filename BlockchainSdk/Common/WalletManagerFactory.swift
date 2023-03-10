@@ -379,7 +379,7 @@ public class WalletManagerFactory {
                         endpointType: .toncenter,
                         isTestnet: testnet
                     ),
-                    network: .init(configuration: networkProviderConfiguration)
+                    networkConfig: networkProviderConfiguration
                 ),
                 TONProvider(
                     node: .init(
@@ -387,7 +387,7 @@ public class WalletManagerFactory {
                         endpointType: .getblock,
                         isTestnet: testnet
                     ),
-                    network: .init(configuration: networkProviderConfiguration)
+                    networkConfig: networkProviderConfiguration
                 ),
                 TONProvider(
                     node: .init(
@@ -395,7 +395,7 @@ public class WalletManagerFactory {
                         endpointType: .nownodes,
                         isTestnet: testnet
                     ),
-                    network: .init(configuration: networkProviderConfiguration)
+                    networkConfig: networkProviderConfiguration
                 ),
             ]
             

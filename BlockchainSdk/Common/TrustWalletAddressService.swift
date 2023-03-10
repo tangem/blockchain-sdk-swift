@@ -12,12 +12,12 @@ import WalletCore
 
 public class TrustWalletAddressService: AddressService {
     
-    private let coin: Blockchain
+    private let coin: CoinType
     private let publicKeyType: PublicKeyType
     
     // MARK: - Init
     
-    public init(coin: Blockchain, publicKeyType: PublicKeyType) {
+    public init(coin: CoinType, publicKeyType: PublicKeyType) {
         self.coin = coin
         self.publicKeyType = publicKeyType
     }
@@ -27,17 +27,25 @@ public class TrustWalletAddressService: AddressService {
     /// - Returns: User-friendly address
     public func makeAddress(from walletPublicKey: Data) throws -> String {
         guard let publicKey = PublicKey(data: walletPublicKey, type: publicKeyType) else {
-            throw TONError.exception("Not created public key")
+            throw TWError.makeAddressFailed
         }
         
-        return AnyAddress(publicKey: publicKey, coin: .ton).description
+        return AnyAddress(publicKey: publicKey, coin: coin).description
     }
     
     /// Validate address wallet with any form
     /// - Parameter address: Any form address wallet
     /// - Returns: Result of validate
     public func validate(_ address: String) -> Bool {
-        return AnyAddress(string: address, coin: .ton) != nil
+        return AnyAddress(string: address, coin: coin) != nil
+    }
+    
+}
+
+extension TrustWalletAddressService {
+    
+    public enum TWError: Error {
+        case makeAddressFailed
     }
     
 }
