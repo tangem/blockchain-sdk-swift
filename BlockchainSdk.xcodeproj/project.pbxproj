@@ -14,7 +14,7 @@
 		2D3E77AD299293470044FC92 /* TONWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E779D299293470044FC92 /* TONWalletManager.swift */; };
 		2D3E77B7299293540044FC92 /* TONNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E77AF299293540044FC92 /* TONNetworkService.swift */; };
 		2D3E77B8299293540044FC92 /* TONNetworkUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E77B0299293540044FC92 /* TONNetworkUrl.swift */; };
-		2D3E77B9299293540044FC92 /* TONProviderContents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E77B2299293540044FC92 /* TONProviderContents.swift */; };
+		2D3E77B9299293540044FC92 /* TONProviderModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E77B2299293540044FC92 /* TONProviderModels.swift */; };
 		2D3E77BA299293540044FC92 /* TONProviderResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E77B3299293540044FC92 /* TONProviderResponse.swift */; };
 		2D3E77BB299293540044FC92 /* TONProviderTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E77B4299293540044FC92 /* TONProviderTarget.swift */; };
 		2D3E77BC299293540044FC92 /* TONProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E77B5299293540044FC92 /* TONProvider.swift */; };
@@ -303,7 +303,7 @@
 		2D3E779D299293470044FC92 /* TONWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONWalletManager.swift; sourceTree = "<group>"; };
 		2D3E77AF299293540044FC92 /* TONNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONNetworkService.swift; sourceTree = "<group>"; };
 		2D3E77B0299293540044FC92 /* TONNetworkUrl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONNetworkUrl.swift; sourceTree = "<group>"; };
-		2D3E77B2299293540044FC92 /* TONProviderContents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProviderContents.swift; sourceTree = "<group>"; };
+		2D3E77B2299293540044FC92 /* TONProviderModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProviderModels.swift; sourceTree = "<group>"; };
 		2D3E77B3299293540044FC92 /* TONProviderResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProviderResponse.swift; sourceTree = "<group>"; };
 		2D3E77B4299293540044FC92 /* TONProviderTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProviderTarget.swift; sourceTree = "<group>"; };
 		2D3E77B5299293540044FC92 /* TONProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProvider.swift; sourceTree = "<group>"; };
@@ -650,7 +650,7 @@
 		2D3E77B1299293540044FC92 /* TONProviderProvider */ = {
 			isa = PBXGroup;
 			children = (
-				2D3E77B2299293540044FC92 /* TONProviderContents.swift */,
+				2D3E77B2299293540044FC92 /* TONProviderModels.swift */,
 				2D3E77B3299293540044FC92 /* TONProviderResponse.swift */,
 				2D3E77B4299293540044FC92 /* TONProviderTarget.swift */,
 				2D3E77B5299293540044FC92 /* TONProvider.swift */,
@@ -2000,7 +2000,7 @@
 				DAE30DFB279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */,
 				5D389ECC23ACFDCF00740FE9 /* MoyaProvider+Combine.swift in Sources */,
 				5D7D243A25136254001B9A4F /* Extensions.swift in Sources */,
-				2D3E77B9299293540044FC92 /* TONProviderContents.swift in Sources */,
+				2D3E77B9299293540044FC92 /* TONProviderModels.swift in Sources */,
 				DA82433D27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift in Sources */,
 				B00FBEDA2996A1B700FDB874 /* BlockscoutTarget.swift in Sources */,
 			);
