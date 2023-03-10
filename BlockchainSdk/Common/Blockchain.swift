@@ -588,7 +588,7 @@ extension Blockchain {
                 networkParams: isTestnet ?  DashTestNetworkParams() : DashMainNetworkParams()
             )
         case .ton:
-            return TONAddressService()
+            return TWCoreAddressService()
         }
     }
 }

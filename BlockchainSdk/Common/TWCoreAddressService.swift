@@ -10,7 +10,7 @@ import Foundation
 import TangemSdk
 import WalletCore
 
-public class TONAddressService: AddressService {
+public class TWCoreAddressService: AddressService {
     
     /// Generate user-friendly address of wallet by public key
     /// - Parameter walletPublicKey: Data public key wallet
