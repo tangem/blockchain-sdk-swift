@@ -22,8 +22,13 @@ final class TONTransactionBuilder {
     
     private let wallet: Wallet
     
-    private var expiredTransactionDate: TimeInterval {
-        Date().addingTimeInterval(1 * 60).timeIntervalSince1970
+    /// 1 minute availability transaction duration
+    private var expiredTransactionDate: UInt32 {
+        UInt32(Date().addingTimeInterval(1 * 60).timeIntervalSince1970)
+    }
+    
+    private var modeTransactionConstant: UInt32 {
+        UInt32(TheOpenNetworkSendMode.payFeesSeparately.rawValue | TheOpenNetworkSendMode.ignoreActionPhaseErrors.rawValue)
     }
     
     // MARK: - Init
@@ -81,8 +86,8 @@ final class TONTransactionBuilder {
             $0.dest = destination
             $0.amount = ((amount.value * wallet.blockchain.decimalValue) as NSDecimalNumber).uint64Value
             $0.sequenceNumber = UInt32(sequenceNumber)
-            $0.mode = UInt32(TheOpenNetworkSendMode.payFeesSeparately.rawValue | TheOpenNetworkSendMode.ignoreActionPhaseErrors.rawValue)
-            $0.expireAt = UInt32(expiredTransactionDate)
+            $0.mode = modeTransactionConstant
+            $0.expireAt = expiredTransactionDate
          }
     }
     
