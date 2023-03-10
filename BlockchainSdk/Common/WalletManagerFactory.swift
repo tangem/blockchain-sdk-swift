@@ -373,7 +373,21 @@ public class WalletManagerFactory {
         case .dash(let testnet):
             return try makeDashWalletManager(testnet: testnet, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
         case .kaspa:
-            return try makeDashWalletManager(testnet: false, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
+            return try KaspaWalletManager(wallet: wallet).then {
+                let compressed = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
+                
+                let bitcoinManager = BitcoinManager(networkParams: BitcoinCashTestNetworkParams(), // TODO!
+                                                    walletPublicKey: compressed,
+                                                    compressedWalletPublicKey: compressed,
+                                                    bip: .bip44)
+                
+                $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
+                
+                let providers: [AnyBitcoinNetworkProvider] = [
+                    KaspaNetworkProvider(url: URL(string: "https://api.kaspa.org")!).eraseToAnyBitcoinNetworkProvider(),
+                ]
+                $0.networkService = KaspaNetworkService(providers: providers)
+            }
         }
     }
     
