@@ -41,6 +41,7 @@ final class TONWalletManager: BaseManager, WalletManager {
                 receiveCompletion: { [unowned self] completionSubscription in
                     if case let .failure(error) = completionSubscription {
                         self.wallet.amounts = [:]
+                        self.isAvailable = false
                         completion(.failure(error))
                     }
                 },

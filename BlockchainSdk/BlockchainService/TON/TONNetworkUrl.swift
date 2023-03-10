@@ -61,7 +61,7 @@ struct TONNetworkNode {
             
             return TONEndpoint(
                 url: url,
-                apiKeyHeaderName: Constants.toncenterApiKeyHeaderName,
+                apiKeyHeaderName: Constants.tonCenterApiKeyHeaderName,
                 apiKeyHeaderValue: apiKeyValue
             )
         case .getblock:
@@ -77,7 +77,7 @@ struct TONNetworkNode {
         }
         
         // Verify available testnet node
-        if isTestnet, endpointType.hasTestnent {
+        if isTestnet, !endpointType.hasTestnent {
             return nil
         }
         

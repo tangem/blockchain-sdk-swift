@@ -88,8 +88,8 @@ struct TONProviderTarget: TargetType {
             "Content-Type": "application/json"
         ]
         
-        if let apiKeyHeaderValue = node.endpoint.apiKeyHeaderValue {
-            headers[node.endpoint.apiKeyHeaderName ?? ""] = node.endpoint.apiKeyHeaderValue ?? ""
+        if let apiKeyHeaderValue = node.endpoint.apiKeyHeaderValue, let apiKeyHeaderName = node.endpoint.apiKeyHeaderName {
+            headers[apiKeyHeaderName] = apiKeyHeaderValue
         }
         
         return headers

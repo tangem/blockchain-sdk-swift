@@ -1,5 +1,5 @@
 //
-//  TONAddressService.swift
+//  TrustWalletAddressService.swift
 //  BlockchainSdk
 //
 //  Created by skibinalexander on 12.01.2023.
@@ -10,7 +10,15 @@ import Foundation
 import TangemSdk
 import WalletCore
 
-public class TWCoreAddressService: AddressService {
+public class TrustWalletAddressService: AddressService {
+    
+    private let coin: Blockchain
+    
+    // MARK: - Init
+    
+    public init(coin: Blockchain) {
+        self.coin = coin
+    }
     
     /// Generate user-friendly address of wallet by public key
     /// - Parameter walletPublicKey: Data public key wallet

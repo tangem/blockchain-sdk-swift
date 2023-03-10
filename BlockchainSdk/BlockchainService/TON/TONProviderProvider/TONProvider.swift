@@ -75,22 +75,11 @@ struct TONProvider: HostProvider {
     }
     
     /// Get estimate sending transaction Fee
-    /// - Parameter boc: Bag of Cells wallet transaction for destination
+    /// - Parameter address: Wallet address
+    /// - Parameter body: Body of message cell TON blockchain
     /// - Returns: Fees or Error
     func getFee(address: String, body: String?) -> AnyPublisher<TONProviderContent.Fee, Error> {
         requestPublisher(for: .init(node: node, targetType: .estimateFee(address: address, body: body)))
-    }
-    
-    /// Get estimate sending transaction Fee
-    /// - Parameter boc: Bag of Cells wallet transaction for destination
-    /// - Returns: Fees or Error
-    func getFeeWithCode(address: String, body: String?, code: String?, data: String?) -> AnyPublisher<TONProviderContent.Fee, Error> {
-        requestPublisher(
-            for: .init(
-                node: node,
-                targetType: .estimateFeeWithCode(address: address, body: body, initCode: code, initData: data)
-            )
-        )
     }
     
     /// Send transaction data message for raw cell TON
@@ -105,9 +94,12 @@ struct TONProvider: HostProvider {
     // MARK: - Private Implementation
     
     private func requestPublisher<T: Codable>(for target: TONProviderTarget) -> AnyPublisher<T, Error> {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        
         return network.requestPublisher(target)
             .filterSuccessfulStatusAndRedirectCodes()
-            .map(TONProviderResponse<T>.self)
+            .map(TONProviderResponse<T>.self, using: decoder)
             .tryMap { $0.result }
             .eraseToAnyPublisher()
     }

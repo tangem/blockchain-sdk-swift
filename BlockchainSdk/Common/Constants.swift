@@ -11,5 +11,5 @@ import Foundation
 enum Constants {
     static let nowNodesApiKeyHeaderName = "api-key"
     static let getBlockApiKeyHeaderName = "x-api-key"
-    static let toncenterApiKeyHeaderName = "X-API-KEY"
+    static let tonCenterApiKeyHeaderName = "X-API-KEY"
 }

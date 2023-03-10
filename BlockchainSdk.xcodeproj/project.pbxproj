@@ -10,7 +10,7 @@
 		2D3E779E299293470044FC92 /* TONWalletInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E778D299293470044FC92 /* TONWalletInfo.swift */; };
 		2D3E779F299293470044FC92 /* TONTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E778E299293470044FC92 /* TONTransactionBuilder.swift */; };
 		2D3E77A1299293470044FC92 /* TONError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E7791299293470044FC92 /* TONError.swift */; };
-		2D3E77AC299293470044FC92 /* TWCoreAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E779C299293470044FC92 /* TWCoreAddressService.swift */; };
+		2D3E77AC299293470044FC92 /* TrustWalletAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E779C299293470044FC92 /* TrustWalletAddressService.swift */; };
 		2D3E77AD299293470044FC92 /* TONWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E779D299293470044FC92 /* TONWalletManager.swift */; };
 		2D3E77B7299293540044FC92 /* TONNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E77AF299293540044FC92 /* TONNetworkService.swift */; };
 		2D3E77B8299293540044FC92 /* TONNetworkUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E77B0299293540044FC92 /* TONNetworkUrl.swift */; };
@@ -299,7 +299,7 @@
 		2D3E778D299293470044FC92 /* TONWalletInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONWalletInfo.swift; sourceTree = "<group>"; };
 		2D3E778E299293470044FC92 /* TONTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONTransactionBuilder.swift; sourceTree = "<group>"; };
 		2D3E7791299293470044FC92 /* TONError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONError.swift; sourceTree = "<group>"; };
-		2D3E779C299293470044FC92 /* TWCoreAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TWCoreAddressService.swift; sourceTree = "<group>"; };
+		2D3E779C299293470044FC92 /* TrustWalletAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrustWalletAddressService.swift; sourceTree = "<group>"; };
 		2D3E779D299293470044FC92 /* TONWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONWalletManager.swift; sourceTree = "<group>"; };
 		2D3E77AF299293540044FC92 /* TONNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONNetworkService.swift; sourceTree = "<group>"; };
 		2D3E77B0299293540044FC92 /* TONNetworkUrl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONNetworkUrl.swift; sourceTree = "<group>"; };
@@ -853,7 +853,7 @@
 				DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */,
 				B05F1E62299BC2F600E27E32 /* TransactionHistoryLoader.swift */,
 				EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */,
-				2D3E779C299293470044FC92 /* TWCoreAddressService.swift */,
+				2D3E779C299293470044FC92 /* TrustWalletAddressService.swift */,
 				2D4C1E9629B2834B005E8AC0 /* Wallet.swift */,
 				2D4C1E8B29B2834A005E8AC0 /* WalletCoreSigner.swift */,
 				2D4C1E8C29B2834A005E8AC0 /* WalletError.swift */,
@@ -1941,7 +1941,7 @@
 				5DF91521253DB89800B927DD /* TezosTarget.swift in Sources */,
 				B0C2C86725FBA10E00A61622 /* AnyPublisher+.swift in Sources */,
 				5DFF005F2521F772005203FB /* DucatusWalletManager.swift in Sources */,
-				2D3E77AC299293470044FC92 /* TWCoreAddressService.swift in Sources */,
+				2D3E77AC299293470044FC92 /* TrustWalletAddressService.swift in Sources */,
 				5D7D243C25136254001B9A4F /* SerializerDefinitions.swift in Sources */,
 				2D4C1EA229B2834B005E8AC0 /* AddressService.swift in Sources */,
 				5DEAFA8E244472CD0032E316 /* Amount.swift in Sources */,
