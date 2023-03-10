@@ -79,7 +79,10 @@ struct TONProvider: HostProvider {
         return network.requestPublisher(target)
             .filterSuccessfulStatusAndRedirectCodes()
             .map(TONProviderResponse<T>.self, using: decoder)
-            .tryMap { $0.result }
+            .map(\.result)
+            .mapError { error in
+                return WalletError.empty
+            }
             .eraseToAnyPublisher()
     }
     
