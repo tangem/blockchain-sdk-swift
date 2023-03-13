@@ -9,7 +9,7 @@
 import Foundation
 
 enum TONEndpointType {
-    case toncenter(_ isTestnet: Bool)
+    case toncenter(_ testnet: Bool)
     case getblock
     case nownodes
 }
@@ -35,8 +35,8 @@ struct TONNetworkNode {
     
     var endpoint: TONEndpoint {
         switch endpointType {
-        case .toncenter(let isTestnet):
-            let url = isTestnet ? URL(string: "https://testnet.toncenter.com/api/v2/")! : URL(string: "https://toncenter.com/api/v2/")!
+        case .toncenter(let testnet):
+            let url = testnet ? URL(string: "https://testnet.toncenter.com/api/v2/")! : URL(string: "https://toncenter.com/api/v2/")!
             
             return TONEndpoint(
                 url: url,
