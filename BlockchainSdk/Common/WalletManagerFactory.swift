@@ -372,32 +372,38 @@ public class WalletManagerFactory {
                 $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
             }
         case .ton(testnet: let testnet):
-            let providers: [TONProvider] = [
+            var providers: [TONProvider] = []
+            
+            providers.append(
                 TONProvider(
                     node: .init(
                         apiKeyValue: config.tonCenterApiKey,
-                        endpointType: .toncenter,
-                        isTestnet: testnet
+                        endpointType: .toncenter(testnet)
                     ),
                     networkConfig: networkProviderConfiguration
-                ),
-                TONProvider(
-                    node: .init(
-                        apiKeyValue: config.getBlockApiKey,
-                        endpointType: .getblock,
-                        isTestnet: testnet
-                    ),
-                    networkConfig: networkProviderConfiguration
-                ),
-                TONProvider(
-                    node: .init(
-                        apiKeyValue: config.nowNodesApiKey,
-                        endpointType: .nownodes,
-                        isTestnet: testnet
-                    ),
-                    networkConfig: networkProviderConfiguration
-                ),
-            ]
+                )
+            )
+            
+            if !testnet {
+                providers.append(
+                    contentsOf: [
+                        TONProvider(
+                            node: .init(
+                                apiKeyValue: config.getBlockApiKey,
+                                endpointType: .getblock
+                            ),
+                            networkConfig: networkProviderConfiguration
+                        ),
+                        TONProvider(
+                            node: .init(
+                                apiKeyValue: config.nowNodesApiKey,
+                                endpointType: .nownodes
+                            ),
+                            networkConfig: networkProviderConfiguration
+                        )
+                    ]
+                )
+            }
             
             return try TONWalletManager(
                 wallet: wallet,

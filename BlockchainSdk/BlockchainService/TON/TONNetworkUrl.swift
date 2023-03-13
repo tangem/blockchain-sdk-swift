@@ -8,8 +8,8 @@
 
 import Foundation
 
-enum TONEndpointType: Int, CaseIterable {
-    case toncenter
+enum TONEndpointType {
+    case toncenter(_ isTestnet: Bool)
     case getblock
     case nownodes
 }
@@ -32,11 +32,10 @@ struct TONNetworkNode {
     
     let apiKeyValue: String
     let endpointType: TONEndpointType
-    let isTestnet: Bool
     
     var endpoint: TONEndpoint {
         switch endpointType {
-        case .toncenter:
+        case .toncenter(let isTestnet):
             let url = isTestnet ? URL(string: "https://testnet.toncenter.com/api/v2/")! : URL(string: "https://toncenter.com/api/v2/")!
             
             return TONEndpoint(
@@ -51,10 +50,9 @@ struct TONNetworkNode {
         }
     }
     
-    init(apiKeyValue: String?, endpointType: TONEndpointType, isTestnet: Bool) {
+    init(apiKeyValue: String?, endpointType: TONEndpointType) {
         self.apiKeyValue = apiKeyValue ?? ""
         self.endpointType = endpointType
-        self.isTestnet = isTestnet
     }
     
 }

@@ -80,9 +80,7 @@ struct TONProvider: HostProvider {
             .filterSuccessfulStatusAndRedirectCodes()
             .map(TONProviderResponse<T>.self, using: decoder)
             .map(\.result)
-            .mapError { error in
-                return WalletError.empty
-            }
+            .mapError { _ in WalletError.empty }
             .eraseToAnyPublisher()
     }
     
