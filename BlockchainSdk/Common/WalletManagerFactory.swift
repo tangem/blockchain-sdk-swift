@@ -377,7 +377,7 @@ public class WalletManagerFactory {
             providers.append(
                 TONProvider(
                     node: .init(
-                        apiKeyValue: config.tonCenterApiKeys.getApiKey(by: testnet),
+                        apiKeyValue: config.tonCenterApiKeys.getApiKey(for: testnet),
                         endpointType: .toncenter(testnet)
                     ),
                     networkConfig: networkProviderConfiguration

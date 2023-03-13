@@ -78,8 +78,8 @@ public extension BlockchainSdkConfig {
             self.testnetApiKey = testnetApiKey
         }
         
-        func getApiKey(by testnet: Bool) -> String {
-            return testnet ? mainnetApiKey : testnetApiKey
+        func getApiKey(for testnet: Bool) -> String {
+            return testnet ? testnetApiKey : mainnetApiKey
         }
     }
 }
