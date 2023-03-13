@@ -618,6 +618,15 @@ class AddressesTests: XCTestCase {
         let walletPubkey3 = Data(hex: "f42c77f931bea20ec5d0150731276bbb2e2860947661245b2319ef8133ee8d41")
         let expectedAddress3 = "EQBm--PFwDv1yCeS-QTJ-L8oiUpqo9IT1BwgVptlSq3ts90Q"
         XCTAssertEqual(try! addressService.makeAddress(from: walletPubkey3), expectedAddress3)
+        
+        let walletPubkey4 = Data(hexString: "0404B604296010A55D40000B798EE8454ECCC1F8900E70B1ADF47C9887625D8BAE3866351A6FA0B5370623268410D33D345F63344121455849C9C28F9389ED9731")
+        XCTAssertNil(try? addressService.makeAddress(from: walletPubkey4))
+        
+        let walletPubkey5 = Data(hexString: "042A5741873B88C383A7CFF4AA23792754B5D20248F1A24DF1DAC35641B3F97D8936D318D49FE06E3437E31568B338B340F4E6DF5184E1EC5840F2B7F4596902AE")
+        XCTAssertNil(try? addressService.makeAddress(from: walletPubkey5))
+        
+        XCTAssertNil(try? addressService.makeAddress(from: secpCompressedKey))
+        XCTAssertNil(try? addressService.makeAddress(from: secpDecompressedKey))
     }
     
     func testTONValidateCorrectAddress() {

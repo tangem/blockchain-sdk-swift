@@ -44,7 +44,7 @@ public class TrustWalletAddressService: AddressService {
 
 extension TrustWalletAddressService {
     
-    public enum TWError: Error {
+    enum TWError: Error {
         case makeAddressFailed
     }
     

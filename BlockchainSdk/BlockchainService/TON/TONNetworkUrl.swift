@@ -41,7 +41,7 @@ struct TONNetworkNode {
             
             return TONEndpoint(
                 url: url,
-                apiKeyHeaderName: Constants.tonCenterApiKeyHeaderName,
+                apiKeyHeaderName: Constants.xApiKeyHeaderName,
                 apiKeyHeaderValue: apiKeyValue
             )
         case .getblock:

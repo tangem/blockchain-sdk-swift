@@ -69,11 +69,6 @@ enum TONModels {
         
     }
 
-    
-}
-
-extension TONModels {
-    
     enum AccountState: String, Codable {
         case active
         case uninitialized

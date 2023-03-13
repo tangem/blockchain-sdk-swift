@@ -93,7 +93,7 @@ struct TONProviderTarget: TargetType {
 
 extension TONProviderTarget {
     
-    public enum TargetType {
+    enum TargetType {
         case getInfo(address: String)
         case estimateFee(address: String, body: String?)
         case getBalance(address: String)
