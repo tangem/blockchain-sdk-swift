@@ -63,7 +63,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                                                                           nowNodesApiKey: "",
                                                                           getBlockApiKey: "",
                                                                           tronGridApiKey: "",
-                                                                          tonCenterApiKey: "",
+                                                                          tonCenterApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
                                                                           quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
                                                                           quickNodeBscCredentials: .init(apiKey: "", subdomain: ""),
                                                                           blockscoutCredentials: .init(login: "", password: ""),
