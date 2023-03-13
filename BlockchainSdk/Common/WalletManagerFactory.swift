@@ -384,7 +384,11 @@ public class WalletManagerFactory {
                 $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: wallet.addresses)
                 
                 let providers: [AnyBitcoinNetworkProvider] = [
-                    KaspaNetworkProvider(url: URL(string: "https://api.kaspa.org")!).eraseToAnyBitcoinNetworkProvider(),
+                    KaspaNetworkProvider(
+                        url: URL(string: "https://api.kaspa.org")!,
+                        blockchain: blockchain,
+                        networkConfiguration: networkProviderConfiguration
+                    ).eraseToAnyBitcoinNetworkProvider(),
                 ]
                 $0.networkService = KaspaNetworkService(providers: providers)
             }

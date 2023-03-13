@@ -9,7 +9,7 @@
 import Foundation
 import Combine
 
-class KaspaNetworkProvider: BitcoinNetworkProvider {
+class KaspaNetworkProvider {
     var host: String {
         url.hostOrUnknown
     }
@@ -19,18 +19,49 @@ class KaspaNetworkProvider: BitcoinNetworkProvider {
     }
     
     private let url: URL
+    private let blockchain: Blockchain
+    private let provider: NetworkProvider<KaspaTarget>
     
-    init(url: URL) {
+    init(url: URL, blockchain: Blockchain, networkConfiguration: NetworkProviderConfiguration) {
         self.url = url
+        self.blockchain = blockchain
+        self.provider = NetworkProvider<KaspaTarget>(configuration: networkConfiguration)
     }
-
-    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        // TODO
-        Just(BitcoinResponse(balance: 1, hasUnconfirmed: false, pendingTxRefs: [], unspentOutputs: []))
-            .setFailureType(to: Error.self)
+    
+    private func balance(address: String) -> AnyPublisher<KaspaBalanceResponse, Error> {
+        requestPublisher(for: .balance(address: address))
+    }
+    
+    private func requestPublisher<T: Codable>(for request: KaspaTarget.Request) -> AnyPublisher<T, Error> {
+        return provider.requestPublisher(KaspaTarget(request: request, baseURL: url))
+            .filterSuccessfulStatusAndRedirectCodes()
+            .map(T.self)
+            .mapError { moyaError in
+                if case .objectMapping = moyaError {
+                    return WalletError.failedToParseNetworkResponse
+                }
+                return moyaError
+            }
             .eraseToAnyPublisher()
     }
-        
+}
+
+extension KaspaNetworkProvider: BitcoinNetworkProvider {
+    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
+        balance(address: address)
+            .tryMap { [weak self] balance in
+                guard let self else { throw WalletError.empty }
+                
+                return BitcoinResponse(
+                    balance: Decimal(integerLiteral: balance.balance) / self.blockchain.decimalValue,
+                    hasUnconfirmed: false,
+                    pendingTxRefs: [],
+                    unspentOutputs: []
+                )
+            }
+            .eraseToAnyPublisher()
+    }
+    
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
         // TODO
         .anyFail(error: WalletError.empty)
