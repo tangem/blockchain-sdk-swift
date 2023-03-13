@@ -16,6 +16,7 @@ public struct BlockchainSdkConfig {
     let nowNodesApiKey: String
     let getBlockApiKey: String
     let tronGridApiKey: String
+    let tonCenterApiKey: String
     let quickNodeSolanaCredentials: QuickNodeCredentials
     let quickNodeBscCredentials: QuickNodeCredentials
     let blockscoutCredentials: NetworkProviderConfiguration.Credentials
@@ -30,6 +31,7 @@ public struct BlockchainSdkConfig {
         nowNodesApiKey: String,
         getBlockApiKey: String,
         tronGridApiKey: String,
+        tonCenterApiKey: String,
         quickNodeSolanaCredentials: QuickNodeCredentials,
         quickNodeBscCredentials: QuickNodeCredentials,
         blockscoutCredentials: NetworkProviderConfiguration.Credentials,
@@ -43,6 +45,7 @@ public struct BlockchainSdkConfig {
         self.nowNodesApiKey = nowNodesApiKey
         self.getBlockApiKey = getBlockApiKey
         self.tronGridApiKey = tronGridApiKey
+        self.tonCenterApiKey = tonCenterApiKey
         self.quickNodeSolanaCredentials = quickNodeSolanaCredentials
         self.quickNodeBscCredentials = quickNodeBscCredentials
         self.blockscoutCredentials = blockscoutCredentials

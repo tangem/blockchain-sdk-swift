@@ -41,6 +41,7 @@ public enum Blockchain: Equatable, Hashable {
     case gnosis
     case optimism(testnet: Bool)
     case saltPay
+    case ton(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -84,12 +85,14 @@ public enum Blockchain: Equatable, Hashable {
             return false
         case .saltPay:
             return false
+        case .ton(let testnet):
+            return testnet
         }
     }
     
     public var curve: EllipticCurve {
         switch self {
-        case .stellar, .cardano, .solana, .polkadot, .kusama:
+        case .stellar, .cardano, .solana, .polkadot, .kusama, .ton:
             return .ed25519
         case .xrp(let curve):
             return curve
@@ -110,7 +113,7 @@ public enum Blockchain: Equatable, Hashable {
             return 6
         case .stellar:
             return 7
-        case .solana:
+        case .solana, .ton:
             return 9
         case .polkadot(let testnet):
             return testnet ? 12 : 10
@@ -171,6 +174,8 @@ public enum Blockchain: Equatable, Hashable {
             return "ETHW"
         case .ethereumFair:
             return "ETF"
+        case .ton:
+            return "TON"
         }
     }
     
@@ -221,6 +226,7 @@ public enum Blockchain: Equatable, Hashable {
         case .binance: return "BEP2"
         case .bsc: return "BEP20"
         case .tron: return "TRC20"
+        case .ton: return "TON"
         default:
             return nil
         }
@@ -521,6 +527,7 @@ extension Blockchain {
         case .dash: return 5
         case .gnosis: return 700
         case .optimism: return 614
+        case .ton: return 607
         }
     }
     
@@ -580,6 +587,8 @@ extension Blockchain {
             return BitcoinLegacyAddressService(
                 networkParams: isTestnet ?  DashTestNetworkParams() : DashMainNetworkParams()
             )
+        case .ton:
+            return TrustWalletAddressService(coin: .ton, publicKeyType: .ed25519)
         }
     }
 }
@@ -649,6 +658,7 @@ extension Blockchain: Codable {
         case .ethereumPoW: return "ethereum-pow-iou"
         case .ethereumFair: return "ethereumfair"
         case .saltPay: return "sxdai"
+        case .ton: return "ton"
         }
     }
     
@@ -699,6 +709,7 @@ extension Blockchain: Codable {
         case "ethereum-pow-iou": self = .ethereumPoW(testnet: isTestnet)
         case "ethereumfair": self = .ethereumFair
         case "sxdai": self = .saltPay
+        case "ton": self = .ton(testnet: isTestnet)
         default: throw BlockchainSdkError.decodingFailed
         }
     }
@@ -858,6 +869,9 @@ extension Blockchain {
             return URL(string: "https://optimistic.etherscan.io/address/\(address)")!
         case .saltPay:
             return URL(string: "https://blockscout.bicoccachain.net/address/\(address)")!
+        case .ton:
+            let subdomain = isTestnet ? "testnet" : ""
+            return URL(string: "https://\(subdomain).tonscan.org/address/\(address)")
         }
     }
 }
@@ -905,6 +919,7 @@ extension Blockchain {
         case "ethereum-pow-iou": return .ethereumPoW(testnet: isTestnet)
         case "ethereumfair": return .ethereumFair
         case "sxdai": return .saltPay
+        case "ton": return .ton(testnet: isTestnet)
         default: return nil
         }
     }

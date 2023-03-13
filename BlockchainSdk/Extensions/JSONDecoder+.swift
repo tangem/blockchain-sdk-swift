@@ -18,3 +18,11 @@ extension JSONDecoder.DateDecodingStrategy {
         throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(string)")
     }
 }
+
+extension Encodable {
+    func asDictionary() throws -> [String: Any] {
+        let data = try JSONEncoder().encode(self)
+        let dictionary = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+        return dictionary as? [String: Any] ?? [:]
+    }
+}
