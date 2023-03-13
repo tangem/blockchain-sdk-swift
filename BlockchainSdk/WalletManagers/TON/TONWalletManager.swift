@@ -106,7 +106,7 @@ final class TONWalletManager: BaseManager, WalletManager {
     
     private func update(with info: TONWalletInfo, completion: @escaping (Result<Void, Error>) -> Void) {
         if info.sequenceNumber != txBuilder.sequenceNumber {
-            for (index, _) in wallet.transactions.enumerated() {
+            for index in wallet.transactions.indices {
                 wallet.transactions[index].status = .confirmed
             }
         }
