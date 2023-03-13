@@ -30,7 +30,7 @@ public struct XRPAddress {
     }
     
     public init(xAddress: String) throws {
-        guard let data = Data(base58: xAddress, alphabet:Base58String.xrpAlphabet) else {
+        guard let data = XRPBase58.getData(from: xAddress) else {
             throw XRPAddressError.invalidAddress
         }
         let check = data.suffix(4).bytes
@@ -45,7 +45,7 @@ public struct XRPAddress {
         let prefixedAccountID = Data([0x00]) + accountID
         let checksum = Data(prefixedAccountID).sha256().sha256().prefix(through: 3)
         let addrrssData = prefixedAccountID + checksum
-        let address = String(base58: addrrssData, alphabet:Base58String.xrpAlphabet)
+        let address = XRPBase58.getString(from: addrrssData)
                 
         if check == [UInt8](Data(concatenated).sha256().sha256().prefix(through: 3)) {
             let data = Data(tagBytes)
@@ -78,6 +78,6 @@ public struct XRPAddress {
         let concatenated = prefix + accountID + flags + tag
         let check = [UInt8](Data(concatenated).sha256().sha256().prefix(through: 3))
         let concatenatedCheck: [UInt8] = concatenated + check
-        return String(base58: Data(concatenatedCheck), alphabet: Base58String.xrpAlphabet)
+        return XRPBase58.getString(from: Data(concatenatedCheck))
     }
 }

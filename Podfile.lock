@@ -54,7 +54,7 @@ PODS:
   - SwiftDate (6.3.1)
   - SwiftProtobuf (1.18.0)
   - SwiftyJSON (5.0.1)
-  - TangemSdk (3.3.4)
+  - TangemSdk (3.4.0)
   - TangemWalletCore (3.1.9-tangem1):
     - SwiftProtobuf
   - TweetNacl (1.0.2)
@@ -84,9 +84,9 @@ DEPENDENCIES:
   - SwiftCBOR
   - SwiftProtobuf
   - SwiftyJSON
-  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-198`)
+  - TangemSdk (from `../tangem-sdk-ios`)
   - TangemWalletCore (from `https://github.com/tangem/wallet-core-binaries-ios.git`, tag `3.1.9-tangem1`)
-  - web3swift (from `https://github.com/tangem/web3swift.git`, tag `2.2.10`)
+  - web3swift (from `https://github.com/tangem/web3swift.git`, tag `2.2.12`)
 
 SPEC REPOS:
   trunk:
@@ -123,14 +123,13 @@ EXTERNAL SOURCES:
     :git: https://github.com/tangem/Solana.Swift
     :tag: add-external-signer-7
   TangemSdk:
-    :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-198
+    :path: "../tangem-sdk-ios"
   TangemWalletCore:
     :git: https://github.com/tangem/wallet-core-binaries-ios.git
     :tag: 3.1.9-tangem1
   web3swift:
     :git: https://github.com/tangem/web3swift.git
-    :tag: 2.2.10
+    :tag: 2.2.12
 
 CHECKOUT OPTIONS:
   BinanceChain:
@@ -145,15 +144,12 @@ CHECKOUT OPTIONS:
   Solana.Swift:
     :git: https://github.com/tangem/Solana.Swift
     :tag: add-external-signer-7
-  TangemSdk:
-    :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-198
   TangemWalletCore:
     :git: https://github.com/tangem/wallet-core-binaries-ios.git
     :tag: 3.1.9-tangem1
   web3swift:
     :git: https://github.com/tangem/web3swift.git
-    :tag: 2.2.10
+    :tag: 2.2.12
 
 SPEC CHECKSUMS:
   Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
@@ -176,12 +172,12 @@ SPEC CHECKSUMS:
   SwiftDate: 72d28954e8e1c6c1c0f917ccc8005e4f83c7d4b2
   SwiftProtobuf: c3c12645230d9b09c72267e0de89468c5543bd86
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
-  TangemSdk: 9ea2c230bd616787bdccc5fb3ab36925d06199d4
+  TangemSdk: e4f7c31e71831fd4956f5341f08423869b477f9e
   TangemWalletCore: 87a4637456e46c2aa3d49a6a1dc07a8054783183
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: c32986c9d6555bc4013dd5fea054553e974661bb
+PODFILE CHECKSUM: fce1afb3b5049fef90f0ea19ce8c0f8e2f28b800
 
 COCOAPODS: 1.11.3

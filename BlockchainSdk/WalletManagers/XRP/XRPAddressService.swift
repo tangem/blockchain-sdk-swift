@@ -28,10 +28,10 @@ public class XRPAddressService: AddressService {
         default:
             fatalError("unsupported curve")
         }
-        let input = RIPEMD160.hash(message: key.sha256())
+        let input = key.sha256Ripemd160
         let buffer = [0x00] + input
         let checkSum = Data(buffer.sha256().sha256()[0..<4])
-        let walletAddress = String(base58: buffer + checkSum, alphabet: Base58String.xrpAlphabet)
+        let walletAddress = XRPBase58.getString(from: buffer + checkSum)
         return walletAddress
     }
     

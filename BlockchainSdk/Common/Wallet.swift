@@ -55,9 +55,9 @@ public struct Wallet {
     }
 
     public var xpubKey: String? {
-        guard let key = publicKey.xpubKey else { return nil }
+        guard let key = publicKey.derivedKey else { return nil }
 
-        return try? key.serialize(for: blockchain.isTestnet ? XpubVersion.testnet : XpubVersion.mainnet)
+        return try? key.serialize(for: blockchain.isTestnet ? .testnet : .mainnet)
     }
     
     public func hasPendingTx(for amountType: Amount.AmountType) -> Bool {
@@ -188,16 +188,7 @@ extension Wallet {
         public let seedKey: Data
         public let derivationPath: DerivationPath?
 
-        public var xpubKey: XpubKey? {
-            guard let derivedKey else {
-                return nil
-            }
-
-            return try? .init(chainCode: derivedKey.chainCode,
-                              publicKey: derivedKey.publicKey)
-        }
-
-        private let derivedKey: ExtendedPublicKey?
+        fileprivate let derivedKey: ExtendedPublicKey?
 
         public var blockchainKey: Data { derivedKey?.publicKey ?? seedKey }
         

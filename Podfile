@@ -3,8 +3,8 @@ use_frameworks!
 inhibit_all_warnings!
 
 def common_pods
-  pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'develop-198'
-  #pod 'TangemSdk', :path => '../tangem-sdk-ios'
+  #pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'develop-198'
+  pod 'TangemSdk', :path => '../tangem-sdk-ios'
   
   pod 'BitcoinCore.swift', :git => 'https://github.com/tangem/bitcoincore.git', :tag => '0.0.16'
   # pod 'BitcoinCore.swift', :path => '../bitcoincore'
@@ -25,8 +25,8 @@ target 'BlockchainSdk' do
   #pod 'BinanceChain', :path => '../SwiftBinanceChain'
   pod 'HDWalletKit', :git => 'https://github.com/tangem/hdwallet.git', :tag => '0.3.12'
   #pod 'HDWalletKit', :path => '../HDWallet'
+  pod 'web3swift', :git => 'https://github.com/tangem/web3swift.git', :tag => '2.2.12'
   #pod 'web3swift', :path => '../web3swift'
-  pod 'web3swift', :git => 'https://github.com/tangem/web3swift.git', :tag => '2.2.10'
   pod 'AnyCodable-FlightSchool'
   pod 'stellar-ios-mac-sdk'
   

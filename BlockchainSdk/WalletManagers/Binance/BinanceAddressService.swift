@@ -19,7 +19,7 @@ public class BinanceAddressService: AddressService {
     
     public func makeAddress(from walletPublicKey: Data) throws -> String {
         let compressedKey = try Secp256k1Key(with: walletPublicKey).compress()
-        let keyHash = RIPEMD160.hash(message: compressedKey.sha256())
+        let keyHash = compressedKey.sha256Ripemd160
         
         return testnet ? Bech32().encode("tbnb", values: keyHash) :
             Bech32().encode("bnb", values: keyHash)
