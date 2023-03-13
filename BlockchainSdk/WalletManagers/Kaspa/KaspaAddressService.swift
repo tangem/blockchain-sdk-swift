@@ -12,22 +12,31 @@ import HDWalletKit
 
 @available(iOS 13.0, *)
 public class KaspaAddressService: AddressService {
+    private let addressPrefix = "kaspa"
+    private let versionPrefix: UInt8 = 1
+    
     public func makeAddress(from walletPublicKey: Data) throws -> String {
-        let addressPrefix = "kaspa"
         let compressedKey = try Secp256k1Key(with: walletPublicKey).compress()
-        let payload = RIPEMD160.hash(message: compressedKey.sha256())
-        let walletAddress = HDWalletKit.Bech32.encode(compressedKey, prefix: addressPrefix)
+        let prefix = Data([versionPrefix])
+        
+        let walletAddress = HDWalletKit.Bech32.encode(prefix + compressedKey, prefix: addressPrefix)
         return walletAddress
     }
     
     public func validate(_ address: String) -> Bool {
-        // TODO
-        // TODO
-        // TODO
-        // TODO
-        // TODO
-        // TODO
-        // TODO
-        return true
+        guard
+            let (addressPrefix, addressData) = HDWalletKit.Bech32.decode(address),
+            addressPrefix == self.addressPrefix
+        else {
+            return false
+        }
+        
+        let versionPrefix = addressData[0]
+        guard versionPrefix == self.versionPrefix else {
+            return false
+        }
+        
+        let key = try? Secp256k1Key(with: addressData.dropFirst())
+        return key != nil
     }
 }
