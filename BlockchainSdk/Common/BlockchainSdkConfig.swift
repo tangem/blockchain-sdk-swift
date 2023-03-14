@@ -16,6 +16,7 @@ public struct BlockchainSdkConfig {
     let nowNodesApiKey: String
     let getBlockApiKey: String
     let tronGridApiKey: String
+    let tonCenterApiKeys: TonCenterApiKeys
     let quickNodeSolanaCredentials: QuickNodeCredentials
     let quickNodeBscCredentials: QuickNodeCredentials
     let blockscoutCredentials: NetworkProviderConfiguration.Credentials
@@ -30,6 +31,7 @@ public struct BlockchainSdkConfig {
         nowNodesApiKey: String,
         getBlockApiKey: String,
         tronGridApiKey: String,
+        tonCenterApiKeys: TonCenterApiKeys,
         quickNodeSolanaCredentials: QuickNodeCredentials,
         quickNodeBscCredentials: QuickNodeCredentials,
         blockscoutCredentials: NetworkProviderConfiguration.Credentials,
@@ -43,6 +45,7 @@ public struct BlockchainSdkConfig {
         self.nowNodesApiKey = nowNodesApiKey
         self.getBlockApiKey = getBlockApiKey
         self.tronGridApiKey = tronGridApiKey
+        self.tonCenterApiKeys = tonCenterApiKeys
         self.quickNodeSolanaCredentials = quickNodeSolanaCredentials
         self.quickNodeBscCredentials = quickNodeBscCredentials
         self.blockscoutCredentials = blockscoutCredentials
@@ -63,6 +66,20 @@ public extension BlockchainSdkConfig {
         public init(apiKey: String, subdomain: String) {
             self.apiKey = apiKey
             self.subdomain = subdomain
+        }
+    }
+    
+    struct TonCenterApiKeys {
+        let mainnetApiKey: String
+        let testnetApiKey: String
+        
+        public init(mainnetApiKey: String, testnetApiKey: String) {
+            self.mainnetApiKey = mainnetApiKey
+            self.testnetApiKey = testnetApiKey
+        }
+        
+        func getApiKey(for testnet: Bool) -> String {
+            return testnet ? testnetApiKey : mainnetApiKey
         }
     }
 }

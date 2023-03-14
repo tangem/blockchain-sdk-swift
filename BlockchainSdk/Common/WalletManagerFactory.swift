@@ -70,6 +70,7 @@ public class WalletManagerFactory {
     func makeWalletManager(from blockchain: Blockchain,
                            publicKey: Wallet.PublicKey,
                            pairPublicKey: Data? = nil) throws -> WalletManager {
+        
         let addresses = try blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey)
         let wallet = Wallet(blockchain: blockchain,
                             addresses: addresses,
@@ -370,6 +371,47 @@ public class WalletManagerFactory {
                 $0.networkService = TronNetworkService(isTestnet: testnet, providers: providers)
                 $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
             }
+        case .ton(testnet: let testnet):
+            var providers: [TONProvider] = []
+            
+            providers.append(
+                TONProvider(
+                    node: .init(
+                        apiKeyValue: config.tonCenterApiKeys.getApiKey(for: testnet),
+                        endpointType: .toncenter(testnet)
+                    ),
+                    networkConfig: networkProviderConfiguration
+                )
+            )
+            
+            if !testnet {
+                providers.append(
+                    contentsOf: [
+                        TONProvider(
+                            node: .init(
+                                apiKeyValue: config.getBlockApiKey,
+                                endpointType: .getblock
+                            ),
+                            networkConfig: networkProviderConfiguration
+                        ),
+                        TONProvider(
+                            node: .init(
+                                apiKeyValue: config.nowNodesApiKey,
+                                endpointType: .nownodes
+                            ),
+                            networkConfig: networkProviderConfiguration
+                        )
+                    ]
+                )
+            }
+            
+            return try TONWalletManager(
+                wallet: wallet,
+                networkService: .init(
+                    providers: providers,
+                    blockchain: blockchain
+                )
+            )
         case .dash(let testnet):
             return try makeDashWalletManager(testnet: testnet, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
         case .kaspa:
@@ -393,6 +435,7 @@ public class WalletManagerFactory {
                 $0.networkService = KaspaNetworkService(providers: providers)
             }
         }
+        
     }
     
     private func makePolkadotWalletManager(network: PolkadotNetwork,

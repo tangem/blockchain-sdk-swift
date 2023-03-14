@@ -186,6 +186,7 @@ class BlockchainSdkTests: XCTestCase {
         case .ethereumFair: break
         case .ethereumPoW: break
         case .saltPay: break
+        case .ton: break
         case .kaspa: break
         }
         // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -219,6 +220,7 @@ class BlockchainSdkTests: XCTestCase {
             .ethereumFair,
             .ethereumPoW(testnet: false),
             .saltPay,
+            .ton(testnet: false),
             .kaspa,
         ]
         
