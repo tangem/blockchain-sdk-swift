@@ -27,7 +27,6 @@ class OptimismWalletManager: EthereumWalletManager {
     /// Read more: https://community.optimism.io/docs/developers/build/transaction-fees/#the-l1-data-fee
     override func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         lastLayer1Fee = nil
-
         
         let transaction = Transaction(
             amount: Amount(with: wallet.blockchain, type: amount.type, value: 0.1),

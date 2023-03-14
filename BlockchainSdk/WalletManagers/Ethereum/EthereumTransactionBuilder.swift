@@ -22,7 +22,7 @@ class EthereumTransactionBuilder {
         self.chainId = BigUInt(chainId)
     }
     
-    public func buildForSign(transaction: Transaction, nonce: Int, gasLimit: BigUInt?) -> (hash: Data, transaction: EthereumTransaction)? {
+    public func buildForSign(transaction: Transaction, nonce: Int, gasLimit: BigUInt?) -> CompiledEthereumTransaction? {
         let params = transaction.params as? EthereumTransactionParams
         let nonceValue = BigUInt(params?.nonce ?? nonce)
         
@@ -73,7 +73,7 @@ class EthereumTransactionBuilder {
             return nil
         }
         
-        return (hashForSign, transaction)
+        return CompiledEthereumTransaction(transaction: transaction, hash: hashForSign)
     }
     
     public func buildForSend(transaction: EthereumTransaction, hash: Data, signature: Data) -> Data? {
