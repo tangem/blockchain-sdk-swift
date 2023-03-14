@@ -58,20 +58,6 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Ethere
     }
 }
 
-// MARK: - EthereumGasLoader
-
-extension EthereumWalletManager: EthereumGasLoader {
-    func getGasPrice() -> AnyPublisher<BigUInt, Error> {
-        networkService.getGasPrice()
-    }
-    
-    func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
-        return networkService
-            .getGasLimit(to: to, from: from, value: value, data: data)
-            .eraseToAnyPublisher()
-    }
-}
-
 // MARK: - EthereumNetworkProvider
 
 extension EthereumWalletManager: EthereumNetworkProvider {
