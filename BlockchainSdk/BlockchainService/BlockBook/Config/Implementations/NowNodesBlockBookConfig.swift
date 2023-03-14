@@ -36,6 +36,9 @@ extension NowNodesBlockBookConfig: BlockBookConfig {
         case .fees:
             return "https://\(currencySymbolPrefix).\(host)"
         default:
+            if blockchain == .ravencoin(testnet: false) {
+                return "https://\(currencySymbolPrefix).\(host)"
+            }
             let testnetSuffix = blockchain.isTestnet ? "-testnet" : ""
             return "https://\(currencySymbolPrefix)book\(testnetSuffix).\(host)"
         }

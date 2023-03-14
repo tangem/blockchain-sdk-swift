@@ -505,8 +505,8 @@ public class WalletManagerFactory {
 
             $0.networkService = BitcoinNetworkService(
                 providers: [
-                    BlockBookUtxoProvider(blockchain: .ravencoin(testnet: testnet),
-                                          blockBookConfig: NowNodesBlockConfig(apiKey: config.nowNodesApiKey),
+                    BlockBookUtxoProvider(blockchain: .ravencoin(testnet: false),
+                                          blockBookConfig: NowNodesBlockBookConfig(apiKey: config.nowNodesApiKey),
                                           networkConfiguration: networkProviderConfiguration)
                     .eraseToAnyBitcoinNetworkProvider()
                 ]
