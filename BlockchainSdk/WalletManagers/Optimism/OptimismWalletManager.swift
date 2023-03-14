@@ -23,18 +23,14 @@ class OptimismWalletManager: EthereumWalletManager {
         super.init(wallet: wallet)
     }
     
-    /// Overrided method from the protocol `EthereumTransactionProcessor`
-    override func getFee(to destination: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error> {
-        guard let amount = amount else {
-            return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
-        }
-
-        guard let data = data ?? txBuilder.getData(for: amount, targetAddress: destination)?.hexString.addHexPrefix() else {
-            return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
+    override func getFee(to: String, value: String?, data: String?) -> AnyPublisher<[Amount], Error> {
+        guard let data = data else {
+            assertionFailure("Data is not found for fee")
+            return super.getFee(to: to, value: value, data: data)
         }
         
         let layer1FeePublisher = getLayer1Fee(data: data)
-        let layer2FeePublisher = super.getFee(amount: amount, destination: destination)
+        let layer2FeePublisher = super.getFee(to: to, value: value, data: data)
         
         return Publishers
             .CombineLatest(layer2FeePublisher, layer1FeePublisher)
