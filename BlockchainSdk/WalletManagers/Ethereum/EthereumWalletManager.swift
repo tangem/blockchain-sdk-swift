@@ -107,7 +107,7 @@ extension EthereumWalletManager {
             let normalAmount = Amount(with: self.wallet.blockchain, value: $0.fees[1])
             let maxAmount = Amount(with: self.wallet.blockchain, value: $0.fees[2])
             let feeArray = [minAmount, normalAmount, maxAmount]
-            print("Fee: \(feeArray)")
+            print("EthereumWalletManager calculated fees: \(feeArray)")
             return feeArray
         }
         .eraseToAnyPublisher()
