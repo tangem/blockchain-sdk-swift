@@ -23,6 +23,7 @@ class OptimismWalletManager: EthereumWalletManager {
         super.init(wallet: wallet)
     }
     
+    /// Overrided method from the protocol `EthereumTransactionProcessor`
     override func getFee(to destination: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error> {
         guard let amount = amount else {
             return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
@@ -53,14 +54,15 @@ class OptimismWalletManager: EthereumWalletManager {
         }.eraseToAnyPublisher()
     }
 
+    /// For what override method from the protocol `EthereumTransactionSigner`
+    /// We calculate the `gasPrice` for `tx` using the formula `fee / gasLimit`
+    /// The `gasLimit` may set in txParams or stored in the `EthereumWalletManager` when we call the `getFee` method
+    /// And here we have to remove the `lastLayer1Fee` for the correct calculation `gasPrice` in `txBuilder`
     override func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
         guard let lastLayer1Fee = lastLayer1Fee else {
             return super.sign(transaction, signer: signer)
         }
-        
-        // We calculated gasPrice for tx for formula fee / gasLimit
-        // GasLimit exist in txParams or saved in EthereumWalletManager when we call getFee method
-        // And here we should to remove lastLayer1Fee for correct calculation gasPrice
+
         let calculatedTransactionFee = transaction.fee.value - lastLayer1Fee
         
         do {

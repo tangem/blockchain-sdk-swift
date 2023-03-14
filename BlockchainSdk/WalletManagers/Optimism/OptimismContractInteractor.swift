@@ -8,10 +8,7 @@
 
 import Combine
 
-protocol OptimismNetworkProvider {
-    func getLayer1Fee(data: String) -> AnyPublisher<Decimal, Error>
-}
-
+/// Object for work with optimism's contract methods
 struct OptimismContractInteractor {
     private let contractInteractor: ContractInteractor
 
