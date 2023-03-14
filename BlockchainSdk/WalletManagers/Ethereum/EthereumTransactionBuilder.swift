@@ -55,18 +55,19 @@ class EthereumTransactionBuilder {
             return nil
         }
         
-        
         let gasPrice = params?.gasPrice ?? feeValue / gasLimit
         
-        let transaction = EthereumTransaction(nonce: nonceValue,
-                                              gasPrice: gasPrice,
-                                              gasLimit: gasLimit,
-                                              to: ethAddress,
-                                              value: transaction.amount.type == .coin ? amountValue : .zero,
-                                              data: data,
-                                              v: 0,
-                                              r: 0,
-                                              s: 0)
+        let transaction = EthereumTransaction(
+            nonce: nonceValue,
+            gasPrice: gasPrice,
+            gasLimit: gasLimit,
+            to: ethAddress,
+            value: transaction.amount.type == .coin ? amountValue : .zero,
+            data: data,
+            v: 0,
+            r: 0,
+            s: 0
+        )
         
         guard let hashForSign = transaction.hashForSignature(chainID: chainId) else {
             return nil

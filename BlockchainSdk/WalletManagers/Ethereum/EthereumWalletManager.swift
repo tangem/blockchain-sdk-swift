@@ -28,7 +28,7 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Ethere
 
     // MARK: - EthereumTransactionSigner
     
-    // It can't be into private extension because it method will be override in OptimismWalletManager
+    // It can't be into extension because it method overrided in OptimismWalletManager
     func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
         guard let txForSign = txBuilder.buildForSign(transaction: transaction,
                                                      nonce: txCount,
@@ -50,27 +50,12 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Ethere
         .eraseToAnyPublisher()
     }
     
-    // It can't be into private extension because it method will be override in OptimismWalletManager
-    func getFee(to: String, value: String?, data: String?) -> AnyPublisher<[Amount], Error> {
-        return networkService.getFee(to: to,
-                                     from: wallet.address,
-                                     value: value,
-                                     data: data)
-        .tryMap {
-            guard $0.fees.count == 3 else {
-                throw BlockchainSdkError.failedToLoadFee
-            }
-            self.gasLimit = $0.gasLimit
-            
-            let minAmount = Amount(with: self.wallet.blockchain, value: $0.fees[0])
-            let normalAmount = Amount(with: self.wallet.blockchain, value: $0.fees[1])
-            let maxAmount = Amount(with: self.wallet.blockchain, value: $0.fees[2])
-            let feeArray = [minAmount, normalAmount, maxAmount]
-            print("EthereumWalletManager calculated fees: \(feeArray)")
-
-            return feeArray
-        }
-        .eraseToAnyPublisher()
+    // MARK: - TransactionSender
+    
+    // It can't be into extension because it method overrided in OptimismWalletManager
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
+        let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
+        return getFee(to: destinationInfo.to, value: destinationInfo.value, data: destinationInfo.data)
     }
 }
 
@@ -107,7 +92,26 @@ extension EthereumWalletManager {
 // MARK: - Private
 
 extension EthereumWalletManager {
-
+    private func getFee(to: String, value: String?, data: String?) -> AnyPublisher<[Amount], Error> {
+        return networkService.getFee(to: to,
+                                     from: wallet.address,
+                                     value: value,
+                                     data: data)
+        .tryMap {
+            guard $0.fees.count == 3 else {
+                throw BlockchainSdkError.failedToLoadFee
+            }
+            self.gasLimit = $0.gasLimit
+            
+            let minAmount = Amount(with: self.wallet.blockchain, value: $0.fees[0])
+            let normalAmount = Amount(with: self.wallet.blockchain, value: $0.fees[1])
+            let maxAmount = Amount(with: self.wallet.blockchain, value: $0.fees[2])
+            let feeArray = [minAmount, normalAmount, maxAmount]
+            print("Fee: \(feeArray)")
+            return feeArray
+        }
+        .eraseToAnyPublisher()
+    }
     
     private func updateWallet(with response: EthereumInfoResponse) {
         wallet.add(coinValue: response.balance)
@@ -160,11 +164,6 @@ extension EthereumWalletManager {
 
 extension EthereumWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
-    
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
-        let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
-        return getFee(to: destinationInfo.to, value: destinationInfo.value, data: destinationInfo.data)
-    }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         sign(transaction, signer: signer)

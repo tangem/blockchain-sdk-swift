@@ -23,25 +23,44 @@ class OptimismWalletManager: EthereumWalletManager {
         super.init(wallet: wallet)
     }
     
-    override func getFee(to: String, value: String?, data: String?) -> AnyPublisher<[Amount], Error> {
-        let layer1FeePublisher = getLayer1Fee(data: data ?? Data().hexString.addHexPrefix())
-        let layer2FeePublisher = super.getFee(to: to, value: value, data: data)
+    /// We are override this method to combine two fee layers in the `OptimisticEthereum` network.
+    /// Read more: https://community.optimism.io/docs/developers/build/transaction-fees/#the-l1-data-fee
+    override func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
+        lastLayer1Fee = nil
+
+        
+        let transaction = Transaction(
+            amount: Amount(with: wallet.blockchain, type: amount.type, value: 0.1),
+            fee: Amount(with: wallet.blockchain, type: amount.type, value: 0.1),
+            sourceAddress: wallet.address,
+            destinationAddress: destination,
+            changeAddress: wallet.address,
+            contractAddress: amount.type.token?.contractAddress
+        )
+
+        let tx = txBuilder.buildForSign(transaction: transaction, nonce: 1, gasLimit: BigUInt(1))
+        
+        // Think about this way of getting data, maybe it can work without a dummy tx
+        guard let byteArray = tx?.transaction.encodeForSend() else {
+            return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
+        }
+        
+        let layer1FeePublisher = getLayer1Fee(data: byteArray.hexString.addHexPrefix())
+        let layer2FeePublisher = super.getFee(amount: amount, destination: destination)
         
         return Publishers
             .CombineLatest(layer2FeePublisher, layer1FeePublisher)
             .tryMap { [weak self] (layer2FeeAmounts, layer1FeeAmount) in
-                guard let self = self else {
-                    throw BlockchainSdkError.failedToLoadFee
+                let fees = layer2FeeAmounts.map { amount in
+                    Amount(type: amount.type, currencySymbol: amount.currencySymbol,
+                           value: amount.value + layer1FeeAmount,
+                           decimals: amount.decimals)
                 }
                 
-                let blockchain = self.wallet.blockchain
+                self?.lastLayer1Fee = layer1FeeAmount
+                print("OptimismWalletManager calculated fees: ", fees)
                 
-                let minAmount = Amount(with: blockchain, value: layer2FeeAmounts[0].value + layer1FeeAmount)
-                let normalAmount = Amount(with: blockchain, value: layer2FeeAmounts[1].value + layer1FeeAmount)
-                let maxAmount = Amount(with: blockchain, value: layer2FeeAmounts[2].value + layer1FeeAmount)
-                self.lastLayer1Fee = layer1FeeAmount
-                
-                return [minAmount, normalAmount, maxAmount]
+                return fees
         }.eraseToAnyPublisher()
     }
 
