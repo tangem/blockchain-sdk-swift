@@ -24,12 +24,7 @@ class OptimismWalletManager: EthereumWalletManager {
     }
     
     override func getFee(to: String, value: String?, data: String?) -> AnyPublisher<[Amount], Error> {
-        guard let data = data else {
-            assertionFailure("Data is not found for fee")
-            return super.getFee(to: to, value: value, data: data)
-        }
-        
-        let layer1FeePublisher = getLayer1Fee(data: data)
+        let layer1FeePublisher = getLayer1Fee(data: data ?? Data().hexString.addHexPrefix())
         let layer2FeePublisher = super.getFee(to: to, value: value, data: data)
         
         return Publishers
