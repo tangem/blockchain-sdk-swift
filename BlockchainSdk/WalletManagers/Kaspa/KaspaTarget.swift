@@ -17,15 +17,29 @@ struct KaspaTarget: TargetType {
         switch request {
         case .balance(let address):
             return "/addresses/\(address)/balance"
+        case .utxos(let address):
+            return "/addresses/\(address)/utxos"
+        case .transactions:
+            return "/transactions"
         }
     }
     
     var method: Moya.Method {
-        .get
+        switch request {
+        case .balance, .utxos:
+            return .get
+        case .transactions:
+            return .post
+        }
     }
     
     var task: Moya.Task {
-        .requestPlain
+        switch request {
+        case .balance, .utxos:
+            return .requestPlain
+        case .transactions(let transaction):
+            return .requestJSONEncodable(transaction)
+        }
     }
     
     var headers: [String : String]? {
@@ -36,5 +50,7 @@ struct KaspaTarget: TargetType {
 extension KaspaTarget {
     enum Request {
         case balance(address: String)
+        case utxos(address: String)
+        case transactions(transaction: KaspaTransactionRequest)
     }
 }
