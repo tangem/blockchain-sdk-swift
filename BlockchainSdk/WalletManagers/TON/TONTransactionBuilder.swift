@@ -82,6 +82,7 @@ final class TONTransactionBuilder {
             $0.amount = ((amount.value * wallet.blockchain.decimalValue) as NSDecimalNumber).uint64Value
             $0.sequenceNumber = UInt32(sequenceNumber)
             $0.mode = modeTransactionConstant
+            $0.bounceBehavior = .nonBounceable
          }
     }
     
