@@ -17,22 +17,22 @@ struct KaspaBalanceResponse: Codable {
 // MARK: - UTXO
 
 struct KaspaUnspentOutputResponse: Codable {
-    var outpoint: KaspaOutpoint?
-    var utxoEntry: KaspaUtxoEntry?
+    var outpoint: KaspaOutpoint
+    var utxoEntry: KaspaUtxoEntry
 }
 
 struct KaspaOutpoint: Codable {
-    let transactionId: String?
-    let index: Int?
+    let transactionId: String
+    let index: Int
 }
 
 struct  KaspaUtxoEntry: Codable {
-    let amount: String?
-    let scriptPublicKey: KaspaScriptPublicKeyResponse?
+    let amount: String
+    let scriptPublicKey: KaspaScriptPublicKeyResponse
 }
 
 struct KaspaScriptPublicKeyResponse: Codable {
-    let scriptPublicKey: String?
+    let scriptPublicKey: String
 }
 
 // MARK: - Transaction
