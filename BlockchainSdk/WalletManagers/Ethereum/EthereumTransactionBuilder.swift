@@ -115,23 +115,4 @@ extension EthereumTransaction {
         let fields = [self.nonce, self.gasPrice, self.gasLimit, self.to.addressData, self.value, self.data, encodeV, self.r, self.s] as [AnyObject]
         return RLP.encode(fields)
     }
-    
-    init?(amount: BigUInt, fee: BigUInt, targetAddress: String, nonce: BigUInt, gasLimit: BigUInt = 21000, data: Data, ignoreCheckSum: Bool,
-          v: BigUInt = 0, r: BigUInt = 0, s: BigUInt = 0, network: Networks) {
-        let gasPrice = fee / gasLimit
-        
-        guard let ethAddress = EthereumAddress(targetAddress, type: .normal, ignoreChecksum: ignoreCheckSum, network: network) else {
-            return nil
-        }
-        
-        self.init(nonce: nonce,
-                  gasPrice: gasPrice,
-                  gasLimit: gasLimit,
-                  to: ethAddress,
-                  value: amount,
-                  data: data,
-                  v: v,
-                  r: r,
-                  s: s)
-    }
 }
