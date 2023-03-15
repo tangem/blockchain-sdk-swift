@@ -50,9 +50,9 @@ extension OptimismContractInteractor {
         
         var parameters: [AnyObject] {
             switch self {
-            case .getL1Fee(data: let data):
+            case .getL1Fee(let data):
                 return [data as AnyObject]
-            case .getL1GasUsed(data: let data):
+            case .getL1GasUsed(let data):
                 return [data as AnyObject]
             case .l1BaseFee:
                 return []

@@ -108,8 +108,8 @@ extension OptimismWalletManager: OptimismGasLoader {
         contractInteractor
             .read(method: .getL1GasUsed(data: data))
             .tryMap { response in
-                if let bigUIntPrice = BigUInt("\(response)") {
-                    return bigUIntPrice
+                if let bigUIntLimit = BigUInt("\(response)") {
+                    return bigUIntLimit
                 }
                 
                 throw BlockchainSdkError.failedToLoadFee
