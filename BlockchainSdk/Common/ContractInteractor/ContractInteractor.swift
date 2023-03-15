@@ -10,44 +10,22 @@ import Foundation
 import Combine
 import web3swift
 
-public class ContractInteractor {
-    private let address: String
-    private let abi: String
-    private let rpcURL: URL
-    private let decimals: Int
-    
+public class ContractInteractor<Contract: SmartContract> {
+    private let contract: Contract
     private lazy var defaultOptions: TransactionOptions = .defaultOptions
     
-    public init(address: String, abi: String, rpcURL: URL, decimals: Int = 18) {
-        self.address = address
-        self.abi = abi
-        self.rpcURL = rpcURL
-        self.decimals = decimals
+    public init(contract: Contract) {
+        self.contract = contract
     }
     
-    private func read(method: String, parameters: [AnyObject], completion: @escaping (Result<Any, Error>) -> Void) {
-        // Make sure to call web3 methods from a non-GUI thread because it runs requests asynchronously
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self else { return }
-            
-            do {
-                let contract = try self.makeContract()
-                let transaction = try self.makeTransaction(from: contract, method: method, parameters: parameters, type: .read)
-                self.call(transaction: transaction, completion: completion)
-            } catch {
-                completion(.failure(error))
-            }
-        }
-    }
-     
-    public func read(method: String, parameters: [AnyObject]) -> AnyPublisher<Any, Error> {
+    public func read(method: Contract.MethodType) -> AnyPublisher<Any, Error> {
         return Deferred {
             Future { [weak self] promise in
                 guard let self = self else {
                     return
                 }
                 
-                self.read(method: method, parameters: parameters) { result in
+                self.read(method: method.name, parameters: method.parameters) { result in
                     switch result {
                     case .success(let value):
                         promise(.success(value))
@@ -59,7 +37,30 @@ public class ContractInteractor {
         }.eraseToAnyPublisher()
     }
     
-    public func write(method: String, parameters: [AnyObject], completion: @escaping (Result<Any, Error>) -> Void) {
+    public func write(method: Contract.MethodType) -> AnyPublisher<Any, Error> {
+        return Deferred {
+            Future { [weak self] promise in
+                guard let self = self else {
+                    return
+                }
+                
+                self.write(method: method.name, parameters: method.parameters) { result in
+                    switch result {
+                    case .success(let value):
+                        promise(.success(value))
+                    case .failure(let error):
+                        promise(.failure(error))
+                    }
+                }
+            }
+        }.eraseToAnyPublisher()
+    }
+}
+
+// MARK: - Private
+
+private extension ContractInteractor {
+    func write(method: String, parameters: [AnyObject], completion: @escaping (Result<Any, Error>) -> Void) {
         // Make sure to call web3 methods from a non-GUI thread because it runs requests asynchronously
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self else { return }
@@ -74,43 +75,39 @@ public class ContractInteractor {
         }
     }
     
-    public func write(method: String, parameters: [AnyObject]) -> AnyPublisher<Any, Error> {
-        return Deferred {
-            Future { [weak self] promise in
-                guard let self = self else {
-                    return
-                }
-                
-                self.write(method: method, parameters: parameters) { result in
-                    switch result {
-                    case .success(let value):
-                        promise(.success(value))
-                    case .failure(let error):
-                        promise(.failure(error))
-                    }
-                }
+    func read(method: String, parameters: [AnyObject], completion: @escaping (Result<Any, Error>) -> Void) {
+        // Make sure to call web3 methods from a non-GUI thread because it runs requests asynchronously
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self else { return }
+            
+            do {
+                let contract = try self.makeContract()
+                let transaction = try self.makeTransaction(from: contract, method: method, parameters: parameters, type: .read)
+                self.call(transaction: transaction, completion: completion)
+            } catch {
+                completion(.failure(error))
             }
-        }.eraseToAnyPublisher()
+        }
     }
     
-    private func makeContract() throws -> web3.web3contract {
-        let web3 = try Web3.new(rpcURL)
+    func makeContract() throws -> web3.web3contract {
+        let web3 = try Web3.new(contract.rpcURL)
         
-        guard let address = EthereumAddress(self.address) else {
+        guard let address = EthereumAddress(contract.address) else {
             throw ContractInteractorError.failedToParseAddress
         }
         
-        guard let contract = web3.contract(abi, at: address, abiVersion: 2) else {
+        guard let contract = web3.contract(contract.abi, at: address, abiVersion: 2) else {
             throw ContractInteractorError.failedToCreateContract
         }
         
         return contract
     }
     
-    private func makeTransaction(from contract: web3.web3contract,
-                                 method: String,
-                                 parameters: [AnyObject],
-                                 type: TransactionType) throws  -> ReadTransaction {
+    func makeTransaction(from contract: web3.web3contract,
+                         method: String,
+                         parameters: [AnyObject],
+                         type: TransactionType) throws  -> ReadTransaction {
         guard let transaction = type.isRead ? contract.read(method, parameters: parameters) :
                 contract.write(method, parameters: parameters) else {
             throw ContractInteractorError.failedToCreateTx
@@ -119,7 +116,7 @@ public class ContractInteractor {
         return transaction
     }
     
-    private func call(transaction: ReadTransaction, completion: @escaping (Result<Any, Error>) -> Void) {
+    func call(transaction: ReadTransaction, completion: @escaping (Result<Any, Error>) -> Void) {
         let transactionOptions = defaultOptions
         
         do {
