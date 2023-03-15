@@ -222,6 +222,8 @@
 		DAB6548A27967D860002A5E8 /* SolanaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB6548927967D860002A5E8 /* SolanaResponse.swift */; };
 		DAB6548D2796C5F00002A5E8 /* SolanaTransactionSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB6548C2796C5F00002A5E8 /* SolanaTransactionSigner.swift */; };
 		DAB87CB1297ADCDC00FF30EB /* GetBlockBlockBookConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB87CB0297ADCDC00FF30EB /* GetBlockBlockBookConfig.swift */; };
+		DABE3BF629C1E3F4000F2197 /* KaspaTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DABE3BF529C1E3F4000F2197 /* KaspaTransactionBuilder.swift */; };
+		DABE3BF829C1E3F9000F2197 /* KaspaTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DABE3BF729C1E3F9000F2197 /* KaspaTransaction.swift */; };
 		DAC020F729BF650600364E70 /* KaspaModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC020F629BF650600364E70 /* KaspaModels.swift */; };
 		DAC7C04127A3BB17002F7252 /* PolkadotTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC7C04027A3BB17002F7252 /* PolkadotTransactionBuilder.swift */; };
 		DAD65BB02955F201003B3E8D /* EthereumApiKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD65BAF2955F201003B3E8D /* EthereumApiKeys.swift */; };
@@ -534,6 +536,8 @@
 		DAB6548927967D860002A5E8 /* SolanaResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaResponse.swift; sourceTree = "<group>"; };
 		DAB6548C2796C5F00002A5E8 /* SolanaTransactionSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaTransactionSigner.swift; sourceTree = "<group>"; };
 		DAB87CB0297ADCDC00FF30EB /* GetBlockBlockBookConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetBlockBlockBookConfig.swift; sourceTree = "<group>"; };
+		DABE3BF529C1E3F4000F2197 /* KaspaTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaspaTransactionBuilder.swift; sourceTree = "<group>"; };
+		DABE3BF729C1E3F9000F2197 /* KaspaTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaspaTransaction.swift; sourceTree = "<group>"; };
 		DAC020F629BF650600364E70 /* KaspaModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaspaModels.swift; sourceTree = "<group>"; };
 		DAC7C04027A3BB17002F7252 /* PolkadotTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotTransactionBuilder.swift; sourceTree = "<group>"; };
 		DAD65BAF2955F201003B3E8D /* EthereumApiKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumApiKeys.swift; sourceTree = "<group>"; };
@@ -1327,6 +1331,8 @@
 				DA0D073229BB7B8E0011F6A8 /* KaspaNetworkProvider.swift */,
 				DAC020F629BF650600364E70 /* KaspaModels.swift */,
 				DA0D073629BB81270011F6A8 /* KaspaTarget.swift */,
+				DABE3BF529C1E3F4000F2197 /* KaspaTransactionBuilder.swift */,
+				DABE3BF729C1E3F9000F2197 /* KaspaTransaction.swift */,
 			);
 			path = Kaspa;
 			sourceTree = "<group>";
@@ -1757,6 +1763,7 @@
 				5D4B33C023F6EA6C00C93A84 /* BlockchairNetworkProvider.swift in Sources */,
 				5DC7DD64244077E4008F83F2 /* XRPTransactionBuilder.swift in Sources */,
 				DAF0867027A9438C0024312E /* PolkadotNetworkService.swift in Sources */,
+				DABE3BF629C1E3F4000F2197 /* KaspaTransactionBuilder.swift in Sources */,
 				DA9F76E927EC8AEB00F0665C /* TronAddressService.swift in Sources */,
 				EFBA17FE2988623F00C23955 /* TransactionSendResult.swift in Sources */,
 				5D304390239A58C90066B8D9 /* BitcoinWalletManager.swift in Sources */,
@@ -1805,6 +1812,7 @@
 				5D7D243425136254001B9A4F /* XRPAccountInfo.swift in Sources */,
 				EF0DA78C285246A90081092A /* DashMainNetworkParams.swift in Sources */,
 				DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */,
+				DABE3BF829C1E3F9000F2197 /* KaspaTransaction.swift in Sources */,
 				DA0D072F29BB766F0011F6A8 /* KaspaWalletManager.swift in Sources */,
 				5D7D243225136254001B9A4F /* XRPWallet.swift in Sources */,
 				5DD1244427F458CE000425D3 /* DerivationStyle.swift in Sources */,
