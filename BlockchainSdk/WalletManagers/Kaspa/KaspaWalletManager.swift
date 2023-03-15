@@ -37,11 +37,14 @@ class KaspaWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        .anyFail(error: WalletError.empty)
+        txBuilder.buildForSend(transaction)
+        return .anyFail(error: WalletError.empty)
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        .anyFail(error: WalletError.empty)
+        Just([Amount.zeroCoin(for: wallet.blockchain)])
+            .setFailureType(to: Error.self)
+            .eraseToAnyPublisher()
     }
 }
 

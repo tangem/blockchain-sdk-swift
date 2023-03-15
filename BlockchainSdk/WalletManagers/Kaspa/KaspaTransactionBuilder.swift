@@ -10,4 +10,7 @@ import Foundation
 
 class KaspaTransactionBuilder {
     var utxos: [BitcoinUnspentOutput] = []
+    
+    func buildForSend(_ transaction: Transaction) {
+    }
 }

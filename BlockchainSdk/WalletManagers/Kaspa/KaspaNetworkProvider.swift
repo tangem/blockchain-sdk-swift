@@ -55,26 +55,25 @@ extension KaspaNetworkProvider: BitcoinNetworkProvider {
         Publishers.Zip(balance(address: address), utxos(address: address))
             .tryMap { [weak self] (balance, utxos) in
                 guard let self else { throw WalletError.empty }
-
-                let unspentOutputs: [BitcoinUnspentOutput] = []
-//                let unspentOutputs: [BitcoinUnspentOutput] = utxos.compactMap {
-//                    guard
-//                        let amount = UInt64($0.utxoEntry.amount)
-//                    else {
-//                        return nil
-//                    }
-//                    
-//                    let d = Data(hex: $0.utxoEntry.scriptPublicKey.scriptPublicKey)
-//                    print(d.count)
-//                    print(d[0], d[d.count - 1])
-//                    
-//                    return BitcoinUnspentOutput(
-//                        transactionHash: $0.outpoint.transactionId,
-//                        outputIndex: $0.outpoint.index,
-//                        amount: amount,
-//                        outputScript: $0.utxoEntry.scriptPublicKey.scriptPublicKey
-//                    )
-//                }
+                
+                let unspentOutputs: [BitcoinUnspentOutput] = utxos.compactMap {
+                    guard
+                        let amount = UInt64($0.utxoEntry.amount)
+                    else {
+                        return nil
+                    }
+                    
+                    let d = Data(hex: $0.utxoEntry.scriptPublicKey.scriptPublicKey)
+                    print(d.count)
+                    print(d[0], d[d.count - 1])
+                    
+                    return BitcoinUnspentOutput(
+                        transactionHash: $0.outpoint.transactionId,
+                        outputIndex: $0.outpoint.index,
+                        amount: amount,
+                        outputScript: $0.utxoEntry.scriptPublicKey.scriptPublicKey
+                    )
+                }
                 
                 return BitcoinResponse(
                     balance: Decimal(integerLiteral: balance.balance) / self.blockchain.decimalValue,
