@@ -22,7 +22,7 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Ethere
     
     var currentHost: String { networkService.host }
     
-    private var gasLimit: BigUInt? = nil
+//    private var gasLimit: BigUInt? = nil
     private var findTokensSubscription: AnyCancellable? = nil
 
 
@@ -32,7 +32,7 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Ethere
     func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
         guard let txForSign = txBuilder.buildForSign(transaction: transaction,
                                                      nonce: txCount,
-                                                     gasLimit: gasLimit) else {
+                                                     gasLimit: nil) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
@@ -53,7 +53,7 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Ethere
     // MARK: - TransactionSender
     
     // It can't be into extension because it method overrided in OptimismWalletManager
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount],Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeDataModel,Error> {
         let destinationInfo = formatDestinationInfo(for: destination, amount: amount)
         return getFee(to: destinationInfo.to, value: destinationInfo.value, data: destinationInfo.data)
     }
@@ -100,25 +100,24 @@ extension EthereumWalletManager {
 // MARK: - Private
 
 extension EthereumWalletManager {
-    private func getFee(to: String, value: String?, data: String?) -> AnyPublisher<[Amount], Error> {
-        return networkService.getFee(to: to,
-                                     from: wallet.address,
-                                     value: value,
-                                     data: data)
-        .tryMap {
-            guard $0.fees.count == 3 else {
-                throw BlockchainSdkError.failedToLoadFee
+    private func getFee(to: String, value: String?, data: String?) -> AnyPublisher<FeeDataModel, Error> {
+        networkService.getFee(to: to, from: wallet.address, value: value, data: data)
+            .tryMap { [weak self] ethereumFeeResponse in
+                guard let self = self else {
+                    throw BlockchainSdkError.failedToLoadFee
+                }
+
+                let feeAmounts = ethereumFeeResponse.fees.map {
+                    Amount(with: self.wallet.blockchain, value: $0)
+                }
+                
+                var feeDataModel = try FeeDataModel(fees: feeAmounts)
+                feeDataModel.additionalParameters = ethereumFeeResponse.parameters
+                
+                print("EthereumWalletManager calculated fees: \(feeDataModel)")
+                return feeDataModel
             }
-            self.gasLimit = $0.gasLimit
-            
-            let minAmount = Amount(with: self.wallet.blockchain, value: $0.fees[0])
-            let normalAmount = Amount(with: self.wallet.blockchain, value: $0.fees[1])
-            let maxAmount = Amount(with: self.wallet.blockchain, value: $0.fees[2])
-            let feeArray = [minAmount, normalAmount, maxAmount]
-            print("EthereumWalletManager calculated fees: \(feeArray)")
-            return feeArray
-        }
-        .eraseToAnyPublisher()
+            .eraseToAnyPublisher()
     }
     
     private func updateWallet(with response: EthereumInfoResponse) {
@@ -263,7 +262,7 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
     func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompiledEthereumTransaction, Error> {
         guard let txForSign = txBuilder.buildForSign(transaction: transaction,
                                                      nonce: txCount,
-                                                     gasLimit: gasLimit) else {
+                                                     gasLimit: nil) else {
             return .anyFail(error: WalletError.failedToBuildTx)
         }
         
@@ -281,7 +280,7 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
         return .justWithError(output: "0x\(tx.toHexString())")
     }
     
-    func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error> {
+    func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<FeeDataModel, Error> {
         getFee(to: to, value: amount?.encodedForSend, data: data)
     }
     

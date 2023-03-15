@@ -19,7 +19,7 @@ class DogecoinWalletManager: BitcoinWalletManager {
         return dogePerKiloByte / bytesInKiloByte
     }
     
-    override func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
+    override func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeDataModel, Error> {
         // https://github.com/dogecoin/dogecoin/blob/master/doc/fee-recommendation.md
         
         let recommendedSatoshiPerByteDecimal = minimalFeePerByte * wallet.blockchain.decimalValue
@@ -66,9 +66,7 @@ class DogecoinWalletManager: BitcoinWalletManager {
         let maxFee = fee(for: maxRate)
 
         let feeAmounts = [minFee, normalFee, maxFee]
-            .map {
-                Amount(with: wallet.blockchain, value: $0)
-            }
+            .map { Amount(with: wallet.blockchain, value: $0) }
         
         txBuilder.feeRates = [:]
         txBuilder.feeRates[minFee] = minRate
@@ -77,6 +75,7 @@ class DogecoinWalletManager: BitcoinWalletManager {
         
         return Just(feeAmounts)
             .setFailureType(to: Error.self)
+            .tryMap { try FeeDataModel(fees: $0) }
             .eraseToAnyPublisher()
     }
 }

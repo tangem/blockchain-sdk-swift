@@ -100,7 +100,7 @@ extension CardanoWalletManager: TransactionSender {
         }
     }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeDataModel, Error> {
         guard let transactionSize = self.getEstimateSize(amount: amount, destination: destination) else {
             return Fail(error: WalletError.failedToCalculateTxSize).eraseToAnyPublisher()
         }
@@ -110,7 +110,8 @@ extension CardanoWalletManager: TransactionSender {
         
         let feeValue = (a + b * transactionSize).rounded(scale: wallet.blockchain.decimalCount, roundingMode: .up)
         let feeAmount = Amount(with: self.wallet.blockchain, value: feeValue)
-        return Result.Publisher([feeAmount]).eraseToAnyPublisher()
+        let feeDataModel = FeeDataModel(feeType: .single(fee: feeAmount))
+        return Result.Publisher(feeDataModel).eraseToAnyPublisher()
     }
     
     private func getEstimateSize(amount: Amount, destination: String) -> Decimal? {

@@ -18,9 +18,14 @@ struct EthereumInfoResponse {
     var pendingTxs: [PendingTransaction]
 }
 
+struct EthereumFeeParameters: FeeParameters {
+    let gasLimit: BigUInt
+    let gasPrice: BigUInt
+}
+
 struct EthereumFeeResponse {
     let fees: [Decimal]
-    let gasLimit: BigUInt
+    let parameters: EthereumFeeParameters
 }
 
 /// Json rpc response structure

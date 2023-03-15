@@ -102,11 +102,11 @@ extension TezosWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeDataModel, Error> {
         networkService
             .checkPublicKeyRevealed(address: wallet.address)
             .combineLatest(networkService.getInfo(address: destination))
-            .tryMap {[weak self] (isPublicKeyRevealed, destinationInfo) -> [Amount] in
+            .tryMap {[weak self] (isPublicKeyRevealed, destinationInfo) -> FeeDataModel in
                 guard let self = self else { throw WalletError.empty }
                 
                 self.txBuilder.isPublicKeyRevealed = isPublicKeyRevealed
@@ -119,7 +119,8 @@ extension TezosWalletManager: TransactionSender {
                     fee += TezosFee.allocation.rawValue
                 }
                 
-                return [Amount(with: self.wallet.blockchain, value: fee)]
+                let amountFee = Amount(with: self.wallet.blockchain, value: fee)
+                return FeeDataModel(feeType: .single(fee: amountFee))
             }
             .eraseToAnyPublisher()
     }

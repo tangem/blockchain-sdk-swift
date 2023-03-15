@@ -10,14 +10,14 @@ import BigInt
 
 public struct EthereumTransactionParams: TransactionParams {
     public let data: Data
-    public let gasLimit: BigUInt?
-    public let gasPrice: BigUInt?
-    public let nonce: Int?
+    public let nonce: Int
+    public let gasLimit: BigUInt
+    public let gasPrice: BigUInt
     
-    public init(data: Data, gasLimit: Int? = nil, gasPrice: Int? = nil, nonce: Int? = nil) {
+    public init(data: Data, nonce: Int, gasLimit: Int, gasPrice: Int) {
         self.data = data
-        self.gasLimit = gasLimit == nil ? nil : BigUInt(gasLimit!)
-        self.gasPrice = gasPrice == nil ? nil : BigUInt(gasPrice!)
         self.nonce = nonce
+        self.gasLimit = BigUInt(gasLimit)
+        self.gasPrice = BigUInt(gasPrice)
     }
 }
