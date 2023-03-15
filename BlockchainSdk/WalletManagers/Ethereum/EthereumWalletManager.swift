@@ -62,12 +62,20 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Ethere
 // MARK: - EthereumNetworkProvider
 
 extension EthereumWalletManager: EthereumNetworkProvider {
+    func getBalance(_ address: String) -> AnyPublisher<Decimal, Error> {
+        networkService.getBalance(address)
+    }
+    
     func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error> {
         networkService.getTokensBalance(address, tokens: tokens)
     }
     
     func getTxCount(_ address: String) -> AnyPublisher<Int, Error> {
         networkService.getTxCount(address)
+    }
+    
+    func getPendingTxCount(_ address: String) -> AnyPublisher<Int, Error> {
+        networkService.getPendingTxCount(address)
     }
 }
 

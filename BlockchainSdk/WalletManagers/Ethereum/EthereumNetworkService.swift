@@ -209,9 +209,7 @@ class EthereumNetworkService: MultiNetworkProvider {
         }
     }
     
-    // MARK: - Private functions
-    
-    private func getBalance(_ address: String) -> AnyPublisher<Decimal, Error> {
+    func getBalance(_ address: String) -> AnyPublisher<Decimal, Error> {
         providerPublisher { provider in
             provider.getBalance(for: address)
                 .tryMap {[weak self] in
@@ -228,7 +226,7 @@ class EthereumNetworkService: MultiNetworkProvider {
         }
     }
     
-    private func getPendingTxCount(_ address: String) -> AnyPublisher<Int, Error> {
+    func getPendingTxCount(_ address: String) -> AnyPublisher<Int, Error> {
         providerPublisher {
             $0.getPendingTxCount(for: address)
                 .tryMap {[weak self] in
@@ -239,6 +237,8 @@ class EthereumNetworkService: MultiNetworkProvider {
                 .eraseToAnyPublisher()
         }
     }
+    
+    // MARK: - Private functions
     
     private func getGas(from response: EthereumResponse) throws -> BigUInt {
         let res = try getResult(from: response)
