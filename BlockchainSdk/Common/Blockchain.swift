@@ -870,8 +870,8 @@ extension Blockchain {
         case .saltPay:
             return URL(string: "https://blockscout.bicoccachain.net/address/\(address)")!
         case .ton:
-            let subdomain = isTestnet ? "testnet" : ""
-            return URL(string: "https://\(subdomain).tonscan.org/address/\(address)")
+            let subdomain = isTestnet ? "testnet." : ""
+            return URL(string: "https://\(subdomain)tonscan.org/address/\(address)")
         }
     }
 }
