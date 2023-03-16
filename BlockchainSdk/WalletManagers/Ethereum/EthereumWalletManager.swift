@@ -22,32 +22,27 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Ethere
     
     var currentHost: String { networkService.host }
     
-//    private var gasLimit: BigUInt? = nil
     private var findTokensSubscription: AnyCancellable? = nil
-
 
     // MARK: - EthereumTransactionSigner
     
     // It can't be into extension because it method overrided in OptimismWalletManager
     func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
-        guard let txForSign = txBuilder.buildForSign(transaction: transaction,
-                                                     nonce: txCount,
-                                                     gasLimit: nil) else {
+        guard let txForSign = txBuilder.buildForSign(transaction: transaction, nonce: txCount) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
-        return signer.sign(hash: txForSign.hash,
-                           walletPublicKey: self.wallet.publicKey)
-        .tryMap {[weak self] signature -> String in
-            guard let self = self else { throw WalletError.empty }
-            
-            guard let tx = self.txBuilder.buildForSend(transaction: txForSign.transaction, hash: txForSign.hash, signature: signature) else {
-                throw WalletError.failedToBuildTx
+        return signer.sign(hash: txForSign.hash, walletPublicKey: wallet.publicKey)
+            .tryMap { [weak self] signature -> String in
+                guard let self = self else { throw WalletError.empty }
+                
+                guard let tx = self.txBuilder.buildForSend(transaction: txForSign.transaction, hash: txForSign.hash, signature: signature) else {
+                    throw WalletError.failedToBuildTx
+                }
+                
+                return "0x\(tx.toHexString())"
             }
-            
-            return "0x\(tx.toHexString())"
-        }
-        .eraseToAnyPublisher()
+            .eraseToAnyPublisher()
     }
     
     // MARK: - TransactionSender
@@ -260,9 +255,7 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
     }
     
     func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompiledEthereumTransaction, Error> {
-        guard let txForSign = txBuilder.buildForSign(transaction: transaction,
-                                                     nonce: txCount,
-                                                     gasLimit: nil) else {
+        guard let txForSign = txBuilder.buildForSign(transaction: transaction, nonce: txCount) else {
             return .anyFail(error: WalletError.failedToBuildTx)
         }
         
