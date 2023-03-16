@@ -91,3 +91,33 @@ private extension OptimismWalletManager {
             .eraseToAnyPublisher()
     }
 }
+
+//MARK: - OptimismGasLoader
+
+extension OptimismWalletManager: OptimismGasLoader {
+    func getLayer1GasPrice() -> AnyPublisher<BigUInt, Error> {
+        contractInteractor
+            .read(method: .l1BaseFee)
+            .tryMap { response in
+                if let bigUIntPrice = BigUInt("\(response)") {
+                    return bigUIntPrice
+                }
+                
+                throw BlockchainSdkError.failedToLoadFee
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func getLayer1GasLimit(data: String) -> AnyPublisher<BigUInt, Error> {
+        contractInteractor
+            .read(method: .getL1GasUsed(data: data))
+            .tryMap { response in
+                if let bigUIntLimit = BigUInt("\(response)") {
+                    return bigUIntLimit
+                }
+                
+                throw BlockchainSdkError.failedToLoadFee
+            }
+            .eraseToAnyPublisher()
+    }
+}
