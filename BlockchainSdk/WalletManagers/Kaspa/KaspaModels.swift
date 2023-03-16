@@ -62,7 +62,7 @@ struct KaspaPreviousOutpoint: Codable {
 }
 
 struct KaspaOutput: Codable {
-    let amount: Int
+    let amount: UInt64
     let scriptPublicKey: KaspaScriptPublicKey
 }
 

@@ -33,7 +33,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
     
     func updateWallet(_ response: BitcoinResponse) {
         self.wallet.add(amount: Amount(with: self.wallet.blockchain, value: response.balance))
-        txBuilder.utxos = response.unspentOutputs
+        txBuilder.unspentOutputs = response.unspentOutputs
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {

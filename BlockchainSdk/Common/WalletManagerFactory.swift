@@ -416,7 +416,7 @@ public class WalletManagerFactory {
             return try makeDashWalletManager(testnet: testnet, wallet: wallet, networkProviderConfiguration: networkProviderConfiguration)
         case .kaspa:
             return KaspaWalletManager(wallet: wallet).then {
-                $0.txBuilder = KaspaTransactionBuilder()
+                $0.txBuilder = KaspaTransactionBuilder(blockchain: blockchain)
                 
                 let providers: [AnyBitcoinNetworkProvider] = [
                     KaspaNetworkProvider(

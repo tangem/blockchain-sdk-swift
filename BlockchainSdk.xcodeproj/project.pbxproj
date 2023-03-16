@@ -224,6 +224,7 @@
 		DAB87CB1297ADCDC00FF30EB /* GetBlockBlockBookConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAB87CB0297ADCDC00FF30EB /* GetBlockBlockBookConfig.swift */; };
 		DABE3BF629C1E3F4000F2197 /* KaspaTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DABE3BF529C1E3F4000F2197 /* KaspaTransactionBuilder.swift */; };
 		DABE3BF829C1E3F9000F2197 /* KaspaTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DABE3BF729C1E3F9000F2197 /* KaspaTransaction.swift */; };
+		DABE3BFB29C30E80000F2197 /* KaspaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DABE3BFA29C30E80000F2197 /* KaspaTests.swift */; };
 		DAC020F729BF650600364E70 /* KaspaModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC020F629BF650600364E70 /* KaspaModels.swift */; };
 		DAC7C04127A3BB17002F7252 /* PolkadotTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC7C04027A3BB17002F7252 /* PolkadotTransactionBuilder.swift */; };
 		DAD65BB02955F201003B3E8D /* EthereumApiKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD65BAF2955F201003B3E8D /* EthereumApiKeys.swift */; };
@@ -538,6 +539,7 @@
 		DAB87CB0297ADCDC00FF30EB /* GetBlockBlockBookConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetBlockBlockBookConfig.swift; sourceTree = "<group>"; };
 		DABE3BF529C1E3F4000F2197 /* KaspaTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaspaTransactionBuilder.swift; sourceTree = "<group>"; };
 		DABE3BF729C1E3F9000F2197 /* KaspaTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaspaTransaction.swift; sourceTree = "<group>"; };
+		DABE3BFA29C30E80000F2197 /* KaspaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaspaTests.swift; sourceTree = "<group>"; };
 		DAC020F629BF650600364E70 /* KaspaModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaspaModels.swift; sourceTree = "<group>"; };
 		DAC7C04027A3BB17002F7252 /* PolkadotTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotTransactionBuilder.swift; sourceTree = "<group>"; };
 		DAD65BAF2955F201003B3E8D /* EthereumApiKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumApiKeys.swift; sourceTree = "<group>"; };
@@ -691,6 +693,7 @@
 				B00DEACC28FEE6070077CD19 /* Common */,
 				B00DEAC828FEE5E90077CD19 /* Ethereum */,
 				B00DEACD28FEE62F0077CD19 /* Extensions */,
+				DABE3BF929C30E78000F2197 /* Kaspa */,
 				B00DEACA28FEE5FA0077CD19 /* Litecoin */,
 				B00DEAC628FEE5D20077CD19 /* Polkadot */,
 				B00DEAC528FEE5C60077CD19 /* Solana */,
@@ -1384,6 +1387,14 @@
 			path = Tron;
 			sourceTree = "<group>";
 		};
+		DABE3BF929C30E78000F2197 /* Kaspa */ = {
+			isa = PBXGroup;
+			children = (
+				DABE3BFA29C30E80000F2197 /* KaspaTests.swift */,
+			);
+			path = Kaspa;
+			sourceTree = "<group>";
+		};
 		DAE30DF7279164500056C5A3 /* Solana */ = {
 			isa = PBXGroup;
 			children = (
@@ -1994,6 +2005,7 @@
 				EF0DA78528523FAC0081092A /* BlockchainSdkTests.swift in Sources */,
 				B00DEAD3290008910077CD19 /* SolanaTests.swift in Sources */,
 				EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */,
+				DABE3BFB29C30E80000F2197 /* KaspaTests.swift in Sources */,
 				EF0DA78628523FAC0081092A /* XCTestCase+.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
