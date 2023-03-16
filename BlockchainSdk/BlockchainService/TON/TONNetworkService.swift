@@ -60,8 +60,10 @@ class TONNetworkService: MultiNetworkProvider {
                         throw WalletError.empty
                     }
                     
-                    let fee = fee.sourceFees.totalFee / self.blockchain.decimalValue
-                    return [Amount(with: self.blockchain, value: fee)]
+                    /// Make rounded digits by correct for max amount Fee
+                    let sourceFee = NSDecimalNumber(decimal: fee.sourceFees.totalFee / self.blockchain.decimalValue).doubleValue
+                    let roundedValue = ceil(sourceFee * 100) / 100.0
+                    return [Amount(with: self.blockchain, value: Decimal(roundedValue))]
                 }
                 .eraseToAnyPublisher()
         }
