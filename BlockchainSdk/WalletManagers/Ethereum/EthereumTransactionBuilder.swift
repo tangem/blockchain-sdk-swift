@@ -102,8 +102,8 @@ class EthereumTransactionBuilder {
             return nil
         }
         
-        let prefixData = Data(hex: "a9059cbb000000000000000000000000")
-        return prefixData + addressData + amountData
+        let transferMethodPrefix = Data(hex: "a9059cbb")
+        return transferMethodPrefix + addressData.aligned(to: 32) + amountData
     }
 }
 

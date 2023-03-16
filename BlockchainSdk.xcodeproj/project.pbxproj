@@ -255,7 +255,7 @@
 		EFF56B3F29C24673002B6952 /* FeeDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B3E29C24673002B6952 /* FeeDataModel.swift */; };
 		EFF56B4129C30265002B6952 /* EthereumFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B4029C30265002B6952 /* EthereumFeeParameters.swift */; };
 		EFF56B4329C3365C002B6952 /* OptimismGasLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B4229C3365C002B6952 /* OptimismGasLoader.swift */; };
-		EFF56B4529C35250002B6952 /* TransactionDestinationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B4429C35250002B6952 /* TransactionDestinationPayload.swift */; };
+		EFF56B4729C377E2002B6952 /* EthereumDestinationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B4629C377E2002B6952 /* EthereumDestinationPayload.swift */; };
 		EFF5BA8429B881440070694A /* OptimismContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF5BA8329B881440070694A /* OptimismContract.swift */; };
 /* End PBXBuildFile section */
 
@@ -558,7 +558,7 @@
 		EFF56B3E29C24673002B6952 /* FeeDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeDataModel.swift; sourceTree = "<group>"; };
 		EFF56B4029C30265002B6952 /* EthereumFeeParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumFeeParameters.swift; sourceTree = "<group>"; };
 		EFF56B4229C3365C002B6952 /* OptimismGasLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptimismGasLoader.swift; sourceTree = "<group>"; };
-		EFF56B4429C35250002B6952 /* TransactionDestinationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDestinationPayload.swift; sourceTree = "<group>"; };
+		EFF56B4629C377E2002B6952 /* EthereumDestinationPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumDestinationPayload.swift; sourceTree = "<group>"; };
 		EFF5BA8329B881440070694A /* OptimismContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismContract.swift; sourceTree = "<group>"; };
 		EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashTestNetworkParams.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1022,7 +1022,7 @@
 				DA656FCB2954B5220092CC61 /* EthereumTarget.swift */,
 				EF9F9087299F8B70006F638F /* ETHError.swift */,
 				EFF56B4029C30265002B6952 /* EthereumFeeParameters.swift */,
-				EFF56B4429C35250002B6952 /* TransactionDestinationPayload.swift */,
+				EFF56B4629C377E2002B6952 /* EthereumDestinationPayload.swift */,
 			);
 			path = Ethereum;
 			sourceTree = "<group>";
@@ -1921,7 +1921,7 @@
 				5DC7DD62244077D7008F83F2 /* XRPNetworkService.swift in Sources */,
 				DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */,
 				5D7D243025136254001B9A4F /* XRPKeypair.swift in Sources */,
-				EFF56B4529C35250002B6952 /* TransactionDestinationPayload.swift in Sources */,
+				EFF56B4729C377E2002B6952 /* EthereumDestinationPayload.swift in Sources */,
 				B04E8D5025F8F67F00821CBE /* RosettaNetworkProvider.swift in Sources */,
 				5D845516243DEAC80072155E /* AdaliteTarget.swift in Sources */,
 				5DCC817823FAE6F700DFC460 /* MoyaPublisher.swift in Sources */,

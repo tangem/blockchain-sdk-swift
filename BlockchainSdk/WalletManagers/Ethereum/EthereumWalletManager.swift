@@ -26,8 +26,8 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable {
 
     /// This method for implemented protocol `EthereumTransactionProcessor`
     /// It can't be into extension because it will be override in the `OptimismWalletManager`
-    func getFee(payload: TransactionDestinationPayload) -> AnyPublisher<FeeDataModel, Error> {
-        getFee(to: payload.destination, value: payload.value, data: payload.data)
+    func getFee(payload: EthereumDestinationPayload) -> AnyPublisher<FeeDataModel, Error> {
+        getFee(to: payload.targetAddress, value: payload.value, data: payload.data)
     }
 }
 
@@ -94,11 +94,6 @@ extension EthereumWalletManager {
 // MARK: - Private
 
 extension EthereumWalletManager {
-    /// Main method for load fee
-    /// - Parameters:
-    ///   - to: Destination address. For `coin` receiver address, for `token` - smart contract address
-    ///   - value: Value for send - ONLY for destination coin
-    ///   - data: Value for send - ONLY for destination token
     func getFee(to: String, value: String?, data: Data?) -> AnyPublisher<FeeDataModel, Error> {
         networkService.getFee(to: to, from: wallet.address, value: value, data: data?.hexString.addHexPrefix())
             .tryMap { [weak self] ethereumFeeResponse in
@@ -148,13 +143,15 @@ extension EthereumWalletManager {
         }
     }
     
-    func formatDestinationInfo(for destination: String, amount: Amount) throws -> TransactionDestinationPayload {
+    func formatDestinationInfo(for destination: String, amount: Amount) throws -> EthereumDestinationPayload {
         switch amount.type {
         case .coin:
-            return .coin(receiverAddress: destination, value: amount.encodedForSend!)
+            if let hexAmount = amount.encodedForSend {
+                return EthereumDestinationPayload(targetAddress: destination, value: hexAmount)
+            }
         case .token(let token):
             if let erc20Data = txBuilder.getData(for: amount, targetAddress: destination) {
-                return .token(contractAddress: token.contractAddress, data: erc20Data)
+                return EthereumDestinationPayload(targetAddress: token.contractAddress, data: erc20Data)
             }
         case .reserve:
             break
@@ -266,11 +263,10 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
     }
     
     func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompiledEthereumTransaction, Error> {
-        guard let txForSign = txBuilder.buildForSign(transaction: transaction, nonce: txCount) else {
+        guard let compiled = txBuilder.buildForSign(transaction: transaction, nonce: txCount) else {
             return .anyFail(error: WalletError.failedToBuildTx)
         }
-        
-        let compiled = CompiledEthereumTransaction(transaction: txForSign.transaction, hash: txForSign.hash)
+
         return .justWithError(output: compiled)
     }
     

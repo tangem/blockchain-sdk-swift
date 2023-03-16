@@ -32,7 +32,7 @@ class OptimismWalletManager: EthereumWalletManager {
     /// But it's important to show user information about a fee which will be charged
     /// `L2` - Used to provide this transaction in the `Etherium` network for "safety".
     /// When we are building transaction we have to use `gasLimit` and `gasPrice` ONLY from L2
-    override func getFee(payload: TransactionDestinationPayload) -> AnyPublisher<FeeDataModel, Error> {
+    override func getFee(payload: EthereumDestinationPayload) -> AnyPublisher<FeeDataModel, Error> {
         super.getFee(payload: payload)
             .tryMap { [weak self] layer2FeeDataModel -> AnyPublisher<FeeDataModel, Error> in
                 guard let self, let parameters = layer2FeeDataModel.additionalParameters as? EthereumFeeParameters else {
@@ -71,14 +71,16 @@ class OptimismWalletManager: EthereumWalletManager {
 // MARK: - Private
     
 private extension OptimismWalletManager {
-    func getLayer1Fee(payload: TransactionDestinationPayload,
+    func getLayer1Fee(payload: EthereumDestinationPayload,
                       L2FeeParameters: EthereumFeeParameters) -> AnyPublisher<Decimal, Error> {
-        guard let address = EthereumAddress(payload.destination),
-              let encodedValue = BigUInt(payload.value ?? "0x0") else {
+        assert(payload.value != nil)
+        
+        guard let address = EthereumAddress(payload.targetAddress),
+              let value = payload.value,
+              let encodedValue = BigUInt(value) else {
             return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
         }
-        
-        
+
         let transaction = EthereumTransaction(gasPrice: L2FeeParameters.gasPrice,
                                               gasLimit: L2FeeParameters.gasLimit,
                                               to: address,

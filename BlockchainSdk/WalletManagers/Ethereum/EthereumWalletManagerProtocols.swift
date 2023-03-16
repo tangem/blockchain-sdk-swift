@@ -29,9 +29,14 @@ public protocol EthereumTransactionProcessor {
     var initialNonce: Int { get }
     func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompiledEthereumTransaction, Error>
     func buildForSend(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
-    func getFee(payload: TransactionDestinationPayload) -> AnyPublisher<FeeDataModel, Error>
+    func getFee(payload: EthereumDestinationPayload) -> AnyPublisher<FeeDataModel, Error>
     func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
     func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<Decimal, Error>
+}
+
+@available(iOS 13.0, *)
+public extension EthereumTransactionProcessor {
+    
 }
 
 @available(iOS 13.0, *)
