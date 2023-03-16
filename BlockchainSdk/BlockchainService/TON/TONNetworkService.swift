@@ -61,9 +61,9 @@ class TONNetworkService: MultiNetworkProvider {
                     }
                     
                     /// Make rounded digits by correct for max amount Fee
-                    let sourceFee = NSDecimalNumber(decimal: fee.sourceFees.totalFee / self.blockchain.decimalValue).doubleValue
-                    let roundedValue = ceil(sourceFee * 100) / 100.0
-                    return [Amount(with: self.blockchain, value: Decimal(roundedValue))]
+                    let fee = fee.sourceFees.totalFee / self.blockchain.decimalValue
+                    let roundedValue = fee.rounded(scale: 2, roundingMode: .up)
+                    return [Amount(with: self.blockchain, value: roundedValue)]
                 }
                 .eraseToAnyPublisher()
         }
