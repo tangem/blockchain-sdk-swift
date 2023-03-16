@@ -280,7 +280,7 @@ class EthereumNetworkService: MultiNetworkProvider {
         let decimals = values
             .compactMap { value in
                 Web3.Utils.formatToEthereumUnits(
-                    maxValue,
+                    value,
                     toUnits: .eth,
                     decimals: decimalCount,
                     decimalSeparator: ".",
