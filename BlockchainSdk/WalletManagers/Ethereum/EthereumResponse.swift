@@ -18,11 +18,6 @@ struct EthereumInfoResponse {
     var pendingTxs: [PendingTransaction]
 }
 
-struct EthereumFeeParameters: FeeParameters {
-    let gasLimit: BigUInt
-    let gasPrice: BigUInt
-}
-
 struct EthereumFeeResponse {
     let fees: [Decimal]
     let parameters: EthereumFeeParameters
