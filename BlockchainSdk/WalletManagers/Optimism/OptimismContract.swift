@@ -56,7 +56,8 @@ public extension OptimismContract {
 
 extension OptimismContract {
     public var abi: String {
-        let url = Bundle.main.url(forResource: "OptimismSmartContractABI", withExtension: "json")!
+        let bundle = Bundle(for: BaseManager.self)
+        let url = bundle.url(forResource: "OptimismSmartContractABI", withExtension: "json")!
         let data = try! Data(contentsOf: url)
         let string = String(bytes: data, encoding: .utf8)!
         

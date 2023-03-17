@@ -254,6 +254,7 @@
 		EFF56B3D29C20CCE002B6952 /* SmartContractMethodType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B3C29C20CCE002B6952 /* SmartContractMethodType.swift */; };
 		EFF56B3F29C24673002B6952 /* FeeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B3E29C24673002B6952 /* FeeType.swift */; };
 		EFF56B4129C30265002B6952 /* EthereumFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B4029C30265002B6952 /* EthereumFeeParameters.swift */; };
+		EFF56B4A29C4965A002B6952 /* OptimismSmartContractABI.json in Resources */ = {isa = PBXBuildFile; fileRef = EFF56B4929C48CB8002B6952 /* OptimismSmartContractABI.json */; };
 		EFF5BA8429B881440070694A /* OptimismContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF5BA8329B881440070694A /* OptimismContract.swift */; };
 /* End PBXBuildFile section */
 
@@ -1581,6 +1582,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EFF56B4A29C4965A002B6952 /* OptimismSmartContractABI.json in Resources */,
 				5D5E058724FE72D900F04DE1 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
