@@ -10,9 +10,9 @@ import Foundation
 import TangemSdk
 import BitcoinCore
 
-struct DashWalletAssembly: WalletAssemblyProtocol {
+struct DashWalletAssembly: WalletManagerAssembly {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
+    func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         try DashWalletManager(wallet: input.wallet).then {
             let compressed = try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress()
             

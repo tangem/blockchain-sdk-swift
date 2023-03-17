@@ -950,7 +950,7 @@ extension Blockchain {
 @available(iOS 13.0, *)
 extension Blockchain {
     
-    var assembly: WalletAssemblyProtocol.Type {
+    var assembly: WalletManagerAssembly {
         switch self {
         case .bitcoin:
             return BitcoinWalletAssembly.self

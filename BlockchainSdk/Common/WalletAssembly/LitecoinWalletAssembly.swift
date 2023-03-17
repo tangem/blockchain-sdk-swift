@@ -10,9 +10,9 @@ import Foundation
 import TangemSdk
 import BitcoinCore
 
-struct LitecoinWalletAssembly: WalletAssemblyProtocol {
+struct LitecoinWalletAssembly: WalletManagerAssembly {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
+    func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return try LitecoinWalletManager(wallet: input.wallet).then {
             let bitcoinManager = BitcoinManager(networkParams: LitecoinNetworkParams(),
                                                 walletPublicKey: input.wallet.publicKey.blockchainKey,

@@ -10,9 +10,9 @@ import Foundation
 import TangemSdk
 import Solana_Swift
 
-struct SolanaWalletAssembly: WalletAssemblyProtocol {
+struct SolanaWalletAssembly: WalletManagerAssembly {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
+    func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return SolanaWalletManager(wallet: input.wallet).then {
             let endpoints: [RPCEndpoint]
             if input.blockchain.isTestnet {

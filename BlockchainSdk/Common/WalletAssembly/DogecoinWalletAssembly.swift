@@ -10,9 +10,9 @@ import Foundation
 import TangemSdk
 import BitcoinCore
 
-struct DogecoinWalletAssembly: WalletAssemblyProtocol {
+struct DogecoinWalletAssembly: WalletManagerAssembly {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
+    func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return try DogecoinWalletManager(wallet: input.wallet).then {
             let bitcoinManager = BitcoinManager(networkParams: DogecoinNetworkParams(),
                                                 walletPublicKey: input.wallet.publicKey.blockchainKey,

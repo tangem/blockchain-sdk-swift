@@ -10,9 +10,9 @@ import Foundation
 import TangemSdk
 import stellarsdk
 
-struct StellarWalletAssembly: WalletAssemblyProtocol {
+struct StellarWalletAssembly: WalletManagerAssembly {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
+    static func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return StellarWalletManager(wallet: input.wallet).then {
             let url = input.blockchain.isTestnet ? "https://horizon-testnet.stellar.org" : "https://horizon.stellar.org"
             let stellarSdk = StellarSDK(withHorizonUrl: url)

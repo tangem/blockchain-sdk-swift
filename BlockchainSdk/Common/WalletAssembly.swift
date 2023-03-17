@@ -9,10 +9,8 @@
 import Foundation
 import TangemSdk
 
-typealias WalletAssembly = WalletManager
-
 /// Input data for assembly wallet manager
-struct BlockchainAssemblyInput {
+struct WalletManagerAssemblyInput {
     let blockchain: Blockchain
     let blockchainConfig: BlockchainSdkConfig
     let pairPublicKey: Data?
@@ -21,24 +19,24 @@ struct BlockchainAssemblyInput {
 }
 
 /// Main assembly wallet manager interface
-protocol WalletAssemblyProtocol {
+protocol WalletManagerAssembly {
     
     /// Assembly to access any providers
-    static var providerAssembly: ProviderAssembly { get }
+    var providerAssembly: NetworkProviderAssembly { get }
     
     // MARK: - Wallet Assembly
     
     /// Blockchain assembly method
     /// - Parameter input: Input data factory
     /// - Returns: Blockchain result
-    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly
+    func make(with input: WalletManagerAssemblyInput) throws -> WalletManager
     
 }
 
-extension WalletAssemblyProtocol {
+extension WalletManagerAssembly {
     
-    static var providerAssembly: ProviderAssembly {
-        return ProviderAssembly()
+    var providerAssembly: NetworkProviderAssembly {
+        return NetworkProviderAssembly()
     }
     
 }

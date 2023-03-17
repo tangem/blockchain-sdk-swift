@@ -3,9 +3,9 @@ import TangemSdk
 import stellarsdk
 import BitcoinCore
 
-struct BitcoinWalletAssembly: WalletAssemblyProtocol {
+struct BitcoinWalletAssembly: WalletManagerAssembly {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
+    func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return try BitcoinWalletManager(wallet: input.wallet).then {
             let network: BitcoinNetwork = input.blockchain.isTestnet ? .testnet : .mainnet
             let bitcoinManager = BitcoinManager(networkParams: network.networkParams,

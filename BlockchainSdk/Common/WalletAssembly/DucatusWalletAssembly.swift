@@ -10,9 +10,9 @@ import Foundation
 import TangemSdk
 import BitcoinCore
 
-struct DucatusWalletAssembly: WalletAssemblyProtocol {
+struct DucatusWalletAssembly: WalletManagerAssembly {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
+    func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return try DucatusWalletManager(wallet: input.wallet).then {
             let bitcoinManager = BitcoinManager(networkParams: DucatusNetworkParams(), walletPublicKey: input.wallet.publicKey.blockchainKey, compressedWalletPublicKey: try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress(), bip: .bip44)
             

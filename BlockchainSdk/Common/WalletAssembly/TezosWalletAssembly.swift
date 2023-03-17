@@ -10,9 +10,9 @@ import Foundation
 import TangemSdk
 import BitcoinCore
 
-struct TezosWalletAssembly: WalletAssemblyProtocol {
+struct TezosWalletAssembly: WalletManagerAssembly {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
+    func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return try TezosWalletManager(wallet: input.wallet).then {
             $0.txBuilder = try TezosTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, curve: input.blockchain.curve)
             $0.networkService = TezosNetworkService(

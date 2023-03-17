@@ -9,9 +9,9 @@
 import Foundation
 import TangemSdk
 
-struct CardanoWalletAssembly: WalletAssemblyProtocol {
+struct CardanoWalletAssembly: WalletManagerAssembly {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
+    func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return CardanoWalletManager(wallet: input.wallet).then {
             $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, shelleyCard: input.blockchain.shelley)
             let service = CardanoNetworkService(providers: [

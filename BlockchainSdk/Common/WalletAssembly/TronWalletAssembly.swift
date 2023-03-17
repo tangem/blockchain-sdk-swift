@@ -9,9 +9,9 @@
 import Foundation
 import TangemSdk
 
-struct TronWalletAssembly: WalletAssemblyProtocol {
+struct TronWalletAssembly: WalletManagerAssembly {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
+    func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return TronWalletManager(wallet: input.wallet).then {
             let network: TronNetwork = input.blockchain.isTestnet ? .nile : .mainnet
             let providers = [

@@ -10,22 +10,22 @@ import Foundation
 import TangemSdk
 import BitcoinCore
 
-struct TONWalletAssembly: WalletAssemblyProtocol {
+struct TONWalletAssembly: WalletManagerAssembly {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
+    func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         var providers: [TONProvider] = []
         
         providers.append(
             TONProvider(
                 node: .init(
-                    apiKeyValue: input.blockchainConfig.tonCenterApiKeys.getApiKey(for: testnet),
+                    apiKeyValue: input.blockchainConfig.tonCenterApiKeys.getApiKey(for: input.blockchain.isTestnet),
                     endpointType: .toncenter(input.blockchain.isTestnet)
                 ),
                 networkConfig: input.networkConfig
             )
         )
         
-        if !testnet {
+        if !input.blockchain.isTestnet {
             providers.append(
                 contentsOf: [
                     TONProvider(

@@ -11,9 +11,9 @@ import TangemSdk
 import stellarsdk
 import BitcoinCore
 
-struct EthereumWalletAssembly: WalletAssemblyProtocol {
+struct EthereumWalletAssembly: WalletManagerAssembly {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
+    func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         let manager: EthereumWalletManager
         let endpoints = input.blockchain.getJsonRpcEndpoints(
             keys: EthereumApiKeys(

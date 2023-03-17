@@ -8,9 +8,9 @@
 
 import Foundation
 
-struct ProviderAssembly {
+struct NetworkProviderAssembly {
     
-    func makeBlockBookUtxoProvider(with input: BlockchainAssemblyInput, for type: BlockBookProviderType) -> BlockBookUtxoProvider {
+    func makeBlockBookUtxoProvider(with input: WalletManagerAssemblyInput, for type: BlockBookProviderType) -> BlockBookUtxoProvider {
         switch type {
         case .nowNodes:
             return BlockBookUtxoProvider(
@@ -27,11 +27,11 @@ struct ProviderAssembly {
         }
     }
     
-    func makeInfoNetworkProvider(with input: BlockchainAssemblyInput) -> BlockchainInfoNetworkProvider {
+    func makeInfoNetworkProvider(with input: WalletManagerAssemblyInput) -> BlockchainInfoNetworkProvider {
         return BlockchainInfoNetworkProvider(configuration: input.networkConfig)
     }
     
-    func makeBlockcypherNetworkProvider(endpoint: BlockcypherEndpoint, with input: BlockchainAssemblyInput) -> BlockcypherNetworkProvider {
+    func makeBlockcypherNetworkProvider(endpoint: BlockcypherEndpoint, with input: WalletManagerAssemblyInput) -> BlockcypherNetworkProvider {
         return BlockcypherNetworkProvider(
             endpoint: endpoint,
             tokens: input.blockchainConfig.blockcypherTokens,
@@ -39,7 +39,7 @@ struct ProviderAssembly {
         )
     }
     
-    func makeBlockchairNetworkProviders(endpoint: BlockchairEndpoint, with input: BlockchainAssemblyInput) -> [AnyBitcoinNetworkProvider] {
+    func makeBlockchairNetworkProviders(endpoint: BlockchairEndpoint, with input: WalletManagerAssemblyInput) -> [AnyBitcoinNetworkProvider] {
         let apiKeys: [String?] = [nil] + input.blockchainConfig.blockchairApiKeys
         
         return apiKeys.map {

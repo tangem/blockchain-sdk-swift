@@ -11,9 +11,9 @@ import TangemSdk
 import stellarsdk
 import BitcoinCore
 
-struct BitcoinCashWalletAssembly: WalletAssemblyProtocol {
+struct BitcoinCashWalletAssembly: WalletManagerAssembly {
     
-    static func make(with input: BlockchainAssemblyInput) throws -> WalletAssembly {
+    func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return try BitcoinCashWalletManager(wallet: input.wallet).then {
             let compressed = try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress()
             let bitcoinManager = BitcoinManager(networkParams: input.blockchain.isTestnet ? BitcoinCashTestNetworkParams() : BitcoinCashNetworkParams(),
