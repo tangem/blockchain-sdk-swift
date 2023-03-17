@@ -103,15 +103,6 @@ public enum Blockchain: Equatable, Hashable {
         }
     }
     
-    public var shelley: Bool {
-        switch self {
-        case .cardano(let shelley):
-            return shelley
-        default:
-            return false
-        }
-    }
-    
     public var decimalCount: Int {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash:
@@ -953,35 +944,37 @@ extension Blockchain {
     var assembly: WalletManagerAssembly {
         switch self {
         case .bitcoin:
-            return BitcoinWalletAssembly.self
+            return BitcoinWalletAssembly()
         case .litecoin:
-            return LitecoinWalletAssembly.self
+            return LitecoinWalletAssembly()
         case .dogecoin:
-            return DogecoinWalletAssembly.self
+            return DogecoinWalletAssembly()
         case .ducatus:
-            return DucatusWalletAssembly.self
+            return DucatusWalletAssembly()
         case .stellar:
-            return StellarWalletAssembly.self
+            return StellarWalletAssembly()
         case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .optimism, .ethereumFair, .saltPay:
-            return EthereumWalletAssembly.self
+            return EthereumWalletAssembly()
         case .bitcoinCash:
-            return BitcoinCashWalletAssembly.self
+            return BitcoinCashWalletAssembly()
         case .binance:
-            return BinanceWalletAssembly.self
+            return BinanceWalletAssembly()
         case .cardano:
-            return CardanoWalletAssembly.self
+            return CardanoWalletAssembly()
         case .xrp:
-            return XRPWalletAssembly.self
+            return XRPWalletAssembly()
         case .tezos:
-            return TezosWalletAssembly.self
+            return TezosWalletAssembly()
         case .solana:
-            return SolanaWalletAssembly.self
+            return SolanaWalletAssembly()
         case .polkadot, .kusama:
-            return SubstrateWalletAssembly.self
+            return SubstrateWalletAssembly()
         case .tron:
-            return TronWalletAssembly.self
+            return TronWalletAssembly()
         case .dash:
-            return DashWalletAssembly.self
+            return DashWalletAssembly()
+        case .ton:
+            return TONWalletAssembly()
         }
     }
     

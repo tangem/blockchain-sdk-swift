@@ -430,21 +430,17 @@ public class WalletManagerFactory {
         }
     }
     
-    private func makeWalletManager(from blockchain: Blockchain,
-                           publicKey: Wallet.PublicKey,
-                           pairPublicKey: Data? = nil
-    ) throws -> WalletManager {
-        return try blockchain.assembly.make(
-            with: .init(
-                blockchain: blockchain,
-                blockchainConfig: config,
-                pairPublicKey: pairPublicKey,
-                wallet: Wallet(
-                    blockchain: blockchain,
-                    addresses: blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey),
-                    publicKey: publicKey
-                ),
-                networkConfig: config.networkProviderConfiguration(for: blockchain)
+    private func makeDashWalletManager(testnet: Bool,
+                                       wallet: Wallet,
+                                       networkProviderConfiguration: NetworkProviderConfiguration) throws -> WalletManager {
+        try DashWalletManager(wallet: wallet).then {
+            let compressed = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
+            
+            let bitcoinManager = BitcoinManager(
+                networkParams: testnet ? DashTestNetworkParams() : DashMainNetworkParams(),
+                walletPublicKey: wallet.publicKey.blockchainKey,
+                compressedWalletPublicKey: compressed,
+                bip: .bip44
             )
             
             // TODO: Add CryptoAPIs for testnet

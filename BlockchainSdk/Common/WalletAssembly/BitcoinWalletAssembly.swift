@@ -5,6 +5,8 @@ import BitcoinCore
 
 struct BitcoinWalletAssembly: WalletManagerAssembly {
     
+    // MARK: - Implementation
+    
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return try BitcoinWalletManager(wallet: input.wallet).then {
             let network: BitcoinNetwork = input.blockchain.isTestnet ? .testnet : .mainnet
