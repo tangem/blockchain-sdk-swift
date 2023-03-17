@@ -56,7 +56,7 @@ public extension OptimismContract {
 
 extension OptimismContract {
     public var abi: String {
-        let bundle = Bundle(for: WalletManagerFactory.self)
+        let bundle = Bundle.blockchainSdkBundle
         let url = bundle.url(forResource: "OptimismSmartContractABI", withExtension: "json")!
         let data = try! Data(contentsOf: url)
         let string = String(bytes: data, encoding: .utf8)!
