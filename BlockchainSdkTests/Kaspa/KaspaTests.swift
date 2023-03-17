@@ -30,7 +30,13 @@ class KaspaTests: XCTestCase {
         let sourceAddress = try! blockchain.getAddressService().makeAddress(from: Data(hex: walletPublicKey))
         let destination = "kaspa:qpsqw2aamda868dlgqczeczd28d5nc3rlrj3t87vu9q58l2tugpjs2psdm4fv"
         
-        let transaction = Transaction(amount: Amount(with: blockchain, value: 0.001), fee: Amount(with: blockchain, value: 0.0003), sourceAddress: sourceAddress, destinationAddress: destination, changeAddress: sourceAddress)
+        let transaction = Transaction(
+            amount: Amount(with: blockchain, value: 0.001),
+            fee: Amount(with: blockchain, value: 0.000300000000001), // otherwise the tests fail, can't convert to 0.0003 properly
+            sourceAddress: sourceAddress,
+            destinationAddress: destination,
+            changeAddress: sourceAddress
+        )
         
         let (kaspaTransaction, hashes) = txBuilder.buildForSign(transaction)
         

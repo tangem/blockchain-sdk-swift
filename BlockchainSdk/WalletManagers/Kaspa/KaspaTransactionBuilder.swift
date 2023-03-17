@@ -18,24 +18,31 @@ class KaspaTransactionBuilder {
     }
     
     func buildForSign(_ transaction: Transaction) -> (KaspaTransaction, [Data]) {
-        let outputs: [KaspaOutput] = [
+        var outputs: [KaspaOutput] = [
             KaspaOutput(
-                amount: 100000,
-                scriptPublicKey: KaspaScriptPublicKey(scriptPublicKey: "2060072BBDDB7A7D1DBF40302CE04D51DB49E223F8E5159FCCE14143FD4BE20328AC", version: 0)
-            ),
-            KaspaOutput(
-                amount: 519870000,
+                amount: amount(from: transaction),
                 scriptPublicKey: KaspaScriptPublicKey(
-                    scriptPublicKey: "2103EB30400CE9D1DEED12B84D4161A1FA922EF4185A155EF3EC208078B3807B126FAB",
+                    scriptPublicKey: "2060072BBDDB7A7D1DBF40302CE04D51DB49E223F8E5159FCCE14143FD4BE20328AC",
                     version: 0
                 )
             )
         ]
         
+        if let change = change(transaction, unspentOutputs: unspentOutputs) {
+            outputs.append(
+                KaspaOutput(
+                    amount: change,
+                    scriptPublicKey: KaspaScriptPublicKey(
+                        scriptPublicKey: "2103EB30400CE9D1DEED12B84D4161A1FA922EF4185A155EF3EC208078B3807B126FAB",
+                        version: 0
+                    )
+                )
+            )
+        }
+        
+        
         let inputs = unspentOutputs
         let kaspaTransaction = KaspaTransaction(inputs: inputs, outputs: outputs)
-        
-        //        let connectedScript =
         
         var hashes: [Data] = []
         for (index, unspentOutput) in unspentOutputs.enumerated() {
@@ -55,7 +62,7 @@ class KaspaTransactionBuilder {
             hashes.append(z)
         }
         
-        let change = calculateChange(transaction: transaction, unspentOutputs: unspentOutputs)
+        
         
         return (kaspaTransaction, hashes)
     }
@@ -75,10 +82,17 @@ class KaspaTransactionBuilder {
         return KaspaTransactionData(inputs: inputs, outputs: builtTransaction.outputs)
     }
     
-    private func calculateChange(transaction: Transaction, unspentOutputs: [BitcoinUnspentOutput]) -> Amount {
-        let fullAmountInSatoshi = unspentOutputs.map { $0.amount }.reduce(0, +)
-        let fullAmount = Amount(with: blockchain, value: Decimal(fullAmountInSatoshi) / blockchain.decimalValue)
-        return fullAmount - transaction.amount - transaction.fee
+    private func amount(from transaction: Transaction) -> UInt64 {
+        return ((transaction.amount.value * blockchain.decimalValue) as NSDecimalNumber).uint64Value
+    }
+    
+    private func change(_ transaction: Transaction, unspentOutputs: [BitcoinUnspentOutput]) -> UInt64? {
+        let fullAmount = unspentOutputs.map { $0.amount }.reduce(0, +)
+        let transactionAmount = ((transaction.amount.value * blockchain.decimalValue).rounded() as NSDecimalNumber).uint64Value
+        let feeAmount = ((transaction.fee.value * blockchain.decimalValue).rounded() as NSDecimalNumber).uint64Value
+        
+        let change = fullAmount - transactionAmount - feeAmount
+        return change == 0 ? nil : change
     }
 }
 
