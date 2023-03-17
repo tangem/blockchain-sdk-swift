@@ -73,11 +73,11 @@ private extension OptimismWalletManager {
         assert(payload.value != nil)
         
         guard let address = EthereumAddress(payload.targetAddress),
-              let value = payload.value,
-              let encodedValue = BigUInt(value) else {
+              let value = payload.value else {
             return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
         }
 
+        let encodedValue = BigUInt(Data(hex: value))
         let transaction = EthereumTransaction(gasPrice: L2FeeParameters.gasPrice,
                                               gasLimit: L2FeeParameters.gasLimit,
                                               to: address,
