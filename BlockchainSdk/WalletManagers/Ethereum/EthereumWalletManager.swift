@@ -27,7 +27,7 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable {
     /// This method for implemented protocol `EthereumTransactionProcessor`
     /// It can't be into extension because it will be override in the `OptimismWalletManager`
     func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<FeeType, Error> {
-        getFee(to: destination, value: value, data: data)
+        getFee(to: destination, from: wallet.address, value: value, data: data)
     }
 }
 
@@ -100,11 +100,11 @@ extension EthereumWalletManager: TransactionFeeProvider {
         switch amount.type {
         case .coin:
             if let hexAmount = amount.encodedForSend {
-                return getFee(to: destination, value: hexAmount, data: nil)
+                return getFee(destination: destination, value: hexAmount)
             }
         case .token(let token):
             if let erc20Data = txBuilder.getData(for: amount, targetAddress: destination) {
-                return getFee(to: token.contractAddress, value: nil, data: erc20Data)
+                return getFee(destination: token.contractAddress, data: erc20Data)
             }
         case .reserve:
             break
@@ -309,8 +309,8 @@ extension EthereumWalletManager: TransactionHistoryLoader {
 // MARK: - Private
 
 private extension EthereumWalletManager {
-    func getFee(to: String, value: String?, data: Data?) -> AnyPublisher<FeeType, Error> {
-        networkService.getFee(to: to, from: wallet.address, value: value, data: data?.hexString.addHexPrefix())
+    func getFee(to: String, from: String, value: String?, data: Data?) -> AnyPublisher<FeeType, Error> {
+        networkService.getFee(to: to, from: from, value: value, data: data?.hexString.addHexPrefix())
             .tryMap { [weak self] ethereumFeeResponse in
                 guard let self = self else {
                     throw BlockchainSdkError.failedToLoadFee
