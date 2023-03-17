@@ -254,8 +254,6 @@
 		EFF56B3D29C20CCE002B6952 /* SmartContractMethodType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B3C29C20CCE002B6952 /* SmartContractMethodType.swift */; };
 		EFF56B3F29C24673002B6952 /* FeeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B3E29C24673002B6952 /* FeeType.swift */; };
 		EFF56B4129C30265002B6952 /* EthereumFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B4029C30265002B6952 /* EthereumFeeParameters.swift */; };
-		EFF56B4B29C499BB002B6952 /* OptimismSmartContractABI.json in Resources */ = {isa = PBXBuildFile; fileRef = EFF56B4929C48CB8002B6952 /* OptimismSmartContractABI.json */; };
-		EFF56B4D29C49E73002B6952 /* Bundle+.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B4C29C49E73002B6952 /* Bundle+.swift */; };
 		EFF5BA8429B881440070694A /* OptimismContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF5BA8329B881440070694A /* OptimismContract.swift */; };
 /* End PBXBuildFile section */
 
@@ -557,8 +555,6 @@
 		EFF56B3C29C20CCE002B6952 /* SmartContractMethodType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContractMethodType.swift; sourceTree = "<group>"; };
 		EFF56B3E29C24673002B6952 /* FeeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeType.swift; sourceTree = "<group>"; };
 		EFF56B4029C30265002B6952 /* EthereumFeeParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumFeeParameters.swift; sourceTree = "<group>"; };
-		EFF56B4929C48CB8002B6952 /* OptimismSmartContractABI.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = OptimismSmartContractABI.json; sourceTree = "<group>"; };
-		EFF56B4C29C49E73002B6952 /* Bundle+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Bundle+.swift"; path = "../../../tangem-app-ios/Pods/TangemSdk/TangemSdk/TangemSdk/Common/Extensions/Bundle+.swift"; sourceTree = "<group>"; };
 		EFF5BA8329B881440070694A /* OptimismContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismContract.swift; sourceTree = "<group>"; };
 		EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashTestNetworkParams.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -671,7 +667,6 @@
 		5D14E4702397B80F00C15FC8 /* BlockchainSdk */ = {
 			isa = PBXGroup;
 			children = (
-				EFF56B4829C48C8D002B6952 /* Resources */,
 				5D14E48B2397B87000C15FC8 /* Common */,
 				5D14E4892397B87000C15FC8 /* WalletManagers */,
 				5D4B33B923F6E9BD00C93A84 /* BlockchainService */,
@@ -804,7 +799,6 @@
 			children = (
 				5DE3BF95239E6D8E00E8815D /* BlockchainUtils */,
 				5DCC817923FAE70500DFC460 /* Moya+Combine */,
-				EFF56B4C29C49E73002B6952 /* Bundle+.swift */,
 				5DEAFA9124447D350032E316 /* ThenProcessable.swift */,
 				5D304396239A6B960066B8D9 /* String+.swift */,
 				5DED72B7239FE2E3006D79AE /* Decimal+.swift */,
@@ -1449,14 +1443,6 @@
 			path = ContractInteractor;
 			sourceTree = "<group>";
 		};
-		EFF56B4829C48C8D002B6952 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				EFF56B4929C48CB8002B6952 /* OptimismSmartContractABI.json */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1585,7 +1571,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFF56B4B29C499BB002B6952 /* OptimismSmartContractABI.json in Resources */,
 				5D5E058724FE72D900F04DE1 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1883,7 +1868,6 @@
 				5DEAFA942444C5300032E316 /* Token.swift in Sources */,
 				5D557CB023AA888D009B32AF /* Uint64+.swift in Sources */,
 				5D94E56123A381F2009C7482 /* EthereumWalletManagerProtocols.swift in Sources */,
-				EFF56B4D29C49E73002B6952 /* Bundle+.swift in Sources */,
 				DC912D1628E706C400D76628 /* ContractInteractor.swift in Sources */,
 				B0BAEE9C25FF1E4200F318A6 /* RosettaData.swift in Sources */,
 				5D8653FA23A8C481000DE52D /* StellarNetworkService.swift in Sources */,

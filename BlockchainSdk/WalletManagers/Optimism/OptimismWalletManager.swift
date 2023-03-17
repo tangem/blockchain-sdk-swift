@@ -13,10 +13,10 @@ import Moya
 import web3swift
 
 class OptimismWalletManager: EthereumWalletManager {
-    private let contractInteractor: ContractInteractor<OptimismContract>
+    private let contractInteractor: ContractInteractor<OptimismSmartContract>
     
     init(wallet: Wallet, rpcURL: URL) {
-        let contract = OptimismContract(rpcURL: rpcURL)
+        let contract = OptimismSmartContract(rpcURL: rpcURL)
         self.contractInteractor = ContractInteractor(contract: contract)
 
         super.init(wallet: wallet)
