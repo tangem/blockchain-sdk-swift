@@ -18,20 +18,21 @@ class OptimismWalletManager: EthereumWalletManager {
     init(wallet: Wallet, rpcURL: URL) {
         let contract = OptimismSmartContract(rpcURL: rpcURL)
         self.contractInteractor = ContractInteractor(contract: contract)
-
+        
         super.init(wallet: wallet)
     }
-
-    /// We are override this method to combine the two fee layers in the `Optimistic-Ethereum` network.
+    
+    /// We are override this method to combine the two fee's layers in the `Optimistic-Ethereum` network.
     /// Read more:
     /// https://community.optimism.io/docs/developers/build/transaction-fees/#the-l1-data-fee
     /// https://help.optimism.io/hc/en-us/articles/4411895794715-How-do-transaction-fees-on-Optimism-work
     /// Short information:
-    /// `L1` - Used to processing a transaction in the `optimistic-etherium` network.
-    /// It will be added to fee in the transaction after sent it in the network. We don't have to use any sum `L1` and `L2` fees when we're building transaction.
-    /// But it's important to show user information about a fee which will be charged
-    /// `L2` - Used to provide this transaction in the `Etherium` network for "safety".
-    /// When we are building transaction we have to use `gasLimit` and `gasPrice` ONLY from L2
+    /// `L2` - Used to provide this transaction in the `Optimistic-etherium` network like a usual tx.
+    /// `L1` - Used to processing a transaction in the `Etherium` network  for "safety".
+    /// This L1 fee will be added to the transaction fee automatically after it is sent to the network.
+    /// This L1 fee calculated the Optimism smart-contract oracle.
+    /// This L1 fee have to used ONLY for showing to a user.
+    /// When we're building transaction we have to used `gasLimit` and `gasPrice` ONLY from `L2`
     override func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<FeeType, Error> {
         super.getFee(destination: destination, value: value, data: data)
             .tryMap { [weak self] layer2FeeType -> AnyPublisher<(FeeType, Decimal), Error> in
@@ -39,10 +40,15 @@ class OptimismWalletManager: EthereumWalletManager {
                       let parameters = layer2FeeType.lowFeeModel?.parameters as? EthereumFeeParameters else {
                     return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
                 }
-
-                return self.getLayer1Fee(destination: destination, value: value, data: data, l2FeeParameters: parameters)
-                    .map { (layer2FeeType, $0) }
-                    .eraseToAnyPublisher()
+                
+                return self.getLayer1Fee(
+                    destination: destination,
+                    value: value,
+                    data: data,
+                    l2FeeParameters: parameters
+                )
+                .map { (layer2FeeType, $0) }
+                .eraseToAnyPublisher()
             }
             .switchToLatest()
             .tryMap { layer2FeeType, layer1Fee -> FeeType in
@@ -65,9 +71,9 @@ class OptimismWalletManager: EthereumWalletManager {
             .eraseToAnyPublisher()
     }
 }
-    
+
 // MARK: - Private
-    
+
 private extension OptimismWalletManager {
     func getLayer1Fee(
         destination: String,
@@ -75,18 +81,15 @@ private extension OptimismWalletManager {
         data: Data?,
         l2FeeParameters: EthereumFeeParameters
     ) -> AnyPublisher<Decimal, Error> {
-        assert(value != nil)
-        
         guard let address = EthereumAddress(destination), let value = value else {
             return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
         }
 
-        let encodedValue = BigUInt(Data(hex: value))
         let transaction = EthereumTransaction(
             gasPrice: l2FeeParameters.gasPrice,
             gasLimit: l2FeeParameters.gasLimit,
             to: address,
-            value: encodedValue,
+            value: BigUInt(Data(hex: value)),
             data: data ?? Data()
         )
         
@@ -106,7 +109,7 @@ private extension OptimismWalletManager {
                 
                 let blockchain = wallet.blockchain
                 let fee = decimalFee / blockchain.decimalValue
-
+                
                 return fee
             }
             .eraseToAnyPublisher()
