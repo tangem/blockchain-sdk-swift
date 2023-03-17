@@ -555,6 +555,7 @@
 		EFF56B3C29C20CCE002B6952 /* SmartContractMethodType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContractMethodType.swift; sourceTree = "<group>"; };
 		EFF56B3E29C24673002B6952 /* FeeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeType.swift; sourceTree = "<group>"; };
 		EFF56B4029C30265002B6952 /* EthereumFeeParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumFeeParameters.swift; sourceTree = "<group>"; };
+		EFF56B4929C48CB8002B6952 /* OptimismSmartContractABI.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = OptimismSmartContractABI.json; sourceTree = "<group>"; };
 		EFF5BA8329B881440070694A /* OptimismContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismContract.swift; sourceTree = "<group>"; };
 		EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashTestNetworkParams.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -667,6 +668,7 @@
 		5D14E4702397B80F00C15FC8 /* BlockchainSdk */ = {
 			isa = PBXGroup;
 			children = (
+				EFF56B4829C48C8D002B6952 /* Resources */,
 				5D14E48B2397B87000C15FC8 /* Common */,
 				5D14E4892397B87000C15FC8 /* WalletManagers */,
 				5D4B33B923F6E9BD00C93A84 /* BlockchainService */,
@@ -1441,6 +1443,14 @@
 				EFF56B3C29C20CCE002B6952 /* SmartContractMethodType.swift */,
 			);
 			path = ContractInteractor;
+			sourceTree = "<group>";
+		};
+		EFF56B4829C48C8D002B6952 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				EFF56B4929C48CB8002B6952 /* OptimismSmartContractABI.json */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
