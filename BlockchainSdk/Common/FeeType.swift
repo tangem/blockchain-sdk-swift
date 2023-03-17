@@ -120,3 +120,19 @@ extension FeeType.FeeModel: Hashable {
         lhs.hashValue == rhs.hashValue
     }
 }
+
+extension FeeType: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .single(let fee):
+            return "Single option: \(fee)"
+        case .multiple(let low, let normal, let priority):
+            return """
+            Multiple options:
+            low: \(low)
+            normal: \(normal)
+            priority: \(priority)
+            """
+        }
+    }
+}
