@@ -62,8 +62,20 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Ethere
 // MARK: - EthereumNetworkProvider
 
 extension EthereumWalletManager: EthereumNetworkProvider {
+    func getBalance(_ address: String) -> AnyPublisher<Decimal, Error> {
+        networkService.getBalance(address)
+    }
+    
     func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error> {
         networkService.getTokensBalance(address, tokens: tokens)
+    }
+    
+    func getTxCount(_ address: String) -> AnyPublisher<Int, Error> {
+        networkService.getTxCount(address)
+    }
+    
+    func getPendingTxCount(_ address: String) -> AnyPublisher<Int, Error> {
+        networkService.getPendingTxCount(address)
     }
 }
 
@@ -288,8 +300,16 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
             .eraseToAnyPublisher()
     }
 
-    func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<String, Error> {
+    func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<Decimal, Error> {
         networkService.getAllowance(from: from, to: to, contractAddress: contractAddress)
+            .tryMap { response in
+                if let allowance = EthereumUtils.parseEthereumDecimal(response, decimalsCount: 0) {
+                    return allowance
+                }
+
+                throw ETHError.failedToParseAllowance
+            }
+            .eraseToAnyPublisher()
     }
 }
 

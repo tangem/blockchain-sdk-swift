@@ -22,7 +22,7 @@ extension GetBlockBlockBookConfig: BlockBookConfig {
     }
     
     var apiKeyName: String {
-        return Constants.getBlockApiKeyHeaderName
+        return Constants.xApiKeyHeaderName
     }
     
     var host: String {

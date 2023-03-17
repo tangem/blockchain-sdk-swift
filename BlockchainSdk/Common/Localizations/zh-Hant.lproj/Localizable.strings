@@ -10,6 +10,7 @@
 "common_parse_network_response_error" = "無法解析網絡回應";
 "common_send_tx_error" = "發送交易失敗";
 "eth_balance_parse_error" = "解析餘額失敗";
+"eth_gas_required_exceeds_allowance" = "沒有足夠的資金進行交易。請先入金";
 "eth_tx_count_parse_error" = "無法解析 tx 計數";
 "failed_to_find_transaction" = "在待定列表中找不到交易";
 "failed_to_find_tx_inputs" = "找不到交易輸入";
@@ -18,8 +19,8 @@
 "network_providers_not_supports_rbf" = "推送交易目前不可用。 請稍後再試";
 "no_account_bnb" = "要創建帳戶，請將資金發送到此地址";
 "no_account_generic" = "加載 %1$@+ %2$@ 以創建帳戶";
-"no_account_on_destination_xlm_asset" = "未創建目標帳戶。要創建帳戶，請發送 1+ XLM。";
-"no_account_polkadot" = "目標帳戶未激活。發送 %@ 或更多以激活帳戶。";
+"no_account_on_destination_xlm_asset" = "未創建目標帳戶。要創建帳戶，請發送 1+ XLM";
+"no_account_polkadot" = "目標帳戶未激活。發送 %@ 或更多以激活帳戶";
 "no_trustline_xlm_asset" = "目標帳戶沒有用於發送資產的 trustline";
 "send_error_dust_amount_format" = "最小數量是 %@";
 "send_error_dust_change_format" = "最小變化是 %@";

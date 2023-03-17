@@ -31,12 +31,15 @@ public protocol EthereumTransactionProcessor {
     func buildForSend(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
     func getFee(to: String, data: String?, amount: Amount?) -> AnyPublisher<[Amount], Error>
     func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
-    func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<String, Error>
+    func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<Decimal, Error>
 }
 
 @available(iOS 13.0, *)
 public protocol EthereumNetworkProvider {
+    func getBalance(_ address: String) -> AnyPublisher<Decimal, Error>
     func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error>
+    func getTxCount(_ address: String) -> AnyPublisher<Int, Error>
+    func getPendingTxCount(_ address: String) -> AnyPublisher<Int, Error>
 }
 
 public struct CompiledEthereumTransaction {

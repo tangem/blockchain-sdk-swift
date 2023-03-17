@@ -61,7 +61,11 @@ class PolkadotTransactionBuilder {
         message.append(try codec.encode(meta.specVersion))
         message.append(try codec.encode(meta.transactionVersion))
         message.append(Data(hexString: meta.genesisHash))
-        message.append(Data(hexString: meta.blockHash))
+        if meta.era == nil {
+            message.append(Data(hex: meta.genesisHash))
+        } else {
+            message.append(Data(hexString: meta.blockHash))
+        }
         return message
     }
     
