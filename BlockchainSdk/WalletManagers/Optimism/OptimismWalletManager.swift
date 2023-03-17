@@ -34,37 +34,33 @@ class OptimismWalletManager: EthereumWalletManager {
     /// When we are building transaction we have to use `gasLimit` and `gasPrice` ONLY from L2
     override func getFee(payload: EthereumDestinationPayload) -> AnyPublisher<FeeType, Error> {
         super.getFee(payload: payload)
-            .tryMap { [weak self] layer2FeeType -> AnyPublisher<FeeType, Error> in
+            .tryMap { [weak self] layer2FeeType -> AnyPublisher<(FeeType, Decimal), Error> in
                 guard let self,
                       let parameters = layer2FeeType.lowFeeModel?.parameters as? EthereumFeeParameters else {
                     return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
                 }
 
                 return self.getLayer1Fee(payload: payload, L2FeeParameters: parameters)
-                    .tryMap { layer1Fee throws -> FeeType in
-                        switch layer2FeeType {
-                        case .multiple(let low, let normal, let priority):
-                            let updatedModels: [FeeType.FeeModel] = [low, normal, priority]
-                                .map { feeModel in
-                                    let oldAmount = feeModel.fee
-                                    let newAmount = Amount(with: oldAmount, value: oldAmount.value + layer1Fee)
-                                    let newFeeModel = FeeType.FeeModel(
-                                        newAmount,
-                                        parameters: layer2FeeType.lowFeeModel?.parameters
-                                    )
-                                    return newFeeModel
-                                }
-
-                            return try FeeType(fees: updatedModels)
-
-                        case .single:
-                            assertionFailure("Not implement this case")
-                            return layer2FeeType
-                        }
-                    }
+                    .map { (layer2FeeType, $0) }
                     .eraseToAnyPublisher()
             }
             .switchToLatest()
+            .tryMap { layer2FeeType, layer1Fee -> FeeType in
+                switch layer2FeeType {
+                case .multiple(let low, let normal, let priority):
+                    let updatedModels: [FeeType.FeeModel] = [low, normal, priority].map { feeModel in
+                        let newAmount = Amount(with: feeModel.fee, value: feeModel.fee.value + layer1Fee)
+                        let newFeeModel = FeeType.FeeModel(newAmount, parameters: feeModel.parameters)
+                        return newFeeModel
+                    }
+                    
+                    return try FeeType(fees: updatedModels)
+
+                case .single:
+                    assertionFailure("Not implement this case")
+                    return layer2FeeType
+                }
+            }
             .eraseToAnyPublisher()
     }
 }
