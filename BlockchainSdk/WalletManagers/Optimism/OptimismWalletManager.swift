@@ -32,15 +32,15 @@ class OptimismWalletManager: EthereumWalletManager {
     /// But it's important to show user information about a fee which will be charged
     /// `L2` - Used to provide this transaction in the `Etherium` network for "safety".
     /// When we are building transaction we have to use `gasLimit` and `gasPrice` ONLY from L2
-    override func getFee(payload: EthereumDestinationPayload) -> AnyPublisher<FeeType, Error> {
-        super.getFee(payload: payload)
+    override func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<FeeType, Error> {
+        super.getFee(destination: destination, value: value, data: data)
             .tryMap { [weak self] layer2FeeType -> AnyPublisher<(FeeType, Decimal), Error> in
                 guard let self,
                       let parameters = layer2FeeType.lowFeeModel?.parameters as? EthereumFeeParameters else {
                     return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
                 }
 
-                return self.getLayer1Fee(payload: payload, L2FeeParameters: parameters)
+                return self.getLayer1Fee(destination: destination, value: value, data: data, l2FeeParameters: parameters)
                     .map { (layer2FeeType, $0) }
                     .eraseToAnyPublisher()
             }
@@ -53,9 +53,10 @@ class OptimismWalletManager: EthereumWalletManager {
                         let newFeeModel = FeeType.FeeModel(newAmount, parameters: feeModel.parameters)
                         return newFeeModel
                     }
+                    let feeType = try FeeType(fees: updatedModels)
+                    print("OptimismWalletManager calculated fees: \(feeType)")
                     
-                    return try FeeType(fees: updatedModels)
-
+                    return feeType
                 case .single:
                     assertionFailure("Not implement this case")
                     return layer2FeeType
@@ -68,21 +69,26 @@ class OptimismWalletManager: EthereumWalletManager {
 // MARK: - Private
     
 private extension OptimismWalletManager {
-    func getLayer1Fee(payload: EthereumDestinationPayload,
-                      L2FeeParameters: EthereumFeeParameters) -> AnyPublisher<Decimal, Error> {
-        assert(payload.value != nil)
+    func getLayer1Fee(
+        destination: String,
+        value: String?,
+        data: Data?,
+        l2FeeParameters: EthereumFeeParameters
+    ) -> AnyPublisher<Decimal, Error> {
+        assert(value != nil)
         
-        guard let address = EthereumAddress(payload.targetAddress),
-              let value = payload.value else {
+        guard let address = EthereumAddress(destination), let value = value else {
             return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
         }
 
         let encodedValue = BigUInt(Data(hex: value))
-        let transaction = EthereumTransaction(gasPrice: L2FeeParameters.gasPrice,
-                                              gasLimit: L2FeeParameters.gasLimit,
-                                              to: address,
-                                              value: encodedValue,
-                                              data: payload.data ?? Data())
+        let transaction = EthereumTransaction(
+            gasPrice: l2FeeParameters.gasPrice,
+            gasLimit: l2FeeParameters.gasLimit,
+            to: address,
+            value: encodedValue,
+            data: data ?? Data()
+        )
         
         // Just collect data to get estimated fee from contact address
         // https://github.com/ethereum/wiki/wiki/RLP

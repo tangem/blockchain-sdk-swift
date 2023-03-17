@@ -26,8 +26,8 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable {
 
     /// This method for implemented protocol `EthereumTransactionProcessor`
     /// It can't be into extension because it will be override in the `OptimismWalletManager`
-    func getFee(payload: EthereumDestinationPayload) -> AnyPublisher<FeeType, Error> {
-        getFee(to: payload.targetAddress, value: payload.value, data: payload.data)
+    func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<FeeType, Error> {
+        getFee(to: destination, value: value, data: data)
     }
 }
 
@@ -91,93 +91,32 @@ extension EthereumWalletManager {
     }
 }
 
-// MARK: - Private
+// MARK: - TransactionFeeProvider
 
-extension EthereumWalletManager {
-    func getFee(to: String, value: String?, data: Data?) -> AnyPublisher<FeeType, Error> {
-        networkService.getFee(to: to, from: wallet.address, value: value, data: data?.hexString.addHexPrefix())
-            .tryMap { [weak self] ethereumFeeResponse in
-                guard let self = self else {
-                    throw BlockchainSdkError.failedToLoadFee
-                }
-
-                let feeAmounts = ethereumFeeResponse.fees.map { feeValue in
-                    let amount = Amount(with: self.wallet.blockchain, value: feeValue.fee)
-                    return FeeType.FeeModel(
-                        amount,
-                        parameters: EthereumFeeParameters(gasLimit: feeValue.gasLimit, gasPrice: feeValue.gasPrice)
-                    )
-                }
-                
-                var feeDataModel = try FeeType(fees: feeAmounts)
-                
-                print("EthereumWalletManager calculated fees: \(feeDataModel)")
-                return feeDataModel
-            }
-            .eraseToAnyPublisher()
-    }
+extension EthereumWalletManager: TransactionFeeProvider {
+    var allowsFeeSelection: Bool { true }
     
-    private func updateWallet(with response: EthereumInfoResponse) {
-        wallet.add(coinValue: response.balance)
-        for tokenBalance in response.tokenBalances {
-            wallet.add(tokenValue: tokenBalance.value, for: tokenBalance.key)
-        }
-       
-        txCount = response.txCount
-        pendingTxCount = response.pendingTxCount
-        
-        // TODO: This should be removed when integrating transaction history for all blockchains
-        // If we can load transaction history for specified blockchain - we can ignore loading pending txs
-        if !wallet.blockchain.canLoadTransactionHistory {
-            if !response.pendingTxs.isEmpty {
-                wallet.transactions.removeAll()
-                response.pendingTxs.forEach {
-                    wallet.addPendingTransaction($0)
-                }
-            } else if txCount == pendingTxCount {
-                for  index in wallet.transactions.indices {
-                    wallet.transactions[index].status = .confirmed
-                }
-            } else {
-                if wallet.transactions.isEmpty {
-                    wallet.addDummyPendingTransaction()
-                }
-            }
-        }
-    }
-    
-    func formatDestinationInfo(for destination: String, amount: Amount) throws -> EthereumDestinationPayload {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeType,Error> {
         switch amount.type {
         case .coin:
             if let hexAmount = amount.encodedForSend {
-                return EthereumDestinationPayload(targetAddress: destination, value: hexAmount)
+                return getFee(to: destination, value: hexAmount, data: nil)
             }
         case .token(let token):
             if let erc20Data = txBuilder.getData(for: amount, targetAddress: destination) {
-                return EthereumDestinationPayload(targetAddress: token.contractAddress, data: erc20Data)
+                return getFee(to: token.contractAddress, value: nil, data: erc20Data)
             }
         case .reserve:
             break
         }
-        
-        throw BlockchainSdkError.failedToLoadFee
+
+        return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
     }
 }
 
 // MARK: - TransactionSender
 
 extension EthereumWalletManager: TransactionSender {
-    var allowsFeeSelection: Bool { true }
-    
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeType,Error> {
-        do {
-            let payload = try formatDestinationInfo(for: destination, amount: amount)
-            return getFee(payload: payload)
-        } catch {
-            return Fail(error: error).eraseToAnyPublisher()
-        }
-    }
-    
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         sign(transaction, signer: signer)
             .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
@@ -364,5 +303,60 @@ extension EthereumWalletManager: TransactionHistoryLoader {
                 self?.wallet.setTransactionHistoryList(transactions)
             })
             .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - Private
+
+private extension EthereumWalletManager {
+    func getFee(to: String, value: String?, data: Data?) -> AnyPublisher<FeeType, Error> {
+        networkService.getFee(to: to, from: wallet.address, value: value, data: data?.hexString.addHexPrefix())
+            .tryMap { [weak self] ethereumFeeResponse in
+                guard let self = self else {
+                    throw BlockchainSdkError.failedToLoadFee
+                }
+
+                let feeAmounts = ethereumFeeResponse.fees.map { feeValue in
+                    let amount = Amount(with: self.wallet.blockchain, value: feeValue.fee)
+                    let parameters = EthereumFeeParameters(gasLimit: feeValue.gasLimit, gasPrice: feeValue.gasPrice)
+
+                    return FeeType.FeeModel(amount, parameters: parameters)
+                }
+                
+                let feeDataModel = try FeeType(fees: feeAmounts)
+                
+                print("EthereumWalletManager calculated fees: \(feeDataModel)")
+                return feeDataModel
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func updateWallet(with response: EthereumInfoResponse) {
+        wallet.add(coinValue: response.balance)
+        for tokenBalance in response.tokenBalances {
+            wallet.add(tokenValue: tokenBalance.value, for: tokenBalance.key)
+        }
+       
+        txCount = response.txCount
+        pendingTxCount = response.pendingTxCount
+        
+        // TODO: This should be removed when integrating transaction history for all blockchains
+        // If we can load transaction history for specified blockchain - we can ignore loading pending txs
+        if !wallet.blockchain.canLoadTransactionHistory {
+            if !response.pendingTxs.isEmpty {
+                wallet.transactions.removeAll()
+                response.pendingTxs.forEach {
+                    wallet.addPendingTransaction($0)
+                }
+            } else if txCount == pendingTxCount {
+                for  index in wallet.transactions.indices {
+                    wallet.transactions[index].status = .confirmed
+                }
+            } else {
+                if wallet.transactions.isEmpty {
+                    wallet.addDummyPendingTransaction()
+                }
+            }
+        }
     }
 }
