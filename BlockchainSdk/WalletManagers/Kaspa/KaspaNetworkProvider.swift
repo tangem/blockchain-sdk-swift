@@ -95,6 +95,11 @@ extension KaspaNetworkProvider: BitcoinNetworkProvider {
         .anyFail(error: WalletError.empty)
     }
     
+//    func send(transaction: KaspaTransaction) -> AnyPublisher<String, Error> {
+//        requestPublisher(for: .transactions(transaction: KaspaTransactionRequest(transaction: transaction)))
+//            .eraseToAnyPublisher()
+//    }
+    
     func push(transaction: String) -> AnyPublisher<String, Error> {
         .anyFail(error: WalletError.empty)
     }

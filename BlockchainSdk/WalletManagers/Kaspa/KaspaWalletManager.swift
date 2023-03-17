@@ -37,7 +37,41 @@ class KaspaWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        txBuilder.buildForSend(transaction)
+        //        txBuilder.buildForSend(transaction)
+//        let (kaspaTransaction, hashes) = txBuilder.buildForSign(transaction)
+//
+//
+//        return signer.sign(hashes: hashes,
+//                           walletPublicKey: self.wallet.publicKey)
+//        .tryMap { [weak self] signatures in
+//            guard let self = self else { throw WalletError.empty }
+//
+//            return self.txBuilder.buildForSend(transaction: kaspaTransaction, signatures: signatures)
+//        }
+//        .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
+//            guard let self = self else { return .emptyFail }
+//
+////            let txHashPublisher: AnyPublisher<String, Error>
+////            if isPushingTx {
+////                txHashPublisher = self.networkService.push(transaction: tx)
+////            } else {
+////                txHashPublisher = self.networkService.send(transaction: tx)
+////            }
+//            self.networkService.send(transaction: <#T##String#>)
+//
+////            return txHashPublisher.tryMap {[weak self] sendResponse in
+////                guard let self = self else { throw WalletError.empty }
+////
+////                var sendedTx = transaction
+////                sendedTx.hash = sendResponse
+////                self.wallet.add(transaction: sendedTx)
+////                return TransactionSendResult(hash: sendResponse)
+////            }
+////            .mapError { SendTxError(error: $0, tx: tx) }
+////            .eraseToAnyPublisher()
+//        }
+//        .eraseToAnyPublisher()
+        
         return .anyFail(error: WalletError.empty)
     }
     

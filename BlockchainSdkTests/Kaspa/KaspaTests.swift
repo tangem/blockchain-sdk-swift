@@ -14,7 +14,7 @@ import TangemSdk
 
 class KaspaTests: XCTestCase {
     private let blockchain = Blockchain.kaspa
-//    private let networkParams =  LitecoinNetworkParams()
+    //    private let networkParams =  LitecoinNetworkParams()
     private let sizeTester = TransactionSizeTesterUtility()
     
     func testBuildTransaction() {
@@ -32,13 +32,23 @@ class KaspaTests: XCTestCase {
         
         let transaction = Transaction(amount: Amount(with: blockchain, value: 0.001), fee: Amount(with: blockchain, value: 0.0003), sourceAddress: sourceAddress, destinationAddress: destination, changeAddress: sourceAddress)
         
-        let hashes = txBuilder.buildForSign(transaction)
+        let (kaspaTransaction, hashes) = txBuilder.buildForSign(transaction)
         
         let expectedHashes = [
             Data(hex: "0FF3D00405C24E8FCC4B6E0FF619D8C6CEDCA595672B5510F835A834B0841878"),
             Data(hex: "A414377AB154AB4A2BAB714F0398F230B8DAD7B7267B67AF40FAC47FB90B5124"),
             Data(hex: "040D5D2E734A47117377D64FCF2B621612E336E99F122E54302A569D37F8B483"),
         ]
-        XCTAssertEqual(hashes, expectedHashes)        
+        XCTAssertEqual(hashes, expectedHashes)
+        
+        
+        let signatures = [
+            Data(hexString: "ED59AEECB1AC0BAF31B6D84BB51C060DBBC3E0321EEEE6FADEBF073099629A9A7247306451FD78488B1AAE38391DA6CAA72B52D2E6D9359F9C682EFCBF388B07"),
+            Data(hexString: "00325BF907137BB6ED0A84D78C12F9680DD57AE374F45D43CDC7068ABF56F5B93C08BC1F9CD1E91E7A496DA2ECD54597B11AE0DDA4F6672235853C0CEF6BF8B4"),
+            Data(hexString: "F408C40F8D8B4A40E35502355C87FBBF218EC9ECB036D42DAA6211EAD4498A6FBC800E82CB2CC0FAB1D68FD3F8E895EC3E0DCB5A05342F5153210142E4224D4C"),
+        ]
+
+        let z = txBuilder.buildForSend(transaction: kaspaTransaction, signatures: signatures)
+        print(z)
     }
 }

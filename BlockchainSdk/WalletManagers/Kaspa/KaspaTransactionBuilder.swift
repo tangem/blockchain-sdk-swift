@@ -12,16 +12,12 @@ class KaspaTransactionBuilder {
     var unspentOutputs: [BitcoinUnspentOutput] = []
     
     let blockchain: Blockchain
-
+    
     init(blockchain: Blockchain) {
         self.blockchain = blockchain
     }
     
-    func buildForSign(_ transaction: Transaction) -> [Data] {
-//        print(unspentOutputs)
-//        print(transaction.destinationAddress)
-//        print(transaction.amount)
-        
+    func buildForSign(_ transaction: Transaction) -> (KaspaTransaction, [Data]) {
         let outputs: [KaspaOutput] = [
             KaspaOutput(
                 amount: 100000,
@@ -36,11 +32,10 @@ class KaspaTransactionBuilder {
             )
         ]
         
-        let kaspaTransaction = KaspaTransaction(inputs: unspentOutputs, outputs: outputs)
+        let inputs = unspentOutputs
+        let kaspaTransaction = KaspaTransaction(inputs: inputs, outputs: outputs)
         
-//        let connectedScript =
-        
-//        if let unspentOutput = unspentOutputs.first {
+        //        let connectedScript =
         
         var hashes: [Data] = []
         for (index, unspentOutput) in unspentOutputs.enumerated() {
@@ -62,14 +57,22 @@ class KaspaTransactionBuilder {
         
         let change = calculateChange(transaction: transaction, unspentOutputs: unspentOutputs)
         
-//        let kaspaTransaction = transaction
-        
-        
-        return hashes
+        return (kaspaTransaction, hashes)
     }
     
-    func buildForSend(_ transaction: Transaction) {
+    func buildForSend(transaction builtTransaction: KaspaTransaction, signatures: [Data]) -> KaspaTransactionData {
+        let inputs = builtTransaction.inputs.enumerated().map { (index, input) in
+            let sigHashAllSuffix: UInt8 = 1
+            let script = signatures[index] + sigHashAllSuffix.data
+            let size = UInt8(script.count)
+            
+            let newSignatureScript = (size.data + script).hexadecimal
+            let outpoint = KaspaPreviousOutpoint(transactionId: input.transactionHash, index: input.outputIndex)
+            let newInput = KaspaInput(previousOutpoint: outpoint, signatureScript: newSignatureScript)
+            return newInput
+        }
         
+        return KaspaTransactionData(inputs: inputs, outputs: builtTransaction.outputs)
     }
     
     private func calculateChange(transaction: Transaction, unspentOutputs: [BitcoinUnspentOutput]) -> Amount {
@@ -80,8 +83,8 @@ class KaspaTransactionBuilder {
 }
 
 fileprivate extension Transaction {
-//    func toKaspaTransaction(unspentOutputs: [BitcoinUnspentOutput], change: Amount) -> KaspaTransaction {
-        
-//    }
-
+    //    func toKaspaTransaction(unspentOutputs: [BitcoinUnspentOutput], change: Amount) -> KaspaTransaction {
+    
+    //    }
+    
 }
