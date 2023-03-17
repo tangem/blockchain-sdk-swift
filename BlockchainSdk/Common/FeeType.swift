@@ -100,11 +100,11 @@ public extension FeeType {
 // MARK: - FeeType
 
 public extension FeeType {
-    struct FeeModel {
-        let fee: Amount
-        let parameters: FeeParameters?
+    public struct FeeModel {
+        public let fee: Amount
+        public let parameters: FeeParameters?
         
-        init(_ fee: Amount, parameters: FeeParameters? = nil) {
+        public init(_ fee: Amount, parameters: FeeParameters? = nil) {
             self.fee = fee
             self.parameters = parameters
         }
