@@ -9,6 +9,7 @@
 import Foundation
 import TangemSdk
 import HDWalletKit
+import BitcoinCore
 
 @available(iOS 13.0, *)
 public class KaspaAddressService: AddressService {

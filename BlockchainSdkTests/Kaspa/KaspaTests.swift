@@ -10,7 +10,10 @@ import XCTest
 import BitcoinCore
 import TangemSdk
 
+
 @testable import BlockchainSdk
+
+
 
 class KaspaTests: XCTestCase {
     private let blockchain = Blockchain.kaspa
@@ -18,6 +21,28 @@ class KaspaTests: XCTestCase {
     private let sizeTester = TransactionSizeTesterUtility()
     
     func testBuildTransaction() {
+        let addresses = [
+            "kaspa:qyp4scvsxvkrjxyq98gd4xedhgrqtmf78l7wl8p8p4j0mjuvpwjg5cqhy97n472",
+            "kaspa:qpsqw2aamda868dlgqczeczd28d5nc3rlrj3t87vu9q58l2tugpjs2psdm4fv",
+            "kaspa:qyp7kvzqpn5arhhdz2uy6stp58afyth5rpdp2hhnassgq79nspa3ymcmyrw53q3", // tx source
+            "kaspa:qpsqw2aamda868dlgqczeczd28d5nc3rlrj3t87vu9q58l2tugpjs2psdm4fv", // tx dest
+        ]
+        for address in addresses {
+            let s = CashAddrBech32.decode(address) 
+            //        s.
+            if let s {
+                print("Address:\n\(address)")
+                print(s.prefix)
+                let type = Data(s.data.first!)
+                let hash = s.data.dropFirst()
+                print(type.hex)
+                print(hash.hex)
+//                print(try! blockchain.getAddressService().makeAddress(from: hash))
+                
+                print("")
+            }
+        }
+        
         let txBuilder = KaspaTransactionBuilder(blockchain: blockchain)
         
         txBuilder.unspentOutputs = [
@@ -28,6 +53,7 @@ class KaspaTests: XCTestCase {
         
         let walletPublicKey = "04EB30400CE9D1DEED12B84D4161A1FA922EF4185A155EF3EC208078B3807B126FA22C335081AAEBF161095C11C7D8BD550EF8882A3125B0EE9AE96DDDE1AE743F"
         let sourceAddress = try! blockchain.getAddressService().makeAddress(from: Data(hex: walletPublicKey))
+        print(sourceAddress)
         let destination = "kaspa:qpsqw2aamda868dlgqczeczd28d5nc3rlrj3t87vu9q58l2tugpjs2psdm4fv"
         
         let transaction = Transaction(
@@ -38,7 +64,7 @@ class KaspaTests: XCTestCase {
             changeAddress: sourceAddress
         )
         
-        let (kaspaTransaction, hashes) = txBuilder.buildForSign(transaction)
+        let (kaspaTransaction, hashes) = txBuilder.buildForSign(transaction)!
         
         let expectedHashes = [
             Data(hex: "0FF3D00405C24E8FCC4B6E0FF619D8C6CEDCA595672B5510F835A834B0841878"),

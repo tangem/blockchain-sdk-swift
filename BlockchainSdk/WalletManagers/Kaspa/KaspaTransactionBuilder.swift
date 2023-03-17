@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import HDWalletKit
 
 class KaspaTransactionBuilder {
     var unspentOutputs: [BitcoinUnspentOutput] = []
@@ -17,7 +18,42 @@ class KaspaTransactionBuilder {
         self.blockchain = blockchain
     }
     
-    func buildForSign(_ transaction: Transaction) -> (KaspaTransaction, [Data]) {
+    func scriptPublicKey(address: String) -> Data? {
+        guard let components = KaspaAddressComponents(address) else { return nil }
+        
+        let prefix: UInt8 = OpCode.OP_HASH256.value
+        let suffix: UInt8
+        switch components.type {
+        case .P2PK_Schnorr:
+            suffix = OpCode.OP_CHECKSIG.value
+        case .P2PK_ECDSA:
+            suffix = OpCode.OP_CODESEPARATOR.value
+        case .P2SH:
+            
+            suffix = OpCode.OP_EQUAL.value
+        default:
+            return nil
+        }
+        
+//        let OP_CHECKSIG: UInt8 = 0xAC
+//        let key = components.hash + Data(OP_CHECKSIG)
+        let size = UInt8(components.hash.count)
+        return Data(prefix) + size.data + components.hash + Data(suffix)
+        return Data()
+    }
+    
+    func buildForSign(_ transaction: Transaction) -> (KaspaTransaction, [Data])? {
+        guard
+            let sourceAddressScript = scriptPublicKey(address: transaction.sourceAddress)?.hex,
+            let destinationAddressScript = scriptPublicKey(address: transaction.destinationAddress)?.hex
+        else {
+            return nil
+        }
+              
+        print("p2sh", scriptPublicKey(address: "kaspa:pqurku73qluhxrmvyj799yeyptpmsflpnc8pha80z6zjh6efwg3v2rrepjm5r")!.hex)
+        print("src", scriptPublicKey(address: transaction.sourceAddress)!.hex)
+        print("dst", scriptPublicKey(address: transaction.destinationAddress)!.hex)
+        
         var outputs: [KaspaOutput] = [
             KaspaOutput(
                 amount: amount(from: transaction),
