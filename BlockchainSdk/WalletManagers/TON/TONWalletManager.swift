@@ -76,13 +76,7 @@ final class TONWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeType, Error> {
-        guard isAvailable else {
-            return Just(.zero(blockchain: wallet.blockchain))
-                .setFailureType(to: Error.self)
-                .eraseToAnyPublisher()
-        }
-        
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
         return Just(())
             .tryMap { [weak self] _ -> String in
                 guard let self = self else {
