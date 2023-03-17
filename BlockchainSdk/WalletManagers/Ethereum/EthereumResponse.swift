@@ -19,8 +19,15 @@ struct EthereumInfoResponse {
 }
 
 struct EthereumFeeResponse {
-    let fees: [Decimal]
-    let parameters: EthereumFeeParameters
+    let fees: [FeeModel]
+}
+
+extension EthereumFeeResponse {
+    struct FeeModel {
+        let gasLimit: BigUInt
+        let gasPrice: BigUInt
+        let fee: Decimal
+    }
 }
 
 /// Json rpc response structure

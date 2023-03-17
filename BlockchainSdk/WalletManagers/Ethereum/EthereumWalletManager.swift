@@ -26,7 +26,7 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable {
 
     /// This method for implemented protocol `EthereumTransactionProcessor`
     /// It can't be into extension because it will be override in the `OptimismWalletManager`
-    func getFee(payload: EthereumDestinationPayload) -> AnyPublisher<FeeDataModel, Error> {
+    func getFee(payload: EthereumDestinationPayload) -> AnyPublisher<FeeType, Error> {
         getFee(to: payload.targetAddress, value: payload.value, data: payload.data)
     }
 }
@@ -94,19 +94,22 @@ extension EthereumWalletManager {
 // MARK: - Private
 
 extension EthereumWalletManager {
-    func getFee(to: String, value: String?, data: Data?) -> AnyPublisher<FeeDataModel, Error> {
+    func getFee(to: String, value: String?, data: Data?) -> AnyPublisher<FeeType, Error> {
         networkService.getFee(to: to, from: wallet.address, value: value, data: data?.hexString.addHexPrefix())
             .tryMap { [weak self] ethereumFeeResponse in
                 guard let self = self else {
                     throw BlockchainSdkError.failedToLoadFee
                 }
 
-                let feeAmounts = ethereumFeeResponse.fees.map {
-                    Amount(with: self.wallet.blockchain, value: $0)
+                let feeAmounts = ethereumFeeResponse.fees.map { feeValue in
+                    let amount = Amount(with: self.wallet.blockchain, value: feeValue.fee)
+                    return FeeType.FeeModel(
+                        amount,
+                        parameters: EthereumFeeParameters(gasLimit: feeValue.gasLimit, gasPrice: feeValue.gasPrice)
+                    )
                 }
                 
-                var feeDataModel = try FeeDataModel(fees: feeAmounts)
-                feeDataModel.additionalParameters = ethereumFeeResponse.parameters
+                var feeDataModel = try FeeType(fees: feeAmounts)
                 
                 print("EthereumWalletManager calculated fees: \(feeDataModel)")
                 return feeDataModel
@@ -166,7 +169,7 @@ extension EthereumWalletManager {
 extension EthereumWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeDataModel,Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeType,Error> {
         do {
             let payload = try formatDestinationInfo(for: destination, amount: amount)
             return getFee(payload: payload)

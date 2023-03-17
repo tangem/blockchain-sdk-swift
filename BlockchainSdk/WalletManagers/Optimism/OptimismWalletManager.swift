@@ -32,33 +32,34 @@ class OptimismWalletManager: EthereumWalletManager {
     /// But it's important to show user information about a fee which will be charged
     /// `L2` - Used to provide this transaction in the `Etherium` network for "safety".
     /// When we are building transaction we have to use `gasLimit` and `gasPrice` ONLY from L2
-    override func getFee(payload: EthereumDestinationPayload) -> AnyPublisher<FeeDataModel, Error> {
+    override func getFee(payload: EthereumDestinationPayload) -> AnyPublisher<FeeType, Error> {
         super.getFee(payload: payload)
-            .tryMap { [weak self] layer2FeeDataModel -> AnyPublisher<FeeDataModel, Error> in
-                guard let self, let parameters = layer2FeeDataModel.additionalParameters as? EthereumFeeParameters else {
+            .tryMap { [weak self] layer2FeeType -> AnyPublisher<FeeType, Error> in
+                guard let self,
+                      let parameters = layer2FeeType.lowFeeModel?.parameters as? EthereumFeeParameters else {
                     return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
                 }
-                
-                return self.getLayer1Fee(payload: payload, L2FeeParameters: parameters)
-                    .tryMap { layer1Fee -> FeeDataModel in
-                        switch layer2FeeDataModel.feeType {
-                        case .multiple(let low, let normal, let priority):
-                            var feeDataModel = FeeDataModel(
-                                feeType: .multiple(
-                                    low: Amount(with: low, value: low.value + layer1Fee),
-                                    normal: Amount(with: normal, value: normal.value + layer1Fee),
-                                    priority: Amount(with: priority, value: priority.value + layer1Fee)
-                                )
-                            )
-                            feeDataModel.additionalParameters = layer2FeeDataModel.additionalParameters
-                            return feeDataModel
 
-                        case .single(let fee):
-                            // Just for case. Usually we don't use it as single option fee
-                            let feeAmount = Amount(with: fee, value: fee.value + layer1Fee)
-                            var feeDataModel = FeeDataModel(feeType: .single(fee: feeAmount))
-                            feeDataModel.additionalParameters = layer2FeeDataModel.additionalParameters
-                            return feeDataModel
+                return self.getLayer1Fee(payload: payload, L2FeeParameters: parameters)
+                    .tryMap { layer1Fee throws -> FeeType in
+                        switch layer2FeeType {
+                        case .multiple(let low, let normal, let priority):
+                            let updatedModels: [FeeType.FeeModel] = [low, normal, priority]
+                                .map { feeModel in
+                                    let oldAmount = feeModel.fee
+                                    let newAmount = Amount(with: oldAmount, value: oldAmount.value + layer1Fee)
+                                    let newFeeModel = FeeType.FeeModel(
+                                        newAmount,
+                                        parameters: layer2FeeType.lowFeeModel?.parameters
+                                    )
+                                    return newFeeModel
+                                }
+
+                            return try FeeType(fees: updatedModels)
+
+                        case .single:
+                            assertionFailure("Not implement this case")
+                            return layer2FeeType
                         }
                     }
                     .eraseToAnyPublisher()

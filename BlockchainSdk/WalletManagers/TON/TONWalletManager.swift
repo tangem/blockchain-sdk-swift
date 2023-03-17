@@ -76,7 +76,7 @@ final class TONWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeDataModel, Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeType, Error> {
         guard isAvailable else {
             return Just(.zero(blockchain: wallet.blockchain))
                 .setFailureType(to: Error.self)
@@ -99,7 +99,7 @@ final class TONWalletManager: BaseManager, WalletManager {
                 
                 return self.networkService.getFee(address: self.wallet.address, message: message)
             }
-            .tryMap { try FeeDataModel(fees: $0) }
+            .tryMap { try FeeType(fees: $0) }
             .eraseToAnyPublisher()
     }
     

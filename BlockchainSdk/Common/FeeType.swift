@@ -13,19 +13,15 @@ public protocol FeeParameters {}
 public enum FeeType {
     case single(fee: FeeModel)
     case multiple(low: FeeModel, normal: FeeModel, priority: FeeModel)
-  
-    public init(feeType: FeeType) {
-        self.feeType = feeType
-    }
     
     public init(fees: [Amount]) throws {
         switch fees.count {
             /// User hasn't a choice
         case 1:
-            self.feeType = .single(fee: FeeModel(fees[0]))
+            self = .single(fee: FeeModel(fees[0]))
             /// User has a choice of 3 option
         case 3:
-            self.feeType = .multiple(low: FeeModel(fees[0]), normal: FeeModel(fees[1]), priority: FeeModel(fees[2]))
+            self = .multiple(low: FeeModel(fees[0]), normal: FeeModel(fees[1]), priority: FeeModel(fees[2]))
         default:
             assertionFailure("FeeType can't be created")
             throw BlockchainSdkError.failedToLoadFee
@@ -36,10 +32,10 @@ public enum FeeType {
         switch fees.count {
         /// User hasn't a choice
         case 1:
-            self.feeType = .single(fee: fees[0])
+            self = .single(fee: fees[0])
         /// User has a choice of 3 option
         case 3:
-            self.feeType = .multiple(low: fees[0], normal: fees[1], priority: fees[2])
+            self = .multiple(low: fees[0], normal: fees[1], priority: fees[2])
         default:
             assertionFailure("FeeType can't be created")
             throw BlockchainSdkError.failedToLoadFee
@@ -51,11 +47,11 @@ public enum FeeType {
 
 public extension FeeType {
     static func zero(blockchain: Blockchain) -> FeeType {
-        FeeType(feeType: .single(fee: FeeModel(.zeroCoin(for: blockchain))))
+        .single(fee: FeeModel(.zeroCoin(for: blockchain)))
     }
     
     var asArray: [Amount] {
-        switch feeType {
+        switch self {
         case .multiple(let low, let normal, let priority):
             return [low.fee, normal.fee, priority.fee]
             
@@ -65,7 +61,7 @@ public extension FeeType {
     }
     
     var lowFeeModel: FeeModel? {
-        if case .multiple(let fee, _, _) = feeType {
+        if case .multiple(let fee, _, _) = self {
             return fee
         }
 
@@ -73,7 +69,7 @@ public extension FeeType {
     }
     
     var normalFeeModel: FeeModel? {
-        if case .multiple(_, let normal, _) = feeType {
+        if case .multiple(_, let normal, _) = self {
             return normal
         }
 
@@ -81,7 +77,7 @@ public extension FeeType {
     }
     
     var priorityFeeModel: FeeModel? {
-        if case .multiple(_, _, let priority) = feeType {
+        if case .multiple(_, _, let priority) = self {
             return priority
         }
 
@@ -89,27 +85,15 @@ public extension FeeType {
     }
     
     var lowFee: Amount? {
-        if case .multiple(let fee, _, _) = feeType {
-            return fee.fee
-        }
-
-        return nil
+        lowFeeModel?.fee
     }
     
     var normalFee: Amount? {
-        if case .multiple(_, let normal, _) = feeType {
-            return normal.fee
-        }
-
-        return nil
+        normalFeeModel?.fee
     }
     
     var priorityFee: Amount? {
-        if case .multiple(_, _, let priority) = feeType {
-            return priority.fee
-        }
-
-        return nil
+        priorityFeeModel?.fee
     }
 }
 
@@ -124,11 +108,5 @@ public extension FeeType {
             self.fee = fee
             self.parameters = parameters
         }
-    }
-}
-
-extension FeeType: CustomStringConvertible {
-    public var description: String {
-        "FeeType: \(feeType.description)"
     }
 }

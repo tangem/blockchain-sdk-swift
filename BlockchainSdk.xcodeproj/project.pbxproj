@@ -252,7 +252,7 @@
 		EFBA17FE2988623F00C23955 /* TransactionSendResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */; };
 		EFF56B3B29C20B17002B6952 /* SmartContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B3A29C20B17002B6952 /* SmartContract.swift */; };
 		EFF56B3D29C20CCE002B6952 /* SmartContractMethodType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B3C29C20CCE002B6952 /* SmartContractMethodType.swift */; };
-		EFF56B3F29C24673002B6952 /* FeeDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B3E29C24673002B6952 /* FeeDataModel.swift */; };
+		EFF56B3F29C24673002B6952 /* FeeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B3E29C24673002B6952 /* FeeType.swift */; };
 		EFF56B4129C30265002B6952 /* EthereumFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B4029C30265002B6952 /* EthereumFeeParameters.swift */; };
 		EFF56B4329C3365C002B6952 /* OptimismGasLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B4229C3365C002B6952 /* OptimismGasLoader.swift */; };
 		EFF56B4729C377E2002B6952 /* EthereumDestinationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B4629C377E2002B6952 /* EthereumDestinationPayload.swift */; };
@@ -555,7 +555,7 @@
 		EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSendResult.swift; sourceTree = "<group>"; };
 		EFF56B3A29C20B17002B6952 /* SmartContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContract.swift; sourceTree = "<group>"; };
 		EFF56B3C29C20CCE002B6952 /* SmartContractMethodType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContractMethodType.swift; sourceTree = "<group>"; };
-		EFF56B3E29C24673002B6952 /* FeeDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeDataModel.swift; sourceTree = "<group>"; };
+		EFF56B3E29C24673002B6952 /* FeeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeType.swift; sourceTree = "<group>"; };
 		EFF56B4029C30265002B6952 /* EthereumFeeParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumFeeParameters.swift; sourceTree = "<group>"; };
 		EFF56B4229C3365C002B6952 /* OptimismGasLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptimismGasLoader.swift; sourceTree = "<group>"; };
 		EFF56B4629C377E2002B6952 /* EthereumDestinationPayload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumDestinationPayload.swift; sourceTree = "<group>"; };
@@ -753,7 +753,7 @@
 				EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */,
 				B05F1E62299BC2F600E27E32 /* TransactionHistoryLoader.swift */,
 				2D9A91A629BB8C2E00476EA6 /* TrustWalletAddressService.swift */,
-				EFF56B3E29C24673002B6952 /* FeeDataModel.swift */,
+				EFF56B3E29C24673002B6952 /* FeeType.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -1837,7 +1837,7 @@
 				2D9A91A029BB8C1700476EA6 /* TONNetworkUrl.swift in Sources */,
 				E93532CE292D0E86008FD979 /* BlockBookUtxoProvider.swift in Sources */,
 				EF9F9088299F8B70006F638F /* ETHError.swift in Sources */,
-				EFF56B3F29C24673002B6952 /* FeeDataModel.swift in Sources */,
+				EFF56B3F29C24673002B6952 /* FeeType.swift in Sources */,
 				EF332D17288EACB000AE3C85 /* HostProvider.swift in Sources */,
 				5DE3BFA0239FA33800E8815D /* Bech32.swift in Sources */,
 				B00FBED82996A1A300FDB874 /* BlockscoutNetworkProvider.swift in Sources */,

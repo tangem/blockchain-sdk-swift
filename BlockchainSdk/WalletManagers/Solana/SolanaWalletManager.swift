@@ -78,7 +78,7 @@ extension SolanaWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
-    public func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeDataModel, Error> {
+    public func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeType, Error> {
         let transactionFeePublisher = networkService
             .transactionFee(numberOfSignatures: 1)
             
@@ -92,7 +92,7 @@ extension SolanaWalletManager: TransactionSender {
                                 
                 let blockchain = self.wallet.blockchain
                 let amount = Amount(with: blockchain, type: .coin, value: transactionFee + accountCreationFee)
-                return FeeDataModel(feeType: .single(fee: amount))
+                return .single(fee: .init(amount))
             }
             .eraseToAnyPublisher()
     }
