@@ -100,7 +100,7 @@ public extension FeeType {
 // MARK: - FeeType
 
 public extension FeeType {
-    public struct FeeModel {
+    struct FeeModel {
         public let fee: Amount
         public let parameters: FeeParameters?
         
@@ -108,5 +108,15 @@ public extension FeeType {
             self.fee = fee
             self.parameters = parameters
         }
+    }
+}
+
+extension FeeType.FeeModel: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(fee)
+    }
+    
+    public static func == (lhs: FeeType.FeeModel, rhs: FeeType.FeeModel) -> Bool {
+        lhs.hashValue == rhs.hashValue
     }
 }
