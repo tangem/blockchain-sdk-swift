@@ -27,8 +27,11 @@ struct DashWalletAssembly: WalletManagerAssembly {
             
             var providers: [AnyBitcoinNetworkProvider] = []
             
-            providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
-            providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider())
+            if input.blockchainConfig.useBlockBookUtxoApis {
+                providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
+                providers.append(providerAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider())
+            }
+            
             providers.append(contentsOf: providerAssembly.makeBlockchairNetworkProviders(endpoint: .dash, with: input))
             providers.append(providerAssembly.makeBlockcypherNetworkProvider(endpoint: .dash, with: input).eraseToAnyBitcoinNetworkProvider())
             
