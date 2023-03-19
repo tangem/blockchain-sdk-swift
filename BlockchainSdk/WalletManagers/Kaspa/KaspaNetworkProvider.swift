@@ -9,13 +9,9 @@
 import Foundation
 import Combine
 
-class KaspaNetworkProvider {
+class KaspaNetworkProvider: HostProvider {
     var host: String {
         url.hostOrUnknown
-    }
-    
-    var supportsTransactionPush: Bool {
-        false
     }
     
     private let url: URL
@@ -28,12 +24,16 @@ class KaspaNetworkProvider {
         self.provider = NetworkProvider<KaspaTarget>(configuration: networkConfiguration)
     }
     
-    private func balance(address: String) -> AnyPublisher<KaspaBalanceResponse, Error> {
+    func balance(address: String) -> AnyPublisher<KaspaBalanceResponse, Error> {
         requestPublisher(for: .balance(address: address))
     }
     
-    private func utxos(address: String) -> AnyPublisher<[KaspaUnspentOutputResponse], Error> {
+    func utxos(address: String) -> AnyPublisher<[KaspaUnspentOutputResponse], Error> {
         requestPublisher(for: .utxos(address: address))
+    }
+    
+    func send(transaction: KaspaTransactionRequest) -> AnyPublisher<String, Error> {
+        requestPublisher(for: .transactions(transaction: transaction))
     }
     
     private func requestPublisher<T: Codable>(for request: KaspaTarget.Request) -> AnyPublisher<T, Error> {
@@ -47,64 +47,5 @@ class KaspaNetworkProvider {
                 return moyaError
             }
             .eraseToAnyPublisher()
-    }
-}
-
-extension KaspaNetworkProvider: BitcoinNetworkProvider {
-    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        Publishers.Zip(balance(address: address), utxos(address: address))
-            .tryMap { [weak self] (balance, utxos) in
-                guard let self else { throw WalletError.empty }
-                
-                let unspentOutputs: [BitcoinUnspentOutput] = utxos.compactMap {
-                    guard
-                        let amount = UInt64($0.utxoEntry.amount)
-                    else {
-                        return nil
-                    }
-                    
-                    let d = Data(hex: $0.utxoEntry.scriptPublicKey.scriptPublicKey)
-                    print(d.count)
-                    print(d[0], d[d.count - 1])
-                    
-                    return BitcoinUnspentOutput(
-                        transactionHash: $0.outpoint.transactionId,
-                        outputIndex: $0.outpoint.index,
-                        amount: amount,
-                        outputScript: $0.utxoEntry.scriptPublicKey.scriptPublicKey
-                    )
-                }
-                
-                return BitcoinResponse(
-                    balance: Decimal(integerLiteral: balance.balance) / self.blockchain.decimalValue,
-                    hasUnconfirmed: false,
-                    pendingTxRefs: [],
-                    unspentOutputs: unspentOutputs
-                )
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    func getFee() -> AnyPublisher<BitcoinFee, Error> {
-        // TODO
-        .anyFail(error: WalletError.empty)
-    }
-    
-    func send(transaction: String) -> AnyPublisher<String, Error> {
-        // TODO
-        .anyFail(error: WalletError.empty)
-    }
-    
-//    func send(transaction: KaspaTransaction) -> AnyPublisher<String, Error> {
-//        requestPublisher(for: .transactions(transaction: KaspaTransactionRequest(transaction: transaction)))
-//            .eraseToAnyPublisher()
-//    }
-    
-    func push(transaction: String) -> AnyPublisher<String, Error> {
-        .anyFail(error: WalletError.empty)
-    }
-    
-    func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-        .anyFail(error: WalletError.empty)
     }
 }

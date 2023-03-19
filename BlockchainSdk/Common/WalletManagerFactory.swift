@@ -418,17 +418,16 @@ public class WalletManagerFactory {
             return KaspaWalletManager(wallet: wallet).then {
                 $0.txBuilder = KaspaTransactionBuilder(blockchain: blockchain)
                 
-                let providers: [AnyBitcoinNetworkProvider] = [
+                let providers: [KaspaNetworkProvider] = [
                     KaspaNetworkProvider(
                         url: URL(string: "https://api.kaspa.org")!,
                         blockchain: blockchain,
                         networkConfiguration: networkProviderConfiguration
-                    ).eraseToAnyBitcoinNetworkProvider(),
+                    )
                 ]
-                $0.networkService = KaspaNetworkService(providers: providers)
+                $0.networkService = KaspaNetworkService(providers: providers, blockchain: blockchain)
             }
         }
-        
     }
     
     private func makePolkadotWalletManager(network: PolkadotNetwork,
