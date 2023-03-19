@@ -76,55 +76,43 @@ class KaspaTests: XCTestCase {
         let builtTransaction = txBuilder.buildForSend(transaction: kaspaTransaction, signatures: signatures)
         
         let expectedTransaction = KaspaTransactionData(
-            version: 0,
             inputs: [
                 BlockchainSdk.KaspaInput(
                     previousOutpoint: BlockchainSdk.KaspaPreviousOutpoint(
                         transactionId: "ae96e819429e9da538e84cb213f62fbc8ad32e932d7c7f1fb9bd2fedf8fd7b4a",
                         index: 0
                     ),
-                    signatureScript: "41e2747d4e00c55d69fa0b8adfafd07f41144f888e322d377878e83f25fd2e258b2e918ef79e151337d7f3bd0798d66fdce04b07c30984424b13344f0a7cc4016501",
-                    sequence: 0,
-                    sigOpCount: 1
+                    signatureScript: "41e2747d4e00c55d69fa0b8adfafd07f41144f888e322d377878e83f25fd2e258b2e918ef79e151337d7f3bd0798d66fdce04b07c30984424b13344f0a7cc4016501"
                 ),
                 BlockchainSdk.KaspaInput(
                     previousOutpoint: BlockchainSdk.KaspaPreviousOutpoint(
                         transactionId: "deb88e7dd734437c6232a636085ef917d1d13cc549fe14749765508b2782f2fb",
                         index: 0
                     ),
-                    signatureScript: "414bf71c43df96fc6b46766cae30e97bd9018e9b98bb2c3645744a696ad26ecc780157ea9d44dc41d0bcb420175a5d3f543079f4263aa2dbde0ee2d33a877fc58301",
-                    sequence: 0,
-                    sigOpCount: 1
+                    signatureScript: "414bf71c43df96fc6b46766cae30e97bd9018e9b98bb2c3645744a696ad26ecc780157ea9d44dc41d0bcb420175a5d3f543079f4263aa2dbde0ee2d33a877fc58301"
                 ),
                 BlockchainSdk.KaspaInput(
                     previousOutpoint: BlockchainSdk.KaspaPreviousOutpoint(
                         transactionId: "304db39069dc409acedf544443dcd4a4f02bfad4aeb67116f8bf087822c456af",
                         index: 0
                     ),
-                    signatureScript: "41e2747d4e00c55d69fa0b8adfafd07f41144f888e322d377878e83f25fd2e258b2e918ef79e151337d7f3bd0798d66fdce04b07c30984424b13344f0a7cc4016801",
-                    sequence: 0,
-                    sigOpCount: 1
+                    signatureScript: "41e2747d4e00c55d69fa0b8adfafd07f41144f888e322d377878e83f25fd2e258b2e918ef79e151337d7f3bd0798d66fdce04b07c30984424b13344f0a7cc4016801"
                 )
             ],
             outputs: [
                 BlockchainSdk.KaspaOutput(
                     amount: 100000,
                     scriptPublicKey: BlockchainSdk.KaspaScriptPublicKey(
-                        scriptPublicKey: "2060072bbddb7a7d1dbf40302ce04d51db49e223f8e5159fcce14143fd4be20328ac",
-                        version: 0
+                        scriptPublicKey: "2060072bbddb7a7d1dbf40302ce04d51db49e223f8e5159fcce14143fd4be20328ac"
                     )
-                    
                 ),
                 BlockchainSdk.KaspaOutput(
                     amount: 519870000,
                     scriptPublicKey: BlockchainSdk.KaspaScriptPublicKey(
-                        scriptPublicKey: "2103eb30400ce9d1deed12b84d4161a1fa922ef4185a155ef3ec208078b3807b126fab",
-                        version: 0
+                        scriptPublicKey: "2103eb30400ce9d1deed12b84d4161a1fa922ef4185a155ef3ec208078b3807b126fab"
                     )
                 )
-            ],
-            lockTime: 0,
-            subnetworkId: "0000000000000000000000000000000000000000"
+            ]
         )
         
         let encoder = JSONEncoder()
@@ -170,37 +158,29 @@ class KaspaTests: XCTestCase {
         let builtTransaction = txBuilder.buildForSend(transaction: kaspaTransaction, signatures: signatures)
         
         let expectedTransaction = KaspaTransactionData(
-            version: 0,
             inputs: [
                 BlockchainSdk.KaspaInput(
                     previousOutpoint: BlockchainSdk.KaspaPreviousOutpoint(
                         transactionId: "ae96e819429e9da538e84cb213f62fbc8ad32e932d7c7f1fb9bd2fedf8fd7b4a",
                         index: 0
                     ),
-                    signatureScript: "41e2747d4e00c55d69fa0b8adfafd07f41144f888e322d377878e83f25fd2e258b2e918ef79e151337d7f3bd0798d66fdce04b0704eb30400ce9d1deed12b84d4101",
-                    sequence: 0,
-                    sigOpCount: 1
+                    signatureScript: "41e2747d4e00c55d69fa0b8adfafd07f41144f888e322d377878e83f25fd2e258b2e918ef79e151337d7f3bd0798d66fdce04b0704eb30400ce9d1deed12b84d4101"
                 ),
             ],
             outputs: [
                 BlockchainSdk.KaspaOutput(
                     amount: 100000,
                     scriptPublicKey: BlockchainSdk.KaspaScriptPublicKey(
-                        scriptPublicKey: "aa20383b73d107f9730f6c24bc5293240ac3b827e19e0e1bf4ef16852beb297222c587",
-                        version: 0
+                        scriptPublicKey: "aa20383b73d107f9730f6c24bc5293240ac3b827e19e0e1bf4ef16852beb297222c587"
                     )
-                    
                 ),
                 BlockchainSdk.KaspaOutput(
                     amount: 499890000,
                     scriptPublicKey: BlockchainSdk.KaspaScriptPublicKey(
-                        scriptPublicKey: "2103eb30400ce9d1deed12b84d4161a1fa922ef4185a155ef3ec208078b3807b126fab",
-                        version: 0
+                        scriptPublicKey: "2103eb30400ce9d1deed12b84d4161a1fa922ef4185a155ef3ec208078b3807b126fab"
                     )
                 )
-            ],
-            lockTime: 0,
-            subnetworkId: "0000000000000000000000000000000000000000"
+            ]
         )
         
         let encoder = JSONEncoder()
