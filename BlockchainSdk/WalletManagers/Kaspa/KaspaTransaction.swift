@@ -72,8 +72,8 @@ struct KaspaTransaction {
         data.append(prevValue.data)
         
             
-//        uint64ToByteStreamLE(BigInteger.valueOf(inputs.get(inputIndex).getSequenceNumber()), bos);
-        data.append(UInt64(inputs[inputIndex].outputIndex).data)
+        let sequenceNumber: UInt64 = 0
+        data.append(UInt64(sequenceNumber).data)
         
 //        bos.write(1); // sig op count
         data.append(UInt8(1).data)
