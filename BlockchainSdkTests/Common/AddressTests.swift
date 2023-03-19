@@ -641,7 +641,7 @@ class AddressesTests: XCTestCase {
         XCTAssertFalse(addressService.validate("8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae"))
     }
     
-    func testKaspa() {
+    func testKaspaAddressGeneration() {
         let blockchain = Blockchain.kaspa
         let addressService = blockchain.getAddressService()
         
@@ -653,5 +653,22 @@ class AddressesTests: XCTestCase {
         XCTAssertTrue(addressService.validate(expectedAddress))
         XCTAssertFalse(addressService.validate("kaspb:qyp5ez9p4q6xnh0jp5xq0ewy58nmsde5uus7vrty9w222v3zc37xwrgeqhkq7v3"))
         XCTAssertFalse(addressService.validate("kaspa:qyp5ez9p4q6xnh0jp5xq0ewy58nmsde5uus7vrty9w222v3zc37xwrgeqhkq7v4"))
+    }
+    
+    func testKaspaAddressComponents() {
+        let blockchain = Blockchain.kaspa
+        let addressService = blockchain.getAddressService() as! KaspaAddressService
+        
+        let ecdsaAddressComponents = addressService.parse("kaspa:qyp4scvsxvkrjxyq98gd4xedhgrqtmf78l7wl8p8p4j0mjuvpwjg5cqhy97n472")!
+        XCTAssertEqual(ecdsaAddressComponents.hash, Data(hex: "03586190332c39188029d0da9b2dba0605ed3e3ffcef9c270d64fdcb8c0ba48a60"))
+        XCTAssertEqual(ecdsaAddressComponents.type, .P2PK_ECDSA)
+        
+        let schnorrAddressComponents = addressService.parse("kaspa:qpsqw2aamda868dlgqczeczd28d5nc3rlrj3t87vu9q58l2tugpjs2psdm4fv")!
+        XCTAssertEqual(schnorrAddressComponents.hash, Data(hex: "60072BBDDB7A7D1DBF40302CE04D51DB49E223F8E5159FCCE14143FD4BE20328"))
+        XCTAssertEqual(schnorrAddressComponents.type, .P2PK_Schnorr)
+        
+        let p2shAddressComponents = addressService.parse("kaspa:pqurku73qluhxrmvyj799yeyptpmsflpnc8pha80z6zjh6efwg3v2rrepjm5r")!
+        XCTAssertEqual(p2shAddressComponents.hash, Data(hex: "383b73d107f9730f6c24bc5293240ac3b827e19e0e1bf4ef16852beb297222c5"))
+        XCTAssertEqual(p2shAddressComponents.type, .P2SH)
     }
 }

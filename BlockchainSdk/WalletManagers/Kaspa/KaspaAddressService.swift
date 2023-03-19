@@ -40,4 +40,21 @@ public class KaspaAddressService: AddressService {
         let key = try? Secp256k1Key(with: addressData.dropFirst())
         return key != nil
     }
+    
+    func parse(_ address: String) -> KaspaAddressComponents? {
+        guard
+            let (prefix, data) = CashAddrBech32.decode(address),
+            !data.isEmpty,
+            let firstByte = data.first,
+            let type = KaspaAddressComponents.KaspaAddressType(rawValue: firstByte)
+        else {
+            return nil
+        }
+
+        return KaspaAddressComponents(
+            prefix: prefix,
+            type: type,
+            hash: data.dropFirst()
+        )
+    }
 }

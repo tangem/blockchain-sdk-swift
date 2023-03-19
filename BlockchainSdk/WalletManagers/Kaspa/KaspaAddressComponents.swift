@@ -9,33 +9,16 @@
 import Foundation
 import BitcoinCore
 
-enum KaspaAddressType: UInt8 {
-        case P2PK_Schnorr
-        case P2PK_ECDSA
-        case P2SH = 8
-   
-}
-
 struct KaspaAddressComponents {
-    
     let prefix: String
     let type: KaspaAddressType
     let hash: Data
 }
 
 extension KaspaAddressComponents {
-    init?(_ address: String) {
-        guard
-            let (prefix, data) = CashAddrBech32.decode(address),
-            !data.isEmpty,
-            let firstByte = data.first,
-            let type = KaspaAddressType(rawValue: firstByte)
-        else {
-            return nil
-        }
-
-        self.prefix = prefix
-        self.type = type
-        self.hash = data.dropFirst()
+    enum KaspaAddressType: UInt8 {
+        case P2PK_Schnorr = 0
+        case P2PK_ECDSA = 1
+        case P2SH = 8
     }
 }

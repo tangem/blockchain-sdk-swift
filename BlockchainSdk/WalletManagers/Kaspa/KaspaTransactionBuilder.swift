@@ -23,7 +23,9 @@ class KaspaTransactionBuilder {
     }
     
     func scriptPublicKey(address: String) -> Data? {
-        guard let components = KaspaAddressComponents(address) else { return nil }
+        let addressService = blockchain.getAddressService() as! KaspaAddressService
+        
+        guard let components = addressService.parse(address) else { return nil }
         
         let prefix: UInt8?
         let suffix: UInt8
