@@ -14,29 +14,29 @@ import BitcoinCore
 @available(iOS 13.0, *)
 public class KaspaAddressService: AddressService {
     private let prefix = "kaspa"
-    private let version: UInt8 = 1
+    private let version: KaspaAddressComponents.KaspaAddressType = .P2PK_ECDSA
     
     public func makeAddress(from walletPublicKey: Data) throws -> String {
         let compressedKey = try Secp256k1Key(with: walletPublicKey).compress()
-        let walletAddress = HDWalletKit.Bech32.encode(version.data + compressedKey, prefix: prefix)
+        let walletAddress = HDWalletKit.Bech32.encode(version.rawValue.data + compressedKey, prefix: prefix)
         return walletAddress
     }
     
     public func validate(_ address: String) -> Bool {
         guard
-            let (addressPrefix, addressData) = HDWalletKit.Bech32.decode(address),
-            addressPrefix == self.prefix
+            let components = parse(address),
+            components.prefix == self.prefix
         else {
             return false
         }
         
-        let versionPrefix = addressData[0]
-        guard versionPrefix == self.version else {
-            return false
+        switch components.type {
+        case .P2PK_ECDSA:
+            let key = try? Secp256k1Key(with: components.hash)
+            return key != nil
+        default:
+            return true
         }
-        
-        let key = try? Secp256k1Key(with: addressData.dropFirst())
-        return key != nil
     }
     
     func parse(_ address: String) -> KaspaAddressComponents? {
