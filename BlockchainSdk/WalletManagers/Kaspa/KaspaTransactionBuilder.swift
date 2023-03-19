@@ -76,14 +76,13 @@ class KaspaTransactionBuilder {
     
     func buildForSend(transaction builtTransaction: KaspaTransaction, signatures: [Data]) -> KaspaTransactionData {
         let inputs = builtTransaction.inputs.enumerated().map { (index, input) in
-            let sigHashAllSuffix: UInt8 = 1
-            let script = signatures[index] + sigHashAllSuffix.data
+            let sigHashAll: UInt8 = 1
+            let script = signatures[index] + sigHashAll.data
             let size = UInt8(script.count)
             
-            let newSignatureScript = (size.data + script).hexadecimal
+            let signatureScript = (size.data + script).hexadecimal
             let outpoint = KaspaPreviousOutpoint(transactionId: input.transactionHash, index: input.outputIndex)
-            let newInput = KaspaInput(previousOutpoint: outpoint, signatureScript: newSignatureScript)
-            return newInput
+            return KaspaInput(previousOutpoint: outpoint, signatureScript: signatureScript)
         }
         
         return KaspaTransactionData(inputs: inputs, outputs: builtTransaction.outputs)
