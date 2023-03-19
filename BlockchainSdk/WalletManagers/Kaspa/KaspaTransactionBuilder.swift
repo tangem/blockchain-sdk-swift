@@ -10,9 +10,10 @@ import Foundation
 import HDWalletKit
 
 class KaspaTransactionBuilder {
-    var unspentOutputs: [BitcoinUnspentOutput] = []
+    private var unspentOutputs: [BitcoinUnspentOutput] = []
     
-    let blockchain: Blockchain
+    private let blockchain: Blockchain
+    private let maxInputCount = 84
     
     init(blockchain: Blockchain) {
         self.blockchain = blockchain
@@ -20,6 +21,14 @@ class KaspaTransactionBuilder {
     
     func unspentOutputs(for amount: Amount) -> Int {
         return unspentOutputs.count
+    }
+    
+    func setUnspentOutputs(_ unspentOutputs: [BitcoinUnspentOutput]) {
+        let sortedOutputs = unspentOutputs.sorted {
+            $0.amount > $1.amount
+        }
+        
+        self.unspentOutputs = Array(sortedOutputs.prefix(maxInputCount))
     }
     
     func scriptPublicKey(address: String) throws -> Data {
@@ -60,7 +69,7 @@ class KaspaTransactionBuilder {
     func buildForSign(_ transaction: Transaction) throws -> (KaspaTransaction, [Data]) {
         let sourceAddressScript = try scriptPublicKey(address: transaction.sourceAddress).hex
         let destinationAddressScript = try scriptPublicKey(address: transaction.destinationAddress).hex
-              
+        
         var outputs: [KaspaOutput] = [
             KaspaOutput(
                 amount: amount(from: transaction),
@@ -85,6 +94,13 @@ class KaspaTransactionBuilder {
         
         
         let inputs = unspentOutputs
+        let availableInputSatoshiValue = inputs.reduce(0) { $0 + $1.amount }
+        let availableInputValue = Amount(with: blockchain, value: Decimal(availableInputSatoshiValue) / blockchain.decimalValue)
+        
+        guard availableInputValue >= transaction.amount else {
+            throw WalletError.failedToBuildTx
+        }
+        
         let kaspaTransaction = KaspaTransaction(inputs: inputs, outputs: outputs)
         
         var hashes: [Data] = []

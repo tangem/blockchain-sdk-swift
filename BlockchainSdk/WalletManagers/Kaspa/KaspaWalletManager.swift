@@ -77,7 +77,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
     
     private func updateWallet(_ response: BitcoinResponse) {
         self.wallet.add(amount: Amount(with: self.wallet.blockchain, value: response.balance))
-        txBuilder.unspentOutputs = response.unspentOutputs
+        txBuilder.setUnspentOutputs(response.unspentOutputs)
     }
 }
 
