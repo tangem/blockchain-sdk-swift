@@ -45,11 +45,11 @@ class KaspaTests: XCTestCase {
         
         let txBuilder = KaspaTransactionBuilder(blockchain: blockchain)
         
-        txBuilder.unspentOutputs = [
+        txBuilder.setUnspentOutputs([
             BlockchainSdk.BitcoinUnspentOutput(transactionHash: "deb88e7dd734437c6232a636085ef917d1d13cc549fe14749765508b2782f2fb", outputIndex: 0, amount: 10000000, outputScript: "21034c88a1a83469ddf20d0c07e5c4a1e7b83734e721e60d642b94a53222c47c670dab"),
             BlockchainSdk.BitcoinUnspentOutput(transactionHash: "304db39069dc409acedf544443dcd4a4f02bfad4aeb67116f8bf087822c456af", outputIndex: 0, amount: 10000000, outputScript: "21034c88a1a83469ddf20d0c07e5c4a1e7b83734e721e60d642b94a53222c47c670dab"),
             BlockchainSdk.BitcoinUnspentOutput(transactionHash: "ae96e819429e9da538e84cb213f62fbc8ad32e932d7c7f1fb9bd2fedf8fd7b4a", outputIndex: 0, amount: 500000000, outputScript: "21034c88a1a83469ddf20d0c07e5c4a1e7b83734e721e60d642b94a53222c47c670dab"),
-        ]
+        ])
         
         let walletPublicKey = "04EB30400CE9D1DEED12B84D4161A1FA922EF4185A155EF3EC208078B3807B126FA22C335081AAEBF161095C11C7D8BD550EF8882A3125B0EE9AE96DDDE1AE743F"
         let sourceAddress = try! blockchain.getAddressService().makeAddress(from: Data(hex: walletPublicKey))
