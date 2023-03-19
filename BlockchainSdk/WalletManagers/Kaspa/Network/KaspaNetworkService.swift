@@ -8,9 +8,11 @@
 
 import Foundation
 import Combine
+
 class KaspaNetworkService: MultiNetworkProvider {
     let providers: [KaspaNetworkProvider]
     var currentProviderIndex: Int = 0
+    
     private let blockchain: Blockchain
     
     init(providers: [KaspaNetworkProvider], blockchain: Blockchain) {
@@ -31,10 +33,6 @@ class KaspaNetworkService: MultiNetworkProvider {
                         return nil
                     }
                     
-                    let d = Data(hex: $0.utxoEntry.scriptPublicKey.scriptPublicKey)
-                    print(d.count)
-                    print(d[0], d[d.count - 1])
-                    
                     return BitcoinUnspentOutput(
                         transactionHash: $0.outpoint.transactionId,
                         outputIndex: $0.outpoint.index,
@@ -50,7 +48,6 @@ class KaspaNetworkService: MultiNetworkProvider {
                     unspentOutputs: unspentOutputs
                 )
             }
-            .retry(2)
             .eraseToAnyPublisher()
     }
     
