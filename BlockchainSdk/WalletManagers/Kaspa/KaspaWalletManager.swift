@@ -61,7 +61,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        let numberOfUtxos = txBuilder.unspentOutputs(for: amount)
+        let numberOfUtxos = txBuilder.unspentOutputsCount(for: amount)
         guard numberOfUtxos > 0 else {
             return Fail(error: WalletError.failedToGetFee)
                 .eraseToAnyPublisher()

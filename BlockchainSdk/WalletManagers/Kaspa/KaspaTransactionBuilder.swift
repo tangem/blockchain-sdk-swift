@@ -10,16 +10,15 @@ import Foundation
 import HDWalletKit
 
 class KaspaTransactionBuilder {
-    private var unspentOutputs: [BitcoinUnspentOutput] = []
-    
     private let blockchain: Blockchain
     private let maxInputCount = 84
+    private var unspentOutputs: [BitcoinUnspentOutput] = []
     
     init(blockchain: Blockchain) {
         self.blockchain = blockchain
     }
     
-    func unspentOutputs(for amount: Amount) -> Int {
+    func unspentOutputsCount(for amount: Amount) -> Int {
         return unspentOutputs.count
     }
     
@@ -31,68 +30,7 @@ class KaspaTransactionBuilder {
         self.unspentOutputs = Array(sortedOutputs.prefix(maxInputCount))
     }
     
-    func scriptPublicKey(address: String) throws -> Data {
-        guard
-            let addressService = blockchain.getAddressService() as? KaspaAddressService,
-            let components = addressService.parse(address)
-        else {
-            throw WalletError.failedToBuildTx
-        }
-        
-        let prefix: UInt8?
-        let suffix: UInt8
-        switch components.type {
-        case .P2PK_Schnorr:
-            prefix = nil
-            suffix = OpCode.OP_CHECKSIG.value
-        case .P2PK_ECDSA:
-            prefix = nil
-            suffix = OpCode.OP_CODESEPARATOR.value
-        case .P2SH:
-            prefix = OpCode.OP_HASH256.value
-            suffix = OpCode.OP_EQUAL.value
-        }
-        
-//        let OP_CHECKSIG: UInt8 = 0xAC
-//        let key = components.hash + Data(OP_CHECKSIG)
-        let size = UInt8(components.hash.count)
-        let prefixData: Data
-        if let prefix {
-            prefixData = prefix.data
-        } else {
-            prefixData = Data()
-        }
-        let suffixData = suffix.data
-        return prefixData + size.data + components.hash + suffixData
-    }
-    
     func buildForSign(_ transaction: Transaction) throws -> (KaspaTransaction, [Data]) {
-        let sourceAddressScript = try scriptPublicKey(address: transaction.sourceAddress).hex
-        let destinationAddressScript = try scriptPublicKey(address: transaction.destinationAddress).hex
-        
-        var outputs: [KaspaOutput] = [
-            KaspaOutput(
-                amount: amount(from: transaction),
-                scriptPublicKey: KaspaScriptPublicKey(
-                    scriptPublicKey: destinationAddressScript,
-                    version: 0
-                )
-            )
-        ]
-        
-        if let change = change(transaction, unspentOutputs: unspentOutputs) {
-            outputs.append(
-                KaspaOutput(
-                    amount: change,
-                    scriptPublicKey: KaspaScriptPublicKey(
-                        scriptPublicKey: sourceAddressScript,
-                        version: 0
-                    )
-                )
-            )
-        }
-        
-        
         let inputs = unspentOutputs
         let availableInputSatoshiValue = inputs.reduce(0) { $0 + $1.amount }
         let availableInputValue = Amount(with: blockchain, value: Decimal(availableInputSatoshiValue) / blockchain.decimalValue)
@@ -101,24 +39,36 @@ class KaspaTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
         
+        
+        let sourceAddressScript = try scriptPublicKey(address: transaction.sourceAddress).hex
+        let destinationAddressScript = try scriptPublicKey(address: transaction.destinationAddress).hex
+        
+        var outputs: [KaspaOutput] = [
+            KaspaOutput(
+                amount: amount(from: transaction),
+                scriptPublicKey: KaspaScriptPublicKey(scriptPublicKey: destinationAddressScript)
+            )
+        ]
+        
+        if let change = change(transaction, unspentOutputs: unspentOutputs) {
+            outputs.append(
+                KaspaOutput(
+                    amount: change,
+                    scriptPublicKey: KaspaScriptPublicKey(scriptPublicKey: sourceAddressScript)
+                )
+            )
+        }
+        
+        
         let kaspaTransaction = KaspaTransaction(inputs: inputs, outputs: outputs)
         
-        var hashes: [Data] = []
-        for (index, unspentOutput) in unspentOutputs.enumerated() {
-            print(unspentOutput)
-            
+        let hashes = unspentOutputs.enumerated().map { (index, unspentOutput) in
             let value = unspentOutput.amount
-            
-            let z = kaspaTransaction.hashForSignatureWitness(
+            return kaspaTransaction.hashForSignatureWitness(
                 inputIndex: index,
                 connectedScript: Data(hexString: unspentOutput.outputScript),
                 prevValue: value
             )
-            
-            print("hash for signature witness")
-            print(z.hex)
-            
-            hashes.append(z)
         }
         
         return (kaspaTransaction, hashes)
@@ -151,11 +101,39 @@ class KaspaTransactionBuilder {
         let change = fullAmount - transactionAmount - feeAmount
         return change == 0 ? nil : change
     }
-}
-
-fileprivate extension Transaction {
-    //    func toKaspaTransaction(unspentOutputs: [BitcoinUnspentOutput], change: Amount) -> KaspaTransaction {
     
-    //    }
-    
+    private func scriptPublicKey(address: String) throws -> Data {
+        guard
+            let addressService = blockchain.getAddressService() as? KaspaAddressService,
+            let components = addressService.parse(address)
+        else {
+            throw WalletError.failedToBuildTx
+        }
+        
+        let startOpCode: OpCode?
+        let endOpCode: OpCode
+        
+        switch components.type {
+        case .P2PK_Schnorr:
+            startOpCode = nil
+            endOpCode = OpCode.OP_CHECKSIG
+        case .P2PK_ECDSA:
+            startOpCode = nil
+            endOpCode = OpCode.OP_CODESEPARATOR
+        case .P2SH:
+            startOpCode = OpCode.OP_HASH256
+            endOpCode = OpCode.OP_EQUAL
+        }
+        
+        let startOpCodeData: Data
+        if let startOpCode {
+            startOpCodeData = startOpCode.value.data
+        } else {
+            startOpCodeData = Data()
+        }
+        let endOpCodeData = endOpCode.value.data
+        let size = UInt8(components.hash.count)
+        
+        return startOpCodeData + size.data + components.hash + endOpCodeData
+    }
 }
