@@ -35,7 +35,7 @@ struct KaspaScriptPublicKeyResponse: Codable {
     let scriptPublicKey: String
 }
 
-// MARK: - Transaction
+// MARK: - Transaction request
 
 struct KaspaTransactionRequest: Codable {
     let transaction: KaspaTransactionData
@@ -69,4 +69,10 @@ struct KaspaOutput: Codable {
 struct KaspaScriptPublicKey: Codable {
     let scriptPublicKey: String
     var version: Int = 0
+}
+
+// MARK: - Transaction response
+
+struct KaspaTransactionResponse: Codable {
+    let transactionId: String
 }

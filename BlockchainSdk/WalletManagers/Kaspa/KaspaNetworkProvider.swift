@@ -32,7 +32,7 @@ class KaspaNetworkProvider: HostProvider {
         requestPublisher(for: .utxos(address: address))
     }
     
-    func send(transaction: KaspaTransactionRequest) -> AnyPublisher<String, Error> {
+    func send(transaction: KaspaTransactionRequest) -> AnyPublisher<KaspaTransactionResponse, Error> {
         requestPublisher(for: .transactions(transaction: transaction))
     }
     

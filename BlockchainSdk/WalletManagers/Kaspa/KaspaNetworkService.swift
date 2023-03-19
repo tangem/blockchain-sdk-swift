@@ -54,7 +54,7 @@ class KaspaNetworkService: MultiNetworkProvider {
             .eraseToAnyPublisher()
     }
     
-    func send(transaction: KaspaTransactionRequest) -> AnyPublisher<String, Error>{
+    func send(transaction: KaspaTransactionRequest) -> AnyPublisher<KaspaTransactionResponse, Error>{
         providerPublisher {
             $0.send(transaction: transaction)
         }

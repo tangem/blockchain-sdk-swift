@@ -43,14 +43,14 @@ class KaspaWalletManager: BaseManager, WalletManager {
             
             return self.txBuilder.buildForSend(transaction: kaspaTransaction, signatures: signatures)
         }
-        .flatMap {[weak self] tx -> AnyPublisher<String, Error> in
+        .flatMap {[weak self] tx -> AnyPublisher<KaspaTransactionResponse, Error> in
             guard let self = self else { return .emptyFail }
             
             let request = KaspaTransactionRequest(transaction: tx)
             return self.networkService.send(transaction: request)
         }
-        .map { hash in
-            TransactionSendResult(hash: hash)
+        .map {
+            TransactionSendResult(hash: $0.transactionId)
         }
         .eraseToAnyPublisher()
 
