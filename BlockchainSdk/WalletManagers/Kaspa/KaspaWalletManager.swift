@@ -32,30 +32,32 @@ class KaspaWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        //        txBuilder.buildForSend(transaction)
-        let (kaspaTransaction, hashes) = txBuilder.buildForSign(transaction)!
+        let kaspaTransaction: KaspaTransaction
+        let hashes: [Data]
         
+        do {
+            let result = try txBuilder.buildForSign(transaction)
+            kaspaTransaction = result.0
+            hashes = result.1
+        } catch {
+            return .anyFail(error: error)
+        }
         
-        let z = signer.sign(hashes: hashes,
-                    walletPublicKey: wallet.publicKey)
-        .tryMap { [weak self] signatures in
-            guard let self = self else { throw WalletError.empty }
-            
-            return self.txBuilder.buildForSend(transaction: kaspaTransaction, signatures: signatures)
-        }
-        .flatMap {[weak self] tx -> AnyPublisher<KaspaTransactionResponse, Error> in
-            guard let self = self else { return .emptyFail }
-            
-            let request = KaspaTransactionRequest(transaction: tx)
-            return self.networkService.send(transaction: request)
-        }
-        .map {
-            TransactionSendResult(hash: $0.transactionId)
-        }
-        .eraseToAnyPublisher()
-
-//        return .anyFail(error: WalletError.empty)
-        return z
+        return signer.sign(hashes: hashes, walletPublicKey: wallet.publicKey)
+            .tryMap { [weak self] signatures in
+                guard let self = self else { throw WalletError.empty }
+                
+                return self.txBuilder.buildForSend(transaction: kaspaTransaction, signatures: signatures)
+            }
+            .flatMap { [weak self] tx -> AnyPublisher<KaspaTransactionResponse, Error> in
+                guard let self = self else { return .emptyFail }
+                
+                return self.networkService.send(transaction: KaspaTransactionRequest(transaction: tx))
+            }
+            .map {
+                TransactionSendResult(hash: $0.transactionId)
+            }
+            .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {

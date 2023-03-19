@@ -64,7 +64,7 @@ class KaspaTests: XCTestCase {
             changeAddress: sourceAddress
         )
         
-        let (kaspaTransaction, hashes) = txBuilder.buildForSign(transaction)!
+        let (kaspaTransaction, hashes) = try! txBuilder.buildForSign(transaction)
         
         let expectedHashes = [
             Data(hex: "0FF3D00405C24E8FCC4B6E0FF619D8C6CEDCA595672B5510F835A834B0841878"),

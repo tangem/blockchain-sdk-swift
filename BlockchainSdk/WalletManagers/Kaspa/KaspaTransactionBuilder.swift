@@ -22,10 +22,13 @@ class KaspaTransactionBuilder {
         return unspentOutputs.count
     }
     
-    func scriptPublicKey(address: String) -> Data? {
-        let addressService = blockchain.getAddressService() as! KaspaAddressService
-        
-        guard let components = addressService.parse(address) else { return nil }
+    func scriptPublicKey(address: String) throws -> Data {
+        guard
+            let addressService = blockchain.getAddressService() as? KaspaAddressService,
+            let components = addressService.parse(address)
+        else {
+            throw WalletError.failedToBuildTx
+        }
         
         let prefix: UInt8?
         let suffix: UInt8
@@ -39,8 +42,6 @@ class KaspaTransactionBuilder {
         case .P2SH:
             prefix = OpCode.OP_HASH256.value
             suffix = OpCode.OP_EQUAL.value
-        default:
-            return nil
         }
         
 //        let OP_CHECKSIG: UInt8 = 0xAC
@@ -56,18 +57,10 @@ class KaspaTransactionBuilder {
         return prefixData + size.data + components.hash + suffixData
     }
     
-    func buildForSign(_ transaction: Transaction) -> (KaspaTransaction, [Data])? {
-        guard
-            let sourceAddressScript = scriptPublicKey(address: transaction.sourceAddress)?.hex,
-            let destinationAddressScript = scriptPublicKey(address: transaction.destinationAddress)?.hex
-        else {
-            return nil
-        }
+    func buildForSign(_ transaction: Transaction) throws -> (KaspaTransaction, [Data]) {
+        let sourceAddressScript = try scriptPublicKey(address: transaction.sourceAddress).hex
+        let destinationAddressScript = try scriptPublicKey(address: transaction.destinationAddress).hex
               
-        print("p2sh", scriptPublicKey(address: "kaspa:pqurku73qluhxrmvyj799yeyptpmsflpnc8pha80z6zjh6efwg3v2rrepjm5r")!.hex)
-        print("src", scriptPublicKey(address: transaction.sourceAddress)!.hex)
-        print("dst", scriptPublicKey(address: transaction.destinationAddress)!.hex)
-        
         var outputs: [KaspaOutput] = [
             KaspaOutput(
                 amount: amount(from: transaction),
@@ -111,8 +104,6 @@ class KaspaTransactionBuilder {
             
             hashes.append(z)
         }
-        
-        
         
         return (kaspaTransaction, hashes)
     }
