@@ -226,7 +226,7 @@
 		DABE3BF829C1E3F9000F2197 /* KaspaTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DABE3BF729C1E3F9000F2197 /* KaspaTransaction.swift */; };
 		DABE3BFB29C30E80000F2197 /* KaspaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DABE3BFA29C30E80000F2197 /* KaspaTests.swift */; };
 		DABE3BFD29C47404000F2197 /* KaspaAddressComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = DABE3BFC29C47404000F2197 /* KaspaAddressComponents.swift */; };
-		DAC020F729BF650600364E70 /* KaspaModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC020F629BF650600364E70 /* KaspaModels.swift */; };
+		DAC020F729BF650600364E70 /* KaspaNetworkModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC020F629BF650600364E70 /* KaspaNetworkModels.swift */; };
 		DAC7C04127A3BB17002F7252 /* PolkadotTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC7C04027A3BB17002F7252 /* PolkadotTransactionBuilder.swift */; };
 		DAD65BB02955F201003B3E8D /* EthereumApiKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD65BAF2955F201003B3E8D /* EthereumApiKeys.swift */; };
 		DAE30DFB279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE30DF8279164500056C5A3 /* SolanaDummyAccountStorage.swift */; };
@@ -542,7 +542,7 @@
 		DABE3BF729C1E3F9000F2197 /* KaspaTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaspaTransaction.swift; sourceTree = "<group>"; };
 		DABE3BFA29C30E80000F2197 /* KaspaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaspaTests.swift; sourceTree = "<group>"; };
 		DABE3BFC29C47404000F2197 /* KaspaAddressComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaspaAddressComponents.swift; sourceTree = "<group>"; };
-		DAC020F629BF650600364E70 /* KaspaModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaspaModels.swift; sourceTree = "<group>"; };
+		DAC020F629BF650600364E70 /* KaspaNetworkModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaspaNetworkModels.swift; sourceTree = "<group>"; };
 		DAC7C04027A3BB17002F7252 /* PolkadotTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotTransactionBuilder.swift; sourceTree = "<group>"; };
 		DAD65BAF2955F201003B3E8D /* EthereumApiKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumApiKeys.swift; sourceTree = "<group>"; };
 		DADB5450298BB10000491102 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -1315,6 +1315,26 @@
 			path = Xpub;
 			sourceTree = "<group>";
 		};
+		DA305BE629C770E700826328 /* Address */ = {
+			isa = PBXGroup;
+			children = (
+				DA35D79329B77F3100DE87AB /* KaspaAddressService.swift */,
+				DABE3BFC29C47404000F2197 /* KaspaAddressComponents.swift */,
+			);
+			path = Address;
+			sourceTree = "<group>";
+		};
+		DA305BE729C770EE00826328 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				DA0D073029BB768A0011F6A8 /* KaspaNetworkService.swift */,
+				DA0D073229BB7B8E0011F6A8 /* KaspaNetworkProvider.swift */,
+				DAC020F629BF650600364E70 /* KaspaNetworkModels.swift */,
+				DA0D073629BB81270011F6A8 /* KaspaTarget.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		DA3081222817AEB800DE41F1 /* protobuf */ = {
 			isa = PBXGroup;
 			children = (
@@ -1330,13 +1350,9 @@
 		DA35D79229B77EF000DE87AB /* Kaspa */ = {
 			isa = PBXGroup;
 			children = (
-				DABE3BFC29C47404000F2197 /* KaspaAddressComponents.swift */,
-				DA35D79329B77F3100DE87AB /* KaspaAddressService.swift */,
+				DA305BE629C770E700826328 /* Address */,
+				DA305BE729C770EE00826328 /* Network */,
 				DA0D072E29BB766F0011F6A8 /* KaspaWalletManager.swift */,
-				DA0D073029BB768A0011F6A8 /* KaspaNetworkService.swift */,
-				DA0D073229BB7B8E0011F6A8 /* KaspaNetworkProvider.swift */,
-				DAC020F629BF650600364E70 /* KaspaModels.swift */,
-				DA0D073629BB81270011F6A8 /* KaspaTarget.swift */,
 				DABE3BF529C1E3F4000F2197 /* KaspaTransactionBuilder.swift */,
 				DABE3BF729C1E3F9000F2197 /* KaspaTransaction.swift */,
 			);
@@ -1844,7 +1860,7 @@
 				5D0EEE69253EF75200758FDC /* TezosFee.swift in Sources */,
 				5D4B33C223F72C0400C93A84 /* BitcoinCashNetworkService.swift in Sources */,
 				5D4B33BE23F6EA3700C93A84 /* BlockchairResponses.swift in Sources */,
-				DAC020F729BF650600364E70 /* KaspaModels.swift in Sources */,
+				DAC020F729BF650600364E70 /* KaspaNetworkModels.swift in Sources */,
 				5D88C80B256BCDBB00020028 /* StellarTransactionParams.swift in Sources */,
 				5D88838927D3BB8B008744E1 /* WalletError.swift in Sources */,
 				5DE3BF9E239FA2F400E8815D /* SegWitBech32.swift in Sources */,

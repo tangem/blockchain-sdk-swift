@@ -1,5 +1,5 @@
 //
-//  KaspaModels.swift
+//  KaspaNetworkModels.swift
 //  BlockchainSdk
 //
 //  Created by Andrey Chukavin on 13.03.2023.
