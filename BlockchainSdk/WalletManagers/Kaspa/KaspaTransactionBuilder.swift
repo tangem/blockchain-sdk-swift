@@ -25,15 +25,17 @@ class KaspaTransactionBuilder {
     func scriptPublicKey(address: String) -> Data? {
         guard let components = KaspaAddressComponents(address) else { return nil }
         
-        let prefix: UInt8 = OpCode.OP_HASH256.value
+        let prefix: UInt8?
         let suffix: UInt8
         switch components.type {
         case .P2PK_Schnorr:
+            prefix = nil
             suffix = OpCode.OP_CHECKSIG.value
         case .P2PK_ECDSA:
+            prefix = nil
             suffix = OpCode.OP_CODESEPARATOR.value
         case .P2SH:
-            
+            prefix = OpCode.OP_HASH256.value
             suffix = OpCode.OP_EQUAL.value
         default:
             return nil
@@ -42,8 +44,14 @@ class KaspaTransactionBuilder {
 //        let OP_CHECKSIG: UInt8 = 0xAC
 //        let key = components.hash + Data(OP_CHECKSIG)
         let size = UInt8(components.hash.count)
-        return Data(prefix) + size.data + components.hash + Data(suffix)
-        return Data()
+        let prefixData: Data
+        if let prefix {
+            prefixData = prefix.data
+        } else {
+            prefixData = Data()
+        }
+        let suffixData = suffix.data
+        return prefixData + size.data + components.hash + suffixData
     }
     
     func buildForSign(_ transaction: Transaction) -> (KaspaTransaction, [Data])? {
@@ -62,7 +70,7 @@ class KaspaTransactionBuilder {
             KaspaOutput(
                 amount: amount(from: transaction),
                 scriptPublicKey: KaspaScriptPublicKey(
-                    scriptPublicKey: "2060072BBDDB7A7D1DBF40302CE04D51DB49E223F8E5159FCCE14143FD4BE20328AC",
+                    scriptPublicKey: destinationAddressScript,
                     version: 0
                 )
             )
@@ -73,7 +81,7 @@ class KaspaTransactionBuilder {
                 KaspaOutput(
                     amount: change,
                     scriptPublicKey: KaspaScriptPublicKey(
-                        scriptPublicKey: "2103EB30400CE9D1DEED12B84D4161A1FA922EF4185A155EF3EC208078B3807B126FAB",
+                        scriptPublicKey: sourceAddressScript,
                         version: 0
                     )
                 )
