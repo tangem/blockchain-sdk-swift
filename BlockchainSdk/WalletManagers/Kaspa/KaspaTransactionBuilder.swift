@@ -18,6 +18,10 @@ class KaspaTransactionBuilder {
         self.blockchain = blockchain
     }
     
+    func unspentOutputs(for amount: Amount) -> Int {
+        return unspentOutputs.count
+    }
+    
     func scriptPublicKey(address: String) -> Data? {
         guard let components = KaspaAddressComponents(address) else { return nil }
         

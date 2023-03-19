@@ -59,7 +59,16 @@ class KaspaWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        Just([Amount.zeroCoin(for: wallet.blockchain)])
+        let numberOfUtxos = txBuilder.unspentOutputs(for: amount)
+        guard numberOfUtxos > 0 else {
+            return Fail(error: WalletError.failedToGetFee)
+                .eraseToAnyPublisher()
+        }
+        
+        let feePerUtxo = 10_000
+        let fee = feePerUtxo * numberOfUtxos
+        
+        return Just([Amount(with: wallet.blockchain, value: Decimal(fee) / wallet.blockchain.decimalValue)])
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
