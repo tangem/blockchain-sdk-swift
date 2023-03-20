@@ -935,3 +935,49 @@ extension Blockchain {
         }
     }
 }
+
+// MARK: - Assembly type
+
+@available(iOS 13.0, *)
+extension Blockchain {
+    
+    var assembly: WalletManagerAssembly {
+        switch self {
+        case .bitcoin:
+            return BitcoinWalletAssembly()
+        case .litecoin:
+            return LitecoinWalletAssembly()
+        case .dogecoin:
+            return DogecoinWalletAssembly()
+        case .ducatus:
+            return DucatusWalletAssembly()
+        case .stellar:
+            return StellarWalletAssembly()
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay:
+            return EthereumWalletAssembly()
+        case .optimism:
+            return OptimismWalletAssembly()
+        case .bitcoinCash:
+            return BitcoinCashWalletAssembly()
+        case .binance:
+            return BinanceWalletAssembly()
+        case .cardano:
+            return CardanoWalletAssembly()
+        case .xrp:
+            return XRPWalletAssembly()
+        case .tezos:
+            return TezosWalletAssembly()
+        case .solana:
+            return SolanaWalletAssembly()
+        case .polkadot, .kusama:
+            return SubstrateWalletAssembly()
+        case .tron:
+            return TronWalletAssembly()
+        case .dash:
+            return DashWalletAssembly()
+        case .ton:
+            return TONWalletAssembly()
+        }
+    }
+    
+}
