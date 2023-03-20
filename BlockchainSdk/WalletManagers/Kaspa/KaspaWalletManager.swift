@@ -98,6 +98,12 @@ class KaspaWalletManager: BaseManager, WalletManager {
 
 extension KaspaWalletManager: ThenProcessable { }
 
+extension KaspaWalletManager: DustRestrictable {
+    var dustValue: Amount {
+        Amount(with: wallet.blockchain, value: Decimal(0.0001))
+    }
+}
+
 extension KaspaWalletManager: WithdrawalValidator {
     func validate(_ transaction: Transaction) -> WithdrawalWarning? {
         let availableAmount = txBuilder.amountAvailableToSend()
