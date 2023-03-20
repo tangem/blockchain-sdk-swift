@@ -16,10 +16,9 @@ final class TONWalletManager: BaseManager, WalletManager {
     // MARK: - Properties
     
     var currentHost: String { networkService.host }
-    var allowsFeeSelection: Bool { false }
     
     // MARK: - Private Properties
-
+    
     private let networkService: TONNetworkService
     private let txBuilder: TONTransactionBuilder
     private var isAvailable: Bool = true
@@ -76,7 +75,14 @@ final class TONWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
+}
+
+// MARK: - TransactionFeeProvider
+
+extension TONWalletManager: TransactionFeeProvider {
+    var allowsFeeSelection: Bool { false }
+    
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeType, Error> {
         return Just(())
             .tryMap { [weak self] _ -> String in
                 guard let self = self else {
@@ -86,18 +92,20 @@ final class TONWalletManager: BaseManager, WalletManager {
                 let input = try self.txBuilder.buildForSign(amount: amount, destination: destination)
                 return try self.buildTransaction(input: input)
             }
-            .flatMap { [weak self] message -> AnyPublisher<[Amount], Error> in
+            .flatMap { [weak self] message -> AnyPublisher<FeeType, Error> in
                 guard let self = self else {
                     return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
                 }
                 
                 return self.networkService.getFee(address: self.wallet.address, message: message)
             }
-            .tryMap { try FeeType(fees: $0) }
             .eraseToAnyPublisher()
     }
-    
-    // MARK: - Private Implementation
+}
+
+// MARK: - Private Implementation
+
+private extension TONWalletManager {
     
     private func update(with info: TONWalletInfo, completion: @escaping (Result<Void, Error>) -> Void) {
         if info.sequenceNumber != txBuilder.sequenceNumber {
@@ -129,5 +137,4 @@ final class TONWalletManager: BaseManager, WalletManager {
         
         return try self.txBuilder.buildForSend(output: output)
     }
-    
 }

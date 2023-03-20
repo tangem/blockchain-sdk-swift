@@ -51,7 +51,7 @@ class TONNetworkService: MultiNetworkProvider {
         }
     }
     
-    func getFee(address: String, message: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(address: String, message: String) -> AnyPublisher<FeeType, Error> {
         providerPublisher { provider in
             provider
                 .getFee(address: address, body: message)
@@ -63,7 +63,8 @@ class TONNetworkService: MultiNetworkProvider {
                     /// Make rounded digits by correct for max amount Fee
                     let fee = fee.sourceFees.totalFee / self.blockchain.decimalValue
                     let roundedValue = fee.rounded(scale: 2, roundingMode: .up)
-                    return [Amount(with: self.blockchain, value: roundedValue)]
+                    let feeAmount = Amount(with: self.blockchain, value: roundedValue)
+                    return .single(fee: .init(feeAmount))
                 }
                 .eraseToAnyPublisher()
         }
