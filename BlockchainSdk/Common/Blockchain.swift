@@ -252,7 +252,7 @@ public enum Blockchain: Equatable, Hashable {
     
     public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
         switch self {
-        case .arbitrum, .stellar, .optimism, .ethereumPoW:
+        case .arbitrum, .stellar, .optimism, .ethereumPoW, .ton:
             return true
         case .fantom, .tron, .gnosis, .avalanche:
             if case .token = amountType {
@@ -882,8 +882,8 @@ extension Blockchain {
         case .saltPay:
             return URL(string: "https://blockscout.bicoccachain.net/address/\(address)")!
         case .ton:
-            let subdomain = isTestnet ? "testnet" : ""
-            return URL(string: "https://\(subdomain).tonscan.org/address/\(address)")
+            let subdomain = isTestnet ? "testnet." : ""
+            return URL(string: "https://\(subdomain)tonscan.org/address/\(address)")
         case .kaspa:
             return URL(string: "https://explorer.kaspa.org/addresses/\(address)")!
         }
