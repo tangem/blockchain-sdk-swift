@@ -20,10 +20,10 @@ class KaspaNetworkService: MultiNetworkProvider {
         self.blockchain = blockchain
     }
     
-    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
+    func getInfo(address: String, unconfirmedTransactionHashes: [String]) -> AnyPublisher<KaspaAddressInfo, Error> {
         balance(address: address)
-            .zip(utxos(address: address))
-            .tryMap { [weak self] (balance, utxos) in
+            .zip(utxos(address: address), confirmedTransactionHashes(unconfirmedTransactionHashes))
+            .tryMap { [weak self] (balance, utxos, confirmedTransactionHashes) in
                 guard let self else { throw WalletError.empty }
                 
                 let unspentOutputs: [BitcoinUnspentOutput] = utxos.compactMap {
@@ -41,11 +41,10 @@ class KaspaNetworkService: MultiNetworkProvider {
                     )
                 }
                 
-                return BitcoinResponse(
+                return KaspaAddressInfo(
                     balance: Decimal(integerLiteral: balance.balance) / self.blockchain.decimalValue,
-                    hasUnconfirmed: false,
-                    pendingTxRefs: [],
-                    unspentOutputs: unspentOutputs
+                    unspentOutputs: unspentOutputs,
+                    confirmedTransactionHashes: confirmedTransactionHashes
                 )
             }
             .eraseToAnyPublisher()
@@ -54,6 +53,15 @@ class KaspaNetworkService: MultiNetworkProvider {
     func send(transaction: KaspaTransactionRequest) -> AnyPublisher<KaspaTransactionResponse, Error>{
         providerPublisher {
             $0.send(transaction: transaction)
+        }
+    }
+    
+    private func currentBlueScore() -> AnyPublisher<UInt64, Error> {
+        providerPublisher {
+            $0.currentBlueScore()
+                .map(\.blueScore)
+                .retry(2)
+                .eraseToAnyPublisher()
         }
     }
     
@@ -68,6 +76,52 @@ class KaspaNetworkService: MultiNetworkProvider {
     private func utxos(address: String) -> AnyPublisher<[KaspaUnspentOutputResponse], Error> {
         providerPublisher {
             $0.utxos(address: address)
+                .retry(2)
+                .eraseToAnyPublisher()
+        }
+    }
+    
+    private func confirmedTransactionHashes(_ hashes: [String]) -> AnyPublisher<[String], Error> {
+        if hashes.isEmpty {
+            return .justWithError(output: [])
+        }
+        
+        let confirmedTransactionBlueScoreDifference: UInt64 = 10
+        
+        return Publishers.Zip(currentBlueScore(), transactionInfos(hashes: hashes))
+            .map { (currentBlueScore, transactionInfos) in
+                let confirmedTransactions = transactionInfos.filter {
+                    $0.isAccepted
+                    &&
+                    currentBlueScore > ($0.acceptingBlockBlueScore + confirmedTransactionBlueScoreDifference)
+                }
+                
+                return confirmedTransactions.map(\.transactionId)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func transactionInfos(hashes: [String]) -> AnyPublisher<[KaspaTransactionInfoResponse], Error> {
+        hashes
+            .publisher
+            .setFailureType(to: Error.self)
+            .flatMap { [weak self] hash -> AnyPublisher<KaspaTransactionInfoResponse, Error> in
+                guard let self = self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+                
+                return self.transactionInfo(hash: hash)
+                    .replaceError(with: .init(transactionId: hash, isAccepted: false, acceptingBlockBlueScore: 0))
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+            }
+            .collect()
+            .eraseToAnyPublisher()
+    }
+    
+    private func transactionInfo(hash: String) -> AnyPublisher<KaspaTransactionInfoResponse, Error> {
+        providerPublisher {
+            $0.transactionInfo(hash: hash)
                 .retry(2)
                 .eraseToAnyPublisher()
         }

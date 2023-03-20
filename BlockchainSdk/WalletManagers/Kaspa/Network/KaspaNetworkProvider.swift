@@ -24,6 +24,10 @@ class KaspaNetworkProvider: HostProvider {
         self.provider = NetworkProvider<KaspaTarget>(configuration: networkConfiguration)
     }
     
+    func currentBlueScore() -> AnyPublisher<KaspaBlueScoreResponse, Error> {
+        requestPublisher(for: .blueScore)
+    }
+    
     func balance(address: String) -> AnyPublisher<KaspaBalanceResponse, Error> {
         requestPublisher(for: .balance(address: address))
     }
@@ -36,10 +40,17 @@ class KaspaNetworkProvider: HostProvider {
         requestPublisher(for: .transactions(transaction: transaction))
     }
     
+    func transactionInfo(hash: String) -> AnyPublisher<KaspaTransactionInfoResponse, Error> {
+        requestPublisher(for: .transaction(hash: hash))
+    }
+    
     private func requestPublisher<T: Codable>(for request: KaspaTarget.Request) -> AnyPublisher<T, Error> {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        
         return provider.requestPublisher(KaspaTarget(request: request, baseURL: url))
             .filterSuccessfulStatusAndRedirectCodes()
-            .map(T.self)
+            .map(T.self, using: decoder)
             .mapError { moyaError in
                 if case .objectMapping = moyaError {
                     return WalletError.failedToParseNetworkResponse

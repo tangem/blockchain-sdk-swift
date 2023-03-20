@@ -8,10 +8,32 @@
 
 import Foundation
 
+// MARK: - Address Info
+
+struct KaspaAddressInfo {
+    let balance: Decimal
+    let unspentOutputs: [BitcoinUnspentOutput]
+    let confirmedTransactionHashes: [String]
+}
+
 // MARK: - Balance
 
 struct KaspaBalanceResponse: Codable {
     let balance: Int
+}
+
+// MARK: - Blue score
+
+struct KaspaBlueScoreResponse: Codable {
+    let blueScore: UInt64
+}
+
+// MARK: - Transaction info
+
+struct KaspaTransactionInfoResponse: Codable {
+    let transactionId: String
+    let isAccepted: Bool
+    let acceptingBlockBlueScore: UInt64
 }
 
 // MARK: - UTXO
