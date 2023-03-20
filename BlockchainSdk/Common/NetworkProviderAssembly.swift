@@ -52,8 +52,8 @@ struct NetworkProviderAssembly {
         return canLoad ? BlockscoutNetworkProvider(configuration: .init(credentials: input.blockchainConfig.blockscoutCredentials)) : nil
     }
     
-    func makeJsonRpcEndpoints(with input: WalletManagerAssemblyInput) -> [URL] {
-        input.blockchain.getJsonRpcEndpoints(
+    func makeEthereumJsonRpcProviders(with input: WalletManagerAssemblyInput) -> [EthereumJsonRpcProvider] {
+        let endpoints = input.blockchain.getJsonRpcEndpoints(
             keys: EthereumApiKeys(
                 infuraProjectId: input.blockchainConfig.infuraProjectId,
                 nowNodesApiKey: input.blockchainConfig.nowNodesApiKey,
@@ -61,6 +61,13 @@ struct NetworkProviderAssembly {
                 quickNodeBscCredentials: input.blockchainConfig.quickNodeBscCredentials
             )
         )!
+        
+        return endpoints.map {
+            return EthereumJsonRpcProvider(
+                url: $0,
+                configuration: input.networkConfig
+            )
+        }
     }
     
 }
