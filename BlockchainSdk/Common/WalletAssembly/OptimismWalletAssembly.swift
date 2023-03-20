@@ -1,17 +1,14 @@
 //
-//  EthereumChildWalletAssembly.swift
+//  OptiomizmWalletAssembly.swift
 //  BlockchainSdk
 //
-//  Created by skibinalexander on 08.02.2023.
+//  Created by skibinalexander on 20.03.2023.
 //  Copyright © 2023 Tangem AG. All rights reserved.
 //
 
 import Foundation
-import TangemSdk
-import stellarsdk
-import BitcoinCore
 
-struct EthereumWalletAssembly: WalletManagerAssembly {
+struct OptimismWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         let manager: EthereumWalletManager
@@ -24,13 +21,7 @@ struct EthereumWalletAssembly: WalletManagerAssembly {
             )
         )!
         
-        manager = EthereumWalletManager(wallet: input.wallet)
-        
-        let blockcypherProvider: BlockcypherNetworkProvider = BlockcypherNetworkProvider(
-            endpoint: .ethereum,
-            tokens: input.blockchainConfig.blockcypherTokens,
-            configuration: input.networkConfig
-        )
+        manager = OptimismWalletManager(wallet: input.wallet, rpcURL: endpoints[0])
         
         var transactionHistoryProvider: TransactionHistoryProvider?
         
@@ -52,7 +43,7 @@ struct EthereumWalletAssembly: WalletManagerAssembly {
             $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, chainId: chainId)
             $0.networkService = EthereumNetworkService(decimals: input.blockchain.decimalCount,
                                                        providers: jsonRpcProviders,
-                                                       blockcypherProvider: blockcypherProvider,
+                                                       blockcypherProvider: nil,
                                                        blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
                                                        transactionHistoryProvider: transactionHistoryProvider)
         }

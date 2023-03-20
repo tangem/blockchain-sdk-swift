@@ -955,6 +955,8 @@ extension Blockchain {
             return StellarWalletAssembly()
         case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .optimism, .ethereumFair, .saltPay:
             return EthereumWalletAssembly()
+        case .optimism:
+            return OptimismWalletAssembly()
         case .bitcoinCash:
             return BitcoinCashWalletAssembly()
         case .binance:

@@ -1,5 +1,5 @@
 //
-//  ProviderAssembly.swift
+//  NetworkProviderAssembly.swift
 //  BlockchainSdk
 //
 //  Created by skibinalexander on 09.02.2023.
@@ -27,7 +27,7 @@ struct NetworkProviderAssembly {
         }
     }
     
-    func makeInfoNetworkProvider(with input: WalletManagerAssemblyInput) -> BlockchainInfoNetworkProvider {
+    func makeBlockchainInfoNetworkProvider(with input: WalletManagerAssemblyInput) -> BlockchainInfoNetworkProvider {
         return BlockchainInfoNetworkProvider(configuration: input.networkConfig)
     }
     

@@ -25,20 +25,20 @@ struct LitecoinWalletAssembly: WalletManagerAssembly {
             
             if input.blockchainConfig.useBlockBookUtxoApis {
                 providers.append(
-                    providerAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider()
+                    networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider()
                 )
                 
                 providers.append(
-                    providerAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider()
+                    networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider()
                 )
             }
             
             providers.append(
-                contentsOf: providerAssembly.makeBlockchairNetworkProviders(endpoint: .litecoin, with: input)
+                contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .litecoin, with: input)
             )
             
             providers.append(
-                providerAssembly.makeBlockcypherNetworkProvider(endpoint: .litecoin, with: input).eraseToAnyBitcoinNetworkProvider()
+                networkProviderAssembly.makeBlockcypherNetworkProvider(endpoint: .litecoin, with: input).eraseToAnyBitcoinNetworkProvider()
             )
             
             $0.networkService = LitecoinNetworkService(providers: providers)

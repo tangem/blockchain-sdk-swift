@@ -5,8 +5,6 @@ import BitcoinCore
 
 struct BitcoinWalletAssembly: WalletManagerAssembly {
     
-    // MARK: - Implementation
-    
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return try BitcoinWalletManager(wallet: input.wallet).then {
             let network: BitcoinNetwork = input.blockchain.isTestnet ? .testnet : .mainnet
@@ -23,31 +21,31 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
             
             if input.blockchainConfig.useBlockBookUtxoApis {
                 providers.append(
-                    providerAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider()
+                    networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider()
                 )
             }
             
             if !input.blockchain.isTestnet {
                 if input.blockchainConfig.useBlockBookUtxoApis {
                     providers.append(
-                        providerAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider()
+                        networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider()
                     )
                 }
                 
                 providers.append(
-                    providerAssembly.makeInfoNetworkProvider(with: input).eraseToAnyBitcoinNetworkProvider()
+                    networkProviderAssembly.makeBlockchainInfoNetworkProvider(with: input).eraseToAnyBitcoinNetworkProvider()
                 )
             }
             
             providers.append(
-                contentsOf: providerAssembly.makeBlockchairNetworkProviders(
+                contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(
                     endpoint: .bitcoin(testnet: input.blockchain.isTestnet),
                     with: input
                 )
             )
             
             providers.append(
-                providerAssembly.makeBlockcypherNetworkProvider(
+                networkProviderAssembly.makeBlockcypherNetworkProvider(
                     endpoint: .bitcoin(testnet: input.blockchain.isTestnet),
                     with: input
                 ).eraseToAnyBitcoinNetworkProvider()

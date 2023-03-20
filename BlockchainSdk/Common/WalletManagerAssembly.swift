@@ -1,5 +1,5 @@
 //
-//  BlockchainAssemblyFactory.swift
+//  WalletManagerAssembly.swift
 //  BlockchainSdk
 //
 //  Created by skibinalexander on 31.01.2023.
@@ -22,20 +22,20 @@ struct WalletManagerAssemblyInput {
 protocol WalletManagerAssembly {
     
     /// Assembly to access any providers
-    var providerAssembly: NetworkProviderAssembly { get }
+    var networkProviderAssembly: NetworkProviderAssembly { get }
     
     // MARK: - Wallet Assembly
     
-    /// Blockchain assembly method
-    /// - Parameter input: Input data factory
-    /// - Returns: Blockchain result
+    /// Function that creates WalletManager according to input data
+    /// - Parameter input: Input that contains information about blockchain, SdkConfig, network settings
+    /// - Returns: WalletManager for specified blockchain
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager
     
 }
 
 extension WalletManagerAssembly {
     
-    var providerAssembly: NetworkProviderAssembly {
+    var networkProviderAssembly: NetworkProviderAssembly {
         return NetworkProviderAssembly()
     }
     
