@@ -7,6 +7,7 @@
 "common_estimate_tx_size_error" = "Berechnung des Transaktionsumfangs fehlgeschlagen";
 "common_failed_to_load_token_balance" = "Failed to load %@ token balance";
 "common_fee_error" = "Erhalt der Gebühr fehlgeschlagen";
+"common_ok" = "OK";
 "common_parse_network_response_error" = "Antwort des Netzwerks fehlgeschlagen";
 "common_send_tx_error" = "Absenden der Transaktion fehlgeschlagen";
 "eth_balance_parse_error" = "Analyse der Bilanz fehlgeschlagen";
@@ -16,6 +17,7 @@
 "failed_to_find_tx_inputs" = "Failed to find transaction inputs";
 "failed_to_load_fee_error" = "Failed to load fee from network";
 "fee_for_push_tx_not_enough" = "Fee for pushing transaction must be greater than fee for original transaction";
+"kaspa_withdrawal_message_warning" = "Due to Kaspa limitations only %1$li UTXOs can fit in a single transaction. This means you can only send %2$@. You need to reduce the amount.";
 "network_providers_not_supports_rbf" = "Pushing transaction currently not available. Please, try again later";
 "no_account_bnb" = "Senden Sie Geld an diese Andresse um ein Konto zu erstellen";
 "no_account_generic" = "Laden Sie %1$@+ %2$@ auf um ein Konto zu erstellen";
