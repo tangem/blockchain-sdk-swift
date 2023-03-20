@@ -30,13 +30,15 @@ public class KaspaAddressService: AddressService {
             return false
         }
         
-        switch components.type {
-        case .P2PK_ECDSA:
-            let key = try? Secp256k1Key(with: components.hash)
-            return key != nil
-        default:
-            return true
+        let validStartLetters = ["q", "p"]
+        guard
+            let firstAddressLetter = address.dropFirst(prefix.count + 1).first,
+            validStartLetters.contains(String(firstAddressLetter))
+        else {
+            return false
         }
+        
+        return true
     }
     
     func parse(_ address: String) -> KaspaAddressComponents? {
