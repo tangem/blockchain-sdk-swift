@@ -97,3 +97,20 @@ class KaspaWalletManager: BaseManager, WalletManager {
 }
 
 extension KaspaWalletManager: ThenProcessable { }
+
+extension KaspaWalletManager: WithdrawalValidator {
+    func validate(_ transaction: Transaction) -> WithdrawalWarning? {
+        let availableAmount = txBuilder.amountAvailableToSend()
+        if transaction.amount <= availableAmount {
+            return nil
+        }
+        
+        let amountToReduceBy = transaction.amount - availableAmount
+        
+        return WithdrawalWarning(
+            warningMessage: "kaspa_withdrawal_message_warning".localized([txBuilder.maxInputCount, availableAmount.description]),
+            reduceMessage: "common_ok".localized,
+            suggestedReduceAmount: amountToReduceBy
+        )
+    }
+}

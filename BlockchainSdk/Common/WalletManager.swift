@@ -99,7 +99,7 @@ public protocol TokenFinder {
 public struct WithdrawalWarning {
     public let warningMessage: String
     public let reduceMessage: String
-    public let ignoreMessage: String
+    public var ignoreMessage: String? = nil
     public let suggestedReduceAmount: Amount
 }
 
