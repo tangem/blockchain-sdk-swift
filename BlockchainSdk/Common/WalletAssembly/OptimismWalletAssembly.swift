@@ -11,38 +11,25 @@ import Foundation
 struct OptimismWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        let endpoints = input.blockchain.getJsonRpcEndpoints(
-            keys: EthereumApiKeys(
-                infuraProjectId: input.blockchainConfig.infuraProjectId,
-                nowNodesApiKey: input.blockchainConfig.nowNodesApiKey,
-                getBlockApiKey: input.blockchainConfig.getBlockApiKey,
-                quickNodeBscCredentials: input.blockchainConfig.quickNodeBscCredentials
-            )
-        )!
+        let endpoints = networkProviderAssembly.makeJsonRpcEndpoints(with: input)
         
-        var transactionHistoryProvider: TransactionHistoryProvider?
-        
-        if input.blockchain.canLoadTransactionHistory {
-            // This should be decided by each assembly
-            transactionHistoryProvider = BlockscoutNetworkProvider(configuration: .init(credentials: input.blockchainConfig.blockscoutCredentials))
-        }
-        
-        return try OptimismWalletManager(wallet: input.wallet, rpcURL: endpoints[0]).then {
+        return try OptimismWalletManager(
+            wallet: input.wallet,
+            rpcURL: endpoints[0]
+        ).then {
             let chainId = input.blockchain.chainId!
             
-            let jsonRpcProviders = endpoints.map {
-                return EthereumJsonRpcProvider(
-                    url: $0,
-                    configuration: input.networkConfig
-                )
-            }
-            
             $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, chainId: chainId)
-            $0.networkService = EthereumNetworkService(decimals: input.blockchain.decimalCount,
-                                                       providers: jsonRpcProviders,
-                                                       blockcypherProvider: nil,
-                                                       blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
-                                                       transactionHistoryProvider: transactionHistoryProvider)
+            $0.networkService = EthereumNetworkService(
+                decimals: input.blockchain.decimalCount,
+                providers: EthereumJsonRpcProvider.make(from: endpoints, with: input.networkConfig),
+                blockcypherProvider: nil,
+                blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
+                transactionHistoryProvider: networkProviderAssembly.makeBlockscoutNetworkProvider(
+                    canLoad: input.blockchain.canLoadTransactionHistory,
+                    with: input
+                )
+            )
         }
     }
     

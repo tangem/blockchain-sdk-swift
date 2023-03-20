@@ -69,3 +69,16 @@ class EthereumJsonRpcProvider: HostProvider {
         .eraseToAnyPublisher()
     }
 }
+
+extension EthereumJsonRpcProvider {
+    
+    static func make(from endpoints: [URL], with configuration: NetworkProviderConfiguration) -> [EthereumJsonRpcProvider] {
+        endpoints.map {
+            return EthereumJsonRpcProvider(
+                url: $0,
+                configuration: configuration
+            )
+        }
+    }
+    
+}

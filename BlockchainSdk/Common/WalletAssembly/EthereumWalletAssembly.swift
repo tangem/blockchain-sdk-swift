@@ -14,39 +14,22 @@ import BitcoinCore
 struct EthereumWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        let endpoints = input.blockchain.getJsonRpcEndpoints(
-            keys: EthereumApiKeys(
-                infuraProjectId: input.blockchainConfig.infuraProjectId,
-                nowNodesApiKey: input.blockchainConfig.nowNodesApiKey,
-                getBlockApiKey: input.blockchainConfig.getBlockApiKey,
-                quickNodeBscCredentials: input.blockchainConfig.quickNodeBscCredentials
-            )
-        )!
-        
-        var transactionHistoryProvider: TransactionHistoryProvider?
-        
-        if input.blockchain.canLoadTransactionHistory {
-            // This should be decided by each assembly
-            transactionHistoryProvider = BlockscoutNetworkProvider(configuration: .init(credentials: input.blockchainConfig.blockscoutCredentials))
-        }
+        let endpoints = networkProviderAssembly.makeJsonRpcEndpoints(with: input)
         
         return try EthereumWalletManager(wallet: input.wallet).then {
             let chainId = input.blockchain.chainId!
             
-            let jsonRpcProviders = endpoints.map {
-                return EthereumJsonRpcProvider(
-                    url: $0,
-                    configuration: input.networkConfig
-                )
-            }
-            
             $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, chainId: chainId)
             $0.networkService = EthereumNetworkService(
                 decimals: input.blockchain.decimalCount,
-                providers: jsonRpcProviders,
+                providers: EthereumJsonRpcProvider.make(from: endpoints, with: input.networkConfig),
                 blockcypherProvider: networkProviderAssembly.makeBlockcypherNetworkProvider(endpoint: .ethereum, with: input),
                 blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
-                transactionHistoryProvider: transactionHistoryProvider)
+                transactionHistoryProvider: networkProviderAssembly.makeBlockscoutNetworkProvider(
+                    canLoad: input.blockchain.canLoadTransactionHistory,
+                    with: input
+                )
+            )
         }
     }
     
