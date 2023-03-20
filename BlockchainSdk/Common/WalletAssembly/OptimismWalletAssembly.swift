@@ -11,7 +11,6 @@ import Foundation
 struct OptimismWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        let manager: EthereumWalletManager
         let endpoints = input.blockchain.getJsonRpcEndpoints(
             keys: EthereumApiKeys(
                 infuraProjectId: input.blockchainConfig.infuraProjectId,
@@ -21,8 +20,6 @@ struct OptimismWalletAssembly: WalletManagerAssembly {
             )
         )!
         
-        manager = OptimismWalletManager(wallet: input.wallet, rpcURL: endpoints[0])
-        
         var transactionHistoryProvider: TransactionHistoryProvider?
         
         if input.blockchain.canLoadTransactionHistory {
@@ -30,7 +27,7 @@ struct OptimismWalletAssembly: WalletManagerAssembly {
             transactionHistoryProvider = BlockscoutNetworkProvider(configuration: .init(credentials: input.blockchainConfig.blockscoutCredentials))
         }
         
-        return try manager.then {
+        return try OptimismWalletManager(wallet: input.wallet, rpcURL: endpoints[0]).then {
             let chainId = input.blockchain.chainId!
             
             let jsonRpcProviders = endpoints.map {

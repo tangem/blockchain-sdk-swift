@@ -14,7 +14,6 @@ import BitcoinCore
 struct EthereumWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        let manager: EthereumWalletManager
         let endpoints = input.blockchain.getJsonRpcEndpoints(
             keys: EthereumApiKeys(
                 infuraProjectId: input.blockchainConfig.infuraProjectId,
@@ -24,14 +23,6 @@ struct EthereumWalletAssembly: WalletManagerAssembly {
             )
         )!
         
-        manager = EthereumWalletManager(wallet: input.wallet)
-        
-        let blockcypherProvider: BlockcypherNetworkProvider = BlockcypherNetworkProvider(
-            endpoint: .ethereum,
-            tokens: input.blockchainConfig.blockcypherTokens,
-            configuration: input.networkConfig
-        )
-        
         var transactionHistoryProvider: TransactionHistoryProvider?
         
         if input.blockchain.canLoadTransactionHistory {
@@ -39,7 +30,7 @@ struct EthereumWalletAssembly: WalletManagerAssembly {
             transactionHistoryProvider = BlockscoutNetworkProvider(configuration: .init(credentials: input.blockchainConfig.blockscoutCredentials))
         }
         
-        return try manager.then {
+        return try EthereumWalletManager(wallet: input.wallet).then {
             let chainId = input.blockchain.chainId!
             
             let jsonRpcProviders = endpoints.map {
@@ -50,11 +41,12 @@ struct EthereumWalletAssembly: WalletManagerAssembly {
             }
             
             $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, chainId: chainId)
-            $0.networkService = EthereumNetworkService(decimals: input.blockchain.decimalCount,
-                                                       providers: jsonRpcProviders,
-                                                       blockcypherProvider: blockcypherProvider,
-                                                       blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
-                                                       transactionHistoryProvider: transactionHistoryProvider)
+            $0.networkService = EthereumNetworkService(
+                decimals: input.blockchain.decimalCount,
+                providers: jsonRpcProviders,
+                blockcypherProvider: networkProviderAssembly.makeBlockcypherNetworkProvider(endpoint: .ethereum, with: input),
+                blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
+                transactionHistoryProvider: transactionHistoryProvider)
         }
     }
     
