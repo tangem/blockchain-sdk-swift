@@ -96,22 +96,7 @@ final class TONWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
-    // MARK: - Private Implementation
-    
-    private func update(with info: TONWalletInfo, completion: @escaping (Result<Void, Error>) -> Void) {
-        if info.sequenceNumber != txBuilder.sequenceNumber {
-            for index in wallet.transactions.indices {
-                wallet.transactions[index].status = .confirmed
-            }
-        }
-        
-        wallet.add(coinValue: info.balance)
-        txBuilder.sequenceNumber = info.sequenceNumber
-        isAvailable = info.isAvailable
-        completion(.success(()))
-    }
-    
-    private func buildTransaction(input: TheOpenNetworkSigningInput, with signer: TransactionSigner? = nil) throws -> String {
+    func buildTransaction(input: TheOpenNetworkSigningInput, with signer: TransactionSigner? = nil) throws -> String {
         let output: TheOpenNetworkSigningOutput
         
         if let signer = signer {
@@ -127,6 +112,21 @@ final class TONWalletManager: BaseManager, WalletManager {
         }
         
         return try self.txBuilder.buildForSend(output: output)
+    }
+    
+    // MARK: - Private Implementation
+    
+    private func update(with info: TONWalletInfo, completion: @escaping (Result<Void, Error>) -> Void) {
+        if info.sequenceNumber != txBuilder.sequenceNumber {
+            for index in wallet.transactions.indices {
+                wallet.transactions[index].status = .confirmed
+            }
+        }
+        
+        wallet.add(coinValue: info.balance)
+        txBuilder.sequenceNumber = info.sequenceNumber
+        isAvailable = info.isAvailable
+        completion(.success(()))
     }
     
 }
