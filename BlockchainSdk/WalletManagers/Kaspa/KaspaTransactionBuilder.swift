@@ -44,7 +44,6 @@ class KaspaTransactionBuilder {
         }
         
         
-        let sourceAddressScript = try scriptPublicKey(address: transaction.sourceAddress).hex
         let destinationAddressScript = try scriptPublicKey(address: transaction.destinationAddress).hex
         
         var outputs: [KaspaOutput] = [
@@ -55,6 +54,8 @@ class KaspaTransactionBuilder {
         ]
         
         if let change = try change(transaction, unspentOutputs: unspentOutputs) {
+            let sourceAddressScript = try scriptPublicKey(address: transaction.sourceAddress).hex
+            
             outputs.append(
                 KaspaOutput(
                     amount: change,
