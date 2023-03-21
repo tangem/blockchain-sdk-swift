@@ -51,7 +51,7 @@ class TONNetworkService: MultiNetworkProvider {
         }
     }
     
-    func getFee(address: String, message: String) -> AnyPublisher<FeeType, Error> {
+    func getFee(address: String, message: String) -> AnyPublisher<[Fee], Error> {
         providerPublisher { provider in
             provider
                 .getFee(address: address, body: message)
@@ -64,7 +64,7 @@ class TONNetworkService: MultiNetworkProvider {
                     let fee = fee.sourceFees.totalFee / self.blockchain.decimalValue
                     let roundedValue = fee.rounded(scale: 2, roundingMode: .up)
                     let feeAmount = Amount(with: self.blockchain, value: roundedValue)
-                    return .single(fee: .init(feeAmount))
+                    return [Fee(feeAmount)]
                 }
                 .eraseToAnyPublisher()
         }

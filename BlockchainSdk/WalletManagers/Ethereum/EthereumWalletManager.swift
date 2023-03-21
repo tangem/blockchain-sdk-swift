@@ -26,7 +26,7 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable {
 
     /// This method for implemented protocol `EthereumTransactionProcessor`
     /// It can't be into extension because it will be override in the `OptimismWalletManager`
-    func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<FeeType, Error> {
+    func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
         getFee(to: destination, from: wallet.address, value: value, data: data)
     }
 }
@@ -96,7 +96,7 @@ extension EthereumWalletManager {
 extension EthereumWalletManager: TransactionFeeProvider {
     var allowsFeeSelection: Bool { true }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeType,Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee],Error> {
         switch amount.type {
         case .coin:
             if let hexAmount = amount.encodedForSend {
@@ -309,7 +309,7 @@ extension EthereumWalletManager: TransactionHistoryLoader {
 // MARK: - Private
 
 private extension EthereumWalletManager {
-    func getFee(to: String, from: String, value: String?, data: Data?) -> AnyPublisher<FeeType, Error> {
+    func getFee(to: String, from: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
         networkService.getFee(to: to, from: from, value: value, data: data?.hexString.addHexPrefix())
             .tryMap { [weak self] ethereumFeeResponse in
                 guard let self = self else {
@@ -317,7 +317,7 @@ private extension EthereumWalletManager {
                 }
 
                 let gasLimit = ethereumFeeResponse.gasLimit
-                let feeAmounts = ethereumFeeResponse.prices.map { gasPrice in
+                let fees = ethereumFeeResponse.prices.map { gasPrice in
                     let feeValue = gasLimit * gasPrice
                     let fee = Decimal(Int(feeValue)) / self.wallet.blockchain.decimalValue
 
@@ -327,7 +327,7 @@ private extension EthereumWalletManager {
                     return Fee(amount, parameters: parameters)
                 }
 
-                return try FeeType(fees: feeAmounts)
+                return fees
             }
             .eraseToAnyPublisher()
     }

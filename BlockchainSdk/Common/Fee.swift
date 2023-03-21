@@ -32,6 +32,16 @@ extension Fee: Hashable {
     }
 }
 
+extension Fee: CustomStringConvertible {
+    public var description: String {
+        var string = "Fee: \(amount.description)"
+        if let parameters {
+            string += "\nFee parameters: \(parameters)"
+        }
+        return string
+    }
+}
+
 // MARK: - Helpers
 
 extension Fee {

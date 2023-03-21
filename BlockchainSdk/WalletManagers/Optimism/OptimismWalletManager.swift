@@ -33,11 +33,12 @@ class OptimismWalletManager: EthereumWalletManager {
     /// This L1 fee calculated the Optimism smart-contract oracle.
     /// This L1 fee have to used ONLY for showing to a user.
     /// When we're building transaction we have to used `gasLimit` and `gasPrice` ONLY from `L2`
-    override func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<FeeType, Error> {
+    override func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
         super.getFee(destination: destination, value: value, data: data)
-            .tryMap { [weak self] layer2Fee -> AnyPublisher<(FeeType, Decimal), Error> in
+            .flatMap { [weak self] layer2Fee -> AnyPublisher<([Fee], Decimal), Error> in
                 guard let self,
-                      let parameters = layer2Fee.lowFeeModel?.parameters as? EthereumFeeParameters else {
+                      // We use EthereumFeeParameters without increase
+                      let parameters = layer2Fee.first?.parameters as? EthereumFeeParameters else {
                     return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
                 }
                 
@@ -50,18 +51,8 @@ class OptimismWalletManager: EthereumWalletManager {
                 .map { (layer2Fee, $0) }
                 .eraseToAnyPublisher()
             }
-            .switchToLatest()
-            .tryMap { layer2FeeType, layer1Fee -> FeeType in
-                switch layer2FeeType {
-                case .multiple(let low, let normal, let priority):
-                    let updatedModels = [low, normal, priority]
-                        .map { $0.increased(by: layer1Fee) }
-
-                    return try FeeType(fees: updatedModels)
-                case .single:
-                    assertionFailure("This case is not implemented")
-                    return layer2FeeType
-                }
+            .map { layer2Fee, layer1Fee -> [Fee] in
+                layer2Fee.map { $0.increased(by: layer1Fee) }
             }
             .eraseToAnyPublisher()
     }

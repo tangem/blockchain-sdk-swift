@@ -66,7 +66,7 @@ class TronWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeType, Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         let maxEnergyUsePublisher: AnyPublisher<Int, Error>
 
         switch amount.type {
@@ -90,12 +90,12 @@ class TronWalletManager: BaseManager, WalletManager {
         
         return Publishers.Zip(maxEnergyUsePublisher, networkService.chainParameters())
             .zip(networkService.accountExists(address: destination), transactionDataPublisher, networkService.getAccountResource(for: wallet.address))
-            .map { (networkParameters, destinationExists, transactionData, resources) -> FeeType in
+            .map { (networkParameters, destinationExists, transactionData, resources) -> [Fee] in
                 let (maxEnergyUse, chainParameters) = networkParameters
                 
                 if !destinationExists && amount.type == .coin {
-                    let fee = Amount(with: blockchain, value: 1.1)
-                    return .single(fee: .init(fee))
+                    let amount = Amount(with: blockchain, value: 1.1)
+                    return [Fee(amount)]
                 }
 
                 let sunPerBandwidthPoint = 1000
@@ -114,11 +114,11 @@ class TronWalletManager: BaseManager, WalletManager {
                 let remainingBandwidthInSun = (resources.freeNetLimit - (resources.freeNetUsed ?? 0)) * sunPerBandwidthPoint
 
                 if totalFee <= remainingBandwidthInSun {
-                    return .zero(blockchain: blockchain)
+                    return [Fee(.zeroCoin(for: blockchain))]
                 } else {
                     let value = Decimal(totalFee) / blockchain.decimalValue
-                    let fee = Amount(with: blockchain, value: value)
-                    return .single(fee: .init(fee))
+                    let amount = Amount(with: blockchain, value: value)
+                    return [Fee(amount)]
                 }
             }
             .eraseToAnyPublisher()

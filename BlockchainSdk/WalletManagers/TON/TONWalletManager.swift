@@ -82,7 +82,7 @@ final class TONWalletManager: BaseManager, WalletManager {
 extension TONWalletManager: TransactionFeeProvider {
     var allowsFeeSelection: Bool { false }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeType, Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         return Just(())
             .tryMap { [weak self] _ -> String in
                 guard let self = self else {
@@ -92,7 +92,7 @@ extension TONWalletManager: TransactionFeeProvider {
                 let input = try self.txBuilder.buildForSign(amount: amount, destination: destination)
                 return try self.buildTransaction(input: input)
             }
-            .flatMap { [weak self] message -> AnyPublisher<FeeType, Error> in
+            .flatMap { [weak self] message -> AnyPublisher<[Fee], Error> in
                 guard let self = self else {
                     return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
                 }

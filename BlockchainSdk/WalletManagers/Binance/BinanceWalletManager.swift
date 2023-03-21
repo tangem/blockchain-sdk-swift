@@ -94,17 +94,17 @@ extension BinanceWalletManager: ThenProcessable { }
 extension BinanceWalletManager: TransactionFeeProvider {
     var allowsFeeSelection: Bool { false }
     
-    func getFee(amount: Amount,  destination: String) -> AnyPublisher<FeeType, Error> {
+    func getFee(amount: Amount,  destination: String) -> AnyPublisher<[Fee], Error> {
         return networkService.getFee()
-            .tryMap { [weak self] feeString throws -> FeeType in
+            .tryMap { [weak self] feeString throws -> [Fee] in
                 guard let self = self else { throw WalletError.empty }
                 
                 guard let feeValue = Decimal(feeString) else {
                     throw WalletError.failedToGetFee
                 }
                 
-                let fee = Amount(with: self.wallet.blockchain, value: feeValue)
-                return .single(fee: .init(fee))
+                let feeAmount = Amount(with: self.wallet.blockchain, value: feeValue)
+                return [Fee(feeAmount)]
             }
             .eraseToAnyPublisher()
     }

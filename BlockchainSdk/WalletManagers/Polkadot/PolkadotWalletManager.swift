@@ -103,7 +103,7 @@ extension PolkadotWalletManager: TransactionSender {
         .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeType, Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         let blockchain = wallet.blockchain
         return networkService.blockchainMeta(for: destination)
             .flatMap { [weak self] meta -> AnyPublisher<Data, Error> in
@@ -119,9 +119,9 @@ extension PolkadotWalletManager: TransactionSender {
                 return self.networkService.fee(for: image)
             }
             .map { intValue in
-                [Amount(with: blockchain, value: Decimal(intValue) / blockchain.decimalValue)]
+                let feeAmount = Amount(with: blockchain, value: Decimal(intValue) / blockchain.decimalValue)
+                return [Fee(feeAmount)]
             }
-            .tryMap { try FeeType(fees: $0) }
             .eraseToAnyPublisher()
     }
     

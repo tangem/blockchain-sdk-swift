@@ -62,7 +62,7 @@ public protocol TransactionSender {
 @available(iOS 13.0, *)
 public protocol TransactionFeeProvider {
     var allowsFeeSelection: Bool { get }
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeType, Error>
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error>
 }
 
 public struct SendTxError: Error, LocalizedError {
@@ -83,7 +83,7 @@ public protocol TransactionSigner {
 @available(iOS 13.0, *)
 public protocol TransactionPusher {
     func isPushAvailable(for transactionHash: String) -> Bool
-    func getPushFee(for transactionHash: String) -> AnyPublisher<FeeType, Error>
+    func getPushFee(for transactionHash: String) -> AnyPublisher<[Fee], Error>
     func pushTransaction(with transactionHash: String, newTransaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error>
 }
 

@@ -56,15 +56,14 @@ class BitcoinWalletManager: BaseManager, WalletManager {
         }
     }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeType, Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         return networkService.getFee()
-            .tryMap {[weak self] response throws -> [Amount] in
+            .tryMap { [weak self] response throws -> [Fee] in
                 guard let self = self else { throw WalletError.empty }
                 
                 return self.processFee(response, amount: amount, destination: destination)
-                
+                    .map { Fee($0) }
             }
-            .tryMap { try FeeType(fees: $0) }
             .eraseToAnyPublisher()
     }
     
@@ -190,7 +189,7 @@ extension BitcoinWalletManager: TransactionPusher {
         return !containNotRbfInput && !containOtherOutputAccount
     }
     
-    func getPushFee(for transactionHash: String) -> AnyPublisher<FeeType, Error> {
+    func getPushFee(for transactionHash: String) -> AnyPublisher<[Fee], Error> {
         guard let tx = wallet.transactions.first(where: { $0.hash == transactionHash }) else {
             return .anyFail(error: BlockchainSdkError.failedToFindTransaction)
         }

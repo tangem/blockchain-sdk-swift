@@ -126,9 +126,9 @@ extension StellarWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<FeeType, Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         networkService.getFee()
-            .tryMap { try FeeType(fees: $0) }
+            .map { $0.map { Fee($0) } }
             .eraseToAnyPublisher()
     }
 }
