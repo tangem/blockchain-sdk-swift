@@ -8,6 +8,7 @@
 
 import XCTest
 import CryptoKit
+import TangemSdk
 import WalletCore
 
 @testable import BlockchainSdk
@@ -15,10 +16,10 @@ import WalletCore
 class TONTests: XCTestCase {
     
     private var blockchain = Blockchain.ton(testnet: true)
-    private let sizeTester = TransactionSizeTesterUtility()
+    private var privateKey = Curve25519.Signing.PrivateKey()
     
-    lazy var txBuilder: TONTransactionBuilder = {
-        let walletPubKey = Curve25519.Signing.PrivateKey().publicKey.rawRepresentation
+    lazy var walletManager: TONWalletManager = {
+        let walletPubKey = privateKey.publicKey.rawRepresentation
         let address = try! blockchain.makeAddresses(from: walletPubKey, with: nil)
         
         let wallet = Wallet(
@@ -31,17 +32,29 @@ class TONTests: XCTestCase {
             )
         )
         
-        return TONTransactionBuilder(wallet: wallet)
+        return try! .init(
+            wallet: wallet,
+            networkService: TONNetworkService(providers: [], blockchain: blockchain)
+        )
+    }()
+    
+    lazy var txBuilder: TONTransactionBuilder = {
+        return TONTransactionBuilder(wallet: walletManager.wallet)
     }()
     
     func testCorrectCoinTransaction() {
         do {
-            let protoInput = try txBuilder.buildForSign(
+            let input = try txBuilder.buildForSign(
                 amount: .init(with: blockchain, value: 1),
                 destination: "EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2"
             )
             
-            try self.sizeTester.testTxSize(protoInput.serializedData())
+            let _ = try walletManager.buildTransaction(
+                input: input,
+                with: TrustCoreSignerTesterUtility(privateKey: privateKey)
+            )
+            
+            // TODO: - Next Write correct output for compare
         } catch {
             XCTFail("Transaction build for sign is nil")
         }

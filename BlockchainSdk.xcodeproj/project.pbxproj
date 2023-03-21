@@ -21,6 +21,7 @@
 		2D9A91A729BB8C2E00476EA6 /* TrustWalletAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A91A629BB8C2E00476EA6 /* TrustWalletAddressService.swift */; };
 		2DBBE94D29C8686000971539 /* OptimismWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBBE94C29C8686000971539 /* OptimismWalletAssembly.swift */; };
 		2DBBE95029C8DBEA00971539 /* TONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBBE94F29C8DBEA00971539 /* TONTests.swift */; };
+		2DC5796129C9CBB1004312AE /* TrustCoreSignerTesterUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5796029C9CBB1004312AE /* TrustCoreSignerTesterUtility.swift */; };
 		2DC5DAB429B9E6A10039154A /* WalletCoreSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5DAB329B9E6A10039154A /* WalletCoreSigner.swift */; };
 		2DDE5B9F29C4F8D200A5B708 /* NetworkProviderAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDE5B8C29C4F8D200A5B708 /* NetworkProviderAssembly.swift */; };
 		2DDE5BA029C4F8D200A5B708 /* BlockBookProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDE5B8D29C4F8D200A5B708 /* BlockBookProviderType.swift */; };
@@ -321,6 +322,7 @@
 		2D9A91A629BB8C2E00476EA6 /* TrustWalletAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrustWalletAddressService.swift; sourceTree = "<group>"; };
 		2DBBE94C29C8686000971539 /* OptimismWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismWalletAssembly.swift; sourceTree = "<group>"; };
 		2DBBE94F29C8DBEA00971539 /* TONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONTests.swift; sourceTree = "<group>"; };
+		2DC5796029C9CBB1004312AE /* TrustCoreSignerTesterUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustCoreSignerTesterUtility.swift; sourceTree = "<group>"; };
 		2DC5DAB329B9E6A10039154A /* WalletCoreSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreSigner.swift; sourceTree = "<group>"; };
 		2DDE5B8C29C4F8D200A5B708 /* NetworkProviderAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkProviderAssembly.swift; sourceTree = "<group>"; };
 		2DDE5B8D29C4F8D200A5B708 /* BlockBookProviderType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockBookProviderType.swift; sourceTree = "<group>"; };
@@ -1269,6 +1271,7 @@
 				5D14E47C2397B80F00C15FC8 /* BlockchainSdkTests.swift */,
 				5DE57D99277CAD6100CCA18A /* AddressTests.swift */,
 				B00DEAD028FFDE0E0077CD19 /* TransactionSizeTesterUtility.swift */,
+				2DC5796029C9CBB1004312AE /* TrustCoreSignerTesterUtility.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -2043,6 +2046,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DC5796129C9CBB1004312AE /* TrustCoreSignerTesterUtility.swift in Sources */,
 				B00DEAD128FFDE0E0077CD19 /* TransactionSizeTesterUtility.swift in Sources */,
 				2DBBE95029C8DBEA00971539 /* TONTests.swift in Sources */,
 				EF0DA78928523FAC0081092A /* LitecoinTests.swift in Sources */,
