@@ -91,6 +91,62 @@ extension EthereumWalletManager {
     }
 }
 
+// MARK: - Private
+
+private extension EthereumWalletManager {
+    func getFee(to: String, from: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
+        networkService.getFee(to: to, from: from, value: value, data: data?.hexString.addHexPrefix())
+            .tryMap { [weak self] ethereumFeeResponse in
+                guard let self = self else {
+                    throw BlockchainSdkError.failedToLoadFee
+                }
+
+                let gasLimit = ethereumFeeResponse.gasLimit
+                let fees = ethereumFeeResponse.prices.map { gasPrice in
+                    let feeValue = gasLimit * gasPrice
+                    let fee = Decimal(Int(feeValue)) / self.wallet.blockchain.decimalValue
+
+                    let amount = Amount(with: self.wallet.blockchain, value: fee)
+                    let parameters = EthereumFeeParameters(gasLimit: gasLimit, gasPrice: gasPrice)
+
+                    return Fee(amount, parameters: parameters)
+                }
+
+                return fees
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func updateWallet(with response: EthereumInfoResponse) {
+        wallet.add(coinValue: response.balance)
+        for tokenBalance in response.tokenBalances {
+            wallet.add(tokenValue: tokenBalance.value, for: tokenBalance.key)
+        }
+       
+        txCount = response.txCount
+        pendingTxCount = response.pendingTxCount
+        
+        // TODO: This should be removed when integrating transaction history for all blockchains
+        // If we can load transaction history for specified blockchain - we can ignore loading pending txs
+        if !wallet.blockchain.canLoadTransactionHistory {
+            if !response.pendingTxs.isEmpty {
+                wallet.transactions.removeAll()
+                response.pendingTxs.forEach {
+                    wallet.addPendingTransaction($0)
+                }
+            } else if txCount == pendingTxCount {
+                for  index in wallet.transactions.indices {
+                    wallet.transactions[index].status = .confirmed
+                }
+            } else {
+                if wallet.transactions.isEmpty {
+                    wallet.addDummyPendingTransaction()
+                }
+            }
+        }
+    }
+}
+
 // MARK: - TransactionFeeProvider
 
 extension EthereumWalletManager: TransactionFeeProvider {
@@ -303,61 +359,5 @@ extension EthereumWalletManager: TransactionHistoryLoader {
                 self?.wallet.setTransactionHistoryList(transactions)
             })
             .eraseToAnyPublisher()
-    }
-}
-
-// MARK: - Private
-
-private extension EthereumWalletManager {
-    func getFee(to: String, from: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
-        networkService.getFee(to: to, from: from, value: value, data: data?.hexString.addHexPrefix())
-            .tryMap { [weak self] ethereumFeeResponse in
-                guard let self = self else {
-                    throw BlockchainSdkError.failedToLoadFee
-                }
-
-                let gasLimit = ethereumFeeResponse.gasLimit
-                let fees = ethereumFeeResponse.prices.map { gasPrice in
-                    let feeValue = gasLimit * gasPrice
-                    let fee = Decimal(Int(feeValue)) / self.wallet.blockchain.decimalValue
-
-                    let amount = Amount(with: self.wallet.blockchain, value: fee)
-                    let parameters = EthereumFeeParameters(gasLimit: gasLimit, gasPrice: gasPrice)
-
-                    return Fee(amount, parameters: parameters)
-                }
-
-                return fees
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    private func updateWallet(with response: EthereumInfoResponse) {
-        wallet.add(coinValue: response.balance)
-        for tokenBalance in response.tokenBalances {
-            wallet.add(tokenValue: tokenBalance.value, for: tokenBalance.key)
-        }
-       
-        txCount = response.txCount
-        pendingTxCount = response.pendingTxCount
-        
-        // TODO: This should be removed when integrating transaction history for all blockchains
-        // If we can load transaction history for specified blockchain - we can ignore loading pending txs
-        if !wallet.blockchain.canLoadTransactionHistory {
-            if !response.pendingTxs.isEmpty {
-                wallet.transactions.removeAll()
-                response.pendingTxs.forEach {
-                    wallet.addPendingTransaction($0)
-                }
-            } else if txCount == pendingTxCount {
-                for  index in wallet.transactions.indices {
-                    wallet.transactions[index].status = .confirmed
-                }
-            } else {
-                if wallet.transactions.isEmpty {
-                    wallet.addDummyPendingTransaction()
-                }
-            }
-        }
     }
 }
