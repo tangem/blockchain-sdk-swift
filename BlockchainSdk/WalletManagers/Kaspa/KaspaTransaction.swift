@@ -13,6 +13,8 @@ struct KaspaTransaction {
     let inputs: [BitcoinUnspentOutput]
     let outputs: [KaspaOutput]
     
+    private let blake2bDigestKey = "TransactionSigningHash".data(using: .utf8)?.bytes ?? []
+    
     func hashForSignatureWitness(inputIndex: Int, connectedScript: Data, prevValue: UInt64)  -> Data {
         var data = Data()
         data.append(UInt16(0).data) // version
@@ -80,8 +82,7 @@ struct KaspaTransaction {
     }
     
     private func blake2bDigest(for data: Data) -> Data {
-        let key = "TransactionSigningHash".data(using: .utf8)?.bytes ?? []
         let length = 32
-        return Data(Sodium().genericHash.hash(message: data.bytes, key: key, outputLength: length) ?? [])
+        return Data(Sodium().genericHash.hash(message: data.bytes, key: blake2bDigestKey, outputLength: length) ?? [])
     }
 }

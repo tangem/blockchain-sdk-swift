@@ -11,6 +11,7 @@ import HDWalletKit
 
 class KaspaTransactionBuilder {
     let maxInputCount = 84
+    
     private let blockchain: Blockchain
     private var unspentOutputs: [BitcoinUnspentOutput] = []
     
@@ -38,7 +39,7 @@ class KaspaTransactionBuilder {
     
     func buildForSign(_ transaction: Transaction) throws -> (KaspaTransaction, [Data]) {
         let availableInputValue = self.availableAmount()
-        if availableInputValue < transaction.amount {
+        if transaction.amount > availableInputValue{
             throw WalletError.failedToBuildTx
         }
         
