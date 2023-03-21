@@ -114,16 +114,17 @@ extension XRPWalletManager: TransactionSender {
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         return networkService.getFee()
-            .map { xrpFeeResponse -> [Fee] in
-                // Why this not divide on wallet.blockchain.decimalValue ??
+            .map { [weak self] xrpFeeResponse -> [Fee] in
+                guard let self else { return [] }
+                let blockchain = self.wallet.blockchain
                 
-                let min = xrpFeeResponse.min/Decimal(1000000)
-                let normal = xrpFeeResponse.normal/Decimal(1000000)
-                let max = xrpFeeResponse.max/Decimal(1000000)
+                let min = xrpFeeResponse.min / blockchain.decimalValue
+                let normal = xrpFeeResponse.normal / blockchain.decimalValue
+                let max = xrpFeeResponse.max / blockchain.decimalValue
                 
-                let minFee = Amount(with: self.wallet.blockchain, value: min)
-                let normalFee = Amount(with: self.wallet.blockchain, value: normal)
-                let maxFee = Amount(with: self.wallet.blockchain, value: max)
+                let minFee = Amount(with: blockchain, value: min)
+                let normalFee = Amount(with: blockchain, value: normal)
+                let maxFee = Amount(with: blockchain, value: max)
 
                 return [minFee, normalFee, maxFee].map { Fee($0) }
             }

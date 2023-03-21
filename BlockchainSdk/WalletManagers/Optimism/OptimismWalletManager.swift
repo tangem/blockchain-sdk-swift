@@ -81,11 +81,11 @@ private extension OptimismWalletManager {
         
         // Just collect data to get estimated fee from contact address
         // https://github.com/ethereum/wiki/wiki/RLP
-        guard let rplEncodedTransactionData = transaction.encodeForSend() else {
+        guard let rlpEncodedTransactionData = transaction.encodeForSend() else {
             return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
         }
         
-        let data = rplEncodedTransactionData.hexString.addHexPrefix()
+        let data = rlpEncodedTransactionData.hexString.addHexPrefix()
         return contractInteractor
             .read(method: .getL1Fee(data: data))
             .tryMap { [wallet] response in
