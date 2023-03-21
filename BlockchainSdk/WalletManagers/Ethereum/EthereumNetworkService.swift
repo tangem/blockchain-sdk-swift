@@ -270,7 +270,7 @@ class EthereumNetworkService: MultiNetworkProvider {
         return result
     }
     
-    private func mapToEthereumFeeResponse(gasPrice: BigUInt, gasLimit: BigUInt, decimalCount: Int) throws -> EthereumFeeResponse {
+    private func mapToEthereumFeeResponse(gasPrice: BigUInt, gasLimit: BigUInt, decimalCount: Int) -> EthereumFeeResponse {
         let minGasPrice = gasPrice
         let normalGasPrice = gasPrice * BigUInt(12) / BigUInt(10)
         let maxGasPrice = gasPrice * BigUInt(15) / BigUInt(10)
