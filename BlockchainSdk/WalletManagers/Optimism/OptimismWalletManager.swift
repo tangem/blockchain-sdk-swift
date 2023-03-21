@@ -35,9 +35,9 @@ class OptimismWalletManager: EthereumWalletManager {
     /// When we're building transaction we have to used `gasLimit` and `gasPrice` ONLY from `L2`
     override func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<FeeType, Error> {
         super.getFee(destination: destination, value: value, data: data)
-            .tryMap { [weak self] layer2FeeType -> AnyPublisher<(FeeType, Decimal), Error> in
+            .tryMap { [weak self] layer2Fee -> AnyPublisher<(FeeType, Decimal), Error> in
                 guard let self,
-                      let parameters = layer2FeeType.lowFeeModel?.parameters as? EthereumFeeParameters else {
+                      let parameters = layer2Fee.lowFeeModel?.parameters as? EthereumFeeParameters else {
                     return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
                 }
                 
@@ -47,24 +47,19 @@ class OptimismWalletManager: EthereumWalletManager {
                     data: data,
                     l2FeeParameters: parameters
                 )
-                .map { (layer2FeeType, $0) }
+                .map { (layer2Fee, $0) }
                 .eraseToAnyPublisher()
             }
             .switchToLatest()
             .tryMap { layer2FeeType, layer1Fee -> FeeType in
                 switch layer2FeeType {
                 case .multiple(let low, let normal, let priority):
-                    let updatedModels: [FeeType.FeeModel] = [low, normal, priority].map { feeModel in
-                        let newAmount = Amount(with: feeModel.fee, value: feeModel.fee.value + layer1Fee)
-                        let newFeeModel = FeeType.FeeModel(newAmount, parameters: feeModel.parameters)
-                        return newFeeModel
-                    }
-                    let feeType = try FeeType(fees: updatedModels)
-                    print("OptimismWalletManager calculated fees: \(feeType)")
-                    
-                    return feeType
+                    let updatedModels = [low, normal, priority]
+                        .map { $0.increased(by: layer1Fee) }
+
+                    return try FeeType(fees: updatedModels)
                 case .single:
-                    assertionFailure("Not implement this case")
+                    assertionFailure("This case is not implemented")
                     return layer2FeeType
                 }
             }

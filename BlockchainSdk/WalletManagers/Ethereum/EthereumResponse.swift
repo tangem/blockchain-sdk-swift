@@ -19,15 +19,9 @@ struct EthereumInfoResponse {
 }
 
 struct EthereumFeeResponse {
-    let fees: [FeeModel]
-}
-
-extension EthereumFeeResponse {
-    struct FeeModel {
-        let gasLimit: BigUInt
-        let gasPrice: BigUInt
-        let fee: Decimal
-    }
+    /// Three gas prices with an increase of 0/20/50 percent
+    let prices: [BigUInt]
+    let gasLimit: BigUInt
 }
 
 /// Json rpc response structure

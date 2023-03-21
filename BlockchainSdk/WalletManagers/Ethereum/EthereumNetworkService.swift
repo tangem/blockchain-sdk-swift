@@ -274,29 +274,8 @@ class EthereumNetworkService: MultiNetworkProvider {
         let minGasPrice = gasPrice
         let normalGasPrice = gasPrice * BigUInt(12) / BigUInt(10)
         let maxGasPrice = gasPrice * BigUInt(15) / BigUInt(10)
-
-        let fees: [EthereumFeeResponse.FeeModel] = [minGasPrice, normalGasPrice, maxGasPrice]
-            .compactMap { gasPrice -> EthereumFeeResponse.FeeModel? in
-                let feeValue = gasPrice * gasLimit
-
-                guard let formattedFee = Web3.Utils.formatToEthereumUnits(
-                    feeValue,
-                    toUnits: .eth,
-                    decimals: decimalCount,
-                    decimalSeparator: ".",
-                    fallbackToScientific: false
-                ) else {
-                    return nil
-                }
-                
-                guard let fee = Decimal(string: formattedFee) else {
-                    return nil
-                }
-                
-                return EthereumFeeResponse.FeeModel(gasLimit: gasLimit, gasPrice: gasPrice, fee: fee)
-            }
         
-        return EthereumFeeResponse(fees: fees)
+        return EthereumFeeResponse(prices: [minGasPrice, normalGasPrice, maxGasPrice], gasLimit: gasLimit)
     }
     
     private func parseGas(_ publisher: AnyPublisher<EthereumResponse, Error>) -> AnyPublisher<BigUInt, Error> {

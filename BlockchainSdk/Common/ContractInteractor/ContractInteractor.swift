@@ -19,7 +19,7 @@ public class ContractInteractor<Contract: SmartContract> {
     }
     
     public func read(method: Contract.MethodType) -> AnyPublisher<Any, Error> {
-        return Deferred {
+        Deferred {
             Future { [weak self] promise in
                 guard let self = self else {
                     return
@@ -36,45 +36,11 @@ public class ContractInteractor<Contract: SmartContract> {
             }
         }.eraseToAnyPublisher()
     }
-    
-    public func write(method: Contract.MethodType) -> AnyPublisher<Any, Error> {
-        return Deferred {
-            Future { [weak self] promise in
-                guard let self = self else {
-                    return
-                }
-                
-                self.write(method: method.name, parameters: method.parameters) { result in
-                    switch result {
-                    case .success(let value):
-                        promise(.success(value))
-                    case .failure(let error):
-                        promise(.failure(error))
-                    }
-                }
-            }
-        }.eraseToAnyPublisher()
-    }
 }
 
 // MARK: - Private
 
 private extension ContractInteractor {
-    func write(method: String, parameters: [AnyObject], completion: @escaping (Result<Any, Error>) -> Void) {
-        // Make sure to call web3 methods from a non-GUI thread because it runs requests asynchronously
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self else { return }
-            
-            do {
-                let contract = try self.makeContract()
-                let transaction = try self.makeTransaction(from: contract, method: method, parameters: parameters, type: .write)
-                self.call(transaction: transaction, completion: completion)
-            } catch {
-                completion(.failure(error))
-            }
-        }
-    }
-    
     func read(method: String, parameters: [AnyObject], completion: @escaping (Result<Any, Error>) -> Void) {
         // Make sure to call web3 methods from a non-GUI thread because it runs requests asynchronously
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in

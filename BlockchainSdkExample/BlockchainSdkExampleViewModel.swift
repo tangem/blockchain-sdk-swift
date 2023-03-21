@@ -297,7 +297,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         walletManager
             .getFee(amount: amount, destination: destination)
             .flatMap { [unowned self] fees -> AnyPublisher<TransactionSendResult, Error> in
-                guard let fee = fees.lowFee else {
+                guard let fee = fees.lowFeeModel else {
                     return .anyFail(error: WalletError.failedToGetFee)
                 }
                 

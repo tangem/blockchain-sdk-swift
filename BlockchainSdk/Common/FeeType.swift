@@ -8,36 +8,22 @@
 
 import Foundation
 
-public protocol FeeParameters {}
-
 public enum FeeType {
-    case single(fee: FeeModel)
-    case multiple(low: FeeModel, normal: FeeModel, priority: FeeModel)
+    case single(fee: Fee)
+    case multiple(low: Fee, normal: Fee, priority: Fee)
     
-    public init(fees: [Amount]) throws {
-        switch fees.count {
-            /// User hasn't a choice
-        case 1:
-            self = .single(fee: FeeModel(fees[0]))
-            /// User has a choice of 3 option
-        case 3:
-            self = .multiple(low: FeeModel(fees[0]), normal: FeeModel(fees[1]), priority: FeeModel(fees[2]))
-        default:
-            assertionFailure("FeeType can't be created")
-            throw BlockchainSdkError.failedToLoadFee
-        }
+    init(fees: [Amount]) throws {
+        try self.init(fees: fees.map { Fee($0) })
     }
 
-    public init(fees: [FeeModel]) throws {
+    init(fees: [Fee]) throws {
         switch fees.count {
-        /// User hasn't a choice
-        case 1:
+        case 1: // User hasn't a choice
             self = .single(fee: fees[0])
-        /// User has a choice of 3 option
-        case 3:
+        case 3: // User has a choice of 3 option
             self = .multiple(low: fees[0], normal: fees[1], priority: fees[2])
         default:
-            assertionFailure("FeeType can't be created")
+            assertionFailure("Fee can't be created")
             throw BlockchainSdkError.failedToLoadFee
         }
     }
@@ -47,77 +33,56 @@ public enum FeeType {
 
 public extension FeeType {
     static func zero(blockchain: Blockchain) -> FeeType {
-        .single(fee: FeeModel(.zeroCoin(for: blockchain)))
+        .single(fee: Fee(.zeroCoin(for: blockchain)))
     }
     
     var asArray: [Amount] {
         switch self {
         case .multiple(let low, let normal, let priority):
-            return [low.fee, normal.fee, priority.fee]
+            return [low.amount, normal.amount, priority.amount]
             
         case .single(let fee):
-            return [fee.fee]
+            return [fee.amount]
         }
     }
     
-    var lowFeeModel: FeeModel? {
-        if case .multiple(let fee, _, _) = self {
+    var lowFeeModel: Fee? {
+        switch self {
+        case .multiple(let low, _, _):
+            return low
+        case .single(let fee):
             return fee
         }
-
-        return nil
     }
     
-    var normalFeeModel: FeeModel? {
-        if case .multiple(_, let normal, _) = self {
+    var normalFeeModel: Fee? {
+        switch self {
+        case .multiple(_, let normal, _):
             return normal
+        case .single(let fee):
+            return fee
         }
-
-        return nil
     }
     
-    var priorityFeeModel: FeeModel? {
-        if case .multiple(_, _, let priority) = self {
+    var priorityFeeModel: Fee? {
+        switch self {
+        case .multiple(_, _, let priority):
             return priority
+        case .single(let fee):
+            return fee
         }
-
-        return nil
     }
     
     var lowFee: Amount? {
-        lowFeeModel?.fee
+        lowFeeModel?.amount
     }
     
     var normalFee: Amount? {
-        normalFeeModel?.fee
+        normalFeeModel?.amount
     }
     
     var priorityFee: Amount? {
-        priorityFeeModel?.fee
-    }
-}
-
-// MARK: - FeeType
-
-public extension FeeType {
-    struct FeeModel {
-        public let fee: Amount
-        public let parameters: FeeParameters?
-        
-        public init(_ fee: Amount, parameters: FeeParameters? = nil) {
-            self.fee = fee
-            self.parameters = parameters
-        }
-    }
-}
-
-extension FeeType.FeeModel: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(fee)
-    }
-    
-    public static func == (lhs: FeeType.FeeModel, rhs: FeeType.FeeModel) -> Bool {
-        lhs.hashValue == rhs.hashValue
+        priorityFeeModel?.amount
     }
 }
 

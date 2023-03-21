@@ -288,7 +288,7 @@ extension EthereumWalletManager: TransactionHistoryLoader {
                     
                     return Transaction(
                         amount: Amount(with: blockchain, type: amountType, value: amountDecimals),
-                        fee: Amount(with: blockchain, value: feeDecimals),
+                        fee: Fee(Amount(with: blockchain, value: feeDecimals)),
                         sourceAddress: transactionRecord.sourceAddress,
                         destinationAddress: transactionRecord.destinationAddress,
                         changeAddress: .unknown,
@@ -316,17 +316,18 @@ private extension EthereumWalletManager {
                     throw BlockchainSdkError.failedToLoadFee
                 }
 
-                let feeAmounts = ethereumFeeResponse.fees.map { feeValue in
-                    let amount = Amount(with: self.wallet.blockchain, value: feeValue.fee)
-                    let parameters = EthereumFeeParameters(gasLimit: feeValue.gasLimit, gasPrice: feeValue.gasPrice)
+                let gasLimit = ethereumFeeResponse.gasLimit
+                let feeAmounts = ethereumFeeResponse.prices.map { gasPrice in
+                    let feeValue = gasLimit * gasPrice
+                    let fee = Decimal(Int(feeValue)) / self.wallet.blockchain.decimalValue
 
-                    return FeeType.FeeModel(amount, parameters: parameters)
+                    let amount = Amount(with: self.wallet.blockchain, value: fee)
+                    let parameters = EthereumFeeParameters(gasLimit: gasLimit, gasPrice: gasPrice)
+
+                    return Fee(amount, parameters: parameters)
                 }
-                
-                let feeDataModel = try FeeType(fees: feeAmounts)
-                
-                print("EthereumWalletManager calculated fees: \(feeDataModel)")
-                return feeDataModel
+
+                return try FeeType(fees: feeAmounts)
             }
             .eraseToAnyPublisher()
     }

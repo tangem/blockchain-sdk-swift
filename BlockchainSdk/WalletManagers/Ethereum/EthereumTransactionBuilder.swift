@@ -23,15 +23,12 @@ class EthereumTransactionBuilder {
     }
     
     public func buildForSign(transaction: Transaction, nonce: Int) -> CompiledEthereumTransaction? {
-        guard let parameters = transaction.params as? EthereumTransactionParams else {
+        guard let feeParameters = transaction.fee.parameters as? EthereumFeeParameters else {
             return nil
         }
-        
-        let nonceValue = BigUInt(parameters.nonce ?? nonce)
-        let gasLimit = parameters.gasLimit
-        let gasPrice = parameters.gasPrice
-        let data = parameters.data ?? getData(for: transaction.amount, targetAddress: transaction.destinationAddress)
-        let targetAddress = transaction.amount.type == .coin ? transaction.destinationAddress: transaction.contractAddress
+
+        let parameters = transaction.params as? EthereumTransactionParams
+        let nonceValue = BigUInt(parameters?.nonce ?? nonce)
         
         guard nonceValue >= 0 else {
             return nil
@@ -41,11 +38,11 @@ class EthereumTransactionBuilder {
             return nil
         }
         
-        guard let data = data else {
+        guard let data = parameters?.data ?? getData(for: transaction.amount, targetAddress: transaction.destinationAddress) else {
             return nil
         }
         
-        guard let targetAddress = targetAddress else {
+        guard let targetAddress = transaction.amount.type == .coin ? transaction.destinationAddress: transaction.contractAddress else {
             return nil
         }
         
@@ -58,8 +55,8 @@ class EthereumTransactionBuilder {
         
         let transaction = EthereumTransaction(
             nonce: nonceValue,
-            gasPrice: gasPrice,
-            gasLimit: gasLimit,
+            gasPrice: feeParameters.gasPrice,
+            gasLimit: feeParameters.gasLimit,
             to: ethereumAddress,
             value: transaction.amount.type == .coin ? amountValue : .zero,
             data: data,

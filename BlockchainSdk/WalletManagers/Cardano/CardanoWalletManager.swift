@@ -118,7 +118,7 @@ extension CardanoWalletManager: TransactionSender {
         let dummyFee = Amount(with: self.wallet.blockchain, value: Decimal(0.1))
         let dummyAmount = amount - dummyFee
         let dummyTx = Transaction(amount: dummyAmount,
-                                  fee: dummyFee,
+                                  fee: Fee(dummyFee),
                                   sourceAddress: self.wallet.address,
                                   destinationAddress: destination,
                                   changeAddress: self.wallet.address)

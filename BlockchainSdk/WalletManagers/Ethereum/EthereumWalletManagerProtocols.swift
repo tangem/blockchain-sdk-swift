@@ -33,7 +33,7 @@ public protocol EthereumTransactionProcessor {
     ///   - destination: Destination address. For token it'll be a contract address. For coin it'll be a receiver(user) address
     ///   - value: Hex encoded amount to send
     ///   - data: Data to be send as `txData`. Required when `destination` is a smart contract address.
-    /// - Returns: `FeeType` with `EthereumFeeParameters`
+    /// - Returns: `FeeType.multiple` with `EthereumFeeParameters`
     func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<FeeType, Error>
     func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
     func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<Decimal, Error>

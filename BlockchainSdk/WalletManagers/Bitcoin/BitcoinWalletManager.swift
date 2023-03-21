@@ -210,7 +210,7 @@ extension BitcoinWalletManager: TransactionPusher {
             return .anyFail(error: BlockchainSdkError.failedToFindTransaction)
         }
         
-        guard oldTx.fee.value < newTransaction.fee.value else {
+        guard oldTx.fee.amount.value < newTransaction.fee.amount.value else {
             return .anyFail(error: BlockchainSdkError.feeForPushTxNotEnough)
         }
         
