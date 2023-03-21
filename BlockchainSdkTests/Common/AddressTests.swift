@@ -645,10 +645,9 @@ class AddressesTests: XCTestCase {
         let blockchain = Blockchain.kaspa
         let addressService = blockchain.getAddressService()
         
-        let publicKey = Data(hexString: "034c88a1a83469ddf20d0c07e5c4a1e7b83734e721e60d642b94a53222c47c670d")
-        let expectedAddress = "kaspa:qyp5ez9p4q6xnh0jp5xq0ewy58nmsde5uus7vrty9w222v3zc37xwrgeqhkq7v3"
+        let expectedAddress = "kaspa:qypyrhxkfd055qulcvu6zccq4qe63qajrzgf7t4u4uusveguw6zzc3grrceeuex"
         
-        XCTAssertEqual(try addressService.makeAddress(from: publicKey), expectedAddress)
+        XCTAssertEqual(try addressService.makeAddress(from: secpCompressedKey), expectedAddress)
     }
     
     func testKaspaAddressComponentsAndValidation() {
