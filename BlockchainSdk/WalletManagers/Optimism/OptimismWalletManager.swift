@@ -67,15 +67,16 @@ private extension OptimismWalletManager {
         data: Data?,
         l2FeeParameters: EthereumFeeParameters
     ) -> AnyPublisher<Decimal, Error> {
-        guard let address = EthereumAddress(destination), let value = value else {
+        guard let address = EthereumAddress(destination) else {
             return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
         }
 
+        let valueData = Data(hex: value ?? "0x0")
         let transaction = EthereumTransaction(
             gasPrice: l2FeeParameters.gasPrice,
             gasLimit: l2FeeParameters.gasLimit,
             to: address,
-            value: BigUInt(Data(hex: value)),
+            value: BigUInt(valueData),
             data: data ?? Data()
         )
         
