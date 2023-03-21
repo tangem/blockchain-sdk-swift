@@ -11,4 +11,9 @@ import BigInt
 public struct EthereumFeeParameters: FeeParameters {
     public let gasLimit: BigUInt
     public let gasPrice: BigUInt
+
+    public init(gasLimit: BigUInt, gasPrice: BigUInt) {
+        self.gasLimit = gasLimit
+        self.gasPrice = gasPrice
+    }
 }
