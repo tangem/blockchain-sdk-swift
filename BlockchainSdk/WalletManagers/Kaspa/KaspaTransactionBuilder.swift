@@ -18,7 +18,7 @@ class KaspaTransactionBuilder {
         self.blockchain = blockchain
     }
     
-    func amountAvailableToSend() -> Amount {
+    func availableAmount() -> Amount {
         let inputs = unspentOutputs
         let availableAmountInSatoshi = inputs.reduce(0) { $0 + $1.amount }
         return Amount(with: blockchain, value: Decimal(availableAmountInSatoshi) / blockchain.decimalValue)
@@ -37,7 +37,7 @@ class KaspaTransactionBuilder {
     }
     
     func buildForSign(_ transaction: Transaction) throws -> (KaspaTransaction, [Data]) {
-        let availableInputValue = self.amountAvailableToSend()
+        let availableInputValue = self.availableAmount()
         if availableInputValue < transaction.amount {
             throw WalletError.failedToBuildTx
         }
