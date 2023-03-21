@@ -74,7 +74,24 @@ final class TONWalletManager: BaseManager, WalletManager {
             }
             .eraseToAnyPublisher()
     }
-    
+
+     func buildTransaction(input: TheOpenNetworkSigningInput, with signer: TransactionSigner? = nil) throws -> String {
+        let output: TheOpenNetworkSigningOutput
+        
+        if let signer = signer {
+            let coreSigner = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey)
+            
+            if let error = coreSigner.error {
+                throw error
+            }
+            
+            output = AnySigner.signExternally(input: input, coin: .ton, signer: coreSigner)
+        } else {
+            output = AnySigner.sign(input: input, coin: .ton)
+        }
+        
+        return try self.txBuilder.buildForSend(output: output)
+    }
 }
 
 // MARK: - TransactionFeeProvider
@@ -118,23 +135,5 @@ private extension TONWalletManager {
         txBuilder.sequenceNumber = info.sequenceNumber
         isAvailable = info.isAvailable
         completion(.success(()))
-    }
-    
-    private func buildTransaction(input: TheOpenNetworkSigningInput, with signer: TransactionSigner? = nil) throws -> String {
-        let output: TheOpenNetworkSigningOutput
-        
-        if let signer = signer {
-            let coreSigner = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey)
-            
-            if let error = coreSigner.error {
-                throw error
-            }
-            
-            output = AnySigner.signExternally(input: input, coin: .ton, signer: coreSigner)
-        } else {
-            output = AnySigner.sign(input: input, coin: .ton)
-        }
-        
-        return try self.txBuilder.buildForSend(output: output)
     }
 }
