@@ -44,11 +44,11 @@ class EthereumTests: XCTestCase {
         let transactionBuilder = try! EthereumTransactionBuilder(walletPublicKey: walletPublicKey, chainId: 1)
         
         let sendAmount = Amount(with: blockchain, type: .coin, value: sendValue)
-        let fee = Amount(with: blockchain, type: .coin, value: feeValue)
-        let gasPrice = fee.bigUIntValue! / gasLimit
+        let feeAmount = Amount(with: blockchain, type: .coin, value: feeValue)
+        let gasPrice = feeAmount.bigUIntValue! / gasLimit
         
-        var transaction = Transaction(amount: sendAmount, fee: fee, sourceAddress: walletAddress, destinationAddress: destinationAddress, changeAddress: walletAddress)
-        transaction.params = EthereumTransactionParams(gasLimit: gasLimit, gasPrice: gasPrice)
+        let fee = Fee(feeAmount, parameters: EthereumFeeParameters(gasLimit: gasLimit, gasPrice: gasPrice))
+        let transaction = Transaction(amount: sendAmount, fee: fee, sourceAddress: walletAddress, destinationAddress: destinationAddress, changeAddress: walletAddress)
         
         let expectedHashToSign = Data(hex: "BDBECF64B443F82D1F9FDA3F2D6BA69AF6D82029B8271339B7E775613AE57761")
         let expectedSignedTransaction = Data(hex: "F86C0F856EDF2A079E825208947655B9B19FFAB8B897F836857DAE22A1E7F8D73588016345785D8A00008025A0B945398FB90158761F6D61789B594D042F0F490F9656FBFFAE8F18B49D5F3005A04F43EE43CCAB2703F0E2E4E61D99CF3D4A875CD759569787CF0AED02415434C6")
@@ -77,11 +77,11 @@ class EthereumTests: XCTestCase {
         let transactionBuilder = try! EthereumTransactionBuilder(walletPublicKey: walletPublicKey, chainId: 1)
         
         let amountToSend = Amount(with: blockchain, type: .token(value: token), value: sendValue)
-        let fee = Amount(with: blockchain, type: .coin, value: feeValue)
-        let gasPrice = fee.bigUIntValue! / gasLimit
+        let feeAmount = Amount(with: blockchain, type: .coin, value: feeValue)
+        let gasPrice = feeAmount.bigUIntValue! / gasLimit
         
-        var transaction = Transaction(amount: amountToSend, fee: fee, sourceAddress: walletAddress, destinationAddress: destinationAddress, changeAddress: walletAddress, contractAddress: contractAddress)
-        transaction.params = EthereumTransactionParams(gasLimit: gasLimit, gasPrice: gasPrice)
+        let fee = Fee(feeAmount, parameters: EthereumFeeParameters(gasLimit: gasLimit, gasPrice: gasPrice))
+        let transaction = Transaction(amount: amountToSend, fee: fee, sourceAddress: walletAddress, destinationAddress: destinationAddress, changeAddress: walletAddress, contractAddress: contractAddress)
         
         let expectedHashToSign = Data(hex: "2F47B058A0C4A91EC6E26372FA926ACB899235D7A639565B4FC82C7A9356D6C5")
         let expectedSignedTransaction = Data(hex: "F8A90F856EDF2A079E82520894A0B86991C6218B36C1D19D4A2E9EB0CE3606EB4880B844A9059CBB0000000000000000000000007655B9B19FFAB8B897F836857DAE22A1E7F8D735000000000000000000000000000000000000000000000000016345785D8A000025A0F408C40F8D8B4A40E35502355C87FBBF218EC9ECB036D42DAA6211EAD4498A6FA0437FF17D34D33F054E29702C07176A127CA1118CAA1470EA6CB15D49EC13F3F5")
