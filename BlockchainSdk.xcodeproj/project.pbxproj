@@ -146,8 +146,6 @@
 		5DCC817823FAE6F700DFC460 /* MoyaPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCC817723FAE6F700DFC460 /* MoyaPublisher.swift */; };
 		5DD1244427F458CE000425D3 /* DerivationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD1244327F458CE000425D3 /* DerivationStyle.swift */; };
 		5DD831BC244DF5BD00F80CEA /* AddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD831BB244DF5BD00F80CEA /* AddressService.swift */; };
-		5DE3BF97239E6DAB00E8815D /* RIPEMD160.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE3BF96239E6DAB00E8815D /* RIPEMD160.swift */; };
-		5DE3BF99239E722400E8815D /* Base58.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE3BF98239E722400E8815D /* Base58.swift */; };
 		5DE3BF9E239FA2F400E8815D /* SegWitBech32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE3BF9D239FA2F400E8815D /* SegWitBech32.swift */; };
 		5DE3BFA0239FA33800E8815D /* Bech32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE3BF9F239FA33800E8815D /* Bech32.swift */; };
 		5DE3BFA4239FB4E500E8815D /* BitcoinNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE3BFA3239FB4E500E8815D /* BitcoinNetworkService.swift */; };
@@ -202,21 +200,6 @@
 		BFD88160E080534F13A7C7A6 /* Pods_BlockchainSdkExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C40B45F626B3CA7042657F9 /* Pods_BlockchainSdkExample.framework */; };
 		DA11507727DB217200CDC879 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA11507627DB217200CDC879 /* Launch Screen.storyboard */; };
 		DA18C4A9297AC63600EC4C05 /* NowNodesBlockBookConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA18C4A8297AC63600EC4C05 /* NowNodesBlockBookConfig.swift */; };
-		DA2A840E29C99B6D006F5FEB /* KaspaNetworkModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2A840429C99B6D006F5FEB /* KaspaNetworkModels.swift */; };
-		DA2A840F29C99B6D006F5FEB /* KaspaNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2A840529C99B6D006F5FEB /* KaspaNetworkProvider.swift */; };
-		DA2A841029C99B6D006F5FEB /* KaspaTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2A840629C99B6D006F5FEB /* KaspaTarget.swift */; };
-		DA2A841129C99B6D006F5FEB /* KaspaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2A840729C99B6D006F5FEB /* KaspaNetworkService.swift */; };
-		DA2A841229C99B6D006F5FEB /* KaspaTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2A840829C99B6D006F5FEB /* KaspaTransaction.swift */; };
-		DA2A841329C99B6D006F5FEB /* KaspaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2A840A29C99B6D006F5FEB /* KaspaAddressService.swift */; };
-		DA2A841429C99B6D006F5FEB /* KaspaAddressComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2A840B29C99B6D006F5FEB /* KaspaAddressComponents.swift */; };
-		DA2A841529C99B6D006F5FEB /* KaspaTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2A840C29C99B6D006F5FEB /* KaspaTransactionBuilder.swift */; };
-		DA2A841629C99B6D006F5FEB /* KaspaWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2A840D29C99B6D006F5FEB /* KaspaWalletManager.swift */; };
-		DA2A841829C99BC7006F5FEB /* KaspaWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2A841729C99BC7006F5FEB /* KaspaWalletAssembly.swift */; };
-		DA2A841D29C9E4E7006F5FEB /* KaspaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2A841C29C9E4E7006F5FEB /* KaspaTests.swift */; };
-		DA2E76FB29769BDD001FF957 /* XpubKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2E76F729769BDC001FF957 /* XpubKey.swift */; };
-		DA2E76FC29769BDD001FF957 /* XpubError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2E76F829769BDC001FF957 /* XpubError.swift */; };
-		DA2E76FD29769BDD001FF957 /* XpubVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2E76F929769BDC001FF957 /* XpubVersion.swift */; };
-		DA2E76FE29769BDD001FF957 /* XpubSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2E76FA29769BDC001FF957 /* XpubSerializer.swift */; };
 		DA2E770029769BF6001FF957 /* TransactionCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */; };
 		DA30812B2817BF3C00DE41F1 /* Tron.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */; };
 		DA30812F2817C0F900DE41F1 /* Contracts.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA30812E2817C0F900DE41F1 /* Contracts.pb.swift */; };
@@ -232,6 +215,17 @@
 		DA59751727D747CD009F0A1F /* BlockchainSdk.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5D14E46E2397B80F00C15FC8 /* BlockchainSdk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DA59751E27D749A9009F0A1F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA59751D27D749A9009F0A1F /* MapKit.framework */; };
 		DA59752027D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA59751F27D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift */; };
+		DA63B08D29CB3FAF00AC6E49 /* KaspaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA63B08C29CB3FAF00AC6E49 /* KaspaTests.swift */; };
+		DA63B09A29CB3FC700AC6E49 /* KaspaNetworkModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA63B09029CB3FC700AC6E49 /* KaspaNetworkModels.swift */; };
+		DA63B09B29CB3FC700AC6E49 /* KaspaNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA63B09129CB3FC700AC6E49 /* KaspaNetworkProvider.swift */; };
+		DA63B09C29CB3FC700AC6E49 /* KaspaTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA63B09229CB3FC700AC6E49 /* KaspaTarget.swift */; };
+		DA63B09D29CB3FC700AC6E49 /* KaspaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA63B09329CB3FC700AC6E49 /* KaspaNetworkService.swift */; };
+		DA63B09E29CB3FC700AC6E49 /* KaspaTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA63B09429CB3FC700AC6E49 /* KaspaTransaction.swift */; };
+		DA63B09F29CB3FC700AC6E49 /* KaspaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA63B09629CB3FC700AC6E49 /* KaspaAddressService.swift */; };
+		DA63B0A029CB3FC700AC6E49 /* KaspaAddressComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA63B09729CB3FC700AC6E49 /* KaspaAddressComponents.swift */; };
+		DA63B0A129CB3FC700AC6E49 /* KaspaTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA63B09829CB3FC700AC6E49 /* KaspaTransactionBuilder.swift */; };
+		DA63B0A229CB3FC700AC6E49 /* KaspaWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA63B09929CB3FC700AC6E49 /* KaspaWalletManager.swift */; };
+		DA63B0A429CB402A00AC6E49 /* KaspaWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA63B0A329CB402A00AC6E49 /* KaspaWalletAssembly.swift */; };
 		DA656FC62952091A0092CC61 /* BlockBookConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA656FC52952091A0092CC61 /* BlockBookConfig.swift */; };
 		DA656FCA295454C10092CC61 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA656FC9295454C10092CC61 /* Constants.swift */; };
 		DA656FCC2954B5220092CC61 /* EthereumTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA656FCB2954B5220092CC61 /* EthereumTarget.swift */; };
@@ -258,6 +252,7 @@
 		DAED921F27A150E500F188D7 /* PolkadotAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */; };
 		DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */; };
 		DAF0867027A9438C0024312E /* PolkadotNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */; };
+		DC4E442B29BF4B4C0088617C /* XRPBase58.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC4E442A29BF4B4C0088617C /* XRPBase58.swift */; };
 		DC63F266293F243200F953EF /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC63F265293F243200F953EF /* Credentials.swift */; };
 		DC912D1628E706C400D76628 /* ContractInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC912D1528E706C400D76628 /* ContractInteractor.swift */; };
 		E93532CE292D0E86008FD979 /* BlockBookUtxoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9941ACA2927B07300399DE3 /* BlockBookUtxoProvider.swift */; };
@@ -474,8 +469,6 @@
 		5DD1244327F458CE000425D3 /* DerivationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationStyle.swift; sourceTree = "<group>"; };
 		5DD1935D25557EC2004AE04D /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5DD831BB244DF5BD00F80CEA /* AddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressService.swift; sourceTree = "<group>"; };
-		5DE3BF96239E6DAB00E8815D /* RIPEMD160.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RIPEMD160.swift; sourceTree = "<group>"; };
-		5DE3BF98239E722400E8815D /* Base58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base58.swift; sourceTree = "<group>"; };
 		5DE3BF9D239FA2F400E8815D /* SegWitBech32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegWitBech32.swift; sourceTree = "<group>"; };
 		5DE3BF9F239FA33800E8815D /* Bech32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bech32.swift; sourceTree = "<group>"; };
 		5DE3BFA3239FB4E500E8815D /* BitcoinNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinNetworkService.swift; sourceTree = "<group>"; };
@@ -543,21 +536,6 @@
 		DA07EFEA28191631008712F1 /* TronTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronTests.swift; sourceTree = "<group>"; };
 		DA11507627DB217200CDC879 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		DA18C4A8297AC63600EC4C05 /* NowNodesBlockBookConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowNodesBlockBookConfig.swift; sourceTree = "<group>"; };
-		DA2A840429C99B6D006F5FEB /* KaspaNetworkModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaNetworkModels.swift; sourceTree = "<group>"; };
-		DA2A840529C99B6D006F5FEB /* KaspaNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaNetworkProvider.swift; sourceTree = "<group>"; };
-		DA2A840629C99B6D006F5FEB /* KaspaTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaTarget.swift; sourceTree = "<group>"; };
-		DA2A840729C99B6D006F5FEB /* KaspaNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaNetworkService.swift; sourceTree = "<group>"; };
-		DA2A840829C99B6D006F5FEB /* KaspaTransaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaTransaction.swift; sourceTree = "<group>"; };
-		DA2A840A29C99B6D006F5FEB /* KaspaAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaAddressService.swift; sourceTree = "<group>"; };
-		DA2A840B29C99B6D006F5FEB /* KaspaAddressComponents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaAddressComponents.swift; sourceTree = "<group>"; };
-		DA2A840C29C99B6D006F5FEB /* KaspaTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaTransactionBuilder.swift; sourceTree = "<group>"; };
-		DA2A840D29C99B6D006F5FEB /* KaspaWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaWalletManager.swift; sourceTree = "<group>"; };
-		DA2A841729C99BC7006F5FEB /* KaspaWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaspaWalletAssembly.swift; sourceTree = "<group>"; };
-		DA2A841C29C9E4E7006F5FEB /* KaspaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaTests.swift; sourceTree = "<group>"; };
-		DA2E76F729769BDC001FF957 /* XpubKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XpubKey.swift; sourceTree = "<group>"; };
-		DA2E76F829769BDC001FF957 /* XpubError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XpubError.swift; sourceTree = "<group>"; };
-		DA2E76F929769BDC001FF957 /* XpubVersion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XpubVersion.swift; sourceTree = "<group>"; };
-		DA2E76FA29769BDC001FF957 /* XpubSerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XpubSerializer.swift; sourceTree = "<group>"; };
 		DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionCreator.swift; sourceTree = "<group>"; };
 		DA3081282817BF1D00DE41F1 /* Tron.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = Tron.proto; sourceTree = "<group>"; };
 		DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tron.pb.swift; sourceTree = "<group>"; };
@@ -575,6 +553,17 @@
 		DA59751127D744A9009F0A1F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		DA59751D27D749A9009F0A1F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		DA59751F27D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainSdkExampleViewModel.swift; sourceTree = "<group>"; };
+		DA63B08C29CB3FAF00AC6E49 /* KaspaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaTests.swift; sourceTree = "<group>"; };
+		DA63B09029CB3FC700AC6E49 /* KaspaNetworkModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaNetworkModels.swift; sourceTree = "<group>"; };
+		DA63B09129CB3FC700AC6E49 /* KaspaNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaNetworkProvider.swift; sourceTree = "<group>"; };
+		DA63B09229CB3FC700AC6E49 /* KaspaTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaTarget.swift; sourceTree = "<group>"; };
+		DA63B09329CB3FC700AC6E49 /* KaspaNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaNetworkService.swift; sourceTree = "<group>"; };
+		DA63B09429CB3FC700AC6E49 /* KaspaTransaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaTransaction.swift; sourceTree = "<group>"; };
+		DA63B09629CB3FC700AC6E49 /* KaspaAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaAddressService.swift; sourceTree = "<group>"; };
+		DA63B09729CB3FC700AC6E49 /* KaspaAddressComponents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaAddressComponents.swift; sourceTree = "<group>"; };
+		DA63B09829CB3FC700AC6E49 /* KaspaTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaTransactionBuilder.swift; sourceTree = "<group>"; };
+		DA63B09929CB3FC700AC6E49 /* KaspaWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaWalletManager.swift; sourceTree = "<group>"; };
+		DA63B0A329CB402A00AC6E49 /* KaspaWalletAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KaspaWalletAssembly.swift; sourceTree = "<group>"; };
 		DA656FC52952091A0092CC61 /* BlockBookConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookConfig.swift; sourceTree = "<group>"; };
 		DA656FC9295454C10092CC61 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		DA656FCB2954B5220092CC61 /* EthereumTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTarget.swift; sourceTree = "<group>"; };
@@ -603,6 +592,7 @@
 		DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotAddressService.swift; sourceTree = "<group>"; };
 		DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotWalletManager.swift; sourceTree = "<group>"; };
 		DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetworkService.swift; sourceTree = "<group>"; };
+		DC4E442A29BF4B4C0088617C /* XRPBase58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPBase58.swift; sourceTree = "<group>"; };
 		DC63F265293F243200F953EF /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		DC912D1528E706C400D76628 /* ContractInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractInteractor.swift; sourceTree = "<group>"; };
 		DCE3379A28F2B7260029A6F5 /* BlockchainSdkExample.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = BlockchainSdkExample.entitlements; sourceTree = "<group>"; };
@@ -727,7 +717,7 @@
 				2DDE5B9C29C4F8D200A5B708 /* TronWalletAssembly.swift */,
 				2DDE5B9D29C4F8D200A5B708 /* DashWalletAssembly.swift */,
 				2DDE5BB129C4F8F700A5B708 /* TONWalletAssembly.swift */,
-				DA2A841729C99BC7006F5FEB /* KaspaWalletAssembly.swift */,
+				DA63B0A329CB402A00AC6E49 /* KaspaWalletAssembly.swift */,
 			);
 			path = WalletAssembly;
 			sourceTree = "<group>";
@@ -784,7 +774,7 @@
 				B00DEACC28FEE6070077CD19 /* Common */,
 				B00DEAC828FEE5E90077CD19 /* Ethereum */,
 				B00DEACD28FEE62F0077CD19 /* Extensions */,
-				DA2A841B29C9E4E7006F5FEB /* Kaspa */,
+				DA63B08B29CB3FAF00AC6E49 /* Kaspa */,
 				B00DEACA28FEE5FA0077CD19 /* Litecoin */,
 				B00DEAC628FEE5D20077CD19 /* Polkadot */,
 				B00DEAC528FEE5C60077CD19 /* Solana */,
@@ -817,7 +807,7 @@
 				DA9F76E727EC8AD900F0665C /* Tron */,
 				5DC7DD5C243F8375008F83F2 /* XRP */,
 				2D9A918C29BB8BFF00476EA6 /* TON */,
-				DA2A840229C99B6D006F5FEB /* Kaspa */,
+				DA63B08E29CB3FC700AC6E49 /* Kaspa */,
 			);
 			path = WalletManagers;
 			sourceTree = "<group>";
@@ -1019,6 +1009,7 @@
 				5D7D240925136254001B9A4F /* LICENSE */,
 				5D7D240A25136254001B9A4F /* README.md */,
 				5D7D240B25136254001B9A4F /* Sources */,
+				DC4E442A29BF4B4C0088617C /* XRPBase58.swift */,
 			);
 			path = XRPKit;
 			sourceTree = "<group>";
@@ -1143,7 +1134,6 @@
 		5DACA35C255E98220096BC48 /* Address */ = {
 			isa = PBXGroup;
 			children = (
-				DA2E76F629769BDC001FF957 /* Xpub */,
 				5DD831BB244DF5BD00F80CEA /* AddressService.swift */,
 				5DACA35A255E97FE0096BC48 /* Address.swift */,
 				5DACA360255E98900096BC48 /* MultipleAddressProvider.swift */,
@@ -1177,8 +1167,6 @@
 		5DE3BF95239E6D8E00E8815D /* BlockchainUtils */ = {
 			isa = PBXGroup;
 			children = (
-				5DE3BF96239E6DAB00E8815D /* RIPEMD160.swift */,
-				5DE3BF98239E722400E8815D /* Base58.swift */,
 				5DE3BF9D239FA2F400E8815D /* SegWitBech32.swift */,
 				5DE3BF9F239FA33800E8815D /* Bech32.swift */,
 			);
@@ -1400,57 +1388,6 @@
 			path = Implementations;
 			sourceTree = "<group>";
 		};
-		DA2A840229C99B6D006F5FEB /* Kaspa */ = {
-			isa = PBXGroup;
-			children = (
-				DA2A840929C99B6D006F5FEB /* Address */,
-				DA2A840329C99B6D006F5FEB /* Network */,
-				DA2A840D29C99B6D006F5FEB /* KaspaWalletManager.swift */,
-				DA2A840829C99B6D006F5FEB /* KaspaTransaction.swift */,
-				DA2A840C29C99B6D006F5FEB /* KaspaTransactionBuilder.swift */,
-			);
-			path = Kaspa;
-			sourceTree = "<group>";
-		};
-		DA2A840329C99B6D006F5FEB /* Network */ = {
-			isa = PBXGroup;
-			children = (
-				DA2A840429C99B6D006F5FEB /* KaspaNetworkModels.swift */,
-				DA2A840529C99B6D006F5FEB /* KaspaNetworkProvider.swift */,
-				DA2A840629C99B6D006F5FEB /* KaspaTarget.swift */,
-				DA2A840729C99B6D006F5FEB /* KaspaNetworkService.swift */,
-			);
-			path = Network;
-			sourceTree = "<group>";
-		};
-		DA2A840929C99B6D006F5FEB /* Address */ = {
-			isa = PBXGroup;
-			children = (
-				DA2A840A29C99B6D006F5FEB /* KaspaAddressService.swift */,
-				DA2A840B29C99B6D006F5FEB /* KaspaAddressComponents.swift */,
-			);
-			path = Address;
-			sourceTree = "<group>";
-		};
-		DA2A841B29C9E4E7006F5FEB /* Kaspa */ = {
-			isa = PBXGroup;
-			children = (
-				DA2A841C29C9E4E7006F5FEB /* KaspaTests.swift */,
-			);
-			path = Kaspa;
-			sourceTree = "<group>";
-		};
-		DA2E76F629769BDC001FF957 /* Xpub */ = {
-			isa = PBXGroup;
-			children = (
-				DA2E76F729769BDC001FF957 /* XpubKey.swift */,
-				DA2E76F829769BDC001FF957 /* XpubError.swift */,
-				DA2E76F929769BDC001FF957 /* XpubVersion.swift */,
-				DA2E76FA29769BDC001FF957 /* XpubSerializer.swift */,
-			);
-			path = Xpub;
-			sourceTree = "<group>";
-		};
 		DA3081222817AEB800DE41F1 /* protobuf */ = {
 			isa = PBXGroup;
 			children = (
@@ -1492,6 +1429,46 @@
 				DA656FC52952091A0092CC61 /* BlockBookConfig.swift */,
 			);
 			path = Config;
+			sourceTree = "<group>";
+		};
+		DA63B08B29CB3FAF00AC6E49 /* Kaspa */ = {
+			isa = PBXGroup;
+			children = (
+				DA63B08C29CB3FAF00AC6E49 /* KaspaTests.swift */,
+			);
+			path = Kaspa;
+			sourceTree = "<group>";
+		};
+		DA63B08E29CB3FC700AC6E49 /* Kaspa */ = {
+			isa = PBXGroup;
+			children = (
+				DA63B09529CB3FC700AC6E49 /* Address */,
+				DA63B08F29CB3FC700AC6E49 /* Network */,
+				DA63B09929CB3FC700AC6E49 /* KaspaWalletManager.swift */,
+				DA63B09429CB3FC700AC6E49 /* KaspaTransaction.swift */,
+				DA63B09829CB3FC700AC6E49 /* KaspaTransactionBuilder.swift */,
+			);
+			path = Kaspa;
+			sourceTree = "<group>";
+		};
+		DA63B08F29CB3FC700AC6E49 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				DA63B09029CB3FC700AC6E49 /* KaspaNetworkModels.swift */,
+				DA63B09129CB3FC700AC6E49 /* KaspaNetworkProvider.swift */,
+				DA63B09229CB3FC700AC6E49 /* KaspaTarget.swift */,
+				DA63B09329CB3FC700AC6E49 /* KaspaNetworkService.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		DA63B09529CB3FC700AC6E49 /* Address */ = {
+			isa = PBXGroup;
+			children = (
+				DA63B09629CB3FC700AC6E49 /* KaspaAddressService.swift */,
+				DA63B09729CB3FC700AC6E49 /* KaspaAddressComponents.swift */,
+			);
+			path = Address;
 			sourceTree = "<group>";
 		};
 		DA9F76E727EC8AD900F0665C /* Tron */ = {
@@ -1895,13 +1872,12 @@
 				5DF9151D253DB85500B927DD /* TezosNetworkService.swift in Sources */,
 				5DEAFA9224447D350032E316 /* ThenProcessable.swift in Sources */,
 				5DCC817623FAE6D500DFC460 /* AnyPublisher+Response.swift in Sources */,
-				5DE3BF97239E6DAB00E8815D /* RIPEMD160.swift in Sources */,
 				2DDE5BA329C4F8D200A5B708 /* TezosWalletAssembly.swift in Sources */,
 				DA18C4A9297AC63600EC4C05 /* NowNodesBlockBookConfig.swift in Sources */,
 				5D0EEE67253EF2E800758FDC /* TezosTransactionBuilder.swift in Sources */,
 				5D4B33C023F6EA6C00C93A84 /* BlockchairNetworkProvider.swift in Sources */,
-				DA2A841129C99B6D006F5FEB /* KaspaNetworkService.swift in Sources */,
 				5DC7DD64244077E4008F83F2 /* XRPTransactionBuilder.swift in Sources */,
+				DA63B09D29CB3FC700AC6E49 /* KaspaNetworkService.swift in Sources */,
 				2DDE5BA929C4F8D200A5B708 /* LitecoinWalletAssembly.swift in Sources */,
 				DAF0867027A9438C0024312E /* PolkadotNetworkService.swift in Sources */,
 				DA9F76E927EC8AEB00F0665C /* TronAddressService.swift in Sources */,
@@ -1912,14 +1888,12 @@
 				EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */,
 				DA2E770029769BF6001FF957 /* TransactionCreator.swift in Sources */,
 				B0EBBEF2265D0E7700D37141 /* DogecoinNetworkParams.swift in Sources */,
-				5DE3BF99239E722400E8815D /* Base58.swift in Sources */,
 				2D9A91A329BB8C1700476EA6 /* TONProviderTarget.swift in Sources */,
 				2D9A919329BB8BFF00476EA6 /* TONTransactionBuilder.swift in Sources */,
 				B0F9DCA125FB4C9B00C0AF18 /* MultiNetworkProvider.swift in Sources */,
-				DA2A840F29C99B6D006F5FEB /* KaspaNetworkProvider.swift in Sources */,
 				5D7D243B25136254001B9A4F /* URandom.swift in Sources */,
-				DA2E76FC29769BDD001FF957 /* XpubError.swift in Sources */,
 				2DDE5BAE29C4F8D200A5B708 /* TronWalletAssembly.swift in Sources */,
+				DA63B09B29CB3FC700AC6E49 /* KaspaNetworkProvider.swift in Sources */,
 				B06AFAEF261496E600E7AAB0 /* CardanoAddressUtils.swift in Sources */,
 				B05F1E64299BD23500E27E32 /* TransactionHistoryLoader.swift in Sources */,
 				DA346451279A802E00E77B1D /* SolanaSdk+.swift in Sources */,
@@ -1930,10 +1904,10 @@
 				5D7D242C25136254001B9A4F /* WebSocket.swift in Sources */,
 				E9941AC92927846B00399DE3 /* BlockBookTarget.swift in Sources */,
 				5DACA361255E98900096BC48 /* MultipleAddressProvider.swift in Sources */,
-				DA2A841429C99B6D006F5FEB /* KaspaAddressComponents.swift in Sources */,
 				2DC5DAB429B9E6A10039154A /* WalletCoreSigner.swift in Sources */,
 				5D7D243325136254001B9A4F /* XRPAddress.swift in Sources */,
 				B0C34958267B83580027CC9D /* BitcoinModels.swift in Sources */,
+				DA63B0A029CB3FC700AC6E49 /* KaspaAddressComponents.swift in Sources */,
 				DA30812B2817BF3C00DE41F1 /* Tron.pb.swift in Sources */,
 				5D4B33C823F72F2700C93A84 /* BitcoinCashWalletManager.swift in Sources */,
 				5D26CEF1243CB9EA00994CC0 /* BlockchainInfoResponse.swift in Sources */,
@@ -1950,10 +1924,11 @@
 				5D8653FC23A8C4A9000DE52D /* StellarTransactionBuilder.swift in Sources */,
 				B044B3A126047F5500D9864F /* RosettaResponse.swift in Sources */,
 				5DACA35B255E97FE0096BC48 /* Address.swift in Sources */,
+				DC4E442B29BF4B4C0088617C /* XRPBase58.swift in Sources */,
 				5D7D2443251362AB001B9A4F /* BitcoinfeesTarget.swift in Sources */,
-				DA2A840E29C99B6D006F5FEB /* KaspaNetworkModels.swift in Sources */,
 				B0BAEE9825FF1E0400F318A6 /* RosettaBody.swift in Sources */,
 				5D26CEEE243CB95000994CC0 /* BlockcypherTarget.swift in Sources */,
+				DA63B09A29CB3FC700AC6E49 /* KaspaNetworkModels.swift in Sources */,
 				DA656FCC2954B5220092CC61 /* EthereumTarget.swift in Sources */,
 				5D7D243425136254001B9A4F /* XRPAccountInfo.swift in Sources */,
 				EF0DA78C285246A90081092A /* DashMainNetworkParams.swift in Sources */,
@@ -1979,7 +1954,6 @@
 				5D88C80B256BCDBB00020028 /* StellarTransactionParams.swift in Sources */,
 				5D88838927D3BB8B008744E1 /* WalletError.swift in Sources */,
 				5DE3BF9E239FA2F400E8815D /* SegWitBech32.swift in Sources */,
-				DA2E76FD29769BDD001FF957 /* XpubVersion.swift in Sources */,
 				5D6DEAB6243CC09A00510EC8 /* EthereumTransactionBuilder.swift in Sources */,
 				DA9F76F527EC9CB400F0665C /* TronTarget.swift in Sources */,
 				5D7D243525136254001B9A4F /* XRPAmount.swift in Sources */,
@@ -1994,10 +1968,10 @@
 				E93532CE292D0E86008FD979 /* BlockBookUtxoProvider.swift in Sources */,
 				EF9F9088299F8B70006F638F /* ETHError.swift in Sources */,
 				EF332D17288EACB000AE3C85 /* HostProvider.swift in Sources */,
-				DA2A841529C99B6D006F5FEB /* KaspaTransactionBuilder.swift in Sources */,
 				5DE3BFA0239FA33800E8815D /* Bech32.swift in Sources */,
 				B00FBED82996A1A300FDB874 /* BlockscoutNetworkProvider.swift in Sources */,
 				B04DC62725AC1C50009AA7B3 /* JSONDecoder+.swift in Sources */,
+				DA63B0A129CB3FC700AC6E49 /* KaspaTransactionBuilder.swift in Sources */,
 				B06D0D852996A9A700D74A5E /* BlockscoutResponse.swift in Sources */,
 				2DDE5BA229C4F8D200A5B708 /* BinanceWalletAssembly.swift in Sources */,
 				5DEAFA90244473460032E316 /* Transaction.swift in Sources */,
@@ -2056,17 +2030,15 @@
 				DA9F76F127EC9C8300F0665C /* TronJsonRpcProvider.swift in Sources */,
 				5D4B33BC23F6EA0500C93A84 /* BlockchairTarget.swift in Sources */,
 				5D94E56723A3946C009C7482 /* Data+.swift in Sources */,
-				DA2E76FE29769BDD001FF957 /* XpubSerializer.swift in Sources */,
 				B0AD566425AC8DD50084F924 /* PendingTransaction.swift in Sources */,
 				DAE30DFD279164500056C5A3 /* SolanaAddressService.swift in Sources */,
 				5D26CEF6243CBA4300994CC0 /* EstimateFeeTarget.swift in Sources */,
 				5DA6F7BC243F3C0B0040AB4B /* CBOR+.swift in Sources */,
-				DA2A841629C99B6D006F5FEB /* KaspaWalletManager.swift in Sources */,
 				2DDE5BA529C4F8D200A5B708 /* DogecoinWalletAssembly.swift in Sources */,
 				E95D95152929872B0068F876 /* BlockBookResponses.swift in Sources */,
 				5DA163D2273D2146007AA991 /* TezosJsonRpcProvider.swift in Sources */,
-				DA2E76FB29769BDD001FF957 /* XpubKey.swift in Sources */,
 				5DED72BA239FE2F8006D79AE /* Int+.swift in Sources */,
+				DA63B0A229CB3FC700AC6E49 /* KaspaWalletManager.swift in Sources */,
 				B06C6793264286390037E7AD /* BlockchairAddressBlockMapper.swift in Sources */,
 				2DDE5BB229C4F8F700A5B708 /* TONWalletAssembly.swift in Sources */,
 				DA656FC62952091A0092CC61 /* BlockBookConfig.swift in Sources */,
@@ -2075,12 +2047,12 @@
 				5D7D243925136254001B9A4F /* IssuedAmount.swift in Sources */,
 				5DF8D5B5243DB80C00186BF0 /* CardanoAddressService.swift in Sources */,
 				2D9A919529BB8BFF00476EA6 /* TONWalletManager.swift in Sources */,
-				DA2A841029C99B6D006F5FEB /* KaspaTarget.swift in Sources */,
 				5DF91519253DB7B300B927DD /* TezosAddress.swift in Sources */,
 				5DF91521253DB89800B927DD /* TezosTarget.swift in Sources */,
 				EFF56B4129C30265002B6952 /* EthereumFeeParameters.swift in Sources */,
 				B0C2C86725FBA10E00A61622 /* AnyPublisher+.swift in Sources */,
 				5DFF005F2521F772005203FB /* DucatusWalletManager.swift in Sources */,
+				DA63B09C29CB3FC700AC6E49 /* KaspaTarget.swift in Sources */,
 				5D7D243C25136254001B9A4F /* SerializerDefinitions.swift in Sources */,
 				5DEAFA8E244472CD0032E316 /* Amount.swift in Sources */,
 				2D9A91A729BB8C2E00476EA6 /* TrustWalletAddressService.swift in Sources */,
@@ -2102,17 +2074,17 @@
 				DAB6548A27967D860002A5E8 /* SolanaResponse.swift in Sources */,
 				5D304397239A6B960066B8D9 /* String+.swift in Sources */,
 				5DC7DD6824408266008F83F2 /* XrpResponse.swift in Sources */,
-				DA2A841229C99B6D006F5FEB /* KaspaTransaction.swift in Sources */,
 				5D7D243D25136254001B9A4F /* Serializer.swift in Sources */,
 				5D7D242D25136254001B9A4F /* XRPLResponse.swift in Sources */,
+				DA63B09E29CB3FC700AC6E49 /* KaspaTransaction.swift in Sources */,
 				DAED921F27A150E500F188D7 /* PolkadotAddressService.swift in Sources */,
 				5D4B33CD23F7DC0400C93A84 /* BinanceWalletManager.swift in Sources */,
 				5D0906C227DBB7A10053B2CD /* BitcoinCashNetworkParams.swift in Sources */,
 				B07EE8B225AC1504009DB163 /* DateFormatter+.swift in Sources */,
 				5D557CB523ACCAD2009B32AF /* BlockcypherNetworkProvider.swift in Sources */,
-				DA2A841329C99B6D006F5FEB /* KaspaAddressService.swift in Sources */,
 				5D7D243725136254001B9A4F /* XRPCurrentLedgerInfo.swift in Sources */,
 				5DD831BC244DF5BD00F80CEA /* AddressService.swift in Sources */,
+				DA63B09F29CB3FC700AC6E49 /* KaspaAddressService.swift in Sources */,
 				DA656FCA295454C10092CC61 /* Constants.swift in Sources */,
 				5D304399239A8C9C0066B8D9 /* BitcoinAddressService.swift in Sources */,
 				5D557CB723ACCB48009B32AF /* BlockchainInfoNetworkProvider.swift in Sources */,
@@ -2139,7 +2111,7 @@
 				DAE30DFB279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */,
 				5D389ECC23ACFDCF00740FE9 /* MoyaProvider+Combine.swift in Sources */,
 				5D7D243A25136254001B9A4F /* Extensions.swift in Sources */,
-				DA2A841829C99BC7006F5FEB /* KaspaWalletAssembly.swift in Sources */,
+				DA63B0A429CB402A00AC6E49 /* KaspaWalletAssembly.swift in Sources */,
 				DA82433D27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift in Sources */,
 				B00FBEDA2996A1B700FDB874 /* BlockscoutTarget.swift in Sources */,
 			);
@@ -2151,6 +2123,7 @@
 			files = (
 				2DC5796129C9CBB1004312AE /* TrustCoreSignerTesterUtility.swift in Sources */,
 				B00DEAD128FFDE0E0077CD19 /* TransactionSizeTesterUtility.swift in Sources */,
+				DA63B08D29CB3FAF00AC6E49 /* KaspaTests.swift in Sources */,
 				2DBBE95029C8DBEA00971539 /* TONTests.swift in Sources */,
 				EF0DA78928523FAC0081092A /* LitecoinTests.swift in Sources */,
 				EF0DA78828523FAC0081092A /* BitcoinTests.swift in Sources */,
@@ -2161,7 +2134,6 @@
 				EF0DA78528523FAC0081092A /* BlockchainSdkTests.swift in Sources */,
 				B00DEAD3290008910077CD19 /* SolanaTests.swift in Sources */,
 				EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */,
-				DA2A841D29C9E4E7006F5FEB /* KaspaTests.swift in Sources */,
 				EF0DA78628523FAC0081092A /* XCTestCase+.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

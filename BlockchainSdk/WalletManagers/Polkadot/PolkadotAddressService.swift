@@ -51,14 +51,12 @@ struct PolkadotAddress {
         let checksum = Self.blake2checksum(checksumMessage)
         addressData.append(checksum)
                 
-        self.string = String(base58: addressData, alphabet: Base58String.btcAlphabet)
+        self.string = addressData.base58EncodedString
     }
     
     // Raw representation (without the prefix) was used in the older protocol versions
     func bytes(raw: Bool) -> Data? {
-        guard var bytes = string.base58DecodedData else {
-            return nil
-        }
+        var bytes = string.base58DecodedData
         
         bytes.removeFirst(Self.networkLength)
         bytes.removeLast(Self.checksumLength)
@@ -71,9 +69,7 @@ struct PolkadotAddress {
     }
     
     static private func isValid(_ address: String, in network: PolkadotNetwork) -> Bool {
-        guard let data = address.base58DecodedData else {
-            return false
-        }
+        let data = address.base58DecodedData
         
         let networkPrefix = data.prefix(networkLength)
         guard networkPrefix == network.addressPrefix else {

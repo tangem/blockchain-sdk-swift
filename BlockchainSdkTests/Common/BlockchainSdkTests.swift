@@ -33,13 +33,6 @@ class BlockchainSdkTests: XCTestCase {
             // Put the code you want to measure the time of here.
         }
     }
-
-    func testBase58() {
-        let ethalonString = "1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L"
-        let testData = Data(hex: "00eb15231dfceb60925886b67d065299925915aeb172c06647")
-        let encoded = String(base58: testData, alphabet: Base58String.btcAlphabet)
-        XCTAssertEqual(ethalonString, encoded)
-    }
     
     func testBtcAddress() {
         let btcAddress = "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs"

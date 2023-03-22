@@ -166,7 +166,7 @@ class Serializer {
     }
     
     private func decodeAddress(address: String) -> Data {
-        let _array = [UInt8](Data(base58: address, alphabet:Base58String.xrpAlphabet)!)
+        let _array = [UInt8](XRPBase58.getData(from: address)!)
         let array = _array.prefix(_array.count-4)
         
         //FIXME: base58Decoding

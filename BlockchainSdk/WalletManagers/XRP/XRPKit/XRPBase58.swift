@@ -1,21 +1,27 @@
 //
-//  Base58.swift
-//  Tangem
+//  XRPBase58.swift
+//  BlockchainSdk
 //
-//  Created by Yulia Moskaleva on 16/02/2018.
-//  Copyright © 2018 Smart Cash AG. All rights reserved.
+//  Created by Alexander Osokin on 13.03.2023.
+//  Copyright © 2023 Tangem AG. All rights reserved.
 //
 
 import Foundation
 import BigInt
 
-public enum Base58String {
-    public static let btcAlphabet = [UInt8]("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".utf8)
-    public static let flickrAlphabet = [UInt8]("123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ".utf8)
-    public static let xrpAlphabet = [UInt8]("rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz".utf8)
+enum XRPBase58 {
+    fileprivate static let xrpAlphabet = [UInt8]("rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz".utf8)
+
+    static func getString(from data: Data) -> String {
+        return String(base58: data, alphabet: XRPBase58.xrpAlphabet)
+    }
+
+    static func getData(from string: String) -> Data? {
+        return Data(base58: string, alphabet: XRPBase58.xrpAlphabet)
+    }
 }
 
-public extension String {
+fileprivate extension String {
     init(base58 bytes: Data, alphabet: [UInt8]) {
         var bigInt = BigUInt(bytes)
         let radix = BigUInt(alphabet.count)
@@ -28,17 +34,17 @@ public extension String {
             answer.append(alphabet[Int(modulus)])
             bigInt = quotient
         }
-        
+
         let zerosCount = bytes.prefix(while: {$0 == 0}).count
         let prefix = Array(repeating: alphabet[0], count: zerosCount)
         let result = prefix + answer.reversed()
-        
+
         self = String(bytes: result, encoding: String.Encoding.utf8)!
     }
 }
 
-public extension Data {
-     init?(base58 string: String, alphabet: [UInt8]) {
+fileprivate extension Data {
+    init?(base58 string: String, alphabet: [UInt8]) {
         var answer = BigUInt(0)
         var j = BigUInt(1)
         let radix = BigUInt(alphabet.count)

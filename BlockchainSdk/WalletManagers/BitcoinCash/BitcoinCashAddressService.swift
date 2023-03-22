@@ -52,7 +52,7 @@ public class CashAddrService: AddressService {
     public func makeAddress(from walletPublicKey: Data) throws -> String {
         let compressedKey = try Secp256k1Key(with: walletPublicKey).compress()
         let prefix = Data([UInt8(0x00)]) //public key hash
-        let payload = RIPEMD160.hash(message: compressedKey.sha256())
+        let payload = compressedKey.sha256Ripemd160
         let walletAddress = HDWalletKit.Bech32.encode(prefix + payload, prefix: addressPrefix)
         return walletAddress
     }

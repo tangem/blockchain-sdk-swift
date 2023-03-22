@@ -47,7 +47,7 @@ public class CardanoAddressService: AddressService {
             return (try? Bech32().decodeLong(address)) != nil
             
         } else {
-            guard let decoded58 = address.base58DecodedData?.bytes,
+            guard let decoded58 = address.base58CheckDecodedBytes,
                 !decoded58.isEmpty else {
                     return false
             }
@@ -87,7 +87,7 @@ public class CardanoAddressService: AddressService {
         let checksum = UInt64(addr.crc32()) // getCheckSum
         let addrItem = CBOR.tagged(CBOR.Tag(rawValue: 24), CBOR.byteString(addr))
         let hexAddress = ([addrItem, CBOR.unsignedInt(checksum)] as CBOR).encode()
-        let walletAddress = String(base58: Data(hexAddress), alphabet: Base58String.btcAlphabet)
+        let walletAddress = hexAddress.base58EncodedString
         return walletAddress
     }
     
