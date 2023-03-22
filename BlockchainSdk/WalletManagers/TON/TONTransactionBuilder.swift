@@ -21,7 +21,9 @@ final class TONTransactionBuilder {
     // MARK: - Private Properties
     
     private let wallet: Wallet
-    private let dummyPrivateKey: Curve25519.Signing.PrivateKey
+    
+    /// Only TrustWallet signer input transfer key (not for use public implementation)
+    private var inputPrivateKey: Curve25519.Signing.PrivateKey
     
     private var modeTransactionConstant: UInt32 {
         UInt32(TheOpenNetworkSendMode.payFeesSeparately.rawValue | TheOpenNetworkSendMode.ignoreActionPhaseErrors.rawValue)
@@ -29,9 +31,9 @@ final class TONTransactionBuilder {
     
     // MARK: - Init
     
-    init(wallet: Wallet, dummyPrivateKey: Curve25519.Signing.PrivateKey = .init()) {
+    init(wallet: Wallet) {
         self.wallet = wallet
-        self.dummyPrivateKey = dummyPrivateKey
+        self.inputPrivateKey = .init()
     }
     
     // MARK: - Implementation
@@ -66,7 +68,7 @@ final class TONTransactionBuilder {
         // Sign input with dummy key of Curve25519 private key
         let input = TheOpenNetworkSigningInput.with {
             $0.transfer = transfer
-            $0.privateKey = dummyPrivateKey.rawRepresentation
+            $0.privateKey = inputPrivateKey.rawRepresentation
         }
         
         return input
@@ -86,6 +88,26 @@ final class TONTransactionBuilder {
             $0.mode = modeTransactionConstant
             $0.bounceBehavior = .nonBounceable
          }
+    }
+    
+}
+
+// MARK: - Dummy Cases
+
+extension TONTransactionBuilder {
+    
+    public struct DummyInput {
+        let wallet: Wallet
+        let inputPrivateKey: Curve25519.Signing.PrivateKey
+        let sequenceNumber: Int
+    }
+    
+    /// Use only dummy tested or any dummy cases!
+    static func makeDummyBuilder(with input: DummyInput) -> TONTransactionBuilder {
+        let txBuilder = TONTransactionBuilder(wallet: input.wallet)
+        txBuilder.inputPrivateKey = input.inputPrivateKey
+        txBuilder.sequenceNumber = input.sequenceNumber
+        return txBuilder
     }
     
 }

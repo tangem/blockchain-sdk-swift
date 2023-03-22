@@ -41,9 +41,12 @@ class TONTests: XCTestCase {
     }()
     
     lazy var txBuilder: TONTransactionBuilder = {
-        return TONTransactionBuilder(
-            wallet: walletManager.wallet,
-            dummyPrivateKey: privateKey
+        return TONTransactionBuilder.makeDummyBuilder(
+            with: .init(
+                wallet: walletManager.wallet,
+                inputPrivateKey: privateKey,
+                sequenceNumber: 0
+            )
         )
     }()
     
