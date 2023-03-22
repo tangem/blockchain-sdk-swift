@@ -21,6 +21,7 @@ final class TONTransactionBuilder {
     // MARK: - Private Properties
     
     private let wallet: Wallet
+    private let dummyPrivateKey: Curve25519.Signing.PrivateKey
     
     private var modeTransactionConstant: UInt32 {
         UInt32(TheOpenNetworkSendMode.payFeesSeparately.rawValue | TheOpenNetworkSendMode.ignoreActionPhaseErrors.rawValue)
@@ -28,8 +29,9 @@ final class TONTransactionBuilder {
     
     // MARK: - Init
     
-    init(wallet: Wallet) {
+    init(wallet: Wallet, dummyPrivateKey: Curve25519.Signing.PrivateKey = .init()) {
         self.wallet = wallet
+        self.dummyPrivateKey = dummyPrivateKey
     }
     
     // MARK: - Implementation
@@ -64,7 +66,7 @@ final class TONTransactionBuilder {
         // Sign input with dummy key of Curve25519 private key
         let input = TheOpenNetworkSigningInput.with {
             $0.transfer = transfer
-            $0.privateKey = Curve25519.Signing.PrivateKey().rawRepresentation
+            $0.privateKey = dummyPrivateKey.rawRepresentation
         }
         
         return input
