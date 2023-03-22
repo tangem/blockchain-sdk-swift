@@ -65,7 +65,7 @@ class CardanoTransactionBuilder {
         }
         
         let convertValue = Blockchain.cardano(shelley: shelleyCard).decimalValue
-        let feeConverted = transaction.fee.value * convertValue
+        let feeConverted = transaction.fee.amount.value * convertValue
         let amountConverted = transaction.amount.value * convertValue
         let walletAmountConverted = walletAmount * convertValue
         let change = walletAmountConverted - amountConverted - feeConverted

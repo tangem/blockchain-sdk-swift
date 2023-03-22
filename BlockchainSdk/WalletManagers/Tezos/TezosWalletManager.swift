@@ -102,11 +102,11 @@ extension TezosWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         networkService
             .checkPublicKeyRevealed(address: wallet.address)
             .combineLatest(networkService.getInfo(address: destination))
-            .tryMap {[weak self] (isPublicKeyRevealed, destinationInfo) -> [Amount] in
+            .tryMap {[weak self] (isPublicKeyRevealed, destinationInfo) -> [Fee] in
                 guard let self = self else { throw WalletError.empty }
                 
                 self.txBuilder.isPublicKeyRevealed = isPublicKeyRevealed
@@ -119,7 +119,8 @@ extension TezosWalletManager: TransactionSender {
                     fee += TezosFee.allocation.rawValue
                 }
                 
-                return [Amount(with: self.wallet.blockchain, value: fee)]
+                let amountFee = Amount(with: self.wallet.blockchain, value: fee)
+                return [Fee(amountFee)]
             }
             .eraseToAnyPublisher()
     }
@@ -145,7 +146,7 @@ extension TezosWalletManager: WithdrawalValidator {
         
         let minimumAmount: Decimal = 0.000001
         
-        if transaction.amount + transaction.fee == walletAmount {
+        if transaction.amount + transaction.fee.amount == walletAmount {
             return WithdrawalWarning(warningMessage: String(format: "xtz_withdrawal_message_warning".localized, minimumAmount.description),
                                      reduceMessage: String(format: "xtz_withdrawal_message_reduce".localized, minimumAmount.description),
                                      ignoreMessage: "xtz_withdrawal_message_ignore".localized,

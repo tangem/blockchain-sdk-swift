@@ -95,34 +95,34 @@ class BlockchainSdkTests: XCTestCase {
         
         vm.wallet.add(coinValue: 10)
         XCTAssertNoThrow(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 3),
-                                                  fee: Amount(with: vm.wallet.amounts[.coin]!, value: 3),
+                                                  fee: Fee(Amount(with: vm.wallet.amounts[.coin]!, value: 3)),
                                                   destinationAddress: ""))
         
         assert(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: -1),
-                                        fee: Amount(with: vm.wallet.amounts[.coin]!, value: 3),
+                                        fee: Fee(Amount(with: vm.wallet.amounts[.coin]!, value: 3)),
                                         destinationAddress: ""),
                throws: TransactionErrors(errors: [.invalidAmount]))
         
         
         
         assert(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 1),
-                                        fee: Amount(with: vm.wallet.amounts[.coin]!, value: -1),
+                                        fee: Fee(Amount(with: vm.wallet.amounts[.coin]!, value: -1)),
                                         destinationAddress: ""),
                throws: TransactionErrors(errors: [.invalidFee]))
         
         assert(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 11),
-                                        fee: Amount(with: vm.wallet.amounts[.coin]!, value: 1),
+                                        fee: Fee(Amount(with: vm.wallet.amounts[.coin]!, value: 1)),
                                         destinationAddress: ""),
                throws: TransactionErrors(errors: [.amountExceedsBalance, .totalExceedsBalance]))
         
         
         assert(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 1),
-                                        fee: Amount(with: vm.wallet.amounts[.coin]!, value: 11),
+                                        fee: Fee(Amount(with: vm.wallet.amounts[.coin]!, value: 11)),
                                         destinationAddress: ""),
                throws: TransactionErrors(errors: [.feeExceedsBalance, .totalExceedsBalance]))
         
         assert(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 3),
-                                        fee: Amount(with: vm.wallet.amounts[.coin]!, value: 8),
+                                        fee: Fee(Amount(with: vm.wallet.amounts[.coin]!, value: 8)),
                                         destinationAddress: ""),
                throws: TransactionErrors(errors: [.totalExceedsBalance]))
     }

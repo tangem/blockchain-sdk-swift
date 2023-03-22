@@ -45,7 +45,7 @@ class BaseManager: WalletProvider {
 extension BaseManager: TransactionCreator {
     func createTransaction(
         amount: Amount,
-        fee: Amount,
+        fee: Fee,
         sourceAddress: String? = nil,
         destinationAddress: String,
         changeAddress: String? = nil,
@@ -79,12 +79,12 @@ extension BaseManager: TransactionCreator {
         }
     }
     
-    func validate(fee: Amount) throws {
-        if !validateAmountValue(fee) {
+    func validate(fee: Fee) throws {
+        if !validateAmountValue(fee.amount) {
             throw TransactionError.invalidFee
         }
         
-        if !validateAmountTotal(fee) {
+        if !validateAmountTotal(fee.amount) {
             throw TransactionError.feeExceedsBalance
         }
     }
@@ -93,7 +93,7 @@ extension BaseManager: TransactionCreator {
 // MARK: - Validation
 
 private extension BaseManager {
-    func validateTransaction(amount: Amount, fee: Amount?) throws {
+    func validateTransaction(amount: Amount, fee: Fee?) throws {
         var errors = [TransactionError]()
         
         do {
@@ -112,7 +112,7 @@ private extension BaseManager {
             errors.append(error)
         }
                 
-        let total = amount + fee
+        let total = amount + fee.amount
         
         var totalError: TransactionError?
         do {
@@ -121,7 +121,7 @@ private extension BaseManager {
             totalError = error
         }
 
-        if amount.type == fee.type, total.value > 0, totalError != nil {
+        if amount.type == fee.amount.type, total.value > 0, totalError != nil {
             errors.append(.totalExceedsBalance)
         }
         

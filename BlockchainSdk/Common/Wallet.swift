@@ -51,7 +51,7 @@ public struct Wallet {
     
     public var pendingBalance: Decimal {
         pendingOutgoingTransactions
-            .reduce(0, { $0 + $1.amount.value + $1.fee.value })
+            .reduce(0, { $0 + $1.amount.value + $1.fee.amount.value })
     }
 
     public var xpubKey: String? {
@@ -138,7 +138,7 @@ public struct Wallet {
         }
         
         var tx = Transaction(amount: amount,
-                             fee: fee,
+                             fee: Fee(fee),
                              sourceAddress: sourceAddress,
                              destinationAddress: destinationAddress,
                              changeAddress: changeAddress,
@@ -161,7 +161,7 @@ public struct Wallet {
     mutating func addDummyPendingTransaction() {
         let dummyAmount = Amount.dummyCoin(for: blockchain)
         var tx = Transaction(amount: dummyAmount,
-                             fee: dummyAmount,
+                             fee: Fee(dummyAmount),
                              sourceAddress: .unknown,
                              destinationAddress: address,
                              changeAddress: .unknown)

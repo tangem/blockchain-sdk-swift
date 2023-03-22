@@ -10,7 +10,7 @@ import Foundation
 import BigInt
 import web3swift
 
-public struct Amount: CustomStringConvertible, Equatable, Comparable {
+public struct Amount: CustomStringConvertible, Hashable, Comparable {
     public enum AmountType {
         case coin
         case token(value: Token)
@@ -154,7 +154,7 @@ public struct Amount: CustomStringConvertible, Equatable, Comparable {
     }
     
 }
-extension Amount.AmountType: Equatable, Hashable {
+extension Amount.AmountType: Hashable {
     public func hash(into hasher: inout Hasher) {
         switch self {
         case .coin:

@@ -211,6 +211,8 @@ public enum Blockchain: Equatable, Hashable {
             return "Optimistic Ethereum" + testnetSuffix
         case .saltPay:
             return "Salt Pay"
+        case .ton:
+            return "Toncoin" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -247,7 +249,7 @@ public enum Blockchain: Equatable, Hashable {
     
     public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
         switch self {
-        case .arbitrum, .stellar, .optimism, .ethereumPoW:
+        case .arbitrum, .stellar, .optimism, .ethereumPoW, .ton:
             return true
         case .fantom, .tron, .gnosis, .avalanche:
             if case .token = amountType {
@@ -870,8 +872,8 @@ extension Blockchain {
         case .saltPay:
             return URL(string: "https://blockscout.bicoccachain.net/address/\(address)")!
         case .ton:
-            let subdomain = isTestnet ? "testnet" : ""
-            return URL(string: "https://\(subdomain).tonscan.org/address/\(address)")
+            let subdomain = isTestnet ? "testnet." : ""
+            return URL(string: "https://\(subdomain)tonscan.org/address/\(address)")
         }
     }
 }
@@ -934,4 +936,50 @@ extension Blockchain {
             return false
         }
     }
+}
+
+// MARK: - Assembly type
+
+@available(iOS 13.0, *)
+extension Blockchain {
+    
+    var assembly: WalletManagerAssembly {
+        switch self {
+        case .bitcoin:
+            return BitcoinWalletAssembly()
+        case .litecoin:
+            return LitecoinWalletAssembly()
+        case .dogecoin:
+            return DogecoinWalletAssembly()
+        case .ducatus:
+            return DucatusWalletAssembly()
+        case .stellar:
+            return StellarWalletAssembly()
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay:
+            return EthereumWalletAssembly()
+        case .optimism:
+            return OptimismWalletAssembly()
+        case .bitcoinCash:
+            return BitcoinCashWalletAssembly()
+        case .binance:
+            return BinanceWalletAssembly()
+        case .cardano:
+            return CardanoWalletAssembly()
+        case .xrp:
+            return XRPWalletAssembly()
+        case .tezos:
+            return TezosWalletAssembly()
+        case .solana:
+            return SolanaWalletAssembly()
+        case .polkadot, .kusama:
+            return SubstrateWalletAssembly()
+        case .tron:
+            return TronWalletAssembly()
+        case .dash:
+            return DashWalletAssembly()
+        case .ton:
+            return TONWalletAssembly()
+        }
+    }
+    
 }

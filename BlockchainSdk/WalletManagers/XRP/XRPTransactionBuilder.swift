@@ -67,7 +67,7 @@ class XRPTransactionBuilder {
         }
          
         let amountDrops = (transaction.amount.value * Decimal(1000000)).rounded(blockchain: .xrp(curve: curve))
-        let feeDrops = (transaction.fee.value * Decimal(1000000)).rounded(blockchain: .xrp(curve: curve))
+        let feeDrops = (transaction.fee.amount.value * Decimal(1000000)).rounded(blockchain: .xrp(curve: curve))
         
         let decodedXAddress = try? XRPAddress.decodeXAddress(xAddress: transaction.destinationAddress)
         let destination = decodedXAddress?.rAddress ?? transaction.destinationAddress

@@ -12,7 +12,7 @@ import Foundation
 public protocol TransactionCreator {
     func createTransaction(
         amount: Amount,
-        fee: Amount,
+        fee: Fee,
         sourceAddress: String?,
         destinationAddress: String,
         changeAddress: String?,
@@ -21,7 +21,7 @@ public protocol TransactionCreator {
         status: TransactionStatus
     ) throws -> Transaction
     
-    func validate(fee: Amount) throws
+    func validate(fee: Fee) throws
     func validate(amount: Amount) throws
 }
 
@@ -29,7 +29,7 @@ public protocol TransactionCreator {
 public extension TransactionCreator {
     func createTransaction(
         amount: Amount,
-        fee: Amount,
+        fee: Fee,
         sourceAddress: String? = nil,
         destinationAddress: String,
         changeAddress: String? = nil,

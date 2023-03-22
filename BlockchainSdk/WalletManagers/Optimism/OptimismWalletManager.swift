@@ -13,92 +13,96 @@ import Moya
 import web3swift
 
 class OptimismWalletManager: EthereumWalletManager {
-    let rpcURL: URL
-    
-    private var gasLimit: BigUInt? = nil
-    private let layer1FeeContractMethodName: String = "getL1Fee"
-    private var lastLayer1FeeAmount: Amount?
-    
-    private var optimismFeeAddress: String {
-        return EthereumAddress("0x420000000000000000000000000000000000000F")!.address
-    }
-    
-    private lazy var contractInteractor = ContractInteractor(address: self.optimismFeeAddress, abi: ContractABI().optimismLayer1GasFeeABI, rpcURL: self.rpcURL)
+    private let contractInteractor: ContractInteractor<OptimismSmartContract>
     
     init(wallet: Wallet, rpcURL: URL) {
-        self.rpcURL = rpcURL
+        let contract = OptimismSmartContract(rpcURL: rpcURL)
+        self.contractInteractor = ContractInteractor(contract: contract)
+        
         super.init(wallet: wallet)
     }
     
-    override func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
-        lastLayer1FeeAmount = nil
-        
-        let layer2FeePublisher = super.getFee(amount: amount, destination: destination)
-        let transaction = Transaction(amount: Amount(with: wallet.blockchain, type: amount.type, value: 0.1),
-                                      fee: Amount(with: wallet.blockchain, type: amount.type, value: 0.1),
-                                      sourceAddress: wallet.address,
-                                      destinationAddress: destination,
-                                      changeAddress: wallet.address,
-                                      contractAddress: amount.type.token?.contractAddress)
-
-        let tx = txBuilder.buildForSign(transaction: transaction,
-                                        nonce: 1,
-                                        gasLimit: BigUInt(1))
-        
-        guard let byteArray = tx?.transaction.encodeForSend() else {
-            return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
-        }
-        
-        let layer1FeePublisher = getLayer1Fee(amount: amount,
-                                              destination: destination,
-                                              transactionHash: byteArray.toHexString().addHexPrefix())
-        
-        return Publishers
-            .CombineLatest(layer2FeePublisher, layer1FeePublisher)
-            .tryMap { [weak self] (layer2FeeAmounts, layer1FeeAmount) in
-                guard let self = self else {
-                    throw BlockchainSdkError.failedToLoadFee
+    /// We are override this method to combine the two fee's layers in the `Optimistic-Ethereum` network.
+    /// Read more:
+    /// https://community.optimism.io/docs/developers/build/transaction-fees/#the-l1-data-fee
+    /// https://help.optimism.io/hc/en-us/articles/4411895794715-How-do-transaction-fees-on-Optimism-work
+    /// Short information:
+    /// `L2` - Used to provide this transaction in the `Optimistic-etherium` network like a usual tx.
+    /// `L1` - Used to processing a transaction in the `Etherium` network  for "safety".
+    /// This L1 fee will be added to the transaction fee automatically after it is sent to the network.
+    /// This L1 fee calculated the Optimism smart-contract oracle.
+    /// This L1 fee have to used ONLY for showing to a user.
+    /// When we're building transaction we have to used `gasLimit` and `gasPrice` ONLY from `L2`
+    override func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
+        super.getFee(destination: destination, value: value, data: data)
+            .flatMap { [weak self] layer2Fees -> AnyPublisher<([Fee], Decimal), Error> in
+                guard let self,
+                      // We use EthereumFeeParameters without increase
+                      let parameters = layer2Fees.first?.parameters as? EthereumFeeParameters else {
+                    return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
                 }
                 
-                let minAmount = Amount(with: self.wallet.blockchain, value: layer2FeeAmounts[0].value + layer1FeeAmount.value)
-                let normalAmount = Amount(with: self.wallet.blockchain, value: layer2FeeAmounts[1].value + layer1FeeAmount.value)
-                let maxAmount = Amount(with: self.wallet.blockchain, value: layer2FeeAmounts[2].value + layer1FeeAmount.value)
-                self.lastLayer1FeeAmount = layer1FeeAmount
-                
-                return [minAmount, normalAmount, maxAmount]
-        }.eraseToAnyPublisher()
-    }
-    
-    override func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
-        let calculatedTransactionFee = transaction.fee.value - (lastLayer1FeeAmount?.value ?? 0)
-        guard var transactionWithCorrectFee = try? createTransaction(amount: transaction.amount,
-                                                                     fee: Amount(with: wallet.blockchain, value: calculatedTransactionFee),
-                                                                     destinationAddress: transaction.destinationAddress)
-        else {
-            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
-        }
-        
-        transactionWithCorrectFee.params = transaction.params
-        return super.sign(transactionWithCorrectFee, signer: signer)
+                return self.getLayer1Fee(
+                    destination: destination,
+                    value: value,
+                    data: data,
+                    l2FeeParameters: parameters
+                )
+                .map { (layer2Fees, $0) }
+                .eraseToAnyPublisher()
+            }
+            .map { layer2Fees, layer1Fee -> [Fee] in
+                layer2Fees.map { fee in
+                    let newAmount = Amount(with: fee.amount, value: fee.amount.value + layer1Fee)
+                    let newFee = Fee(newAmount, parameters: fee.parameters)
+                    return newFee
+                }
+            }
+            .eraseToAnyPublisher()
     }
 }
 
-//MARK: - Private
+// MARK: - Private
 
-extension OptimismWalletManager {
-    private func getLayer1Fee(amount: Amount, destination: String, transactionHash: String) -> AnyPublisher<Amount, Error> {
-        let params = [transactionHash] as! [AnyObject]
+private extension OptimismWalletManager {
+    func getLayer1Fee(
+        destination: String,
+        value: String?,
+        data: Data?,
+        l2FeeParameters: EthereumFeeParameters
+    ) -> AnyPublisher<Decimal, Error> {
+        guard let address = EthereumAddress(destination) else {
+            return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
+        }
+
+        let valueData = Data(hex: value ?? "0x0")
+        let transaction = EthereumTransaction(
+            gasPrice: l2FeeParameters.gasPrice,
+            gasLimit: l2FeeParameters.gasLimit,
+            to: address,
+            value: BigUInt(valueData),
+            data: data ?? Data()
+        )
         
+        // Just collect data to get estimated fee from contact address
+        // https://github.com/ethereum/wiki/wiki/RLP
+        guard let rlpEncodedTransactionData = transaction.encodeForSend() else {
+            return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
+        }
+        
+        let data = rlpEncodedTransactionData.hexString.addHexPrefix()
         return contractInteractor
-            .read(method: self.layer1FeeContractMethodName, parameters: params)
-            .tryMap { response in
-                if let bigUIntFee = BigUInt("\(response)"),
-                   let fee = Web3.Utils.formatToEthereumUnits(bigUIntFee, toUnits: .eth, decimals: 18, decimalSeparator: ".", fallbackToScientific: false),
-                   let decimalFee = Decimal(fee) {
-                    return Amount(with: self.wallet.blockchain, value: decimalFee)
-                } else {
+            .read(method: .getL1Fee(data: data))
+            .tryMap { [wallet] response in
+                guard let decimalFee = Decimal(string: "\(response)") else {
                     throw BlockchainSdkError.failedToLoadFee
                 }
-            }.eraseToAnyPublisher()
+                
+                let blockchain = wallet.blockchain
+                let fee = decimalFee / blockchain.decimalValue
+                
+                return fee
+            }
+            .eraseToAnyPublisher()
     }
 }

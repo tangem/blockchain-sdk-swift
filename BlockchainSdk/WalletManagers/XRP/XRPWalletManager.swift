@@ -112,17 +112,21 @@ extension XRPWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         return networkService.getFee()
-            .map { xrpFeeResponse -> [Amount] in
-                let min = xrpFeeResponse.min/Decimal(1000000)
-                let normal = xrpFeeResponse.normal/Decimal(1000000)
-                let max = xrpFeeResponse.max/Decimal(1000000)
+            .map { [weak self] xrpFeeResponse -> [Fee] in
+                guard let self else { return [] }
+                let blockchain = self.wallet.blockchain
                 
-                let minAmount = Amount(with: self.wallet.blockchain, value: min)
-                let normalAmount = Amount(with: self.wallet.blockchain, value: normal)
-                let maxAmount = Amount(with: self.wallet.blockchain, value: max)
-                return [minAmount, normalAmount, maxAmount]
+                let min = xrpFeeResponse.min / blockchain.decimalValue
+                let normal = xrpFeeResponse.normal / blockchain.decimalValue
+                let max = xrpFeeResponse.max / blockchain.decimalValue
+                
+                let minFee = Amount(with: blockchain, value: min)
+                let normalFee = Amount(with: blockchain, value: normal)
+                let maxFee = Amount(with: blockchain, value: max)
+
+                return [minFee, normalFee, maxFee].map { Fee($0) }
             }
             .eraseToAnyPublisher()
     }
