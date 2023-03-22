@@ -54,17 +54,16 @@ class BinanceWalletManager: BaseManager, WalletManager {
     }
 }
 
+// MARK: - TransactionSender
+
 extension BinanceWalletManager: TransactionSender {
-    var allowsFeeSelection: Bool { false }
-    
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         guard let msg = txBuilder.buildForSign(transaction: transaction) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
         let hash = msg.encodeForSignature()
-        return signer.sign(hash: hash,
-                           walletPublicKey: self.wallet.publicKey)
+        return signer.sign(hash: hash, walletPublicKey: self.wallet.publicKey)
             .tryMap {[weak self] signature -> Message in
                 guard let self = self else { throw WalletError.empty }
                 
@@ -84,20 +83,29 @@ extension BinanceWalletManager: TransactionSender {
             }
             .eraseToAnyPublisher()
     }
+}
+
+// MARK: - ThenProcessable
+
+extension BinanceWalletManager: ThenProcessable { }
+
+// MARK: - TransactionFeeProvider
+
+extension BinanceWalletManager: TransactionFeeProvider {
+    var allowsFeeSelection: Bool { false }
     
-    func getFee(amount: Amount,  destination: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount,  destination: String) -> AnyPublisher<[Fee], Error> {
         return networkService.getFee()
-            .tryMap {[weak self] feeString throws -> [Amount] in
+            .tryMap { [weak self] feeString throws -> [Fee] in
                 guard let self = self else { throw WalletError.empty }
                 
                 guard let feeValue = Decimal(feeString) else {
                     throw WalletError.failedToGetFee
                 }
                 
-                return [Amount(with: self.wallet.blockchain, value: feeValue)]
+                let feeAmount = Amount(with: self.wallet.blockchain, value: feeValue)
+                return [Fee(feeAmount)]
             }
             .eraseToAnyPublisher()
     }
 }
-
-extension BinanceWalletManager: ThenProcessable { }

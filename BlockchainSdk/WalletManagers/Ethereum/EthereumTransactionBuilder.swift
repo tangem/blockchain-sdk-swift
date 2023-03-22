@@ -22,47 +22,54 @@ class EthereumTransactionBuilder {
         self.chainId = BigUInt(chainId)
     }
     
-    public func buildForSign(transaction: Transaction, nonce: Int, gasLimit: BigUInt?) -> (hash: Data, transaction: EthereumTransaction)? {
-        let params = transaction.params as? EthereumTransactionParams
-        let nonceValue = BigUInt(params?.nonce ?? nonce)
+    public func buildForSign(transaction: Transaction, nonce: Int) -> CompiledEthereumTransaction? {
+        guard let feeParameters = transaction.fee.parameters as? EthereumFeeParameters else {
+            return nil
+        }
+
+        let parameters = transaction.params as? EthereumTransactionParams
+        let nonceValue = BigUInt(parameters?.nonce ?? nonce)
         
         guard nonceValue >= 0 else {
             return nil
         }
         
-        guard let gasLimit = params?.gasLimit ?? gasLimit else {
+        guard let amountValue = transaction.amount.bigUIntValue else {
             return nil
         }
         
-        guard let feeValue = transaction.fee.bigUIntValue, let amountValue = transaction.amount.bigUIntValue else {
+        guard let data = parameters?.data ?? getData(for: transaction.amount, targetAddress: transaction.destinationAddress) else {
             return nil
         }
         
-        guard let data = params?.data ?? getData(for: transaction.amount, targetAddress: transaction.destinationAddress) else {
+        guard let targetAddress = transaction.amount.type == .coin ? transaction.destinationAddress: transaction.contractAddress else {
             return nil
         }
         
-        guard let targetAddr = transaction.amount.type == .coin ? transaction.destinationAddress: transaction.contractAddress else {
-            return nil
-        }
-        
-        
-        guard let transaction = EthereumTransaction(amount: transaction.amount.type == .coin ? amountValue : BigUInt.zero,
-                                                    fee: feeValue,
-                                                    targetAddress: targetAddr,
-                                                    nonce: nonceValue,
-                                                    gasLimit: gasLimit,
-                                                    data: data,
-                                                    ignoreCheckSum: transaction.amount.type != .coin,
+        guard let ethereumAddress = EthereumAddress(targetAddress,
+                                                    type: .normal,
+                                                    ignoreChecksum: transaction.amount.type != .coin,
                                                     network: web3Network) else {
             return nil
         }
+        
+        let transaction = EthereumTransaction(
+            nonce: nonceValue,
+            gasPrice: feeParameters.gasPrice,
+            gasLimit: feeParameters.gasLimit,
+            to: ethereumAddress,
+            value: transaction.amount.type == .coin ? amountValue : .zero,
+            data: data,
+            v: 0,
+            r: 0,
+            s: 0
+        )
         
         guard let hashForSign = transaction.hashForSignature(chainID: chainId) else {
             return nil
         }
         
-        return (hashForSign, transaction)
+        return CompiledEthereumTransaction(transaction: transaction, hash: hashForSign)
     }
     
     public func buildForSend(transaction: EthereumTransaction, hash: Data, signature: Data) -> Data? {
@@ -92,8 +99,8 @@ class EthereumTransactionBuilder {
             return nil
         }
         
-        let prefixData = Data(hex: "a9059cbb000000000000000000000000")
-        return prefixData + addressData + amountData
+        let transferMethodPrefix = Data(hex: "a9059cbb")
+        return transferMethodPrefix + addressData.aligned(to: 32) + amountData
     }
 }
 
@@ -104,24 +111,5 @@ extension EthereumTransaction {
         
         let fields = [self.nonce, self.gasPrice, self.gasLimit, self.to.addressData, self.value, self.data, encodeV, self.r, self.s] as [AnyObject]
         return RLP.encode(fields)
-    }
-    
-    init?(amount: BigUInt, fee: BigUInt, targetAddress: String, nonce: BigUInt, gasLimit: BigUInt = 21000, data: Data, ignoreCheckSum: Bool,
-          v: BigUInt = 0, r: BigUInt = 0, s: BigUInt = 0, network: Networks) {
-        let gasPrice = fee / gasLimit
-        
-        guard let ethAddress = EthereumAddress(targetAddress, type: .normal, ignoreChecksum: ignoreCheckSum, network: network) else {
-            return nil
-        }
-        
-        self.init(nonce: nonce,
-                  gasPrice: gasPrice,
-                  gasLimit: gasLimit,
-                  to: ethAddress,
-                  value: amount,
-                  data: data,
-                  v: v,
-                  r: r,
-                  s: s)
     }
 }

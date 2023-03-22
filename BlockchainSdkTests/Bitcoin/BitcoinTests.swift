@@ -98,7 +98,8 @@ class BitcoinTests: XCTestCase {
         
         let amountToSend = Amount(with: blockchain, type: .coin, value: sendValue)
         let feeAmount = Amount(with: blockchain, type: .coin, value: feeValue)
-        let transaction = Transaction(amount: amountToSend, fee: feeAmount, sourceAddress: segwit.value, destinationAddress: destination, changeAddress: "")
+        let fee = Fee(feeAmount)
+        let transaction = Transaction(amount: amountToSend, fee: fee, sourceAddress: segwit.value, destinationAddress: destination, changeAddress: "")
         
         let expectedHashToSign1 = Data(hex: "8272779353EAD7848859916DFA4E6ED4DAA54989CA6258566D0FFEDEC2002400")
         let expectedHashToSign2 = Data(hex: "5624DB10BC172D5300C03EB50E3A1B2947CDCE4C89F483994DF07BB81EB97EA8")

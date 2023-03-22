@@ -98,12 +98,12 @@ class EthereumNetworkService: MultiNetworkProvider {
                 guard let self = self else {
                     throw BlockchainSdkError.failedToLoadFee
                 }
-                
-                let maxGasPrice = try maxGas(gasPrices)
-                let maxGasLimit = try maxGas(gasLimits)
-                
-                let fees = try self.calculateFee(gasPrice: maxGasPrice, gasLimit: maxGasLimit, decimalCount: self.decimals)
-                return EthereumFeeResponse(fees: fees, gasLimit: maxGasLimit)
+
+                return try self.mapToEthereumFeeResponse(
+                    gasPrice: maxGas(gasPrices),
+                    gasLimit: maxGas(gasLimits),
+                    decimalCount: self.decimals
+                )
             }
             .mapError { error in
                 if let moyaError = error as? MoyaError,
@@ -270,23 +270,12 @@ class EthereumNetworkService: MultiNetworkProvider {
         return result
     }
     
-    private func calculateFee(gasPrice: BigUInt, gasLimit: BigUInt, decimalCount: Int) throws -> [Decimal] {
-        let minValue = gasPrice * gasLimit
-        let min = Web3.Utils.formatToEthereumUnits(minValue, toUnits: .eth, decimals: decimalCount, decimalSeparator: ".", fallbackToScientific: false)!
+    private func mapToEthereumFeeResponse(gasPrice: BigUInt, gasLimit: BigUInt, decimalCount: Int) -> EthereumFeeResponse {
+        let minGasPrice = gasPrice
+        let normalGasPrice = gasPrice * BigUInt(12) / BigUInt(10)
+        let maxGasPrice = gasPrice * BigUInt(15) / BigUInt(10)
         
-        let normalValue = gasPrice * gasLimit * BigUInt(12) / BigUInt(10)
-        let normal = Web3.Utils.formatToEthereumUnits(normalValue, toUnits: .eth, decimals: decimalCount, decimalSeparator: ".", fallbackToScientific: false)!
-        
-        let maxValue = gasPrice * gasLimit * BigUInt(15) / BigUInt(10)
-        let max = Web3.Utils.formatToEthereumUnits(maxValue, toUnits: .eth, decimals: decimalCount, decimalSeparator: ".", fallbackToScientific: false)!
-        
-        guard let minDecimal = Decimal(string: min),
-              let normalDecimal = Decimal(string: normal),
-              let maxDecimal = Decimal(string: max) else {
-                  throw WalletError.failedToGetFee
-              }
-        
-        return [minDecimal, normalDecimal, maxDecimal]
+        return EthereumFeeResponse(gasPrices: [minGasPrice, normalGasPrice, maxGasPrice], gasLimit: gasLimit)
     }
     
     private func parseGas(_ publisher: AnyPublisher<EthereumResponse, Error>) -> AnyPublisher<BigUInt, Error> {

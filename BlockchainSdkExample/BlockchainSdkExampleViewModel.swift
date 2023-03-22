@@ -278,7 +278,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                     break
                 }
             } receiveValue: { [unowned self] in
-                self.feeDescriptions = $0.map { $0.description }
+                self.feeDescriptions = $0.map { $0.amount.description }
             }
             .store(in: &bag)
     }
