@@ -58,7 +58,8 @@ class LitecoinTests: XCTestCase {
         
         let amountToSend = Amount(with: blockchain, type: .coin, value: sendValue)
         let feeAmount = Amount(with: blockchain, type: .coin, value: feeValue)
-        let tx = Transaction(amount: amountToSend, fee: feeAmount, sourceAddress: address, destinationAddress: destinationAddress, changeAddress: address)
+        let fee = Fee(feeAmount)
+        let tx = Transaction(amount: amountToSend, fee: fee, sourceAddress: address, destinationAddress: destinationAddress, changeAddress: address)
         
         let expectedHashToSign1 = Data(hex: "4E17896956F9B8AFCCD0B2BBF5AC50462508C0AC1485EB6580AF7CC9300E837E")
         let expectedHashToSign2 = Data(hex: "E84A90E9E9DAE1EACAA2F12B79FF8824F868EA77C35272ADE0DFF8D2DAA8391E")

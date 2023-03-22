@@ -11,7 +11,7 @@ import TangemSdk
 import Combine
 
 @available(iOS 13.0, *)
-public protocol WalletManager: WalletProvider, BlockchainDataProvider, TransactionSender, TransactionCreator {
+public protocol WalletManager: WalletProvider, BlockchainDataProvider, TransactionSender, TransactionCreator, TransactionFeeProvider {
     var cardTokens: [Token] { get }
     func update(completion: @escaping (Result<Void, Error>) -> Void)
     func updatePublisher() -> AnyPublisher<Wallet, Error>
@@ -56,9 +56,13 @@ extension BlockchainDataProvider {
 
 @available(iOS 13.0, *)
 public protocol TransactionSender {
-    var allowsFeeSelection: Bool {get}
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error>
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error>
+}
+
+@available(iOS 13.0, *)
+public protocol TransactionFeeProvider {
+    var allowsFeeSelection: Bool { get }
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error>
 }
 
 public struct SendTxError: Error, LocalizedError {
@@ -79,13 +83,13 @@ public protocol TransactionSigner {
 @available(iOS 13.0, *)
 public protocol TransactionPusher {
     func isPushAvailable(for transactionHash: String) -> Bool
-    func getPushFee(for transactionHash: String) -> AnyPublisher<[Amount], Error>
+    func getPushFee(for transactionHash: String) -> AnyPublisher<[Fee], Error>
     func pushTransaction(with transactionHash: String, newTransaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error>
 }
 
 @available(iOS 13.0, *)
 public protocol SignatureCountValidator {
-	func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error>
+    func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error>
 }
 
 public protocol WithdrawalValidator {

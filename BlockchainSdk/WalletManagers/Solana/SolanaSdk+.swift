@@ -33,7 +33,7 @@ extension RPCEndpoint {
 extension Api {
     func getFees(
         commitment: Commitment? = nil
-    ) -> AnyPublisher<Fee, Error> {
+    ) -> AnyPublisher<Solana_Swift.Fee, Error> {
         Deferred {
             Future { [weak self] promise in
                 guard let self = self else {

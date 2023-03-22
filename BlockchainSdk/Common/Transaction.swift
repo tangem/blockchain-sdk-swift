@@ -13,7 +13,7 @@ public protocol TransactionParams {}
 
 public struct Transaction {
     public let amount: Amount
-    public var fee: Amount
+    public var fee: Fee
     public let sourceAddress: String
     public let destinationAddress: String
     public let changeAddress: String
@@ -24,7 +24,7 @@ public struct Transaction {
     public var params: TransactionParams? = nil
     
     public init(amount: Amount,
-                fee: Amount,
+                fee: Fee,
                 sourceAddress: String,
                 destinationAddress: String,
                 changeAddress: String,
@@ -48,7 +48,7 @@ public struct Transaction {
                                sourceAddress: String = .unknown,
                                destinationAddress: String) -> Transaction {
         Transaction(amount: Amount(with: blockchain, type: type, value: 0),
-                    fee: Amount(with: blockchain, type: type, value: 0),
+                    fee: Fee(Amount(with: blockchain, type: type, value: 0)),
                     sourceAddress: sourceAddress,
                     destinationAddress: destinationAddress,
                     changeAddress: sourceAddress)

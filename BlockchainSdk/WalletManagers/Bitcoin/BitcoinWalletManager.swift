@@ -56,13 +56,13 @@ class BitcoinWalletManager: BaseManager, WalletManager {
         }
     }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         return networkService.getFee()
-            .tryMap {[weak self] response throws -> [Amount] in
+            .tryMap { [weak self] response throws -> [Fee] in
                 guard let self = self else { throw WalletError.empty }
                 
                 return self.processFee(response, amount: amount, destination: destination)
-                
+                    .map { Fee($0) }
             }
             .eraseToAnyPublisher()
     }
@@ -189,7 +189,7 @@ extension BitcoinWalletManager: TransactionPusher {
         return !containNotRbfInput && !containOtherOutputAccount
     }
     
-    func getPushFee(for transactionHash: String) -> AnyPublisher<[Amount], Error> {
+    func getPushFee(for transactionHash: String) -> AnyPublisher<[Fee], Error> {
         guard let tx = wallet.transactions.first(where: { $0.hash == transactionHash }) else {
             return .anyFail(error: BlockchainSdkError.failedToFindTransaction)
         }
@@ -197,9 +197,9 @@ extension BitcoinWalletManager: TransactionPusher {
         txBuilder.unspentOutputs = loadedUnspents.filter { $0.transactionHash != transactionHash }
         
         return getFee(amount: tx.amount, destination: tx.destinationAddress)
-            .map { [weak self] in
+            .map { [weak self] feeDataModel in
                 self?.txBuilder.unspentOutputs = self?.loadedUnspents
-                return $0
+                return feeDataModel
             }
             .eraseToAnyPublisher()
     }
@@ -209,7 +209,7 @@ extension BitcoinWalletManager: TransactionPusher {
             return .anyFail(error: BlockchainSdkError.failedToFindTransaction)
         }
         
-        guard oldTx.fee.value < newTransaction.fee.value else {
+        guard oldTx.fee.amount.value < newTransaction.fee.amount.value else {
             return .anyFail(error: BlockchainSdkError.feeForPushTxNotEnough)
         }
         

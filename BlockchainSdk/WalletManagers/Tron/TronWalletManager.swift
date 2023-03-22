@@ -66,7 +66,7 @@ class TronWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         let maxEnergyUsePublisher: AnyPublisher<Int, Error>
 
         switch amount.type {
@@ -90,11 +90,12 @@ class TronWalletManager: BaseManager, WalletManager {
         
         return Publishers.Zip(maxEnergyUsePublisher, networkService.chainParameters())
             .zip(networkService.accountExists(address: destination), transactionDataPublisher, networkService.getAccountResource(for: wallet.address))
-            .map { (networkParameters, destinationExists, transactionData, resources) -> Amount in
+            .map { (networkParameters, destinationExists, transactionData, resources) -> [Fee] in
                 let (maxEnergyUse, chainParameters) = networkParameters
                 
                 if !destinationExists && amount.type == .coin {
-                    return Amount(with: blockchain, value: 1.1)
+                    let amount = Amount(with: blockchain, value: 1.1)
+                    return [Fee(amount)]
                 }
 
                 let sunPerBandwidthPoint = 1000
@@ -113,14 +114,12 @@ class TronWalletManager: BaseManager, WalletManager {
                 let remainingBandwidthInSun = (resources.freeNetLimit - (resources.freeNetUsed ?? 0)) * sunPerBandwidthPoint
 
                 if totalFee <= remainingBandwidthInSun {
-                    return .zeroCoin(for: blockchain)
+                    return [Fee(.zeroCoin(for: blockchain))]
                 } else {
                     let value = Decimal(totalFee) / blockchain.decimalValue
-                    return Amount(with: blockchain, value: value)
+                    let amount = Amount(with: blockchain, value: value)
+                    return [Fee(amount)]
                 }
-            }
-            .map {
-                [$0]
             }
             .eraseToAnyPublisher()
     }

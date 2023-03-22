@@ -19,7 +19,7 @@ struct EthereumInfoResponse {
 }
 
 struct EthereumFeeResponse {
-    let fees: [Decimal]
+    let gasPrices: [BigUInt]
     let gasLimit: BigUInt
 }
 
