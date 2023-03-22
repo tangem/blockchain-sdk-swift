@@ -19,8 +19,7 @@ struct EthereumInfoResponse {
 }
 
 struct EthereumFeeResponse {
-    /// Three gas prices with an increase of 0/20/50 percent
-    let prices: [BigUInt]
+    let gasPrices: [BigUInt]
     let gasLimit: BigUInt
 }
 
