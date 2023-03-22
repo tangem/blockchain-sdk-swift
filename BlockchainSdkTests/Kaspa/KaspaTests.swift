@@ -51,7 +51,7 @@ class KaspaTests: XCTestCase {
         
         let transaction = Transaction(
             amount: Amount(with: blockchain, value: 0.001),
-            fee: Amount(with: blockchain, value: 0.000300000000001), // otherwise the tests fail, can't convert to 0.0003 properly
+            fee: Fee(Amount(with: blockchain, value: 0.000300000000001)), // otherwise the tests fail, can't convert to 0.0003 properly
             sourceAddress: sourceAddress,
             destinationAddress: destination,
             changeAddress: sourceAddress
@@ -137,7 +137,7 @@ class KaspaTests: XCTestCase {
         
         let transaction = Transaction(
             amount: Amount(with: blockchain, value: 0.001),
-            fee: Amount(with: blockchain, value: 0.0001),
+            fee: Fee(Amount(with: blockchain, value: 0.0001)),
             sourceAddress: sourceAddress,
             destinationAddress: destination,
             changeAddress: sourceAddress
