@@ -54,7 +54,7 @@ PODS:
   - SwiftDate (6.3.1)
   - SwiftProtobuf (1.18.0)
   - SwiftyJSON (5.0.1)
-  - TangemSdk (3.3.4)
+  - TangemSdk (3.4.0)
   - TangemWalletCore (3.1.9-tangem1):
     - SwiftProtobuf
   - TweetNacl (1.0.2)
@@ -84,9 +84,9 @@ DEPENDENCIES:
   - SwiftCBOR
   - SwiftProtobuf
   - SwiftyJSON
-  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-198`)
+  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-207`)
   - TangemWalletCore (from `https://github.com/tangem/wallet-core-binaries-ios.git`, tag `3.1.9-tangem2`)
-  - web3swift (from `https://github.com/tangem/web3swift.git`, tag `2.2.10`)
+  - web3swift (from `https://github.com/tangem/web3swift.git`, tag `2.2.12`)
 
 SPEC REPOS:
   trunk:
@@ -124,13 +124,13 @@ EXTERNAL SOURCES:
     :tag: add-external-signer-7
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-198
+    :tag: develop-207
   TangemWalletCore:
     :git: https://github.com/tangem/wallet-core-binaries-ios.git
     :tag: 3.1.9-tangem2
   web3swift:
     :git: https://github.com/tangem/web3swift.git
-    :tag: 2.2.10
+    :tag: 2.2.12
 
 CHECKOUT OPTIONS:
   BinanceChain:
@@ -147,13 +147,13 @@ CHECKOUT OPTIONS:
     :tag: add-external-signer-7
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-198
+    :tag: develop-207
   TangemWalletCore:
     :git: https://github.com/tangem/wallet-core-binaries-ios.git
     :tag: 3.1.9-tangem2
   web3swift:
     :git: https://github.com/tangem/web3swift.git
-    :tag: 2.2.10
+    :tag: 2.2.12
 
 SPEC CHECKSUMS:
   Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
@@ -176,12 +176,12 @@ SPEC CHECKSUMS:
   SwiftDate: 72d28954e8e1c6c1c0f917ccc8005e4f83c7d4b2
   SwiftProtobuf: c3c12645230d9b09c72267e0de89468c5543bd86
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
-  TangemSdk: 9ea2c230bd616787bdccc5fb3ab36925d06199d4
+  TangemSdk: d628b627e16634b97c2536f265bdcddc9734c617
   TangemWalletCore: 87a4637456e46c2aa3d49a6a1dc07a8054783183
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 1ab3fb32ea68d082db31443d1b0493ab2a4c9611
+PODFILE CHECKSUM: 141a51134555c5bd3fa60a1e563065ddb0f5ef68
 
 COCOAPODS: 1.11.3

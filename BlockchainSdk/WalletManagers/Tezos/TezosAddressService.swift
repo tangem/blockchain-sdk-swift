@@ -41,8 +41,8 @@ public class TezosAddressService: AddressService {
     }
     
     public func validate(_ address: String) -> Bool {
-        guard let prefixedHashWithChecksum = address.base58DecodedData,
-            prefixedHashWithChecksum.count == 27 else {
+        let prefixedHashWithChecksum = address.base58DecodedData
+        guard prefixedHashWithChecksum.count == 27 else {
             return false
         }
         
