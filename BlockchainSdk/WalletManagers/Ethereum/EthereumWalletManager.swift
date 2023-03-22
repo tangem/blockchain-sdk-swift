@@ -102,7 +102,7 @@ private extension EthereumWalletManager {
                 }
 
                 let gasLimit = ethereumFeeResponse.gasLimit
-                let fees = ethereumFeeResponse.prices.map { gasPrice in
+                let fees = ethereumFeeResponse.gasPrices.map { gasPrice in
                     let feeValue = gasLimit * gasPrice
                     let fee = Decimal(Int(feeValue)) / self.wallet.blockchain.decimalValue
 

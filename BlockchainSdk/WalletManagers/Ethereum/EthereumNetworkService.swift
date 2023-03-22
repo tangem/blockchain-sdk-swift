@@ -275,7 +275,7 @@ class EthereumNetworkService: MultiNetworkProvider {
         let normalGasPrice = gasPrice * BigUInt(12) / BigUInt(10)
         let maxGasPrice = gasPrice * BigUInt(15) / BigUInt(10)
         
-        return EthereumFeeResponse(prices: [minGasPrice, normalGasPrice, maxGasPrice], gasLimit: gasLimit)
+        return EthereumFeeResponse(gasPrices: [minGasPrice, normalGasPrice, maxGasPrice], gasLimit: gasLimit)
     }
     
     private func parseGas(_ publisher: AnyPublisher<EthereumResponse, Error>) -> AnyPublisher<BigUInt, Error> {
