@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import TangemSdk
+import BitcoinCore
 
 class DogecoinWalletManager: BitcoinWalletManager {
     override var minimalFee: Decimal { 0.01 }
@@ -47,6 +48,11 @@ class DogecoinWalletManager: BitcoinWalletManager {
             )
             transactionSize = transactionData.count
         } catch {
+            if let bitcoinCoreError = error as? BitcoinCoreErrors.SendValueErrors,
+               case .dust = bitcoinCoreError {
+                return .justWithError(output: [Fee(.zeroCoin(for: wallet.blockchain))])
+            }
+            
             print("Failed to calculate \(wallet.blockchain.displayName) fee", error)
             return .anyFail(error: BlockchainSdkError.failedToLoadFee)
         }
