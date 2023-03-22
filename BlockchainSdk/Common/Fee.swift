@@ -41,12 +41,3 @@ extension Fee: CustomStringConvertible {
         return string
     }
 }
-
-// MARK: - Helpers
-
-extension Fee {
-    public func increased(by value: Decimal) -> Self {
-        let newAmount = Amount(with: amount, value: amount.value + value)
-        return Fee(newAmount, parameters: parameters)
-    }
-}

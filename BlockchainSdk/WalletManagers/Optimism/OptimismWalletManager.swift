@@ -35,10 +35,10 @@ class OptimismWalletManager: EthereumWalletManager {
     /// When we're building transaction we have to used `gasLimit` and `gasPrice` ONLY from `L2`
     override func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
         super.getFee(destination: destination, value: value, data: data)
-            .flatMap { [weak self] layer2Fee -> AnyPublisher<([Fee], Decimal), Error> in
+            .flatMap { [weak self] layer2Fees -> AnyPublisher<([Fee], Decimal), Error> in
                 guard let self,
                       // We use EthereumFeeParameters without increase
-                      let parameters = layer2Fee.first?.parameters as? EthereumFeeParameters else {
+                      let parameters = layer2Fees.first?.parameters as? EthereumFeeParameters else {
                     return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
                 }
                 
@@ -48,11 +48,15 @@ class OptimismWalletManager: EthereumWalletManager {
                     data: data,
                     l2FeeParameters: parameters
                 )
-                .map { (layer2Fee, $0) }
+                .map { (layer2Fees, $0) }
                 .eraseToAnyPublisher()
             }
-            .map { layer2Fee, layer1Fee -> [Fee] in
-                layer2Fee.map { $0.increased(by: layer1Fee) }
+            .map { layer2Fees, layer1Fee -> [Fee] in
+                layer2Fees.map { fee in
+                    let newAmount = Amount(with: fee.amount, value: fee.amount.value + layer1Fee)
+                    let newFee = Fee(newAmount, parameters: fee.parameters)
+                    return newFee
+                }
             }
             .eraseToAnyPublisher()
     }
