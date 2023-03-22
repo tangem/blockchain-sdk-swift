@@ -100,7 +100,7 @@ class KaspaTransactionBuilder {
     private func change(_ transaction: Transaction, unspentOutputs: [BitcoinUnspentOutput]) throws -> UInt64? {
         let fullAmount = unspentOutputs.map { $0.amount }.reduce(0, +)
         let transactionAmount = ((transaction.amount.value * blockchain.decimalValue).rounded() as NSDecimalNumber).uint64Value
-        let feeAmount = ((transaction.fee.value * blockchain.decimalValue).rounded() as NSDecimalNumber).uint64Value
+        let feeAmount = ((transaction.fee.amount.value * blockchain.decimalValue).rounded() as NSDecimalNumber).uint64Value
         
         let amountCharged = transactionAmount + feeAmount
         if fullAmount > amountCharged {

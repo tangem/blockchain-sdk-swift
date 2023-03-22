@@ -69,7 +69,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Amount], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         let numberOfUtxos = txBuilder.unspentOutputsCount(for: amount)
         guard numberOfUtxos > 0 else {
             return Fail(error: WalletError.failedToGetFee)
@@ -79,7 +79,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
         let feePerUtxo = 10_000
         let fee = feePerUtxo * numberOfUtxos
         
-        return Just([Amount(with: wallet.blockchain, value: Decimal(fee) / wallet.blockchain.decimalValue)])
+        return Just([Fee(Amount(with: wallet.blockchain, value: Decimal(fee) / wallet.blockchain.decimalValue))])
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
@@ -106,7 +106,7 @@ extension KaspaWalletManager: DustRestrictable {
 
 extension KaspaWalletManager: WithdrawalValidator {
     func validate(_ transaction: Transaction) -> WithdrawalWarning? {
-        let amountAvailableToSend = txBuilder.availableAmount() - transaction.fee
+        let amountAvailableToSend = txBuilder.availableAmount() - transaction.fee.amount
         if transaction.amount <= amountAvailableToSend {
             return nil
         }
