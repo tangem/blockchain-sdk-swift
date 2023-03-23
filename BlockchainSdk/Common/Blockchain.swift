@@ -42,6 +42,7 @@ public enum Blockchain: Equatable, Hashable {
     case optimism(testnet: Bool)
     case saltPay
     case ton(testnet: Bool)
+    case kava(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -87,6 +88,8 @@ public enum Blockchain: Equatable, Hashable {
             return false
         case .ton(let testnet):
             return testnet
+        case .kava(let testnet):
+            return testnet
         }
     }
     
@@ -107,7 +110,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash:
             return 8
-        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay:
+        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava:
             return 18
         case  .cardano, .xrp, .tezos, .tron:
             return 6
@@ -176,6 +179,8 @@ public enum Blockchain: Equatable, Hashable {
             return "ETF"
         case .ton:
             return "TON"
+        case .kava:
+            return "KAVA"
         }
     }
     
@@ -283,6 +288,7 @@ extension Blockchain {
         case .gnosis: return 100
         case .optimism: return isTestnet ? 420 : 10
         case .saltPay: return 29313331
+        case .kava: return isTestnet ? 2221 : 2222
         default: return nil
         }
     }
@@ -448,6 +454,12 @@ extension Blockchain {
             return [
                 URL(string: "https://rpc.bicoccachain.net")!,
             ]
+        case .kava:
+            if isTestnet {
+                return [URL(string: "https://evm.testnet.kava.io")!]
+            }
+            
+            return [URL(string: "https://evm.kava.io")!]
         default:
             return nil
         }
@@ -528,6 +540,7 @@ extension Blockchain {
         case .gnosis: return 700
         case .optimism: return 614
         case .ton: return 607
+        case .kava: return 459
         }
     }
     
@@ -589,6 +602,8 @@ extension Blockchain {
             )
         case .ton:
             return TrustWalletAddressService(coin: .ton, publicKeyType: .ed25519)
+        case .kava:
+            return EthereumAddressService()
         }
     }
 }
@@ -659,6 +674,7 @@ extension Blockchain: Codable {
         case .ethereumFair: return "ethereumfair"
         case .saltPay: return "sxdai"
         case .ton: return "ton"
+        case .kava: return "kava"
         }
     }
     
@@ -710,7 +726,10 @@ extension Blockchain: Codable {
         case "ethereumfair": self = .ethereumFair
         case "sxdai": self = .saltPay
         case "ton": self = .ton(testnet: isTestnet)
-        default: throw BlockchainSdkError.decodingFailed
+        case "kava": self = .kava(testnet: isTestnet)
+        default:
+            assertionFailure("Blockchain for \(key) isn't supported")
+            throw BlockchainSdkError.decodingFailed
         }
     }
     
@@ -769,6 +788,8 @@ extension Blockchain {
             // Or another one https://testnet-faucet.dash.org/ - by Dash Core Group
         case .optimism:
             return URL(string: "https://optimismfaucet.xyz")! //another one https://faucet.paradigm.xyz
+        case .kava:
+            return URL(string: "https://faucet.kava.io")!
         default:
             return nil
         }
@@ -872,6 +893,12 @@ extension Blockchain {
         case .ton:
             let subdomain = isTestnet ? "testnet." : ""
             return URL(string: "https://\(subdomain)tonscan.org/address/\(address)")
+        case .kava:
+            if isTestnet {
+                return URL(string: "https://explorer.testnet.kava.io/address/\(address)")
+            }
+
+            return URL(string: "https://explorer.kava.io/address/\(address)")
         }
     }
 }
@@ -977,6 +1004,8 @@ extension Blockchain {
             return DashWalletAssembly()
         case .ton:
             return TONWalletAssembly()
+        case .kava:
+            return EthereumWalletAssembly()
         }
     }
     
