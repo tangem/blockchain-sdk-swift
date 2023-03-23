@@ -17,11 +17,23 @@ struct EthereumWalletAssembly: WalletManagerAssembly {
         return try EthereumWalletManager(wallet: input.wallet).then {
             let chainId = input.blockchain.chainId!
             
+            let blockcypherProvider: BlockcypherNetworkProvider?
+            
+            if case .ethereum = input.blockchain {
+                blockcypherProvider = BlockcypherNetworkProvider(
+                    endpoint: .ethereum,
+                    tokens: input.blockchainConfig.blockcypherTokens,
+                    configuration: input.networkConfig
+                )
+            } else {
+                blockcypherProvider = nil
+            }
+            
             $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, chainId: chainId)
             $0.networkService = EthereumNetworkService(
                 decimals: input.blockchain.decimalCount,
                 providers: networkProviderAssembly.makeEthereumJsonRpcProviders(with: input),
-                blockcypherProvider: networkProviderAssembly.makeBlockcypherNetworkProvider(endpoint: .ethereum, with: input),
+                blockcypherProvider: blockcypherProvider,
                 blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
                 transactionHistoryProvider: networkProviderAssembly.makeBlockscoutNetworkProvider(
                     canLoad: input.blockchain.canLoadTransactionHistory,

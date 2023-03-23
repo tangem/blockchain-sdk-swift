@@ -30,15 +30,15 @@ struct TONWalletAssembly: WalletManagerAssembly {
                 contentsOf: [
                     TONProvider(
                         node: .init(
-                            apiKeyValue: input.blockchainConfig.getBlockApiKey,
-                            endpointType: .getblock
+                            apiKeyValue: input.blockchainConfig.nowNodesApiKey,
+                            endpointType: .nownodes
                         ),
                         networkConfig: input.networkConfig
                     ),
                     TONProvider(
                         node: .init(
-                            apiKeyValue: input.blockchainConfig.nowNodesApiKey,
-                            endpointType: .nownodes
+                            apiKeyValue: input.blockchainConfig.getBlockApiKey,
+                            endpointType: .getblock
                         ),
                         networkConfig: input.networkConfig
                     )
