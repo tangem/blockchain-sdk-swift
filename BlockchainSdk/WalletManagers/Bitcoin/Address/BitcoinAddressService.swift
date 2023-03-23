@@ -133,7 +133,6 @@ public class BitcoinBech32AddressService: AddressService {
 	}
 	
 	public func makeMultisigAddress(from scriptHash: Data) throws -> String {
-		print("Script hash hex: ", scriptHash.hex)
 		let address = try converter.convert(scriptHash: scriptHash).stringValue
 		
 		return address

@@ -7,6 +7,7 @@
 //
 
 import Moya
+import TangemSdk
 
 public struct NetworkProviderConfiguration {
     let logger: LoggerType
@@ -27,7 +28,9 @@ public struct NetworkProviderConfiguration {
         var plugins: [PluginType] = []
 
         if let logOptions = logger.logOptions {
-            plugins.append(NetworkLoggerPlugin(configuration: .init(logOptions: logOptions)))
+            let configuration = NetworkLoggerPlugin.Configuration(output: NetworkLoggerPlugin.tangemSdkLoggerOutput,
+                                                                  logOptions: logOptions)
+            plugins.append(NetworkLoggerPlugin(configuration: configuration))
         }
 
         if let credentials {
@@ -65,4 +68,14 @@ public extension URLSessionConfiguration {
         configuration.timeoutIntervalForResource = 30
         return configuration
     }()
+}
+
+// MARK: - Moya + TangemSdk
+
+public extension NetworkLoggerPlugin {
+    static func tangemSdkLoggerOutput(target: TargetType, items: [String]) {
+        for item in items {
+            Log.network(item)
+        }
+    }
 }

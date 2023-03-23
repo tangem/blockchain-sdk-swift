@@ -62,7 +62,7 @@ class BitcoinTransactionBuilder {
                                                          sequence: sequence)
 			return hashes
 		} catch {
-			print(error)
+            Log.error(error)
 			return nil
 		}
 	}
@@ -81,7 +81,7 @@ class BitcoinTransactionBuilder {
                                                    changeScript: changeScript,
                                                    sequence: sequence)
 		} catch {
-			print(error)
+            Log.error(error)
 			return nil
 		}
 	}
