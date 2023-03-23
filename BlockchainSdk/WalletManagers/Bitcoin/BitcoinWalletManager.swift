@@ -107,7 +107,7 @@ class BitcoinWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
-    private func processFee(_ response: BitcoinFee, amount: Amount, destination: String) -> [Amount] {
+    func processFee(_ response: BitcoinFee, amount: Amount, destination: String) -> [Amount] {
         // Don't remove `.rounded` from here, intValue can sometimes go crazy
         // e.g. with the Decimal of (662701 / 3), producing 0 integer
         var minRate = (max(response.minimalSatoshiPerByte, minimalFeePerByte).rounded(roundingMode: .up) as NSDecimalNumber).intValue
