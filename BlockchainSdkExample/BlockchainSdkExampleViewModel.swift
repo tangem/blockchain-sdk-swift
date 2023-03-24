@@ -62,6 +62,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                                                                           useBlockBookUtxoApis: true,
                                                                           nowNodesApiKey: "",
                                                                           getBlockApiKey: "",
+                                                                          kaspaSecondaryApiUrl: nil,
                                                                           tronGridApiKey: "",
                                                                           tonCenterApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
                                                                           quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
