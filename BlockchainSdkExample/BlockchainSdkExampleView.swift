@@ -21,6 +21,38 @@ struct BlockchainSdkExampleView: View {
                         Text("Scan card")
                     }
                     
+                    if #available(iOS 14.0, *) {
+                        DisclosureGroup("Dummy data", isExpanded: $model.dummyExpanded) {
+                            TextField("Dummy Public Key", text: $model.dummyPublicWalletKey)
+                                .disableAutocorrection(true)
+                                .keyboardType(.alphabet)
+                                .truncationMode(.middle)
+                            TextField("Dummy Address", text: $model.dummyAddress)
+                                .disableAutocorrection(true)
+                                .keyboardType(.alphabet)
+                                .truncationMode(.middle)
+                            HStack {
+                                Button {
+                                    model.updateDummyAction()
+                                } label: {
+                                    Text("Update")
+                                        .padding()
+                                        .font(.body)
+                                }
+                                .frame(maxWidth: .infinity)
+                                
+                                Button {
+                                    model.clearDummyAction()
+                                } label: {
+                                    Text("Clear")
+                                        .padding()
+                                        .foregroundColor(.red)
+                                }
+                                .frame(maxWidth: .infinity)
+                            }
+                        }
+                    }
+                    
                     Picker("Blockchain", selection: $model.blockchainName) {
                         Text("Not selected").tag("")
                         ForEach(model.blockchains, id: \.1) { blockchain in

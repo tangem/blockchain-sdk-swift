@@ -14,6 +14,8 @@ import BlockchainSdk
 import TangemSdk
 
 class BlockchainSdkExampleViewModel: ObservableObject {
+    @Published var dummyPublicWalletKey: String = ""
+    @Published var dummyAddress: String = ""
     @Published var destination: String = ""
     @Published var amountToSend: String = ""
     @Published var feeDescriptions: [String] = []
@@ -31,6 +33,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     @Published var tokenDecimalPlaces = 0
     @Published var sourceAddresses: [Address] = []
     @Published var balance: String = "--"
+    
+    @Published var dummyExpanded: Bool = false
     
     var tokenSectionName: String {
         if let enteredToken = self.enteredToken {
@@ -216,6 +220,16 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         }
     }
     
+    func updateDummyAction() {
+        updateWalletManager()
+    }
+    
+    func clearDummyAction() {
+        dummyPublicWalletKey = ""
+        dummyAddress = ""
+        updateWalletManager()
+    }
+    
     func updateBalance() {
         balance = "--"
         
@@ -373,7 +387,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         }
 
         do {
-            let walletManager = try walletManagerFactory.makeWalletManager(blockchain: blockchain, walletPublicKey: wallet.publicKey)
+            let walletManager = try createWalletManager(blockchain: blockchain, wallet: wallet)
             self.walletManager = walletManager
             self.sourceAddresses = walletManager.wallet.addresses
             if let enteredToken = enteredToken {
@@ -383,6 +397,14 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         } catch {
             print(error)
         }
+    }
+    
+    private func createWalletManager(blockchain: Blockchain, wallet: Card.Wallet) throws -> WalletManager {
+        return try walletManagerFactory.makeStubWalletManager(
+            blockchain: blockchain,
+            walletPublicKey: dummyPublicWalletKey.isEmpty ? wallet.publicKey : Data(hex: dummyPublicWalletKey),
+            addresses: [dummyAddress]
+        )
     }
     
     private func parseAmount() -> Amount? {
