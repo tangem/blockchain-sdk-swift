@@ -104,13 +104,26 @@ class BitcoinTests: XCTestCase {
         let expectedHashToSign1 = Data(hex: "8272779353EAD7848859916DFA4E6ED4DAA54989CA6258566D0FFEDEC2002400")
         let expectedHashToSign2 = Data(hex: "5624DB10BC172D5300C03EB50E3A1B2947CDCE4C89F483994DF07BB81EB97EA8")
         let expectedSignedTransaction = Data(hex:  "01000000000102DF05DDAF1B9E0D7A36672DA32986499F5EC8B3946429D16E1CD6736CF4A3FECF0100000000FAFFFFFFEF0788C82E89047D926062A41C8500C4FE896069E95C37251D6B8CEED67A908B0000000000FAFFFFFF02005A620200000000220020D79BB4E313E9A85557D685D363601A00E9176DC04F6B051F1C0D97257769A4B9AF04B90000000000160014309A0C6EFA0DA7966D5C42DC5A928F6BAF0E47EF02463043021F325BF907137BB6ED0A84D78C12F9680DD57AE374F45D43CDC7068ABF56F5B902203C08BC1F9CD1E91E7A496DA2ECD54597B11AE0DDA4F6672235853C0CEF6BF8B40121036DB397495FA03FE263EE4021B77C49496E5C7DB8266E6E33A03D5B3A370C3D6D02483045022100ED59AEECB1AC0BAF31B6D84BB51C060DBBC3E0321EEEE6FADEBF073099629A9A02207247306451FD78488B1AAE38391DA6CAA72B52D2E6D9359F9C682EFCBF388B070121036DB397495FA03FE263EE4021B77C49496E5C7DB8266E6E33A03D5B3A370C3D6D00000000")
+        testTransaction(
+            transaction,
+            signatures: [signature1, signature2],
+            txBuilder: txBuilder,
+            sortType: .none,
+            expectedHashes: [expectedHashToSign1, expectedHashToSign2],
+            expectedSignedTransaction: expectedSignedTransaction
+        )
         
-        let buildToSignResult = txBuilder.buildForSign(transaction: transaction, sequence: 4294967290, sortType: .none)!
-        sizeTester.testTxSizes(buildToSignResult)
-        let signedTx = txBuilder.buildForSend(transaction: transaction, signatures: [signature1, signature2], sequence: 4294967290, sortType: .none)
-        XCTAssertEqual(buildToSignResult[0].hexString, expectedHashToSign1.hexString)
-        XCTAssertEqual(buildToSignResult[1].hexString, expectedHashToSign2.hexString)
-        XCTAssertEqual(signedTx?.hexString, expectedSignedTransaction.hexString)
+        let expectedHashToSign1Sorted = Data(hex: "524AA09FDD0F8B414E2C66C650C9853C020963D56B84CE3049FDDD56869E5EEA")
+        let expectedHashToSign2Sorted = Data(hex: "CA0F139AD25974812C294544229ECE7D3293B9E53680AC63B83B3BC1B2FC22BD")
+        let expectedSignedSortedTransaction = Data(hex:  "01000000000102EF0788C82E89047D926062A41C8500C4FE896069E95C37251D6B8CEED67A908B0000000000FAFFFFFFDF05DDAF1B9E0D7A36672DA32986499F5EC8B3946429D16E1CD6736CF4A3FECF0100000000FAFFFFFF02AF04B90000000000160014309A0C6EFA0DA7966D5C42DC5A928F6BAF0E47EF005A620200000000220020D79BB4E313E9A85557D685D363601A00E9176DC04F6B051F1C0D97257769A4B902463043021F325BF907137BB6ED0A84D78C12F9680DD57AE374F45D43CDC7068ABF56F5B902203C08BC1F9CD1E91E7A496DA2ECD54597B11AE0DDA4F6672235853C0CEF6BF8B40121036DB397495FA03FE263EE4021B77C49496E5C7DB8266E6E33A03D5B3A370C3D6D02483045022100ED59AEECB1AC0BAF31B6D84BB51C060DBBC3E0321EEEE6FADEBF073099629A9A02207247306451FD78488B1AAE38391DA6CAA72B52D2E6D9359F9C682EFCBF388B070121036DB397495FA03FE263EE4021B77C49496E5C7DB8266E6E33A03D5B3A370C3D6D00000000")
+        testTransaction(
+            transaction,
+            signatures: [signature1, signature2],
+            txBuilder: txBuilder,
+            sortType: .bip69,
+            expectedHashes: [expectedHashToSign1Sorted, expectedHashToSign2Sorted],
+            expectedSignedTransaction: expectedSignedSortedTransaction
+        )
     }
     
     private func prepareTwoUnspentOutputs(for addresses: [BitcoinCore.Address]) -> [BitcoinUnspentOutput] {
@@ -131,5 +144,13 @@ class BitcoinTests: XCTestCase {
                                          amount: 12210000,
                                          outputScript: utxo2Script!.hex)
         return [utxo2, utxo1]
+    }
+    
+    private func testTransaction(_ transaction: BlockchainSdk.Transaction, signatures: [Data], txBuilder: BitcoinTransactionBuilder, sortType: TransactionDataSortType, expectedHashes: [Data], expectedSignedTransaction: Data) {
+        let buildToSignResult = txBuilder.buildForSign(transaction: transaction, sequence: 4294967290, sortType: sortType)!
+        sizeTester.testTxSizes(buildToSignResult)
+        let signedTx = txBuilder.buildForSend(transaction: transaction, signatures: signatures, sequence: 4294967290, sortType: sortType)
+        XCTAssertEqual(buildToSignResult.map { $0.hex }, expectedHashes.map { $0.hex })
+        XCTAssertEqual(signedTx?.hexString, expectedSignedTransaction.hexString)
     }
 }
