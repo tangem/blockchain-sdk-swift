@@ -569,7 +569,7 @@ extension Blockchain {
         case .stellar:
             return StellarAddressService()
         case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair,
-                .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay:
+                .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -602,8 +602,6 @@ extension Blockchain {
             )
         case .ton:
             return TrustWalletAddressService(coin: .ton, publicKeyType: .ed25519)
-        case .kava:
-            return EthereumAddressService()
         }
     }
 }
@@ -980,7 +978,7 @@ extension Blockchain {
             return DucatusWalletAssembly()
         case .stellar:
             return StellarWalletAssembly()
-        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay:
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
@@ -1004,8 +1002,6 @@ extension Blockchain {
             return DashWalletAssembly()
         case .ton:
             return TONWalletAssembly()
-        case .kava:
-            return EthereumWalletAssembly()
         }
     }
     
