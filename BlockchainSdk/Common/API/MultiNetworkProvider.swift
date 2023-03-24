@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import Moya
+import TangemSdk
 
 @available(iOS 13.0, *)
 protocol MultiNetworkProvider: AnyObject, HostProvider {
@@ -32,17 +33,17 @@ extension MultiNetworkProvider {
                 guard let self = self else { return .anyFail(error: error) }
                 
                 if let moyaError = error as? MoyaError, case let .statusCode(resp) = moyaError {
-                    print("Switchable publisher catched error: \(moyaError). Response message: \(String(describing: String(data: resp.data, encoding: .utf8)))")
+                    Log.network("Switchable publisher catched error: \(moyaError). Response message: \(String(describing: String(data: resp.data, encoding: .utf8)))")
                 }
                 
                 if case WalletError.noAccount = error {
                     return .anyFail(error: error)
                 }
                 
-                print("Switchable publisher catched error:", error)
+                Log.network("Switchable publisher catched error: \(error)")
                 
                 if self.needRetry(for: currentHost) {
-                    print("Switching to next publisher")
+                    Log.network("Switching to next publisher")
                     return self.providerPublisher(for: requestPublisher)
                 }
                 

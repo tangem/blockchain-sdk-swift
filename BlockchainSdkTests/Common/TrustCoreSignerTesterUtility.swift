@@ -18,9 +18,11 @@ import CryptoKit
 public class TrustCoreSignerTesterUtility {
     
     private var privateKey: Curve25519.Signing.PrivateKey
+    private var signatures: [Data]?
     
-    init(privateKey: Curve25519.Signing.PrivateKey) {
+    init(privateKey: Curve25519.Signing.PrivateKey, signatures: [Data]? = nil) {
         self.privateKey = privateKey
+        self.signatures = signatures
     }
     
 }
@@ -34,10 +36,14 @@ extension TrustCoreSignerTesterUtility: TransactionSigner {
                 TransactionSizeTesterUtility().testTxSizes(hashes)
                 
                 do {
-                    let signatures = try hashes.map {
-                        try Curve25519.Signing.PrivateKey(rawRepresentation: self.privateKey.rawRepresentation).signature(for: $0)
+                    if let signatures = self.signatures {
+                        promise(.success(signatures))
+                    } else {
+                        let signatures = try hashes.map {
+                            return try self.privateKey.signature(for: $0)
+                        }
+                        promise(.success(signatures))
                     }
-                    promise(.success(signatures))
                 } catch {
                     promise(.failure(NSError()))
                 }
