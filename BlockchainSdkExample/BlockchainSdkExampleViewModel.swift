@@ -431,7 +431,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .gnosis,
             .saltPay,
             .optimism(testnet: false),
-            .kava
+            .kava(testnet: false)
         ]
         
         return blockchains.map { ($0.displayName, $0.codingKey) }
