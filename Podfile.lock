@@ -74,7 +74,7 @@ DEPENDENCIES:
   - AnyCodable-FlightSchool
   - BigInt
   - BinanceChain (from `https://github.com/tangem/swiftbinancechain.git`, tag `0.0.9`)
-  - BitcoinCore.swift (from `https://github.com/tangem/bitcoincore.git`, tag `0.0.18`)
+  - BitcoinCore.swift (from `https://github.com/tangem/bitcoincore.git`, tag `0.0.19`)
   - HDWalletKit (from `https://github.com/tangem/hdwallet.git`, tag `0.3.12`)
   - Moya
   - ScaleCodec
@@ -115,7 +115,7 @@ EXTERNAL SOURCES:
     :tag: 0.0.9
   BitcoinCore.swift:
     :git: https://github.com/tangem/bitcoincore.git
-    :tag: 0.0.18
+    :tag: 0.0.19
   HDWalletKit:
     :git: https://github.com/tangem/hdwallet.git
     :tag: 0.3.12
@@ -138,7 +138,7 @@ CHECKOUT OPTIONS:
     :tag: 0.0.9
   BitcoinCore.swift:
     :git: https://github.com/tangem/bitcoincore.git
-    :tag: 0.0.18
+    :tag: 0.0.19
   HDWalletKit:
     :git: https://github.com/tangem/hdwallet.git
     :tag: 0.3.12
@@ -182,6 +182,6 @@ SPEC CHECKSUMS:
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 698a9969866e31e71e22a321e2d89cc395765965
+PODFILE CHECKSUM: da93cb62cb7764120b37c5a7fe91eae07de40f9c
 
 COCOAPODS: 1.11.3

@@ -6,8 +6,8 @@ def common_pods
   pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'develop-207'
   #pod 'TangemSdk', :path => '../tangem-sdk-ios'
   
-  pod 'BitcoinCore.swift', :git => 'https://github.com/tangem/bitcoincore.git', :tag => '0.0.18'
-  # pod 'BitcoinCore.swift', :path => '../bitcoincore'
+  pod 'BitcoinCore.swift', :git => 'https://github.com/tangem/bitcoincore.git', :tag => '0.0.19'
+#   pod 'BitcoinCore.swift', :path => '../bitcoincore'
   
   pod 'TangemWalletCore', :git => 'https://github.com/tangem/wallet-core-binaries-ios.git', :tag => '3.1.9-tangem2'
 #    pod 'TangemWalletCore', :path => '../tangem-wallet-core'
