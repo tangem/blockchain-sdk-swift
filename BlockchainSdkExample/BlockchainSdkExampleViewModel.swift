@@ -62,6 +62,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                                                                           useBlockBookUtxoApis: true,
                                                                           nowNodesApiKey: "",
                                                                           getBlockApiKey: "",
+                                                                          kaspaSecondaryApiUrl: nil,
                                                                           tronGridApiKey: "",
                                                                           tonCenterApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
                                                                           quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
@@ -435,6 +436,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .saltPay,
             .optimism(testnet: false),
             .kava(testnet: false),
+            .kaspa,
         ]
         
         return blockchains.map { ($0.displayName, $0.codingKey) }
