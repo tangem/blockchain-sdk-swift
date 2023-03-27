@@ -14,8 +14,6 @@ import BlockchainSdk
 import TangemSdk
 
 class BlockchainSdkExampleViewModel: ObservableObject {
-    @Published var dummyPublicWalletKey: String = ""
-    @Published var dummyAddress: String = ""
     @Published var destination: String = ""
     @Published var amountToSend: String = ""
     @Published var feeDescriptions: [String] = []
@@ -35,6 +33,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     @Published var balance: String = "--"
     
     @Published var dummyExpanded: Bool = false
+    @Published var dummyPublicKey: String = ""
+    @Published var dummyAddress: String = ""
     
     var tokenSectionName: String {
         if let enteredToken = self.enteredToken {
@@ -225,7 +225,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     }
     
     func clearDummyAction() {
-        dummyPublicWalletKey = ""
+        dummyPublicKey = ""
         dummyAddress = ""
         updateWalletManager()
     }
@@ -402,7 +402,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     private func createWalletManager(blockchain: Blockchain, wallet: Card.Wallet) throws -> WalletManager {
         return try walletManagerFactory.makeStubWalletManager(
             blockchain: blockchain,
-            walletPublicKey: dummyPublicWalletKey.isEmpty ? wallet.publicKey : Data(hex: dummyPublicWalletKey),
+            walletPublicKey: dummyPublicKey.isEmpty ? wallet.publicKey : Data(hex: dummyPublicKey),
             addresses: [dummyAddress]
         )
     }

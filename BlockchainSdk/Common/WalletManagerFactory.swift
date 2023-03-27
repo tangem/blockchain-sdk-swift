@@ -25,7 +25,7 @@ public class WalletManagerFactory {
     
     /// Base wallet manager initializer
     /// - Parameters:
-    ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
+    ///   - blockchain: Card native blockchain will be used
     ///   - seedKey: Public key  of the wallet
     ///   - derivedKey: Derived ExtendedPublicKey by the card
     ///   - derivation: DerivationParams
@@ -55,7 +55,7 @@ public class WalletManagerFactory {
     
     /// Legacy wallet manager initializer
     /// - Parameters:
-    ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
+    ///   - blockchain: Card native blockchain will be used
     ///   - walletPublicKey: Wallet's publicKey
     /// - Returns: WalletManager
     public func makeWalletManager(blockchain: Blockchain, walletPublicKey: Data) throws -> WalletManager {
@@ -88,7 +88,7 @@ public class WalletManagerFactory {
     
     /// Private implementation facroty creation wallet manager
     /// - Parameters:
-    ///   - blockhain to create. If nil, card native blockchain will be used
+    ///   - blockhain Card native blockchain will be used
     ///   - publicKey: Public key wallet
     ///   - pairPublicKey: Optional data pair public key
     /// - Returns: WalletManager model
@@ -116,7 +116,7 @@ extension WalletManagerFactory {
     
     /// Use this method only Test and Debug [Addresses, Fees, etc.]
     /// - Parameters:
-    ///   - blockhain to create. If nil, card native blockchain will be used
+    ///   - blockhain Card native blockchain will be used
     ///   - walletPublicKey: Wallet public key or dummy input
     ///   - addresses: Dummy input addresses
     /// - Returns: WalletManager model
