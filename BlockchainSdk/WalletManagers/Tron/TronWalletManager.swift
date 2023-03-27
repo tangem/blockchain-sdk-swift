@@ -68,32 +68,7 @@ class TronWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        let energyUsePublisher: AnyPublisher<Int, Error>
-        let energyFactorPublisher: AnyPublisher<Int?, Error>
-
-        switch amount.type {
-        case .reserve:
-            return .anyFail(error: WalletError.failedToGetFee)
-        case .coin:
-            energyUsePublisher = Just(0).setFailureType(to: Error.self).eraseToAnyPublisher()
-            energyFactorPublisher = Just(0).setFailureType(to: Error.self).eraseToAnyPublisher()
-        case .token(let token):
-            let addressData = TronAddressService.toByteForm(destination)?.padLeft(length: 32) ?? Data()
-            guard let bigIntValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: token.decimalCount) else {
-                return .anyFail(error: WalletError.failedToGetFee)
-            }
-            
-            let amountData = bigIntValue.serialize().padLeft(length: 32)
-            let parameter = (addressData + amountData).hex
-            
-            energyUsePublisher = networkService.contractEnergyUsage(
-                sourceAddress: wallet.address,
-                contractAddress: token.contractAddress,
-                parameter: parameter
-            )
-            
-            energyFactorPublisher = networkService.contractEnergyFactor(address: token.contractAddress)
-        }
+        let energyFeePublisher = energyFee(amount: amount, destination: destination)
         
         let transactionDataPublisher = signedTransactionData(
             amount: amount,
@@ -104,26 +79,15 @@ class TronWalletManager: BaseManager, WalletManager {
         )
 
         let blockchain = self.wallet.blockchain
-        
-        return Publishers.Zip3(energyUsePublisher, energyFactorPublisher, networkService.chainParameters())
-            .zip(networkService.accountExists(address: destination), transactionDataPublisher, networkService.getAccountResource(for: wallet.address))
-            .map { (networkParameters, destinationExists, transactionData, resources) -> [Fee] in
-                let (energyUse, energyFactor, chainParameters) = networkParameters
-                
+
+        return Publishers.Zip4(energyFeePublisher, networkService.accountExists(address: destination), transactionDataPublisher, networkService.getAccountResource(for: wallet.address))
+            .map { energyFee, destinationExists, transactionData, resources -> [Fee] in
                 if !destinationExists && amount.type == .coin {
                     let amount = Amount(with: blockchain, value: 1.1)
                     return [Fee(amount)]
                 }
                 
                 let sunPerBandwidthPoint = 1000
-                
-                let dynamicEnergyFactorPrecision: Double = 10_000
-                let dynamicEnergyFactor: Double
-                if let energyFactor = energyFactor {
-                    dynamicEnergyFactor = Double(energyFactor) / dynamicEnergyFactorPrecision
-                } else {
-                    dynamicEnergyFactor = 0
-                }
                 
                 let remainingBandwidthInSun = (resources.freeNetLimit - (resources.freeNetUsed ?? 0)) * sunPerBandwidthPoint
                 
@@ -136,14 +100,56 @@ class TronWalletManager: BaseManager, WalletManager {
                     consumedBandwidthFee = transactionSizeFee
                 }
                 
-                let sunPerEnergyUnit = chainParameters.sunPerEnergyUnit
-                let energyFee = Int(ceil(Double(energyUse * sunPerEnergyUnit) * (1 + dynamicEnergyFactor)))
-                
                 let totalFee = consumedBandwidthFee + energyFee
                 
                 let value = Decimal(totalFee) / blockchain.decimalValue
                 let amount = Amount(with: blockchain, value: value)
                 return [Fee(amount)]
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func energyFee(amount: Amount, destination: String) -> AnyPublisher<Int, Error> {
+        let token: Token
+        switch amount.type {
+        case .reserve:
+            return .anyFail(error: WalletError.failedToGetFee)
+        case .coin:
+            return Just(0).setFailureType(to: Error.self).eraseToAnyPublisher()
+        case .token(let amountToken):
+            token = amountToken
+        }
+        
+        let addressData = TronAddressService.toByteForm(destination)?.padLeft(length: 32) ?? Data()
+        guard let bigIntValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: token.decimalCount) else {
+            return .anyFail(error: WalletError.failedToGetFee)
+        }
+        
+        let amountData = bigIntValue.serialize().padLeft(length: 32)
+        let parameter = (addressData + amountData).hex
+        
+        let energyUsePublisher = networkService.contractEnergyUsage(
+            sourceAddress: wallet.address,
+            contractAddress: token.contractAddress,
+            parameter: parameter
+        )
+        
+        let energyFactorPublisher = networkService.contractEnergyFactor(address: token.contractAddress)
+        
+        return Publishers.Zip3(energyUsePublisher, energyFactorPublisher, networkService.chainParameters())
+            .map { energyUse, energyFactor, chainParameters in
+                let dynamicEnergyFactorPrecision: Double = 10_000
+                let dynamicEnergyFactor: Double
+                if let energyFactor = energyFactor {
+                    dynamicEnergyFactor = Double(energyFactor) / dynamicEnergyFactorPrecision
+                } else {
+                    dynamicEnergyFactor = 0
+                }
+
+                let sunPerEnergyUnit = chainParameters.sunPerEnergyUnit
+                let energyFee = Int(ceil(Double(energyUse * sunPerEnergyUnit) * (1 + dynamicEnergyFactor)))
+                
+                return energyFee
             }
             .eraseToAnyPublisher()
     }
