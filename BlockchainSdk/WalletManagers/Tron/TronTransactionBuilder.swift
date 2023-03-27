@@ -122,10 +122,3 @@ class TronTransactionBuilder {
         return (decimalAmount.rounded() as NSDecimalNumber)
     }
 }
-
-fileprivate extension Data {
-    func padLeft(length: Int) -> Data {
-        let extraLength = Swift.max(0, length - self.count)
-        return Data(repeating: 0, count: extraLength) + self
-    }
-}

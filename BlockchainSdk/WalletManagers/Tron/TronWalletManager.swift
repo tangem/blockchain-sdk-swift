@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import TangemSdk
+import web3swift
 
 class TronWalletManager: BaseManager, WalletManager {
     var networkService: TronNetworkService!
@@ -67,15 +68,27 @@ class TronWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        let maxEnergyUsePublisher: AnyPublisher<Int, Error>
+        let energyUsePublisher: AnyPublisher<Int, Error>
 
         switch amount.type {
         case .reserve:
             return .anyFail(error: WalletError.failedToGetFee)
         case .coin:
-            maxEnergyUsePublisher = Just(0).setFailureType(to: Error.self).eraseToAnyPublisher()
+            energyUsePublisher = Just(0).setFailureType(to: Error.self).eraseToAnyPublisher()
         case .token(let token):
-            maxEnergyUsePublisher = networkService.tokenTransferMaxEnergyUse(contractAddress: token.contractAddress)
+            let addressData = TronAddressService.toByteForm(destination)?.padLeft(length: 32) ?? Data()
+            guard let bigIntValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: token.decimalCount) else {
+                return .anyFail(error: WalletError.failedToGetFee)
+            }
+            
+            let amountData = bigIntValue.serialize().padLeft(length: 32)
+            let parameter = (addressData + amountData).hex
+            
+            energyUsePublisher = networkService.contractEnergyUsage(
+                sourceAddress: wallet.address,
+                contractAddress: token.contractAddress,
+                parameter: parameter
+            )
         }
         
         let transactionDataPublisher = signedTransactionData(
@@ -88,10 +101,10 @@ class TronWalletManager: BaseManager, WalletManager {
 
         let blockchain = self.wallet.blockchain
         
-        return Publishers.Zip(maxEnergyUsePublisher, networkService.chainParameters())
+        return Publishers.Zip(energyUsePublisher, networkService.chainParameters())
             .zip(networkService.accountExists(address: destination), transactionDataPublisher, networkService.getAccountResource(for: wallet.address))
             .map { (networkParameters, destinationExists, transactionData, resources) -> [Fee] in
-                let (maxEnergyUse, chainParameters) = networkParameters
+                let (energyUse, chainParameters) = networkParameters
                 
                 if !destinationExists && amount.type == .coin {
                     let amount = Amount(with: blockchain, value: 1.1)
@@ -107,7 +120,7 @@ class TronWalletManager: BaseManager, WalletManager {
                 let transactionSizeFee = sunPerBandwidthPoint * (transactionData.count + additionalDataSize)
 
                 let sunPerEnergyUnit = chainParameters.sunPerEnergyUnit
-                let maxEnergyFee = Int(ceil(Double(maxEnergyUse * sunPerEnergyUnit) * (1 + dynamicEnergyMaxFactor)))
+                let maxEnergyFee = Int(ceil(Double(energyUse * sunPerEnergyUnit) * (1 + dynamicEnergyMaxFactor)))
 
                 let totalFee = transactionSizeFee + maxEnergyFee
 

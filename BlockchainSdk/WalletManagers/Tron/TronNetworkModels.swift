@@ -99,3 +99,7 @@ struct TronTokenHistoryResponse: Codable {
     
     let data: [TokenHistoryData]
 }
+
+struct TronContractEnergyUsageResponse: Codable {
+    let energy_used: Int
+}
