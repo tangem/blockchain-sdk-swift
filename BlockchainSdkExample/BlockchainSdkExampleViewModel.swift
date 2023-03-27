@@ -91,6 +91,9 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     
     init() {
         var config = Config()
+        config.logConfig = .verbose
+        // initialize at start to handle all logs
+        Log.config = config.logConfig
         config.attestationMode = .offline
 
         self.sdk = TangemSdk(config: config)
@@ -211,7 +214,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         sdk.scanCard { [unowned self] result in
             switch result {
             case .failure(let error):
-                print(error)
+                Log.error(error)
             case .success(let card):
                 self.card = card
                 self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: curve, isShelley: isShelley)
@@ -237,7 +240,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             let balanceDescription: String
             switch result {
             case .failure(let error):
-                print(error)
+                Log.error(error)
                 balanceDescription = error.localizedDescription
             case .success:
                 var balances: [String] = []
@@ -286,7 +289,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .sink { [unowned self] in
                 switch $0 {
                 case .failure(let error):
-                    print(error)
+                    Log.error(error)
                     self.feeDescriptions = [error.localizedDescription]
                 case .finished:
                     break
@@ -331,7 +334,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .sink { [unowned self] in
                 switch $0 {
                 case .failure(let error):
-                    print(error)
+                    Log.error(error)
                     self.transactionResult = error.localizedDescription
                 case .finished:
                     self.transactionResult = "OK"
@@ -367,7 +370,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             
             self.blockchain = newBlockchain
         } catch {
-            print(error)
+            Log.error(error)
         }
     }
     
@@ -395,7 +398,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             }
             updateBalance()
         } catch {
-            print(error)
+            Log.error(error)
         }
     }
     
@@ -452,7 +455,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .dash(testnet: false),
             .gnosis,
             .saltPay,
-            .optimism(testnet: false)
+            .optimism(testnet: false),
+            .kava(testnet: false),
         ]
         
         return blockchains.map { ($0.displayName, $0.codingKey) }

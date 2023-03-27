@@ -212,7 +212,7 @@ class TronWalletManager: BaseManager, WalletManager {
             
             return components.r + components.s + components.v
         } catch {
-            print(error)
+            Log.error(error)
             return Data()
         }
     }

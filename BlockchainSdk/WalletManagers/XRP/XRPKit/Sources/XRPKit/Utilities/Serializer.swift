@@ -8,6 +8,7 @@
 //
 
 import Foundation
+import TangemSdk
 
 private struct Definitions {
     
@@ -79,7 +80,7 @@ class Serializer {
                 self.definitions = Definitions(dict: jsonResult)
             }
         } catch {
-            print(error.localizedDescription)
+            Log.error(error)
         }
     }
 
@@ -544,9 +545,6 @@ class Serializer {
                 let fieldVal = tx[tuple.name]!
                 let bytes = fieldToBytes(fieldName: tuple.name, fieldVal: fieldVal)
                 fieldAsBytes.append(bytes)
-//                print(tuple.name)
-//                printBytes([bytes])
-                
             }
         }
         return fieldAsBytes.reduce(Data(), { (result, newData) -> Data in
