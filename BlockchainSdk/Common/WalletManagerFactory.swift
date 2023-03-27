@@ -86,7 +86,7 @@ public class WalletManagerFactory {
     
     // MARK: - Private Implementation
     
-    /// Private implementation facroty creation wallet manager
+    /// Private implementation factory creation wallet manager
     /// - Parameters:
     ///   - blockhain Card native blockchain will be used
     ///   - publicKey: Public key wallet

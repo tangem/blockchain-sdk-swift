@@ -406,7 +406,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         return try walletManagerFactory.makeStubWalletManager(
             blockchain: blockchain,
             walletPublicKey: dummyPublicKey.isEmpty ? wallet.publicKey : Data(hex: dummyPublicKey),
-            addresses: [dummyAddress]
+            addresses: dummyAddress.isEmpty ? [] : [dummyAddress]
         )
     }
     
