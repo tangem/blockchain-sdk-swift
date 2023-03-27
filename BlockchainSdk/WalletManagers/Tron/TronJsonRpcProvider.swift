@@ -49,6 +49,10 @@ class TronJsonRpcProvider: HostProvider {
         requestPublisher(for: .tokenBalance(address: address, contractAddress: contractAddress, network: network))
     }
     
+    func contractInfo(address: String) -> AnyPublisher<TronContractInfoResponse, Error> {
+        requestPublisher(for: .contractInfo(address: address, network: network))
+    }
+    
     func contractEnergyUsage(sourceAddress: String, contractAddress: String, parameter: String) -> AnyPublisher<TronContractEnergyUsageResponse, Error> {
         requestPublisher(for: .contractEnergyUsage(sourceAddress: sourceAddress, contractAddress: contractAddress, parameter: parameter, network: network))
     }

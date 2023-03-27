@@ -69,12 +69,14 @@ class TronWalletManager: BaseManager, WalletManager {
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         let energyUsePublisher: AnyPublisher<Int, Error>
+        let energyFactorPublisher: AnyPublisher<Int?, Error>
 
         switch amount.type {
         case .reserve:
             return .anyFail(error: WalletError.failedToGetFee)
         case .coin:
             energyUsePublisher = Just(0).setFailureType(to: Error.self).eraseToAnyPublisher()
+            energyFactorPublisher = Just(0).setFailureType(to: Error.self).eraseToAnyPublisher()
         case .token(let token):
             let addressData = TronAddressService.toByteForm(destination)?.padLeft(length: 32) ?? Data()
             guard let bigIntValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: token.decimalCount) else {
@@ -89,6 +91,8 @@ class TronWalletManager: BaseManager, WalletManager {
                 contractAddress: token.contractAddress,
                 parameter: parameter
             )
+            
+            energyFactorPublisher = networkService.contractEnergyFactor(address: token.contractAddress)
         }
         
         let transactionDataPublisher = signedTransactionData(
@@ -101,38 +105,45 @@ class TronWalletManager: BaseManager, WalletManager {
 
         let blockchain = self.wallet.blockchain
         
-        return Publishers.Zip(energyUsePublisher, networkService.chainParameters())
+        return Publishers.Zip3(energyUsePublisher, energyFactorPublisher, networkService.chainParameters())
             .zip(networkService.accountExists(address: destination), transactionDataPublisher, networkService.getAccountResource(for: wallet.address))
             .map { (networkParameters, destinationExists, transactionData, resources) -> [Fee] in
-                let (energyUse, chainParameters) = networkParameters
+                let (energyUse, energyFactor, chainParameters) = networkParameters
                 
                 if !destinationExists && amount.type == .coin {
                     let amount = Amount(with: blockchain, value: 1.1)
                     return [Fee(amount)]
                 }
-
+                
                 let sunPerBandwidthPoint = 1000
-
-                let dynamicEnergyMaxFactorPrecision: Double = 10_000
-                let dynamicEnergyMaxFactor = Double(chainParameters.dynamicEnergyMaxFactor) / dynamicEnergyMaxFactorPrecision
-
+                
+                let dynamicEnergyFactorPrecision: Double = 10_000
+                let dynamicEnergyFactor: Double
+                if let energyFactor = energyFactor {
+                    dynamicEnergyFactor = Double(energyFactor) / dynamicEnergyFactorPrecision
+                } else {
+                    dynamicEnergyFactor = 0
+                }
+                
+                let remainingBandwidthInSun = (resources.freeNetLimit - (resources.freeNetUsed ?? 0)) * sunPerBandwidthPoint
+                
                 let additionalDataSize = 64
                 let transactionSizeFee = sunPerBandwidthPoint * (transactionData.count + additionalDataSize)
-
-                let sunPerEnergyUnit = chainParameters.sunPerEnergyUnit
-                let maxEnergyFee = Int(ceil(Double(energyUse * sunPerEnergyUnit) * (1 + dynamicEnergyMaxFactor)))
-
-                let totalFee = transactionSizeFee + maxEnergyFee
-
-                let remainingBandwidthInSun = (resources.freeNetLimit - (resources.freeNetUsed ?? 0)) * sunPerBandwidthPoint
-
-                if totalFee <= remainingBandwidthInSun {
-                    return [Fee(.zeroCoin(for: blockchain))]
+                let consumedBandwidthFee: Int
+                if transactionSizeFee <= remainingBandwidthInSun {
+                    consumedBandwidthFee = 0
                 } else {
-                    let value = Decimal(totalFee) / blockchain.decimalValue
-                    let amount = Amount(with: blockchain, value: value)
-                    return [Fee(amount)]
+                    consumedBandwidthFee = transactionSizeFee
                 }
+                
+                let sunPerEnergyUnit = chainParameters.sunPerEnergyUnit
+                let energyFee = Int(ceil(Double(energyUse * sunPerEnergyUnit) * (1 + dynamicEnergyFactor)))
+                
+                let totalFee = consumedBandwidthFee + energyFee
+                
+                let value = Decimal(totalFee) / blockchain.decimalValue
+                let amount = Amount(with: blockchain, value: value)
+                return [Fee(amount)]
             }
             .eraseToAnyPublisher()
     }
