@@ -459,7 +459,8 @@ extension Blockchain {
                 return [URL(string: "https://evm.testnet.kava.io")!]
             }
             
-            return [URL(string: "https://evm.kava.io")!]
+            return [URL(string: "https://evm.kava.io")!,
+                    URL(string: "https://evm2.kava.io")!]
         default:
             return nil
         }
