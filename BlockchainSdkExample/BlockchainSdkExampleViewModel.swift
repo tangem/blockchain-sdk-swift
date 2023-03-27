@@ -435,6 +435,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .gnosis,
             .saltPay,
             .optimism(testnet: false),
+            .kava(testnet: false),
             .kaspa,
         ]
         
