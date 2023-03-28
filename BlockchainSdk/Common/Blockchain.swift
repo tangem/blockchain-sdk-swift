@@ -259,7 +259,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .arbitrum, .stellar, .optimism, .ethereumPoW, .ton:
             return true
-        case .fantom, .tron, .gnosis, .avalanche:
+        case .fantom, .gnosis, .avalanche:
             if case .token = amountType {
                 return true
             }
