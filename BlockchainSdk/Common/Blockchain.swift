@@ -43,6 +43,7 @@ public enum Blockchain: Equatable, Hashable {
     case saltPay
     case ton(testnet: Bool)
     case kava(testnet: Bool)
+    case kaspa
     
     public var isTestnet: Bool {
         switch self {
@@ -90,6 +91,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .kava(let testnet):
             return testnet
+        case .kaspa:
+            return false
         }
     }
     
@@ -108,7 +111,7 @@ public enum Blockchain: Equatable, Hashable {
     
     public var decimalCount: Int {
         switch self {
-        case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash:
+        case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash, .kaspa:
             return 8
         case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava:
             return 18
@@ -181,6 +184,8 @@ public enum Blockchain: Equatable, Hashable {
             return "TON"
         case .kava:
             return "KAVA"
+        case .kaspa:
+            return "KAS"
         }
     }
     
@@ -542,6 +547,7 @@ extension Blockchain {
         case .optimism: return 614
         case .ton: return 607
         case .kava: return 459
+        case .kaspa: return 111111
         }
     }
     
@@ -603,6 +609,8 @@ extension Blockchain {
             )
         case .ton:
             return TrustWalletAddressService(coin: .ton, publicKeyType: .ed25519)
+        case .kaspa:
+            return KaspaAddressService()
         }
     }
 }
@@ -674,6 +682,7 @@ extension Blockchain: Codable {
         case .saltPay: return "sxdai"
         case .ton: return "ton"
         case .kava: return "kava"
+        case .kaspa: return "kaspa"
         }
     }
     
@@ -726,6 +735,7 @@ extension Blockchain: Codable {
         case "sxdai": self = .saltPay
         case "ton": self = .ton(testnet: isTestnet)
         case "kava": self = .kava(testnet: isTestnet)
+        case "kaspa": self = .kaspa
         default:
             assertionFailure("Blockchain for \(key) isn't supported")
             throw BlockchainSdkError.decodingFailed
@@ -789,6 +799,8 @@ extension Blockchain {
             return URL(string: "https://optimismfaucet.xyz")! //another one https://faucet.paradigm.xyz
         case .kava:
             return URL(string: "https://faucet.kava.io")!
+        case .kaspa:
+            return URL(string: "https://faucet.kaspanet.io")!
         default:
             return nil
         }
@@ -898,6 +910,8 @@ extension Blockchain {
             }
 
             return URL(string: "https://explorer.kava.io/address/\(address)")
+        case .kaspa:
+            return URL(string: "https://explorer.kaspa.org/addresses/\(address)")!
         }
     }
 }
@@ -1003,6 +1017,8 @@ extension Blockchain {
             return DashWalletAssembly()
         case .ton:
             return TONWalletAssembly()
+        case .kaspa:
+            return KaspaWalletAssembly()
         }
     }
     

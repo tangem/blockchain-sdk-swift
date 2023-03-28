@@ -15,6 +15,7 @@ public struct BlockchainSdkConfig {
     let useBlockBookUtxoApis: Bool
     let nowNodesApiKey: String
     let getBlockApiKey: String
+    let kaspaSecondaryApiUrl: String?
     let tronGridApiKey: String
     let tonCenterApiKeys: TonCenterApiKeys
     let quickNodeSolanaCredentials: QuickNodeCredentials
@@ -30,6 +31,7 @@ public struct BlockchainSdkConfig {
         useBlockBookUtxoApis: Bool,
         nowNodesApiKey: String,
         getBlockApiKey: String,
+        kaspaSecondaryApiUrl: String?,
         tronGridApiKey: String,
         tonCenterApiKeys: TonCenterApiKeys,
         quickNodeSolanaCredentials: QuickNodeCredentials,
@@ -44,6 +46,7 @@ public struct BlockchainSdkConfig {
         self.useBlockBookUtxoApis = useBlockBookUtxoApis
         self.nowNodesApiKey = nowNodesApiKey
         self.getBlockApiKey = getBlockApiKey
+        self.kaspaSecondaryApiUrl = kaspaSecondaryApiUrl
         self.tronGridApiKey = tronGridApiKey
         self.tonCenterApiKeys = tonCenterApiKeys
         self.quickNodeSolanaCredentials = quickNodeSolanaCredentials
