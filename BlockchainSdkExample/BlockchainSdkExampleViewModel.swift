@@ -32,6 +32,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     @Published var sourceAddresses: [Address] = []
     @Published var balance: String = "--"
     
+    @Published var isUseDummy: Bool = false
     @Published var dummyExpanded: Bool = false
     @Published var dummyPublicKey: String = ""
     @Published var dummyAddress: String = ""
@@ -391,7 +392,14 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         }
 
         do {
-            let walletManager = try createWalletManager(blockchain: blockchain, wallet: wallet)
+            let walletManager: WalletManager
+            
+            if isNeedUseStubWalletManager() {
+                walletManager = try createStubWalletManager(blockchain: blockchain, wallet: wallet)
+            } else {
+                walletManager = try createWalletManager(blockchain: blockchain, wallet: wallet)
+            }
+            
             self.walletManager = walletManager
             self.sourceAddresses = walletManager.wallet.addresses
             if let enteredToken = enteredToken {
@@ -404,6 +412,10 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     }
     
     private func createWalletManager(blockchain: Blockchain, wallet: Card.Wallet) throws -> WalletManager {
+        return try walletManagerFactory.makeWalletManager(blockchain: blockchain, walletPublicKey: wallet.publicKey)
+    }
+    
+    private func createStubWalletManager(blockchain: Blockchain, wallet: Card.Wallet) throws -> WalletManager {
         return try walletManagerFactory.makeStubWalletManager(
             blockchain: blockchain,
             walletPublicKey: dummyPublicKey.isEmpty ? wallet.publicKey : Data(hex: dummyPublicKey),
@@ -425,6 +437,11 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         } else {
             return Amount(with: blockchain, value: value)
         }
+    }
+    
+    private func isNeedUseStubWalletManager() -> Bool {
+        isUseDummy = !dummyPublicKey.isEmpty || !dummyAddress.isEmpty
+        return isUseDummy
     }
     
     static private func blockchainList() -> [(String, String)] {

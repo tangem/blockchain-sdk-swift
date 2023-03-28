@@ -65,10 +65,12 @@ struct BlockchainSdkExampleView: View {
                                 .disableAutocorrection(true)
                                 .keyboardType(.alphabet)
                                 .truncationMode(.middle)
+                            
                             TextField("Address", text: $model.dummyAddress)
                                 .disableAutocorrection(true)
                                 .keyboardType(.alphabet)
                                 .truncationMode(.middle)
+                            
                             HStack {
                                 Button {
                                     model.updateDummyAction()
@@ -121,6 +123,11 @@ struct BlockchainSdkExampleView: View {
                                     Image(systemName: "doc.on.doc")
                                 }
                             }
+                        }
+                        
+                        if model.isUseDummy {
+                            Text("Attention: Using a dummy address, please do not send transactions!")
+                                .foregroundColor(.red)
                         }
                     }
                     

@@ -44,7 +44,7 @@ public class WalletManagerFactory {
             derivationPath = path
         }
         
-        let publicKey: Wallet.PublicKey = .init(seedKey: seedKey, derivedKey: derivedKey, derivationPath: derivationPath)
+        let publicKey = Wallet.PublicKey(seedKey: seedKey, derivedKey: derivedKey, derivationPath: derivationPath)
         
         return try makeWalletManager(
             from: blockchain,
@@ -59,7 +59,7 @@ public class WalletManagerFactory {
     ///   - walletPublicKey: Wallet's publicKey
     /// - Returns: WalletManager
     public func makeWalletManager(blockchain: Blockchain, walletPublicKey: Data) throws -> WalletManager {
-        let publicKey: Wallet.PublicKey = .init(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil)
+        let publicKey = Wallet.PublicKey(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil)
         
         return try makeWalletManager(
             from: blockchain,
@@ -74,7 +74,7 @@ public class WalletManagerFactory {
     ///   - walletPublicKey: Wallet's publicKey
     public func makeTwinWalletManager(walletPublicKey: Data, pairKey: Data, isTestnet: Bool) throws -> WalletManager {
         let blockchain: Blockchain = .bitcoin(testnet: isTestnet)
-        let publicKey: Wallet.PublicKey = .init(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil)
+        let publicKey = Wallet.PublicKey(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil)
         
         return try makeWalletManager(
             from: blockchain,
@@ -129,7 +129,7 @@ extension WalletManagerFactory {
         
         return try makeWalletManager(
             from: blockchain,
-            publicKey: .init(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil),
+            publicKey: publicKey,
             addresses: addresses.isEmpty ? blockchain.makeAddresses(from: publicKey.blockchainKey, with: nil) :
                 addresses.map { PlainAddress(value: $0, type: .default) }
         )
