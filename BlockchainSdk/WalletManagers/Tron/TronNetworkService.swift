@@ -110,14 +110,6 @@ class TronNetworkService: MultiNetworkProvider {
         }
     }
     
-    func contractEnergyFactor(address: String) -> AnyPublisher<Int?, Error> {
-        providerPublisher {
-            $0.contractInfo(address: address)
-                .map(\.contract_state.energy_factor)
-                .eraseToAnyPublisher()
-        }
-    }
-    
     func contractEnergyUsage(sourceAddress: String, contractAddress: String, parameter: String) -> AnyPublisher<Int, Error> {
         providerPublisher {
             $0.contractEnergyUsage(sourceAddress: sourceAddress, contractAddress: contractAddress, parameter: parameter)

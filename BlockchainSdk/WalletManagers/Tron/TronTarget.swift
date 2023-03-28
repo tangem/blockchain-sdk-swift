@@ -17,7 +17,6 @@ struct TronTarget: TargetType {
         case getNowBlock(network: TronNetwork)
         case broadcastHex(data: Data, network: TronNetwork)
         case tokenBalance(address: String, contractAddress: String, network: TronNetwork)
-        case contractInfo(address: String, network: TronNetwork)
         case contractEnergyUsage(sourceAddress: String, contractAddress: String, parameter: String, network: TronNetwork)
         case tokenTransactionHistory(contractAddress: String, limit: Int, network: TronNetwork)
         case getTransactionInfoById(transactionID: String, network: TronNetwork)
@@ -45,8 +44,6 @@ struct TronTarget: TargetType {
             return network.url
         case .tokenBalance(_, _, let network):
             return network.url
-        case .contractInfo(_, let network):
-            return network.url
         case .contractEnergyUsage(_, _, _, let network):
             return network.url
         case .tokenTransactionHistory(_, _, let network):
@@ -68,8 +65,6 @@ struct TronTarget: TargetType {
             return "/wallet/getnowblock"
         case .broadcastHex:
             return "/wallet/broadcasthex"
-        case .contractInfo(let address, _):
-            return "/wallet/getcontractinfo"
         case .tokenBalance, .contractEnergyUsage:
             return "/wallet/triggerconstantcontract"
         case .tokenTransactionHistory(let contractAddress, _, _):
@@ -111,12 +106,6 @@ struct TronTarget: TargetType {
                 visible: true
             )
             return .requestJSONEncodable(request)
-        case .contractInfo(let address, _):
-            let parameters: [String: Any] = [
-                "value": address,
-                "visible": true
-            ]
-            return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
         case .contractEnergyUsage(let sourceAddress, let contractAddress, let parameter, _):
             let request = TronTriggerSmartContractRequest(
                 owner_address: sourceAddress,

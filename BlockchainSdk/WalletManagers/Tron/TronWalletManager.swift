@@ -134,20 +134,10 @@ class TronWalletManager: BaseManager, WalletManager {
             parameter: parameter
         )
         
-        let energyFactorPublisher = networkService.contractEnergyFactor(address: token.contractAddress)
-        
-        return Publishers.Zip3(energyUsePublisher, energyFactorPublisher, networkService.chainParameters())
-            .map { energyUse, energyFactor, chainParameters in
-                let dynamicEnergyFactorPrecision: Double = 10_000
-                let dynamicEnergyFactor: Double
-                if let energyFactor = energyFactor {
-                    dynamicEnergyFactor = Double(energyFactor) / dynamicEnergyFactorPrecision
-                } else {
-                    dynamicEnergyFactor = 0
-                }
-
+        return Publishers.Zip(energyUsePublisher, networkService.chainParameters())
+            .map { energyUse, chainParameters in
                 let sunPerEnergyUnit = chainParameters.sunPerEnergyUnit
-                let energyFee = Int(ceil(Double(energyUse * sunPerEnergyUnit) * (1 + dynamicEnergyFactor)))
+                let energyFee = energyUse * sunPerEnergyUnit
                 
                 return energyFee
             }
