@@ -74,20 +74,6 @@ class TronNetworkService: MultiNetworkProvider {
         }
     }
     
-    func tokenTransferMaxEnergyUse(contractAddress: String) -> AnyPublisher<Int, Error> {
-        providerPublisher {
-            $0.tokenTransactionHistory(contractAddress: contractAddress)
-                .tryMap {
-                    guard let maxEnergyUsage = $0.data.compactMap(\.energy_usage_total).max() else {
-                        throw WalletError.failedToGetFee
-                    }
-                    
-                    return maxEnergyUsage
-                }
-                .eraseToAnyPublisher()
-        }
-    }
-    
     func getAccountResource(for address: String) -> AnyPublisher<TronGetAccountResourceResponse, Error> {
         providerPublisher {
             $0.getAccountResource(for: address)

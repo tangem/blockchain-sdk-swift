@@ -92,14 +92,6 @@ struct TronTriggerSmartContractResponse: Codable {
     let constant_result: [String]
 }
 
-struct TronTokenHistoryResponse: Codable {
-    struct TokenHistoryData: Codable {
-        let energy_usage_total: Int?
-    }
-    
-    let data: [TokenHistoryData]
-}
-
 struct TronContractEnergyUsageResponse: Codable {
     let energy_used: Int
 }
