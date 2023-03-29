@@ -32,10 +32,13 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     @Published var sourceAddresses: [Address] = []
     @Published var balance: String = "--"
     
-    @Published var isUseDummy: Bool = false
     @Published var dummyExpanded: Bool = false
     @Published var dummyPublicKey: String = ""
     @Published var dummyAddress: String = ""
+    
+    var isUseDummy: Bool {
+        !dummyPublicKey.isEmpty || !dummyAddress.isEmpty
+    }
     
     var tokenSectionName: String {
         if let enteredToken = self.enteredToken {
@@ -394,7 +397,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         do {
             let walletManager: WalletManager
             
-            if isNeedUseStubWalletManager() {
+            if isUseDummy {
                 walletManager = try createStubWalletManager(blockchain: blockchain, wallet: wallet)
             } else {
                 walletManager = try createWalletManager(blockchain: blockchain, wallet: wallet)
@@ -437,11 +440,6 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         } else {
             return Amount(with: blockchain, value: value)
         }
-    }
-    
-    private func isNeedUseStubWalletManager() -> Bool {
-        isUseDummy = !dummyPublicKey.isEmpty || !dummyAddress.isEmpty
-        return isUseDummy
     }
     
     static private func blockchainList() -> [(String, String)] {
