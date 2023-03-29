@@ -61,8 +61,6 @@ class CoinAddressCompareTests: XCTestCase {
         // Positive
         addressesUtility.validateTRUE(address: "bitcoincash:qruxj7zq6yzpdx8dld0e9hfvt7u47zrw9gfr5hy0vh", for: blockchain)
         addressesUtility.validateTRUE(address: "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2", for: blockchain)
-//        addressesUtility.validateTRUE(address: "qq07l6rr5lsdm3m80qxw80ku2ex0tj76vvsxpvmgme", for: blockchain)
-//        addressesUtility.validateTRUE(address: "qqslmu0jxk4st3ldjyuazfpf5thd6vlgfuggqd3re4", for: blockchain)
     }
     
     func testTezosAddress() {
@@ -72,7 +70,6 @@ class CoinAddressCompareTests: XCTestCase {
         addressesUtility.validateTRUE(address: "tz1d1qQL3mYVuiH4JPFvuikEpFwaDm85oabM", for: blockchain)
         
         // Negative
-//        addressesUtility.validateFALSE(address: "NmH7tmeJUmHcncBDvpr7aJNEBk7rp5zYsB1qt", for: blockchain)
         addressesUtility.validateFALSE(address: "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3AAAA", for: blockchain)
         addressesUtility.validateFALSE(address: "1tzeZwq8b5cvE2bPKokatLkVMzkxz24zAAAAA", for: blockchain)
     }
