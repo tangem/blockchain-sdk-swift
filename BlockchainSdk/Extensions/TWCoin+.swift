@@ -39,7 +39,3 @@ extension CoinType {
     }
     
 }
-
-extension CoinType {
-    
-}
