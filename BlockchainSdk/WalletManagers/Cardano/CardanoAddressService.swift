@@ -47,8 +47,8 @@ public class CardanoAddressService: AddressService {
             return (try? Bech32().decodeLong(address)) != nil
             
         } else {
-            guard let decoded58 = address.base58CheckDecodedBytes,
-                !decoded58.isEmpty else {
+            let decoded58 = address.base58DecodedBytes
+            guard !decoded58.isEmpty else {
                     return false
             }
             
