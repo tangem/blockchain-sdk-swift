@@ -28,12 +28,11 @@ extension CoinAddressesCompareTests {
         let blockchain = Blockchain.ethereum(testnet: false)
         
         // Positive
-        addressesUtility.validateTRUE(address: "0xeDe8F58dADa22c3A49dB60D4f82BAD428ab65F89", for: blockchain)
-        addressesUtility.validateTRUE(address: "0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359", for: blockchain)
-        addressesUtility.validateTRUE(address: "0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359", for: blockchain)
-        addressesUtility.validateTRUE(address: "0x52908400098527886E0F7030069857D2E4169EE7", for: blockchain)
-        
         let testCases = [
+            "0xeDe8F58dADa22c3A49dB60D4f82BAD428ab65F89",
+            "0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359",
+            "0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359",
+            "0x52908400098527886E0F7030069857D2E4169EE7",
             "0x52908400098527886E0F7030069857D2E4169EE7",
             "0x8617E340B3D01FA5F11F306F4090FD50E238070D",
             "0xde709f2102306220921060314715629080e2fb77",
