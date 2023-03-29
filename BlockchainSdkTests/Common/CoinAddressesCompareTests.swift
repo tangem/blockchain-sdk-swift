@@ -130,6 +130,14 @@ extension CoinAddressesCompareTests {
         addressesUtility.validateFALSE(address: "175tWpb8K1S7NmH4Zx6rewF9WQrcZv245W", for: blockchain)
     }
     
+    func testStellarAddress() {
+        let blockchain = Blockchain.stellar(testnet: false)
+        
+        // Positive
+        addressesUtility.validateTRUE(address: "GAB6EDWGWSRZUYUYCWXAFQFBHE5ZEJPDXCIMVZC3LH2C7IU35FTI2NOQ", for: blockchain)
+        addressesUtility.validateTRUE(address: "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI", for: blockchain)
+    }
+    
     func testRippleAddress() {
         let blockchain = Blockchain.xrp(curve: .secp256k1)
         
@@ -141,10 +149,40 @@ extension CoinAddressesCompareTests {
         addressesUtility.validateTRUE(address: "XVfvixWZQKkcenFRYApCjpTUyJ4BePMjMaPqnob9QVPiVJV", for: blockchain)
         addressesUtility.validateTRUE(address: "rfxdLwsZnoespnTDDb1Xhvbc8EFNdztaoq", for: blockchain)
         addressesUtility.validateTRUE(address: "rU893viamSnsfP3zjzM2KPxjqZjXSXK6VF", for: blockchain)
-        
-        // Negative
     }
     
+    func testSolanaAddress() {
+        let blockchain = Blockchain.solana(testnet: false)
+        
+        // Positve
+        addressesUtility.validateTRUE(address: "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q", for: blockchain)
+        addressesUtility.validateTRUE(address: "EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd", for: blockchain)
+    }
+    
+    func testPolkadotAddress() {
+        let blockchain = Blockchain.polkadot(testnet: false)
+        
+        // Positve
+        addressesUtility.validateTRUE(address: "12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW", for: blockchain)
+        addressesUtility.validateTRUE(address: "14PhJGbzPxhQbiq7k9uFjDQx3MNiYxnjFRSiVBvBBBfnkAoM", for: blockchain)
+        
+        // Negative
+        addressesUtility.validateFALSE(address: "cosmos1l4f4max9w06gqrvsxf74hhyzuqhu2l3zyf0480", for: blockchain)
+        addressesUtility.validateFALSE(address: "3317oFJC9FvxU2fwrKVsvgnMGCDzTZ5nyf", for: blockchain)
+        addressesUtility.validateFALSE(address: "ELmaX1aPkyEF7TSmYbbyCjmSgrBpGHv9EtpwR2tk1kmpwvG", for: blockchain)
+    }
+    
+    func testKusamaAddress() {
+//        let blockchain = Blockchain.kusama
+//
+//        // Positve
+//        addressesUtility.validateTRUE(address: "ELmaX1aPkyEF7TSmYbbyCjmSgrBpGHv9EtpwR2tk1kmpwvG", for: blockchain)
+//
+//        // Negative
+//        addressesUtility.validateFALSE(address: "14PhJGbzPxhQbiq7k9uFjDQx3MNiYxnjFRSiVBvBBBfnkAoM", for: blockchain)
+//        addressesUtility.validateFALSE(address: "cosmos1l4f4max9w06gqrvsxf74hhyzuqhu2l3zyf0480", for: blockchain)
+//        addressesUtility.validateFALSE(address: "3317oFJC9FvxU2fwrKVsvgnMGCDzTZ5nyf", for: blockchain)
+    }
 }
 
 // MARK: - Compare Addresses from public key data
@@ -183,6 +221,16 @@ extension CoinAddressesCompareTests {
         
     }
     
+    func testStellarFromKeyAddress() {
+        let blockchain = Blockchain.stellar(testnet: false)
+        
+        let test_address = "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI"
+        let test_private_key = PrivateKey(data: Data(hex: "59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"))
+        let test_public_key = test_private_key!.getPublicKeyEd25519().data
+        
+        addressesUtility.validate(address: test_address, publicKey: test_public_key, for: blockchain)
+    }
+    
     func testTONFromKeyAddress() {
         let blockchain = Blockchain.ton(testnet: false)
         
@@ -192,6 +240,46 @@ extension CoinAddressesCompareTests {
         
         addressesUtility.validate(address: test_address, publicKey: test_public_key, for: blockchain)
         
+    }
+    
+    func testTezosFromKeyAddress() {
+        let blockchain = Blockchain.tezos(curve: .ed25519)
+        
+        let test_private_key = PrivateKey(data: Data(hex: "b177a72743f54ed4bdf51f1b55527c31bcd68c6d2cb2436d76cadd0227c99ff0"))
+        let test_public_key = test_private_key!.getPublicKeyEd25519().data
+        let test_address = "tz1cG2jx3W4bZFeVGBjsTxUAG8tdpTXtE8PT"
+        
+        addressesUtility.validate(address: test_address, publicKey: test_public_key, for: blockchain)
+    }
+    
+    func testSolanaFromKeyAddress() {
+        let blockchain = Blockchain.solana(testnet: false)
+        
+        let test_private_key = PrivateKey(data: Data(Base58.decodeNoCheck(string: "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr")!))
+        let test_public_key = test_private_key!.getPublicKeyEd25519().data
+        let test_address = "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q"
+        
+        addressesUtility.validate(address: test_address, publicKey: test_public_key, for: blockchain)
+    }
+    
+    func testPolkadotFromKeyAddress() {
+        let blockchain = Blockchain.polkadot(testnet: false)
+        
+        let test_private_key = PrivateKey(data: Data(hexString: "0xd65ed4c1a742699b2e20c0c1f1fe780878b1b9f7d387f934fe0a7dc36f1f9008"))
+        let test_public_key = test_private_key!.getPublicKeyEd25519().data
+        let test_address = "12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW"
+        
+        addressesUtility.validate(address: test_address, publicKey: test_public_key, for: blockchain)
+    }
+    
+    func testKusamaFromKeyAddress() {
+//        let blockchain = Blockchain.kusama
+//
+//        let test_private_key = PrivateKey(data: Data(hexString: "0x85fca134b3fe3fd523d8b528608d803890e26c93c86dc3d97b8d59c7b3540c97"))
+//        let test_public_key = test_private_key!.getPublicKeyEd25519().data
+//        let test_address = "HewiDTQv92L2bVtkziZC8ASxrFUxr6ajQ62RXAnwQ8FDVmg"
+//
+//        addressesUtility.validate(address: test_address, publicKey: test_public_key, for: blockchain)
     }
     
 }

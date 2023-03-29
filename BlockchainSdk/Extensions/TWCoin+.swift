@@ -35,6 +35,12 @@ extension CoinType {
             self = .tron
         case .ton:
             self = .ton
+        case .solana:
+            self = .solana
+        case .polkadot:
+            self = .polkadot
+        case .kusama:
+            self = .kusama
         default:
             throw NSError()
         }

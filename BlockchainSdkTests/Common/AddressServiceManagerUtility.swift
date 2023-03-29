@@ -19,14 +19,14 @@ final class AddressServiceManagerUtility {
             
             XCTAssertEqual(address, addressFromPublicKey)
         } catch {
-            XCTFail("__INVALID_ADDRESS__ blockchain from public key!")
+            XCTFail("__INVALID_ADDRESS__ BLOCKCHAIN FTOM PUBLIC KEY!")
         }
         
     }
     
     func validateTRUE(address: String, for blockchain: Blockchain) {
-        XCTAssertTrue(TrustWalletAddressService.validate(address, for: blockchain))
-        XCTAssertTrue(validate(address, for: blockchain))
+        XCTAssertTrue(TrustWalletAddressService.validate(address, for: blockchain), "__INVALID_ADDRESS__ FROM TW ADDRESS SERVICE")
+        XCTAssertTrue(validate(address, for: blockchain), "__INVALID_ADDRESS__ FROM OWN ADDRESS SERVICE")
     }
     
     func validateFALSE(address: String, for blockchain: Blockchain) {
