@@ -29,6 +29,8 @@ extension CoinType {
             self = .binance
         case .tezos:
             self = .tezos
+        case .xrp:
+            self = .xrp
         case .tron:
             self = .tron
         case .ton:

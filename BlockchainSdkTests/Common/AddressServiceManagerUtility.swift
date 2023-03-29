@@ -12,8 +12,16 @@ import XCTest
 
 final class AddressServiceManagerUtility {
     
-    func validate(_ address: String, for blockchain: Blockchain) -> Bool {
-        blockchain.getAddressService().validate(address)
+    func validate(address: String, publicKey: Data, for blockchain: Blockchain) {
+        do {
+            let addressFromPublicKey = try blockchain.getAddressService().makeAddress(from: publicKey)
+            validateTRUE(address: addressFromPublicKey, for: blockchain)
+            
+            XCTAssertEqual(address, addressFromPublicKey)
+        } catch {
+            XCTFail("__INVALID_ADDRESS__ blockchain from public key!")
+        }
+        
     }
     
     func validateTRUE(address: String, for blockchain: Blockchain) {
@@ -24,6 +32,12 @@ final class AddressServiceManagerUtility {
     func validateFALSE(address: String, for blockchain: Blockchain) {
         XCTAssertFalse(TrustWalletAddressService.validate(address, for: blockchain))
         XCTAssertFalse(validate(address, for: blockchain))
+    }
+    
+    // MARK: - Private Implementation
+    
+    private func validate(_ address: String, for blockchain: Blockchain) -> Bool {
+        blockchain.getAddressService().validate(address)
     }
     
 }
