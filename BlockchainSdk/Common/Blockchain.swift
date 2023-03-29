@@ -221,6 +221,8 @@ public enum Blockchain: Equatable, Hashable {
             return "Optimistic Ethereum" + testnetSuffix
         case .saltPay:
             return "Salt Pay"
+        case .kava:
+            return "Kava EVM"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
