@@ -11,6 +11,7 @@ import WalletCore
 
 extension CoinType {
     
+    /// Сonstructor that maps the sdk blockchain type into the TrustWallet coin type
     init(_ blockchain: Blockchain) throws {
         switch blockchain {
         case .bitcoin:
@@ -41,6 +42,12 @@ extension CoinType {
             self = .polkadot
         case .kusama:
             self = .kusama
+        case .bsc:
+            self = .smartChain
+        case .cardano:
+            self = .cardano
+        case .polygon:
+            self = .polygon
         default:
             throw NSError()
         }
