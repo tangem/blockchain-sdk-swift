@@ -136,10 +136,17 @@ class TronWalletManager: BaseManager, WalletManager {
         
         return Publishers.Zip(energyUsePublisher, networkService.chainParameters())
             .map { energyUse, chainParameters in
+                // Contract's energy fee changes every maintenance period (6 hours) and
+                // since we don't know what period the transaction is going to be executed in
+                // we increase the fee just in case by 20%
                 let sunPerEnergyUnit = chainParameters.sunPerEnergyUnit
-                let energyFee = energyUse * sunPerEnergyUnit
+                let energyFee = Double(energyUse * sunPerEnergyUnit)
                 
-                return energyFee
+                let dynamicEnergyIncreaseFactorPresicion = 10_000
+                let dynamicEnergyIncreaseFactor = Double(chainParameters.dynamicEnergyIncreaseFactor) / Double(dynamicEnergyIncreaseFactorPresicion)
+                let conservativeEnergyFee = Int(energyFee * (1 + dynamicEnergyIncreaseFactor))
+                
+                return conservativeEnergyFee
             }
             .eraseToAnyPublisher()
     }

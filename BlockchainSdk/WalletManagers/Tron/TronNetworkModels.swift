@@ -20,6 +20,7 @@ struct TronGetChainParametersResponse: Codable {
 struct TronChainParameters {
     let sunPerEnergyUnit: Int
     let dynamicEnergyMaxFactor: Int
+    let dynamicEnergyIncreaseFactor: Int
 }
 
 struct TronAccountInfo {
