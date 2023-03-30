@@ -9,7 +9,6 @@
 import Foundation
 import Combine
 import TangemSdk
-import web3swift
 
 class TronWalletManager: BaseManager, WalletManager {
     var networkService: TronNetworkService!
