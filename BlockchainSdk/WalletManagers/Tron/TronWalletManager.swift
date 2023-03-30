@@ -121,11 +121,10 @@ class TronWalletManager: BaseManager, WalletManager {
         }
         
         let addressData = TronAddressService.toByteForm(destination)?.aligned(to: 32) ?? Data()
-        guard let bigIntValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: token.decimalCount) else {
+        guard let amountData = amount.encodedAligned else {
             return .anyFail(error: WalletError.failedToGetFee)
         }
         
-        let amountData = bigIntValue.serialize().aligned(to: 32)
         let parameter = (addressData + amountData).hex
         
         let energyUsePublisher = networkService.contractEnergyUsage(
