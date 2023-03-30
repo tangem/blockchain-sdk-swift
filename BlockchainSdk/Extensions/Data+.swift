@@ -35,9 +35,4 @@ extension Data {
     func validateAsSecp256k1Key() throws {
         _ = try Secp256k1Key(with: self)
     }
-    
-    func padLeft(length: Int) -> Data {
-        let extraLength = Swift.max(0, length - self.count)
-        return Data(repeating: 0, count: extraLength) + self
-    }
 }
