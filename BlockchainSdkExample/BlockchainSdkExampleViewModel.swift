@@ -32,6 +32,14 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     @Published var sourceAddresses: [Address] = []
     @Published var balance: String = "--"
     
+    @Published var dummyExpanded: Bool = false
+    @Published var dummyPublicKey: String = ""
+    @Published var dummyAddress: String = ""
+    
+    var isUseDummy: Bool {
+        !dummyPublicKey.isEmpty || !dummyAddress.isEmpty
+    }
+    
     var tokenSectionName: String {
         if let enteredToken = self.enteredToken {
             return "Token (\(enteredToken.symbol))"
@@ -220,6 +228,16 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         }
     }
     
+    func updateDummyAction() {
+        updateWalletManager()
+    }
+    
+    func clearDummyAction() {
+        dummyPublicKey = ""
+        dummyAddress = ""
+        updateWalletManager()
+    }
+    
     func updateBalance() {
         balance = "--"
         
@@ -377,7 +395,14 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         }
 
         do {
-            let walletManager = try walletManagerFactory.makeWalletManager(blockchain: blockchain, walletPublicKey: wallet.publicKey)
+            let walletManager: WalletManager
+            
+            if isUseDummy {
+                walletManager = try createStubWalletManager(blockchain: blockchain, wallet: wallet)
+            } else {
+                walletManager = try createWalletManager(blockchain: blockchain, wallet: wallet)
+            }
+            
             self.walletManager = walletManager
             self.sourceAddresses = walletManager.wallet.addresses
             if let enteredToken = enteredToken {
@@ -387,6 +412,18 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         } catch {
             Log.error(error)
         }
+    }
+    
+    private func createWalletManager(blockchain: Blockchain, wallet: Card.Wallet) throws -> WalletManager {
+        return try walletManagerFactory.makeWalletManager(blockchain: blockchain, walletPublicKey: wallet.publicKey)
+    }
+    
+    private func createStubWalletManager(blockchain: Blockchain, wallet: Card.Wallet) throws -> WalletManager {
+        return try walletManagerFactory.makeStubWalletManager(
+            blockchain: blockchain,
+            walletPublicKey: dummyPublicKey.isEmpty ? wallet.publicKey : Data(hex: dummyPublicKey),
+            addresses: dummyAddress.isEmpty ? [] : [dummyAddress]
+        )
     }
     
     private func parseAmount() -> Amount? {

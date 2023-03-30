@@ -58,6 +58,43 @@ struct BlockchainSdkExampleView: View {
                             Stepper("Decimal places \(model.tokenDecimalPlaces)", value: $model.tokenDecimalPlaces, in: 0...24)
                         }
                     }
+                    
+                    if #available(iOS 14.0, *) {
+                        DisclosureGroup("Using dummy address / public key", isExpanded: $model.dummyExpanded) {
+                            TextField("Public Key", text: $model.dummyPublicKey)
+                                .disableAutocorrection(true)
+                                .keyboardType(.alphabet)
+                                .truncationMode(.middle)
+                            
+                            TextField("Address", text: $model.dummyAddress)
+                                .disableAutocorrection(true)
+                                .keyboardType(.alphabet)
+                                .truncationMode(.middle)
+                            
+                            HStack {
+                                Button {
+                                    model.updateDummyAction()
+                                } label: {
+                                    Text("Update")
+                                        .padding()
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .buttonStyle(BorderlessButtonStyle())
+                                
+                                Spacer()
+
+                                Button {
+                                    model.clearDummyAction()
+                                } label: {
+                                    Text("Clear")
+                                        .padding()
+                                        .foregroundColor(.red)
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .buttonStyle(BorderlessButtonStyle())
+                            }
+                        }
+                    }
                 }
                 
                 Section(header: Text("Source address and balance")) {
@@ -86,6 +123,11 @@ struct BlockchainSdkExampleView: View {
                                     Image(systemName: "doc.on.doc")
                                 }
                             }
+                        }
+                        
+                        if model.isUseDummy {
+                            Text("Attention: Using a dummy address, please do not send transactions!")
+                                .foregroundColor(.red)
                         }
                     }
                     

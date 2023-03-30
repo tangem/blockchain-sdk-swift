@@ -81,7 +81,7 @@ class TronTransactionBuilder {
             let functionSelector = "transfer(address,uint256)"
             let functionSelectorHash = Data(functionSelector.bytes).sha3(.keccak256).prefix(4)
             
-            let addressData = TronAddressService.toByteForm(destination)?.padLeft(length: 32) ?? Data()
+            let addressData = TronAddressService.toByteForm(destination)?.aligned(to: 32) ?? Data()
             
             guard
                 let bigIntValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: token.decimalCount)
@@ -89,7 +89,7 @@ class TronTransactionBuilder {
                 throw WalletError.failedToBuildTx
             }
             
-            let amountData = bigIntValue.serialize().padLeft(length: 32)
+            let amountData = bigIntValue.serialize().aligned(to: 32)
             let contractData = functionSelectorHash + addressData + amountData
             
             let parameter = Protocol_TriggerSmartContract.with {
@@ -120,12 +120,5 @@ class TronTransactionBuilder {
         
         let decimalAmount = amount.value * decimalValue
         return (decimalAmount.rounded() as NSDecimalNumber)
-    }
-}
-
-fileprivate extension Data {
-    func padLeft(length: Int) -> Data {
-        let extraLength = Swift.max(0, length - self.count)
-        return Data(repeating: 0, count: extraLength) + self
     }
 }

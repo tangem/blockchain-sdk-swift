@@ -34,12 +34,18 @@ class TronNetworkService: MultiNetworkProvider {
                         let energyFeeChainParameter = $0.chainParameter.first(where: { $0.key == "getEnergyFee" }),
                         let energyFee = energyFeeChainParameter.value,
                         let dynamicEnergyMaxFactorChainParameter = $0.chainParameter.first(where: { $0.key == "getDynamicEnergyMaxFactor" }),
-                        let dynamicEnergyMaxFactor = dynamicEnergyMaxFactorChainParameter.value
+                        let dynamicEnergyMaxFactor = dynamicEnergyMaxFactorChainParameter.value,
+                        let dynamicEnergyIncreaseFactorParameter = $0.chainParameter.first(where: { $0.key == "getDynamicEnergyIncreaseFactor" }),
+                        let dynamicEnergyIncreaseFactor = dynamicEnergyIncreaseFactorParameter.value
                     else {
                         throw WalletError.failedToParseNetworkResponse
                     }
                     
-                    return TronChainParameters(sunPerEnergyUnit: energyFee, dynamicEnergyMaxFactor: dynamicEnergyMaxFactor)
+                    return TronChainParameters(
+                        sunPerEnergyUnit: energyFee,
+                        dynamicEnergyMaxFactor: dynamicEnergyMaxFactor,
+                        dynamicEnergyIncreaseFactor: dynamicEnergyIncreaseFactor
+                    )
                 }
                 .eraseToAnyPublisher()
         }
@@ -74,20 +80,6 @@ class TronNetworkService: MultiNetworkProvider {
         }
     }
     
-    func tokenTransferMaxEnergyUse(contractAddress: String) -> AnyPublisher<Int, Error> {
-        providerPublisher {
-            $0.tokenTransactionHistory(contractAddress: contractAddress)
-                .tryMap {
-                    guard let maxEnergyUsage = $0.data.compactMap(\.energy_usage_total).max() else {
-                        throw WalletError.failedToGetFee
-                    }
-                    
-                    return maxEnergyUsage
-                }
-                .eraseToAnyPublisher()
-        }
-    }
-    
     func getAccountResource(for address: String) -> AnyPublisher<TronGetAccountResourceResponse, Error> {
         providerPublisher {
             $0.getAccountResource(for: address)
@@ -106,6 +98,14 @@ class TronNetworkService: MultiNetworkProvider {
                     }
                     throw error
                 }
+                .eraseToAnyPublisher()
+        }
+    }
+    
+    func contractEnergyUsage(sourceAddress: String, contractAddress: String, parameter: String) -> AnyPublisher<Int, Error> {
+        providerPublisher {
+            $0.contractEnergyUsage(sourceAddress: sourceAddress, contractAddress: contractAddress, parameter: parameter)
+                .map(\.energy_used)
                 .eraseToAnyPublisher()
         }
     }

@@ -25,7 +25,7 @@ public class WalletManagerFactory {
     
     /// Base wallet manager initializer
     /// - Parameters:
-    ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
+    ///   - blockchain: Card native blockchain will be used
     ///   - seedKey: Public key  of the wallet
     ///   - derivedKey: Derived ExtendedPublicKey by the card
     ///   - derivation: DerivationParams
@@ -44,20 +44,28 @@ public class WalletManagerFactory {
             derivationPath = path
         }
         
-        return try makeWalletManager(from: blockchain,
-                                     publicKey: .init(seedKey: seedKey,
-                                                      derivedKey: derivedKey,
-                                                      derivationPath: derivationPath))
+        let publicKey = Wallet.PublicKey(seedKey: seedKey, derivedKey: derivedKey, derivationPath: derivationPath)
+        
+        return try makeWalletManager(
+            from: blockchain,
+            publicKey: publicKey,
+            addresses: blockchain.makeAddresses(from: publicKey.blockchainKey, with: nil)
+        )
     }
     
     /// Legacy wallet manager initializer
     /// - Parameters:
-    ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
+    ///   - blockchain: Card native blockchain will be used
     ///   - walletPublicKey: Wallet's publicKey
     /// - Returns: WalletManager
     public func makeWalletManager(blockchain: Blockchain, walletPublicKey: Data) throws -> WalletManager {
-        try makeWalletManager(from: blockchain,
-                              publicKey: .init(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil))
+        let publicKey = Wallet.PublicKey(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil)
+        
+        return try makeWalletManager(
+            from: blockchain,
+            publicKey: publicKey,
+            addresses: blockchain.makeAddresses(from: publicKey.blockchainKey, with: nil)
+        )
     }
     
     /// Wallet manager initializer for twin cards
@@ -65,38 +73,71 @@ public class WalletManagerFactory {
     ///   - blockchain: blockhain to create. If nil, card native blockchain will be used
     ///   - walletPublicKey: Wallet's publicKey
     public func makeTwinWalletManager(walletPublicKey: Data, pairKey: Data, isTestnet: Bool) throws -> WalletManager {
-        try makeWalletManager(from: .bitcoin(testnet: isTestnet),
-                              publicKey: .init(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil),
-                              pairPublicKey: pairKey)
+        let blockchain: Blockchain = .bitcoin(testnet: isTestnet)
+        let publicKey = Wallet.PublicKey(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil)
+        
+        return try makeWalletManager(
+            from: blockchain,
+            publicKey: publicKey,
+            addresses: blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairKey),
+            pairPublicKey: pairKey
+        )
     }
     
     // MARK: - Private Implementation
     
-    /// Private implementation facroty creation wallet manager
+    /// Private implementation factory creation wallet manager
     /// - Parameters:
-    ///   - blockchain: Type of blockchain
+    ///   - blockhain Card native blockchain will be used
     ///   - publicKey: Public key wallet
     ///   - pairPublicKey: Optional data pair public key
     /// - Returns: WalletManager model
-    private func makeWalletManager(from blockchain: Blockchain,
-                           publicKey: Wallet.PublicKey,
-                           pairPublicKey: Data? = nil) throws -> WalletManager {
-        
+    private func makeWalletManager(
+        from blockchain: Blockchain,
+        publicKey: Wallet.PublicKey,
+        addresses: [Address],
+        pairPublicKey: Data? = nil
+    ) throws -> WalletManager {
         return try blockchain.assembly.make(
             with: .init(
                 blockchain: blockchain,
                 blockchainConfig: config,
                 pairPublicKey: pairPublicKey,
-                wallet: Wallet(
-                    blockchain: blockchain,
-                    addresses: blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey),
-                    publicKey: publicKey
-                ),
+                wallet: Wallet(blockchain: blockchain, addresses: addresses, publicKey: publicKey),
                 networkConfig: config.networkProviderConfiguration(for: blockchain)
             )
         )
     }
 }
+
+// MARK: - Stub Implementation
+
+extension WalletManagerFactory {
+    
+    /// Use this method only Test and Debug [Addresses, Fees, etc.]
+    /// - Parameters:
+    ///   - blockhain Card native blockchain will be used
+    ///   - walletPublicKey: Wallet public key or dummy input
+    ///   - addresses: Dummy input addresses
+    /// - Returns: WalletManager model
+    public func makeStubWalletManager(
+        blockchain: Blockchain,
+        walletPublicKey: Data,
+        addresses: [String]
+    ) throws -> WalletManager {
+        let publicKey: Wallet.PublicKey = .init(seedKey: walletPublicKey, derivedKey: nil, derivationPath: nil)
+        
+        return try makeWalletManager(
+            from: blockchain,
+            publicKey: publicKey,
+            addresses: addresses.isEmpty ? blockchain.makeAddresses(from: publicKey.blockchainKey, with: nil) :
+                addresses.map { PlainAddress(value: $0, type: .default) }
+        )
+    }
+    
+}
+
+// MARK: - DerivationParams
 
 extension WalletManagerFactory {
     public enum DerivationParams {

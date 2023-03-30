@@ -17,7 +17,7 @@ struct TronTarget: TargetType {
         case getNowBlock(network: TronNetwork)
         case broadcastHex(data: Data, network: TronNetwork)
         case tokenBalance(address: String, contractAddress: String, network: TronNetwork)
-        case tokenTransactionHistory(contractAddress: String, limit: Int, network: TronNetwork)
+        case contractEnergyUsage(sourceAddress: String, contractAddress: String, parameter: String, network: TronNetwork)
         case getTransactionInfoById(transactionID: String, network: TronNetwork)
     }
     
@@ -43,7 +43,7 @@ struct TronTarget: TargetType {
             return network.url
         case .tokenBalance(_, _, let network):
             return network.url
-        case .tokenTransactionHistory(_, _, let network):
+        case .contractEnergyUsage(_, _, _, let network):
             return network.url
         case .getTransactionInfoById(_, let network):
             return network.url
@@ -62,22 +62,15 @@ struct TronTarget: TargetType {
             return "/wallet/getnowblock"
         case .broadcastHex:
             return "/wallet/broadcasthex"
-        case .tokenBalance:
+        case .tokenBalance, .contractEnergyUsage:
             return "/wallet/triggerconstantcontract"
-        case .tokenTransactionHistory(let contractAddress, _, _):
-            return "/v1/contracts/\(contractAddress)/transactions"
         case .getTransactionInfoById:
             return "/walletsolidity/gettransactioninfobyid"
         }
     }
     
     var method: Moya.Method {
-        switch type {
-        case .tokenTransactionHistory:
-            return .get
-        default:
-            return .post
-        }
+        .post
     }
     
     var task: Task {
@@ -103,12 +96,15 @@ struct TronTarget: TargetType {
                 visible: true
             )
             return .requestJSONEncodable(request)
-        case .tokenTransactionHistory(_, let limit, _):
-            let parameters: [String: Any] = [
-                "only_confirmed": true,
-                "limit": limit,
-            ]
-            return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
+        case .contractEnergyUsage(let sourceAddress, let contractAddress, let parameter, _):
+            let request = TronTriggerSmartContractRequest(
+                owner_address: sourceAddress,
+                contract_address: contractAddress,
+                function_selector: "transfer(address,uint256)",
+                parameter: parameter,
+                visible: true
+            )
+            return .requestJSONEncodable(request)
         case .getTransactionInfoById(let transactionID, _):
             let request = TronTransactionInfoRequest(value: transactionID)
             return .requestJSONEncodable(request)

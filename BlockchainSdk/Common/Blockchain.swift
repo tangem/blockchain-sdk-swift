@@ -221,6 +221,8 @@ public enum Blockchain: Equatable, Hashable {
             return "Optimistic Ethereum" + testnetSuffix
         case .saltPay:
             return "Salt Pay"
+        case .kava:
+            return "Kava EVM"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -257,9 +259,9 @@ public enum Blockchain: Equatable, Hashable {
     
     public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
         switch self {
-        case .arbitrum, .stellar, .optimism, .ethereumPoW, .ton:
+        case .arbitrum, .stellar, .optimism, .ton:
             return true
-        case .fantom, .tron, .gnosis, .avalanche:
+        case .fantom, .tron, .gnosis, .avalanche, .ethereumPoW:
             if case .token = amountType {
                 return true
             }
