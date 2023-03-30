@@ -29,21 +29,6 @@ final class AddressServiceManagerUtility {
         }
     }
     
-    func validate(address: String, privateKey: PrivateKey, for blockchain: BlockchainSdk.Blockchain) {
-        var publicKey = Data()
-        
-        switch blockchain {
-        case .ethereum:
-            publicKey = privateKey.getPublicKeySecp256k1(compressed: true).data
-        case .bsc:
-            publicKey = privateKey.getPublicKeySecp256k1(compressed: false).data
-        default:
-            XCTFail("__INVALID_ADDRESS__ BLOCKCHAIN NOT IMPLEMENTED!")
-        }
-        
-        validate(address: address, publicKey: publicKey, for: blockchain)
-    }
-    
     func validate(address: String, publicKey: Data, for blockchain: BlockchainSdk.Blockchain) {
         do {
             let addressFromPublicKey = try blockchain.getAddressService().makeAddress(from: publicKey)
