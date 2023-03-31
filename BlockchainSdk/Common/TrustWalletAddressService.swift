@@ -44,6 +44,14 @@ public class TrustWalletAddressService: AddressService {
 
 extension TrustWalletAddressService {
     
+    static func validate(_ address: String, for blockchain: Blockchain) -> Bool {
+        return (try? AnyAddress(string: address, coin: CoinType(blockchain))) != nil
+    }
+    
+}
+
+extension TrustWalletAddressService {
+    
     enum TWError: Error {
         case makeAddressFailed
     }
