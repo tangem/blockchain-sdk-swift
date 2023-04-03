@@ -22,11 +22,11 @@ struct TronTarget: TargetType {
     }
     
     let type: TronTargetType
-    let tronGridApiKey: String?
+    let apiKeyValue: String?
     
-    init(_ type: TronTargetType, tronGridApiKey: String?) {
+    init(_ type: TronTargetType, apiKeyValue: String?) {
         self.type = type
-        self.tronGridApiKey = tronGridApiKey
+        self.apiKeyValue = apiKeyValue
     }
     
     var baseURL: URL {
@@ -117,8 +117,8 @@ struct TronTarget: TargetType {
             "Content-Type": "application/json",
         ]
         
-        if let tronGridApiKey = tronGridApiKey {
-            headers["TRON-PRO-API-KEY"] = tronGridApiKey
+        if let apiKeyValue = apiKeyValue {
+            headers["TRON-PRO-API-KEY"] = apiKeyValue
         }
         
         return headers

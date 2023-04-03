@@ -21,12 +21,12 @@ struct TronWalletAssembly: WalletManagerAssembly {
                 providers = [
                     TronJsonRpcProvider(
                         network: .nowNodes(apiKey: input.blockchainConfig.nowNodesApiKey),
-                        tronGridApiKey: nil,
+                        apiKeyValue: nil,
                         configuration: input.networkConfig
                     ),
                     TronJsonRpcProvider(
                         network: .getBlock(apiKey: input.blockchainConfig.getBlockApiKey),
-                        tronGridApiKey: nil,
+                        apiKeyValue: nil,
                         configuration: input.networkConfig
                     ),
                 ]
@@ -35,12 +35,12 @@ struct TronWalletAssembly: WalletManagerAssembly {
             providers.append(contentsOf: [
                 TronJsonRpcProvider(
                     network: tronGridNetwork,
-                    tronGridApiKey: nil,
+                    apiKeyValue: nil,
                     configuration: input.networkConfig
                 ),
                 TronJsonRpcProvider(
                     network: tronGridNetwork,
-                    tronGridApiKey: input.blockchainConfig.tronGridApiKey,
+                    apiKeyValue: input.blockchainConfig.tronGridApiKey,
                     configuration: input.networkConfig
                 ),
             ])
