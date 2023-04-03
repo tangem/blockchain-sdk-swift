@@ -11,6 +11,8 @@
 		2D3829C929D34A93001D4785 /* TWCoin+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829C829D34A93001D4785 /* TWCoin+.swift */; };
 		2D3829CC29D34DC4001D4785 /* CoinAddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829CB29D34DC4001D4785 /* CoinAddressesCompareTests.swift */; };
 		2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */; };
+		2D64FC9729DAE518007C8792 /* MnemoniAddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D64FC9629DAE518007C8792 /* MnemoniAddressesCompareTests.swift */; };
+		2D64FC9929DAED32007C8792 /* BIP39ServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D64FC9829DAED32007C8792 /* BIP39ServiceManagerUtility.swift */; };
 		2D9A919229BB8BFF00476EA6 /* TONWalletInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */; };
 		2D9A919329BB8BFF00476EA6 /* TONTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */; };
 		2D9A919429BB8BFF00476EA6 /* TONError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A919029BB8BFF00476EA6 /* TONError.swift */; };
@@ -327,6 +329,8 @@
 		2D3829C829D34A93001D4785 /* TWCoin+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWCoin+.swift"; sourceTree = "<group>"; };
 		2D3829CB29D34DC4001D4785 /* CoinAddressesCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinAddressesCompareTests.swift; sourceTree = "<group>"; };
 		2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressServiceManagerUtility.swift; sourceTree = "<group>"; };
+		2D64FC9629DAE518007C8792 /* MnemoniAddressesCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemoniAddressesCompareTests.swift; sourceTree = "<group>"; };
+		2D64FC9829DAED32007C8792 /* BIP39ServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BIP39ServiceManagerUtility.swift; sourceTree = "<group>"; };
 		2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONWalletInfo.swift; sourceTree = "<group>"; };
 		2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONTransactionBuilder.swift; sourceTree = "<group>"; };
 		2D9A919029BB8BFF00476EA6 /* TONError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONError.swift; sourceTree = "<group>"; };
@@ -1308,7 +1312,9 @@
 				B00DEAD028FFDE0E0077CD19 /* TransactionSizeTesterUtility.swift */,
 				2DC5796029C9CBB1004312AE /* TrustCoreSignerTesterUtility.swift */,
 				2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */,
+				2D64FC9829DAED32007C8792 /* BIP39ServiceManagerUtility.swift */,
 				2D3829CB29D34DC4001D4785 /* CoinAddressesCompareTests.swift */,
+				2D64FC9629DAE518007C8792 /* MnemoniAddressesCompareTests.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -2141,6 +2147,7 @@
 				2D3829CC29D34DC4001D4785 /* CoinAddressesCompareTests.swift in Sources */,
 				B00DEAD128FFDE0E0077CD19 /* TransactionSizeTesterUtility.swift in Sources */,
 				DA63B08D29CB3FAF00AC6E49 /* KaspaTests.swift in Sources */,
+				2D64FC9929DAED32007C8792 /* BIP39ServiceManagerUtility.swift in Sources */,
 				2DBBE95029C8DBEA00971539 /* TONTests.swift in Sources */,
 				EF0DA78928523FAC0081092A /* LitecoinTests.swift in Sources */,
 				EF0DA78828523FAC0081092A /* BitcoinTests.swift in Sources */,
@@ -2153,6 +2160,7 @@
 				EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */,
 				EF0DA78628523FAC0081092A /* XCTestCase+.swift in Sources */,
 				2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */,
+				2D64FC9729DAE518007C8792 /* MnemoniAddressesCompareTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

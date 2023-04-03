@@ -17,10 +17,6 @@ class CoinAddressesCompareTests: XCTestCase {
     
     let addressesUtility = AddressServiceManagerUtility()
     
-    let wallets = [
-        HDWallet(mnemonic: "broom ramp luggage this language sketch door allow elbow wife moon impulse", passphrase: "")!
-    ]
-    
 }
 
 // MARK: - Compare Addresses from address string
@@ -185,32 +181,6 @@ extension CoinAddressesCompareTests {
         
         // Positve
         addressesUtility.validateTRUE(address: "0xf3d468DBb386aaD46E92FF222adDdf872C8CC064", for: blockchain)
-    }
-    
-}
-
-// MARK: - Compare Addresses from public key data
-
-extension CoinAddressesCompareTests {
-    
-    func testValidateAddressesFromKey() {
-        wallets.forEach { wallet in
-            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .ethereum), for: .ethereum(testnet: false))
-            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .bitcoin), for: .bitcoin(testnet: false))
-            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .litecoin), for: .litecoin)
-            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .stellar), for: .stellar(testnet: false))
-            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .xrp), for: .xrp(curve: .secp256k1))
-            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .ton), for: .ton(testnet: false))
-            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .ton), for: .ton(testnet: false))
-            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .binance), for: .binance(testnet: false))
-            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .smartChain), for: .bsc(testnet: false))
-            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .solana), for: .solana(testnet: false))
-            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .polkadot), for: .polkadot(testnet: false))
-            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .kusama), for: .kusama)
-            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .tron), for: .tron(testnet: false))
-            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .tezos), for: .tezos(curve: .ed25519))
-            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .polygon), for: .polygon(testnet: false))
-        }
     }
     
 }
