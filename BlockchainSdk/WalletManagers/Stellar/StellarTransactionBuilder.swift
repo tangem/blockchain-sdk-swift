@@ -34,61 +34,63 @@ class StellarTransactionBuilder {
         
         let memo = (transaction.params as? StellarTransactionParams)?.memo ?? Memo.text("")
         
-        return Just(targetAccountResponse)
-            .tryMap { [weak self] response -> (hash: Data, transaction: stellarsdk.TransactionXDR) in
-                guard let self = self else { throw WalletError.empty }
+        let result: (Data, stellarsdk.TransactionXDR)
+        do {
+            let isAccountCreated = targetAccountResponse.accountCreated
+            
+            if transaction.amount.type == .coin {
+                if !isAccountCreated && transaction.amount.value < 1 {
+                    throw StellarError.xlmCreateAccount
+                }
                 
-                let isAccountCreated = response.accountCreated
+                let operation = isAccountCreated ? try PaymentOperation(sourceAccountId: transaction.sourceAddress,
+                                                                        destinationAccountId: transaction.destinationAddress,
+                                                                        asset: Asset(type: AssetType.ASSET_TYPE_NATIVE)!,
+                                                                        amount: transaction.amount.value ) :
+                CreateAccountOperation(sourceAccountId: nil, destination: destinationKeyPair, startBalance: transaction.amount.value)
                 
-                if transaction.amount.type == .coin {
-                    if !isAccountCreated && transaction.amount.value < 1 {
-                        throw StellarError.xlmCreateAccount
-                    }
+                result = try self.serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo)
+                
+            } else if transaction.amount.type.isToken {
+                guard let contractAddress = transaction.contractAddress, let keyPair = try? KeyPair(accountId: contractAddress),
+                      let asset = self.createNonNativeAsset(code: transaction.amount.currencySymbol, issuer: keyPair) else {
+                    throw WalletError.failedToBuildTx
+                }
+                
+                guard isAccountCreated else {
+                    throw StellarError.assetNoAccountOnDestination
+                }
+                
+                guard targetAccountResponse.trustlineCreated  else {
+                    throw StellarError.assetNoTrustline
+                }
+                
+                if  transaction.amount.value > 0 {
                     
-                    let operation = isAccountCreated ? try PaymentOperation(sourceAccountId: transaction.sourceAddress,
-                                                                            destinationAccountId: transaction.destinationAddress,
-                                                                            asset: Asset(type: AssetType.ASSET_TYPE_NATIVE)!,
-                                                                            amount: transaction.amount.value ) :
-                    CreateAccountOperation(sourceAccountId: nil, destination: destinationKeyPair, startBalance: transaction.amount.value)
+                    let operation = try PaymentOperation(sourceAccountId: transaction.sourceAddress,
+                                                         destinationAccountId: transaction.destinationAddress,
+                                                         asset: asset,
+                                                         amount: transaction.amount.value)
                     
-                    return try self.serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo)
-                    
-                } else if transaction.amount.type.isToken {
-                    guard let contractAddress = transaction.contractAddress, let keyPair = try? KeyPair(accountId: contractAddress),
-                          let asset = self.createNonNativeAsset(code: transaction.amount.currencySymbol, issuer: keyPair) else {
+                    result = try self.serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo)
+                } else {
+                    guard let changeTrustAsset = asset.toChangeTrustAsset() else {
                         throw WalletError.failedToBuildTx
                     }
                     
-                    guard isAccountCreated else {
-                        throw StellarError.assetNoAccountOnDestination
-                    }
-                    
-                    guard response.trustlineCreated  else {
-                        throw StellarError.assetNoTrustline
-                    }
-                    
-                    if  transaction.amount.value > 0 {
-                        
-                        let operation = try PaymentOperation(sourceAccountId: transaction.sourceAddress,
-                                                             destinationAccountId: transaction.destinationAddress,
-                                                             asset: asset,
-                                                             amount: transaction.amount.value)
-                        
-                        return try self.serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo)
-                    } else {
-                        guard let changeTrustAsset = asset.toChangeTrustAsset() else {
-                            throw WalletError.failedToBuildTx
-                        }
-                        
-                        let operation = ChangeTrustOperation(sourceAccountId: transaction.sourceAddress, asset: changeTrustAsset, limit: Decimal(string: "900000000000.0000000"))
-                        return try self.serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo)
-                    }
-                    
-                } else {
-                    throw WalletError.failedToBuildTx
+                    let operation = ChangeTrustOperation(sourceAccountId: transaction.sourceAddress, asset: changeTrustAsset, limit: Decimal(string: "900000000000.0000000"))
+                    result = try self.serializeOperation(operation, sourceKeyPair: sourceKeyPair, memo: memo)
                 }
+                
+            } else {
+                throw WalletError.failedToBuildTx
             }
-            .eraseToAnyPublisher()
+            
+        } catch {
+            return Fail(error: error).eraseToAnyPublisher()
+        }
+        
+        return Just(result).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
     
     public func buildForSend(signature: Data, transaction: TransactionXDR) -> String? {
