@@ -24,6 +24,12 @@ class StellarNetworkService: MultiNetworkProvider {
         }
     }
     
+    public func checkTargetAccount(transaction: Transaction) -> AnyPublisher<StellarTargetAccountResponse, Error> {
+        providerPublisher {
+            $0.checkTargetAccount(transaction: transaction)
+        }
+    }
+    
     public func getInfo(accountId: String, isAsset: Bool) -> AnyPublisher<StellarResponse, Error> {
         providerPublisher {
             $0.getInfo(accountId: accountId, isAsset: isAsset)

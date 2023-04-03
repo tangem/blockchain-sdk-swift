@@ -94,7 +94,12 @@ extension StellarWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        return txBuilder.buildForSign(transaction: transaction)
+        return networkService.checkTargetAccount(transaction: transaction)
+            .flatMap { [weak self] response -> AnyPublisher<(hash: Data, transaction: stellarsdk.TransactionXDR), Error> in
+                guard let self else { return .emptyFail }
+                
+                return txBuilder.buildForSign(targetAccountResponse: response, transaction: transaction)
+            }
             .flatMap {[weak self] buildForSignResponse -> AnyPublisher<(Data, (hash: Data, transaction: stellarsdk.TransactionXDR)), Error> in
                 guard let self = self else { return .emptyFail }
                 

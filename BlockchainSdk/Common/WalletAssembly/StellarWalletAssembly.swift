@@ -31,8 +31,7 @@ struct StellarWalletAssembly: WalletManagerAssembly {
                 StellarNetworkProvider(isTestnet: input.blockchain.isTestnet, stellarSdk: StellarSDK(withHorizonUrl: $0))
             }
             
-            let stellarSdk = StellarSDK(withHorizonUrl: urls.first!)
-            $0.txBuilder = StellarTransactionBuilder(stellarSdk: stellarSdk, walletPublicKey: input.wallet.publicKey.blockchainKey, isTestnet: input.blockchain.isTestnet)
+            $0.txBuilder = StellarTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, isTestnet: input.blockchain.isTestnet)
             $0.networkService = StellarNetworkService(providers: providers)
         }
     }

@@ -28,6 +28,10 @@ class StellarNetworkProvider: HostProvider {
         self.stellarSdk = stellarSdk
     }
     
+    public func checkTargetAccount(transaction: Transaction) -> AnyPublisher<StellarTargetAccountResponse, Error> {
+        stellarSdk.accounts.checkTargetAccount(address: transaction.destinationAddress, token: transaction.amount.type.token)
+    }
+    
     public func send(transaction: String) -> AnyPublisher<Bool, Error> {
         return stellarSdk.transactions.postTransaction(transactionEnvelope: transaction)
             .tryMap{ submitTransactionResponse throws  -> Bool in

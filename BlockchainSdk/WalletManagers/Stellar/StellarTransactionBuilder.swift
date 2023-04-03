@@ -17,17 +17,15 @@ class StellarTransactionBuilder {
     //for tests
     var specificTxTime: TimeInterval? = nil
     
-    private let stellarSdk: StellarSDK
     private let walletPublicKey: Data
     private let isTestnet: Bool
     
-    init(stellarSdk: StellarSDK, walletPublicKey: Data, isTestnet: Bool) {
-        self.stellarSdk = stellarSdk
+    init(walletPublicKey: Data, isTestnet: Bool) {
         self.walletPublicKey = walletPublicKey
         self.isTestnet = isTestnet
     }
     
-    public func buildForSign(transaction: Transaction) -> AnyPublisher<(hash: Data, transaction: stellarsdk.TransactionXDR), Error> {
+    public func buildForSign(targetAccountResponse: StellarTargetAccountResponse, transaction: Transaction) -> AnyPublisher<(hash: Data, transaction: stellarsdk.TransactionXDR), Error> {
         guard let destinationKeyPair = try? KeyPair(accountId: transaction.destinationAddress),
               let sourceKeyPair = try? KeyPair(accountId: transaction.sourceAddress) else {
             return Fail(error: WalletError.failedToBuildTx)
@@ -36,7 +34,7 @@ class StellarTransactionBuilder {
         
         let memo = (transaction.params as? StellarTransactionParams)?.memo ?? Memo.text("")
         
-        return stellarSdk.accounts.checkTargetAccount(address: transaction.destinationAddress, token: transaction.amount.type.token)
+        return Just(targetAccountResponse)
             .tryMap { [weak self] response -> (hash: Data, transaction: stellarsdk.TransactionXDR) in
                 guard let self = self else { throw WalletError.empty }
                 
