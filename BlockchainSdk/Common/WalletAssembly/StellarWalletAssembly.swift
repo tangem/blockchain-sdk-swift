@@ -14,7 +14,12 @@ struct StellarWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return StellarWalletManager(wallet: input.wallet).then {
-            let url = input.blockchain.isTestnet ? "https://horizon-testnet.stellar.org" : "https://horizon.stellar.org"
+            let url = input.blockchain.isTestnet ? "https://horizon-testnet.stellar.org" :
+            
+//                "https://horizon.stellar.org"
+            "https://xlm.nownodes.io/\(input.blockchainConfig.nowNodesApiKey)"
+//            "https://xlm.getblock.io/mainnet/\(input.blockchainConfig.getBlockApiKey)"
+            
             let stellarSdk = StellarSDK(withHorizonUrl: url)
             $0.stellarSdk = stellarSdk
             $0.txBuilder = StellarTransactionBuilder(stellarSdk: stellarSdk, walletPublicKey: input.wallet.publicKey.blockchainKey, isTestnet: input.blockchain.isTestnet)
