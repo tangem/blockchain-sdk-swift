@@ -13,7 +13,7 @@ import WalletCore
 
 @testable import BlockchainSdk
 
-class SeedPhraseAddressesCompareTests: XCTestCase {
+class MnemonicAddressesCompareTests: XCTestCase {
     
     let addressesUtility = AddressServiceManagerUtility()
     
@@ -50,6 +50,5 @@ class SeedPhraseAddressesCompareTests: XCTestCase {
             addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .polygon), for: .polygon(testnet: false))
         }
     }
-    
     
 }

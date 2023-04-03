@@ -11,8 +11,9 @@
 		2D3829C929D34A93001D4785 /* TWCoin+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829C829D34A93001D4785 /* TWCoin+.swift */; };
 		2D3829CC29D34DC4001D4785 /* CoinAddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829CB29D34DC4001D4785 /* CoinAddressesCompareTests.swift */; };
 		2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */; };
-		2D64FC9729DAE518007C8792 /* MnemoniAddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D64FC9629DAE518007C8792 /* MnemoniAddressesCompareTests.swift */; };
+		2D64FC9729DAE518007C8792 /* MnemonicAddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D64FC9629DAE518007C8792 /* MnemonicAddressesCompareTests.swift */; };
 		2D64FC9929DAED32007C8792 /* BIP39ServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D64FC9829DAED32007C8792 /* BIP39ServiceManagerUtility.swift */; };
+		2D64FC9C29DB22C8007C8792 /* BIP39AddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D64FC9B29DB22C8007C8792 /* BIP39AddressesCompareTests.swift */; };
 		2D9A919229BB8BFF00476EA6 /* TONWalletInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */; };
 		2D9A919329BB8BFF00476EA6 /* TONTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */; };
 		2D9A919429BB8BFF00476EA6 /* TONError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A919029BB8BFF00476EA6 /* TONError.swift */; };
@@ -329,8 +330,9 @@
 		2D3829C829D34A93001D4785 /* TWCoin+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWCoin+.swift"; sourceTree = "<group>"; };
 		2D3829CB29D34DC4001D4785 /* CoinAddressesCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinAddressesCompareTests.swift; sourceTree = "<group>"; };
 		2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressServiceManagerUtility.swift; sourceTree = "<group>"; };
-		2D64FC9629DAE518007C8792 /* MnemoniAddressesCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemoniAddressesCompareTests.swift; sourceTree = "<group>"; };
+		2D64FC9629DAE518007C8792 /* MnemonicAddressesCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicAddressesCompareTests.swift; sourceTree = "<group>"; };
 		2D64FC9829DAED32007C8792 /* BIP39ServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BIP39ServiceManagerUtility.swift; sourceTree = "<group>"; };
+		2D64FC9B29DB22C8007C8792 /* BIP39AddressesCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BIP39AddressesCompareTests.swift; sourceTree = "<group>"; };
 		2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONWalletInfo.swift; sourceTree = "<group>"; };
 		2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONTransactionBuilder.swift; sourceTree = "<group>"; };
 		2D9A919029BB8BFF00476EA6 /* TONError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONError.swift; sourceTree = "<group>"; };
@@ -660,6 +662,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2D64FC9A29DB22A5007C8792 /* CompareTests */ = {
+			isa = PBXGroup;
+			children = (
+				2D3829CB29D34DC4001D4785 /* CoinAddressesCompareTests.swift */,
+				2D64FC9629DAE518007C8792 /* MnemonicAddressesCompareTests.swift */,
+				2D64FC9B29DB22C8007C8792 /* BIP39AddressesCompareTests.swift */,
+			);
+			path = CompareTests;
+			sourceTree = "<group>";
+		};
 		2D9A918C29BB8BFF00476EA6 /* TON */ = {
 			isa = PBXGroup;
 			children = (
@@ -782,8 +794,9 @@
 		5D14E47B2397B80F00C15FC8 /* BlockchainSdkTests */ = {
 			isa = PBXGroup;
 			children = (
-				B00DEAC728FEE5E00077CD19 /* Bitcoin */,
 				B00DEACC28FEE6070077CD19 /* Common */,
+				2D64FC9A29DB22A5007C8792 /* CompareTests */,
+				B00DEAC728FEE5E00077CD19 /* Bitcoin */,
 				B00DEAC828FEE5E90077CD19 /* Ethereum */,
 				B00DEACD28FEE62F0077CD19 /* Extensions */,
 				DA63B08B29CB3FAF00AC6E49 /* Kaspa */,
@@ -1313,8 +1326,6 @@
 				2DC5796029C9CBB1004312AE /* TrustCoreSignerTesterUtility.swift */,
 				2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */,
 				2D64FC9829DAED32007C8792 /* BIP39ServiceManagerUtility.swift */,
-				2D3829CB29D34DC4001D4785 /* CoinAddressesCompareTests.swift */,
-				2D64FC9629DAE518007C8792 /* MnemoniAddressesCompareTests.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -2157,10 +2168,11 @@
 				EF0DA78728523FAC0081092A /* TronTests.swift in Sources */,
 				EF0DA78528523FAC0081092A /* BlockchainSdkTests.swift in Sources */,
 				B00DEAD3290008910077CD19 /* SolanaTests.swift in Sources */,
+				2D64FC9C29DB22C8007C8792 /* BIP39AddressesCompareTests.swift in Sources */,
 				EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */,
 				EF0DA78628523FAC0081092A /* XCTestCase+.swift in Sources */,
 				2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */,
-				2D64FC9729DAE518007C8792 /* MnemoniAddressesCompareTests.swift in Sources */,
+				2D64FC9729DAE518007C8792 /* MnemonicAddressesCompareTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
