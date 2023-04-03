@@ -21,7 +21,6 @@ struct StellarWalletAssembly: WalletManagerAssembly {
 //            "https://xlm.getblock.io/mainnet/\(input.blockchainConfig.getBlockApiKey)"
             
             let stellarSdk = StellarSDK(withHorizonUrl: url)
-            $0.stellarSdk = stellarSdk
             $0.txBuilder = StellarTransactionBuilder(stellarSdk: stellarSdk, walletPublicKey: input.wallet.publicKey.blockchainKey, isTestnet: input.blockchain.isTestnet)
             $0.networkService = StellarNetworkService(isTestnet: input.blockchain.isTestnet, stellarSdk: stellarSdk)
         }

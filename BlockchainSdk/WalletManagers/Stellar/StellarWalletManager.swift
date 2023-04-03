@@ -44,7 +44,6 @@ public enum StellarError: Error, LocalizedError {
 class StellarWalletManager: BaseManager, WalletManager {
     var txBuilder: StellarTransactionBuilder!
     var networkService: StellarNetworkService!
-    var stellarSdk: StellarSDK!
     var currentHost: String { networkService.host  }
     
     func update(completion: @escaping (Result<(), Error>)-> Void)  {
