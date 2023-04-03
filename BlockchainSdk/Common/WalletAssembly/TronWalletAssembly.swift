@@ -17,8 +17,8 @@ struct TronWalletAssembly: WalletManagerAssembly {
             
             if !input.blockchain.isTestnet {
                 tronGridNetworks = [
-                    .mainnet(apiKey: nil),
-                    .mainnet(apiKey: input.blockchainConfig.tronGridApiKey),
+                    .tronGrid(apiKey: nil),
+                    .tronGrid(apiKey: input.blockchainConfig.tronGridApiKey),
                 ]
             } else {
                 tronGridNetworks = [.nile]
