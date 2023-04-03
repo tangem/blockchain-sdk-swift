@@ -45,7 +45,7 @@ class StellarTests: XCTestCase {
         
         let walletAddress = try! addressService.makeAddress(from: walletPubkey)
         
-        let txBuilder = StellarTransactionBuilder(stellarSdk: StellarSDK(withHorizonUrl: "https://horizon.stellar.org"), walletPublicKey: walletPubkey, isTestnet: false)
+        let txBuilder = StellarTransactionBuilder(walletPublicKey: walletPubkey, isTestnet: false)
         txBuilder.sequence = 139655650517975046
         txBuilder.specificTxTime = 1614848128.2697558
         
@@ -59,7 +59,8 @@ class StellarTests: XCTestCase {
         
         let expectations = expectation(description: "All values received")
         
-        txBuilder.buildForSign(transaction: tx)
+        let targetAccountResponse = StellarTargetAccountResponse(accountCreated: true, trustlineCreated: true)
+        txBuilder.buildForSign(targetAccountResponse: targetAccountResponse, transaction: tx)
             .sink(receiveCompletion: { completion in
                 if case let .failure(error) = completion {
                     XCTFail("Failed to build tx. Reason: \(error.localizedDescription)")
