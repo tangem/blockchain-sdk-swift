@@ -13,7 +13,16 @@ struct TronWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return TronWalletManager(wallet: input.wallet).then {
-            let tronGridNetwork: TronNetwork = input.blockchain.isTestnet ? .nile : .mainnet
+            let tronGridNetworks: [TronNetwork]
+            
+            if !input.blockchain.isTestnet {
+                tronGridNetworks = [
+                    .mainnet(apiKey: nil),
+                    .mainnet(apiKey: input.blockchainConfig.tronGridApiKey),
+                ]
+            } else {
+                tronGridNetworks = [.nile]
+            }
             
             var providers: [TronJsonRpcProvider] = []
             
@@ -21,32 +30,23 @@ struct TronWalletAssembly: WalletManagerAssembly {
                 providers = [
                     TronJsonRpcProvider(
                         network: .nowNodes(apiKey: input.blockchainConfig.nowNodesApiKey),
-                        apiKeyValue: nil,
                         configuration: input.networkConfig
                     ),
                     TronJsonRpcProvider(
                         network: .getBlock(apiKey: input.blockchainConfig.getBlockApiKey),
-                        apiKeyValue: nil,
                         configuration: input.networkConfig
                     ),
                 ]
             }
             
-            providers.append(contentsOf: [
+            providers.append(contentsOf: tronGridNetworks.map {
                 TronJsonRpcProvider(
-                    network: tronGridNetwork,
-                    apiKeyValue: nil,
+                    network: $0,
                     configuration: input.networkConfig
-                ),
-                TronJsonRpcProvider(
-                    network: tronGridNetwork,
-                    apiKeyValue: input.blockchainConfig.tronGridApiKey,
-                    configuration: input.networkConfig
-                ),
-            ])
+                )
+            })
             $0.networkService = TronNetworkService(isTestnet: input.blockchain.isTestnet, providers: providers)
             $0.txBuilder = TronTransactionBuilder(blockchain: input.blockchain)
         }
     }
-    
 }

@@ -12,16 +12,14 @@ import Moya
 
 class TronJsonRpcProvider: HostProvider {
     var host: String {
-        network.url.hostOrUnknown + (apiKeyValue == nil ? "" : " (API KEY)")
+        network.url.hostOrUnknown + (network.apiKeyHeaderValue == nil ? "" : " (API KEY)")
     }
 
     private let network: TronNetwork
-    private let apiKeyValue: String?
     private let provider: NetworkProvider<TronTarget>
     
-    init(network: TronNetwork, apiKeyValue: String?, configuration: NetworkProviderConfiguration) {
+    init(network: TronNetwork, configuration: NetworkProviderConfiguration) {
         self.network = network
-        self.apiKeyValue = apiKeyValue
         provider = NetworkProvider<TronTarget>(configuration: configuration)
     }
     
@@ -57,8 +55,8 @@ class TronJsonRpcProvider: HostProvider {
         requestPublisher(for: .getTransactionInfoById(transactionID: id, network: network))
     }
     
-    private func requestPublisher<T: Codable>(for target: TronTarget.TronTargetType, apiKeyValue: String? = nil) -> AnyPublisher<T, Error> {
-        return provider.requestPublisher(TronTarget(target, apiKeyValue: apiKeyValue))
+    private func requestPublisher<T: Codable>(for target: TronTarget.TronTargetType) -> AnyPublisher<T, Error> {
+        return provider.requestPublisher(TronTarget(target))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(T.self)
             .mapError { moyaError in

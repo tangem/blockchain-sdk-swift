@@ -11,7 +11,7 @@ import Foundation
 enum TronNetwork {
     case nowNodes(apiKey: String)
     case getBlock(apiKey: String)
-    case mainnet
+    case mainnet(apiKey: String?)
     case shasta
     case nile
     
@@ -27,6 +27,22 @@ enum TronNetwork {
             return URL(string: "https://api.shasta.trongrid.io/")!
         case .nile:
             return URL(string: "https://nile.trongrid.io")!
+        }
+    }
+    
+    var apiKeyHeaderValue: String? {
+        if case .mainnet(let apiKey) = self {
+            return apiKey
+        } else {
+            return nil
+        }
+    }
+    
+    var apiKeyHeaderName: String? {
+        if case .mainnet = self {
+            return "TRON-PRO-API-KEY"
+        } else {
+            return nil
         }
     }
 }
