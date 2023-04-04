@@ -32,7 +32,10 @@ final class AddressServiceManagerUtility {
     func validate(address: String, publicKey: Data, for blockchain: BlockchainSdk.Blockchain) {
         do {
             let addressFromPublicKey = try blockchain.getAddressService().makeAddress(from: publicKey)
-            let addressFromTrustWallet = try TrustWalletAddressService(coin: .init(blockchain), publicKeyType: .init(blockchain)).makeAddress(from: publicKey)
+            let addressFromTrustWallet = try TrustWalletAddressService(
+                coin: .init(blockchain),
+                publicKeyType: .init(blockchain)
+            ).makeAddress(from: publicKey)
             
             validateTRUE(address: addressFromPublicKey, for: blockchain)
             

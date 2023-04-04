@@ -49,11 +49,11 @@ class BIP39AddressesCompareTests: XCTestCase {
     func testBitcoin() {
         let blockchain = Blockchain.bitcoin(testnet: false)
         
-        utility.validate(blockchain: blockchain) { privateKey in
-            addressesUtility.validate(privateKey: privateKey, for: blockchain)
+        utility.validate(blockchain: blockchain) { privateKey, publicKey in
+            addressesUtility.validate(privateKey: .init(data: privateKey.privateKey)!, for: blockchain)
             addressesUtility.validate(
                 address: "bc1qa3hn4whckf7gazxh5zd7m0xyrk90ncu4vnda8m",
-                publicKey: try! privateKey.getPublicKey(coinType: .init(blockchain)).data,
+                publicKey: publicKey.publicKey,
                 for: .bitcoin(testnet: false)
             )
         }
@@ -62,12 +62,14 @@ class BIP39AddressesCompareTests: XCTestCase {
     func testEthereum() {
         let blockchain = Blockchain.ethereum(testnet: false)
         
-        utility.validate(blockchain: blockchain) { privateKey in
-            addressesUtility.validate(privateKey: privateKey, for: blockchain)
+        utility.validate(blockchain: blockchain) { privateKey, publicKey in
+            addressesUtility.validate(privateKey: .init(data: privateKey.privateKey)!, for: blockchain)
+            
+            print(publicKey.publicKey.hexString)
             
             addressesUtility.validate(
                 address: "0xd0EEe5dAe303c76548C2bc2D4fbE753fdb014D00",
-                publicKey: try! privateKey.getPublicKey(coinType: .init(blockchain)).data,
+                publicKey: try! Secp256k1Key(with: publicKey.publicKey).decompress(),
                 for: .ethereum(testnet: false)
             )
         }

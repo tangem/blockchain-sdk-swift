@@ -87,7 +87,7 @@ class KeyAddressesCompareTests: XCTestCase {
         let blockchain = Blockchain.bsc(testnet: false)
         
         let test_private_key = PrivateKey(data: Data(hexString: "727f677b390c151caf9c206fd77f77918f56904b5504243db9b21e51182c4c06"))
-        let test_public_key = test_private_key!.getPublicKeySecp256k1(compressed: true).data
+        let test_public_key = test_private_key!.getPublicKeySecp256k1(compressed: false).data
         let test_address = "0xf3d468DBb386aaD46E92FF222adDdf872C8CC064"
         
         addressesUtility.validate(address: test_address,publicKey: test_public_key, for: blockchain)
