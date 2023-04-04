@@ -10,46 +10,59 @@ import Foundation
 import Moya
 import Combine
 
-/*
-curl 'https://ravencoin.network/v1/raven/address/R9evUf3dCSfzdjuRJgvBxAnjA7TPjDYjPo/utxo' \
- -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15'
--X 'GET' \
--H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15'
-{"apiVersion":"1","status":{"code":200,"message":"OK"},"data":{"items":[{"rvnAddress":"R9evUf3dCSfzdjuRJgvBxAnjA7TPjDYjPo","totalReceived":900000000,"totalReceivedDisplayValue":"9","totalSent":0,"totalSentDisplayValue":"0","finalBalance":900000000,"finalBalanceDisplayValue":"9","txCount":1,"blockHash":"00000000000015ca462a0bc9b53a7e5e1fe81ef3e03987096445f26f040497af","blockHeight":2500370}]}}%
-*/
-
-struct RavencoinNetworkProvider {
-    let provider: NetworkProvider<RavencoinTarget>
+class RavencoinMultiNetworkProvider: MultiNetworkProvider {
+    var currentProviderIndex: Int = 0
+    let providers: [RavencoinNetworkProvider]
     
     init(configuration: NetworkProviderConfiguration) {
-        provider = NetworkProvider<RavencoinTarget>(configuration: configuration)
+        let hosts = ["https://ravencoin.network/api", "https://api.ravencoin.org/api/"]
+
+        providers = hosts.map { host in
+            RavencoinNetworkProvider(
+                host: host,
+                provider: NetworkProvider<RavencoinTarget>(configuration: configuration)
+            )
+        }
+    }
+}
+
+class RavencoinNetworkProvider: HostProvider {
+    let host: String
+    let provider: NetworkProvider<RavencoinTarget>
+    
+    init(host: String, provider: NetworkProvider<RavencoinTarget>) {
+        self.host = host
+        self.provider = provider
     }
 
     func getInfo(address: String) -> AnyPublisher<RavencoinWalletInfo, Error> {
         provider
-            .requestPublisher(.wallet(address: address))
+            .requestPublisher(.init(host: host, target: .wallet(address: address)))
             .map(RavencoinWalletInfo.self)
             .eraseError()
     }
     
     func getUTXO(address: String) -> AnyPublisher<[RavencoinWalletUTXO], Error> {
         provider
-            .requestPublisher(.utxo(address: address))
+            .requestPublisher(.init(host: host, target: .utxo(address: address)))
             .map([RavencoinWalletUTXO].self)
             .eraseError()
     }
     
     func getTxInfo(transactionId: String) -> AnyPublisher<RavencoinTransactionInfo, Error> {
         provider
-            .requestPublisher(.transaction(id: transactionId))
+            .requestPublisher(.init(host: host, target: .transaction(id: transactionId)))
             .map(RavencoinTransactionInfo.self)
             .eraseError()
     }
     
     func getUTXO(raw: RavencoinRawTransactionRequestModel) -> AnyPublisher<Void, Error> {
         provider
-            .requestPublisher(.sendTransaction(raw: raw))
-            .map { _ in Void() }
+            .requestPublisher(.init(host: host, target: .sendTransaction(raw: raw)))
+            .map { response in
+                print(String(bytes: response.data, encoding: .utf8)!)
+                return Void()
+            }
             .eraseToAnyPublisher()
             .eraseError()
     }

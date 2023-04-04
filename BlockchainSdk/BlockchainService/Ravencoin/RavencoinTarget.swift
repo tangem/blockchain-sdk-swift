@@ -9,18 +9,25 @@
 import Foundation
 import Moya
 
-enum RavencoinTarget: TargetType {
-    case wallet(address: String)
-    case utxo(address: String)
-    case transaction(id: String)
-    case sendTransaction(raw: RavencoinRawTransactionRequestModel)
+struct RavencoinTarget {
+    let host: String
+    let target: Target
+}
+
+extension RavencoinTarget: TargetType {
+    enum Target {
+        case wallet(address: String)
+        case utxo(address: String)
+        case transaction(id: String)
+        case sendTransaction(raw: RavencoinRawTransactionRequestModel)
+    }
     
     var baseURL: URL {
-        URL(string: "https://ravencoin.network/api")!
+        URL(string: host)!
     }
     
     var path: String {
-        switch self {
+        switch target {
         case .wallet(let address):
             return "addr/\(address)"
         case .utxo(let address):
@@ -32,9 +39,23 @@ enum RavencoinTarget: TargetType {
         }
     }
     
-    var method: Moya.Method { .get }
+    var method: Moya.Method {
+        switch target {
+        case .sendTransaction:
+            return .post
+        case .wallet, .utxo, .transaction:
+            return .get
+        }
+    }
     
-    var task: Moya.Task { .requestPlain }
+    var task: Moya.Task {
+        switch target {
+        case .sendTransaction(let raw):
+            return .requestJSONEncodable(raw)
+        case .wallet, .utxo, .transaction:
+            return .requestPlain
+        }
+    }
     
     // Workaround for API
     var headers: [String : String]? {
