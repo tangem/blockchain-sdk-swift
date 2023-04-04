@@ -13,11 +13,9 @@ import WalletCore
 
 @testable import BlockchainSdk
 
-final class BIP39ServiceManagerUtility {
+final class MnemonicServiceManagerUtility {
     
     // MARK: - Properties
-    
-    private var bip39 = BIP39()
     
     private var mnemonic: String = ""
     private var passphrase: String = ""
@@ -26,29 +24,78 @@ final class BIP39ServiceManagerUtility {
         .init(mnemonic: mnemonic, passphrase: passphrase)!
     }
     
-    private var bip39MnemonicComponents: [String] {
-        (try? bip39.parse(mnemonicString: mnemonic))!
+    // MARK: - Keys
+    
+    var privateKey_ed25519: Data = Data()
+    var privateKey_secp256k1: Data = Data()
+    
+    // MARK: - Init
+    
+    public init(mnemonic: String, passphrase: String = "") {
+        self.mnemonic = mnemonic
+        self.passphrase = passphrase
     }
     
     // MARK: - Implementation
     
-    func validate(mnemonic: String, passphrase: String) {
-        self.mnemonic = mnemonic
-        self.passphrase = passphrase
-        
+    @discardableResult
+    func validate() -> Self {
         validate(mnemonic: hdWallet.mnemonic)
         
         do {
-            try validateSeed(hdSeed: hdWallet.seed, bip39Seed: bip39.generateSeed(from: bip39MnemonicComponents))
+            try validateSeed(hdSeed: hdWallet.seed, bip39Seed: Mnemonic(with: mnemonic).generateSeed(with: passphrase))
+            try validateMasterKey(hdSeed: hdWallet.seed, bip39Seed: Mnemonic(with: mnemonic).generateSeed(with: passphrase))
         } catch {
             XCTFail("__INVALID_SEED__ DID NOT CREATED FROM TangemSdk BIP39!")
         }
         
+        return self
+    }
+    
+    @discardableResult
+    func validate(seed: String, masterKey: String, curve: EllipticCurve) -> Self {
         do {
-            try validateMasterKey(hdSeed: hdWallet.seed, bip39Seed: bip39.generateSeed(from: bip39MnemonicComponents))
+            let bip39Seed = try Mnemonic(with: mnemonic).generateSeed(with: passphrase)
+            try validateSeed(hdSeed: hdWallet.seed, bip39Seed: bip39Seed)
+            try validateMasterKey(hdSeed: hdWallet.seed, bip39Seed: Mnemonic(with: mnemonic).generateSeed(with: passphrase))
+            
+            switch curve {
+            case .secp256k1:
+                privateKey_secp256k1 = try BIP32().makeMasterKey(from: bip39Seed, curve: .secp256k1).privateKey
+                XCTAssertEqual(masterKey, privateKey_secp256k1.hexString.lowercased())
+            case .ed25519:
+                privateKey_ed25519 = try BIP32().makeMasterKey(from: bip39Seed, curve: .ed25519).privateKey
+                XCTAssertEqual(masterKey, privateKey_ed25519.hexString.lowercased())
+            default:
+                XCTFail("__INVALID_ELIPTIC_CURVE__")
+            }
         } catch {
-            XCTFail("__INVALID_SEED__ DID NOT CREATED FROM TangemSdk BIP39!")
+            XCTFail("__INVALID_SEED__")
         }
+        
+        return self
+    }
+    
+    @discardableResult
+    func validate(
+        blockchain: BlockchainSdk.Blockchain,
+        executtion: (_ privateKey: PrivateKey) -> Void
+    ) -> Self {
+        guard !privateKey_secp256k1.isEmpty || !privateKey_ed25519.isEmpty else {
+            XCTFail("__INVALID_PRIVATE_KEYS__ RUN -> 'func validate() -> Self'")
+            return self
+        }
+        
+        switch blockchain.curve {
+        case .secp256k1:
+            executtion(PrivateKey(data: privateKey_secp256k1)!)
+        case .ed25519:
+            executtion(PrivateKey(data: privateKey_ed25519)!)
+        default:
+            XCTFail("__INVALID_ELIPTIC_CURVE__")
+        }
+        
+        return self
     }
     
     // MARK: - Private Implementation
@@ -56,26 +103,26 @@ final class BIP39ServiceManagerUtility {
     private func validate(mnemonic: String) {
         print("[BIP39ServiceManagerUtility] perform test mnemonic -> \(mnemonic)")
         
-        XCTAssertNotNil(try? bip39.validate(mnemonicComponents: bip39.parse(mnemonicString: mnemonic)))
+        XCTAssertNotNil(try? Mnemonic(with: mnemonic).generateSeed(with: passphrase))
         XCTAssertTrue(WalletCore.Mnemonic.isValid(mnemonic: mnemonic))
     }
     
-    private func validateSeed(hdSeed: Data, bip39Seed: Data) {
+    private func validateSeed(hdSeed: Data, bip39Seed: Data) throws {
         XCTAssertEqual(hdSeed.hexString, bip39Seed.hexString)
     }
     
     private func validateMasterKey(hdSeed: Data, bip39Seed: Data) {
         do {
             let privateKeyHDWallet_ed25519 = hdWallet.getMasterKey(curve: .ed25519).data.hexString
-            let privateKeyBIP32_ed25519 = try BIP32().makeMasterKey(from: bip39Seed, curve: .ed25519).privateKey.hexString
+            privateKey_ed25519 = try BIP32().makeMasterKey(from: bip39Seed, curve: .ed25519).privateKey
             
             let privateKeyHDWallet_secp256k1 = hdWallet.getMasterKey(curve: .secp256k1).data.hexString
-            let privateKeyBIP32_secp256k1 = try BIP32().makeMasterKey(from: bip39Seed, curve: .secp256k1).privateKey.hexString
+            privateKey_secp256k1 = try BIP32().makeMasterKey(from: bip39Seed, curve: .secp256k1).privateKey
             
-            XCTAssertEqual(privateKeyHDWallet_ed25519, privateKeyBIP32_ed25519)
-            XCTAssertEqual(privateKeyHDWallet_secp256k1, privateKeyBIP32_secp256k1)
+            XCTAssertEqual(privateKeyHDWallet_ed25519, privateKey_ed25519.hexString)
+            XCTAssertEqual(privateKeyHDWallet_secp256k1, privateKey_secp256k1.hexString)
         } catch {
-            XCTFail("__INVALID_MASTER_RPIVATE_KEY__ DID NOT CREATED!")
+            XCTFail("__INVALID_MASTER_RPIVATE_KEY__")
         }
     }
     

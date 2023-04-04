@@ -32,8 +32,11 @@ final class AddressServiceManagerUtility {
     func validate(address: String, publicKey: Data, for blockchain: BlockchainSdk.Blockchain) {
         do {
             let addressFromPublicKey = try blockchain.getAddressService().makeAddress(from: publicKey)
+            let addressFromTrustWallet = try TrustWalletAddressService(coin: .init(blockchain), publicKeyType: .init(blockchain)).makeAddress(from: publicKey)
+            
             validateTRUE(address: addressFromPublicKey, for: blockchain)
             
+            XCTAssertEqual(addressFromPublicKey, addressFromTrustWallet)
             XCTAssertEqual(address, addressFromPublicKey)
         } catch {
             XCTFail("__INVALID_ADDRESS__ BLOCKCHAIN FROM PUBLIC KEY!")
