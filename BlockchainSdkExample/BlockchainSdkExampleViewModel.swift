@@ -92,11 +92,20 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     private let tokenDecimalPlacesKey = "tokenDecimalPlaces"
     
     private var bag: Set<AnyCancellable> = []
+    private var derivationPath: DerivationPath? {
+        blockchain?.derivationPath(for: .new)
+    }
 
     
     init() {
         var config = Config()
         config.logConfig = .verbose
+        if let blockchain, let derivationPath = blockchain.derivationPath(for: .new) {
+            config.defaultDerivationPaths = [blockchain.curve: [derivationPath]]
+        } else {
+            config.defaultDerivationPaths = [Blockchain.ravencoin(testnet: false).curve: [Blockchain.ravencoin(testnet: false).derivationPath()!]]
+        }
+
         // initialize at start to handle all logs
         Log.config = config.logConfig
         config.attestationMode = .offline
@@ -216,6 +225,10 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     }
     
     func scanCardAndGetInfo() {
+        if let blockchain = blockchain, let derivationPath = derivationPath {
+            sdk.config.defaultDerivationPaths = [blockchain.curve: [derivationPath]]
+        }
+
         sdk.scanCard { [unowned self] result in
             switch result {
             case .failure(let error):
@@ -415,6 +428,16 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     }
     
     private func createWalletManager(blockchain: Blockchain, wallet: Card.Wallet) throws -> WalletManager {
+        if let derivationPath = derivationPath, let derivedKey = wallet.derivedKeys[derivationPath] {
+            return try walletManagerFactory.makeWalletManager(
+                blockchain: blockchain,
+                seedKey: wallet.publicKey,
+                derivedKey: derivedKey,
+                derivation: .custom(derivationPath)
+            )
+        }
+        
+        Log.error("Don't have derivedKeys for \(blockchain)")
         return try walletManagerFactory.makeWalletManager(blockchain: blockchain, walletPublicKey: wallet.publicKey)
     }
     

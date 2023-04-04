@@ -70,4 +70,8 @@ struct NetworkProviderAssembly {
         }
     }
     
+    func makeRavencoinNetworkProvider(with input: WalletManagerAssemblyInput) -> RavencoinNetworkProvider {
+        RavencoinNetworkProvider(configuration: input.networkConfig)
+    }
+    
 }

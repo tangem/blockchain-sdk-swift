@@ -9,5 +9,5 @@
 import Foundation
 
 class RavencoinWalletManager: BitcoinWalletManager {
-    override var minimalFeePerByte: Decimal { 0.00001 }
+    override var minimalFeePerByte: Decimal { 0.001 / 1000 }
 }
