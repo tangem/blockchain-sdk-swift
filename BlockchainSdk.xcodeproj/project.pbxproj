@@ -11,6 +11,7 @@
 		2D3829C929D34A93001D4785 /* TWCoin+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829C829D34A93001D4785 /* TWCoin+.swift */; };
 		2D3829CC29D34DC4001D4785 /* CoinAddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829CB29D34DC4001D4785 /* CoinAddressesCompareTests.swift */; };
 		2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */; };
+		2D4313EF29DBFB95007497BE /* KeyAddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4313EE29DBFB95007497BE /* KeyAddressesCompareTests.swift */; };
 		2D64FC9729DAE518007C8792 /* MnemonicAddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D64FC9629DAE518007C8792 /* MnemonicAddressesCompareTests.swift */; };
 		2D64FC9929DAED32007C8792 /* BIP39ServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D64FC9829DAED32007C8792 /* BIP39ServiceManagerUtility.swift */; };
 		2D64FC9C29DB22C8007C8792 /* BIP39AddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D64FC9B29DB22C8007C8792 /* BIP39AddressesCompareTests.swift */; };
@@ -330,6 +331,7 @@
 		2D3829C829D34A93001D4785 /* TWCoin+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWCoin+.swift"; sourceTree = "<group>"; };
 		2D3829CB29D34DC4001D4785 /* CoinAddressesCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinAddressesCompareTests.swift; sourceTree = "<group>"; };
 		2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressServiceManagerUtility.swift; sourceTree = "<group>"; };
+		2D4313EE29DBFB95007497BE /* KeyAddressesCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyAddressesCompareTests.swift; sourceTree = "<group>"; };
 		2D64FC9629DAE518007C8792 /* MnemonicAddressesCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicAddressesCompareTests.swift; sourceTree = "<group>"; };
 		2D64FC9829DAED32007C8792 /* BIP39ServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BIP39ServiceManagerUtility.swift; sourceTree = "<group>"; };
 		2D64FC9B29DB22C8007C8792 /* BIP39AddressesCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BIP39AddressesCompareTests.swift; sourceTree = "<group>"; };
@@ -668,6 +670,7 @@
 				2D3829CB29D34DC4001D4785 /* CoinAddressesCompareTests.swift */,
 				2D64FC9629DAE518007C8792 /* MnemonicAddressesCompareTests.swift */,
 				2D64FC9B29DB22C8007C8792 /* BIP39AddressesCompareTests.swift */,
+				2D4313EE29DBFB95007497BE /* KeyAddressesCompareTests.swift */,
 			);
 			path = CompareTests;
 			sourceTree = "<group>";
@@ -2168,6 +2171,7 @@
 				EF0DA78728523FAC0081092A /* TronTests.swift in Sources */,
 				EF0DA78528523FAC0081092A /* BlockchainSdkTests.swift in Sources */,
 				B00DEAD3290008910077CD19 /* SolanaTests.swift in Sources */,
+				2D4313EF29DBFB95007497BE /* KeyAddressesCompareTests.swift in Sources */,
 				2D64FC9C29DB22C8007C8792 /* BIP39AddressesCompareTests.swift in Sources */,
 				EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */,
 				EF0DA78628523FAC0081092A /* XCTestCase+.swift in Sources */,

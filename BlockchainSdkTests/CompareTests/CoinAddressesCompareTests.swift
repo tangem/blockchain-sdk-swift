@@ -138,42 +138,73 @@ extension CoinAddressesCompareTests {
         let blockchain = Blockchain.stellar(testnet: false)
         
         // Positive
-        addressesUtility.validateTRUE(address: "GAB6EDWGWSRZUYUYCWXAFQFBHE5ZEJPDXCIMVZC3LH2C7IU35FTI2NOQ", for: blockchain)
-        addressesUtility.validateTRUE(address: "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI", for: blockchain)
+        let positiveTestCases = [
+            "GAB6EDWGWSRZUYUYCWXAFQFBHE5ZEJPDXCIMVZC3LH2C7IU35FTI2NOQ",
+            "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI"
+        ]
+        
+        positiveTestCases.forEach {
+            addressesUtility.validateTRUE(address: $0, for: blockchain)
+        }
     }
     
     func testRippleAddress() {
         let blockchain = Blockchain.xrp(curve: .secp256k1)
         
         // Positive
-        addressesUtility.validateTRUE(address: "rDpysuumkweqeC7XdNgYNtzL5GxbdsmrtF", for: blockchain)
-        addressesUtility.validateTRUE(address: "XVfvixWZQKkcenFRYApCjpTUyJ4BePTe3jJv7beatUZvQYh", for: blockchain)
-        addressesUtility.validateTRUE(address: "rJjXGYnKNcbTsnuwoaP9wfDebB8hDX8jdQ", for: blockchain)
-        addressesUtility.validateTRUE(address: "r36yxStAh7qgTQNHTzjZvXybCTzUFhrfav", for: blockchain)
-        addressesUtility.validateTRUE(address: "XVfvixWZQKkcenFRYApCjpTUyJ4BePMjMaPqnob9QVPiVJV", for: blockchain)
-        addressesUtility.validateTRUE(address: "rfxdLwsZnoespnTDDb1Xhvbc8EFNdztaoq", for: blockchain)
-        addressesUtility.validateTRUE(address: "rU893viamSnsfP3zjzM2KPxjqZjXSXK6VF", for: blockchain)
+        let positiveTestCases = [
+            "rDpysuumkweqeC7XdNgYNtzL5GxbdsmrtF",
+            "XVfvixWZQKkcenFRYApCjpTUyJ4BePTe3jJv7beatUZvQYh",
+            "XVfvixWZQKkcenFRYApCjpTUyJ4BePTe3jJv7beatUZvQYh",
+            "rJjXGYnKNcbTsnuwoaP9wfDebB8hDX8jdQ",
+            "r36yxStAh7qgTQNHTzjZvXybCTzUFhrfav",
+            "XVfvixWZQKkcenFRYApCjpTUyJ4BePMjMaPqnob9QVPiVJV",
+            "rfxdLwsZnoespnTDDb1Xhvbc8EFNdztaoq",
+            "rU893viamSnsfP3zjzM2KPxjqZjXSXK6VF",
+        ]
+        
+        positiveTestCases.forEach {
+            addressesUtility.validateTRUE(address: $0, for: blockchain)
+        }
     }
     
     func testSolanaAddress() {
         let blockchain = Blockchain.solana(testnet: false)
+
+        // Positive
+        let positiveTestCases = [
+            "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q",
+            "EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd"
+        ]
         
-        // Positve
-        addressesUtility.validateTRUE(address: "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q", for: blockchain)
-        addressesUtility.validateTRUE(address: "EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd", for: blockchain)
+        positiveTestCases.forEach {
+            addressesUtility.validateTRUE(address: $0, for: blockchain)
+        }
     }
     
     func testPolkadotAddress() {
         let blockchain = Blockchain.polkadot(testnet: false)
         
         // Positve
-        addressesUtility.validateTRUE(address: "12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW", for: blockchain)
-        addressesUtility.validateTRUE(address: "14PhJGbzPxhQbiq7k9uFjDQx3MNiYxnjFRSiVBvBBBfnkAoM", for: blockchain)
+        let positiveTestCases = [
+            "12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW",
+            "14PhJGbzPxhQbiq7k9uFjDQx3MNiYxnjFRSiVBvBBBfnkAoM"
+        ]
+        
+        positiveTestCases.forEach {
+            addressesUtility.validateTRUE(address: $0, for: blockchain)
+        }
         
         // Negative
-        addressesUtility.validateFALSE(address: "cosmos1l4f4max9w06gqrvsxf74hhyzuqhu2l3zyf0480", for: blockchain)
-        addressesUtility.validateFALSE(address: "3317oFJC9FvxU2fwrKVsvgnMGCDzTZ5nyf", for: blockchain)
-        addressesUtility.validateFALSE(address: "ELmaX1aPkyEF7TSmYbbyCjmSgrBpGHv9EtpwR2tk1kmpwvG", for: blockchain)
+        let negativeTestCases = [
+            "cosmos1l4f4max9w06gqrvsxf74hhyzuqhu2l3zyf0480",
+            "3317oFJC9FvxU2fwrKVsvgnMGCDzTZ5nyf",
+            "ELmaX1aPkyEF7TSmYbbyCjmSgrBpGHv9EtpwR2tk1kmpwvG"
+        ]
+        
+        negativeTestCases.forEach {
+            addressesUtility.validateFALSE(address: $0, for: blockchain)
+        }
     }
     
     func testBscAddress() {

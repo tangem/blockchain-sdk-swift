@@ -22,13 +22,13 @@ final class BIP39ServiceManagerUtility {
     private var mnemonic: String = ""
     private var passphrase: String = ""
     
-    private lazy var hdWallet: HDWallet = {
+    private var hdWallet: HDWallet {
         .init(mnemonic: mnemonic, passphrase: passphrase)!
-    }()
+    }
     
-    private lazy var bip39MnemonicComponents: [String] = {
+    private var bip39MnemonicComponents: [String] {
         (try? bip39.parse(mnemonicString: mnemonic))!
-    }()
+    }
     
     // MARK: - Implementation
     
@@ -54,6 +54,8 @@ final class BIP39ServiceManagerUtility {
     // MARK: - Private Implementation
     
     private func validate(mnemonic: String) {
+        print("[BIP39ServiceManagerUtility] perform test mnemonic -> \(mnemonic)")
+        
         XCTAssertNotNil(try? bip39.validate(mnemonicComponents: bip39.parse(mnemonicString: mnemonic)))
         XCTAssertTrue(WalletCore.Mnemonic.isValid(mnemonic: mnemonic))
     }
@@ -73,7 +75,7 @@ final class BIP39ServiceManagerUtility {
             XCTAssertEqual(privateKeyHDWallet_ed25519, privateKeyBIP32_ed25519)
             XCTAssertEqual(privateKeyHDWallet_secp256k1, privateKeyBIP32_secp256k1)
         } catch {
-            XCTFail("__INVALID_RPIVATE_KEY__ DID NOT CREATED!")
+            XCTFail("__INVALID_MASTER_RPIVATE_KEY__ DID NOT CREATED!")
         }
     }
     
