@@ -86,9 +86,15 @@ extension CoinAddressesCompareTests {
         let blockchain = Blockchain.litecoin
         
         // Positive
-        addressesUtility.validateTRUE(address: "ltc1q5wmm9vrz55war9c0rgw26tv9un5fxnn7slyjpy", for: blockchain)
-        addressesUtility.validateTRUE(address: "MPmoY6RX3Y3HFjGEnFxyuLPCQdjvHwMEny", for: blockchain)
-        addressesUtility.validateTRUE(address: "LMbRCidgQLz1kNA77gnUpLuiv2UL6Bc4Q2", for: blockchain)
+        let positiveTestCases = [
+            "ltc1q5wmm9vrz55war9c0rgw26tv9un5fxnn7slyjpy",
+            "MPmoY6RX3Y3HFjGEnFxyuLPCQdjvHwMEny",
+            "LMbRCidgQLz1kNA77gnUpLuiv2UL6Bc4Q2"
+        ]
+        
+        positiveTestCases.forEach {
+            addressesUtility.validateTRUE(address: $0, for: blockchain)
+        }
         
         // Negative
         addressesUtility.validateFALSE(address: "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2", for: blockchain)
@@ -98,10 +104,16 @@ extension CoinAddressesCompareTests {
         let blockchain = Blockchain.bitcoinCash(testnet: false)
         
         // Positive
-        addressesUtility.validateTRUE(address: "bitcoincash:qruxj7zq6yzpdx8dld0e9hfvt7u47zrw9gfr5hy0vh", for: blockchain)
-        addressesUtility.validateTRUE(address: "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd", for: blockchain)
-        addressesUtility.validateTRUE(address: "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd", for: blockchain)
-        addressesUtility.validateTRUE(address: "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2", for: blockchain)
+        let positiveTestCases = [
+            "bitcoincash:qruxj7zq6yzpdx8dld0e9hfvt7u47zrw9gfr5hy0vh",
+            "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd",
+            "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd",
+            "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"
+        ]
+        
+        positiveTestCases.forEach {
+            addressesUtility.validateTRUE(address: $0, for: blockchain)
+        }
     }
     
     func testBinanaceAddress() {
