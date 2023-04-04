@@ -22,32 +22,13 @@ struct TronTarget: TargetType {
     }
     
     let type: TronTargetType
-    let tronGridApiKey: String?
     
-    init(_ type: TronTargetType, tronGridApiKey: String?) {
+    init(_ type: TronTargetType) {
         self.type = type
-        self.tronGridApiKey = tronGridApiKey
     }
     
     var baseURL: URL {
-        switch type {
-        case .getChainParameters(let network):
-            return network.url
-        case .getAccount(_, let network):
-            return network.url
-        case .getAccountResource(_, let network):
-            return network.url
-        case .getNowBlock(let network):
-            return network.url
-        case .broadcastHex(_, let network):
-            return network.url
-        case .tokenBalance(_, _, let network):
-            return network.url
-        case .contractEnergyUsage(_, _, _, let network):
-            return network.url
-        case .getTransactionInfoById(_, let network):
-            return network.url
-        }
+        type.network.url
     }
     
     var path: String {
@@ -117,10 +98,33 @@ struct TronTarget: TargetType {
             "Content-Type": "application/json",
         ]
         
-        if let tronGridApiKey = tronGridApiKey {
-            headers["TRON-PRO-API-KEY"] = tronGridApiKey
+        if let apiKeyHeaderName = type.network.apiKeyHeaderName, let apiKeyHeaderValue = type.network.apiKeyHeaderValue {
+            headers[apiKeyHeaderName] = apiKeyHeaderValue
         }
         
         return headers
+    }
+}
+
+fileprivate extension TronTarget.TronTargetType {
+    var network: TronNetwork {
+        switch self {
+        case .getChainParameters(let network):
+            return network
+        case .getAccount(_, let network):
+            return network
+        case .getAccountResource(_, let network):
+            return network
+        case .getNowBlock(let network):
+            return network
+        case .broadcastHex(_, let network):
+            return network
+        case .tokenBalance(_, _, let network):
+            return network
+        case .contractEnergyUsage(_, _, _, let network):
+            return network
+        case .getTransactionInfoById(_, let network):
+            return network
+        }
     }
 }
