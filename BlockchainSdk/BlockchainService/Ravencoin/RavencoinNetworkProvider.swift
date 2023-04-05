@@ -10,26 +10,6 @@ import Foundation
 import Moya
 import Combine
 
-/// https://api.ravencoin.org/api/statistics/fees?days=2
-///[{"date":"2023-04-04","fee":"0.54902094"},{"date":"2023-04-03","fee":"0.12607205"}]
-///
-
-class RavencoinMultiNetworkProvider: MultiNetworkProvider {
-    var currentProviderIndex: Int = 0
-    let providers: [RavencoinNetworkProvider]
-    
-    init(configuration: NetworkProviderConfiguration) {
-        let hosts = ["https://api.ravencoin.org/api/", "https://ravencoin.network/api"]
- // https://testnet.ravencoin.org/api/
-        providers = hosts.map { host in
-            RavencoinNetworkProvider(
-                host: host,
-                provider: NetworkProvider<RavencoinTarget>(configuration: configuration)
-            )
-        }
-    }
-}
-
 /// https://github.com/RavenProject/Ravencoin/blob/master/doc/REST-interface.md
 /// https://github.com/RavenDevKit/insight-api
 class RavencoinNetworkProvider: HostProvider {
@@ -73,7 +53,7 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
-        getFeeRate(blocks: 10)
+        getFeeRateByBite(blocks: 10)
             .map { perByte in
                 let satoshi = perByte * pow(10, 8) // TODO: Change on decimalValue
                 let minRate = satoshi
@@ -129,7 +109,7 @@ private extension RavencoinNetworkProvider {
             .eraseError()
     }
     
-    func getFeeRate(blocks: Int) -> AnyPublisher<Decimal, Error> {
+    func getFeeRateByBite(blocks: Int) -> AnyPublisher<Decimal, Error> {
         provider
             .requestPublisher(.init(host: host, target: .fees(request: .init(nbBlocks: blocks))))
             .mapJSON(failsOnEmptyData: true)
