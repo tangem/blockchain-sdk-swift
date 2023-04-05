@@ -36,7 +36,7 @@ extension RavencoinTarget: TargetType {
         case .utxo(let address):
             return "addrs/\(address)/utxo"
         case .fees:
-            return "utils/estimatesmartfee?nbBlocks=10"
+            return "utils/estimatesmartfee"
         case .transaction(let id):
             return "tx/\(id)"
         case .send:

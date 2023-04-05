@@ -8,7 +8,12 @@
 
 import Foundation
 
-struct RavencoinTransactionInfo : Codable {
+struct RavencoinBaseTransactionInfo: Codable {
+    let pagesTotal: Int
+    let txs: [RavencoinTransactionInfo]
+}
+
+struct RavencoinTransactionInfo: Codable {
     let txid: String?
     let version: Int?
     let locktime: Int?

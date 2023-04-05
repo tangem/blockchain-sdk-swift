@@ -10,8 +10,6 @@ import Foundation
 import TangemSdk
 import BitcoinCore
 
-//https://blockbook.ravencoin.org/api/tx/3717b528eb4925461d9de5a596d2eefe175985740b4fda153255e10135f236a6
-
 struct RavencoinWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         try RavencoinWalletManager(wallet: input.wallet).then {
@@ -29,13 +27,20 @@ struct RavencoinWalletAssembly: WalletManagerAssembly {
                 addresses: input.wallet.addresses
             )
             
-            $0.networkService = BitcoinNetworkService(
-                providers: [
-                    networkProviderAssembly
-                        .makeRavencoinNetworkProvider(with: input)
-                        .eraseToAnyBitcoinNetworkProvider()
-                ]
-            )
+            let hosts: [String]
+            
+            if input.blockchain.isTestnet {
+                hosts = ["https://testnet.ravencoin.org/api/"]
+            } else {
+                hosts = ["https://api.ravencoin.org/api/", "https://ravencoin.network/api/"]
+            }
+
+            let providers: [AnyBitcoinNetworkProvider] = hosts.map {
+                RavencoinNetworkProvider(host: $0, provider: .init(configuration: input.networkConfig))
+                    .eraseToAnyBitcoinNetworkProvider()
+            }
+            
+            $0.networkService = BitcoinNetworkService(providers: providers)
         }
     }
     
