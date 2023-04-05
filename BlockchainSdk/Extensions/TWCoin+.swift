@@ -48,6 +48,10 @@ extension CoinType {
             self = .cardano
         case .polygon:
             self = .polygon
+        case .dash:
+            self = .dash
+        case .dogecoin:
+            self = .dogecoin
         default:
             throw NSError()
         }

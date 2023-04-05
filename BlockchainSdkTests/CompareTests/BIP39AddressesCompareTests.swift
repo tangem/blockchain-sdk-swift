@@ -202,5 +202,29 @@ class BIP39AddressesCompareTests: XCTestCase {
         }
     }
     
+    func testDash() {
+        let blockchain = Blockchain.dash(testnet: false)
+        
+        utility.validate(blockchain: blockchain) { privateKey, publicKey in
+            addressesUtility.validate(
+                address: "XxEzYt2yQDsHgZxkcHXs7dg15XfX3xRu5d",
+                publicKey: publicKey.publicKey,
+                for: blockchain
+            )
+        }
+    }
+    
+    func testDogecoin() {
+        let blockchain = Blockchain.dogecoin
+        
+        utility.validate(blockchain: blockchain) { privateKey, publicKey in
+            addressesUtility.validate(
+                address: "DShFFtKijvYz4dYmUzDCos9p8Kp8LiPwkX",
+                publicKey: publicKey.publicKey,
+                for: blockchain
+            )
+        }
+    }
+    
 }
 

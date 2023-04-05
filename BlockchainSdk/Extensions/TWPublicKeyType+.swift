@@ -56,6 +56,10 @@ extension PublicKeyType {
             }
         case .polygon:
             self = .secp256k1Extended
+        case .dash:
+            self = .secp256k1
+        case .dogecoin:
+            self = .secp256k1
         default:
             throw NSError()
         }
