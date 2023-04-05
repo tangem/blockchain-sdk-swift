@@ -9,32 +9,65 @@
 import Foundation
 import Moya
 
-enum RavencoinTarget: TargetType {
-    case wallet(address: String)
-    case utxo(address: String)
-    case transaction(id: String)
-    case sendTransaction(raw: RavencoinRawTransactionRequestModel)
+struct RavencoinTarget {
+    let host: String
+    let target: Target
+}
+
+extension RavencoinTarget: TargetType {
+    enum Target {
+        case wallet(address: String)
+        case transactions(address: String)
+        case utxo(address: String)
+        case fees(request: RavencoinFee.Request)
+        
+        case send(transaction: RavencoinRawTransaction.Request)
+        case transaction(id: String)
+    }
     
     var baseURL: URL {
-        URL(string: "https://ravencoin.network/api")!
+        URL(string: host)!
     }
     
     var path: String {
-        switch self {
+        switch target {
         case .wallet(let address):
             return "addr/\(address)"
         case .utxo(let address):
             return "addrs/\(address)/utxo"
+        case .fees:
+            return "utils/estimatesmartfee?nbBlocks=10"
         case .transaction(let id):
             return "tx/\(id)"
-        case .sendTransaction:
+        case .send:
             return "tx/send"
+        case .transactions:
+            return "txs"
         }
     }
     
-    var method: Moya.Method { .get }
+    var method: Moya.Method {
+        switch target {
+        case .send:
+            return .post
+        case .wallet, .utxo, .transaction, .fees, .transactions:
+            return .get
+        }
+    }
     
-    var task: Moya.Task { .requestPlain }
+    var task: Moya.Task {
+        switch target {
+        case .fees(let request):
+            let parameters = try? request.asDictionary()
+            return .requestParameters(parameters: parameters ?? [:], encoding: URLEncoding.default)
+        case .transactions(let address):
+            return .requestParameters(parameters: ["address": address], encoding: URLEncoding.default)
+        case .send(let transaction):
+            return .requestJSONEncodable(transaction)
+        case .wallet, .utxo, .transaction:
+            return .requestPlain
+        }
+    }
     
     // Workaround for API
     var headers: [String : String]? {
