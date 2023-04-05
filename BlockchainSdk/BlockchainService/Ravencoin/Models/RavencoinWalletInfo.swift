@@ -10,14 +10,15 @@ import Foundation
 
 struct RavencoinWalletInfo: Decodable {
     let address: String
-    let balance: Decimal
-    let balanceSatoshi: Decimal
+
+    let balance: Decimal?
+    let balanceSatoshi: Decimal?
     
-    let totalReceived: Decimal
-    let totalReceivedSatoshi: Decimal
+    let totalReceived: Decimal?
+    let totalReceivedSatoshi: Decimal?
     
-    let totalSent : Decimal
-    let totalSentSatoshi : Decimal
+    let totalSent : Decimal?
+    let totalSentSatoshi : Decimal?
     
     let unconfirmedBalance : Decimal
     let unconfirmedBalanceSatoshi : Decimal
