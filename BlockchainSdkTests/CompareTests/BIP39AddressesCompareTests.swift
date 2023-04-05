@@ -226,5 +226,29 @@ class BIP39AddressesCompareTests: XCTestCase {
         }
     }
     
+    func testBitcoinCash() {
+        let blockchain = Blockchain.bitcoinCash(testnet: false)
+        
+        utility.validate(blockchain: blockchain) { privateKey, publicKey in
+            addressesUtility.validate(
+                address: "bitcoincash:qrkx7w46lze8er5g67sfhmducswc470rj5umyvauan",
+                publicKey: publicKey.publicKey,
+                for: blockchain
+            )
+        }
+    }
+    
+    func testArbitrum() {
+        let blockchain = Blockchain.arbitrum(testnet: false)
+        
+        utility.validate(blockchain: blockchain) { privateKey, publicKey in
+            addressesUtility.validate(
+                address: "0xd0EEe5dAe303c76548C2bc2D4fbE753fdb014D00",
+                publicKey: try! Secp256k1Key(with: publicKey.publicKey).decompress(),
+                for: blockchain
+            )
+        }
+    }
+    
 }
 

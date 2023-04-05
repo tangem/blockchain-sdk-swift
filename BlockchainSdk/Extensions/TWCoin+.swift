@@ -52,6 +52,10 @@ extension CoinType {
             self = .dash
         case .dogecoin:
             self = .dogecoin
+        case .bitcoinCash:
+            self = .bitcoinCash
+        case .arbitrum:
+            self = .arbitrum
         default:
             throw NSError()
         }

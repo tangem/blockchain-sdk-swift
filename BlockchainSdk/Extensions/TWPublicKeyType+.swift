@@ -34,7 +34,7 @@ extension PublicKeyType {
         case .ton:
             self = .ed25519
         case .cardano:
-            self = .ed25519Cardano
+            self = .ed25519
         case .binance:
             self = .secp256k1
         case .bsc:
@@ -60,6 +60,10 @@ extension PublicKeyType {
             self = .secp256k1
         case .dogecoin:
             self = .secp256k1
+        case .bitcoinCash:
+            self = .secp256k1
+        case .arbitrum:
+            self = .secp256k1Extended
         default:
             throw NSError()
         }

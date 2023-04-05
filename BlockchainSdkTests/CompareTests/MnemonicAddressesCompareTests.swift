@@ -48,6 +48,8 @@ class MnemonicAddressesCompareTests: XCTestCase {
             addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .tezos), for: .tezos(curve: .ed25519))
             addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .polygon), for: .polygon(testnet: false))
             addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .dogecoin), for: .dogecoin)
+            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .bitcoinCash), for: .bitcoinCash(testnet: false))
+            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .arbitrum), for: .arbitrum(testnet: false))
         }
     }
     
