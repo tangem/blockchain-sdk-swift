@@ -21,10 +21,12 @@ import Combine
 /// https://testnet.ravencoin.org/api/
 class RavencoinNetworkProvider: HostProvider {
     let host: String
+    let blockchain: Blockchain
     let provider: NetworkProvider<RavencoinTarget>
     
-    init(host: String, provider: NetworkProvider<RavencoinTarget>) {
+    init(host: String, blockchain: Blockchain, provider: NetworkProvider<RavencoinTarget>) {
         self.host = host
+        self.blockchain = blockchain
         self.provider = provider
     }
 }
@@ -35,7 +37,7 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
     var supportsTransactionPush: Bool { false }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        Publishers.CombineLatest(getWalletInfo(address: address), getUTXO(address: address))
+        Publishers.Zip(getWalletInfo(address: address), getUTXO(address: address))
             .map { wallet, outputs -> BitcoinResponse in
                 let unspentOutputs = outputs.map { utxo in
                     BitcoinUnspentOutput(transactionHash: utxo.txid,
@@ -51,17 +53,21 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
                     unspentOutputs: unspentOutputs
                 )
             }
-        .eraseToAnyPublisher()
+            .eraseToAnyPublisher()
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
-        getFeeRateByBite(blocks: 10)
-            .map { perByte in
-                let satoshi = perByte * pow(10, 8) // TODO: Change on decimalValue
+        getFeeRatePerByte(blocks: 10)
+            .tryMap { [weak self] perByte in
+                guard let self else {
+                    throw BlockchainSdkError.failedToLoadFee
+                }
+                
+                let satoshi = perByte * self.blockchain.decimalValue
                 let minRate = satoshi
                 let normalRate = satoshi * 12 / 10
                 let priorityRate = satoshi * 15 / 10
-
+                
                 return BitcoinFee(
                     minimalSatoshiPerByte: minRate,
                     normalSatoshiPerByte: normalRate,
@@ -76,7 +82,7 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
             .map { $0.txid }
             .eraseToAnyPublisher()
     }
-
+    
     func push(transaction: String) -> AnyPublisher<String, Error> {
         .anyFail(error: BlockchainSdkError.networkProvidersNotSupportsRbf)
     }
@@ -89,6 +95,7 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
 // MARK: - Private
 
 private extension RavencoinNetworkProvider {
+    
     func getWalletInfo(address: String) -> AnyPublisher<RavencoinWalletInfo, Error> {
         provider
             .requestPublisher(.init(host: host, target: .wallet(address: address)))
@@ -99,7 +106,9 @@ private extension RavencoinNetworkProvider {
     func getTransactions(address: String) -> AnyPublisher<[RavencoinTransactionInfo], Error> {
         provider
             .requestPublisher(.init(host: host, target: .transactions(address: address)))
-            .map([RavencoinTransactionInfo].self)
+            .map(RavencoinBaseTransactionInfo.self)
+            .map { $0.txs }
+            .eraseToAnyPublisher()
             .eraseError()
     }
     
@@ -110,15 +119,20 @@ private extension RavencoinNetworkProvider {
             .eraseError()
     }
     
-    func getFeeRateByBite(blocks: Int) -> AnyPublisher<Decimal, Error> {
+    func getFeeRatePerByte(blocks: Int) -> AnyPublisher<Decimal, Error> {
         provider
             .requestPublisher(.init(host: host, target: .fees(request: .init(nbBlocks: blocks))))
             .mapJSON(failsOnEmptyData: true)
-            .compactMap { $0 as? [String: Any] }
-            .compactMap { $0["\(blocks)"] as? Decimal } // Get rate per kilobyte
-            .map { $0 / 1024 }
+            .tryMap { json throws -> Decimal in
+                guard let json = json as? [String: Any],
+                      let rate = json["\(blocks)"] as? Double else {
+                    throw BlockchainSdkError.failedToLoadFee
+                }
+                
+                let ratePerKilobyte = Decimal(floatLiteral: rate)
+                return ratePerKilobyte / 1024
+            }
             .eraseToAnyPublisher()
-            .eraseError()
     }
     
     func getTxInfo(transactionId: String) -> AnyPublisher<RavencoinTransactionInfo, Error> {
