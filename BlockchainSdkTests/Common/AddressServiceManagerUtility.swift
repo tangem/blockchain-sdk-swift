@@ -34,9 +34,6 @@ final class AddressServiceManagerUtility {
             let addressFromPublicKey = try makeLocalWalletAddressService(publicKey: publicKey, for: blockchain)
             let addressFromTrustWallet = try makeTrustWalletAddressService(publicKey: publicKey, for: blockchain)
             
-            print(addressFromPublicKey)
-            print(addressFromTrustWallet)
-            
             validateTRUE(address: addressFromPublicKey, for: blockchain)
             
             XCTAssertEqual(addressFromPublicKey, addressFromTrustWallet)

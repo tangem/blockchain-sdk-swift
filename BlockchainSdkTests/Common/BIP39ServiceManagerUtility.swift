@@ -104,8 +104,6 @@ final class MnemonicServiceManagerUtility {
     // MARK: - Private Implementation
     
     private func validate(mnemonic: String) {
-        print("[BIP39ServiceManagerUtility] perform test mnemonic -> \(mnemonic)")
-        
         XCTAssertNotNil(try? Mnemonic(with: mnemonic).generateSeed(with: passphrase))
         XCTAssertTrue(WalletCore.Mnemonic.isValid(mnemonic: mnemonic))
     }
