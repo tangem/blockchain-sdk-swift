@@ -9,8 +9,18 @@
 import Foundation
 import Moya
 
-enum RosettaUrl: String {
-    case tangemRosetta = "https://ada.tangem.com"
+enum RosettaUrl {
+    case getBlockRosetta(apiKey: String)
+    case tangemRosetta
+    
+    var url: String {
+        switch self {
+        case .getBlockRosetta(let apiKey):
+            return "https://ada.getblock.io/mainnet/\(apiKey)"
+        case .tangemRosetta:
+            return "https://ada.tangem.com"
+        }
+    }
 }
 
 enum RosettaTarget: TargetType {
@@ -21,7 +31,7 @@ enum RosettaTarget: TargetType {
     var baseURL: URL {
         switch self {
         case .address(let url, _), .submitTransaction(let url, _), .coins(let url, _):
-            return URL(string: url.rawValue)!
+            return URL(string: url.url)!
         }
     }
     
