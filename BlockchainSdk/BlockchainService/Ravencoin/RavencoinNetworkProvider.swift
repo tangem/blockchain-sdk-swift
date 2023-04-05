@@ -10,8 +10,15 @@ import Foundation
 import Moya
 import Combine
 
+/// Documentation:
 /// https://github.com/RavenProject/Ravencoin/blob/master/doc/REST-interface.md
 /// https://github.com/RavenDevKit/insight-api
+
+/// Hosts: Will move to assembly
+/// https://api.ravencoin.org/api/
+/// https://ravencoin.network/api/
+/// Testnet:
+/// https://testnet.ravencoin.org/api/
 class RavencoinNetworkProvider: HostProvider {
     let host: String
     let provider: NetworkProvider<RavencoinTarget>

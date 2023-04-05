@@ -13,7 +13,7 @@ struct RavencoinFee {
         let nbBlocks: Int
         let mode: RavencoinFeeMode
         
-        init(nbBlocks: Int = 10, mode: RavencoinFeeMode = .economical) {
+        init(nbBlocks: Int, mode: RavencoinFeeMode = .economical) {
             self.nbBlocks = nbBlocks
             self.mode = mode
         }
