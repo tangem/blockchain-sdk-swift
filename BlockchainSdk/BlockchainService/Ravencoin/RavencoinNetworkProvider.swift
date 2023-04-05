@@ -35,21 +35,16 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
     var supportsTransactionPush: Bool { false }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        Publishers.CombineLatest3(
-            getWalletInfo(address: address),
-            getTransactions(address: address),
-            getUTXO(address: address)
-        ).map { wallet, transactions, outputs -> BitcoinResponse in
-            let unspentOutputs = outputs.map { utxo in
-                BitcoinUnspentOutput(transactionHash: utxo.txid,
-                                     outputIndex: utxo.vout,
-                                     amount: UInt64(utxo.satoshis),
-                                     outputScript: utxo.scriptPubKey)
-            }
-            
-            print("transactions", transactions)
-            
-            return BitcoinResponse(
+        Publishers.CombineLatest(getWalletInfo(address: address), getUTXO(address: address))
+            .map { wallet, outputs -> BitcoinResponse in
+                let unspentOutputs = outputs.map { utxo in
+                    BitcoinUnspentOutput(transactionHash: utxo.txid,
+                                         outputIndex: utxo.vout,
+                                         amount: utxo.satoshis,
+                                         outputScript: utxo.scriptPubKey)
+                }
+                
+                return BitcoinResponse(
                     balance: wallet.balance ?? 0,
                     hasUnconfirmed: wallet.unconfirmedTxApperances != 0,
                     pendingTxRefs: [], // TBD
@@ -65,12 +60,12 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
                 let satoshi = perByte * pow(10, 8) // TODO: Change on decimalValue
                 let minRate = satoshi
                 let normalRate = satoshi * 12 / 10
-                let priorityRate = satoshi * 12 / 10
+                let priorityRate = satoshi * 15 / 10
 
                 return BitcoinFee(
-                    minimalSatoshiPerByte: perByte,
-                    normalSatoshiPerByte: perByte,
-                    prioritySatoshiPerByte: perByte
+                    minimalSatoshiPerByte: minRate,
+                    normalSatoshiPerByte: normalRate,
+                    prioritySatoshiPerByte: priorityRate
                 )
             }
             .eraseToAnyPublisher()
@@ -81,8 +76,7 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
             .map { $0.txid }
             .eraseToAnyPublisher()
     }
-    // fees
-    
+
     func push(transaction: String) -> AnyPublisher<String, Error> {
         .anyFail(error: BlockchainSdkError.networkProvidersNotSupportsRbf)
     }
