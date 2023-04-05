@@ -20,74 +20,7 @@ class RavencoinNetworkProvider: HostProvider {
         self.host = host
         self.provider = provider
     }
-}
-
-// MARK: - BitcoinNetworkProvider
-
-extension RavencoinNetworkProvider: BitcoinNetworkProvider {
-    var supportsTransactionPush: Bool { false }
     
-    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        Publishers.CombineLatest3(
-            getWalletInfo(address: address),
-            getTransactions(address: address),
-            getUTXO(address: address)
-        ).map { wallet, transactions, outputs -> BitcoinResponse in
-            let unspentOutputs = outputs.map { utxo in
-                BitcoinUnspentOutput(transactionHash: utxo.txid,
-                                     outputIndex: utxo.vout,
-                                     amount: UInt64(utxo.satoshis),
-                                     outputScript: utxo.scriptPubKey)
-            }
-            
-            print("transactions", transactions)
-            
-            return BitcoinResponse(
-                    balance: wallet.balance ?? 0,
-                    hasUnconfirmed: wallet.unconfirmedTxApperances != 0,
-                    pendingTxRefs: [], // TBD
-                    unspentOutputs: unspentOutputs
-                )
-            }
-        .eraseToAnyPublisher()
-    }
-    
-    func getFee() -> AnyPublisher<BitcoinFee, Error> {
-        getFeeRateByBite(blocks: 10)
-            .map { perByte in
-                let satoshi = perByte * pow(10, 8) // TODO: Change on decimalValue
-                let minRate = satoshi
-                let normalRate = satoshi * 12 / 10
-                let priorityRate = satoshi * 12 / 10
-
-                return BitcoinFee(
-                    minimalSatoshiPerByte: perByte,
-                    normalSatoshiPerByte: perByte,
-                    prioritySatoshiPerByte: perByte
-                )
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    func send(transaction: String) -> AnyPublisher<String, Error> {
-        send(transaction: RavencoinRawTransaction.Request(rawtx: transaction))
-            .map { $0.txid }
-            .eraseToAnyPublisher()
-    }
-    // fees
-    
-    func push(transaction: String) -> AnyPublisher<String, Error> {
-        .anyFail(error: BlockchainSdkError.networkProvidersNotSupportsRbf)
-    }
-    
-    func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-        .anyFail(error: BlockchainSdkError.notImplemented)
-    }
-}
-
-// MARK: - Private
-
-private extension RavencoinNetworkProvider {
     func getWalletInfo(address: String) -> AnyPublisher<RavencoinWalletInfo, Error> {
         provider
             .requestPublisher(.init(host: host, target: .wallet(address: address)))
