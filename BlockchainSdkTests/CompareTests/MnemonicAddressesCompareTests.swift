@@ -39,7 +39,6 @@ class MnemonicAddressesCompareTests: XCTestCase {
             addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .stellar), for: .stellar(testnet: false))
             addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .xrp), for: .xrp(curve: .secp256k1))
             addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .ton), for: .ton(testnet: false))
-            addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .ton), for: .ton(testnet: false))
             addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .binance), for: .binance(testnet: false))
             addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .smartChain), for: .bsc(testnet: false))
             addressesUtility.validate(privateKey: wallet.getKeyForCoin(coin: .solana), for: .solana(testnet: false))
