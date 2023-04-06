@@ -9,7 +9,6 @@
 import Foundation
 
 struct RavencoinBaseTransactionInfo: Codable {
-    let pagesTotal: Int
     let txs: [RavencoinTransactionInfo]
 }
 

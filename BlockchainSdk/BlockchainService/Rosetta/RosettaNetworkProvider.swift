@@ -13,7 +13,7 @@ import SwiftCBOR
 
 class RosettaNetworkProvider: CardanoNetworkProvider {
     var host: String {
-        URL(string: baseUrl.rawValue)!.hostOrUnknown
+        URL(string: baseUrl.url)!.hostOrUnknown
     }
     
     private let provider: NetworkProvider<RosettaTarget>
