@@ -30,10 +30,14 @@ struct RavencoinWalletAssembly: WalletManagerAssembly {
             let hosts: [String]
             
             if input.blockchain.isTestnet {
-                hosts = ["https://testnet.ravencoin.network/api/"]
+                hosts = [
+                    "https://testnet.ravencoin.network/api/"
+                ]
             } else {
-                hosts = ["https://api.ravencoin.org/api/",
-                         "https://ravencoin.network/api/"]
+                hosts = [
+                    "https://api.ravencoin.org/api/",
+                    "https://ravencoin.network/api/",
+                ]
             }
 
             let providers: [AnyBitcoinNetworkProvider] = hosts.map {
