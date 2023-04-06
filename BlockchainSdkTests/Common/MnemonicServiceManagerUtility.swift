@@ -1,5 +1,5 @@
 //
-//  BIP39ServiceManagerUtility.swift
+//  MnemonicServiceManagerUtility.swift
 //  BlockchainSdkTests
 //
 //  Created by skibinalexander on 03.04.2023.
