@@ -15,9 +15,8 @@ import Combine
 class RavencoinNetworkProvider: HostProvider {
     let host: String
     let provider: NetworkProvider<RavencoinTarget>
-    
-    // Will change to ravencoin
-    var decimalValue: Decimal { Blockchain.bitcoin(testnet: false).decimalValue }
+
+    private var decimalValue: Decimal { Blockchain.ravencoin(testnet: false).decimalValue }
     
     init(host: String, provider: NetworkProvider<RavencoinTarget>) {
         self.host = host
