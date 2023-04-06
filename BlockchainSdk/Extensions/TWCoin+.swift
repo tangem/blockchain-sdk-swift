@@ -48,6 +48,8 @@ extension CoinType {
             self = .cardano
         case .polygon:
             self = .polygon
+        case .ravencoin:
+            self = .ravencoin
         default:
             throw NSError()
         }

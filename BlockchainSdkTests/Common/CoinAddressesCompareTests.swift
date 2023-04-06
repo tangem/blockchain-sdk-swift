@@ -187,6 +187,16 @@ extension CoinAddressesCompareTests {
         addressesUtility.validateTRUE(address: "0xf3d468DBb386aaD46E92FF222adDdf872C8CC064", for: blockchain)
     }
     
+    func testRavencoinAddress() {
+        let blockchain = Blockchain.ravencoin(testnet: false)
+        
+        // Positve
+        addressesUtility.validateTRUE(address: "RT1iM3xbqSQ276GNGGNGFdYrMTEeq4hXRH", for: blockchain)
+        addressesUtility.validateTRUE(address: "RRjP4a6i7e1oX1mZq1rdQpNMHEyDdSQVNi", for: blockchain)
+
+        // Negative
+        addressesUtility.validateFALSE(address: "QT1iM3xbqSQ276GNGGNGFdYrMTEeq4hXRH", for: blockchain)
+    }
 }
 
 // MARK: - Compare Addresses from public key data

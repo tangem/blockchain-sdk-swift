@@ -686,31 +686,18 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(p2shAddressComponents.type, .P2SH)
     }
     
-    func testRavencoinCompressedMainNet() {
-         let blockchain = Blockchain.ravencoin(testnet: false)
-         let addressService = blockchain.getAddressService()
-         let expectedAddress = "RT1iM3xbqSQ276GNGGNGFdYrMTEeq4hXRH"
-
-         do {
-             let address = try addressService.makeAddress(from: secpCompressedKey)
-
-             XCTAssertEqual(address, expectedAddress)
-         } catch {
-             XCTAssertNil(error)
-         }
-     }
-
-     func testRavencoinDecompressedMainNet() {
-         let blockchain = Blockchain.ravencoin(testnet: false)
-         let addressService = blockchain.getAddressService()
-         let expectedAddress = "RRjP4a6i7e1oX1mZq1rdQpNMHEyDdSQVNi"
-
-         do {
-             let address = try addressService.makeAddress(from: secpDecompressedKey)
-
-             XCTAssertEqual(address, expectedAddress)
-         } catch {
-             XCTAssertNil(error)
-         }
+    func testRavencoinAddress() throws {
+         let addressService = Blockchain.ravencoin(testnet: false).getAddressService()
+        
+        let compAddress = try addressService.makeAddress(from: secpCompressedKey)
+        let expectedCompAddress = "RT1iM3xbqSQ276GNGGNGFdYrMTEeq4hXRH"
+        XCTAssertEqual(compAddress, expectedCompAddress)
+        
+        let decompAddress = try addressService.makeAddress(from: secpDecompressedKey)
+        let expectedDecompAddress = "RRjP4a6i7e1oX1mZq1rdQpNMHEyDdSQVNi"
+        XCTAssertEqual(decompAddress, expectedDecompAddress)
+        
+        XCTAssertTrue(addressService.validate(compAddress))
+        XCTAssertTrue(addressService.validate(decompAddress))
      }
 }
