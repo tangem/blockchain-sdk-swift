@@ -11,24 +11,9 @@ import CryptoKit
 import WalletCore
 
 public struct TONTransactionParams: TransactionParams {
-    public var memo: Memo
+    public var memo: String
     
-    public init(memo: Memo) {
+    public init(memo: String) {
         self.memo = memo
     }
-}
-
-extension TONTransactionParams {
-    
-    public enum Memo {
-        case text(String)
-        
-        var value: String? {
-            switch self {
-            case .text(let text):
-                return text
-            }
-        }
-    }
-    
 }

@@ -63,7 +63,7 @@ final class TONWalletManager: BaseManager, WalletManager {
                 let input = try self.txBuilder.buildForSign(
                     amount: transaction.amount,
                     destination: transaction.destinationAddress,
-                    memo: params?.memo
+                    params: params
                 )
                 return try self.buildTransaction(input: input, with: signer)
             }

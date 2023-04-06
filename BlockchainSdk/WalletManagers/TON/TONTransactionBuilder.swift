@@ -43,8 +43,8 @@ final class TONTransactionBuilder {
     ///   - amount: Amount transaction
     ///   - destination: Destination address transaction
     /// - Returns: TheOpenNetworkSigningInput for sign transaction with external signer
-    public func buildForSign(amount: Amount, destination: String, memo: TONTransactionParams.Memo? = nil) throws -> TheOpenNetworkSigningInput {
-        return try self.input(amount: amount, destination: destination, memo: memo)
+    public func buildForSign(amount: Amount, destination: String, params: TONTransactionParams? = nil) throws -> TheOpenNetworkSigningInput {
+        return try self.input(amount: amount, destination: destination, params: params)
     }
     
     /// Build for send transaction obtain external message output
@@ -62,8 +62,8 @@ final class TONTransactionBuilder {
     ///   - amount: Amount transaction
     ///   - destination: Destination address transaction
     /// - Returns: TheOpenNetworkSigningInput for sign transaction with external signer
-    private func input(amount: Amount, destination: String, memo: TONTransactionParams.Memo?) throws -> TheOpenNetworkSigningInput {
-        let transfer = try self.transfer(amount: amount, destination: destination, memo: memo)
+    private func input(amount: Amount, destination: String, params: TONTransactionParams?) throws -> TheOpenNetworkSigningInput {
+        let transfer = try self.transfer(amount: amount, destination: destination, params: params)
         
         // Sign input with dummy key of Curve25519 private key
         let input = TheOpenNetworkSigningInput.with {
@@ -79,7 +79,7 @@ final class TONTransactionBuilder {
     ///   - amount: Amount transaction
     ///   - destination: Destination address transaction
     /// - Returns: TheOpenNetworkTransfer message for Input transaction of TON blockchain
-    private func transfer(amount: Amount, destination: String, memo: TONTransactionParams.Memo?) throws -> TheOpenNetworkTransfer {
+    private func transfer(amount: Amount, destination: String, params: TONTransactionParams?) throws -> TheOpenNetworkTransfer {
         TheOpenNetworkTransfer.with {
             $0.walletVersion = TheOpenNetworkWalletVersion.walletV4R2
             $0.dest = destination
@@ -87,7 +87,7 @@ final class TONTransactionBuilder {
             $0.sequenceNumber = UInt32(sequenceNumber)
             $0.mode = modeTransactionConstant
             $0.bounceBehavior = .nonBounceable
-            $0.comment = memo?.value ?? ""
+            $0.comment = params?.memo ?? ""
          }
     }
     
