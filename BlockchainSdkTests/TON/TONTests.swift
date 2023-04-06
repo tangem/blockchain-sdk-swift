@@ -54,7 +54,8 @@ class TONTests: XCTestCase {
         do {
             let input = try txBuilder.buildForSign(
                 amount: .init(with: blockchain, value: 1),
-                destination: "EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2"
+                destination: "EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2",
+                memo: .none
             )
             
             XCTAssertEqual(try! input.jsonString(), "{\"privateKey\":\"hfyhNLP+P9Uj2LUoYI2AOJDibJPIbcPZe41Zx7NUDJc=\",\"transfer\":{\"walletVersion\":\"WALLET_V4_R2\",\"dest\":\"EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2\",\"amount\":\"1000000000\",\"mode\":3,\"bounceBehavior\":\"NON_BOUNCEABLE\"}}"
