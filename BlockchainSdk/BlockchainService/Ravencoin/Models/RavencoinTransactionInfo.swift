@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct RavencoinBaseTransactionInfo: Codable {
+struct RavencoinBaseTransactionInfo: Decodable {
     let txs: [RavencoinTransactionInfo]
 }
 

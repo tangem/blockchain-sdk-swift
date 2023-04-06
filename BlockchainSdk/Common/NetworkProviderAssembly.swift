@@ -68,5 +68,6 @@ struct NetworkProviderAssembly {
                 configuration: input.networkConfig
             )
         }
-    }    
+    }
+    
 }

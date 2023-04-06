@@ -9,5 +9,8 @@
 import Foundation
 
 class RavencoinWalletManager: BitcoinWalletManager {
-    override var minimalFeePerByte: Decimal { 0.001 / 1000 }
+    /// These are the current default values in the ravencore library involved on these checks:
+    /// Transaction.FEE_PER_KB: 10000 (satoshis per kilobyte) = 0.0001 RVN per Kilobyte
+    /// https://github.com/raven-community/ravencore-lib/blob/master/docs/transaction.md
+    override var minimalFeePerByte: Decimal { 0.0001 / 1024 }
 }
