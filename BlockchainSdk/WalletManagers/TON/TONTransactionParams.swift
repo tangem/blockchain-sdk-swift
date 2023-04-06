@@ -21,7 +21,7 @@ public struct TONTransactionParams: TransactionParams {
 extension TONTransactionParams {
     
     public enum Memo {
-        case text (String)
+        case text(String)
         
         var value: String? {
             switch self {
