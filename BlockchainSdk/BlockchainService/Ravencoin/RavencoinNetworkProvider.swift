@@ -21,12 +21,13 @@ import Combine
 /// https://testnet.ravencoin.org/api/
 class RavencoinNetworkProvider: HostProvider {
     let host: String
-    let blockchain: Blockchain
     let provider: NetworkProvider<RavencoinTarget>
     
-    init(host: String, blockchain: Blockchain, provider: NetworkProvider<RavencoinTarget>) {
+    // Will change to ravencoin
+    var decimalValue: Decimal { Blockchain.bitcoin(testnet: false).decimalValue }
+    
+    init(host: String, provider: NetworkProvider<RavencoinTarget>) {
         self.host = host
-        self.blockchain = blockchain
         self.provider = provider
     }
 }
@@ -63,7 +64,7 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
                     throw BlockchainSdkError.failedToLoadFee
                 }
                 
-                let satoshi = perByte * self.blockchain.decimalValue
+                let satoshi = perByte * self.decimalValue
                 let minRate = satoshi
                 let normalRate = satoshi * 12 / 10
                 let priorityRate = satoshi * 15 / 10
@@ -99,6 +100,7 @@ private extension RavencoinNetworkProvider {
     func getWalletInfo(address: String) -> AnyPublisher<RavencoinWalletInfo, Error> {
         provider
             .requestPublisher(.init(host: host, target: .wallet(address: address)))
+            .filterSuccessfulStatusAndRedirectCodes()
             .map(RavencoinWalletInfo.self)
             .eraseError()
     }
@@ -106,6 +108,7 @@ private extension RavencoinNetworkProvider {
     func getTransactions(address: String) -> AnyPublisher<[RavencoinTransactionInfo], Error> {
         provider
             .requestPublisher(.init(host: host, target: .transactions(address: address)))
+            .filterSuccessfulStatusAndRedirectCodes()
             .map(RavencoinBaseTransactionInfo.self)
             .map { $0.txs }
             .eraseToAnyPublisher()
@@ -115,6 +118,7 @@ private extension RavencoinNetworkProvider {
     func getUTXO(address: String) -> AnyPublisher<[RavencoinWalletUTXO], Error> {
         provider
             .requestPublisher(.init(host: host, target: .utxo(address: address)))
+            .filterSuccessfulStatusAndRedirectCodes()
             .map([RavencoinWalletUTXO].self)
             .eraseError()
     }
@@ -122,6 +126,7 @@ private extension RavencoinNetworkProvider {
     func getFeeRatePerByte(blocks: Int) -> AnyPublisher<Decimal, Error> {
         provider
             .requestPublisher(.init(host: host, target: .fees(request: .init(nbBlocks: blocks))))
+            .filterSuccessfulStatusAndRedirectCodes()
             .mapJSON(failsOnEmptyData: true)
             .tryMap { json throws -> Decimal in
                 guard let json = json as? [String: Any],
@@ -138,6 +143,7 @@ private extension RavencoinNetworkProvider {
     func getTxInfo(transactionId: String) -> AnyPublisher<RavencoinTransactionInfo, Error> {
         provider
             .requestPublisher(.init(host: host, target: .transaction(id: transactionId)))
+            .filterSuccessfulStatusAndRedirectCodes()
             .map(RavencoinTransactionInfo.self)
             .eraseError()
     }
@@ -145,6 +151,7 @@ private extension RavencoinNetworkProvider {
     func send(transaction: RavencoinRawTransaction.Request) -> AnyPublisher<RavencoinRawTransaction.Response, Error> {
         provider
             .requestPublisher(.init(host: host, target: .send(transaction: transaction)))
+            .filterSuccessfulStatusAndRedirectCodes()
             .map(RavencoinRawTransaction.Response.self)
             .eraseToAnyPublisher()
             .eraseError()
