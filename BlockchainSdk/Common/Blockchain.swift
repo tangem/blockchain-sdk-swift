@@ -44,6 +44,7 @@ public enum Blockchain: Equatable, Hashable {
     case ton(testnet: Bool)
     case kava(testnet: Bool)
     case kaspa
+    case ravencoin(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -93,6 +94,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .kaspa:
             return false
+        case .ravencoin(let testnet):
+            return testnet
         }
     }
     
@@ -111,7 +114,7 @@ public enum Blockchain: Equatable, Hashable {
     
     public var decimalCount: Int {
         switch self {
-        case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash, .kaspa:
+        case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash, .kaspa, .ravencoin:
             return 8
         case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava:
             return 18
@@ -186,6 +189,8 @@ public enum Blockchain: Equatable, Hashable {
             return "KAVA"
         case .kaspa:
             return "KAS"
+        case .ravencoin:
+            return "RVN"
         }
     }
     
@@ -550,6 +555,7 @@ extension Blockchain {
         case .ton: return 607
         case .kava: return 459
         case .kaspa: return 111111
+        case .ravencoin: return 175
         }
     }
     
@@ -613,6 +619,9 @@ extension Blockchain {
             return TrustWalletAddressService(coin: .ton, publicKeyType: .ed25519)
         case .kaspa:
             return KaspaAddressService()
+        case .ravencoin:
+            let networkParams: INetwork = isTestnet ? RavencoinTestNetworkParams() : RavencoinMainNetworkParams()
+            return BitcoinLegacyAddressService(networkParams: networkParams)
         }
     }
 }
@@ -685,6 +694,7 @@ extension Blockchain: Codable {
         case .ton: return "ton"
         case .kava: return "kava"
         case .kaspa: return "kaspa"
+        case .ravencoin: return "ravencoin"
         }
     }
     
@@ -738,6 +748,7 @@ extension Blockchain: Codable {
         case "ton": self = .ton(testnet: isTestnet)
         case "kava": self = .kava(testnet: isTestnet)
         case "kaspa": self = .kaspa
+        case "ravencoin": self = .ravencoin(testnet: isTestnet)
         default:
             assertionFailure("Blockchain for \(key) isn't supported")
             throw BlockchainSdkError.decodingFailed
@@ -914,6 +925,12 @@ extension Blockchain {
             return URL(string: "https://explorer.kava.io/address/\(address)")
         case .kaspa:
             return URL(string: "https://explorer.kaspa.org/addresses/\(address)")!
+        case .ravencoin:
+              if isTestnet {
+                  return URL(string: "https://testnet.ravencoin.network/address/\(address)")
+              }
+
+              return URL(string: "https://ravencoin.network/address/\(address)")
         }
     }
 }
@@ -1021,6 +1038,8 @@ extension Blockchain {
             return TONWalletAssembly()
         case .kaspa:
             return KaspaWalletAssembly()
+        case .ravencoin:
+            return RavencoinWalletAssembly()
         }
     }
     

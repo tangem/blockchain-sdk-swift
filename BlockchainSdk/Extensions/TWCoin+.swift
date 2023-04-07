@@ -48,6 +48,9 @@ extension CoinType {
             self = .cardano
         case .polygon:
             self = .polygon
+			self = .rave
+        case .ravencoin:
+            self = .ravencoin
         case .dash:
             self = .dash
         case .dogecoin:

@@ -685,4 +685,19 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(p2shAddressComponents.hash, Data(hex: "383b73d107f9730f6c24bc5293240ac3b827e19e0e1bf4ef16852beb297222c5"))
         XCTAssertEqual(p2shAddressComponents.type, .P2SH)
     }
+    
+    func testRavencoinAddress() throws {
+         let addressService = Blockchain.ravencoin(testnet: false).getAddressService()
+        
+        let compAddress = try addressService.makeAddress(from: secpCompressedKey)
+        let expectedCompAddress = "RT1iM3xbqSQ276GNGGNGFdYrMTEeq4hXRH"
+        XCTAssertEqual(compAddress, expectedCompAddress)
+        
+        let decompAddress = try addressService.makeAddress(from: secpDecompressedKey)
+        let expectedDecompAddress = "RRjP4a6i7e1oX1mZq1rdQpNMHEyDdSQVNi"
+        XCTAssertEqual(decompAddress, expectedDecompAddress)
+        
+        XCTAssertTrue(addressService.validate(compAddress))
+        XCTAssertTrue(addressService.validate(decompAddress))
+     }
 }
