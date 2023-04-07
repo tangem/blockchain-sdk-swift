@@ -5,26 +5,18 @@
 //  Created by Sergey Balashov on 03.04.2023.
 //  Copyright © 2023 Tangem AG. All rights reserved.
 //
-
 import Foundation
 import Moya
 import Combine
 
-/// Documentation:
-/// https://github.com/RavenProject/Ravencoin/blob/master/doc/REST-interface.md
+/// Documentations:
 /// https://github.com/RavenDevKit/insight-api
-
-/// Hosts: Will move to assembly
-/// https://api.ravencoin.org/api/
-/// https://ravencoin.network/api/
-/// Testnet:
-/// https://testnet.ravencoin.org/api/
+/// https://github.com/RavenProject/Ravencoin/blob/master/doc/REST-interface.md
 class RavencoinNetworkProvider: HostProvider {
     let host: String
     let provider: NetworkProvider<RavencoinTarget>
-    
-    // Will change to ravencoin
-    var decimalValue: Decimal { Blockchain.bitcoin(testnet: false).decimalValue }
+
+    private var decimalValue: Decimal { Blockchain.ravencoin(testnet: false).decimalValue }
     
     init(host: String, provider: NetworkProvider<RavencoinTarget>) {
         self.host = host

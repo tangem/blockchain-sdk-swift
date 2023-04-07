@@ -12,7 +12,7 @@ struct RavencoinBaseTransactionInfo: Decodable {
     let txs: [RavencoinTransactionInfo]
 }
 
-struct RavencoinTransactionInfo : Codable {
+struct RavencoinTransactionInfo: Codable {
     let txid: String?
     let version: Int?
     let locktime: Int?
