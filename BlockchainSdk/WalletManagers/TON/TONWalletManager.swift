@@ -58,7 +58,13 @@ final class TONWalletManager: BaseManager, WalletManager {
                     throw WalletError.failedToBuildTx
                 }
                 
-                let input = try self.txBuilder.buildForSign(amount: transaction.amount, destination: transaction.destinationAddress)
+                let params = transaction.params as? TONTransactionParams
+                
+                let input = try self.txBuilder.buildForSign(
+                    amount: transaction.amount,
+                    destination: transaction.destinationAddress,
+                    params: params
+                )
                 return try self.buildTransaction(input: input, with: signer)
             }
             .flatMap { [weak self] message -> AnyPublisher<String, Error> in

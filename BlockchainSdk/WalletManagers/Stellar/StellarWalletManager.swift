@@ -44,7 +44,6 @@ public enum StellarError: Error, LocalizedError {
 class StellarWalletManager: BaseManager, WalletManager {
     var txBuilder: StellarTransactionBuilder!
     var networkService: StellarNetworkService!
-    var stellarSdk: StellarSDK!
     var currentHost: String { networkService.host  }
     
     func update(completion: @escaping (Result<(), Error>)-> Void)  {
@@ -95,7 +94,12 @@ extension StellarWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        return txBuilder.buildForSign(transaction: transaction)
+        return networkService.checkTargetAccount(transaction: transaction)
+            .flatMap { [weak self] response -> AnyPublisher<(hash: Data, transaction: stellarsdk.TransactionXDR), Error> in
+                guard let self else { return .emptyFail }
+                
+                return self.txBuilder.buildForSign(targetAccountResponse: response, transaction: transaction)
+            }
             .flatMap {[weak self] buildForSignResponse -> AnyPublisher<(Data, (hash: Data, transaction: stellarsdk.TransactionXDR)), Error> in
                 guard let self = self else { return .emptyFail }
                 
