@@ -13,6 +13,7 @@ import WalletCore
 
 @testable import BlockchainSdk
 
+/// Basic testplan for testing validation Addresses blockchain with compare addreses from TrustWallet address service and Local address service
 class CoinAddressesCompareTests: XCTestCase {
     
     let addressesUtility = AddressServiceManagerUtility()

@@ -1,5 +1,5 @@
 //
-//  BIP39CompareTests.swift
+//  ExtendedKeysAddressesCompareTests.swift
 //  BlockchainSdkTests
 //
 //  Created by skibinalexander on 03.04.2023.
@@ -13,20 +13,10 @@ import WalletCore
 
 @testable import BlockchainSdk
 
-class BIP39AddressesCompareTests: XCTestCase {
+/// Basic testplan for validation blockchain address from mnemonic
+class ExtendedKeysAddressesCompareTests: XCTestCase {
     
     // MARK: - Static Data
-    
-    let mnemonics = [
-        "broom ramp luggage this language sketch door allow elbow wife moon impulse",
-        "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal",
-        "history step cheap card humble screen raise seek robot slot coral roof spoil wreck caution",
-        "diary shine country alpha bridge coast loan hungry hip media sell crucial swarm share gospel lake visa coin dizzy physical basket",
-        "poet spider smile swift roof pilot subject save hand diet ice universe over brown inspire ugly wide economy symbol shove episode patient plug swamp",
-        "letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic bless",
-        "inmate flip alley wear offer often piece magnet surge toddler submit right radio absent pear floor belt raven price stove replace reduce plate home",
-        "tiny escape drive pupil flavor endless love walk gadget match filter luxury"
-    ]
     
     let mnemonic = "tiny escape drive pupil flavor endless love walk gadget match filter luxury"
     
@@ -39,12 +29,6 @@ class BIP39AddressesCompareTests: XCTestCase {
     let addressesUtility = AddressServiceManagerUtility()
     
     // MARK: - Implementation
-    
-    func testValidateMnemonics() {
-        mnemonics.forEach {
-            MnemonicServiceManagerUtility(mnemonic: $0, passphrase: "").validate()
-        }
-    }
     
     func testBitcoin() {
         let blockchain = Blockchain.bitcoin(testnet: false)

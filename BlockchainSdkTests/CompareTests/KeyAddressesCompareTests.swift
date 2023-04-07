@@ -13,6 +13,7 @@ import WalletCore
 
 @testable import BlockchainSdk
 
+/// Basic testplan for validation blockchain address from PrivateKey TrustWallet
 class KeyAddressesCompareTests: XCTestCase {
     
     // MARK: - Properties

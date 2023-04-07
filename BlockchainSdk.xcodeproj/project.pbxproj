@@ -14,7 +14,7 @@
 		2D4313EF29DBFB95007497BE /* KeyAddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4313EE29DBFB95007497BE /* KeyAddressesCompareTests.swift */; };
 		2D64FC9729DAE518007C8792 /* MnemonicAddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D64FC9629DAE518007C8792 /* MnemonicAddressesCompareTests.swift */; };
 		2D64FC9929DAED32007C8792 /* MnemonicServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D64FC9829DAED32007C8792 /* MnemonicServiceManagerUtility.swift */; };
-		2D64FC9C29DB22C8007C8792 /* BIP39AddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D64FC9B29DB22C8007C8792 /* BIP39AddressesCompareTests.swift */; };
+		2D64FC9C29DB22C8007C8792 /* ExtendedKeysAddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D64FC9B29DB22C8007C8792 /* ExtendedKeysAddressesCompareTests.swift */; };
 		2D8501F929DFF20100F4A11B /* TONTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8501F829DFF20100F4A11B /* TONTransactionParams.swift */; };
 		2D9A919229BB8BFF00476EA6 /* TONWalletInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */; };
 		2D9A919329BB8BFF00476EA6 /* TONTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */; };
@@ -342,7 +342,7 @@
 		2D4313EE29DBFB95007497BE /* KeyAddressesCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyAddressesCompareTests.swift; sourceTree = "<group>"; };
 		2D64FC9629DAE518007C8792 /* MnemonicAddressesCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicAddressesCompareTests.swift; sourceTree = "<group>"; };
 		2D64FC9829DAED32007C8792 /* MnemonicServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicServiceManagerUtility.swift; sourceTree = "<group>"; };
-		2D64FC9B29DB22C8007C8792 /* BIP39AddressesCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BIP39AddressesCompareTests.swift; sourceTree = "<group>"; };
+		2D64FC9B29DB22C8007C8792 /* ExtendedKeysAddressesCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtendedKeysAddressesCompareTests.swift; sourceTree = "<group>"; };
 		2D8501F829DFF20100F4A11B /* TONTransactionParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONTransactionParams.swift; sourceTree = "<group>"; };
 		2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONWalletInfo.swift; sourceTree = "<group>"; };
 		2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONTransactionBuilder.swift; sourceTree = "<group>"; };
@@ -685,7 +685,7 @@
 			children = (
 				2D3829CB29D34DC4001D4785 /* CoinAddressesCompareTests.swift */,
 				2D64FC9629DAE518007C8792 /* MnemonicAddressesCompareTests.swift */,
-				2D64FC9B29DB22C8007C8792 /* BIP39AddressesCompareTests.swift */,
+				2D64FC9B29DB22C8007C8792 /* ExtendedKeysAddressesCompareTests.swift */,
 				2D4313EE29DBFB95007497BE /* KeyAddressesCompareTests.swift */,
 			);
 			path = CompareTests;
@@ -2212,7 +2212,7 @@
 				EF0DA78528523FAC0081092A /* BlockchainSdkTests.swift in Sources */,
 				B00DEAD3290008910077CD19 /* SolanaTests.swift in Sources */,
 				2D4313EF29DBFB95007497BE /* KeyAddressesCompareTests.swift in Sources */,
-				2D64FC9C29DB22C8007C8792 /* BIP39AddressesCompareTests.swift in Sources */,
+				2D64FC9C29DB22C8007C8792 /* ExtendedKeysAddressesCompareTests.swift in Sources */,
 				EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */,
 				EF0DA78628523FAC0081092A /* XCTestCase+.swift in Sources */,
 				2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */,

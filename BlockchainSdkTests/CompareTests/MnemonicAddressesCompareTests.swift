@@ -13,6 +13,7 @@ import WalletCore
 
 @testable import BlockchainSdk
 
+/// Basic testplan for testing validation mnemonics list with creation from PrivateKey of TrustWallet
 class MnemonicAddressesCompareTests: XCTestCase {
     
     let addressesUtility = AddressServiceManagerUtility()
@@ -24,7 +25,9 @@ class MnemonicAddressesCompareTests: XCTestCase {
         "diary shine country alpha bridge coast loan hungry hip media sell crucial swarm share gospel lake visa coin dizzy physical basket",
         "poet spider smile swift roof pilot subject save hand diet ice universe over brown inspire ugly wide economy symbol shove episode patient plug swamp",
         "letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic avoid letter advice cage absurd amount doctor acoustic bless",
-        "inmate flip alley wear offer often piece magnet surge toddler submit right radio absent pear floor belt raven price stove replace reduce plate home"
+        "inmate flip alley wear offer often piece magnet surge toddler submit right radio absent pear floor belt raven price stove replace reduce plate home",
+        "poet spider smile swift roof pilot subject save hand diet ice universe over brown inspire ugly wide economy symbol shove episode patient plug swamp",
+        "tiny escape drive pupil flavor endless love walk gadget match filter luxury"
     ]
     
     lazy var wallets = mnemonics.map {

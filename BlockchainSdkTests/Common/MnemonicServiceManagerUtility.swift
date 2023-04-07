@@ -13,6 +13,7 @@ import WalletCore
 
 @testable import BlockchainSdk
 
+/// Utility for testing mnemonic & and testing process with generate Extended Keys from mnemonic
 final class MnemonicServiceManagerUtility {
     
     // MARK: - Properties
