@@ -204,6 +204,8 @@
 		BFD88160E080534F13A7C7A6 /* Pods_BlockchainSdkExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C40B45F626B3CA7042657F9 /* Pods_BlockchainSdkExample.framework */; };
 		DA11507727DB217200CDC879 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA11507627DB217200CDC879 /* Launch Screen.storyboard */; };
 		DA18C4A9297AC63600EC4C05 /* NowNodesBlockBookConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA18C4A8297AC63600EC4C05 /* NowNodesBlockBookConfig.swift */; };
+		DA198B5629E3F6D300DB6EEA /* CosmosNetworkModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA198B5529E3F6D300DB6EEA /* CosmosNetworkModels.swift */; };
+		DA198B5929E3F6E400DB6EEA /* CosmosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA198B5829E3F6E400DB6EEA /* CosmosTests.swift */; };
 		DA19F5E129DFE32600FD57A3 /* StellarNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA19F5E029DFE32600FD57A3 /* StellarNetworkProvider.swift */; };
 		DA2E770029769BF6001FF957 /* TransactionCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */; };
 		DA30812B2817BF3C00DE41F1 /* Tron.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */; };
@@ -556,6 +558,8 @@
 		DA07EFEA28191631008712F1 /* TronTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronTests.swift; sourceTree = "<group>"; };
 		DA11507627DB217200CDC879 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		DA18C4A8297AC63600EC4C05 /* NowNodesBlockBookConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowNodesBlockBookConfig.swift; sourceTree = "<group>"; };
+		DA198B5529E3F6D300DB6EEA /* CosmosNetworkModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosNetworkModels.swift; sourceTree = "<group>"; };
+		DA198B5829E3F6E400DB6EEA /* CosmosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosTests.swift; sourceTree = "<group>"; };
 		DA19F5E029DFE32600FD57A3 /* StellarNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarNetworkProvider.swift; sourceTree = "<group>"; };
 		DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionCreator.swift; sourceTree = "<group>"; };
 		DA3081282817BF1D00DE41F1 /* Tron.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = Tron.proto; sourceTree = "<group>"; };
@@ -806,6 +810,7 @@
 			children = (
 				B00DEAC728FEE5E00077CD19 /* Bitcoin */,
 				B00DEACC28FEE6070077CD19 /* Common */,
+				DA198B5729E3F6DB00DB6EEA /* Cosmos */,
 				B00DEAC828FEE5E90077CD19 /* Ethereum */,
 				B00DEACD28FEE62F0077CD19 /* Extensions */,
 				DA63B08B29CB3FAF00AC6E49 /* Kaspa */,
@@ -829,6 +834,7 @@
 				5D4B33B823F6E9A600C93A84 /* BitcoinCash */,
 				5D4B33CB23F7DBF100C93A84 /* Binance */,
 				5DF8D5B3243DB7EE00186BF0 /* Cardano */,
+				DA198B5429E3F6C400DB6EEA /* Cosmos */,
 				B0EBBEF0265D0E4900D37141 /* Dogecoin */,
 				5D977BB423FAEB3700575BE4 /* Ducatus */,
 				5D94E55F23A37EF7009C7482 /* Ethereum */,
@@ -1418,6 +1424,22 @@
 				DAB87CB0297ADCDC00FF30EB /* GetBlockBlockBookConfig.swift */,
 			);
 			path = Implementations;
+			sourceTree = "<group>";
+		};
+		DA198B5429E3F6C400DB6EEA /* Cosmos */ = {
+			isa = PBXGroup;
+			children = (
+				DA198B5529E3F6D300DB6EEA /* CosmosNetworkModels.swift */,
+			);
+			path = Cosmos;
+			sourceTree = "<group>";
+		};
+		DA198B5729E3F6DB00DB6EEA /* Cosmos */ = {
+			isa = PBXGroup;
+			children = (
+				DA198B5829E3F6E400DB6EEA /* CosmosTests.swift */,
+			);
+			path = Cosmos;
 			sourceTree = "<group>";
 		};
 		DA3081222817AEB800DE41F1 /* protobuf */ = {
@@ -2146,6 +2168,7 @@
 				5D4B33DC23FAAD8300C93A84 /* BitcoreProvider.swift in Sources */,
 				2D9A919429BB8BFF00476EA6 /* TONError.swift in Sources */,
 				EFF56B3D29C20CCE002B6952 /* SmartContractMethodType.swift in Sources */,
+				DA198B5629E3F6D300DB6EEA /* CosmosNetworkModels.swift in Sources */,
 				2DDE5B9F29C4F8D200A5B708 /* NetworkProviderAssembly.swift in Sources */,
 				DAB6548A27967D860002A5E8 /* SolanaResponse.swift in Sources */,
 				5D304397239A6B960066B8D9 /* String+.swift in Sources */,
@@ -2213,6 +2236,7 @@
 				EF0DA78328523FAC0081092A /* AddressTests.swift in Sources */,
 				EF0DA78728523FAC0081092A /* TronTests.swift in Sources */,
 				EF0DA78528523FAC0081092A /* BlockchainSdkTests.swift in Sources */,
+				DA198B5929E3F6E400DB6EEA /* CosmosTests.swift in Sources */,
 				B00DEAD3290008910077CD19 /* SolanaTests.swift in Sources */,
 				EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */,
 				EF0DA78628523FAC0081092A /* XCTestCase+.swift in Sources */,
