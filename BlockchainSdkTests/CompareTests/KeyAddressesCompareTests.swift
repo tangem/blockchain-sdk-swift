@@ -22,15 +22,34 @@ class KeyAddressesCompareTests: XCTestCase {
     
     // MARK: - Implementation
     
-    func testRippleFromKeyAddress() {
-        let blockchain = Blockchain.xrp(curve: .secp256k1)
+    func testBitcoinAddress() {
+        let blockchain = Blockchain.bitcoin(testnet: false)
         
-        let test_address = "r36yxStAh7qgTQNHTzjZvXybCTzUFhrfav"
+        // From public key
+        let any_address_test_address = "bc1qcj2vfjec3c3luf9fx9vddnglhh9gawmncmgxhz"
+        let any_address_test_pubkey = "02753f5c275e1847ba4d2fd3df36ad00af2e165650b35fe3991e9c9c46f68b12bc"
+        
+        addressesUtility.validate(address: any_address_test_address, publicKey: Data(hex: any_address_test_pubkey), for: blockchain)
+    }
+    
+    func testEthereumFromKeyAddress() {
+        let blockchain = Blockchain.ethereum(testnet: false)
+        
+        let test_address = "0x6C1b86ABe251EC1b4bB3595283E178b0C0849e08"
+        let test_private_key = PrivateKey(data: Data(hex: "9c3d42d0515f0406ed350ab2abf3eaf761f8907802469b64052ac17e2250ae13"))
+        let test_public_key = test_private_key!.getPublicKeySecp256k1(compressed: false).data
+        
+        addressesUtility.validate(address: test_address, publicKey: test_public_key, for: blockchain)
+    }
+    
+    func testLitecoinFromKeyAddress() {
+        let blockchain = Blockchain.litecoin
+        
+        let test_address = "ltc1q2jy3qwat4tdrzaz0908ywun784tks7vn77ky9j"
         let test_private_key = PrivateKey(data: Data(hex: "9c3d42d0515f0406ed350ab2abf3eaf761f8907802469b64052ac17e2250ae13"))
         let test_public_key = test_private_key!.getPublicKeySecp256k1(compressed: true).data
         
         addressesUtility.validate(address: test_address, publicKey: test_public_key, for: blockchain)
-        
     }
     
     func testStellarFromKeyAddress() {
@@ -41,6 +60,17 @@ class KeyAddressesCompareTests: XCTestCase {
         let test_public_key = test_private_key!.getPublicKeyEd25519().data
         
         addressesUtility.validate(address: test_address, publicKey: test_public_key, for: blockchain)
+    }
+    
+    func testRippleFromKeyAddress() {
+        let blockchain = Blockchain.xrp(curve: .secp256k1)
+        
+        let test_address = "r36yxStAh7qgTQNHTzjZvXybCTzUFhrfav"
+        let test_private_key = PrivateKey(data: Data(hex: "9c3d42d0515f0406ed350ab2abf3eaf761f8907802469b64052ac17e2250ae13"))
+        let test_public_key = test_private_key!.getPublicKeySecp256k1(compressed: true).data
+        
+        addressesUtility.validate(address: test_address, publicKey: test_public_key, for: blockchain)
+        
     }
     
     func testTONFromKeyAddress() {
@@ -54,12 +84,22 @@ class KeyAddressesCompareTests: XCTestCase {
         
     }
     
-    func testTezosFromKeyAddress() {
-        let blockchain = Blockchain.tezos(curve: .ed25519)
+    func testBinance() {
+        let blockchain = Blockchain.binance(testnet: false)
         
-        let test_private_key = PrivateKey(data: Data(hex: "b177a72743f54ed4bdf51f1b55527c31bcd68c6d2cb2436d76cadd0227c99ff0"))
-        let test_public_key = test_private_key!.getPublicKeyEd25519().data
-        let test_address = "tz1cG2jx3W4bZFeVGBjsTxUAG8tdpTXtE8PT"
+        let test_private_key = PrivateKey(data: Data(hex: "9c3d42d0515f0406ed350ab2abf3eaf761f8907802469b64052ac17e2250ae13"))
+        let test_public_key = test_private_key!.getPublicKeySecp256k1(compressed: true).data
+        let test_address = "bnb12jy3qwat4tdrzaz0908ywun784tks7vnwud8cp"
+        
+        addressesUtility.validate(address: test_address, publicKey: test_public_key, for: blockchain)
+    }
+    
+    func testBsc() {
+        let blockchain = Blockchain.bsc(testnet: false)
+        
+        let test_private_key = PrivateKey(data: Data(hex: "9c3d42d0515f0406ed350ab2abf3eaf761f8907802469b64052ac17e2250ae13"))
+        let test_public_key = test_private_key!.getPublicKeySecp256k1(compressed: false).data
+        let test_address = "0x6C1b86ABe251EC1b4bB3595283E178b0C0849e08"
         
         addressesUtility.validate(address: test_address, publicKey: test_public_key, for: blockchain)
     }
@@ -84,6 +124,26 @@ class KeyAddressesCompareTests: XCTestCase {
         addressesUtility.validate(address: test_address, publicKey: test_public_key, for: blockchain)
     }
     
+    func testTron() {
+        let blockchain = Blockchain.tron(testnet: false)
+        
+        let test_private_key = PrivateKey(data: Data(hex: "9c3d42d0515f0406ed350ab2abf3eaf761f8907802469b64052ac17e2250ae13"))
+        let test_public_key = test_private_key!.getPublicKeySecp256k1(compressed: false).data
+        let test_address = "TKppxKZh7CKPTHjcUFja3AkPTxkfNaCX8i"
+        
+        addressesUtility.validate(address: test_address, publicKey: test_public_key, for: blockchain)
+    }
+    
+    func testTezosFromKeyAddress() {
+        let blockchain = Blockchain.tezos(curve: .ed25519)
+        
+        let test_private_key = PrivateKey(data: Data(hex: "b177a72743f54ed4bdf51f1b55527c31bcd68c6d2cb2436d76cadd0227c99ff0"))
+        let test_public_key = test_private_key!.getPublicKeyEd25519().data
+        let test_address = "tz1cG2jx3W4bZFeVGBjsTxUAG8tdpTXtE8PT"
+        
+        addressesUtility.validate(address: test_address, publicKey: test_public_key, for: blockchain)
+    }
+    
     func testBscFromKeyAddress() {
         let blockchain = Blockchain.bsc(testnet: false)
         
@@ -94,14 +154,54 @@ class KeyAddressesCompareTests: XCTestCase {
         addressesUtility.validate(address: test_address,publicKey: test_public_key, for: blockchain)
     }
     
-    func testBitcoinAddress() {
-        let blockchain = Blockchain.bitcoin(testnet: false)
+    func testPolygonFromKeyAddress() {
+        let blockchain = Blockchain.polygon(testnet: false)
         
-        // From public key
-        let any_address_test_address = "bc1qcj2vfjec3c3luf9fx9vddnglhh9gawmncmgxhz"
-        let any_address_test_pubkey = "02753f5c275e1847ba4d2fd3df36ad00af2e165650b35fe3991e9c9c46f68b12bc"
+        let test_private_key = PrivateKey(data: Data(hex: "9c3d42d0515f0406ed350ab2abf3eaf761f8907802469b64052ac17e2250ae13"))
+        let test_public_key = test_private_key!.getPublicKeySecp256k1(compressed: false).data
+        let test_address = "0x6C1b86ABe251EC1b4bB3595283E178b0C0849e08"
         
-        addressesUtility.validate(address: any_address_test_address, publicKey: Data(hex: any_address_test_pubkey), for: blockchain)
+        addressesUtility.validate(address: test_address,publicKey: test_public_key, for: blockchain)
+    }
+    
+    func testDashFromKeyAddress() {
+        let blockchain = Blockchain.dash(testnet: false)
+        
+        let test_private_key = PrivateKey(data: Data(hex: "9c3d42d0515f0406ed350ab2abf3eaf761f8907802469b64052ac17e2250ae13"))
+        let test_public_key = test_private_key!.getPublicKeySecp256k1(compressed: true).data
+        let test_address = "XiPpnhYq2C4GcLpsKt3nn4fPVoZtoNP4sg"
+        
+        addressesUtility.validate(address: test_address,publicKey: test_public_key, for: blockchain)
+    }
+    
+    func testDogecoinFromKeyAddress() {
+        let blockchain = Blockchain.dogecoin
+        
+        let test_private_key = PrivateKey(data: Data(hex: "9c3d42d0515f0406ed350ab2abf3eaf761f8907802469b64052ac17e2250ae13"))
+        let test_public_key = test_private_key!.getPublicKeySecp256k1(compressed: true).data
+        let test_address = "DCr5VhqaMtjxzQQtCaj8UJ9CYbiW8bbymp"
+        
+        addressesUtility.validate(address: test_address,publicKey: test_public_key, for: blockchain)
+    }
+    
+    func testBitcoinCashFromKeyAddress() {
+        let blockchain = Blockchain.bitcoinCash(testnet: false)
+        
+        let test_private_key = PrivateKey(data: Data(hex: "9c3d42d0515f0406ed350ab2abf3eaf761f8907802469b64052ac17e2250ae13"))
+        let test_public_key = test_private_key!.getPublicKeySecp256k1(compressed: true).data
+        let test_address = "bitcoincash:qp2gjypm4w4d5vt5fu4uu3mj0c74w6rejvpakqylvs"
+        
+        addressesUtility.validate(address: test_address,publicKey: test_public_key, for: blockchain)
+    }
+    
+    func testArbitrumFromKeyAddress() {
+        let blockchain = Blockchain.arbitrum(testnet: false)
+        
+        let test_private_key = PrivateKey(data: Data(hex: "9c3d42d0515f0406ed350ab2abf3eaf761f8907802469b64052ac17e2250ae13"))
+        let test_public_key = test_private_key!.getPublicKeySecp256k1(compressed: false).data
+        let test_address = "0x6C1b86ABe251EC1b4bB3595283E178b0C0849e08"
+        
+        addressesUtility.validate(address: test_address,publicKey: test_public_key, for: blockchain)
     }
     
 }
