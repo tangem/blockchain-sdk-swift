@@ -1,5 +1,5 @@
 //
-//  CosmosNetworkModels.swift
+//  CosmosModels.swift
 //  BlockchainSdk
 //
 //  Created by Andrey Chukavin on 10.04.2023.
