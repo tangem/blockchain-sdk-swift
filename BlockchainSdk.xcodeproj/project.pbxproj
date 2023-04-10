@@ -209,6 +209,7 @@
 		DA198B5B29E3FF4F00DB6EEA /* CosmosTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA198B5A29E3FF4F00DB6EEA /* CosmosTarget.swift */; };
 		DA198B6129E4090C00DB6EEA /* CosmosRestProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA198B6029E4090C00DB6EEA /* CosmosRestProvider.swift */; };
 		DA198B6329E41AD800DB6EEA /* CosmosNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA198B6229E41AD800DB6EEA /* CosmosNetworkService.swift */; };
+		DA198B6529E44D2600DB6EEA /* CosmosChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA198B6429E44D2600DB6EEA /* CosmosChain.swift */; };
 		DA19F5E129DFE32600FD57A3 /* StellarNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA19F5E029DFE32600FD57A3 /* StellarNetworkProvider.swift */; };
 		DA2E770029769BF6001FF957 /* TransactionCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */; };
 		DA30812B2817BF3C00DE41F1 /* Tron.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */; };
@@ -566,6 +567,7 @@
 		DA198B5A29E3FF4F00DB6EEA /* CosmosTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosTarget.swift; sourceTree = "<group>"; };
 		DA198B6029E4090C00DB6EEA /* CosmosRestProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosRestProvider.swift; sourceTree = "<group>"; };
 		DA198B6229E41AD800DB6EEA /* CosmosNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosNetworkService.swift; sourceTree = "<group>"; };
+		DA198B6429E44D2600DB6EEA /* CosmosChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosChain.swift; sourceTree = "<group>"; };
 		DA19F5E029DFE32600FD57A3 /* StellarNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarNetworkProvider.swift; sourceTree = "<group>"; };
 		DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionCreator.swift; sourceTree = "<group>"; };
 		DA3081282817BF1D00DE41F1 /* Tron.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = Tron.proto; sourceTree = "<group>"; };
@@ -1439,6 +1441,7 @@
 				DA198B6029E4090C00DB6EEA /* CosmosRestProvider.swift */,
 				DA198B5A29E3FF4F00DB6EEA /* CosmosTarget.swift */,
 				DA198B5529E3F6D300DB6EEA /* CosmosModels.swift */,
+				DA198B6429E44D2600DB6EEA /* CosmosChain.swift */,
 			);
 			path = Cosmos;
 			sourceTree = "<group>";
@@ -2119,6 +2122,7 @@
 				DC912D1628E706C400D76628 /* ContractInteractor.swift in Sources */,
 				B0BAEE9C25FF1E4200F318A6 /* RosettaData.swift in Sources */,
 				2DDE5BA129C4F8D200A5B708 /* DucatusWalletAssembly.swift in Sources */,
+				DA198B6529E44D2600DB6EEA /* CosmosChain.swift in Sources */,
 				5D8653FA23A8C481000DE52D /* StellarNetworkService.swift in Sources */,
 				DC63F266293F243200F953EF /* Credentials.swift in Sources */,
 				5D7D242F25136254001B9A4F /* XRPTransaction.swift in Sources */,

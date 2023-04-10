@@ -57,3 +57,11 @@ extension CosmosTxResponse {
         let txhash: String
     }
 }
+
+// MARK: - Local models
+
+struct CosmosAccountInfo {
+    let accountNumber: Int
+    let sequenceNumber: Int
+    let amount: Amount
+}

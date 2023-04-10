@@ -13,22 +13,57 @@ class CosmosNetworkService: MultiNetworkProvider {
     let providers: [CosmosRestProvider]
     var currentProviderIndex: Int = 0
     
-    let isTestnet: Bool
-        
-    init(isTestnet: Bool, providers: [CosmosRestProvider]) {
-        self.isTestnet = isTestnet
+    private let cosmosChain: CosmosChain
+    
+    init(cosmosChain: CosmosChain, providers: [CosmosRestProvider]) {
         self.providers = providers
-    }
- 
-    func accountInfo(for address: String) -> AnyPublisher<Void, Error> {
-        .emptyFail
+        self.cosmosChain = cosmosChain
     }
     
-    func fee(for transaction: Transaction) -> AnyPublisher<Void, Error> {
-        .emptyFail
+    func accountInfo(for address: String) -> AnyPublisher<CosmosAccountInfo, Error> {
+        providerPublisher {
+            $0.accounts(address: address)
+                .zip($0.balances(address: address))
+                .tryMap { [weak self] (accountInfo, balanceInfo) in
+                    guard
+                        let self,
+                        let accountNumber = Int(accountInfo.account.accountNumber),
+                        let sequenceNumber = Int(accountInfo.account.sequence),
+                        let balanceInfo = balanceInfo.balances.first(where: { $0.denom == self.cosmosChain.smallestDenomination} ),
+                        let balanceInSmallestDenomination = Int(balanceInfo.amount)
+                    else {
+                        throw WalletError.failedToGetFee
+                    }
+                    
+                    let blockchain = self.cosmosChain.blockchain
+                    let amount = Amount(with: blockchain, value: Decimal(balanceInSmallestDenomination) / blockchain.decimalValue)
+                    
+                    return CosmosAccountInfo(accountNumber: accountNumber, sequenceNumber: sequenceNumber, amount: amount)
+                }
+                .eraseToAnyPublisher()
+        }
     }
     
-    func send(transaction: Transaction) -> AnyPublisher<Void, Error> {
-        .emptyFail
+    func estimateGas(for transaction: Data) -> AnyPublisher<Int, Error> {
+        providerPublisher {
+            $0.simulate(data: transaction)
+                .map(\.gasInfo.gasUsed)
+                .tryMap {
+                    guard let gasUsed = Int($0) else {
+                        throw WalletError.failedToGetFee
+                    }
+                    
+                    return gasUsed
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+    
+    func send(transaction: Data) -> AnyPublisher<String, Error> {
+        providerPublisher {
+            $0.txs(data: transaction)
+                .map(\.txResponse.txhash)
+                .eraseToAnyPublisher()
+        }
     }
 }
