@@ -33,3 +33,27 @@ extension CosmosBalanceResponse {
         let amount: String
     }
 }
+
+// MARK: - Simulate
+
+struct CosmosSimulateResponse: Decodable {
+    let gasInfo: GasInfo
+}
+
+extension CosmosSimulateResponse {
+    struct GasInfo: Decodable {
+      let gasUsed: String
+    }
+}
+
+// MARK: - TX
+
+struct CosmosTxResponse: Decodable {
+    let txResponse: TxResponse
+}
+
+extension CosmosTxResponse {
+    struct TxResponse: Decodable {
+        let txhash: String
+    }
+}
