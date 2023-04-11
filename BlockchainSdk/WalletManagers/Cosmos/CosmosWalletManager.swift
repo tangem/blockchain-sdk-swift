@@ -68,15 +68,21 @@ class CosmosWalletManager: BaseManager, WalletManager {
     }
     
     private func estimateGas(amount: Amount, destination: String, initialGasApproximation: UInt64?) -> AnyPublisher<UInt64, Error> {
-        let regularGasPrice = cosmosChain.gasPrices[1]
-        
         return Just(())
             .setFailureType(to: Error.self)
             .tryMap { Void -> Data in
+                let feeAmount: Decimal?
+                if let initialGasApproximation {
+                    let regularGasPrice = cosmosChain.gasPrices[1]
+                    feeAmount = Decimal(Double(initialGasApproximation) * regularGasPrice) / self.cosmosChain.blockchain.decimalValue
+                } else {
+                    feeAmount = nil
+                }
+                
                 let input = try txBuilder.buildForSign(
                     amount: amount,
                     destination: destination,
-                    gasPrice: regularGasPrice,
+                    feeAmount: feeAmount,
                     gas: initialGasApproximation
                 )
                 let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)

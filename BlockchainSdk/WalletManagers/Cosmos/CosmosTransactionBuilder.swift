@@ -14,10 +14,6 @@ class CosmosTransactionBuilder {
     private var sequenceNumber: UInt64?
     private var accountNumber: UInt64?
     
-    private var regularGasPrice: Double {
-        cosmosChain.gasPrices[1]
-    }
-    
     init(cosmosChain: CosmosChain) {
         self.cosmosChain = cosmosChain
     }
@@ -30,7 +26,7 @@ class CosmosTransactionBuilder {
         self.accountNumber = accountNumber
     }
     
-    func buildForSign(amount: Amount, destination: String, gasPrice: Double, gas: UInt64?) throws -> CosmosSigningInput {
+    func buildForSign(amount: Amount, destination: String, feeAmount: Decimal?, gas: UInt64?) throws -> CosmosSigningInput {
         let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f004"))!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let fromAddress = AnyAddress(publicKey: publicKey, coin: .cosmos)
@@ -52,13 +48,12 @@ class CosmosTransactionBuilder {
         }
         
         let fee: CosmosFee?
-        if let gas = gas {
-            let feeAmount = Int(Double(gas) * gasPrice)
-            
+        if let feeAmount, let gas {
+            let feeAmountInSmallestDenomination = (feeAmount * cosmosChain.blockchain.decimalValue as NSDecimalNumber).uint64Value
             fee = CosmosFee.with {
                 $0.gas = gas
                 $0.amounts = [CosmosAmount.with {
-                    $0.amount = "\(feeAmount)"
+                    $0.amount = "\(feeAmountInSmallestDenomination)"
                     $0.denom = cosmosChain.smallestDenomination
                 }]
             }
