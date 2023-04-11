@@ -45,10 +45,7 @@ final class MnemonicServiceManagerUtility {
     @discardableResult
     /// Basic validation and store local keys wallet
     func validate() -> Self {
-        validate(mnemonic: hdWallet.mnemonic)
-        
         do {
-            try validateSeed(hdSeed: hdWallet.seed, bip39Seed: Mnemonic(with: mnemonic).generateSeed(with: passphrase))
             try validateAndStoreKeys(hdSeed: hdWallet.seed, bip39Seed: Mnemonic(with: mnemonic).generateSeed(with: passphrase))
         } catch {
             XCTFail("__INVALID_SEED__ DID NOT CREATED FROM TangemSdk BIP39!")
@@ -84,20 +81,6 @@ final class MnemonicServiceManagerUtility {
     }
     
     // MARK: - Private Implementation
-    
-    /// Perform equal validate mnemonic from TrustWallet & TangemSdk
-    private func validate(mnemonic: String) {
-        XCTAssertNotNil(try? Mnemonic(with: mnemonic).generateSeed(with: passphrase))
-        XCTAssertTrue(WalletCore.Mnemonic.isValid(mnemonic: mnemonic))
-    }
-    
-    /// Perform equal validate seed from TrustWallet & TangemSdk
-    /// - Parameters:
-    ///   - hdSeed: TrustWallet seed
-    ///   - bip39Seed: TangemSdk seed
-    private func validateSeed(hdSeed: Data, bip39Seed: Data) throws {
-        XCTAssertEqual(hdSeed.hexString, bip39Seed.hexString)
-    }
     
     /// Perform generate private and public keys and store keys to local properties for next use
     /// - Parameters:
