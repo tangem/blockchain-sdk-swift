@@ -88,12 +88,17 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     feeAmount: feeAmount,
                     gas: initialGasApproximation
                 )
-                let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
-                
+
+                guard let privateKey = PrivateKey(data: Data(repeating: 1, count: 32)) else {
                 guard let outputData = output.serialized.data(using: .utf8) else {
                     throw WalletError.failedToGetFee
                 }
-                return outputData
+                
+                let dummySigner = PrivateKeySigner(privateKey: privateKey, coin: .cosmos)
+                return try txBuilder.buildForSend(input: input, signer: dummySigner)
+            }
+            .tryCatch { _ -> AnyPublisher<Data, Error> in
+                .anyFail(error: WalletError.failedToGetFee)
             }
             .flatMap { [weak self] tx -> AnyPublisher<UInt64, Error> in
                 guard let self else {

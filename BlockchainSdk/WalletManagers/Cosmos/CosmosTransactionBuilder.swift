@@ -78,4 +78,14 @@ class CosmosTransactionBuilder {
         
         return input
     }
+    
+    func buildForSend(input: CosmosSigningInput, signer: Signer) throws -> Data {
+        let output: CosmosSigningOutput = AnySigner.signExternally(input: input, coin: .cosmos, signer: signer)
+        
+        guard let outputData = output.serialized.data(using: .utf8) else {
+            throw WalletError.failedToBuildTx
+        }
+        
+        return outputData
+    }
 }
