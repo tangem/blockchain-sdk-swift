@@ -61,7 +61,7 @@ extension CosmosTxResponse {
 // MARK: - Local models
 
 struct CosmosAccountInfo {
-    let accountNumber: Int
-    let sequenceNumber: Int
+    let accountNumber: UInt64
+    let sequenceNumber: UInt64
     let amount: Amount
 }

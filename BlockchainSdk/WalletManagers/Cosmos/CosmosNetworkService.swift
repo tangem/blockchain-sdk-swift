@@ -27,8 +27,8 @@ class CosmosNetworkService: MultiNetworkProvider {
                 .tryMap { [weak self] (accountInfo, balanceInfo) in
                     guard
                         let self,
-                        let accountNumber = Int(accountInfo.account.accountNumber),
-                        let sequenceNumber = Int(accountInfo.account.sequence),
+                        let accountNumber = UInt64(accountInfo.account.accountNumber),
+                        let sequenceNumber = UInt64(accountInfo.account.sequence),
                         let balanceInfo = balanceInfo.balances.first(where: { $0.denom == self.cosmosChain.smallestDenomination} ),
                         let balanceInSmallestDenomination = Int(balanceInfo.amount)
                     else {
@@ -44,12 +44,12 @@ class CosmosNetworkService: MultiNetworkProvider {
         }
     }
     
-    func estimateGas(for transaction: Data) -> AnyPublisher<Int, Error> {
+    func estimateGas(for transaction: Data) -> AnyPublisher<UInt64, Error> {
         providerPublisher {
             $0.simulate(data: transaction)
                 .map(\.gasInfo.gasUsed)
                 .tryMap {
-                    guard let gasUsed = Int($0) else {
+                    guard let gasUsed = UInt64($0) else {
                         throw WalletError.failedToGetFee
                     }
                     
