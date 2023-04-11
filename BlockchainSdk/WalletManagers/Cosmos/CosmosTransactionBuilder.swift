@@ -11,11 +11,13 @@ import WalletCore
 
 class CosmosTransactionBuilder {
     private let cosmosChain: CosmosChain
+    private let wallet: Wallet
     private var sequenceNumber: UInt64?
     private var accountNumber: UInt64?
     
-    init(cosmosChain: CosmosChain) {
+    init(wallet: Wallet, cosmosChain: CosmosChain) {
         self.cosmosChain = cosmosChain
+        self.wallet = wallet
     }
     
     func setSequenceNumber(_ sequenceNumber: UInt64) {
@@ -79,8 +81,14 @@ class CosmosTransactionBuilder {
         return input
     }
     
-    func buildForSend(input: CosmosSigningInput, signer: Signer) throws -> Data {
-        let output: CosmosSigningOutput = AnySigner.signExternally(input: input, coin: .cosmos, signer: signer)
+    func buildForSend(input: CosmosSigningInput, signer: TransactionSigner?) throws -> Data {
+        let output: CosmosSigningOutput
+        if let signer {
+            let coreSigner = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey)
+            output = AnySigner.signExternally(input: input, coin: .cosmos, signer: coreSigner)
+        } else {
+            output = AnySigner.sign(input: input, coin: .cosmos)
+        }
         
         guard let outputData = output.serialized.data(using: .utf8) else {
             throw WalletError.failedToBuildTx

@@ -19,6 +19,8 @@ class CosmosWalletManager: BaseManager, WalletManager {
     
     private let cosmosChain: CosmosChain
     
+    private var lastFetchedGas: UInt64?
+    
     init(cosmosChain: CosmosChain, wallet: Wallet) {
         self.cosmosChain = cosmosChain
         
@@ -42,7 +44,43 @@ class CosmosWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        .anyFail(error: WalletError.empty)
+        guard let lastFetchedGas else {
+            return .anyFail(error: WalletError.failedToBuildTx)
+        }
+                
+        return Just(())
+            .receive(on: DispatchQueue.global())
+            .setFailureType(to: Error.self)
+            .tryMap { [weak self] Void -> Data in
+                guard let self else { throw WalletError.empty }
+                
+                let input = try txBuilder.buildForSign(
+                    amount: transaction.amount,
+                    source: wallet.address,
+                    destination: transaction.destinationAddress,
+                    feeAmount: transaction.fee.amount.value,
+                    gas: lastFetchedGas
+                )
+                
+                let coreSigner = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey)
+                let output: CosmosSigningOutput = AnySigner.signExternally(input: input, coin: .cosmos, signer: coreSigner)
+                
+                guard let outputData = output.serialized.data(using: .utf8) else {
+                    throw WalletError.failedToGetFee
+                }
+                return outputData
+            }
+            .flatMap { [weak self] tx -> AnyPublisher<String, Error> in
+                guard let self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+                
+                return self.networkService.send(transaction: tx)
+            }
+            .map {
+                TransactionSendResult(hash: $0)
+            }
+            .eraseToAnyPublisher()
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
@@ -54,6 +92,8 @@ class CosmosWalletManager: BaseManager, WalletManager {
             }
             .tryMap { [weak self] gas in
                 guard let self = self else { throw WalletError.empty }
+                
+                self.lastFetchedGas = gas
                 
                 let blockchain = self.cosmosChain.blockchain
                 
@@ -89,13 +129,12 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     gas: initialGasApproximation
                 )
 
-                guard let privateKey = PrivateKey(data: Data(repeating: 1, count: 32)) else {
-                guard let outputData = output.serialized.data(using: .utf8) else {
+                guard let dummyPrivateKey = PrivateKey(data: Data(repeating: 1, count: 32)) else {
                     throw WalletError.failedToGetFee
                 }
-                
-                let dummySigner = PrivateKeySigner(privateKey: privateKey, coin: .cosmos)
-                return try txBuilder.buildForSend(input: input, signer: dummySigner)
+                let dummySigner = PrivateKeySigner(privateKey: dummyPrivateKey, coin: .cosmos)
+//                print((try! txBuilder.buildForSend(input: input, signer: dummySigner)))
+                return try txBuilder.buildForSend(input: input, signer: nil) //dummySigner)
             }
             .tryCatch { _ -> AnyPublisher<Data, Error> in
                 .anyFail(error: WalletError.failedToGetFee)

@@ -242,6 +242,7 @@
 		DA656FCC2954B5220092CC61 /* EthereumTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA656FCB2954B5220092CC61 /* EthereumTarget.swift */; };
 		DA67A69629E51FEA001B6799 /* CosmosWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA67A69529E51FEA001B6799 /* CosmosWalletManager.swift */; };
 		DA67A69829E523C6001B6799 /* CosmosTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA67A69729E523C6001B6799 /* CosmosTransactionBuilder.swift */; };
+		DA67A69A29E58174001B6799 /* PrivateKeySigner+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA67A69929E58174001B6799 /* PrivateKeySigner+.swift */; };
 		DA71441E2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
 		DA82433D27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433C27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift */; };
 		DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */; };
@@ -604,6 +605,7 @@
 		DA656FCB2954B5220092CC61 /* EthereumTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTarget.swift; sourceTree = "<group>"; };
 		DA67A69529E51FEA001B6799 /* CosmosWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosWalletManager.swift; sourceTree = "<group>"; };
 		DA67A69729E523C6001B6799 /* CosmosTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosTransactionBuilder.swift; sourceTree = "<group>"; };
+		DA67A69929E58174001B6799 /* PrivateKeySigner+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrivateKeySigner+.swift"; sourceTree = "<group>"; };
 		DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaNetworkService.swift; sourceTree = "<group>"; };
 		DA7CA47527AD4BD90041B1A1 /* PolkadotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotTests.swift; sourceTree = "<group>"; };
 		DA82433C27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotJsonRpcProvider.swift; sourceTree = "<group>"; };
@@ -901,6 +903,7 @@
 				B05F1E62299BC2F600E27E32 /* TransactionHistoryLoader.swift */,
 				2D9A91A629BB8C2E00476EA6 /* TrustWalletAddressService.swift */,
 				EF5F1B9629C9C0500093307B /* Fee.swift */,
+				DA67A69929E58174001B6799 /* PrivateKeySigner+.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -2179,6 +2182,7 @@
 				EF2BC62029DACE33003D3F18 /* RavencoinTarget.swift in Sources */,
 				5DC7DD62244077D7008F83F2 /* XRPNetworkService.swift in Sources */,
 				2DBBE94D29C8686000971539 /* OptimismWalletAssembly.swift in Sources */,
+				DA67A69A29E58174001B6799 /* PrivateKeySigner+.swift in Sources */,
 				EF5F1B9729C9C0500093307B /* Fee.swift in Sources */,
 				DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */,
 				5D7D243025136254001B9A4F /* XRPKeypair.swift in Sources */,
