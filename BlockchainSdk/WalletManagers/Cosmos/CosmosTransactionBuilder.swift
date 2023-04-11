@@ -26,23 +26,18 @@ class CosmosTransactionBuilder {
         self.accountNumber = accountNumber
     }
     
-    func buildForSign(amount: Amount, destination: String, feeAmount: Decimal?, gas: UInt64?) throws -> CosmosSigningInput {
-        let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f004"))!
-        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
-        let fromAddress = AnyAddress(publicKey: publicKey, coin: .cosmos)
-        
-        
+    func buildForSign(amount: Amount, source: String, destination: String, feeAmount: Decimal?, gas: UInt64?) throws -> CosmosSigningInput {
         let amountInSmallestDenomination = ((amount.value * cosmosChain.blockchain.decimalValue) as NSDecimalNumber).uint64Value
         
         let sendCoinsMessage = CosmosMessage.Send.with {
-            $0.fromAddress = fromAddress.description
+            $0.fromAddress = source
             $0.toAddress = destination
             $0.amounts = [CosmosAmount.with {
                 $0.amount = "\(amountInSmallestDenomination)"
                 $0.denom = cosmosChain.smallestDenomination
             }]
         }
-
+        
         let message = CosmosMessage.with {
             $0.sendCoinsMessage = sendCoinsMessage
         }
@@ -67,8 +62,8 @@ class CosmosTransactionBuilder {
         else {
             throw WalletError.failedToBuildTx
         }
-
-        var input = CosmosSigningInput.with {
+        
+        let input = CosmosSigningInput.with {
             $0.signingMode = .protobuf;
             $0.accountNumber = accountNumber
             $0.chainID = cosmosChain.chainID
@@ -78,7 +73,7 @@ class CosmosTransactionBuilder {
             if let fee = fee {
                 $0.fee = fee
             }
-            $0.privateKey = privateKey.data
+            $0.privateKey = Data(repeating: 1, count: 32)
         }
         
         return input

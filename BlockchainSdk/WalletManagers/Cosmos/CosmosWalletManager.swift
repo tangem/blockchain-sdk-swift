@@ -70,7 +70,9 @@ class CosmosWalletManager: BaseManager, WalletManager {
     private func estimateGas(amount: Amount, destination: String, initialGasApproximation: UInt64?) -> AnyPublisher<UInt64, Error> {
         return Just(())
             .setFailureType(to: Error.self)
-            .tryMap { Void -> Data in
+            .tryMap { [weak self] Void -> Data in
+                guard let self else { throw WalletError.empty }
+                
                 let feeAmount: Decimal?
                 if let initialGasApproximation {
                     let regularGasPrice = cosmosChain.gasPrices[1]
@@ -81,6 +83,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 
                 let input = try txBuilder.buildForSign(
                     amount: amount,
+                    source: self.wallet.address,
                     destination: destination,
                     feeAmount: feeAmount,
                     gas: initialGasApproximation
