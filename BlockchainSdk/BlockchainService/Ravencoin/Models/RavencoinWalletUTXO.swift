@@ -13,9 +13,4 @@ struct RavencoinWalletUTXO: Decodable {
     let vout: Int
     let satoshis: UInt64
     let scriptPubKey: String
-    let address: String?
-    let assetName: String?
-    let amount: Decimal?
-    let height: Int?
-    let confirmations: Int?
 }
