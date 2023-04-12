@@ -16,8 +16,8 @@ enum TronNetwork {
     
     var url: URL {
         switch self {
-        case .nowNodes(let apiKey):
-            return URL(string: "https://trx.nownodes.io/\(apiKey)")!
+        case .nowNodes:
+            return URL(string: "https://trx.nownodes.io")!
         case .getBlock(let apiKey):
             return URL(string: "https://trx.getblock.io/mainnet/\(apiKey)")!
         case .tronGrid:
@@ -28,17 +28,23 @@ enum TronNetwork {
     }
     
     var apiKeyHeaderValue: String? {
-        if case .tronGrid(let apiKey) = self {
+        switch self {
+        case .nowNodes(let apiKey):
             return apiKey
-        } else {
+        case .tronGrid(let apiKey):
+            return apiKey
+        default:
             return nil
         }
     }
     
     var apiKeyHeaderName: String? {
-        if case .tronGrid = self {
+        switch self {
+        case .nowNodes:
+            return Constants.nowNodesApiKeyHeaderName
+        case .tronGrid:
             return "TRON-PRO-API-KEY"
-        } else {
+        default:
             return nil
         }
     }
