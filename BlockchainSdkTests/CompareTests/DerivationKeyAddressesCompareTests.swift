@@ -372,4 +372,76 @@ class DerivationKeyAddressesCompareTests: XCTestCase {
         }
     }
     
+    func testXrp() {
+        let blockchain = Blockchain.xrp(curve: .secp256k1)
+        
+        utility.validate(
+            blockchain: blockchain,
+            derivation: MnemonicServiceManagerUtility.CompareDerivation(
+                local: blockchain.derivationPath()!.rawPath,
+                reference: "m/44'/144'/0'/0/0"
+            )
+        ) { privateKey, publicKey in
+            addressesUtility.validate(
+                address: "rfcYjCaEDJX9ETHe4t3bxD7GkayhdaASfp",
+                publicKey: publicKey.data,
+                for: blockchain
+            )
+        }
+    }
+    
+    func testTezos() {
+        let blockchain = Blockchain.tezos(curve: .ed25519)
+        
+        utility.validate(
+            blockchain: blockchain,
+            derivation: MnemonicServiceManagerUtility.CompareDerivation(
+                local: blockchain.derivationPath()!.rawPath,
+                reference: "m/44'/1729'/0'/0/0"
+            )
+        ) { privateKey, publicKey in
+            addressesUtility.validate(
+                address: "tz1bpvevsxE1rGbqxTRHTaPqmKKhANzW61rr",
+                publicKey: publicKey.data,
+                for: blockchain
+            )
+        }
+    }
+    
+    func testRavencoin() {
+        let blockchain = Blockchain.ravencoin(testnet: false)
+        
+        utility.validate(
+            blockchain: blockchain,
+            derivation: MnemonicServiceManagerUtility.CompareDerivation(
+                local: blockchain.derivationPath()!.rawPath,
+                reference: "m/44'/175'/0'/0/0"
+            )
+        ) { privateKey, publicKey in
+            addressesUtility.validate(
+                address: "RPTqwXzy7LmMLbPWdDE4yP3QBThMJij3ZY",
+                publicKey: publicKey.data,
+                for: blockchain
+            )
+        }
+    }
+    
+    func testFantom() {
+        let blockchain = Blockchain.fantom(testnet: false)
+        
+        utility.validate(
+            blockchain: blockchain,
+            derivation: MnemonicServiceManagerUtility.CompareDerivation(
+                local: blockchain.derivationPath()!.rawPath,
+                reference: "m/44'/60'/0'/0/0"
+            )
+        ) { privateKey, publicKey in
+            addressesUtility.validate(
+                address: "0x5984781A30B49B5E9b835278b08ACf296DF6874d",
+                publicKey: publicKey.data,
+                for: blockchain
+            )
+        }
+    }
+    
 }

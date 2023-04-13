@@ -62,6 +62,8 @@ extension CoinType {
             self = .avalancheCChain
         case .kava:
             self = .kava
+        case .fantom:
+            self = .fantom
         default:
             throw NSError()
         }
