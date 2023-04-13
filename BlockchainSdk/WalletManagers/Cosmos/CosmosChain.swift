@@ -17,6 +17,22 @@ enum CosmosChain {
 // Keplr registry contains lots of goodies, for example:
 // https://github.com/chainapsis/keplr-chain-registry/blob/main/cosmos/cosmoshub.json
 extension CosmosChain {
+    // https://cosmos.directory/cosmoshub
+    var urls: [String] {
+        switch self {
+        case .cosmos(let testnet):
+            if testnet {
+                return [
+                    "https://rest.seed-01.theta-testnet.polypore.xyz",
+                ]
+            } else {
+                return [
+                    "https://cosmos-mainnet-rpc.allthatnode.com:1317",
+                ]
+            }
+        }
+    }
+    
     // Either feeCurrencies/coinMinimalDenom from Keplr registry
     // or
     // params/bond_denom field from /cosmos/staking/v1beta1/params request

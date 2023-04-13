@@ -9,6 +9,7 @@
 import Foundation
 import TangemSdk
 import BitcoinCore
+import enum WalletCore.CoinType
 
 // MARK: - Base
 @available(iOS 13.0, *)
@@ -45,6 +46,7 @@ public enum Blockchain: Equatable, Hashable {
     case kava(testnet: Bool)
     case kaspa
     case ravencoin(testnet: Bool)
+    case cosmos(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -96,6 +98,8 @@ public enum Blockchain: Equatable, Hashable {
             return false
         case .ravencoin(let testnet):
             return testnet
+        case .cosmos(let testnet):
+            return testnet
         }
     }
     
@@ -118,7 +122,7 @@ public enum Blockchain: Equatable, Hashable {
             return 8
         case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava:
             return 18
-        case  .cardano, .xrp, .tezos, .tron:
+        case  .cardano, .xrp, .tezos, .tron, .cosmos:
             return 6
         case .stellar:
             return 7
@@ -191,6 +195,8 @@ public enum Blockchain: Equatable, Hashable {
             return "KAS"
         case .ravencoin:
             return "RVN"
+        case .cosmos:
+            return "ATOM"
         }
     }
     
@@ -556,6 +562,7 @@ extension Blockchain {
         case .kava: return 459
         case .kaspa: return 111111
         case .ravencoin: return 175
+        case .cosmos: return 118
         }
     }
     
@@ -622,6 +629,9 @@ extension Blockchain {
         case .ravencoin:
             let networkParams: INetwork = isTestnet ? RavencoinTestNetworkParams() : RavencoinMainNetworkParams()
             return BitcoinLegacyAddressService(networkParams: networkParams)
+        case .cosmos:
+            let coin = try! CoinType(self)
+            return TrustWalletAddressService(coin: coin, publicKeyType: coin.publicKeyType)
         }
     }
 }
@@ -695,6 +705,7 @@ extension Blockchain: Codable {
         case .kava: return "kava"
         case .kaspa: return "kaspa"
         case .ravencoin: return "ravencoin"
+        case .cosmos: return "cosmos-hub"
         }
     }
     
@@ -749,6 +760,7 @@ extension Blockchain: Codable {
         case "kava": self = .kava(testnet: isTestnet)
         case "kaspa": self = .kaspa
         case "ravencoin": self = .ravencoin(testnet: isTestnet)
+        case "cosmos-hub": self = .cosmos(testnet: isTestnet)
         default:
             assertionFailure("Blockchain for \(key) isn't supported")
             throw BlockchainSdkError.decodingFailed
@@ -814,6 +826,8 @@ extension Blockchain {
             return URL(string: "https://faucet.kava.io")!
         case .kaspa:
             return URL(string: "https://faucet.kaspanet.io")!
+        case .cosmos:
+            return URL(string: "https://discord.com/channels/669268347736686612/953697793476821092")!
         default:
             return nil
         }
@@ -931,6 +945,12 @@ extension Blockchain {
               }
 
               return URL(string: "https://ravencoin.network/address/\(address)")
+        case .cosmos(let testnet):
+            if testnet {
+                return URL(string: "https://explorer.theta-testnet.polypore.xyz/accounts/\(address)")!
+            } else {
+                return URL(string: "https://www.mintscan.io/cosmos/account/\(address)")!
+            }
         }
     }
 }
@@ -1040,6 +1060,8 @@ extension Blockchain {
             return KaspaWalletAssembly()
         case .ravencoin:
             return RavencoinWalletAssembly()
+        case .cosmos:
+            return CosmosWalletAssembly()
         }
     }
     

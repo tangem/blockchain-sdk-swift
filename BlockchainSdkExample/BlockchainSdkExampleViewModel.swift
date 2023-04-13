@@ -475,6 +475,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .kava(testnet: false),
             .kaspa,
             .ravencoin(testnet: false),
+            .cosmos(testnet: false),
         ]
         
         return blockchains.map { ($0.displayName, $0.codingKey) }
