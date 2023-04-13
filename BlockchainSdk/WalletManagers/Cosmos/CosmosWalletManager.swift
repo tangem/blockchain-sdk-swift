@@ -78,6 +78,11 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 
                 return self.networkService.send(transaction: transaction)
             }
+            .handleEvents(receiveOutput: { [weak self] in
+                var submittedTransaction = transaction
+                submittedTransaction.hash = $0
+                self?.wallet.transactions.append(submittedTransaction)
+            })
             .map {
                 TransactionSendResult(hash: $0)
             }
