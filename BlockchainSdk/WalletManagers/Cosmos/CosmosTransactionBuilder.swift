@@ -85,9 +85,9 @@ class CosmosTransactionBuilder {
         let output: CosmosSigningOutput
         if let signer {
             let coreSigner = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey, blockchain: cosmosChain.blockchain)
-            output = AnySigner.signExternally(input: input, coin: .cosmos, signer: coreSigner)
+            output = AnySigner.signExternally(input: input, coin: cosmosChain.coin, signer: coreSigner)
         } else {
-            output = AnySigner.sign(input: input, coin: .cosmos)
+            output = AnySigner.sign(input: input, coin: cosmosChain.coin)
         }
         
         guard let outputData = output.serialized.data(using: .utf8) else {

@@ -63,7 +63,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 )
                 
                 let signer = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey, blockchain: self.cosmosChain.blockchain)
-                let output: CosmosSigningOutput = AnySigner.signExternally(input: input, coin: .cosmos, signer: signer)
+                let output: CosmosSigningOutput = AnySigner.signExternally(input: input, coin: self.cosmosChain.coin, signer: signer)
                 
                 guard let outputData = output.serialized.data(using: .utf8) else {
                     throw WalletError.failedToGetFee

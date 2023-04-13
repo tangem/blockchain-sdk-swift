@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import WalletCore
 
 enum CosmosChain {
     case cosmos(testnet: Bool)
@@ -52,6 +53,13 @@ extension CosmosChain {
                 0.025,
                 0.03,
             ]
+        }
+    }
+    
+    var coin: CoinType {
+        switch self {
+        case .cosmos:
+            return .cosmos
         }
     }
 }
