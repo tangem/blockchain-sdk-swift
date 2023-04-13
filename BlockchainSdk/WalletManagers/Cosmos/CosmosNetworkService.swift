@@ -29,7 +29,7 @@ class CosmosNetworkService: MultiNetworkProvider {
                         let self,
                         let accountNumber = UInt64(accountInfo.account.accountNumber),
                         let sequenceNumber = UInt64(accountInfo.account.sequence),
-                        let balanceInfo = balanceInfo.balances.first(where: { $0.denom == self.cosmosChain.smallestDenomination} ),
+                        let balanceInfo = balanceInfo.balances.first(where: { $0.denom == self.cosmosChain.smallestDenomination } ),
                         let balanceInSmallestDenomination = Int(balanceInfo.amount)
                     else {
                         throw WalletError.failedToGetFee

@@ -11,12 +11,11 @@ import Combine
 import Moya
 
 class CosmosRestProvider: HostProvider {
-    let url: URL
-    
     var host: String {
         url.hostOrUnknown
     }
     
+    private let url: URL
     private let provider: NetworkProvider<CosmosTarget>
     
     init(url: String, configuration: NetworkProviderConfiguration) {

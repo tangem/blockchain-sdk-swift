@@ -62,8 +62,8 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     gas: lastFetchedGas
                 )
                 
-                let cardSigner = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey, blockchain: cosmosChain.blockchain)
-                let output: CosmosSigningOutput = AnySigner.signExternally(input: input, coin: .cosmos, signer: cardSigner)
+                let signer = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey, blockchain: cosmosChain.blockchain)
+                let output: CosmosSigningOutput = AnySigner.signExternally(input: input, coin: .cosmos, signer: signer)
                 
                 guard let outputData = output.serialized.data(using: .utf8) else {
                     throw WalletError.failedToGetFee
@@ -71,12 +71,12 @@ class CosmosWalletManager: BaseManager, WalletManager {
 
                 return outputData
             }
-            .flatMap { [weak self] tx -> AnyPublisher<String, Error> in
+            .flatMap { [weak self] transaction -> AnyPublisher<String, Error> in
                 guard let self else {
                     return .anyFail(error: WalletError.empty)
                 }
                 
-                return self.networkService.send(transaction: tx)
+                return self.networkService.send(transaction: transaction)
             }
             .map {
                 TransactionSendResult(hash: $0)
@@ -87,6 +87,9 @@ class CosmosWalletManager: BaseManager, WalletManager {
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         lastFetchedGas = nil
         
+        // Estimate gas by simulating a transaction without the 'fee'
+        // Get the gas
+        // Use the gas to simulate a transaction with the 'fee', getting a better gas approximation
         return estimateGas(amount: amount, destination: destination, initialGasApproximation: nil)
             .flatMap { [weak self] initialGasEstimation -> AnyPublisher<UInt64, Error> in
                 guard let self else { return .anyFail(error: WalletError.empty) }
@@ -137,12 +140,12 @@ class CosmosWalletManager: BaseManager, WalletManager {
             .tryCatch { _ -> AnyPublisher<Data, Error> in
                 .anyFail(error: WalletError.failedToGetFee)
             }
-            .flatMap { [weak self] tx -> AnyPublisher<UInt64, Error> in
+            .flatMap { [weak self] transaction -> AnyPublisher<UInt64, Error> in
                 guard let self else {
                     return .anyFail(error: WalletError.empty)
                 }
                 
-                return self.networkService.estimateGas(for: tx)
+                return self.networkService.estimateGas(for: transaction)
             }
             .eraseToAnyPublisher()
     }

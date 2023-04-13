@@ -10,14 +10,14 @@ import Foundation
 import WalletCore
 
 class CosmosTransactionBuilder {
-    private let cosmosChain: CosmosChain
     private let wallet: Wallet
+    private let cosmosChain: CosmosChain
     private var sequenceNumber: UInt64?
     private var accountNumber: UInt64?
     
     init(wallet: Wallet, cosmosChain: CosmosChain) {
-        self.cosmosChain = cosmosChain
         self.wallet = wallet
+        self.cosmosChain = cosmosChain
     }
     
     func setSequenceNumber(_ sequenceNumber: UInt64) {
