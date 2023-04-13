@@ -56,7 +56,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 
                 let input = try self.txBuilder.buildForSign(
                     amount: transaction.amount,
-                    source: wallet.address,
+                    source: self.wallet.address,
                     destination: transaction.destinationAddress,
                     feeAmount: transaction.fee.amount.value,
                     gas: lastFetchedGas
