@@ -54,7 +54,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
             .tryMap { [weak self] Void -> Data in
                 guard let self else { throw WalletError.empty }
                 
-                let input = try txBuilder.buildForSign(
+                let input = try self.txBuilder.buildForSign(
                     amount: transaction.amount,
                     source: wallet.address,
                     destination: transaction.destinationAddress,
@@ -132,7 +132,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     feeAmount = nil
                 }
                 
-                let input = try txBuilder.buildForSign(
+                let input = try self.txBuilder.buildForSign(
                     amount: amount,
                     source: self.wallet.address,
                     destination: destination,
@@ -140,7 +140,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     gas: initialGasApproximation
                 )
                 
-                return try txBuilder.buildForSend(input: input, signer: nil)
+                return try self.txBuilder.buildForSend(input: input, signer: nil)
             }
             .tryCatch { _ -> AnyPublisher<Data, Error> in
                 .anyFail(error: WalletError.failedToGetFee)
