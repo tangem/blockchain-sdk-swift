@@ -8,10 +8,10 @@
 
 import XCTest
 import CryptoKit
-import TangemSdk
 import WalletCore
 
 @testable import BlockchainSdk
+@testable import TangemSdk
 
 /// Utility for testing mnemonic & and testing process with generate Extended Keys from mnemonic
 final class MnemonicServiceManagerUtility {
@@ -25,14 +25,6 @@ final class MnemonicServiceManagerUtility {
         .init(mnemonic: mnemonic, passphrase: passphrase)!
     }
     
-    // MARK: - Keys
-    
-    private var privateKey_ed25519: ExtendedPrivateKey!
-    private var privateKey_secp256k1: ExtendedPrivateKey!
-    
-    private var publicKey_ed25519: ExtendedPublicKey!
-    private var publicKey_secp256k1: ExtendedPublicKey!
-    
     // MARK: - Init
     
     public init(mnemonic: String, passphrase: String = "") {
@@ -44,9 +36,35 @@ final class MnemonicServiceManagerUtility {
     
     @discardableResult
     /// Basic validation and store local keys wallet
-    func validate() -> Self {
+    func validate(
+        blockchain: BlockchainSdk.Blockchain,
+        _ executtion: (_ privateKey: ExtendedPrivateKey, _ publicKey: ExtendedPublicKey) -> Void
+    ) -> Self {
         do {
-            try validateAndStoreKeys(hdSeed: hdWallet.seed, bip39Seed: Mnemonic(with: mnemonic).generateSeed(with: passphrase))
+            let keys = try validateAndStoreMasterKeys(
+                hdSeed: hdWallet.seed,
+                bip39Seed: Mnemonic(with: mnemonic).generateSeed(with: passphrase)
+            )
+            
+            guard let secp256k1 = keys?.0, let ed25519 = keys?.1 else {
+                XCTFail("__INVALID_PRIVATE_KEYS__ RUN -> 'func validate() -> Self'")
+                return self
+            }
+            
+            guard !secp256k1.exPrivateKey.privateKey.isEmpty || !ed25519.exPrivateKey.privateKey.isEmpty else {
+                XCTFail("__INVALID_PRIVATE_KEYS__ RUN -> 'func validate() -> Self'")
+                return self
+            }
+            
+            switch blockchain.curve {
+            case .secp256k1:
+                executtion(secp256k1.exPrivateKey, secp256k1.exPublicKey)
+            case .ed25519:
+                executtion(ed25519.exPrivateKey, ed25519.exPublicKey)
+            default:
+                XCTFail("__INVALID_ELIPTIC_CURVE__")
+            }
+            
         } catch {
             XCTFail("__INVALID_SEED__ DID NOT CREATED FROM TangemSdk BIP39!")
         }
@@ -55,26 +73,20 @@ final class MnemonicServiceManagerUtility {
     }
     
     @discardableResult
-    /// Closure validation for local stored extended public & private keys
-    /// - Parameters:
-    ///   - blockchain: Blockchain enum
-    ///   - executtion: Process validation
+    /// Basic validation and store local keys wallet
     func validate(
         blockchain: BlockchainSdk.Blockchain,
-        executtion: (_ privateKey: ExtendedPrivateKey, _ publicKey: ExtendedPublicKey) -> Void
+        derivation: CompareDerivation?,
+        _ executtion: (_ privateKey: PrivateKey, _ publicKey: PublicKey) -> Void
     ) -> Self {
-        guard !privateKey_secp256k1.privateKey.isEmpty || !privateKey_ed25519.privateKey.isEmpty else {
-            XCTFail("__INVALID_PRIVATE_KEYS__ RUN -> 'func validate() -> Self'")
-            return self
-        }
-        
-        switch blockchain.curve {
-        case .secp256k1:
-            executtion(privateKey_secp256k1, publicKey_secp256k1)
-        case .ed25519:
-            executtion(privateKey_ed25519, publicKey_ed25519)
-        default:
-            XCTFail("__INVALID_ELIPTIC_CURVE__")
+        if let derivation = derivation {
+            XCTAssertEqual(derivation.local, derivation.reference)
+            
+            let privateKey = try! hdWallet.getKey(coin: .init(blockchain), derivationPath: derivation.reference)
+            try! executtion(privateKey, privateKey.getPublicKey(coinType: .init(blockchain)))
+        } else {
+            let privateKey = try! hdWallet.getKeyForCoin(coin: .init(blockchain))
+            try! executtion(privateKey, privateKey.getPublicKey(coinType: .init(blockchain)))
         }
         
         return self
@@ -86,30 +98,58 @@ final class MnemonicServiceManagerUtility {
     /// - Parameters:
     ///   - hdSeed: Seed from TrustWallet
     ///   - bip39Seed: Seed from TangemSdk
-    private func validateAndStoreKeys(hdSeed: Data, bip39Seed: Data) {
+    private func validateAndStoreMasterKeys(hdSeed: Data, bip39Seed: Data) throws -> (ExtendedKey, ExtendedKey)? {
         do {
             let privateKeyHDWallet_ed25519 = hdWallet.getMasterKey(curve: .ed25519)
-            privateKey_ed25519 = try BIP32().makeMasterKey(from: bip39Seed, curve: .ed25519)
+            let privateKey_ed25519 = try BIP32().makeMasterKey(from: bip39Seed, curve: .ed25519)
             
             let privateKeyHDWallet_secp256k1 = hdWallet.getMasterKey(curve: .secp256k1)
-            privateKey_secp256k1 = try BIP32().makeMasterKey(from: bip39Seed, curve: .secp256k1)
+            let privateKey_secp256k1 = try BIP32().makeMasterKey(from: bip39Seed, curve: .secp256k1)
             
             // Verify private keys from TrustWallet & TangemSdk
             XCTAssertEqual(privateKeyHDWallet_ed25519.data.hexString, privateKey_ed25519.privateKey.hexString)
             XCTAssertEqual(privateKeyHDWallet_secp256k1.data.hexString, privateKey_secp256k1.privateKey.hexString)
             
             let publicKeyHDWallet_ed25519 = privateKeyHDWallet_ed25519.getPublicKeyEd25519()
-            publicKey_ed25519 = try privateKey_ed25519.makePublicKey(for: .ed25519)
+            let publicKey_ed25519 = try privateKey_ed25519.makePublicKey(for: .ed25519)
             
             let publicKeyHDWallet_secp256k1 = privateKeyHDWallet_secp256k1.getPublicKeySecp256k1(compressed: true)
-            publicKey_secp256k1 = try privateKey_secp256k1.makePublicKey(for: .secp256k1)
+            let publicKey_secp256k1 = try privateKey_secp256k1.makePublicKey(for: .secp256k1)
             
             // Verify public keys from TrustWallet & TangemSdk
             XCTAssertEqual(publicKeyHDWallet_ed25519.data.hexString, publicKey_ed25519.publicKey.hexString)
             XCTAssertEqual(publicKeyHDWallet_secp256k1.data.hexString, publicKey_secp256k1.publicKey.hexString)
+            
+            return (
+                .init(exPrivateKey: privateKey_secp256k1, exPublicKey: publicKey_secp256k1),
+                .init(exPrivateKey: privateKey_ed25519, exPublicKey: publicKey_ed25519)
+            )
         } catch {
             XCTFail("__INVALID_GEN_KEYS__")
+            return nil
         }
+    }
+    
+    /// Perform generate private and public keys and store keys to local properties for next use
+    /// - Parameters:
+    ///   - hdSeed: Seed from TrustWallet
+    ///   - bip39Seed: Seed from TangemSdk
+    private func validateAndStoreDerivationKeys(hdSeed: Data, bip39Seed: Data, derivationPath: String) {
+        
+    }
+    
+}
+
+extension MnemonicServiceManagerUtility {
+    
+    struct ExtendedKey {
+        let exPrivateKey: ExtendedPrivateKey
+        let exPublicKey: ExtendedPublicKey
+    }
+    
+    struct CompareDerivation {
+        let local: String
+        let reference: String
     }
     
 }

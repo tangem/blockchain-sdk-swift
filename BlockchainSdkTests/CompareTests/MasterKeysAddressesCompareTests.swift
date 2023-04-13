@@ -1,5 +1,5 @@
 //
-//  ExtendedKeysAddressesCompareTests.swift
+//  MasterKeysAddressesCompareTests.swift
 //  BlockchainSdkTests
 //
 //  Created by skibinalexander on 03.04.2023.
@@ -13,7 +13,7 @@ import WalletCore
 
 @testable import BlockchainSdk
 
-/// Basic testplan for validation blockchain address from mnemonic
+/// Basic testplan for validation blockchain address from mnemonic at master key
 class ExtendedKeysAddressesCompareTests: XCTestCase {
     
     // MARK: - Static Data
@@ -21,7 +21,7 @@ class ExtendedKeysAddressesCompareTests: XCTestCase {
     let mnemonic = "tiny escape drive pupil flavor endless love walk gadget match filter luxury"
     
     lazy var utility: MnemonicServiceManagerUtility = {
-        .init(mnemonic: mnemonic, passphrase: "").validate()
+        .init(mnemonic: mnemonic, passphrase: "")
     }()
     
     // MARK: - Properties

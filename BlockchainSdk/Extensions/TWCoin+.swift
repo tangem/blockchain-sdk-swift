@@ -56,6 +56,12 @@ extension CoinType {
             self = .dogecoin
         case .arbitrum:
             self = .arbitrum
+        case .optimism:
+            self = .optimism
+        case .avalanche:
+            self = .avalancheCChain
+        case .kava:
+            self = .kava
         default:
             throw NSError()
         }
