@@ -8,9 +8,18 @@
 
 import Foundation
 
+/// These are the current default values in the ravencore library involved on these checks:
+/// Transaction.FEE_PER_KB: 10000 (satoshis per kilobyte) = 0.0001 RVN per Kilobyte
+/// Transaction.DUST_AMOUNT: 642 (satoshis)
+/// Source: https://github.com/raven-community/ravencore-lib/blob/master/docs/transaction.md
+
 class RavencoinWalletManager: BitcoinWalletManager {
-    /// These are the current default values in the ravencore library involved on these checks:
-    /// Transaction.FEE_PER_KB: 10000 (satoshis per kilobyte) = 0.0001 RVN per Kilobyte
-    /// https://github.com/raven-community/ravencore-lib/blob/master/docs/transaction.md
-    override var minimalFeePerByte: Decimal { 0.0001 / 1024 }
+    override var minimalFeePerByte: Decimal { 10 }
+}
+
+extension RavencoinWalletManager: DustRestrictable {
+    var dustValue: Amount {
+        let value = 642 / wallet.blockchain.decimalValue
+        return Amount(with: wallet.blockchain, value: value)
+    }
 }
