@@ -54,7 +54,7 @@ class WalletCoreSigner: Signer {
             self.signSubscription = self.sdkSigner.sign(hashes: data, walletPublicKey: self.walletPublicKey)
                 .tryMap { signatures in
                     if case .secp256k1 = self.blockchain.curve {
-                        return try self.unmarshall(signatures, for: data)
+                        return try self.unmarshal(signatures, for: data)
                     } else {
                         return signatures
                     }
@@ -80,15 +80,15 @@ class WalletCoreSigner: Signer {
         return signedData
     }
     
-    private func unmarshall(_ signatures: [Data], for data: [Data]) throws -> [Data] {
+    private func unmarshal(_ signatures: [Data], for data: [Data]) throws -> [Data] {
         try signatures
             .enumerated()
             .map { (index, signature) in
-                try self.unmarshall(signature, for: data[index])
+                try self.unmarshal(signature, for: data[index])
             }
     }
     
-    private func unmarshall(_ signature: Data, for data: Data) throws -> Data {
+    private func unmarshal(_ signature: Data, for data: Data) throws -> Data {
         let secpSignature = try Secp256k1Signature(with: signature)
         let (v, r, s) = try secpSignature.unmarshal(with: publicKey, hash: data)
         return r + s + v
