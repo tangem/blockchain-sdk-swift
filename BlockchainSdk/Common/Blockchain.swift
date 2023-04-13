@@ -931,7 +931,7 @@ extension Blockchain {
                   return URL(string: "https://testnet.ravencoin.network/address/\(address)")
               }
 
-              return URL(string: "https://ravencoin.network/address/\(address)")
+              return URL(string: "https://api.ravencoin.org/address/\(address)")
         }
     }
 }
