@@ -62,12 +62,13 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     gas: lastFetchedGas
                 )
                 
-                let coreSigner = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey)
-                let output: CosmosSigningOutput = AnySigner.signExternally(input: input, coin: .cosmos, signer: coreSigner)
+                let cardSigner = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey, blockchain: cosmosChain.blockchain)
+                let output: CosmosSigningOutput = AnySigner.signExternally(input: input, coin: .cosmos, signer: cardSigner)
                 
                 guard let outputData = output.serialized.data(using: .utf8) else {
                     throw WalletError.failedToGetFee
                 }
+
                 return outputData
             }
             .flatMap { [weak self] tx -> AnyPublisher<String, Error> in
@@ -84,7 +85,9 @@ class CosmosWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        estimateGas(amount: amount, destination: destination, initialGasApproximation: nil)
+        lastFetchedGas = nil
+        
+        return estimateGas(amount: amount, destination: destination, initialGasApproximation: nil)
             .flatMap { [weak self] initialGasEstimation -> AnyPublisher<UInt64, Error> in
                 guard let self else { return .anyFail(error: WalletError.empty) }
                 
@@ -128,13 +131,8 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     feeAmount: feeAmount,
                     gas: initialGasApproximation
                 )
-
-                guard let dummyPrivateKey = PrivateKey(data: Data(repeating: 1, count: 32)) else {
-                    throw WalletError.failedToGetFee
-                }
-                let dummySigner = PrivateKeySigner(privateKey: dummyPrivateKey, coin: .cosmos)
-//                print((try! txBuilder.buildForSend(input: input, signer: dummySigner)))
-                return try txBuilder.buildForSend(input: input, signer: nil) //dummySigner)
+                
+                return try txBuilder.buildForSend(input: input, signer: nil)
             }
             .tryCatch { _ -> AnyPublisher<Data, Error> in
                 .anyFail(error: WalletError.failedToGetFee)
