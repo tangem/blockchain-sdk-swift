@@ -62,7 +62,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     gas: lastFetchedGas
                 )
                 
-                let signer = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey, blockchain: cosmosChain.blockchain)
+                let signer = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey, blockchain: self.cosmosChain.blockchain)
                 let output: CosmosSigningOutput = AnySigner.signExternally(input: input, coin: .cosmos, signer: signer)
                 
                 guard let outputData = output.serialized.data(using: .utf8) else {
@@ -126,7 +126,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 
                 let feeAmount: Decimal?
                 if let initialGasApproximation {
-                    let regularGasPrice = cosmosChain.gasPrices[1]
+                    let regularGasPrice = self.cosmosChain.gasPrices[1]
                     feeAmount = Decimal(Double(initialGasApproximation) * regularGasPrice) / self.cosmosChain.blockchain.decimalValue
                 } else {
                     feeAmount = nil
