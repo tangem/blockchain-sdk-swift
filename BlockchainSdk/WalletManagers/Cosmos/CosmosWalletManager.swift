@@ -54,12 +54,15 @@ class CosmosWalletManager: BaseManager, WalletManager {
             .tryMap { [weak self] Void -> Data in
                 guard let self else { throw WalletError.empty }
                 
+                let params = transaction.params as? CosmosTransactionParams
+                
                 let input = try self.txBuilder.buildForSign(
                     amount: transaction.amount,
                     source: self.wallet.address,
                     destination: transaction.destinationAddress,
                     feeAmount: transaction.fee.amount.value,
-                    gas: lastFetchedGas
+                    gas: lastFetchedGas,
+                    params: params
                 )
                 
                 let signer = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey, blockchain: self.cosmosChain.blockchain)
@@ -137,7 +140,8 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     source: self.wallet.address,
                     destination: destination,
                     feeAmount: feeAmount,
-                    gas: initialGasApproximation
+                    gas: initialGasApproximation,
+                    params: nil
                 )
                 
                 return try self.txBuilder.buildForSend(input: input, signer: nil)
