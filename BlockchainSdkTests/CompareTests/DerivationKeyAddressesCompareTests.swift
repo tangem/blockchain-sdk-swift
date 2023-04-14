@@ -38,7 +38,8 @@ class DerivationKeyAddressesCompareTests: XCTestCase {
             derivation: MnemonicServiceManagerUtility.CompareDerivation(
                 local: blockchain.derivationPath()!.rawPath,
                 reference: "m/84'/0'/0'/0/0"
-            )
+            ),
+            sdkPublicKey: Data(hex: "032A08567430A46A47CFFBF3FFD7FBB17A7850E75E7AC8E3E034BB1D8D5625A30D")
         ) { publicKey in
             addressesUtility.validate(
                 address: "bc1qnvhettk30ch9j0c64cldwthktmd66w9xhyytgq",
@@ -57,7 +58,7 @@ class DerivationKeyAddressesCompareTests: XCTestCase {
                 local: blockchain.derivationPath()!.rawPath,
                 reference: "m/84'/2'/0'/0/0"
             ),
-            sdkPublicKey: try! Secp256k1Key(with: Data(hex: "0361607CC77FF2AF9C985C7E3791E8209E0F274B243CF81D9932E8C6A014A0F9F0")).compress()
+            sdkPublicKey: Data(hex: "0361607CC77FF2AF9C985C7E3791E8209E0F274B243CF81D9932E8C6A014A0F9F0")
         ) { publicKey in
             addressesUtility.validate(
                 address: "ltc1qw0lem6vgtpgq2xffsqdw22dd7epzfz6e39wld9",
@@ -76,10 +77,7 @@ class DerivationKeyAddressesCompareTests: XCTestCase {
                 local: blockchain.derivationPath()!.rawPath,
                 reference: "m/44'/148'/0'"
             ),
-            sdkPublicKey: try! PublicKey(
-                data: Data(hexString: "C42FFE4F0EC064D0324E6018BE66A053C0F0BF50B01FCA3646FBC160656285C0"),
-                type: .init(blockchain)
-            )!.data
+            sdkPublicKey: Data(hexString: "C42FFE4F0EC064D0324E6018BE66A053C0F0BF50B01FCA3646FBC160656285C0")
         ) { publicKey in
             addressesUtility.validate(
                 address: "GCFW7Y6DNIP3LEYMACPWWIZB3L5UIIE2R3ZSKU3HFYZZULTO7UZKYSKI",
@@ -116,7 +114,8 @@ class DerivationKeyAddressesCompareTests: XCTestCase {
             derivation: MnemonicServiceManagerUtility.CompareDerivation(
                 local: blockchain.derivationPath()!.rawPath,
                 reference: "m/44'/60'/0'/0/0"
-            )
+            ),
+            sdkPublicKey: try! Secp256k1Key(with: Data(hex: "023A291DBF3427922A22D166C8D3333253A0E383115CF5DB36BE47EC5EA81D7D56")).decompress()
         ) { publicKey in
             addressesUtility.validate(
                 address: "0x40fb949258c65edb4F97FB4F40695ec739F8B46F",
@@ -134,7 +133,8 @@ class DerivationKeyAddressesCompareTests: XCTestCase {
             derivation: MnemonicServiceManagerUtility.CompareDerivation(
                 local: blockchain.derivationPath()!.rawPath,
                 reference: "m/44'/60'/0'/0/0"
-            )
+            ),
+            sdkPublicKey: Data(hex: "03D6FDE463A4D0F4DECC6AB11BE24E83C55A15F68FD5DB561EEBCA021976215FF5")
         ) { publicKey in
             addressesUtility.validate(
                 address: "bitcoincash:qqml0kr5t7eer7qrsnzvxa0xazzwun8v9q44km8zsn",
@@ -153,7 +153,7 @@ class DerivationKeyAddressesCompareTests: XCTestCase {
                 local: blockchain.derivationPath()!.rawPath,
                 reference: "m/44'/714'/0'/0/0"
             ),
-            sdkPublicKey: try! Secp256k1Key(with: Data(hex: "03A17B33F13B894BF46FE4BB0E060F8F6A7A79B9556B910629FE7CDF4CF91DBC04")).compress()
+            sdkPublicKey: Data(hex: "03A17B33F13B894BF46FE4BB0E060F8F6A7A79B9556B910629FE7CDF4CF91DBC04")
         ) { publicKey in
             addressesUtility.validate(
                 address: "bnb1at6qa8typl6hkvtgrh6pn2ll33ypwhnn5mut87",
