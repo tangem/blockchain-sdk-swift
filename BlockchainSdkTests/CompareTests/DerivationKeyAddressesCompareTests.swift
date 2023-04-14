@@ -226,7 +226,8 @@ class DerivationKeyAddressesCompareTests: XCTestCase {
             derivation: MnemonicServiceManagerUtility.CompareDerivation(
                 local: blockchain.derivationPath()!.rawPath,
                 reference: "m/44'/60'/0'/0/0"
-            )
+            ),
+            sdkPublicKey: try! Secp256k1Key(with: Data(hex: "023A291DBF3427922A22D166C8D3333253A0E383115CF5DB36BE47EC5EA81D7D56")).decompress()
         ) { publicKey in
             addressesUtility.validate(
                 address: "0x5984781A30B49B5E9b835278b08ACf296DF6874d",
@@ -355,7 +356,8 @@ class DerivationKeyAddressesCompareTests: XCTestCase {
             derivation: MnemonicServiceManagerUtility.CompareDerivation(
                 local: blockchain.derivationPath()!.rawPath,
                 reference: "m/44'/60'/0'/0/0"
-            )
+            ),
+            sdkPublicKey: try! Secp256k1Key(with: Data(hex: "023A291DBF3427922A22D166C8D3333253A0E383115CF5DB36BE47EC5EA81D7D56")).decompress()
         ) { publicKey in
             addressesUtility.validate(
                 address: "0x5984781A30B49B5E9b835278b08ACf296DF6874d",
