@@ -38,25 +38,25 @@ extension CosmosChain {
     // params/bond_denom field from /cosmos/staking/v1beta1/params request
     var smallestDenomination: String {
         switch self {
-        case .cosmos(let testnet):
-            assert(testnet)
-            return testnet ? "uatom" : "!!! TODO !!!"
+        case .cosmos:
+            return "uatom"
         }
     }
     
     var blockchain: Blockchain {
         switch self {
         case .cosmos(let testnet):
-            return .tron(testnet: testnet) // TODO
+            return .cosmos(testnet: testnet)
         }
     }
     
+    // Either chainId from Keplr registry
+    // or
     // node_info/network field from /node_info request
     var chainID: String {
         switch self {
         case .cosmos(let testnet):
-            assert(testnet)
-            return testnet ? "theta-testnet-001" : "!!! TODO !!!"
+            return testnet ? "theta-testnet-001" : "cosmoshub-4"
         }
     }
     
