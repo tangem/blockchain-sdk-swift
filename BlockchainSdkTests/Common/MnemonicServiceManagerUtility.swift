@@ -38,7 +38,7 @@ final class MnemonicServiceManagerUtility {
     /// Basic validation and store local keys wallet
     func validate(
         blockchain: BlockchainSdk.Blockchain,
-        _ executtion: (_ privateKey: ExtendedPrivateKey, _ publicKey: ExtendedPublicKey) -> Void
+        _ execution: (_ privateKey: ExtendedPrivateKey, _ publicKey: ExtendedPublicKey) -> Void
     ) -> Self {
         do {
             let keys = try validateAndStoreMasterKeys(
@@ -58,9 +58,9 @@ final class MnemonicServiceManagerUtility {
             
             switch blockchain.curve {
             case .secp256k1:
-                executtion(secp256k1.exPrivateKey, secp256k1.exPublicKey)
+                execution(secp256k1.exPrivateKey, secp256k1.exPublicKey)
             case .ed25519:
-                executtion(ed25519.exPrivateKey, ed25519.exPublicKey)
+                execution(ed25519.exPrivateKey, ed25519.exPublicKey)
             default:
                 XCTFail("__INVALID_ELIPTIC_CURVE__")
             }
@@ -77,16 +77,45 @@ final class MnemonicServiceManagerUtility {
     func validate(
         blockchain: BlockchainSdk.Blockchain,
         derivation: CompareDerivation?,
-        _ executtion: (_ privateKey: PrivateKey, _ publicKey: PublicKey) -> Void
+        sdkPublicKey: Data? = nil,
+        _ execution: (_ publicKey: PublicKey) -> Void
     ) -> Self {
         if let derivation = derivation {
+            // Compare validate derivation from local and reference
             XCTAssertEqual(derivation.local, derivation.reference)
             
             let privateKey = try! hdWallet.getKey(coin: .init(blockchain), derivationPath: derivation.reference)
-            try! executtion(privateKey, privateKey.getPublicKey(coinType: .init(blockchain)))
+            let publicKey = try! privateKey.getPublicKeyByType(pubkeyType: .init(blockchain))
+            
+            if let sdkPublicKey = sdkPublicKey {
+                let sdkPublicKey = try! PublicKey(data: sdkPublicKey, type: .init(blockchain))!
+                
+                // Compare validate hash public keys from TrustWallet and TangemSdk
+                
+                XCTAssertEqual(publicKey.data.hexString, sdkPublicKey.data.hexString)
+                
+                // Return keypair of derivation path
+                execution(sdkPublicKey)
+            } else {
+                // Return keypair of derivation path
+                execution(publicKey)
+            }
         } else {
             let privateKey = try! hdWallet.getKeyForCoin(coin: .init(blockchain))
-            try! executtion(privateKey, privateKey.getPublicKey(coinType: .init(blockchain)))
+            let publicKey = try! privateKey.getPublicKey(coinType: .init(blockchain))
+            
+            if let sdkPublicKey = sdkPublicKey {
+                let sdkPublicKey = try! PublicKey(data: sdkPublicKey, type: .init(blockchain))!
+                
+                // Compare validate hash public keys from TrustWallet and TangemSdk
+                XCTAssertEqual(publicKey.data.hexString, sdkPublicKey.data.hexString)
+                
+                // Return keypair of derivation path
+                execution(sdkPublicKey)
+            } else {
+                // Return keypair of derivation path
+                execution(publicKey)
+            }
         }
         
         return self

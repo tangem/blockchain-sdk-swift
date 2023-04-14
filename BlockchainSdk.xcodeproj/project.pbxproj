@@ -1349,12 +1349,12 @@
 		B00DEACC28FEE6070077CD19 /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				2D75FAE229E567DA00D9CDEE /* MnemonicServiceManagerUtility.swift */,
-				5D14E47C2397B80F00C15FC8 /* BlockchainSdkTests.swift */,
+				2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */,
 				5DE57D99277CAD6100CCA18A /* AddressTests.swift */,
+				5D14E47C2397B80F00C15FC8 /* BlockchainSdkTests.swift */,
+				2D75FAE229E567DA00D9CDEE /* MnemonicServiceManagerUtility.swift */,
 				B00DEAD028FFDE0E0077CD19 /* TransactionSizeTesterUtility.swift */,
 				2DC5796029C9CBB1004312AE /* TrustCoreSignerTesterUtility.swift */,
-				2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
