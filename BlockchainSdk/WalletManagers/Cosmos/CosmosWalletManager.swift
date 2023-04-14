@@ -19,8 +19,6 @@ class CosmosWalletManager: BaseManager, WalletManager {
     
     private let cosmosChain: CosmosChain
     
-    private var lastFetchedGas: UInt64?
-    
     init(cosmosChain: CosmosChain, wallet: Wallet) {
         self.cosmosChain = cosmosChain
         
@@ -44,7 +42,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        guard let lastFetchedGas else {
+        guard let parameters = transaction.fee.parameters as? CosmosFeeParameters else {
             return .anyFail(error: WalletError.failedToBuildTx)
         }
                 
@@ -59,7 +57,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     source: self.wallet.address,
                     destination: transaction.destinationAddress,
                     feeAmount: transaction.fee.amount.value,
-                    gas: lastFetchedGas
+                    gas: parameters.gas
                 )
                 
                 let signer = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey, blockchain: self.cosmosChain.blockchain)
@@ -90,7 +88,6 @@ class CosmosWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        lastFetchedGas = nil
         
         // Estimate gas by simulating a transaction without the 'fee'
         // Get the gas
@@ -104,15 +101,14 @@ class CosmosWalletManager: BaseManager, WalletManager {
             .tryMap { [weak self] gas in
                 guard let self = self else { throw WalletError.empty }
                 
-                self.lastFetchedGas = gas
-                
                 let blockchain = self.cosmosChain.blockchain
                 
                 return Array(repeating: gas, count: self.cosmosChain.gasPrices.count)
                     .enumerated()
                     .map { index, gas in
                         let value = Decimal(Double(gas) * self.cosmosChain.gasPrices[index]) / blockchain.decimalValue
-                        return Fee(Amount(with: blockchain, value: value))
+                        let parameters = CosmosFeeParameters(gas: gas)
+                        return Fee(Amount(with: blockchain, value: value), parameters: parameters)
                     }
             }
             .eraseToAnyPublisher()
