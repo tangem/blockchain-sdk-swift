@@ -700,4 +700,32 @@ class AddressesTests: XCTestCase {
         XCTAssertTrue(addressService.validate(compAddress))
         XCTAssertTrue(addressService.validate(decompAddress))
      }
+    
+    func testCosmosAddress() throws {
+        let addressService = Blockchain.cosmos(testnet: false).getAddressService()
+        
+        let tangemAddress = try addressService.makeAddress(from: secpCompressedKey)
+        XCTAssertEqual(tangemAddress, "cosmos1c2zwqqucrqvvtyxfn78ajm8w2sgyjf5emztyek")
+        
+        let validAddresses = [
+            "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02",
+            "cosmospub1addwnpepqftjsmkr7d7nx4tmhw4qqze8w39vjq364xt8etn45xqarlu3l2wu2n7pgrq",
+            "cosmosvaloper1sxx9mszve0gaedz5ld7qdkjkfv8z992ax69k08",
+            "cosmosvalconspub1zcjduepqjnnwe2jsywv0kfc97pz04zkm7tc9k2437cde2my3y5js9t7cw9mstfg3sa",
+        ]
+        
+        for validAddress in validAddresses {
+            XCTAssertTrue(addressService.validate(validAddress))
+        }
+        
+        let invalidAddresses = [
+            "cosmoz1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02",
+            "osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5",
+            "cosmosvaloper1sxx9mszve0gaedz5ld7qdkjkfv8z992ax69k03",
+            "cosmosvalconspub1zcjduepqjnnwe2jsywv0kfc97pz04zkm7tc9k2437cde2my3y5js9t7cw9mstfg3sb",
+        ]
+        for invalidAddress in invalidAddresses {
+            XCTAssertFalse(addressService.validate(invalidAddress))
+        }
+    }
 }
