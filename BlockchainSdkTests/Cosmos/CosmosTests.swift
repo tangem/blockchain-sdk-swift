@@ -7,10 +7,75 @@
 //
 
 import XCTest
+//import TangemSdk
+//import class WalletCore.PrivateKey
+import WalletCore
 
 @testable import BlockchainSdk
 
 class CosmosTests: XCTestCase {
+    func testTransaction() throws {
+        let cosmosChain = CosmosChain.cosmos(testnet: false)
+        
+        let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"))!
+        let publicKeyData = privateKey.getPublicKeySecp256k1(compressed: true).data
+        
+        let addresses = try cosmosChain.blockchain.getAddressService().makeAddresses(from: publicKeyData)
+        print(addresses)
+
+        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivedKey: nil, derivationPath: nil)
+        let wallet = Wallet(blockchain: cosmosChain.blockchain, addresses: addresses, publicKey: publicKey)
+        let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)
+        
+        
+//        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
+//        let fromAddress = AnyAddress(publicKey: publicKey, coin: .cosmos)
+
+        let sendCoinsMessage = CosmosMessage.Send.with {
+            $0.fromAddress = addresses.first!.value
+            $0.toAddress = "cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"
+            $0.amounts = [CosmosAmount.with {
+                $0.amount = "1"
+                $0.denom = "muon"
+            }]
+        }
+
+        let message = CosmosMessage.with {
+            $0.sendCoinsMessage = sendCoinsMessage
+        }
+
+        let fee = CosmosFee.with {
+            $0.gas = 200000
+            $0.amounts = [CosmosAmount.with {
+                $0.amount = "200"
+                $0.denom = "muon"
+            }]
+        }
+
+        var input = CosmosSigningInput.with {
+            $0.signingMode = .protobuf;
+            $0.accountNumber = 1037
+            $0.chainID = "gaia-13003"
+            $0.memo = ""
+            $0.sequence = 8
+            $0.messages = [message]
+            $0.fee = fee
+            $0.privateKey = privateKey.data
+        }
+        let z = try! txBuilder.buildForSign(
+            amount: Amount(with: cosmosChain.blockchain, value: 0.000001),
+            source: wallet.address,
+            destination: "cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573",
+            feeAmount: 0.000200,
+            gas: 200_000
+        )
+        
+        let signer = PrivateKeySigner(privateKey: privateKey, coin: cosmosChain.coin)
+        let outputp = txBuilder.buildForSend(input: input, signer: signer)
+        print(outputp)
+        
+    }
+    
     func testDecodingNetworkModels() {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
