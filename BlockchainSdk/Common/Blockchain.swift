@@ -630,6 +630,7 @@ extension Blockchain {
             let networkParams: INetwork = isTestnet ? RavencoinTestNetworkParams() : RavencoinMainNetworkParams()
             return BitcoinLegacyAddressService(networkParams: networkParams)
         case .cosmos:
+            // TODO: refactor use use this code for all TrustWallet blockchains
             let coin = try! CoinType(self)
             return TrustWalletAddressService(coin: coin, publicKeyType: coin.publicKeyType)
         }

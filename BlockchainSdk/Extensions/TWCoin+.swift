@@ -52,7 +52,9 @@ extension CoinType {
             self = .ravencoin
         case .cosmos:
             self = .cosmos
-        case .ethereumPoW, .ethereumFair, .rsk, .ducatus, .dogecoin, .avalanche, .fantom, .arbitrum, .dash, .gnosis, .optimism, .saltPay, .kava, .kaspa:
+        default:
+            // TODO: refactor to force the developer to handle the necessary
+            // case .ethereumPoW, .ethereumFair, .rsk, .ducatus, .dogecoin, .avalanche, .fantom, .arbitrum, .dash, .gnosis, .optimism, .saltPay, .kava, .kaspa:
             throw NSError()
         }
     }
