@@ -38,7 +38,7 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
 
                 let hasUnconfirmed = wallet.unconfirmedTxApperances != 0
                 if hasUnconfirmed {
-                    return self.getTransactions(address: address)
+                    return self.getTransactions(request: .init(address: address))
                         .map { transactions -> BitcoinResponse  in
                             self.mapToBitcoinResponse(wallet: wallet,
                                                       outputs: outputs,
@@ -180,11 +180,11 @@ private extension RavencoinNetworkProvider {
             .eraseError()
     }
     
-    func getTransactions(address: String) -> AnyPublisher<[RavencoinTransactionInfo], Error> {
+    func getTransactions(request: RavencoinTransactionHistory.Request) -> AnyPublisher<[RavencoinTransactionInfo], Error> {
         provider
-            .requestPublisher(.init(host: host, target: .transactions(address: address)))
+            .requestPublisher(.init(host: host, target: .transactions(request: request)))
             .filterSuccessfulStatusAndRedirectCodes()
-            .map(RavencoinBaseTransactionInfo.self)
+            .map(RavencoinTransactionHistory.Response.self)
             .map { $0.txs }
             .eraseToAnyPublisher()
             .eraseError()

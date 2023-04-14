@@ -8,11 +8,6 @@
 
 import Foundation
 
-struct RavencoinBaseTransactionInfo: Decodable {
-    let pagesTotal: Int
-    let txs: [RavencoinTransactionInfo]
-}
-
 struct RavencoinTransactionInfo: Decodable {
     let txid: String
     let vin: [Vin]
