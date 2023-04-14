@@ -18,7 +18,7 @@ enum CosmosChain {
 // https://github.com/chainapsis/keplr-chain-registry/blob/main/cosmos/cosmoshub.json
 extension CosmosChain {
     // https://cosmos.directory/cosmoshub
-    var urls: [String] {
+    func urls(for config: BlockchainSdkConfig) -> [String] {
         switch self {
         case .cosmos(let testnet):
             if testnet {
@@ -27,7 +27,17 @@ extension CosmosChain {
                 ]
             } else {
                 return [
+                    "https://atom.nownodes.io/\(config.nowNodesApiKey)",
+                    "https://atom.getblock.io/\(config.getBlockApiKey)",
+                    
                     "https://cosmos-mainnet-rpc.allthatnode.com:1317",
+                    
+                    // This is a REST proxy combining the servers below (and others)
+                    "https://rest.cosmos.directory/cosmoshub",
+                    
+                    "https://cosmoshub-api.lavenderfive.com",
+                    "https://rest-cosmoshub.ecostake.com",
+                    "https://lcd.cosmos.dragonstake.io",
                 ]
             }
         }

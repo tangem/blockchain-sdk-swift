@@ -18,7 +18,7 @@ struct CosmosWalletAssembly: WalletManagerAssembly {
             throw WalletError.empty
         }
         
-        let urls = cosmosChain.urls
+        let urls = cosmosChain.urls(for: input.blockchainConfig)
         let providers = urls.map {
             CosmosRestProvider(url: $0, configuration: input.networkConfig)
         }
