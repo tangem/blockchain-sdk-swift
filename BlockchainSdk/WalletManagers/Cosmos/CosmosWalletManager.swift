@@ -153,7 +153,9 @@ class CosmosWalletManager: BaseManager, WalletManager {
     
     private func updateWallet(accountInfo: CosmosAccountInfo) {
         wallet.add(amount: accountInfo.amount)
-        txBuilder.setAccountNumber(accountInfo.accountNumber)
+        if let accountNumber = accountInfo.accountNumber {
+            txBuilder.setAccountNumber(accountNumber)
+        }
         txBuilder.setSequenceNumber(accountInfo.sequenceNumber)
         
         // Transactions are confirmed instantaneuously
