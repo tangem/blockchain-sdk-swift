@@ -321,9 +321,9 @@ extension Blockchain {
                 ]
             } else {
                 return [
+                    URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
                     URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")!,
                     URL(string: "https://eth.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
-                    URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
                 ]
             }
         case .ethereumClassic:
