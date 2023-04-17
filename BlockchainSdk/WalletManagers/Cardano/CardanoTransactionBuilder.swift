@@ -106,7 +106,12 @@ class CardanoTransactionBuilder {
         transactionMap[CBOR.unsignedInt(0)] = CBOR.array(inputsArray)
         transactionMap[CBOR.unsignedInt(1)] = CBOR.array(outputsArray)
         transactionMap[2] = CBOR.unsignedInt(feesLong)
-        transactionMap[3] = CBOR.unsignedInt(90000000)
+        
+        // Transaction validity time. Currently we are using absolute values.
+        // At 16 April 2023 was 90007700 slot number.
+        // We need to rework this logic to use relative validity time. TODO: https://tangem.atlassian.net/browse/IOS-3471
+        // This can be constructed using absolute ttl slot from `/metadata` endpoint.
+        transactionMap[3] = CBOR.unsignedInt(190000000)
         
         return transactionMap
     }
