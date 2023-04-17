@@ -47,7 +47,7 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
                         .eraseToAnyPublisher()
                 }
                 
-                let response = mapToBitcoinResponse(wallet: wallet, outputs: outputs, transactions: [])
+                let response = self.mapToBitcoinResponse(wallet: wallet, outputs: outputs, transactions: [])
                 return .justWithError(output: response)
             }
             .eraseToAnyPublisher()
