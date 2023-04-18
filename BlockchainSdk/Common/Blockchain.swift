@@ -359,9 +359,9 @@ extension Blockchain {
             ]
         case .rsk:
             return [
+                URL(string: "https://public-node.rsk.co/")!,
                 URL(string: "https://rsk.nownodes.io/\(nowNodesApiKey)")!,
                 URL(string: "https://rsk.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
-                URL(string: "https://public-node.rsk.co/")!,
             ]
         case .bsc:
             if isTestnet {
