@@ -85,7 +85,7 @@ final class TONWalletManager: BaseManager, WalletManager {
         let output: TheOpenNetworkSigningOutput
         
         if let signer = signer {
-            let coreSigner = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey, blockchain: wallet.blockchain)
+            let coreSigner = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey, curve: wallet.blockchain.curve)
             
             if let error = coreSigner.error {
                 throw error

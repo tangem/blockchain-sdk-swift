@@ -61,7 +61,12 @@ extension CosmosTxResponse {
 // MARK: - Local models
 
 struct CosmosAccountInfo {
-    let accountNumber: UInt64
+    let accountNumber: UInt64?
     let sequenceNumber: UInt64
     let amount: Amount
+}
+
+struct CosmosError: Error, Decodable {
+    let code: Int
+    let message: String
 }
