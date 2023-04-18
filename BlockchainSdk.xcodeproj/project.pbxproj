@@ -206,6 +206,10 @@
 		DA18C4A9297AC63600EC4C05 /* NowNodesBlockBookConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA18C4A8297AC63600EC4C05 /* NowNodesBlockBookConfig.swift */; };
 		DA198B5629E3F6D300DB6EEA /* CosmosModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA198B5529E3F6D300DB6EEA /* CosmosModels.swift */; };
 		DA198B5929E3F6E400DB6EEA /* CosmosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA198B5829E3F6E400DB6EEA /* CosmosTests.swift */; };
+		DA198B5B29E3FF4F00DB6EEA /* CosmosTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA198B5A29E3FF4F00DB6EEA /* CosmosTarget.swift */; };
+		DA198B6129E4090C00DB6EEA /* CosmosRestProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA198B6029E4090C00DB6EEA /* CosmosRestProvider.swift */; };
+		DA198B6329E41AD800DB6EEA /* CosmosNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA198B6229E41AD800DB6EEA /* CosmosNetworkService.swift */; };
+		DA198B6529E44D2600DB6EEA /* CosmosChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA198B6429E44D2600DB6EEA /* CosmosChain.swift */; };
 		DA19F5E129DFE32600FD57A3 /* StellarNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA19F5E029DFE32600FD57A3 /* StellarNetworkProvider.swift */; };
 		DA2E770029769BF6001FF957 /* TransactionCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */; };
 		DA30812B2817BF3C00DE41F1 /* Tron.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA30812A2817BF3C00DE41F1 /* Tron.pb.swift */; };
@@ -236,6 +240,8 @@
 		DA656FC62952091A0092CC61 /* BlockBookConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA656FC52952091A0092CC61 /* BlockBookConfig.swift */; };
 		DA656FCA295454C10092CC61 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA656FC9295454C10092CC61 /* Constants.swift */; };
 		DA656FCC2954B5220092CC61 /* EthereumTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA656FCB2954B5220092CC61 /* EthereumTarget.swift */; };
+		DA67A69629E51FEA001B6799 /* CosmosWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA67A69529E51FEA001B6799 /* CosmosWalletManager.swift */; };
+		DA67A69829E523C6001B6799 /* CosmosTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA67A69729E523C6001B6799 /* CosmosTransactionBuilder.swift */; };
 		DA71441E2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */; };
 		DA82433D27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433C27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift */; };
 		DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */; };
@@ -259,6 +265,7 @@
 		DAED921F27A150E500F188D7 /* PolkadotAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */; };
 		DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */; };
 		DAF0867027A9438C0024312E /* PolkadotNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */; };
+		DAF3AD4629E916D300E057FA /* CosmosFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF3AD4529E916D300E057FA /* CosmosFeeParameters.swift */; };
 		DC4E442B29BF4B4C0088617C /* XRPBase58.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC4E442A29BF4B4C0088617C /* XRPBase58.swift */; };
 		DC63F266293F243200F953EF /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC63F265293F243200F953EF /* Credentials.swift */; };
 		DC912D1628E706C400D76628 /* ContractInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC912D1528E706C400D76628 /* ContractInteractor.swift */; };
@@ -561,6 +568,10 @@
 		DA18C4A8297AC63600EC4C05 /* NowNodesBlockBookConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowNodesBlockBookConfig.swift; sourceTree = "<group>"; };
 		DA198B5529E3F6D300DB6EEA /* CosmosModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosModels.swift; sourceTree = "<group>"; };
 		DA198B5829E3F6E400DB6EEA /* CosmosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosTests.swift; sourceTree = "<group>"; };
+		DA198B5A29E3FF4F00DB6EEA /* CosmosTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosTarget.swift; sourceTree = "<group>"; };
+		DA198B6029E4090C00DB6EEA /* CosmosRestProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosRestProvider.swift; sourceTree = "<group>"; };
+		DA198B6229E41AD800DB6EEA /* CosmosNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosNetworkService.swift; sourceTree = "<group>"; };
+		DA198B6429E44D2600DB6EEA /* CosmosChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosChain.swift; sourceTree = "<group>"; };
 		DA19F5E029DFE32600FD57A3 /* StellarNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarNetworkProvider.swift; sourceTree = "<group>"; };
 		DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionCreator.swift; sourceTree = "<group>"; };
 		DA3081282817BF1D00DE41F1 /* Tron.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = Tron.proto; sourceTree = "<group>"; };
@@ -593,6 +604,8 @@
 		DA656FC52952091A0092CC61 /* BlockBookConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookConfig.swift; sourceTree = "<group>"; };
 		DA656FC9295454C10092CC61 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		DA656FCB2954B5220092CC61 /* EthereumTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTarget.swift; sourceTree = "<group>"; };
+		DA67A69529E51FEA001B6799 /* CosmosWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosWalletManager.swift; sourceTree = "<group>"; };
+		DA67A69729E523C6001B6799 /* CosmosTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosTransactionBuilder.swift; sourceTree = "<group>"; };
 		DA71441D2795C2EA0052AFB4 /* SolanaNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaNetworkService.swift; sourceTree = "<group>"; };
 		DA7CA47527AD4BD90041B1A1 /* PolkadotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotTests.swift; sourceTree = "<group>"; };
 		DA82433C27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotJsonRpcProvider.swift; sourceTree = "<group>"; };
@@ -618,6 +631,7 @@
 		DAED921E27A150E500F188D7 /* PolkadotAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotAddressService.swift; sourceTree = "<group>"; };
 		DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotWalletManager.swift; sourceTree = "<group>"; };
 		DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetworkService.swift; sourceTree = "<group>"; };
+		DAF3AD4529E916D300E057FA /* CosmosFeeParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosFeeParameters.swift; sourceTree = "<group>"; };
 		DC4E442A29BF4B4C0088617C /* XRPBase58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPBase58.swift; sourceTree = "<group>"; };
 		DC63F265293F243200F953EF /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		DC912D1528E706C400D76628 /* ContractInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractInteractor.swift; sourceTree = "<group>"; };
@@ -1431,7 +1445,14 @@
 		DA198B5429E3F6C400DB6EEA /* Cosmos */ = {
 			isa = PBXGroup;
 			children = (
+				DA67A69529E51FEA001B6799 /* CosmosWalletManager.swift */,
+				DAF3AD4529E916D300E057FA /* CosmosFeeParameters.swift */,
+				DA67A69729E523C6001B6799 /* CosmosTransactionBuilder.swift */,
+				DA198B6229E41AD800DB6EEA /* CosmosNetworkService.swift */,
+				DA198B6029E4090C00DB6EEA /* CosmosRestProvider.swift */,
+				DA198B5A29E3FF4F00DB6EEA /* CosmosTarget.swift */,
 				DA198B5529E3F6D300DB6EEA /* CosmosModels.swift */,
+				DA198B6429E44D2600DB6EEA /* CosmosChain.swift */,
 			);
 			path = Cosmos;
 			sourceTree = "<group>";
@@ -2021,9 +2042,11 @@
 				DC4E442B29BF4B4C0088617C /* XRPBase58.swift in Sources */,
 				5D7D2443251362AB001B9A4F /* BitcoinfeesTarget.swift in Sources */,
 				B0BAEE9825FF1E0400F318A6 /* RosettaBody.swift in Sources */,
+				DA198B6129E4090C00DB6EEA /* CosmosRestProvider.swift in Sources */,
 				2D3829C929D34A93001D4785 /* TWCoin+.swift in Sources */,
 				5D26CEEE243CB95000994CC0 /* BlockcypherTarget.swift in Sources */,
 				DA63B09A29CB3FC700AC6E49 /* KaspaNetworkModels.swift in Sources */,
+				DA198B6329E41AD800DB6EEA /* CosmosNetworkService.swift in Sources */,
 				DA656FCC2954B5220092CC61 /* EthereumTarget.swift in Sources */,
 				5D7D243425136254001B9A4F /* XRPAccountInfo.swift in Sources */,
 				EF0DA78C285246A90081092A /* DashMainNetworkParams.swift in Sources */,
@@ -2039,6 +2062,7 @@
 				2D9A919F29BB8C1700476EA6 /* TONNetworkService.swift in Sources */,
 				2DDE5BAA29C4F8D200A5B708 /* SolanaWalletAssembly.swift in Sources */,
 				2D29A7F729D5C2AE00359A0C /* TWPublicKeyType+.swift in Sources */,
+				DA67A69629E51FEA001B6799 /* CosmosWalletManager.swift in Sources */,
 				DAB87CB1297ADCDC00FF30EB /* GetBlockBlockBookConfig.swift in Sources */,
 				EF0DA78D285246A90081092A /* DashWalletManager.swift in Sources */,
 				5D7D243625136254001B9A4F /* XRPAccount.swift in Sources */,
@@ -2112,6 +2136,7 @@
 				DC912D1628E706C400D76628 /* ContractInteractor.swift in Sources */,
 				B0BAEE9C25FF1E4200F318A6 /* RosettaData.swift in Sources */,
 				2DDE5BA129C4F8D200A5B708 /* DucatusWalletAssembly.swift in Sources */,
+				DA198B6529E44D2600DB6EEA /* CosmosChain.swift in Sources */,
 				5D8653FA23A8C481000DE52D /* StellarNetworkService.swift in Sources */,
 				DC63F266293F243200F953EF /* Credentials.swift in Sources */,
 				5D7D242F25136254001B9A4F /* XRPTransaction.swift in Sources */,
@@ -2190,6 +2215,8 @@
 				5DD831BC244DF5BD00F80CEA /* AddressService.swift in Sources */,
 				DA63B09F29CB3FC700AC6E49 /* KaspaAddressService.swift in Sources */,
 				DA656FCA295454C10092CC61 /* Constants.swift in Sources */,
+				DAF3AD4629E916D300E057FA /* CosmosFeeParameters.swift in Sources */,
+				DA198B5B29E3FF4F00DB6EEA /* CosmosTarget.swift in Sources */,
 				5D304399239A8C9C0066B8D9 /* BitcoinAddressService.swift in Sources */,
 				EF31EA1629DC31E000A59FBE /* RavencoinWalletManager.swift in Sources */,
 				5D557CB723ACCB48009B32AF /* BlockchainInfoNetworkProvider.swift in Sources */,
@@ -2208,6 +2235,7 @@
 				B004DAC026416B8A000863A4 /* EthereumResponse.swift in Sources */,
 				B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */,
 				DAE30DFF279164500056C5A3 /* SolanaWalletManager.swift in Sources */,
+				DA67A69829E523C6001B6799 /* CosmosTransactionBuilder.swift in Sources */,
 				EF2BC62729DAD65F003D3F18 /* RavencoinTransactionInfo.swift in Sources */,
 				DA570CEF27A802BE007F34EB /* SolanaError+.swift in Sources */,
 				5D4B33D323F7DF1F00C93A84 /* BinanceNetworkService.swift in Sources */,
