@@ -17,30 +17,56 @@ enum CosmosChain {
 // Keplr registry contains lots of goodies, for example:
 // https://github.com/chainapsis/keplr-chain-registry/blob/main/cosmos/cosmoshub.json
 extension CosmosChain {
+    // https://cosmos.directory/cosmoshub
+    func urls(for config: BlockchainSdkConfig) -> [String] {
+        switch self {
+        case .cosmos(let testnet):
+            if testnet {
+                return [
+                    "https://rest.seed-01.theta-testnet.polypore.xyz",
+                ]
+            } else {
+                return [
+                    "https://atom.nownodes.io/\(config.nowNodesApiKey)",
+                    "https://atom.getblock.io/\(config.getBlockApiKey)",
+                    
+                    "https://cosmos-mainnet-rpc.allthatnode.com:1317",
+                    
+                    // This is a REST proxy combining the servers below (and others)
+                    "https://rest.cosmos.directory/cosmoshub",
+                    
+                    "https://cosmoshub-api.lavenderfive.com",
+                    "https://rest-cosmoshub.ecostake.com",
+                    "https://lcd.cosmos.dragonstake.io",
+                ]
+            }
+        }
+    }
+    
     // Either feeCurrencies/coinMinimalDenom from Keplr registry
     // or
     // params/bond_denom field from /cosmos/staking/v1beta1/params request
     var smallestDenomination: String {
         switch self {
-        case .cosmos(let testnet):
-            assert(testnet)
-            return testnet ? "uatom" : "!!! TODO !!!"
+        case .cosmos:
+            return "uatom"
         }
     }
     
     var blockchain: Blockchain {
         switch self {
         case .cosmos(let testnet):
-            return .tron(testnet: testnet) // TODO
+            return .cosmos(testnet: testnet)
         }
     }
     
+    // Either chainId from Keplr registry
+    // or
     // node_info/network field from /node_info request
     var chainID: String {
         switch self {
         case .cosmos(let testnet):
-            assert(testnet)
-            return testnet ? "theta-testnet-001" : "!!! TODO !!!"
+            return testnet ? "theta-testnet-001" : "cosmoshub-4"
         }
     }
     

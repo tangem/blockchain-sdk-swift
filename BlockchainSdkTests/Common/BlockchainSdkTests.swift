@@ -183,8 +183,11 @@ class BlockchainSdkTests: XCTestCase {
         case .kava: break
         case .kaspa: break
         case .ravencoin: break
+        case .cosmos: break
+            // READ BELOW:
+            //
+            // Did you get a compilation error here? If so, add your new blockchain to the array below
         }
-        // Did you get a compilation error here? If so, add your new blockchain to the array below
         
         let blockchains: [Blockchain] = [
             .ethereum(testnet: false),
@@ -219,6 +222,7 @@ class BlockchainSdkTests: XCTestCase {
             .kava(testnet: false),
             .kaspa,
             .ravencoin(testnet: false),
+            .cosmos(testnet: false),
         ]
         
         let encoder = JSONEncoder()
