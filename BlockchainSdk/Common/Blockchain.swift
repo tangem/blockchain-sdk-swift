@@ -420,7 +420,6 @@ extension Blockchain {
                 return [
                     URL(string: "https://rpc.ftm.tools/")!,
                     URL(string: "https://rpcapi.fantom.network/")!,
-                    URL(string: "https://ftmrpc.ultimatenodes.io/")!,
                     URL(string: "https://fantom-mainnet.public.blastapi.io")!,
                     URL(string: "https://fantom-rpc.gateway.pokt.network")!,
                     URL(string: "https://ftm.nownodes.io/\(nowNodesApiKey)")!,
@@ -454,7 +453,6 @@ extension Blockchain {
                 URL(string: "https://gnosischain-rpc.gateway.pokt.network")!,
                 URL(string: "https://gnosis-mainnet.public.blastapi.io")!,
                 URL(string: "https://xdai-rpc.gateway.pokt.network")!,
-                URL(string: "https://xdai-archive.blockscout.com")!,
                 URL(string: "https://rpc.ankr.com/gnosis")!,
             ]
         case .optimism(let testnet):
