@@ -401,9 +401,9 @@ extension Blockchain {
                 ]
             } else {
                 return [
+                    URL(string: "https://api.avax.network/ext/bc/C/rpc")!,
                     URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)/ext/bc/C/rpc")!,
                     URL(string: "https://avax.getblock.io/mainnet/ext/bc/C/rpc?api_key=\(getBlockApiKey)")!,
-                    URL(string: "https://api.avax.network/ext/bc/C/rpc")!,
                 ]
             }
         case .fantom:
