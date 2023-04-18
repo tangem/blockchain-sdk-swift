@@ -766,6 +766,9 @@ extension Blockchain: Codable {
         case "ravencoin": self = .ravencoin(testnet: isTestnet)
         case "cosmos-hub": self = .cosmos(testnet: isTestnet)
         default:
+            // TODO: Remove this assert
+            // TODO:    A new blockchain can be added during a development and then you
+            // TODO:    roll back to an earlier version that doesn't support it -- not convenient
             assertionFailure("Blockchain for \(key) isn't supported")
             throw BlockchainSdkError.decodingFailed
         }
