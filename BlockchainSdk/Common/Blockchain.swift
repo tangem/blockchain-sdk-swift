@@ -375,6 +375,7 @@ extension Blockchain {
                     URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!,
                 ]
             } else {
+                // https://docs.fantom.foundation/api/public-api-endpoints
                 return [
                     URL(string: "https://bsc-dataseed.binance.org/")!,
                     URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")!,
