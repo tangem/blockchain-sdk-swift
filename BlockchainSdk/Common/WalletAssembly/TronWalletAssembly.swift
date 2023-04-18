@@ -17,10 +17,10 @@ struct TronWalletAssembly: WalletManagerAssembly {
             
             if !input.blockchain.isTestnet {
                 networks = [
-                    .nowNodes(apiKey: input.blockchainConfig.nowNodesApiKey),
-                    .getBlock(apiKey: input.blockchainConfig.getBlockApiKey),
                     .tronGrid(apiKey: nil),
                     .tronGrid(apiKey: input.blockchainConfig.tronGridApiKey),
+                    .nowNodes(apiKey: input.blockchainConfig.nowNodesApiKey),
+                    .getBlock(apiKey: input.blockchainConfig.getBlockApiKey),
                 ]
             } else {
                 networks = [
