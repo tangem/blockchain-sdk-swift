@@ -27,17 +27,19 @@ class CosmosNetworkService: MultiNetworkProvider {
                 .tryMap { [weak self] (accountInfo, balanceInfo) in
                     guard
                         let self,
-                        let accountNumber = UInt64(accountInfo.account.accountNumber),
-                        let sequenceNumber = UInt64(accountInfo.account.sequence),
-                        let balanceInfo = balanceInfo.balances.first(where: { $0.denom == self.cosmosChain.smallestDenomination } ),
-                        let balanceInSmallestDenomination = Int(balanceInfo.amount)
+                        let sequenceNumber = UInt64(accountInfo?.account.sequence ?? "0")
                     else {
-                        throw WalletError.failedToGetFee
+                        throw WalletError.failedToParseNetworkResponse
                     }
                     
-                    let blockchain = self.cosmosChain.blockchain
-                    let amount = Amount(with: blockchain, value: Decimal(balanceInSmallestDenomination) / blockchain.decimalValue)
+                    let accountNumber: UInt64?
+                    if let account = accountInfo?.account {
+                        accountNumber = UInt64(account.accountNumber)
+                    } else {
+                        accountNumber = nil
+                    }
                     
+                    let amount = try self.parseBalance(balanceInfo)
                     return CosmosAccountInfo(accountNumber: accountNumber, sequenceNumber: sequenceNumber, amount: amount)
                 }
                 .eraseToAnyPublisher()
@@ -65,5 +67,18 @@ class CosmosNetworkService: MultiNetworkProvider {
                 .map(\.txResponse.txhash)
                 .eraseToAnyPublisher()
         }
+    }
+    
+    private func parseBalance(_ balanceInfo: CosmosBalanceResponse) throws -> Amount {
+        guard let balanceAmountString = balanceInfo.balances.first(where: { $0.denom == cosmosChain.smallestDenomination } )?.amount else {
+            return .zeroCoin(for: cosmosChain.blockchain)
+        }
+
+        guard let balanceInSmallestDenomination = Int(balanceAmountString) else {
+            throw WalletError.failedToParseNetworkResponse
+        }
+        
+        let blockchain = cosmosChain.blockchain
+        return Amount(with: blockchain, value: Decimal(balanceInSmallestDenomination) / cosmosChain.blockchain.decimalValue)
     }
 }

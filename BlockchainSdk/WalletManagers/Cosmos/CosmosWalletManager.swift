@@ -63,7 +63,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     params: params
                 )
                 
-                let signer = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey, blockchain: self.cosmosChain.blockchain)
+                let signer = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey, curve: self.cosmosChain.blockchain.curve)
                 let output: CosmosSigningOutput = AnySigner.signExternally(input: input, coin: self.cosmosChain.coin, signer: signer)
                 
                 guard let outputData = output.serialized.data(using: .utf8) else {
@@ -157,7 +157,9 @@ class CosmosWalletManager: BaseManager, WalletManager {
     
     private func updateWallet(accountInfo: CosmosAccountInfo) {
         wallet.add(amount: accountInfo.amount)
-        txBuilder.setAccountNumber(accountInfo.accountNumber)
+        if let accountNumber = accountInfo.accountNumber {
+            txBuilder.setAccountNumber(accountNumber)
+        }
         txBuilder.setSequenceNumber(accountInfo.sequenceNumber)
         
         // Transactions are confirmed instantaneuously
