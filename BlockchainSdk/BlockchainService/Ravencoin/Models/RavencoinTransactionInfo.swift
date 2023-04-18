@@ -8,45 +8,56 @@
 
 import Foundation
 
-struct RavencoinTransactionInfo: Decodable {
-    let txid: String
-    let vin: [Vin]
-    let vout: [Vout]
+struct RavencoinBaseTransactionInfo: Decodable {
+    let txs: [RavencoinTransactionInfo]
+}
+
+struct RavencoinTransactionInfo: Codable {
+    let txid: String?
+    let version: Int?
+    let locktime: Int?
+    let vin: [Vin]?
+    let vout: [Vout]?
     let blockhash: String?
-    let blockheight: Int
-    let confirmations: Int
-    let time: Int
-    let valueIn: Decimal
-    let valueOut: Decimal
-    let fees: Decimal
+    let blockheight: Int?
+    let confirmations: Int?
+    let time: Int?
+    let blocktime: Int?
+    let valueIn: Double?
+    let valueOut: Double?
+    let isCoinBase: Bool?
+    let size: Int?
+    let fees: Double?
 }
 
 extension RavencoinTransactionInfo {
-    struct Vin : Decodable {
-        let txid: String
-        let vout: Int
-        let scriptSig: ScriptPubKey?
-        let addr: String
-        let valueSat: UInt
-        let value: Decimal
-        
-        struct ScriptPubKey: Decodable {
-            let hex: String?
-            let asm: String?
-        }
+    struct ScriptPubKey: Codable {
+        let hex: String?
+        let asm: String?
+        let addresses: [String]?
+        let type: String?
     }
     
-    struct Vout : Decodable {
-        let value: String
+    struct Vin : Codable {
+        let txid: String?
+        let vout: Int?
+        let sequence: Int?
         let n: Int?
-        let scriptPubKey: ScriptPubKey
+        let scriptSig: ScriptPubKey?
+        let addr: String?
+        let valueSat: Int?
+        let value: Double?
+        let doubleSpentTxID: String?
+        let coinbase: String?
+    }
+    
+    struct Vout : Codable {
+        let value: String?
+        let n: Int?
+        let scriptPubKey: ScriptPubKey?
         let spentTxId: String?
-        
-        struct ScriptPubKey: Decodable {
-            let hex: String?
-            let asm: String?
-            let addresses: [String]
-            let type: String?
-        }
+        let spentIndex: Int?
+        let spentHeight: Int?
     }
 }
+

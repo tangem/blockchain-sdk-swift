@@ -17,11 +17,12 @@ struct RavencoinTarget {
 extension RavencoinTarget: TargetType {
     enum Target {
         case wallet(address: String)
+        case transactions(address: String)
         case utxo(address: String)
         case fees(request: RavencoinFee.Request)
-        case transactions(request: RavencoinTransactionHistory.Request)
-        case transaction(id: String)
+        
         case send(transaction: RavencoinRawTransaction.Request)
+        case transaction(id: String)
     }
     
     var baseURL: URL {
@@ -59,9 +60,8 @@ extension RavencoinTarget: TargetType {
         case .fees(let request):
             let parameters = try? request.asDictionary()
             return .requestParameters(parameters: parameters ?? [:], encoding: URLEncoding.default)
-        case .transactions(let request):
-            let parameters = try? request.asDictionary()
-            return .requestParameters(parameters: parameters ?? [:], encoding: URLEncoding.default)
+        case .transactions(let address):
+            return .requestParameters(parameters: ["address": address], encoding: URLEncoding.default)
         case .send(let transaction):
             return .requestJSONEncodable(transaction)
         case .wallet, .utxo, .transaction:

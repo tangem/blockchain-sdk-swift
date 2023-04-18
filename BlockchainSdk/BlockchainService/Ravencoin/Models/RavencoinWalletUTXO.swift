@@ -9,8 +9,13 @@
 import Foundation
 
 struct RavencoinWalletUTXO: Decodable {
+    let address: String
     let txid: String
     let vout: Int
-    let satoshis: UInt64
     let scriptPubKey: String
+    let assetName: String
+    let amount: Decimal
+    let satoshis: UInt64
+    let height: Int
+    let confirmations: Int
 }
