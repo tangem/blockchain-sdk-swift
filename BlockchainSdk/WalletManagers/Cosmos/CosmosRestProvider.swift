@@ -23,8 +23,17 @@ class CosmosRestProvider: HostProvider {
         provider = NetworkProvider<CosmosTarget>(configuration: configuration)
     }
     
-    func accounts(address: String) -> AnyPublisher<CosmosAccountResponse, Error> {
+    func accounts(address: String) -> AnyPublisher<CosmosAccountResponse?, Error> {
         requestPublisher(for: .accounts(address: address))
+            .tryCatch { error -> AnyPublisher<CosmosAccountResponse?, Error> in
+                if let cosmosError = error as? CosmosError,
+                   cosmosError.code == 5 {
+                    return .justWithError(output: nil)
+                } else {
+                    throw error
+                }
+            }
+            .eraseToAnyPublisher()
     }
     
     func balances(address: String) -> AnyPublisher<CosmosBalanceResponse, Error> {
@@ -47,6 +56,11 @@ class CosmosRestProvider: HostProvider {
             .filterSuccessfulStatusAndRedirectCodes()
             .map(T.self, using: decoder)
             .mapError { moyaError in
+                if case .statusCode(let response) = moyaError,
+                   let cosmosError = try? JSONDecoder().decode(CosmosError.self, from: response.data) {
+                    return cosmosError
+                }
+                
                 if case .objectMapping = moyaError {
                     return WalletError.failedToParseNetworkResponse
                 }
