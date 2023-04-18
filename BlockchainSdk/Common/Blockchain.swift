@@ -753,6 +753,7 @@ extension Blockchain: Codable {
             // TODO: Remove this assert
             // TODO:    A new blockchain can be added during a development and then you
             // TODO:    roll back to an earlier version that doesn't support it -- not convenient
+            // TODO:    See IOS-3481
             assertionFailure("Blockchain for \(key) isn't supported")
             throw BlockchainSdkError.decodingFailed
         }
