@@ -392,11 +392,11 @@ extension Blockchain {
                 // https://wiki.polygon.technology/docs/operate/network-rpc-endpoints
                 return [
                     URL(string: "https://polygon-rpc.com")!,
+                    URL(string: "https://matic.nownodes.io/\(nowNodesApiKey)")!,
+                    URL(string: "https://matic.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
                     URL(string: "https://matic-mainnet.chainstacklabs.com")!,
                     URL(string: "https://rpc-mainnet.maticvigil.com")!,
                     URL(string: "https://rpc-mainnet.matic.quiknode.pro")!,
-                    URL(string: "https://matic.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://matic.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
                 ]
             }
         case .avalanche:
