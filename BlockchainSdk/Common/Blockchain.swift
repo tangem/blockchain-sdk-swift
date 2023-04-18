@@ -418,12 +418,12 @@ extension Blockchain {
                 ]
             } else {
                 return [
+                    URL(string: "https://ftm.nownodes.io/\(nowNodesApiKey)")!,
+                    URL(string: "https://ftm.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
                     URL(string: "https://rpc.ftm.tools/")!,
                     URL(string: "https://rpcapi.fantom.network/")!,
                     URL(string: "https://fantom-mainnet.public.blastapi.io")!,
                     URL(string: "https://fantom-rpc.gateway.pokt.network")!,
-                    URL(string: "https://ftm.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://ftm.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
                     URL(string: "https://rpc.ankr.com/fantom")!,
                 ]
             }
