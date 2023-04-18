@@ -370,9 +370,9 @@ extension Blockchain {
                 ]
             } else {
                 return [
+                    URL(string: "https://bsc-dataseed.binance.org/")!,
                     URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")!,
                     URL(string: "https://bsc.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
-                    URL(string: "https://bsc-dataseed.binance.org/")!,
                     URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)/")!,
                 ]
             }
