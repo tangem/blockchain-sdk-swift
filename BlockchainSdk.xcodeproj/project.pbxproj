@@ -248,6 +248,8 @@
 		DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */; };
 		DA82434127A2B0AD00CFC2C0 /* PolkadotTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */; };
 		DA82434327A2B0C100CFC2C0 /* PolkadotResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82434227A2B0C100CFC2C0 /* PolkadotResponse.swift */; };
+		DA9EA73729EE71D400CAE6F2 /* PrivateKeySigner+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9EA73629EE71D400CAE6F2 /* PrivateKeySigner+.swift */; };
+		DA9EA73929EE720000CAE6F2 /* XCTAssert+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9EA73829EE720000CAE6F2 /* XCTAssert+.swift */; };
 		DA9F76E927EC8AEB00F0665C /* TronAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9F76E827EC8AEB00F0665C /* TronAddressService.swift */; };
 		DA9F76EC27EC9A2900F0665C /* TronWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9F76EB27EC9A2900F0665C /* TronWalletManager.swift */; };
 		DA9F76EF27EC9BCD00F0665C /* TronNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9F76EE27EC9BCD00F0665C /* TronNetworkService.swift */; };
@@ -614,6 +616,8 @@
 		DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetwork.swift; sourceTree = "<group>"; };
 		DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotTarget.swift; sourceTree = "<group>"; };
 		DA82434227A2B0C100CFC2C0 /* PolkadotResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotResponse.swift; sourceTree = "<group>"; };
+		DA9EA73629EE71D400CAE6F2 /* PrivateKeySigner+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrivateKeySigner+.swift"; sourceTree = "<group>"; };
+		DA9EA73829EE720000CAE6F2 /* XCTAssert+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTAssert+.swift"; sourceTree = "<group>"; };
 		DA9F76E827EC8AEB00F0665C /* TronAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronAddressService.swift; sourceTree = "<group>"; };
 		DA9F76EB27EC9A2900F0665C /* TronWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronWalletManager.swift; sourceTree = "<group>"; };
 		DA9F76EE27EC9BCD00F0665C /* TronNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronNetworkService.swift; sourceTree = "<group>"; };
@@ -1362,6 +1366,8 @@
 			isa = PBXGroup;
 			children = (
 				5D8FFDD927D8B77400C5993F /* XCTestCase+.swift */,
+				DA9EA73629EE71D400CAE6F2 /* PrivateKeySigner+.swift */,
+				DA9EA73829EE720000CAE6F2 /* XCTAssert+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2271,8 +2277,10 @@
 				EF0DA78A28523FAC0081092A /* PolkadotTests.swift in Sources */,
 				EF0DA78328523FAC0081092A /* AddressTests.swift in Sources */,
 				EF0DA78728523FAC0081092A /* TronTests.swift in Sources */,
+				DA9EA73729EE71D400CAE6F2 /* PrivateKeySigner+.swift in Sources */,
 				EF0DA78528523FAC0081092A /* BlockchainSdkTests.swift in Sources */,
 				DA198B5929E3F6E400DB6EEA /* CosmosTests.swift in Sources */,
+				DA9EA73929EE720000CAE6F2 /* XCTAssert+.swift in Sources */,
 				B00DEAD3290008910077CD19 /* SolanaTests.swift in Sources */,
 				EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */,
 				EF0DA78628523FAC0081092A /* XCTestCase+.swift in Sources */,

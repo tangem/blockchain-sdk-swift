@@ -11,6 +11,8 @@ import WalletCore
 
 enum CosmosChain {
     case cosmos(testnet: Bool)
+    // ancient testnet network, we only use it for unit tests
+    case gaia
 }
 
 // Keplr is a Cosmos network software wallet
@@ -40,6 +42,8 @@ extension CosmosChain {
                     "https://lcd.cosmos.dragonstake.io",
                 ]
             }
+        case .gaia:
+            fatalError()
         }
     }
     
@@ -50,6 +54,8 @@ extension CosmosChain {
         switch self {
         case .cosmos:
             return "uatom"
+        case .gaia:
+            return "muon"
         }
     }
     
@@ -57,6 +63,8 @@ extension CosmosChain {
         switch self {
         case .cosmos(let testnet):
             return .cosmos(testnet: testnet)
+        case .gaia:
+            return .cosmos(testnet: true)
         }
     }
     
@@ -67,6 +75,8 @@ extension CosmosChain {
         switch self {
         case .cosmos(let testnet):
             return testnet ? "theta-testnet-001" : "cosmoshub-4"
+        case .gaia:
+            return "gaia-13003"
         }
     }
     
@@ -79,12 +89,14 @@ extension CosmosChain {
                 0.025,
                 0.03,
             ]
+        case .gaia:
+            fatalError()
         }
     }
     
     var coin: CoinType {
         switch self {
-        case .cosmos:
+        case .cosmos, .gaia:
             return .cosmos
         }
     }
