@@ -327,9 +327,9 @@ extension Blockchain {
                 ]
             } else {
                 return [
+                    URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
                     URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")!,
                     URL(string: "https://eth.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
-                    URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
                 ]
             }
         case .ethereumClassic:
@@ -365,6 +365,7 @@ extension Blockchain {
             ]
         case .rsk:
             return [
+                URL(string: "https://rsk.nownodes.io/\(nowNodesApiKey)")!,
                 URL(string: "https://rsk.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
                 URL(string: "https://public-node.rsk.co/")!,
             ]
@@ -945,7 +946,7 @@ extension Blockchain {
                   return URL(string: "https://testnet.ravencoin.network/address/\(address)")
               }
 
-              return URL(string: "https://ravencoin.network/address/\(address)")
+              return URL(string: "https://api.ravencoin.org/address/\(address)")
         case .cosmos(let testnet):
             if testnet {
                 return URL(string: "https://explorer.theta-testnet.polypore.xyz/accounts/\(address)")!
