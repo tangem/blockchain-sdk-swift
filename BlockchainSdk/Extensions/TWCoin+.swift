@@ -50,7 +50,11 @@ extension CoinType {
             self = .polygon
         case .ravencoin:
             self = .ravencoin
+        case .cosmos:
+            self = .cosmos
         default:
+            // TODO: refactor to force the developer to handle the necessary
+            // case .ethereumPoW, .ethereumFair, .rsk, .ducatus, .dogecoin, .avalanche, .fantom, .arbitrum, .dash, .gnosis, .optimism, .saltPay, .kava, .kaspa:
             throw NSError()
         }
     }
