@@ -28,7 +28,7 @@ class CosmosTransactionBuilder {
         self.accountNumber = accountNumber
     }
     
-    func buildForSign(amount: Amount, source: String, destination: String, feeAmount: Decimal?, gas: UInt64?) throws -> CosmosSigningInput {
+    func buildForSign(amount: Amount, source: String, destination: String, feeAmount: Decimal?, gas: UInt64?, params: CosmosTransactionParams?) throws -> CosmosSigningInput {
         let amountInSmallestDenomination = ((amount.value * cosmosChain.blockchain.decimalValue) as NSDecimalNumber).uint64Value
         
         let sendCoinsMessage = CosmosMessage.Send.with {
@@ -69,7 +69,7 @@ class CosmosTransactionBuilder {
             $0.signingMode = .protobuf;
             $0.accountNumber = accountNumber
             $0.chainID = cosmosChain.chainID
-            $0.memo = ""
+            $0.memo = params?.memo ?? ""
             $0.sequence = sequenceNumber
             $0.messages = [message]
             if let fee = fee {
