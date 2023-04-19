@@ -12,7 +12,7 @@ import WalletCore
 extension CoinType {
     
     /// Сonstructor that maps the sdk blockchain type into the TrustWallet coin type
-    init(_ blockchain: Blockchain) throws {
+    init?(_ blockchain: Blockchain) {
         switch blockchain {
         case .bitcoin:
             self = .bitcoin
@@ -65,7 +65,7 @@ extension CoinType {
         case .fantom:
             self = .fantom
         default:
-            throw NSError()
+            return nil
         }
     }
     

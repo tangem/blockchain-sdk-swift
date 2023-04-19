@@ -15,20 +15,6 @@ import WalletCore
 
 final class AddressServiceManagerUtility {
     
-    func validate(privateKey: PrivateKey, for blockchain: BlockchainSdk.Blockchain) {
-        do {
-            let publicKey = try privateKey.getPublicKey(coinType: .init(blockchain)).data
-            let twAddress = try makeTrustWalletAddressService(publicKey: publicKey, for: blockchain)
-            let localAddress = try makeLocalWalletAddressService(publicKey: publicKey, for: blockchain)
-            
-            XCTAssertEqual(twAddress, localAddress)
-            
-            validate(address: twAddress, publicKey: publicKey, for: blockchain)
-        } catch {
-            XCTFail("__INVALID_ADDRESS__ TW ADDRESS DID NOT CREATED!")
-        }
-    }
-    
     func validate(address: String, publicKey: Data, for blockchain: BlockchainSdk.Blockchain) {
         do {
             let addressFromPublicKey = try makeLocalWalletAddressService(publicKey: publicKey, for: blockchain)
@@ -54,24 +40,28 @@ final class AddressServiceManagerUtility {
         XCTAssertFalse(validate(address, for: blockchain))
     }
     
-    // MARK: - Private Implementation
-    
-    private func validate(_ address: String, for blockchain: BlockchainSdk.Blockchain) -> Bool {
-        blockchain.getAddressService().validate(address)
-    }
-    
-    private func makeTrustWalletAddressService(
+    func makeTrustWalletAddressService(
         publicKey: Data,
         for blockchain: BlockchainSdk.Blockchain
     ) throws -> String {
-        try TrustWalletAddressService(coin: .init(blockchain), publicKeyType: .init(blockchain)).makeAddress(from: publicKey)
+        if let coin = CoinType(blockchain) {
+            return try TrustWalletAddressService(coin: coin, publicKeyType: .init(blockchain)).makeAddress(from: publicKey)
+        } else {
+            throw NSError()
+        }
     }
     
-    private func makeLocalWalletAddressService(
+    func makeLocalWalletAddressService(
         publicKey: Data,
         for blockchain: BlockchainSdk.Blockchain
     ) throws -> String {
         try blockchain.getAddressService().makeAddress(from: publicKey)
+    }
+    
+    // MARK: - Private Implementation
+    
+    private func validate(_ address: String, for blockchain: BlockchainSdk.Blockchain) -> Bool {
+        blockchain.getAddressService().validate(address)
     }
     
 }

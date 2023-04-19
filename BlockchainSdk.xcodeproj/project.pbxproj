@@ -7,13 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D194D4129EFD4C9005ABDF6 /* DerivationCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D194D4029EFD4C9005ABDF6 /* DerivationCompareTests.swift */; };
+		2D194D4529EFF416005ABDF6 /* DerivationPublicKeyCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D194D4429EFF416005ABDF6 /* DerivationPublicKeyCompareTests.swift */; };
+		2D194D4729EFF438005ABDF6 /* BlockchainServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D194D4629EFF438005ABDF6 /* BlockchainServiceManagerUtility.swift */; };
 		2D29A7F729D5C2AE00359A0C /* TWPublicKeyType+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D29A7F629D5C2AE00359A0C /* TWPublicKeyType+.swift */; };
 		2D3829C929D34A93001D4785 /* TWCoin+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829C829D34A93001D4785 /* TWCoin+.swift */; };
 		2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */; };
 		2D75FAE329E567DA00D9CDEE /* MnemonicServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D75FAE229E567DA00D9CDEE /* MnemonicServiceManagerUtility.swift */; };
 		2D75FAE829E567F500D9CDEE /* CoinAddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D75FAE529E567F500D9CDEE /* CoinAddressesCompareTests.swift */; };
 		2D75FAE929E567F500D9CDEE /* KeyAddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D75FAE629E567F500D9CDEE /* KeyAddressesCompareTests.swift */; };
-		2D75FAEA29E567F500D9CDEE /* MasterKeysAddressesCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D75FAE729E567F500D9CDEE /* MasterKeysAddressesCompareTests.swift */; };
 		2D8501F729DEC20A00F4A11B /* TONTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8501F629DEC20A00F4A11B /* TONTransactionParams.swift */; };
 		2D9A919229BB8BFF00476EA6 /* TONWalletInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */; };
 		2D9A919329BB8BFF00476EA6 /* TONTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */; };
@@ -342,13 +344,15 @@
 
 /* Begin PBXFileReference section */
 		0C79DB7FEDD8D4029AFA208D /* Pods-BlockchainSdk.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.release.xcconfig"; sourceTree = "<group>"; };
+		2D194D4029EFD4C9005ABDF6 /* DerivationCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationCompareTests.swift; sourceTree = "<group>"; };
+		2D194D4429EFF416005ABDF6 /* DerivationPublicKeyCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationPublicKeyCompareTests.swift; sourceTree = "<group>"; };
+		2D194D4629EFF438005ABDF6 /* BlockchainServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainServiceManagerUtility.swift; sourceTree = "<group>"; };
 		2D29A7F629D5C2AE00359A0C /* TWPublicKeyType+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWPublicKeyType+.swift"; sourceTree = "<group>"; };
 		2D3829C829D34A93001D4785 /* TWCoin+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWCoin+.swift"; sourceTree = "<group>"; };
 		2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressServiceManagerUtility.swift; sourceTree = "<group>"; };
 		2D75FAE229E567DA00D9CDEE /* MnemonicServiceManagerUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MnemonicServiceManagerUtility.swift; sourceTree = "<group>"; };
 		2D75FAE529E567F500D9CDEE /* CoinAddressesCompareTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoinAddressesCompareTests.swift; sourceTree = "<group>"; };
 		2D75FAE629E567F500D9CDEE /* KeyAddressesCompareTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyAddressesCompareTests.swift; sourceTree = "<group>"; };
-		2D75FAE729E567F500D9CDEE /* MasterKeysAddressesCompareTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MasterKeysAddressesCompareTests.swift; sourceTree = "<group>"; };
 		2D8501F629DEC20A00F4A11B /* TONTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONTransactionParams.swift; sourceTree = "<group>"; };
 		2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONWalletInfo.swift; sourceTree = "<group>"; };
 		2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONTransactionBuilder.swift; sourceTree = "<group>"; };
@@ -699,8 +703,9 @@
 			children = (
 				2D75FAE529E567F500D9CDEE /* CoinAddressesCompareTests.swift */,
 				2D75FAE629E567F500D9CDEE /* KeyAddressesCompareTests.swift */,
-				2D75FAE729E567F500D9CDEE /* MasterKeysAddressesCompareTests.swift */,
 				2DDD2FF329E7EC5600F1B5FC /* DerivationKeyAddressesCompareTests.swift */,
+				2D194D4029EFD4C9005ABDF6 /* DerivationCompareTests.swift */,
+				2D194D4429EFF416005ABDF6 /* DerivationPublicKeyCompareTests.swift */,
 			);
 			path = CompareTests;
 			sourceTree = "<group>";
@@ -1354,6 +1359,7 @@
 				2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */,
 				5DE57D99277CAD6100CCA18A /* AddressTests.swift */,
 				5D14E47C2397B80F00C15FC8 /* BlockchainSdkTests.swift */,
+				2D194D4629EFF438005ABDF6 /* BlockchainServiceManagerUtility.swift */,
 				2D75FAE229E567DA00D9CDEE /* MnemonicServiceManagerUtility.swift */,
 				B00DEAD028FFDE0E0077CD19 /* TransactionSizeTesterUtility.swift */,
 				2DC5796029C9CBB1004312AE /* TrustCoreSignerTesterUtility.swift */,
@@ -2248,6 +2254,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D194D4129EFD4C9005ABDF6 /* DerivationCompareTests.swift in Sources */,
 				2DC5796129C9CBB1004312AE /* TrustCoreSignerTesterUtility.swift in Sources */,
 				B00DEAD128FFDE0E0077CD19 /* TransactionSizeTesterUtility.swift in Sources */,
 				DA63B08D29CB3FAF00AC6E49 /* KaspaTests.swift in Sources */,
@@ -2260,6 +2267,8 @@
 				2D75FAE829E567F500D9CDEE /* CoinAddressesCompareTests.swift in Sources */,
 				EF0DA78328523FAC0081092A /* AddressTests.swift in Sources */,
 				2D75FAE929E567F500D9CDEE /* KeyAddressesCompareTests.swift in Sources */,
+				2D194D4529EFF416005ABDF6 /* DerivationPublicKeyCompareTests.swift in Sources */,
+				2D194D4729EFF438005ABDF6 /* BlockchainServiceManagerUtility.swift in Sources */,
 				EF0DA78728523FAC0081092A /* TronTests.swift in Sources */,
 				EF0DA78528523FAC0081092A /* BlockchainSdkTests.swift in Sources */,
 				DA198B5929E3F6E400DB6EEA /* CosmosTests.swift in Sources */,
@@ -2267,7 +2276,6 @@
 				EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */,
 				EF0DA78628523FAC0081092A /* XCTestCase+.swift in Sources */,
 				2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */,
-				2D75FAEA29E567F500D9CDEE /* MasterKeysAddressesCompareTests.swift in Sources */,
 				2DDD2FF429E7EC5600F1B5FC /* DerivationKeyAddressesCompareTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
