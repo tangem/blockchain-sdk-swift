@@ -12,7 +12,6 @@ public struct BlockchainSdkConfig {
     let blockchairApiKeys: [String]
     let blockcypherTokens: [String]
     let infuraProjectId: String
-    let useBlockBookUtxoApis: Bool
     let nowNodesApiKey: String
     let getBlockApiKey: String
     let kaspaSecondaryApiUrl: String?
@@ -28,7 +27,6 @@ public struct BlockchainSdkConfig {
         blockchairApiKeys: [String],
         blockcypherTokens: [String],
         infuraProjectId: String,
-        useBlockBookUtxoApis: Bool,
         nowNodesApiKey: String,
         getBlockApiKey: String,
         kaspaSecondaryApiUrl: String?,
@@ -43,7 +41,6 @@ public struct BlockchainSdkConfig {
         self.blockchairApiKeys = blockchairApiKeys
         self.blockcypherTokens = blockcypherTokens
         self.infuraProjectId = infuraProjectId
-        self.useBlockBookUtxoApis = useBlockBookUtxoApis
         self.nowNodesApiKey = nowNodesApiKey
         self.getBlockApiKey = getBlockApiKey
         self.kaspaSecondaryApiUrl = kaspaSecondaryApiUrl

@@ -67,7 +67,6 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKeys: [],
                                                                           blockcypherTokens: [],
                                                                           infuraProjectId: "",
-                                                                          useBlockBookUtxoApis: true,
                                                                           nowNodesApiKey: "",
                                                                           getBlockApiKey: "",
                                                                           kaspaSecondaryApiUrl: nil,
@@ -475,6 +474,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .kava(testnet: false),
             .kaspa,
             .ravencoin(testnet: false),
+            .cosmos(testnet: false),
         ]
         
         return blockchains.map { ($0.displayName, $0.codingKey) }

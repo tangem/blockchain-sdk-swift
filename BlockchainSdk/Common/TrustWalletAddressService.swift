@@ -26,7 +26,7 @@ public class TrustWalletAddressService: AddressService {
     /// - Parameter walletPublicKey: Data public key wallet
     /// - Returns: User-friendly address
     public func makeAddress(from walletPublicKey: Data) throws -> String {
-        guard let publicKey = PublicKey(data: walletPublicKey, type: publicKeyType) else {
+        guard let publicKey = PublicKey(data: try compressIfNeeded(walletPublicKey), type: publicKeyType) else {
             throw TWError.makeAddressFailed
         }
         
@@ -40,6 +40,17 @@ public class TrustWalletAddressService: AddressService {
         return AnyAddress(string: address, coin: coin) != nil
     }
     
+    private func compressIfNeeded(_ publicKey: Data) throws -> Data {
+        if case .secp256k1 = coin.publicKeyType {
+            guard let compressedPublicKey = try? Secp256k1Key(with: publicKey).compress() else {
+                throw TWError.makeAddressFailed
+            }
+            
+            return compressedPublicKey
+        } else {
+            return publicKey
+        }
+    }
 }
 
 extension TrustWalletAddressService {

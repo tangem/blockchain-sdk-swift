@@ -24,12 +24,14 @@ class WalletCoreSigner: Signer {
     
     private let sdkSigner: TransactionSigner
     private let walletPublicKey: Wallet.PublicKey
+    private let curve: EllipticCurve
     
     private var signSubscription: AnyCancellable?
     
-    init(sdkSigner: TransactionSigner, walletPublicKey: Wallet.PublicKey) {
+    init(sdkSigner: TransactionSigner, walletPublicKey: Wallet.PublicKey, curve: EllipticCurve) {
         self.sdkSigner = sdkSigner
         self.walletPublicKey = walletPublicKey
+        self.curve = curve
     }
     
     func sign(_ data: Data) -> Data {
@@ -50,6 +52,13 @@ class WalletCoreSigner: Signer {
             group.enter()
             
             self.signSubscription = self.sdkSigner.sign(hashes: data, walletPublicKey: self.walletPublicKey)
+                .tryMap { signatures in
+                    if case .secp256k1 = self.curve {
+                        return try self.unmarshal(signatures, for: data)
+                    } else {
+                        return signatures
+                    }
+                }
                 .sink { completion in
                     if case .failure(let error) = completion {
                         self.error = error
@@ -69,5 +78,19 @@ class WalletCoreSigner: Signer {
         }
         
         return signedData
+    }
+    
+    private func unmarshal(_ signatures: [Data], for data: [Data]) throws -> [Data] {
+        try signatures
+            .enumerated()
+            .map { (index, signature) in
+                try self.unmarshal(signature, for: data[index])
+            }
+    }
+    
+    private func unmarshal(_ signature: Data, for data: Data) throws -> Data {
+        let secpSignature = try Secp256k1Signature(with: signature)
+        let (v, r, s) = try secpSignature.unmarshal(with: publicKey, hash: data)
+        return r + s + v
     }
 }
