@@ -99,12 +99,16 @@ class CosmosWalletManager: BaseManager, WalletManager {
         // Estimate gas by simulating a transaction without the 'fee'
         // Get the gas
         // Use the gas to simulate a transaction with the 'fee', getting a better gas approximation
-        return estimateGas(amount: amount, destination: destination, initialGasApproximation: nil)
+        return estimateGas(amount: amount, destination: destination, initialGasApproximation: 200_000)
             .flatMap { [weak self] initialGasEstimation -> AnyPublisher<UInt64, Error> in
                 guard let self else { return .anyFail(error: WalletError.empty) }
-                
-                return self.estimateGas(amount: amount, destination: destination, initialGasApproximation: initialGasEstimation)
+
+//                let newGasEstimation = UInt64(Double(initialGasEstimation) * 1.5)
+                let newGasEstimation = initialGasEstimation
+
+                return self.estimateGas(amount: amount, destination: destination, initialGasApproximation: newGasEstimation)
             }
+//        return Just(UInt64(200_000)).setFailureType(to: Error.self)
             .tryMap { [weak self] gas in
                 guard let self = self else { throw WalletError.empty }
                 
@@ -112,8 +116,17 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 
                 return Array(repeating: gas, count: self.cosmosChain.gasPrices.count)
                     .enumerated()
-                    .map { index, gas in
-                        let value = Decimal(Double(gas) * self.cosmosChain.gasPrices[index]) / blockchain.decimalValue
+                    .map { index, _gas in
+                        let gasMultiplier: UInt64 = 3 // out of gas in location: ReadFlat; gasWanted: 124626, gasUsed: 125279: out of gas
+                        let feeMultiplier: Double = 1.5 //  "insufficient fees; got: 1005uluna required: 1006uluna: insufficient fee",
+                        
+                        // TERRA 2
+//                        let gasMultiplier: UInt64 = 2 // out of gas
+//                        let feeMultiplier: Double = 1.5 //  "insufficient fees; got: 1005uluna required: 1006uluna: insufficient fee",
+
+                        
+                        let gas = _gas * gasMultiplier
+                        let value = Decimal(Double(gas) * feeMultiplier * self.cosmosChain.gasPrices[index]) / blockchain.decimalValue
                         let parameters = CosmosFeeParameters(gas: gas)
                         return Fee(Amount(with: blockchain, value: value), parameters: parameters)
                     }

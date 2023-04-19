@@ -50,7 +50,8 @@ extension CosmosChain {
             ]
         case .terraV2:
             return [
-                "https://luna.getblock.io/\(config.getBlockApiKey)/mainnet",
+                "https://phoenix-lcd.terra.dev",
+//                "https://luna.getblock.io/\(config.getBlockApiKey)/mainnet",
             ]
         case .gaia:
             fatalError()
