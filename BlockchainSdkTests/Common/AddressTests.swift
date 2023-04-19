@@ -707,6 +707,9 @@ class AddressesTests: XCTestCase {
         let tangemAddress = try addressService.makeAddress(from: secpCompressedKey)
         XCTAssertEqual(tangemAddress, "cosmos1c2zwqqucrqvvtyxfn78ajm8w2sgyjf5emztyek")
         
+        XCTAssertThrowsError(try addressService.makeAddress(from: secpDecompressedKey))
+        XCTAssertThrowsError(try addressService.makeAddress(from: edKey))
+        
         let validAddresses = [
             "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02",
             "cosmospub1addwnpepqftjsmkr7d7nx4tmhw4qqze8w39vjq364xt8etn45xqarlu3l2wu2n7pgrq",
