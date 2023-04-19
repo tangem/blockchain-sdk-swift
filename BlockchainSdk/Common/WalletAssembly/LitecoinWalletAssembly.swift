@@ -23,15 +23,13 @@ struct LitecoinWalletAssembly: WalletManagerAssembly {
             
             var providers = [AnyBitcoinNetworkProvider]()
             
-            if input.blockchainConfig.useBlockBookUtxoApis {
-                providers.append(
-                    networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider()
-                )
-                
-                providers.append(
-                    networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider()
-                )
-            }
+            providers.append(
+                networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider()
+            )
+            
+            providers.append(
+                networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider()
+            )
             
             providers.append(
                 contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .litecoin, with: input)

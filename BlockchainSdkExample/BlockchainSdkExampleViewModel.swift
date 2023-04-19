@@ -67,7 +67,6 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKeys: [],
                                                                           blockcypherTokens: [],
                                                                           infuraProjectId: "",
-                                                                          useBlockBookUtxoApis: true,
                                                                           nowNodesApiKey: "",
                                                                           getBlockApiKey: "",
                                                                           kaspaSecondaryApiUrl: nil,
