@@ -965,9 +965,9 @@ extension Blockchain {
                 return URL(string: "https://www.mintscan.io/cosmos/account/\(address)")!
             }
         case .terraV1:
-            fatalError() // TODO: !
+            return URL(string: "https://finder.terra.money/classic/address/\(address)")!
         case .terraV2:
-            fatalError() // TODO: !
+            return URL(string: "https://terrasco.pe/mainnet/address/\(address)")!
         }
     }
 }
