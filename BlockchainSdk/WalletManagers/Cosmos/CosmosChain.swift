@@ -11,6 +11,8 @@ import WalletCore
 
 enum CosmosChain {
     case cosmos(testnet: Bool)
+    case terraV1
+    case terraV2
     // ancient testnet network, we only use it for unit tests
     case gaia
 }
@@ -42,6 +44,14 @@ extension CosmosChain {
                     "https://lcd.cosmos.dragonstake.io",
                 ]
             }
+        case .terraV1:
+            return [
+                "https://terra.nownodes.io/\(config.nowNodesApiKey)",
+            ]
+        case .terraV2:
+            return [
+                "https://luna.getblock.io/\(config.getBlockApiKey)/mainnet",
+            ]
         case .gaia:
             fatalError()
         }
@@ -54,6 +64,8 @@ extension CosmosChain {
         switch self {
         case .cosmos:
             return "uatom"
+        case .terraV1, .terraV2:
+            return "uluna"
         case .gaia:
             return "muon"
         }
@@ -63,6 +75,10 @@ extension CosmosChain {
         switch self {
         case .cosmos(let testnet):
             return .cosmos(testnet: testnet)
+        case .terraV1:
+            return .terraV1
+        case .terraV2:
+            return .terraV2
         case .gaia:
             return .cosmos(testnet: true)
         }
@@ -75,6 +91,10 @@ extension CosmosChain {
         switch self {
         case .cosmos(let testnet):
             return testnet ? "theta-testnet-001" : "cosmoshub-4"
+        case .terraV1:
+            return "columbus-5"
+        case .terraV2:
+            return "phoenix-1"
         case .gaia:
             return "gaia-13003"
         }
@@ -89,6 +109,18 @@ extension CosmosChain {
                 0.025,
                 0.03,
             ]
+        case .terraV1:
+            return [
+                28.325,
+                28.325,
+                28.325,
+            ]
+        case .terraV2:
+            return [
+                0.015,
+                0.025,
+                0.040,
+            ]
         case .gaia:
             fatalError()
         }
@@ -98,6 +130,10 @@ extension CosmosChain {
         switch self {
         case .cosmos, .gaia:
             return .cosmos
+        case .terraV1:
+            return .terra
+        case .terraV2:
+            return .terraV2
         }
     }
 }
