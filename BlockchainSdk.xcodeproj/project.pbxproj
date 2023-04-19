@@ -216,6 +216,8 @@
 		DA30812F2817C0F900DE41F1 /* Contracts.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA30812E2817C0F900DE41F1 /* Contracts.pb.swift */; };
 		DA3081322817EC1A00DE41F1 /* TronTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA3081312817EC1A00DE41F1 /* TronTransactionBuilder.swift */; };
 		DA346451279A802E00E77B1D /* SolanaSdk+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA346450279A802E00E77B1D /* SolanaSdk+.swift */; };
+		DA3738ED29EFB6F500439F6B /* PrivateKeySigner+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA3738EB29EFB6F500439F6B /* PrivateKeySigner+.swift */; };
+		DA3738EE29EFB6F500439F6B /* XCTAssert+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA3738EC29EFB6F500439F6B /* XCTAssert+.swift */; };
 		DA570CEF27A802BE007F34EB /* SolanaError+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA570CEE27A802BE007F34EB /* SolanaError+.swift */; };
 		DA570CF927A82322007F34EB /* PolkadotBlockchainMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA570CF727A82322007F34EB /* PolkadotBlockchainMeta.swift */; };
 		DA59750B27D744A7009F0A1F /* BlockchainSdkExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA59750A27D744A7009F0A1F /* BlockchainSdkExampleApp.swift */; };
@@ -248,8 +250,7 @@
 		DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */; };
 		DA82434127A2B0AD00CFC2C0 /* PolkadotTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */; };
 		DA82434327A2B0C100CFC2C0 /* PolkadotResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA82434227A2B0C100CFC2C0 /* PolkadotResponse.swift */; };
-		DA9EA73729EE71D400CAE6F2 /* PrivateKeySigner+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9EA73629EE71D400CAE6F2 /* PrivateKeySigner+.swift */; };
-		DA9EA73929EE720000CAE6F2 /* XCTAssert+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9EA73829EE720000CAE6F2 /* XCTAssert+.swift */; };
+		DA9EA73F29EE958500CAE6F2 /* CosmosTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9EA73E29EE958500CAE6F2 /* CosmosTransactionParams.swift */; };
 		DA9F76E927EC8AEB00F0665C /* TronAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9F76E827EC8AEB00F0665C /* TronAddressService.swift */; };
 		DA9F76EC27EC9A2900F0665C /* TronWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9F76EB27EC9A2900F0665C /* TronWalletManager.swift */; };
 		DA9F76EF27EC9BCD00F0665C /* TronNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA9F76EE27EC9BCD00F0665C /* TronNetworkService.swift */; };
@@ -584,6 +585,8 @@
 		DA3081312817EC1A00DE41F1 /* TronTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronTransactionBuilder.swift; sourceTree = "<group>"; };
 		DA30813428182F0C00DE41F1 /* Tron Protobuf.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Tron Protobuf.md"; sourceTree = "<group>"; };
 		DA346450279A802E00E77B1D /* SolanaSdk+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SolanaSdk+.swift"; sourceTree = "<group>"; };
+		DA3738EB29EFB6F500439F6B /* PrivateKeySigner+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PrivateKeySigner+.swift"; sourceTree = "<group>"; };
+		DA3738EC29EFB6F500439F6B /* XCTAssert+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCTAssert+.swift"; sourceTree = "<group>"; };
 		DA570CEE27A802BE007F34EB /* SolanaError+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SolanaError+.swift"; sourceTree = "<group>"; };
 		DA570CF727A82322007F34EB /* PolkadotBlockchainMeta.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotBlockchainMeta.swift; sourceTree = "<group>"; };
 		DA59750827D744A7009F0A1F /* BlockchainSdkExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BlockchainSdkExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -616,8 +619,7 @@
 		DA82433E27A2B07800CFC2C0 /* PolkadotNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetwork.swift; sourceTree = "<group>"; };
 		DA82434027A2B0AD00CFC2C0 /* PolkadotTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotTarget.swift; sourceTree = "<group>"; };
 		DA82434227A2B0C100CFC2C0 /* PolkadotResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotResponse.swift; sourceTree = "<group>"; };
-		DA9EA73629EE71D400CAE6F2 /* PrivateKeySigner+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrivateKeySigner+.swift"; sourceTree = "<group>"; };
-		DA9EA73829EE720000CAE6F2 /* XCTAssert+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTAssert+.swift"; sourceTree = "<group>"; };
+		DA9EA73E29EE958500CAE6F2 /* CosmosTransactionParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CosmosTransactionParams.swift; sourceTree = "<group>"; };
 		DA9F76E827EC8AEB00F0665C /* TronAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronAddressService.swift; sourceTree = "<group>"; };
 		DA9F76EB27EC9A2900F0665C /* TronWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronWalletManager.swift; sourceTree = "<group>"; };
 		DA9F76EE27EC9BCD00F0665C /* TronNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronNetworkService.swift; sourceTree = "<group>"; };
@@ -1365,9 +1367,9 @@
 		B00DEACD28FEE62F0077CD19 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				DA3738EB29EFB6F500439F6B /* PrivateKeySigner+.swift */,
+				DA3738EC29EFB6F500439F6B /* XCTAssert+.swift */,
 				5D8FFDD927D8B77400C5993F /* XCTestCase+.swift */,
-				DA9EA73629EE71D400CAE6F2 /* PrivateKeySigner+.swift */,
-				DA9EA73829EE720000CAE6F2 /* XCTAssert+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1457,6 +1459,7 @@
 				DA67A69529E51FEA001B6799 /* CosmosWalletManager.swift */,
 				DAF3AD4529E916D300E057FA /* CosmosFeeParameters.swift */,
 				DA67A69729E523C6001B6799 /* CosmosTransactionBuilder.swift */,
+				DA9EA73E29EE958500CAE6F2 /* CosmosTransactionParams.swift */,
 				DA198B6229E41AD800DB6EEA /* CosmosNetworkService.swift */,
 				DA198B6029E4090C00DB6EEA /* CosmosRestProvider.swift */,
 				DA198B5A29E3FF4F00DB6EEA /* CosmosTarget.swift */,
@@ -2089,6 +2092,7 @@
 				DA9F76F527EC9CB400F0665C /* TronTarget.swift in Sources */,
 				5D7D243525136254001B9A4F /* XRPAmount.swift in Sources */,
 				2D9A91A129BB8C1700476EA6 /* TONProviderModels.swift in Sources */,
+				DA9EA73F29EE958500CAE6F2 /* CosmosTransactionParams.swift in Sources */,
 				B04DC65E25AC6538009AA7B3 /* EthereumAdditionalInfoProvider.swift in Sources */,
 				5D65D5C9260B261F00F84BED /* TezosPrefix.swift in Sources */,
 				2DDE5BA829C4F8D200A5B708 /* BitcoinWalletAssembly.swift in Sources */,
@@ -2277,10 +2281,10 @@
 				EF0DA78A28523FAC0081092A /* PolkadotTests.swift in Sources */,
 				EF0DA78328523FAC0081092A /* AddressTests.swift in Sources */,
 				EF0DA78728523FAC0081092A /* TronTests.swift in Sources */,
-				DA9EA73729EE71D400CAE6F2 /* PrivateKeySigner+.swift in Sources */,
+				DA3738ED29EFB6F500439F6B /* PrivateKeySigner+.swift in Sources */,
 				EF0DA78528523FAC0081092A /* BlockchainSdkTests.swift in Sources */,
 				DA198B5929E3F6E400DB6EEA /* CosmosTests.swift in Sources */,
-				DA9EA73929EE720000CAE6F2 /* XCTAssert+.swift in Sources */,
+				DA3738EE29EFB6F500439F6B /* XCTAssert+.swift in Sources */,
 				B00DEAD3290008910077CD19 /* SolanaTests.swift in Sources */,
 				EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */,
 				EF0DA78628523FAC0081092A /* XCTestCase+.swift in Sources */,
