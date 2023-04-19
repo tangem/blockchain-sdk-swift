@@ -35,7 +35,8 @@ class CosmosTests: XCTestCase {
             source: wallet.address,
             destination: "cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573",
             feeAmount: 0.000200,
-            gas: 200_000
+            gas: 200_000,
+            params: nil
         )
         
         let signer = PrivateKeySigner(privateKey: privateKey, coin: cosmosChain.coin)
