@@ -704,10 +704,10 @@ class AddressesTests: XCTestCase {
     func testCosmosAddress() throws {
         let addressService = Blockchain.cosmos(testnet: false).getAddressService()
         
-        let tangemAddress = try addressService.makeAddress(from: secpCompressedKey)
-        XCTAssertEqual(tangemAddress, "cosmos1c2zwqqucrqvvtyxfn78ajm8w2sgyjf5emztyek")
+        let expectedAddress = "cosmos1c2zwqqucrqvvtyxfn78ajm8w2sgyjf5emztyek"
+        XCTAssertEqual(expectedAddress, try addressService.makeAddress(from: secpCompressedKey))
+        XCTAssertEqual(expectedAddress, try addressService.makeAddress(from: secpDecompressedKey))
         
-        XCTAssertThrowsError(try addressService.makeAddress(from: secpDecompressedKey))
         XCTAssertThrowsError(try addressService.makeAddress(from: edKey))
         
         let validAddresses = [
