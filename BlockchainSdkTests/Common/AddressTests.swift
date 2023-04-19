@@ -731,4 +731,10 @@ class AddressesTests: XCTestCase {
             XCTAssertFalse(addressService.validate(invalidAddress))
         }
     }
+    
+    // READ BELOW:
+    //
+    //      When adding new blockchain here you MUST include tests for all public key types.
+    //      Not just the one used by the blockchain itself.
+    //
 }
