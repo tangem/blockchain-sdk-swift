@@ -56,6 +56,8 @@ extension CosmosTarget: TargetType {
     }
     
     var headers: [String : String]? {
-        nil
+        [
+            "Content-Type": "application/json",
+        ]
     }
 }
