@@ -7,8 +7,6 @@
 //
 
 import XCTest
-//import TangemSdk
-//import class WalletCore.PrivateKey
 import WalletCore
 
 @testable import BlockchainSdk
