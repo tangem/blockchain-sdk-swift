@@ -47,11 +47,14 @@ extension CosmosChain {
         case .terraV1:
             return [
                 "https://terra.nownodes.io/\(config.nowNodesApiKey)",
+//                "https://terra-mainnet-rpc.allthatnode.com:1317",
+//                "https://rpc.cosmos.directory/terra",
             ]
         case .terraV2:
             return [
-                "https://phoenix-lcd.terra.dev",
-//                "https://luna.getblock.io/\(config.getBlockApiKey)/mainnet",
+                "https://luna.getblock.io/\(config.getBlockApiKey)/mainnet",
+//                "https://rpc.cosmos.directory/terra2", // does it work?
+//                "https://phoenix-lcd.terra.dev", // sometimes is down
             ]
         case .gaia:
             fatalError()
@@ -135,6 +138,17 @@ extension CosmosChain {
             return .terra
         case .terraV2:
             return .terraV2
+        }
+    }
+    
+    var tokenDenominationByContractAddress: [String: String] {
+        switch self {
+        case .terraV1:
+            return [
+                "uusd1": "uusd",
+            ]
+        case .cosmos, .gaia, .terraV2:
+            return [:]
         }
     }
 }

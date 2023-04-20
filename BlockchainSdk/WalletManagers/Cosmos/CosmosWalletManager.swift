@@ -117,12 +117,13 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 return Array(repeating: gas, count: self.cosmosChain.gasPrices.count)
                     .enumerated()
                     .map { index, _gas in
+                        // TERRA 1
                         let gasMultiplier: UInt64 = 3 // out of gas in location: ReadFlat; gasWanted: 124626, gasUsed: 125279: out of gas
                         let feeMultiplier: Double = 1.5 //  "insufficient fees; got: 1005uluna required: 1006uluna: insufficient fee",
                         
                         // TERRA 2
-//                        let gasMultiplier: UInt64 = 2 // out of gas
-//                        let feeMultiplier: Double = 1.5 //  "insufficient fees; got: 1005uluna required: 1006uluna: insufficient fee",
+//                        let gasMultiplier: UInt64 = 2*2 // out of gas
+//                        let feeMultiplier: Double = 1.5*2 //  "insufficient fees; got: 1005uluna required: 1006uluna: insufficient fee",
 
                         
                         let gas = _gas * gasMultiplier
