@@ -24,8 +24,8 @@ struct BlockBookTarget: TargetType {
         switch request {
         case .address(let address):
             return basePath + "/address/\(address)"
-        case .send(let txHex):
-            return basePath + "/sendtx/\(txHex)"
+        case .send:
+            return basePath + "/sendtx/"
         case .txDetails(let txHash):
             return basePath + "/tx/\(txHash)"
         case .utxo(let address):
@@ -37,17 +37,19 @@ struct BlockBookTarget: TargetType {
     
     var method: Moya.Method {
         switch request {
-        case .send, .address, .utxo:
+        case .address, .utxo:
             return .get
-        case .txDetails, .fees:
+        case .send, .txDetails, .fees:
             return .post
         }
     }
     
     var task: Moya.Task {
         switch request {
-        case .txDetails, .send, .utxo:
+        case .txDetails, .utxo:
             return .requestPlain
+        case .send(let tx):
+            return .requestData(tx)
         case .fees(let confirmationBlocks):
             return .requestJSONEncodable(BitcoinNodeEstimateSmartFeeParameters(confirmationBlocks: confirmationBlocks))
         case .address:
@@ -57,16 +59,25 @@ struct BlockBookTarget: TargetType {
     
     var headers: [String : String]? {
         [
-            "Content-Type": "application/json",
+            "Content-Type": contentType,
             config.apiKeyName: config.apiKeyValue,
         ]
+    }
+    
+    private var contentType: String {
+        switch request {
+        case .send:
+            return "text/plain; charset=utf-8"
+        default:
+            return "application/json"
+        }
     }
 }
 
 extension BlockBookTarget {
     enum Request {
         case address(address: String)
-        case send(txHex: String)
+        case send(tx: Data)
         case txDetails(txHash: String)
         case utxo(address: String)
         case fees(confirmationBlocks: Int)
