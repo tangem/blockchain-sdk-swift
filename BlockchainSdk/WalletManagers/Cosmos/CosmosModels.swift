@@ -65,6 +65,7 @@ struct CosmosAccountInfo {
     let accountNumber: UInt64?
     let sequenceNumber: UInt64
     let amount: Amount
+    let tokenBalances: [Token: Decimal]
 }
 
 struct CosmosError: Error, Decodable {
