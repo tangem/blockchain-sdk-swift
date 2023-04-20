@@ -103,12 +103,8 @@ class CosmosWalletManager: BaseManager, WalletManager {
             .flatMap { [weak self] initialGasEstimation -> AnyPublisher<UInt64, Error> in
                 guard let self else { return .anyFail(error: WalletError.empty) }
 
-//                let newGasEstimation = UInt64(Double(initialGasEstimation) * 1.5)
-                let newGasEstimation = initialGasEstimation
-
-                return self.estimateGas(amount: amount, destination: destination, initialGasApproximation: newGasEstimation)
+                return self.estimateGas(amount: amount, destination: destination, initialGasApproximation: initialGasEstimation)
             }
-//        return Just(UInt64(200_000)).setFailureType(to: Error.self)
             .tryMap { [weak self] gas in
                 guard let self = self else { throw WalletError.empty }
                 
@@ -116,17 +112,11 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 
                 return Array(repeating: gas, count: self.cosmosChain.gasPrices.count)
                     .enumerated()
-                    .map { index, _gas in
-                        // TERRA 1
-                        let gasMultiplier: UInt64 = 3 // out of gas in location: ReadFlat; gasWanted: 124626, gasUsed: 125279: out of gas
-                        let feeMultiplier: Double = 1.5 //  "insufficient fees; got: 1005uluna required: 1006uluna: insufficient fee",
+                    .map { index, estimatedGas in
+                        let gasMultiplier = self.cosmosChain.gasMultiplier
+                        let feeMultiplier = self.cosmosChain.feeMultiplier
                         
-                        // TERRA 2
-//                        let gasMultiplier: UInt64 = 2*2 // out of gas
-//                        let feeMultiplier: Double = 1.5*2 //  "insufficient fees; got: 1005uluna required: 1006uluna: insufficient fee",
-
-                        
-                        let gas = _gas * gasMultiplier
+                        let gas = estimatedGas * gasMultiplier
                         let value = Decimal(Double(gas) * feeMultiplier * self.cosmosChain.gasPrices[index]) / blockchain.decimalValue
                         let parameters = CosmosFeeParameters(gas: gas)
                         return Fee(Amount(with: blockchain, value: value), parameters: parameters)

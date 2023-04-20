@@ -47,14 +47,13 @@ extension CosmosChain {
         case .terraV1:
             return [
                 "https://terra.nownodes.io/\(config.nowNodesApiKey)",
-//                "https://terra-mainnet-rpc.allthatnode.com:1317",
-//                "https://rpc.cosmos.directory/terra",
+//                "https://terra-mainnet-rpc.allthatnode.com:1317", // TODO: is it responsive
+//                "https://rpc.cosmos.directory/terra", // TODO: is it responsive
             ]
         case .terraV2:
             return [
                 "https://luna.getblock.io/\(config.getBlockApiKey)/mainnet",
-//                "https://rpc.cosmos.directory/terra2", // does it work?
-//                "https://phoenix-lcd.terra.dev", // sometimes is down
+                "https://phoenix-lcd.terra.dev", // sometimes is down
             ]
         case .gaia:
             fatalError()
@@ -127,6 +126,34 @@ extension CosmosChain {
             ]
         case .gaia:
             fatalError()
+        }
+    }
+    
+    // Often times the value specified in Keplr is not enough:
+    // >>> out of gas in location: WriteFlat; gasWanted: 76012, gasUsed: 76391: out of gas
+    // >>> out of gas in location: ReadFlat; gasWanted: 124626, gasUsed: 125279: out of gas
+    // Default multiplier value is 1
+    var gasMultiplier: UInt64 {
+        switch self {
+        case .cosmos, .gaia:
+            return 1
+        case .terraV1:
+            return 3
+        case .terraV2:
+            return 2
+        }
+    }
+
+    // We use a formula to calculate the fee, by multiplying estimated gas by gas price.
+    // But sometimes this is not enough:
+    // >>> insufficient fees; got: 1005uluna required: 1006uluna: insufficient fee
+    // Default multiplier value is 1
+    var feeMultiplier: Double {
+        switch self {
+        case .cosmos, .gaia:
+            return 1
+        case .terraV1, .terraV2:
+            return 1.5
         }
     }
     
