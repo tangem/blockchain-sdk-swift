@@ -365,9 +365,9 @@ extension Blockchain {
             ]
         case .rsk:
             return [
+                URL(string: "https://public-node.rsk.co/")!,
                 URL(string: "https://rsk.nownodes.io/\(nowNodesApiKey)")!,
                 URL(string: "https://rsk.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
-                URL(string: "https://public-node.rsk.co/")!,
             ]
         case .bsc:
             if isTestnet {
@@ -375,10 +375,11 @@ extension Blockchain {
                     URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!,
                 ]
             } else {
+                // https://docs.fantom.foundation/api/public-api-endpoints
                 return [
+                    URL(string: "https://bsc-dataseed.binance.org/")!,
                     URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")!,
                     URL(string: "https://bsc.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
-                    URL(string: "https://bsc-dataseed.binance.org/")!,
                     URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)/")!,
                 ]
             }
@@ -388,16 +389,14 @@ extension Blockchain {
                     URL(string: "https://rpc-mumbai.maticvigil.com/")!,
                 ]
             } else {
-                // https://docs.polygon.technology/docs/develop/network-details/network/
+                // https://wiki.polygon.technology/docs/operate/network-rpc-endpoints
                 return [
+                    URL(string: "https://polygon-rpc.com")!,
                     URL(string: "https://matic.nownodes.io/\(nowNodesApiKey)")!,
                     URL(string: "https://matic.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
-                    URL(string: "https://polygon-rpc.com")!,
-                    URL(string: "https://rpc-mainnet.matic.network")!,
                     URL(string: "https://matic-mainnet.chainstacklabs.com")!,
                     URL(string: "https://rpc-mainnet.maticvigil.com")!,
                     URL(string: "https://rpc-mainnet.matic.quiknode.pro")!,
-                    URL(string: "https://matic-mainnet-full-rpc.bwarelabs.com")!,
                 ]
             }
         case .avalanche:
@@ -407,9 +406,9 @@ extension Blockchain {
                 ]
             } else {
                 return [
+                    URL(string: "https://api.avax.network/ext/bc/C/rpc")!,
                     URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)/ext/bc/C/rpc")!,
                     URL(string: "https://avax.getblock.io/mainnet/ext/bc/C/rpc?api_key=\(getBlockApiKey)")!,
-                    URL(string: "https://api.avax.network/ext/bc/C/rpc")!,
                 ]
             }
         case .fantom:
@@ -423,7 +422,8 @@ extension Blockchain {
                     URL(string: "https://ftm.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
                     URL(string: "https://rpc.ftm.tools/")!,
                     URL(string: "https://rpcapi.fantom.network/")!,
-                    URL(string: "https://ftmrpc.ultimatenodes.io/")!,
+                    URL(string: "https://fantom-mainnet.public.blastapi.io")!,
+                    URL(string: "https://fantom-rpc.gateway.pokt.network")!,
                     URL(string: "https://rpc.ankr.com/fantom")!,
                 ]
             }
@@ -453,7 +453,6 @@ extension Blockchain {
                 URL(string: "https://gnosischain-rpc.gateway.pokt.network")!,
                 URL(string: "https://gnosis-mainnet.public.blastapi.io")!,
                 URL(string: "https://xdai-rpc.gateway.pokt.network")!,
-                URL(string: "https://xdai-archive.blockscout.com")!,
                 URL(string: "https://rpc.ankr.com/gnosis")!,
             ]
         case .optimism(let testnet):
@@ -463,8 +462,8 @@ extension Blockchain {
                 ]
             } else {
                 return [
-                    URL(string: "https://optimism.nownodes.io/\(nowNodesApiKey)")!,
                     URL(string: "https://mainnet.optimism.io")!,
+                    URL(string: "https://optimism.nownodes.io/\(nowNodesApiKey)")!,
                     URL(string: "https://optimism-mainnet.public.blastapi.io")!,
                     URL(string: "https://rpc.ankr.com/optimism")!,
                 ]
@@ -764,6 +763,10 @@ extension Blockchain: Codable {
         case "ravencoin": self = .ravencoin(testnet: isTestnet)
         case "cosmos-hub": self = .cosmos(testnet: isTestnet)
         default:
+            // TODO: Remove this assert
+            // TODO:    A new blockchain can be added during a development and then you
+            // TODO:    roll back to an earlier version that doesn't support it -- not convenient
+            // TODO:    See IOS-3481
             assertionFailure("Blockchain for \(key) isn't supported")
             throw BlockchainSdkError.decodingFailed
         }
