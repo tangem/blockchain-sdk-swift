@@ -221,8 +221,12 @@ extension BlockBookUtxoProvider: BitcoinNetworkProvider {
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
-        provider
-            .requestPublisher(target(for: .send(txHex: transaction)))
+        guard let transactionData = transaction.data(using: .utf8) else {
+            return .anyFail(error: WalletError.failedToSendTx)
+        }
+        
+        return provider
+            .requestPublisher(target(for: .send(tx: transactionData)))
             .filterSuccessfulStatusAndRedirectCodes()
             .mapNotEmptyString()
             .eraseError()
