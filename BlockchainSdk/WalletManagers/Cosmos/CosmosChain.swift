@@ -145,7 +145,7 @@ extension CosmosChain {
         switch self {
         case .terraV1:
             return [
-                "uusd1": "uusd",
+                "uusd": "uusd",
             ]
         case .cosmos, .gaia, .terraV2:
             return [:]
