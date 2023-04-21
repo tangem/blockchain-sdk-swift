@@ -42,7 +42,7 @@ struct CosmosSimulateResponse: Decodable {
 
 extension CosmosSimulateResponse {
     struct GasInfo: Decodable {
-      let gasUsed: String
+        let gasUsed: String
     }
 }
 

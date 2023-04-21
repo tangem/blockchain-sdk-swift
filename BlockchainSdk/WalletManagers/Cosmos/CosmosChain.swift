@@ -143,7 +143,7 @@ extension CosmosChain {
             return 2
         }
     }
-
+    
     // We use a formula to calculate the fee, by multiplying estimated gas by gas price.
     // But sometimes this is not enough:
     // >>> insufficient fees; got: 1005uluna required: 1006uluna: insufficient fee

@@ -101,7 +101,7 @@ class CosmosNetworkService: MultiNetworkProvider {
         guard let balanceAmountString = balanceInfo.balances.first(where: { $0.denom == denomination } )?.amount else {
             return .zero
         }
-
+        
         guard let balanceInSmallestDenomination = Int(balanceAmountString) else {
             throw WalletError.failedToParseNetworkResponse
         }
