@@ -732,6 +732,32 @@ class AddressesTests: XCTestCase {
         }
     }
     
+    func testTerraAddress() throws {
+        let blockchains: [Blockchain] = [
+            .terraV1,
+            .terraV1USD,
+            .terraV2,
+        ]
+        
+        for blockchain in blockchains {
+            try testTerraAddress(blockchain: blockchain)
+        }
+    }
+    
+    func testTerraAddress(blockchain: Blockchain) throws {
+        let addressService = blockchain.getAddressService()
+        let expectedAddress = "terra1c2zwqqucrqvvtyxfn78ajm8w2sgyjf5eax3ymk"
+        
+        XCTAssertEqual(expectedAddress, try addressService.makeAddress(from: secpCompressedKey))
+        XCTAssertEqual(expectedAddress, try addressService.makeAddress(from: secpDecompressedKey))
+        
+        XCTAssertThrowsError(try addressService.makeAddress(from: edKey))
+        
+        XCTAssertTrue(addressService.validate("terra1hdp298kaz0eezpgl6scsykxljrje3667d233ms"))
+        XCTAssertTrue(addressService.validate("terravaloper1pdx498r0hrc2fj36sjhs8vuhrz9hd2cw0yhqtk"))
+        XCTAssertFalse(addressService.validate("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02"))
+    }
+    
     // READ BELOW:
     //
     //      When adding new blockchain here you MUST include tests for all public key types.
