@@ -55,13 +55,12 @@ extension CosmosChain {
         case .terraV1, .terraV1USD:
             return [
                 "https://terra.nownodes.io/\(config.nowNodesApiKey)",
-//                "https://terra-mainnet-rpc.allthatnode.com:1317", // TODO: is it responsive
-//                "https://rpc.cosmos.directory/terra", // TODO: is it responsive
+                "https://terra-classic-lcd.publicnode.com", // This is a redirect from https://columbus-lcd.terra.dev
             ]
         case .terraV2:
             return [
                 "https://luna.getblock.io/\(config.getBlockApiKey)/mainnet",
-                "https://phoenix-lcd.terra.dev", // sometimes is down
+                "https://phoenix-lcd.terra.dev", // Sometimes not responsive
             ]
         case .gaia:
             fatalError()
