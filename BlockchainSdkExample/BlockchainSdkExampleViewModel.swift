@@ -476,6 +476,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .ravencoin(testnet: false),
             .cosmos(testnet: false),
             .terraV1,
+            .terraV1USD,
             .terraV2,
         ]
         

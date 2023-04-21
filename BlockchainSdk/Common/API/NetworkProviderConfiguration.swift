@@ -64,7 +64,7 @@ public extension NetworkProviderConfiguration {
 public extension URLSessionConfiguration {
     static let standart: URLSessionConfiguration = {
         let configuration = URLSessionConfiguration.default
-        configuration.timeoutIntervalForRequest = 10
+        configuration.timeoutIntervalForRequest = 100
         configuration.timeoutIntervalForResource = 30
         return configuration
     }()

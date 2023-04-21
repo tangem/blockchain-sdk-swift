@@ -99,7 +99,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
         // Estimate gas by simulating a transaction without the 'fee'
         // Get the gas
         // Use the gas to simulate a transaction with the 'fee', getting a better gas approximation
-        return estimateGas(amount: amount, destination: destination, initialGasApproximation: 200_000)
+        return estimateGas(amount: amount, destination: destination, initialGasApproximation: nil)
             .flatMap { [weak self] initialGasEstimation -> AnyPublisher<UInt64, Error> in
                 guard let self else { return .anyFail(error: WalletError.empty) }
                 

@@ -31,7 +31,7 @@ class CosmosTransactionBuilder {
     func buildForSign(amount: Amount, source: String, destination: String, feeAmount: Decimal?, gas: UInt64?, params: CosmosTransactionParams?) throws -> CosmosSigningInput {
         let amountInSmallestDenomination = ((amount.value * cosmosChain.blockchain.decimalValue) as NSDecimalNumber).uint64Value
         
-        let denomination = try denomination(for: amount)
+        let denomination = cosmosChain.smallestDenomination
         let sendCoinsMessage = CosmosMessage.Send.with {
             $0.fromAddress = source
             $0.toAddress = destination
@@ -47,13 +47,27 @@ class CosmosTransactionBuilder {
         
         let fee: CosmosFee?
         if let feeAmount, let gas {
-            let feeAmountInSmallestDenomination = (feeAmount * cosmosChain.blockchain.decimalValue as NSDecimalNumber).uint64Value
+            var feeAmountInSmallestDenomination = (feeAmount * cosmosChain.blockchain.decimalValue as NSDecimalNumber).uint64Value
+            
+            if let tax = tax(for: amount) {
+                feeAmountInSmallestDenomination += tax
+            }
+            
+            var feeAmounts = [CosmosAmount.with {
+                $0.amount = "\(feeAmountInSmallestDenomination)"
+                $0.denom = denomination
+            }]
+            
+            if let tax = tax(for: amount) {
+                feeAmounts.append(CosmosAmount.with {
+                    $0.amount = "\(tax)"
+                    $0.denom = denomination
+                })
+            }
+            
             fee = CosmosFee.with {
                 $0.gas = gas
-                $0.amounts = [CosmosAmount.with {
-                    $0.amount = "\(feeAmountInSmallestDenomination)"
-                    $0.denom = cosmosChain.smallestDenomination
-                }]
+                $0.amounts = feeAmounts
             }
         } else {
             fee = nil
@@ -98,18 +112,14 @@ class CosmosTransactionBuilder {
         return outputData
     }
     
-    private func denomination(for amount: Amount) throws -> String {
-        switch amount.type {
-        case .coin:
-            return cosmosChain.smallestDenomination
-        case .token(let token):
-            guard let tokenDenomination = cosmosChain.tokenDenominationByContractAddress[token.contractAddress] else {
-                throw WalletError.failedToBuildTx
-            }
-            
-            return tokenDenomination
-        case .reserve:
-            throw WalletError.failedToBuildTx
+    private func tax(for amount: Amount) -> UInt64? {
+        guard let taxPercent = cosmosChain.taxPercent else {
+            return nil
         }
+        
+        let amountInSmallestDenomination = amount.value * cosmosChain.blockchain.decimalValue
+        let taxAmount = amountInSmallestDenomination * taxPercent / 100
+        
+        return (taxAmount as NSDecimalNumber).uint64Value
     }
 }

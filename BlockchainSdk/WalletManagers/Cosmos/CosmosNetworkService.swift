@@ -45,20 +45,7 @@ class CosmosNetworkService: MultiNetworkProvider {
                         decimalValue: self.cosmosChain.blockchain.decimalValue
                     )
                     let amount = Amount(with: self.cosmosChain.blockchain, value: rawAmount)
-                    
-                    let tokenAmounts: [Token: Decimal] = Dictionary(try tokens.compactMap {
-                        guard let denomination = self.cosmosChain.tokenDenominationByContractAddress[$0.contractAddress] else {
-                            return nil
-                        }
-                        
-                        let balance = try self.parseBalance(balanceInfo, denomination: denomination, decimalValue: $0.decimalValue)
-                        return ($0, balance)
-                    }, uniquingKeysWith: {
-                        pair1, _ in
-                        pair1
-                    })
-                    
-                    return CosmosAccountInfo(accountNumber: accountNumber, sequenceNumber: sequenceNumber, amount: amount, tokenBalances: tokenAmounts)
+                    return CosmosAccountInfo(accountNumber: accountNumber, sequenceNumber: sequenceNumber, amount: amount, tokenBalances: [:])
                 }
                 .eraseToAnyPublisher()
         }

@@ -48,13 +48,14 @@ public enum Blockchain: Equatable, Hashable {
     case ravencoin(testnet: Bool)
     case cosmos(testnet: Bool)
     case terraV1
+    case terraV1USD
     case terraV2
     
     public var isTestnet: Bool {
         switch self {
         case .bitcoin(let testnet):
             return testnet
-        case .litecoin, .ducatus, .cardano, .xrp, .rsk, .tezos, .dogecoin, .kusama, .terraV1, .terraV2:
+        case .litecoin, .ducatus, .cardano, .xrp, .rsk, .tezos, .dogecoin, .kusama, .terraV1, .terraV1USD, .terraV2:
             return false
         case .stellar(let testnet):
             return testnet
@@ -124,7 +125,7 @@ public enum Blockchain: Equatable, Hashable {
             return 8
         case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava:
             return 18
-        case  .cardano, .xrp, .tezos, .tron, .cosmos, .terraV1, .terraV2:
+        case  .cardano, .xrp, .tezos, .tron, .cosmos, .terraV1, .terraV1USD, .terraV2:
             return 6
         case .stellar:
             return 7
@@ -201,6 +202,8 @@ public enum Blockchain: Equatable, Hashable {
             return "ATOM"
         case .terraV1:
             return "LUNC"
+        case .terraV1USD:
+            return "USTC"
         case .terraV2:
             return "LUNA"
         }
@@ -569,7 +572,7 @@ extension Blockchain {
         case .kaspa: return 111111
         case .ravencoin: return 175
         case .cosmos: return 118
-        case .terraV1, .terraV2: return 330
+        case .terraV1, .terraV1USD, .terraV2: return 330
         }
     }
     
@@ -636,7 +639,7 @@ extension Blockchain {
         case .ravencoin:
             let networkParams: INetwork = isTestnet ? RavencoinTestNetworkParams() : RavencoinMainNetworkParams()
             return BitcoinLegacyAddressService(networkParams: networkParams)
-        case .cosmos, .terraV1, .terraV2:
+        case .cosmos, .terraV1, .terraV1USD, .terraV2:
             // TODO: refactor use use this code for all TrustWallet blockchains
             let coin = try! CoinType(self)
             return TrustWalletAddressService(coin: coin, publicKeyType: coin.publicKeyType)
@@ -715,6 +718,7 @@ extension Blockchain: Codable {
         case .ravencoin: return "ravencoin"
         case .cosmos: return "cosmos-hub"
         case .terraV1: return "terra"
+        case .terraV1USD: return "terra-usd"
         case .terraV2: return "terra-2"
         }
     }
@@ -772,6 +776,7 @@ extension Blockchain: Codable {
         case "ravencoin": self = .ravencoin(testnet: isTestnet)
         case "cosmos-hub": self = .cosmos(testnet: isTestnet)
         case "terra": self = .terraV1
+        case "terra-usd": self = .terraV1USD
         case "terra-2": self = .terraV2
         default:
             // TODO: Remove this assert
@@ -967,7 +972,7 @@ extension Blockchain {
             } else {
                 return URL(string: "https://www.mintscan.io/cosmos/account/\(address)")!
             }
-        case .terraV1:
+        case .terraV1, .terraV1USD:
             return URL(string: "https://finder.terra.money/classic/address/\(address)")!
         case .terraV2:
             return URL(string: "https://terrasco.pe/mainnet/address/\(address)")!
@@ -1080,7 +1085,7 @@ extension Blockchain {
             return KaspaWalletAssembly()
         case .ravencoin:
             return RavencoinWalletAssembly()
-        case .cosmos, .terraV1, .terraV2:
+        case .cosmos, .terraV1, .terraV1USD, .terraV2:
             return CosmosWalletAssembly()
         }
     }
