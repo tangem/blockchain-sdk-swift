@@ -41,8 +41,8 @@ class CosmosNetworkService: MultiNetworkProvider {
                     
                     let rawAmount = try self.parseBalance(
                         balanceInfo,
-                        denomination: cosmosChain.smallestDenomination,
-                        decimalValue: cosmosChain.blockchain.decimalValue
+                        denomination: self.cosmosChain.smallestDenomination,
+                        decimalValue: self.cosmosChain.blockchain.decimalValue
                     )
                     let amount = Amount(with: self.cosmosChain.blockchain, value: rawAmount)
                     
