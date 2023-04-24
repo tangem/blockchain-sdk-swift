@@ -27,7 +27,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
     
     func update(completion: @escaping (Result<Void, Error>) -> Void) {
         cancellable = networkService
-            .accountInfo(for: wallet.address)
+            .accountInfo(for: wallet.address, tokens: cardTokens)
             .sink { result in
                 switch result {
                 case .failure(let error):
@@ -95,60 +95,49 @@ class CosmosWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        // Estimate gas by simulating a transaction without the 'fee'
-        // Get the gas
-        // Use the gas to simulate a transaction with the 'fee', getting a better gas approximation
-        return fetchSequenceIfNeeded()
-            .flatMap { [weak self] _ -> AnyPublisher<UInt64, Error> in
-                guard let self else { return .anyFail(error: WalletError.empty) }
-                
-                return self.estimateGas(amount: amount, destination: destination, initialGasApproximation: nil)
-            }
-            .flatMap { [weak self] initialGasEstimation -> AnyPublisher<UInt64, Error> in
-                guard let self else { return .anyFail(error: WalletError.empty) }
-                
-                return self.estimateGas(amount: amount, destination: destination, initialGasApproximation: initialGasEstimation)
-            }
+        let gasPrices = cosmosChain.gasPrices(for: amount.type)
+        
+        return estimateGas(amount: amount, destination: destination)
             .tryMap { [weak self] gas in
                 guard let self = self else { throw WalletError.empty }
                 
                 let blockchain = self.cosmosChain.blockchain
                 
-                return Array(repeating: gas, count: self.cosmosChain.gasPrices.count)
+                return Array(repeating: gas, count: gasPrices.count)
                     .enumerated()
                     .map { index, estimatedGas in
                         let gasMultiplier = self.cosmosChain.gasMultiplier
                         let feeMultiplier = self.cosmosChain.feeMultiplier
                         
                         let gas = estimatedGas * gasMultiplier
-                        let value = Decimal(Double(gas) * feeMultiplier * self.cosmosChain.gasPrices[index]) / blockchain.decimalValue
+                        
+                        var feeValueInSmallestDenomination = UInt64(Double(gas) * feeMultiplier * gasPrices[index])
+                        if let tax = self.tax(for: amount) {
+                            feeValueInSmallestDenomination += tax
+                        }
+                        
+                        let decimalValue = amount.type.token?.decimalValue ?? blockchain.decimalValue
+                        var feeValue = (Decimal(feeValueInSmallestDenomination) / decimalValue).rounded(blockchain: blockchain)
+                        
                         let parameters = CosmosFeeParameters(gas: gas)
-                        return Fee(Amount(with: blockchain, value: value), parameters: parameters)
+                        return Fee(Amount(with: blockchain, type: amount.type, value: feeValue), parameters: parameters)
                     }
             }
             .eraseToAnyPublisher()
     }
     
-    private func estimateGas(amount: Amount, destination: String, initialGasApproximation: UInt64?) -> AnyPublisher<UInt64, Error> {
+    private func estimateGas(amount: Amount, destination: String) -> AnyPublisher<UInt64, Error> {
         return Just(())
             .setFailureType(to: Error.self)
             .tryMap { [weak self] Void -> Data in
                 guard let self else { throw WalletError.empty }
                 
-                let feeAmount: Decimal?
-                if let initialGasApproximation {
-                    let regularGasPrice = self.cosmosChain.gasPrices[1]
-                    feeAmount = Decimal(Double(initialGasApproximation) * regularGasPrice) / self.cosmosChain.blockchain.decimalValue
-                } else {
-                    feeAmount = nil
-                }
-                
                 let input = try self.txBuilder.buildForSign(
                     amount: amount,
                     source: self.wallet.address,
                     destination: destination,
-                    feeAmount: feeAmount,
-                    gas: initialGasApproximation,
+                    feeAmount: nil,
+                    gas: nil,
                     params: nil
                 )
                 
@@ -172,7 +161,11 @@ class CosmosWalletManager: BaseManager, WalletManager {
         if let accountNumber = accountInfo.accountNumber {
             txBuilder.setAccountNumber(accountNumber)
         }
-        updateSequenceNumber(accountInfo.sequenceNumber)
+        txBuilder.setSequenceNumber(accountInfo.sequenceNumber)
+        
+        for (token, balance) in accountInfo.tokenBalances {
+            wallet.add(tokenValue: balance, for: token)
+        }
         
         // Transactions are confirmed instantaneuously
         for (index, _) in wallet.transactions.enumerated() {
@@ -180,29 +173,18 @@ class CosmosWalletManager: BaseManager, WalletManager {
         }
     }
     
-    private func updateSequenceNumber(_ sequenceNumber: UInt64) {
-        txBuilder.setSequenceNumber(sequenceNumber)
-    }
-    
-    
-    private func fetchSequenceIfNeeded() -> AnyPublisher<Void, Error> {
-        switch cosmosChain {
-        case .cosmos, .terraV2, .gaia:
-            return Just(()).setFailureType(to: Error.self).eraseToAnyPublisher()
-        case .terraV1, .terraV1USD:
-            break
+    private func tax(for amount: Amount) -> UInt64? {
+        guard case .token(let token) = amount.type,
+              let taxPercent = cosmosChain.taxPercentByContractAddress[token.contractAddress]
+        else {
+            return nil
         }
         
-        return networkService.accountInfo(for: wallet.address)
-            .map(\.sequenceNumber)
-            .handleEvents(receiveOutput:  { [weak self] sequenceNumber in
-                print(sequenceNumber)
-                self?.updateSequenceNumber(sequenceNumber)
-            })
-            .map { _ in
-                ()
-            }
-            .eraseToAnyPublisher()
+        let decimalValue = amount.type.token?.decimalValue ?? cosmosChain.blockchain.decimalValue
+        let amountInSmallestDenomination = amount.value * decimalValue
+        let taxAmount = amountInSmallestDenomination * taxPercent / 100
+        
+        return (taxAmount as NSDecimalNumber).uint64Value
     }
 }
 

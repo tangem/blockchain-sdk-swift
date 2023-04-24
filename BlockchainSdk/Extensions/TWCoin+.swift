@@ -52,7 +52,7 @@ extension CoinType {
             self = .ravencoin
         case .cosmos:
             self = .cosmos
-        case .terraV1, .terraV1USD:
+        case .terraV1:
             self = .terra
         case .terraV2:
             self = .terraV2

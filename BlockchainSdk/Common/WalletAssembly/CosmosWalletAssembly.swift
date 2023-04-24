@@ -16,12 +16,10 @@ struct CosmosWalletAssembly: WalletManagerAssembly {
             cosmosChain = .cosmos(testnet: testnet)
         case .terraV1:
             cosmosChain = .terraV1
-        case .terraV1USD:
-            cosmosChain = .terraV1USD
         case .terraV2:
             cosmosChain = .terraV2
         default:
-            fatalError()
+            throw WalletError.empty
         }
         
         let urls = cosmosChain.urls(for: input.blockchainConfig)
