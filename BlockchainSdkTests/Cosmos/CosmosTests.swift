@@ -82,7 +82,8 @@ class CosmosTests: XCTestCase {
     }
     
     func testTerraV1USDTransaction() throws {
-        let cosmosChain = CosmosChain.terraV1USD
+        let cosmosChain = CosmosChain.terraV1
+        let token = Token(name: "USTC", symbol: "USTC", contractAddress: "uusd", decimalCount: 6)
         
         let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"))!
         let publicKeyData = privateKey.getPublicKeySecp256k1(compressed: true).data
@@ -97,7 +98,7 @@ class CosmosTests: XCTestCase {
         txBuilder.setSequenceNumber(1)
         
         let input = try! txBuilder.buildForSign(
-            amount: Amount(with: cosmosChain.blockchain, value: 1),
+            amount: Amount(with: token, value: 1),
             source: wallet.address,
             destination: "terra1jlgaqy9nvn2hf5t2sra9ycz8s77wnf9l0kmgcp",
             feeAmount: 0.03,
@@ -111,7 +112,7 @@ class CosmosTests: XCTestCase {
         
         let expectedOutput =
                 """
-                {"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CpABCo0BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm0KLHRlcnJhMWhzazZqcnl5cWpmaHA1ZGhjNTV0YzlqdGNreWd4MGVwMzdoZGQyEix0ZXJyYTFqbGdhcXk5bnZuMmhmNXQyc3JhOXljejhzNzd3bmY5bDBrbWdjcBoPCgR1dXNkEgcxMDAwMDAwEnUKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQJXKG7D830zVXu7qgALJ3RKyQI6qZZ8rnWhgdH/kfqdxRIECgIIARgBEiEKDQoEdXVzZBIFMzIwMDAKDAoEdXVzZBIEMjAwMBDAmgwaQKIIynXT/E5IzSV33NJcfeFzEuh4R516h1nJq+UGeh0CHIBqVE0gSvw081YhYSoEaRFZi+emer6Qd1lk0eHu8vQ="}
+                {"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CpABCo0BChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEm0KLHRlcnJhMWhzazZqcnl5cWpmaHA1ZGhjNTV0YzlqdGNreWd4MGVwMzdoZGQyEix0ZXJyYTFqbGdhcXk5bnZuMmhmNXQyc3JhOXljejhzNzd3bmY5bDBrbWdjcBoPCgR1dXNkEgcxMDAwMDAwEmcKUApGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQJXKG7D830zVXu7qgALJ3RKyQI6qZZ8rnWhgdH/kfqdxRIECgIIARgBEhMKDQoEdXVzZBIFMzAwMDAQwJoMGkAnF3n5KOt8/GP2oe0lZJKIZSmnjAy7BDpNoY35hP5wT1sWEtzVVZVgxPFfsdefJb5JnFJRcJtWL6Tne/DCN5wi"}
                 """
         
         XCTAssertJSONEqual(transactionString, expectedOutput)

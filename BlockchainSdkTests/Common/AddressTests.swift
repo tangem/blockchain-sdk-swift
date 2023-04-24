@@ -735,7 +735,6 @@ class AddressesTests: XCTestCase {
     func testTerraAddress() throws {
         let blockchains: [Blockchain] = [
             .terraV1,
-            .terraV1USD,
             .terraV2,
         ]
         
