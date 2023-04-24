@@ -53,12 +53,21 @@ class CosmosTransactionBuilder {
                 feeAmountInSmallestDenomination += tax
             }
             
+            var feeAmounts = [CosmosAmount.with {
+                $0.amount = "\(feeAmountInSmallestDenomination)"
+                $0.denom = denomination
+            }]
+            
+            if let tax = tax(for: amount) {
+                feeAmounts.append(CosmosAmount.with {
+                    $0.amount = "\(tax)"
+                    $0.denom = denomination
+                })
+            }
+            
             fee = CosmosFee.with {
                 $0.gas = gas
-                $0.amounts = [CosmosAmount.with {
-                    $0.amount = "\(feeAmountInSmallestDenomination)"
-                    $0.denom = denomination
-                }]
+                $0.amounts = feeAmounts
             }
         } else {
             fee = nil
