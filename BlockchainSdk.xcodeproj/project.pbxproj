@@ -739,14 +739,14 @@
 			path = Jsons;
 			sourceTree = "<group>";
 		};
-		2D75FAE429E567F500D9CDEE /* CompareTests */ = {
+		2D75FAE429E567F500D9CDEE /* VectorTests */ = {
 			isa = PBXGroup;
 			children = (
 				2D75FAE529E567F500D9CDEE /* AddressesValidationTests.swift */,
 				2D194D4029EFD4C9005ABDF6 /* DerivationCompareTests.swift */,
 				2D75FAE629E567F500D9CDEE /* PublicKeyAddressValidatationTests.swift */,
 			);
-			path = CompareTests;
+			path = VectorTests;
 			sourceTree = "<group>";
 		};
 		2D9A918C29BB8BFF00476EA6 /* TON */ = {
@@ -876,7 +876,7 @@
 			children = (
 				2D5B013B29F673E800225F9F /* Jsons */,
 				B00DEACC28FEE6070077CD19 /* Common */,
-				2D75FAE429E567F500D9CDEE /* CompareTests */,
+				2D75FAE429E567F500D9CDEE /* VectorTests */,
 				B00DEAC728FEE5E00077CD19 /* Bitcoin */,
 				DA198B5729E3F6DB00DB6EEA /* Cosmos */,
 				B00DEAC828FEE5E90077CD19 /* Ethereum */,
