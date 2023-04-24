@@ -1023,6 +1023,8 @@ extension Blockchain {
         case "ethereumfair": return .ethereumFair
         case "sxdai": return .saltPay
         case "ton": return .ton(testnet: isTestnet)
+        case "terra": return .terraV1
+        case "terra-2": return .terraV2
         default: return nil
         }
     }
