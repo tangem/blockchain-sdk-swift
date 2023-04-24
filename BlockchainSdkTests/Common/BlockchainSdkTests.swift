@@ -185,7 +185,6 @@ class BlockchainSdkTests: XCTestCase {
         case .ravencoin: break
         case .cosmos: break
         case .terraV1: break
-        case .terraV1USD: break
         case .terraV2: break
             // READ BELOW:
             //
@@ -227,7 +226,6 @@ class BlockchainSdkTests: XCTestCase {
             .ravencoin(testnet: false),
             .cosmos(testnet: false),
             .terraV1,
-            .terraV1USD,
             .terraV2,
         ]
         
