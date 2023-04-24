@@ -243,6 +243,12 @@ public enum Blockchain: Equatable, Hashable {
             return "Salt Pay"
         case .kava:
             return "Kava EVM"
+        case .terraV1:
+            return "Terra Classic"
+        case .terraV1USD:
+            return "TerraClassicUSD"
+        case .terraV2:
+            return "Terra"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
