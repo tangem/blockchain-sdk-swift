@@ -116,18 +116,10 @@ class CosmosWalletManager: BaseManager, WalletManager {
                             feeValueInSmallestDenomination += tax
                         }
                         
-                        var feeValue = (Decimal(feeValueInSmallestDenomination) / blockchain.decimalValue).rounded(blockchain: blockchain)
+                        let decimalValue = amount.type.token?.decimalValue ?? blockchain.decimalValue
+                        var feeValue = (Decimal(feeValueInSmallestDenomination) / decimalValue).rounded(blockchain: blockchain)
                         
                         let parameters = CosmosFeeParameters(gas: gas)
-                        
-                        // !!!
-                        // !!!
-                        // !!!
-                        // TODO: CHECK `blockchain.decimalValue` entries
-                        // !!!
-                        // !!!
-                        // !!!
-                        
                         return Fee(Amount(with: blockchain, type: amount.type, value: feeValue), parameters: parameters)
                     }
             }
@@ -188,7 +180,8 @@ class CosmosWalletManager: BaseManager, WalletManager {
             return nil
         }
         
-        let amountInSmallestDenomination = amount.value * cosmosChain.blockchain.decimalValue
+        let decimalValue = amount.type.token?.decimalValue ?? cosmosChain.blockchain.decimalValue
+        let amountInSmallestDenomination = amount.value * decimalValue
         let taxAmount = amountInSmallestDenomination * taxPercent / 100
         
         return (taxAmount as NSDecimalNumber).uint64Value
