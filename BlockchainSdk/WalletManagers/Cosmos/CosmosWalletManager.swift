@@ -45,7 +45,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
         guard let feeParameters = transaction.fee.parameters as? CosmosFeeParameters else {
             return .anyFail(error: WalletError.failedToBuildTx)
         }
-                
+        
         return Just(())
             .receive(on: DispatchQueue.global())
             .setFailureType(to: Error.self)
@@ -73,7 +73,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 guard let outputData = output.serialized.data(using: .utf8) else {
                     throw WalletError.failedToGetFee
                 }
-
+                
                 return outputData
             }
             .flatMap { [weak self] transaction -> AnyPublisher<String, Error> in
@@ -98,9 +98,9 @@ class CosmosWalletManager: BaseManager, WalletManager {
         return estimateGas(amount: amount, destination: destination)
             .tryMap { [weak self] gas in
                 guard let self = self else { throw WalletError.empty }
-
+                
                 let blockchain = self.cosmosChain.blockchain
-
+                
                 return Array(repeating: gas, count: self.cosmosChain.gasPrices.count)
                     .enumerated()
                     .map { index, estimatedGas -> Fee in
