@@ -95,6 +95,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
+        let gasPrices = cosmosChain.gasPrices(for: amount.type)
         
         // Estimate gas by simulating a transaction without the 'fee'
         // Get the gas
@@ -110,16 +111,25 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 
                 let blockchain = self.cosmosChain.blockchain
                 
-                return Array(repeating: gas, count: self.cosmosChain.gasPrices.count)
+                return Array(repeating: gas, count: gasPrices.count)
                     .enumerated()
                     .map { index, estimatedGas in
                         let gasMultiplier = self.cosmosChain.gasMultiplier
                         let feeMultiplier = self.cosmosChain.feeMultiplier
                         
                         let gas = estimatedGas * gasMultiplier
-                        let value = Decimal(Double(gas) * feeMultiplier * self.cosmosChain.gasPrices[index]) / blockchain.decimalValue
+                        let value = Decimal(Double(gas) * feeMultiplier * gasPrices[index]) / blockchain.decimalValue
                         let parameters = CosmosFeeParameters(gas: gas)
-                        return Fee(Amount(with: blockchain, value: value), parameters: parameters)
+                        
+                        // !!!
+                        // !!!
+                        // !!!
+                        // TODO: CHECK `blockchain.decimalValue` entries
+                        // !!!
+                        // !!!
+                        // !!!
+                        
+                        return Fee(Amount(with: blockchain, type: amount.type, value: value), parameters: parameters)
                     }
             }
             .eraseToAnyPublisher()
@@ -133,7 +143,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 
                 let feeAmount: Decimal?
                 if let initialGasApproximation {
-                    let regularGasPrice = self.cosmosChain.gasPrices[1]
+                    let regularGasPrice = self.cosmosChain.gasPrices(for: amount.type)[1]
                     feeAmount = Decimal(Double(initialGasApproximation) * regularGasPrice) / self.cosmosChain.blockchain.decimalValue
                 } else {
                     feeAmount = nil

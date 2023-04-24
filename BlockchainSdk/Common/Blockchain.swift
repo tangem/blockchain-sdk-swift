@@ -242,8 +242,6 @@ public enum Blockchain: Equatable, Hashable {
             return "Kava EVM"
         case .terraV1:
             return "Terra Classic"
-        case .terraV1USD:
-            return "TerraClassicUSD"
         case .terraV2:
             return "Terra"
         default:

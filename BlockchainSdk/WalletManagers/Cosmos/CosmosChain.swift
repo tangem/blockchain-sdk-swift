@@ -103,7 +103,7 @@ extension CosmosChain {
     }
     
     // feeCurrencies/gasPriceStep field from Keplr registry
-    var gasPrices: [Double] {
+    func gasPrices(for amountType: Amount.AmountType) -> [Double] {
         switch self {
         case .cosmos:
             return [
@@ -112,11 +112,19 @@ extension CosmosChain {
                 0.03,
             ]
         case .terraV1:
-            return [
-                28.325,
-                28.325,
-                28.325,
-            ]
+            if case .coin = amountType {
+                return [
+                    28.325,
+                    28.325,
+                    28.325,
+                ]
+            } else {
+                return [
+                    1,
+                    1,
+                    1,
+                ]
+            }
         case .terraV2:
             return [
                 0.015,
@@ -172,6 +180,18 @@ extension CosmosChain {
         case .terraV1:
             return [
                 "uusd": "uusd",
+            ]
+        case .cosmos, .gaia, .terraV2:
+            return [:]
+        }
+    }
+    
+    
+    var taxPercentByContractAddress: [String: Decimal] {
+        switch self {
+        case .terraV1:
+            return [
+                "uusd": 0.2,
             ]
         case .cosmos, .gaia, .terraV2:
             return [:]
