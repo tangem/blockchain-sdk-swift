@@ -113,7 +113,14 @@ class CosmosWalletManager: BaseManager, WalletManager {
                         let feeMultiplier = self.cosmosChain.feeMultiplier
                         
                         let gas = estimatedGas * gasMultiplier
-                        let value = (Decimal(Double(gas) * feeMultiplier * gasPrices[index]) / blockchain.decimalValue).rounded(blockchain: blockchain)
+                        
+                        var feeValueInSmallestDenomination = UInt64(Double(gas) * feeMultiplier * gasPrices[index])
+                        if let tax = self.tax(for: amount) {
+                            feeValueInSmallestDenomination += tax
+                        }
+                        
+                        var feeValue = (Decimal(feeValueInSmallestDenomination) / blockchain.decimalValue).rounded(blockchain: blockchain)
+                        
                         let parameters = CosmosFeeParameters(gas: gas)
                         
                         // !!!
@@ -124,7 +131,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                         // !!!
                         // !!!
                         
-                        return Fee(Amount(with: blockchain, type: amount.type, value: value), parameters: parameters)
+                        return Fee(Amount(with: blockchain, type: amount.type, value: feeValue), parameters: parameters)
                     }
             }
             .eraseToAnyPublisher()
@@ -183,6 +190,19 @@ class CosmosWalletManager: BaseManager, WalletManager {
         for (index, _) in wallet.transactions.enumerated() {
             wallet.transactions[index].status = .confirmed
         }
+    }
+    
+    private func tax(for amount: Amount) -> UInt64? {
+        guard case .token(let token) = amount.type,
+              let taxPercent = cosmosChain.taxPercentByContractAddress[token.contractAddress]
+        else {
+            return nil
+        }
+        
+        let amountInSmallestDenomination = amount.value * cosmosChain.blockchain.decimalValue
+        let taxAmount = amountInSmallestDenomination * taxPercent / 100
+        
+        return (taxAmount as NSDecimalNumber).uint64Value
     }
 }
 

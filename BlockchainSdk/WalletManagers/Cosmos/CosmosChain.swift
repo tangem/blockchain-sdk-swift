@@ -145,7 +145,7 @@ extension CosmosChain {
         case .cosmos, .gaia:
             return 2
         case .terraV1:
-            return 3
+            return 4
         case .terraV2:
             return 2
         }

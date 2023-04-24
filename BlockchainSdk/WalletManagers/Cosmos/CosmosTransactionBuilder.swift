@@ -47,11 +47,7 @@ class CosmosTransactionBuilder {
         
         let fee: CosmosFee?
         if let feeAmount, let gas {
-            var feeAmountInSmallestDenomination = (feeAmount * cosmosChain.blockchain.decimalValue as NSDecimalNumber).uint64Value
-            
-            if let tax = tax(for: amount) {
-                feeAmountInSmallestDenomination += tax
-            }
+            let feeAmountInSmallestDenomination = (feeAmount * cosmosChain.blockchain.decimalValue as NSDecimalNumber).uint64Value
             
             fee = CosmosFee.with {
                 $0.gas = gas
@@ -116,19 +112,5 @@ class CosmosTransactionBuilder {
         case .reserve:
             throw WalletError.failedToBuildTx
         }
-    }
-    
-    
-    private func tax(for amount: Amount) -> UInt64? {
-        guard case .token(let token) = amount.type,
-              let taxPercent = cosmosChain.taxPercentByContractAddress[token.contractAddress]
-        else {
-            return nil
-        }
-        
-        let amountInSmallestDenomination = amount.value * cosmosChain.blockchain.decimalValue
-        let taxAmount = amountInSmallestDenomination * taxPercent / 100
-        
-        return (taxAmount as NSDecimalNumber).uint64Value
     }
 }
