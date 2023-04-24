@@ -95,15 +95,11 @@ class CosmosWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
+        
         // Estimate gas by simulating a transaction without the 'fee'
         // Get the gas
         // Use the gas to simulate a transaction with the 'fee', getting a better gas approximation
-        return fetchSequenceIfNeeded()
-            .flatMap { [weak self] _ -> AnyPublisher<UInt64, Error> in
-                guard let self else { return .anyFail(error: WalletError.empty) }
-                
-                return self.estimateGas(amount: amount, destination: destination, initialGasApproximation: nil)
-            }
+        return estimateGas(amount: amount, destination: destination, initialGasApproximation: nil)
             .flatMap { [weak self] initialGasEstimation -> AnyPublisher<UInt64, Error> in
                 guard let self else { return .anyFail(error: WalletError.empty) }
                 
@@ -172,37 +168,12 @@ class CosmosWalletManager: BaseManager, WalletManager {
         if let accountNumber = accountInfo.accountNumber {
             txBuilder.setAccountNumber(accountNumber)
         }
-        updateSequenceNumber(accountInfo.sequenceNumber)
+        txBuilder.setSequenceNumber(accountInfo.sequenceNumber)
         
         // Transactions are confirmed instantaneuously
         for (index, _) in wallet.transactions.enumerated() {
             wallet.transactions[index].status = .confirmed
         }
-    }
-    
-    private func updateSequenceNumber(_ sequenceNumber: UInt64) {
-        txBuilder.setSequenceNumber(sequenceNumber)
-    }
-    
-    
-    private func fetchSequenceIfNeeded() -> AnyPublisher<Void, Error> {
-        switch cosmosChain {
-        case .cosmos, .terraV2, .gaia:
-            return Just(()).setFailureType(to: Error.self).eraseToAnyPublisher()
-        case .terraV1, .terraV1USD:
-            break
-        }
-        
-        return networkService.accountInfo(for: wallet.address)
-            .map(\.sequenceNumber)
-            .handleEvents(receiveOutput:  { [weak self] sequenceNumber in
-                print(sequenceNumber)
-                self?.updateSequenceNumber(sequenceNumber)
-            })
-            .map { _ in
-                ()
-            }
-            .eraseToAnyPublisher()
     }
 }
 
