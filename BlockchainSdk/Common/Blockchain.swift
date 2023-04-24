@@ -1030,6 +1030,8 @@ extension Blockchain {
     }
 }
 
+// MARK: - Transaction history
+
 extension Blockchain {
     public var canLoadTransactionHistory: Bool {
         switch self {
@@ -1037,6 +1039,20 @@ extension Blockchain {
             return true
         default:
             return false
+        }
+    }
+}
+
+// MARK: - Token transaction fee currency
+
+extension Blockchain {
+    // Some networks (Terra specifically) allow the fees to be paid in tokens themselves when transacting tokens
+    public var tokenTransactionFeePaidInNetworkCurrency: Bool {
+        switch self {
+        case .terraV1:
+            return false
+        default:
+            return true
         }
     }
 }
