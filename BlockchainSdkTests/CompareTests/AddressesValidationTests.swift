@@ -14,27 +14,17 @@ import WalletCore
 @testable import BlockchainSdk
 
 /// Basic testplan for testing validation Addresses blockchain with compare addreses from TrustWallet address service and Local address service
-class CoinAddressesCompareTests: XCTestCase {
+class AddressesValidationTests: XCTestCase {
     
     let addressesUtility = AddressServiceManagerUtility()
     let testVectorsUtility = TestVectorsUtility()
     
 }
 
-extension CoinAddressesCompareTests {
-    
-    struct Vector: Decodable {
-        let blockchain: String
-        let positive: [String]
-        let negative: [String]
-    }
-    
-}
-
 // MARK: - Compare Addresses from address string
 
 @available(iOS 13.0, *)
-extension CoinAddressesCompareTests {
+extension AddressesValidationTests {
     
     func testAddressVector() {
         do {
@@ -43,7 +33,7 @@ extension CoinAddressesCompareTests {
                 return
             }
             
-            guard let vectors: [Vector] = try testVectorsUtility.getTestVectors(from: "addresses_compare_vectors") else {
+            guard let vectors: [DecodableVectors.ValidAddressVector] = try testVectorsUtility.getTestVectors(from: "valid_address_vectors") else {
                 XCTFail("__INVALID_VECTOR__ ADDRESSES DATA IS NIL")
                 return
             }

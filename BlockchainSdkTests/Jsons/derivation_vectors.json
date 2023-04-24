@@ -152,6 +152,62 @@
             "tangem": "m/44'/195'/0'/0/0",
             "trust": "m/44'/195'/0'/0/0"
         }
+    },
+    {
+        "blockchain": "arbitrum",
+        "derivation": {
+            "tangem": "m/44'/60'/0'/0/0",
+            "trust": "m/44'/60'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "dash",
+        "derivation": {
+            "tangem": "m/44'/5'/0'/0/0",
+            "trust": "m/44'/5'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "gnosis",
+        "derivation": {
+            "tangem": "m/44'/60'/0'/0/0",
+            "trust": "m/44'/60'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "optimism",
+        "derivation": {
+            "tangem": "m/44'/60'/0'/0/0",
+            "trust": "m/44'/60'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "ton",
+        "derivation": {
+            "tangem": "m/44'/607'/0'/0/0",
+            "trust": "m/44'/607'/0'"
+        }
+    },
+    {
+        "blockchain": "kava",
+        "derivation": {
+            "tangem": "m/44'/60'/0'/0/0",
+            "trust": "m/44'/459'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "kaspa",
+        "derivation": {
+            "tangem": "m/44'/111111'/0'/0/0",
+            "trust": "m/44'/111111'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "ravencoin",
+        "derivation": {
+            "tangem": "m/44'/175'/0'/0/0",
+            "trust": "m/44'/175'/0'/0/0"
+        }
     }
 ]
 
