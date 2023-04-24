@@ -97,10 +97,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         let gasPrices = cosmosChain.gasPrices(for: amount.type)
         
-        // Estimate gas by simulating a transaction without the 'fee'
-        // Get the gas
-        // Use the gas to simulate a transaction with the 'fee', getting a better gas approximation
-        return estimateGas(amount: amount, destination: destination, initialGasApproximation: nil)
+        return estimateGas(amount: amount, destination: destination)
             .tryMap { [weak self] gas in
                 guard let self = self else { throw WalletError.empty }
                 
@@ -137,26 +134,18 @@ class CosmosWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
-    private func estimateGas(amount: Amount, destination: String, initialGasApproximation: UInt64?) -> AnyPublisher<UInt64, Error> {
+    private func estimateGas(amount: Amount, destination: String) -> AnyPublisher<UInt64, Error> {
         return Just(())
             .setFailureType(to: Error.self)
             .tryMap { [weak self] Void -> Data in
                 guard let self else { throw WalletError.empty }
                 
-                let feeAmount: Decimal?
-                if let initialGasApproximation {
-                    let regularGasPrice = self.cosmosChain.gasPrices(for: amount.type)[1]
-                    feeAmount = Decimal(Double(initialGasApproximation) * regularGasPrice) / self.cosmosChain.blockchain.decimalValue
-                } else {
-                    feeAmount = nil
-                }
-                
                 let input = try self.txBuilder.buildForSign(
                     amount: amount,
                     source: self.wallet.address,
                     destination: destination,
-                    feeAmount: feeAmount,
-                    gas: initialGasApproximation,
+                    feeAmount: nil,
+                    gas: nil,
                     params: nil
                 )
                 
