@@ -143,7 +143,7 @@ extension CosmosChain {
     var gasMultiplier: UInt64 {
         switch self {
         case .cosmos, .gaia:
-            return 1
+            return 2
         case .terraV1:
             return 3
         case .terraV2:

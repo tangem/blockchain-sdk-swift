@@ -100,12 +100,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
         // Estimate gas by simulating a transaction without the 'fee'
         // Get the gas
         // Use the gas to simulate a transaction with the 'fee', getting a better gas approximation
-        return estimateGas(amount: amount, destination: destination, initialGasApproximation: 200_000)
-            .flatMap { [weak self] initialGasEstimation -> AnyPublisher<UInt64, Error> in
-                guard let self else { return .anyFail(error: WalletError.empty) }
-                
-                return self.estimateGas(amount: amount, destination: destination, initialGasApproximation: initialGasEstimation)
-            }
+        return estimateGas(amount: amount, destination: destination, initialGasApproximation: nil)
             .tryMap { [weak self] gas in
                 guard let self = self else { throw WalletError.empty }
                 
@@ -118,7 +113,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                         let feeMultiplier = self.cosmosChain.feeMultiplier
                         
                         let gas = estimatedGas * gasMultiplier
-                        let value = Decimal(Double(gas) * feeMultiplier * gasPrices[index]) / blockchain.decimalValue
+                        let value = (Decimal(Double(gas) * feeMultiplier * gasPrices[index]) / blockchain.decimalValue).rounded(blockchain: blockchain)
                         let parameters = CosmosFeeParameters(gas: gas)
                         
                         // !!!
