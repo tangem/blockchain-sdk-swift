@@ -95,25 +95,18 @@ class CosmosWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        
-        // Estimate gas by simulating a transaction without the 'fee'
-        // Get the gas
-        // Use the gas to simulate a transaction with the 'fee', getting a better gas approximation
-        return estimateGas(amount: amount, destination: destination, initialGasApproximation: nil)
-            .flatMap { [weak self] initialGasEstimation -> AnyPublisher<UInt64, Error> in
-                guard let self else { return .anyFail(error: WalletError.empty) }
-                
-                return self.estimateGas(amount: amount, destination: destination, initialGasApproximation: initialGasEstimation)
-            }
+        return estimateGas(amount: amount, destination: destination)
             .tryMap { [weak self] gas in
                 guard let self = self else { throw WalletError.empty }
-                
+
                 let blockchain = self.cosmosChain.blockchain
-                
+
                 return Array(repeating: gas, count: self.cosmosChain.gasPrices.count)
                     .enumerated()
-                    .map { index, gas in
-                        let value = Decimal(Double(gas) * self.cosmosChain.gasPrices[index]) / blockchain.decimalValue
+                    .map { index, estimatedGas -> Fee in
+                        let cosmosGasMultiplier: UInt64 = 2
+                        let gas = estimatedGas * cosmosGasMultiplier
+                        let value = (Decimal(Double(gas) * self.cosmosChain.gasPrices[index]) / blockchain.decimalValue).rounded(blockchain: blockchain)
                         let parameters = CosmosFeeParameters(gas: gas)
                         return Fee(Amount(with: blockchain, value: value), parameters: parameters)
                     }
@@ -121,26 +114,18 @@ class CosmosWalletManager: BaseManager, WalletManager {
             .eraseToAnyPublisher()
     }
     
-    private func estimateGas(amount: Amount, destination: String, initialGasApproximation: UInt64?) -> AnyPublisher<UInt64, Error> {
+    private func estimateGas(amount: Amount, destination: String) -> AnyPublisher<UInt64, Error> {
         return Just(())
             .setFailureType(to: Error.self)
             .tryMap { [weak self] Void -> Data in
                 guard let self else { throw WalletError.empty }
                 
-                let feeAmount: Decimal?
-                if let initialGasApproximation {
-                    let regularGasPrice = self.cosmosChain.gasPrices[1]
-                    feeAmount = Decimal(Double(initialGasApproximation) * regularGasPrice) / self.cosmosChain.blockchain.decimalValue
-                } else {
-                    feeAmount = nil
-                }
-                
                 let input = try self.txBuilder.buildForSign(
                     amount: amount,
                     source: self.wallet.address,
                     destination: destination,
-                    feeAmount: feeAmount,
-                    gas: initialGasApproximation,
+                    feeAmount: nil,
+                    gas: nil,
                     params: nil
                 )
                 
