@@ -27,7 +27,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
     
     func update(completion: @escaping (Result<Void, Error>) -> Void) {
         cancellable = networkService
-            .accountInfo(for: wallet.address)
+            .accountInfo(for: wallet.address, tokens: cardTokens)
             .sink { result in
                 switch result {
                 case .failure(let error):
@@ -169,6 +169,10 @@ class CosmosWalletManager: BaseManager, WalletManager {
             txBuilder.setAccountNumber(accountNumber)
         }
         txBuilder.setSequenceNumber(accountInfo.sequenceNumber)
+        
+        for (token, balance) in accountInfo.tokenBalances {
+            wallet.add(tokenValue: balance, for: token)
+        }
         
         // Transactions are confirmed instantaneuously
         for (index, _) in wallet.transactions.enumerated() {
