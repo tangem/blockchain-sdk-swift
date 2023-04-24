@@ -1,0 +1,185 @@
+[
+    {
+        "blockchain": "ethereum",
+        "positive": [
+            "0xeDe8F58dADa22c3A49dB60D4f82BAD428ab65F89",
+            "0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359",
+            "0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359",
+            "0x52908400098527886E0F7030069857D2E4169EE7",
+            "0x52908400098527886E0F7030069857D2E4169EE7",
+            "0x8617E340B3D01FA5F11F306F4090FD50E238070D",
+            "0xde709f2102306220921060314715629080e2fb77",
+            "0x27b1fdb04752bbc536007a920d24acb045561c26",
+            "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed",
+            "0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359",
+            "0xdbF03B407c01E7cD3CBea99509d93f8DDDC8C6FB",
+            "0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b9aDb",
+            "0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d"
+        ],
+        "negative": [
+            "ede8f58dada22a49db60d4f82bad428ab65f89"
+        ]
+    },
+    {
+        "blockchain": "bitcoin",
+        "positive": [
+            "bc1q2ddhp55sq2l4xnqhpdv0xazg02v9dr7uu8c2p2",
+            "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2",
+            "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2",
+            "1AC4gh14wwZPULVPCdxUkgqbtPvC92PQPN",
+            "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs",
+            "bc1qcj2vfjec3c3luf9fx9vddnglhh9gawmncmgxhz"
+        ],
+        "negative": [
+            "bc1q2ddhp55sq2l4xnqhpdv9xazg02v9dr7uu8c2p2",
+            "MPmoY6RX3Y3HFjGEnFxyuLPCQdjvHwMEny",
+            "abc",
+            "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed",
+            "175tWpb8K1S7NmH4Zx6rewF9WQrcZv245W"
+        ]
+    },
+    {
+        "blockchain": "litecoin",
+        "positive": [
+            "ltc1q5wmm9vrz55war9c0rgw26tv9un5fxnn7slyjpy",
+            "MPmoY6RX3Y3HFjGEnFxyuLPCQdjvHwMEny",
+            "LMbRCidgQLz1kNA77gnUpLuiv2UL6Bc4Q2"
+        ],
+        "negative": [
+            "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"
+        ]
+    },
+    {
+        "blockchain": "bitcoinCash",
+        "positive": [
+            "bitcoincash:qruxj7zq6yzpdx8dld0e9hfvt7u47zrw9gfr5hy0vh",
+            "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd",
+            "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"
+        ],
+        "negative": []
+    },
+    {
+        "blockchain": "binance",
+        "positive": [
+            "bnb1c2zwqqucrqvvtyxfn78ajm8w2sgyjf5eex5gcc"
+        ],
+        "negative": []
+    },
+    {
+        "blockchain": "tezos",
+        "positive": [
+            "tz1d1qQL3mYVuiH4JPFvuikEpFwaDm85oabM"
+        ],
+        "negative": [
+            "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3AAAA",
+            "1tzeZwq8b5cvE2bPKokatLkVMzkxz24zAAAAA"
+        ]
+    },
+    {
+        "blockchain": "tron",
+        "positive": [
+            "TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC"
+        ],
+        "negative": [
+            "abc",
+            "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed",
+            "175tWpb8K1S7NmH4Zx6rewF9WQrcZv245W",
+            "RJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC"
+        ]
+    },
+    {
+        "blockchain": "stellar",
+        "positive": [
+            "GAB6EDWGWSRZUYUYCWXAFQFBHE5ZEJPDXCIMVZC3LH2C7IU35FTI2NOQ",
+            "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI"
+        ],
+        "negative": []
+    },
+    {
+        "blockchain": "xrp",
+        "positive": [
+            "rDpysuumkweqeC7XdNgYNtzL5GxbdsmrtF",
+            "XVfvixWZQKkcenFRYApCjpTUyJ4BePTe3jJv7beatUZvQYh",
+            "XVfvixWZQKkcenFRYApCjpTUyJ4BePTe3jJv7beatUZvQYh",
+            "rJjXGYnKNcbTsnuwoaP9wfDebB8hDX8jdQ",
+            "r36yxStAh7qgTQNHTzjZvXybCTzUFhrfav",
+            "XVfvixWZQKkcenFRYApCjpTUyJ4BePMjMaPqnob9QVPiVJV",
+            "rfxdLwsZnoespnTDDb1Xhvbc8EFNdztaoq",
+            "rU893viamSnsfP3zjzM2KPxjqZjXSXK6VF"
+        ],
+        "negative": []
+    },
+    {
+        "blockchain": "solana",
+        "positive": [
+            "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q",
+            "EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd"
+        ],
+        "negative": []
+    },
+    {
+        "blockchain": "polkadot",
+        "positive": [
+            "12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW",
+            "14PhJGbzPxhQbiq7k9uFjDQx3MNiYxnjFRSiVBvBBBfnkAoM"
+        ],
+        "negative": [
+            "cosmos1l4f4max9w06gqrvsxf74hhyzuqhu2l3zyf0480",
+            "3317oFJC9FvxU2fwrKVsvgnMGCDzTZ5nyf",
+            "ELmaX1aPkyEF7TSmYbbyCjmSgrBpGHv9EtpwR2tk1kmpwvG"
+        ]
+    },
+    {
+        "blockchain": "bsc",
+        "positive": [
+            "0xf3d468DBb386aaD46E92FF222adDdf872C8CC064"
+        ],
+        "negative": []
+    },
+    {
+        "blockchain": "ravencoin",
+        "positive": [
+            "RT1iM3xbqSQ276GNGGNGFdYrMTEeq4hXRH",
+            "RRjP4a6i7e1oX1mZq1rdQpNMHEyDdSQVNi"
+        ],
+        "negative": [
+            "QT1iM3xbqSQ276GNGGNGFdYrMTEeq4hXRH"
+        ]
+    },
+    {
+        "blockchain": "ton",
+        "positive": [
+            "EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2",
+            "EQAGDzFFIxJswaBU5Rqaz5H5dKUBGYEMhL44fpLtIdWbjkBo",
+            "EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG",
+            "0:8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae",
+            "0:66fbe3c5c03bf5c82792f904c9f8bf28894a6aa3d213d41c20569b654aadedb3"
+        ],
+        "negative": [
+            "8a8627861a5dd96c9db3ce0807b122da5ed473934ce7568a5b4b1c361cbb28ae"
+        ]
+    },
+    {
+        "blockchain": "cosmos-hub",
+        "positive": [
+            "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02",
+            "cosmospub1addwnpepqftjsmkr7d7nx4tmhw4qqze8w39vjq364xt8etn45xqarlu3l2wu2n7pgrq",
+            "cosmosvaloper1sxx9mszve0gaedz5ld7qdkjkfv8z992ax69k08",
+            "cosmosvalconspub1zcjduepqjnnwe2jsywv0kfc97pz04zkm7tc9k2437cde2my3y5js9t7cw9mstfg3sa"
+        ],
+        "negative": [
+            "cosmoz1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02",
+            "osmo1mky69cn8ektwy0845vec9upsdphktxt0en97f5",
+            "cosmosvaloper1sxx9mszve0gaedz5ld7qdkjkfv8z992ax69k03",
+            "cosmosvalconspub1zcjduepqjnnwe2jsywv0kfc97pz04zkm7tc9k2437cde2my3y5js9t7cw9mstfg3sb"
+        ]
+    },
+    {
+        "blockchain": "polygon",
+        "positive": [
+            "0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d"
+        ],
+        "negative": []
+    }
+]
+

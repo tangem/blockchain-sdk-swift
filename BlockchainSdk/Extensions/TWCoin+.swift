@@ -64,6 +64,8 @@ extension CoinType {
             self = .kava
         case .fantom:
             self = .fantom
+        case .cosmos:
+            self = .cosmos
         default:
             return nil
         }

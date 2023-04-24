@@ -18,7 +18,6 @@ class DerivationPublicKeyCompareTests: XCTestCase {
     // MARK: - Properties
     
     let blockchainUtility = BlockchainServiceManagerUtility()
-    let addressUtility = AddressServiceManagerUtility()
     
     lazy var mnemonicUtility = {
         MnemonicServiceManagerUtility(mnemonic: blockchainUtility.mnemonics[0])
@@ -26,7 +25,7 @@ class DerivationPublicKeyCompareTests: XCTestCase {
     
     // MARK: - Implementation
     
-    func testPublicKeyCompare() {
+    func testPublicKeysCompare() {
         blockchainUtility.blockchains.forEach { blockchain in
             if CoinType(blockchain) != nil {
                 guard let twReference = blockchainUtility.twDerivations.first(where: { $0.blockchain == blockchain }) else {

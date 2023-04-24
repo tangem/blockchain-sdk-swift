@@ -1,0 +1,157 @@
+[
+    {
+        "blockchain": "bitcoin",
+        "derivation": {
+            "tangem": "m/44'/0'/0'/0/0",
+            "trust": "m/84'/0'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "litecoin",
+        "derivation": {
+            "tangem": "m/44'/2'/0'/0/0",
+            "trust": "m/84'/2'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "stellar",
+        "derivation": {
+            "tangem": "m/44'/148'/0'",
+            "trust": "m/44'/148'/0'"
+        }
+    },
+    {
+        "blockchain": "ethereum",
+        "derivation": {
+            "tangem": "m/44'/60'/0'/0/0",
+            "trust": "m/44'/60'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "ethereum-pow-iou",
+        "derivation": {
+            "tangem": "m/44'/60'/0'/0/0",
+            "trust": "m/44'/60'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "ethereumfair",
+        "derivation": {
+            "tangem": "m/44'/60'/0'/0/0",
+            "trust": "m/44'/60'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "ethereumClassic",
+        "derivation": {
+            "tangem": "m/44'/60'/0'/0/0",
+            "trust": "m/44'/61'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "rsk",
+        "derivation": {
+            "tangem": "m/44'/60'/0'/0/0",
+            "trust": "m/44'/60'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "bitcoinCash",
+        "derivation": {
+            "tangem": "m/44'/145'/0'/0/0",
+            "trust": "m/44'/145'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "binance",
+        "derivation": {
+            "tangem": "m/44'/714'/0'/0/0",
+            "trust": "m/44'/714'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "cardano",
+        "derivation": {
+            "tangem": "m/1852'/1815'/0'/0/0",
+            "trust": "m/1852'/1815'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "xrp",
+        "derivation": {
+            "tangem": "m/44'/144'/0'/0/0",
+            "trust": "m/44'/144'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "tezos",
+        "derivation": {
+            "tangem": "m/44'/1729'/0'/0/0",
+            "trust": "m/44'/1729'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "dogecoin",
+        "derivation": {
+            "tangem": "m/44'/3'/0'/0/0",
+            "trust": "m/44'/3'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "bsc",
+        "derivation": {
+            "tangem": "m/44'/60'/0'/0/0",
+            "trust": "m/44'/714'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "polygon",
+        "derivation": {
+            "tangem": "m/44'/60'/0'/0/0",
+            "trust": "m/44'/60'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "avalanche",
+        "derivation": {
+            "tangem": "m/44'/60'/0'/0/0",
+            "trust": "m/44'/60'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "solana",
+        "derivation": {
+            "tangem": "m/44'/501'/0'",
+            "trust": "m/44'/501'/0'"
+        }
+    },
+    {
+        "blockchain": "fantom",
+        "derivation": {
+            "tangem": "m/44'/60'/0'/0/0",
+            "trust": "m/44'/60'/0'/0/0"
+        }
+    },
+    {
+        "blockchain": "polkadot",
+        "derivation": {
+            "tangem": "m/44'/354'/0'/0/0",
+            "trust": "m/44'/354'/0'/0'/0'"
+        }
+    },
+    {
+        "blockchain": "kusama",
+        "derivation": {
+            "tangem": "m/44'/434'/0'/0/0",
+            "trust": "m/44'/434'/0'/0'/0'"
+        }
+    },
+    {
+        "blockchain": "tron",
+        "derivation": {
+            "tangem": "m/44'/195'/0'/0/0",
+            "trust": "m/44'/195'/0'/0/0"
+        }
+    }
+]
+
