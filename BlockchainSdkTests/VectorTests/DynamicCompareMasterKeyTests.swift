@@ -55,6 +55,7 @@ extension PublicKeyAddressValidatationTests {
                     /// Validate public keys without derivations
                     XCTAssertEqual(trustWalletPublicKey.data.hex, tangemSdkPublicKey.publicKey.hex, "\(blockchain.displayName)!")
                 } catch {
+                    XCTFail("__INVALID_У__ \(error)")
                     return
                 }
             }

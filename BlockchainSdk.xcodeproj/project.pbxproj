@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		2D194D4129EFD4C9005ABDF6 /* DerivationCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D194D4029EFD4C9005ABDF6 /* DerivationCompareTests.swift */; };
-		2D194D4729EFF438005ABDF6 /* BlockchainServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D194D4629EFF438005ABDF6 /* BlockchainServiceManagerUtility.swift */; };
 		2D29A7F729D5C2AE00359A0C /* TWPublicKeyType+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D29A7F629D5C2AE00359A0C /* TWPublicKeyType+.swift */; };
 		2D3829C929D34A93001D4785 /* TWCoin+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829C829D34A93001D4785 /* TWCoin+.swift */; };
 		2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */; };
@@ -38,6 +37,7 @@
 		2D9A91A429BB8C1700476EA6 /* TONProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A919D29BB8C1700476EA6 /* TONProvider.swift */; };
 		2D9A91A529BB8C1700476EA6 /* TONProviderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A919E29BB8C1700476EA6 /* TONProviderRequest.swift */; };
 		2D9A91A729BB8C2E00476EA6 /* TrustWalletAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A91A629BB8C2E00476EA6 /* TrustWalletAddressService.swift */; };
+		2DADB19629F8181100E51E8D /* PublicKeyDerivationAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DADB19529F8181100E51E8D /* PublicKeyDerivationAddressTests.swift */; };
 		2DBBE94D29C8686000971539 /* OptimismWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBBE94C29C8686000971539 /* OptimismWalletAssembly.swift */; };
 		2DBBE95029C8DBEA00971539 /* TONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBBE94F29C8DBEA00971539 /* TONTests.swift */; };
 		2DC5796129C9CBB1004312AE /* TrustCoreSignerTesterUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5796029C9CBB1004312AE /* TrustCoreSignerTesterUtility.swift */; };
@@ -364,7 +364,6 @@
 /* Begin PBXFileReference section */
 		0C79DB7FEDD8D4029AFA208D /* Pods-BlockchainSdk.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.release.xcconfig"; sourceTree = "<group>"; };
 		2D194D4029EFD4C9005ABDF6 /* DerivationCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationCompareTests.swift; sourceTree = "<group>"; };
-		2D194D4629EFF438005ABDF6 /* BlockchainServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainServiceManagerUtility.swift; sourceTree = "<group>"; };
 		2D29A7F629D5C2AE00359A0C /* TWPublicKeyType+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWPublicKeyType+.swift"; sourceTree = "<group>"; };
 		2D3829C829D34A93001D4785 /* TWCoin+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWCoin+.swift"; sourceTree = "<group>"; };
 		2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressServiceManagerUtility.swift; sourceTree = "<group>"; };
@@ -394,6 +393,7 @@
 		2D9A919D29BB8C1700476EA6 /* TONProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProvider.swift; sourceTree = "<group>"; };
 		2D9A919E29BB8C1700476EA6 /* TONProviderRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProviderRequest.swift; sourceTree = "<group>"; };
 		2D9A91A629BB8C2E00476EA6 /* TrustWalletAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrustWalletAddressService.swift; sourceTree = "<group>"; };
+		2DADB19529F8181100E51E8D /* PublicKeyDerivationAddressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicKeyDerivationAddressTests.swift; sourceTree = "<group>"; };
 		2DBBE94C29C8686000971539 /* OptimismWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismWalletAssembly.swift; sourceTree = "<group>"; };
 		2DBBE94F29C8DBEA00971539 /* TONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONTests.swift; sourceTree = "<group>"; };
 		2DC5796029C9CBB1004312AE /* TrustCoreSignerTesterUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustCoreSignerTesterUtility.swift; sourceTree = "<group>"; };
@@ -756,6 +756,7 @@
 				2D194D4029EFD4C9005ABDF6 /* DerivationCompareTests.swift */,
 				2D5B014C29F7D2E800225F9F /* DynamicCompareMasterKeyTests.swift */,
 				2D75FAE629E567F500D9CDEE /* PublicKeyAddressValidatationTests.swift */,
+				2DADB19529F8181100E51E8D /* PublicKeyDerivationAddressTests.swift */,
 			);
 			path = VectorTests;
 			sourceTree = "<group>";
@@ -1412,7 +1413,6 @@
 				2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */,
 				5DE57D99277CAD6100CCA18A /* AddressTests.swift */,
 				5D14E47C2397B80F00C15FC8 /* BlockchainSdkTests.swift */,
-				2D194D4629EFF438005ABDF6 /* BlockchainServiceManagerUtility.swift */,
 				2D5B014429F6C31A00225F9F /* DecodableVectors.swift */,
 				2D5B014E29F7D4A800225F9F /* MnemonicServiceManagerUtility.swift */,
 				2D5B013E29F67DAB00225F9F /* TestVectorsUtility.swift */,
@@ -2345,10 +2345,10 @@
 				EF0DA78428523FAC0081092A /* EthereumTests.swift in Sources */,
 				EF0DA78A28523FAC0081092A /* PolkadotTests.swift in Sources */,
 				2D75FAE829E567F500D9CDEE /* AddressesValidationTests.swift in Sources */,
+				2DADB19629F8181100E51E8D /* PublicKeyDerivationAddressTests.swift in Sources */,
 				EF0DA78328523FAC0081092A /* AddressTests.swift in Sources */,
 				2D5B014F29F7D4A800225F9F /* MnemonicServiceManagerUtility.swift in Sources */,
 				2D75FAE929E567F500D9CDEE /* PublicKeyAddressValidatationTests.swift in Sources */,
-				2D194D4729EFF438005ABDF6 /* BlockchainServiceManagerUtility.swift in Sources */,
 				EF0DA78728523FAC0081092A /* TronTests.swift in Sources */,
 				DA3738F129EFDF9600439F6B /* PrivateKeySigner+.swift in Sources */,
 				EF0DA78528523FAC0081092A /* BlockchainSdkTests.swift in Sources */,
