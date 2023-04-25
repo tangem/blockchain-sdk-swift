@@ -752,10 +752,10 @@
 			isa = PBXGroup;
 			children = (
 				2D75FAE529E567F500D9CDEE /* AddressesValidationTests.swift */,
-				2D194D4029EFD4C9005ABDF6 /* DerivationCompareTests.swift */,
-				2D75FAE629E567F500D9CDEE /* PublicKeyAddressValidatationTests.swift */,
 				2D5B014829F7B96300225F9F /* BlockchainCodingKeyTests.swift */,
+				2D194D4029EFD4C9005ABDF6 /* DerivationCompareTests.swift */,
 				2D5B014C29F7D2E800225F9F /* DynamicCompareMasterKeyTests.swift */,
+				2D75FAE629E567F500D9CDEE /* PublicKeyAddressValidatationTests.swift */,
 			);
 			path = VectorTests;
 			sourceTree = "<group>";

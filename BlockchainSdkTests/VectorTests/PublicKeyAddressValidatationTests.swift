@@ -50,7 +50,6 @@ extension PublicKeyAddressValidatationTests {
                 let addressFromTrustWallet = try addressesUtility.makeTrustWalletAddressService(publicKey: publicKey, for: blockchain)
 
                 XCTAssertTrue(TrustWalletAddressService.validate(vector.address, for: blockchain), "-> \(blockchain)")
-
                 XCTAssertEqual(addressFromPublicKey, addressFromTrustWallet, "-> \(blockchain.displayName)!")
                 XCTAssertEqual(vector.address, addressFromPublicKey, "\(blockchain.displayName)!")
             }

@@ -46,27 +46,22 @@ final class MnemonicServiceManagerUtility {
     }
 
     /// Basic validation and store local keys wallet
-    func getDerivationPublicKeyFromTrustWallet(
+    func getPublicKeyFromTrustWallet(
         blockchain: BlockchainSdk.Blockchain,
-        derivationPath: String?
+        privateKey: PrivateKey
     ) throws -> PublicKey {
-        do {
-            if let coin = CoinType(blockchain), let derivationPath = derivationPath {
-                let privateKey = hdWallet.getKey(coin: coin, derivationPath: derivationPath)
-                return privateKey.getPublicKey(coinType: coin).compressed
-            } else if let coin = CoinType(blockchain) {
-                let privateKey = hdWallet.getKeyForCoin(coin: coin)
-                return privateKey.getPublicKey(coinType: coin).compressed
-            } else {
-                throw NSError(domain: "__INVALID_COIN_TYPE_FOR_KEY__ BLOCKCHAIN \(blockchain.currencySymbol)", code: -1)
-            }
-        } catch {
+        switch try? Curve(blockchain.curve) {
+        case .secp256k1:
+            return try privateKey.getPublicKeySecp256k1(compressed: true)
+        case .ed25519:
+            return try privateKey.getPublicKeyEd25519()
+        default:
             throw NSError(domain: "__INVALID_EXECUTE_KEY__ BLOCKCHAIN \(blockchain.currencySymbol)", code: -1)
         }
     }
     
     /// Basic validation and store local keys wallet
-    func getDerivationPublicKeyFromTangemSdk(
+    func getPublicKeyFromTangemSdk(
         blockchain: BlockchainSdk.Blockchain,
         privateKey: ExtendedPrivateKey
     ) throws -> ExtendedPublicKey {
