@@ -13,6 +13,7 @@ enum DecodableVectors: String {
     case validAddress = "valid_address_vectors"
     case derivation = "derivation_vectors"
     case publicKeyAddress = "public_key_address_vectors"
+    case mnemonic = "mnemonic_vectors"
 }
 
 // MARK: - Namespace
@@ -46,8 +47,14 @@ extension DecodableVectors {
     }
     
     struct MnemonicVector: Decodable {
-        let main: String
-        let suggestions: [String]?
+        
+        public struct Testable: Decodable {
+            let mnemonic: String
+            let seed: String
+        }
+        
+        let testable: Testable
+        let suggestions: [String]
     }
     
 }
