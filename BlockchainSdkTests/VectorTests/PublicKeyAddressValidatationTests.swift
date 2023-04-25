@@ -52,7 +52,7 @@ extension PublicKeyAddressValidatationTests {
                 XCTAssertTrue(TrustWalletAddressService.validate(vector.address, for: blockchain), "-> \(blockchain)")
 
                 XCTAssertEqual(addressFromPublicKey, addressFromTrustWallet, "-> \(blockchain.displayName)!")
-                XCTAssertEqual(vector.address, addressFromPublicKey, "BLOCKCHAIN \(blockchain.displayName)!")
+                XCTAssertEqual(vector.address, addressFromPublicKey, "\(blockchain.displayName)!")
             }
         } catch let error {
             XCTFail("__INVALID_VECTOR__ \(error)")

@@ -6,7 +6,6 @@
             "0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359",
             "0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359",
             "0x52908400098527886E0F7030069857D2E4169EE7",
-            "0x52908400098527886E0F7030069857D2E4169EE7",
             "0x8617E340B3D01FA5F11F306F4090FD50E238070D",
             "0xde709f2102306220921060314715629080e2fb77",
             "0x27b1fdb04752bbc536007a920d24acb045561c26",
@@ -14,7 +13,7 @@
             "0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359",
             "0xdbF03B407c01E7cD3CBea99509d93f8DDDC8C6FB",
             "0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b9aDb",
-            "0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d"
+            "0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d",
         ],
         "negative": [
             "ede8f58dada22a49db60d4f82bad428ab65f89"
@@ -41,9 +40,11 @@
     {
         "blockchain": "litecoin",
         "positive": [
+            "LMbRCidgQLz1kNA77gnUpLuiv2UL6Bc4Q2",
             "ltc1q5wmm9vrz55war9c0rgw26tv9un5fxnn7slyjpy",
             "MPmoY6RX3Y3HFjGEnFxyuLPCQdjvHwMEny",
-            "LMbRCidgQLz1kNA77gnUpLuiv2UL6Bc4Q2"
+            "LMbRCidgQLz1kNA77gnUpLuiv2UL6Bc4Q2",
+            "LWjJD6H1QrMmCQ5QhBKMqvPqMzwYpJPv2M"
         ],
         "negative": [
             "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"
@@ -91,7 +92,8 @@
         "blockchain": "stellar",
         "positive": [
             "GAB6EDWGWSRZUYUYCWXAFQFBHE5ZEJPDXCIMVZC3LH2C7IU35FTI2NOQ",
-            "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI"
+            "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI",
+            "GDWFHB6YWOF5T34AXW6HRUGX4HCT6CHCNFBWZGOVWPBN6SZM44YBFUDZ"
         ],
         "negative": []
     },
@@ -178,6 +180,13 @@
         "blockchain": "polygon",
         "positive": [
             "0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d"
+        ],
+        "negative": []
+    },
+    {
+        "blockchain": "duc",
+        "positive": [
+            "LokyqymHydUE3ZC1hnZeZo6nuART3VcsSU"
         ],
         "negative": []
     }

@@ -45,4 +45,9 @@ extension DecodableVectors {
         let address: String
     }
     
+    struct MnemonicVector: Decodable {
+        let main: String
+        let suggestions: [String]?
+    }
+    
 }
