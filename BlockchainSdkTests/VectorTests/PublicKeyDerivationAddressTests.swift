@@ -14,12 +14,8 @@ import WalletCore
 @testable import BlockchainSdk
 
 class PublicKeyDerivationAddressTests: XCTestCase {
-    
-    // MARK: - Properties
-
     let addressesUtility = AddressServiceManagerUtility()
     let testVectorsUtility = TestVectorsUtility()
-    
 }
 
 /*

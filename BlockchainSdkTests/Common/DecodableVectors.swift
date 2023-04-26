@@ -25,20 +25,6 @@ extension DecodableVectors {
         let negative: [String]
     }
     
-    struct DerivationVector: Decodable {
-        
-        struct Derivation: Decodable {
-            let tangem: String
-            let trust: String
-        }
-        
-        // MARK: - Properties
-        
-        let blockchain: String
-        let derivation: Derivation
-        
-    }
-    
     struct CompareVector: Decodable {
         
         struct Mnemonic: Decodable {

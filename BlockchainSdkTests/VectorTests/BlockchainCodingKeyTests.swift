@@ -14,11 +14,9 @@ import WalletCore
 @testable import BlockchainSdk
 
 class BlockchainCodingKeyTests: XCTestCase {
-    
     let testVectorsUtility = TestVectorsUtility()
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
-    
 }
 
 // MARK: - Compare Addresses from address string
