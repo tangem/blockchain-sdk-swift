@@ -13,7 +13,7 @@ import WalletCore
 
 @testable import BlockchainSdk
 
-final class MnemonicServiceManagerUtility {
+final class KeysServiceManagerUtility {
     
     // MARK: - Properties
     
@@ -50,12 +50,31 @@ final class MnemonicServiceManagerUtility {
         blockchain: BlockchainSdk.Blockchain,
         privateKey: PrivateKey
     ) throws -> PublicKey {
-        switch try? Curve(blockchain.curve) {
-        case .secp256k1:
-            return privateKey.getPublicKeySecp256k1(compressed: true)
-        case .ed25519:
-            return privateKey.getPublicKeyEd25519()
-        default:
+        return try privateKey.getPublicKeyByType(pubkeyType: .init(blockchain)).compressed
+    }
+    
+    /// Basic validation and store local keys wallet
+    func getPublicKeyFromTangemSdk(
+        blockchain: BlockchainSdk.Blockchain,
+        privateKey: ExtendedPrivateKey
+    ) throws -> ExtendedPublicKey {
+        do {
+            return try privateKey.makePublicKey(for: blockchain.curve)
+        } catch {
+            throw NSError(domain: "__INVALID_EXECUTE_KEY__ BLOCKCHAIN \(blockchain.currencySymbol)", code: -1)
+        }
+    }
+    
+    // MARK: - asjkdaksldlk
+    
+    /// Basic validation and store local keys wallet
+    func getPublicKeyFromTrustWallet(
+        blockchain: BlockchainSdk.Blockchain,
+        derivation: String
+    ) throws -> PublicKey {
+        if let coin = CoinType(blockchain) {
+            return try hdWallet.getKey(coin: coin, derivationPath: derivation).getPublicKeyByType(pubkeyType: .init(blockchain))
+        } else {
             throw NSError(domain: "__INVALID_EXECUTE_KEY__ BLOCKCHAIN \(blockchain.currencySymbol)", code: -1)
         }
     }
@@ -63,7 +82,8 @@ final class MnemonicServiceManagerUtility {
     /// Basic validation and store local keys wallet
     func getPublicKeyFromTangemSdk(
         blockchain: BlockchainSdk.Blockchain,
-        privateKey: ExtendedPrivateKey
+        privateKey: ExtendedPrivateKey,
+        derivation: String
     ) throws -> ExtendedPublicKey {
         do {
             return try privateKey.makePublicKey(for: blockchain.curve)

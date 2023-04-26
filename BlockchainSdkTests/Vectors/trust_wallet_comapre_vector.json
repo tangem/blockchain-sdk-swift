@@ -1,0 +1,113 @@
+{
+    "mnemonic": {
+        "words": "tiny escape drive pupil flavor endless love walk gadget match filter luxury",
+        "passphrase": ""
+    },
+    "testable": [
+        {
+            "blockchain": "bitcoin",
+            "derivation": "m/84'/0'/0'/0/0",
+            "addressType": "default"
+        },
+        {
+            "blockchain": "litecoin",
+            "derivation": "m/84'/2'/0'/0/0"
+        },
+        {
+            "blockchain": "stellar",
+            "derivation": "m/44'/148'/0'"
+        },
+        {
+            "blockchain": "ethereum",
+            "derivation": "m/44'/60'/0'/0/0"
+        },
+        {
+            "blockchain": "ethereumClassic",
+            "derivation": "m/44'/61'/0'/0/0"
+        },
+        {
+            "blockchain": "bitcoinCash",
+            "derivation": "m/44'/145'/0'/0/0"
+        },
+        {
+            "blockchain": "binance",
+            "derivation": "m/44'/714'/0'/0/0"
+        },
+        {
+            "blockchain": "xrp",
+            "derivation": "m/44'/144'/0'/0/0"
+        },
+        {
+            "blockchain": "tezos",
+            "derivation": "m/44'/1729'/0'/0/0"
+        },
+        {
+            "blockchain": "dogecoin",
+            "derivation": "m/44'/3'/0'/0/0"
+        },
+        {
+            "blockchain": "bsc",
+            "derivation": "m/44'/60'/0'/0/0"
+        },
+        {
+            "blockchain": "polygon",
+            "derivation": "m/44'/60'/0'/0/0"
+        },
+        {
+            "blockchain": "avalanche",
+            "derivation": "m/44'/60'/0'/0/0"
+        },
+        {
+            "blockchain": "solana",
+            "derivation": "m/44'/501'/0'"
+        },
+        {
+            "blockchain": "fantom",
+            "derivation": "m/44'/60'/0'/0/0"
+        },
+        {
+            "blockchain": "polkadot",
+            "derivation": "m/44'/354'/0'/0'/0'"
+        },
+        {
+            "blockchain": "kusama",
+            "derivation": "m/44'/434'/0'/0'/0'"
+        },
+        {
+            "blockchain": "tron",
+            "derivation": "m/44'/195'/0'/0/0"
+        },
+        {
+            "blockchain": "arbitrum",
+            "derivation": "m/44'/60'/0'/0/0"
+        },
+        {
+            "blockchain": "dash",
+            "derivation": "m/44'/5'/0'/0/0"
+        },
+        {
+            "blockchain": "gnosis",
+            "derivation": "m/44'/60'/0'/0/0"
+        },
+        {
+            "blockchain": "optimism",
+            "derivation": "m/44'/60'/0'/0/0"
+        },
+        {
+            "blockchain": "ton",
+            "derivation": "m/44'/607'/0'"
+        },
+        {
+            "blockchain": "kava",
+            "derivation": "m/44'/60'/0'/0/0"
+        },
+        {
+            "blockchain": "kaspa",
+            "derivation": "m/44'/111111'/0'/0/0"
+        },
+        {
+            "blockchain": "ravencoin",
+            "derivation": "m/44'/175'/0'/0/0"
+        }
+    ]
+}

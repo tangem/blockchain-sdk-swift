@@ -12,8 +12,7 @@ enum DecodableVectors: String {
     case blockchain = "blockchain_vectors"
     case validAddress = "valid_address_vectors"
     case derivation = "derivation_vectors"
-    case publicKeyAddress = "public_key_address_vectors"
-    case mnemonic = "mnemonic_vectors"
+    case turstWalletCompare = "trust_wallet_comapre_vector"
 }
 
 // MARK: - Namespace
@@ -40,21 +39,22 @@ extension DecodableVectors {
         
     }
     
-    struct PublicKeyAddressVector: Decodable {
-        let blockchain: String
-        let publicKey: String
-        let address: String
-    }
-    
-    struct MnemonicVector: Decodable {
+    struct CompareVector: Decodable {
         
-        public struct Testable: Decodable {
-            let mnemonic: String
-            let seed: String
+        struct Mnemonic: Decodable {
+            let words: String
+            let passphrase: String?
         }
         
-        let testable: Testable
-        let suggestions: [String]
+        struct Testable: Decodable {
+            let blockchain: String
+            let derivation: String
+            let addressType: String?
+        }
+        
+        let mnemonic: Mnemonic
+        let testable: [Testable]
+        
     }
     
 }

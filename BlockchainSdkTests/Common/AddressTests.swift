@@ -19,6 +19,7 @@ class AddressesTests: XCTestCase {
     private let secpDecompressedKey = Data(hexString: "0441DCD64B5F4A039FC339A16300A833A883B218909F2EBCAF3906651C76842C45E3D67E8D2947E6FEE8B62D3D3B6A4D5F212DA23E478DD69A2C6CCC851F300D80")
     private let secpCompressedKey = Data(hexString: "0241DCD64B5F4A039FC339A16300A833A883B218909F2EBCAF3906651C76842C45")
     private let edKey = Data(hex: "9FE5BB2CC7D83C1DA10845AFD8A34B141FD8FD72500B95B1547E12B9BB8AAC3D")
+    
 
     func testBtc() {
         let blockchain = Blockchain.bitcoin(testnet: false)
@@ -133,6 +134,10 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addrs.count, 1)
         XCTAssertEqual(addrs[0].localizedName, AddressType.default.defaultLocalizedName)
         XCTAssertEqual(addrs[0].value, "GCP6LOZMY7MDYHNBBBC27WFDJMKB7WH5OJIAXFNRKR7BFON3RKWD3XYA")
+        
+        // TODO: - aslkdjaskldj
+        let addr = try? AddressServiceManagerUtility().makeTrustWalletAddressService(publicKey: edKey, for: blockchain)
+        XCTAssertEqual(addrs[0].value, addr)
     }
     
     func testXlmTestnet() {

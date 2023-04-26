@@ -18,8 +18,10 @@ extension PublicKeyType {
             self = PublicKeyType.secp256k1
         case .ethereum, .bsc, .tron, .polygon, .arbitrum, .avalanche, .ethereumClassic, .optimism, .fantom:
             self = PublicKeyType.secp256k1Extended
-        case .stellar, .ton, .cardano, .solana, .polkadot, .kusama:
+        case .stellar, .ton, .solana, .polkadot, .kusama:
             self = PublicKeyType.ed25519
+        case .cardano:
+            self = PublicKeyType.ed25519Cardano
         case .xrp(let curve):
             switch curve {
             case .secp256k1:

@@ -22,15 +22,26 @@ final class AddressServiceManagerUtility {
         if let coin = CoinType(blockchain) {
             return try TrustWalletAddressService(coin: coin, publicKeyType: .init(blockchain)).makeAddress(from: publicKey)
         } else {
-            throw NSError()
+            throw NSError(domain: "__ AddressServiceManagerUtility __ error make address from TrustWallet address service", code: -1)
         }
     }
     
     func makeLocalWalletAddressService(
         publicKey: Data,
-        for blockchain: BlockchainSdk.Blockchain
+        for blockchain: BlockchainSdk.Blockchain,
+        addressType: AddressType?
     ) throws -> String {
-        try blockchain.getAddressService().makeAddress(from: publicKey)
+        if let addressType = addressType {
+            let addresses = try blockchain.getAddressService().makeAddresses(from: publicKey)
+            
+            if let address = addresses.first(where: { $0.type == addressType }) {
+                return address.value
+            } else {
+                throw NSError(domain: "__ AddressServiceManagerUtility __ error make address from BlockchainSdk address service", code: -1)
+            }
+        } else {
+            return try blockchain.getAddressService().makeAddress(from: publicKey)
+        }
     }
     
 }

@@ -14,7 +14,7 @@ public protocol Address {
     var type: AddressType { get }
 }
 
-public enum AddressType: Equatable {
+public enum AddressType: String, Equatable {
     case `default`
 	case legacy
     
