@@ -19,6 +19,17 @@ class LitecoinTests: XCTestCase {
     
     private lazy var addressService = blockchain.getAddressService()
     
+    func testAddress() {
+        let walletPublicKey = Data(hex: "041C1E7B3253E5C1E3519FB22894AD95285CE244D1D426A58D3178296A488FDC56699C85990B3EC09505253CB3C3FC7B712F1C6E953675922534B61D17408EAB39")
+        let expectedAddress = "LWjJD6H1QrMmCQ5QhBKMqvPqMzwYpJPv2M"
+        
+        XCTAssertEqual(try! addressService.makeAddresses(from: walletPublicKey)[1].value, expectedAddress)
+    }
+    
+    func testValidateCorrectAddress() {
+        XCTAssertTrue(addressService.validate("LWjJD6H1QrMmCQ5QhBKMqvPqMzwYpJPv2M"))
+    }
+    
     func testBuildTransaction() {
         let walletPubkey = Data(hex: "04AC17063C443E9DC00C090733A0A76FF18A322D8484495FDF65BE5922EA6C1F5EDC0A802D505BFF664E32E9082DC934D60A4B4E83572A0818F1D73F8FB4D100EA")
         let compressedPubkey = try! Secp256k1Key(with: walletPubkey).compress()
