@@ -16,14 +16,16 @@ public struct Token: Hashable, Equatable, Codable {
     public let contractAddress: String
     public let decimalCount: Int
     public let customIconUrl: String?
+    public let exchangeable: Bool?
     
-    public init(name: String, symbol: String, contractAddress: String, decimalCount: Int, id: String? = nil, customIconUrl: String? = nil) {
+    public init(name: String, symbol: String, contractAddress: String, decimalCount: Int, id: String? = nil, customIconUrl: String? = nil, exchangeable: Bool? = nil) {
         self.id = id
         self.name = name
         self.symbol = symbol
         self.contractAddress = contractAddress
         self.decimalCount = decimalCount
         self.customIconUrl = customIconUrl
+        self.exchangeable = exchangeable
     }
     
     public init(_ sdkToken: WalletData.Token, id: String? = nil) {
@@ -33,6 +35,7 @@ public struct Token: Hashable, Equatable, Codable {
         self.contractAddress = sdkToken.contractAddress
         self.decimalCount = sdkToken.decimals
         self.customIconUrl = nil
+        self.exchangeable = nil
     }
     
     init(_ blockhairToken: BlockchairToken, blockchain: Blockchain) {
@@ -42,6 +45,7 @@ public struct Token: Hashable, Equatable, Codable {
         self.contractAddress = blockhairToken.address
         self.decimalCount = blockhairToken.decimals
         self.customIconUrl = nil
+        self.exchangeable = nil
     }
     
     public func hash(into hasher: inout Hasher) {
