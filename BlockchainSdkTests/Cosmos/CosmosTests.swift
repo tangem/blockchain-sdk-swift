@@ -118,7 +118,6 @@ class CosmosTests: XCTestCase {
         XCTAssertJSONEqual(transactionString, expectedOutput)
     }
     
-    
     // From TrustWallet
     func testTerraV2Transaction() throws {
         let cosmosChain = CosmosChain.terraV2

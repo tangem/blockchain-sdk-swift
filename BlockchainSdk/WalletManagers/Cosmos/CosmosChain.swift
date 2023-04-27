@@ -186,7 +186,6 @@ extension CosmosChain {
         }
     }
     
-    
     var taxPercentByContractAddress: [String: Decimal] {
         switch self {
         case .terraV1:
