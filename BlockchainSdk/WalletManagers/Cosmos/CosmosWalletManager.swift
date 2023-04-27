@@ -95,13 +95,12 @@ class CosmosWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        let gasPrices = cosmosChain.gasPrices(for: amount.type)
-        
         return estimateGas(amount: amount, destination: destination)
             .tryMap { [weak self] gas in
                 guard let self = self else { throw WalletError.empty }
                 
                 let blockchain = self.cosmosChain.blockchain
+                let gasPrices = self.cosmosChain.gasPrices(for: amount.type)
                 
                 return Array(repeating: gas, count: gasPrices.count)
                     .enumerated()
@@ -111,13 +110,13 @@ class CosmosWalletManager: BaseManager, WalletManager {
                         
                         let gas = estimatedGas * gasMultiplier
                         
-                        var feeValueInSmallestDenomination = UInt64(Double(gas) * feeMultiplier * gasPrices[index])
+                        var feeValueInSmallestDenomination = UInt64(Double(gas) * gasPrices[index] * feeMultiplier)
                         if let tax = self.tax(for: amount) {
                             feeValueInSmallestDenomination += tax
                         }
                         
                         let decimalValue = amount.type.token?.decimalValue ?? blockchain.decimalValue
-                        var feeValue = (Decimal(feeValueInSmallestDenomination) / decimalValue).rounded(blockchain: blockchain)
+                        let feeValue = (Decimal(feeValueInSmallestDenomination) / decimalValue).rounded(blockchain: blockchain)
                         
                         let parameters = CosmosFeeParameters(gas: gas)
                         return Fee(Amount(with: blockchain, type: amount.type, value: feeValue), parameters: parameters)
@@ -180,8 +179,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
             return nil
         }
         
-        let decimalValue = amount.type.token?.decimalValue ?? cosmosChain.blockchain.decimalValue
-        let amountInSmallestDenomination = amount.value * decimalValue
+        let amountInSmallestDenomination = amount.value * token.decimalValue
         let taxAmount = amountInSmallestDenomination * taxPercent / 100
         
         return (taxAmount as NSDecimalNumber).uint64Value
