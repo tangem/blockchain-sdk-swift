@@ -52,9 +52,8 @@ extension CoinType {
             self = .ravencoin
         case .cosmos:
             self = .cosmos
-        default:
-            // TODO: refactor to force the developer to handle the necessary
-            // case .ethereumPoW, .ethereumFair, .rsk, .ducatus, .dogecoin, .avalanche, .fantom, .arbitrum, .dash, .gnosis, .optimism, .saltPay, .kava, .kaspa:
+        case .ethereumPoW, .ethereumFair, .rsk, .ducatus, .dogecoin, .avalanche, .fantom, .arbitrum, .dash, .gnosis, .optimism, .saltPay, .kava, .kaspa:
+            // Blockchains that are not in WalletCore yet
             throw NSError()
         }
     }
