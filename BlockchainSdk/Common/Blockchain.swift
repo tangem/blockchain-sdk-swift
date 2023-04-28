@@ -890,8 +890,12 @@ extension Blockchain {
             return URL(string: "https://blockchair.com/dogecoin/address/\(address)")
         case .bsc:
             let baseUrl = isTestnet ? "https://testnet.bscscan.com/address/" : "https://bscscan.com/address/"
-            let link = baseUrl + address
-            return URL(string: link)
+            var exploreLink = baseUrl + address
+            
+            if tokenContractAddress != nil {
+                exploreLink += "#tokentxns"
+            }
+            return URL(string: exploreLink)
         case .polygon:
             let baseUrl = isTestnet ? "https://explorer-mumbai.maticvigil.com/address/" : "https://polygonscan.com/address/"
             let link = baseUrl + address
