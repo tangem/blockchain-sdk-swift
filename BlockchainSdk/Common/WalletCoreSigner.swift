@@ -29,6 +29,8 @@ class WalletCoreSigner: Signer {
     private var signSubscription: AnyCancellable?
     
     init(sdkSigner: TransactionSigner, walletPublicKey: Wallet.PublicKey, curve: EllipticCurve) {
+        assert(!Thread.isMainThread, "WalletCoreSigner MUST NOT be created on the main thread to avoid hanging")
+        
         self.sdkSigner = sdkSigner
         self.walletPublicKey = walletPublicKey
         self.curve = curve
