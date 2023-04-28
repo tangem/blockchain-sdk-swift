@@ -19,6 +19,12 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
             
             var providers = [AnyBitcoinNetworkProvider]()
             
+            if !input.blockchain.isTestnet {
+                providers.append(
+                    networkProviderAssembly.makeBlockchainInfoNetworkProvider(with: input).eraseToAnyBitcoinNetworkProvider()
+                )
+            }
+            
             providers.append(
                 networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider()
             )
@@ -26,10 +32,6 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
             if !input.blockchain.isTestnet {
                 providers.append(
                     networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider()
-                )
-                
-                providers.append(
-                    networkProviderAssembly.makeBlockchainInfoNetworkProvider(with: input).eraseToAnyBitcoinNetworkProvider()
                 )
             }
             
