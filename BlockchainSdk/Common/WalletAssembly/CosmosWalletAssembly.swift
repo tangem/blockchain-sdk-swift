@@ -14,6 +14,10 @@ struct CosmosWalletAssembly: WalletManagerAssembly {
         switch input.blockchain {
         case .cosmos(let testnet):
             cosmosChain = .cosmos(testnet: testnet)
+        case .terraV1:
+            cosmosChain = .terraV1
+        case .terraV2:
+            cosmosChain = .terraV2
         default:
             throw WalletError.empty
         }
