@@ -634,7 +634,7 @@ extension Blockchain {
                 networkParams: isTestnet ?  DashTestNetworkParams() : DashMainNetworkParams()
             )
         case .ton:
-            return TrustWalletAddressService(coin: .ton, publicKeyType: .ed25519)
+            return WalletCoreAddressService(coin: .ton, publicKeyType: .ed25519)
         case .kaspa:
             return KaspaAddressService()
         case .ravencoin:
@@ -643,7 +643,7 @@ extension Blockchain {
         case .cosmos, .terraV1, .terraV2:
             // TODO: refactor use use this code for all TrustWallet blockchains
             let coin = try! CoinType(self)
-            return TrustWalletAddressService(coin: coin, publicKeyType: coin.publicKeyType)
+            return WalletCoreAddressService(coin: coin, publicKeyType: coin.publicKeyType)
         }
     }
 }

@@ -42,12 +42,12 @@ final class AddressServiceManagerUtility {
     }
     
     func validateTRUE(address: String, for blockchain: BlockchainSdk.Blockchain) {
-        XCTAssertTrue(TrustWalletAddressService.validate(address, for: blockchain), "__INVALID_ADDRESS__ FROM TW ADDRESS SERVICE")
+        XCTAssertTrue(WalletCoreAddressService.validate(address, for: blockchain), "__INVALID_ADDRESS__ FROM TW ADDRESS SERVICE")
         XCTAssertTrue(validate(address, for: blockchain), "__INVALID_ADDRESS__ FROM OWN ADDRESS SERVICE")
     }
     
     func validateFALSE(address: String, for blockchain: BlockchainSdk.Blockchain) {
-        XCTAssertFalse(TrustWalletAddressService.validate(address, for: blockchain))
+        XCTAssertFalse(WalletCoreAddressService.validate(address, for: blockchain))
         XCTAssertFalse(validate(address, for: blockchain))
     }
     
@@ -61,7 +61,7 @@ final class AddressServiceManagerUtility {
         publicKey: Data,
         for blockchain: BlockchainSdk.Blockchain
     ) throws -> String {
-        try TrustWalletAddressService(coin: .init(blockchain), publicKeyType: .init(blockchain)).makeAddress(from: publicKey)
+        try WalletCoreAddressService(coin: .init(blockchain), publicKeyType: .init(blockchain)).makeAddress(from: publicKey)
     }
     
     private func makeLocalWalletAddressService(
