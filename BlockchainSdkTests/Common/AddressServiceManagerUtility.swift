@@ -18,7 +18,7 @@ final class AddressServiceManagerUtility {
     func validate(privateKey: PrivateKey, for blockchain: BlockchainSdk.Blockchain) {
         do {
             let publicKey = try privateKey.getPublicKey(coinType: .init(blockchain)).data
-            let twAddress = try makeTrustWalletAddressService(publicKey: publicKey, for: blockchain)
+            let twAddress = try makeWalletCoreAddressService(publicKey: publicKey, for: blockchain)
             let localAddress = try makeLocalWalletAddressService(publicKey: publicKey, for: blockchain)
             
             XCTAssertEqual(twAddress, localAddress)
@@ -57,7 +57,7 @@ final class AddressServiceManagerUtility {
         blockchain.getAddressService().validate(address)
     }
     
-    private func makeTrustWalletAddressService(
+    private func makeWalletCoreAddressService(
         publicKey: Data,
         for blockchain: BlockchainSdk.Blockchain
     ) throws -> String {
