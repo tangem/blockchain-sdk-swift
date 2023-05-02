@@ -52,6 +52,10 @@ extension CoinType {
             self = .ravencoin
         case .cosmos:
             self = .cosmos
+        case .terraV1:
+            self = .terra
+        case .terraV2:
+            self = .terraV2
         default:
             // TODO: refactor to force the developer to handle the necessary
             // case .ethereumPoW, .ethereumFair, .rsk, .ducatus, .dogecoin, .avalanche, .fantom, .arbitrum, .dash, .gnosis, .optimism, .saltPay, .kava, .kaspa:

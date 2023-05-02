@@ -20,7 +20,7 @@ class CosmosNetworkService: MultiNetworkProvider {
         self.cosmosChain = cosmosChain
     }
     
-    func accountInfo(for address: String) -> AnyPublisher<CosmosAccountInfo, Error> {
+    func accountInfo(for address: String, tokens: [Token]) -> AnyPublisher<CosmosAccountInfo, Error> {
         providerPublisher {
             $0.accounts(address: address)
                 .zip($0.balances(address: address))
@@ -39,8 +39,26 @@ class CosmosNetworkService: MultiNetworkProvider {
                         accountNumber = nil
                     }
                     
-                    let amount = try self.parseBalance(balanceInfo)
-                    return CosmosAccountInfo(accountNumber: accountNumber, sequenceNumber: sequenceNumber, amount: amount)
+                    let rawAmount = try self.parseBalance(
+                        balanceInfo,
+                        denomination: self.cosmosChain.smallestDenomination,
+                        decimalValue: self.cosmosChain.blockchain.decimalValue
+                    )
+                    let amount = Amount(with: self.cosmosChain.blockchain, value: rawAmount)
+                    
+                    let tokenAmounts: [Token: Decimal] = Dictionary(try tokens.compactMap {
+                        guard let denomination = self.cosmosChain.tokenDenominationByContractAddress[$0.contractAddress] else {
+                            return nil
+                        }
+                        
+                        let balance = try self.parseBalance(balanceInfo, denomination: denomination, decimalValue: $0.decimalValue)
+                        return ($0, balance)
+                    }, uniquingKeysWith: {
+                        pair1, _ in
+                        pair1
+                    })
+                    
+                    return CosmosAccountInfo(accountNumber: accountNumber, sequenceNumber: sequenceNumber, amount: amount, tokenBalances: tokenAmounts)
                 }
                 .eraseToAnyPublisher()
         }
@@ -79,16 +97,15 @@ class CosmosNetworkService: MultiNetworkProvider {
         }
     }
     
-    private func parseBalance(_ balanceInfo: CosmosBalanceResponse) throws -> Amount {
-        guard let balanceAmountString = balanceInfo.balances.first(where: { $0.denom == cosmosChain.smallestDenomination } )?.amount else {
-            return .zeroCoin(for: cosmosChain.blockchain)
+    private func parseBalance(_ balanceInfo: CosmosBalanceResponse, denomination: String, decimalValue: Decimal) throws -> Decimal {
+        guard let balanceAmountString = balanceInfo.balances.first(where: { $0.denom == denomination } )?.amount else {
+            return .zero
         }
-
+        
         guard let balanceInSmallestDenomination = Int(balanceAmountString) else {
             throw WalletError.failedToParseNetworkResponse
         }
         
-        let blockchain = cosmosChain.blockchain
-        return Amount(with: blockchain, value: Decimal(balanceInSmallestDenomination) / cosmosChain.blockchain.decimalValue)
+        return Decimal(balanceInSmallestDenomination) / decimalValue
     }
 }
