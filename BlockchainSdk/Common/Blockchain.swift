@@ -886,9 +886,10 @@ extension Blockchain {
         case .ducatus:
             return URL(string: "https://insight.ducatus.io/#/DUC/mainnet/address/\(address)")
         case .ethereum:
-            let baseUrl = isTestnet ? "https://goerli.etherscan.io/address/" : "https://etherscan.io/address/"
-            let exploreLink = tokenContractAddress == nil ? baseUrl + address :
-            "https://etherscan.io/token/\(tokenContractAddress!)?a=\(address)"
+            let baseUrl = isTestnet ? "https://goerli.etherscan.io/" : "https://etherscan.io/"
+            let exploreLink = tokenContractAddress == nil ?
+                baseUrl + "address/" + address :
+                baseUrl + "token/" + "\(tokenContractAddress!)?a=\(address)"
             return URL(string: exploreLink)
         case .ethereumClassic(let testnet):
             let network = testnet ? "kotti" : "mainnet"
@@ -920,25 +921,40 @@ extension Blockchain {
         case .dogecoin:
             return URL(string: "https://blockchair.com/dogecoin/address/\(address)")
         case .bsc:
-            let baseUrl = isTestnet ? "https://testnet.bscscan.com/address/" : "https://bscscan.com/address/"
-            let link = baseUrl + address
-            return URL(string: link)
+            let baseUrl = isTestnet ? "https://testnet.bscscan.com/" : "https://bscscan.com/"
+            let exploreLink = tokenContractAddress == nil ?
+                baseUrl + "address/" + address :
+                baseUrl + "token/" + "\(tokenContractAddress!)?a=\(address)"
+            return URL(string: exploreLink)
         case .polygon:
-            let baseUrl = isTestnet ? "https://explorer-mumbai.maticvigil.com/address/" : "https://polygonscan.com/address/"
-            let link = baseUrl + address
-            return URL(string: link)
+            let baseUrl = isTestnet ? "https://explorer-mumbai.maticvigil.com/" : "https://polygonscan.com/"
+            let exploreLink = tokenContractAddress == nil ?
+                baseUrl + "address/" + address :
+                baseUrl + "token/" + "\(tokenContractAddress!)?a=\(address)"
+            return URL(string: exploreLink)
         case .avalanche:
-            let baseUrl = isTestnet ? "https://testnet.snowtrace.io/address/" : "https://snowtrace.io/address/"
-            let link = baseUrl + address
-            return URL(string: link)
+            let baseUrl = isTestnet ? "https://testnet.snowtrace.io/" : "https://snowtrace.io/"
+            let exploreLink = tokenContractAddress == nil ?
+                baseUrl + "address/" + address :
+                baseUrl + "token/" + "\(tokenContractAddress!)?a=\(address)"
+            return URL(string: exploreLink)
         case .solana:
             let baseUrl = "https://explorer.solana.com/address/"
             let cluster = isTestnet ? "?cluster=devnet" : ""
-            return URL(string: baseUrl + address + cluster)
+            
+            var exploreLink = baseUrl + address + cluster
+            
+            if tokenContractAddress != nil {
+                exploreLink += "/tokens"
+            }
+            
+            return URL(string: exploreLink)
         case .fantom:
-            let baseUrl = isTestnet ? "https://testnet.ftmscan.com/address/" : "https://ftmscan.com/address/"
-            let link = baseUrl + address
-            return URL(string: link)
+            let baseUrl = isTestnet ? "https://testnet.ftmscan.com/" : "https://ftmscan.com/"
+            let exploreLink = tokenContractAddress == nil ?
+                baseUrl + "address/" + address :
+                baseUrl + "token/" + "\(tokenContractAddress!)?a=\(address)"
+            return URL(string: exploreLink)
         case .polkadot:
             let subdomain = isTestnet ? "westend" : "polkadot"
             return URL(string: "https://\(subdomain).subscan.io/account/\(address)")
@@ -948,20 +964,38 @@ extension Blockchain {
             let subdomain = isTestnet ? "nile." : ""
             return URL(string: "https://\(subdomain)tronscan.org/#/address/\(address)")!
         case .arbitrum:
+            let baseUrl: String
+            
             if isTestnet {
-                return URL(string: "https://goerli-rollup-explorer.arbitrum.io/address/\(address)")!
+                baseUrl = "https://goerli-rollup-explorer.arbitrum.io/"
+            } else {
+                baseUrl = "https://arbiscan.io/"
             }
-            return URL(string: "https://arbiscan.io/address/\(address)")!
+            
+            let exploreLink = tokenContractAddress == nil ?
+                baseUrl + "address/" + address :
+                baseUrl + "token/" + "\(tokenContractAddress!)?a=\(address)"
+            
+            return URL(string: exploreLink)
         case .dash:
             let network = isTestnet ? "testnet" : "mainnet"
             return URL(string: "https://blockexplorer.one/dash/\(network)/address/\(address)")
         case .gnosis:
             return URL(string: "https://blockscout.com/xdai/mainnet/address/\(address)")!
         case .optimism:
+            let baseUrl: String
+            
             if isTestnet {
-                return URL(string: "https://blockscout.com/optimism/goerli/address/\(address)")!
+                baseUrl = "https://blockscout.com/optimism/goerli/"
+            } else {
+                baseUrl = "https://optimistic.etherscan.io/"
             }
-            return URL(string: "https://optimistic.etherscan.io/address/\(address)")!
+            
+            let exploreLink = tokenContractAddress == nil ?
+                baseUrl + "address/" + address :
+                baseUrl + "token/" + "\(tokenContractAddress!)?a=\(address)"
+            
+            return URL(string: exploreLink)
         case .saltPay:
             return URL(string: "https://blockscout.bicoccachain.net/address/\(address)")!
         case .ton:
