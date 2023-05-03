@@ -210,7 +210,7 @@ private extension RavencoinNetworkProvider {
                 }
                 
                 let ratePerKilobyte = Decimal(floatLiteral: rate)
-                return ratePerKilobyte / 1024
+                return ratePerKilobyte / 1000
             }
             .eraseToAnyPublisher()
     }
