@@ -49,12 +49,13 @@ public enum Blockchain: Equatable, Hashable {
     case cosmos(testnet: Bool)
     case terraV1
     case terraV2
+    case cronos
     
     public var isTestnet: Bool {
         switch self {
         case .bitcoin(let testnet):
             return testnet
-        case .litecoin, .ducatus, .cardano, .xrp, .rsk, .tezos, .dogecoin, .kusama, .terraV1, .terraV2:
+        case .litecoin, .ducatus, .cardano, .xrp, .rsk, .tezos, .dogecoin, .kusama, .terraV1, .terraV2, .cronos:
             return false
         case .stellar(let testnet):
             return testnet
@@ -122,7 +123,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash, .kaspa, .ravencoin:
             return 8
-        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava:
+        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos:
             return 18
         case  .cardano, .xrp, .tezos, .tron, .cosmos, .terraV1, .terraV2:
             return 6
@@ -203,6 +204,8 @@ public enum Blockchain: Equatable, Hashable {
             return "LUNC"
         case .terraV2:
             return "LUNA"
+        case .cronos:
+            return "CRO"
         }
     }
     
@@ -317,6 +320,7 @@ extension Blockchain {
         case .optimism: return isTestnet ? 420 : 10
         case .saltPay: return 29313331
         case .kava: return isTestnet ? 2221 : 2222
+        case .cronos: return 25
         default: return nil
         }
     }
@@ -489,6 +493,15 @@ extension Blockchain {
             
             return [URL(string: "https://evm.kava.io")!,
                     URL(string: "https://evm2.kava.io")!]
+        case .cronos:
+            return [
+                URL(string: "https://evm.cronos.org")!,
+                URL(string: "https://evm-cronos.crypto.org")!,
+                URL(string: "https://cro.getblock.io/mainnet/\(getBlockApiKey)")!,
+                URL(string: "https://node.croswap.com/rpc")!,
+                URL(string: "https://cronos.blockpi.network/v1/rpc/public")!,
+                URL(string: "https://cronos-evm.publicnode.com")!,
+            ]
         default:
             return nil
         }
@@ -574,6 +587,7 @@ extension Blockchain {
         case .ravencoin: return 175
         case .cosmos: return 118
         case .terraV1, .terraV2: return 330
+        case .cronos: return 10000025
         }
     }
     
@@ -602,7 +616,7 @@ extension Blockchain {
         case .stellar:
             return StellarAddressService()
         case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair,
-                .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava:
+                .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -720,6 +734,7 @@ extension Blockchain: Codable {
         case .cosmos: return "cosmos-hub"
         case .terraV1: return "terra"
         case .terraV2: return "terra-2"
+        case .cronos: return "cronos"
         }
     }
     
@@ -777,6 +792,7 @@ extension Blockchain: Codable {
         case "cosmos-hub": self = .cosmos(testnet: isTestnet)
         case "terra": self = .terraV1
         case "terra-2": self = .terraV2
+        case "cronos": self = .cronos
         default:
             // TODO: Remove this assert
             // TODO:    A new blockchain can be added during a development and then you
@@ -975,6 +991,8 @@ extension Blockchain {
             return URL(string: "https://finder.terra.money/classic/address/\(address)")!
         case .terraV2:
             return URL(string: "https://terrasco.pe/mainnet/address/\(address)")!
+        case .cronos:
+            return URL(string: "https://cronoscan.com/address/\(address)")!
         }
     }
 }
@@ -1025,6 +1043,7 @@ extension Blockchain {
         case "ton": return .ton(testnet: isTestnet)
         case "terra": return .terraV1
         case "terra-2": return .terraV2
+        case "cronos": return .cronos
         default: return nil
         }
     }
@@ -1074,7 +1093,7 @@ extension Blockchain {
             return DucatusWalletAssembly()
         case .stellar:
             return StellarWalletAssembly()
-        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava:
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava, .cronos:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
