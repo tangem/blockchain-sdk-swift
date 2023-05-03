@@ -56,7 +56,7 @@ extension CoinType {
             self = .terra
         case .terraV2:
             self = .terraV2        
-        case .ethereumPoW, .ethereumFair, .rsk, .ducatus, .dogecoin, .avalanche, .fantom, .arbitrum, .dash, .gnosis, .optimism, .saltPay, .kava, .kaspa:
+        case .ethereumPoW, .ethereumFair, .rsk, .ducatus, .dogecoin, .avalanche, .fantom, .arbitrum, .dash, .gnosis, .optimism, .saltPay, .kava, .kaspa, .cronos:
             // Blockchains that are not in WalletCore yet
             throw NSError()
         }
