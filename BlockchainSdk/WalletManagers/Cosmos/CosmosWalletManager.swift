@@ -27,7 +27,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
     
     func update(completion: @escaping (Result<Void, Error>) -> Void) {
         cancellable = networkService
-            .accountInfo(for: wallet.address)
+            .accountInfo(for: wallet.address, tokens: cardTokens)
             .sink { result in
                 switch result {
                 case .failure(let error):
@@ -100,15 +100,26 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 guard let self = self else { throw WalletError.empty }
                 
                 let blockchain = self.cosmosChain.blockchain
+                let gasPrices = self.cosmosChain.gasPrices(for: amount.type)
                 
-                return Array(repeating: gas, count: self.cosmosChain.gasPrices.count)
+                return Array(repeating: gas, count: gasPrices.count)
                     .enumerated()
-                    .map { index, estimatedGas -> Fee in
-                        let cosmosGasMultiplier: UInt64 = 2
-                        let gas = estimatedGas * cosmosGasMultiplier
-                        let value = (Decimal(Double(gas) * self.cosmosChain.gasPrices[index]) / blockchain.decimalValue).rounded(blockchain: blockchain)
+                    .map { index, estimatedGas in
+                        let gasMultiplier = self.cosmosChain.gasMultiplier
+                        let feeMultiplier = self.cosmosChain.feeMultiplier
+                        
+                        let gas = estimatedGas * gasMultiplier
+                        
+                        var feeValueInSmallestDenomination = UInt64(Double(gas) * gasPrices[index] * feeMultiplier)
+                        if let tax = self.tax(for: amount) {
+                            feeValueInSmallestDenomination += tax
+                        }
+                        
+                        let decimalValue = amount.type.token?.decimalValue ?? blockchain.decimalValue
+                        let feeValue = (Decimal(feeValueInSmallestDenomination) / decimalValue).rounded(blockchain: blockchain)
+                        
                         let parameters = CosmosFeeParameters(gas: gas)
-                        return Fee(Amount(with: blockchain, value: value), parameters: parameters)
+                        return Fee(Amount(with: blockchain, type: amount.type, value: feeValue), parameters: parameters)
                     }
             }
             .eraseToAnyPublisher()
@@ -151,10 +162,27 @@ class CosmosWalletManager: BaseManager, WalletManager {
         }
         txBuilder.setSequenceNumber(accountInfo.sequenceNumber)
         
+        for (token, balance) in accountInfo.tokenBalances {
+            wallet.add(tokenValue: balance, for: token)
+        }
+        
         // Transactions are confirmed instantaneuously
         for (index, _) in wallet.transactions.enumerated() {
             wallet.transactions[index].status = .confirmed
         }
+    }
+    
+    private func tax(for amount: Amount) -> UInt64? {
+        guard case .token(let token) = amount.type,
+              let taxPercent = cosmosChain.taxPercentByContractAddress[token.contractAddress]
+        else {
+            return nil
+        }
+        
+        let amountInSmallestDenomination = amount.value * token.decimalValue
+        let taxAmount = amountInSmallestDenomination * taxPercent / 100
+        
+        return (taxAmount as NSDecimalNumber).uint64Value
     }
 }
 

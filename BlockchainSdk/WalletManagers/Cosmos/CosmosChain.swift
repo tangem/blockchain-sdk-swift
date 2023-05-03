@@ -11,6 +11,8 @@ import WalletCore
 
 enum CosmosChain {
     case cosmos(testnet: Bool)
+    case terraV1
+    case terraV2
     // ancient testnet network, we only use it for unit tests
     case gaia
 }
@@ -42,6 +44,16 @@ extension CosmosChain {
                     "https://lcd.cosmos.dragonstake.io",
                 ]
             }
+        case .terraV1:
+            return [
+                "https://terra.nownodes.io/\(config.nowNodesApiKey)",
+                "https://terra-classic-lcd.publicnode.com", // This is a redirect from https://columbus-lcd.terra.dev
+            ]
+        case .terraV2:
+            return [
+                "https://luna.getblock.io/\(config.getBlockApiKey)/mainnet",
+                "https://phoenix-lcd.terra.dev", // Sometimes not responsive
+            ]
         case .gaia:
             fatalError()
         }
@@ -54,6 +66,8 @@ extension CosmosChain {
         switch self {
         case .cosmos:
             return "uatom"
+        case .terraV1, .terraV2:
+            return "uluna"
         case .gaia:
             return "muon"
         }
@@ -63,6 +77,10 @@ extension CosmosChain {
         switch self {
         case .cosmos(let testnet):
             return .cosmos(testnet: testnet)
+        case .terraV1:
+            return .terraV1
+        case .terraV2:
+            return .terraV2
         case .gaia:
             return .cosmos(testnet: true)
         }
@@ -75,13 +93,17 @@ extension CosmosChain {
         switch self {
         case .cosmos(let testnet):
             return testnet ? "theta-testnet-001" : "cosmoshub-4"
+        case .terraV1:
+            return "columbus-5"
+        case .terraV2:
+            return "phoenix-1"
         case .gaia:
             return "gaia-13003"
         }
     }
     
     // feeCurrencies/gasPriceStep field from Keplr registry
-    var gasPrices: [Double] {
+    func gasPrices(for amountType: Amount.AmountType) -> [Double] {
         switch self {
         case .cosmos:
             return [
@@ -89,8 +111,56 @@ extension CosmosChain {
                 0.025,
                 0.03,
             ]
+        case .terraV1:
+            if case .coin = amountType {
+                return [
+                    28.325,
+                    28.325,
+                    28.325,
+                ]
+            } else {
+                return [
+                    1,
+                    1,
+                    1,
+                ]
+            }
+        case .terraV2:
+            return [
+                0.015,
+                0.025,
+                0.040,
+            ]
         case .gaia:
             fatalError()
+        }
+    }
+    
+    // Often times the value specified in Keplr is not enough:
+    // >>> out of gas in location: WriteFlat; gasWanted: 76012, gasUsed: 76391: out of gas
+    // >>> out of gas in location: ReadFlat; gasWanted: 124626, gasUsed: 125279: out of gas
+    // Default multiplier value is 1
+    var gasMultiplier: UInt64 {
+        switch self {
+        case .cosmos, .gaia:
+            return 2
+        case .terraV1:
+            return 4
+        case .terraV2:
+            return 2
+        }
+    }
+    
+    // We use a formula to calculate the fee, by multiplying estimated gas by gas price.
+    // But sometimes this is not enough:
+    // >>> insufficient fees; got: 1005uluna required: 1006uluna: insufficient fee
+    // Default multiplier value is 1
+    var feeMultiplier: Double {
+        switch self {
+        case .cosmos, .gaia:
+            return 1
+        case .terraV1, .terraV2:
+            return 1.5
         }
     }
     
@@ -98,6 +168,32 @@ extension CosmosChain {
         switch self {
         case .cosmos, .gaia:
             return .cosmos
+        case .terraV1:
+            return .terra
+        case .terraV2:
+            return .terraV2
+        }
+    }
+    
+    var tokenDenominationByContractAddress: [String: String] {
+        switch self {
+        case .terraV1:
+            return [
+                "uusd": "uusd",
+            ]
+        case .cosmos, .gaia, .terraV2:
+            return [:]
+        }
+    }
+    
+    var taxPercentByContractAddress: [String: Decimal] {
+        switch self {
+        case .terraV1:
+            return [
+                "uusd": 0.2,
+            ]
+        case .cosmos, .gaia, .terraV2:
+            return [:]
         }
     }
 }

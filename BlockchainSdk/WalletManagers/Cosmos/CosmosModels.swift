@@ -42,7 +42,7 @@ struct CosmosSimulateResponse: Decodable {
 
 extension CosmosSimulateResponse {
     struct GasInfo: Decodable {
-      let gasUsed: String
+        let gasUsed: String
     }
 }
 
@@ -65,6 +65,7 @@ struct CosmosAccountInfo {
     let accountNumber: UInt64?
     let sequenceNumber: UInt64
     let amount: Amount
+    let tokenBalances: [Token: Decimal]
 }
 
 struct CosmosError: Error, Decodable {

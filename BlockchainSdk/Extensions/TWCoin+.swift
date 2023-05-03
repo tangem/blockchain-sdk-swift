@@ -66,6 +66,10 @@ extension CoinType {
             self = .fantom
         case .cosmos:
             self = .cosmos
+        case .terraV1:
+            self = .terra
+        case .terraV2:
+            self = .terraV2
         default:
             return nil
         }

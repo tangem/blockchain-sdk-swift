@@ -83,33 +83,30 @@ class StellarNetworkProvider: HostProvider {
     }
     
     public func getFee() -> AnyPublisher<[Amount], Error> {
-        Publishers.Zip(stellarSdk.ledgers.getLatestLedger(),
-                       stellarSdk.feeStats.getFeeStats())
-        .tryMap { [blockchain] (ledger, feeStats) -> [Amount] in
-            let baseFeeStroops = Decimal(ledger.baseFeeInStroops)
-            guard let minChargedFeeStroops = Decimal(feeStats.feeCharged.min),
-                  let maxChargedFeeStroops = Decimal(feeStats.feeCharged.max)
-            else {
-                throw WalletError.failedToGetFee
+        stellarSdk.feeStats.getFeeStats()
+            .tryMap { [blockchain] feeStats -> [Amount] in
+                guard let minChargedFeeStroops = Decimal(feeStats.feeCharged.min),
+                      let maxChargedFeeStroops = Decimal(feeStats.feeCharged.max)
+                else {
+                    throw WalletError.failedToGetFee
+                }
+                
+                let divider =  blockchain.decimalValue
+                
+                let minChargedFee = minChargedFeeStroops / divider
+                let maxChargedFee = maxChargedFeeStroops / divider
+                
+                let fees = [
+                    minChargedFee,
+                    (minChargedFee + maxChargedFee) / 2,
+                    maxChargedFee,
+                ].map {
+                    Amount(with: blockchain, value: $0)
+                }
+                
+                return fees
             }
-            
-            let divider =  blockchain.decimalValue
-            
-            let baseFee = baseFeeStroops / divider
-            let minChargedFee = minChargedFeeStroops / divider
-            let maxChargedFee = maxChargedFeeStroops / divider
-            
-            let fees = [
-                baseFee,
-                (minChargedFee + maxChargedFee) / 2,
-                maxChargedFee,
-            ].map {
-                Amount(with: blockchain, value: $0)
-            }
-            
-            return fees
-        }
-        .eraseToAnyPublisher()
+            .eraseToAnyPublisher()
     }
     
     private func stellarData(accountId: String) -> AnyPublisher<(AccountResponse, LedgerResponse), Error> {

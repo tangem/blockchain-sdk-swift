@@ -29,14 +29,16 @@ class CosmosTransactionBuilder {
     }
     
     func buildForSign(amount: Amount, source: String, destination: String, feeAmount: Decimal?, gas: UInt64?, params: CosmosTransactionParams?) throws -> CosmosSigningInput {
-        let amountInSmallestDenomination = ((amount.value * cosmosChain.blockchain.decimalValue) as NSDecimalNumber).uint64Value
+        let decimalValue = amount.type.token?.decimalValue ?? cosmosChain.blockchain.decimalValue
+        let amountInSmallestDenomination = ((amount.value * decimalValue) as NSDecimalNumber).uint64Value
         
+        let denomination = try denomination(for: amount)
         let sendCoinsMessage = CosmosMessage.Send.with {
             $0.fromAddress = source
             $0.toAddress = destination
             $0.amounts = [CosmosAmount.with {
                 $0.amount = "\(amountInSmallestDenomination)"
-                $0.denom = cosmosChain.smallestDenomination
+                $0.denom = denomination
             }]
         }
         
@@ -46,12 +48,13 @@ class CosmosTransactionBuilder {
         
         let fee: CosmosFee?
         if let feeAmount, let gas {
-            let feeAmountInSmallestDenomination = (feeAmount * cosmosChain.blockchain.decimalValue as NSDecimalNumber).uint64Value
+            let feeAmountInSmallestDenomination = (feeAmount * decimalValue as NSDecimalNumber).uint64Value
+            
             fee = CosmosFee.with {
                 $0.gas = gas
                 $0.amounts = [CosmosAmount.with {
                     $0.amount = "\(feeAmountInSmallestDenomination)"
-                    $0.denom = cosmosChain.smallestDenomination
+                    $0.denom = denomination
                 }]
             }
         } else {
@@ -95,5 +98,20 @@ class CosmosTransactionBuilder {
         }
         
         return outputData
+    }
+    
+    private func denomination(for amount: Amount) throws -> String {
+        switch amount.type {
+        case .coin:
+            return cosmosChain.smallestDenomination
+        case .token(let token):
+            guard let tokenDenomination = cosmosChain.tokenDenominationByContractAddress[token.contractAddress] else {
+                throw WalletError.failedToBuildTx
+            }
+            
+            return tokenDenomination
+        case .reserve:
+            throw WalletError.failedToBuildTx
+        }
     }
 }
