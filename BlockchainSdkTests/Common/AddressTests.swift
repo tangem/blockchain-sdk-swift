@@ -38,7 +38,7 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(bech32_dec.value, "bc1qc2zwqqucrqvvtyxfn78ajm8w2sgyjf5edc40am")
         XCTAssertEqual(bech32_dec.localizedName, bech32_comp.localizedName)
         
-        try XCTAssertEqual(addressesUtility.makeTrustWalletAddressService(publicKey: secpDecompressedKey, for: blockchain), bech32_dec.value)
+        try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: secpDecompressedKey, for: blockchain), bech32_dec.value)
         
         let leg_dec = addr_dec.first(where: { $0.type == .legacy })!
         let leg_comp = addr_comp.first(where: { $0.type == .legacy })!
@@ -120,7 +120,7 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(bech32_dec.value, "ltc1qc2zwqqucrqvvtyxfn78ajm8w2sgyjf5efy0t9t") //todo: validate
         XCTAssertEqual(bech32_dec.localizedName, bech32_comp.localizedName)
         
-        try XCTAssertEqual(addressesUtility.makeTrustWalletAddressService(publicKey: secpDecompressedKey, for: blockchain), bech32_dec.value)
+        try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: secpDecompressedKey, for: blockchain), bech32_dec.value)
         
         let leg_dec = addr_dec.first(where: { $0.type == .legacy })!
         let leg_comp = addr_comp.first(where: { $0.type == .legacy })!
@@ -140,10 +140,10 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addrs[0].localizedName, AddressType.default.defaultLocalizedName)
         XCTAssertEqual(addrs[0].value, "GCP6LOZMY7MDYHNBBBC27WFDJMKB7WH5OJIAXFNRKR7BFON3RKWD3XYA")
         
-        try XCTAssertEqual(addressesUtility.makeTrustWalletAddressService(publicKey: edKey, for: blockchain), "GCP6LOZMY7MDYHNBBBC27WFDJMKB7WH5OJIAXFNRKR7BFON3RKWD3XYA")
+        try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: edKey, for: blockchain), "GCP6LOZMY7MDYHNBBBC27WFDJMKB7WH5OJIAXFNRKR7BFON3RKWD3XYA")
         
         // TODO: - aslkdjaskldj
-        let addr = try? AddressServiceManagerUtility().makeTrustWalletAddressService(publicKey: edKey, for: blockchain)
+        let addr = try? AddressServiceManagerUtility().makeTrustWalletAddress(publicKey: edKey, for: blockchain)
         XCTAssertEqual(addrs[0].value, addr)
     }
     
@@ -174,7 +174,7 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addr_dec[0].value, "0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d")
         XCTAssertEqual("0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d".lowercased(), "0x6eca00c52afc728cdbf42e817d712e175bb23c7d") //without checksum
         
-        try XCTAssertEqual(addressesUtility.makeTrustWalletAddressService(publicKey: secpDecompressedKey, for: blockchain), addr_dec[0].value)
+        try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: secpDecompressedKey, for: blockchain), addr_dec[0].value)
     }
     
     func testEthTestnet() {
@@ -230,7 +230,7 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addr_comp[0].value, "bitcoincash:qrpgfcqrnqvp33vsex0clktvae2pqjfxnyxq0ml0zc") //we ignore uncompressed addresses
         XCTAssertEqual(addr_comp[1].value, "1JjXGY5KEcbT35uAo6P9A7DebBn4DXnjdQ") //we ignore uncompressed addresses
         
-        try XCTAssertEqual(addressesUtility.makeTrustWalletAddressService(publicKey: secpDecompressedKey, for: blockchain), addr_comp[0].value)
+        try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: secpDecompressedKey, for: blockchain), addr_comp[0].value)
     }
     
     func testBchTestnet() {
@@ -264,7 +264,7 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addr_dec[0].type, addr_comp[0].type)
         XCTAssertEqual(addr_dec[0].value, "bnb1c2zwqqucrqvvtyxfn78ajm8w2sgyjf5eex5gcc")
         
-        try XCTAssertEqual(addressesUtility.makeTrustWalletAddressService(publicKey: secpDecompressedKey, for: blockchain), addr_dec[0].value)
+        try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: secpDecompressedKey, for: blockchain), addr_dec[0].value)
     }
     
     func testBinanceTestnet() {
@@ -330,7 +330,7 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addr_dec[0].localizedName, addr_comp[0].localizedName)
         XCTAssertEqual(addr_dec[0].value, "rJjXGYnKNcbTsnuwoaP9wfDebB8hDX8jdQ")
         
-        try XCTAssertEqual(addressesUtility.makeTrustWalletAddressService(publicKey: secpDecompressedKey, for: blockchain), addr_dec[0].value)
+        try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: secpDecompressedKey, for: blockchain), addr_dec[0].value)
     }
     
     func testXrpEd() {
@@ -363,7 +363,7 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addr_dec[0].type, addr_comp[0].type)
         XCTAssertEqual(addr_comp[0].value, "DNscoo1xY2Vja65mXgNhhsPFUKWMa7NLEb")
         
-        try XCTAssertEqual(addressesUtility.makeTrustWalletAddressService(publicKey: secpDecompressedKey, for: blockchain), addr_comp[0].value)
+        try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: secpDecompressedKey, for: blockchain), addr_comp[0].value)
     }
     
     func testXTZSecp() {
@@ -406,7 +406,7 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addr_dec[0].type, addr_comp[0].type)
         XCTAssertEqual(addr_comp[0].value, "DNscoo1xY2Vja65mXgNhhsPFUKWMa7NLEb")
         
-        try XCTAssertEqual(addressesUtility.makeTrustWalletAddressService(publicKey: secpDecompressedKey, for: blockchain), addr_comp[0].value)
+        try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: secpDecompressedKey, for: blockchain), addr_comp[0].value)
     }
     
     func testBsc() {
@@ -424,7 +424,7 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addr_dec[0].value, "0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d")
         XCTAssertEqual("0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d".lowercased(), "0x6eca00c52afc728cdbf42e817d712e175bb23c7d") //without checksum
         
-        try XCTAssertEqual(addressesUtility.makeTrustWalletAddressService(publicKey: secpDecompressedKey, for: blockchain), addr_comp[0].value)
+        try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: secpDecompressedKey, for: blockchain), addr_comp[0].value)
     }
     
     func testBscTestnet() {
@@ -457,7 +457,7 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addr_dec[0].value, "0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d")
         XCTAssertEqual("0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d".lowercased(), "0x6eca00c52afc728cdbf42e817d712e175bb23c7d") //without checksum
         
-        try XCTAssertEqual(addressesUtility.makeTrustWalletAddressService(publicKey: secpDecompressedKey, for: blockchain), addr_comp[0].value)
+        try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: secpDecompressedKey, for: blockchain), addr_comp[0].value)
     }
     
     func testPolygonTestnet() {
@@ -496,7 +496,7 @@ class AddressesTests: XCTestCase {
         let addrFromTangemKey = try! blockchain.makeAddresses(from: edKey, with: nil).first!
         XCTAssertEqual(addrFromTangemKey.value, "BmAzxn8WLYU3gEw79ATUdSUkMT53MeS5LjapBQB8gTPJ")
         
-        try XCTAssertEqual(addressesUtility.makeTrustWalletAddressService(publicKey: edKey, for: blockchain), addrFromTangemKey.value)
+        try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: edKey, for: blockchain), addrFromTangemKey.value)
     }
     
     func testPolkadot() {
@@ -581,7 +581,7 @@ class AddressesTests: XCTestCase {
         XCTAssertTrue (TronAddressService().validate("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC"))
         XCTAssertFalse(TronAddressService().validate("RJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC"))
         
-        try XCTAssertEqual(addressesUtility.makeTrustWalletAddressService(publicKey: publicKey1, for: blockchain), address1)
+        try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: publicKey1, for: blockchain), address1)
     }
     
     // MARK: - Dash addresses
@@ -597,7 +597,7 @@ class AddressesTests: XCTestCase {
             let address = try addressService.makeAddress(from: secpCompressedKey)
             
             XCTAssertEqual(address, expectedAddress)
-            try XCTAssertEqual(addressesUtility.makeTrustWalletAddressService(publicKey: secpCompressedKey, for: blockchain), address)
+            try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: secpCompressedKey, for: blockchain), address)
         } catch {
             XCTAssertNil(error)
         }
@@ -663,7 +663,7 @@ class AddressesTests: XCTestCase {
         XCTAssertNil(try? addressService.makeAddress(from: secpCompressedKey))
         XCTAssertNil(try? addressService.makeAddress(from: secpDecompressedKey))
         
-        try XCTAssertEqual(addressesUtility.makeTrustWalletAddressService(publicKey: walletPubkey1, for: blockchain), expectedAddress1)
+        try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: walletPubkey1, for: blockchain), expectedAddress1)
     }
     
     func testTONValidateCorrectAddress() {

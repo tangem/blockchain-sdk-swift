@@ -83,12 +83,12 @@ extension PublicKeyDerivationAddressTests {
                 }
 
                 do {
-                    let trustWalletAddress = try addressesUtility.makeTrustWalletAddressService(
+                    let trustWalletAddress = try addressesUtility.makeTrustWalletAddress(
                         publicKey: trustWalletDerivationPublicKey.data,
                         for: blockchain
                     )
 
-                    let tangemWalletAddress = try addressesUtility.makeLocalWalletAddressService(
+                    let tangemWalletAddress = try addressesUtility.makeTangemAddress(
                         publicKey: Data(hex: tangemWalletPublicKey),
                         for: blockchain,
                         addressType: .init(rawValue: test.addressType ?? "")

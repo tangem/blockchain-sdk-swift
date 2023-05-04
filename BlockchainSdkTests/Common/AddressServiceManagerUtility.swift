@@ -15,7 +15,7 @@ import WalletCore
 
 final class AddressServiceManagerUtility {
     
-    func makeTrustWalletAddressService(
+    func makeTrustWalletAddress(
         publicKey: Data,
         for blockchain: BlockchainSdk.Blockchain
     ) throws -> String {
@@ -26,7 +26,7 @@ final class AddressServiceManagerUtility {
         }
     }
     
-    func makeLocalWalletAddressService(
+    func makeTangemAddress(
         publicKey: Data,
         for blockchain: BlockchainSdk.Blockchain,
         addressType: AddressType?
