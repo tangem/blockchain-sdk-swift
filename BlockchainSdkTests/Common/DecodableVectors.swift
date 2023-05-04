@@ -37,6 +37,7 @@ extension DecodableVectors {
             let derivation: String
             let addressType: String?
             let walletPublicKey: String?
+            let skip: Bool?
         }
         
         let mnemonic: Mnemonic

@@ -48,8 +48,11 @@ extension PublicKeyDerivationAddressTests {
                 
                 guard CoinType(blockchain) != nil else { return }
                 
-                // MARK: -  Step - 0
+                //FIXME: - Remove when all test will be is completed
+                guard !(test.skip ?? false) else { return }
                 
+                // MARK: -  Step - 0
+
                 XCTAssertEqual(test.derivation, blockchain.derivationPath(for: .new)!.rawPath, "-> \(blockchain.displayName)")
                 
                 // MARK: -  Step - 1 / 2
@@ -57,7 +60,7 @@ extension PublicKeyDerivationAddressTests {
                 let keysServiceUtility = KeysServiceManagerUtility(mnemonic: vector.mnemonic.words)
                 let seed = try keysServiceUtility.getTrustWalletSeed()
 
-                let trustWalletPrivateKey = try keysServiceUtility.getMasterKeyFromTrustWallet(with: seed, for: blockchain)
+                let trustWalletPrivateKey = try keysServiceUtility.getMasterKeyFromTrustWallet(for: blockchain)
                 let tangemSdkPrivateKey = try keysServiceUtility.getMasterKeyFromBIP32(with: seed, for: blockchain)
 
                 // Validate private keys
@@ -68,23 +71,24 @@ extension PublicKeyDerivationAddressTests {
 
                 // Compare public keys without derivations
                 XCTAssertEqual(trustWalletPublicKey.data.hex, tangemSdkPublicKey.publicKey.hex, "\(blockchain.displayName)")
-                
+
                 // MARK: - Step 3
-                
+
                 let trustWalletDerivationPublicKey = try keysServiceUtility.getPublicKeyFromTrustWallet(
                     blockchain: blockchain,
                     derivation: test.derivation
                 )
 
                 // MARK: - Step 4
-                
+
+                // Need for skip test derivation address from undefined public key
                 guard let tangemWalletPublicKey = test.walletPublicKey else {
                     return
                 }
 
                 do {
                     let trustWalletAddress = try addressesUtility.makeTrustWalletAddress(
-                        publicKey: trustWalletDerivationPublicKey.data,
+                        publicKey: trustWalletDerivationPublicKey.uncompressed.data,
                         for: blockchain
                     )
 

@@ -37,7 +37,7 @@ final class KeysServiceManagerUtility {
         try Mnemonic(with: mnemonic).generateSeed(with: passphrase)
     }
     
-    func getMasterKeyFromTrustWallet(with seed: Data, for blockchain: BlockchainSdk.Blockchain) throws -> PrivateKey {
+    func getMasterKeyFromTrustWallet(for blockchain: BlockchainSdk.Blockchain) throws -> PrivateKey {
         try hdWallet.getMasterKey(curve: .init(blockchain.curve))
     }
     

@@ -14,9 +14,9 @@ extension PublicKeyType {
     /// Сonstructor that maps the sdk blockchain type into the TrustWallet public key type
     init(_ blockchain: Blockchain) throws {
         switch blockchain {
-        case .bitcoin, .litecoin, .binance, .dash, .dogecoin, .bitcoinCash, .kava, .ravencoin, .cosmos:
+        case .bitcoin, .litecoin, .binance, .dash, .dogecoin, .bitcoinCash, .ravencoin, .cosmos:
             self = PublicKeyType.secp256k1
-        case .ethereum, .bsc, .tron, .polygon, .arbitrum, .avalanche, .ethereumClassic, .optimism, .fantom:
+        case .ethereum, .bsc, .tron, .polygon, .arbitrum, .avalanche, .ethereumClassic, .optimism, .fantom, .kava:
             self = PublicKeyType.secp256k1Extended
         case .stellar, .ton, .solana, .polkadot, .kusama:
             self = PublicKeyType.ed25519
