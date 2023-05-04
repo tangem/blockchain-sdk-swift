@@ -60,6 +60,8 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
                     throw BlockchainSdkError.failedToLoadFee
                 }
                 
+                // Increase rate just for case
+                let perByte = perByte * 1.1
                 let satoshi = perByte * self.decimalValue
                 let minRate = satoshi
                 let normalRate = satoshi * 12 / 10
@@ -210,7 +212,7 @@ private extension RavencoinNetworkProvider {
                 }
                 
                 let ratePerKilobyte = Decimal(floatLiteral: rate)
-                return ratePerKilobyte / 1000
+                return ratePerKilobyte / 1024
             }
             .eraseToAnyPublisher()
     }
