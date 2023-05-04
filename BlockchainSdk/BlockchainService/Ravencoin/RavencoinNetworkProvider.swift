@@ -60,7 +60,7 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
                     throw BlockchainSdkError.failedToLoadFee
                 }
                 
-                // Increase rate just for case
+                // Increase rate just in case
                 let perByte = perByte * 1.1
                 let satoshi = perByte * self.decimalValue
                 let minRate = satoshi
