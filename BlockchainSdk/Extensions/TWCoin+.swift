@@ -61,7 +61,7 @@ extension CoinType {
         case .avalanche:
             self = .avalancheCChain
         case .kava:
-            self = .kava
+            self = .kavaEvm
         case .fantom:
             self = .fantom
         case .cosmos:

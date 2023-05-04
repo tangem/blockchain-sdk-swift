@@ -12,7 +12,7 @@ enum DecodableVectors: String {
     case blockchain = "blockchain_vectors"
     case validAddress = "valid_address_vectors"
     case derivation = "derivation_vectors"
-    case turstWalletCompare = "trust_wallet_comapre_vector"
+    case trustWalletCompare = "trust_wallet_comapre_vector"
 }
 
 // MARK: - Namespace
@@ -36,6 +36,7 @@ extension DecodableVectors {
             let blockchain: String
             let derivation: String
             let addressType: String?
+            let walletPublicKey: String?
         }
         
         let mnemonic: Mnemonic

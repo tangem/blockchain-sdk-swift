@@ -35,7 +35,7 @@ extension PublicKeyDerivationAddressTests {
                 return
             }
             
-            guard let vector: DecodableVectors.CompareVector = try testVectorsUtility.getTestVectors(from: DecodableVectors.turstWalletCompare.rawValue) else {
+            guard let vector: DecodableVectors.CompareVector = try testVectorsUtility.getTestVectors(from: DecodableVectors.trustWalletCompare.rawValue) else {
                 XCTFail("__INVALID_VECTOR__ COMPARE DATA IS NIL")
                 return
             }
@@ -52,7 +52,7 @@ extension PublicKeyDerivationAddressTests {
                 
                 XCTAssertEqual(test.derivation, blockchain.derivationPath(for: .new)!.rawPath, "-> \(blockchain.displayName)")
                 
-                // MARK: -  Step - 1
+                // MARK: -  Step - 1 / 2
                 
                 let keysServiceUtility = KeysServiceManagerUtility(mnemonic: vector.mnemonic.words)
                 let seed = try keysServiceUtility.getTrustWalletSeed()
@@ -76,13 +76,11 @@ extension PublicKeyDerivationAddressTests {
                     derivation: test.derivation
                 )
 
-                let tangemDerivationPublicKey = try keysServiceUtility.getPublicKeyFromTangemSdk(
-                    blockchain: blockchain,
-                    privateKey: tangemSdkPrivateKey,
-                    derivation: test.derivation
-                )
-
                 // MARK: - Step 4
+                
+                guard let tangemWalletPublicKey = test.walletPublicKey else {
+                    return
+                }
 
                 do {
                     let trustWalletAddress = try addressesUtility.makeTrustWalletAddressService(
@@ -91,7 +89,7 @@ extension PublicKeyDerivationAddressTests {
                     )
 
                     let tangemWalletAddress = try addressesUtility.makeLocalWalletAddressService(
-                        publicKey: tangemDerivationPublicKey.publicKey,
+                        publicKey: Data(hex: tangemWalletPublicKey),
                         for: blockchain,
                         addressType: .init(rawValue: test.addressType ?? "")
                     )

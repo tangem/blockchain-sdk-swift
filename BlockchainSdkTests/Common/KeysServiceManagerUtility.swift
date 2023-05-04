@@ -79,17 +79,4 @@ final class KeysServiceManagerUtility {
         }
     }
     
-    /// Basic validation and store local keys wallet
-    func getPublicKeyFromTangemSdk(
-        blockchain: BlockchainSdk.Blockchain,
-        privateKey: ExtendedPrivateKey,
-        derivation: String
-    ) throws -> ExtendedPublicKey {
-        do {
-            return try privateKey.makePublicKey(for: blockchain.curve)
-        } catch {
-            throw NSError(domain: "__INVALID_EXECUTE_KEY__ BLOCKCHAIN \(blockchain.currencySymbol)", code: -1)
-        }
-    }
-    
 }
