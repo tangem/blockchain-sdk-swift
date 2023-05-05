@@ -88,7 +88,7 @@ class CosmosTransactionBuilder {
         let output: CosmosSigningOutput
         if let signer {
             let coreSigner = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey, curve: cosmosChain.blockchain.curve)
-            output = AnySigner.signExternally(input: input, coin: cosmosChain.coin, signer: coreSigner)
+            output = try AnySigner.signExternally(input: input, coin: cosmosChain.coin, signer: coreSigner)
         } else {
             output = AnySigner.sign(input: input, coin: cosmosChain.coin)
         }
