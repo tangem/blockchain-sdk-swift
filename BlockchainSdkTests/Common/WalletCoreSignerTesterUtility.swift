@@ -1,5 +1,5 @@
 //
-//  TrustCoreSignerTesterUtility.swift
+//  WalletCoreSignerTesterUtility.swift
 //  BlockchainSdkTests
 //
 //  Created by skibinalexander on 21.03.2023.
@@ -15,7 +15,7 @@ import CryptoKit
 @testable import BlockchainSdk
 
 @available(iOS 13.0, *)
-public class TrustCoreSignerTesterUtility {
+public class WalletCoreSignerTesterUtility {
     
     private var privateKey: Curve25519.Signing.PrivateKey
     private var signatures: [Data]?
@@ -27,7 +27,7 @@ public class TrustCoreSignerTesterUtility {
     
 }
 
-extension TrustCoreSignerTesterUtility: TransactionSigner {
+extension WalletCoreSignerTesterUtility: TransactionSigner {
     public func sign(hashes: [Data], walletPublicKey: Wallet.PublicKey) -> AnyPublisher<[Data], Error> {
         Deferred {
             Future { [weak self] promise in

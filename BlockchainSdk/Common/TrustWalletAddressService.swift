@@ -1,5 +1,5 @@
 //
-//  TrustWalletAddressService.swift
+//  WalletCoreAddressService.swift
 //  BlockchainSdk
 //
 //  Created by skibinalexander on 12.01.2023.
@@ -10,7 +10,7 @@ import Foundation
 import TangemSdk
 import WalletCore
 
-public class TrustWalletAddressService: AddressService {
+public class WalletCoreAddressService: AddressService {
     
     private let coin: CoinType
     private let publicKeyType: PublicKeyType
@@ -53,7 +53,7 @@ public class TrustWalletAddressService: AddressService {
     }
 }
 
-extension TrustWalletAddressService {
+extension WalletCoreAddressService {
     
     static func validate(_ address: String, for blockchain: Blockchain) -> Bool {
         return (try? AnyAddress(string: address, coin: CoinType(blockchain))) != nil
@@ -61,7 +61,7 @@ extension TrustWalletAddressService {
     
 }
 
-extension TrustWalletAddressService {
+extension WalletCoreAddressService {
     
     enum TWError: Error {
         case makeAddressFailed

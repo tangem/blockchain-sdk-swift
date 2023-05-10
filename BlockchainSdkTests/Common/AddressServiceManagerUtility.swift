@@ -18,7 +18,7 @@ final class AddressServiceManagerUtility {
     func validate(privateKey: PrivateKey, for blockchain: BlockchainSdk.Blockchain) {
         do {
             let publicKey = try privateKey.getPublicKey(coinType: .init(blockchain)).data
-            let twAddress = try makeTrustWalletAddressService(publicKey: publicKey, for: blockchain)
+            let twAddress = try makeWalletCoreAddressService(publicKey: publicKey, for: blockchain)
             let localAddress = try makeLocalWalletAddressService(publicKey: publicKey, for: blockchain)
             
             XCTAssertEqual(twAddress, localAddress)
@@ -42,12 +42,12 @@ final class AddressServiceManagerUtility {
     }
     
     func validateTRUE(address: String, for blockchain: BlockchainSdk.Blockchain) {
-        XCTAssertTrue(TrustWalletAddressService.validate(address, for: blockchain), "__INVALID_ADDRESS__ FROM TW ADDRESS SERVICE")
+        XCTAssertTrue(WalletCoreAddressService.validate(address, for: blockchain), "__INVALID_ADDRESS__ FROM TW ADDRESS SERVICE")
         XCTAssertTrue(validate(address, for: blockchain), "__INVALID_ADDRESS__ FROM OWN ADDRESS SERVICE")
     }
     
     func validateFALSE(address: String, for blockchain: BlockchainSdk.Blockchain) {
-        XCTAssertFalse(TrustWalletAddressService.validate(address, for: blockchain))
+        XCTAssertFalse(WalletCoreAddressService.validate(address, for: blockchain))
         XCTAssertFalse(validate(address, for: blockchain))
     }
     
@@ -57,11 +57,11 @@ final class AddressServiceManagerUtility {
         blockchain.getAddressService().validate(address)
     }
     
-    private func makeTrustWalletAddressService(
+    private func makeWalletCoreAddressService(
         publicKey: Data,
         for blockchain: BlockchainSdk.Blockchain
     ) throws -> String {
-        try TrustWalletAddressService(coin: .init(blockchain), publicKeyType: .init(blockchain)).makeAddress(from: publicKey)
+        try WalletCoreAddressService(coin: .init(blockchain), publicKeyType: .init(blockchain)).makeAddress(from: publicKey)
     }
     
     private func makeLocalWalletAddressService(
