@@ -477,6 +477,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .cosmos(testnet: false),
             .terraV1,
             .terraV2,
+            .cronos,
         ]
         
         return blockchains.map { ($0.displayName, $0.codingKey) }

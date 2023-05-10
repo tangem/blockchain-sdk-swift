@@ -49,12 +49,13 @@ public enum Blockchain: Equatable, Hashable {
     case cosmos(testnet: Bool)
     case terraV1
     case terraV2
+    case cronos
     
     public var isTestnet: Bool {
         switch self {
         case .bitcoin(let testnet):
             return testnet
-        case .litecoin, .ducatus, .cardano, .xrp, .rsk, .tezos, .dogecoin, .kusama, .terraV1, .terraV2:
+        case .litecoin, .ducatus, .cardano, .xrp, .rsk, .tezos, .dogecoin, .kusama, .terraV1, .terraV2, .cronos:
             return false
         case .stellar(let testnet):
             return testnet
@@ -122,7 +123,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash, .kaspa, .ravencoin:
             return 8
-        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava:
+        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos:
             return 18
         case  .cardano, .xrp, .tezos, .tron, .cosmos, .terraV1, .terraV2:
             return 6
@@ -203,6 +204,8 @@ public enum Blockchain: Equatable, Hashable {
             return "LUNC"
         case .terraV2:
             return "LUNA"
+        case .cronos:
+            return "CRO"
         }
     }
     
@@ -317,6 +320,7 @@ extension Blockchain {
         case .optimism: return isTestnet ? 420 : 10
         case .saltPay: return 29313331
         case .kava: return isTestnet ? 2221 : 2222
+        case .cronos: return 25
         default: return nil
         }
     }
@@ -489,6 +493,15 @@ extension Blockchain {
             
             return [URL(string: "https://evm.kava.io")!,
                     URL(string: "https://evm2.kava.io")!]
+        case .cronos:
+            return [
+                URL(string: "https://evm.cronos.org")!,
+                URL(string: "https://evm-cronos.crypto.org")!,
+                URL(string: "https://cro.getblock.io/mainnet/\(getBlockApiKey)")!,
+                URL(string: "https://node.croswap.com/rpc")!,
+                URL(string: "https://cronos.blockpi.network/v1/rpc/public")!,
+                URL(string: "https://cronos-evm.publicnode.com")!,
+            ]
         default:
             return nil
         }
@@ -574,6 +587,7 @@ extension Blockchain {
         case .ravencoin: return 175
         case .cosmos: return 118
         case .terraV1, .terraV2: return 330
+        case .cronos: return 10000025
         }
     }
     
@@ -602,7 +616,7 @@ extension Blockchain {
         case .stellar:
             return StellarAddressService()
         case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair,
-                .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava:
+                .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -633,15 +647,12 @@ extension Blockchain {
             return BitcoinLegacyAddressService(
                 networkParams: isTestnet ?  DashTestNetworkParams() : DashMainNetworkParams()
             )
-        case .ton:
-            return WalletCoreAddressService(coin: .ton, publicKeyType: .ed25519)
         case .kaspa:
             return KaspaAddressService()
         case .ravencoin:
             let networkParams: INetwork = isTestnet ? RavencoinTestNetworkParams() : RavencoinMainNetworkParams()
             return BitcoinLegacyAddressService(networkParams: networkParams)
-        case .cosmos, .terraV1, .terraV2:
-            // TODO: refactor use use this code for all TrustWallet blockchains
+        case .ton, .cosmos, .cosmos, .terraV1, .terraV2:
             let coin = try! CoinType(self)
             return WalletCoreAddressService(coin: coin, publicKeyType: coin.publicKeyType)
         }
@@ -720,6 +731,7 @@ extension Blockchain: Codable {
         case .cosmos: return "cosmos-hub"
         case .terraV1: return "terra"
         case .terraV2: return "terra-2"
+        case .cronos: return "cronos"
         }
     }
     
@@ -777,12 +789,8 @@ extension Blockchain: Codable {
         case "cosmos-hub": self = .cosmos(testnet: isTestnet)
         case "terra": self = .terraV1
         case "terra-2": self = .terraV2
+        case "cronos": self = .cronos
         default:
-            // TODO: Remove this assert
-            // TODO:    A new blockchain can be added during a development and then you
-            // TODO:    roll back to an earlier version that doesn't support it -- not convenient
-            // TODO:    See IOS-3481
-            assertionFailure("Blockchain for \(key) isn't supported")
             throw BlockchainSdkError.decodingFailed
         }
     }
@@ -870,9 +878,10 @@ extension Blockchain {
         case .ducatus:
             return URL(string: "https://insight.ducatus.io/#/DUC/mainnet/address/\(address)")
         case .ethereum:
-            let baseUrl = isTestnet ? "https://goerli.etherscan.io/address/" : "https://etherscan.io/address/"
-            let exploreLink = tokenContractAddress == nil ? baseUrl + address :
-            "https://etherscan.io/token/\(tokenContractAddress!)?a=\(address)"
+            let baseUrl = isTestnet ? "https://goerli.etherscan.io/" : "https://etherscan.io/"
+            let exploreLink = tokenContractAddress == nil ?
+                baseUrl + "address/" + address :
+                baseUrl + "token/" + "\(tokenContractAddress!)?a=\(address)"
             return URL(string: exploreLink)
         case .ethereumClassic(let testnet):
             let network = testnet ? "kotti" : "mainnet"
@@ -904,25 +913,40 @@ extension Blockchain {
         case .dogecoin:
             return URL(string: "https://blockchair.com/dogecoin/address/\(address)")
         case .bsc:
-            let baseUrl = isTestnet ? "https://testnet.bscscan.com/address/" : "https://bscscan.com/address/"
-            let link = baseUrl + address
-            return URL(string: link)
+            let baseUrl = isTestnet ? "https://testnet.bscscan.com/" : "https://bscscan.com/"
+            let exploreLink = tokenContractAddress == nil ?
+                baseUrl + "address/" + address :
+                baseUrl + "token/" + "\(tokenContractAddress!)?a=\(address)"
+            return URL(string: exploreLink)
         case .polygon:
-            let baseUrl = isTestnet ? "https://explorer-mumbai.maticvigil.com/address/" : "https://polygonscan.com/address/"
-            let link = baseUrl + address
-            return URL(string: link)
+            let baseUrl = isTestnet ? "https://explorer-mumbai.maticvigil.com/" : "https://polygonscan.com/"
+            let exploreLink = tokenContractAddress == nil ?
+                baseUrl + "address/" + address :
+                baseUrl + "token/" + "\(tokenContractAddress!)?a=\(address)"
+            return URL(string: exploreLink)
         case .avalanche:
-            let baseUrl = isTestnet ? "https://testnet.snowtrace.io/address/" : "https://snowtrace.io/address/"
-            let link = baseUrl + address
-            return URL(string: link)
+            let baseUrl = isTestnet ? "https://testnet.snowtrace.io/" : "https://snowtrace.io/"
+            let exploreLink = tokenContractAddress == nil ?
+                baseUrl + "address/" + address :
+                baseUrl + "token/" + "\(tokenContractAddress!)?a=\(address)"
+            return URL(string: exploreLink)
         case .solana:
             let baseUrl = "https://explorer.solana.com/address/"
             let cluster = isTestnet ? "?cluster=devnet" : ""
-            return URL(string: baseUrl + address + cluster)
+            
+            var exploreLink = baseUrl + address + cluster
+            
+            if tokenContractAddress != nil {
+                exploreLink += "/tokens"
+            }
+            
+            return URL(string: exploreLink)
         case .fantom:
-            let baseUrl = isTestnet ? "https://testnet.ftmscan.com/address/" : "https://ftmscan.com/address/"
-            let link = baseUrl + address
-            return URL(string: link)
+            let baseUrl = isTestnet ? "https://testnet.ftmscan.com/" : "https://ftmscan.com/"
+            let exploreLink = tokenContractAddress == nil ?
+                baseUrl + "address/" + address :
+                baseUrl + "token/" + "\(tokenContractAddress!)?a=\(address)"
+            return URL(string: exploreLink)
         case .polkadot:
             let subdomain = isTestnet ? "westend" : "polkadot"
             return URL(string: "https://\(subdomain).subscan.io/account/\(address)")
@@ -932,20 +956,38 @@ extension Blockchain {
             let subdomain = isTestnet ? "nile." : ""
             return URL(string: "https://\(subdomain)tronscan.org/#/address/\(address)")!
         case .arbitrum:
+            let baseUrl: String
+            
             if isTestnet {
-                return URL(string: "https://goerli-rollup-explorer.arbitrum.io/address/\(address)")!
+                baseUrl = "https://goerli-rollup-explorer.arbitrum.io/"
+            } else {
+                baseUrl = "https://arbiscan.io/"
             }
-            return URL(string: "https://arbiscan.io/address/\(address)")!
+            
+            let exploreLink = tokenContractAddress == nil ?
+                baseUrl + "address/" + address :
+                baseUrl + "token/" + "\(tokenContractAddress!)?a=\(address)"
+            
+            return URL(string: exploreLink)
         case .dash:
             let network = isTestnet ? "testnet" : "mainnet"
             return URL(string: "https://blockexplorer.one/dash/\(network)/address/\(address)")
         case .gnosis:
             return URL(string: "https://blockscout.com/xdai/mainnet/address/\(address)")!
         case .optimism:
+            let baseUrl: String
+            
             if isTestnet {
-                return URL(string: "https://blockscout.com/optimism/goerli/address/\(address)")!
+                baseUrl = "https://blockscout.com/optimism/goerli/"
+            } else {
+                baseUrl = "https://optimistic.etherscan.io/"
             }
-            return URL(string: "https://optimistic.etherscan.io/address/\(address)")!
+            
+            let exploreLink = tokenContractAddress == nil ?
+                baseUrl + "address/" + address :
+                baseUrl + "token/" + "\(tokenContractAddress!)?a=\(address)"
+            
+            return URL(string: exploreLink)
         case .saltPay:
             return URL(string: "https://blockscout.bicoccachain.net/address/\(address)")!
         case .ton:
@@ -975,6 +1017,8 @@ extension Blockchain {
             return URL(string: "https://finder.terra.money/classic/address/\(address)")!
         case .terraV2:
             return URL(string: "https://terrasco.pe/mainnet/address/\(address)")!
+        case .cronos:
+            return URL(string: "https://cronoscan.com/address/\(address)")!
         }
     }
 }
@@ -1025,6 +1069,7 @@ extension Blockchain {
         case "ton": return .ton(testnet: isTestnet)
         case "terra": return .terraV1
         case "terra-2": return .terraV2
+        case "cronos": return .cronos
         default: return nil
         }
     }
@@ -1074,7 +1119,7 @@ extension Blockchain {
             return DucatusWalletAssembly()
         case .stellar:
             return StellarWalletAssembly()
-        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava:
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava, .cronos:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
