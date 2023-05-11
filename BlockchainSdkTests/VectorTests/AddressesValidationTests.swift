@@ -26,7 +26,7 @@ extension AddressesValidationTests {
     func testAddressVector() {
         do {
             guard let blockchains: [BlockchainSdk.Blockchain] = try testVectorsUtility.getTestVectors(from: "blockchain_vectors") else {
-                XCTFail("__INVALID_VECTOR__ BLOCKCHAIN DATA IS NIL")
+                XCTFail("__INVALID_BLOCKCHAIN__ DATA IS NIL")
                 return
             }
             
@@ -42,13 +42,13 @@ extension AddressesValidationTests {
                 }
                 
                 vector.positive.forEach {
-                    XCTAssertTrue(WalletCoreAddressService.validate($0, for: blockchain), "-> \(blockchain)")
-                    XCTAssertTrue(blockchain.getAddressService().validate($0), "-> \(blockchain)")
+                    XCTAssertTrue(WalletCoreAddressService.validate($0, for: blockchain), "__INVALIDATE_WALLET_CORE__ ADDRESS -> \(blockchain)")
+                    XCTAssertTrue(blockchain.getAddressService().validate($0), "__INVALIDATE_SDK_CORE__ ADDRESS -> \(blockchain)")
                 }
                 
                 vector.negative.forEach {
-                    XCTAssertFalse(WalletCoreAddressService.validate($0, for: blockchain), "-> \(blockchain)")
-                    XCTAssertFalse(blockchain.getAddressService().validate($0), "-> \(blockchain)")
+                    XCTAssertFalse(WalletCoreAddressService.validate($0, for: blockchain), "__INVALIDATE_WALLET_CORE__ ADDRESS -> \(blockchain)")
+                    XCTAssertFalse(blockchain.getAddressService().validate($0), "__INVALIDATE_SDK_CORE_ ADDRESS -> \(blockchain)")
                 }
             }
         } catch let error {
