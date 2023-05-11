@@ -17,8 +17,8 @@ import WalletCore
  - 0. Compare derivation from vector file with BlockchainSdk.derivationPath(.new)
  - 1. Obtain MASTER Trustwallet Keys and keys from TrangemSdk and compare keys
  - 2. Obtain PUBLIC Trustwallet Keys and keys from TrangemSdk and compare keys
- - 3. Obtain ADDRESSES TeustWallet service and BlockchainSdk service for derivation public keys
- - 4. Compare addresses from services
+ - 3. Obtain derivation public key from TrustWallet service
+ - 4. Compare addresses from services TrustWallet and BlockchainSdk address service
  */
 
 class PublicKeyDerivationAddressTests: XCTestCase {
