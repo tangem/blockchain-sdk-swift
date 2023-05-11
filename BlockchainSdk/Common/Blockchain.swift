@@ -652,8 +652,8 @@ extension Blockchain {
         case .ravencoin:
             let networkParams: INetwork = isTestnet ? RavencoinTestNetworkParams() : RavencoinMainNetworkParams()
             return BitcoinLegacyAddressService(networkParams: networkParams)
-        case .ton, .cosmos, .cosmos, .terraV1, .terraV2:
-            let coin = try! CoinType(self)
+        case .ton, .cosmos, .terraV1, .terraV2:
+            let coin = CoinType(self)!
             return WalletCoreAddressService(coin: coin, publicKeyType: coin.publicKeyType)
         }
     }
