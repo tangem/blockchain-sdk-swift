@@ -647,17 +647,14 @@ extension Blockchain {
             return BitcoinLegacyAddressService(
                 networkParams: isTestnet ?  DashTestNetworkParams() : DashMainNetworkParams()
             )
-        case .ton:
-            return TrustWalletAddressService(coin: .ton, publicKeyType: .ed25519)
         case .kaspa:
             return KaspaAddressService()
         case .ravencoin:
             let networkParams: INetwork = isTestnet ? RavencoinTestNetworkParams() : RavencoinMainNetworkParams()
             return BitcoinLegacyAddressService(networkParams: networkParams)
-        case .cosmos, .terraV1, .terraV2:
-            // TODO: refactor use use this code for all TrustWallet blockchains
-            let coin = CoinType(self)!
-            return TrustWalletAddressService(coin: coin, publicKeyType: coin.publicKeyType)
+        case .ton, .cosmos, .cosmos, .terraV1, .terraV2:
+            let coin = try! CoinType(self)
+            return WalletCoreAddressService(coin: coin, publicKeyType: coin.publicKeyType)
         }
     }
 }
@@ -794,11 +791,6 @@ extension Blockchain: Codable {
         case "terra-2": self = .terraV2
         case "cronos": self = .cronos
         default:
-            // TODO: Remove this assert
-            // TODO:    A new blockchain can be added during a development and then you
-            // TODO:    roll back to an earlier version that doesn't support it -- not convenient
-            // TODO:    See IOS-3481
-            assertionFailure("Blockchain for \(key) isn't supported")
             throw BlockchainSdkError.decodingFailed
         }
     }

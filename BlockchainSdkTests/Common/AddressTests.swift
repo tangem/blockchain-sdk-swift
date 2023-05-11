@@ -142,7 +142,6 @@ class AddressesTests: XCTestCase {
         
         try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: edKey, for: blockchain), "GCP6LOZMY7MDYHNBBBC27WFDJMKB7WH5OJIAXFNRKR7BFON3RKWD3XYA")
         
-        // TODO: - aslkdjaskldj
         let addr = try? AddressServiceManagerUtility().makeTrustWalletAddress(publicKey: edKey, for: blockchain)
         XCTAssertEqual(addrs[0].value, addr)
     }

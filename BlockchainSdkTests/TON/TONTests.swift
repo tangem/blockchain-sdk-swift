@@ -62,7 +62,7 @@ class TONTests: XCTestCase {
             
             let output = try walletManager.buildTransaction(
                 input: input,
-                with: TrustCoreSignerTesterUtility(
+                with: WalletCoreSignerTesterUtility(
                     privateKey: privateKey,
                     signatures: [
                         Data(hex: "0c88f60571fae5ae341b1af5910e0c07bd5676726cd7775c85159b5542cecb0c5e3f291d5f69f4f2da012524211c064ec2fc5f7f0c62b1ea236d6165d1fc2c09")
@@ -89,7 +89,7 @@ class TONTests: XCTestCase {
             
             let output = try walletManager.buildTransaction(
                 input: input,
-                with: TrustCoreSignerTesterUtility(
+                with: WalletCoreSignerTesterUtility(
                     privateKey: privateKey,
                     signatures: [
                         Data(hex: "0c88f60571fae5ae341b1af5910e0c07bd5676726cd7775c85159b5542cecb0c5e3f291d5f69f4f2da012524211c064ec2fc5f7f0c62b1ea236d6165d1fc2c09")

@@ -69,8 +69,9 @@ extension CoinType {
         case .terraV1:
             self = .terra
         case .terraV2:
-            self = .terraV2
-        default:
+            self = .terraV2        
+        case .ethereumPoW, .ethereumFair, .rsk, .ducatus, .gnosis, .saltPay, .kaspa, .cronos:
+            // Blockchains that are not in WalletCore yet
             return nil
         }
     }
