@@ -17,8 +17,8 @@ final class KeysServiceManagerUtility {
     
     // MARK: - Properties
     
-    private var mnemonic: String = ""
-    private var passphrase: String = ""
+    private let mnemonic: String
+    private let passphrase: String
     
     private var hdWallet: HDWallet {
         .init(mnemonic: mnemonic, passphrase: passphrase)!
@@ -34,7 +34,7 @@ final class KeysServiceManagerUtility {
     // MARK: - Implementation
     
     func getTrustWalletSeed() throws -> Data {
-        try Mnemonic(with: mnemonic).generateSeed(with: passphrase)
+        return try Mnemonic(with: mnemonic).generateSeed(with: passphrase)
     }
     
     func getMasterKeyFromTrustWallet(for blockchain: BlockchainSdk.Blockchain) throws -> PrivateKey {
@@ -61,11 +61,9 @@ final class KeysServiceManagerUtility {
         do {
             return try privateKey.makePublicKey(for: blockchain.curve)
         } catch {
-            throw NSError(domain: "__INVALID_EXECUTE_KEY__ BLOCKCHAIN \(blockchain.currencySymbol)", code: -1)
+            throw NSError(domain: "__INVALID_EXECUTE_SDK_KEY__ \(error.localizedDescription) BLOCKCHAIN \(blockchain.currencySymbol)", code: -1)
         }
     }
-    
-    // MARK: - asjkdaksldlk
     
     /// Basic validation and store local keys wallet
     func getPublicKeyFromTrustWallet(
@@ -75,7 +73,7 @@ final class KeysServiceManagerUtility {
         if let coin = CoinType(blockchain) {
             return try hdWallet.getKey(coin: coin, derivationPath: derivation).getPublicKeyByType(pubkeyType: .init(blockchain))
         } else {
-            throw NSError(domain: "__INVALID_EXECUTE_KEY__ BLOCKCHAIN \(blockchain.currencySymbol)", code: -1)
+            throw NSError(domain: "__INVALID_EXECUTE_TW_KEY__ BLOCKCHAIN \(blockchain.currencySymbol)", code: -1)
         }
     }
     

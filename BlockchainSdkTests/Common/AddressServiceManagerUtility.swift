@@ -20,7 +20,7 @@ final class AddressServiceManagerUtility {
         for blockchain: BlockchainSdk.Blockchain
     ) throws -> String {
         if let coin = CoinType(blockchain) {
-            return try TrustWalletAddressService(coin: coin, publicKeyType: .init(blockchain)).makeAddress(from: publicKey)
+            return try WalletCoreAddressService(coin: coin, publicKeyType: .init(blockchain)).makeAddress(from: publicKey)
         } else {
             throw NSError(domain: "__ AddressServiceManagerUtility __ error make address from TrustWallet address service", code: -1)
         }

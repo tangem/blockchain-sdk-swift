@@ -13,20 +13,17 @@ import WalletCore
 
 @testable import BlockchainSdk
 
-class PublicKeyDerivationAddressTests: XCTestCase {
-    let addressesUtility = AddressServiceManagerUtility()
-    let testVectorsUtility = TestVectorsUtility()
-}
-
 /*
  - 0. Compare derivation from vector file with BlockchainSdk.derivationPath(.new)
  - 1. Obtain MASTER Trustwallet Keys and keys from TrangemSdk and compare keys
  - 2. Obtain PUBLIC Trustwallet Keys and keys from TrangemSdk and compare keys
- - 2. Obtain ADDRESSES TeustWallet service and BlockchainSdk service for derivation public keys
+ - 3. Obtain ADDRESSES TeustWallet service and BlockchainSdk service for derivation public keys
  - 4. Compare addresses from services
  */
 
-extension PublicKeyDerivationAddressTests {
+class PublicKeyDerivationAddressTests: XCTestCase {
+    let addressesUtility = AddressServiceManagerUtility()
+    let testVectorsUtility = TestVectorsUtility()
     
     func testPublicKeyDerivationAddressVector() {
         do {
@@ -41,15 +38,15 @@ extension PublicKeyDerivationAddressTests {
             }
             
             try vector.testable.forEach { test in
+                //FIXME: - Remove when all test will be is completed
+                guard !(test.skip ?? false) else { return }
+                
                 guard let blockchain = blockchains.first(where: { $0.codingKey == test.blockchain }) else {
                     print("__INVALID_VECTOR__ MATCH BLOCKCHAIN KEY IS NIL \(test.blockchain)")
                     return
                 }
                 
                 guard CoinType(blockchain) != nil else { return }
-                
-                //FIXME: - Remove when all test will be is completed
-                guard !(test.skip ?? false) else { return }
                 
                 // MARK: -  Step - 0
 
@@ -111,5 +108,4 @@ extension PublicKeyDerivationAddressTests {
             return
         }
     }
-    
 }

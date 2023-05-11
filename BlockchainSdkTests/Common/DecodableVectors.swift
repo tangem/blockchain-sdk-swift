@@ -12,7 +12,7 @@ enum DecodableVectors: String {
     case blockchain = "blockchain_vectors"
     case validAddress = "valid_address_vectors"
     case derivation = "derivation_vectors"
-    case trustWalletCompare = "trust_wallet_comapre_vector"
+    case trustWalletCompare = "trust_wallet_compare_vector"
 }
 
 // MARK: - Namespace

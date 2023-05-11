@@ -42,12 +42,12 @@ extension AddressesValidationTests {
                 }
                 
                 vector.positive.forEach {
-                    XCTAssertTrue(TrustWalletAddressService.validate($0, for: blockchain), "-> \(blockchain)")
+                    XCTAssertTrue(WalletCoreAddressService.validate($0, for: blockchain), "-> \(blockchain)")
                     XCTAssertTrue(blockchain.getAddressService().validate($0), "-> \(blockchain)")
                 }
                 
                 vector.negative.forEach {
-                    XCTAssertFalse(TrustWalletAddressService.validate($0, for: blockchain), "-> \(blockchain)")
+                    XCTAssertFalse(WalletCoreAddressService.validate($0, for: blockchain), "-> \(blockchain)")
                     XCTAssertFalse(blockchain.getAddressService().validate($0), "-> \(blockchain)")
                 }
             }

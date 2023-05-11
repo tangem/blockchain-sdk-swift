@@ -13,12 +13,13 @@
 		2D535E772A0CC5E50081EB76 /* DecodableVectors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E742A0CC5E50081EB76 /* DecodableVectors.swift */; };
 		2D535E782A0CC5E50081EB76 /* KeysServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E752A0CC5E50081EB76 /* KeysServiceManagerUtility.swift */; };
 		2D535E792A0CC5E50081EB76 /* TestVectorsUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E762A0CC5E50081EB76 /* TestVectorsUtility.swift */; };
-		2D535E822A0CC5FA0081EB76 /* trust_wallet_comapre_vector.json in Resources */ = {isa = PBXBuildFile; fileRef = 2D535E7B2A0CC5FA0081EB76 /* trust_wallet_comapre_vector.json */; };
+		2D535E822A0CC5FA0081EB76 /* trust_wallet_compare_vector.json in Resources */ = {isa = PBXBuildFile; fileRef = 2D535E7B2A0CC5FA0081EB76 /* trust_wallet_compare_vector.json */; };
 		2D535E832A0CC5FA0081EB76 /* valid_address_vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = 2D535E7C2A0CC5FA0081EB76 /* valid_address_vectors.json */; };
 		2D535E842A0CC5FA0081EB76 /* blockchain_vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = 2D535E7D2A0CC5FA0081EB76 /* blockchain_vectors.json */; };
 		2D535E852A0CC5FA0081EB76 /* PublicKeyDerivationAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E7F2A0CC5FA0081EB76 /* PublicKeyDerivationAddressTests.swift */; };
 		2D535E862A0CC5FA0081EB76 /* BlockchainCodingKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E802A0CC5FA0081EB76 /* BlockchainCodingKeyTests.swift */; };
 		2D535E872A0CC5FA0081EB76 /* AddressesValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E812A0CC5FA0081EB76 /* AddressesValidationTests.swift */; };
+		2D535E892A0CC9920081EB76 /* TWCurve+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E882A0CC9920081EB76 /* TWCurve+.swift */; };
 		2D8501F729DEC20A00F4A11B /* TONTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8501F629DEC20A00F4A11B /* TONTransactionParams.swift */; };
 		2D9A919229BB8BFF00476EA6 /* TONWalletInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */; };
 		2D9A919329BB8BFF00476EA6 /* TONTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */; };
@@ -363,12 +364,13 @@
 		2D535E742A0CC5E50081EB76 /* DecodableVectors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecodableVectors.swift; sourceTree = "<group>"; };
 		2D535E752A0CC5E50081EB76 /* KeysServiceManagerUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeysServiceManagerUtility.swift; sourceTree = "<group>"; };
 		2D535E762A0CC5E50081EB76 /* TestVectorsUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestVectorsUtility.swift; sourceTree = "<group>"; };
-		2D535E7B2A0CC5FA0081EB76 /* trust_wallet_comapre_vector.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = trust_wallet_comapre_vector.json; sourceTree = "<group>"; };
+		2D535E7B2A0CC5FA0081EB76 /* trust_wallet_compare_vector.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = trust_wallet_compare_vector.json; sourceTree = "<group>"; };
 		2D535E7C2A0CC5FA0081EB76 /* valid_address_vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = valid_address_vectors.json; sourceTree = "<group>"; };
 		2D535E7D2A0CC5FA0081EB76 /* blockchain_vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = blockchain_vectors.json; sourceTree = "<group>"; };
 		2D535E7F2A0CC5FA0081EB76 /* PublicKeyDerivationAddressTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicKeyDerivationAddressTests.swift; sourceTree = "<group>"; };
 		2D535E802A0CC5FA0081EB76 /* BlockchainCodingKeyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockchainCodingKeyTests.swift; sourceTree = "<group>"; };
 		2D535E812A0CC5FA0081EB76 /* AddressesValidationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddressesValidationTests.swift; sourceTree = "<group>"; };
+		2D535E882A0CC9920081EB76 /* TWCurve+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TWCurve+.swift"; sourceTree = "<group>"; };
 		2D8501F629DEC20A00F4A11B /* TONTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONTransactionParams.swift; sourceTree = "<group>"; };
 		2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONWalletInfo.swift; sourceTree = "<group>"; };
 		2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONTransactionBuilder.swift; sourceTree = "<group>"; };
@@ -727,7 +729,7 @@
 		2D535E7A2A0CC5FA0081EB76 /* Vectors */ = {
 			isa = PBXGroup;
 			children = (
-				2D535E7B2A0CC5FA0081EB76 /* trust_wallet_comapre_vector.json */,
+				2D535E7B2A0CC5FA0081EB76 /* trust_wallet_compare_vector.json */,
 				2D535E7C2A0CC5FA0081EB76 /* valid_address_vectors.json */,
 				2D535E7D2A0CC5FA0081EB76 /* blockchain_vectors.json */,
 			);
@@ -1007,6 +1009,7 @@
 				B04E556A265FB89400679EAF /* URL+.swift */,
 				2D3829C829D34A93001D4785 /* TWCoin+.swift */,
 				2D29A7F629D5C2AE00359A0C /* TWPublicKeyType+.swift */,
+				2D535E882A0CC9920081EB76 /* TWCurve+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1870,7 +1873,7 @@
 			files = (
 				2D535E842A0CC5FA0081EB76 /* blockchain_vectors.json in Resources */,
 				2D535E832A0CC5FA0081EB76 /* valid_address_vectors.json in Resources */,
-				2D535E822A0CC5FA0081EB76 /* trust_wallet_comapre_vector.json in Resources */,
+				2D535E822A0CC5FA0081EB76 /* trust_wallet_compare_vector.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2179,6 +2182,7 @@
 				B0C8222A25F8DA860027E3BF /* CardanoNetworkService.swift in Sources */,
 				B05BF634256F953500B50FD7 /* BitcoinScriptAddress.swift in Sources */,
 				5D7D242A25136254001B9A4F /* WebSocket+Convenience.swift in Sources */,
+				2D535E892A0CC9920081EB76 /* TWCurve+.swift in Sources */,
 				5DC7DD60243F83E6008F83F2 /* XRPAddressService.swift in Sources */,
 				B0CDFF252641488900B9BA9D /* EthereumJsonRpcProvider.swift in Sources */,
 				DAD65BB02955F201003B3E8D /* EthereumApiKeys.swift in Sources */,
