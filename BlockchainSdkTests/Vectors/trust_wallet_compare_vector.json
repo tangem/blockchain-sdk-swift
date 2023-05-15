@@ -114,7 +114,7 @@
             "walletPublicKey": "02AF38CA8890E8C46FA63C5B1DAA36371AC59DB5DB5BEC6968A1B5759927196E8E"
         },
         {
-            "blockchain": "gnosis",
+            "blockchain": "xdai",
             "derivation": "m/44'/60'/0'/0/0",
             "walletPublicKey": "023A291DBF3427922A22D166C8D3333253A0E383115CF5DB36BE47EC5EA81D7D56"
         },

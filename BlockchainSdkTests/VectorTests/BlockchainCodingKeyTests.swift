@@ -17,12 +17,6 @@ class BlockchainCodingKeyTests: XCTestCase {
     let testVectorsUtility = TestVectorsUtility()
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
-}
-
-// MARK: - Compare Addresses from address string
-
-@available(iOS 13.0, *)
-extension BlockchainCodingKeyTests {
     
     func testCodingKeys() {
         do {
@@ -40,5 +34,4 @@ extension BlockchainCodingKeyTests {
             return
         }
     }
-    
 }

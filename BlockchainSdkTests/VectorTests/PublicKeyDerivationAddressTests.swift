@@ -42,7 +42,7 @@ class PublicKeyDerivationAddressTests: XCTestCase {
                 guard !(test.skip ?? false) else { return }
                 
                 guard let blockchain = blockchains.first(where: { $0.codingKey == test.blockchain }) else {
-                    print("__INVALID_VECTOR__ MATCH BLOCKCHAIN KEY IS NIL \(test.blockchain)")
+                    XCTFail("__INVALID_VECTOR__ MATCH BLOCKCHAIN KEY IS NIL \(test.blockchain)")
                     return
                 }
                 
