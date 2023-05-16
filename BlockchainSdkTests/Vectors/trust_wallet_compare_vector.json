@@ -1,0 +1,148 @@
+{
+    "mnemonic": {
+        "words": "tiny escape drive pupil flavor endless love walk gadget match filter luxury",
+        "passphrase": ""
+    },
+    "testable": [
+        {
+            "blockchain": "bitcoin",
+            "derivation": "m/84'/0'/0'/0/0",
+            "addressType": "default",
+            "walletPublicKey": "032A08567430A46A47CFFBF3FFD7FBB17A7850E75E7AC8E3E034BB1D8D5625A30D",
+            "skip": true
+        },
+        {
+            "blockchain": "litecoin",
+            "derivation": "m/84'/2'/0'/0/0",
+            "walletPublicKey": "0361607CC77FF2AF9C985C7E3791E8209E0F274B243CF81D9932E8C6A014A0F9F0",
+            "skip": true
+        },
+        {
+            "blockchain": "stellar",
+            "derivation": "m/44'/148'/0'",
+            "walletPublicKey": "C42FFE4F0EC064D0324E6018BE66A053C0F0BF50B01FCA3646FBC160656285C0",
+            "skip": true
+        },
+        {
+            "blockchain": "ethereum",
+            "derivation": "m/44'/60'/0'/0/0",
+            "walletPublicKey": "023A291DBF3427922A22D166C8D3333253A0E383115CF5DB36BE47EC5EA81D7D56"
+        },
+        {
+            "blockchain": "ethereumClassic",
+            "derivation": "m/44'/61'/0'/0/0",
+            "walletPublicKey": "023A291DBF3427922A22D166C8D3333253A0E383115CF5DB36BE47EC5EA81D7D56",
+            "skip": true
+        },
+        {
+            "blockchain": "bitcoinCash",
+            "derivation": "m/44'/145'/0'/0/0",
+            "walletPublicKey": "03D6FDE463A4D0F4DECC6AB11BE24E83C55A15F68FD5DB561EEBCA021976215FF5"
+        },
+        {
+            "blockchain": "binance",
+            "derivation": "m/44'/714'/0'/0/0",
+            "walletPublicKey": "03A17B33F13B894BF46FE4BB0E060F8F6A7A79B9556B910629FE7CDF4CF91DBC04"
+        },
+        {
+            "blockchain": "xrp",
+            "derivation": "m/44'/144'/0'/0/0",
+            "walletPublicKey": "0393F5CD6F5FFB5DB412218815FE3210D97C6E1994517D127382488FF3ACF2758A"
+        },
+        {
+            "blockchain": "tezos",
+            "derivation": "m/44'/1729'/0'/0/0",
+            "walletPublicKey": "5D09117F61B9944546041D8DF5EECC1CEDFF325D12C17DB10B495245AB93F9A5",
+            "skip": true
+        },
+        {
+            "blockchain": "dogecoin",
+            "derivation": "m/44'/3'/0'/0/0",
+            "walletPublicKey": "03149EA0300DBB38AA8DF2C00E8EAA7C586B6FA697BD9CA1AA06344266AC96A528"
+        },
+        {
+            "blockchain": "bsc",
+            "derivation": "m/44'/60'/0'/0/0",
+            "walletPublicKey": "023A291DBF3427922A22D166C8D3333253A0E383115CF5DB36BE47EC5EA81D7D56"
+        },
+        {
+            "blockchain": "polygon",
+            "derivation": "m/44'/60'/0'/0/0",
+            "walletPublicKey": "023A291DBF3427922A22D166C8D3333253A0E383115CF5DB36BE47EC5EA81D7D56"
+        },
+        {
+            "blockchain": "avalanche",
+            "derivation": "m/44'/60'/0'/0/0",
+            "walletPublicKey": "023A291DBF3427922A22D166C8D3333253A0E383115CF5DB36BE47EC5EA81D7D56"
+        },
+        {
+            "blockchain": "solana",
+            "derivation": "m/44'/501'/0'",
+            "walletPublicKey": "034D2D2A3F4A2099FDC9414607706F6C8F1B4C7439002C256CB12CE4AF90D3FE",
+            "skip": true
+        },
+        {
+            "blockchain": "fantom",
+            "derivation": "m/44'/60'/0'/0/0",
+            "walletPublicKey": "023A291DBF3427922A22D166C8D3333253A0E383115CF5DB36BE47EC5EA81D7D56"
+        },
+        {
+            "blockchain": "polkadot",
+            "derivation": "m/44'/354'/0'/0'/0'",
+            "walletPublicKey": "0BA9AB99A3A07ED502CB14A35CDBE92F5882AC1B690E8AFA195F98121FB4FC3D",
+            "skip": true
+        },
+        {
+            "blockchain": "kusama",
+            "derivation": "m/44'/434'/0'/0'/0'",
+            "walletPublicKey": "6E19C225663EEDB1BB3786DBBB262B7172141947317FFD1A97E0AA6F4380BCF0",
+            "skip": true
+        },
+        {
+            "blockchain": "tron",
+            "derivation": "m/44'/195'/0'/0/0",
+            "walletPublicKey": "0246A5F0CA01A7018E7B4C11734F610483FE694947559BD6CB6A157FE23C752A64"
+        },
+        {
+            "blockchain": "arbitrum",
+            "derivation": "m/44'/60'/0'/0/0",
+            "walletPublicKey": "023A291DBF3427922A22D166C8D3333253A0E383115CF5DB36BE47EC5EA81D7D56"
+        },
+        {
+            "blockchain": "dash",
+            "derivation": "m/44'/5'/0'/0/0",
+            "walletPublicKey": "02AF38CA8890E8C46FA63C5B1DAA36371AC59DB5DB5BEC6968A1B5759927196E8E"
+        },
+        {
+            "blockchain": "xdai",
+            "derivation": "m/44'/60'/0'/0/0",
+            "walletPublicKey": "023A291DBF3427922A22D166C8D3333253A0E383115CF5DB36BE47EC5EA81D7D56"
+        },
+        {
+            "blockchain": "optimism",
+            "derivation": "m/44'/60'/0'/0/0",
+            "walletPublicKey": "023A291DBF3427922A22D166C8D3333253A0E383115CF5DB36BE47EC5EA81D7D56"
+        },
+        {
+            "blockchain": "ton",
+            "derivation": "m/44'/607'/0'",
+            "walletPublicKey": "5D09117F61B9944546041D8DF5EECC1CEDFF325D12C17DB10B495245AB93F9A5",
+            "skip": true
+        },
+        {
+            "blockchain": "kava",
+            "derivation": "m/44'/60'/0'/0/0",
+            "walletPublicKey": "023A291DBF3427922A22D166C8D3333253A0E383115CF5DB36BE47EC5EA81D7D56"
+        },
+        {
+            "blockchain": "kaspa",
+            "derivation": "m/44'/111111'/0'/0/0",
+            "walletPublicKey": "035F25F3544EF2D031DB235B341112C31F1B26C03F13DC52B5D0E2D508A4F3F176"
+        },
+        {
+            "blockchain": "ravencoin",
+            "derivation": "m/44'/175'/0'/0/0",
+            "walletPublicKey": "0260BF54E0D66880E36FC5400C5CBF799AE129807B03B0FC88DB2506217EB24D85"
+        }
+    ]
+}

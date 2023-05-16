@@ -56,7 +56,11 @@ public class WalletCoreAddressService: AddressService {
 extension WalletCoreAddressService {
     
     static func validate(_ address: String, for blockchain: Blockchain) -> Bool {
-        return (try? AnyAddress(string: address, coin: CoinType(blockchain))) != nil
+        if let coin = CoinType(blockchain) {
+            return (try? AnyAddress(string: address, coin: coin)) != nil
+        } else {
+            return false
+        }
     }
     
 }

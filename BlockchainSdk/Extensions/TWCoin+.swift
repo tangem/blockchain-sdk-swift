@@ -12,7 +12,7 @@ import WalletCore
 extension CoinType {
     
     /// Сonstructor that maps the sdk blockchain type into the TrustWallet coin type
-    init(_ blockchain: Blockchain) throws {
+    init?(_ blockchain: Blockchain) {
         switch blockchain {
         case .bitcoin:
             self = .bitcoin
@@ -50,15 +50,29 @@ extension CoinType {
             self = .polygon
         case .ravencoin:
             self = .ravencoin
+        case .dash:
+            self = .dash
+        case .dogecoin:
+            self = .dogecoin
+        case .arbitrum:
+            self = .arbitrum
+        case .optimism:
+            self = .optimism
+        case .avalanche:
+            self = .avalancheCChain
+        case .kava:
+            self = .kavaEvm
+        case .fantom:
+            self = .fantom
         case .cosmos:
             self = .cosmos
         case .terraV1:
             self = .terra
         case .terraV2:
             self = .terraV2        
-        case .ethereumPoW, .ethereumFair, .rsk, .ducatus, .dogecoin, .avalanche, .fantom, .arbitrum, .dash, .gnosis, .optimism, .saltPay, .kava, .kaspa, .cronos:
+        case .ethereumPoW, .ethereumFair, .rsk, .ducatus, .gnosis, .saltPay, .kaspa, .cronos:
             // Blockchains that are not in WalletCore yet
-            throw NSError()
+            return nil
         }
     }
     

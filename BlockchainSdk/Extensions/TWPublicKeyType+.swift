@@ -14,14 +14,14 @@ extension PublicKeyType {
     /// Сonstructor that maps the sdk blockchain type into the TrustWallet public key type
     init(_ blockchain: Blockchain) throws {
         switch blockchain {
-        case .bitcoin:
+        case .bitcoin, .litecoin, .binance, .dash, .dogecoin, .bitcoinCash, .ravencoin, .cosmos:
             self = PublicKeyType.secp256k1
-        case .ethereum:
+        case .ethereum, .bsc, .tron, .polygon, .arbitrum, .avalanche, .ethereumClassic, .optimism, .fantom, .kava:
             self = PublicKeyType.secp256k1Extended
-        case .litecoin:
-            self = PublicKeyType.secp256k1
-        case .stellar:
+        case .stellar, .ton, .solana, .polkadot, .kusama:
             self = PublicKeyType.ed25519
+        case .cardano:
+            self = PublicKeyType.ed25519Cardano
         case .xrp(let curve):
             switch curve {
             case .secp256k1:
@@ -31,22 +31,6 @@ extension PublicKeyType {
             default:
                 throw NSError()
             }
-        case .ton:
-            self = .ed25519
-        case .cardano:
-            self = .ed25519Cardano
-        case .binance:
-            self = .secp256k1
-        case .bsc:
-            self = .secp256k1Extended
-        case .solana:
-            self = .ed25519
-        case .polkadot:
-            self = .ed25519
-        case .kusama:
-            self = .ed25519
-        case .tron:
-            self = .secp256k1Extended
         case .tezos(let curve):
             switch curve {
             case .ed25519:
@@ -54,8 +38,6 @@ extension PublicKeyType {
             default:
                 throw NSError()
             }
-        case .polygon:
-            self = .secp256k1Extended
         default:
             throw NSError()
         }

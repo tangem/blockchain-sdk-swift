@@ -239,4 +239,5 @@ class BlockchainSdkTests: XCTestCase {
             XCTAssertTrue(recoveredFromCodable == blockchain, "\(blockchain.displayName) codingKey test failed")
         }
     }
+    
 }

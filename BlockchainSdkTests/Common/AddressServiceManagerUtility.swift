@@ -15,60 +15,33 @@ import WalletCore
 
 final class AddressServiceManagerUtility {
     
-    func validate(privateKey: PrivateKey, for blockchain: BlockchainSdk.Blockchain) {
-        do {
-            let publicKey = try privateKey.getPublicKey(coinType: .init(blockchain)).data
-            let twAddress = try makeWalletCoreAddressService(publicKey: publicKey, for: blockchain)
-            let localAddress = try makeLocalWalletAddressService(publicKey: publicKey, for: blockchain)
-            
-            XCTAssertEqual(twAddress, localAddress)
-            
-            validate(address: twAddress, publicKey: publicKey, for: blockchain)
-        } catch {
-            XCTFail("__INVALID_ADDRESS__ TW ADDRESS DID NOT CREATED!")
-        }
-    }
-    
-    func validate(address: String, publicKey: Data, for blockchain: BlockchainSdk.Blockchain) {
-        do {
-            let addressFromPublicKey = try blockchain.getAddressService().makeAddress(from: publicKey)
-            validateTRUE(address: addressFromPublicKey, for: blockchain)
-            
-            XCTAssertEqual(address, addressFromPublicKey)
-        } catch {
-            XCTFail("__INVALID_ADDRESS__ BLOCKCHAIN FROM PUBLIC KEY!")
-        }
-        
-    }
-    
-    func validateTRUE(address: String, for blockchain: BlockchainSdk.Blockchain) {
-        XCTAssertTrue(WalletCoreAddressService.validate(address, for: blockchain), "__INVALID_ADDRESS__ FROM TW ADDRESS SERVICE")
-        XCTAssertTrue(validate(address, for: blockchain), "__INVALID_ADDRESS__ FROM OWN ADDRESS SERVICE")
-    }
-    
-    func validateFALSE(address: String, for blockchain: BlockchainSdk.Blockchain) {
-        XCTAssertFalse(WalletCoreAddressService.validate(address, for: blockchain))
-        XCTAssertFalse(validate(address, for: blockchain))
-    }
-    
-    // MARK: - Private Implementation
-    
-    private func validate(_ address: String, for blockchain: BlockchainSdk.Blockchain) -> Bool {
-        blockchain.getAddressService().validate(address)
-    }
-    
-    private func makeWalletCoreAddressService(
+    func makeTrustWalletAddress(
         publicKey: Data,
         for blockchain: BlockchainSdk.Blockchain
     ) throws -> String {
-        try WalletCoreAddressService(coin: .init(blockchain), publicKeyType: .init(blockchain)).makeAddress(from: publicKey)
+        if let coin = CoinType(blockchain) {
+            return try WalletCoreAddressService(coin: coin, publicKeyType: .init(blockchain)).makeAddress(from: publicKey)
+        } else {
+            throw NSError(domain: "__ AddressServiceManagerUtility __ error make address from TrustWallet address service", code: -1)
+        }
     }
     
-    private func makeLocalWalletAddressService(
+    func makeTangemAddress(
         publicKey: Data,
-        for blockchain: BlockchainSdk.Blockchain
+        for blockchain: BlockchainSdk.Blockchain,
+        addressType: AddressType?
     ) throws -> String {
-        try blockchain.getAddressService().makeAddress(from: publicKey)
+        if let addressType = addressType {
+            let addresses = try blockchain.getAddressService().makeAddresses(from: publicKey)
+            
+            if let address = addresses.first(where: { $0.type == addressType }) {
+                return address.value
+            } else {
+                throw NSError(domain: "__ AddressServiceManagerUtility __ error make address from BlockchainSdk address service", code: -1)
+            }
+        } else {
+            return try blockchain.getAddressService().makeAddress(from: publicKey)
+        }
     }
     
 }
