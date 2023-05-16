@@ -17,24 +17,20 @@ final class KeysServiceManagerUtility {
     
     // MARK: - Properties
     
-    private let mnemonic: String
-    private let passphrase: String
-    
-    private var hdWallet: HDWallet {
-        .init(mnemonic: mnemonic, passphrase: passphrase)!
-    }
+    private let seed: Data
+    private let hdWallet: HDWallet
     
     // MARK: - Init
     
-    public init(mnemonic: String, passphrase: String = "") {
-        self.mnemonic = mnemonic
-        self.passphrase = passphrase
+    public init(mnemonic: String, passphrase: String = "") throws {
+        self.seed = try Mnemonic(with: mnemonic).generateSeed(with: passphrase)
+        self.hdWallet = HDWallet(mnemonic: mnemonic, passphrase: passphrase)!
     }
     
     // MARK: - Implementation
     
-    func getTrustWalletSeed() throws -> Data {
-        return try Mnemonic(with: mnemonic).generateSeed(with: passphrase)
+    func getBIP32Seed() throws -> Data {
+        return seed
     }
     
     func getMasterKeyFromTrustWallet(for blockchain: BlockchainSdk.Blockchain) throws -> PrivateKey {

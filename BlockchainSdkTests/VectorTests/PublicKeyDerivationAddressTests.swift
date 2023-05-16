@@ -37,6 +37,9 @@ class PublicKeyDerivationAddressTests: XCTestCase {
                 return
             }
             
+            // Fill mnemonics for generate seed from TangemSdk and generate HDWallet TrustWallet
+            let keysServiceUtility = try KeysServiceManagerUtility(mnemonic: vector.mnemonic.words)
+            
             try vector.testable.forEach { test in
                 //FIXME: - Remove when all test will be is completed
                 guard !(test.skip ?? false) else { return }
@@ -53,12 +56,9 @@ class PublicKeyDerivationAddressTests: XCTestCase {
                 XCTAssertEqual(test.derivation, blockchain.derivationPath(for: .new)!.rawPath, "-> \(blockchain.displayName)")
                 
                 // MARK: -  Step - 1 / 2
-                
-                let keysServiceUtility = KeysServiceManagerUtility(mnemonic: vector.mnemonic.words)
-                let seed = try keysServiceUtility.getTrustWalletSeed()
 
                 let trustWalletPrivateKey = try keysServiceUtility.getMasterKeyFromTrustWallet(for: blockchain)
-                let tangemSdkPrivateKey = try keysServiceUtility.getMasterKeyFromBIP32(with: seed, for: blockchain)
+                let tangemSdkPrivateKey = try keysServiceUtility.getMasterKeyFromBIP32(with: keysServiceUtility.getBIP32Seed(), for: blockchain)
 
                 // Validate private keys
                 XCTAssertEqual(trustWalletPrivateKey.data.hex, tangemSdkPrivateKey.privateKey.hex, "\(blockchain.displayName)")
@@ -103,7 +103,7 @@ class PublicKeyDerivationAddressTests: XCTestCase {
                 }
             }
             
-        } catch let error {
+        } catch {
             XCTFail("__INVALID_VECTOR__ \(error)")
             return
         }
