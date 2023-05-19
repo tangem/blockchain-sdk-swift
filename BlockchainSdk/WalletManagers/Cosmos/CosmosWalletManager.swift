@@ -63,7 +63,12 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     params: transactionParameters
                 )
                 
-                let signer = WalletCoreSigner(sdkSigner: signer, walletPublicKey: self.wallet.publicKey, curve: self.cosmosChain.blockchain.curve)
+                let signer = WalletCoreSigner(
+                    sdkSigner: signer,
+                    blockchainKey: WalletCorePublicKeyConverterUtil.convert(publicKey: self.wallet.publicKey.blockchainKey, blockchain: self.wallet.blockchain),
+                    walletPublicKey: self.wallet.publicKey,
+                    curve: self.cosmosChain.blockchain.curve
+                )
                 let output: CosmosSigningOutput = try AnySigner.signExternally(input: input, coin: self.cosmosChain.coin, signer: signer)
                 
                 guard let outputData = output.serialized.data(using: .utf8) else {

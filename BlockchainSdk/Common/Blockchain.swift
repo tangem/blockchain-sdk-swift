@@ -654,7 +654,7 @@ extension Blockchain {
             return BitcoinLegacyAddressService(networkParams: networkParams)
         case .ton, .cosmos, .terraV1, .terraV2:
             let coin = CoinType(self)!
-            return WalletCoreAddressService(coin: coin, publicKeyType: coin.publicKeyType)
+            return WalletCoreAddressService(coin: coin, blockchain: self, publicKeyType: coin.publicKeyType)
         }
     }
 }

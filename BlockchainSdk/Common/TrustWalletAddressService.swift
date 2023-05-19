@@ -13,12 +13,14 @@ import WalletCore
 public class WalletCoreAddressService: AddressService {
     
     private let coin: CoinType
+    private let blockchain: Blockchain
     private let publicKeyType: PublicKeyType
     
     // MARK: - Init
     
-    public init(coin: CoinType, publicKeyType: PublicKeyType) {
+    public init(coin: CoinType, blockchain: Blockchain, publicKeyType: PublicKeyType) {
         self.coin = coin
+        self.blockchain = blockchain
         self.publicKeyType = publicKeyType
     }
     
@@ -26,7 +28,8 @@ public class WalletCoreAddressService: AddressService {
     /// - Parameter walletPublicKey: Data public key wallet
     /// - Returns: User-friendly address
     public func makeAddress(from walletPublicKey: Data) throws -> String {
-        guard let publicKey = PublicKey(data: try compressIfNeeded(walletPublicKey), type: publicKeyType) else {
+        let convertedPublicKey = WalletCorePublicKeyConverterUtil.convert(publicKey: walletPublicKey, blockchain: blockchain)
+        guard let publicKey = PublicKey(data: convertedPublicKey, type: publicKeyType) else {
             throw TWError.makeAddressFailed
         }
         
@@ -38,18 +41,6 @@ public class WalletCoreAddressService: AddressService {
     /// - Returns: Result of validate
     public func validate(_ address: String) -> Bool {
         return AnyAddress(string: address, coin: coin) != nil
-    }
-    
-    private func compressIfNeeded(_ publicKey: Data) throws -> Data {
-        if case .secp256k1 = coin.publicKeyType {
-            guard let compressedPublicKey = try? Secp256k1Key(with: publicKey).compress() else {
-                throw TWError.makeAddressFailed
-            }
-            
-            return compressedPublicKey
-        } else {
-            return publicKey
-        }
     }
 }
 
