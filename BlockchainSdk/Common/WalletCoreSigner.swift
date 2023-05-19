@@ -15,7 +15,7 @@ import WalletCore
 // C++ and Swift exceptions and the way async/await functions work
 class WalletCoreSigner: Signer {
     var publicKey: Data {
-        compressIfNeeded(walletPublicKey.blockchainKey)
+        walletPublicKey.blockchainKey
     }
     
     private let signQueue = DispatchQueue(label: "com.signer.queue", qos: .userInitiated)
@@ -92,17 +92,5 @@ class WalletCoreSigner: Signer {
         let secpSignature = try Secp256k1Signature(with: signature)
         let (v, r, s) = try secpSignature.unmarshal(with: publicKey, hash: data)
         return r + s + v
-    }
-    
-    private func compressIfNeeded(_ publicKey: Data) -> Data {
-        if case .secp256k1 = curve {
-            guard let compressedPublicKey = try? Secp256k1Key(with: publicKey).compress() else {
-                return publicKey
-            }
-            
-            return compressedPublicKey
-        } else {
-            return publicKey
-        }
     }
 }
