@@ -23,7 +23,7 @@ class CosmosNetworkService: MultiNetworkProvider {
     func accountInfo(for address: String, tokens: [Token], transactionHashes: [String]) -> AnyPublisher<CosmosAccountInfo, Error> {
         providerPublisher {
             $0.accounts(address: address)
-                .zip($0.balances(address: address), self.confirmedTransactionHashes(ids: transactionHashes, with: $0))
+                .zip($0.balances(address: address), self.confirmedTransactionHashes(transactionHashes, with: $0))
                 .tryMap { [weak self] (accountInfo, balanceInfo, confirmedTransactionHashes) in
                     guard
                         let self,
@@ -93,15 +93,15 @@ class CosmosNetworkService: MultiNetworkProvider {
         }
     }
     
-    private func confirmedTransactionHashes(ids transactionHashes: [String], with provider: CosmosRestProvider) -> AnyPublisher<[String], Error> {
-        transactionHashes
+    private func confirmedTransactionHashes(_ hashes: [String], with provider: CosmosRestProvider) -> AnyPublisher<[String], Error> {
+        hashes
             .publisher
             .setFailureType(to: Error.self)
-            .flatMap { [weak self] transactionHash -> AnyPublisher<String?, Error> in
+            .flatMap { [weak self] hash -> AnyPublisher<String?, Error> in
                 guard let self = self else {
                     return .anyFail(error: WalletError.empty)
                 }
-                return self.transactionConfirmed(hash: transactionHash, with: provider)
+                return self.transactionConfirmed(hash, with: provider)
             }
             .collect()
             .map {
@@ -114,7 +114,7 @@ class CosmosNetworkService: MultiNetworkProvider {
             .eraseToAnyPublisher()
     }
     
-    private func transactionConfirmed(hash: String, with provider: CosmosRestProvider) -> AnyPublisher<String?, Error> {
+    private func transactionConfirmed(_ hash: String, with provider: CosmosRestProvider) -> AnyPublisher<String?, Error> {
         provider.transactionStatus(hash: hash)
             .map(\.txResponse)
             .compactMap { response in
