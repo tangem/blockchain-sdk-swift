@@ -14,9 +14,7 @@ import WalletCore
 // It is implemented with several restrictions in mind, mainly lack of compatibility between
 // C++ and Swift exceptions and the way async/await functions work
 class WalletCoreSigner: Signer {
-    var publicKey: Data {
-        walletPublicKey.blockchainKey
-    }
+    let publicKey: Data
     
     private let signQueue = DispatchQueue(label: "com.signer.queue", qos: .userInitiated)
     
@@ -28,8 +26,9 @@ class WalletCoreSigner: Signer {
     
     private var signSubscription: AnyCancellable?
     
-    init(sdkSigner: TransactionSigner, walletPublicKey: Wallet.PublicKey, curve: EllipticCurve) {
+    init(sdkSigner: TransactionSigner, blockchainKey: Data, walletPublicKey: Wallet.PublicKey, curve: EllipticCurve) {
         self.sdkSigner = sdkSigner
+        self.publicKey = blockchainKey
         self.walletPublicKey = walletPublicKey
         self.curve = curve
     }
