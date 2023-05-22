@@ -26,8 +26,12 @@ class CosmosWalletManager: BaseManager, WalletManager {
     }
     
     func update(completion: @escaping (Result<Void, Error>) -> Void) {
+        let transactionHashes = wallet.transactions
+            .filter { $0.status == .unconfirmed }
+            .compactMap { $0.hash }
+        
         cancellable = networkService
-            .accountInfo(for: wallet.address, tokens: cardTokens)
+            .accountInfo(for: wallet.address, tokens: cardTokens, transactionHashes: transactionHashes)
             .sink { result in
                 switch result {
                 case .failure(let error):
@@ -91,7 +95,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
             .handleEvents(receiveOutput: { [weak self] in
                 var submittedTransaction = transaction
                 submittedTransaction.hash = $0
-                self?.wallet.transactions.append(submittedTransaction)
+                self?.wallet.add(transaction: submittedTransaction)
             })
             .map {
                 TransactionSendResult(hash: $0)
@@ -171,9 +175,10 @@ class CosmosWalletManager: BaseManager, WalletManager {
             wallet.add(tokenValue: balance, for: token)
         }
         
-        // Transactions are confirmed instantaneuously
-        for (index, _) in wallet.transactions.enumerated() {
-            wallet.transactions[index].status = .confirmed
+        for (index, transaction) in wallet.transactions.enumerated() {
+            if let hash = transaction.hash, accountInfo.confirmedTransactionHashes.contains(hash) {
+                wallet.transactions[index].status = .confirmed
+            }
         }
     }
     

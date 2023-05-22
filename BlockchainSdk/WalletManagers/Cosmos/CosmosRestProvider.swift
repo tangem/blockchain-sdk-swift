@@ -48,6 +48,10 @@ class CosmosRestProvider: HostProvider {
         requestPublisher(for: .txs(data: data))
     }
     
+    func transactionStatus(hash: String) -> AnyPublisher<CosmosTxResponse, Error> {
+        requestPublisher(for: .transactionStatus(hash: hash))
+    }
+    
     private func requestPublisher<T: Decodable>(for target: CosmosTarget.CosmosTargetType) -> AnyPublisher<T, Error> {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
