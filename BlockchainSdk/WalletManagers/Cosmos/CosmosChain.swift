@@ -125,13 +125,9 @@ extension CosmosChain {
             if case .coin = amountType {
                 return [
                     28.325,
-                    28.325,
-                    28.325,
                 ]
             } else {
                 return [
-                    1,
-                    1,
                     1,
                 ]
             }
