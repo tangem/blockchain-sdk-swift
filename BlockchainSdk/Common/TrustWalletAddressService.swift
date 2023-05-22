@@ -26,8 +26,7 @@ public class WalletCoreAddressService: AddressService {
     /// - Parameter walletPublicKey: Data public key wallet
     /// - Returns: User-friendly address
     public func makeAddress(from walletPublicKey: Data) throws -> String {
-        let convertedPublicKey = WalletCorePublicKeyConverterUtil.convert(publicKey: walletPublicKey, publicKeyType: publicKeyType)
-        guard let publicKey = PublicKey(data: convertedPublicKey, type: publicKeyType) else {
+        guard let publicKey = PublicKey(tangemPublicKey: walletPublicKey, publicKeyType: publicKeyType) else {
             throw TWError.makeAddressFailed
         }
         

@@ -63,9 +63,13 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     params: transactionParameters
                 )
                 
+                guard let publicKey = PublicKey(tangemPublicKey: self.wallet.publicKey.blockchainKey, publicKeyType: self.cosmosChain.coin.publicKeyType) else {
+                    throw WalletError.failedToGetFee
+                }
+                
                 let signer = WalletCoreSigner(
                     sdkSigner: signer,
-                    blockchainKey: WalletCorePublicKeyConverterUtil.convert(publicKey: self.wallet.publicKey.blockchainKey, publicKeyType: self.cosmosChain.coin.publicKeyType),
+                    blockchainKey: publicKey.data,
                     walletPublicKey: self.wallet.publicKey,
                     curve: self.cosmosChain.blockchain.curve
                 )

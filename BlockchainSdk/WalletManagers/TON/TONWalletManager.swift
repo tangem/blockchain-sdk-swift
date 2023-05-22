@@ -85,9 +85,13 @@ final class TONWalletManager: BaseManager, WalletManager {
         let output: TheOpenNetworkSigningOutput
         
         if let signer = signer {
+            guard let publicKey = PublicKey(tangemPublicKey: self.wallet.publicKey.blockchainKey, publicKeyType: CoinType.ton.publicKeyType) else {
+                throw WalletError.failedToBuildTx
+            }
+            
             let coreSigner = WalletCoreSigner(
                 sdkSigner: signer,
-                blockchainKey: WalletCorePublicKeyConverterUtil.convert(publicKey: self.wallet.publicKey.blockchainKey, publicKeyType: CoinType.ton.publicKeyType),
+                blockchainKey: publicKey.data,
                 walletPublicKey: self.wallet.publicKey,
                 curve: wallet.blockchain.curve
             )
