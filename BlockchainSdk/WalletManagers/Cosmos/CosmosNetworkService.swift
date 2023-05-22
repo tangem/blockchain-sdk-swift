@@ -105,11 +105,7 @@ class CosmosNetworkService: MultiNetworkProvider {
             }
             .collect()
             .map {
-                $0.reduce(into: []) { confirmedTransactionHashes, confirmedTransactionHash in
-                    if let confirmedTransactionHash = confirmedTransactionHash {
-                        confirmedTransactionHashes.append(confirmedTransactionHash)
-                    }
-                }
+                $0.compactMap { $0 }
             }
             .eraseToAnyPublisher()
     }
