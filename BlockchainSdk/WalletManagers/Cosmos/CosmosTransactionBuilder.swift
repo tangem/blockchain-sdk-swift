@@ -89,7 +89,7 @@ class CosmosTransactionBuilder {
         if let signer {
             let coreSigner = WalletCoreSigner(
                 sdkSigner: signer,
-                blockchainKey: WalletCorePublicKeyConverterUtil.convert(publicKey: self.wallet.publicKey.blockchainKey, blockchain: self.wallet.blockchain),
+                blockchainKey: WalletCorePublicKeyConverterUtil.convert(publicKey: self.wallet.publicKey.blockchainKey, publicKeyType: cosmosChain.coin.publicKeyType),
                 walletPublicKey: self.wallet.publicKey,
                 curve: cosmosChain.blockchain.curve
             )

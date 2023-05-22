@@ -65,7 +65,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 
                 let signer = WalletCoreSigner(
                     sdkSigner: signer,
-                    blockchainKey: WalletCorePublicKeyConverterUtil.convert(publicKey: self.wallet.publicKey.blockchainKey, blockchain: self.wallet.blockchain),
+                    blockchainKey: WalletCorePublicKeyConverterUtil.convert(publicKey: self.wallet.publicKey.blockchainKey, publicKeyType: cosmosChain.coin.publicKeyType),
                     walletPublicKey: self.wallet.publicKey,
                     curve: self.cosmosChain.blockchain.curve
                 )

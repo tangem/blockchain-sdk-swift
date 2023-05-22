@@ -87,7 +87,7 @@ final class TONWalletManager: BaseManager, WalletManager {
         if let signer = signer {
             let coreSigner = WalletCoreSigner(
                 sdkSigner: signer,
-                blockchainKey: WalletCorePublicKeyConverterUtil.convert(publicKey: self.wallet.publicKey.blockchainKey, blockchain: self.wallet.blockchain),
+                blockchainKey: WalletCorePublicKeyConverterUtil.convert(publicKey: self.wallet.publicKey.blockchainKey, publicKeyType: CoinType.ton.publicKeyType),
                 walletPublicKey: self.wallet.publicKey,
                 curve: wallet.blockchain.curve
             )

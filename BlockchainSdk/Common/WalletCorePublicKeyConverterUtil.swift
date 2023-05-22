@@ -7,14 +7,16 @@
 //
 
 import TangemSdk
+import WalletCore
 
 enum WalletCorePublicKeyConverterUtil {
-    static func convert(publicKey: Data, blockchain: Blockchain) -> Data {
-        switch blockchain {
-        case .bitcoin, .litecoin, .stellar, .ethereum, .ethereumPoW, .ethereumFair, .ethereumClassic, .rsk, .bitcoinCash, .binance, .cardano, .xrp, .ducatus, .tezos, .dogecoin, .bsc, .polygon, .avalanche, .solana, .fantom, .polkadot, .kusama, .tron, .arbitrum, .dash, .gnosis, .optimism, .saltPay, .ton, .kava, .kaspa, .ravencoin:
-            return publicKey
-        case .cosmos, .terraV1, .terraV2, .cronos:
+    static func convert(publicKey: Data, publicKeyType: PublicKeyType) -> Data {
+        switch publicKeyType {
+        case .secp256k1:
+            // Note that this is NOT the extended Secp key
             return compressedSecp256k1Key(publicKey)
+        default:
+            return publicKey
         }
     }
     
