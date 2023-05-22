@@ -13,14 +13,12 @@ import WalletCore
 public class WalletCoreAddressService: AddressService {
     
     private let coin: CoinType
-    private let blockchain: Blockchain
     private let publicKeyType: PublicKeyType
     
     // MARK: - Init
     
-    public init(coin: CoinType, blockchain: Blockchain, publicKeyType: PublicKeyType) {
+    public init(coin: CoinType, publicKeyType: PublicKeyType) {
         self.coin = coin
-        self.blockchain = blockchain
         self.publicKeyType = publicKeyType
     }
     
