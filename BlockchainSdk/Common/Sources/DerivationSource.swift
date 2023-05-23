@@ -59,16 +59,13 @@ public struct DerivationSource {
             return 1
         }
         
-        switch style {
-        case .new, .v2:
-            guard blockchain.isEvm else { fallthrough }
-            
-            // Ethereum coinType
-            return 60
-            
-        case .legacy, .v1, .v3:
-            return blockchain.bip44CoinType
+        let isEthLikeStyle = style == .new || style == .v2
+
+        if isEthLikeStyle, blockchain.isEvm {
+            return Blockchain.ethereum(testnet: false).bip44CoinType
         }
+        
+        return blockchain.bip44CoinType
     }
 }
 
