@@ -11,9 +11,9 @@ import struct TangemSdk.DerivationPath
 import struct TangemSdk.BIP44
 
 public struct DefaultDerivationSource {
-    public func getDerivations(for blockchain: Blockchain, style: DerivationStyle) -> AddressDerivationPath {
+    public func getDerivations(for blockchain: Blockchain, style: DerivationStyle) -> [AddressType: DerivationPath] {
         guard blockchain.curve == .secp256k1 || blockchain.curve == .ed25519 else {
-            return .empty
+            return [:]
         }
         
         let coinType = coinType(for: blockchain, style: style)
@@ -24,21 +24,21 @@ public struct DefaultDerivationSource {
             // Path according to sep-0005. https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md
             // Solana path consistent with TrustWallet:
             // https://github.com/trustwallet/wallet-core/blob/456f22d6a8ce8a66ccc73e3b42bcfec5a6afe53a/registry.json#L1013
-            return AddressDerivationPath(default: DerivationPath(nodes: [.hardened(BIP44.purpose),
-                                                                         .hardened(coinType),
-                                                                         .hardened(0)]))
+            return [.default: DerivationPath(nodes: [.hardened(BIP44.purpose),
+                                                     .hardened(coinType),
+                                                     .hardened(0)])]
         case .cardano(let shelley):
             // We use shelley for all new cards with HD wallets feature
             if !shelley {
-                return .empty
+                return [:]
             }
             
             // Path according to CIP-1852. https://cips.cardano.org/cips/cip1852/
-            return AddressDerivationPath(default:  DerivationPath(nodes: [.hardened(1852), // purpose
+            return [.default:  DerivationPath(nodes: [.hardened(1852), // purpose
                                                                           .hardened(coinType),
                                                                           .hardened(0),
                                                                           .nonHardened(0),
-                                                                          .nonHardened(0)]))
+                                                                          .nonHardened(0)])]
         case .bitcoin, .litecoin:
             guard style == .v2 else { fallthrough }
             
@@ -50,9 +50,9 @@ public struct DefaultDerivationSource {
                                                .nonHardened(0),
                                                .nonHardened(0)])
             
-            return AddressDerivationPath(legacy: bip44, default: bip84)
+            return [.legacy: bip44, .default: bip84]
         default:
-            return AddressDerivationPath(default: bip44)
+            return [.default: bip44]
         }
     }
     

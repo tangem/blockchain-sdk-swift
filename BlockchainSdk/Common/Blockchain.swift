@@ -513,7 +513,7 @@ extension Blockchain {
 extension Blockchain {
     @available(*, deprecated, message: "Use DefaultDerivationSource.getDerivationPath")
     public func derivationPath(for style: DerivationStyle = .legacy) -> DerivationPath? {
-        DefaultDerivationSource().getDerivations(for: self, style: style).default
+        DefaultDerivationSource().getDerivations(for: self, style: style)[.default]
     }
     
     public func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data?) throws -> [Address] {
