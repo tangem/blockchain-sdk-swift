@@ -1,17 +1,15 @@
 //
-//  DefaultDerivationSource.swift
-//  Alamofire
+//  DerivationSource.swift
+//  BlockchainSdk
 //
 //  Created by Sergey Balashov on 23.05.2023.
 //
 
 import Foundation
+import TangemSdk
 
-import struct TangemSdk.DerivationPath
-import struct TangemSdk.BIP44
-
-public struct DefaultDerivationSource {
-    public func getDerivations(for blockchain: Blockchain, style: DerivationStyle) -> [AddressType: DerivationPath] {
+public struct DerivationSource {
+    public func derivations(for blockchain: Blockchain, style: DerivationStyle) -> [AddressType: DerivationPath] {
         guard blockchain.curve == .secp256k1 || blockchain.curve == .ed25519 else {
             return [:]
         }
@@ -35,10 +33,10 @@ public struct DefaultDerivationSource {
             
             // Path according to CIP-1852. https://cips.cardano.org/cips/cip1852/
             return [.default:  DerivationPath(nodes: [.hardened(1852), // purpose
-                                                                          .hardened(coinType),
-                                                                          .hardened(0),
-                                                                          .nonHardened(0),
-                                                                          .nonHardened(0)])]
+                                                      .hardened(coinType),
+                                                      .hardened(0),
+                                                      .nonHardened(0),
+                                                      .nonHardened(0)])]
         case .bitcoin, .litecoin:
             guard style == .v2 else { fallthrough }
             
@@ -61,20 +59,27 @@ public struct DefaultDerivationSource {
             return 1
         }
         
-        let ethCoinType: UInt32 = 60
-        
-        let isNewStyle = style == .v1 || style == .new
-        
-        if isNewStyle, blockchain.isEvm {
-            return ethCoinType
+        switch style {
+        case .new, .v2:
+            guard blockchain.isEvm else { fallthrough }
+            
+            // Ethereum coinType
+            return 60
+            
+        case .legacy, .v1, .v3:
+            return blockchain.bip44CoinType
         }
-        
-        // https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-        switch blockchain {
+    }
+}
+
+private extension Blockchain {
+    /// Source: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+    var bip44CoinType: UInt32 {
+        switch self {
         case .bitcoin, .ducatus: return 0
         case .litecoin: return 2
         case .dogecoin: return 3
-        case .ethereum, .ethereumPoW, .ethereumFair, .saltPay: return ethCoinType
+        case .ethereum, .ethereumPoW, .ethereumFair, .saltPay: return 60
         case .ethereumClassic: return 61
         case .bsc: return 9006
         case .bitcoinCash: return 145

@@ -314,6 +314,7 @@
 		EF332D17288EACB000AE3C85 /* HostProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D16288EACB000AE3C85 /* HostProvider.swift */; };
 		EF332D19288EAEAC00AE3C85 /* NetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D18288EAEAC00AE3C85 /* NetworkProvider.swift */; };
 		EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */; };
+		EF57BEC42A1CE40800C2A493 /* DerivationSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BEC32A1CE40800C2A493 /* DerivationSource.swift */; };
 		EF5F1B9729C9C0500093307B /* Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5F1B9629C9C0500093307B /* Fee.swift */; };
 		EF5F1BA629C9E8EB0093307B /* OptimismSmartContractABI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5F1BA529C9E8EB0093307B /* OptimismSmartContractABI.swift */; };
 		EF9F9086299F88D1006F638F /* EthereumWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9F9085299F88D1006F638F /* EthereumWalletManager.swift */; };
@@ -682,6 +683,7 @@
 		EF332D16288EACB000AE3C85 /* HostProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostProvider.swift; sourceTree = "<group>"; };
 		EF332D18288EAEAC00AE3C85 /* NetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProvider.swift; sourceTree = "<group>"; };
 		EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProviderConfiguration.swift; sourceTree = "<group>"; };
+		EF57BEC32A1CE40800C2A493 /* DerivationSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DerivationSource.swift; sourceTree = "<group>"; };
 		EF5F1B9629C9C0500093307B /* Fee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fee.swift; sourceTree = "<group>"; };
 		EF5F1BA529C9E8EB0093307B /* OptimismSmartContractABI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismSmartContractABI.swift; sourceTree = "<group>"; };
 		EF680A72284F524300F6B1BD /* DashWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashWalletManager.swift; sourceTree = "<group>"; };
@@ -929,6 +931,7 @@
 				5D5E058A24FE736E00F04DE1 /* Localizations */,
 				B0A1D39B2625A10B0013F0BF /* Utils */,
 				2DDE5B8E29C4F8D200A5B708 /* WalletAssembly */,
+				EF57BEC22A1CE40800C2A493 /* Sources */,
 				5D006ACC239950F9008BA04D /* Wallet.swift */,
 				5DEAFA932444C5300032E316 /* Token.swift */,
 				2DC5DAB329B9E6A10039154A /* WalletCoreSigner.swift */,
@@ -1718,6 +1721,15 @@
 			path = API;
 			sourceTree = "<group>";
 		};
+		EF57BEC22A1CE40800C2A493 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				EF57BEC32A1CE40800C2A493 /* DerivationSource.swift */,
+			);
+			name = Sources;
+			path = BlockchainSdk/Common/Sources;
+			sourceTree = SOURCE_ROOT;
+		};
 		EF680A71284F523100F6B1BD /* Dash */ = {
 			isa = PBXGroup;
 			children = (
@@ -2150,6 +2162,7 @@
 				5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */,
 				2D9A91A029BB8C1700476EA6 /* TONNetworkUrl.swift in Sources */,
 				E93532CE292D0E86008FD979 /* BlockBookUtxoProvider.swift in Sources */,
+				EF57BEC42A1CE40800C2A493 /* DerivationSource.swift in Sources */,
 				EF9F9088299F8B70006F638F /* ETHError.swift in Sources */,
 				EF332D17288EACB000AE3C85 /* HostProvider.swift in Sources */,
 				5DE3BFA0239FA33800E8815D /* Bech32.swift in Sources */,
