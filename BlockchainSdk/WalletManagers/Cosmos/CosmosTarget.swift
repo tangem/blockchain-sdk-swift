@@ -20,6 +20,7 @@ extension CosmosTarget {
         case balances(address: String)
         case simulate(data: Data)
         case txs(data: Data)
+        case transactionStatus(hash: String)
     }
 }
 
@@ -34,12 +35,14 @@ extension CosmosTarget: TargetType {
             return "/cosmos/tx/v1beta1/simulate"
         case .txs:
             return "/cosmos/tx/v1beta1/txs"
+        case .transactionStatus(let hash):
+            return "/cosmos/tx/v1beta1/txs/\(hash)"
         }
     }
     
     var method: Moya.Method {
         switch type {
-        case .accounts, .balances:
+        case .accounts, .balances, .transactionStatus:
             return .get
         case .simulate, .txs:
             return .post
@@ -48,10 +51,10 @@ extension CosmosTarget: TargetType {
     
     var task: Moya.Task {
         switch type {
-        case .accounts, .balances:
+        case .accounts, .balances, .transactionStatus:
             return .requestPlain
         case .simulate(let data), .txs(let data):
-            return .requestData(data)                
+            return .requestData(data)
         }
     }
     

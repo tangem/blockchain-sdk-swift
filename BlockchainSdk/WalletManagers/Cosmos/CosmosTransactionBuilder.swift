@@ -69,6 +69,7 @@ class CosmosTransactionBuilder {
         }
         
         let input = CosmosSigningInput.with {
+            $0.mode = .sync
             $0.signingMode = .protobuf;
             $0.accountNumber = accountNumber
             $0.chainID = cosmosChain.chainID

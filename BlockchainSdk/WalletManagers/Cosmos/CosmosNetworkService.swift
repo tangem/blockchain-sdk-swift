@@ -20,11 +20,11 @@ class CosmosNetworkService: MultiNetworkProvider {
         self.cosmosChain = cosmosChain
     }
     
-    func accountInfo(for address: String, tokens: [Token]) -> AnyPublisher<CosmosAccountInfo, Error> {
+    func accountInfo(for address: String, tokens: [Token], transactionHashes: [String]) -> AnyPublisher<CosmosAccountInfo, Error> {
         providerPublisher {
             $0.accounts(address: address)
-                .zip($0.balances(address: address))
-                .tryMap { [weak self] (accountInfo, balanceInfo) in
+                .zip($0.balances(address: address), self.confirmedTransactionHashes(transactionHashes, with: $0))
+                .tryMap { [weak self] (accountInfo, balanceInfo, confirmedTransactionHashes) in
                     guard
                         let self,
                         let sequenceNumber = UInt64(accountInfo?.account.sequence ?? "0")
@@ -58,7 +58,13 @@ class CosmosNetworkService: MultiNetworkProvider {
                         pair1
                     })
                     
-                    return CosmosAccountInfo(accountNumber: accountNumber, sequenceNumber: sequenceNumber, amount: amount, tokenBalances: tokenAmounts)
+                    return CosmosAccountInfo(
+                        accountNumber: accountNumber,
+                        sequenceNumber: sequenceNumber,
+                        amount: amount,
+                        tokenBalances: tokenAmounts,
+                        confirmedTransactionHashes: confirmedTransactionHashes
+                    )
                 }
                 .eraseToAnyPublisher()
         }
@@ -82,19 +88,46 @@ class CosmosNetworkService: MultiNetworkProvider {
     func send(transaction: Data) -> AnyPublisher<String, Error> {
         providerPublisher {
             $0.txs(data: transaction)
-                .map(\.txResponse)
-                .tryMap { txResponse in
-                    guard
-                        let height = UInt64(txResponse.height),
-                        height > 0
-                    else {
-                        throw WalletError.failedToSendTx
-                    }
-                    
-                    return txResponse.txhash
-                }
+                .map(\.txResponse.txhash)
                 .eraseToAnyPublisher()
         }
+    }
+    
+    private func confirmedTransactionHashes(_ hashes: [String], with provider: CosmosRestProvider) -> AnyPublisher<[String], Error> {
+        hashes
+            .publisher
+            .setFailureType(to: Error.self)
+            .flatMap { [weak self] hash -> AnyPublisher<String?, Error> in
+                guard let self = self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+                return self.transactionConfirmed(hash, with: provider)
+            }
+            .collect()
+            .map {
+                $0.compactMap { $0 }
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func transactionConfirmed(_ hash: String, with provider: CosmosRestProvider) -> AnyPublisher<String?, Error> {
+        provider.transactionStatus(hash: hash)
+            .map(\.txResponse)
+            .compactMap { response in
+                if let height = UInt64(response.height),
+                   height > 0 {
+                    return hash
+                } else {
+                    return nil
+                }
+            }
+            .tryCatch { error -> AnyPublisher<String?, Error> in
+                if case WalletError.failedToParseNetworkResponse = error {
+                    return Just(nil).setFailureType(to: Error.self).eraseToAnyPublisher()
+                }
+                throw error
+            }
+            .eraseToAnyPublisher()
     }
     
     private func parseBalance(_ balanceInfo: CosmosBalanceResponse, denomination: String, decimalValue: Decimal) throws -> Decimal {
