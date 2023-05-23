@@ -359,8 +359,6 @@ extension Blockchain {
                     URL(string: "https://blockscout.com/etc/mainnet/api/eth-rpc")!,
                     URL(string: "https://etc.mytokenpocket.vip")!,
                     URL(string: "https://besu-de.etc-network.info")!,
-                    URL(string: "https://besu-at.etc-network.info")!,
-                    URL(string: "https://geth-de.etc-network.info")!,
                     URL(string: "https://geth-at.etc-network.info")!,
                 ]
             }
