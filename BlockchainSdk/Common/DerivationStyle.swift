@@ -9,6 +9,21 @@
 import Foundation
 
 public enum DerivationStyle {
-    case legacy //https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-    case new //All evm blockchains have identical derivation. Other blockchains - same as legacy
+    @available(*, deprecated, message: "Will be removed after refactoring")
+    case legacy
+    
+    @available(*, deprecated, message: "Will be removed after refactoring")
+    case new
+    
+    /// All have derivation according to `coinType`
+    /// https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+    case v1
+    
+    /// All EVM have identical derivation with `coinType == 60`
+    /// Other blockchains - according to `coinType`
+    case v2
+    
+    /// `EVM-like` blockchains have identical derivation with `coinType == 60`
+    /// `Bitcoin-like` blockchains have different derivation related to `BIP`. For example `Legacy` and `SegWit`
+    case v3
 }
