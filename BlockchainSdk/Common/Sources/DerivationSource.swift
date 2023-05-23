@@ -38,17 +38,20 @@ public struct DerivationSource {
                                                       .nonHardened(0),
                                                       .nonHardened(0)])]
         case .bitcoin, .litecoin:
-            guard style == .v2 else { fallthrough }
+            if style == .v3 {
+                // SegWit path according to BIP-84.
+                // https://github.com/bitcoin/bips/blob/master/bip-0084.mediawiki
+                let bip84 = DerivationPath(nodes: [.hardened(84), // purpose
+                                                   .hardened(coinType),
+                                                   .hardened(0),
+                                                   .nonHardened(0),
+                                                   .nonHardened(0)])
+                
+                return [.legacy: bip44, .default: bip84]
+            }
             
-            // SegWit path according to BIP-84.
-            // https://github.com/bitcoin/bips/blob/master/bip-0084.mediawiki
-            let bip84 = DerivationPath(nodes: [.hardened(84), // purpose
-                                               .hardened(coinType),
-                                               .hardened(0),
-                                               .nonHardened(0),
-                                               .nonHardened(0)])
-            
-            return [.legacy: bip44, .default: bip84]
+            return [.default: bip44]
+
         default:
             return [.default: bip44]
         }
@@ -59,9 +62,9 @@ public struct DerivationSource {
             return 1
         }
         
-        let isEthLikeStyle = style == .new || style == .v2
+        let singleEthereumDerivation = style == .new || style == .v2
 
-        if isEthLikeStyle, blockchain.isEvm {
+        if singleEthereumDerivation, blockchain.isEvm {
             return Blockchain.ethereum(testnet: false).bip44CoinType
         }
         
