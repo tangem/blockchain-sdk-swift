@@ -12,7 +12,7 @@ import WalletCore
 
 class CosmosWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkService.host }
-    var allowsFeeSelection: Bool { true }
+    var allowsFeeSelection: Bool { cosmosChain.allowsFeeSelection }
     
     var networkService: CosmosNetworkService!
     var txBuilder: CosmosTransactionBuilder!
