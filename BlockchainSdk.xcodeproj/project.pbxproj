@@ -687,11 +687,6 @@
 		EF332D18288EAEAC00AE3C85 /* NetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProvider.swift; sourceTree = "<group>"; };
 		EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProviderConfiguration.swift; sourceTree = "<group>"; };
 		EF57BEC72A1E13BE00C2A493 /* DerivationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationProvider.swift; sourceTree = "<group>"; };
-		EF57BEC92A1E13D100C2A493 /* BIP44DerivationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BIP44DerivationProvider.swift; sourceTree = "<group>"; };
-		EF57BECB2A1E13E800C2A493 /* EthereumDerivationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumDerivationProvider.swift; sourceTree = "<group>"; };
-		EF57BECD2A1E13F900C2A493 /* BitcoinDerivationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinDerivationProvider.swift; sourceTree = "<group>"; };
-		EF57BECF2A1E141100C2A493 /* SEP0005DerivationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SEP0005DerivationProvider.swift; sourceTree = "<group>"; };
-		EF57BED12A1E142200C2A493 /* CardanoDerivationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoDerivationProvider.swift; sourceTree = "<group>"; };
 		EF57BED52A1E19E700C2A493 /* DerivationStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DerivationStyle.swift; sourceTree = "<group>"; };
 		EF57BED72A1E624100C2A493 /* DerivationProviderV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationProviderV1.swift; sourceTree = "<group>"; };
 		EF57BED92A1E625400C2A493 /* DerivationProviderV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationProviderV2.swift; sourceTree = "<group>"; };
@@ -1738,11 +1733,6 @@
 			children = (
 				EF57BED52A1E19E700C2A493 /* DerivationStyle.swift */,
 				EF57BEC72A1E13BE00C2A493 /* DerivationProvider.swift */,
-				EF57BEC92A1E13D100C2A493 /* BIP44DerivationProvider.swift */,
-				EF57BECB2A1E13E800C2A493 /* EthereumDerivationProvider.swift */,
-				EF57BECD2A1E13F900C2A493 /* BitcoinDerivationProvider.swift */,
-				EF57BECF2A1E141100C2A493 /* SEP0005DerivationProvider.swift */,
-				EF57BED12A1E142200C2A493 /* CardanoDerivationProvider.swift */,
 				EF57BED72A1E624100C2A493 /* DerivationProviderV1.swift */,
 				EF57BED92A1E625400C2A493 /* DerivationProviderV2.swift */,
 				EF57BEDB2A1E626700C2A493 /* DerivationProviderV3.swift */,
