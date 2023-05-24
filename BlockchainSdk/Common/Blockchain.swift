@@ -517,46 +517,7 @@ extension Blockchain {
             return nil
         }
         
-        return getDerivationProvider(style: style).derivations(for: self)[.default]
-    }
-    
-    /// Source: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-    public var bip44CoinType: UInt32 {
-        if isTestnet { return 1 }
-
-        switch self {
-        case .bitcoin, .ducatus: return 0
-        case .litecoin: return 2
-        case .dogecoin: return 3
-        case .ethereum, .ethereumPoW, .ethereumFair, .saltPay: return 60
-        case .ethereumClassic: return 61
-        case .bsc: return 9006
-        case .bitcoinCash: return 145
-        case .binance: return 714
-        case .xrp: return 144
-        case .tezos: return 1729
-        case .stellar: return 148
-        case .cardano: return 1815
-        case .rsk: return 137
-        case .polygon: return 966
-        case .avalanche: return 9000
-        case .solana: return 501
-        case .fantom: return 1007
-        case .polkadot: return 354
-        case .kusama: return 434
-        case .tron: return 195
-        case .arbitrum: return 9001
-        case .dash: return 5
-        case .gnosis: return 700
-        case .optimism: return 614
-        case .ton: return 607
-        case .kava: return 459
-        case .kaspa: return 111111
-        case .ravencoin: return 175
-        case .cosmos: return 118
-        case .terraV1, .terraV2: return 330
-        case .cronos: return 10000025
-        }
+        return style.provider.derivations(for: self)[.default]
     }
     
     public func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data?) throws -> [Address] {
@@ -623,21 +584,6 @@ extension Blockchain {
         case .ton, .cosmos, .terraV1, .terraV2:
             let coin = CoinType(self)!
             return WalletCoreAddressService(coin: coin, publicKeyType: coin.publicKeyType)
-        }
-    }
-    
-    func getDerivationProvider(style: DerivationStyle) -> DerivationProvider {
-        switch self {
-        case .stellar, .solana:
-            return SEP0005DerivationProvider()
-        case .cardano(let shelley):
-            return CardanoDerivationProvider(shelley: shelley)
-        case .bitcoin, .litecoin:
-            return BitcoinDerivationProvider(style: style)
-        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava, .cronos, .optimism:
-            return EthereumDerivationProvider(style: style)
-        default:
-            return BIP44DerivationProvider()
         }
     }
 }

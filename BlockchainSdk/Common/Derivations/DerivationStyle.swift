@@ -27,3 +27,16 @@ public enum DerivationStyle {
     /// `Bitcoin-like` blockchains have different derivation related to `BIP`. For example `Legacy` and `SegWit`
     case v3
 }
+
+public extension DerivationStyle {
+    var provider: DerivationProvider {
+        switch self {
+        case .legacy, .v1:
+            return DerivationProviderV1()
+        case .new, .v2:
+            return DerivationProviderV2()
+        case .v3:
+            return DerivationProviderV3()
+        }
+    }
+}
