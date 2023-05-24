@@ -511,9 +511,13 @@ extension Blockchain {
 // MARK: - Address creation
 @available(iOS 13.0, *)
 extension Blockchain {
-    @available(*, deprecated, message: "Use DerivationSource.derivations(for:)")
+    @available(*, deprecated, message: "Will be changed to DerivationProvider")
     public func derivationPath(for style: DerivationStyle = .legacy) -> DerivationPath? {
-        DerivationSource().derivations(for: self, style: style)[.default]
+        guard curve == .secp256k1 || curve == .ed25519 else {
+            return nil
+        }
+        
+        return getDerivationProvider(style: style).derivations(for: self)[.default]
     }
     
     public func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data?) throws -> [Address] {
@@ -580,6 +584,21 @@ extension Blockchain {
         case .ton, .cosmos, .terraV1, .terraV2:
             let coin = CoinType(self)!
             return WalletCoreAddressService(coin: coin, publicKeyType: coin.publicKeyType)
+        }
+    }
+    
+    func getDerivationProvider(style: DerivationStyle) -> DerivationProvider {
+        switch self {
+        case .stellar, .solana:
+            return SEP0005DerivationProvider()
+        case .cardano(let shelley):
+            return CardanoDerivationProvider(shelley: shelley)
+        case .bitcoin, .litecoin:
+            return BitcoinDerivationProvider(style: style)
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava, .cronos:
+            return EthereumDerivationProvider(style: style)
+        default:
+            return BIP44DerivationProvider()
         }
     }
 }
