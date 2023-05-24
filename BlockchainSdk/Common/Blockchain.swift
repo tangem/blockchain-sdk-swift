@@ -634,7 +634,7 @@ extension Blockchain {
             return CardanoDerivationProvider(shelley: shelley)
         case .bitcoin, .litecoin:
             return BitcoinDerivationProvider(style: style)
-        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava, .cronos:
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava, .cronos, .optimism:
             return EthereumDerivationProvider(style: style)
         default:
             return BIP44DerivationProvider()
