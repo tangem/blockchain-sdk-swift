@@ -511,13 +511,21 @@ extension Blockchain {
 // MARK: - Address creation
 @available(iOS 13.0, *)
 extension Blockchain {
-    @available(*, deprecated, message: "Will be changed to DerivationProvider")
+    @available(*, deprecated, message: "Use derivationPaths(for:)")
     public func derivationPath(for style: DerivationStyle = .legacy) -> DerivationPath? {
         guard curve == .secp256k1 || curve == .ed25519 else {
             return nil
         }
         
         return style.provider.derivations(for: self)[.default]
+    }
+    
+    public func derivationPaths(for style: DerivationStyle) -> [AddressType: DerivationPath] {
+        guard curve == .secp256k1 || curve == .ed25519 else {
+            return [:]
+        }
+        
+        return style.provider.derivations(for: self)
     }
     
     public func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data?) throws -> [Address] {
