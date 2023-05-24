@@ -522,6 +522,8 @@ extension Blockchain {
     
     /// Source: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
     public var bip44CoinType: UInt32 {
+        if isTestnet { return 1 }
+
         switch self {
         case .bitcoin, .ducatus: return 0
         case .litecoin: return 2
