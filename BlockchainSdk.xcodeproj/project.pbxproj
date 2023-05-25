@@ -318,7 +318,6 @@
 		EF57BED82A1E624100C2A493 /* DerivationConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BED72A1E624100C2A493 /* DerivationConfigV1.swift */; };
 		EF57BEDA2A1E625400C2A493 /* DerivationConfigV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BED92A1E625400C2A493 /* DerivationConfigV2.swift */; };
 		EF57BEDC2A1E626700C2A493 /* DerivationConfigV3.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BEDB2A1E626700C2A493 /* DerivationConfigV3.swift */; };
-		EF57BEE12A1E642000C2A493 /* DerivationProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BEE02A1E642000C2A493 /* DerivationProviderTests.swift */; };
 		EF57BEE32A1E682D00C2A493 /* Blockchain+AllCases.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BEE22A1E682D00C2A493 /* Blockchain+AllCases.swift */; };
 		EF5F1B9729C9C0500093307B /* Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5F1B9629C9C0500093307B /* Fee.swift */; };
 		EF5F1BA629C9E8EB0093307B /* OptimismSmartContractABI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5F1BA529C9E8EB0093307B /* OptimismSmartContractABI.swift */; };
@@ -692,7 +691,6 @@
 		EF57BED72A1E624100C2A493 /* DerivationConfigV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationConfigV1.swift; sourceTree = "<group>"; };
 		EF57BED92A1E625400C2A493 /* DerivationConfigV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationConfigV2.swift; sourceTree = "<group>"; };
 		EF57BEDB2A1E626700C2A493 /* DerivationConfigV3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationConfigV3.swift; sourceTree = "<group>"; };
-		EF57BEE02A1E642000C2A493 /* DerivationProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationProviderTests.swift; sourceTree = "<group>"; };
 		EF57BEE22A1E682D00C2A493 /* Blockchain+AllCases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Blockchain+AllCases.swift"; sourceTree = "<group>"; };
 		EF5F1B9629C9C0500093307B /* Fee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fee.swift; sourceTree = "<group>"; };
 		EF5F1BA529C9E8EB0093307B /* OptimismSmartContractABI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismSmartContractABI.swift; sourceTree = "<group>"; };
@@ -885,7 +883,6 @@
 		5D14E47B2397B80F00C15FC8 /* BlockchainSdkTests */ = {
 			isa = PBXGroup;
 			children = (
-				EF57BEDF2A1E641100C2A493 /* Derivations */,
 				2D535E7A2A0CC5FA0081EB76 /* Vectors */,
 				2D535E7E2A0CC5FA0081EB76 /* VectorTests */,
 				B00DEAC728FEE5E00077CD19 /* Bitcoin */,
@@ -1745,14 +1742,6 @@
 			path = BlockchainSdk/Common/Derivations;
 			sourceTree = SOURCE_ROOT;
 		};
-		EF57BEDF2A1E641100C2A493 /* Derivations */ = {
-			isa = PBXGroup;
-			children = (
-				EF57BEE02A1E642000C2A493 /* DerivationProviderTests.swift */,
-			);
-			path = Derivations;
-			sourceTree = "<group>";
-		};
 		EF680A71284F523100F6B1BD /* Dash */ = {
 			isa = PBXGroup;
 			children = (
@@ -2371,7 +2360,6 @@
 				EF0DA78828523FAC0081092A /* BitcoinTests.swift in Sources */,
 				2D535E862A0CC5FA0081EB76 /* BlockchainCodingKeyTests.swift in Sources */,
 				EF0DA78428523FAC0081092A /* EthereumTests.swift in Sources */,
-				EF57BEE12A1E642000C2A493 /* DerivationProviderTests.swift in Sources */,
 				EF0DA78A28523FAC0081092A /* PolkadotTests.swift in Sources */,
 				EF0DA78328523FAC0081092A /* AddressTests.swift in Sources */,
 				EF0DA78728523FAC0081092A /* TronTests.swift in Sources */,
