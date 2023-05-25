@@ -358,8 +358,8 @@ extension Blockchain {
                     URL(string: "https://etc.etcdesktop.com")!,
                     URL(string: "https://blockscout.com/etc/mainnet/api/eth-rpc")!,
                     URL(string: "https://etc.mytokenpocket.vip")!,
-                    URL(string: "https://besu.etc-network.info")!,
-                    URL(string: "https://geth.etc-network.info")!,
+                    URL(string: "https://besu-de.etc-network.info")!,
+                    URL(string: "https://geth-at.etc-network.info")!,
                 ]
             }
         case .ethereumPoW:
@@ -451,9 +451,6 @@ extension Blockchain {
                     // https://developer.offchainlabs.com/docs/mainnet#connect-your-wallet
                     URL(string: "https://arb1.arbitrum.io/rpc")!,
                     URL(string: "https://arbitrum-mainnet.infura.io/v3/\(infuraProjectId)")!,
-                    
-                    // from wallet-core's registry.json
-                    URL(string: "https://node.offchainlabs.com:8547")!,
                 ]
             }
         case .gnosis:
