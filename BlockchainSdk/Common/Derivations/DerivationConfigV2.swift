@@ -12,7 +12,7 @@ import Foundation
 /// Types:
 /// - `Stellar`, `Solana`. According to `SEP0005`
 /// https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md
-/// - `Cardano`. . According to  `CIP1852`
+/// - `Cardano`.  According to  `CIP1852`
 /// https://cips.cardano.org/cips/cip1852/
 /// - `All else`. According to `BIP44`
 /// https://github.com/satoshilabs/slips/blob/master/slip-0044.md
