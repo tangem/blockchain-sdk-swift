@@ -1,5 +1,5 @@
 //
-//  DerivationProvider.swift
+//  DerivationConfig.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 24.05.2023.
@@ -9,6 +9,6 @@
 import Foundation
 import TangemSdk
 
-public protocol DerivationProvider {
-    func derivations(for blockchain: Blockchain) -> [AddressType: DerivationPath]
+public protocol DerivationConfig {
+    func derivations(for blockchain: Blockchain) -> [AddressType: String]
 }

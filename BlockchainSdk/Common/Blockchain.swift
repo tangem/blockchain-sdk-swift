@@ -517,7 +517,15 @@ extension Blockchain {
             return nil
         }
         
-        return style.provider.derivations(for: self)[.default]
+        if isTestnet {
+            return BIP44(coinType: 1).buildPath()
+        }
+        
+        guard let rawPath = style.provider.derivations(for: self)[.default] else {
+            return nil
+        }
+        
+        return try? DerivationPath(rawPath: rawPath)
     }
     
     public func derivationPaths(for style: DerivationStyle) -> [AddressType: DerivationPath] {
@@ -525,7 +533,12 @@ extension Blockchain {
             return [:]
         }
         
+        if isTestnet {
+            return [.default: BIP44(coinType: 1).buildPath()]
+        }
+        
         return style.provider.derivations(for: self)
+            .compactMapValues { try? DerivationPath(rawPath: $0) }
     }
     
     public func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data?) throws -> [Address] {

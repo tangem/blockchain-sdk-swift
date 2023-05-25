@@ -13,9 +13,7 @@ import XCTest
 class DerivationProviderTests: XCTestCase {
     func test_DerivationProviderV1() {
         Blockchain.allMainnetCases.forEach { blockchain in
-            let expectingPaths = derivationPathsV1(blockchain: blockchain).reduce(into: [:], {
-                $0[$1.key] = $1.value
-            })
+            let expectingPaths = derivationPathsV1(blockchain: blockchain)
             let pathsV1 = blockchain.derivationPaths(for: .v1).reduce(into: [:], {
                 $0[$1.key] = $1.value.rawPath
             })
@@ -29,9 +27,7 @@ class DerivationProviderTests: XCTestCase {
     
     func test_DerivationProviderV2() {
         Blockchain.allMainnetCases.forEach { blockchain in
-            let expectingPaths = derivationPathsV2(blockchain: blockchain).reduce(into: [:], {
-                $0[$1.key] = $1.value
-            })
+            let expectingPaths = derivationPathsV2(blockchain: blockchain)
             let pathsV2 = blockchain.derivationPaths(for: .v2).reduce(into: [:], {
                 $0[$1.key] = $1.value.rawPath
             })

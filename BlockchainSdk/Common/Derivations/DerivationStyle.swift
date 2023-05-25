@@ -29,14 +29,14 @@ public enum DerivationStyle {
 }
 
 public extension DerivationStyle {
-    var provider: DerivationProvider {
+    var provider: DerivationConfig {
         switch self {
         case .legacy, .v1:
-            return DerivationProviderV1()
+            return DerivationConfigV1()
         case .new, .v2:
-            return DerivationProviderV2()
+            return DerivationConfigV2()
         case .v3:
-            return DerivationProviderV3()
+            return DerivationConfigV3()
         }
     }
 }
