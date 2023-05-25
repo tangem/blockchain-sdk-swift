@@ -15,8 +15,6 @@ public enum WalletError: Error, LocalizedError {
     case failedToParseNetworkResponse
     case failedToSendTx
     case failedToCalculateTxSize
-    case failedToLoadTokenBalance(token: Token)
-    case cancelled
     case empty
     
     public var errorDescription: String? {
@@ -33,10 +31,6 @@ public enum WalletError: Error, LocalizedError {
             return "common_send_tx_error".localized
         case .failedToCalculateTxSize:
             return "common_estimate_tx_size_error".localized
-        case let .failedToLoadTokenBalance(token):
-            return String(format: "common_failed_to_load_token_balance".localized, token.name)
-        case .cancelled:
-            return "common_cancelled".localized
         case .empty:
             return "Empty"
         }
