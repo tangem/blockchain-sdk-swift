@@ -7,8 +7,15 @@
 //
 
 import Foundation
-import TangemSdk
 
+/// Documentation:
+/// Types:
+/// - `Stellar`, `Solana`. According to `SEP0005`
+/// https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md
+/// - `Cardano`. . According to  `CIP1852`
+/// https://cips.cardano.org/cips/cip1852/
+/// - `All else`. According to `BIP44`
+/// https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 public struct DerivationConfigV1: DerivationConfig {
     public func derivations(for blockchain: Blockchain) -> [AddressType : String] {
         switch blockchain {
@@ -17,16 +24,13 @@ public struct DerivationConfigV1: DerivationConfig {
         case .litecoin:
             return [.legacy: "m/44'/2'/0'/0/0", .default: "m/44'/2'/0'/0/0"]
         case .stellar:
-            // Path according to sep-0005. https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md
             return [.default: "m/44'/148'/0'"]
         case .solana:
-            // Path according to sep-0005. https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md
             return [.default: "m/44'/501'/0'"]
         case .cardano(let shelley):
             guard shelley else {
                 return [:]
             }
-            // Path according to CIP-1852. https://cips.cardano.org/cips/cip1852/
             return [.legacy: "m/1852'/1815'/0'/0/0", .default: "m/1852'/1815'/0'/0/0"]
         case .bitcoinCash:
             return [.legacy: "m/44'/145'/0'/0/0", .default: "m/44'/145'/0'/0/0"]

@@ -318,7 +318,6 @@
 		EF57BED82A1E624100C2A493 /* DerivationConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BED72A1E624100C2A493 /* DerivationConfigV1.swift */; };
 		EF57BEDA2A1E625400C2A493 /* DerivationConfigV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BED92A1E625400C2A493 /* DerivationConfigV2.swift */; };
 		EF57BEDC2A1E626700C2A493 /* DerivationConfigV3.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BEDB2A1E626700C2A493 /* DerivationConfigV3.swift */; };
-		EF57BEDE2A1E633400C2A493 /* Blockchain+BIP44CoinType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BEDD2A1E633400C2A493 /* Blockchain+BIP44CoinType.swift */; };
 		EF57BEE12A1E642000C2A493 /* DerivationProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BEE02A1E642000C2A493 /* DerivationProviderTests.swift */; };
 		EF57BEE32A1E682D00C2A493 /* Blockchain+AllCases.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BEE22A1E682D00C2A493 /* Blockchain+AllCases.swift */; };
 		EF5F1B9729C9C0500093307B /* Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5F1B9629C9C0500093307B /* Fee.swift */; };
@@ -693,7 +692,6 @@
 		EF57BED72A1E624100C2A493 /* DerivationConfigV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationConfigV1.swift; sourceTree = "<group>"; };
 		EF57BED92A1E625400C2A493 /* DerivationConfigV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationConfigV2.swift; sourceTree = "<group>"; };
 		EF57BEDB2A1E626700C2A493 /* DerivationConfigV3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationConfigV3.swift; sourceTree = "<group>"; };
-		EF57BEDD2A1E633400C2A493 /* Blockchain+BIP44CoinType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Blockchain+BIP44CoinType.swift"; sourceTree = "<group>"; };
 		EF57BEE02A1E642000C2A493 /* DerivationProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationProviderTests.swift; sourceTree = "<group>"; };
 		EF57BEE22A1E682D00C2A493 /* Blockchain+AllCases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Blockchain+AllCases.swift"; sourceTree = "<group>"; };
 		EF5F1B9629C9C0500093307B /* Fee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fee.swift; sourceTree = "<group>"; };
@@ -1742,7 +1740,6 @@
 				EF57BED72A1E624100C2A493 /* DerivationConfigV1.swift */,
 				EF57BED92A1E625400C2A493 /* DerivationConfigV2.swift */,
 				EF57BEDB2A1E626700C2A493 /* DerivationConfigV3.swift */,
-				EF57BEDD2A1E633400C2A493 /* Blockchain+BIP44CoinType.swift */,
 			);
 			name = Derivations;
 			path = BlockchainSdk/Common/Derivations;
@@ -2102,7 +2099,6 @@
 				DA2E770029769BF6001FF957 /* TransactionCreator.swift in Sources */,
 				EF31EA1529DC31E000A59FBE /* RavencoinMainNetworkParams.swift in Sources */,
 				B0EBBEF2265D0E7700D37141 /* DogecoinNetworkParams.swift in Sources */,
-				EF57BEDE2A1E633400C2A493 /* Blockchain+BIP44CoinType.swift in Sources */,
 				2D9A91A329BB8C1700476EA6 /* TONProviderTarget.swift in Sources */,
 				2D9A919329BB8BFF00476EA6 /* TONTransactionBuilder.swift in Sources */,
 				B0F9DCA125FB4C9B00C0AF18 /* MultiNetworkProvider.swift in Sources */,
