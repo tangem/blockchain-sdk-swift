@@ -1,11 +1,8 @@
 "address_type_default" = "Default";
 "address_type_legacy" = "Legacy";
 "cardano_low_ada" = "Betrag absenden, die Änderung darf nicht unter 1 ADA liegen";
-"cardano_missing_unspents" = "keine unverbraucht";
 "common_build_tx_error" = "Transaktion fehlgeschlagen";
-"common_cancelled" = "User cancelled";
 "common_estimate_tx_size_error" = "Berechnung des Transaktionsumfangs fehlgeschlagen";
-"common_failed_to_load_token_balance" = "Failed to load %@ token balance";
 "common_fee_error" = "Erhalt der Gebühr fehlgeschlagen";
 "common_ok" = "OK";
 "common_parse_network_response_error" = "Antwort des Netzwerks fehlgeschlagen";
@@ -15,7 +12,6 @@
 "eth_tx_count_parse_error" = "Analyse tx Berechnung fehlgeschlagen";
 "failed_to_find_transaction" = "Transaction not found in pending list";
 "failed_to_find_tx_inputs" = "Failed to find transaction inputs";
-"failed_to_load_fee_error" = "Failed to load fee from network";
 "fee_for_push_tx_not_enough" = "Fee for pushing transaction must be greater than fee for original transaction";
 "kaspa_withdrawal_message_warning" = "Due to Kaspa limitations only %1$li UTXOs can fit in a single transaction. This means you can only send %2$@ or less. You need to reduce the amount.";
 "network_providers_not_supports_rbf" = "Pushing transaction currently not available. Please, try again later";

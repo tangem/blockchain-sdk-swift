@@ -1,11 +1,8 @@
 "address_type_default" = "По умолчанию";
 "address_type_legacy" = "Устаревший";
 "cardano_low_ada" = "Отправляемая сумма и сдача не могут быть меньше 1 ADA";
-"cardano_missing_unspents" = "Не удалось получить информацию от блокчейна";
 "common_build_tx_error" = "Не удалось создать транзакцию";
-"common_cancelled" = "Отменено пользователем";
 "common_estimate_tx_size_error" = "Не удалось рассчитать размер транзакции";
-"common_failed_to_load_token_balance" = "Не удалось загрузить баланс токенов %@";
 "common_fee_error" = "Не удалось получить комиссию";
 "common_ok" = "OK";
 "common_parse_network_response_error" = "Не удалось проанализировать сетевой ответ";
@@ -15,7 +12,6 @@
 "eth_tx_count_parse_error" = "Не удалось определить количество транзакций";
 "failed_to_find_transaction" = "Транзакция не найдена в списке неподтвержденных";
 "failed_to_find_tx_inputs" = "Не удалось найти инпуты транзакции";
-"failed_to_load_fee_error" = "Не удалось загрузить комиссию из сети";
 "fee_for_push_tx_not_enough" = "Комиссия за проталкивание транзакции должна быть выше комиссии за исходную транзакцию.";
 "kaspa_withdrawal_message_warning" = "Из-за ограничений Kaspa в одну транзакцию может поместиться только %1$li UTXO. Это означает, что вы можете отправить только %2$@ или меньше. Вам нужно уменьшить сумму.";
 "network_providers_not_supports_rbf" = "Проталкивание транзакции в настоящее время недоступно. Пожалуйста, повторите попытку позже";

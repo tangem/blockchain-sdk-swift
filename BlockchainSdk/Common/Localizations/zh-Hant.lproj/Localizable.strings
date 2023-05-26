@@ -1,11 +1,8 @@
 "address_type_default" = "默認";
 "address_type_legacy" = "遺留資產";
 "cardano_low_ada" = "發送金額和找零不能少於1個ADA";
-"cardano_missing_unspents" = "缺少未花費的";
 "common_build_tx_error" = "建立交易失敗";
-"common_cancelled" = "用戶取消";
 "common_estimate_tx_size_error" = "無法計算交易規模";
-"common_failed_to_load_token_balance" = "加載 %@ 代幣餘額失敗";
 "common_fee_error" = "獲取費用失敗";
 "common_ok" = "OK";
 "common_parse_network_response_error" = "無法解析網絡回應";
@@ -15,7 +12,6 @@
 "eth_tx_count_parse_error" = "無法解析 tx 計數";
 "failed_to_find_transaction" = "在待定列表中找不到交易";
 "failed_to_find_tx_inputs" = "找不到交易輸入";
-"failed_to_load_fee_error" = "無法從網絡加載費用";
 "fee_for_push_tx_not_enough" = "推送交易手續費必須大於原交易手續費";
 "kaspa_withdrawal_message_warning" = "由於 Kaspa 的限制，只有%1$li UTXO 可以放入單次交易中。這意味著您只能發送%2$@或更少數量。您需要減少數量。";
 "network_providers_not_supports_rbf" = "推送交易目前不可用。 請稍後再試";
