@@ -243,7 +243,7 @@ class EthereumNetworkService: MultiNetworkProvider {
     private func getGas(from response: EthereumResponse) throws -> BigUInt {
         let res = try getResult(from: response)
         guard let count = BigUInt(res.removeHexPrefix(), radix: 16) else {
-            throw ETHError.failedToParseGasLimit
+            throw WalletError.failedToParseNetworkResponse
         }
         
         return count
@@ -252,7 +252,7 @@ class EthereumNetworkService: MultiNetworkProvider {
     private func getTxCount(from response: EthereumResponse) throws -> Int {
         let countString = try getResult(from: response)
         guard let count = Int(countString.removeHexPrefix(), radix: 16) else {
-            throw ETHError.failedToParseTxCount
+            throw WalletError.failedToParseNetworkResponse
         }
         
         return count

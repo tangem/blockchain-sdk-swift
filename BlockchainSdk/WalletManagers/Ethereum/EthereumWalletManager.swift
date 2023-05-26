@@ -300,7 +300,7 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
                     return allowance
                 }
 
-                throw ETHError.failedToParseAllowance
+                throw WalletError.failedToParseNetworkResponse
             }
             .eraseToAnyPublisher()
     }
