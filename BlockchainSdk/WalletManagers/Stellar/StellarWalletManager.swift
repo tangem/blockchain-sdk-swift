@@ -28,7 +28,7 @@ public enum StellarError: Error, LocalizedError {
         case .assetCreateAccount:
             return "no_account_generic".localized(["1.5", "XLM"])
         case .assetNoAccountOnDestination:
-            return "no_account_on_destination_xlm_asset".localized
+            return "send_error_no_target_account".localized(["1 XLM"])
         case .assetNoTrustline:
             return "no_trustline_xlm_asset".localized
         }
