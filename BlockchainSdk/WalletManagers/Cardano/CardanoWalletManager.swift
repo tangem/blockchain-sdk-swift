@@ -11,7 +11,6 @@ import Combine
 import TangemSdk
 
 public enum CardanoError: String, Error, LocalizedError {
-    case noUnspents = "cardano_missing_unspents"
     case lowAda = "cardano_low_ada"
      
     public var errorDescription: String? {
