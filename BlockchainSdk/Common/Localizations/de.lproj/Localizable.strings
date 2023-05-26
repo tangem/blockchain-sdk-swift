@@ -13,6 +13,7 @@
 "failed_to_find_transaction" = "Transaction not found in pending list";
 "failed_to_find_tx_inputs" = "Failed to find transaction inputs";
 "fee_for_push_tx_not_enough" = "Fee for pushing transaction must be greater than fee for original transaction";
+"generic_error_code" = "An error occurred. Code: %li.";
 "kaspa_withdrawal_message_warning" = "Due to Kaspa limitations only %1$li UTXOs can fit in a single transaction. This means you can only send %2$@ or less. You need to reduce the amount.";
 "network_providers_not_supports_rbf" = "Pushing transaction currently not available. Please, try again later";
 "no_account_bnb" = "Senden Sie Geld an diese Andresse um ein Konto zu erstellen";

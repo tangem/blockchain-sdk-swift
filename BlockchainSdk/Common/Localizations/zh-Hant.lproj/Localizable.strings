@@ -13,6 +13,7 @@
 "failed_to_find_transaction" = "在待定列表中找不到交易";
 "failed_to_find_tx_inputs" = "找不到交易輸入";
 "fee_for_push_tx_not_enough" = "推送交易手續費必須大於原交易手續費";
+"generic_error_code" = "An error occurred. Code: %li.";
 "kaspa_withdrawal_message_warning" = "由於 Kaspa 的限制，只有%1$li UTXO 可以放入單次交易中。這意味著您只能發送%2$@或更少數量。您需要減少數量。";
 "network_providers_not_supports_rbf" = "推送交易目前不可用。 請稍後再試";
 "no_account_bnb" = "要創建帳戶，請將資金發送到此地址";
