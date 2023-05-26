@@ -29,7 +29,7 @@ public enum BlockchainSdkError: Int, LocalizedError {
 			// TODO: Replace with proper error message. Android sending instead of message just code, and client app decide what message to show to user
 			return "\(rawValue)"
         case .failedToLoadFee:
-            return "failed_to_load_fee_error".localized
+            return "common_fee_error".localized
         case .failedToFindTransaction:
             return "failed_to_find_transaction".localized
         case .failedToFindTxInputs:
