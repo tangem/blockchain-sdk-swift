@@ -25,9 +25,6 @@ public enum BlockchainSdkError: Int, LocalizedError {
 	
 	public var errorDescription: String? {
 		switch self {
-		case .signatureCountNotMatched, .notImplemented:
-			// TODO: Replace with proper error message. Android sending instead of message just code, and client app decide what message to show to user
-			return "\(rawValue)"
         case .failedToLoadFee:
             return "common_fee_error".localized
         case .failedToFindTransaction:
@@ -38,8 +35,11 @@ public enum BlockchainSdkError: Int, LocalizedError {
             return "fee_for_push_tx_not_enough".localized
         case .networkProvidersNotSupportsRbf:
             return "network_providers_not_supports_rbf".localized
+        case .signatureCountNotMatched, .notImplemented:
+            // TODO: Replace with proper error message. Android sending instead of message just code, and client app decide what message to show to user
+            return "generic_error_code".localized(rawValue)
 		default:
-			return "\(rawValue)"
+			return "generic_error_code".localized(rawValue)
 		}
 	}
 }
