@@ -11,11 +11,11 @@ import Combine
 import TangemSdk
 
 public enum XRPError: Int, Error, LocalizedError {
-    case failedLoadUnconfirmed = 100
-    case failedLoadReserve = 101
-    case failedLoadInfo = 102
-    case missingReserve = 103
-    case distinctTagsFound = 104
+    case failedLoadUnconfirmed = 10_000
+    case failedLoadReserve
+    case failedLoadInfo
+    case missingReserve
+    case distinctTagsFound
     
     public var errorDescription: String? {
         "generic_error_code".localized(rawValue)
