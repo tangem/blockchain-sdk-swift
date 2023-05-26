@@ -14,7 +14,6 @@ public enum WalletError: Error, LocalizedError {
     case failedToBuildTx
     case failedToParseNetworkResponse
     case failedToSendTx
-    case failedToCalculateTxSize
     case empty
     
     public var errorDescription: String? {
@@ -29,8 +28,6 @@ public enum WalletError: Error, LocalizedError {
             return "common_parse_network_response_error".localized
         case .failedToSendTx:
             return "common_send_tx_error".localized
-        case .failedToCalculateTxSize:
-            return "common_estimate_tx_size_error".localized
         case .empty:
             return "Empty"
         }
