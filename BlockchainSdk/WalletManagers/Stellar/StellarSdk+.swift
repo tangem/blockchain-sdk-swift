@@ -90,7 +90,7 @@ extension LedgersService {
                     if let lastLedger = ledgerResponse.records.first {
                         promise(.success(lastLedger))
                     } else {
-                        promise(.failure(StellarError.failedToFindLatestLedger))
+                        promise(.failure(WalletError.failedToParseNetworkResponse))
                     }
                 case .failure(let error):
                     promise(.failure(error))
