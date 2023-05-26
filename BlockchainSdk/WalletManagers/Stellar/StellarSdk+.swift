@@ -185,7 +185,7 @@ extension HorizonRequestError {
     var message: String {
         switch self {
         case .emptyResponse:
-            return StellarError.emptyResponse.localizedDescription
+            return WalletError.failedToParseNetworkResponse.localizedDescription
         case .beforeHistory(let message, _):
             return message
         case .badRequest(let message, _):

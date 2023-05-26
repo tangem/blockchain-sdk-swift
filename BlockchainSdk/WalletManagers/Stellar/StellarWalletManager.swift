@@ -13,7 +13,6 @@ import Combine
 import TangemSdk
 
 public enum StellarError: Error, LocalizedError {
-    case emptyResponse
     case requiresMemo
     case xlmCreateAccount
     case assetCreateAccount
@@ -22,8 +21,6 @@ public enum StellarError: Error, LocalizedError {
     
     public var errorDescription: String? {
         switch self {
-        case .emptyResponse:
-            return "xlm_empty_response_error".localized
         case .requiresMemo:
             return "xlm_requires_memo_error".localized
         case .xlmCreateAccount:
