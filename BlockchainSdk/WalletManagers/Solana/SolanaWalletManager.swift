@@ -106,7 +106,7 @@ extension SolanaWalletManager: TransactionSender {
          
             The account opening fee we returned in getFee is used for display purposes only.
          */
-        let signer = SolanaTransactionSigner(transactionSigner: signer, walletPublicKey: wallet.defaultPublicKey)
+        let signer = SolanaTransactionSigner(transactionSigner: signer, walletPublicKey: wallet.publicKey)
 
         return accountCreationFee(destination: transaction.destinationAddress, amount: transaction.amount)
             .flatMap { [weak self] additionalAmount -> AnyPublisher<TransactionID, Error> in
@@ -130,7 +130,7 @@ extension SolanaWalletManager: TransactionSender {
         
         let decimalAmount = transaction.amount.value * token.decimalValue
         let intAmount = (decimalAmount.rounded() as NSDecimalNumber).uint64Value
-        let signer = SolanaTransactionSigner(transactionSigner: signer, walletPublicKey: wallet.defaultPublicKey)
+        let signer = SolanaTransactionSigner(transactionSigner: signer, walletPublicKey: wallet.publicKey)
 
         return networkService.sendSplToken(
             amount: intAmount,

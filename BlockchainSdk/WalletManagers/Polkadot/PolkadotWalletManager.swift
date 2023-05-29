@@ -141,7 +141,7 @@ extension PolkadotWalletManager: TransactionSender {
             .flatMap { preImage in
                 signer.sign(
                     hash: preImage,
-                    walletPublicKey: wallet.defaultPublicKey
+                    walletPublicKey: wallet.publicKey
                 )
             }
             .tryMap { [weak self] signature in

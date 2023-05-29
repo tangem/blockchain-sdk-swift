@@ -44,7 +44,7 @@ class TronWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        return signedTransactionData(amount: transaction.amount, source: wallet.address, destination: transaction.destinationAddress, signer: signer, publicKey: wallet.defaultPublicKey)
+        return signedTransactionData(amount: transaction.amount, source: wallet.address, destination: transaction.destinationAddress, signer: signer, publicKey: wallet.publicKey)
             .flatMap { [weak self] data -> AnyPublisher<TronBroadcastResponse, Error> in
                 guard let self = self else {
                     return .anyFail(error: WalletError.empty)

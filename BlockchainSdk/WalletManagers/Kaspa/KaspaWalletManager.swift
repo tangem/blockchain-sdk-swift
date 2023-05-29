@@ -47,7 +47,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
             return .anyFail(error: error)
         }
         
-        return signer.sign(hashes: hashes, walletPublicKey: wallet.defaultPublicKey)
+        return signer.sign(hashes: hashes, walletPublicKey: wallet.publicKey)
             .tryMap { [weak self] signatures in
                 guard let self = self else { throw WalletError.empty }
                 

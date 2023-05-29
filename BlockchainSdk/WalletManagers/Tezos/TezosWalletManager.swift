@@ -70,7 +70,7 @@ extension TezosWalletManager: TransactionSender {
                 }
                 
                 return signer.sign(hash: txToSign,
-                                   walletPublicKey: self.wallet.defaultPublicKey)
+                                   walletPublicKey: self.wallet.publicKey)
                     .map {signature -> (TezosHeader, String, Data) in
                         return (header, forgedContents, signature)
                     }

@@ -27,7 +27,7 @@ class CardanoWalletManager: BaseManager, WalletManager {
     
     func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
-            .getInfo(addresses: wallet.addresses.all.map { $0.address.value })
+            .getInfo(addresses: wallet.addresses.map { $0.value })
             .sink(receiveCompletion: {[unowned self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
                     self.wallet.amounts = [:]
@@ -73,7 +73,7 @@ extension CardanoWalletManager: TransactionSender {
             let info = try txBuilder.buildForSign(transaction: transaction, walletAmount: walletAmount, isEstimated: false)
             
             return signer.sign(hash: info.hash,
-                               walletPublicKey: self.wallet.defaultPublicKey)
+                               walletPublicKey: self.wallet.publicKey)
                 .tryMap {[weak self] signature -> (tx: Data, hash: String) in
                     guard let self = self else { throw WalletError.empty }
                     

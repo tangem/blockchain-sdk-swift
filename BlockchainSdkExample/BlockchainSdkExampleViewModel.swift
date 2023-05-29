@@ -403,7 +403,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             }
             
             self.walletManager = walletManager
-            self.sourceAddresses = walletManager.wallet.addresses.all.map { $0.address }
+            self.sourceAddresses = walletManager.wallet.addresses
             if let enteredToken = enteredToken {
                 walletManager.addToken(enteredToken)
             }

@@ -11,13 +11,16 @@ import TangemSdk
 
 public struct Wallet {
     public let blockchain: Blockchain
-    public let addresses: Addresses
+    public let walletAddresses: Addresses
     
     public internal(set) var amounts: [Amount.AmountType:Amount] = [:]
     public internal(set) var transactions: [Transaction] = []
     
-    public var defaultAddress: WalletAddress { addresses.default }
-    public var defaultPublicKey: Wallet.PublicKey { defaultAddress.publicKey }
+    public var addresses: [Address] { walletAddresses.all.map { $0.address } }
+    public var defaultAddress: WalletAddress { walletAddresses.default }
+    
+    /// `publicKey` for default address
+    public var publicKey: Wallet.PublicKey { defaultAddress.publicKey }
 
     public var address: String { defaultAddress.address.value }
     
@@ -33,7 +36,7 @@ public struct Wallet {
         transactions.filter { tx in
             tx.status == .unconfirmed &&
             tx.destinationAddress != .unknown &&
-            addresses.all.contains(where: { $0.address.value == tx.sourceAddress })
+            addresses.contains(where: { $0.value == tx.sourceAddress })
         }
     }
     
@@ -41,7 +44,7 @@ public struct Wallet {
         transactions.filter { tx in
             tx.status == .unconfirmed &&
             tx.sourceAddress != .unknown &&
-            addresses.all.contains(where: { $0.address.value == tx.destinationAddress })
+            addresses.contains(where: { $0.value == tx.destinationAddress })
         }
     }
     
@@ -58,7 +61,7 @@ public struct Wallet {
     }
     
     public var xpubKeys: [String] {
-        addresses.all
+        walletAddresses.all
             .compactMap {
                 try? $0.publicKey.derivedKey?.serialize(
                     for: blockchain.isTestnet ? .testnet : .mainnet
@@ -79,7 +82,7 @@ public struct Wallet {
             WalletAddress(address: $0, publicKey: publicKey)
         }
         
-        self.addresses = .init(
+        self.walletAddresses = .init(
             default: walletAddresses.first(where: { $0.address.type == .default })!,
             legacy: walletAddresses.first(where: { $0.address.type == .legacy })
         )
@@ -87,7 +90,7 @@ public struct Wallet {
     
     init(blockchain: Blockchain, addresses: Addresses) {
         self.blockchain = blockchain
-        self.addresses = addresses
+        self.walletAddresses = addresses
     }
     
     public func hasPendingTx(for amountType: Amount.AmountType) -> Bool {
@@ -155,8 +158,8 @@ public struct Wallet {
             return
         }
         
-        if addresses.all.contains(where: { $0.address.value == sourceAddress }) &&
-            addresses.all.contains(where: { $0.address.value == destinationAddress }) {
+        if addresses.contains(where: { $0.value == sourceAddress }) &&
+            addresses.contains(where: { $0.value == destinationAddress }) {
             return
         }
         

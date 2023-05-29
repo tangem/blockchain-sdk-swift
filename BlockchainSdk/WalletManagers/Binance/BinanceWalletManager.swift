@@ -63,7 +63,7 @@ extension BinanceWalletManager: TransactionSender {
         }
         
         let hash = msg.encodeForSignature()
-        return signer.sign(hash: hash, walletPublicKey: self.wallet.defaultPublicKey)
+        return signer.sign(hash: hash, walletPublicKey: self.wallet.publicKey)
             .tryMap {[weak self] signature -> Message in
                 guard let self = self else { throw WalletError.empty }
                 

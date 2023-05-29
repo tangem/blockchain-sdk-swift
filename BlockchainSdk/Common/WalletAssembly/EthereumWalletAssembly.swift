@@ -29,7 +29,7 @@ struct EthereumWalletAssembly: WalletManagerAssembly {
                 blockcypherProvider = nil
             }
             
-            $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: input.wallet.defaultPublicKey.blockchainKey, chainId: chainId)
+            $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, chainId: chainId)
             $0.networkService = EthereumNetworkService(
                 decimals: input.blockchain.decimalCount,
                 providers: networkProviderAssembly.makeEthereumJsonRpcProviders(with: input),
