@@ -12,12 +12,13 @@ struct OptimismWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         let providers = networkProviderAssembly.makeEthereumJsonRpcProviders(with: input)
-        let optimismNetworkService = OptimismSmartContract(providers: providers.map { .init(url: $0.url) })
+        let smartContract = OptimismSmartContract()
+        let contractInteractor = ContractInteractor(
+            contract: smartContract,
+            providers: providers.map { SmartContractProvider(url: $0.url) }
+        )
         
-        return try OptimismWalletManager(
-            wallet: input.wallet,
-            optimismSmartContract: optimismNetworkService
-        ).then {
+        return try OptimismWalletManager(wallet: input.wallet, contractInteractor: contractInteractor).then {
             let chainId = input.blockchain.chainId!
             
             $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, chainId: chainId)

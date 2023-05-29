@@ -15,8 +15,8 @@ import web3swift
 class OptimismWalletManager: EthereumWalletManager {
     private let contractInteractor: ContractInteractor<OptimismSmartContract>
 
-    init(wallet: Wallet, optimismSmartContract: OptimismSmartContract) {
-        self.contractInteractor = .init(contract: optimismSmartContract)
+    init(wallet: Wallet, contractInteractor: ContractInteractor<OptimismSmartContract>) {
+        self.contractInteractor = contractInteractor
 
         super.init(wallet: wallet)
     }

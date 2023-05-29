@@ -10,14 +10,10 @@ import Combine
 
 public struct OptimismSmartContract: SmartContract {
     public typealias MethodType = ContractMethod
+    public typealias ProviderType = SmartContractProvider
     
-    public let providers: [SmartContractRPCProvider]
     public var address: String { "0x420000000000000000000000000000000000000F" }
     public var abi: String { OptimismSmartContractABI().abi }
-    
-    public init(providers: [SmartContractRPCProvider]) {
-        self.providers = providers
-    }
 }
 
 public extension OptimismSmartContract {

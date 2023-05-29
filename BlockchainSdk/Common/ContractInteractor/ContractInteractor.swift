@@ -12,13 +12,14 @@ import web3swift
 
 public class ContractInteractor<Contract: SmartContract>: MultiNetworkProvider {
     var currentProviderIndex: Int = 0
-    var providers: [SmartContractRPCProvider] { contract.providers }
+    let providers: [Contract.ProviderType]
     
     private let contract: Contract
     private lazy var defaultOptions: TransactionOptions = .defaultOptions
     
-    public init(contract: Contract) {
+    public init(contract: Contract, providers: [Contract.ProviderType]) {
         self.contract = contract
+        self.providers = providers
     }
     
     public func read(method: Contract.MethodType) -> AnyPublisher<Any, Error> {

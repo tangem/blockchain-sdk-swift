@@ -253,7 +253,7 @@ extension Action {
 }
 
 extension NetworkingRouter: HostProvider {
-    var host: String {
+    public var host: String {
         endpoint.url.hostOrUnknown
     }
 }

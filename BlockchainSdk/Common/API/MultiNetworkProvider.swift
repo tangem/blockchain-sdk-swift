@@ -24,7 +24,7 @@ extension MultiNetworkProvider {
         providers[currentProviderIndex]
     }
     
-    var host: String { provider.host }
+    public var host: String { provider.host }
     
     func providerPublisher<T>(for requestPublisher: @escaping (_ provider: Provider) -> AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
         let currentHost = provider.host

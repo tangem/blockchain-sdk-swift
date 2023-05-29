@@ -321,7 +321,8 @@
 		EFD32AE429E9B7800026353E /* RavencoinTransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD32AE329E9B7800026353E /* RavencoinTransactionHistory.swift */; };
 		EFD717B82A24B20700E5430D /* OptimismContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF5BA8329B881440070694A /* OptimismContract.swift */; };
 		EFD717B92A24B20900E5430D /* OptimismSmartContractABI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5F1BA529C9E8EB0093307B /* OptimismSmartContractABI.swift */; };
-		EFD717BD2A24BBA200E5430D /* SmartContractRPCProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717BC2A24BBA200E5430D /* SmartContractRPCProvider.swift */; };
+		EFD717BD2A24BBA200E5430D /* SmartContractProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717BC2A24BBA200E5430D /* SmartContractProvider.swift */; };
+		EFD717BF2A24CD4500E5430D /* SmartContractProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717BE2A24CD4500E5430D /* SmartContractProviderType.swift */; };
 		EFF56B3B29C20B17002B6952 /* SmartContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B3A29C20B17002B6952 /* SmartContract.swift */; };
 		EFF56B3D29C20CCE002B6952 /* SmartContractMethodType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B3C29C20CCE002B6952 /* SmartContractMethodType.swift */; };
 		EFF56B4129C30265002B6952 /* EthereumFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B4029C30265002B6952 /* EthereumFeeParameters.swift */; };
@@ -691,7 +692,8 @@
 		EF9F9087299F8B70006F638F /* ETHError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ETHError.swift; sourceTree = "<group>"; };
 		EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSendResult.swift; sourceTree = "<group>"; };
 		EFD32AE329E9B7800026353E /* RavencoinTransactionHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RavencoinTransactionHistory.swift; sourceTree = "<group>"; };
-		EFD717BC2A24BBA200E5430D /* SmartContractRPCProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartContractRPCProvider.swift; sourceTree = "<group>"; };
+		EFD717BC2A24BBA200E5430D /* SmartContractProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartContractProvider.swift; sourceTree = "<group>"; };
+		EFD717BE2A24CD4500E5430D /* SmartContractProviderType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContractProviderType.swift; sourceTree = "<group>"; };
 		EFF56B3A29C20B17002B6952 /* SmartContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContract.swift; sourceTree = "<group>"; };
 		EFF56B3C29C20CCE002B6952 /* SmartContractMethodType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContractMethodType.swift; sourceTree = "<group>"; };
 		EFF56B4029C30265002B6952 /* EthereumFeeParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumFeeParameters.swift; sourceTree = "<group>"; };
@@ -1733,10 +1735,11 @@
 		EFF56B3929C20AEC002B6952 /* ContractInteractor */ = {
 			isa = PBXGroup;
 			children = (
-				EFD717BC2A24BBA200E5430D /* SmartContractRPCProvider.swift */,
 				DC912D1528E706C400D76628 /* ContractInteractor.swift */,
 				EFF56B3A29C20B17002B6952 /* SmartContract.swift */,
 				EFF56B3C29C20CCE002B6952 /* SmartContractMethodType.swift */,
+				EFD717BE2A24CD4500E5430D /* SmartContractProviderType.swift */,
+				EFD717BC2A24BBA200E5430D /* SmartContractProvider.swift */,
 			);
 			path = ContractInteractor;
 			sourceTree = "<group>";
@@ -2200,7 +2203,7 @@
 				5DEAFA942444C5300032E316 /* Token.swift in Sources */,
 				5D557CB023AA888D009B32AF /* Uint64+.swift in Sources */,
 				5D94E56123A381F2009C7482 /* EthereumWalletManagerProtocols.swift in Sources */,
-				EFD717BD2A24BBA200E5430D /* SmartContractRPCProvider.swift in Sources */,
+				EFD717BD2A24BBA200E5430D /* SmartContractProvider.swift in Sources */,
 				DC912D1628E706C400D76628 /* ContractInteractor.swift in Sources */,
 				B0BAEE9C25FF1E4200F318A6 /* RosettaData.swift in Sources */,
 				2DDE5BA129C4F8D200A5B708 /* DucatusWalletAssembly.swift in Sources */,
@@ -2290,6 +2293,7 @@
 				EF31EA1629DC31E000A59FBE /* RavencoinWalletManager.swift in Sources */,
 				5D557CB723ACCB48009B32AF /* BlockchainInfoNetworkProvider.swift in Sources */,
 				5D26CEE7243CA4E200994CC0 /* DucatusAddressService.swift in Sources */,
+				EFD717BF2A24CD4500E5430D /* SmartContractProviderType.swift in Sources */,
 				B04E556B265FB89400679EAF /* URL+.swift in Sources */,
 				5D84550E243DE9B40072155E /* CardanoWalletManager.swift in Sources */,
 				B0EBBEF4265D0EE600D37141 /* DogecoinWalletManager.swift in Sources */,
