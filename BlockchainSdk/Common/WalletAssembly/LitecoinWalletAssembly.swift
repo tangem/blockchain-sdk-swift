@@ -19,8 +19,7 @@ struct LitecoinWalletAssembly: WalletManagerAssembly {
                                                 compressedWalletPublicKey: try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress(),
                                                 bip: .bip84)
             
-            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager,
-                                                     addresses: input.wallet.addresses)
+            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
             
             var providers = [AnyBitcoinNetworkProvider]()
             

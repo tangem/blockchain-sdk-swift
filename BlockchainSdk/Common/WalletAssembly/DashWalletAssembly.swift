@@ -23,8 +23,7 @@ struct DashWalletAssembly: WalletManagerAssembly {
                 bip: .bip44
             )
             
-            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager,
-                                                     addresses: input.wallet.addresses)
+            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
             
             var providers: [AnyBitcoinNetworkProvider] = []
             

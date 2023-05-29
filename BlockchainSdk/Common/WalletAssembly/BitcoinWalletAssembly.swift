@@ -15,8 +15,7 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
                 bip: input.pairPublicKey == nil ? .bip84 : .bip141
             )
             
-            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager,
-                                                     addresses: input.wallet.addresses)
+            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
             
             var providers = [AnyBitcoinNetworkProvider]()
             

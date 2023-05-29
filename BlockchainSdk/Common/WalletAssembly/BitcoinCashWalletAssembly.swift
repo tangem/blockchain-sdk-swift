@@ -21,8 +21,7 @@ struct BitcoinCashWalletAssembly: WalletManagerAssembly {
                                                 compressedWalletPublicKey: compressed,
                                                 bip: .bip44)
             
-            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager,
-                                                     addresses: input.wallet.addresses)
+            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
             
             //TODO: Add testnet support. Maybe https://developers.cryptoapis.io/technical-documentation/general-information/what-we-support
             var providers = [AnyBitcoinNetworkProvider]()
