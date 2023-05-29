@@ -13,18 +13,18 @@ import BitcoinCore
 struct RavencoinWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         try RavencoinWalletManager(wallet: input.wallet).then {
-            let compressedKey = try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress()
+            let compressedKey = try Secp256k1Key(with: input.wallet.defaultPublicKey.blockchainKey).compress()
 
             let bitcoinManager = BitcoinManager(
                 networkParams: input.blockchain.isTestnet ? RavencoinTestNetworkParams() : RavencoinMainNetworkParams(),
-                walletPublicKey: input.wallet.publicKey.blockchainKey,
+                walletPublicKey: input.wallet.defaultPublicKey.blockchainKey,
                 compressedWalletPublicKey: compressedKey,
                 bip: .bip44
             )
 
             $0.txBuilder = BitcoinTransactionBuilder(
                 bitcoinManager: bitcoinManager,
-                addresses: input.wallet.addresses
+                addresses: input.wallet.addresses.all.map { $0.address }
             )
             
             let hosts: [String]

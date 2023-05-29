@@ -10,12 +10,13 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
             let network: BitcoinNetwork = input.blockchain.isTestnet ? .testnet : .mainnet
             let bitcoinManager = BitcoinManager(
                 networkParams: network.networkParams,
-                walletPublicKey: input.wallet.publicKey.blockchainKey,
-                compressedWalletPublicKey: try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress(),
+                walletPublicKey: input.wallet.defaultPublicKey.blockchainKey,
+                compressedWalletPublicKey: try Secp256k1Key(with: input.wallet.defaultPublicKey.blockchainKey).compress(),
                 bip: input.pairPublicKey == nil ? .bip84 : .bip141
             )
             
-            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
+            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager,
+                                                     addresses: input.wallet.addresses.all.map { $0.address })
             
             var providers = [AnyBitcoinNetworkProvider]()
             

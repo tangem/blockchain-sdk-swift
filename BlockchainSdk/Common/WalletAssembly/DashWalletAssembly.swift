@@ -14,16 +14,17 @@ struct DashWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         try DashWalletManager(wallet: input.wallet).then {
-            let compressed = try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress()
+            let compressed = try Secp256k1Key(with: input.wallet.defaultPublicKey.blockchainKey).compress()
             
             let bitcoinManager = BitcoinManager(
                 networkParams: input.blockchain.isTestnet ? DashTestNetworkParams() : DashMainNetworkParams(),
-                walletPublicKey: input.wallet.publicKey.blockchainKey,
+                walletPublicKey: input.wallet.defaultPublicKey.blockchainKey,
                 compressedWalletPublicKey: compressed,
                 bip: .bip44
             )
             
-            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
+            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager,
+                                                     addresses: input.wallet.addresses.all.map { $0.address })
             
             var providers: [AnyBitcoinNetworkProvider] = []
             

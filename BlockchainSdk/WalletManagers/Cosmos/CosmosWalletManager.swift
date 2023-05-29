@@ -67,14 +67,14 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     params: transactionParameters
                 )
                 
-                guard let publicKey = PublicKey(tangemPublicKey: self.wallet.publicKey.blockchainKey, publicKeyType: self.cosmosChain.coin.publicKeyType) else {
+                guard let publicKey = PublicKey(tangemPublicKey: self.wallet.defaultPublicKey.blockchainKey, publicKeyType: self.cosmosChain.coin.publicKeyType) else {
                     throw WalletError.failedToBuildTx
                 }
                 
                 let signer = WalletCoreSigner(
                     sdkSigner: signer,
                     blockchainKey: publicKey.data,
-                    walletPublicKey: self.wallet.publicKey,
+                    walletPublicKey: self.wallet.defaultPublicKey,
                     curve: self.cosmosChain.blockchain.curve
                 )
                 let output: CosmosSigningOutput = try AnySigner.signExternally(input: input, coin: self.cosmosChain.coin, signer: signer)

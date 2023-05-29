@@ -15,11 +15,12 @@ struct LitecoinWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return try LitecoinWalletManager(wallet: input.wallet).then {
             let bitcoinManager = BitcoinManager(networkParams: LitecoinNetworkParams(),
-                                                walletPublicKey: input.wallet.publicKey.blockchainKey,
-                                                compressedWalletPublicKey: try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress(),
+                                                walletPublicKey: input.wallet.defaultPublicKey.blockchainKey,
+                                                compressedWalletPublicKey: try Secp256k1Key(with: input.wallet.defaultPublicKey.blockchainKey).compress(),
                                                 bip: .bip84)
             
-            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
+            $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager,
+                                                     addresses: input.wallet.addresses.all.map { $0.address })
             
             var providers = [AnyBitcoinNetworkProvider]()
             

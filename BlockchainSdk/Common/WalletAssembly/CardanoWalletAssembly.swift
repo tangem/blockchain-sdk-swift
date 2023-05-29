@@ -14,7 +14,7 @@ struct CardanoWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return CardanoWalletManager(wallet: input.wallet).then {
             $0.txBuilder = CardanoTransactionBuilder(
-                walletPublicKey: input.wallet.publicKey.blockchainKey,
+                walletPublicKey: input.wallet.defaultPublicKey.blockchainKey,
                 shelleyCard: self.isShelley(for: input.blockchain)
             )
             let service = CardanoNetworkService(providers: [

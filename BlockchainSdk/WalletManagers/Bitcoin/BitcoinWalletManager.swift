@@ -25,7 +25,7 @@ class BitcoinWalletManager: BaseManager, WalletManager {
     var outputsCount: Int? { loadedUnspents.count }
     
     func update(completion: @escaping (Result<Void, Error>)-> Void)  {
-        cancellable = networkService.getInfo(addresses: wallet.addresses.map{ $0.value })
+        cancellable = networkService.getInfo(addresses: wallet.addresses.all.map { $0.address.value })
             .eraseToAnyPublisher()
             .subscribe(on: DispatchQueue.global())
             .sink(receiveCompletion: {[unowned self] completionSubscription in
@@ -73,7 +73,7 @@ class BitcoinWalletManager: BaseManager, WalletManager {
         }
         
         return signer.sign(hashes: hashes,
-                           walletPublicKey: self.wallet.publicKey)
+                           walletPublicKey: self.wallet.defaultPublicKey)
             .tryMap {[weak self] signatures -> (String) in
                 guard let self = self else { throw WalletError.empty }
                 
@@ -165,7 +165,7 @@ extension BitcoinWalletManager: TransactionPusher {
             return false
         }
         
-        let userAddresses = wallet.addresses.map { $0.value }
+        let userAddresses = wallet.addresses.all.map { $0.address.value }
         
         guard userAddresses.contains(tx.sourceAddress) else {
             return false

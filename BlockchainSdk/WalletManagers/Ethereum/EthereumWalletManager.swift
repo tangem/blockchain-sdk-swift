@@ -39,7 +39,7 @@ extension EthereumWalletManager: EthereumTransactionSigner {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
         
-        return signer.sign(hash: txForSign.hash, walletPublicKey: wallet.publicKey)
+        return signer.sign(hash: txForSign.hash, walletPublicKey: wallet.defaultPublicKey)
             .tryMap { [weak self] signature -> String in
                 guard let self = self else { throw WalletError.empty }
                 
