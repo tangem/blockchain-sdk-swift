@@ -11,12 +11,12 @@ import Combine
 public struct OptimismSmartContract: SmartContract {
     public typealias MethodType = ContractMethod
     
-    public let rpcURL: URL
+    public let providers: [SmartContractRPCProvider]
     public var address: String { "0x420000000000000000000000000000000000000F" }
     public var abi: String { OptimismSmartContractABI().abi }
     
-    public init(rpcURL: URL) {
-        self.rpcURL = rpcURL
+    public init(providers: [SmartContractRPCProvider]) {
+        self.providers = providers
     }
 }
 

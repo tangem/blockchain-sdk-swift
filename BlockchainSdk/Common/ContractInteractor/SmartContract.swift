@@ -13,5 +13,5 @@ public protocol SmartContract {
     
     var address: String { get }
     var abi: String { get }
-    var rpcURL: URL { get }
+    var providers: [SmartContractRPCProvider] { get }
 }

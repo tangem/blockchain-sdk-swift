@@ -14,11 +14,10 @@ import web3swift
 
 class OptimismWalletManager: EthereumWalletManager {
     private let contractInteractor: ContractInteractor<OptimismSmartContract>
-    
-    init(wallet: Wallet, rpcURL: URL) {
-        let contract = OptimismSmartContract(rpcURL: rpcURL)
-        self.contractInteractor = ContractInteractor(contract: contract)
-        
+
+    init(wallet: Wallet, optimismSmartContract: OptimismSmartContract) {
+        self.contractInteractor = .init(contract: optimismSmartContract)
+
         super.init(wallet: wallet)
     }
     
@@ -89,7 +88,7 @@ private extension OptimismWalletManager {
         guard let rlpEncodedTransactionData = transaction.encodeForSend() else {
             return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
         }
-        
+
         let data = rlpEncodedTransactionData.hexString.addHexPrefix()
         return contractInteractor
             .read(method: .getL1Fee(data: data))
@@ -97,12 +96,16 @@ private extension OptimismWalletManager {
                 guard let decimalFee = Decimal(string: "\(response)") else {
                     throw BlockchainSdkError.failedToLoadFee
                 }
-                
+
                 let blockchain = wallet.blockchain
                 let fee = decimalFee / blockchain.decimalValue
-                
+
                 return fee
             }
+            // We can ignore errors so as not to block users
+            // Unfortunately L1 fee doesn't work well
+            .replaceError(with: 0)
+            .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
 }

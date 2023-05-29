@@ -286,7 +286,6 @@
 		E93532CE292D0E86008FD979 /* BlockBookUtxoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9941ACA2927B07300399DE3 /* BlockBookUtxoProvider.swift */; };
 		E95D95152929872B0068F876 /* BlockBookResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = E95D95142929872B0068F876 /* BlockBookResponses.swift */; };
 		E9941AC92927846B00399DE3 /* BlockBookTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9941AC82927846B00399DE3 /* BlockBookTarget.swift */; };
-		E9EECB5328E9F50600899D6C /* OptimismWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EECB5228E9F50600899D6C /* OptimismWalletManager.swift */; };
 		ED3D33D84D8B747FB3B1D09D /* Pods_BlockchainSdkTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A172F9D47772F23948771418 /* Pods_BlockchainSdkTests.framework */; };
 		EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFCE549274BB88700C1B1A0 /* StellarTests.swift */; };
 		EF0DA78328523FAC0081092A /* AddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE57D99277CAD6100CCA18A /* AddressTests.swift */; };
@@ -315,15 +314,16 @@
 		EF332D19288EAEAC00AE3C85 /* NetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D18288EAEAC00AE3C85 /* NetworkProvider.swift */; };
 		EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */; };
 		EF5F1B9729C9C0500093307B /* Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5F1B9629C9C0500093307B /* Fee.swift */; };
-		EF5F1BA629C9E8EB0093307B /* OptimismSmartContractABI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5F1BA529C9E8EB0093307B /* OptimismSmartContractABI.swift */; };
+		EF609FC72A20D4E9004E6D4E /* OptimismWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EECB5228E9F50600899D6C /* OptimismWalletManager.swift */; };
 		EF9F9086299F88D1006F638F /* EthereumWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9F9085299F88D1006F638F /* EthereumWalletManager.swift */; };
 		EF9F9088299F8B70006F638F /* ETHError.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9F9087299F8B70006F638F /* ETHError.swift */; };
 		EFBA17FE2988623F00C23955 /* TransactionSendResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */; };
 		EFD32AE429E9B7800026353E /* RavencoinTransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD32AE329E9B7800026353E /* RavencoinTransactionHistory.swift */; };
+		EFD717B82A24B20700E5430D /* OptimismContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF5BA8329B881440070694A /* OptimismContract.swift */; };
+		EFD717B92A24B20900E5430D /* OptimismSmartContractABI.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5F1BA529C9E8EB0093307B /* OptimismSmartContractABI.swift */; };
 		EFF56B3B29C20B17002B6952 /* SmartContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B3A29C20B17002B6952 /* SmartContract.swift */; };
 		EFF56B3D29C20CCE002B6952 /* SmartContractMethodType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B3C29C20CCE002B6952 /* SmartContractMethodType.swift */; };
 		EFF56B4129C30265002B6952 /* EthereumFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B4029C30265002B6952 /* EthereumFeeParameters.swift */; };
-		EFF5BA8429B881440070694A /* OptimismContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF5BA8329B881440070694A /* OptimismContract.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -684,6 +684,9 @@
 		EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProviderConfiguration.swift; sourceTree = "<group>"; };
 		EF5F1B9629C9C0500093307B /* Fee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fee.swift; sourceTree = "<group>"; };
 		EF5F1BA529C9E8EB0093307B /* OptimismSmartContractABI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismSmartContractABI.swift; sourceTree = "<group>"; };
+		EF609FC12A20D05F004E6D4E /* OptimismTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismTarget.swift; sourceTree = "<group>"; };
+		EF609FC32A20D0B0004E6D4E /* OptimismJsonRpcProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismJsonRpcProvider.swift; sourceTree = "<group>"; };
+		EF609FC52A20D144004E6D4E /* OptimismNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismNetworkService.swift; sourceTree = "<group>"; };
 		EF680A72284F524300F6B1BD /* DashWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashWalletManager.swift; sourceTree = "<group>"; };
 		EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashMainNetworkParams.swift; sourceTree = "<group>"; };
 		EF9F9085299F88D1006F638F /* EthereumWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumWalletManager.swift; sourceTree = "<group>"; };
@@ -1670,6 +1673,9 @@
 				E9EECB5228E9F50600899D6C /* OptimismWalletManager.swift */,
 				EFF5BA8329B881440070694A /* OptimismContract.swift */,
 				EF5F1BA529C9E8EB0093307B /* OptimismSmartContractABI.swift */,
+				EF609FC12A20D05F004E6D4E /* OptimismTarget.swift */,
+				EF609FC32A20D0B0004E6D4E /* OptimismJsonRpcProvider.swift */,
+				EF609FC52A20D144004E6D4E /* OptimismNetworkService.swift */,
 			);
 			path = Optimism;
 			sourceTree = "<group>";
@@ -2067,6 +2073,7 @@
 				B0F9DCA125FB4C9B00C0AF18 /* MultiNetworkProvider.swift in Sources */,
 				5D7D243B25136254001B9A4F /* URandom.swift in Sources */,
 				2DDE5BAE29C4F8D200A5B708 /* TronWalletAssembly.swift in Sources */,
+				EF609FC72A20D4E9004E6D4E /* OptimismWalletManager.swift in Sources */,
 				DA63B09B29CB3FC700AC6E49 /* KaspaNetworkProvider.swift in Sources */,
 				B06AFAEF261496E600E7AAB0 /* CardanoAddressUtils.swift in Sources */,
 				B05F1E64299BD23500E27E32 /* TransactionHistoryLoader.swift in Sources */,
@@ -2096,7 +2103,6 @@
 				5D4B33D923FAAD1B00C93A84 /* BitcoreTarget.swift in Sources */,
 				5DED72BC239FEEEC006D79AE /* BitcoinTransactionBuilder.swift in Sources */,
 				2D8501F729DEC20A00F4A11B /* TONTransactionParams.swift in Sources */,
-				E9EECB5328E9F50600899D6C /* OptimismWalletManager.swift in Sources */,
 				5D8653FC23A8C4A9000DE52D /* StellarTransactionBuilder.swift in Sources */,
 				B044B3A126047F5500D9864F /* RosettaResponse.swift in Sources */,
 				5DACA35B255E97FE0096BC48 /* Address.swift in Sources */,
@@ -2164,7 +2170,6 @@
 				2DDE5BAB29C4F8D200A5B708 /* StellarWalletAssembly.swift in Sources */,
 				5D845511243DE9CD0072155E /* CardanoTransactionBuilder.swift in Sources */,
 				5DED72C423A1315F006D79AE /* StellarWalletManager.swift in Sources */,
-				EFF5BA8429B881440070694A /* OptimismContract.swift in Sources */,
 				5D740B802625B42500DE9636 /* RskAddressService.swift in Sources */,
 				EF9F9086299F88D1006F638F /* EthereumWalletManager.swift in Sources */,
 				5D8653FE23A8E486000DE52D /* StellarSdk+.swift in Sources */,
@@ -2227,6 +2232,7 @@
 				2DDE5BA529C4F8D200A5B708 /* DogecoinWalletAssembly.swift in Sources */,
 				E95D95152929872B0068F876 /* BlockBookResponses.swift in Sources */,
 				5DA163D2273D2146007AA991 /* TezosJsonRpcProvider.swift in Sources */,
+				EFD717B82A24B20700E5430D /* OptimismContract.swift in Sources */,
 				5DED72BA239FE2F8006D79AE /* Int+.swift in Sources */,
 				DA63B0A229CB3FC700AC6E49 /* KaspaWalletManager.swift in Sources */,
 				EF31EA1429DC31E000A59FBE /* RavencoinTestNetworkParams.swift in Sources */,
@@ -2294,10 +2300,10 @@
 				5D88838B27D3BBDA008744E1 /* BaseManager.swift in Sources */,
 				B0ED2011267C9E4500D5C3E5 /* BitcoinTransactionParams.swift in Sources */,
 				5D4B33C623F72F1100C93A84 /* BitcoinCashAddressService.swift in Sources */,
-				EF5F1BA629C9E8EB0093307B /* OptimismSmartContractABI.swift in Sources */,
 				5D14E4982397B87000C15FC8 /* Blockchain.swift in Sources */,
 				EFF56B3B29C20B17002B6952 /* SmartContract.swift in Sources */,
 				B004DAC026416B8A000863A4 /* EthereumResponse.swift in Sources */,
+				EFD717B92A24B20900E5430D /* OptimismSmartContractABI.swift in Sources */,
 				B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */,
 				DAE30DFF279164500056C5A3 /* SolanaWalletManager.swift in Sources */,
 				DA67A69829E523C6001B6799 /* CosmosTransactionBuilder.swift in Sources */,

@@ -10,7 +10,10 @@ import Foundation
 import Combine
 import web3swift
 
-public class ContractInteractor<Contract: SmartContract> {
+public class ContractInteractor<Contract: SmartContract>: MultiNetworkProvider {
+    var currentProviderIndex: Int = 0
+    var providers: [SmartContractRPCProvider] { contract.providers }
+    
     private let contract: Contract
     private lazy var defaultOptions: TransactionOptions = .defaultOptions
     
@@ -19,13 +22,13 @@ public class ContractInteractor<Contract: SmartContract> {
     }
     
     public func read(method: Contract.MethodType) -> AnyPublisher<Any, Error> {
-        Deferred {
-            Future { [weak self] promise in
+        providerPublisher { provider in
+            Future<Any, Error> { [weak self] promise in
                 guard let self = self else {
                     return
                 }
                 
-                self.read(method: method.name, parameters: method.parameters) { result in
+                self.read(rpcURL: provider.url, method: method.name, parameters: method.parameters) { result in
                     switch result {
                     case .success(let value):
                         promise(.success(value))
@@ -34,20 +37,21 @@ public class ContractInteractor<Contract: SmartContract> {
                     }
                 }
             }
-        }.eraseToAnyPublisher()
+            .eraseToAnyPublisher()
+        }
     }
 }
 
 // MARK: - Private
 
 private extension ContractInteractor {
-    func read(method: String, parameters: [AnyObject], completion: @escaping (Result<Any, Error>) -> Void) {
+    func read(rpcURL: URL, method: String, parameters: [AnyObject], completion: @escaping (Result<Any, Error>) -> Void) {
         // Make sure to call web3 methods from a non-GUI thread because it runs requests asynchronously
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self else { return }
             
             do {
-                let contract = try self.makeContract()
+                let contract = try self.makeContract(rpcURL: rpcURL)
                 let transaction = try self.makeTransaction(from: contract, method: method, parameters: parameters, type: .read)
                 self.call(transaction: transaction, completion: completion)
             } catch {
@@ -56,8 +60,8 @@ private extension ContractInteractor {
         }
     }
     
-    func makeContract() throws -> web3.web3contract {
-        let web3 = try Web3.new(contract.rpcURL)
+    func makeContract(rpcURL: URL) throws -> web3.web3contract {
+        let web3 = try Web3.new(rpcURL)
         
         guard let address = EthereumAddress(contract.address) else {
             throw ContractInteractorError.failedToParseAddress
