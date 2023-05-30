@@ -86,16 +86,14 @@ private extension OptimismWalletManager {
         return networkService
             .read(contract: contract, method: .getL1Fee(data: rlpEncodedTransactionData))
             .tryMap { [wallet] response in
-                guard let decimalFee = Decimal(string: "\(response)") else {
+                guard let value = EthereumUtils.parseEthereumDecimal(response, decimalsCount: wallet.blockchain.decimalCount) else {
                     throw BlockchainSdkError.failedToLoadFee
                 }
-
-                let blockchain = wallet.blockchain
-                let fee = decimalFee / blockchain.decimalValue
-
-                return fee
+                
+                return value
             }
             // We can ignore errors so as not to block users
+            // This L1Fee value is only needed to inform users. It will not used in the transaction
             // Unfortunately L1 fee doesn't work well
             .replaceError(with: 0)
             .setFailureType(to: Error.self)
