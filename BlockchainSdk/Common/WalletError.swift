@@ -14,6 +14,7 @@ public enum WalletError: Error, LocalizedError {
     case failedToBuildTx
     case failedToParseNetworkResponse
     case failedToSendTx
+    case failedToCalculateTxSize
     case empty
     
     public var errorDescription: String? {
@@ -30,6 +31,31 @@ public enum WalletError: Error, LocalizedError {
             return "common_send_tx_error".localized
         case .empty:
             return "Empty"
+        case .failedToCalculateTxSize:
+            return "generic_error_code".localized(errorCodeDescription)
+        }
+    }
+    
+    private var errorCodeDescription: String {
+        return "wallet_error \(errorCode)"
+    }
+    
+    private var errorCode: Int {
+        switch self {
+        case .noAccount:
+            return 1
+        case .failedToGetFee:
+            return 2
+        case .failedToBuildTx:
+            return 3
+        case .failedToParseNetworkResponse:
+            return 4
+        case .failedToSendTx:
+            return 5
+        case .failedToCalculateTxSize:
+            return 6
+        case .empty:
+            return 7
         }
     }
 }

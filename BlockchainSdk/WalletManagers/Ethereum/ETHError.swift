@@ -9,14 +9,23 @@
 import Foundation
 
 public enum ETHError: Error, LocalizedError, DetailedError {
+    case failedToParseTxCount
     case failedToParseBalance(value: String, address: String, decimals: Int)
+    case failedToParseGasLimit
+    case failedToParseAllowance
     case gasRequiredExceedsAllowance
     case unsupportedFeature
     
     public var errorDescription: String? {
         switch self {
+        case .failedToParseTxCount:
+            return "generic_error_code".localized(errorCodeDescription)
         case .failedToParseBalance:
-            return WalletError.failedToParseNetworkResponse.errorDescription
+            return "eth_balance_parse_error".localized
+        case .failedToParseGasLimit: // TODO: refactor
+            return "generic_error_code".localized(errorCodeDescription)
+        case .failedToParseAllowance:
+            return "generic_error_code".localized(errorCodeDescription)
         case .gasRequiredExceedsAllowance:
             return "eth_gas_required_exceeds_allowance".localized
         case .unsupportedFeature:
@@ -30,6 +39,27 @@ public enum ETHError: Error, LocalizedError, DetailedError {
             return "value:\(value), address:\(address), decimals:\(decimals)"
         default:
             return nil
+        }
+    }
+    
+    private var errorCodeDescription: String {
+        "eth_error \(errorCode)"
+    }
+    
+    private var errorCode: Int {
+        switch self {
+        case .failedToParseTxCount:
+            return 1
+        case .failedToParseBalance:
+            return 2
+        case .failedToParseGasLimit:
+            return 3
+        case .failedToParseAllowance:
+            return 4
+        case .gasRequiredExceedsAllowance:
+            return 5
+        case .unsupportedFeature:
+            return 6
         }
     }
 }

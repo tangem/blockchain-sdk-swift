@@ -11,10 +11,29 @@ import Combine
 import TangemSdk
 
 public enum CardanoError: String, Error, LocalizedError {
-    case lowAda = "cardano_low_ada"
+    case noUnspents
+    case lowAda
      
     public var errorDescription: String? {
-        return self.rawValue.localized
+        switch self {
+        case .noUnspents:
+            return "generic_error_code".localized(errorCodeDescription)
+        case .lowAda:
+            return "cardano_low_ada".localized
+        }
+    }
+    
+    private var errorCodeDescription: String {
+        return "cardano_error \(errorCode)"
+    }
+    
+    private var errorCode: Int {
+        switch self {
+        case .noUnspents:
+            return 1
+        case .lowAda:
+            return 2
+        }
     }
 }
 
@@ -101,7 +120,7 @@ extension CardanoWalletManager: TransactionSender {
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         guard let transactionSize = self.getEstimateSize(amount: amount, destination: destination) else {
-            return Fail(error: WalletError.failedToGetFee).eraseToAnyPublisher()
+            return Fail(error: WalletError.failedToCalculateTxSize).eraseToAnyPublisher()
         }
         
         let a = Decimal(0.155381)

@@ -83,7 +83,7 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
     }
     
     func push(transaction: String) -> AnyPublisher<String, Error> {
-        .anyFail(error: WalletError.failedToSendTx)
+        .anyFail(error: BlockchainSdkError.networkProvidersNotSupportsRbf)
     }
     
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {

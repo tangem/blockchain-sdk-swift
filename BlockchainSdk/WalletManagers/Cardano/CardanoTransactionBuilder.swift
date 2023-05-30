@@ -35,7 +35,7 @@ class CardanoTransactionBuilder {
     
     public func buildForSend(bodyItem: CBOR, signature: Data) throws -> Data {
         guard let unspents = unspentOutputs else {
-            throw WalletError.failedToBuildTx
+            throw CardanoError.noUnspents
         }
         
         let useByronWitness = unspents.contains(where: { !CardanoAddressUtils.isShelleyAddress($0.address) })
@@ -61,7 +61,7 @@ class CardanoTransactionBuilder {
     
 	private func buildTransactionBody(from transaction: Transaction, walletAmount: Decimal, isEstimated: Bool = false) throws -> CBOR {
         guard let unspentOutputs = self.unspentOutputs else {
-            throw WalletError.failedToBuildTx
+            throw CardanoError.noUnspents
         }
         
         let convertValue = Blockchain.cardano(shelley: shelleyCard).decimalValue

@@ -90,7 +90,7 @@ extension LedgersService {
                     if let lastLedger = ledgerResponse.records.first {
                         promise(.success(lastLedger))
                     } else {
-                        promise(.failure(WalletError.failedToParseNetworkResponse))
+                        promise(.failure(StellarError.failedToFindLatestLedger))
                     }
                 case .failure(let error):
                     promise(.failure(error))
@@ -185,7 +185,7 @@ extension HorizonRequestError {
     var message: String {
         switch self {
         case .emptyResponse:
-            return WalletError.failedToParseNetworkResponse.localizedDescription
+            return StellarError.emptyResponse.localizedDescription
         case .beforeHistory(let message, _):
             return message
         case .badRequest(let message, _):

@@ -12,8 +12,10 @@ import SwiftyJSON
 import Combine
 import TangemSdk
 
-public enum StellarError: Error, LocalizedError {
+public enum StellarError: Int, Error, LocalizedError {
+    case emptyResponse
     case requiresMemo
+    case failedToFindLatestLedger
     case xlmCreateAccount
     case assetCreateAccount
     case assetNoAccountOnDestination
@@ -31,7 +33,13 @@ public enum StellarError: Error, LocalizedError {
             return "send_error_no_target_account".localized(["1 XLM"])
         case .assetNoTrustline:
             return "no_trustline_xlm_asset".localized
+        default:
+            return "generic_error_code".localized(errorCodeDescription)
         }
+    }
+    
+    private var errorCodeDescription: String {
+        "stellar_error \(rawValue)"
     }
 }
 

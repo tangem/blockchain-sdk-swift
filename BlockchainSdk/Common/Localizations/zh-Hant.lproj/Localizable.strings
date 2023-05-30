@@ -7,7 +7,7 @@
 "common_parse_network_response_error" = "無法解析網絡回應";
 "common_send_tx_error" = "發送交易失敗";
 "eth_gas_required_exceeds_allowance" = "沒有足夠的資金進行交易。請先入金";
-"generic_error_code" = "An error occurred. Code: %li.";
+"generic_error_code" = "An error occurred. Code: %@.";
 "kaspa_withdrawal_message_warning" = "由於 Kaspa 的限制，只有%1$li UTXO 可以放入單次交易中。這意味著您只能發送%2$@或更少數量。您需要減少數量。";
 "no_account_bnb" = "要創建帳戶，請將資金發送到此地址";
 "no_account_generic" = "加載 %1$@+ %2$@ 以創建帳戶";

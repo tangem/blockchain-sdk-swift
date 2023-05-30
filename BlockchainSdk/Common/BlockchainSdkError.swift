@@ -19,6 +19,7 @@ public enum BlockchainSdkError: Int, LocalizedError {
     case failedToFindTransaction
     case failedToFindTxInputs
     case feeForPushTxNotEnough
+    case networkProvidersNotSupportsRbf
     
     public var errorDescription: String? {
         switch self {
@@ -26,11 +27,15 @@ public enum BlockchainSdkError: Int, LocalizedError {
             return "common_fee_error".localized
         case .signatureCountNotMatched, .notImplemented:
             // TODO: Replace with proper error message. Android sending instead of message just code, and client app decide what message to show to user
-            return "generic_error_code".localized(rawValue)
+            return "generic_error_code".localized(errorCodeDescription)
 		default:
-			return "generic_error_code".localized(rawValue)
+			return "generic_error_code".localized(errorCodeDescription)
 		}
 	}
+    
+    private var errorCodeDescription: String {
+        "blockchain_sdk_error \(rawValue)"
+    }
 }
 
 public enum NetworkServiceError: Error {
