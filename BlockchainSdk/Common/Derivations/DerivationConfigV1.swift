@@ -17,7 +17,7 @@ import Foundation
 /// - `All else`. According to `BIP44`
 /// https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 public struct DerivationConfigV1: DerivationConfig {
-    public func derivations(for blockchain: Blockchain) -> [AddressType : String] {
+    public func derivations(for blockchain: Blockchain) -> [AddressType: String] {
         switch blockchain {
         case .bitcoin:
             return [.legacy: "m/44'/0'/0'/0/0", .default: "m/44'/0'/0'/0/0"]
@@ -28,6 +28,7 @@ public struct DerivationConfigV1: DerivationConfig {
         case .solana:
             return [.default: "m/44'/501'/0'"]
         case .cardano(let shelley):
+            // We use shelley for all new cards with HD wallets feature.
             guard shelley else {
                 return [:]
             }
