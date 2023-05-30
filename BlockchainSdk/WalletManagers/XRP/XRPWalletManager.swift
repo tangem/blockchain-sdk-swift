@@ -18,7 +18,7 @@ public enum XRPError: Int, Error, LocalizedError {
     case distinctTagsFound
     
     public var errorDescription: String? {
-        "generic_error_code".localized(rawValue)
+        "generic_error_code".localized("xrp_error \(rawValue)")
     }
 }
 
