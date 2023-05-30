@@ -16,8 +16,9 @@ import Foundation
 /// https://wiki.polkadot.network/docs/learn-account-advanced#derivation-paths
 /// - `Cardano`. According to  `CIP1852`
 /// https://cips.cardano.org/cips/cip1852/
-/// - `Bitcoin`, `Litecoin`. Default address is SegWit. According to `BIP-84`
+/// - `Bitcoin`, `Litecoin`. Default address is `SegWit`. According to `BIP-84`
 /// https://github.com/bitcoin/bips/blob/master/bip-0084.mediawiki
+/// - `EVM-like` without `Ethereum classic` with `Ethereum` coinType(60).
 /// - `All else`. According to `BIP44`
 /// https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 public struct DerivationConfigV3: DerivationConfig {
@@ -38,30 +39,23 @@ public struct DerivationConfigV3: DerivationConfig {
             return [.legacy: "m/1852'/1815'/0'/0/0", .default: "m/44'/1815'/0'/0/0"]
         case .bitcoinCash:
             return [.legacy: "m/44'/145'/0'/0/0", .default: "m/44'/145'/0'/0/0"]
-        case .ethereum, .ethereumPoW, .ethereumFair, .saltPay:
+        case .ethereum,
+                .ethereumPoW,
+                .ethereumFair,
+                .saltPay,
+                .rsk,
+                .bsc,
+                .polygon,
+                .avalanche,
+                .fantom,
+                .arbitrum,
+                .gnosis,
+                .optimism,
+                .kava,
+                .cronos:
             return [.default: "m/44'/60'/0'/0/0"]
         case .ethereumClassic:
             return [.default: "m/44'/61'/0'/0/0"]
-        case .rsk:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .bsc:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .polygon:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .avalanche:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .fantom:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .arbitrum:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .gnosis:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .optimism:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .kava:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .cronos:
-            return [.default: "m/44'/60'/0'/0/0"]
         case .binance:
             return [.default: "m/44'/714'/0'/0/0"]
         case .xrp:

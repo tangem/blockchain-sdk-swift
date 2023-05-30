@@ -14,6 +14,7 @@ import Foundation
 /// https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md
 /// - `Cardano`.  According to  `CIP1852`
 /// https://cips.cardano.org/cips/cip1852/
+/// - `EVM-like` with `Ethereum` coinType(60).
 /// - `All else`. According to `BIP44`
 /// https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 public struct DerivationConfigV2: DerivationConfig {
@@ -24,42 +25,32 @@ public struct DerivationConfigV2: DerivationConfig {
         case .litecoin:
             return [.legacy: "m/44'/2'/0'/0/0", .default: "m/44'/2'/0'/0/0"]
         case .stellar:
-            // Path according to sep-0005. https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md
             return [.default: "m/44'/148'/0'"]
         case .solana:
-            // Path according to sep-0005. https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md
             return [.default: "m/44'/501'/0'"]
         case .cardano(let shelley):
+            // We use shelley for all new cards with HD wallets feature.
             guard shelley else {
                 return [:]
             }
-            // Path according to CIP-1852. https://cips.cardano.org/cips/cip1852/
             return [.legacy: "m/1852'/1815'/0'/0/0", .default: "m/1852'/1815'/0'/0/0"]
         case .bitcoinCash:
             return [.legacy: "m/44'/145'/0'/0/0", .default: "m/44'/145'/0'/0/0"]
-        case .ethereum, .ethereumPoW, .ethereumFair, .saltPay:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .ethereumClassic:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .rsk:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .bsc:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .polygon:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .avalanche:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .fantom:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .arbitrum:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .gnosis:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .optimism:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .kava:
-            return [.default: "m/44'/60'/0'/0/0"]
-        case .cronos:
+        case .ethereum,
+                .ethereumPoW,
+                .ethereumFair,
+                .saltPay,
+                .ethereumClassic,
+                .rsk,
+                .bsc,
+                .polygon,
+                .avalanche,
+                .fantom,
+                .arbitrum,
+                .gnosis,
+                .optimism,
+                .kava,
+                .cronos:
             return [.default: "m/44'/60'/0'/0/0"]
         case .binance:
             return [.default: "m/44'/714'/0'/0/0"]
