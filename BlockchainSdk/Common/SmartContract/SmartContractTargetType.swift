@@ -8,7 +8,8 @@
 
 import Foundation
 
-public protocol SmartContractMethodType {
-    var name: String { get }
+public protocol SmartContractTargetType {
+    var contactAddress: String { get }
+    var methodName: String { get }
     var parameters: [SmartContractMethodParameterType] { get }
 }

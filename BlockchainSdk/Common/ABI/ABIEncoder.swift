@@ -9,5 +9,5 @@
 import Foundation
 
 protocol ABIEncoder {
-    func encode(method: SmartContractMethodType) -> String
+    func encode(method: String, parameters: [SmartContractMethodParameterType]) -> String
 }

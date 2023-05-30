@@ -243,11 +243,11 @@ class EthereumNetworkService: MultiNetworkProvider {
         }
     }
     
-    func read<Contract: SmartContract>(contract: Contract, method: Contract.MethodType) -> AnyPublisher<String, Error> {
-        let encodedData = abiEncoder.encode(method: method)
+    func read<Target: SmartContractTargetType>(target: Target) -> AnyPublisher<String, Error> {
+        let encodedData = abiEncoder.encode(method: target.methodName, parameters: target.parameters)
 
         return providerPublisher {
-            $0.read(contractAddress: contract.address, encodedData: encodedData)
+            $0.read(contractAddress: target.contactAddress, encodedData: encodedData)
                 .tryMap { [weak self] in
                     guard let self = self else { throw WalletError.empty }
                     

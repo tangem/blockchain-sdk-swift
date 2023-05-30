@@ -13,8 +13,6 @@ import Moya
 import web3swift
 
 class OptimismWalletManager: EthereumWalletManager {
-    private lazy var contract = OptimismSmartContract()
-    
     /// We are override this method to combine the two fee's layers in the `Optimistic-Ethereum` network.
     /// Read more:
     /// https://community.optimism.io/docs/developers/build/transaction-fees/#the-l1-data-fee
@@ -84,7 +82,7 @@ private extension OptimismWalletManager {
         }
 
         return networkService
-            .read(contract: contract, method: .getL1Fee(data: rlpEncodedTransactionData))
+            .read(target: OptimismSmartContractTarget.getL1Fee(data: rlpEncodedTransactionData))
             .tryMap { [wallet] response in
                 guard let value = EthereumUtils.parseEthereumDecimal(response, decimalsCount: wallet.blockchain.decimalCount) else {
                     throw BlockchainSdkError.failedToLoadFee
