@@ -8,6 +8,6 @@
 
 import Foundation
 
-public protocol HostProvider {
+protocol HostProvider {
     var host: String { get }
 }
