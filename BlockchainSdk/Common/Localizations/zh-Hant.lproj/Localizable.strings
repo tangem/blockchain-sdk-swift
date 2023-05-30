@@ -4,7 +4,6 @@
 "common_build_tx_error" = "建立交易失敗";
 "common_fee_error" = "獲取費用失敗";
 "common_ok" = "OK";
-"common_parse_network_response_error" = "無法解析網絡回應";
 "common_send_tx_error" = "發送交易失敗";
 "eth_gas_required_exceeds_allowance" = "沒有足夠的資金進行交易。請先入金";
 "generic_error_code" = "An error occurred. Code: %@.";

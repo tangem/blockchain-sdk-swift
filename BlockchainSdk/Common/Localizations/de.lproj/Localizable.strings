@@ -4,7 +4,6 @@
 "common_build_tx_error" = "Transaktion fehlgeschlagen";
 "common_fee_error" = "Erhalt der Gebühr fehlgeschlagen";
 "common_ok" = "OK";
-"common_parse_network_response_error" = "Antwort des Netzwerks fehlgeschlagen";
 "common_send_tx_error" = "Absenden der Transaktion fehlgeschlagen";
 "eth_gas_required_exceeds_allowance" = "Not enough funds for the transaction. Please top up your account.";
 "generic_error_code" = "An error occurred. Code: %@.";

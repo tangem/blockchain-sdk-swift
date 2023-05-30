@@ -4,7 +4,6 @@
 "common_build_tx_error" = "Impossibile creare la transazione";
 "common_fee_error" = "Impossibile ottenere la commissione";
 "common_ok" = "OK";
-"common_parse_network_response_error" = "Impossibile analizzare la risposta di rete";
 "common_send_tx_error" = "Impossibile inviare la transazione";
 "eth_gas_required_exceeds_allowance" = "Not enough funds for the transaction. Please top up your account.";
 "generic_error_code" = "An error occurred. Code: %@.";

@@ -4,7 +4,6 @@
 "common_build_tx_error" = "Failed to build transaction";
 "common_fee_error" = "Failed to get fee";
 "common_ok" = "OK";
-"common_parse_network_response_error" = "Failed to parse network response";
 "common_send_tx_error" = "Failed to send transaction";
 "eth_gas_required_exceeds_allowance" = "Not enough funds for the transaction. Please top up your account.";
 "generic_error_code" = "An error occurred. Code: %@.";

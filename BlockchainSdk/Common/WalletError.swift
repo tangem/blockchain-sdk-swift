@@ -25,13 +25,11 @@ public enum WalletError: Error, LocalizedError {
             return "common_fee_error".localized
         case .failedToBuildTx:
             return "common_build_tx_error".localized
-        case .failedToParseNetworkResponse:
-            return "common_parse_network_response_error".localized
         case .failedToSendTx:
             return "common_send_tx_error".localized
         case .empty:
             return "Empty"
-        case .failedToCalculateTxSize:
+        case .failedToCalculateTxSize, .failedToParseNetworkResponse:
             return "generic_error_code".localized(errorCodeDescription)
         }
     }

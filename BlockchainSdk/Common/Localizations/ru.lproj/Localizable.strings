@@ -4,7 +4,6 @@
 "common_build_tx_error" = "Не удалось создать транзакцию";
 "common_fee_error" = "Не удалось получить комиссию";
 "common_ok" = "OK";
-"common_parse_network_response_error" = "Не удалось проанализировать сетевой ответ";
 "common_send_tx_error" = "Не удалось отправить транзакцию";
 "eth_gas_required_exceeds_allowance" = "Недостаточно средств для совершения транзакции. Пожалуйста, пополните свой аккаунт.";
 "generic_error_code" = "Произошла ошибка. Код: %s.";
