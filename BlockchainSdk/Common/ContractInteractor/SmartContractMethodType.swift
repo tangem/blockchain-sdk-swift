@@ -10,5 +10,5 @@ import Foundation
 
 public protocol SmartContractMethodType {
     var name: String { get }
-    var parameters: [AnyObject] { get }
+    var parameters: [SmartContractMethodParameterType] { get }
 }

@@ -10,19 +10,17 @@ import Combine
 
 public struct OptimismSmartContract: SmartContract {
     public typealias MethodType = ContractMethod
-    public typealias ProviderType = SmartContractProvider
     
     public var address: String { "0x420000000000000000000000000000000000000F" }
-    public var abi: String { OptimismSmartContractABI().abi }
 }
 
 public extension OptimismSmartContract {
     enum ContractMethod: SmartContractMethodType {
         /// Return a value which equal result the `getL1GasUsed` multiplied on `l1BaseFee`
-        case getL1Fee(data: String)
+        case getL1Fee(data: Data)
 
         /// Like the gasLimit related the transaction data size
-        case getL1GasUsed(data: String)
+        case getL1GasUsed(data: Data)
         
         /// Like the gasPrice
         case l1BaseFee
@@ -38,12 +36,12 @@ public extension OptimismSmartContract {
             }
         }
         
-        public var parameters: [AnyObject] {
+        public var parameters: [SmartContractMethodParameterType] {
             switch self {
             case .getL1Fee(let data):
-                return [data as AnyObject]
+                return [.bytes(data)]
             case .getL1GasUsed(let data):
-                return [data as AnyObject]
+                return [.bytes(data)]
             case .l1BaseFee:
                 return []
             }

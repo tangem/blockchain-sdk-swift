@@ -21,17 +21,22 @@ class EthereumNetworkService: MultiNetworkProvider {
     private let ethereumInfoNetworkProvider: EthereumAdditionalInfoProvider?
     private let blockchairProvider: BlockchairNetworkProvider?
     private let transactionHistoryProvider: TransactionHistoryProvider?
+    private let abiEncoder: ABIEncoder
     
-    init(decimals: Int,
-         providers: [EthereumJsonRpcProvider],
-         blockcypherProvider: BlockcypherNetworkProvider?,
-         blockchairProvider: BlockchairNetworkProvider?,
-         transactionHistoryProvider: TransactionHistoryProvider?) {
+    init(
+        decimals: Int,
+        providers: [EthereumJsonRpcProvider],
+        blockcypherProvider: BlockcypherNetworkProvider?,
+        blockchairProvider: BlockchairNetworkProvider?,
+        transactionHistoryProvider: TransactionHistoryProvider?,
+        abiEncoder: ABIEncoder
+    ) {
         self.providers = providers
         self.decimals = decimals
         self.ethereumInfoNetworkProvider = blockcypherProvider
         self.blockchairProvider = blockchairProvider
         self.transactionHistoryProvider = transactionHistoryProvider
+        self.abiEncoder = abiEncoder
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
@@ -237,6 +242,21 @@ class EthereumNetworkService: MultiNetworkProvider {
                 .eraseToAnyPublisher()
         }
     }
+    
+    func read<Contract: SmartContract>(contract: Contract, method: Contract.MethodType) -> AnyPublisher<String, Error> {
+        let encodedData = abiEncoder.encode(method: method)
+
+        return providerPublisher {
+            $0.read(contractAddress: contract.address, encodedData: encodedData)
+                .tryMap { [weak self] in
+                    guard let self = self else { throw WalletError.empty }
+                    
+                    return try self.getResult(from: $0)
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+    
     
     // MARK: - Private functions
     

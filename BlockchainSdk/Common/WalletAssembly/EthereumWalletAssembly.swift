@@ -38,7 +38,8 @@ struct EthereumWalletAssembly: WalletManagerAssembly {
                 transactionHistoryProvider: networkProviderAssembly.makeBlockscoutNetworkProvider(
                     canLoad: input.blockchain.canLoadTransactionHistory,
                     with: input
-                )
+                ),
+                abiEncoder: WalletCoreABIEncoder()
             )
         }
     }

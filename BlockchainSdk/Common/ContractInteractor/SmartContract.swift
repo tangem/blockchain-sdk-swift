@@ -10,8 +10,6 @@ import Foundation
 
 public protocol SmartContract {
     associatedtype MethodType: SmartContractMethodType
-    associatedtype ProviderType: SmartContractProviderType
-    
+
     var address: String { get }
-    var abi: String { get }
 }
