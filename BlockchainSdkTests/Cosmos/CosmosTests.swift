@@ -21,7 +21,7 @@ class CosmosTests: XCTestCase {
         
         let addresses = try cosmosChain.blockchain.getAddressService().makeAddresses(from: publicKeyData)
         
-        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivedKey: nil, derivationPath: nil)
+        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivation: .none)
         let wallet = Wallet(blockchain: cosmosChain.blockchain, addresses: addresses, publicKey: publicKey)
         
         let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)
@@ -53,7 +53,7 @@ class CosmosTests: XCTestCase {
         
         let addresses = try cosmosChain.blockchain.getAddressService().makeAddresses(from: publicKeyData)
         
-        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivedKey: nil, derivationPath: nil)
+        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivation: .none)
         let wallet = Wallet(blockchain: cosmosChain.blockchain, addresses: addresses, publicKey: publicKey)
         
         let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)
@@ -90,7 +90,7 @@ class CosmosTests: XCTestCase {
         
         let addresses = try cosmosChain.blockchain.getAddressService().makeAddresses(from: publicKeyData)
         
-        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivedKey: nil, derivationPath: nil)
+        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivation: .none)
         let wallet = Wallet(blockchain: cosmosChain.blockchain, addresses: addresses, publicKey: publicKey)
         
         let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)
@@ -127,7 +127,7 @@ class CosmosTests: XCTestCase {
         
         let addresses = try cosmosChain.blockchain.getAddressService().makeAddresses(from: publicKeyData)
         
-        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivedKey: nil, derivationPath: nil)
+        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivation: .none)
         let wallet = Wallet(blockchain: cosmosChain.blockchain, addresses: addresses, publicKey: publicKey)
         
         let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)
