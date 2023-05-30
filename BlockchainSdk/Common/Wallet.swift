@@ -10,24 +10,30 @@ import Foundation
 import TangemSdk
 
 public struct Wallet {
-    public let blockchain: Blockchain
-    public let walletAddresses: Addresses
     
-    public internal(set) var amounts: [Amount.AmountType:Amount] = [:]
+    // MARK: - Properties
+
+    public let blockchain: Blockchain
+    public let walletAddresses: [AddressType: PublicAddress]
+    
+    public internal(set) var amounts: [Amount.AmountType: Amount] = [:]
     public internal(set) var transactions: [Transaction] = []
     
-    public var addresses: [Address] { walletAddresses.all.map { $0.address } }
-    public var defaultAddress: WalletAddress { walletAddresses.default }
+    // MARK: - Calculations
     
-    /// `publicKey` for default address
+    public var addresses: [PublicAddress] { walletAddresses.map { $0.value } }
+    public var defaultAddress: PublicAddress { walletAddresses[.default]! }
+    
+    /// `publicKey` from default address
     public var publicKey: Wallet.PublicKey { defaultAddress.publicKey }
-
-    public var address: String { defaultAddress.address.value }
     
+    /// Default address
+    public var address: String { defaultAddress.value }
+
     public var isEmpty: Bool {
         return amounts.filter { $0.key != .reserve && !$0.value.isZero }.isEmpty
     }
-    
+
     public var hasPendingTx: Bool {
         return !transactions.filter { $0.status == .unconfirmed }.isEmpty
     }
@@ -59,26 +65,25 @@ public struct Wallet {
     }
     
     public var xpubKeys: [String] {
-        walletAddresses.all.compactMap { $0.xpubKey(isTestnet: blockchain.isTestnet) }
+        walletAddresses
+            .compactMapValues { $0.xpubKey(isTestnet: blockchain.isTestnet) }
+            .map { $0.value }
     }
     
     @available(*, deprecated, message: "Use init(blockchain:, addresses:)")
     init(blockchain: Blockchain, addresses: [Address], publicKey: PublicKey) {
         self.blockchain = blockchain
-        
-        assert(addresses.contains(where: { $0.type == .default }), "Addresses have to contains default address")
-        
-        let walletAddresses = addresses.map {
-            WalletAddress(address: $0, publicKey: publicKey)
+                
+        let addresses: [AddressType: PublicAddress] = addresses.reduce(into: [:]) { result, address in
+            result[address.type] = PublicAddress(value: address.value, publicKey: publicKey, type: address.type)
         }
         
-        self.walletAddresses = .init(
-            default: walletAddresses.first(where: { $0.address.type == .default })!,
-            legacy: walletAddresses.first(where: { $0.address.type == .legacy })
-        )
+        assert(addresses[.default] != nil, "Addresses have to contains default address")
+
+        self.walletAddresses = addresses
     }
     
-    init(blockchain: Blockchain, addresses: Addresses) {
+    init(blockchain: Blockchain, addresses: [AddressType: PublicAddress]) {
         self.blockchain = blockchain
         self.walletAddresses = addresses
     }

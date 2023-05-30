@@ -23,6 +23,22 @@ public class WalletManagerFactory {
         self.config = config
     }
     
+    public func makeWalletManager(blockchain: Blockchain, publicKeys: [AddressType: Wallet.PublicKey]) throws -> WalletManager {
+        // It'll moved in Assembly in next task
+        let walletFactory = WalletFactory(addressProvider: blockchain.getAddressService())
+        let wallet = try walletFactory.makeWallet(blockchain: blockchain, publicKeys: publicKeys)
+
+        let input = WalletManagerAssemblyInput(
+            blockchain: blockchain,
+            blockchainConfig: config,
+            pairPublicKey: nil,
+            wallet: wallet,
+            networkConfig: config.networkProviderConfiguration(for: blockchain)
+        )
+
+        return try blockchain.assembly.make(with: input)
+    }
+    
     /// Base wallet manager initializer
     /// - Parameters:
     ///   - blockchain: Card native blockchain will be used
