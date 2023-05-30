@@ -19,10 +19,8 @@ struct WalletCoreABIEncoder: ABIEncoder {
             }
         }
         
-        let encoded = EthereumAbi.encode(fn: function).hexString
-        print(encoded)
-        print(function.getType())
-        
-        return encoded
+        let encodedData = EthereumAbi.encode(fn: function)
+
+        return encodedData.hexString.addHexPrefix()
     }
 }
