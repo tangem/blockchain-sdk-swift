@@ -13,6 +13,8 @@ import Combine
 import TangemSdk
 
 public enum StellarError: Int, Error, LocalizedError {
+    // WARNING: Make sure to preserve the error codes when removing or inserting errors
+    
     case emptyResponse
     case requiresMemo
     case failedToFindLatestLedger
@@ -20,6 +22,8 @@ public enum StellarError: Int, Error, LocalizedError {
     case assetCreateAccount
     case assetNoAccountOnDestination
     case assetNoTrustline
+    
+    // WARNING: Make sure to preserve the error codes when removing or inserting errors
     
     public var errorDescription: String? {
         switch self {

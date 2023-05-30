@@ -9,10 +9,12 @@
 import Foundation
 
 public enum BlockchainSdkError: Int, LocalizedError {
-	case signatureCountNotMatched = 0
-	case failedToCreateMultisigScript = 1
-	case failedToConvertPublicKey = 2
-	case notImplemented = -1000
+    // WARNING: Make sure to preserve the error codes when removing or inserting errors
+    
+    case signatureCountNotMatched = 0
+    case failedToCreateMultisigScript = 1
+    case failedToConvertPublicKey = 2
+    case notImplemented = -1000
     case decodingFailed
     case failedToLoadFee
     case failedToLoadTxDetails
@@ -20,6 +22,8 @@ public enum BlockchainSdkError: Int, LocalizedError {
     case failedToFindTxInputs
     case feeForPushTxNotEnough
     case networkProvidersNotSupportsRbf
+    
+    // WARNING: Make sure to preserve the error codes when removing or inserting errors
     
     public var errorDescription: String? {
         switch self {
