@@ -55,28 +55,18 @@ public struct Wallet {
 
     @available(*, deprecated, message: "Use xpubKeys with each address support")
     public var xpubKey: String? {
-        guard let key = defaultAddress.publicKey.derivedKey else { return nil }
-
-        return try? key.serialize(for: blockchain.isTestnet ? .testnet : .mainnet)
+        defaultAddress.xpubKey(isTestnet: blockchain.isTestnet)
     }
     
     public var xpubKeys: [String] {
-        walletAddresses.all
-            .compactMap {
-                try? $0.publicKey.derivedKey?.serialize(
-                    for: blockchain.isTestnet ? .testnet : .mainnet
-                )
-            }
+        walletAddresses.all.compactMap { $0.xpubKey(isTestnet: blockchain.isTestnet) }
     }
     
     @available(*, deprecated, message: "Use init(blockchain:, addresses:)")
     init(blockchain: Blockchain, addresses: [Address], publicKey: PublicKey) {
         self.blockchain = blockchain
         
-        assert(
-            addresses.contains(where: { $0.type == .default }),
-            "Addresses have to contains default address"
-        )
+        assert(addresses.contains(where: { $0.type == .default }), "Addresses have to contains default address")
         
         let walletAddresses = addresses.map {
             WalletAddress(address: $0, publicKey: publicKey)
@@ -201,59 +191,5 @@ public struct Wallet {
     
     mutating func remove(token: Token) {
         amounts[.token(value: token)] = nil
-    }
-}
-
-extension Wallet {
-    public struct PublicKey: Codable, Hashable {
-        public let seedKey: Data
-        public let derivation: Derivation
-
-        public enum Derivation: Codable, Hashable {
-            case not
-            case derivation(path: DerivationPath, derivedKey: ExtendedPublicKey)
-        }
-        
-        public var derivedKey: ExtendedPublicKey? {
-            switch derivation {
-            case .not:
-                return nil
-            case .derivation(_, let derivedKey):
-                return derivedKey
-            }
-        }
-        
-        public var derivationPath: DerivationPath? {
-            switch derivation {
-            case .not:
-                return nil
-            case .derivation(let path, _):
-                return path
-            }
-        }
-
-        /// Derived or non-derived key that should be used to create an address in a blockchain
-        public var blockchainKey: Data {
-            switch derivation {
-            case .not:
-                return seedKey
-            case .derivation(_, let derivedKey):
-                return derivedKey.publicKey
-            }
-        }
-        
-        public init(seedKey: Data, derivation: Derivation) {
-            self.seedKey = seedKey
-            self.derivation = derivation
-        }
-    }
-    
-    public struct Addresses {
-        public let `default`: WalletAddress
-        public let legacy: WalletAddress?
-        
-        public var all: [WalletAddress] {
-            [`default`, legacy].compactMap { $0 }
-        }
     }
 }

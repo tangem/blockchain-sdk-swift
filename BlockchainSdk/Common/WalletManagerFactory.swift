@@ -35,14 +35,14 @@ public class WalletManagerFactory {
                                   derivedKey: ExtendedPublicKey,
                                   derivation derivationParams: DerivationParams) throws -> WalletManager {
         
-        let derivation: Wallet.PublicKey.Derivation
+        let derivation: Wallet.PublicKey.Derivation?
         
         switch derivationParams {
         case .default(let derivationStyle):
             if let derivationPath = blockchain.derivationPath(for: derivationStyle) {
                 derivation = .derivation(path: derivationPath, derivedKey: derivedKey)
             } else {
-                derivation = .not
+                derivation = .none
             }
         case .custom(let path):
             derivation = .derivation(path: path, derivedKey: derivedKey)
@@ -63,7 +63,7 @@ public class WalletManagerFactory {
     ///   - walletPublicKey: Wallet's publicKey
     /// - Returns: WalletManager
     public func makeWalletManager(blockchain: Blockchain, walletPublicKey: Data) throws -> WalletManager {
-        let publicKey = Wallet.PublicKey(seedKey: walletPublicKey, derivation: .not)
+        let publicKey = Wallet.PublicKey(seedKey: walletPublicKey, derivation: .none)
         
         return try makeWalletManager(
             from: blockchain,
@@ -78,7 +78,7 @@ public class WalletManagerFactory {
     ///   - walletPublicKey: Wallet's publicKey
     public func makeTwinWalletManager(walletPublicKey: Data, pairKey: Data, isTestnet: Bool) throws -> WalletManager {
         let blockchain: Blockchain = .bitcoin(testnet: isTestnet)
-        let publicKey = Wallet.PublicKey(seedKey: walletPublicKey, derivation: .not)
+        let publicKey = Wallet.PublicKey(seedKey: walletPublicKey, derivation: .none)
         
         return try makeWalletManager(
             from: blockchain,
@@ -129,7 +129,7 @@ extension WalletManagerFactory {
         walletPublicKey: Data,
         addresses: [String]
     ) throws -> WalletManager {
-        let publicKey: Wallet.PublicKey = .init(seedKey: walletPublicKey, derivation: .not)
+        let publicKey: Wallet.PublicKey = .init(seedKey: walletPublicKey, derivation: .none)
         
         return try makeWalletManager(
             from: blockchain,
