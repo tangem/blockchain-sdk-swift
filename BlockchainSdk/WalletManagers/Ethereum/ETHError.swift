@@ -18,13 +18,9 @@ public enum ETHError: Error, LocalizedError, DetailedError {
     
     public var errorDescription: String? {
         switch self {
-        case .failedToParseTxCount:
+        case .failedToParseTxCount, .failedToParseBalance, .failedToParseAllowance:
             return "generic_error_code".localized(errorCodeDescription)
-        case .failedToParseBalance:
-            return "eth_balance_parse_error".localized
         case .failedToParseGasLimit: // TODO: refactor
-            return "generic_error_code".localized(errorCodeDescription)
-        case .failedToParseAllowance:
             return "generic_error_code".localized(errorCodeDescription)
         case .gasRequiredExceedsAllowance:
             return "eth_gas_required_exceeds_allowance".localized
