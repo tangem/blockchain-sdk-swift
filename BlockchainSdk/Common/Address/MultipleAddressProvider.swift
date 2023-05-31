@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import TangemSdk
 
 @available(*, deprecated, message: "Use AddressProvider.makeAddress(for:, with:)")
 public protocol MultipleAddressProvider: AddressService {
