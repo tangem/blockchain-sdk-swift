@@ -10,20 +10,19 @@ import Foundation
 import Combine
 import TangemSdk
 
-public enum XRPError: String, Error, LocalizedError {
-    case failedLoadUnconfirmed = "xrp_load_unconfirmed_error"
-    case failedLoadReserve = "xrp_load_reserve_error"
-    case failedLoadInfo = "xrp_load_account_error"
-    case missingReserve = "xrp_missing_reserve_error"
+public enum XRPError: Int, Error, LocalizedError {
+    // WARNING: Make sure to preserve the error codes when removing or inserting errors
+    
+    case failedLoadUnconfirmed
+    case failedLoadReserve
+    case failedLoadInfo
+    case missingReserve
     case distinctTagsFound
     
+    // WARNING: Make sure to preserve the error codes when removing or inserting errors
+    
     public var errorDescription: String? {
-        switch self {
-        case .distinctTagsFound:
-            return rawValue
-        default:
-            return rawValue.localized
-        }
+        "generic_error_code".localized("xrp_error \(rawValue)")
     }
 }
 
