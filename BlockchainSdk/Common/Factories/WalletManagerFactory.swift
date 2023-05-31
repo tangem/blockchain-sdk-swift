@@ -51,7 +51,7 @@ public class WalletManagerFactory {
                                   derivedKey: ExtendedPublicKey,
                                   derivation derivationParams: DerivationParams) throws -> WalletManager {
         
-        let derivation: Wallet.PublicKey.Derivation?
+        let derivation: Wallet.PublicKey.Derivation
         
         switch derivationParams {
         case .default(let derivationStyle):
@@ -66,11 +66,7 @@ public class WalletManagerFactory {
         
         let publicKey = Wallet.PublicKey(seedKey: seedKey, derivation: derivation)
         
-        return try makeWalletManager(
-            from: blockchain,
-            publicKey: publicKey,
-            addresses: blockchain.makeAddresses(from: publicKey.blockchainKey, with: nil)
-        )
+        return try makeWalletManager(from: blockchain, publicKey: publicKey)
     }
     
     /// Legacy wallet manager initializer
@@ -81,11 +77,7 @@ public class WalletManagerFactory {
     public func makeWalletManager(blockchain: Blockchain, walletPublicKey: Data) throws -> WalletManager {
         let publicKey = Wallet.PublicKey(seedKey: walletPublicKey, derivation: .none)
         
-        return try makeWalletManager(
-            from: blockchain,
-            publicKey: publicKey,
-            addresses: blockchain.makeAddresses(from: publicKey.blockchainKey, with: nil)
-        )
+        return try makeWalletManager(from: blockchain, publicKey: publicKey)
     }
     
     /// Wallet manager initializer for twin cards
@@ -99,7 +91,6 @@ public class WalletManagerFactory {
         return try makeWalletManager(
             from: blockchain,
             publicKey: publicKey,
-            addresses: blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairKey),
             pairPublicKey: pairKey
         )
     }
@@ -115,15 +106,17 @@ public class WalletManagerFactory {
     private func makeWalletManager(
         from blockchain: Blockchain,
         publicKey: Wallet.PublicKey,
-        addresses: [Address],
         pairPublicKey: Data? = nil
     ) throws -> WalletManager {
+        let addresses = try blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey)
+        let wallet = Wallet(blockchain: blockchain, addresses: addresses, publicKey: publicKey)
+        
         return try blockchain.assembly.make(
             with: .init(
                 blockchain: blockchain,
                 blockchainConfig: config,
                 pairPublicKey: pairPublicKey,
-                wallet: Wallet(blockchain: blockchain, addresses: addresses, publicKey: publicKey),
+                wallet: wallet,
                 networkConfig: config.networkProviderConfiguration(for: blockchain)
             )
         )
@@ -146,12 +139,22 @@ extension WalletManagerFactory {
         addresses: [String]
     ) throws -> WalletManager {
         let publicKey: Wallet.PublicKey = .init(seedKey: walletPublicKey, derivation: .none)
+        var addresses: [Address] = addresses.map { PlainAddress(value: $0, type: .default) }
+
+        if addresses.isEmpty {
+            addresses = try blockchain.makeAddresses(from: publicKey.blockchainKey, with: nil)
+        }
         
-        return try makeWalletManager(
-            from: blockchain,
-            publicKey: publicKey,
-            addresses: addresses.isEmpty ? blockchain.makeAddresses(from: publicKey.blockchainKey, with: nil) :
-                addresses.map { PlainAddress(value: $0, type: .default) }
+        let wallet = Wallet(blockchain: blockchain, addresses: addresses, publicKey: publicKey)
+
+        return try blockchain.assembly.make(
+            with: .init(
+                blockchain: blockchain,
+                blockchainConfig: config,
+                pairPublicKey: nil,
+                wallet: wallet,
+                networkConfig: config.networkProviderConfiguration(for: blockchain)
+            )
         )
     }
     

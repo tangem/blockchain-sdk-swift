@@ -12,7 +12,7 @@ import TangemSdk
 extension Wallet {
     public struct PublicKey: Codable, Hashable {
         public let seedKey: Data
-        public let derivation: Derivation?
+        public let derivation: Derivation
                 
         public var derivedKey: ExtendedPublicKey? {
             switch derivation {
@@ -42,7 +42,7 @@ extension Wallet {
             }
         }
         
-        public init(seedKey: Data, derivation: Derivation?) {
+        public init(seedKey: Data, derivation: Derivation) {
             self.seedKey = seedKey
             self.derivation = derivation
         }
@@ -51,6 +51,7 @@ extension Wallet {
 
 extension Wallet.PublicKey {
     public enum Derivation: Codable, Hashable {
+        case none
         case derivation(path: DerivationPath, derivedKey: ExtendedPublicKey)
     }
 }
