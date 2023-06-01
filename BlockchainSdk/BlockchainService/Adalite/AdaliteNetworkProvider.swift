@@ -9,7 +9,6 @@
 import Foundation
 import Moya
 import Combine
-import SwiftyJSON
 
 class AdaliteNetworkProvider: CardanoNetworkProvider {
     private let adaliteUrl: AdaliteUrl
@@ -36,11 +35,11 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
         getUnspents(addresses: addresses)
             .flatMap {[weak self] unspents -> AnyPublisher<CardanoAddressResponse, Error> in
                 guard let self = self else { return .emptyFail }
-                
+
                 return self.getBalance(addresses: addresses)
                     .map { balanceResponse -> CardanoAddressResponse in
-                        let balance = balanceResponse.reduce(Decimal(0), { $0 + $1.balance })
-                        let txHashes = balanceResponse.reduce([String](), { $0 + $1.transactions })
+                        let balance = balanceResponse.reduce(0, { $0 + $1.balance })
+                        let txHashes = balanceResponse.reduce([], { $0 + $1.transactions })
                         return CardanoAddressResponse(balance: balance, recentTransactionsHashes: txHashes, unspentOutputs: unspents)
                     }
                     .eraseToAnyPublisher()
@@ -53,17 +52,27 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
         provider
             .requestPublisher(.unspents(addresses: addresses, url: adaliteUrl))
             .filterSuccessfulStatusAndRedirectCodes()
-            .mapSwiftyJSON()
-            .tryMap { json throws -> [CardanoUnspentOutput] in
-                let unspentOutputsJson = json["Right"].arrayValue
-                let unspentOutputs = unspentOutputsJson.map{ json -> CardanoUnspentOutput in
-                    let output = CardanoUnspentOutput(address: json["cuAddress"].stringValue,
-                                                      amount: Decimal(json["cuCoins"]["getCoin"].doubleValue),
-                                                      outputIndex: json["cuOutIndex"].intValue,
-                                                      transactionHash: json["cuId"].stringValue)
-                    return output
+            .map(AdaliteBaseResponseDTO<String, [AdaliteUnspentOutputResponseDTO]>.self)
+            .tryMap { response throws -> [CardanoUnspentOutput] in
+                guard let unspentOutputs = response.right else {
+                    throw response.left ?? WalletError.empty
                 }
-                return unspentOutputs
+                
+                return unspentOutputs.compactMap { output -> CardanoUnspentOutput? in
+                    // We need to ignore unspents with tokens (until we start supporting tokens)
+                    guard output.cuCoins.getTokens.isEmpty else {
+                        return nil
+                    }
+                    
+                    guard let amount = Decimal(string: output.cuCoins.getCoin) else {
+                        return nil
+                    }
+                    
+                    return CardanoUnspentOutput(address: output.cuAddress,
+                                                amount: amount,
+                                                outputIndex: output.cuOutIndex,
+                                                transactionHash: output.cuId)
+                }
             }
             .eraseToAnyPublisher()
     }
@@ -75,23 +84,17 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
             return self.provider
                 .requestPublisher(.address(address: $0, url: self.adaliteUrl))
                 .filterSuccessfulStatusAndRedirectCodes()
-                .mapSwiftyJSON()
-                .tryMap {json throws -> AdaliteBalanceResponse in
-                    let addressData = json["Right"]
-                    guard let balanceString = addressData["caBalance"]["getCoin"].string,
-                          let balance = Decimal(balanceString) else {
-                        throw json["Left"].stringValue
+                .map(AdaliteBaseResponseDTO<String, AdaliteBalanceResponseDTO>.self)
+                .tryMap { response throws -> AdaliteBalanceResponse in
+                    guard let addressData = response.right else {
+                        throw response.left ?? WalletError.empty
                     }
-                    
+
+                    let balance = Decimal(string: addressData.caBalance.getCoin) ?? 0
                     let convertedValue = balance / Blockchain.cardano(shelley: false).decimalValue
-                    
-                    var transactionList = [String]()
-                    if let transactionListJSON = addressData["caTxList"].array {
-                        transactionList = transactionListJSON.map({ return $0["ctbId"].stringValue })
-                    }
-                    
-                    let response = AdaliteBalanceResponse(balance: convertedValue, transactions: transactionList)
-                    return response
+                    let transactions = addressData.caTxList.map { $0.ctbId }
+
+                    return AdaliteBalanceResponse(balance: convertedValue, transactions: transactions)
                 }
                 .eraseToAnyPublisher()
         })

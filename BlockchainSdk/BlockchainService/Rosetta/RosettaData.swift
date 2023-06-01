@@ -22,10 +22,6 @@ struct RosettaAccountIdentifier: Codable {
 struct RosettaAmount: Codable {
     let value: String?
     let currency: RosettaCurrency?
-    
-    var valueDecimal: Decimal? {
-        Decimal(value)
-    }
 }
 
 struct RosettaCurrency: Codable {
@@ -36,6 +32,15 @@ struct RosettaCurrency: Codable {
 struct RosettaCoin: Codable {
     let coinIdentifier: RosettaCoinIdentifier?
     let amount: RosettaAmount?
+    let metadata: RosettaMetadata?
+}
+
+struct RosettaMetadata: Codable {
+    let metadata: [String: [RosettaMetadataValue]]?
+}
+
+struct RosettaMetadataValue: Codable {
+    let policyId: String?
 }
 
 struct RosettaCoinIdentifier: Codable {
