@@ -11,11 +11,29 @@ import Combine
 import TangemSdk
 
 public enum CardanoError: String, Error, LocalizedError {
-    case noUnspents = "cardano_missing_unspents"
-    case lowAda = "cardano_low_ada"
+    case noUnspents
+    case lowAda
      
     public var errorDescription: String? {
-        return self.rawValue.localized
+        switch self {
+        case .noUnspents:
+            return "generic_error_code".localized(errorCodeDescription)
+        case .lowAda:
+            return "cardano_low_ada".localized
+        }
+    }
+    
+    private var errorCodeDescription: String {
+        return "cardano_error \(errorCode)"
+    }
+    
+    private var errorCode: Int {
+        switch self {
+        case .noUnspents:
+            return 1
+        case .lowAda:
+            return 2
+        }
     }
 }
 

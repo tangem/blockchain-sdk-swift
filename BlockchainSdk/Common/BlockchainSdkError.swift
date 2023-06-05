@@ -9,10 +9,12 @@
 import Foundation
 
 public enum BlockchainSdkError: Int, LocalizedError {
-	case signatureCountNotMatched = 0
-	case failedToCreateMultisigScript = 1
-	case failedToConvertPublicKey = 2
-	case notImplemented = -1000
+    // WARNING: Make sure to preserve the error codes when removing or inserting errors
+    
+    case signatureCountNotMatched = 0
+    case failedToCreateMultisigScript = 1
+    case failedToConvertPublicKey = 2
+    case notImplemented = -1000
     case decodingFailed
     case failedToLoadFee
     case failedToLoadTxDetails
@@ -20,28 +22,24 @@ public enum BlockchainSdkError: Int, LocalizedError {
     case failedToFindTxInputs
     case feeForPushTxNotEnough
     case networkProvidersNotSupportsRbf
-    case wrongKey
-    case wrongDerivationPath
-	
-	public var errorDescription: String? {
-		switch self {
-		case .signatureCountNotMatched, .notImplemented:
-			// TODO: Replace with proper error message. Android sending instead of message just code, and client app decide what message to show to user
-			return "\(rawValue)"
+    
+    // WARNING: Make sure to preserve the error codes when removing or inserting errors
+    
+    public var errorDescription: String? {
+        switch self {
         case .failedToLoadFee:
-            return "failed_to_load_fee_error".localized
-        case .failedToFindTransaction:
-            return "failed_to_find_transaction".localized
-        case .failedToFindTxInputs:
-            return "failed_to_find_tx_inputs".localized
-        case .feeForPushTxNotEnough:
-            return "fee_for_push_tx_not_enough".localized
-        case .networkProvidersNotSupportsRbf:
-            return "network_providers_not_supports_rbf".localized
+            return "common_fee_error".localized
+        case .signatureCountNotMatched, .notImplemented:
+            // TODO: Replace with proper error message. Android sending instead of message just code, and client app decide what message to show to user
+            return "generic_error_code".localized(errorCodeDescription)
 		default:
-			return "\(rawValue)"
+			return "generic_error_code".localized(errorCodeDescription)
 		}
 	}
+    
+    private var errorCodeDescription: String {
+        "blockchain_sdk_error \(rawValue)"
+    }
 }
 
 public enum NetworkServiceError: Error {
