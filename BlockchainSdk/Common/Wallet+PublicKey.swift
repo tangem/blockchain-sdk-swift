@@ -13,16 +13,17 @@ extension Wallet {
     public struct PublicKey: Codable, Hashable {
         public let seedKey: Data
         public let derivation: Derivation
-                
-        public var derivedKey: ExtendedPublicKey? {
+
+        /// Derived or non-derived key that should be used to create an address in a blockchain
+        public var blockchainKey: Data {
             switch derivation {
             case .none:
-                return nil
+                return seedKey
             case .derivation(_, let derivedKey):
-                return derivedKey
+                return derivedKey.publicKey
             }
         }
-        
+
         public var derivationPath: DerivationPath? {
             switch derivation {
             case .none:
@@ -31,14 +32,13 @@ extension Wallet {
                 return path
             }
         }
-        
-        /// Derived or non-derived key that should be used to create an address in a blockchain
-        public var blockchainKey: Data {
+
+        public func xpubKey(isTestnet: Bool) -> String? {
             switch derivation {
             case .none:
-                return seedKey
+                return nil
             case .derivation(_, let derivedKey):
-                return derivedKey.publicKey
+                return try? derivedKey.serialize(for: isTestnet ? .testnet : .mainnet)
             }
         }
         

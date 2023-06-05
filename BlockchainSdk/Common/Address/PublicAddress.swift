@@ -14,8 +14,4 @@ public struct PublicAddress: Address {
     public let type: AddressType
     
     public var localizedName: String { type.defaultLocalizedName }
-
-    public func xpubKey(isTestnet: Bool) -> String? {
-        try? publicKey.derivedKey?.serialize(for: isTestnet ? .testnet : .mainnet)
-    }
 }

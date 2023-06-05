@@ -61,12 +61,12 @@ public struct Wallet {
 
     @available(*, deprecated, message: "Use xpubKeys with each address support")
     public var xpubKey: String? {
-        defaultAddress.xpubKey(isTestnet: blockchain.isTestnet)
+        defaultAddress.publicKey.xpubKey(isTestnet: blockchain.isTestnet)
     }
     
     public var xpubKeys: [String] {
         walletAddresses
-            .compactMapValues { $0.xpubKey(isTestnet: blockchain.isTestnet) }
+            .compactMapValues { $0.publicKey.xpubKey(isTestnet: blockchain.isTestnet) }
             .map { $0.value }
     }
     
