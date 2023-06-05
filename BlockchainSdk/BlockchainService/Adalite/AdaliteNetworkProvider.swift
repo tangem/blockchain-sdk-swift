@@ -38,7 +38,10 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
 
                 return self.getBalance(addresses: addresses)
                     .map { balanceResponse -> CardanoAddressResponse in
-                        let balance = balanceResponse.reduce(0, { $0 + $1.balance })
+                        // We should calculate the balance from outputs
+                        // Because they don't contain tokens
+                        var balance = unspents.reduce(0, { $0 + $1.amount })
+                        balance /= Blockchain.cardano(shelley: false).decimalValue
                         let txHashes = balanceResponse.reduce([], { $0 + $1.transactions })
                         return CardanoAddressResponse(balance: balance, recentTransactionsHashes: txHashes, unspentOutputs: unspents)
                     }
@@ -57,7 +60,7 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
                 guard let unspentOutputs = response.right else {
                     throw response.left ?? WalletError.empty
                 }
-                
+
                 return unspentOutputs.compactMap { output -> CardanoUnspentOutput? in
                     // We need to ignore unspents with tokens (until we start supporting tokens)
                     guard output.cuCoins.getTokens.isEmpty else {
