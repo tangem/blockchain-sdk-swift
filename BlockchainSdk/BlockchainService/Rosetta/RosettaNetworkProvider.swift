@@ -31,15 +31,15 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     }
     
     func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
-        typealias Response = (balance: RosettaBalanceResponse, coins: RosettaCoinsResponse, address: String)
+        typealias Response = (coins: RosettaCoinsResponse, address: String)
         
         return AnyPublisher<Response, Error>.multiAddressPublisher(addresses: addresses) { [weak self] address -> AnyPublisher<Response, Error> in
             guard let self else {
                 return .emptyFail
             }
             
-            return Publishers.Zip(balancePublisher(for: address), coinsPublisher(for: address))
-                .map { (balance: $0, coins: $1, address: address) }
+            return coinsPublisher(for: address)
+                .map { (coins: $0, address: address) }
                 .eraseToAnyPublisher()
         }
         .tryMap { [weak self] responses -> CardanoAddressResponse in
@@ -50,18 +50,10 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
             let unspentOutputs = responses.flatMap {
                 self.mapToCardanoUnspentOutput(response: $0.coins, address: $0.address)
             }
-            
-            let balances = responses.flatMap { $0.balance.balances ?? [] }
-            var balance: Decimal = balances.reduce(0) { result, balance in
-                // Calculate only coin balances
-                guard balance.currency?.symbol == self.cardanoCurrencySymbol,
-                      let value = Decimal(balance.value) else {
-                    return result
-                }
-                
-                return result + value
-            }
-            
+
+            // We should calculate the balance from outputs
+            // Because they don't contain tokens
+            var balance = unspentOutputs.reduce(0) { $0 + $1.amount }
             balance = balance / Blockchain.cardano(shelley: false).decimalValue
             
             return CardanoAddressResponse(balance: balance, recentTransactionsHashes: [], unspentOutputs: unspentOutputs)
@@ -118,7 +110,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
                                         outputIndex: index,
                                         transactionHash: String(splittedIdentifier[0]))
         }
-        
+
         return outputs
     }
 }
