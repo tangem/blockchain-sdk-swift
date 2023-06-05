@@ -18,14 +18,10 @@ public enum ETHError: Error, LocalizedError, DetailedError {
     
     public var errorDescription: String? {
         switch self {
-        case .failedToParseTxCount:
-            return "eth_tx_count_parse_error".localized
-        case .failedToParseBalance:
-            return "eth_balance_parse_error".localized
+        case .failedToParseTxCount, .failedToParseBalance, .failedToParseAllowance:
+            return "generic_error_code".localized(errorCodeDescription)
         case .failedToParseGasLimit: // TODO: refactor
-            return "failedToParseGasLimit"
-        case .failedToParseAllowance:
-            return "failedToParseAllowance"
+            return "generic_error_code".localized(errorCodeDescription)
         case .gasRequiredExceedsAllowance:
             return "eth_gas_required_exceeds_allowance".localized
         case .unsupportedFeature:
@@ -39,6 +35,27 @@ public enum ETHError: Error, LocalizedError, DetailedError {
             return "value:\(value), address:\(address), decimals:\(decimals)"
         default:
             return nil
+        }
+    }
+    
+    private var errorCodeDescription: String {
+        "eth_error \(errorCode)"
+    }
+    
+    private var errorCode: Int {
+        switch self {
+        case .failedToParseTxCount:
+            return 1
+        case .failedToParseBalance:
+            return 2
+        case .failedToParseGasLimit:
+            return 3
+        case .failedToParseAllowance:
+            return 4
+        case .gasRequiredExceedsAllowance:
+            return 5
+        case .unsupportedFeature:
+            return 6
         }
     }
 }

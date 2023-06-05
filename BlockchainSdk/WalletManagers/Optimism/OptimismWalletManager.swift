@@ -13,15 +13,6 @@ import Moya
 import web3swift
 
 class OptimismWalletManager: EthereumWalletManager {
-    private let contractInteractor: ContractInteractor<OptimismSmartContract>
-    
-    init(wallet: Wallet, rpcURL: URL) {
-        let contract = OptimismSmartContract(rpcURL: rpcURL)
-        self.contractInteractor = ContractInteractor(contract: contract)
-        
-        super.init(wallet: wallet)
-    }
-    
     /// We are override this method to combine the two fee's layers in the `Optimistic-Ethereum` network.
     /// Read more:
     /// https://community.optimism.io/docs/developers/build/transaction-fees/#the-l1-data-fee
@@ -89,20 +80,21 @@ private extension OptimismWalletManager {
         guard let rlpEncodedTransactionData = transaction.encodeForSend() else {
             return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
         }
-        
-        let data = rlpEncodedTransactionData.hexString.addHexPrefix()
-        return contractInteractor
-            .read(method: .getL1Fee(data: data))
+
+        return networkService
+            .read(target: OptimismSmartContractTarget.getL1Fee(data: rlpEncodedTransactionData))
             .tryMap { [wallet] response in
-                guard let decimalFee = Decimal(string: "\(response)") else {
+                guard let value = EthereumUtils.parseEthereumDecimal(response, decimalsCount: wallet.blockchain.decimalCount) else {
                     throw BlockchainSdkError.failedToLoadFee
                 }
                 
-                let blockchain = wallet.blockchain
-                let fee = decimalFee / blockchain.decimalValue
-                
-                return fee
+                return value
             }
+            // We can ignore errors so as not to block users
+            // This L1Fee value is only needed to inform users. It will not used in the transaction
+            // Unfortunately L1 fee doesn't work well
+            .replaceError(with: 0)
+            .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
 }

@@ -18,6 +18,12 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     
     private let provider: NetworkProvider<RosettaTarget>
     private let baseUrl: RosettaUrl
+    private let cardanoCurrencySymbol: String = Blockchain.cardano(shelley: false).currencySymbol
+    private var decoder: JSONDecoder {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        return decoder
+    }
     
     init(baseUrl: RosettaUrl, configuration: NetworkProviderConfiguration) {
         self.baseUrl = baseUrl
@@ -25,44 +31,32 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     }
     
     func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
-        AnyPublisher<(RosettaBalanceResponse, RosettaCoinsResponse, String), Error>
-            .multiAddressPublisher(addresses: addresses, requestFactory: {[weak self] (address: String)
-                -> AnyPublisher<(RosettaBalanceResponse, RosettaCoinsResponse, String), Error> in
-            guard let self = self else { return .emptyFail }
-            
-            return Publishers.Zip(self.balancePublisher(for: address), self.coinsPublisher(for: address))
-                .map {($0, $1, address)}
-                .eraseToAnyPublisher()
-        })
-        .map { (responses: [(RosettaBalanceResponse, RosettaCoinsResponse, String)]) -> CardanoAddressResponse in
-            let cardanoCurrencySymbol = "ADA"
-            var balance = Decimal(0)
-            var unspentOutputs = [CardanoUnspentOutput]()
-            
-            responses.forEach { (balanceResponse, coinsResponse, address) in
-                coinsResponse.coins?.forEach { coin in
-                    if coin.amount?.currency?.symbol == cardanoCurrencySymbol,
-                       let splittedIdentifier = coin.coinIdentifier?.identifier?.split(separator: ":"),
-                       splittedIdentifier.count == 2,
-                       let index = Int(splittedIdentifier[1]) {
-                        unspentOutputs.append(CardanoUnspentOutput(address: address,
-                                                                   amount: coin.amount?.valueDecimal ?? 0,
-                                                                   outputIndex: index,
-                                                                   transactionHash: String(splittedIdentifier[0])))
-                    }
-                }
-                balanceResponse.balances?.forEach { b in
-                    if b.currency?.symbol == cardanoCurrencySymbol {
-                        balance += b.valueDecimal ?? 0
-                    }
-                }
+        typealias Response = (coins: RosettaCoinsResponse, address: String)
+        
+        return AnyPublisher<Response, Error>.multiAddressPublisher(addresses: addresses) { [weak self] address -> AnyPublisher<Response, Error> in
+            guard let self else {
+                return .emptyFail
             }
             
+            return coinsPublisher(for: address)
+                .map { (coins: $0, address: address) }
+                .eraseToAnyPublisher()
+        }
+        .tryMap { [weak self] responses -> CardanoAddressResponse in
+            guard let self else {
+                throw WalletError.empty
+            }
+            
+            let unspentOutputs = responses.flatMap {
+                self.mapToCardanoUnspentOutput(response: $0.coins, address: $0.address)
+            }
+
+            // We should calculate the balance from outputs
+            // Because they don't contain tokens
+            var balance = unspentOutputs.reduce(0) { $0 + $1.amount }
             balance = balance / Blockchain.cardano(shelley: false).decimalValue
             
-            return CardanoAddressResponse(balance: balance,
-                                          recentTransactionsHashes: [],
-                                          unspentOutputs: unspentOutputs)
+            return CardanoAddressResponse(balance: balance, recentTransactionsHashes: [], unspentOutputs: unspentOutputs)
         }
         .eraseToAnyPublisher()
     }
@@ -72,21 +66,11 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
             [CBOR.utf8String(transaction.toHexString())]
         ).encode().toHexString()
         
-        return provider.requestPublisher(.submitTransaction(baseUrl: baseUrl,
-                                                            submitBody: RosettaSubmitBody(networkIdentifier: .mainNet,
-                                                                                          signedTransaction: txHex)))
-            .mapNotEmptyString()
-            .tryMap{(resp: String) -> String in
-                guard let data = resp.data(using: .utf8) else {
-                    throw WalletError.failedToParseNetworkResponse
-                }
-                
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                
-                let submitResponse = try decoder.decode(RosettaSubmitResponse.self, from: data)
-                return submitResponse.transactionIdentifier.hash ?? ""
-            }
+        let submitBody = RosettaSubmitBody(networkIdentifier: .mainNet, signedTransaction: txHex)
+        return provider.requestPublisher(.submitTransaction(baseUrl: baseUrl, submitBody: submitBody))
+            .map(RosettaSubmitResponse.self, using: decoder)
+            .eraseError()
+            .map { $0.transactionIdentifier.hash ?? "" }
             .eraseToAnyPublisher()
     }
     
@@ -95,17 +79,8 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
             .requestPublisher(.address(baseUrl: self.baseUrl,
                                        addressBody: RosettaAddressBody(networkIdentifier: .mainNet,
                                                                        accountIdentifier: RosettaAccountIdentifier(address: address))))
-            .mapNotEmptyString()
-            .tryMap {(response: String) -> RosettaBalanceResponse in
-                guard let data = response.data(using: .utf8) else {
-                    throw WalletError.failedToParseNetworkResponse
-                }
-                
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                
-                return try decoder.decode(RosettaBalanceResponse.self, from: data)
-            }
+            .map(RosettaBalanceResponse.self, using: decoder)
+            .eraseError()
             .eraseToAnyPublisher()
     }
     
@@ -114,17 +89,28 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
             .requestPublisher(.coins(baseUrl: self.baseUrl,
                                      addressBody: RosettaAddressBody(networkIdentifier: .mainNet,
                                                                      accountIdentifier: RosettaAccountIdentifier(address: address))))
-            .mapNotEmptyString()
-            .tryMap {(response: String) -> RosettaCoinsResponse in
-                guard let data = response.data(using: .utf8) else {
-                    throw WalletError.failedToParseNetworkResponse
-                }
-                
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                
-                return try decoder.decode(RosettaCoinsResponse.self, from: data)
-            }
+            .map(RosettaCoinsResponse.self, using: decoder)
+            .eraseError()
             .eraseToAnyPublisher()
+    }
+    
+    private func mapToCardanoUnspentOutput(response: RosettaCoinsResponse, address: String) -> [CardanoUnspentOutput] {
+        let coins = response.coins ?? []
+        let outputs: [CardanoUnspentOutput] = coins.compactMap { coin -> CardanoUnspentOutput? in
+            guard coin.amount?.currency?.symbol == cardanoCurrencySymbol,
+                  coin.metadata == nil, // filter tokens while we don't support them
+                  let splittedIdentifier = coin.coinIdentifier?.identifier?.split(separator: ":"),
+                  splittedIdentifier.count == 2,
+                  let index = Int(splittedIdentifier[1]) else {
+                return nil
+            }
+            
+            return CardanoUnspentOutput(address: address,
+                                        amount: Decimal(coin.amount?.value) ?? 0,
+                                        outputIndex: index,
+                                        transactionHash: String(splittedIdentifier[0]))
+        }
+
+        return outputs
     }
 }

@@ -15,8 +15,6 @@ public enum WalletError: Error, LocalizedError {
     case failedToParseNetworkResponse
     case failedToSendTx
     case failedToCalculateTxSize
-    case failedToLoadTokenBalance(token: Token)
-    case cancelled
     case empty
     
     public var errorDescription: String? {
@@ -27,18 +25,35 @@ public enum WalletError: Error, LocalizedError {
             return "common_fee_error".localized
         case .failedToBuildTx:
             return "common_build_tx_error".localized
-        case .failedToParseNetworkResponse:
-            return "common_parse_network_response_error".localized
         case .failedToSendTx:
             return "common_send_tx_error".localized
-        case .failedToCalculateTxSize:
-            return "common_estimate_tx_size_error".localized
-        case let .failedToLoadTokenBalance(token):
-            return String(format: "common_failed_to_load_token_balance".localized, token.name)
-        case .cancelled:
-            return "common_cancelled".localized
         case .empty:
             return "Empty"
+        case .failedToCalculateTxSize, .failedToParseNetworkResponse:
+            return "generic_error_code".localized(errorCodeDescription)
+        }
+    }
+    
+    private var errorCodeDescription: String {
+        return "wallet_error \(errorCode)"
+    }
+    
+    private var errorCode: Int {
+        switch self {
+        case .noAccount:
+            return 1
+        case .failedToGetFee:
+            return 2
+        case .failedToBuildTx:
+            return 3
+        case .failedToParseNetworkResponse:
+            return 4
+        case .failedToSendTx:
+            return 5
+        case .failedToCalculateTxSize:
+            return 6
+        case .empty:
+            return 7
         }
     }
 }

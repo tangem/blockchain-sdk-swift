@@ -29,7 +29,7 @@ struct EthereumTarget: TargetType {
             "method": ethMethod,
             "id": EthereumTarget.coinId
         ]
-        
+
         var params: [Any] = []
         switch targetType {
         case .balance(let address), .transactions(let address), .pending(let address):
@@ -57,6 +57,9 @@ struct EthereumTarget: TargetType {
             params.append(gasLimitParams)
         case .gasPrice:
             break
+        case .read(let contractAddress, let encodedData):
+            let dataValue = ["to": contractAddress, "data": encodedData]
+            params.append(dataValue)
         }
         
         if let blockParams = blockParams {
@@ -78,7 +81,7 @@ struct EthereumTarget: TargetType {
         case .balance: return "eth_getBalance"
         case .transactions, .pending: return "eth_getTransactionCount"
         case .send: return "eth_sendRawTransaction"
-        case .tokenBalance, .getAllowance: return "eth_call"
+        case .tokenBalance, .getAllowance, .read: return "eth_call"
         case .gasLimit: return "eth_estimateGas"
         case .gasPrice: return "eth_gasPrice"
         }
@@ -86,7 +89,7 @@ struct EthereumTarget: TargetType {
     
     private var blockParams: String? {
         switch targetType {
-        case .balance, .transactions, .tokenBalance, .getAllowance: return "latest"
+        case .balance, .transactions, .tokenBalance, .getAllowance, .read: return "latest"
         case .pending: return "pending"
         case .send, .gasLimit, .gasPrice: return nil
         }
@@ -103,5 +106,6 @@ extension EthereumTarget {
         case getAllowance(from: String, to: String, contractAddress: String)
         case gasLimit(to: String, from: String, value: String?, data: String?)
         case gasPrice
+        case read(contractAddress: String, encodedData: String)
     }
 }

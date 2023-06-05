@@ -25,6 +25,10 @@ class EthereumJsonRpcProvider: HostProvider {
         provider = NetworkProvider<EthereumTarget>(configuration: configuration)
     }
     
+    func read(contractAddress: String, encodedData: String) -> AnyPublisher<EthereumResponse, Error> {
+        return requestPublisher(for: .read(contractAddress: contractAddress, encodedData: encodedData))
+    }
+    
     func getBalance(for address: String) -> AnyPublisher<EthereumResponse, Error> {
         requestPublisher(for: .balance(address: address))
     }
