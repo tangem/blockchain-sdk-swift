@@ -157,7 +157,6 @@
 		5DC7DD6824408266008F83F2 /* XrpResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC7DD6724408266008F83F2 /* XrpResponse.swift */; };
 		5DCC817623FAE6D500DFC460 /* AnyPublisher+Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCC817523FAE6D500DFC460 /* AnyPublisher+Response.swift */; };
 		5DCC817823FAE6F700DFC460 /* MoyaPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCC817723FAE6F700DFC460 /* MoyaPublisher.swift */; };
-		5DD1244427F458CE000425D3 /* DerivationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD1244327F458CE000425D3 /* DerivationStyle.swift */; };
 		5DD831BC244DF5BD00F80CEA /* AddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD831BB244DF5BD00F80CEA /* AddressService.swift */; };
 		5DE3BF9E239FA2F400E8815D /* SegWitBech32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE3BF9D239FA2F400E8815D /* SegWitBech32.swift */; };
 		5DE3BFA0239FA33800E8815D /* Bech32.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE3BF9F239FA33800E8815D /* Bech32.swift */; };
@@ -312,6 +311,12 @@
 		EF332D17288EACB000AE3C85 /* HostProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D16288EACB000AE3C85 /* HostProvider.swift */; };
 		EF332D19288EAEAC00AE3C85 /* NetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D18288EAEAC00AE3C85 /* NetworkProvider.swift */; };
 		EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */; };
+		EF57BEC82A1E13BE00C2A493 /* DerivationConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BEC72A1E13BE00C2A493 /* DerivationConfig.swift */; };
+		EF57BED62A1E19E800C2A493 /* DerivationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BED52A1E19E700C2A493 /* DerivationStyle.swift */; };
+		EF57BED82A1E624100C2A493 /* DerivationConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BED72A1E624100C2A493 /* DerivationConfigV1.swift */; };
+		EF57BEDA2A1E625400C2A493 /* DerivationConfigV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BED92A1E625400C2A493 /* DerivationConfigV2.swift */; };
+		EF57BEDC2A1E626700C2A493 /* DerivationConfigV3.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BEDB2A1E626700C2A493 /* DerivationConfigV3.swift */; };
+		EF57BEE32A1E682D00C2A493 /* Blockchain+AllCases.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BEE22A1E682D00C2A493 /* Blockchain+AllCases.swift */; };
 		EF3FFFFD2A27740400C6E7D9 /* AdaliteUnspentOutputResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3FFFFA2A27740400C6E7D9 /* AdaliteUnspentOutputResponseDTO.swift */; };
 		EF3FFFFE2A27740400C6E7D9 /* AdaliteBalanceResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3FFFFB2A27740400C6E7D9 /* AdaliteBalanceResponseDTO.swift */; };
 		EF3FFFFF2A27740400C6E7D9 /* AdaliteBaseResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3FFFFC2A27740400C6E7D9 /* AdaliteBaseResponseDTO.swift */; };
@@ -523,7 +528,6 @@
 		5DC7DD6724408266008F83F2 /* XrpResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XrpResponse.swift; sourceTree = "<group>"; };
 		5DCC817523FAE6D500DFC460 /* AnyPublisher+Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyPublisher+Response.swift"; sourceTree = "<group>"; };
 		5DCC817723FAE6F700DFC460 /* MoyaPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoyaPublisher.swift; sourceTree = "<group>"; };
-		5DD1244327F458CE000425D3 /* DerivationStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationStyle.swift; sourceTree = "<group>"; };
 		5DD1935D25557EC2004AE04D /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5DD831BB244DF5BD00F80CEA /* AddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressService.swift; sourceTree = "<group>"; };
 		5DE3BF9D239FA2F400E8815D /* SegWitBech32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegWitBech32.swift; sourceTree = "<group>"; };
@@ -685,6 +689,12 @@
 		EF332D16288EACB000AE3C85 /* HostProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostProvider.swift; sourceTree = "<group>"; };
 		EF332D18288EAEAC00AE3C85 /* NetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProvider.swift; sourceTree = "<group>"; };
 		EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProviderConfiguration.swift; sourceTree = "<group>"; };
+		EF57BEC72A1E13BE00C2A493 /* DerivationConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationConfig.swift; sourceTree = "<group>"; };
+		EF57BED52A1E19E700C2A493 /* DerivationStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DerivationStyle.swift; sourceTree = "<group>"; };
+		EF57BED72A1E624100C2A493 /* DerivationConfigV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationConfigV1.swift; sourceTree = "<group>"; };
+		EF57BED92A1E625400C2A493 /* DerivationConfigV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationConfigV2.swift; sourceTree = "<group>"; };
+		EF57BEDB2A1E626700C2A493 /* DerivationConfigV3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationConfigV3.swift; sourceTree = "<group>"; };
+		EF57BEE22A1E682D00C2A493 /* Blockchain+AllCases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Blockchain+AllCases.swift"; sourceTree = "<group>"; };
 		EF3FFFFA2A27740400C6E7D9 /* AdaliteUnspentOutputResponseDTO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdaliteUnspentOutputResponseDTO.swift; sourceTree = "<group>"; };
 		EF3FFFFB2A27740400C6E7D9 /* AdaliteBalanceResponseDTO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdaliteBalanceResponseDTO.swift; sourceTree = "<group>"; };
 		EF3FFFFC2A27740400C6E7D9 /* AdaliteBaseResponseDTO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdaliteBaseResponseDTO.swift; sourceTree = "<group>"; };
@@ -938,12 +948,14 @@
 				5D5E058A24FE736E00F04DE1 /* Localizations */,
 				B0A1D39B2625A10B0013F0BF /* Utils */,
 				2DDE5B8E29C4F8D200A5B708 /* WalletAssembly */,
+				EF57BEC22A1CE40800C2A493 /* Derivations */,
 				5D006ACC239950F9008BA04D /* Wallet.swift */,
 				5DEAFA932444C5300032E316 /* Token.swift */,
 				2DC5DAB329B9E6A10039154A /* WalletCoreSigner.swift */,
 				5DEAFA8D244472CD0032E316 /* Amount.swift */,
 				5DEAFA8F244473460032E316 /* Transaction.swift */,
 				5D14E4902397B87000C15FC8 /* Blockchain.swift */,
+				EF57BEE22A1E682D00C2A493 /* Blockchain+AllCases.swift */,
 				5D304393239A6A6B0066B8D9 /* WalletManagerFactory.swift */,
 				B056729A2570F9DC00A8CB59 /* BlockchainSdkError.swift */,
 				5DEC90C02587A35800826C95 /* BlockchainSdkConfig.swift */,
@@ -952,7 +964,6 @@
 				5D88838827D3BB8B008744E1 /* WalletError.swift */,
 				5D31EA2E27DA1C910031DBEB /* DetailedError.swift */,
 				5D88838A27D3BBDA008744E1 /* BaseManager.swift */,
-				5DD1244327F458CE000425D3 /* DerivationStyle.swift */,
 				2DDE5B8D29C4F8D200A5B708 /* BlockBookProviderType.swift */,
 				2DDE5B8C29C4F8D200A5B708 /* NetworkProviderAssembly.swift */,
 				2DDE5B9E29C4F8D200A5B708 /* WalletManagerAssembly.swift */,
@@ -1727,6 +1738,19 @@
 			path = API;
 			sourceTree = "<group>";
 		};
+		EF57BEC22A1CE40800C2A493 /* Derivations */ = {
+			isa = PBXGroup;
+			children = (
+				EF57BED52A1E19E700C2A493 /* DerivationStyle.swift */,
+				EF57BEC72A1E13BE00C2A493 /* DerivationConfig.swift */,
+				EF57BED72A1E624100C2A493 /* DerivationConfigV1.swift */,
+				EF57BED92A1E625400C2A493 /* DerivationConfigV2.swift */,
+				EF57BEDB2A1E626700C2A493 /* DerivationConfigV3.swift */,
+			);
+			name = Derivations;
+			path = BlockchainSdk/Common/Derivations;
+			sourceTree = SOURCE_ROOT;
+		};
 		EF3FFFF92A27740400C6E7D9 /* DTOs */ = {
 			isa = PBXGroup;
 			children = (
@@ -2080,6 +2104,7 @@
 				5DC7DD64244077E4008F83F2 /* XRPTransactionBuilder.swift in Sources */,
 				EF666C202A288AEF0044986F /* AdaliteTokenDTO.swift in Sources */,
 				DA63B09D29CB3FC700AC6E49 /* KaspaNetworkService.swift in Sources */,
+				EF57BED62A1E19E800C2A493 /* DerivationStyle.swift in Sources */,
 				2DDE5BA929C4F8D200A5B708 /* LitecoinWalletAssembly.swift in Sources */,
 				DAF0867027A9438C0024312E /* PolkadotNetworkService.swift in Sources */,
 				DA9F76E927EC8AEB00F0665C /* TronAddressService.swift in Sources */,
@@ -2088,6 +2113,7 @@
 				2DDE5BB029C4F8D200A5B708 /* WalletManagerAssembly.swift in Sources */,
 				5D304390239A58C90066B8D9 /* BitcoinWalletManager.swift in Sources */,
 				5D4B33DA23FAAD1B00C93A84 /* BitcoreResponse.swift in Sources */,
+				EF57BEE32A1E682D00C2A493 /* Blockchain+AllCases.swift in Sources */,
 				EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */,
 				EF3FFFFE2A27740400C6E7D9 /* AdaliteBalanceResponseDTO.swift in Sources */,
 				DA2E770029769BF6001FF957 /* TransactionCreator.swift in Sources */,
@@ -2116,6 +2142,7 @@
 				B0C34958267B83580027CC9D /* BitcoinModels.swift in Sources */,
 				DA63B0A029CB3FC700AC6E49 /* KaspaAddressComponents.swift in Sources */,
 				DA30812B2817BF3C00DE41F1 /* Tron.pb.swift in Sources */,
+				EF57BED82A1E624100C2A493 /* DerivationConfigV1.swift in Sources */,
 				5D4B33C823F72F2700C93A84 /* BitcoinCashWalletManager.swift in Sources */,
 				5D26CEF1243CB9EA00994CC0 /* BlockchainInfoResponse.swift in Sources */,
 				EF332D19288EAEAC00AE3C85 /* NetworkProvider.swift in Sources */,
@@ -2144,7 +2171,6 @@
 				EF0DA78C285246A90081092A /* DashMainNetworkParams.swift in Sources */,
 				DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */,
 				5D7D243225136254001B9A4F /* XRPWallet.swift in Sources */,
-				5DD1244427F458CE000425D3 /* DerivationStyle.swift in Sources */,
 				EF2BC62929DAD93A003D3F18 /* RavencoinWalletUTXO.swift in Sources */,
 				DA60AF1229E8308E0013F5AC /* CosmosWalletAssembly.swift in Sources */,
 				5D845514243DEABB0072155E /* AdaliteResponse.swift in Sources */,
@@ -2210,6 +2236,7 @@
 				EFD32AE429E9B7800026353E /* RavencoinTransactionHistory.swift in Sources */,
 				5D86540023A906DF000DE52D /* CommonSigner.swift in Sources */,
 				DAB6548D2796C5F00002A5E8 /* SolanaTransactionSigner.swift in Sources */,
+				EF57BEDC2A1E626700C2A493 /* DerivationConfigV3.swift in Sources */,
 				5D54FE1E23E4313A009FAC2F /* LitecoinWalletManager.swift in Sources */,
 				2DDE5BA629C4F8D200A5B708 /* CardanoWalletAssembly.swift in Sources */,
 				5D557CAE23AA771E009B32AF /* EthereumNetworkService.swift in Sources */,
@@ -2315,6 +2342,7 @@
 				DA63B09F29CB3FC700AC6E49 /* KaspaAddressService.swift in Sources */,
 				DA656FCA295454C10092CC61 /* Constants.swift in Sources */,
 				DAF3AD4629E916D300E057FA /* CosmosFeeParameters.swift in Sources */,
+				EF57BEC82A1E13BE00C2A493 /* DerivationConfig.swift in Sources */,
 				DA198B5B29E3FF4F00DB6EEA /* CosmosTarget.swift in Sources */,
 				5D304399239A8C9C0066B8D9 /* BitcoinAddressService.swift in Sources */,
 				EF31EA1629DC31E000A59FBE /* RavencoinWalletManager.swift in Sources */,
@@ -2345,6 +2373,7 @@
 				5D7D243A25136254001B9A4F /* Extensions.swift in Sources */,
 				DA63B0A429CB402A00AC6E49 /* KaspaWalletAssembly.swift in Sources */,
 				DA82433D27A2B06500CFC2C0 /* PolkadotJsonRpcProvider.swift in Sources */,
+				EF57BEDA2A1E625400C2A493 /* DerivationConfigV2.swift in Sources */,
 				B00FBEDA2996A1B700FDB874 /* BlockscoutTarget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

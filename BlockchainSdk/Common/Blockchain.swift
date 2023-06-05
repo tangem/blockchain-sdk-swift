@@ -508,84 +508,34 @@ extension Blockchain {
 // MARK: - Address creation
 @available(iOS 13.0, *)
 extension Blockchain {
+    @available(*, deprecated, message: "Use derivationPaths(for:)")
     public func derivationPath(for style: DerivationStyle = .legacy) -> DerivationPath? {
-        guard curve == .secp256k1 || curve == .ed25519 else { return  nil }
-        
-        switch self {
-        case .stellar, .solana:
-            //Path according to sep-0005. https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md
-            // Solana path consistent with TrustWallet:
-            // https://github.com/trustwallet/wallet-core/blob/456f22d6a8ce8a66ccc73e3b42bcfec5a6afe53a/registry.json#L1013
-            return DerivationPath(nodes: [.hardened(BIP44.purpose),
-                                          .hardened(coinType(for: style)),
-                                          .hardened(0)])
-        case .cardano(let shelley):
-            if !shelley { //We use shelley for all new cards with HD wallets feature
-                return nil
-            }
-            
-            //Path according to CIP-1852. https://cips.cardano.org/cips/cip1852/
-            return DerivationPath(nodes: [.hardened(1852), //purpose
-                                          .hardened(coinType(for: style)),
-                                          .hardened(0),
-                                          .nonHardened(0),
-                                          .nonHardened(0)])
-        default:
-            //Standart bip44
-            let bip44 = BIP44(coinType: coinType(for: style),
-                              account: 0,
-                              change: .external,
-                              addressIndex: 0)
-            
-            return bip44.buildPath()
+        guard curve == .secp256k1 || curve == .ed25519 else {
+            return nil
         }
+        
+        if isTestnet {
+            return BIP44(coinType: 1).buildPath()
+        }
+        
+        guard let rawPath = style.provider.derivations(for: self)[.default] else {
+            return nil
+        }
+        
+        return try? DerivationPath(rawPath: rawPath)
     }
     
-    public func coinType(for style: DerivationStyle = .legacy) -> UInt32 {
+    public func derivationPaths(for style: DerivationStyle) -> [AddressType: DerivationPath] {
+        guard curve == .secp256k1 || curve == .ed25519 else {
+            return [:]
+        }
+        
         if isTestnet {
-            return 1
+            return [.default: BIP44(coinType: 1).buildPath()]
         }
         
-        let ethCoinType: UInt32 = 60
-        
-        if style == .new, isEvm {
-            return ethCoinType
-        }
-        
-        // https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-        switch self {
-        case .bitcoin, .ducatus: return 0
-        case .litecoin: return 2
-        case .dogecoin: return 3
-        case .ethereum, .ethereumPoW, .ethereumFair, .saltPay: return ethCoinType
-        case .ethereumClassic: return 61
-        case .bsc: return 9006
-        case .bitcoinCash: return 145
-        case .binance: return 714
-        case .xrp: return 144
-        case .tezos: return 1729
-        case .stellar: return 148
-        case .cardano: return 1815
-        case .rsk: return 137
-        case .polygon: return 966
-        case .avalanche: return 9000
-        case .solana: return 501
-        case .fantom: return 1007
-        case .polkadot: return 354
-        case .kusama: return 434
-        case .tron: return 195
-        case .arbitrum: return 9001
-        case .dash: return 5
-        case .gnosis: return 700
-        case .optimism: return 614
-        case .ton: return 607
-        case .kava: return 459
-        case .kaspa: return 111111
-        case .ravencoin: return 175
-        case .cosmos: return 118
-        case .terraV1, .terraV2: return 330
-        case .cronos: return 10000025
-        }
+        return style.provider.derivations(for: self)
+            .compactMapValues { try? DerivationPath(rawPath: $0) }
     }
     
     public func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data?) throws -> [Address] {
