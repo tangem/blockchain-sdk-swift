@@ -12,37 +12,22 @@ import TangemSdk
 extension Wallet {
     public struct PublicKey: Codable, Hashable {
         public let seedKey: Data
-        public let derivation: Derivation
+        public let derivation: Derivation?
 
         /// Derived or non-derived key that should be used to create an address in a blockchain
         public var blockchainKey: Data {
-            switch derivation {
-            case .none:
-                return seedKey
-            case .derivation(_, let derivedKey):
-                return derivedKey.publicKey
-            }
+            derivation?.derivedKey.publicKey ?? seedKey
         }
 
         public var derivationPath: DerivationPath? {
-            switch derivation {
-            case .none:
-                return nil
-            case .derivation(let path, _):
-                return path
-            }
+            derivation?.path
         }
 
         public func xpubKey(isTestnet: Bool) -> String? {
-            switch derivation {
-            case .none:
-                return nil
-            case .derivation(_, let derivedKey):
-                return try? derivedKey.serialize(for: isTestnet ? .testnet : .mainnet)
-            }
+            try? derivation?.derivedKey.serialize(for: isTestnet ? .testnet : .mainnet)
         }
         
-        public init(seedKey: Data, derivation: Derivation) {
+        public init(seedKey: Data, derivation: Derivation?) {
             self.seedKey = seedKey
             self.derivation = derivation
         }
@@ -50,8 +35,8 @@ extension Wallet {
 }
 
 extension Wallet.PublicKey {
-    public enum Derivation: Codable, Hashable {
-        case none
-        case derivation(path: DerivationPath, derivedKey: ExtendedPublicKey)
+    public struct Derivation: Codable, Hashable {
+        let path: DerivationPath
+        let derivedKey: ExtendedPublicKey
     }
 }

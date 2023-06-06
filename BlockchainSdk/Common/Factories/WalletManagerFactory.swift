@@ -51,17 +51,15 @@ public class WalletManagerFactory {
                                   derivedKey: ExtendedPublicKey,
                                   derivation derivationParams: DerivationParams) throws -> WalletManager {
         
-        let derivation: Wallet.PublicKey.Derivation
+        var derivation: Wallet.PublicKey.Derivation?
         
         switch derivationParams {
         case .default(let derivationStyle):
             if let derivationPath = blockchain.derivationPath(for: derivationStyle) {
-                derivation = .derivation(path: derivationPath, derivedKey: derivedKey)
-            } else {
-                derivation = .none
+                derivation = .init(path: derivationPath, derivedKey: derivedKey)
             }
         case .custom(let path):
-            derivation = .derivation(path: path, derivedKey: derivedKey)
+            derivation = .init(path: path, derivedKey: derivedKey)
         }
         
         let publicKey = Wallet.PublicKey(seedKey: seedKey, derivation: derivation)
