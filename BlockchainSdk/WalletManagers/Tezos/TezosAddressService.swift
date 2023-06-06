@@ -12,21 +12,26 @@ import stellarsdk
 import TangemSdk
 
 @available(iOS 13.0, *)
-public class TezosAddressService: AddressService {
+public struct TezosAddressService {
     private let curve: EllipticCurve
     
     init(curve: EllipticCurve) {
         self.curve = curve
     }
-    
-    public func makeAddress(from walletPublicKey: Data) throws -> String {
+}
+
+// MARK: - AddressProvider
+
+@available(iOS 13.0, *)
+extension TezosAddressService: AddressProvider {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
         var key: Data
         switch curve {
         case .ed25519:
-            try walletPublicKey.validateAsEdKey()
-            key = walletPublicKey
+            try publicKey.blockchainKey.validateAsEdKey()
+            key = publicKey.blockchainKey
         case .secp256k1:
-            key = try Secp256k1Key(with: walletPublicKey).compress()
+            key = try Secp256k1Key(with: publicKey.blockchainKey).compress()
         case .secp256r1:
             fatalError("Not implemented")
         default:
@@ -37,15 +42,22 @@ public class TezosAddressService: AddressService {
         let prefixedHash = prefix + publicKeyHash
         let checksum = prefixedHash.sha256().sha256().prefix(4)
         let prefixedHashWithChecksum = prefixedHash + checksum
-        return Base58.encode(prefixedHashWithChecksum)
+        let address = Base58.encode(prefixedHashWithChecksum)
+
+        return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
     }
-    
+}
+
+// MARK: - AddressValidator
+
+@available(iOS 13.0, *)
+extension TezosAddressService: AddressValidator {
     public func validate(_ address: String) -> Bool {
         let prefixedHashWithChecksum = address.base58DecodedData
         guard prefixedHashWithChecksum.count == 27 else {
             return false
         }
-        
+
         let prefixedHash = prefixedHashWithChecksum.prefix(23)
         let checksum = prefixedHashWithChecksum.suffix(from: 23)
         let calculatedChecksum = prefixedHash.sha256().sha256().prefix(4)

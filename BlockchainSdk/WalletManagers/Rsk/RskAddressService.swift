@@ -9,40 +9,8 @@
 import Foundation
 import TangemSdk
 
-public class RskAddressService: AddressService {
-    public func makeAddress(from walletPublicKey: Data) throws -> String {
-        //skip secp256k1 prefix
-        let walletPublicKey = try Secp256k1Key(with: walletPublicKey).decompress()
-        let keccak = walletPublicKey[1...].sha3(.keccak256)
-        let addressBytes = keccak[12...]
-        let hexAddressBytes = addressBytes.toHexString()
-        let address = "0x" + hexAddressBytes
-        return toChecksumAddress(address)!
-    }
-    
-    public func validate(_ address: String) -> Bool {
-        guard !address.isEmpty,
-              address.lowercased().starts(with: "0x"),
-              address.count == 42
-        else {
-            return false
-        }
-        
-       
-        if let checksummed = toChecksumAddress(address),
-           checksummed == address {
-            return true
-        } else {
-            let cleanHex = address.stripHexPrefix()
-            if cleanHex.lowercased() != cleanHex && cleanHex.uppercased() != cleanHex {
-                return false
-            }
-        }
-        
-        return true
-    }
-    
-    public func toChecksumAddress(_ address: String) -> String? {
+public struct RskAddressService {
+    private func toChecksumAddress(_ address: String) -> String? {
         let lowercasedAddress = address.lowercased()
         let addressToHash = "30\(lowercasedAddress)"
         guard let hash = addressToHash.data(using: .utf8)?.sha3(.keccak256).toHexString() else {
@@ -65,5 +33,46 @@ public class RskAddressService: AddressService {
         }
         return ret
     }
-    
+}
+
+// MARK: - AddressProvider
+
+@available(iOS 13.0, *)
+extension RskAddressService: AddressProvider {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
+        //skip secp256k1 prefix
+        let walletPublicKey = try Secp256k1Key(with: publicKey.blockchainKey).decompress()
+        let keccak = walletPublicKey[1...].sha3(.keccak256)
+        let addressBytes = keccak[12...]
+        let hexAddressBytes = addressBytes.toHexString()
+        let address = "0x" + hexAddressBytes
+        let checksumAddress = toChecksumAddress(address)!
+        return AddressPublicKeyPair(value: checksumAddress, publicKey: publicKey, type: addressType)
+    }
+}
+
+// MARK: - AddressValidator
+
+@available(iOS 13.0, *)
+extension RskAddressService: AddressValidator {
+    public func validate(_ address: String) -> Bool {
+        guard !address.isEmpty,
+              address.lowercased().starts(with: "0x"),
+              address.count == 42
+        else {
+            return false
+        }
+
+        if let checksummed = toChecksumAddress(address),
+           checksummed == address {
+            return true
+        } else {
+            let cleanHex = address.stripHexPrefix()
+            if cleanHex.lowercased() != cleanHex && cleanHex.uppercased() != cleanHex {
+                return false
+            }
+        }
+
+        return true
+    }
 }

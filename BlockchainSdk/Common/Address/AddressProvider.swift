@@ -12,10 +12,10 @@ public protocol AddressProvider {
     func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair
 }
 
-extension AddressService {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
-        let address = try makeAddress(from: publicKey.blockchainKey)
-        
-        return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
-    }
-}
+//extension AddressService {
+//    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
+//        let address = try makeAddress(from: publicKey.blockchainKey)
+//        
+//        return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
+//    }
+//}

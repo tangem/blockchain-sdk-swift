@@ -9,15 +9,27 @@
 import Foundation
 import stellarsdk
 
-public class StellarAddressService: AddressService {
-    public func makeAddress(from walletPublicKey: Data) throws -> String {
-        try walletPublicKey.validateAsEdKey()
-        
-        let publicKey = try PublicKey(Array(walletPublicKey))
-        let keyPair = KeyPair(publicKey: publicKey)
-        return keyPair.accountId
+public struct StellarAddressService {}
+
+// MARK: - AddressProvider
+
+@available(iOS 13.0, *)
+extension StellarAddressService: AddressProvider {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
+        try publicKey.blockchainKey.validateAsEdKey()
+
+        let stellarPublicKey = try PublicKey(Array(publicKey.blockchainKey))
+        let keyPair = KeyPair(publicKey: stellarPublicKey)
+        let address = keyPair.accountId
+
+        return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
     }
-    
+}
+
+// MARK: - AddressValidator
+
+@available(iOS 13.0, *)
+extension StellarAddressService: AddressValidator {
     public func validate(_ address: String) -> Bool {
         let keyPair = try? KeyPair(accountId: address)
         return keyPair != nil

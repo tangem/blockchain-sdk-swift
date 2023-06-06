@@ -12,37 +12,44 @@ import TangemSdk
 import BitcoinCore
 
 @available(iOS 13.0, *)
-public class BitcoinCashAddressService: MultipleAddressProvider {
+public class BitcoinCashAddressService {
     private let legacyService: BitcoinLegacyAddressService
-    private let cashAddrService: CashAddrService
+    private let bitcoinCashAddressService: DefaultBitcoinCashAddressService
     
     public init(networkParams: INetwork) {
         self.legacyService = .init(networkParams: networkParams)
-        self.cashAddrService = .init(networkParams: networkParams)
+        self.bitcoinCashAddressService = .init(networkParams: networkParams)
     }
-    
-    public func makeAddress(from walletPublicKey: Data) throws -> String {
-        try cashAddrService.makeAddress(from: walletPublicKey)
-    }
-    
-    public func makeAddresses(from walletPublicKey: Data) throws -> [Address] {
-        let cashAddrString = try makeAddress(from: walletPublicKey)
-        let compressedKey = try Secp256k1Key(with: walletPublicKey).compress()
-        let legacyString = try legacyService.makeAddress(from: compressedKey)
-        
-        let cashAddr = PlainAddress(value: cashAddrString, type: .default)
-        let legacy = PlainAddress(value: legacyString, type: .legacy)
-        
-        return [cashAddr, legacy]
-    }
-    
+}
+
+// MARK: - AddressValidator
+
+@available(iOS 13.0, *)
+extension BitcoinCashAddressService: AddressValidator {
     public func validate(_ address: String) -> Bool {
-        cashAddrService.validate(address) || legacyService.validate(address)
+        bitcoinCashAddressService.validate(address) || legacyService.validate(address)
+    }
+}
+
+// MARK: - AddressProvider
+
+@available(iOS 13.0, *)
+extension BitcoinCashAddressService: AddressProvider {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
+        switch addressType {
+        case .default:
+            let address = try bitcoinCashAddressService.makeAddress(from: publicKey.blockchainKey)
+            return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
+        case .legacy:
+            let compressedKey = try Secp256k1Key(with: publicKey.blockchainKey).compress()
+            let address = try legacyService.makeAddress(from: compressedKey)
+            return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
+        }
     }
 }
 
 @available(iOS 13.0, *)
-public class CashAddrService: AddressService {
+public class DefaultBitcoinCashAddressService {
     private let addressPrefix: String
     
     public init(networkParams: INetwork) {

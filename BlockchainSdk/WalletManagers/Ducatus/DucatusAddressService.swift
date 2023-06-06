@@ -1,5 +1,5 @@
 //
-//  DucatusAddressService.swift
+//  DucatusNetworkParams.swift
 //  BlockchainSdk
 //
 //  Created by Alexander Osokin on 07.04.2020.

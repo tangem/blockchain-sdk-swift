@@ -11,73 +11,9 @@ import Sodium
 import SwiftCBOR
 import CryptoSwift
 
-public class CardanoAddressService: MultipleAddressProvider {
+public struct CardanoAddressService {
     private let addressHeaderByte = Data([UInt8(97)])
-    
-    private let shelley: Bool
-    
-    public init(shelley: Bool) {
-        self.shelley = shelley
-    }
-    
-    public func makeAddresses(from walletPublicKey: Data) throws -> [Address] {
-        try walletPublicKey.validateAsEdKey()
-        
-        if shelley {
-            return [
-                PlainAddress(value: makeShelleyAddress(from: walletPublicKey), type: .default),
-                PlainAddress(value: makeByronAddress(from: walletPublicKey), type: .legacy)
-            ]
-        }
-        return [makeCardanoAddress(from: walletPublicKey)]
-    }
-    
-    public func makeAddress(from walletPublicKey: Data) throws -> String {
-        try walletPublicKey.validateAsEdKey()
-        
-        return makeCardanoAddress(from: walletPublicKey).value
-    }
-    
-    public func validate(_ address: String) -> Bool {
-        guard !address.isEmpty else {
-            return false
-        }
-        
-        if CardanoAddressUtils.isShelleyAddress(address) {
-            return (try? Bech32().decodeLong(address)) != nil
-            
-        } else {
-            let decoded58 = address.base58DecodedBytes
-            guard !decoded58.isEmpty else {
-                    return false
-            }
-            
-            guard let cborArray = try? CBORDecoder(input: decoded58).decodeItem(),
-                let addressArray = cborArray[0],
-                let checkSumArray = cborArray[1] else {
-                    return false
-            }
-            
-            guard case let CBOR.tagged(_, cborByteString) = addressArray,
-                case let CBOR.byteString(addressBytes) = cborByteString else {
-                    return false
-            }
-            
-            guard case let CBOR.unsignedInt(checksum) = checkSumArray else {
-                return false
-            }
-            
-            let calculatedChecksum = UInt64(addressBytes.crc32())
-            return calculatedChecksum == checksum
-        }
-    }
-    
-    private func makeCardanoAddress(from pubkey: Data) -> Address {
-        shelley ?
-        PlainAddress(value: makeShelleyAddress(from: pubkey), type: .default) :
-        PlainAddress(value: makeByronAddress(from: pubkey), type: .legacy)
-    }
-    
+
     private func makeByronAddress(from walletPublicKey: Data) -> String {
         let hexPublicKeyExtended = walletPublicKey + Data(repeating: 0, count: 32) // extendedPublicKey
         let forSha3 = ([0, [0, CBOR.byteString(hexPublicKeyExtended.toBytes)], [:]] as CBOR).encode() // makePubKeyWithAttributes
@@ -97,5 +33,62 @@ public class CardanoAddressService: MultipleAddressProvider {
         let bech32 = Bech32()
         let walletAddress = bech32.encode(CardanoAddressUtils.bech32Hrp, values: Data(addressBytes))
         return walletAddress
+    }
+}
+
+// MARK: - AddressValidator
+
+@available(iOS 13.0, *)
+extension CardanoAddressService: AddressValidator {
+    public func validate(_ address: String) -> Bool {
+        guard !address.isEmpty else {
+            return false
+        }
+
+        if CardanoAddressUtils.isShelleyAddress(address) {
+            return (try? Bech32().decodeLong(address)) != nil
+
+        } else {
+            let decoded58 = address.base58DecodedBytes
+            guard !decoded58.isEmpty else {
+                    return false
+            }
+
+            guard let cborArray = try? CBORDecoder(input: decoded58).decodeItem(),
+                let addressArray = cborArray[0],
+                let checkSumArray = cborArray[1] else {
+                    return false
+            }
+
+            guard case let CBOR.tagged(_, cborByteString) = addressArray,
+                case let CBOR.byteString(addressBytes) = cborByteString else {
+                    return false
+            }
+
+            guard case let CBOR.unsignedInt(checksum) = checkSumArray else {
+                return false
+            }
+
+            let calculatedChecksum = UInt64(addressBytes.crc32())
+            return calculatedChecksum == checksum
+        }
+    }
+}
+
+// MARK: - AddressProvider
+
+@available(iOS 13.0, *)
+extension CardanoAddressService: AddressProvider {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
+        try publicKey.blockchainKey.validateAsEdKey()
+
+        switch addressType {
+        case .default:
+            let shelley = makeShelleyAddress(from: publicKey.blockchainKey)
+            return AddressPublicKeyPair(value: shelley, publicKey: publicKey, type: addressType)
+        case .legacy:
+            let byron =  makeByronAddress(from: publicKey.blockchainKey)
+            return AddressPublicKeyPair(value: byron, publicKey: publicKey, type: addressType)
+        }
     }
 }
