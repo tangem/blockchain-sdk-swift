@@ -18,9 +18,9 @@ enum XrpUrl {
         switch self {
         case .xrpLedgerFoundation:
             return URL(string: "https://xrplcluster.com/")!
-        case .nowNodes(let apiKey):
+        case .nowNodes:
             return URL(string: "https://xrp.nownodes.io")!
-        case .getBlock(let apiKey):
+        case .getBlock:
             return URL(string: "https://xrp.getblock.io/mainnet")!
         }
     }
