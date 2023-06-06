@@ -45,7 +45,7 @@ public class WalletManagerFactory {
     ///   - seedKey: Public key  of the wallet
     ///   - derivedKey: Derived ExtendedPublicKey by the card
     ///   - derivation: DerivationParams
-    /// - Returns: WalletManager?
+    /// - Returns: WalletManager
     public func makeWalletManager(blockchain: Blockchain,
                                   seedKey: Data,
                                   derivedKey: ExtendedPublicKey,

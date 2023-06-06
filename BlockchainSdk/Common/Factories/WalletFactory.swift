@@ -14,7 +14,7 @@ public struct WalletFactory {
     func makeWallet(blockchain: Blockchain, publicKeys: [AddressType: Wallet.PublicKey]) throws -> Wallet {
         assert(publicKeys[.default] != nil, "PublicKeys have to contains default publicKey")
         
-        let addresses: [AddressType: PublicAddress] = try publicKeys.reduce(into: [:]) { result, args in
+        let addresses: [AddressType: AddressPublicKeyPair] = try publicKeys.reduce(into: [:]) { result, args in
             let (addressType, publicKey) = args
 
             result[addressType] = try addressProvider.makeAddress(for: publicKey, with: addressType)

@@ -14,15 +14,15 @@ public struct Wallet {
     // MARK: - Properties
 
     public let blockchain: Blockchain
-    public let walletAddresses: [AddressType: PublicAddress]
+    public let walletAddresses: [AddressType: AddressPublicKeyPair]
     
     public internal(set) var amounts: [Amount.AmountType: Amount] = [:]
     public internal(set) var transactions: [Transaction] = []
     
     // MARK: - Calculations
     
-    public var addresses: [PublicAddress] { walletAddresses.map { $0.value } }
-    public var defaultAddress: PublicAddress { walletAddresses[.default]! }
+    public var addresses: [AddressPublicKeyPair] { walletAddresses.map { $0.value } }
+    public var defaultAddress: AddressPublicKeyPair { walletAddresses[.default]! }
     
     /// `publicKey` from default address
     public var publicKey: Wallet.PublicKey { defaultAddress.publicKey }
@@ -74,16 +74,16 @@ public struct Wallet {
     init(blockchain: Blockchain, addresses: [Address], publicKey: PublicKey) {
         self.blockchain = blockchain
                 
-        let addresses: [AddressType: PublicAddress] = addresses.reduce(into: [:]) { result, address in
-            result[address.type] = PublicAddress(value: address.value, publicKey: publicKey, type: address.type)
+        let addresses: [AddressType: AddressPublicKeyPair] = addresses.reduce(into: [:]) { result, address in
+            result[address.type] = AddressPublicKeyPair(value: address.value, publicKey: publicKey, type: address.type)
         }
         
-        assert(addresses[.default] != nil, "Addresses have to contains default address")
+        assert(addresses.contains { $0.key == .default }, "Addresses have to contains default address")
 
         self.walletAddresses = addresses
     }
     
-    init(blockchain: Blockchain, addresses: [AddressType: PublicAddress]) {
+    init(blockchain: Blockchain, addresses: [AddressType: AddressPublicKeyPair]) {
         self.blockchain = blockchain
         self.walletAddresses = addresses
     }

@@ -9,13 +9,13 @@
 import Foundation
 
 public protocol AddressProvider {
-    func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PublicAddress
+    func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair
 }
 
 extension AddressService {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PublicAddress {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
         let address = try makeAddress(from: publicKey.blockchainKey)
         
-        return PublicAddress(value: address, publicKey: publicKey, type: addressType)
+        return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
     }
 }

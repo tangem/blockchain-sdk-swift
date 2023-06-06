@@ -1,5 +1,5 @@
 //
-//  PublicAddress.swift
+//  AddressPublicKeyPair.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 30.05.2023.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct PublicAddress: Address {
+public struct AddressPublicKeyPair: Address {
     public let value: String
     public let publicKey: Wallet.PublicKey
     public let type: AddressType

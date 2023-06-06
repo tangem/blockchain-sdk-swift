@@ -334,7 +334,7 @@
 		EFD717D02A2619C400E5430D /* Wallet+PublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717CF2A2619C400E5430D /* Wallet+PublicKey.swift */; };
 		EFD717D52A26330F00E5430D /* WalletFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717D42A26330F00E5430D /* WalletFactory.swift */; };
 		EFD717D72A2647E200E5430D /* AddressProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717D62A2647E200E5430D /* AddressProvider.swift */; };
-		EFD717D92A2647F200E5430D /* PublicAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717D82A2647F200E5430D /* PublicAddress.swift */; };
+		EFD717D92A2647F200E5430D /* AddressPublicKeyPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717D82A2647F200E5430D /* AddressPublicKeyPair.swift */; };
 		EFD717DB2A272D1B00E5430D /* PlainAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717DA2A272D1B00E5430D /* PlainAddress.swift */; };
 		EFD717DD2A27309700E5430D /* MultisigAddressProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717DC2A27309700E5430D /* MultisigAddressProvider.swift */; };
 		EFD717DF2A27310E00E5430D /* AddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717DE2A27310E00E5430D /* AddressType.swift */; };
@@ -719,7 +719,7 @@
 		EFD717CF2A2619C400E5430D /* Wallet+PublicKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Wallet+PublicKey.swift"; sourceTree = "<group>"; };
 		EFD717D42A26330F00E5430D /* WalletFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletFactory.swift; sourceTree = "<group>"; };
 		EFD717D62A2647E200E5430D /* AddressProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressProvider.swift; sourceTree = "<group>"; };
-		EFD717D82A2647F200E5430D /* PublicAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicAddress.swift; sourceTree = "<group>"; };
+		EFD717D82A2647F200E5430D /* AddressPublicKeyPair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressPublicKeyPair.swift; sourceTree = "<group>"; };
 		EFD717DA2A272D1B00E5430D /* PlainAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainAddress.swift; sourceTree = "<group>"; };
 		EFD717DC2A27309700E5430D /* MultisigAddressProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigAddressProvider.swift; sourceTree = "<group>"; };
 		EFD717DE2A27310E00E5430D /* AddressType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressType.swift; sourceTree = "<group>"; };
@@ -1280,7 +1280,7 @@
 				EFD717DC2A27309700E5430D /* MultisigAddressProvider.swift */,
 				5DACA35A255E97FE0096BC48 /* Address.swift */,
 				EFD717DE2A27310E00E5430D /* AddressType.swift */,
-				EFD717D82A2647F200E5430D /* PublicAddress.swift */,
+				EFD717D82A2647F200E5430D /* AddressPublicKeyPair.swift */,
 				EFD717DA2A272D1B00E5430D /* PlainAddress.swift */,
 			);
 			path = Address;
@@ -2341,7 +2341,7 @@
 				5D7D243C25136254001B9A4F /* SerializerDefinitions.swift in Sources */,
 				5DEAFA8E244472CD0032E316 /* Amount.swift in Sources */,
 				2D9A91A729BB8C2E00476EA6 /* WalletCoreAddressService.swift in Sources */,
-				EFD717D92A2647F200E5430D /* PublicAddress.swift in Sources */,
+				EFD717D92A2647F200E5430D /* AddressPublicKeyPair.swift in Sources */,
 				2D9A91A729BB8C2E00476EA6 /* WalletCoreAddressService.swift in Sources */,
 				DA9F76FB27ECA49F00F0665C /* TronNetwork.swift in Sources */,
 				EF2BC62029DACE33003D3F18 /* RavencoinTarget.swift in Sources */,
