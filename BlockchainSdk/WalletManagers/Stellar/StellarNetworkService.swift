@@ -13,9 +13,11 @@ import Combine
 class StellarNetworkService: MultiNetworkProvider {
     var currentProviderIndex: Int = 0
     let providers: [StellarNetworkProvider]
+    var exceptionHandler: ExternalExceptionHandler?
     
-    init(providers: [StellarNetworkProvider]) {
+    init(providers: [StellarNetworkProvider], exceptionHandler: ExternalExceptionHandler?) {
         self.providers = providers
+        self.exceptionHandler = exceptionHandler
     }
     
     public func send(transaction: String) -> AnyPublisher<Bool, Error> {

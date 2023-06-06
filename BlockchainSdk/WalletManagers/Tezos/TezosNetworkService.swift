@@ -13,9 +13,11 @@ import Combine
 class TezosNetworkService: MultiNetworkProvider {
     let providers: [TezosJsonRpcProvider]
     var currentProviderIndex: Int = 0
+    var exceptionHandler: ExternalExceptionHandler?
     
-    init(providers: [TezosJsonRpcProvider]) {
+    init(providers: [TezosJsonRpcProvider], exceptionHandler: ExternalExceptionHandler?) {
         self.providers = providers
+        self.exceptionHandler = exceptionHandler
     }
     
     func getInfo(address: String) -> AnyPublisher<TezosAddress, Error> {

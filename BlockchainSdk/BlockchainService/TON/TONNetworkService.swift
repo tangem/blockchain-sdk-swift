@@ -16,14 +16,16 @@ class TONNetworkService: MultiNetworkProvider {
     
     let providers: [TONProvider]
     var currentProviderIndex: Int = 0
+    var exceptionHandler: ExternalExceptionHandler?
     
     private var blockchain: Blockchain
     
     // MARK: - Init
     
-    init(providers: [TONProvider], blockchain: Blockchain) {
+    init(providers: [TONProvider], blockchain: Blockchain, exceptionHandler: ExternalExceptionHandler?) {
         self.providers = providers
         self.blockchain = blockchain
+        self.exceptionHandler = exceptionHandler
     }
     
     // MARK: - Implementation

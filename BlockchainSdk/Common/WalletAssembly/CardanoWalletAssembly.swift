@@ -17,20 +17,23 @@ struct CardanoWalletAssembly: WalletManagerAssembly {
                 walletPublicKey: input.wallet.publicKey.blockchainKey,
                 shelleyCard: self.isShelley(for: input.blockchain)
             )
-            let service = CardanoNetworkService(providers: [
-                RosettaNetworkProvider(
-                    baseUrl: .getBlockRosetta(apiKey: input.blockchainConfig.getBlockApiKey),
-                    configuration: input.networkConfig
-                ).eraseToAnyCardanoNetworkProvider(),
-                AdaliteNetworkProvider(
-                    baseUrl: .main,
-                    configuration: input.networkConfig
-                ).eraseToAnyCardanoNetworkProvider(),
-                RosettaNetworkProvider(
-                    baseUrl: .tangemRosetta,
-                    configuration: input.networkConfig
-                ).eraseToAnyCardanoNetworkProvider()
-            ])
+            let service = CardanoNetworkService(
+                providers: [
+                    RosettaNetworkProvider(
+                        baseUrl: .getBlockRosetta(apiKey: input.blockchainConfig.getBlockApiKey),
+                        configuration: input.networkConfig
+                    ).eraseToAnyCardanoNetworkProvider(),
+                    AdaliteNetworkProvider(
+                        baseUrl: .main,
+                        configuration: input.networkConfig
+                    ).eraseToAnyCardanoNetworkProvider(),
+                    RosettaNetworkProvider(
+                        baseUrl: .tangemRosetta,
+                        configuration: input.networkConfig
+                    ).eraseToAnyCardanoNetworkProvider()
+                ],
+                exceptionHandler: input.exceptionHandler
+            )
             $0.networkService = service
         }
     }

@@ -41,9 +41,11 @@ class AnyCardanoNetworkProvider: CardanoNetworkProvider {
 class CardanoNetworkService: MultiNetworkProvider, CardanoNetworkProvider {
     let providers: [AnyCardanoNetworkProvider]
     var currentProviderIndex: Int = 0
+    var exceptionHandler: ExternalExceptionHandler?
     
-    init(providers: [AnyCardanoNetworkProvider]) {
+    init(providers: [AnyCardanoNetworkProvider], exceptionHandler: ExternalExceptionHandler?) {
         self.providers = providers
+        self.exceptionHandler = exceptionHandler
     }
     
     func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {

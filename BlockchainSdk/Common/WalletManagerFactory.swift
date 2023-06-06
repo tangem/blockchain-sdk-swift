@@ -16,11 +16,13 @@ import Solana_Swift
 public class WalletManagerFactory {
     
     private let config: BlockchainSdkConfig
+    private let exceptionHandler: ExternalExceptionHandler?
     
     // MARK: - Init
     
-    public init(config: BlockchainSdkConfig) {
+    public init(config: BlockchainSdkConfig, exceptionHandler: ExternalExceptionHandler? = nil) {
         self.config = config
+        self.exceptionHandler = exceptionHandler
     }
     
     /// Base wallet manager initializer
@@ -30,10 +32,13 @@ public class WalletManagerFactory {
     ///   - derivedKey: Derived ExtendedPublicKey by the card
     ///   - derivation: DerivationParams
     /// - Returns: WalletManager?
-    public func makeWalletManager(blockchain: Blockchain,
-                                  seedKey: Data,
-                                  derivedKey: ExtendedPublicKey,
-                                  derivation: DerivationParams) throws -> WalletManager {
+    public func makeWalletManager(
+        blockchain: Blockchain,
+        seedKey: Data,
+        derivedKey: ExtendedPublicKey,
+        derivation: DerivationParams,
+        exceptionHandler: ExternalExceptionHandler? = nil
+    ) throws -> WalletManager {
         
         var derivationPath: DerivationPath? = nil
         
@@ -104,7 +109,8 @@ public class WalletManagerFactory {
                 blockchainConfig: config,
                 pairPublicKey: pairPublicKey,
                 wallet: Wallet(blockchain: blockchain, addresses: addresses, publicKey: publicKey),
-                networkConfig: config.networkProviderConfiguration(for: blockchain)
+                networkConfig: config.networkProviderConfiguration(for: blockchain),
+                exceptionHandler: exceptionHandler
             )
         )
     }

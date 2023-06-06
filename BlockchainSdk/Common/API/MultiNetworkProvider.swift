@@ -17,6 +17,7 @@ protocol MultiNetworkProvider: AnyObject, HostProvider {
     
     var providers: [Provider] { get }
     var currentProviderIndex: Int { get set }
+    var exceptionHandler: ExternalExceptionHandler? { get }
 }
 
 extension MultiNetworkProvider {
@@ -33,17 +34,26 @@ extension MultiNetworkProvider {
                 guard let self = self else { return .anyFail(error: error) }
                 
                 if let moyaError = error as? MoyaError, case let .statusCode(resp) = moyaError {
-                    Log.network("Switchable publisher catched error: \(moyaError). Response message: \(String(describing: String(data: resp.data, encoding: .utf8)))")
+                    let message = "Switchable publisher catched error: \(moyaError). Response message: \(String(describing: String(data: resp.data, encoding: .utf8)))"
+                    
+                    Log.network(message)
+                    exceptionHandler?.log(exception: message)
                 }
                 
                 if case WalletError.noAccount = error {
                     return .anyFail(error: error)
                 }
                 
-                Log.network("Switchable publisher catched error: \(error)")
+                let message = "Switchable publisher catched error: \(error)"
+                
+                Log.network(message)
+                exceptionHandler?.log(exception: message)
                 
                 if self.needRetry(for: currentHost) {
-                    Log.network("Switching to next publisher")
+                    let message = "Switching to next publisher"
+                    Log.network(message)
+                    exceptionHandler?.log(exception: message)
+                    
                     return self.providerPublisher(for: requestPublisher)
                 }
                 

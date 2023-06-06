@@ -15,9 +15,11 @@ import Alamofire
 class BitcoinNetworkService: MultiNetworkProvider, BitcoinNetworkProvider {
     let providers: [AnyBitcoinNetworkProvider]
     var currentProviderIndex: Int = 0
+    var exceptionHandler: ExternalExceptionHandler?
     
-    init(providers: [AnyBitcoinNetworkProvider]) {
+    init(providers: [AnyBitcoinNetworkProvider], exceptionHandler: ExternalExceptionHandler?) {
         self.providers = providers
+        self.exceptionHandler = exceptionHandler
     }
     
     var supportsTransactionPush: Bool { !providers.filter { $0.supportsTransactionPush }.isEmpty }
