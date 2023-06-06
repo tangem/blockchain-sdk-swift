@@ -9,13 +9,42 @@
 import Foundation
 import Moya
 
-enum XrpUrl: String {
-    case xrpLedgerFoundation = "https://xrplcluster.com/"
-    case ripple = "https://s1.ripple.com:51234"
-    case rippleReserve = "https://s2.ripple.com:51234/"
+enum XrpUrl {
+    case xrpLedgerFoundation
+    case nowNodes(apiKey: String)
+    case getBlock(apiKey: String)
     
     var url: URL {
-        return URL(string: rawValue)!
+        switch self {
+        case .xrpLedgerFoundation:
+            return URL(string: "https://xrplcluster.com/")!
+        case .nowNodes:
+            return URL(string: "https://xrp.nownodes.io")!
+        case .getBlock:
+            return URL(string: "https://xrp.getblock.io/mainnet")!
+        }
+    }
+
+    var apiKeyHeaderValue: String? {
+        switch self {
+        case .nowNodes(let apiKey):
+            return apiKey
+        case .getBlock(let apiKey):
+            return apiKey
+        default:
+            return nil
+        }
+    }
+
+    var apiKeyHeaderName: String? {
+        switch self {
+        case .nowNodes:
+            return Constants.nowNodesApiKeyHeaderName
+        case .getBlock:
+            return Constants.xApiKeyHeaderName
+        default:
+            return nil
+        }
     }
 }
 
@@ -27,17 +56,21 @@ enum XrpTarget: TargetType {
     case reserve(url: XrpUrl)
     
     var baseURL: URL {
+        xrpURL.url
+    }
+
+    var xrpURL: XrpUrl {
         switch self {
         case .accountInfo(_, let url):
-            return url.url
+            return url
         case .fee(let url):
-            return url.url
+            return url
         case .reserve(let url):
-            return url.url
+            return url
         case .submit(_, let url):
-            return url.url
+            return url
         case .unconfirmed(_, let url):
-            return url.url
+            return url
         }
     }
     
@@ -95,6 +128,13 @@ enum XrpTarget: TargetType {
     }
     
     public var headers: [String: String]? {
-        return ["Content-Type": "application/json"]
+        var headers = ["Content-Type": "application/json"]
+
+        if let apiKeyHeaderName = xrpURL.apiKeyHeaderName,
+           let apiKeyHeaderValue = xrpURL.apiKeyHeaderValue {
+            headers[apiKeyHeaderName] = apiKeyHeaderValue
+        }
+
+        return headers
     }
 }
