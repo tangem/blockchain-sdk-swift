@@ -16,7 +16,7 @@ public class KaspaAddressService {
     private let prefix = "kaspa"
     private let version: KaspaAddressComponents.KaspaAddressType = .P2PK_ECDSA
 
-    private func parse(_ address: String) -> KaspaAddressComponents? {
+    func parse(_ address: String) -> KaspaAddressComponents? {
         guard
             let (prefix, data) = CashAddrBech32.decode(address),
             !data.isEmpty,

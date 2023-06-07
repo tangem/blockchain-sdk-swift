@@ -48,23 +48,18 @@ extension BitcoinCashAddressService: AddressProvider {
     }
 }
 
+// MARK: - MultipleAddressProvider
+
 @available(iOS 13.0, *)
-public class DefaultBitcoinCashAddressService {
-    private let addressPrefix: String
-    
-    public init(networkParams: INetwork) {
-        addressPrefix = networkParams.bech32PrefixPattern
-    }
-    
-    public func makeAddress(from walletPublicKey: Data) throws -> String {
-        let compressedKey = try Secp256k1Key(with: walletPublicKey).compress()
-        let prefix = Data([UInt8(0x00)]) //public key hash
-        let payload = compressedKey.sha256Ripemd160
-        let walletAddress = HDWalletKit.Bech32.encode(prefix + payload, prefix: addressPrefix)
-        return walletAddress
-    }
-    
-    public func validate(_ address: String) -> Bool {
-        return (try? BitcoinCashAddress(address)) != nil
-    }
+extension BitcoinCashAddressService: MultipleAddressProvider {
+    public func makeAddresses(from walletPublicKey: Data) throws -> [Address] {
+            let address = try bitcoinCashAddressService.makeAddress(from: walletPublicKey)
+            let compressedKey = try Secp256k1Key(with: walletPublicKey).compress()
+            let legacyString = try legacyService.makeAddress(from: compressedKey)
+
+            let cashAddress = PlainAddress(value: address, type: .default)
+            let legacy = PlainAddress(value: legacyString, type: .legacy)
+
+            return [cashAddress, legacy]
+        }
 }

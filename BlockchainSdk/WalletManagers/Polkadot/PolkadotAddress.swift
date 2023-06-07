@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Sodium
 
 struct PolkadotAddress {
     let string: String

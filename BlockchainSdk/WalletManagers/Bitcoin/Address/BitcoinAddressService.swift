@@ -66,6 +66,23 @@ extension BitcoinAddressService: MultisigAddressProvider {
 	}
 }
 
+// MARK: - MultipleAddressProvider
+
+@available(iOS 13.0, *)
+extension BitcoinAddressService: MultipleAddressProvider {
+    public func makeAddresses(from walletPublicKey: Data) throws -> [Address] {
+        let legacyAddressString = try legacy.makeAddress(from: walletPublicKey)
+        let bech32AddressString = try bech32.makeAddress(from: walletPublicKey)
+
+        return [
+            PlainAddress(value: legacyAddressString, type: .legacy),
+            PlainAddress(value: bech32AddressString, type: .default),
+        ]
+    }
+}
+
+// MARK: - Private
+
 @available(iOS 13.0, *)
 private extension BitcoinAddressService {
     func create1Of2MultisigOutputScript(firstPublicKey: Data, secondPublicKey: Data) throws -> HDWalletScript? {

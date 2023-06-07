@@ -14,6 +14,12 @@ import CryptoSwift
 public struct CardanoAddressService {
     private let addressHeaderByte = Data([UInt8(97)])
 
+    private let shelley: Bool
+
+    public init(shelley: Bool) {
+        self.shelley = shelley
+    }
+
     private func makeByronAddress(from walletPublicKey: Data) -> String {
         let hexPublicKeyExtended = walletPublicKey + Data(repeating: 0, count: 32) // extendedPublicKey
         let forSha3 = ([0, [0, CBOR.byteString(hexPublicKeyExtended.toBytes)], [:]] as CBOR).encode() // makePubKeyWithAttributes
@@ -91,4 +97,22 @@ extension CardanoAddressService: AddressProvider {
             return AddressPublicKeyPair(value: byron, publicKey: publicKey, type: addressType)
         }
     }
+}
+
+// MARK: - MultipleAddressProvider
+
+@available(iOS 13.0, *)
+extension CardanoAddressService: MultipleAddressProvider {
+    public func makeAddresses(from walletPublicKey: Data) throws -> [Address] {
+          try walletPublicKey.validateAsEdKey()
+
+          if shelley {
+              return [
+                  PlainAddress(value: makeShelleyAddress(from: walletPublicKey), type: .default),
+                  PlainAddress(value: makeByronAddress(from: walletPublicKey), type: .legacy)
+              ]
+          }
+
+          return [PlainAddress(value: makeByronAddress(from: walletPublicKey), type: .legacy)]
+      }
 }

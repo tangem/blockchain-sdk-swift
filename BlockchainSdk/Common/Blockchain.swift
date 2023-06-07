@@ -539,19 +539,19 @@ extension Blockchain {
     }
     
     @available(*, deprecated, message: "Will be move to WalletManager assembly")
-    public func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data?) throws -> [Address] {
+    public func makeAddresses(from walletPublicKey: Wallet.PublicKey, with pairPublicKey: Data?) throws -> [Address] {
         let addressService = getAddressService()
         
         if let multiSigAddressProvider = addressService as? MultisigAddressProvider,
            let pairKey = pairPublicKey {
-            return try multiSigAddressProvider.makeAddresses(from: walletPublicKey, with: pairKey)
+            return try multiSigAddressProvider.makeAddresses(from: walletPublicKey.blockchainKey, with: pairKey)
         }
         
         if let addressService = addressService as? MultipleAddressProvider {
-            return try addressService.makeAddresses(from: walletPublicKey)
+            return try addressService.makeAddresses(from: walletPublicKey.blockchainKey)
         }
         
-        return [try addressService.makeAddress(from: walletPublicKey)]
+        return [try addressService.makeAddress(for: walletPublicKey, with: .default)]
     }
     
     public func validate(address: String) -> Bool {

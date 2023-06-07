@@ -108,7 +108,7 @@ public class WalletManagerFactory {
         publicKey: Wallet.PublicKey,
         pairPublicKey: Data? = nil
     ) throws -> WalletManager {
-        let addresses = try blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey)
+        let addresses = try blockchain.makeAddresses(from: publicKey, with: pairPublicKey)
         let wallet = Wallet(blockchain: blockchain, addresses: addresses, publicKey: publicKey)
         
         return try blockchain.assembly.make(
@@ -142,7 +142,7 @@ extension WalletManagerFactory {
         var addresses: [Address] = addresses.map { PlainAddress(value: $0, type: .default) }
 
         if addresses.isEmpty {
-            addresses = try blockchain.makeAddresses(from: publicKey.blockchainKey, with: nil)
+            addresses = try blockchain.makeAddresses(from: publicKey, with: nil)
         }
         
         let wallet = Wallet(blockchain: blockchain, addresses: addresses, publicKey: publicKey)

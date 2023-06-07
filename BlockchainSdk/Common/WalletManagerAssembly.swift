@@ -12,7 +12,8 @@ import TangemSdk
 /// Input data for assembly wallet manager
 struct WalletManagerAssemblyInput {
     let blockchain: Blockchain
-    let publicKeys: [AddressType: Wallet.PublicKey]
+    let blockchainConfig: BlockchainSdkConfig
+//    let publicKeys: [AddressType: Wallet.PublicKey]
     let pairPublicKey: Data?
     let wallet: Wallet
     let networkConfig: NetworkProviderConfiguration

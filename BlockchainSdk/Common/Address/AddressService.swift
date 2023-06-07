@@ -8,15 +8,12 @@
 
 import Foundation
 
-public protocol AddressService: AddressProvider {
-    func makeAddress(from walletPublicKey: Data) throws -> String
+typealias AddressService = AddressProvider & AddressValidator
+
+public protocol AddressValidator {
     func validate(_ address: String) -> Bool
 }
 
-extension AddressService {
-    public func makeAddress(from walletPublicKey: Data) throws -> Address {
-        let value = try makeAddress(from: walletPublicKey)
-        let address = PlainAddress(value: value, type: .default)
-        return address
-    }
+public protocol AddressProvider {
+    func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair
 }
