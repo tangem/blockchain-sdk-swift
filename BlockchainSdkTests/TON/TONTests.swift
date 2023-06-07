@@ -27,11 +27,7 @@ class TONTests: XCTestCase {
         let wallet = Wallet(
             blockchain: blockchain,
             addresses: address,
-            publicKey: .init(
-                seedKey: walletPubKey,
-                derivedKey: nil,
-                derivationPath: nil
-            )
+            publicKey: .init(seedKey: walletPubKey, derivation: .none)
         )
         
         return try! .init(

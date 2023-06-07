@@ -8,10 +8,7 @@
 
 import Foundation
 
-public protocol MultipleAddressProvider {
+@available(*, deprecated, message: "Use AddressProvider.makeAddress(for:, with:)")
+public protocol MultipleAddressProvider: AddressService {
     func makeAddresses(from walletPublicKey: Data) throws -> [Address]
-}
-
-public protocol MultisigAddressProvider {
-	func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data) throws -> [Address]
 }

@@ -91,7 +91,7 @@ class BlockchainSdkTests: XCTestCase {
     func testTxValidation() {
         let vm: WalletManager = BitcoinWalletManager(wallet: Wallet(blockchain: .bitcoin(testnet: false),
                                                                     addresses: [PlainAddress(value: "adfjbajhfaldfh", type: .default)],
-                                                                    publicKey: .init(seedKey: Data(), derivedKey: nil, derivationPath: nil)))
+                                                                    publicKey: .init(seedKey: Data(), derivation: .none)))
         
         vm.wallet.add(coinValue: 10)
         XCTAssertNoThrow(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 3),

@@ -32,8 +32,7 @@ final class AddressServiceManagerUtility {
         addressType: AddressType?
     ) throws -> String {
         if let addressType = addressType {
-            let addresses = try blockchain.getAddressService().makeAddresses(from: publicKey)
-            
+            let addresses = try blockchain.makeAddresses(from: publicKey, with: nil)
             if let address = addresses.first(where: { $0.type == addressType }) {
                 return address.value
             } else {

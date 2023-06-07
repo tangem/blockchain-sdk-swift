@@ -19,9 +19,9 @@ class CosmosTests: XCTestCase {
         let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"))!
         let publicKeyData = privateKey.getPublicKeySecp256k1(compressed: true).data
         
-        let addresses = try cosmosChain.blockchain.getAddressService().makeAddresses(from: publicKeyData)
+        let addresses = try cosmosChain.blockchain.makeAddresses(from: publicKeyData, with: nil)
         
-        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivedKey: nil, derivationPath: nil)
+        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivation: .none)
         let wallet = Wallet(blockchain: cosmosChain.blockchain, addresses: addresses, publicKey: publicKey)
         
         let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)
@@ -51,9 +51,9 @@ class CosmosTests: XCTestCase {
         let privateKey = PrivateKey(data: Data(hexString: "1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6"))!
         let publicKeyData = privateKey.getPublicKeySecp256k1(compressed: true).data
         
-        let addresses = try cosmosChain.blockchain.getAddressService().makeAddresses(from: publicKeyData)
+        let addresses = try cosmosChain.blockchain.makeAddresses(from: publicKeyData, with: nil)
         
-        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivedKey: nil, derivationPath: nil)
+        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivation: .none)
         let wallet = Wallet(blockchain: cosmosChain.blockchain, addresses: addresses, publicKey: publicKey)
         
         let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)
@@ -88,9 +88,9 @@ class CosmosTests: XCTestCase {
         let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"))!
         let publicKeyData = privateKey.getPublicKeySecp256k1(compressed: true).data
         
-        let addresses = try cosmosChain.blockchain.getAddressService().makeAddresses(from: publicKeyData)
+        let addresses = try cosmosChain.blockchain.makeAddresses(from: publicKeyData, with: nil)
         
-        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivedKey: nil, derivationPath: nil)
+        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivation: .none)
         let wallet = Wallet(blockchain: cosmosChain.blockchain, addresses: addresses, publicKey: publicKey)
         
         let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)
@@ -125,9 +125,9 @@ class CosmosTests: XCTestCase {
         let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"))!
         let publicKeyData = privateKey.getPublicKeySecp256k1(compressed: true).data
         
-        let addresses = try cosmosChain.blockchain.getAddressService().makeAddresses(from: publicKeyData)
+        let addresses = try cosmosChain.blockchain.makeAddresses(from: publicKeyData, with: nil)
         
-        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivedKey: nil, derivationPath: nil)
+        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivation: .none)
         let wallet = Wallet(blockchain: cosmosChain.blockchain, addresses: addresses, publicKey: publicKey)
         
         let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)

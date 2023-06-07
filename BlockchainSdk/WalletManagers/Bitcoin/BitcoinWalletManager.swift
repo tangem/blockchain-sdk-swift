@@ -25,7 +25,7 @@ class BitcoinWalletManager: BaseManager, WalletManager {
     var outputsCount: Int? { loadedUnspents.count }
     
     func update(completion: @escaping (Result<Void, Error>)-> Void)  {
-        cancellable = networkService.getInfo(addresses: wallet.addresses.map{ $0.value })
+        cancellable = networkService.getInfo(addresses: wallet.addresses.map { $0.value })
             .eraseToAnyPublisher()
             .subscribe(on: DispatchQueue.global())
             .sink(receiveCompletion: {[unowned self] completionSubscription in
