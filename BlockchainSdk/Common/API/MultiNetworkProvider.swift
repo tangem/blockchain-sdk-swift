@@ -37,7 +37,7 @@ extension MultiNetworkProvider {
                     let message = "Switchable publisher catched error: \(moyaError). Response message: \(String(describing: String(data: resp.data, encoding: .utf8)))"
                     
                     Log.network(message)
-                    exceptionHandler?.log(exception: message)
+                    exceptionHandler?.log(exception: message, for: currentHost)
                 }
                 
                 if case WalletError.noAccount = error {
@@ -47,12 +47,12 @@ extension MultiNetworkProvider {
                 let message = "Switchable publisher catched error: \(error)"
                 
                 Log.network(message)
-                exceptionHandler?.log(exception: message)
+                exceptionHandler?.log(exception: message, for: currentHost)
                 
                 if self.needRetry(for: currentHost) {
                     let message = "Switching to next publisher"
                     Log.network(message)
-                    exceptionHandler?.log(exception: message)
+                    exceptionHandler?.log(exception: message, for: currentHost)
                     
                     return self.providerPublisher(for: requestPublisher)
                 }

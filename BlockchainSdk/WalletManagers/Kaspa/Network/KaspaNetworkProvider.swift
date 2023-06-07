@@ -14,8 +14,6 @@ class KaspaNetworkProvider: HostProvider {
         url.hostOrUnknown
     }
     
-    var exceptionLogger: ExternalExceptionHandler?
-    
     private let url: URL
     private let blockchain: Blockchain
     private let provider: NetworkProvider<KaspaTarget>

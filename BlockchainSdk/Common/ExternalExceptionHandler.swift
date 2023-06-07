@@ -11,6 +11,6 @@ import Foundation
 public protocol ExternalExceptionHandler {
     
     /// Register BlockchainSdk exception for external service logger
-    func log(exception message: String)
+    func log(exception message: String, for host: String)
     
 }
