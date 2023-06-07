@@ -10,25 +10,30 @@ import Foundation
 import TangemSdk
 
 public struct Wallet {
+    
+    // MARK: - Properties
+
     public let blockchain: Blockchain
-    public let addresses: [Address]
-    public let publicKey: PublicKey
-    public internal(set) var amounts: [Amount.AmountType:Amount] = [:]
+    public let walletAddresses: [AddressType: AddressPublicKeyPair]
+    
+    public internal(set) var amounts: [Amount.AmountType: Amount] = [:]
     public internal(set) var transactions: [Transaction] = []
-    public private(set) var state: WalletState = .created
     
-    public var address: String {
-        if let address = addresses.first(where: { $0.type == .default })?.value {
-            return address
-        } else {
-            return addresses.first!.value
-        }
-    }
+    // MARK: - Calculations
     
+    public var addresses: [AddressPublicKeyPair] { walletAddresses.map { $0.value } }
+    public var defaultAddress: AddressPublicKeyPair { walletAddresses[.default]! }
+    
+    /// `publicKey` from default address
+    public var publicKey: Wallet.PublicKey { defaultAddress.publicKey }
+    
+    /// Default address
+    public var address: String { defaultAddress.value }
+
     public var isEmpty: Bool {
         return amounts.filter { $0.key != .reserve && !$0.value.isZero }.isEmpty
     }
-    
+
     public var hasPendingTx: Bool {
         return !transactions.filter { $0.status == .unconfirmed }.isEmpty
     }
@@ -54,20 +59,37 @@ public struct Wallet {
             .reduce(0, { $0 + $1.amount.value + $1.fee.amount.value })
     }
 
+    @available(*, deprecated, message: "Use xpubKeys with each address support")
     public var xpubKey: String? {
-        guard let key = publicKey.derivedKey else { return nil }
+        defaultAddress.publicKey.xpubKey(isTestnet: blockchain.isTestnet)
+    }
+    
+    public var xpubKeys: [String] {
+        walletAddresses
+            .compactMapValues { $0.publicKey.xpubKey(isTestnet: blockchain.isTestnet) }
+            .map { $0.value }
+    }
+    
+    @available(*, deprecated, message: "Use init(blockchain:, addresses:)")
+    init(blockchain: Blockchain, addresses: [Address], publicKey: PublicKey) {
+        self.blockchain = blockchain
+                
+        let addresses: [AddressType: AddressPublicKeyPair] = addresses.reduce(into: [:]) { result, address in
+            result[address.type] = AddressPublicKeyPair(value: address.value, publicKey: publicKey, type: address.type)
+        }
+        
+        assert(addresses.contains { $0.key == .default }, "Addresses have to contains default address")
 
-        return try? key.serialize(for: blockchain.isTestnet ? .testnet : .mainnet)
+        self.walletAddresses = addresses
+    }
+    
+    init(blockchain: Blockchain, addresses: [AddressType: AddressPublicKeyPair]) {
+        self.blockchain = blockchain
+        self.walletAddresses = addresses
     }
     
     public func hasPendingTx(for amountType: Amount.AmountType) -> Bool {
         return !transactions.filter { $0.status == .unconfirmed && $0.amount.type == amountType }.isEmpty
-    }
-    
-    internal init(blockchain: Blockchain, addresses: [Address], publicKey: PublicKey) {
-        self.blockchain = blockchain
-        self.addresses = addresses
-        self.publicKey = publicKey
     }
     
     /// Explore URL for specific address
@@ -86,21 +108,13 @@ public struct Wallet {
         return blockchain.getShareString(from: address)
     }
     
-    mutating func clearAmounts() {
-        amounts = [:]
-    }
-    
     public mutating func add(coinValue: Decimal) {
-        let coinAmount = Amount(with: blockchain,
-                                type: .coin,
-                                value: coinValue)
+        let coinAmount = Amount(with: blockchain, type: .coin, value: coinValue)
         add(amount: coinAmount)
     }
     
     public mutating func add(reserveValue: Decimal) {
-        let reserveAmount = Amount(with: blockchain,
-                                   type: .reserve,
-                                   value: reserveValue)
+        let reserveAmount = Amount(with: blockchain, type: .reserve, value: reserveValue)
         add(amount: reserveAmount)
     }
     
@@ -113,6 +127,12 @@ public struct Wallet {
     
     public mutating func add(amount: Amount) {
         amounts[amount.type] = amount
+    }
+    
+    // MARK: - Internal
+    
+    mutating func clearAmounts() {
+        amounts = [:]
     }
     
     mutating func add(transaction: Transaction) {
@@ -133,7 +153,8 @@ public struct Wallet {
             return
         }
         
-        if addresses.contains(where: { $0.value == sourceAddress }) && addresses.contains(where: { $0.value == destinationAddress }) {
+        if addresses.contains(where: { $0.value == sourceAddress }) &&
+            addresses.contains(where: { $0.value == destinationAddress }) {
             return
         }
         
@@ -175,27 +196,5 @@ public struct Wallet {
     
     mutating func remove(token: Token) {
         amounts[.token(value: token)] = nil
-    }
-}
-
-extension Wallet {
-    public enum WalletState {
-        case created
-        case loaded
-    }
-    
-    public struct PublicKey: Codable, Hashable {
-        public let seedKey: Data
-        public let derivationPath: DerivationPath?
-
-        fileprivate let derivedKey: ExtendedPublicKey?
-
-        public var blockchainKey: Data { derivedKey?.publicKey ?? seedKey }
-        
-        public init(seedKey: Data, derivedKey: ExtendedPublicKey?, derivationPath: DerivationPath?) {
-            self.seedKey = seedKey
-            self.derivedKey = derivedKey
-            self.derivationPath = derivationPath
-        }
     }
 }

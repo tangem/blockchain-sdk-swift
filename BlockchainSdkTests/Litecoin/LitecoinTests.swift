@@ -17,17 +17,15 @@ class LitecoinTests: XCTestCase {
     private let networkParams =  LitecoinNetworkParams()
     private let sizeTester = TransactionSizeTesterUtility()
     
-    private lazy var addressService = blockchain.getAddressService()
-    
     func testAddress() {
         let walletPublicKey = Data(hex: "041C1E7B3253E5C1E3519FB22894AD95285CE244D1D426A58D3178296A488FDC56699C85990B3EC09505253CB3C3FC7B712F1C6E953675922534B61D17408EAB39")
         let expectedAddress = "LWjJD6H1QrMmCQ5QhBKMqvPqMzwYpJPv2M"
         
-        XCTAssertEqual(try! addressService.makeAddresses(from: walletPublicKey)[1].value, expectedAddress)
+        XCTAssertEqual(try! blockchain.makeAddresses(from: walletPublicKey, with: nil)[1].value, expectedAddress)
     }
     
     func testValidateCorrectAddress() {
-        XCTAssertTrue(addressService.validate("LWjJD6H1QrMmCQ5QhBKMqvPqMzwYpJPv2M"))
+        XCTAssertTrue(blockchain.validate(address: "LWjJD6H1QrMmCQ5QhBKMqvPqMzwYpJPv2M"))
     }
     
     func testBuildTransaction() {
@@ -43,7 +41,7 @@ class LitecoinTests: XCTestCase {
         let destinationAddress = "LWjJD6H1QrMmCQ5QhBKMqvPqMzwYpJPv2M"
         
         let feeRate = 4
-        let addresses = try! addressService.makeAddresses(from: walletPubkey)
+        let addresses = try! blockchain.makeAddresses(from: walletPubkey, with: nil)
         let address = addresses[1].value
         XCTAssertNotNil(address)
         

@@ -11,7 +11,7 @@ import Sodium
 import SwiftCBOR
 import CryptoSwift
 
-public class CardanoAddressService: AddressService {
+public class CardanoAddressService: MultipleAddressProvider {
     private let addressHeaderByte = Data([UInt8(97)])
     
     private let shelley: Bool

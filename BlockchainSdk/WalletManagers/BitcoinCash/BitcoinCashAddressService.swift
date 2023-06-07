@@ -12,7 +12,7 @@ import TangemSdk
 import BitcoinCore
 
 @available(iOS 13.0, *)
-public class BitcoinCashAddressService: AddressService {
+public class BitcoinCashAddressService: MultipleAddressProvider {
     private let legacyService: BitcoinLegacyAddressService
     private let cashAddrService: CashAddrService
     
