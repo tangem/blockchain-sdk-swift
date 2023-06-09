@@ -143,6 +143,21 @@
             "blockchain": "ravencoin",
             "derivation": "m/44'/175'/0'/0/0",
             "walletPublicKey": "0260BF54E0D66880E36FC5400C5CBF799AE129807B03B0FC88DB2506217EB24D85"
+        },
+        {
+            "blockchain": "cosmos-hub",
+            "derivation": "m/44'/118'/0'/0/0",
+            "walletPublicKey": "026AB533F98EEDAF3C271023A379E2CE2EEC479D1E31832294B627A5AD3D0AA4D2"
+        },
+        {
+            "blockchain": "terra",
+            "derivation": "m/44'/330'/0'/0/0",
+            "walletPublicKey": "0243ac5946c42ff532bf6375cd62ce766da829d3942d0f33811c1d72694b1d3b5d"
+        },
+        {
+            "blockchain": "terra-2",
+            "derivation": "m/44'/330'/0'/0/0",
+            "walletPublicKey": "0243ac5946c42ff532bf6375cd62ce766da829d3942d0f33811c1d72694b1d3b5d"
         }
     ]
 }
