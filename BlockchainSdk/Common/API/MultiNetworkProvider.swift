@@ -38,7 +38,7 @@ extension MultiNetworkProvider {
                     
                     Log.network(message)
                     
-                    exceptionHandler?.errorSwitchApi(
+                    self.exceptionHandler?.errorSwitchApi(
                         exceptionHost: currentHost,
                         selectedHost: self.nextHostProvider(for: currentHost),
                         code: resp.statusCode,
