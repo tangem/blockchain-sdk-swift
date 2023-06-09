@@ -8,9 +8,18 @@
 
 import Foundation
 
+public struct ExternalExceptionInput {
+    public let blockchain: Blockchain
+    
+    init(blockchain: Blockchain) {
+        self.blockchain = blockchain
+    }
+}
+
+public typealias ExternalExceptionHandlerBuilder = (ExternalExceptionInput) -> ExternalExceptionHandler
+
 public protocol ExternalExceptionHandler {
     
-    /// Register BlockchainSdk exception for external service logger
-    func log(exception message: String, for host: String)
+    func errorSwitchApi(exceptionHost: String, selectedHost: String?, code: Int, message: String)
     
 }

@@ -37,23 +37,23 @@ extension MultiNetworkProvider {
                     let message = "Switchable publisher catched error: \(moyaError). Response message: \(String(describing: String(data: resp.data, encoding: .utf8)))"
                     
                     Log.network(message)
-                    exceptionHandler?.log(exception: message, for: currentHost)
+                    
+                    exceptionHandler?.errorSwitchApi(
+                        exceptionHost: currentHost,
+                        selectedHost: self.nextHostProvider(for: currentHost),
+                        code: resp.statusCode,
+                        message: message
+                    )
                 }
                 
                 if case WalletError.noAccount = error {
                     return .anyFail(error: error)
                 }
                 
-                let message = "Switchable publisher catched error: \(error)"
-                
-                Log.network(message)
-                exceptionHandler?.log(exception: message, for: currentHost)
+                Log.network("Switchable publisher catched error: \(error)")
                 
                 if self.needRetry(for: currentHost) {
-                    let message = "Switching to next publisher"
-                    Log.network(message)
-                    exceptionHandler?.log(exception: message, for: currentHost)
-                    
+                    Log.network("Switching to next publisher")
                     return self.providerPublisher(for: requestPublisher)
                 }
                 
@@ -75,6 +75,14 @@ extension MultiNetworkProvider {
         }
         resetProviders()
         return false
+    }
+    
+    private func nextHostProvider(for host: String) -> String? {
+        if needRetry(for: host) && (currentProviderIndex + 1) < providers.count {
+            return providers[currentProviderIndex + 1].host
+        }
+        
+        return nil
     }
     
     private func resetProviders() {
