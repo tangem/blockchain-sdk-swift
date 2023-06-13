@@ -531,7 +531,8 @@ extension Blockchain {
         }
         
         if isTestnet {
-            return [.default: BIP44(coinType: 1).buildPath()]
+            return style.provider.derivations(for: self)
+                .mapValues { _ in BIP44(coinType: 1).buildPath() }
         }
         
         return style.provider.derivations(for: self)

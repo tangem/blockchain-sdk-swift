@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum AddressType: String, Equatable {
+public enum AddressType: Int, Equatable {
     case `default`
     case legacy
     
@@ -19,5 +19,11 @@ public enum AddressType: String, Equatable {
         case .legacy:
             return "address_type_legacy".localized
         }
+    }
+}
+
+extension AddressType: Comparable {
+    public static func < (lhs: AddressType, rhs: AddressType) -> Bool {
+        lhs.rawValue < rhs.rawValue
     }
 }

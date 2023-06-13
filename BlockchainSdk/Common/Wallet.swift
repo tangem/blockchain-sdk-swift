@@ -21,7 +21,7 @@ public struct Wallet {
     
     // MARK: - Calculations
     
-    public var addresses: [Address] { walletAddresses.map { $0.value } }
+    public var addresses: [Address] { walletAddresses.map { $0.value }.sorted(by: { $0.type < $1.type }) }
     public var defaultAddress: Address { walletAddresses[.default]! }
     
     /// `publicKey` from default address
