@@ -46,7 +46,10 @@ class LitecoinTests: XCTestCase {
         let destinationAddress = "LWjJD6H1QrMmCQ5QhBKMqvPqMzwYpJPv2M"
         
         let feeRate = 4
-        let addresses = try addressService.makeAddresses(from: walletPubkey)
+        let addresses = [
+            try addressService.makeAddress(from: walletPubkey, type: .default),
+            try addressService.makeAddress(from: walletPubkey, type: .legacy),
+        ]
         let address = addresses[1].value
         XCTAssertNotNil(address)
         

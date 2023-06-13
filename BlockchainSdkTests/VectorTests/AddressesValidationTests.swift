@@ -37,7 +37,7 @@ class AddressesValidationTests: XCTestCase {
 
                 let coin = CoinType(blockchain)!
                 let walletCoreAddressValidator = WalletCoreAddressService(coin: coin, publicKeyType: coin.publicKeyType)
-                let addressValidator = AddressServiceFactory().getAddressService(for: blockchain)
+                let addressValidator = AddressServiceFactory(blockchain: blockchain).makeAddressService()
                 
                 vector.positive.forEach {
                     XCTAssertTrue(walletCoreAddressValidator.validate($0), "__INVALIDATE_WALLET_CORE__ ADDRESS -> \(blockchain)")

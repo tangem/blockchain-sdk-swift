@@ -16,7 +16,7 @@ class StellarTests: XCTestCase {
     private let blockchain = Blockchain.stellar(testnet: false)
     private let sizeTester = TransactionSizeTesterUtility()
     
-    private lazy var addressService = blockchain.getAddressService()
+    private lazy var addressService = StellarAddressService()
     private var bag = Set<AnyCancellable>()
     
     override func setUp() {

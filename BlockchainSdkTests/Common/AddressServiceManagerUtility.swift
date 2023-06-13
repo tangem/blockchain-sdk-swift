@@ -31,7 +31,7 @@ final class AddressServiceManagerUtility {
         for blockchain: BlockchainSdk.Blockchain,
         addressType: AddressType = .default
     ) throws -> String {
-        let service = AddressServiceFactory().getAddressService(for: blockchain)
+        let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
         return try service.makeAddress(from: publicKey, type: addressType).value
     }
     

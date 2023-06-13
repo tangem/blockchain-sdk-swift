@@ -540,12 +540,7 @@ extension Blockchain {
 
     @available(*, deprecated, message: "Use AddressServiceFactory(blockchain:).validate(_:)")
     public func validate(address: String) -> Bool {
-        getAddressService().validate(address)
-    }
-
-    @available(*, deprecated, message: "Use AddressServiceFactory(blockchain:).makeAddressService()")
-    func getAddressService() -> AddressService {
-        AddressServiceFactory(blockchain: self).makeAddressService()
+        AddressServiceFactory(blockchain: self).makeAddressService().validate(address)
     }
 }
 

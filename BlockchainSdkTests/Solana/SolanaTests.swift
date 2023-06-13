@@ -69,10 +69,11 @@ final class SolanaTests: XCTestCase {
         super.setUp()
         networkingRouter = .init(endpoints: [.devnetSolana, .devnetGenesysGo, .testnetSolana])
         solanaSdk = .init(router: networkingRouter, accountStorage: SolanaDummyAccountStorage())
-        let addrs = try! blockchain.makeAddresses(from: .init(seedKey: walletPubKey, derivation: nil), with: nil)
-        let wallet = Wallet(blockchain: blockchain,
-                            addresses: addrs,
-                            publicKey: .init(seedKey: walletPubKey, derivation: .none))
+        let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
+
+        let addrs = try! service.makeAddress(from: walletPubKey)
+        let wallet = Wallet(blockchain: blockchain, addresses: [.default: addrs])
+
         manager = .init(wallet: wallet)
         manager.solanaSdk = solanaSdk
         manager.networkService = SolanaNetworkService(solanaSdk: solanaSdk, blockchain: blockchain, hostProvider: networkingRouter)

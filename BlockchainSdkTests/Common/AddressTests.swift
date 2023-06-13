@@ -70,10 +70,10 @@ class AddressesTests: XCTestCase {
         let blockchain = Blockchain.bitcoin(testnet: false) //no testnet for twins
         let service = BitcoinAddressService(networkParams: BitcoinNetwork.mainnet.networkParams)
 
-        let addr_dec = try service.makeAddresses(firstPublicKey: secpDecompressedKey, secondPublicKey: secpPairDecompressedKey)
-        let addr_dec1 = try service.makeAddresses(firstPublicKey: secpDecompressedKey, secondPublicKey: secpPairCompressedKey)
-        let addr_comp = try service.makeAddresses(firstPublicKey: secpCompressedKey, secondPublicKey: secpPairCompressedKey)
-        let addr_comp1 = try service.makeAddresses(firstPublicKey: secpCompressedKey, secondPublicKey: secpPairDecompressedKey)
+        let addr_dec = try service.makeAddresses(publicKey: .init(seedKey: secpDecompressedKey), pairPublicKey: secpPairDecompressedKey)
+        let addr_dec1 = try service.makeAddresses(publicKey: .init(seedKey: secpDecompressedKey), pairPublicKey: secpPairCompressedKey)
+        let addr_comp = try service.makeAddresses(publicKey: .init(seedKey: secpCompressedKey), pairPublicKey: secpPairCompressedKey)
+        let addr_comp1 = try service.makeAddresses(publicKey: .init(seedKey: secpCompressedKey), pairPublicKey: secpPairDecompressedKey)
         XCTAssertEqual(addr_dec.count, 2)
         XCTAssertEqual(addr_dec1.count, 2)
         XCTAssertEqual(addr_comp.count, 2)

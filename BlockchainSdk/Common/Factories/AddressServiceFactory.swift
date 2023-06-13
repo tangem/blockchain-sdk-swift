@@ -17,10 +17,6 @@ public struct AddressServiceFactory {
         self.blockchain = blockchain
     }
 
-    public func validate(address: String) -> Bool {
-        makeAddressService().validate(address)
-    }
-
     public func makeAddressService() -> AddressService {
         let isTestnet = blockchain.isTestnet
 

@@ -309,7 +309,7 @@
 		EF32FEC22A3072B9002ED43F /* BitcoinCashAddrService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FEC12A3072B9002ED43F /* BitcoinCashAddrService.swift */; };
 		EF32FED92A38A04E002ED43F /* AddressServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FED82A38A04E002ED43F /* AddressServiceFactory.swift */; };
 		EF32FEDB2A38C288002ED43F /* BitcoinScriptAddressProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FEDA2A38C288002ED43F /* BitcoinScriptAddressProvider.swift */; };
-		EF32FEDF2A38D015002ED43F /* BitcoinScriptAddressesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FEDD2A38D015002ED43F /* BitcoinScriptAddressesProvider.swift */; };
+		EF32FEE02A38D43A002ED43F /* BitcoinScriptAddressesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FEDD2A38D015002ED43F /* BitcoinScriptAddressesProvider.swift */; };
 		EF332D17288EACB000AE3C85 /* HostProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D16288EACB000AE3C85 /* HostProvider.swift */; };
 		EF332D19288EAEAC00AE3C85 /* NetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D18288EAEAC00AE3C85 /* NetworkProvider.swift */; };
 		EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */; };
@@ -2270,7 +2270,6 @@
 				DA82434127A2B0AD00CFC2C0 /* PolkadotTarget.swift in Sources */,
 				5D26CEF9243CBF2700994CC0 /* BitcoinNetworkProvider.swift in Sources */,
 				5D4B33D523F7DFB400C93A84 /* BinanceTransactionBuilder.swift in Sources */,
-				EF32FEDF2A38D015002ED43F /* BitcoinScriptAddressesProvider.swift in Sources */,
 				5D26CEEC243CB92700994CC0 /* BlockcypherResponse.swift in Sources */,
 				EF2BC62529DAD53B003D3F18 /* RavencoinWalletInfo.swift in Sources */,
 				5D5E058C24FE749D00F04DE1 /* Bundle+.swift in Sources */,
@@ -2296,6 +2295,7 @@
 				5D7D243125136254001B9A4F /* XRPHistoricalTransaction.swift in Sources */,
 				2D9A91A229BB8C1700476EA6 /* TONProviderResponse.swift in Sources */,
 				B056729B2570F9DC00A8CB59 /* BlockchainSdkError.swift in Sources */,
+				EF32FEE02A38D43A002ED43F /* BitcoinScriptAddressesProvider.swift in Sources */,
 				DADF5F932A1B7C6B00D58DC3 /* TWPublicKey+.swift in Sources */,
 				5DEAFA942444C5300032E316 /* Token.swift in Sources */,
 				5D557CB023AA888D009B32AF /* Uint64+.swift in Sources */,
