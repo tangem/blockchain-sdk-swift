@@ -21,7 +21,7 @@ protocol MultiNetworkProvider: AnyObject, HostProvider {
 }
 
 extension MultiNetworkProvider {
-    var nextHostProvider: String? {
+    var nextHost: String? {
         if (currentProviderIndex + 1) < providers.count {
             return providers[currentProviderIndex + 1].host
         }
@@ -50,7 +50,7 @@ extension MultiNetworkProvider {
                     
                     self.exceptionHandler?.handleAPISwitch(
                         currentHost: currentHost,
-                        nextHost: self.nextHostProvider,
+                        nextHost: self.nextHost,
                         statusCode: resp.statusCode,
                         message: message
                     )

@@ -32,7 +32,11 @@ class TONTests: XCTestCase {
         
         return try! .init(
             wallet: wallet,
-            networkService: TONNetworkService(providers: [], blockchain: blockchain)
+            networkService: TONNetworkService(
+                providers: [],
+                blockchain: blockchain,
+                exceptionHandler: nil
+            )
         )
     }()
     
