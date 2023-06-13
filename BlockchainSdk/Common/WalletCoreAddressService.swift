@@ -21,6 +21,19 @@ public struct WalletCoreAddressService {
     }
 }
 
+// MARK: - Convenience init
+
+extension WalletCoreAddressService {
+    public init(coin: CoinType) {
+        self.init(coin: coin, publicKeyType: coin.publicKeyType)
+    }
+
+    public init(blockchain: Blockchain) {
+        let coin = CoinType(blockchain)!
+        self.init(coin: coin)
+    }
+}
+
 // MARK: - AddressProvider
 
 extension WalletCoreAddressService: AddressProvider {

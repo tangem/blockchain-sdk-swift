@@ -17,3 +17,9 @@ public protocol AddressValidator {
 public protocol AddressProvider {
     func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair
 }
+
+extension AddressProvider {
+    func makeAddress(from publicKey: Data, type: AddressType = .default) throws -> AddressPublicKeyPair {
+        try makeAddress(for: Wallet.PublicKey(seedKey: publicKey, derivation: .none), with: type)
+    }
+}

@@ -34,10 +34,11 @@ class BlockchainSdkTests: XCTestCase {
         }
     }
     
-    func testBtcAddress() {
+    func testBtcAddress() throws {
         let btcAddress = "1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs"
         let publicKey = Data(hex: "0250863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352")
-        XCTAssertEqual(try! BitcoinLegacyAddressService(networkParams: BitcoinNetwork.mainnet.networkParams).makeAddress(from: publicKey), btcAddress)
+        let service = BitcoinLegacyAddressService(networkParams: BitcoinNetwork.mainnet.networkParams)
+        XCTAssertEqual(try service.makeAddress(from: publicKey).value, btcAddress)
     }
     
     func testDucatusAddressValidation() {
@@ -45,7 +46,8 @@ class BlockchainSdkTests: XCTestCase {
     }
     
     func testLTCAddressValidation() {
-        XCTAssertTrue(Blockchain.litecoin.validate(address: "LMbRCidgQLz1kNA77gnUpLuiv2UL6Bc4Q2"))
+        let service = BitcoinAddressService(networkParams: LitecoinNetworkParams())
+        XCTAssertTrue(service.validate("LMbRCidgQLz1kNA77gnUpLuiv2UL6Bc4Q2"))
     }
     
     func testEthChecksum() {
@@ -77,9 +79,10 @@ class BlockchainSdkTests: XCTestCase {
     
     func testRskChecksum() {
         let rskAddressService = RskAddressService()
-        let chesksummed = try! rskAddressService.makeAddress(from: Data(hex:"04BAEC8CD3BA50FDFE1E8CF2B04B58E17041245341CD1F1C6B3A496B48956DB4C896A6848BCF8FCFC33B88341507DD25E5F4609386C68086C74CF472B86E5C3820"))
+        let publicKey = Data(hex:"04BAEC8CD3BA50FDFE1E8CF2B04B58E17041245341CD1F1C6B3A496B48956DB4C896A6848BCF8FCFC33B88341507DD25E5F4609386C68086C74CF472B86E5C3820")
+        let chesksummed = try! rskAddressService.makeAddress(from: publicKey)
         
-        XCTAssertEqual(chesksummed, "0xc63763572D45171E4C25cA0818B44e5DD7f5c15b")
+        XCTAssertEqual(chesksummed.value, "0xc63763572D45171E4C25cA0818B44e5DD7f5c15b")
         
         let correctAddress = "0xc63763572d45171e4c25ca0818b44e5dd7f5c15b"
         let correctAddressWithChecksum = "0xc63763572D45171E4C25cA0818B44e5DD7f5c15b"

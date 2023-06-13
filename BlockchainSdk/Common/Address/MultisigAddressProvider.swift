@@ -9,5 +9,5 @@
 import Foundation
 
 public protocol MultisigAddressProvider {
-    func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data) throws -> [Address]
+    func makeAddresses(firstPublicKey: Data, secondPublicKey: Data) throws -> [Address]
 }

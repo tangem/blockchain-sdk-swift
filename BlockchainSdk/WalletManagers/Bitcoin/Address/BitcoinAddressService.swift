@@ -38,10 +38,10 @@ extension BitcoinAddressService: AddressProvider {
     public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
         switch addressType {
         case .default:
-            let bech32AddressString = try bech32.makeAddress(from: publicKey.blockchainKey)
+            let bech32AddressString = try bech32.makeAddress(from: publicKey.blockchainKey).value
             return AddressPublicKeyPair(value: bech32AddressString, publicKey: publicKey, type: addressType)
         case .legacy:
-            let legacyAddressString = try legacy.makeAddress(from: publicKey.blockchainKey)
+            let legacyAddressString = try legacy.makeAddress(from: publicKey.blockchainKey).value
             return AddressPublicKeyPair(value: legacyAddressString, publicKey: publicKey, type: addressType)
         }
     }
@@ -51,8 +51,8 @@ extension BitcoinAddressService: AddressProvider {
 
 @available(iOS 13.0, *)
 extension BitcoinAddressService: MultisigAddressProvider {
-	public func makeAddresses(from walletPublicKey: Data, with pairPublicKey: Data) throws -> [Address] {
-        guard let script = try create1Of2MultisigOutputScript(firstPublicKey: walletPublicKey, secondPublicKey: pairPublicKey) else {
+	public func makeAddresses(firstPublicKey: Data, secondPublicKey: Data) throws -> [Address] {
+        guard let script = try create1Of2MultisigOutputScript(firstPublicKey: firstPublicKey, secondPublicKey: secondPublicKey) else {
             throw BlockchainSdkError.failedToCreateMultisigScript
         }
 
@@ -71,8 +71,8 @@ extension BitcoinAddressService: MultisigAddressProvider {
 @available(iOS 13.0, *)
 extension BitcoinAddressService: MultipleAddressProvider {
     public func makeAddresses(from walletPublicKey: Data) throws -> [Address] {
-        let legacyAddressString = try legacy.makeAddress(from: walletPublicKey)
-        let bech32AddressString = try bech32.makeAddress(from: walletPublicKey)
+        let legacyAddressString = try legacy.makeAddress(from: walletPublicKey).value
+        let bech32AddressString = try bech32.makeAddress(from: walletPublicKey).value
 
         return [
             PlainAddress(value: legacyAddressString, type: .legacy),

@@ -10,7 +10,7 @@ import Foundation
 import TangemSdk
 
 public struct EthereumAddressService {
-    private func toChecksumAddress(_ address: String) -> String? {
+    func toChecksumAddress(_ address: String) -> String? {
         let address = address.lowercased().remove("0x")
         guard let hash = address.data(using: .utf8)?.sha3(.keccak256).toHexString() else {
             return nil

@@ -17,23 +17,8 @@ public class BitcoinLegacyAddressService {
     }
 
     public func makeMultisigAddress(from scriptHash: Data) throws -> String {
-        let address = try converter.convert(keyHash: scriptHash, type: .p2sh).stringValue
-
-        return address
+        return try converter.convert(keyHash: scriptHash, type: .p2sh).stringValue
     }
-
-    public func makeAddress(from walletPublicKey: Data) throws -> String {
-            try walletPublicKey.validateAsSecp256k1Key()
-
-            let publicKey = PublicKey(withAccount: 0,
-                                      index: 0,
-                                      external: true,
-                                      hdPublicKeyData: walletPublicKey)
-
-            let address = try converter.convert(publicKey: publicKey, type: .p2pkh).stringValue
-
-            return address
-        }
 }
 
 // MARK: - AddressValidator
@@ -55,7 +40,14 @@ extension BitcoinLegacyAddressService: AddressValidator {
 @available(iOS 13.0, *)
 extension BitcoinLegacyAddressService: AddressProvider {
     public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
-        let address = try makeAddress(from: publicKey.blockchainKey)
+        try publicKey.blockchainKey.validateAsSecp256k1Key()
+
+        let bitcoinCorePublicKey = PublicKey(withAccount: 0,
+                                  index: 0,
+                                  external: true,
+                                  hdPublicKeyData: publicKey.blockchainKey)
+
+        let address = try converter.convert(publicKey: bitcoinCorePublicKey, type: .p2pkh).stringValue
         return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
     }
 }

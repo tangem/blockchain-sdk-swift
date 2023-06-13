@@ -11,8 +11,8 @@ import TangemSdk
 
 extension Wallet {
     public struct PublicKey: Codable, Hashable {
-        let seedKey: Data
-        private let derivation: Derivation?
+        public let seedKey: Data
+        public let derivation: Derivation?
 
         /// Derived or non-derived key that should be used to create an address in a blockchain
         public var blockchainKey: Data {

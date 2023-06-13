@@ -65,8 +65,7 @@ struct AddressServiceFactory {
             let networkParams: INetwork = isTestnet ? RavencoinTestNetworkParams() : RavencoinMainNetworkParams()
             return BitcoinLegacyAddressService(networkParams: networkParams)
         case .ton, .cosmos, .terraV1, .terraV2:
-            let coin = CoinType(blockchain)!
-            return WalletCoreAddressService(coin: coin, publicKeyType: coin.publicKeyType)
+            return WalletCoreAddressService(blockchain: blockchain)
         }
     }
 }

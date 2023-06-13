@@ -42,7 +42,7 @@ extension BitcoinCashAddressService: AddressProvider {
             return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
         case .legacy:
             let compressedKey = try Secp256k1Key(with: publicKey.blockchainKey).compress()
-            let address = try legacyService.makeAddress(from: compressedKey)
+            let address = try legacyService.makeAddress(from: compressedKey).value
             return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
         }
     }
@@ -53,13 +53,13 @@ extension BitcoinCashAddressService: AddressProvider {
 @available(iOS 13.0, *)
 extension BitcoinCashAddressService: MultipleAddressProvider {
     public func makeAddresses(from walletPublicKey: Data) throws -> [Address] {
-            let address = try bitcoinCashAddressService.makeAddress(from: walletPublicKey)
-            let compressedKey = try Secp256k1Key(with: walletPublicKey).compress()
-            let legacyString = try legacyService.makeAddress(from: compressedKey)
+        let address = try bitcoinCashAddressService.makeAddress(from: walletPublicKey)
+        let compressedKey = try Secp256k1Key(with: walletPublicKey).compress()
+        let legacyString = try legacyService.makeAddress(from: compressedKey).value
 
-            let cashAddress = PlainAddress(value: address, type: .default)
-            let legacy = PlainAddress(value: legacyString, type: .legacy)
+        let cashAddress = PlainAddress(value: address, type: .default)
+        let legacy = PlainAddress(value: legacyString, type: .legacy)
 
-            return [cashAddress, legacy]
-        }
+        return [cashAddress, legacy]
+    }
 }

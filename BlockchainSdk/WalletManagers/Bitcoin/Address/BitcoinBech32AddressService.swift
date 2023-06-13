@@ -19,18 +19,6 @@ public class BitcoinBech32AddressService {
         converter = SegWitBech32AddressConverter(prefix: networkParams.bech32PrefixPattern, scriptConverter: scriptConverter)
     }
 
-    public func makeAddress(from walletPublicKey: Data) throws -> String {
-        let compressedKey = try Secp256k1Key(with: walletPublicKey).compress()
-        let publicKey = PublicKey(withAccount: 0,
-                                  index: 0,
-                                  external: true,
-                                  hdPublicKeyData: compressedKey)
-
-        let address = try converter.convert(publicKey: publicKey, type: .p2wpkh).stringValue
-
-        return address
-    }
-
     public func validate(_ address: String) -> Bool {
         do {
             _ = try converter.convert(address: address)
@@ -44,5 +32,19 @@ public class BitcoinBech32AddressService {
         let address = try converter.convert(scriptHash: scriptHash).stringValue
 
         return address
+    }
+}
+
+@available(iOS 13.0, *)
+extension BitcoinBech32AddressService: AddressProvider {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
+        let compressedKey = try Secp256k1Key(with: publicKey.blockchainKey).compress()
+        let bitcoinCorePublicKey = PublicKey(withAccount: 0,
+                                  index: 0,
+                                  external: true,
+                                  hdPublicKeyData: compressedKey)
+
+        let address = try converter.convert(publicKey: bitcoinCorePublicKey, type: .p2wpkh).stringValue
+        return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
     }
 }

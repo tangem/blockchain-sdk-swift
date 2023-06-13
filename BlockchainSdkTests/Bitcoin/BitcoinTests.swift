@@ -41,11 +41,11 @@ class BitcoinTests: XCTestCase {
         let expectedLegacyAddress = "358vzrRZUDZ8DM5Zbz9oLqGr8voPYQqe56"
         let expectedSegwitAddress = "bc1qw9czf0m0eu0v5uhdqj9l4w9su3ca0pegzxxk947hrehma343qwusy4nf8c"
         
-        let addresses = try? addressService.make1Of2MultisigAddresses(firstPublicKey: walletPublicKey1, secondPublicKey: walletPublicKey2)
+        let addresses = try? addressService.makeAddresses(firstPublicKey: walletPublicKey1, secondPublicKey: walletPublicKey2)
         XCTAssertNotNil(addresses)
         XCTAssertEqual(addresses!.count, numberOfAddresses)
         
-        let reversedPubkeysAddresses = try? addressService.make1Of2MultisigAddresses(firstPublicKey: walletPublicKey2, secondPublicKey: walletPublicKey1)
+        let reversedPubkeysAddresses = try? addressService.makeAddresses(firstPublicKey: walletPublicKey2, secondPublicKey: walletPublicKey1)
         XCTAssertNotNil(reversedPubkeysAddresses)
         XCTAssertEqual(reversedPubkeysAddresses!.count, numberOfAddresses)
         

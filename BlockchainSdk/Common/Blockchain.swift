@@ -544,7 +544,7 @@ extension Blockchain {
         
         if let multiSigAddressProvider = addressService as? MultisigAddressProvider,
            let pairKey = pairPublicKey {
-            return try multiSigAddressProvider.makeAddresses(from: walletPublicKey.blockchainKey, with: pairKey)
+            return try multiSigAddressProvider.makeAddresses(firstPublicKey: walletPublicKey.blockchainKey, secondPublicKey: pairKey)
         }
         
         if let addressService = addressService as? MultipleAddressProvider {
@@ -553,62 +553,15 @@ extension Blockchain {
         
         return [try addressService.makeAddress(for: walletPublicKey, with: .default)]
     }
-    
+
+    @available(*, deprecated, message: "Use AddressServiceFactory().validate(for:)")
     public func validate(address: String) -> Bool {
         getAddressService().validate(address)
     }
-    
+
+    @available(*, deprecated, message: "Use AddressServiceFactory().getAddressService(for:)")
     func getAddressService() -> AddressService {
-        switch self {
-        case .bitcoin:
-            let network: BitcoinNetwork = isTestnet ? .testnet : .mainnet
-            let networkParams = network.networkParams
-            return BitcoinAddressService(networkParams: networkParams)
-        case .litecoin:
-            return BitcoinAddressService(networkParams: LitecoinNetworkParams())
-        case .stellar:
-            return StellarAddressService()
-        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair,
-                .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos:
-            return EthereumAddressService()
-        case .rsk:
-            return RskAddressService()
-        case .bitcoinCash:
-            let networkParams: INetwork = isTestnet ? BitcoinCashTestNetworkParams() : BitcoinCashNetworkParams()
-            return BitcoinCashAddressService(networkParams: networkParams)
-        case .binance:
-            return BinanceAddressService(testnet: isTestnet)
-        case .ducatus:
-            return BitcoinLegacyAddressService(networkParams: DucatusNetworkParams())
-        case .cardano(let shelley):
-            return CardanoAddressService(shelley: shelley)
-        case .xrp(let curve):
-            return XRPAddressService(curve: curve)
-        case .tezos(let curve):
-            return TezosAddressService(curve: curve)
-        case .dogecoin:
-            return BitcoinLegacyAddressService(networkParams: DogecoinNetworkParams())
-        case .solana:
-            return SolanaAddressService()
-        case .polkadot:
-            return PolkadotAddressService(network: isTestnet ? .westend : .polkadot)
-        case .kusama:
-            return PolkadotAddressService(network: .kusama)
-        case .tron:
-            return TronAddressService()
-        case .dash:
-            return BitcoinLegacyAddressService(
-                networkParams: isTestnet ?  DashTestNetworkParams() : DashMainNetworkParams()
-            )
-        case .kaspa:
-            return KaspaAddressService()
-        case .ravencoin:
-            let networkParams: INetwork = isTestnet ? RavencoinTestNetworkParams() : RavencoinMainNetworkParams()
-            return BitcoinLegacyAddressService(networkParams: networkParams)
-        case .ton, .cosmos, .terraV1, .terraV2:
-            let coin = CoinType(self)!
-            return WalletCoreAddressService(coin: coin, publicKeyType: coin.publicKeyType)
-        }
+        AddressServiceFactory().getAddressService(for: self)
     }
 }
 
