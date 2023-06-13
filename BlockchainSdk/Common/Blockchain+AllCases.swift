@@ -23,7 +23,6 @@ extension Blockchain {
         case .binance: break
         case .cardano: break
         case .xrp: break
-        case .ducatus: break
         case .tezos: break
         case .dogecoin: break
         case .bsc: break
@@ -66,7 +65,6 @@ extension Blockchain {
             .tezos(curve: .secp256k1),
             .stellar(testnet: false),
             .cardano(shelley: true),
-            .ducatus,
             .dogecoin,
             .bsc(testnet: false),
             .polygon(testnet: false),

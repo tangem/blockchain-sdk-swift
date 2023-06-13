@@ -40,10 +40,6 @@ class BlockchainSdkTests: XCTestCase {
         XCTAssertEqual(try! BitcoinLegacyAddressService(networkParams: BitcoinNetwork.mainnet.networkParams).makeAddress(from: publicKey), btcAddress)
     }
     
-    func testDucatusAddressValidation() {
-        XCTAssertTrue(Blockchain.ducatus.validate(address: "LokyqymHydUE3ZC1hnZeZo6nuART3VcsSU"))
-    }
-    
     func testLTCAddressValidation() {
         XCTAssertTrue(Blockchain.litecoin.validate(address: "LMbRCidgQLz1kNA77gnUpLuiv2UL6Bc4Q2"))
     }
