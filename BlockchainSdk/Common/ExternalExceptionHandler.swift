@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct ExternalExceptionInput {
+public struct ExceptionInput {
     public let blockchain: Blockchain
     
     init(blockchain: Blockchain) {
@@ -16,10 +16,8 @@ public struct ExternalExceptionInput {
     }
 }
 
-public typealias ExternalExceptionHandlerBuilder = (ExternalExceptionInput) -> ExternalExceptionHandler
+public typealias ExceptionHandlerBuilder = (ExceptionInput) -> ExceptionHandler
 
-public protocol ExternalExceptionHandler {
-    
-    func errorSwitchApi(exceptionHost: String, selectedHost: String?, code: Int, message: String)
-    
+public protocol ExceptionHandler {
+    func handleAPISwitch(currentHost: String, nextHost: String?, statusCode: Int, message: String)
 }

@@ -16,7 +16,7 @@ struct WalletManagerAssemblyInput {
     let pairPublicKey: Data?
     let wallet: Wallet
     let networkConfig: NetworkProviderConfiguration
-    let exceptionHandler: ExternalExceptionHandler?
+    let exceptionHandler: ExceptionHandler?
 }
 
 /// Main assembly wallet manager interface

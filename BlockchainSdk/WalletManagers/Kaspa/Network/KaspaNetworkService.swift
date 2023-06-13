@@ -11,12 +11,13 @@ import Combine
 
 class KaspaNetworkService: MultiNetworkProvider {
     let providers: [KaspaNetworkProvider]
+    let exceptionHandler: ExceptionHandler?
+    
     var currentProviderIndex: Int = 0
-    var exceptionHandler: ExternalExceptionHandler?
     
     private let blockchain: Blockchain
     
-    init(providers: [KaspaNetworkProvider], blockchain: Blockchain, exceptionHandler: ExternalExceptionHandler?) {
+    init(providers: [KaspaNetworkProvider], blockchain: Blockchain, exceptionHandler: ExceptionHandler?) {
         self.providers = providers
         self.blockchain = blockchain
         self.exceptionHandler = exceptionHandler

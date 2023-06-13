@@ -11,18 +11,17 @@ import Combine
 
 /// Abstract layer for multi provide TON blockchain
 class TONNetworkService: MultiNetworkProvider {
-    
     // MARK: - Protperties
     
     let providers: [TONProvider]
     var currentProviderIndex: Int = 0
-    var exceptionHandler: ExternalExceptionHandler?
+    var exceptionHandler: ExceptionHandler?
     
     private var blockchain: Blockchain
     
     // MARK: - Init
-    
-    init(providers: [TONProvider], blockchain: Blockchain, exceptionHandler: ExternalExceptionHandler?) {
+
+    init(providers: [TONProvider], blockchain: Blockchain, exceptionHandler: ExceptionHandler?) {
         self.providers = providers
         self.blockchain = blockchain
         self.exceptionHandler = exceptionHandler

@@ -13,9 +13,9 @@ import Combine
 class StellarNetworkService: MultiNetworkProvider {
     var currentProviderIndex: Int = 0
     let providers: [StellarNetworkProvider]
-    var exceptionHandler: ExternalExceptionHandler?
+    let exceptionHandler: ExceptionHandler?
     
-    init(providers: [StellarNetworkProvider], exceptionHandler: ExternalExceptionHandler?) {
+    init(providers: [StellarNetworkProvider], exceptionHandler: ExceptionHandler?) {
         self.providers = providers
         self.exceptionHandler = exceptionHandler
     }

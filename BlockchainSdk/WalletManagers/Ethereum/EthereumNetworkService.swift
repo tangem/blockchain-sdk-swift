@@ -15,8 +15,9 @@ import BigInt
 
 class EthereumNetworkService: MultiNetworkProvider {
     let providers: [EthereumJsonRpcProvider]
+    let exceptionHandler: ExceptionHandler?
+    
     var currentProviderIndex: Int = 0
-    var exceptionHandler: ExternalExceptionHandler?
     
     private let decimals: Int
     private let ethereumInfoNetworkProvider: EthereumAdditionalInfoProvider?
@@ -31,7 +32,7 @@ class EthereumNetworkService: MultiNetworkProvider {
         blockchairProvider: BlockchairNetworkProvider?,
         transactionHistoryProvider: TransactionHistoryProvider?,
         abiEncoder: ABIEncoder,
-        exceptionHandler: ExternalExceptionHandler?
+        exceptionHandler: ExceptionHandler?
     ) {
         self.providers = providers
         self.decimals = decimals

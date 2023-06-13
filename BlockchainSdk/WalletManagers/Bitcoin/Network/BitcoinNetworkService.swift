@@ -14,10 +14,11 @@ import Alamofire
 
 class BitcoinNetworkService: MultiNetworkProvider, BitcoinNetworkProvider {
     let providers: [AnyBitcoinNetworkProvider]
-    var currentProviderIndex: Int = 0
-    var exceptionHandler: ExternalExceptionHandler?
+    let exceptionHandler: ExceptionHandler?
     
-    init(providers: [AnyBitcoinNetworkProvider], exceptionHandler: ExternalExceptionHandler?) {
+    var currentProviderIndex: Int = 0
+    
+    init(providers: [AnyBitcoinNetworkProvider], exceptionHandler: ExceptionHandler?) {
         self.providers = providers
         self.exceptionHandler = exceptionHandler
     }

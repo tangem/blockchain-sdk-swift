@@ -40,10 +40,11 @@ class AnyCardanoNetworkProvider: CardanoNetworkProvider {
 
 class CardanoNetworkService: MultiNetworkProvider, CardanoNetworkProvider {
     let providers: [AnyCardanoNetworkProvider]
-    var currentProviderIndex: Int = 0
-    var exceptionHandler: ExternalExceptionHandler?
+    let exceptionHandler: ExceptionHandler?
     
-    init(providers: [AnyCardanoNetworkProvider], exceptionHandler: ExternalExceptionHandler?) {
+    var currentProviderIndex: Int = 0
+    
+    init(providers: [AnyCardanoNetworkProvider], exceptionHandler: ExceptionHandler?) {
         self.providers = providers
         self.exceptionHandler = exceptionHandler
     }

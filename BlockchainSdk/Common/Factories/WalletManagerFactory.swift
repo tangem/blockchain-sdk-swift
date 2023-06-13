@@ -16,13 +16,13 @@ import Solana_Swift
 public class WalletManagerFactory {
     
     private let config: BlockchainSdkConfig
-    private let makeExceptionHandler: ExternalExceptionHandlerBuilder?
+    private let exceptionHandlerBuilder: ExceptionHandlerBuilder?
     
     // MARK: - Init
     
-    public init(config: BlockchainSdkConfig, makeExceptionHandler: ExternalExceptionHandlerBuilder? = nil) {
+    public init(config: BlockchainSdkConfig, exceptionHandlerBuilder: ExceptionHandlerBuilder? = nil) {
         self.config = config
-        self.makeExceptionHandler = makeExceptionHandler
+        self.exceptionHandlerBuilder = exceptionHandlerBuilder
     }
     
     public func makeWalletManager(blockchain: Blockchain, publicKeys: [AddressType: Wallet.PublicKey]) throws -> WalletManager {
@@ -36,7 +36,7 @@ public class WalletManagerFactory {
             pairPublicKey: nil,
             wallet: wallet,
             networkConfig: config.networkProviderConfiguration(for: blockchain),
-            exceptionHandler: makeExceptionHandler?(.init(blockchain: blockchain))
+            exceptionHandler: exceptionHandlerBuilder?(.init(blockchain: blockchain))
         )
 
         return try blockchain.assembly.make(with: input)
@@ -121,7 +121,7 @@ public class WalletManagerFactory {
                 pairPublicKey: pairPublicKey,
                 wallet: wallet,
                 networkConfig: config.networkProviderConfiguration(for: blockchain),
-                exceptionHandler: makeExceptionHandler?(.init(blockchain: blockchain))
+                exceptionHandler: exceptionHandlerBuilder?(.init(blockchain: blockchain))
             )
         )
     }
@@ -158,7 +158,7 @@ extension WalletManagerFactory {
                 pairPublicKey: nil,
                 wallet: wallet,
                 networkConfig: config.networkProviderConfiguration(for: blockchain),
-                exceptionHandler: makeExceptionHandler?(.init(blockchain: blockchain))
+                exceptionHandler: exceptionHandlerBuilder?(.init(blockchain: blockchain))
             )
         )
     }

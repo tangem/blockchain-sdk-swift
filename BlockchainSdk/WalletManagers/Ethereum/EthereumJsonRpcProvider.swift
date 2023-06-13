@@ -18,8 +18,6 @@ class EthereumJsonRpcProvider: HostProvider {
         url.hostOrUnknown
     }
     
-    var exceptionLogger: ExternalExceptionHandler?
-    
     private let provider: NetworkProvider<EthereumTarget>
 
     init(url: URL, configuration: NetworkProviderConfiguration) {

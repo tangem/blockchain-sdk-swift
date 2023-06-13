@@ -12,10 +12,11 @@ import Combine
 
 class TezosNetworkService: MultiNetworkProvider {
     let providers: [TezosJsonRpcProvider]
-    var currentProviderIndex: Int = 0
-    var exceptionHandler: ExternalExceptionHandler?
+    let exceptionHandler: ExceptionHandler?
     
-    init(providers: [TezosJsonRpcProvider], exceptionHandler: ExternalExceptionHandler?) {
+    var currentProviderIndex: Int = 0
+    
+    init(providers: [TezosJsonRpcProvider], exceptionHandler: ExceptionHandler?) {
         self.providers = providers
         self.exceptionHandler = exceptionHandler
     }

@@ -11,12 +11,13 @@ import Combine
 
 class CosmosNetworkService: MultiNetworkProvider {
     let providers: [CosmosRestProvider]
+    let exceptionHandler: ExceptionHandler?
+    
     var currentProviderIndex: Int = 0
-    var exceptionHandler: ExternalExceptionHandler?
     
     private let cosmosChain: CosmosChain
     
-    init(cosmosChain: CosmosChain, providers: [CosmosRestProvider], exceptionHandler: ExternalExceptionHandler?) {
+    init(cosmosChain: CosmosChain, providers: [CosmosRestProvider], exceptionHandler: ExceptionHandler?) {
         self.providers = providers
         self.cosmosChain = cosmosChain
         self.exceptionHandler = exceptionHandler
