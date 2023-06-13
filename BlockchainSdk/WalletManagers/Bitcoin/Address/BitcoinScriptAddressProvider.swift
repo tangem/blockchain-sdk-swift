@@ -9,5 +9,5 @@
 import Foundation
 
 public protocol BitcoinScriptAddressProvider {
-    func makeMultisigAddress(from scriptHash: Data) throws -> String
+    func makeScriptAddress(from scriptHash: Data) throws -> String
 }

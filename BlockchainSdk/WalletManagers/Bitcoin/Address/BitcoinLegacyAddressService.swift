@@ -21,7 +21,7 @@ public class BitcoinLegacyAddressService {
 
 @available(iOS 13.0, *)
 extension BitcoinLegacyAddressService: BitcoinScriptAddressProvider {
-    public func makeMultisigAddress(from scriptHash: Data) throws -> String {
+    public func makeScriptAddress(from scriptHash: Data) throws -> String {
         return try converter.convert(keyHash: scriptHash, type: .p2sh).stringValue
     }
 }

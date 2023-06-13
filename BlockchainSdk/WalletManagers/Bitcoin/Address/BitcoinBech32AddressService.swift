@@ -25,7 +25,7 @@ public class BitcoinBech32AddressService {
 
 @available(iOS 13.0, *)
 extension BitcoinBech32AddressService: BitcoinScriptAddressProvider {
-    public func makeMultisigAddress(from scriptHash: Data) throws -> String {
+    public func makeScriptAddress(from scriptHash: Data) throws -> String {
         return try converter.convert(scriptHash: scriptHash).stringValue
     }
 }

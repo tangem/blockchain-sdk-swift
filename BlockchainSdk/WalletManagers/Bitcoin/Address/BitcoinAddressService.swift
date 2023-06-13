@@ -47,7 +47,7 @@ extension BitcoinAddressService: AddressProvider {
     }
 }
 
-// MARK: - BitcoinMultisigAddressProvider
+// MARK: - BitcoinScriptAddressProvider
 
 @available(iOS 13.0, *)
 extension BitcoinAddressService: BitcoinScriptAddressesProvider {
@@ -56,10 +56,10 @@ extension BitcoinAddressService: BitcoinScriptAddressesProvider {
             throw BlockchainSdkError.failedToCreateMultisigScript
         }
 
-        let legacyAddressString = try legacy.makeMultisigAddress(from: script.data.sha256Ripemd160)
+        let legacyAddressString = try legacy.makeScriptAddress(from: script.data.sha256Ripemd160)
         let scriptAddress = BitcoinScriptAddress(script: script, value: legacyAddressString, publicKey: publicKey, type: .legacy)
 
-        let bech32AddressString = try bech32.makeMultisigAddress(from: script.data.sha256())
+        let bech32AddressString = try bech32.makeScriptAddress(from: script.data.sha256())
         let bech32Address = BitcoinScriptAddress(script: script, value: bech32AddressString, publicKey: publicKey, type: .default)
 
         return [bech32Address, scriptAddress]
