@@ -21,6 +21,16 @@ protocol MultiNetworkProvider: AnyObject, HostProvider {
 }
 
 extension MultiNetworkProvider {
+    var nextHostProvider: String? {
+        if (currentProviderIndex + 1) < providers.count {
+            return providers[currentProviderIndex + 1].host
+        }
+        
+        return nil
+    }
+}
+
+extension MultiNetworkProvider {
     var provider: Provider {
         providers[currentProviderIndex]
     }
@@ -40,7 +50,7 @@ extension MultiNetworkProvider {
                     
                     self.exceptionHandler?.handleAPISwitch(
                         currentHost: currentHost,
-                        nextHost: self.nextHostProvider(for: currentHost),
+                        nextHost: self.nextHostProvider,
                         statusCode: resp.statusCode,
                         message: message
                     )
@@ -75,14 +85,6 @@ extension MultiNetworkProvider {
         }
         resetProviders()
         return false
-    }
-    
-    private func nextHostProvider(for host: String) -> String? {
-        if needRetry(for: host) && (currentProviderIndex + 1) < providers.count {
-            return providers[currentProviderIndex + 1].host
-        }
-        
-        return nil
     }
     
     private func resetProviders() {
