@@ -11,7 +11,8 @@ class DucatusWalletManager: BitcoinWalletManager {
     override func updateWallet(with response: [BitcoinResponse]) {
         let singleResponse = response.first!
         wallet.add(coinValue: singleResponse.balance)
-        txBuilder.unspentOutputs = singleResponse.unspentOutputs
+        txBuilder.update(unspentOutputs: singleResponse.unspentOutputs)
+
         loadedUnspents = singleResponse.unspentOutputs
         if singleResponse.hasUnconfirmed {
             if wallet.transactions.isEmpty {

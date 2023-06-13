@@ -13,7 +13,7 @@ import BitcoinCore
 
 class BitcoinWalletManager: BaseManager, WalletManager {
     var allowsFeeSelection: Bool { true }
-    var txBuilder: BitcoinTransactionBuilder!
+    var txBuilder: UTXOTransactionBuilder!
     var networkService: BitcoinNetworkProvider!
     
     var minimalFeePerByte: Decimal { 10 }
@@ -46,7 +46,7 @@ class BitcoinWalletManager: BaseManager, WalletManager {
         
         wallet.add(coinValue: balance)
         loadedUnspents = unspents
-        txBuilder.unspentOutputs = unspents
+        txBuilder.update(unspentOutputs: unspents)
         
         wallet.transactions.removeAll()
         if hasUnconfirmed {
@@ -68,22 +68,23 @@ class BitcoinWalletManager: BaseManager, WalletManager {
     }
     
     private func send(_ transaction: Transaction, signer: TransactionSigner, sequence: Int, isPushingTx: Bool) -> AnyPublisher<TransactionSendResult, Error> {
-        guard let hashes = txBuilder.buildForSign(transaction: transaction, sequence: sequence) else {
+        guard let hashes = try? txBuilder.buildForSign(transaction: transaction, sequence: sequence) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
-        
-        return signer.sign(hashes: hashes,
-                           walletPublicKey: self.wallet.publicKey)
-            .tryMap {[weak self] signatures -> (String) in
+
+        return signer.sign(hashes: hashes, walletPublicKey: self.wallet.publicKey)
+            .tryMap { [weak self] signatures -> (String) in
                 guard let self = self else { throw WalletError.empty }
-                
-                guard let tx = self.txBuilder.buildForSend(transaction: transaction, signatures: signatures, sequence: sequence) else {
-                    throw WalletError.failedToBuildTx
+
+                let signatures = signatures.enumerated().map { index, element in
+                    Signature(hash: hashes[index], publicKey: self.wallet.publicKey.blockchainKey, signature: element)
                 }
+
+                let tx = try self.txBuilder.buildForSend(transaction: transaction, signatures: signatures, sequence: sequence)
                 
                 return tx.toHexString()
             }
-            .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
+            .flatMap { [weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
                 guard let self = self else { return .emptyFail }
                 
                 let txHashPublisher: AnyPublisher<String, Error>
@@ -114,12 +115,12 @@ class BitcoinWalletManager: BaseManager, WalletManager {
         var normalRate = (max(response.normalSatoshiPerByte, minimalFeePerByte).rounded(roundingMode: .up) as NSDecimalNumber).intValue
         var maxRate = (max(response.prioritySatoshiPerByte, minimalFeePerByte).rounded(roundingMode: .up) as NSDecimalNumber).intValue
         
-        var minFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: false, changeScript: nil, sequence: .max)
-        var normalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: false, changeScript: nil, sequence: .max)
-        var maxFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: false, changeScript: nil, sequence: .max)
+        var minFee = txBuilder.fee(for: amount.value, address: destination, feeRate: minRate, senderPay: false, changeScript: nil, sequence: .max)
+        var normalFee = txBuilder.fee(for: amount.value, address: destination, feeRate: normalRate, senderPay: false, changeScript: nil, sequence: .max)
+        var maxFee = txBuilder.fee(for: amount.value, address: destination, feeRate: maxRate, senderPay: false, changeScript: nil, sequence: .max)
         
         let minimalFeeRate = (((minimalFee * Decimal(minRate)) / minFee).rounded(scale: 0, roundingMode: .up) as NSDecimalNumber).intValue
-        let minimalFee = txBuilder.bitcoinManager.fee(for: amount.value, address: destination, feeRate: minimalFeeRate, senderPay: false, changeScript: nil, sequence: .max)
+        let minimalFee = txBuilder.fee(for: amount.value, address: destination, feeRate: minimalFeeRate, senderPay: false, changeScript: nil, sequence: .max)
         if minFee < minimalFee {
             minRate = minimalFeeRate
             minFee = minimalFee
@@ -134,11 +135,17 @@ class BitcoinWalletManager: BaseManager, WalletManager {
             maxRate = minimalFeeRate
             maxFee = minimalFee
         }
-        
-        txBuilder.feeRates = [:]
-        txBuilder.feeRates[minFee] = minRate
-        txBuilder.feeRates[normalFee] = normalRate
-        txBuilder.feeRates[maxFee] = maxRate
+
+        txBuilder.update(feeRates: [
+            minFee : minRate,
+            normalFee: normalRate,
+            maxFee:maxRate
+        ])
+
+//        txBuilder.feeRates = [:]
+//        txBuilder.feeRates[minFee] = minRate
+//        txBuilder.feeRates[normalFee] = normalRate
+//        txBuilder.feeRates[maxFee] = maxRate
         return [
             Amount(with: wallet.blockchain, value: minFee),
             Amount(with: wallet.blockchain, value: normalFee),
@@ -150,7 +157,7 @@ class BitcoinWalletManager: BaseManager, WalletManager {
 @available(iOS 13.0, *)
 extension BitcoinWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        txBuilder.unspentOutputs = loadedUnspents
+        txBuilder.update(unspentOutputs: loadedUnspents)
         return send(transaction, signer: signer, sequence: SequenceValues.default.rawValue, isPushingTx: false)
     }
 }
@@ -194,11 +201,11 @@ extension BitcoinWalletManager: TransactionPusher {
             return .anyFail(error: BlockchainSdkError.failedToFindTransaction)
         }
         
-        txBuilder.unspentOutputs = loadedUnspents.filter { $0.transactionHash != transactionHash }
+        txBuilder.update(unspentOutputs: loadedUnspents.filter { $0.transactionHash != transactionHash })
         
         return getFee(amount: tx.amount, destination: tx.destinationAddress)
             .map { [weak self] feeDataModel in
-                self?.txBuilder.unspentOutputs = self?.loadedUnspents
+                self?.txBuilder.update(unspentOutputs: self?.loadedUnspents ?? [])
                 return feeDataModel
             }
             .eraseToAnyPublisher()
@@ -222,7 +229,7 @@ extension BitcoinWalletManager: TransactionPusher {
         
         //        let outputs = loadedUnspents.filter { unspent in params.inputs.contains(where: { $0.prevHash == unspent.transactionHash })}
         let outputs = loadedUnspents.filter { $0.transactionHash != transactionHash }
-        txBuilder.unspentOutputs = outputs
+        txBuilder.update(unspentOutputs: outputs)
         
         return send(newTransaction, signer: signer, sequence: sequence + 1, isPushingTx: true)
             .map { _ in Void() }

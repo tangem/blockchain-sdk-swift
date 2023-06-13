@@ -16,7 +16,7 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
             )
             
             $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
-            
+
             var providers = [AnyBitcoinNetworkProvider]()
             
             if !input.blockchain.isTestnet {

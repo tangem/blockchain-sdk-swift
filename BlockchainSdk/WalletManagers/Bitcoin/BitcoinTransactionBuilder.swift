@@ -11,7 +11,11 @@ import TangemSdk
 import HDWalletKit
 import BitcoinCore
 
-class BitcoinTransactionBuilder {
+class BitcoinTransactionBuilder: UTXOTransactionBuilder {
+    func fee(for value: Decimal, address: String?, feeRate: Int, senderPay: Bool, changeScript: Data?, sequence: Int?) -> Decimal {
+        bitcoinManager.fee(for: value, address: address, feeRate: feeRate, senderPay: senderPay, changeScript: changeScript)
+    }
+
 	var unspentOutputs: [BitcoinUnspentOutput]? {
 		didSet {
 			let utxoDTOs: [UtxoDTO]? = unspentOutputs?.map {
@@ -50,42 +54,42 @@ class BitcoinTransactionBuilder {
         walletScripts = scripts
         changeScript = defaultScriptData?.sha256()
 	}
+
+    func update(unspentOutputs: [BitcoinUnspentOutput]) {
+        self.unspentOutputs = unspentOutputs
+    }
+
+    func update(feeRates: [Decimal : Int]) {
+        self.feeRates = feeRates
+    }
 	
-    public func buildForSign(transaction: Transaction, sequence: Int?, sortType: TransactionDataSortType = .bip69) -> [Data]? {
-		do {
-            guard let feeRate = feeRates[transaction.fee.amount.value] else { return nil }
-            
-			let hashes = try bitcoinManager.buildForSign(target: transaction.destinationAddress,
-														 amount: transaction.amount.value,
-                                                         feeRate: feeRate,
-                                                         sortType: sortType,
-                                                         changeScript: changeScript,
-                                                         sequence: sequence)
-			return hashes
-		} catch {
-            Log.error(error)
-			return nil
-		}
+    public func buildForSign(transaction: Transaction, sequence: Int?, sortType: TransactionDataSortType = .bip69) throws -> [Data] {
+        guard let feeRate = feeRates[transaction.fee.amount.value] else {
+            throw WalletError.failedToBuildTx
+        }
+        
+        let hashes = try bitcoinManager.buildForSign(target: transaction.destinationAddress,
+                                                     amount: transaction.amount.value,
+                                                     feeRate: feeRate,
+                                                     sortType: sortType,
+                                                     changeScript: changeScript,
+                                                     sequence: sequence)
+        return hashes
 	}
 	
-    public func buildForSend(transaction: Transaction, signatures: [Data], sequence: Int?, sortType: TransactionDataSortType = .bip69) -> Data? {
-        guard let signatures = convertToDER(signatures),
+    public func buildForSend(transaction: Transaction, signatures: [Signature], sequence: Int?, sortType: TransactionDataSortType = .bip69) throws -> Data {
+        guard let signatures = convertToDER(signatures.map { $0.signature }),
               let feeRate = feeRates[transaction.fee.amount.value] else {
-			return nil
+            throw WalletError.failedToBuildTx
 		}
 		
-		do {
-			return try bitcoinManager.buildForSend(target: transaction.destinationAddress,
-												   amount: transaction.amount.value,
-												   feeRate: feeRate,
-                                                   sortType: sortType,
-                                                   derSignatures: signatures,
-                                                   changeScript: changeScript,
-                                                   sequence: sequence)
-		} catch {
-            Log.error(error)
-			return nil
-		}
+        return try bitcoinManager.buildForSend(target: transaction.destinationAddress,
+                                               amount: transaction.amount.value,
+                                               feeRate: feeRate,
+                                               sortType: sortType,
+                                               derSignatures: signatures,
+                                               changeScript: changeScript,
+                                               sequence: sequence)
 	}
 	
 	private func convertToDER(_ signatures: [Data]) -> [Data]? {
