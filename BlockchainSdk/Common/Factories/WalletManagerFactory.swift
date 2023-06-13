@@ -81,7 +81,7 @@ public class WalletManagerFactory {
         let blockchain: Blockchain = .bitcoin(testnet: isTestnet)
         let publicKey = Wallet.PublicKey(seedKey: walletPublicKey, derivation: .none)
         let walletFactory = WalletFactory(blockchain: blockchain)
-        let wallet = try walletFactory.makeWallet(blockchain: .bitcoin(testnet: isTestnet), publicKey: publicKey, pairPublicKey: pairKey)
+        let wallet = try walletFactory.makeWallet(blockchain: blockchain, publicKey: publicKey, pairPublicKey: pairKey)
         return try makeWalletManager(from: blockchain, wallet: wallet, pairPublicKey: pairKey)
     }
     

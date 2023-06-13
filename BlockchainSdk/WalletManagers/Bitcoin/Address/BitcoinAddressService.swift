@@ -12,7 +12,7 @@ import HDWalletKit
 import BitcoinCore
 
 @available(iOS 13.0, *)
-public class BitcoinAddressService {
+public struct BitcoinAddressService {
     let legacy: BitcoinLegacyAddressService
     let bech32: BitcoinBech32AddressService
     

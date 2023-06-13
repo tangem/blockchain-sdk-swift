@@ -20,7 +20,7 @@ public struct WalletFactory {
 
     /// With one public key
     func makeWallet(blockchain: Blockchain, publicKey: Wallet.PublicKey) throws -> Wallet {
-        // Temporary for get number on addresses
+        // Temporary for get count on addresses
         let addressTypes: [AddressType] = Array(blockchain.derivationPaths(for: .v2).keys)
 
         let addresses: [AddressType: PlainAddress] = try addressTypes.reduce(into: [:]) { result, addressType in

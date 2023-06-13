@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum AddressType: Int, Equatable {
+public enum AddressType: String, Equatable {
     case `default`
     case legacy
     
@@ -24,6 +24,11 @@ public enum AddressType: Int, Equatable {
 
 extension AddressType: Comparable {
     public static func < (lhs: AddressType, rhs: AddressType) -> Bool {
-        lhs.rawValue < rhs.rawValue
+        switch (lhs, rhs) {
+        case (.default, legacy):
+            return true
+        default:
+            return false
+        }
     }
 }
