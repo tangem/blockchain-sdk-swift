@@ -12,13 +12,8 @@ import Combine
 
 @available(iOS 13.0, *)
 public protocol WalletManager: WalletProvider, BlockchainDataProvider, TransactionSender, TransactionCreator, TransactionFeeProvider {
-    var cardTokens: [Token] { get }
     func update(completion: @escaping (Result<Void, Error>) -> Void)
     func updatePublisher() -> AnyPublisher<Wallet, Error>
-    
-    func removeToken(_ token: Token)
-    func addToken(_ token: Token)
-    func addTokens(_ tokens: [Token])
 }
 
 extension WalletManager {
@@ -41,8 +36,18 @@ extension WalletManager {
 
 @available(iOS 13.0, *)
 public protocol WalletProvider: AnyObject {
+    associatedtype Wallet: WalletType
+
     var wallet: Wallet { get set }
     var walletPublisher: Published<Wallet>.Publisher { get }
+}
+
+public protocol WalletTokenProvider: AnyObject {
+    var cardTokens: [Token] { get }
+
+    func removeToken(_ token: Token)
+    func addToken(_ token: Token)
+    func addTokens(_ tokens: [Token])
 }
 
 public protocol BlockchainDataProvider {

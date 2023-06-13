@@ -11,7 +11,7 @@ import TangemSdk
 import Combine
 import BitcoinCore
 
-class BitcoinWalletManager: BaseManager, WalletManager {
+class BitcoinWalletManager: BaseManager<MultiAddressWallet>, WalletManager {
     var allowsFeeSelection: Bool { true }
     var txBuilder: BitcoinTransactionBuilder!
     var networkService: BitcoinNetworkProvider!

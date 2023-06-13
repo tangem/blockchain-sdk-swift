@@ -10,13 +10,13 @@ import Foundation
 import WalletCore
 
 class CosmosTransactionBuilder {
-    private let wallet: Wallet
+    private let publicKey: Wallet.PublicKey
     private let cosmosChain: CosmosChain
     private var sequenceNumber: UInt64?
     private var accountNumber: UInt64?
     
-    init(wallet: Wallet, cosmosChain: CosmosChain) {
-        self.wallet = wallet
+    init(publicKey: Wallet.PublicKey, cosmosChain: CosmosChain) {
+        self.publicKey = publicKey
         self.cosmosChain = cosmosChain
     }
     
@@ -88,14 +88,14 @@ class CosmosTransactionBuilder {
     func buildForSend(input: CosmosSigningInput, signer: TransactionSigner?) throws -> Data {
         let output: CosmosSigningOutput
         if let signer {
-            guard let publicKey = PublicKey(tangemPublicKey: self.wallet.publicKey.blockchainKey, publicKeyType: self.cosmosChain.coin.publicKeyType) else {
+            guard let publicKey = PublicKey(tangemPublicKey: self.publicKey.blockchainKey, publicKeyType: self.cosmosChain.coin.publicKeyType) else {
                 throw WalletError.failedToBuildTx
             }
             
             let coreSigner = WalletCoreSigner(
                 sdkSigner: signer,
                 blockchainKey: publicKey.data,
-                walletPublicKey: self.wallet.publicKey,
+                walletPublicKey: self.publicKey,
                 curve: cosmosChain.blockchain.curve
             )
             output = try AnySigner.signExternally(input: input, coin: cosmosChain.coin, signer: coreSigner)

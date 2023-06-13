@@ -9,7 +9,7 @@
 import Foundation
 import Combine
 
-class KaspaWalletManager: BaseManager, WalletManager {
+class KaspaWalletManager: BaseManager<PlainWallet>, WalletManager {
     var txBuilder: KaspaTransactionBuilder!
     var networkService: KaspaNetworkService!
     

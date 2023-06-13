@@ -9,15 +9,44 @@
 import Foundation
 import TangemSdk
 
-public struct Wallet {
+
+public protocol TokWalletType {
+    var blockchain: Blockchain { get }
+    var address: String { get }
+    var publicKey: Wallet.PublicKey { get }
+
+    var tokens: [Token] { get set }
+}
+
+// For UI usage
+public protocol WalletType {
+    var blockchain: Blockchain { get }
+    var amounts: [Amount.AmountType: Amount] { get set }
+    var transactions: [Transaction] { get set }
+
+    var address: String { get }
+    var publicKey: Wallet.PublicKey { get }
+
+    var tokens: [Token] { get set }
+}
+
+public protocol MultiAddressWalletType: WalletType {
+    var addresses: [String] { get }
+}
+
+// 1. Plain with 1 address
+//  1.1 Plain with 1 address and tokens
+// 2. Plain with 2 address
+
+public struct MultiAddressWallet: BaseWalletType {
     
     // MARK: - Properties
 
     public let blockchain: Blockchain
     public let walletAddresses: [AddressType: AddressPublicKeyPair]
     
-    public internal(set) var amounts: [Amount.AmountType: Amount] = [:]
-    public internal(set) var transactions: [Transaction] = []
+    public var amounts: [Amount.AmountType: Amount] = [:]
+    public var transactions: [Transaction] = []
     
     // MARK: - Calculations
     
@@ -71,7 +100,7 @@ public struct Wallet {
     }
     
     @available(*, deprecated, message: "Use init(blockchain:, addresses:)")
-    init(blockchain: Blockchain, addresses: [Address], publicKey: PublicKey) {
+    init(blockchain: Blockchain, addresses: [Address], publicKey: Wallet.PublicKey) {
         self.blockchain = blockchain
                 
         let addresses: [AddressType: AddressPublicKeyPair] = addresses.reduce(into: [:]) { result, address in
@@ -106,27 +135,6 @@ public struct Wallet {
     public func getShareString(for address: String? = nil) -> String {
         let address = address ?? self.address
         return blockchain.getShareString(from: address)
-    }
-    
-    public mutating func add(coinValue: Decimal) {
-        let coinAmount = Amount(with: blockchain, type: .coin, value: coinValue)
-        add(amount: coinAmount)
-    }
-    
-    public mutating func add(reserveValue: Decimal) {
-        let reserveAmount = Amount(with: blockchain, type: .reserve, value: reserveValue)
-        add(amount: reserveAmount)
-    }
-    
-    @discardableResult
-    public mutating func add(tokenValue: Decimal, for token: Token) -> Amount {
-        let tokenAmount = Amount(with: token, value: tokenValue)
-        add(amount: tokenAmount)
-        return tokenAmount
-    }
-    
-    public mutating func add(amount: Amount) {
-        amounts[amount.type] = amount
     }
     
     // MARK: - Internal

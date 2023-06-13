@@ -10,12 +10,12 @@ import Foundation
 import Combine
 
 @available(iOS 13.0, *)
-class BaseManager: WalletProvider {
+class BaseManager<Wallet: BaseWalletType>: WalletProvider {
     @Published var wallet: Wallet
     var cardTokens: [Token] = []
     
-    var defaultSourceAddress: String { wallet.address }
-    var defaultChangeAddress: String { wallet.address }
+//    var defaultSourceAddress: String { wallet.address }
+//    var defaultChangeAddress: String { wallet.address }
     
     var cancellable: Cancellable? = nil
     var walletPublisher: Published<Wallet>.Publisher { $wallet }
@@ -24,50 +24,50 @@ class BaseManager: WalletProvider {
         self.wallet = wallet
     }
     
-    func removeToken(_ token: Token) {
-        cardTokens.removeAll(where: { $0 == token })
-        wallet.remove(token: token)
-    }
-    
-    func addToken(_ token: Token) {
-        if !cardTokens.contains(token) {
-            cardTokens.append(token)
-        }
-    }
-    
-    func addTokens(_ tokens: [Token]) {
-        tokens.forEach { addToken($0) }
-    }
+//    func removeToken(_ token: Token) {
+//        cardTokens.removeAll(where: { $0 == token })
+//        wallet.remove(token: token)
+//    }
+//
+//    func addToken(_ token: Token) {
+//        if !cardTokens.contains(token) {
+//            cardTokens.append(token)
+//        }
+//    }
+//
+//    func addTokens(_ tokens: [Token]) {
+//        tokens.forEach { addToken($0) }
+//    }
 }
 
 // MARK: - TransactionCreator
 
 extension BaseManager: TransactionCreator {
-    func createTransaction(
-        amount: Amount,
-        fee: Fee,
-        sourceAddress: String? = nil,
-        destinationAddress: String,
-        changeAddress: String? = nil,
-        contractAddress: String? = nil,
-        date: Date = Date(),
-        status: TransactionStatus = .unconfirmed
-    ) throws -> Transaction {
-        let transaction = Transaction(
-            amount: amount,
-            fee: fee,
-            sourceAddress: sourceAddress ?? defaultSourceAddress,
-            destinationAddress: destinationAddress,
-            changeAddress: changeAddress ?? defaultChangeAddress,
-            contractAddress: contractAddress ?? amount.type.token?.contractAddress,
-            date: date,
-            status: status,
-            hash: nil
-        )
-        
-        try validateTransaction(amount: amount, fee: fee)
-        return transaction
-    }
+//    func createTransaction(
+//        amount: Amount,
+//        fee: Fee,
+//        sourceAddress: String? = nil,
+//        destinationAddress: String,
+//        changeAddress: String? = nil,
+//        contractAddress: String? = nil,
+//        date: Date = Date(),
+//        status: TransactionStatus = .unconfirmed
+//    ) throws -> Transaction {
+//        let transaction = Transaction(
+//            amount: amount,
+//            fee: fee,
+//            sourceAddress: sourceAddress ?? defaultSourceAddress,
+//            destinationAddress: destinationAddress,
+//            changeAddress: changeAddress ?? defaultChangeAddress,
+//            contractAddress: contractAddress ?? amount.type.token?.contractAddress,
+//            date: date,
+//            status: status,
+//            hash: nil
+//        )
+//        
+//        try validateTransaction(amount: amount, fee: fee)
+//        return transaction
+//    }
     
     func validate(amount: Amount) throws {
         if !validateAmountValue(amount) {

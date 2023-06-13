@@ -9,6 +9,8 @@
 import Foundation
 import TangemSdk
 
+public struct Wallet {}
+
 extension Wallet {
     public struct PublicKey: Codable, Hashable {
         public let seedKey: Data
