@@ -14,6 +14,7 @@ class KaspaTransactionBuilder {
     
     private let blockchain: Blockchain
     private var unspentOutputs: [BitcoinUnspentOutput] = []
+    private let addressService = KaspaAddressService()
     
     init(blockchain: Blockchain) {
         self.blockchain = blockchain
@@ -113,10 +114,7 @@ class KaspaTransactionBuilder {
     }
     
     private func scriptPublicKey(address: String) throws -> Data {
-        guard
-            let addressService = blockchain.getAddressService() as? KaspaAddressService,
-            let components = addressService.parse(address)
-        else {
+        guard let components = addressService.parse(address) else {
             throw WalletError.failedToBuildTx
         }
         

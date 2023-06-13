@@ -8,18 +8,19 @@
 
 import Foundation
 
-typealias AddressService = AddressProvider & AddressValidator
+public typealias AddressService = AddressProvider & AddressValidator
 
 public protocol AddressValidator {
     func validate(_ address: String) -> Bool
 }
 
 public protocol AddressProvider {
-    func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair
+    func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress
 }
 
-extension AddressProvider {
-    func makeAddress(from publicKey: Data, type: AddressType = .default) throws -> AddressPublicKeyPair {
+// A convenient extension for using a raw public key
+public extension AddressProvider {
+    func makeAddress(from publicKey: Data, type: AddressType = .default) throws -> PlainAddress {
         try makeAddress(for: Wallet.PublicKey(seedKey: publicKey, derivation: .none), with: type)
     }
 }

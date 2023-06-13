@@ -15,14 +15,14 @@ public struct StellarAddressService {}
 
 @available(iOS 13.0, *)
 extension StellarAddressService: AddressProvider {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
         try publicKey.blockchainKey.validateAsEdKey()
 
         let stellarPublicKey = try PublicKey(Array(publicKey.blockchainKey))
         let keyPair = KeyPair(publicKey: stellarPublicKey)
         let address = keyPair.accountId
 
-        return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
+        return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
 }
 

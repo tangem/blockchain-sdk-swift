@@ -18,7 +18,7 @@ public struct BinanceAddressService {
     }
 }
 
-// MARK: - AddressProvider
+// MARK: - AddressValidator
 
 @available(iOS 13.0, *)
 extension BinanceAddressService: AddressValidator {
@@ -47,16 +47,16 @@ extension BinanceAddressService: AddressValidator {
 
 @available(iOS 13.0, *)
 extension BinanceAddressService: AddressProvider {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
         let compressedKey = try Secp256k1Key(with: publicKey.blockchainKey).compress()
         let keyHash = compressedKey.sha256Ripemd160
 
         if testnet {
             let address = Bech32().encode("tbnb", values: keyHash)
-            return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
+            return PlainAddress(value: address, publicKey: publicKey, type: addressType)
         } else {
             let address = Bech32().encode("bnb", values: keyHash)
-            return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
+            return PlainAddress(value: address, publicKey: publicKey, type: addressType)
         }
     }
 }

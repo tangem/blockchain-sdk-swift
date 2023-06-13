@@ -537,31 +537,15 @@ extension Blockchain {
         return style.provider.derivations(for: self)
             .compactMapValues { try? DerivationPath(rawPath: $0) }
     }
-    
-    @available(*, deprecated, message: "Will be move to WalletManager assembly")
-    public func makeAddresses(from walletPublicKey: Wallet.PublicKey, with pairPublicKey: Data?) throws -> [Address] {
-        let addressService = getAddressService()
-        
-        if let multiSigAddressProvider = addressService as? MultisigAddressProvider,
-           let pairKey = pairPublicKey {
-            return try multiSigAddressProvider.makeAddresses(firstPublicKey: walletPublicKey.blockchainKey, secondPublicKey: pairKey)
-        }
-        
-        if let addressService = addressService as? MultipleAddressProvider {
-            return try addressService.makeAddresses(from: walletPublicKey.blockchainKey)
-        }
-        
-        return [try addressService.makeAddress(for: walletPublicKey, with: .default)]
-    }
 
-    @available(*, deprecated, message: "Use AddressServiceFactory().validate(for:)")
+    @available(*, deprecated, message: "Use AddressServiceFactory(blockchain:).validate(_:)")
     public func validate(address: String) -> Bool {
         getAddressService().validate(address)
     }
 
-    @available(*, deprecated, message: "Use AddressServiceFactory().getAddressService(for:)")
+    @available(*, deprecated, message: "Use AddressServiceFactory(blockchain:).makeAddressService()")
     func getAddressService() -> AddressService {
-        AddressServiceFactory().getAddressService(for: self)
+        AddressServiceFactory(blockchain: self).makeAddressService()
     }
 }
 

@@ -85,34 +85,16 @@ extension CardanoAddressService: AddressValidator {
 
 @available(iOS 13.0, *)
 extension CardanoAddressService: AddressProvider {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
         try publicKey.blockchainKey.validateAsEdKey()
 
         switch addressType {
         case .default:
             let shelley = makeShelleyAddress(from: publicKey.blockchainKey)
-            return AddressPublicKeyPair(value: shelley, publicKey: publicKey, type: addressType)
+            return PlainAddress(value: shelley, publicKey: publicKey, type: addressType)
         case .legacy:
             let byron =  makeByronAddress(from: publicKey.blockchainKey)
-            return AddressPublicKeyPair(value: byron, publicKey: publicKey, type: addressType)
+            return PlainAddress(value: byron, publicKey: publicKey, type: addressType)
         }
     }
-}
-
-// MARK: - MultipleAddressProvider
-
-@available(iOS 13.0, *)
-extension CardanoAddressService: MultipleAddressProvider {
-    public func makeAddresses(from walletPublicKey: Data) throws -> [Address] {
-          try walletPublicKey.validateAsEdKey()
-
-          if shelley {
-              return [
-                  PlainAddress(value: makeShelleyAddress(from: walletPublicKey), type: .default),
-                  PlainAddress(value: makeByronAddress(from: walletPublicKey), type: .legacy)
-              ]
-          }
-
-          return [PlainAddress(value: makeByronAddress(from: walletPublicKey), type: .legacy)]
-      }
 }

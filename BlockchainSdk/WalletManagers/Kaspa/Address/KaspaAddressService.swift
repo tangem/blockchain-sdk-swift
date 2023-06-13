@@ -39,11 +39,11 @@ public class KaspaAddressService {
 
 @available(iOS 13.0, *)
 extension KaspaAddressService: AddressProvider {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
         let compressedKey = try Secp256k1Key(with: publicKey.blockchainKey).compress()
         let address = HDWalletKit.Bech32.encode(version.rawValue.data + compressedKey, prefix: prefix)
 
-        return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
+        return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
 }
 

@@ -35,50 +35,35 @@ extension BitcoinAddressService: AddressValidator {
 
 @available(iOS 13.0, *)
 extension BitcoinAddressService: AddressProvider {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
         switch addressType {
         case .default:
             let bech32AddressString = try bech32.makeAddress(from: publicKey.blockchainKey).value
-            return AddressPublicKeyPair(value: bech32AddressString, publicKey: publicKey, type: addressType)
+            return PlainAddress(value: bech32AddressString, publicKey: publicKey, type: addressType)
         case .legacy:
             let legacyAddressString = try legacy.makeAddress(from: publicKey.blockchainKey).value
-            return AddressPublicKeyPair(value: legacyAddressString, publicKey: publicKey, type: addressType)
+            return PlainAddress(value: legacyAddressString, publicKey: publicKey, type: addressType)
         }
     }
 }
 
-// MARK: - MultisigAddressProvider
+// MARK: - BitcoinMultisigAddressProvider
 
 @available(iOS 13.0, *)
-extension BitcoinAddressService: MultisigAddressProvider {
-	public func makeAddresses(firstPublicKey: Data, secondPublicKey: Data) throws -> [Address] {
-        guard let script = try create1Of2MultisigOutputScript(firstPublicKey: firstPublicKey, secondPublicKey: secondPublicKey) else {
+extension BitcoinAddressService: BitcoinScriptAddressesProvider {
+    public func makeAddresses(publicKey: Wallet.PublicKey, pairPublicKey: Data) throws -> [BitcoinScriptAddress] {
+        guard let script = try create1Of2MultisigOutputScript(firstPublicKey: publicKey.blockchainKey, secondPublicKey: pairPublicKey) else {
             throw BlockchainSdkError.failedToCreateMultisigScript
         }
 
         let legacyAddressString = try legacy.makeMultisigAddress(from: script.data.sha256Ripemd160)
-        let scriptAddress = BitcoinScriptAddress(script: script, value: legacyAddressString, type: .legacy)
+        let scriptAddress = BitcoinScriptAddress(script: script, value: legacyAddressString, publicKey: publicKey, type: .legacy)
 
         let bech32AddressString = try bech32.makeMultisigAddress(from: script.data.sha256())
-        let bech32Address = BitcoinScriptAddress(script: script, value: bech32AddressString, type: .default)
+        let bech32Address = BitcoinScriptAddress(script: script, value: bech32AddressString, publicKey: publicKey, type: .default)
 
         return [bech32Address, scriptAddress]
 	}
-}
-
-// MARK: - MultipleAddressProvider
-
-@available(iOS 13.0, *)
-extension BitcoinAddressService: MultipleAddressProvider {
-    public func makeAddresses(from walletPublicKey: Data) throws -> [Address] {
-        let legacyAddressString = try legacy.makeAddress(from: walletPublicKey).value
-        let bech32AddressString = try bech32.makeAddress(from: walletPublicKey).value
-
-        return [
-            PlainAddress(value: legacyAddressString, type: .legacy),
-            PlainAddress(value: bech32AddressString, type: .default),
-        ]
-    }
 }
 
 // MARK: - Private

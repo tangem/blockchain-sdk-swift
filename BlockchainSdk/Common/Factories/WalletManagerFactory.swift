@@ -25,20 +25,11 @@ public class WalletManagerFactory {
     
     public func makeWalletManager(blockchain: Blockchain, publicKeys: [AddressType: Wallet.PublicKey]) throws -> WalletManager {
         // It'll moved in Assembly in next task
-        let walletFactory = WalletFactory(addressProvider: blockchain.getAddressService())
+        let walletFactory = WalletFactory(blockchain: blockchain)
         let wallet = try walletFactory.makeWallet(blockchain: blockchain, publicKeys: publicKeys)
-
-        let input = WalletManagerAssemblyInput(
-            blockchain: blockchain,
-            blockchainConfig: config,
-            pairPublicKey: nil,
-            wallet: wallet,
-            networkConfig: config.networkProviderConfiguration(for: blockchain)
-        )
-
-        return try blockchain.assembly.make(with: input)
+        return try makeWalletManager(from: blockchain, wallet: wallet)
     }
-    
+
     /// Base wallet manager initializer
     /// - Parameters:
     ///   - blockchain: Card native blockchain will be used
@@ -63,10 +54,11 @@ public class WalletManagerFactory {
         case .custom(let path):
             derivation = .init(path: path, derivedKey: derivedKey)
         }
-        
+
         let publicKey = Wallet.PublicKey(seedKey: seedKey, derivation: derivation)
-        
-        return try makeWalletManager(from: blockchain, publicKey: publicKey)
+        let walletFactory = WalletFactory(blockchain: blockchain)
+        let wallet = try walletFactory.makeWallet(blockchain: blockchain, publicKey: publicKey)
+        return try makeWalletManager(from: blockchain, wallet: wallet)
     }
     
     /// Legacy wallet manager initializer
@@ -76,8 +68,9 @@ public class WalletManagerFactory {
     /// - Returns: WalletManager
     public func makeWalletManager(blockchain: Blockchain, walletPublicKey: Data) throws -> WalletManager {
         let publicKey = Wallet.PublicKey(seedKey: walletPublicKey, derivation: .none)
-        
-        return try makeWalletManager(from: blockchain, publicKey: publicKey)
+        let walletFactory = WalletFactory(blockchain: blockchain)
+        let wallet = try walletFactory.makeWallet(blockchain: blockchain, publicKey: publicKey)
+        return try makeWalletManager(from: blockchain, wallet: wallet)
     }
     
     /// Wallet manager initializer for twin cards
@@ -87,12 +80,9 @@ public class WalletManagerFactory {
     public func makeTwinWalletManager(walletPublicKey: Data, pairKey: Data, isTestnet: Bool) throws -> WalletManager {
         let blockchain: Blockchain = .bitcoin(testnet: isTestnet)
         let publicKey = Wallet.PublicKey(seedKey: walletPublicKey, derivation: .none)
-        
-        return try makeWalletManager(
-            from: blockchain,
-            publicKey: publicKey,
-            pairPublicKey: pairKey
-        )
+        let walletFactory = WalletFactory(blockchain: blockchain)
+        let wallet = try walletFactory.makeWallet(blockchain: .bitcoin(testnet: isTestnet), publicKey: publicKey, pairPublicKey: pairKey)
+        return try makeWalletManager(from: blockchain, wallet: wallet, pairPublicKey: pairKey)
     }
     
     // MARK: - Private Implementation
@@ -105,12 +95,9 @@ public class WalletManagerFactory {
     /// - Returns: WalletManager model
     private func makeWalletManager(
         from blockchain: Blockchain,
-        publicKey: Wallet.PublicKey,
+        wallet: Wallet,
         pairPublicKey: Data? = nil
     ) throws -> WalletManager {
-        let addresses = try blockchain.makeAddresses(from: publicKey, with: pairPublicKey)
-        let wallet = Wallet(blockchain: blockchain, addresses: addresses, publicKey: publicKey)
-        
         return try blockchain.assembly.make(
             with: .init(
                 blockchain: blockchain,
@@ -139,10 +126,13 @@ extension WalletManagerFactory {
         addresses: [String]
     ) throws -> WalletManager {
         let publicKey: Wallet.PublicKey = .init(seedKey: walletPublicKey, derivation: .none)
-        var addresses: [Address] = addresses.map { PlainAddress(value: $0, type: .default) }
+
+        var addresses: [Address] = addresses.map { PlainAddress(value: $0, publicKey: publicKey, type: .default) }
 
         if addresses.isEmpty {
-            addresses = try blockchain.makeAddresses(from: publicKey, with: nil)
+            let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
+            // Will be removed in next task
+            addresses = try [service.makeAddress(for: publicKey, with: .default)]
         }
         
         let wallet = Wallet(blockchain: blockchain, addresses: addresses, publicKey: publicKey)

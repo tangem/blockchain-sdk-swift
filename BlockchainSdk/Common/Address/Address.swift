@@ -12,4 +12,7 @@ public protocol Address {
     var value: String { get }
     var localizedName: String { get }
     var type: AddressType { get }
+
+    // Will be used for signing
+    var publicKey: Wallet.PublicKey { get }
 }

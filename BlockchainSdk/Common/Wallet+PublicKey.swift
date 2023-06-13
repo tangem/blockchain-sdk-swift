@@ -27,7 +27,7 @@ extension Wallet {
             try? derivation?.derivedKey.serialize(for: isTestnet ? .testnet : .mainnet)
         }
         
-        public init(seedKey: Data, derivation: Derivation?) {
+        public init(seedKey: Data, derivation: Derivation? = .none) {
             self.seedKey = seedKey
             self.derivation = derivation
         }

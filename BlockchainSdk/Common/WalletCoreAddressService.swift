@@ -37,13 +37,13 @@ extension WalletCoreAddressService {
 // MARK: - AddressProvider
 
 extension WalletCoreAddressService: AddressProvider {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
         guard let walletCorePublicKey = PublicKey(tangemPublicKey: publicKey.blockchainKey, publicKeyType: publicKeyType) else {
             throw TWError.makeAddressFailed
         }
 
         let address = AnyAddress(publicKey: walletCorePublicKey, coin: coin).description
-        return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
+        return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
 }
 

@@ -21,11 +21,11 @@ struct PolkadotAddressService {
 
 @available(iOS 13.0, *)
 extension PolkadotAddressService: AddressProvider {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
         try publicKey.blockchainKey.validateAsEdKey()
         let address = PolkadotAddress(publicKey: publicKey.blockchainKey, network: network).string
 
-        return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
+        return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
 }
 

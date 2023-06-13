@@ -10,6 +10,7 @@ import Foundation
 import BitcoinCore
 import TangemSdk
 
+
 @available(iOS 13.0, *)
 public class BitcoinBech32AddressService {
     private let converter: SegWitBech32AddressConverter
@@ -18,7 +19,21 @@ public class BitcoinBech32AddressService {
         let scriptConverter = ScriptConverter()
         converter = SegWitBech32AddressConverter(prefix: networkParams.bech32PrefixPattern, scriptConverter: scriptConverter)
     }
+}
 
+// MARK: - BitcoinScriptAddressProvider
+
+@available(iOS 13.0, *)
+extension BitcoinBech32AddressService: BitcoinScriptAddressProvider {
+    public func makeMultisigAddress(from scriptHash: Data) throws -> String {
+        return try converter.convert(scriptHash: scriptHash).stringValue
+    }
+}
+
+// MARK: - AddressValidator
+
+@available(iOS 13.0, *)
+extension BitcoinBech32AddressService: AddressValidator {
     public func validate(_ address: String) -> Bool {
         do {
             _ = try converter.convert(address: address)
@@ -27,17 +42,13 @@ public class BitcoinBech32AddressService {
             return false
         }
     }
-
-    public func makeMultisigAddress(from scriptHash: Data) throws -> String {
-        let address = try converter.convert(scriptHash: scriptHash).stringValue
-
-        return address
-    }
 }
+
+// MARK: - AddressProvider
 
 @available(iOS 13.0, *)
 extension BitcoinBech32AddressService: AddressProvider {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
         let compressedKey = try Secp256k1Key(with: publicKey.blockchainKey).compress()
         let bitcoinCorePublicKey = PublicKey(withAccount: 0,
                                   index: 0,
@@ -45,6 +56,6 @@ extension BitcoinBech32AddressService: AddressProvider {
                                   hdPublicKeyData: compressedKey)
 
         let address = try converter.convert(publicKey: bitcoinCorePublicKey, type: .p2wpkh).stringValue
-        return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
+        return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
 }

@@ -10,12 +10,18 @@ import Foundation
 import BitcoinCore
 import WalletCore
 
-struct AddressServiceFactory {
-    public func validate(address: String, in blockchain: Blockchain) -> Bool {
-        getAddressService(for: blockchain).validate(address)
+public struct AddressServiceFactory {
+    private let blockchain: Blockchain
+
+    public init(blockchain: Blockchain) {
+        self.blockchain = blockchain
     }
 
-    func getAddressService(for blockchain: Blockchain) -> AddressService {
+    public func validate(address: String) -> Bool {
+        makeAddressService().validate(address)
+    }
+
+    public func makeAddressService() -> AddressService {
         let isTestnet = blockchain.isTestnet
 
         switch blockchain {

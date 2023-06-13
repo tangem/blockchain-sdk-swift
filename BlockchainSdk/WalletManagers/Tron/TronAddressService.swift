@@ -41,7 +41,7 @@ public struct TronAddressService {
 
 @available(iOS 13.0, *)
 extension TronAddressService: AddressProvider {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
         let decompressedPublicKey = try Secp256k1Key(with: publicKey.blockchainKey).decompress()
 
         let data = decompressedPublicKey.dropFirst()
@@ -50,7 +50,7 @@ extension TronAddressService: AddressProvider {
         let addressData = [prefix] + hash.suffix(addressLength - 1)
         let address = addressData.base58CheckEncodedString
 
-        return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
+        return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
 }
 

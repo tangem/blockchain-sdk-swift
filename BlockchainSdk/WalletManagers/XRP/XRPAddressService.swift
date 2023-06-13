@@ -22,7 +22,7 @@ public struct XRPAddressService {
 
 @available(iOS 13.0, *)
 extension XRPAddressService: AddressProvider {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> AddressPublicKeyPair {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
         var key: Data
         switch curve {
         case .secp256k1:
@@ -38,7 +38,7 @@ extension XRPAddressService: AddressProvider {
         let checkSum = Data(buffer.sha256().sha256()[0..<4])
         let address = XRPBase58.getString(from: buffer + checkSum)
 
-        return AddressPublicKeyPair(value: address, publicKey: publicKey, type: addressType)
+        return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
 }
 
