@@ -25,18 +25,16 @@ public struct DerivationConfigV3: DerivationConfig {
     public func derivations(for blockchain: Blockchain) -> [AddressType: String] {
         switch blockchain {
         case .bitcoin:
-            return [.legacy: "m/44'/0'/0'/0/0", .default: "m/84'/0'/0'/0/0"]
+            return [.default: "m/84'/0'/0'/0/0"]
         case .litecoin:
-            return [.legacy: "m/44'/2'/0'/0/0", .default: "m/84'/2'/0'/0/0"]
+            return [.default: "m/84'/2'/0'/0/0"]
         case .stellar:
             return [.default: "m/44'/148'/0'"]
         case .solana:
             return [.default: "m/44'/501'/0'"]
         case .cardano(let shelley):
-            guard shelley else {
-                return [.legacy: "m/1852'/1815'/0'/0/0"]
-            }
-            return [.legacy: "m/1852'/1815'/0'/0/0", .default: "m/44'/1815'/0'/0/0"]
+            assert(shelley, "DerivationConfigV3 supports only shelley address")
+            return [.default: "m/44'/1815'/0'/0/0"]
         case .bitcoinCash:
             return [.legacy: "m/44'/145'/0'/0/0", .default: "m/44'/145'/0'/0/0"]
         case .ethereum,
