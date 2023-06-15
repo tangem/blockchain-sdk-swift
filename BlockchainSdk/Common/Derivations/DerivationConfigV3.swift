@@ -33,7 +33,7 @@ public struct DerivationConfigV3: DerivationConfig {
         case .solana:
             return [.default: "m/44'/501'/0'"]
         case .cardano(let shelley):
-            assert(shelley, "DerivationConfigV3 don't support only shelley address")
+            assert(shelley, "DerivationConfigV3 supports only shelley address")
             return [.default: "m/44'/1815'/0'/0/0"]
         case .bitcoinCash:
             return [.legacy: "m/44'/145'/0'/0/0", .default: "m/44'/145'/0'/0/0"]
