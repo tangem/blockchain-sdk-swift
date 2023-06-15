@@ -12,7 +12,7 @@ public protocol ExceptionHandlerOutput {
     func handleAPISwitch(blockchain: Blockchain, currentHost: String, nextHost: String?, statusCode: Int, message: String)
 }
 
-public final class ExceptionHandlerr {
+public final class ExceptionHandler {
     
     // MARK: - Static
     
