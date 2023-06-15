@@ -11,11 +11,13 @@ import Moya
 import Combine
 
 class TezosNetworkService: MultiNetworkProvider {
+    let blockchain: Blockchain
     let providers: [TezosJsonRpcProvider]
     
     var currentProviderIndex: Int = 0
     
-    init(providers: [TezosJsonRpcProvider]) {
+    init(blockchain: Blockchain, providers: [TezosJsonRpcProvider]) {
+        self.blockchain = blockchain
         self.providers = providers
     }
     

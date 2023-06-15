@@ -12,9 +12,12 @@ import Combine
 @available(iOS 13.0, *)
 class StellarNetworkService: MultiNetworkProvider {
     var currentProviderIndex: Int = 0
+    
+    let blockchain: Blockchain
     let providers: [StellarNetworkProvider]
     
-    init(providers: [StellarNetworkProvider]) {
+    init(blockchain: Blockchain, providers: [StellarNetworkProvider]) {
+        self.blockchain = blockchain
         self.providers = providers
     }
     

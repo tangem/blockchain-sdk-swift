@@ -16,21 +16,25 @@ import Solana_Swift
 public class WalletManagerFactory {
     
     private let config: BlockchainSdkConfig
-    private let exceptionHandlerBuilder: ExceptionHandlerBuilder?
     
     // MARK: - Init
     
-    public init(config: BlockchainSdkConfig, exceptionHandlerBuilder: ExceptionHandlerBuilder? = nil) {
+    public init(config: BlockchainSdkConfig) {
         self.config = config
-        self.exceptionHandlerBuilder = exceptionHandlerBuilder
+        
+        ExceptionHandlerr.shared.handleAPISwitch(
+            blockchain: .ethereum(testnet: true),
+            currentHost: "currentHost",
+            nextHost: "nextHist",
+            statusCode: 404,
+            message: "Test event implementation"
+        )
     }
     
     public func makeWalletManager(blockchain: Blockchain, publicKeys: [AddressType: Wallet.PublicKey]) throws -> WalletManager {
         // It'll moved in Assembly in next task
         let walletFactory = WalletFactory(addressProvider: blockchain.getAddressService())
         let wallet = try walletFactory.makeWallet(blockchain: blockchain, publicKeys: publicKeys)
-        
-        ExceptionHandlerr.shared.append(output: exceptionHandlerBuilder?(.init(blockchain: blockchain)))
 
         let input = WalletManagerAssemblyInput(
             blockchain: blockchain,
@@ -115,8 +119,6 @@ public class WalletManagerFactory {
         let addresses = try blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey)
         let wallet = Wallet(blockchain: blockchain, addresses: addresses, publicKey: publicKey)
         
-        ExceptionHandlerr.shared.append(output: exceptionHandlerBuilder?(.init(blockchain: blockchain)))
-        
         return try blockchain.assembly.make(
             with: .init(
                 blockchain: blockchain,
@@ -152,8 +154,6 @@ extension WalletManagerFactory {
         }
         
         let wallet = Wallet(blockchain: blockchain, addresses: addresses, publicKey: publicKey)
-        
-        ExceptionHandlerr.shared.append(output: exceptionHandlerBuilder?(.init(blockchain: blockchain)))
 
         return try blockchain.assembly.make(
             with: .init(

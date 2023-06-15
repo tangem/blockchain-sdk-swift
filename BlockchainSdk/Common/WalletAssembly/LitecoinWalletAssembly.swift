@@ -39,7 +39,7 @@ struct LitecoinWalletAssembly: WalletManagerAssembly {
                 networkProviderAssembly.makeBlockcypherNetworkProvider(endpoint: .litecoin, with: input).eraseToAnyBitcoinNetworkProvider()
             )
             
-            $0.networkService = LitecoinNetworkService(providers: providers)
+            $0.networkService = LitecoinNetworkService(blockchain: input.blockchain, providers: providers)
         }
     }
     

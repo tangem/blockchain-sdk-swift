@@ -32,7 +32,7 @@ struct StellarWalletAssembly: WalletManagerAssembly {
             }
             
             $0.txBuilder = StellarTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, isTestnet: input.blockchain.isTestnet)
-            $0.networkService = StellarNetworkService(providers: providers)
+            $0.networkService = StellarNetworkService(blockchain: input.blockchain, providers: providers)
         }
     }
     

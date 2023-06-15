@@ -49,8 +49,8 @@ struct TONWalletAssembly: WalletManagerAssembly {
         return try TONWalletManager(
             wallet: input.wallet,
             networkService: .init(
-                providers: providers,
-                blockchain: input.blockchain
+                blockchain: input.blockchain,
+                providers: providers
             )
         )
     }

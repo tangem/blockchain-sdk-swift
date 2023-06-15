@@ -14,6 +14,7 @@ import web3swift
 import BigInt
 
 class EthereumNetworkService: MultiNetworkProvider {
+    var blockchain: Blockchain
     let providers: [EthereumJsonRpcProvider]
     
     var currentProviderIndex: Int = 0
@@ -25,6 +26,7 @@ class EthereumNetworkService: MultiNetworkProvider {
     private let abiEncoder: ABIEncoder
     
     init(
+        blockchain: Blockchain,
         decimals: Int,
         providers: [EthereumJsonRpcProvider],
         blockcypherProvider: BlockcypherNetworkProvider?,
@@ -32,6 +34,7 @@ class EthereumNetworkService: MultiNetworkProvider {
         transactionHistoryProvider: TransactionHistoryProvider?,
         abiEncoder: ABIEncoder
     ) {
+        self.blockchain = blockchain
         self.providers = providers
         self.decimals = decimals
         self.ethereumInfoNetworkProvider = blockcypherProvider

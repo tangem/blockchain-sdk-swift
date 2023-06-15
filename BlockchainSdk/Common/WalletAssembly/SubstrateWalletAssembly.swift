@@ -20,7 +20,7 @@ struct SubstrateWalletAssembly: WalletManagerAssembly {
             let providers = network.urls.map { url in
                 PolkadotJsonRpcProvider(url: url, configuration: input.networkConfig)
             }
-            $0.networkService = PolkadotNetworkService(providers: providers, network: network)
+            $0.networkService = PolkadotNetworkService(blockchain: input.blockchain, providers: providers, network: network)
             $0.txBuilder = PolkadotTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, network: network)
         }
     }

@@ -17,6 +17,7 @@ struct OptimismWalletAssembly: WalletManagerAssembly {
             
             $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, chainId: chainId)
             $0.networkService = EthereumNetworkService(
+                blockchain: input.blockchain,
                 decimals: input.blockchain.decimalCount,
                 providers: providers,
                 blockcypherProvider: nil,
