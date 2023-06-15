@@ -13,7 +13,6 @@ public protocol ExceptionHandlerOutput {
 }
 
 public final class ExceptionHandler {
-    
     // MARK: - Static
     
     public static let shared: ExceptionHandler = .init()
@@ -42,5 +41,4 @@ public final class ExceptionHandler {
             )
         }
     }
-    
 }
