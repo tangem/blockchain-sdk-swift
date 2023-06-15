@@ -17,7 +17,6 @@ protocol MultiNetworkProvider: AnyObject, HostProvider {
     
     var providers: [Provider] { get }
     var currentProviderIndex: Int { get set }
-    var exceptionHandler: ExceptionHandler? { get }
 }
 
 extension MultiNetworkProvider {
@@ -48,7 +47,7 @@ extension MultiNetworkProvider {
                     
                     Log.network(message)
                     
-                    self.exceptionHandler?.handleAPISwitch(
+                    ExceptionHandlerr.shared.handleAPISwitch(
                         currentHost: currentHost,
                         nextHost: self.nextHost,
                         statusCode: resp.statusCode,

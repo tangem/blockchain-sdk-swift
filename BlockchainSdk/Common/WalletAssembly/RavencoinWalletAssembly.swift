@@ -45,7 +45,7 @@ struct RavencoinWalletAssembly: WalletManagerAssembly {
                     .eraseToAnyBitcoinNetworkProvider()
             }
             
-            $0.networkService = BitcoinNetworkService(providers: providers, exceptionHandler: input.exceptionHandler)
+            $0.networkService = BitcoinNetworkService(providers: providers)
         }
     }
     

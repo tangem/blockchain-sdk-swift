@@ -49,7 +49,7 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
                 ).eraseToAnyBitcoinNetworkProvider()
             )
             
-            $0.networkService = BitcoinNetworkService(providers: providers, exceptionHandler: input.exceptionHandler)
+            $0.networkService = BitcoinNetworkService(providers: providers)
         }
     }
     

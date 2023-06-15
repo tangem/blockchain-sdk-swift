@@ -19,8 +19,7 @@ struct XRPWalletAssembly: WalletManagerAssembly {
                     XRPNetworkProvider(baseUrl: .xrpLedgerFoundation, configuration: input.networkConfig),
                     XRPNetworkProvider(baseUrl: .nowNodes(apiKey: input.blockchainConfig.nowNodesApiKey), configuration: input.networkConfig),
                     XRPNetworkProvider(baseUrl: .getBlock(apiKey: input.blockchainConfig.getBlockApiKey), configuration: input.networkConfig)
-                ],
-                exceptionHandler: input.exceptionHandler
+                ]
             )
         }
     }

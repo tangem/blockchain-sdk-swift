@@ -13,17 +13,15 @@ import Sodium
 
 class PolkadotNetworkService: MultiNetworkProvider {
     let providers: [PolkadotJsonRpcProvider]
-    let exceptionHandler: ExceptionHandler?
     
     var currentProviderIndex: Int = 0
     
     private let network: PolkadotNetwork
     private let codec = SCALE.default
     
-    init(providers: [PolkadotJsonRpcProvider], network: PolkadotNetwork, exceptionHandler: ExceptionHandler?) {
+    init(providers: [PolkadotJsonRpcProvider], network: PolkadotNetwork) {
         self.providers = providers
         self.network = network
-        self.exceptionHandler = exceptionHandler
     }
     
     func getInfo(for address: String) -> AnyPublisher<BigUInt, Error> {

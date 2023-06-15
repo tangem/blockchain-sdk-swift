@@ -13,7 +13,6 @@ import web3swift
 
 class TronNetworkService: MultiNetworkProvider {
     let providers: [TronJsonRpcProvider]
-    let exceptionHandler: ExceptionHandler?
     let isTestnet: Bool
     
     var currentProviderIndex: Int = 0
@@ -22,10 +21,9 @@ class TronNetworkService: MultiNetworkProvider {
         Blockchain.tron(testnet: isTestnet)
     }
     
-    init(isTestnet: Bool, providers: [TronJsonRpcProvider], exceptionHandler: ExceptionHandler?) {
+    init(isTestnet: Bool, providers: [TronJsonRpcProvider]) {
         self.isTestnet = isTestnet
         self.providers = providers
-        self.exceptionHandler = exceptionHandler
     }
     
     func chainParameters() -> AnyPublisher<TronChainParameters, Error> {

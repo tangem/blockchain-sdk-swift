@@ -25,8 +25,7 @@ struct OptimismWalletAssembly: WalletManagerAssembly {
                     canLoad: input.blockchain.canLoadTransactionHistory,
                     with: input
                 ),
-                abiEncoder: WalletCoreABIEncoder(),
-                exceptionHandler: input.exceptionHandler
+                abiEncoder: WalletCoreABIEncoder()
             )
         }
     }

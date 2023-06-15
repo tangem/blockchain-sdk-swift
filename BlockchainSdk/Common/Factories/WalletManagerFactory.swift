@@ -29,14 +29,15 @@ public class WalletManagerFactory {
         // It'll moved in Assembly in next task
         let walletFactory = WalletFactory(addressProvider: blockchain.getAddressService())
         let wallet = try walletFactory.makeWallet(blockchain: blockchain, publicKeys: publicKeys)
+        
+        ExceptionHandlerr.shared.append(output: exceptionHandlerBuilder?(.init(blockchain: blockchain)))
 
         let input = WalletManagerAssemblyInput(
             blockchain: blockchain,
             blockchainConfig: config,
             pairPublicKey: nil,
             wallet: wallet,
-            networkConfig: config.networkProviderConfiguration(for: blockchain),
-            exceptionHandler: exceptionHandlerBuilder?(.init(blockchain: blockchain))
+            networkConfig: config.networkProviderConfiguration(for: blockchain)
         )
 
         return try blockchain.assembly.make(with: input)
@@ -114,14 +115,15 @@ public class WalletManagerFactory {
         let addresses = try blockchain.makeAddresses(from: publicKey.blockchainKey, with: pairPublicKey)
         let wallet = Wallet(blockchain: blockchain, addresses: addresses, publicKey: publicKey)
         
+        ExceptionHandlerr.shared.append(output: exceptionHandlerBuilder?(.init(blockchain: blockchain)))
+        
         return try blockchain.assembly.make(
             with: .init(
                 blockchain: blockchain,
                 blockchainConfig: config,
                 pairPublicKey: pairPublicKey,
                 wallet: wallet,
-                networkConfig: config.networkProviderConfiguration(for: blockchain),
-                exceptionHandler: exceptionHandlerBuilder?(.init(blockchain: blockchain))
+                networkConfig: config.networkProviderConfiguration(for: blockchain)
             )
         )
     }
@@ -150,6 +152,8 @@ extension WalletManagerFactory {
         }
         
         let wallet = Wallet(blockchain: blockchain, addresses: addresses, publicKey: publicKey)
+        
+        ExceptionHandlerr.shared.append(output: exceptionHandlerBuilder?(.init(blockchain: blockchain)))
 
         return try blockchain.assembly.make(
             with: .init(
@@ -157,8 +161,7 @@ extension WalletManagerFactory {
                 blockchainConfig: config,
                 pairPublicKey: nil,
                 wallet: wallet,
-                networkConfig: config.networkProviderConfiguration(for: blockchain),
-                exceptionHandler: exceptionHandlerBuilder?(.init(blockchain: blockchain))
+                networkConfig: config.networkProviderConfiguration(for: blockchain)
             )
         )
     }

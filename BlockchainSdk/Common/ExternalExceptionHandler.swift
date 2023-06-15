@@ -16,8 +16,35 @@ public struct ExceptionHandlerBuilderInput {
     }
 }
 
-public typealias ExceptionHandlerBuilder = (ExceptionHandlerBuilderInput) -> ExceptionHandler
+public typealias ExceptionHandlerBuilder = (ExceptionHandlerBuilderInput) -> ExceptionHandlerOutput
 
-public protocol ExceptionHandler {
+public protocol ExceptionHandlerOutput {
     func handleAPISwitch(currentHost: String, nextHost: String?, statusCode: Int, message: String)
+}
+
+public final class ExceptionHandlerr {
+    
+    // MARK: - Static
+    
+    static let shared: ExceptionHandlerr = .init()
+    
+    // MARK: - Properties
+    
+    private var outputs: [ExceptionHandlerOutput] = []
+    
+    // MARK: - Configuration
+    
+    func append(output: ExceptionHandlerOutput?) {
+        guard let output = output else { return }
+        self.outputs.append(output)
+    }
+
+    // MARK: - Handle
+    
+    func handleAPISwitch(currentHost: String, nextHost: String?, statusCode: Int, message: String) {
+        self.outputs.forEach { output in
+            output.handleAPISwitch(currentHost: currentHost, nextHost: nextHost, statusCode: statusCode, message: message)
+        }
+    }
+    
 }

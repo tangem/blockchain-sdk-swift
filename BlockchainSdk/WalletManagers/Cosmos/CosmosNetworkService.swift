@@ -11,16 +11,14 @@ import Combine
 
 class CosmosNetworkService: MultiNetworkProvider {
     let providers: [CosmosRestProvider]
-    let exceptionHandler: ExceptionHandler?
     
     var currentProviderIndex: Int = 0
     
     private let cosmosChain: CosmosChain
     
-    init(cosmosChain: CosmosChain, providers: [CosmosRestProvider], exceptionHandler: ExceptionHandler?) {
+    init(cosmosChain: CosmosChain, providers: [CosmosRestProvider]) {
         self.providers = providers
         self.cosmosChain = cosmosChain
-        self.exceptionHandler = exceptionHandler
     }
     
     func accountInfo(for address: String, tokens: [Token], transactionHashes: [String]) -> AnyPublisher<CosmosAccountInfo, Error> {
