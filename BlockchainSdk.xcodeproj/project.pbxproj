@@ -278,6 +278,7 @@
 		DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */; };
 		DAF0867027A9438C0024312E /* PolkadotNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */; };
 		DAF3AD4629E916D300E057FA /* CosmosFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF3AD4529E916D300E057FA /* CosmosFeeParameters.swift */; };
+		DC0D056B2A3B023400C4E07C /* EVMFeeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC0D056A2A3B023400C4E07C /* EVMFeeTests.swift */; };
 		DC4E442B29BF4B4C0088617C /* XRPBase58.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC4E442A29BF4B4C0088617C /* XRPBase58.swift */; };
 		DC63F266293F243200F953EF /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC63F265293F243200F953EF /* Credentials.swift */; };
 		E93532CE292D0E86008FD979 /* BlockBookUtxoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9941ACA2927B07300399DE3 /* BlockBookUtxoProvider.swift */; };
@@ -674,6 +675,7 @@
 		DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotWalletManager.swift; sourceTree = "<group>"; };
 		DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetworkService.swift; sourceTree = "<group>"; };
 		DAF3AD4529E916D300E057FA /* CosmosFeeParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosFeeParameters.swift; sourceTree = "<group>"; };
+		DC0D056A2A3B023400C4E07C /* EVMFeeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EVMFeeTests.swift; sourceTree = "<group>"; };
 		DC4E442A29BF4B4C0088617C /* XRPBase58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPBase58.swift; sourceTree = "<group>"; };
 		DC63F265293F243200F953EF /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		DCE3379A28F2B7260029A6F5 /* BlockchainSdkExample.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = BlockchainSdkExample.entitlements; sourceTree = "<group>"; };
@@ -905,6 +907,7 @@
 		5D14E47B2397B80F00C15FC8 /* BlockchainSdkTests */ = {
 			isa = PBXGroup;
 			children = (
+				DC0D05692A3B021700C4E07C /* Api */,
 				2D535E7A2A0CC5FA0081EB76 /* Vectors */,
 				2D535E7E2A0CC5FA0081EB76 /* VectorTests */,
 				B00DEAC728FEE5E00077CD19 /* Bitcoin */,
@@ -1694,6 +1697,14 @@
 			path = Polkadot;
 			sourceTree = "<group>";
 		};
+		DC0D05692A3B021700C4E07C /* Api */ = {
+			isa = PBXGroup;
+			children = (
+				DC0D056A2A3B023400C4E07C /* EVMFeeTests.swift */,
+			);
+			path = Api;
+			sourceTree = "<group>";
+		};
 		E9941AC72927845C00399DE3 /* BlockBook */ = {
 			isa = PBXGroup;
 			children = (
@@ -2429,6 +2440,7 @@
 				EF0DA78828523FAC0081092A /* BitcoinTests.swift in Sources */,
 				2D535E862A0CC5FA0081EB76 /* BlockchainCodingKeyTests.swift in Sources */,
 				EF0DA78428523FAC0081092A /* EthereumTests.swift in Sources */,
+				DC0D056B2A3B023400C4E07C /* EVMFeeTests.swift in Sources */,
 				EF0DA78A28523FAC0081092A /* PolkadotTests.swift in Sources */,
 				EF0DA78328523FAC0081092A /* AddressTests.swift in Sources */,
 				EF0DA78728523FAC0081092A /* TronTests.swift in Sources */,

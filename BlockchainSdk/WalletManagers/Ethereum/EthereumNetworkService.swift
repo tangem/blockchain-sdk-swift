@@ -85,28 +85,18 @@ class EthereumNetworkService: MultiNetworkProvider {
     }
     
     func getFee(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumFeeResponse, Error> {
-        let gasPricePublishers = Publishers.MergeMany(
-            providers.map {
-                parseGas($0.getGasPrice()).toResultPublisher()
-            }
-        ).collect()
+        let gasPricePublisher = getGasPrice()
+        let gasLimitPublisher = getGasLimit(to: to, from: from, value: value, data: data)
         
-        let gasLimitPublishers = Publishers.MergeMany(
-            providers.map {
-                parseGas($0.getGasLimit(to: to, from: from, value: value, data: data)).toResultPublisher()
-                
-            }
-        ).collect()
-        
-        return Publishers.Zip(gasPricePublishers, gasLimitPublishers)
-            .tryMap {[weak self] gasPrices, gasLimits -> EthereumFeeResponse in
+        return Publishers.Zip(gasPricePublisher, gasLimitPublisher)
+            .tryMap {[weak self] gasPrice, gasLimit -> EthereumFeeResponse in
                 guard let self = self else {
                     throw BlockchainSdkError.failedToLoadFee
                 }
 
                 return try self.mapToEthereumFeeResponse(
-                    gasPrice: maxGas(gasPrices),
-                    gasLimit: maxGas(gasLimits),
+                    gasPrice: gasPrice,
+                    gasLimit: gasLimit,
                     decimalCount: self.decimals
                 )
             }
@@ -297,15 +287,6 @@ class EthereumNetworkService: MultiNetworkProvider {
         
         return EthereumFeeResponse(gasPrices: [minGasPrice, normalGasPrice, maxGasPrice], gasLimit: gasLimit)
     }
-    
-    private func parseGas(_ publisher: AnyPublisher<EthereumResponse, Error>) -> AnyPublisher<BigUInt, Error> {
-        publisher.tryMap {[weak self] in
-            guard let self = self else { throw WalletError.empty }
-            
-            return try self.getGas(from: $0)
-        }
-        .eraseToAnyPublisher()
-    }
 }
 
 extension EthereumNetworkService: TransactionHistoryProvider {
@@ -315,46 +296,5 @@ extension EthereumNetworkService: TransactionHistoryProvider {
         }
         
         return historyProvider.loadTransactionHistory(address: address)
-    }
-}
-
-// MARK: - Gas price / gas limit helpers
-
-fileprivate extension AnyPublisher where Output == BigUInt, Failure == Error {
-    func toResultPublisher() -> AnyPublisher<Result<BigUInt, Error>, Never> {
-        map {
-            Result<BigUInt, Error>.success($0)
-        }.catch {
-            Just<Result<BigUInt, Error>>(.failure($0))
-        }
-        .eraseToAnyPublisher()
-    }
-}
-
-fileprivate func maxGas(_ results: [Result<BigUInt, Error>]) throws -> BigUInt {
-    if let maxSuccessValue = results.maxSuccessValue {
-        return maxSuccessValue
-    } else if let firstFailureError = results.firstFailureError {
-        throw firstFailureError
-    } else {
-        throw WalletError.failedToGetFee
-    }
-}
-
-fileprivate extension Array where Element == Result<BigUInt, Error> {
-    var maxSuccessValue: BigUInt? {
-        compactMap {
-            guard case let .success(value) = $0 else { return nil }
-            return value
-        }
-        .max()
-    }
-    
-    var firstFailureError: Error? {
-        compactMap {
-            guard case let .failure(error) = $0 else { return nil }
-            return error
-        }
-        .first
     }
 }
