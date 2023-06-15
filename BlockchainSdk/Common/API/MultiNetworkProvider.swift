@@ -48,7 +48,7 @@ extension MultiNetworkProvider {
                     
                     Log.network(message)
                     
-                    ExceptionHandlerr.shared.handleAPISwitch(
+                    ExceptionHandler.shared.handleAPISwitch(
                         blockchain: blockchain,
                         currentHost: currentHost,
                         nextHost: self.nextHost,

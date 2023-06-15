@@ -16,7 +16,7 @@ public final class ExceptionHandler {
     
     // MARK: - Static
     
-    public static let shared: ExceptionHandlerr = .init()
+    public static let shared: ExceptionHandler = .init()
     
     // MARK: - Properties
     

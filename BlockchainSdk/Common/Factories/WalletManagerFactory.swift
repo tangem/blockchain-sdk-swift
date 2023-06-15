@@ -21,14 +21,6 @@ public class WalletManagerFactory {
     
     public init(config: BlockchainSdkConfig) {
         self.config = config
-        
-        ExceptionHandlerr.shared.handleAPISwitch(
-            blockchain: .ethereum(testnet: true),
-            currentHost: "currentHost",
-            nextHost: "nextHist",
-            statusCode: 404,
-            message: "Test event implementation"
-        )
     }
     
     public func makeWalletManager(blockchain: Blockchain, publicKeys: [AddressType: Wallet.PublicKey]) throws -> WalletManager {
