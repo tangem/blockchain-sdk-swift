@@ -56,8 +56,6 @@ public struct DerivationConfigV2: DerivationConfig {
             return [.default: "m/44'/714'/0'/0/0"]
         case .xrp:
             return [.default: "m/44'/144'/0'/0/0"]
-        case .ducatus:
-            return [.default: "m/44'/0'/0'/0/0"]
         case .tezos:
             return [.default: "m/44'/1729'/0'/0/0"]
         case .dogecoin:
