@@ -39,7 +39,7 @@ struct DogecoinWalletAssembly: WalletManagerAssembly {
                 networkProviderAssembly.makeBlockcypherNetworkProvider(endpoint: .dogecoin, with: input).eraseToAnyBitcoinNetworkProvider()
             )
             
-            $0.networkService = BitcoinNetworkService(providers: providers, exceptionHandler: input.exceptionHandler)
+            $0.networkService = BitcoinNetworkService(blockchain: input.blockchain, providers: providers)
         }
     }
     

@@ -16,8 +16,8 @@ struct TezosWalletAssembly: WalletManagerAssembly {
         return try TezosWalletManager(wallet: input.wallet).then {
             $0.txBuilder = try TezosTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, curve: input.blockchain.curve)
             $0.networkService = TezosNetworkService(
-                providers: TezosApi.makeAllProviders(configuration: input.networkConfig),
-                exceptionHandler: input.exceptionHandler
+                blockchain: input.blockchain,
+                providers: TezosApi.makeAllProviders(configuration: input.networkConfig)
             )
         }
     }

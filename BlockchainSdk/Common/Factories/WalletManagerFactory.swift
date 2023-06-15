@@ -16,13 +16,19 @@ import Solana_Swift
 public class WalletManagerFactory {
     
     private let config: BlockchainSdkConfig
-    private let exceptionHandlerBuilder: ExceptionHandlerBuilder?
     
     // MARK: - Init
     
-    public init(config: BlockchainSdkConfig, exceptionHandlerBuilder: ExceptionHandlerBuilder? = nil) {
+    public init(config: BlockchainSdkConfig) {
         self.config = config
-        self.exceptionHandlerBuilder = exceptionHandlerBuilder
+        
+        ExceptionHandlerr.shared.handleAPISwitch(
+            blockchain: .ethereum(testnet: true),
+            currentHost: "currentHost",
+            nextHost: "nextHist",
+            statusCode: 404,
+            message: "Test event implementation"
+        )
     }
     
     public func makeWalletManager(blockchain: Blockchain, publicKeys: [AddressType: Wallet.PublicKey]) throws -> WalletManager {
@@ -35,8 +41,7 @@ public class WalletManagerFactory {
             blockchainConfig: config,
             pairPublicKey: nil,
             wallet: wallet,
-            networkConfig: config.networkProviderConfiguration(for: blockchain),
-            exceptionHandler: exceptionHandlerBuilder?(.init(blockchain: blockchain))
+            networkConfig: config.networkProviderConfiguration(for: blockchain)
         )
 
         return try blockchain.assembly.make(with: input)
@@ -120,8 +125,7 @@ public class WalletManagerFactory {
                 blockchainConfig: config,
                 pairPublicKey: pairPublicKey,
                 wallet: wallet,
-                networkConfig: config.networkProviderConfiguration(for: blockchain),
-                exceptionHandler: exceptionHandlerBuilder?(.init(blockchain: blockchain))
+                networkConfig: config.networkProviderConfiguration(for: blockchain)
             )
         )
     }
@@ -157,8 +161,7 @@ extension WalletManagerFactory {
                 blockchainConfig: config,
                 pairPublicKey: nil,
                 wallet: wallet,
-                networkConfig: config.networkProviderConfiguration(for: blockchain),
-                exceptionHandler: exceptionHandlerBuilder?(.init(blockchain: blockchain))
+                networkConfig: config.networkProviderConfiguration(for: blockchain)
             )
         )
     }

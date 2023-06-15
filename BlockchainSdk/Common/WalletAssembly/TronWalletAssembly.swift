@@ -34,7 +34,7 @@ struct TronWalletAssembly: WalletManagerAssembly {
                     configuration: input.networkConfig
                 )
             }
-            $0.networkService = TronNetworkService(isTestnet: input.blockchain.isTestnet, providers: providers, exceptionHandler: input.exceptionHandler)
+            $0.networkService = TronNetworkService(blockchain: input.blockchain, providers: providers)
             $0.txBuilder = TronTransactionBuilder(blockchain: input.blockchain)
         }
     }

@@ -32,7 +32,7 @@ struct DashWalletAssembly: WalletManagerAssembly {
             providers.append(contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .dash, with: input))
             providers.append(networkProviderAssembly.makeBlockcypherNetworkProvider(endpoint: .dash, with: input).eraseToAnyBitcoinNetworkProvider())
             
-            $0.networkService = BitcoinNetworkService(providers: providers, exceptionHandler: input.exceptionHandler)
+            $0.networkService = BitcoinNetworkService(blockchain: input.blockchain, providers: providers)
         }
     }
     

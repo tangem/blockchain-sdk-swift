@@ -12,20 +12,14 @@ import BigInt
 import web3swift
 
 class TronNetworkService: MultiNetworkProvider {
+    let blockchain: Blockchain
     let providers: [TronJsonRpcProvider]
-    let exceptionHandler: ExceptionHandler?
-    let isTestnet: Bool
     
     var currentProviderIndex: Int = 0
     
-    private var blockchain: Blockchain {
-        Blockchain.tron(testnet: isTestnet)
-    }
-    
-    init(isTestnet: Bool, providers: [TronJsonRpcProvider], exceptionHandler: ExceptionHandler?) {
-        self.isTestnet = isTestnet
+    init(blockchain: Blockchain, providers: [TronJsonRpcProvider]) {
+        self.blockchain = blockchain
         self.providers = providers
-        self.exceptionHandler = exceptionHandler
     }
     
     func chainParameters() -> AnyPublisher<TronChainParameters, Error> {

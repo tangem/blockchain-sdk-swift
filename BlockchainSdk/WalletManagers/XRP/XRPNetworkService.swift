@@ -19,14 +19,14 @@ protocol XRPNetworkServiceType {
 }
 
 class XRPNetworkService: MultiNetworkProvider, XRPNetworkServiceType {
+    let blockchain: Blockchain
     let providers: [XRPNetworkProvider]
-    let exceptionHandler: ExceptionHandler?
     
     var currentProviderIndex: Int = 0
     
-    init(providers: [XRPNetworkProvider], exceptionHandler: ExceptionHandler?) {
+    init(blockchain: Blockchain, providers: [XRPNetworkProvider]) {
+        self.blockchain = blockchain
         self.providers = providers
-        self.exceptionHandler = exceptionHandler
     }
     
     func getInfo(account: String) -> AnyPublisher<XrpInfoResponse, Error> {

@@ -14,8 +14,8 @@ import web3swift
 import BigInt
 
 class EthereumNetworkService: MultiNetworkProvider {
+    var blockchain: Blockchain
     let providers: [EthereumJsonRpcProvider]
-    let exceptionHandler: ExceptionHandler?
     
     var currentProviderIndex: Int = 0
     
@@ -26,21 +26,21 @@ class EthereumNetworkService: MultiNetworkProvider {
     private let abiEncoder: ABIEncoder
     
     init(
+        blockchain: Blockchain,
         decimals: Int,
         providers: [EthereumJsonRpcProvider],
         blockcypherProvider: BlockcypherNetworkProvider?,
         blockchairProvider: BlockchairNetworkProvider?,
         transactionHistoryProvider: TransactionHistoryProvider?,
-        abiEncoder: ABIEncoder,
-        exceptionHandler: ExceptionHandler?
+        abiEncoder: ABIEncoder
     ) {
+        self.blockchain = blockchain
         self.providers = providers
         self.decimals = decimals
         self.ethereumInfoNetworkProvider = blockcypherProvider
         self.blockchairProvider = blockchairProvider
         self.transactionHistoryProvider = transactionHistoryProvider
         self.abiEncoder = abiEncoder
-        self.exceptionHandler = exceptionHandler
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {

@@ -12,12 +12,13 @@ import Combine
 @available(iOS 13.0, *)
 class StellarNetworkService: MultiNetworkProvider {
     var currentProviderIndex: Int = 0
-    let providers: [StellarNetworkProvider]
-    let exceptionHandler: ExceptionHandler?
     
-    init(providers: [StellarNetworkProvider], exceptionHandler: ExceptionHandler?) {
+    let blockchain: Blockchain
+    let providers: [StellarNetworkProvider]
+    
+    init(blockchain: Blockchain, providers: [StellarNetworkProvider]) {
+        self.blockchain = blockchain
         self.providers = providers
-        self.exceptionHandler = exceptionHandler
     }
     
     public func send(transaction: String) -> AnyPublisher<Bool, Error> {

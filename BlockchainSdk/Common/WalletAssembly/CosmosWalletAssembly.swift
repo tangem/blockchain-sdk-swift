@@ -26,7 +26,7 @@ struct CosmosWalletAssembly: WalletManagerAssembly {
         let providers = urls.map {
             CosmosRestProvider(url: $0, configuration: input.networkConfig)
         }
-        let networkService = CosmosNetworkService(cosmosChain: cosmosChain, providers: providers, exceptionHandler: input.exceptionHandler)
+        let networkService = CosmosNetworkService(blockchain: input.blockchain, cosmosChain: cosmosChain, providers: providers)
         
         let walletManager = CosmosWalletManager(cosmosChain: cosmosChain, wallet: input.wallet).then {
             $0.txBuilder = CosmosTransactionBuilder(wallet: input.wallet, cosmosChain: cosmosChain)

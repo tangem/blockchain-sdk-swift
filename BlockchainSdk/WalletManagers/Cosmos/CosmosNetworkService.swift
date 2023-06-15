@@ -10,17 +10,17 @@ import Foundation
 import Combine
 
 class CosmosNetworkService: MultiNetworkProvider {
+    let blockchain: Blockchain
     let providers: [CosmosRestProvider]
-    let exceptionHandler: ExceptionHandler?
     
     var currentProviderIndex: Int = 0
     
     private let cosmosChain: CosmosChain
     
-    init(cosmosChain: CosmosChain, providers: [CosmosRestProvider], exceptionHandler: ExceptionHandler?) {
+    init(blockchain: Blockchain, cosmosChain: CosmosChain, providers: [CosmosRestProvider]) {
+        self.blockchain = blockchain
         self.providers = providers
         self.cosmosChain = cosmosChain
-        self.exceptionHandler = exceptionHandler
     }
     
     func accountInfo(for address: String, tokens: [Token], transactionHashes: [String]) -> AnyPublisher<CosmosAccountInfo, Error> {

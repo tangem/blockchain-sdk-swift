@@ -11,14 +11,14 @@ import Moya
 import Combine
 
 class TezosNetworkService: MultiNetworkProvider {
+    let blockchain: Blockchain
     let providers: [TezosJsonRpcProvider]
-    let exceptionHandler: ExceptionHandler?
     
     var currentProviderIndex: Int = 0
     
-    init(providers: [TezosJsonRpcProvider], exceptionHandler: ExceptionHandler?) {
+    init(blockchain: Blockchain, providers: [TezosJsonRpcProvider]) {
+        self.blockchain = blockchain
         self.providers = providers
-        self.exceptionHandler = exceptionHandler
     }
     
     func getInfo(address: String) -> AnyPublisher<TezosAddress, Error> {

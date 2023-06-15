@@ -30,7 +30,7 @@ struct BitcoinCashWalletAssembly: WalletManagerAssembly {
                 contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .bitcoinCash, with: input)
             )
             
-            $0.networkService = BitcoinCashNetworkService(providers: providers, exceptionHandler: input.exceptionHandler)
+            $0.networkService = BitcoinCashNetworkService(blockchain: input.blockchain, providers: providers)
         }
     }
     

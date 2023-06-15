@@ -11,16 +11,13 @@ import Combine
 
 class KaspaNetworkService: MultiNetworkProvider {
     let providers: [KaspaNetworkProvider]
-    let exceptionHandler: ExceptionHandler?
+    let blockchain: Blockchain
     
     var currentProviderIndex: Int = 0
     
-    private let blockchain: Blockchain
-    
-    init(providers: [KaspaNetworkProvider], blockchain: Blockchain, exceptionHandler: ExceptionHandler?) {
+    init(providers: [KaspaNetworkProvider], blockchain: Blockchain) {
         self.providers = providers
         self.blockchain = blockchain
-        self.exceptionHandler = exceptionHandler
     }
     
     func getInfo(address: String, unconfirmedTransactionHashes: [String]) -> AnyPublisher<KaspaAddressInfo, Error> {
