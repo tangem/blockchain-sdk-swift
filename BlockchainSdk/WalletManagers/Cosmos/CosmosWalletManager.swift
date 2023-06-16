@@ -125,7 +125,12 @@ class CosmosWalletManager: BaseManager, WalletManager {
                         }
                         
                         let decimalValue = amount.type.token?.decimalValue ?? blockchain.decimalValue
-                        let feeValue = (Decimal(feeValueInSmallestDenomination) / decimalValue).rounded(blockchain: blockchain)
+                        var feeValue = (Decimal(feeValueInSmallestDenomination) / decimalValue)
+                        if let extraFee = self.cosmosChain.extraFee(for: amount.value) {
+                            feeValue += extraFee
+                        }
+                        
+                        feeValue = feeValue.rounded(blockchain: blockchain)
                         
                         let parameters = CosmosFeeParameters(gas: gas)
                         return Fee(Amount(with: blockchain, type: amount.type, value: feeValue), parameters: parameters)
