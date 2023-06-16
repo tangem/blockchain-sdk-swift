@@ -202,4 +202,16 @@ extension CosmosChain {
             return [:]
         }
     }
+    
+    func extraFee(for amount: Decimal) -> Decimal? {
+        switch self {
+        case .terraV1:
+            // Stability or "spread" fee
+            // https://classic-docs.terra.money/docs/learn/fees.html#spread-fee
+            let minimumSpreadFeePercentage: Decimal = 0.3//5
+            return amount * 0.01 * minimumSpreadFeePercentage
+        case .cosmos, .terraV2, .gaia:
+            return nil
+        }
+    }
 }
