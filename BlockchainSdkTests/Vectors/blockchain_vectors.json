@@ -186,12 +186,6 @@
         "shelley": false
     },
     {
-        "key": "ducatus",
-        "testnet": false,
-        "curve": "secp256k1",
-        "shelley": false
-    },
-    {
         "key": "cosmos-hub",
         "testnet": false,
         "curve": "secp256k1",

@@ -26,7 +26,6 @@ public enum Blockchain: Equatable, Hashable {
     case binance(testnet: Bool)
     case cardano(shelley: Bool)
     case xrp(curve: EllipticCurve)
-    case ducatus
     case tezos(curve: EllipticCurve)
     case dogecoin
     case bsc(testnet: Bool)
@@ -55,7 +54,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoin(let testnet):
             return testnet
-        case .litecoin, .ducatus, .cardano, .xrp, .rsk, .tezos, .dogecoin, .kusama, .terraV1, .terraV2, .cronos:
+        case .litecoin, .cardano, .xrp, .rsk, .tezos, .dogecoin, .kusama, .terraV1, .terraV2, .cronos:
             return false
         case .stellar(let testnet):
             return testnet
@@ -121,7 +120,7 @@ public enum Blockchain: Equatable, Hashable {
     
     public var decimalCount: Int {
         switch self {
-        case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash, .kaspa, .ravencoin:
+        case .bitcoin, .litecoin, .bitcoinCash, .binance, .dogecoin, .dash, .kaspa, .ravencoin:
             return 8
         case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos:
             return 18
@@ -156,8 +155,6 @@ public enum Blockchain: Equatable, Hashable {
             return "BCH"
         case .binance:
             return "BNB"
-        case .ducatus:
-            return "DUC"
         case .cardano:
             return "ADA"
         case .xrp:
@@ -586,7 +583,6 @@ extension Blockchain: Codable {
         case .bitcoin: return "bitcoin"
         case .bitcoinCash: return "bitcoinCash"
         case .cardano: return "cardano"
-        case .ducatus: return "ducatus"
         case .ethereum: return "ethereum"
         case .ethereumClassic: return "ethereumClassic"
         case .litecoin: return "litecoin"
@@ -650,7 +646,6 @@ extension Blockchain: Codable {
         case "binance": self = .binance(testnet: isTestnet)
         case "cardano": self =  .cardano(shelley: shelley!)
         case "xrp": self = .xrp(curve: curve)
-        case "ducatus": self = .ducatus
         case "tezos": self = .tezos(curve: curve)
         case "dogecoin": self = .dogecoin
         case "bsc": self = .bsc(testnet: isTestnet)
@@ -761,8 +756,6 @@ extension Blockchain {
         case .cardano:
             let baseUrl = "https://www.blockchair.com/cardano/address/"
             return URL(string: baseUrl + address)
-        case .ducatus:
-            return URL(string: "https://insight.ducatus.io/#/DUC/mainnet/address/\(address)")
         case .ethereum:
             let baseUrl = isTestnet ? "https://goerli.etherscan.io/" : "https://etherscan.io/"
             let exploreLink = tokenContractAddress == nil ?
@@ -935,7 +928,6 @@ extension Blockchain {
         case "cardano": return .cardano(shelley: false)
         case "cardano-s": return .cardano(shelley: true)
         case "xrp": return .xrp(curve: curve)
-        case "duc": return .ducatus
         case "xtz": return .tezos(curve: curve)
         case "doge": return .dogecoin
         case "bsc": return .bsc(testnet: isTestnet)
@@ -1001,8 +993,6 @@ extension Blockchain {
             return LitecoinWalletAssembly()
         case .dogecoin:
             return DogecoinWalletAssembly()
-        case .ducatus:
-            return DucatusWalletAssembly()
         case .stellar:
             return StellarWalletAssembly()
         case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava, .cronos:
