@@ -88,14 +88,7 @@ class CosmosNetworkService: MultiNetworkProvider {
     func send(transaction: Data) -> AnyPublisher<String, Error> {
         providerPublisher {
             $0.txs(data: transaction)
-                .map(\.txResponse)
-                .tryMap { txResponse in
-                    guard txResponse.code == 0 else {
-                        throw WalletError.failedToSendTx
-                    }
-                    
-                    return txResponse.txhash
-                }
+                .map(\.txResponse.txhash)
                 .eraseToAnyPublisher()
         }
     }

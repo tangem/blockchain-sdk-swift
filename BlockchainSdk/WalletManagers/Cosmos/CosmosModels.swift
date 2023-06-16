@@ -56,7 +56,6 @@ extension CosmosTxResponse {
     struct TxResponse: Decodable {
         let height: String
         let txhash: String
-        let code: Int
     }
 }
 
