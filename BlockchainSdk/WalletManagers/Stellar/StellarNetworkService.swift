@@ -13,11 +13,9 @@ import Combine
 class StellarNetworkService: MultiNetworkProvider {
     var currentProviderIndex: Int = 0
     
-    let blockchain: Blockchain
     let providers: [StellarNetworkProvider]
     
-    init(blockchain: Blockchain, providers: [StellarNetworkProvider]) {
-        self.blockchain = blockchain
+    init(providers: [StellarNetworkProvider]) {
         self.providers = providers
     }
     
