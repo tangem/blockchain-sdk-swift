@@ -18,7 +18,6 @@ struct CardanoWalletAssembly: WalletManagerAssembly {
                 shelleyCard: self.isShelley(for: input.blockchain)
             )
             let service = CardanoNetworkService(
-                blockchain: input.blockchain,
                 providers: [
                     RosettaNetworkProvider(
                         baseUrl: .getBlockRosetta(apiKey: input.blockchainConfig.getBlockApiKey),
