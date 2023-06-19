@@ -17,7 +17,6 @@ protocol MultiNetworkProvider: AnyObject, HostProvider {
     
     var providers: [Provider] { get }
     var currentProviderIndex: Int { get set }
-    var blockchain: Blockchain { get }
 }
 
 extension MultiNetworkProvider {
@@ -49,7 +48,6 @@ extension MultiNetworkProvider {
                     Log.network(message)
                     
                     ExceptionHandler.shared.handleAPISwitch(
-                        blockchain: blockchain,
                         currentHost: currentHost,
                         nextHost: self.nextHost,
                         statusCode: resp.statusCode,

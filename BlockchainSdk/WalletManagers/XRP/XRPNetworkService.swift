@@ -19,13 +19,11 @@ protocol XRPNetworkServiceType {
 }
 
 class XRPNetworkService: MultiNetworkProvider, XRPNetworkServiceType {
-    let blockchain: Blockchain
     let providers: [XRPNetworkProvider]
     
     var currentProviderIndex: Int = 0
     
-    init(blockchain: Blockchain, providers: [XRPNetworkProvider]) {
-        self.blockchain = blockchain
+    init(providers: [XRPNetworkProvider]) {
         self.providers = providers
     }
     

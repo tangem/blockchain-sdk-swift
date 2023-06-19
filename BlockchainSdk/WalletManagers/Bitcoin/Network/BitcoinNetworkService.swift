@@ -13,13 +13,11 @@ import TangemSdk
 import Alamofire
 
 class BitcoinNetworkService: MultiNetworkProvider, BitcoinNetworkProvider {
-    let blockchain: Blockchain
     let providers: [AnyBitcoinNetworkProvider]
     
     var currentProviderIndex: Int = 0
     
-    init(blockchain: Blockchain, providers: [AnyBitcoinNetworkProvider]) {
-        self.blockchain = blockchain
+    init(providers: [AnyBitcoinNetworkProvider]) {
         self.providers = providers
     }
     
