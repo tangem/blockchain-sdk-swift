@@ -40,8 +40,7 @@ class PolkadotWalletManager: BaseManager, WalletManager {
     }
     
     private func updateInfo(_ balance: BigUInt) {
-        let blockchain = network.blockchain
-        let decimals = blockchain.decimalCount
+        let decimals = wallet.blockchain.decimalCount
         guard
             let formatted = Web3.Utils.formatToPrecision(balance, numberDecimals: decimals, formattingDecimals: decimals, decimalSeparator: ".", fallbackToScientific: false),
             let value = Decimal(formatted)
@@ -49,7 +48,7 @@ class PolkadotWalletManager: BaseManager, WalletManager {
             return
         }
         
-        wallet.add(amount: .init(with: blockchain, value: value))
+        wallet.add(amount: .init(with: wallet.blockchain, value: value))
         
         let currentDate = Date()
         for (index, transaction) in wallet.transactions.enumerated() {
@@ -77,7 +76,7 @@ extension PolkadotWalletManager: TransactionSender {
                 return .emptyFail
             }
             
-            let existentialDeposit = self.network.existentialDeposit
+            let existentialDeposit = self.existentialDeposit(blockchain: wallet.blockchain)
             if transaction.amount < existentialDeposit && destinationBalance == BigUInt(0) {
                 let message = String(format: "no_account_polkadot".localized, existentialDeposit.string(roundingMode: .plain))
                 return Fail(error: WalletError.noAccount(message: message)).eraseToAnyPublisher()
@@ -160,14 +159,29 @@ extension PolkadotWalletManager: TransactionSender {
 }
 
 extension PolkadotWalletManager: ExistentialDepositProvider {
-    var existentialDeposit: Amount {
-        network.existentialDeposit
+    
+    func existentialDeposit(blockchain: Blockchain) -> Amount {
+        switch network {
+        case .polkadot:
+            return Amount(with: blockchain, value: 1)
+        case .kusama:
+            // This value was ALSO found experimentally, just like the one on the Westend.
+            // It is different from what official documentation is telling us.
+            return Amount(with: blockchain, value: 0.000033333333)
+        case .westend:
+            // This value was found experimentally by sending transactions with different values to inactive accounts.
+            // This is the lowest amount that activates an account on the Westend network.
+            return Amount(with: blockchain, value: 0.01)
+        case .azero:
+            return Amount(with: blockchain, value: 0.0000000005)
+        }
     }
+    
 }
 
 extension PolkadotWalletManager: MinimumBalanceRestrictable {
     var minimumBalance: Amount {
-        network.existentialDeposit
+        self.existentialDeposit(blockchain: wallet.blockchain)
     }
 }
 

@@ -12,16 +12,16 @@ import TangemSdk
 struct SubstrateWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        guard let network = PolkadotNetwork.allCases.first(where: { $0.blockchain == input.blockchain }) else {
+        guard let network = PolkadotNetwork(blockchain: input.blockchain) else {
             throw WalletError.empty
         }
         
         return PolkadotWalletManager(network: network, wallet: input.wallet).then {
-            let providers = network.urls.map { url in
+            let providers = network.urls(isTestnet: input.blockchain.isTestnet).map { url in
                 PolkadotJsonRpcProvider(url: url, configuration: input.networkConfig)
             }
             $0.networkService = PolkadotNetworkService(providers: providers, network: network)
-            $0.txBuilder = PolkadotTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, network: network)
+            $0.txBuilder = PolkadotTransactionBuilder(blockchain: input.blockchain, walletPublicKey: input.wallet.publicKey.blockchainKey, network: network)
         }
     }
     

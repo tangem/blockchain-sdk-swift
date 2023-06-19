@@ -32,6 +32,7 @@ extension Blockchain {
         case .fantom: break
         case .polkadot: break
         case .kusama: break
+        case .azero: break
         case .tron: break
         case .arbitrum: break
         case .dash: break
@@ -72,6 +73,7 @@ extension Blockchain {
             .solana(testnet: false),
             .polkadot(testnet: false),
             .kusama,
+            .azero(testnet: false),
             .fantom(testnet: false),
             .tron(testnet: false),
             .arbitrum(testnet: false),

@@ -42,6 +42,8 @@ extension CoinType {
             self = .polkadot
         case .kusama:
             self = .kusama
+        case .azero:
+            return nil
         case .bsc:
             self = .smartChain
         case .cardano:
