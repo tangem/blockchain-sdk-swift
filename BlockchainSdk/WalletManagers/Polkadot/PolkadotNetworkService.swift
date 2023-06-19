@@ -12,7 +12,6 @@ import ScaleCodec
 import Sodium
 
 class PolkadotNetworkService: MultiNetworkProvider {
-    let blockchain: Blockchain
     let providers: [PolkadotJsonRpcProvider]
     
     var currentProviderIndex: Int = 0
@@ -20,8 +19,7 @@ class PolkadotNetworkService: MultiNetworkProvider {
     private let network: PolkadotNetwork
     private let codec = SCALE.default
     
-    init(blockchain: Blockchain, providers: [PolkadotJsonRpcProvider], network: PolkadotNetwork) {
-        self.blockchain = blockchain
+    init(providers: [PolkadotJsonRpcProvider], network: PolkadotNetwork) {
         self.providers = providers
         self.network = network
     }
