@@ -10,15 +10,13 @@ import Foundation
 import Combine
 
 class CosmosNetworkService: MultiNetworkProvider {
-    let blockchain: Blockchain
     let providers: [CosmosRestProvider]
     
     var currentProviderIndex: Int = 0
     
     private let cosmosChain: CosmosChain
     
-    init(blockchain: Blockchain, cosmosChain: CosmosChain, providers: [CosmosRestProvider]) {
-        self.blockchain = blockchain
+    init(cosmosChain: CosmosChain, providers: [CosmosRestProvider]) {
         self.providers = providers
         self.cosmosChain = cosmosChain
     }
