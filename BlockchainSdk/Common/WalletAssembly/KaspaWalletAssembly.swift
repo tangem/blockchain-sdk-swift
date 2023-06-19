@@ -32,7 +32,7 @@ struct KaspaWalletAssembly: WalletManagerAssembly {
                 )
             }
             
-            $0.networkService = KaspaNetworkService(providers: providers, blockchain: input.blockchain)
+            $0.networkService = KaspaNetworkService(blockchain: input.blockchain, providers: providers)
         }
     }
 }
