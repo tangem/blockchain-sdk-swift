@@ -137,12 +137,14 @@ class BlockBookUtxoProvider {
             return []
         }
         
-        return utxos.compactMap {
-            guard let value = UInt64($0.value) else { return nil}
+        return utxos.compactMap { utxo in
+            guard let value = UInt64(utxo.value), utxo.confirmations > 0 else {
+                return nil
+            }
             
             return BitcoinUnspentOutput(
-                transactionHash: $0.txid,
-                outputIndex: $0.vout,
+                transactionHash: utxo.txid,
+                outputIndex: utxo.vout,
                 amount: value,
                 outputScript: outputScript
             )
