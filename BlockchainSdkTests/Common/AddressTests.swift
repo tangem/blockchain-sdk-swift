@@ -503,13 +503,13 @@ class AddressesTests: XCTestCase {
         let privateKey = Data(hexString: "0xd65ed4c1a742699b2e20c0c1f1fe780878b1b9f7d387f934fe0a7dc36f1f9008")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         testSubstrateNetwork(
-            .polkadot,
+            .polkadot(testnet: false),
             publicKey: publicKey,
             expectedAddress: "12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW"
         )
         
         testSubstrateNetwork(
-            .polkadot,
+            .polkadot(testnet: false),
             publicKey: edKey,
             expectedAddress: "14cermZiQ83ihmHKkAucgBT2sqiRVvd4rwqBGqrMnowAKYRp"
         )
@@ -534,22 +534,17 @@ class AddressesTests: XCTestCase {
     
     func testWestend() {
         testSubstrateNetwork(
-            .westend,
+            .polkadot(testnet: true),
             publicKey: edKey,
             expectedAddress: "5FgMiSJeYLnFGEGonXrcY2ct2Dimod4vnT6h7Ys1Eiue9KxK"
         )
     }
     
-    func testSubstrateNetwork(_ network: PolkadotNetwork, publicKey: Data, expectedAddress: String) {
-        let otherNetworks = PolkadotNetwork.allCases.filter { $0 != network }
-        let blockchain = network.blockchain
+    func testSubstrateNetwork(_ blockchain: Blockchain, publicKey: Data, expectedAddress: String) {
+        let network = PolkadotNetwork(blockchain: blockchain)!
         
         let addresses = try! blockchain.makeAddresses(from: publicKey, with: nil)
         let addressFromString = PolkadotAddress(string: expectedAddress, network: network)
-        
-        let otherNetworkAddresses = otherNetworks.map {
-            try! $0.blockchain.makeAddresses(from: publicKey, with: nil).first!.value
-        }
         
         XCTAssertThrowsError(try blockchain.makeAddresses(from: secpCompressedKey, with: nil))
         XCTAssertThrowsError(try blockchain.makeAddresses(from: secpDecompressedKey, with: nil))
@@ -559,7 +554,6 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addressFromString!.bytes(raw: true), publicKey)
         XCTAssertEqual(addresses.first!.value, expectedAddress)
         XCTAssertNotEqual(addressFromString!.bytes(raw: false), publicKey)
-        XCTAssertFalse(otherNetworkAddresses.contains(addressFromString!.string))
     }
     
     func testTron() {

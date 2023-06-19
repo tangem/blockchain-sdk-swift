@@ -20,9 +20,9 @@ class PolkadotTests: XCTestCase {
         let privateKey = Data(hexString: "70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         let network: PolkadotNetwork = .polkadot
-        let blockchain = network.blockchain
+        let blockchain: Blockchain = .polkadot(testnet: false)
         
-        let txBuilder = PolkadotTransactionBuilder(walletPublicKey: publicKey, network: network)
+        let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
         
         let amount = Amount(with: blockchain, value: 0.2)
         let destination = "13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5"
@@ -56,10 +56,10 @@ class PolkadotTests: XCTestCase {
         
         let privateKey = Data(hexString: "0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
-        let network: PolkadotNetwork = .polkadot
-        let blockchain = network.blockchain
+        let blockchain: Blockchain = .polkadot(testnet: false)
+        let network: PolkadotNetwork = .init(blockchain: blockchain)!
         
-        let txBuilder = PolkadotTransactionBuilder(walletPublicKey: publicKey, network: network)
+        let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
         
         let amount = Amount(with: blockchain, value: 12345 / blockchain.decimalValue)
         let destination = try! blockchain.makeAddresses(from: toAddress, with: nil).first!.value
@@ -91,10 +91,10 @@ class PolkadotTests: XCTestCase {
     func testTransaction72dd5b() {
         let privateKey = Data(hexString: "37932b086586a6675e66e562fe68bd3eeea4177d066619c602fe3efc290ada62")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
-        let network: PolkadotNetwork = .polkadot
-        let blockchain = network.blockchain
+        let blockchain: Blockchain = .polkadot(testnet: false)
+        let network: PolkadotNetwork = .init(blockchain: blockchain)!
         
-        let txBuilder = PolkadotTransactionBuilder(walletPublicKey: publicKey, network: network)
+        let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
         
         let amount = Amount(with: blockchain, value: 1)
         let destination = "13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5"
