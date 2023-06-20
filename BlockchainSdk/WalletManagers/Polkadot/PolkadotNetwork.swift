@@ -66,11 +66,11 @@ enum PolkadotNetwork {
         case .azero(let isTestnet):
             if isTestnet {
                 return [
-                    URL(string: "https://rpc.test.azero.dev")!
+                    URL(string: "https://rpc.test.azero.dev")!,
                 ]
             } else {
                 return [
-                    URL(string: "https://rpc.azero.dev")!
+                    URL(string: "https://rpc.azero.dev")!,
                 ]
             }
         }
