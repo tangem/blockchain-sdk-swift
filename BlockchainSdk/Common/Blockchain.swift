@@ -238,7 +238,7 @@ public enum Blockchain: Equatable, Hashable {
         case .polkadot:
             return "Polkadot" + testnetSuffix + (isTestnet ? " (Westend)" : "")
         case .azero:
-            return "Aleph Zero"
+            return "Aleph Zero" + testnetSuffix
         case .gnosis:
             return "Gnosis Chain" + testnetSuffix
         case .optimism:
@@ -1017,7 +1017,7 @@ extension Blockchain {
         case "fantom": return .fantom(testnet: isTestnet)
         case "polkadot": return .polkadot(testnet: isTestnet)
         case "kusama": return .kusama
-        case "aleph-zero": return .azero(testnet: isTestnet)
+        case "aleph zero": return .azero(testnet: isTestnet)
         case "tron": return .tron(testnet: isTestnet)
         case "arbitrum": return .arbitrum(testnet: isTestnet)
         case "dash": return .dash(testnet: isTestnet)
