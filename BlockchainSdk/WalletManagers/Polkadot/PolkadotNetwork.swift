@@ -93,6 +93,7 @@ enum PolkadotNetwork {
     }
 }
 
+// https://support.polkadot.network/support/solutions/articles/65000168651-what-is-the-existential-deposit-
 extension PolkadotNetwork: ExistentialDepositProvider {
     var existentialDeposit: Amount {
         switch self {
@@ -107,8 +108,7 @@ extension PolkadotNetwork: ExistentialDepositProvider {
             // This is the lowest amount that activates an account on the Westend network.
             return Amount(with: blockchain, value: 0.01)
         case .azero:
-            // Existential deposit - 0.0000000005
-            // TODO: - Link on documentation
+            // Existential deposit - 0.0000000005 Look https://test.azero.dev wallet for example
             return Amount(with: blockchain, value: 0.0000000005)
         }
     }

@@ -1017,7 +1017,7 @@ extension Blockchain {
         case "fantom": return .fantom(testnet: isTestnet)
         case "polkadot": return .polkadot(testnet: isTestnet)
         case "kusama": return .kusama
-        case "aleph zero": return .azero(testnet: isTestnet)
+        case "aleph-zero": return .azero(testnet: isTestnet)
         case "tron": return .tron(testnet: isTestnet)
         case "arbitrum": return .arbitrum(testnet: isTestnet)
         case "dash": return .dash(testnet: isTestnet)

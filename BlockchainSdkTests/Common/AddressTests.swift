@@ -542,7 +542,7 @@ class AddressesTests: XCTestCase {
     
     func testAzero() {
         testSubstrateNetwork(
-            .polkadot(testnet: true),
+            .azero(testnet: true),
             publicKey: edKey,
             expectedAddress: "5FgMiSJeYLnFGEGonXrcY2ct2Dimod4vnT6h7Ys1Eiue9KxK"
         )

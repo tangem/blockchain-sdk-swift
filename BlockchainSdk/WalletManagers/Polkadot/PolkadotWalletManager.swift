@@ -158,6 +158,12 @@ extension PolkadotWalletManager: TransactionSender {
     }
 }
 
+extension PolkadotWalletManager: ExistentialDepositProvider {
+    var existentialDeposit: Amount {
+        network.existentialDeposit
+    }
+}
+
 extension PolkadotWalletManager: MinimumBalanceRestrictable {
     var minimumBalance: Amount {
         self.network.existentialDeposit

@@ -20,8 +20,6 @@
 		2D535E862A0CC5FA0081EB76 /* BlockchainCodingKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E802A0CC5FA0081EB76 /* BlockchainCodingKeyTests.swift */; };
 		2D535E872A0CC5FA0081EB76 /* AddressesValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E812A0CC5FA0081EB76 /* AddressesValidationTests.swift */; };
 		2D535E892A0CC9920081EB76 /* TWCurve+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E882A0CC9920081EB76 /* TWCurve+.swift */; };
-		2D74C2692A419692007185BC /* AzeroTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74C2682A419692007185BC /* AzeroTests.swift */; };
-		2D74C26B2A41A059007185BC /* KusamaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D74C26A2A41A059007185BC /* KusamaTests.swift */; };
 		2D8501F729DEC20A00F4A11B /* TONTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8501F629DEC20A00F4A11B /* TONTransactionParams.swift */; };
 		2D9A919229BB8BFF00476EA6 /* TONWalletInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */; };
 		2D9A919329BB8BFF00476EA6 /* TONTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */; };
@@ -386,8 +384,6 @@
 		2D535E802A0CC5FA0081EB76 /* BlockchainCodingKeyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockchainCodingKeyTests.swift; sourceTree = "<group>"; };
 		2D535E812A0CC5FA0081EB76 /* AddressesValidationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddressesValidationTests.swift; sourceTree = "<group>"; };
 		2D535E882A0CC9920081EB76 /* TWCurve+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TWCurve+.swift"; sourceTree = "<group>"; };
-		2D74C2682A419692007185BC /* AzeroTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AzeroTests.swift; sourceTree = "<group>"; };
-		2D74C26A2A41A059007185BC /* KusamaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KusamaTests.swift; sourceTree = "<group>"; };
 		2D8501F629DEC20A00F4A11B /* TONTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONTransactionParams.swift; sourceTree = "<group>"; };
 		2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONWalletInfo.swift; sourceTree = "<group>"; };
 		2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONTransactionBuilder.swift; sourceTree = "<group>"; };
@@ -1376,8 +1372,6 @@
 			isa = PBXGroup;
 			children = (
 				DA7CA47527AD4BD90041B1A1 /* PolkadotTests.swift */,
-				2D74C2682A419692007185BC /* AzeroTests.swift */,
-				2D74C26A2A41A059007185BC /* KusamaTests.swift */,
 			);
 			path = Polkadot;
 			sourceTree = "<group>";
@@ -2412,7 +2406,6 @@
 				2D535E862A0CC5FA0081EB76 /* BlockchainCodingKeyTests.swift in Sources */,
 				EF0DA78428523FAC0081092A /* EthereumTests.swift in Sources */,
 				EF0DA78A28523FAC0081092A /* PolkadotTests.swift in Sources */,
-				2D74C26B2A41A059007185BC /* KusamaTests.swift in Sources */,
 				EF0DA78328523FAC0081092A /* AddressTests.swift in Sources */,
 				EF0DA78728523FAC0081092A /* TronTests.swift in Sources */,
 				DA3738F129EFDF9600439F6B /* PrivateKeySigner+.swift in Sources */,
@@ -2420,7 +2413,6 @@
 				2D535E792A0CC5E50081EB76 /* TestVectorsUtility.swift in Sources */,
 				EF0DA78528523FAC0081092A /* BlockchainSdkTests.swift in Sources */,
 				DA198B5929E3F6E400DB6EEA /* CosmosTests.swift in Sources */,
-				2D74C2692A419692007185BC /* AzeroTests.swift in Sources */,
 				DA3738F229EFDF9600439F6B /* XCTAssert+.swift in Sources */,
 				B00DEAD3290008910077CD19 /* SolanaTests.swift in Sources */,
 				EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */,
