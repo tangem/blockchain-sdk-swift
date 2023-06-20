@@ -94,7 +94,7 @@ enum PolkadotNetwork {
 }
 
 // https://support.polkadot.network/support/solutions/articles/65000168651-what-is-the-existential-deposit-
-extension PolkadotNetwork: ExistentialDepositProvider {
+extension PolkadotNetwork {
     var existentialDeposit: Amount {
         switch self {
         case .polkadot:

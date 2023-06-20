@@ -910,6 +910,7 @@ extension Blockchain {
         case .kusama:
             return URL(string: "https://kusama.subscan.io/account/\(address)")
         case .azero:
+            guard !isTestnet else { return nil } // So far only available for mainnet
             return URL(string: "https://alephzero.subscan.io/account/\(address)")
         case .tron:
             let subdomain = isTestnet ? "nile." : ""
