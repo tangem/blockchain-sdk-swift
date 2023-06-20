@@ -62,7 +62,7 @@ class PolkadotTests: XCTestCase {
         let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
         
         let amount = Amount(with: blockchain, value: 12345 / blockchain.decimalValue)
-        let destination = try! blockchain.makeAddresses(from: toAddress, with: nil).first!.value
+        let destination = try! PolkadotAddressService(network: network).makeAddress(from: toAddress)
         let meta = PolkadotBlockchainMeta(
             specVersion: 17,
             transactionVersion: 3,
@@ -134,7 +134,7 @@ class PolkadotTests: XCTestCase {
         let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
         
         let amount = Amount(with: blockchain, value: 12345 / blockchain.decimalValue)
-        let destination = try! blockchain.makeAddresses(from: toAddress, with: nil).first!.value
+        let destination = try! PolkadotAddressService(network: network).makeAddress(from: toAddress)
         let meta = PolkadotBlockchainMeta(
             specVersion: 17,
             transactionVersion: 3,
