@@ -9,9 +9,13 @@
 import Foundation
 
 enum PolkadotNetwork {
+    /// Polkadot blockchain for isTestnet = false
     case polkadot
-    case kusama
+    /// Polkadot blockchain for isTestnet = true
     case westend
+    /// Kusama blockchain
+    case kusama
+    /// Azero blockchain
     case azero(testnet: Bool)
     
     init?(blockchain: Blockchain) {
