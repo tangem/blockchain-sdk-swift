@@ -1,5 +1,5 @@
 //
-//  BitcoinCashAddrService.swift
+//  CashAddrService.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 07.06.2023.
@@ -12,7 +12,7 @@ import HDWalletKit
 import TangemSdk
 
 @available(iOS 13.0, *)
-public class BitcoinCashAddrService {
+public class CashAddrService {
     private let addressPrefix: String
 
     public init(networkParams: INetwork) {

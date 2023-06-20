@@ -37,11 +37,11 @@ class BitcoinTests: XCTestCase {
         let expectedLegacyAddress = "358vzrRZUDZ8DM5Zbz9oLqGr8voPYQqe56"
         let expectedSegwitAddress = "bc1qw9czf0m0eu0v5uhdqj9l4w9su3ca0pegzxxk947hrehma343qwusy4nf8c"
 
-        let addresses = try addressService.makeAddresses(publicKey: .init(seedKey: walletPublicKey1), pairPublicKey: walletPublicKey2)
+        let addresses = try addressService.makeAddresses(publicKey: .init(seedKey: walletPublicKey1, derivation: .none), pairPublicKey: walletPublicKey2)
         XCTAssertNotNil(addresses)
         XCTAssertEqual(addresses.count, numberOfAddresses)
         
-        let reversedPubkeysAddresses = try addressService.makeAddresses(publicKey: .init(seedKey: walletPublicKey2), pairPublicKey: walletPublicKey1)
+        let reversedPubkeysAddresses = try addressService.makeAddresses(publicKey: .init(seedKey: walletPublicKey2, derivation: .none), pairPublicKey: walletPublicKey1)
         XCTAssertNotNil(reversedPubkeysAddresses)
         XCTAssertEqual(reversedPubkeysAddresses.count, numberOfAddresses)
         

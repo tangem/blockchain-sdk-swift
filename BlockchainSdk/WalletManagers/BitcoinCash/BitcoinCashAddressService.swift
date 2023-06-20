@@ -14,7 +14,7 @@ import BitcoinCore
 @available(iOS 13.0, *)
 public class BitcoinCashAddressService {
     private let legacyService: BitcoinLegacyAddressService
-    private let cashAddrService: BitcoinCashAddrService
+    private let cashAddrService: CashAddrService
     
     public init(networkParams: INetwork) {
         self.legacyService = .init(networkParams: networkParams)

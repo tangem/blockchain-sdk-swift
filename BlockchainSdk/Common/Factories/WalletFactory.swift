@@ -19,7 +19,7 @@ public struct WalletFactory {
     }
 
     /// With one public key
-    func makeWallet(blockchain: Blockchain, publicKey: Wallet.PublicKey) throws -> Wallet {
+    func makeWallet(publicKey: Wallet.PublicKey) throws -> Wallet {
         // Temporary for get count on addresses
         let addressTypes: [AddressType] = Array(blockchain.derivationPaths(for: .v2).keys)
 
@@ -31,7 +31,7 @@ public struct WalletFactory {
     }
 
     /// With multisig script public key
-    func makeWallet(blockchain: Blockchain, publicKey: Wallet.PublicKey, pairPublicKey: Data) throws -> Wallet {
+    func makeWallet(publicKey: Wallet.PublicKey, pairPublicKey: Data) throws -> Wallet {
         guard let addressProvider = addressProvider as? BitcoinScriptAddressesProvider else {
             throw WalletError.empty
         }
@@ -45,7 +45,7 @@ public struct WalletFactory {
     }
 
     /// With different public keys
-    func makeWallet(blockchain: Blockchain, publicKeys: [AddressType: Wallet.PublicKey]) throws -> Wallet {
+    func makeWallet(publicKeys: [AddressType: Wallet.PublicKey]) throws -> Wallet {
         assert(publicKeys[.default] != nil, "PublicKeys have to contains default publicKey")
 
         let addressProvider = AddressServiceFactory(blockchain: blockchain).makeAddressService()

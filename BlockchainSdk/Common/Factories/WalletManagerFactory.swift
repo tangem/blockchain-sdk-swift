@@ -26,7 +26,7 @@ public class WalletManagerFactory {
     public func makeWalletManager(blockchain: Blockchain, publicKeys: [AddressType: Wallet.PublicKey]) throws -> WalletManager {
         // It'll moved in Assembly in next task
         let walletFactory = WalletFactory(blockchain: blockchain)
-        let wallet = try walletFactory.makeWallet(blockchain: blockchain, publicKeys: publicKeys)
+        let wallet = try walletFactory.makeWallet(publicKeys: publicKeys)
         return try makeWalletManager(from: blockchain, wallet: wallet)
     }
 
@@ -57,7 +57,7 @@ public class WalletManagerFactory {
 
         let publicKey = Wallet.PublicKey(seedKey: seedKey, derivation: derivation)
         let walletFactory = WalletFactory(blockchain: blockchain)
-        let wallet = try walletFactory.makeWallet(blockchain: blockchain, publicKey: publicKey)
+        let wallet = try walletFactory.makeWallet(publicKey: publicKey)
         return try makeWalletManager(from: blockchain, wallet: wallet)
     }
     
@@ -69,7 +69,7 @@ public class WalletManagerFactory {
     public func makeWalletManager(blockchain: Blockchain, walletPublicKey: Data) throws -> WalletManager {
         let publicKey = Wallet.PublicKey(seedKey: walletPublicKey, derivation: .none)
         let walletFactory = WalletFactory(blockchain: blockchain)
-        let wallet = try walletFactory.makeWallet(blockchain: blockchain, publicKey: publicKey)
+        let wallet = try walletFactory.makeWallet(publicKey: publicKey)
         return try makeWalletManager(from: blockchain, wallet: wallet)
     }
     
@@ -81,7 +81,7 @@ public class WalletManagerFactory {
         let blockchain: Blockchain = .bitcoin(testnet: isTestnet)
         let publicKey = Wallet.PublicKey(seedKey: walletPublicKey, derivation: .none)
         let walletFactory = WalletFactory(blockchain: blockchain)
-        let wallet = try walletFactory.makeWallet(blockchain: blockchain, publicKey: publicKey, pairPublicKey: pairKey)
+        let wallet = try walletFactory.makeWallet(publicKey: publicKey, pairPublicKey: pairKey)
         return try makeWalletManager(from: blockchain, wallet: wallet, pairPublicKey: pairKey)
     }
     

@@ -301,9 +301,8 @@
 		EF31EA1529DC31E000A59FBE /* RavencoinMainNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF31EA1229DC31E000A59FBE /* RavencoinMainNetworkParams.swift */; };
 		EF31EA1629DC31E000A59FBE /* RavencoinWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF31EA1329DC31E000A59FBE /* RavencoinWalletManager.swift */; };
 		EF31EA1829DC6B4700A59FBE /* RavencoinFee.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF31EA1729DC6B4700A59FBE /* RavencoinFee.swift */; };
-		EF32FEBC2A306D40002ED43F /* DucatusNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FEBB2A306D40002ED43F /* DucatusNetworkParams.swift */; };
 		EF32FEBF2A306E51002ED43F /* AddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD831BB244DF5BD00F80CEA /* AddressService.swift */; };
-		EF32FEC22A3072B9002ED43F /* BitcoinCashAddrService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FEC12A3072B9002ED43F /* BitcoinCashAddrService.swift */; };
+		EF32FEC22A3072B9002ED43F /* CashAddrService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FEC12A3072B9002ED43F /* CashAddrService.swift */; };
 		EF32FED92A38A04E002ED43F /* AddressServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FED82A38A04E002ED43F /* AddressServiceFactory.swift */; };
 		EF32FEDB2A38C288002ED43F /* BitcoinScriptAddressProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FEDA2A38C288002ED43F /* BitcoinScriptAddressProvider.swift */; };
 		EF32FEE02A38D43A002ED43F /* BitcoinScriptAddressesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FEDD2A38D015002ED43F /* BitcoinScriptAddressesProvider.swift */; };
@@ -688,7 +687,7 @@
 		EF31EA1329DC31E000A59FBE /* RavencoinWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RavencoinWalletManager.swift; sourceTree = "<group>"; };
 		EF31EA1729DC6B4700A59FBE /* RavencoinFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RavencoinFee.swift; sourceTree = "<group>"; };
 		EF32FEBB2A306D40002ED43F /* DucatusNetworkParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DucatusNetworkParams.swift; sourceTree = "<group>"; };
-		EF32FEC12A3072B9002ED43F /* BitcoinCashAddrService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinCashAddrService.swift; sourceTree = "<group>"; };
+		EF32FEC12A3072B9002ED43F /* CashAddrService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CashAddrService.swift; sourceTree = "<group>"; };
 		EF32FED82A38A04E002ED43F /* AddressServiceFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddressServiceFactory.swift; sourceTree = "<group>"; };
 		EF32FEDA2A38C288002ED43F /* BitcoinScriptAddressProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinScriptAddressProvider.swift; sourceTree = "<group>"; };
 		EF32FEDD2A38D015002ED43F /* BitcoinScriptAddressesProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoinScriptAddressesProvider.swift; sourceTree = "<group>"; };
@@ -876,6 +875,7 @@
 				5D14E46F2397B80F00C15FC8 /* Products */,
 				5D14E49A2397B8B000C15FC8 /* Frameworks */,
 				C78C27BD063723008A1058A7 /* Pods */,
+				EF34FCFA2A41E44200E18670 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1055,7 +1055,7 @@
 			children = (
 				5D4B33C123F72C0400C93A84 /* BitcoinCashNetworkService.swift */,
 				5D4B33C523F72F1100C93A84 /* BitcoinCashAddressService.swift */,
-				EF32FEC12A3072B9002ED43F /* BitcoinCashAddrService.swift */,
+				EF32FEC12A3072B9002ED43F /* CashAddrService.swift */,
 				5D4B33C723F72F2700C93A84 /* BitcoinCashWalletManager.swift */,
 				5D0906C127DBB7A10053B2CD /* BitcoinCashNetworkParams.swift */,
 			);
@@ -1748,6 +1748,14 @@
 			path = API;
 			sourceTree = "<group>";
 		};
+		EF34FCFA2A41E44200E18670 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				EF32FEBB2A306D40002ED43F /* DucatusNetworkParams.swift */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		EF3FFFF92A27740400C6E7D9 /* DTOs */ = {
 			isa = PBXGroup;
 			children = (
@@ -2137,7 +2145,6 @@
 				5D4B33DA23FAAD1B00C93A84 /* BitcoreResponse.swift in Sources */,
 				EF57BEE32A1E682D00C2A493 /* Blockchain+AllCases.swift in Sources */,
 				EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */,
-				EF32FEBC2A306D40002ED43F /* DucatusNetworkParams.swift in Sources */,
 				EF3FFFFE2A27740400C6E7D9 /* AdaliteBalanceResponseDTO.swift in Sources */,
 				DA2E770029769BF6001FF957 /* TransactionCreator.swift in Sources */,
 				EF31EA1529DC31E000A59FBE /* RavencoinMainNetworkParams.swift in Sources */,
@@ -2386,7 +2393,7 @@
 				B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */,
 				DAE30DFF279164500056C5A3 /* SolanaWalletManager.swift in Sources */,
 				DA67A69829E523C6001B6799 /* CosmosTransactionBuilder.swift in Sources */,
-				EF32FEC22A3072B9002ED43F /* BitcoinCashAddrService.swift in Sources */,
+				EF32FEC22A3072B9002ED43F /* CashAddrService.swift in Sources */,
 				EF2BC62729DAD65F003D3F18 /* RavencoinTransactionInfo.swift in Sources */,
 				EF666C2E2A2F3EE90044986F /* BitcoinLegacyAddressService.swift in Sources */,
 				DA570CEF27A802BE007F34EB /* SolanaError+.swift in Sources */,

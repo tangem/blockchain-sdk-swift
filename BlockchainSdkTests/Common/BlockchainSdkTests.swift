@@ -90,7 +90,7 @@ class BlockchainSdkTests: XCTestCase {
     func testTxValidation() {
         let wallet = Wallet(
             blockchain: .bitcoin(testnet: false),
-            addresses: [.default: PlainAddress(value: "adfjbajhfaldfh", publicKey: .init(seedKey: Data()), type: .default)]
+            addresses: [.default: PlainAddress(value: "adfjbajhfaldfh", publicKey: .init(seedKey: Data(), derivation: .none), type: .default)]
         )
 
         let vm: WalletManager = BitcoinWalletManager(wallet: wallet)
