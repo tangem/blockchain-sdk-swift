@@ -108,6 +108,7 @@ extension PolkadotNetwork: ExistentialDepositProvider {
             return Amount(with: blockchain, value: 0.01)
         case .azero:
             // Existential deposit - 0.0000000005
+            // TODO: - Link on documentation
             return Amount(with: blockchain, value: 0.0000000005)
         }
     }
