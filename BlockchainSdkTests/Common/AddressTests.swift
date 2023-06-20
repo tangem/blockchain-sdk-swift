@@ -45,7 +45,6 @@ class AddressesTests: XCTestCase {
     }
     
     func testBtcTestnet() throws {
-        let blockchain = Blockchain.bitcoin(testnet: true)
         let service = BitcoinAddressService(networkParams: BitcoinNetwork.testnet.networkParams)
         XCTAssertThrowsError(try service.makeAddress(from: edKey))
 
@@ -66,14 +65,16 @@ class AddressesTests: XCTestCase {
         // let secpPairPrivKey = Data(hexString: "997D79C06B72E8163D1B9FCE6DA0D2ABAA15B85E52C6032A087342BAD98E5316")
         let secpPairDecompressedKey = Data(hexString: "042A5741873B88C383A7CFF4AA23792754B5D20248F1A24DF1DAC35641B3F97D8936D318D49FE06E3437E31568B338B340F4E6DF5184E1EC5840F2B7F4596902AE")
         let secpPairCompressedKey = Data(hexString: "022A5741873B88C383A7CFF4AA23792754B5D20248F1A24DF1DAC35641B3F97D89")
-        
-        let blockchain = Blockchain.bitcoin(testnet: false) //no testnet for twins
         let service = BitcoinAddressService(networkParams: BitcoinNetwork.mainnet.networkParams)
 
-        let addr_dec = try service.makeAddresses(publicKey: .init(seedKey: secpDecompressedKey), pairPublicKey: secpPairDecompressedKey)
-        let addr_dec1 = try service.makeAddresses(publicKey: .init(seedKey: secpDecompressedKey), pairPublicKey: secpPairCompressedKey)
-        let addr_comp = try service.makeAddresses(publicKey: .init(seedKey: secpCompressedKey), pairPublicKey: secpPairCompressedKey)
-        let addr_comp1 = try service.makeAddresses(publicKey: .init(seedKey: secpCompressedKey), pairPublicKey: secpPairDecompressedKey)
+        let addr_dec = try service.makeAddresses(publicKey: .init(seedKey: secpDecompressedKey, derivation: .none),
+                                                 pairPublicKey: secpPairDecompressedKey)
+        let addr_dec1 = try service.makeAddresses(publicKey: .init(seedKey: secpDecompressedKey, derivation: .none),
+                                                  pairPublicKey: secpPairCompressedKey)
+        let addr_comp = try service.makeAddresses(publicKey: .init(seedKey: secpCompressedKey, derivation: .none),
+                                                  pairPublicKey: secpPairCompressedKey)
+        let addr_comp1 = try service.makeAddresses(publicKey: .init(seedKey: secpCompressedKey, derivation: .none),
+                                                   pairPublicKey: secpPairDecompressedKey)
         XCTAssertEqual(addr_dec.count, 2)
         XCTAssertEqual(addr_dec1.count, 2)
         XCTAssertEqual(addr_comp.count, 2)
@@ -138,7 +139,6 @@ class AddressesTests: XCTestCase {
     }
     
     func testXlmTestnet() throws {
-        let blockchain = Blockchain.stellar(testnet: true)
         let service = StellarAddressService()
 
         let addrs = try service.makeAddress(from: edKey)
@@ -169,7 +169,6 @@ class AddressesTests: XCTestCase {
     }
     
     func testEthTestnet() throws {
-        let blockchain = Blockchain.ethereum(testnet: true)
         let service = EthereumAddressService()
 
         let addr_dec = try service.makeAddress(from: secpDecompressedKey)
@@ -229,7 +228,6 @@ class AddressesTests: XCTestCase {
     }
     
     func testBchTestnet() throws {
-        let blockchain = Blockchain.bitcoinCash(testnet: true)
         let service = BitcoinCashAddressService(networkParams: BitcoinCashTestNetworkParams())
 
         let addr_dec_default = try service.makeAddress(from: secpDecompressedKey, type: .default)
@@ -286,7 +284,6 @@ class AddressesTests: XCTestCase {
     }
     
     func testAda() throws {
-        let blockchain = Blockchain.cardano(shelley: false)
         let service = CardanoAddressService(shelley: false)
 
         let addrs = try service.makeAddress(from: edKey, type: .legacy)
@@ -299,7 +296,6 @@ class AddressesTests: XCTestCase {
     }
     
     func testAdaShelley() throws {
-        let blockchain = Blockchain.cardano(shelley: true)
         let service = CardanoAddressService(shelley: true)
 
         let addrs_shelley = try service.makeAddress(from: edKey, type: .default) // default is shelley
@@ -335,7 +331,6 @@ class AddressesTests: XCTestCase {
     }
     
     func testXrpEd() throws {
-        let blockchain = Blockchain.xrp(curve: .ed25519)
         let service = XRPAddressService(curve: .ed25519)
         let address = try service.makeAddress(from: edKey)
 
@@ -379,7 +374,6 @@ class AddressesTests: XCTestCase {
     }
     
     func testXTZEd() throws {
-        let blockchain = Blockchain.tezos(curve: .ed25519)
         let service = TezosAddressService(curve: .ed25519)
         let address = try service.makeAddress(from: edKey)
         
@@ -426,7 +420,6 @@ class AddressesTests: XCTestCase {
     }
     
     func testBscTestnet() throws {
-        let blockchain = Blockchain.bsc(testnet: true)
         let service = EthereumAddressService()
 
         let addr_dec = try service.makeAddress(from: secpDecompressedKey)
@@ -580,7 +573,6 @@ class AddressesTests: XCTestCase {
     
     func testDashDecompressedMainnet() throws {
         // given
-        let blockchain = Blockchain.dash(testnet: true)
         let service = BitcoinLegacyAddressService(networkParams: DashMainNetworkParams())
         let expectedAddress = "Xs92pJsKUXRpbwzxDjBjApiwMK6JysNntG"
 
@@ -635,7 +627,6 @@ class AddressesTests: XCTestCase {
     }
     
     func testTONValidateCorrectAddress() {
-        let blockchain = Blockchain.ton(testnet: false)
         let addressService = WalletCoreAddressService(coin: .ton)
         
         XCTAssertTrue(addressService.validate("EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2"))
@@ -647,7 +638,6 @@ class AddressesTests: XCTestCase {
     }
     
     func testKaspaAddressGeneration() throws {
-        let blockchain = Blockchain.kaspa
         let addressService = KaspaAddressService()
         
         let expectedAddress = "kaspa:qypyrhxkfd055qulcvu6zccq4qe63qajrzgf7t4u4uusveguw6zzc3grrceeuex"
@@ -666,7 +656,6 @@ class AddressesTests: XCTestCase {
     }
     
     func testKaspaAddressComponentsAndValidation() throws {
-        let blockchain = Blockchain.kaspa
         let addressService = KaspaAddressService()
         
         XCTAssertFalse(addressService.validate("kaspb:qyp5ez9p4q6xnh0jp5xq0ewy58nmsde5uus7vrty9w222v3zc37xwrgeqhkq7v3"))
