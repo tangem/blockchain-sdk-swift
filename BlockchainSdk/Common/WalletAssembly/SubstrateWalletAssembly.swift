@@ -17,7 +17,7 @@ struct SubstrateWalletAssembly: WalletManagerAssembly {
         }
         
         return PolkadotWalletManager(network: network, wallet: input.wallet).then {
-            let providers = network.urls(isTestnet: input.blockchain.isTestnet).map { url in
+            let providers = network.urls.map { url in
                 PolkadotJsonRpcProvider(url: url, configuration: input.networkConfig)
             }
             $0.networkService = PolkadotNetworkService(providers: providers, network: network)

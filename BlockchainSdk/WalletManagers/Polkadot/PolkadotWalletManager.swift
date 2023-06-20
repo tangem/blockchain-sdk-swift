@@ -76,7 +76,7 @@ extension PolkadotWalletManager: TransactionSender {
                 return .emptyFail
             }
             
-            let existentialDeposit = self.existentialDeposit(blockchain: wallet.blockchain)
+            let existentialDeposit = self.network.existentialDeposit
             if transaction.amount < existentialDeposit && destinationBalance == BigUInt(0) {
                 let message = String(format: "no_account_polkadot".localized, existentialDeposit.string(roundingMode: .plain))
                 return Fail(error: WalletError.noAccount(message: message)).eraseToAnyPublisher()
@@ -158,30 +158,9 @@ extension PolkadotWalletManager: TransactionSender {
     }
 }
 
-extension PolkadotWalletManager: ExistentialDepositProvider {
-    
-    func existentialDeposit(blockchain: Blockchain) -> Amount {
-        switch network {
-        case .polkadot:
-            return Amount(with: blockchain, value: 1)
-        case .kusama:
-            // This value was ALSO found experimentally, just like the one on the Westend.
-            // It is different from what official documentation is telling us.
-            return Amount(with: blockchain, value: 0.000033333333)
-        case .westend:
-            // This value was found experimentally by sending transactions with different values to inactive accounts.
-            // This is the lowest amount that activates an account on the Westend network.
-            return Amount(with: blockchain, value: 0.01)
-        case .azero:
-            return Amount(with: blockchain, value: 0.0000000005)
-        }
-    }
-    
-}
-
 extension PolkadotWalletManager: MinimumBalanceRestrictable {
     var minimumBalance: Amount {
-        self.existentialDeposit(blockchain: wallet.blockchain)
+        self.network.existentialDeposit
     }
 }
 

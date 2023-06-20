@@ -113,5 +113,5 @@ public protocol RentProvider {
 }
 
 public protocol ExistentialDepositProvider {
-    func existentialDeposit(blockchain: Blockchain) -> Amount
+    var existentialDeposit: Amount { get }
 }

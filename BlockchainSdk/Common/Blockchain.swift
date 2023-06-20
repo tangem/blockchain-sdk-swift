@@ -597,7 +597,7 @@ extension Blockchain {
         case .kusama:
             return PolkadotAddressService(network: .kusama)
         case .azero:
-            return PolkadotAddressService(network: .azero)
+            return PolkadotAddressService(network: .azero(testnet: isTestnet))
         case .tron:
             return TronAddressService()
         case .dash:
@@ -908,7 +908,7 @@ extension Blockchain {
         case .kusama:
             return URL(string: "https://kusama.subscan.io/account/\(address)")
         case .azero:
-            return URL(string: "https://alephzero.subscan.io/account\(address)")
+            return URL(string: "https://alephzero.subscan.io/account/\(address)")
         case .tron:
             let subdomain = isTestnet ? "nile." : ""
             return URL(string: "https://\(subdomain)tronscan.org/#/address/\(address)")!

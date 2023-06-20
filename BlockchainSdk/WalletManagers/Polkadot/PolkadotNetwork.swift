@@ -8,11 +8,11 @@
 
 import Foundation
 
-enum PolkadotNetwork: CaseIterable {
+enum PolkadotNetwork {
     case polkadot
     case kusama
     case westend
-    case azero
+    case azero(testnet: Bool)
     
     init?(blockchain: Blockchain) {
         switch blockchain {
@@ -24,15 +24,28 @@ enum PolkadotNetwork: CaseIterable {
             }
         case .kusama:
             self = .kusama
-        case .azero:
-            self = .azero
+        case .azero(let isTestnet):
+            self = .azero(testnet: isTestnet)
         default:
             return nil
         }
     }
     
+    var blockchain: Blockchain {
+        switch self {
+        case .polkadot:
+            return .polkadot(testnet: false)
+        case .kusama:
+            return .kusama
+        case .westend:
+            return .polkadot(testnet: true)
+        case .azero(let isTestnet):
+            return .azero(testnet: isTestnet)
+        }
+    }
+    
     // https://wiki.polkadot.network/docs/maintain-endpoints#test-networks
-    func urls(isTestnet: Bool) -> [URL] {
+    var urls: [URL] {
         switch self {
         case .polkadot:
             return [
@@ -50,7 +63,7 @@ enum PolkadotNetwork: CaseIterable {
             return [
                 URL(string: "https://westend-rpc.polkadot.io")!,
             ]
-        case .azero:
+        case .azero(let isTestnet):
             if isTestnet {
                 return [
                     URL(string: "https://rpc.test.azero.dev")!
@@ -77,5 +90,25 @@ enum PolkadotNetwork: CaseIterable {
         }
         
         return Data(prefixByte)
+    }
+}
+
+extension PolkadotNetwork: ExistentialDepositProvider {
+    var existentialDeposit: Amount {
+        switch self {
+        case .polkadot:
+            return Amount(with: blockchain, value: 1)
+        case .kusama:
+            // This value was ALSO found experimentally, just like the one on the Westend.
+            // It is different from what official documentation is telling us.
+            return Amount(with: blockchain, value: 0.000033333333)
+        case .westend:
+            // This value was found experimentally by sending transactions with different values to inactive accounts.
+            // This is the lowest amount that activates an account on the Westend network.
+            return Amount(with: blockchain, value: 0.01)
+        case .azero:
+            // Existential deposit - 0.0000000005
+            return Amount(with: blockchain, value: 0.0000000005)
+        }
     }
 }
