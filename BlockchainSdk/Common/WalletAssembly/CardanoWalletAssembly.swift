@@ -13,10 +13,8 @@ struct CardanoWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return CardanoWalletManager(wallet: input.wallet).then {
-            $0.txBuilder = CardanoTransactionBuilder(
-                walletPublicKey: input.wallet.publicKey.blockchainKey,
-                shelleyCard: self.isShelley(for: input.blockchain)
-            )
+            $0.transactionBuilder = CardanoTransactionBuilder()
+
             let service = CardanoNetworkService(providers: [
                 RosettaNetworkProvider(
                     baseUrl: .getBlockRosetta(apiKey: input.blockchainConfig.getBlockApiKey),
