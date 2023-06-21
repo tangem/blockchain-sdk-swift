@@ -20,6 +20,12 @@ public struct Fee {
     }
 }
 
+extension Fee {
+    static func zero(for blockchain: Blockchain) -> Fee {
+        Fee(.zeroCoin(for: blockchain))
+    }
+}
+
 // MARK: - Hashable
 
 extension Fee: Hashable {
