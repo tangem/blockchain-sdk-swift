@@ -26,6 +26,11 @@ extension MultiNetworkProvider {
     
     var host: String { provider.host }
     
+    var nextHost: String {
+        let nextProviderIndex = currentProviderIndex + 1 >= providers.count ? 0 : currentProviderIndex + 1
+        return providers[nextProviderIndex].host
+    }
+    
     func providerPublisher<T>(for requestPublisher: @escaping (_ provider: Provider) -> AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
         let currentHost = provider.host
         return requestPublisher(provider)
@@ -33,7 +38,16 @@ extension MultiNetworkProvider {
                 guard let self = self else { return .anyFail(error: error) }
                 
                 if let moyaError = error as? MoyaError, case let .statusCode(resp) = moyaError {
-                    Log.network("Switchable publisher catched error: \(moyaError). Response message: \(String(describing: String(data: resp.data, encoding: .utf8)))")
+                    let message = "Switchable publisher catched error: \(moyaError). Response message: \(String(describing: String(data: resp.data, encoding: .utf8)))"
+                                        
+                    Log.network(message)
+
+                    ExceptionHandler.shared.handleAPISwitch(
+                        currentHost: currentHost,
+                        nextHost: self.nextHost,
+                        statusCode: resp.statusCode,
+                        message: message
+                    )
                 }
                 
                 if case WalletError.noAccount = error {
