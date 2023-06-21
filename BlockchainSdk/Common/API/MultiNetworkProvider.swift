@@ -45,11 +45,17 @@ extension MultiNetworkProvider {
                 if let nextIndexProvider = self.switchProviderHostOnNextIndex(for: currentHost) {
                     Log.network("Switching to next publisher on host")
                     
-                    ExceptionHandler.shared.handleAPISwitch(
-                        currentHost: currentHost,
-                        nextHost: self.providers[nextIndexProvider].host,
-                        message: error.localizedDescription
-                    )
+                    let nextHost = self.providers[nextIndexProvider].host
+                    
+                    // Send event if api did switched by host value
+                    if currentHost != nextHost {
+                        ExceptionHandler.shared.handleAPISwitch(
+                            currentHost: currentHost,
+                            nextHost: self.providers[nextIndexProvider].host,
+                            message: error.localizedDescription
+                        )
+                    }
+                    
                     return self.providerPublisher(for: requestPublisher)
                 }
                 
@@ -76,4 +82,5 @@ extension MultiNetworkProvider {
     private func resetProviders() {
         currentProviderIndex = 0
     }
+    
 }
