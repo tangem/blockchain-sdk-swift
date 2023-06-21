@@ -26,11 +26,6 @@ extension MultiNetworkProvider {
     
     var host: String { provider.host }
     
-    var nextHost: String {
-        let nextProviderIndex = currentProviderIndex + 1 >= providers.count ? 0 : currentProviderIndex + 1
-        return providers[nextProviderIndex].host
-    }
-    
     func providerPublisher<T>(for requestPublisher: @escaping (_ provider: Provider) -> AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
         let currentHost = provider.host
         return requestPublisher(provider)
@@ -38,16 +33,7 @@ extension MultiNetworkProvider {
                 guard let self = self else { return .anyFail(error: error) }
                 
                 if let moyaError = error as? MoyaError, case let .statusCode(resp) = moyaError {
-                    let message = "Switchable publisher catched error: \(moyaError). Response message: \(String(describing: String(data: resp.data, encoding: .utf8)))"
-                                        
-                    Log.network(message)
-
-                    ExceptionHandler.shared.handleAPISwitch(
-                        currentHost: currentHost,
-                        nextHost: self.nextHost,
-                        statusCode: resp.statusCode,
-                        message: message
-                    )
+                    Log.network("Switchable publisher catched error: \(moyaError). Response message: \(String(describing: String(data: resp.data, encoding: .utf8)))")
                 }
                 
                 if case WalletError.noAccount = error {
@@ -56,8 +42,14 @@ extension MultiNetworkProvider {
                 
                 Log.network("Switchable publisher catched error: \(error)")
                 
-                if self.needRetry(for: currentHost) {
-                    Log.network("Switching to next publisher")
+                if let nextIndexProvider = self.switchProviderHostOnNextIndex(for: currentHost) {
+                    Log.network("Switching to next publisher on host")
+                    
+                    ExceptionHandler.shared.handleAPISwitch(
+                        currentHost: currentHost,
+                        nextHost: self.providers[nextIndexProvider].host,
+                        message: error.localizedDescription
+                    )
                     return self.providerPublisher(for: requestPublisher)
                 }
                 
@@ -68,17 +60,17 @@ extension MultiNetworkProvider {
     
     // NOTE: There also copy of this behaviour in the wild, if you want to update something
     // in the code, don't forget to update also Solano.Swift framework, class NetworkingRouter
-    private func needRetry(for errorHost: String) -> Bool {
+    private func switchProviderHostOnNextIndex(for errorHost: String) -> Int? {
         if errorHost != self.host { // Do not switch the provider, if it was switched already
-            return true
+            return currentProviderIndex
         }
         
         currentProviderIndex += 1
         if currentProviderIndex < providers.count {
-            return true
+            return currentProviderIndex
         }
         resetProviders()
-        return false
+        return nil
     }
     
     private func resetProviders() {
