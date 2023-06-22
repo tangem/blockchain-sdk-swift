@@ -308,6 +308,8 @@
 		EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */; };
 		EF34FCF72A41CA8700E18670 /* CardanoTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF34FCF62A41CA8700E18670 /* CardanoTransactionBuilder.swift */; };
 		EF34FD002A43378000E18670 /* CardanoError.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF34FCFF2A43378000E18670 /* CardanoError.swift */; };
+		EF34FD012A43551600E18670 /* WalletCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF34FCEB2A408F3100E18670 /* WalletCore.xcframework */; };
+		EF34FD022A43551600E18670 /* WalletCore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EF34FCEB2A408F3100E18670 /* WalletCore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EF3FFFFD2A27740400C6E7D9 /* AdaliteUnspentOutputResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3FFFFA2A27740400C6E7D9 /* AdaliteUnspentOutputResponseDTO.swift */; };
 		EF3FFFFE2A27740400C6E7D9 /* AdaliteBalanceResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3FFFFB2A27740400C6E7D9 /* AdaliteBalanceResponseDTO.swift */; };
 		EF3FFFFF2A27740400C6E7D9 /* AdaliteBaseResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3FFFFC2A27740400C6E7D9 /* AdaliteBaseResponseDTO.swift */; };
@@ -365,6 +367,17 @@
 			dstSubfolderSpec = 10;
 			files = (
 				DA59751727D747CD009F0A1F /* BlockchainSdk.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EF34FD032A43551600E18670 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				EF34FD022A43551600E18670 /* WalletCore.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -731,6 +744,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0505E82760A54B2F6AF1FD74 /* Pods_BlockchainSdk.framework in Frameworks */,
+				EF34FD012A43551600E18670 /* WalletCore.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1837,6 +1851,7 @@
 				5D14E46A2397B80F00C15FC8 /* Sources */,
 				5D14E46B2397B80F00C15FC8 /* Frameworks */,
 				5D14E46C2397B80F00C15FC8 /* Resources */,
+				EF34FD032A43551600E18670 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

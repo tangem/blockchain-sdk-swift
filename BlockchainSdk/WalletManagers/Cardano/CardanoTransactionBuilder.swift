@@ -23,20 +23,38 @@ extension CardanoTransactionBuilder {
         self.outputs = outputs
     }
 
-    func build(transaction: Transaction, signer: TransactionSigner, walletPublicKey: Wallet.PublicKey) throws -> Data {
+    func buildForSign(transaction: Transaction) throws -> Data {
         let input = try buildCardanoSigningInput(transaction: transaction)
-        let signer = WalletCoreSigner(sdkSigner: signer, walletPublicKey: walletPublicKey, curve: blockchain.curve)
+        let txInputData = try input.serializedData()
 
-        AnySigner.setExternalSigner(signer: signer)
-        let output: CardanoSigningOutput = AnySigner.sign(input: input, coin: coinType)
-        AnySigner.clearExternalSigner()
+        let preImageHashes = TransactionCompiler.preImageHashes(coinType: .cardano, txInputData: txInputData)
+        let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
+
+        if preSigningOutput.error != .ok {
+            assertionFailure("\(preSigningOutput.errorMessage)")
+            throw WalletError.failedToBuildTx
+        }
+
+        return preSigningOutput.data
+    }
+
+    func buildForSend(transaction: Transaction, publicKey: Data, signatures: [Data]) throws -> Data {
+        let input = try buildCardanoSigningInput(transaction: transaction)
+        let txInputData = try input.serializedData()
+
+        let signatures = DataVector()
+        let publicKeys = DataVector()
+
+        let compileWithSignatures = TransactionCompiler.compileWithSignatures(coinType: coinType, txInputData: txInputData, signatures: signatures, publicKeys: publicKeys)
+        let output: CardanoSigningOutput = try CardanoSigningOutput(serializedData: compileWithSignatures)
 
         if output.error != .ok {
-            assertionFailure("\(output.error.self)")
+            assertionFailure("\(output.errorMessage)")
             throw WalletError.failedToBuildTx
         }
 
         print("wallet core ->> output.encoded", output.encoded.hex)
+
         return output.encoded
     }
 

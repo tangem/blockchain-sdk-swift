@@ -56,36 +56,50 @@ extension CardanoWalletManager: TransactionSender {
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         // Use Just to switch on global queue because we have async signing
-        return Just(())
+        Just(())
             .receive(on: DispatchQueue.global())
-                .tryMap { [weak self] _ in
+                .tryMap { [weak self] _ -> Data in
                     guard let self else {
                         throw WalletError.empty
                     }
 
-                    return try self.transactionBuilder.build(
+                    return try self.transactionBuilder.buildForSign(transaction: transaction)
+                }
+                .flatMap { [weak self] dataForSign -> AnyPublisher<Data, Error> in
+                    guard let self else {
+                        return .anyFail(error: WalletError.empty)
+                    }
+
+                    return signer.sign(hash: dataForSign, walletPublicKey: wallet.publicKey)
+                }
+                .tryMap { [weak self] signature -> Data in
+                    guard let self else {
+                        throw WalletError.empty
+                    }
+
+                    return try self.transactionBuilder.buildForSend(
                         transaction: transaction,
-                        signer: signer,
-                        walletPublicKey: wallet.publicKey
+                        publicKey: self.wallet.publicKey.blockchainKey,
+                        signatures: [signature]
                     )
                 }
-                .flatMap { [weak self] builtTransaction -> AnyPublisher<TransactionSendResult, Error> in
+                .flatMap { [weak self] builtTransaction -> AnyPublisher<String, Error> in
                     guard let self else {
                         return .anyFail(error: WalletError.empty)
                     }
 
                     return self.networkService.send(transaction: builtTransaction)
-                        .tryMap { [weak self] txHash in
-                            guard let self = self else { throw WalletError.empty }
-
-                            var sendedTx = transaction
-                            sendedTx.hash = txHash
-                            self.wallet.add(transaction: sendedTx)
-
-                            return TransactionSendResult(hash: txHash)
-                        }
                         .mapError { SendTxError(error: $0, tx: builtTransaction.hex) }
                         .eraseToAnyPublisher()
+                }
+                .tryMap { [weak self] txHash in
+                    guard let self = self else { throw WalletError.empty }
+
+                    var sendedTx = transaction
+                    sendedTx.hash = txHash
+                    self.wallet.add(transaction: sendedTx)
+
+                    return TransactionSendResult(hash: txHash)
                 }
                 .eraseToAnyPublisher()
     }
