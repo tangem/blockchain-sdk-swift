@@ -527,6 +527,9 @@ class AddressesTests: XCTestCase {
         let address = try! service.makeAddress(from: publicKey)
         let addressFromString = PolkadotAddress(string: expectedAddress, network: network)
 
+        XCTAssertThrowsError(try service.makeAddress(from: secpCompressedKey))
+        XCTAssertThrowsError(try service.makeAddress(from: secpDecompressedKey))
+
         XCTAssertNotNil(addressFromString)
         XCTAssertEqual(addressFromString!.bytes(raw: true), publicKey)
         XCTAssertEqual(address.value, expectedAddress)
