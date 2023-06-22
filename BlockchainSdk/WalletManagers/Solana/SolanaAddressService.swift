@@ -9,12 +9,24 @@
 import Foundation
 import Solana_Swift
 
-public class SolanaAddressService: AddressService {
-    public func makeAddress(from walletPublicKey: Data) throws -> String {
-        try walletPublicKey.validateAsEdKey()
-        return Base58.encode(walletPublicKey.bytes)
+public struct SolanaAddressService {}
+
+// MARK: - AddressProvider
+
+@available(iOS 13.0, *)
+extension SolanaAddressService: AddressProvider {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
+        try publicKey.blockchainKey.validateAsEdKey()
+        let address = Base58.encode(publicKey.blockchainKey.bytes)
+
+        return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
-    
+}
+
+// MARK: - AddressValidator
+
+@available(iOS 13.0, *)
+extension SolanaAddressService: AddressValidator {
     public func validate(_ address: String) -> Bool {
         let publicKey = PublicKey(string: address)
         return publicKey != nil

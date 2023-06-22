@@ -7,56 +7,56 @@
 //
 
 import Foundation
-import TangemSdk
 import WalletCore
 
-public class WalletCoreAddressService: AddressService {
-    
+public struct WalletCoreAddressService {
     private let coin: CoinType
     private let publicKeyType: PublicKeyType
-    
+
     // MARK: - Init
-    
+
     public init(coin: CoinType, publicKeyType: PublicKeyType) {
         self.coin = coin
         self.publicKeyType = publicKeyType
     }
-    
-    /// Generate address of wallet by public key
-    /// - Parameter walletPublicKey: Data public key wallet
-    /// - Returns: User-friendly address
-    public func makeAddress(from walletPublicKey: Data) throws -> String {
-        guard let publicKey = PublicKey(tangemPublicKey: walletPublicKey, publicKeyType: publicKeyType) else {
+}
+
+// MARK: - Convenience init
+
+extension WalletCoreAddressService {
+    public init(coin: CoinType) {
+        self.init(coin: coin, publicKeyType: coin.publicKeyType)
+    }
+
+    public init(blockchain: Blockchain) {
+        let coin = CoinType(blockchain)!
+        self.init(coin: coin)
+    }
+}
+
+// MARK: - AddressProvider
+
+extension WalletCoreAddressService: AddressProvider {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
+        guard let walletCorePublicKey = PublicKey(tangemPublicKey: publicKey.blockchainKey, publicKeyType: publicKeyType) else {
             throw TWError.makeAddressFailed
         }
-        
-        return AnyAddress(publicKey: publicKey, coin: coin).description
+
+        let address = AnyAddress(publicKey: walletCorePublicKey, coin: coin).description
+        return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
-    
-    /// Validate address wallet with any form
-    /// - Parameter address: Any form address wallet
-    /// - Returns: Result of validate
+}
+
+// MARK: - AddressValidator
+
+extension WalletCoreAddressService: AddressValidator {
     public func validate(_ address: String) -> Bool {
         return AnyAddress(string: address, coin: coin) != nil
     }
 }
 
 extension WalletCoreAddressService {
-    
-    static func validate(_ address: String, for blockchain: Blockchain) -> Bool {
-        if let coin = CoinType(blockchain) {
-            return (try? AnyAddress(string: address, coin: coin)) != nil
-        } else {
-            return false
-        }
-    }
-    
-}
-
-extension WalletCoreAddressService {
-    
     enum TWError: Error {
         case makeAddressFailed
     }
-    
 }

@@ -92,7 +92,7 @@ class PublicKeyDerivationAddressTests: XCTestCase {
                     let tangemWalletAddress = try addressesUtility.makeTangemAddress(
                         publicKey: Data(hex: tangemWalletPublicKey),
                         for: blockchain,
-                        addressType: .init(rawValue: test.addressType ?? "")
+                        addressType: .init(rawValue: test.addressType ?? "") ?? .default
                     )
 
                     // Compare addresses

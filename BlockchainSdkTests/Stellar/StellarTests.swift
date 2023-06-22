@@ -16,7 +16,7 @@ class StellarTests: XCTestCase {
     private let blockchain = Blockchain.stellar(testnet: false)
     private let sizeTester = TransactionSizeTesterUtility()
     
-    private lazy var addressService = blockchain.getAddressService()
+    private lazy var addressService = StellarAddressService()
     private var bag = Set<AnyCancellable>()
     
     override func setUp() {
@@ -28,7 +28,7 @@ class StellarTests: XCTestCase {
         let walletPubkey = Data(hex: "EC5387D8B38BD9EF80BDBC78D0D7E1C53F08E269436C99D5B3C2DF4B2CE73012")
         let expectedAddress = "GDWFHB6YWOF5T34AXW6HRUGX4HCT6CHCNFBWZGOVWPBN6SZM44YBFUDZ"
         
-        XCTAssertEqual(try! addressService.makeAddress(from: walletPubkey), expectedAddress)
+        XCTAssertEqual(try! addressService.makeAddress(from: walletPubkey).value, expectedAddress)
     }
     
     func testValidateCorrectAddress() {
@@ -52,7 +52,11 @@ class StellarTests: XCTestCase {
         let amountToSend = Amount(with: blockchain, type: .coin, value: sendValue)
         let feeAmount = Amount(with: blockchain, type: .coin, value: feeValue)
         let fee = Fee(feeAmount)
-        let tx = Transaction(amount: amountToSend, fee: fee, sourceAddress: walletAddress, destinationAddress: destinationAddress, changeAddress: walletAddress)
+        let tx = Transaction(amount: amountToSend,
+                             fee: fee,
+                             sourceAddress: walletAddress.value,
+                             destinationAddress: destinationAddress,
+                             changeAddress: walletAddress.value)
         
         let expectedHashToSign = Data(hex: "96994C3FA90044DD7991F9A4DD4CFBFDD6D2B684F60439DE49E66D5026A84C0A")
         let expectedSignedTx = "AAAAAgAAAACf5bssx9g8HaEIRa/Yo0sUH9j9clALlbFUfhK5u4qsPQAAAGQB8CgTAAAABwAAAAEAAAAAYECgRAAAAABgQKC8AAAAAQAAAAAAAAABAAAAAQAAAACf5bssx9g8HaEIRa/Yo0sUH9j9clALlbFUfhK5u4qsPQAAAAEAAAAAXsvdZzvE53MOsaXA2lViyLzvvR1h5IjZvs/Du2s+pUIAAAAAAAAAAAAPQkAAAAAAAAAAAbuKrD0AAABA6hkI3RsrCTd1jl7/8Y21g+Qd1HGZ9XXC2Ds1Tim/Q5yFDccoudCxZvb3rNFgBB7jMy2tBN0IkEyw0iksGp+4Ag=="

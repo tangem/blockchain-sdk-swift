@@ -46,15 +46,15 @@ class KaspaTests: XCTestCase {
         ])
         
         let walletPublicKey = "04EB30400CE9D1DEED12B84D4161A1FA922EF4185A155EF3EC208078B3807B126FA22C335081AAEBF161095C11C7D8BD550EF8882A3125B0EE9AE96DDDE1AE743F"
-        let sourceAddress = try! blockchain.getAddressService().makeAddress(from: Data(hex: walletPublicKey))
+        let sourceAddress = try! KaspaAddressService().makeAddress(from: Data(hex: walletPublicKey))
         let destination = "kaspa:qpsqw2aamda868dlgqczeczd28d5nc3rlrj3t87vu9q58l2tugpjs2psdm4fv"
         
         let transaction = Transaction(
             amount: Amount(with: blockchain, value: 0.001),
             fee: Fee(Amount(with: blockchain, value: 0.000300000000001)), // otherwise the tests fail, can't convert to 0.0003 properly
-            sourceAddress: sourceAddress,
+            sourceAddress: sourceAddress.value,
             destinationAddress: destination,
-            changeAddress: sourceAddress
+            changeAddress: sourceAddress.value
         )
         
         let (kaspaTransaction, hashes) = try! txBuilder.buildForSign(transaction)
@@ -132,15 +132,15 @@ class KaspaTests: XCTestCase {
         ])
         
         let walletPublicKey = "04EB30400CE9D1DEED12B84D4161A1FA922EF4185A155EF3EC208078B3807B126FA22C335081AAEBF161095C11C7D8BD550EF8882A3125B0EE9AE96DDDE1AE743F"
-        let sourceAddress = try! blockchain.getAddressService().makeAddress(from: Data(hex: walletPublicKey))
+        let sourceAddress = try! KaspaAddressService().makeAddress(from: Data(hex: walletPublicKey))
         let destination = "kaspa:pqurku73qluhxrmvyj799yeyptpmsflpnc8pha80z6zjh6efwg3v2rrepjm5r"
         
         let transaction = Transaction(
             amount: Amount(with: blockchain, value: 0.001),
             fee: Fee(Amount(with: blockchain, value: 0.0001)),
-            sourceAddress: sourceAddress,
+            sourceAddress: sourceAddress.value,
             destinationAddress: destination,
-            changeAddress: sourceAddress
+            changeAddress: sourceAddress.value
         )
         
         let (kaspaTransaction, hashes) = try! txBuilder.buildForSign(transaction)

@@ -9,41 +9,8 @@
 import Foundation
 import TangemSdk
 
-public class EthereumAddressService: AddressService {
-    public func makeAddress(from walletPublicKey: Data) throws -> String {
-        let walletPublicKey = try Secp256k1Key(with: walletPublicKey).decompress()
-        //skip secp256k1 prefix
-        let keccak = walletPublicKey[1...].sha3(.keccak256)
-        let addressBytes = keccak[12...]
-        let hexAddressBytes = addressBytes.toHexString()
-        let address = "0x" + hexAddressBytes
-        return toChecksumAddress(address)!
-    }
-    
-    public func validate(_ address: String) -> Bool {
-        guard !address.isEmpty,
-              address.lowercased().starts(with: "0x"),
-              address.count == 42
-        else {
-            return false
-        }
-        
-       
-        if let checksummed = toChecksumAddress(address),
-           checksummed == address {
-            return true
-        } else {
-            let cleanHex = address.stripHexPrefix()
-            if cleanHex.lowercased() != cleanHex && cleanHex.uppercased() != cleanHex {
-                return false
-            }
-        }
-        
-        return true
-    }
-    
-    
-    public func toChecksumAddress(_ address: String) -> String? {
+public struct EthereumAddressService {
+    func toChecksumAddress(_ address: String) -> String? {
         let address = address.lowercased().remove("0x")
         guard let hash = address.data(using: .utf8)?.sha3(.keccak256).toHexString() else {
             return nil
@@ -64,5 +31,48 @@ public class EthereumAddressService: AddressService {
             }
         }
         return ret
+    }
+}
+
+// MARK: - AddressProvider
+
+@available(iOS 13.0, *)
+extension EthereumAddressService: AddressProvider {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
+        let walletPublicKey = try Secp256k1Key(with: publicKey.blockchainKey).decompress()
+        //skip secp256k1 prefix
+        let keccak = walletPublicKey[1...].sha3(.keccak256)
+        let addressBytes = keccak[12...]
+        let hexAddressBytes = addressBytes.toHexString()
+        let address = "0x" + hexAddressBytes
+        let checksumAddress = toChecksumAddress(address)!
+        return PlainAddress(value: checksumAddress, publicKey: publicKey, type: addressType)
+    }
+}
+
+// MARK: - AddressValidator
+
+@available(iOS 13.0, *)
+extension EthereumAddressService: AddressValidator {
+    public func validate(_ address: String) -> Bool {
+        guard !address.isEmpty,
+              address.lowercased().starts(with: "0x"),
+              address.count == 42
+        else {
+            return false
+        }
+
+
+        if let checksummed = toChecksumAddress(address),
+           checksummed == address {
+            return true
+        } else {
+            let cleanHex = address.stripHexPrefix()
+            if cleanHex.lowercased() != cleanHex && cleanHex.uppercased() != cleanHex {
+                return false
+            }
+        }
+
+        return true
     }
 }

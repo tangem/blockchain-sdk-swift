@@ -20,7 +20,7 @@ class EthereumTests: XCTestCase {
         let walletPubKey = Data(hex: "04BAEC8CD3BA50FDFE1E8CF2B04B58E17041245341CD1F1C6B3A496B48956DB4C896A6848BCF8FCFC33B88341507DD25E5F4609386C68086C74CF472B86E5C3820")
         let expectedAddress = "0xc63763572D45171e4C25cA0818b44E5Dd7F5c15B"
         
-        XCTAssertEqual(try! addressService.makeAddress(from: walletPubKey), expectedAddress)
+        XCTAssertEqual(try! addressService.makeAddress(from: walletPubKey).value, expectedAddress)
     }
     
     func testValidateCorrectAddress() {
@@ -40,7 +40,7 @@ class EthereumTests: XCTestCase {
         let destinationAddress = "0x7655b9b19ffab8b897f836857dae22a1e7f8d735"
         let nonce = 15
         
-        let walletAddress = try! addressService.makeAddress(from: walletPublicKey)
+        let walletAddress = try! addressService.makeAddress(from: walletPublicKey).value
         let transactionBuilder = try! EthereumTransactionBuilder(walletPublicKey: walletPublicKey, chainId: 1)
         
         let sendAmount = Amount(with: blockchain, type: .coin, value: sendValue)
@@ -73,7 +73,7 @@ class EthereumTests: XCTestCase {
         let contractAddress = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
         let token = Token(name: "USDC Coin", symbol: "USDC", contractAddress: contractAddress, decimalCount: 18)
         
-        let walletAddress = try! addressService.makeAddress(from: walletPublicKey)
+        let walletAddress = try! addressService.makeAddress(from: walletPublicKey).value
         let transactionBuilder = try! EthereumTransactionBuilder(walletPublicKey: walletPublicKey, chainId: 1)
         
         let amountToSend = Amount(with: blockchain, type: .token(value: token), value: sendValue)
