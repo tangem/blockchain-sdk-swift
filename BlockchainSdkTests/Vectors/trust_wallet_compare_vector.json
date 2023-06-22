@@ -161,7 +161,7 @@
         },
         {
             "blockchain": "aleph-zero",
-            "derivation": "m/44'/643'/0'/0/0",
+            "derivation": "m/44'/643'/0'/0'/0'",
             "walletPublicKey": "030322c3a06e4d1197ff25e1cbae9968fea30c80089c41c2b3ec93aab7556b7703"
         }
     ]

@@ -67,7 +67,7 @@ public struct DerivationConfigV3: DerivationConfig {
         case .kusama:
             return [.default: "m/44'/434'/0'/0'/0'"]
         case .azero:
-            return [.default: "m/44'/643'/0'/0/0"]
+            return [.default: "m/44'/643'/0'/0'/0'"]
         case .tron:
             return [.default: "m/44'/195'/0'/0/0"]
         case .dash:

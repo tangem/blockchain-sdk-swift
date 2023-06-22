@@ -21,30 +21,13 @@ enum PolkadotNetwork {
     init?(blockchain: Blockchain) {
         switch blockchain {
         case .polkadot(let isTestnet):
-            if isTestnet {
-                self = .westend
-            } else {
-                self = .polkadot
-            }
+            self = isTestnet ? .westend : .polkadot
         case .kusama:
             self = .kusama
         case .azero(let isTestnet):
             self = .azero(testnet: isTestnet)
         default:
             return nil
-        }
-    }
-    
-    var blockchain: Blockchain {
-        switch self {
-        case .polkadot:
-            return .polkadot(testnet: false)
-        case .kusama:
-            return .kusama
-        case .westend:
-            return .polkadot(testnet: true)
-        case .azero(let isTestnet):
-            return .azero(testnet: isTestnet)
         }
     }
     
@@ -102,18 +85,18 @@ extension PolkadotNetwork {
     var existentialDeposit: Amount {
         switch self {
         case .polkadot:
-            return Amount(with: blockchain, value: 1)
+            return Amount(with: .polkadot(testnet: false), value: 1)
         case .kusama:
             // This value was ALSO found experimentally, just like the one on the Westend.
             // It is different from what official documentation is telling us.
-            return Amount(with: blockchain, value: 0.000033333333)
+            return Amount(with: .kusama, value: 0.000033333333)
         case .westend:
             // This value was found experimentally by sending transactions with different values to inactive accounts.
             // This is the lowest amount that activates an account on the Westend network.
-            return Amount(with: blockchain, value: 0.01)
-        case .azero:
+            return Amount(with: .polkadot(testnet: true), value: 0.01)
+        case .azero(let isTestnet):
             // Existential deposit - 0.0000000005 Look https://test.azero.dev wallet for example
-            return Amount(with: blockchain, value: 0.0000000005)
+            return Amount(with: .azero(testnet: isTestnet), value: 0.0000000005)
         }
     }
 }
