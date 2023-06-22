@@ -12,7 +12,7 @@ import TangemSdk
 import BitcoinCore
 
 @available(iOS 13.0, *)
-public class BitcoinCashAddressService: MultipleAddressProvider {
+public class BitcoinCashAddressService {
     private let legacyService: BitcoinLegacyAddressService
     private let cashAddrService: CashAddrService
     
@@ -20,44 +20,30 @@ public class BitcoinCashAddressService: MultipleAddressProvider {
         self.legacyService = .init(networkParams: networkParams)
         self.cashAddrService = .init(networkParams: networkParams)
     }
-    
-    public func makeAddress(from walletPublicKey: Data) throws -> String {
-        try cashAddrService.makeAddress(from: walletPublicKey)
-    }
-    
-    public func makeAddresses(from walletPublicKey: Data) throws -> [Address] {
-        let cashAddrString = try makeAddress(from: walletPublicKey)
-        let compressedKey = try Secp256k1Key(with: walletPublicKey).compress()
-        let legacyString = try legacyService.makeAddress(from: compressedKey)
-        
-        let cashAddr = PlainAddress(value: cashAddrString, type: .default)
-        let legacy = PlainAddress(value: legacyString, type: .legacy)
-        
-        return [cashAddr, legacy]
-    }
-    
+}
+
+// MARK: - AddressValidator
+
+@available(iOS 13.0, *)
+extension BitcoinCashAddressService: AddressValidator {
     public func validate(_ address: String) -> Bool {
         cashAddrService.validate(address) || legacyService.validate(address)
     }
 }
 
+// MARK: - AddressProvider
+
 @available(iOS 13.0, *)
-public class CashAddrService: AddressService {
-    private let addressPrefix: String
-    
-    public init(networkParams: INetwork) {
-        addressPrefix = networkParams.bech32PrefixPattern
-    }
-    
-    public func makeAddress(from walletPublicKey: Data) throws -> String {
-        let compressedKey = try Secp256k1Key(with: walletPublicKey).compress()
-        let prefix = Data([UInt8(0x00)]) //public key hash
-        let payload = compressedKey.sha256Ripemd160
-        let walletAddress = HDWalletKit.Bech32.encode(prefix + payload, prefix: addressPrefix)
-        return walletAddress
-    }
-    
-    public func validate(_ address: String) -> Bool {
-        return (try? BitcoinCashAddress(address)) != nil
+extension BitcoinCashAddressService: AddressProvider {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
+        switch addressType {
+        case .default:
+            let address = try cashAddrService.makeAddress(from: publicKey.blockchainKey)
+            return PlainAddress(value: address, publicKey: publicKey, type: addressType)
+        case .legacy:
+            let compressedKey = try Secp256k1Key(with: publicKey.blockchainKey).compress()
+            let address = try legacyService.makeAddress(from: compressedKey).value
+            return PlainAddress(value: address, publicKey: publicKey, type: addressType)
+        }
     }
 }

@@ -12,13 +12,14 @@ import HDWalletKit
 public struct BitcoinScriptAddress: Address {
 	public let script: HDWalletScript
 	public let value: String
-    public let localizedName: String
+    public let publicKey: Wallet.PublicKey
 	public let type: AddressType
+    public var localizedName: String { type.defaultLocalizedName }
     
-    internal init(script: HDWalletScript, value: String, type: AddressType) {
+    public init(script: HDWalletScript, value: String, publicKey: Wallet.PublicKey, type: AddressType) {
         self.script = script
         self.value = value
-        self.localizedName = type.defaultLocalizedName
+        self.publicKey = publicKey
         self.type = type
     }
 }

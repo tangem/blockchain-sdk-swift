@@ -10,40 +10,52 @@ import Foundation
 import TangemSdk
 
 @available(iOS 13.0, *)
-public class XRPAddressService: AddressService {
+public struct XRPAddressService {
     let curve: EllipticCurve
     
     init(curve: EllipticCurve) {
         self.curve = curve
     }
-    
-    public func makeAddress(from walletPublicKey: Data) throws -> String {
+}
+
+// MARK: - AddressProvider
+
+@available(iOS 13.0, *)
+extension XRPAddressService: AddressProvider {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
         var key: Data
         switch curve {
         case .secp256k1:
-            key = try Secp256k1Key(with: walletPublicKey).compress()
+            key = try Secp256k1Key(with: publicKey.blockchainKey).compress()
         case .ed25519:
-            try walletPublicKey.validateAsEdKey()
-            key = [UInt8(0xED)] + walletPublicKey
+            try publicKey.blockchainKey.validateAsEdKey()
+            key = [UInt8(0xED)] + publicKey.blockchainKey
         default:
             fatalError("unsupported curve")
         }
         let input = key.sha256Ripemd160
         let buffer = [0x00] + input
         let checkSum = Data(buffer.sha256().sha256()[0..<4])
-        let walletAddress = XRPBase58.getString(from: buffer + checkSum)
-        return walletAddress
+        let address = XRPBase58.getString(from: buffer + checkSum)
+
+        return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
-    
+}
+
+// MARK: - AddressValidator
+
+@available(iOS 13.0, *)
+extension XRPAddressService: AddressValidator {
     public func validate(_ address: String) -> Bool {
         if XRPSeedWallet.validate(address: address) {
             return true
         }
-        
+
         if let _ = try? XRPAddress.decodeXAddress(xAddress: address) {
             return true
         }
-        
+
         return false
     }
 }
+

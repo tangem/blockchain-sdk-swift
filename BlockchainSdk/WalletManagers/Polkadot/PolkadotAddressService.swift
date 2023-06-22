@@ -9,85 +9,31 @@
 import Foundation
 import Sodium
 
-class PolkadotAddressService: AddressService {
+struct PolkadotAddressService {
     private let network: PolkadotNetwork
     
     init(network: PolkadotNetwork) {
         self.network = network
     }
-    
-    func makeAddress(from walletPublicKey: Data) throws -> String {
-        try walletPublicKey.validateAsEdKey()
-        return PolkadotAddress(publicKey: walletPublicKey, network: network).string
-    }
-    
-    func validate(_ address: String) -> Bool {
-        PolkadotAddress(string: address, network: network) != nil
+}
+
+// MARK: - AddressProvider
+
+@available(iOS 13.0, *)
+extension PolkadotAddressService: AddressProvider {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
+        try publicKey.blockchainKey.validateAsEdKey()
+        let address = PolkadotAddress(publicKey: publicKey.blockchainKey, network: network).string
+
+        return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
 }
 
+// MARK: - AddressValidator
 
-struct PolkadotAddress {
-    let string: String
-
-    static private let networkLength = 1
-    static private let checksumLength = 2
-    static private let ss58prefix = "SS58PRE".data(using: .utf8) ?? Data()
-    
-    init?(string: String, network: PolkadotNetwork) {
-        guard Self.isValid(string, in: network) else {
-            return nil
-        }
-        self.string = string
-    }
-    
-    init(publicKey: Data, network: PolkadotNetwork) {
-        var addressData = Data()
-        
-        addressData.append(network.addressPrefix)
-        addressData.append(publicKey)
-        
-        let checksumMessage = Self.ss58prefix + addressData
-        let checksum = Self.blake2checksum(checksumMessage)
-        addressData.append(checksum)
-                
-        self.string = addressData.base58EncodedString
-    }
-    
-    // Raw representation (without the prefix) was used in the older protocol versions
-    func bytes(raw: Bool) -> Data? {
-        var bytes = string.base58DecodedData
-        
-        bytes.removeFirst(Self.networkLength)
-        bytes.removeLast(Self.checksumLength)
-        
-        if !raw {
-            bytes = Data(UInt8(0)) + bytes
-        }
-        
-        return bytes
-    }
-    
-    static private func isValid(_ address: String, in network: PolkadotNetwork) -> Bool {
-        let data = address.base58DecodedData
-        
-        let networkPrefix = data.prefix(networkLength)
-        guard networkPrefix == network.addressPrefix else {
-            return false
-        }
-        
-        let expectedChecksum = data.suffix(checksumLength)
-        let addressData = data.dropLast(checksumLength)
-        
-        let checksumMessage = ss58prefix + addressData
-        let checksum = blake2checksum(checksumMessage)
-        
-        return checksum == expectedChecksum
-    }
-
-    static private func blake2checksum(_ message: Data) -> Data {
-        let hash = Data(Sodium().genericHash.hash(message: message.bytes, outputLength: 64) ?? [])
-        let checksum = hash.prefix(checksumLength)
-        return checksum
+@available(iOS 13.0, *)
+extension PolkadotAddressService: AddressValidator {
+    func validate(_ address: String) -> Bool {
+        PolkadotAddress(string: address, network: network) != nil
     }
 }

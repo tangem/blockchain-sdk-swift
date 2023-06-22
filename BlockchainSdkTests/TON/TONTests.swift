@@ -22,14 +22,12 @@ class TONTests: XCTestCase {
     
     lazy var walletManager: TONWalletManager = {
         let walletPubKey = privateKey.publicKey.rawRepresentation
-        let address = try! blockchain.makeAddresses(from: walletPubKey, with: nil)
-        
-        let wallet = Wallet(
-            blockchain: blockchain,
-            addresses: address,
-            publicKey: .init(seedKey: walletPubKey, derivation: .none)
+        let address = try! WalletCoreAddressService(coin: .ton).makeAddress(
+            for: .init(seedKey: walletPubKey, derivation: .none),
+            with: .default
         )
         
+        let wallet = Wallet(blockchain: blockchain, addresses: [.default: address])
         return try! .init(
             wallet: wallet,
             networkService: TONNetworkService(providers: [], blockchain: blockchain)
