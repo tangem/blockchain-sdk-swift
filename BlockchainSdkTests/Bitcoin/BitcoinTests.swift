@@ -18,40 +18,36 @@ class BitcoinTests: XCTestCase {
     private lazy var addressService = BitcoinAddressService(networkParams: networkParams)
     private let sizeTester = TransactionSizeTesterUtility()
     
-    func testBtcAddress() {
+    func testBtcAddress() throws {
         let walletPublicKey = Data(hex: "046DB397495FA03FE263EE4021B77C49496E5C7DB8266E6E33A03D5B3A370C3D6D744A863B14DE2457D82BEE322416523E336530760C4533AEE980F4A4CDB9A98D")
-        let numberOfAddresses = 2
         let expectedLegacyAddress = "1KWFv7SBZGMsneK2ZJ3D4aKcCzbvEyUbAA"
         let expectedSegwitAddress = "bc1qxzdqcmh6pknevm2ugtw94y50dwhsu3l0p5tg63"
         
-        let addresses = try! addressService.makeAddresses(from: walletPublicKey)
-        XCTAssertEqual(addresses.count, numberOfAddresses)
+        let legacy = try addressService.makeAddress(from: walletPublicKey, type: .legacy)
+        XCTAssertEqual(legacy.value, expectedLegacyAddress)
         
-        let legacy = addresses.first(where: { $0.type == .legacy })
-        XCTAssertEqual(legacy?.value, expectedLegacyAddress)
-        
-        let segwit = addresses.first(where: { $0.type == .default })
-        XCTAssertEqual(segwit?.value, expectedSegwitAddress)
+        let segwit = try addressService.makeAddress(from: walletPublicKey, type: .default)
+        XCTAssertEqual(segwit.value, expectedSegwitAddress)
     }
     
-    func testMultisigAddress() {
+    func testMultisigAddress() throws {
         let walletPublicKey1 = Data(hex: "04752A727E14BBA5BD73B6714D72500F61FFD11026AD1196D2E1C54577CBEEAC3D11FC68A64700F8D533F4E311964EA8FB3AA26C588295F2133868D69C3E628693")
         let walletPublicKey2 = Data(hex: "04E3F3BE3CE3D8284DB3BA073AD0291040093D83C11A277B905D5555C9EC41073E103F4D9D299EDEA8285C51C3356A8681A545618C174251B984DF841F49D2376F")
         let numberOfAddresses = 2
         let expectedLegacyAddress = "358vzrRZUDZ8DM5Zbz9oLqGr8voPYQqe56"
         let expectedSegwitAddress = "bc1qw9czf0m0eu0v5uhdqj9l4w9su3ca0pegzxxk947hrehma343qwusy4nf8c"
-        
-        let addresses = try? addressService.make1Of2MultisigAddresses(firstPublicKey: walletPublicKey1, secondPublicKey: walletPublicKey2)
+
+        let addresses = try addressService.makeAddresses(publicKey: .init(seedKey: walletPublicKey1, derivation: .none), pairPublicKey: walletPublicKey2)
         XCTAssertNotNil(addresses)
-        XCTAssertEqual(addresses!.count, numberOfAddresses)
+        XCTAssertEqual(addresses.count, numberOfAddresses)
         
-        let reversedPubkeysAddresses = try? addressService.make1Of2MultisigAddresses(firstPublicKey: walletPublicKey2, secondPublicKey: walletPublicKey1)
+        let reversedPubkeysAddresses = try addressService.makeAddresses(publicKey: .init(seedKey: walletPublicKey2, derivation: .none), pairPublicKey: walletPublicKey1)
         XCTAssertNotNil(reversedPubkeysAddresses)
-        XCTAssertEqual(reversedPubkeysAddresses!.count, numberOfAddresses)
+        XCTAssertEqual(reversedPubkeysAddresses.count, numberOfAddresses)
         
         var legacy: BlockchainSdk.Address?
         var segwit: BlockchainSdk.Address?
-        zip(addresses!, reversedPubkeysAddresses!).forEach {
+        zip(addresses, reversedPubkeysAddresses).forEach {
             XCTAssertEqual($0.value, $1.value)
             if $0.type == .legacy {
                 legacy = $0
@@ -73,7 +69,7 @@ class BitcoinTests: XCTestCase {
         XCTAssertTrue(addressService.validate("bc1qxzdqcmh6pknevm2ugtw94y50dwhsu3l0p5tg63"))
     }
     
-    func testBtcTxBuilder() {
+    func testBtcTxBuilder() throws {
         let pubkey = Data(hex: "046DB397495FA03FE263EE4021B77C49496E5C7DB8266E6E33A03D5B3A370C3D6D744A863B14DE2457D82BEE322416523E336530760C4533AEE980F4A4CDB9A98D")
         let compressedPubkey = try! Secp256k1Key(with: pubkey).compress()
         XCTAssertNotNil(compressedPubkey)
@@ -85,7 +81,11 @@ class BitcoinTests: XCTestCase {
         let feeValue = Decimal(0.00004641)
         let destination = "bc1q67dmfccnax59247kshfkxcq6qr53wmwqfa4s28cupktj2amf5jus2j6qvt"
         
-        let addresses = try! addressService.makeAddresses(from: pubkey)
+        let addresses = [
+            try addressService.makeAddress(from: pubkey, type: .default),
+            try addressService.makeAddress(from: pubkey, type: .legacy),
+        ]
+
         let segwit = addresses.first(where: { $0.type == .default } )!
         let manager = BitcoinManager(networkParams: networkParams, walletPublicKey: pubkey, compressedWalletPublicKey: compressedPubkey)
         let txBuilder = BitcoinTransactionBuilder(bitcoinManager: manager, addresses: addresses)

@@ -51,7 +51,7 @@ class PolkadotTests: XCTestCase {
         XCTAssertEqual(imageWithoutSignature, expectedImageWithoutSignature)
     }
     
-    func testTransaction() {
+    func testTransaction() throws {
         let toAddress = Data(hexString: "0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48")
         
         let privateKey = Data(hexString: "0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115")
@@ -62,7 +62,7 @@ class PolkadotTests: XCTestCase {
         let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
         
         let amount = Amount(with: blockchain, value: 12345 / blockchain.decimalValue)
-        let destination = try! PolkadotAddressService(network: network).makeAddress(from: toAddress)
+        let destination = try! PolkadotAddressService(network: network).makeAddress(from: toAddress).value
         let meta = PolkadotBlockchainMeta(
             specVersion: 17,
             transactionVersion: 3,
@@ -134,7 +134,7 @@ class PolkadotTests: XCTestCase {
         let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
         
         let amount = Amount(with: blockchain, value: 12345 / blockchain.decimalValue)
-        let destination = try! PolkadotAddressService(network: network).makeAddress(from: toAddress)
+        let destination = try! PolkadotAddressService(network: network).makeAddress(from: toAddress).value
         let meta = PolkadotBlockchainMeta(
             specVersion: 17,
             transactionVersion: 3,

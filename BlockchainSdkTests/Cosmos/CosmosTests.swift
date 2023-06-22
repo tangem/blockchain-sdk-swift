@@ -15,14 +15,14 @@ class CosmosTests: XCTestCase {
     // From TrustWallet
     func testTransaction() throws {
         let cosmosChain = CosmosChain.gaia
-        
+        let blockchain = cosmosChain.blockchain
+
         let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"))!
         let publicKeyData = privateKey.getPublicKeySecp256k1(compressed: true).data
         
-        let addresses = try cosmosChain.blockchain.makeAddresses(from: publicKeyData, with: nil)
-        
-        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivation: .none)
-        let wallet = Wallet(blockchain: cosmosChain.blockchain, addresses: addresses, publicKey: publicKey)
+        let publicKey: BlockchainSdk.Wallet.PublicKey = .init(seedKey: publicKeyData, derivation: .none)
+        let address = try WalletCoreAddressService(blockchain: blockchain).makeAddress(for: publicKey, with: .default)
+        let wallet = Wallet(blockchain: blockchain, addresses: [.default: address])
         
         let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)
         txBuilder.setAccountNumber(1037)
@@ -47,14 +47,14 @@ class CosmosTests: XCTestCase {
     
     func testTerraV1Transaction() throws {
         let cosmosChain = CosmosChain.terraV1
+        let blockchain = cosmosChain.blockchain
         
         let privateKey = PrivateKey(data: Data(hexString: "1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6"))!
         let publicKeyData = privateKey.getPublicKeySecp256k1(compressed: true).data
-        
-        let addresses = try cosmosChain.blockchain.makeAddresses(from: publicKeyData, with: nil)
-        
-        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivation: .none)
-        let wallet = Wallet(blockchain: cosmosChain.blockchain, addresses: addresses, publicKey: publicKey)
+
+        let publicKey: BlockchainSdk.Wallet.PublicKey = .init(seedKey: publicKeyData, derivation: .none)
+        let address = try WalletCoreAddressService(blockchain: blockchain).makeAddress(for: publicKey, with: .default)
+        let wallet = Wallet(blockchain: blockchain, addresses: [.default: address])
         
         let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)
         txBuilder.setAccountNumber(158)
@@ -83,15 +83,15 @@ class CosmosTests: XCTestCase {
     
     func testTerraV1USDTransaction() throws {
         let cosmosChain = CosmosChain.terraV1
+        let blockchain = cosmosChain.blockchain
         let token = Token(name: "USTC", symbol: "USTC", contractAddress: "uusd", decimalCount: 6)
         
         let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"))!
         let publicKeyData = privateKey.getPublicKeySecp256k1(compressed: true).data
         
-        let addresses = try cosmosChain.blockchain.makeAddresses(from: publicKeyData, with: nil)
-        
-        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivation: .none)
-        let wallet = Wallet(blockchain: cosmosChain.blockchain, addresses: addresses, publicKey: publicKey)
+        let publicKey: BlockchainSdk.Wallet.PublicKey = .init(seedKey: publicKeyData, derivation: .none)
+        let address = try WalletCoreAddressService(blockchain: blockchain).makeAddress(for: publicKey, with: .default)
+        let wallet = Wallet(blockchain: blockchain, addresses: [.default: address])
         
         let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)
         txBuilder.setAccountNumber(1037)
@@ -121,14 +121,14 @@ class CosmosTests: XCTestCase {
     // From TrustWallet
     func testTerraV2Transaction() throws {
         let cosmosChain = CosmosChain.terraV2
-        
+        let blockchain = cosmosChain.blockchain
+
         let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"))!
         let publicKeyData = privateKey.getPublicKeySecp256k1(compressed: true).data
         
-        let addresses = try cosmosChain.blockchain.makeAddresses(from: publicKeyData, with: nil)
-        
-        let publicKey: BlockchainSdk.Wallet.PublicKey! = .init(seedKey: publicKeyData, derivation: .none)
-        let wallet = Wallet(blockchain: cosmosChain.blockchain, addresses: addresses, publicKey: publicKey)
+        let publicKey: BlockchainSdk.Wallet.PublicKey = .init(seedKey: publicKeyData, derivation: .none)
+        let address = try WalletCoreAddressService(blockchain: blockchain).makeAddress(for: publicKey, with: .default)
+        let wallet = Wallet(blockchain: blockchain, addresses: [.default: address])
         
         let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)
         txBuilder.setAccountNumber(1037)

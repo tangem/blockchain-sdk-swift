@@ -9,30 +9,11 @@
 import Foundation
 import TangemSdk
 
-class TronAddressService: AddressService {
+public struct TronAddressService {
     private let prefix: UInt8 = 0x41
     private let addressLength = 21
     
-    init() {}
-    
-    func makeAddress(from walletPublicKey: Data) throws -> String {
-        let decompressedPublicKey = try Secp256k1Key(with: walletPublicKey).decompress()
-        
-        let data = decompressedPublicKey.dropFirst()
-        let hash = data.sha3(.keccak256)
-        
-        let addressData = [prefix] + hash.suffix(addressLength - 1)
-        
-        return addressData.base58CheckEncodedString
-    }
-    
-    func validate(_ address: String) -> Bool {
-        guard let decoded = address.base58CheckDecodedBytes else {
-            return false
-        }
-
-        return decoded.starts(with: [prefix]) && decoded.count == addressLength
-    }
+    public init() {}
     
     static func toByteForm(_ base58String: String) -> Data? {
         guard let bytes = base58String.base58CheckDecodedBytes else {
@@ -53,5 +34,35 @@ class TronAddressService: AddressService {
         } else {
             return hex
         }
+    }
+}
+
+// MARK: - AddressProvider
+
+@available(iOS 13.0, *)
+extension TronAddressService: AddressProvider {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
+        let decompressedPublicKey = try Secp256k1Key(with: publicKey.blockchainKey).decompress()
+
+        let data = decompressedPublicKey.dropFirst()
+        let hash = data.sha3(.keccak256)
+
+        let addressData = [prefix] + hash.suffix(addressLength - 1)
+        let address = addressData.base58CheckEncodedString
+
+        return PlainAddress(value: address, publicKey: publicKey, type: addressType)
+    }
+}
+
+// MARK: - AddressValidator
+
+@available(iOS 13.0, *)
+extension TronAddressService: AddressValidator {
+    public func validate(_ address: String) -> Bool {
+        guard let decoded = address.base58CheckDecodedBytes else {
+            return false
+        }
+
+        return decoded.starts(with: [prefix]) && decoded.count == addressLength
     }
 }

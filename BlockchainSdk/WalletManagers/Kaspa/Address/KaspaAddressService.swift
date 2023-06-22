@@ -12,35 +12,10 @@ import HDWalletKit
 import BitcoinCore
 
 @available(iOS 13.0, *)
-public class KaspaAddressService: AddressService {
+public class KaspaAddressService {
     private let prefix = "kaspa"
     private let version: KaspaAddressComponents.KaspaAddressType = .P2PK_ECDSA
-    
-    public func makeAddress(from walletPublicKey: Data) throws -> String {
-        let compressedKey = try Secp256k1Key(with: walletPublicKey).compress()
-        let walletAddress = HDWalletKit.Bech32.encode(version.rawValue.data + compressedKey, prefix: prefix)
-        return walletAddress
-    }
-    
-    public func validate(_ address: String) -> Bool {
-        guard
-            let components = parse(address),
-            components.prefix == self.prefix
-        else {
-            return false
-        }
-        
-        let validStartLetters = ["q", "p"]
-        guard
-            let firstAddressLetter = address.dropFirst(prefix.count + 1).first,
-            validStartLetters.contains(String(firstAddressLetter))
-        else {
-            return false
-        }
-        
-        return true
-    }
-    
+
     func parse(_ address: String) -> KaspaAddressComponents? {
         guard
             let (prefix, data) = CashAddrBech32.decode(address),
@@ -56,5 +31,42 @@ public class KaspaAddressService: AddressService {
             type: type,
             hash: data.dropFirst()
         )
+    }
+}
+
+
+// MARK: - AddressProvider
+
+@available(iOS 13.0, *)
+extension KaspaAddressService: AddressProvider {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
+        let compressedKey = try Secp256k1Key(with: publicKey.blockchainKey).compress()
+        let address = HDWalletKit.Bech32.encode(version.rawValue.data + compressedKey, prefix: prefix)
+
+        return PlainAddress(value: address, publicKey: publicKey, type: addressType)
+    }
+}
+
+// MARK: - AddressValidator
+
+@available(iOS 13.0, *)
+extension KaspaAddressService: AddressValidator {
+    public func validate(_ address: String) -> Bool {
+        guard
+            let components = parse(address),
+            components.prefix == self.prefix
+        else {
+            return false
+        }
+
+        let validStartLetters = ["q", "p"]
+        guard
+            let firstAddressLetter = address.dropFirst(prefix.count + 1).first,
+            validStartLetters.contains(String(firstAddressLetter))
+        else {
+            return false
+        }
+
+        return true
     }
 }

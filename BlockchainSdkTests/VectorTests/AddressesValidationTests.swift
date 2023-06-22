@@ -34,15 +34,19 @@ class AddressesValidationTests: XCTestCase {
                     print("__INVALID_VECTOR__ MATCH BLOCKCHAIN KEY IS NIL \(vector.blockchain)")
                     return
                 }
+
+                let coin = CoinType(blockchain)!
+                let walletCoreAddressValidator = WalletCoreAddressService(coin: coin, publicKeyType: coin.publicKeyType)
+                let addressValidator = AddressServiceFactory(blockchain: blockchain).makeAddressService()
                 
                 vector.positive.forEach {
-                    XCTAssertTrue(WalletCoreAddressService.validate($0, for: blockchain), "__INVALIDATE_WALLET_CORE__ ADDRESS -> \(blockchain)")
-                    XCTAssertTrue(blockchain.getAddressService().validate($0), "__INVALIDATE_SDK_CORE__ ADDRESS -> \(blockchain)")
+                    XCTAssertTrue(walletCoreAddressValidator.validate($0), "__INVALIDATE_WALLET_CORE__ ADDRESS -> \(blockchain)")
+                    XCTAssertTrue(addressValidator.validate($0), "__INVALIDATE_SDK_CORE__ ADDRESS -> \(blockchain)")
                 }
                 
                 vector.negative.forEach {
-                    XCTAssertFalse(WalletCoreAddressService.validate($0, for: blockchain), "__INVALIDATE_WALLET_CORE__ ADDRESS -> \(blockchain)")
-                    XCTAssertFalse(blockchain.getAddressService().validate($0), "__INVALIDATE_SDK_CORE_ ADDRESS -> \(blockchain)")
+                    XCTAssertFalse(walletCoreAddressValidator.validate($0), "__INVALIDATE_WALLET_CORE__ ADDRESS -> \(blockchain)")
+                    XCTAssertFalse(addressValidator.validate($0), "__INVALIDATE_SDK_CORE_ ADDRESS -> \(blockchain)")
                 }
             }
         } catch let error {

@@ -21,3 +21,14 @@ public enum AddressType: String, Equatable {
         }
     }
 }
+
+extension AddressType: Comparable {
+    public static func < (lhs: AddressType, rhs: AddressType) -> Bool {
+        switch (lhs, rhs) {
+        case (.default, legacy):
+            return true
+        default:
+            return false
+        }
+    }
+}
