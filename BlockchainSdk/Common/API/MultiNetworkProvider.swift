@@ -42,8 +42,18 @@ extension MultiNetworkProvider {
                 
                 Log.network("Switchable publisher catched error: \(error)")
                 
-                if self.needRetry(for: currentHost) {
-                    Log.network("Switching to next publisher")
+                if let nextHost = self.switchProviderIfNeeded(for: currentHost) {
+                    // Send event if api did switched by host value
+                    if currentHost != nextHost {
+                        Log.network("Switching to next publisher on host")
+                        
+                        ExceptionHandler.shared.handleAPISwitch(
+                            currentHost: currentHost,
+                            nextHost: nextHost,
+                            message: error.localizedDescription
+                        )
+                    }
+                    
                     return self.providerPublisher(for: requestPublisher)
                 }
                 
@@ -54,20 +64,21 @@ extension MultiNetworkProvider {
     
     // NOTE: There also copy of this behaviour in the wild, if you want to update something
     // in the code, don't forget to update also Solano.Swift framework, class NetworkingRouter
-    private func needRetry(for errorHost: String) -> Bool {
+    private func switchProviderIfNeeded(for errorHost: String) -> String? {
         if errorHost != self.host { // Do not switch the provider, if it was switched already
-            return true
+            return providers[currentProviderIndex].host
         }
         
         currentProviderIndex += 1
         if currentProviderIndex < providers.count {
-            return true
+            return providers[currentProviderIndex].host
         }
         resetProviders()
-        return false
+        return nil
     }
     
     private func resetProviders() {
         currentProviderIndex = 0
     }
+    
 }
