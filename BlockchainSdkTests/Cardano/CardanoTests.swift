@@ -14,109 +14,87 @@ import WalletCore
 
 class CardanoTests: XCTestCase {
     var transactionBuilder: CardanoTransactionBuilder!
-    var outputs: [CardanoUnspentOutput] = []
 
-    let publicKey = Data(hex: "35E60B25785480A2105F378945DEF8048009212825A8685406C47D3901B836AB")
-    let tangemWalletAddress = "addr1v9jlkv7lv2m4zxqyljd2jjajw8n27v6gjpuznya09zavu7c5r9mxs"
-
-    var walletCorePublicKey: PublicKey {
-        PublicKey(
-            data: Data(hex: "fafa7eb4146220db67156a03a5f7a79c666df83eb31abbfbe77c85e06d40da3110f3245ddf9132ecef98c670272ef39c03a232107733d4a1d28cb53318df26faf4b8d5201961e68f2e177ba594101f513ee70fe70a41324e8ea8eb787ffda6f4bf2eea84515a4e16c4ff06c92381822d910b5cbf9e9c144e1fb76a6291af7276"),
-            type: coinType.publicKeyType
+    var walletCorePrivateKey: PrivateKey {
+        PrivateKey(
+            data: Data(hex: "089b68e458861be0c44bf9f7967f05cc91e51ede86dc679448a3566990b7785bd48c330875b1e0d03caaed0e67cecc42075dce1c7a13b1c49240508848ac82f603391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf1290dbd508e5ec71afaea98da2df1533c22ef02a26bb87b31907d0b2738fb7785b38d53aa68fc01230784c9209b2b2a2faf28491b3b1f1d221e63e704bbd0403c4154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e")
         )!
     }
 
-    // addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn
+    var walletCorePublicKey: PublicKey {
+        walletCorePrivateKey.getPublicKey(coinType: coinType)
+    }
+
     var walletCoreAddress: AnyAddress {
         AnyAddress(
-            string: "addr1qxxe304qg9py8hyyqu8evfj4wln7dnms943wsugpdzzsxnkvvjljtzuwxvx0pnwelkcruy95ujkq3aw6rl0vvg32x35qc92xkq",
+            string: "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23",
             coin: coinType
         )!
     }
 
+    let blockchain = Blockchain.cardano(shelley: true)
     let coinType = CoinType.cardano
 
     override func setUp() {
         super.setUp()
-//        continueAfterFailure = false
-
-        transactionBuilder = CardanoTransactionBuilder(walletPublicKey: <#T##Wallet.PublicKey#>)
-
-        outputs = [
-            CardanoUnspentOutput(
-                address: "addr1qx55ymlqemndq8gluv40v58pu76a2tp4mzjnyx8n6zrp2vtzrs43a0057y0edkn8lh9su8vh5lnhs4npv6l9tuvncv8swc7t08",
-                amount: 5316591,
-                outputIndex: 1,
-                transactionHash: "cde74834c41bfd276b860fa7c33a5a0503385f3b4eb6556ab0738c0e6e35cf96"
-            )
-        ]
-
+        continueAfterFailure = false
+        transactionBuilder = CardanoTransactionBuilder()
+    }
+    
+    func test_walletCore_publicKeyFromPrivate() {
+        XCTAssertEqual(walletCorePublicKey.data.hex, "6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29003391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf12e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e06932154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e")
     }
 
-    func test_address() throws {
+    func test_address() {
+        // when
         let address = AnyAddress(publicKey: walletCorePublicKey, coin: coinType)
+        
+        // then
         XCTAssertEqual(address.description, walletCoreAddress.description)
     }
-
-    func test_build_tx() throws {
-        transactionBuilder.unspentOutputs = outputs
+    
+    func testSignTransfer() throws {
         let transaction = Transaction(
-            amount: Amount(with: .cardano(shelley: true), value: 1),
-            fee: Fee(Amount(with: .cardano(shelley: true), value: 0.1)),
-            sourceAddress: tangemWalletAddress,
-            destinationAddress: walletCoreAddress.description,
-            changeAddress: tangemWalletAddress
+            amount: Amount(with: blockchain, value: 7),
+            fee: .zero(for: blockchain),
+            sourceAddress: walletCoreAddress.description,
+            destinationAddress: "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5",
+            changeAddress: walletCoreAddress.description
         )
-        let walletAmount = outputs.reduce(0, { $0 + $1.amount })
-
-        let (hash, cbor) = try transactionBuilder.buildForSign(
-            transaction: transaction,
-            walletAmount: Decimal(walletAmount),
-            isEstimated: false
-        )
-
-//        WalletCore.CardanoSigningInput
-
-//        XCTAssertEqual(hash.hex, "2ff8fc42ce3d1871aad5e9cb2da24c2f78a25b2a49011367b4d4c09cdbaccdaa")
-//        XCTAssertEqual(cbor.encode(), [164, 1, 130, 130, 88, 57, 1, 141, 152, 190, 160, 65, 66, 67, 220, 132, 7, 15, 150, 38, 85, 119, 231, 230, 207, 112, 45, 98, 232, 113, 1, 104, 133, 3, 78, 204, 100, 191, 37, 139, 142, 51, 12, 240, 205, 217, 253, 176, 62, 16, 180, 228, 172, 8, 245, 218, 31, 222, 198, 34, 42, 52, 104, 26, 0, 15, 66, 64, 130, 88, 29, 97, 101, 251, 51, 223, 98, 183, 81, 24, 4, 252, 154, 169, 75, 178, 113, 230, 175, 51, 72, 144, 120, 41, 147, 175, 40, 186, 206, 123, 27, 0, 0, 4, 213, 221, 115, 208, 224, 2, 26, 0, 1, 134, 160, 0, 129, 130, 88, 32, 205, 231, 72, 52, 196, 27, 253, 39, 107, 134, 15, 167, 195, 58, 90, 5, 3, 56, 95, 59, 78, 182, 85, 106, 176, 115, 140, 14, 110, 53, 207, 150, 1, 3, 26, 11, 83, 43, 128])
-
-        print("buildForSign ->> data", hash.hex)
-        print("buildForSign ->> hash cbor", "\(cbor.encode())")
+        
+        let utxos = [
+            CardanoUnspentOutput(address: walletCoreAddress.description,
+                                 amount: 1500000,
+                                 outputIndex: 1,
+                                 transactionHash: "f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767"),
+            CardanoUnspentOutput(address: walletCoreAddress.description,
+                                 amount: 6500000,
+                                 outputIndex: 0,
+                                 transactionHash: "554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0"),
+        ]
+        
+        transactionBuilder.update(timeToLife: 53333333)
+        transactionBuilder.update(outputs: utxos)
+        do {
+            let dataForSign = try transactionBuilder.buildForSign(transaction: transaction)
+            
+            // Sign
+            let signature = try XCTUnwrap(walletCorePrivateKey.sign(digest: dataForSign, curve: coinType.curve))
+            XCTAssertEqual(
+                signature.hex,
+                "7cf591599852b5f5e007fdc241062405c47e519266c0d884b0767c1d4f5eacce00db035998e53ed10ca4ba5ce4aac8693798089717ce6cf4415f345cc764200e"
+            )
+            
+            let signatureInfo = SignatureInfo(signature: signature, publicKey: walletCorePublicKey.data)
+            let encoded = try transactionBuilder.buildForSend(transaction: transaction, signature: signatureInfo)
+            XCTAssertEqual(
+                encoded.hex,
+                "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a006acfc082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a000ca96c021a000298d4031a032dcd55a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29058407cf591599852b5f5e007fdc241062405c47e519266c0d884b0767c1d4f5eacce00db035998e53ed10ca4ba5ce4aac8693798089717ce6cf4415f345cc764200ef6"
+            )
+        } catch CardanoError.lowAda {
+            // Ignore this error for WalletCore test
+        } catch {
+            throw error
+        }
     }
 }
-
-
-/*
- {
-    "Right":[
-       {
-          "tag":"CUtxo",
-          "cuOutIndex":1,
-          "cuAddress":"addr1qx55ymlqemndq8gluv40v58pu76a2tp4mzjnyx8n6zrp2vtzrs43a0057y0edkn8lh9su8vh5lnhs4npv6l9tuvncv8swc7t08",
-          "cuId":"cde74834c41bfd276b860fa7c33a5a0503385f3b4eb6556ab0738c0e6e35cf96",
-          "cuCoins":{
-             "getCoin":"5316591",
-             "getTokens":[
-
-             ]
-          }
-       },
-       {
-          "tag":"CUtxo",
-          "cuOutIndex":2,
-          "cuAddress":"addr1qx55ymlqemndq8gluv40v58pu76a2tp4mzjnyx8n6zrp2vtzrs43a0057y0edkn8lh9su8vh5lnhs4npv6l9tuvncv8swc7t08",
-          "cuId":"4c0bd7424e4940119c59d26e61adaa35caa6655a3ee3d86aa5f261bf1482fe12",
-          "cuCoins":{
-             "getCoin":"2000000",
-             "getTokens":[
-                {
-                   "policyId":"9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77",
-                   "assetName":"53554e444145",
-                   "quantity":"25877662"
-                }
-             ]
-          }
-       }
-    ]
- }
- */

@@ -31,7 +31,7 @@ class CardanoWalletManager: BaseManager, WalletManager {
     
     private func updateWallet(with response: CardanoAddressResponse) {
         wallet.add(coinValue: response.balance)
-        transactionBuilder.updateOutputs(outputs: response.unspentOutputs)
+        transactionBuilder.update(outputs: response.unspentOutputs)
 
         wallet.transactions = wallet.transactions.map {
             var mutableTx = $0
@@ -76,12 +76,9 @@ extension CardanoWalletManager: TransactionSender {
                     guard let self else {
                         throw WalletError.empty
                     }
-
-                    return try self.transactionBuilder.buildForSend(
-                        transaction: transaction,
-                        publicKey: self.wallet.publicKey.blockchainKey,
-                        signatures: [signature]
-                    )
+                    
+                    let signatureInfo = SignatureInfo(signature: signature, publicKey: self.wallet.publicKey.blockchainKey)
+                    return try self.transactionBuilder.buildForSend(transaction: transaction, signature: signatureInfo)
                 }
                 .flatMap { [weak self] builtTransaction -> AnyPublisher<String, Error> in
                     guard let self else {
