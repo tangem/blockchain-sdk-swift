@@ -9,17 +9,31 @@
 import Foundation
 import WalletCore
 
+// You can decode your CBOR transaction here: https://cbor.me
 class CardanoTransactionBuilder {
     private var outputs: [CardanoUnspentOutput] = []
-
+    
+    // Transaction validity time. Currently we are using absolute values.
+    // At 16 April 2023 was 90007700 slot number.
+    // We need to rework this logic to use relative validity time.
+    // TODO: https://tangem.atlassian.net/browse/IOS-3471
+    // This can be constructed using absolute ttl slot from `/metadata` endpoint.
+    private var timeToLife: UInt64 = 190000000
+    
     private let coinType: CoinType = .cardano
-    private let blockchain = Blockchain.cardano(shelley: true)
+    private var decimalValue: Decimal {
+        Blockchain.cardano(shelley: true).decimalValue
+    }
 
     init() {}
 }
 
 extension CardanoTransactionBuilder {
-    func updateOutputs(outputs: [CardanoUnspentOutput]) {
+    func update(timeToLife: UInt64) {
+        self.timeToLife = timeToLife
+    }
+    
+    func update(outputs: [CardanoUnspentOutput]) {
         self.outputs = outputs
     }
 
@@ -29,27 +43,37 @@ extension CardanoTransactionBuilder {
 
         let preImageHashes = TransactionCompiler.preImageHashes(coinType: .cardano, txInputData: txInputData)
         let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
+        
+        print("preSigningOutput.data ->> ", preSigningOutput.data.hex)
+//        print("walletPublicKey.hex ->> ", walletPublicKey.hex)
 
         if preSigningOutput.error != .ok {
-            assertionFailure("\(preSigningOutput.errorMessage)")
             throw WalletError.failedToBuildTx
         }
 
-        return preSigningOutput.data
+        return preSigningOutput.dataHash
     }
 
-    func buildForSend(transaction: Transaction, publicKey: Data, signatures: [Data]) throws -> Data {
+    func buildForSend(transaction: Transaction, signature: SignatureInfo) throws -> Data {
         let input = try buildCardanoSigningInput(transaction: transaction)
         let txInputData = try input.serializedData()
 
         let signatures = DataVector()
+        signatures.add(data: signature.signature)
+        
         let publicKeys = DataVector()
+        publicKeys.add(data: signature.publicKey)
 
-        let compileWithSignatures = TransactionCompiler.compileWithSignatures(coinType: coinType, txInputData: txInputData, signatures: signatures, publicKeys: publicKeys)
+        let compileWithSignatures = TransactionCompiler.compileWithSignatures(
+            coinType: coinType,
+            txInputData: txInputData,
+            signatures: signatures,
+            publicKeys: publicKeys
+        )
+
         let output: CardanoSigningOutput = try CardanoSigningOutput(serializedData: compileWithSignatures)
 
         if output.error != .ok {
-            assertionFailure("\(output.errorMessage)")
             throw WalletError.failedToBuildTx
         }
 
@@ -66,9 +90,7 @@ extension CardanoTransactionBuilder {
     }
 
     func buildCardanoSigningInput(transaction: Transaction) throws -> CardanoSigningInput {
-        var amount = transaction.amount.value
-        amount *= blockchain.decimalValue
-
+        let amount = transaction.amount.value * decimalValue
         print("wallet core ->> amount", amount)
 
         var input = CardanoSigningInput.with {
@@ -76,13 +98,7 @@ extension CardanoTransactionBuilder {
             $0.transferMessage.changeAddress = transaction.changeAddress
             $0.transferMessage.amount = amount.roundedDecimalNumber.uint64Value
             $0.transferMessage.useMaxAmount = false
-
-            // Transaction validity time. Currently we are using absolute values.
-            // At 16 April 2023 was 90007700 slot number.
-            // We need to rework this logic to use relative validity time.
-            // TODO: https://tangem.atlassian.net/browse/IOS-3471
-            // This can be constructed using absolute ttl slot from `/metadata` endpoint.
-            $0.ttl = 190000000
+            $0.ttl = timeToLife
         }
 
         if outputs.isEmpty {
@@ -100,7 +116,7 @@ extension CardanoTransactionBuilder {
 
         input.plan = AnySigner.plan(input: input, coin: coinType)
 
-        let minChange = 1 * blockchain.decimalValue
+        let minChange = 1 * decimalValue
         if input.plan.change < minChange.roundedDecimalNumber.uint64Value {
             throw CardanoError.lowAda
         }

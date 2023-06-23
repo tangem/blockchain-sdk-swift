@@ -10,7 +10,7 @@ def common_pods
 #   pod 'BitcoinCore.swift', :path => '../bitcoincore'
   
  # pod 'TangemWalletCore', :git => 'https://github.com/tangem/wallet-core-binaries-ios.git', :tag => '3.1.9-tangem4'
-#    pod 'TangemWalletCore', :path => '../wallet-core-binaries-ios'
+   pod 'TangemWalletCore', :path => '../wallet-core-binaries-ios'
 end
 
 
@@ -62,11 +62,11 @@ post_install do |installer|
   end
 
   # Need for use for TangemWalletCore in tangem-app-ios
-#  installer.pods_project.targets.each do |target|
-#    target.build_configurations.each do |config|
-#      config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
-#    end
-#  end
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
+    end
+  end
   
   installer.pods_project.targets.each do |target|
 
