@@ -16,7 +16,7 @@ extension PublicKeyType {
         switch blockchain {
         case .bitcoin, .litecoin, .binance, .dash, .dogecoin, .bitcoinCash, .ravencoin, .cosmos, .terraV1, .terraV2:
             self = PublicKeyType.secp256k1
-        case .ethereum, .bsc, .tron, .polygon, .arbitrum, .avalanche, .ethereumClassic, .optimism, .fantom, .kava:
+        case .ethereum, .bsc, .tron, .polygon, .arbitrum, .avalanche, .ethereumClassic, .optimism, .fantom, .kava, .veChain:
             self = PublicKeyType.secp256k1Extended
         case .stellar, .ton, .solana, .polkadot, .kusama:
             self = PublicKeyType.ed25519

@@ -49,6 +49,7 @@ public enum Blockchain: Equatable, Hashable {
     case terraV1
     case terraV2
     case cronos
+    case veChain(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -102,6 +103,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .cosmos(let testnet):
             return testnet
+        case .veChain(let testnet):
+            return testnet
         }
     }
     
@@ -122,7 +125,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .binance, .dogecoin, .dash, .kaspa, .ravencoin:
             return 8
-        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos:
+        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos, .veChain:
             return 18
         case  .cardano, .xrp, .tezos, .tron, .cosmos, .terraV1, .terraV2:
             return 6
@@ -203,6 +206,8 @@ public enum Blockchain: Equatable, Hashable {
             return "LUNA"
         case .cronos:
             return "CRO"
+        case .veChain:
+            return "VET"
         }
     }
     
@@ -244,6 +249,8 @@ public enum Blockchain: Equatable, Hashable {
             return "Terra Classic"
         case .terraV2:
             return "Terra"
+        case .veChain:
+            return "vechain"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -318,6 +325,7 @@ extension Blockchain {
         case .saltPay: return 29313331
         case .kava: return isTestnet ? 2221 : 2222
         case .cronos: return 25
+        case .veChain: return 74
         default: return nil
         }
     }
@@ -496,6 +504,14 @@ extension Blockchain {
                 URL(string: "https://cronos.blockpi.network/v1/rpc/public")!,
                 URL(string: "https://cronos-evm.publicnode.com")!,
             ]
+        case .veChain:
+            if isTestnet {
+                return []
+            } else {
+                return [
+                    URL(string: "https://vet.nownodes.io/\(nowNodesApiKey)")!,
+                ]
+            }
         default:
             return nil
         }
@@ -614,6 +630,7 @@ extension Blockchain: Codable {
         case .terraV1: return "terra"
         case .terraV2: return "terra-2"
         case .cronos: return "cronos"
+        case .veChain: return "vechain"
         }
     }
     
@@ -671,6 +688,7 @@ extension Blockchain: Codable {
         case "terra": self = .terraV1
         case "terra-2": self = .terraV2
         case "cronos": self = .cronos
+        case "vechain": self = .veChain(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -898,6 +916,12 @@ extension Blockchain {
             return URL(string: "https://terrasco.pe/mainnet/address/\(address)")!
         case .cronos:
             return URL(string: "https://cronoscan.com/address/\(address)")!
+        case .veChain(let testnet):
+            if testnet {
+                return URL(string: "https://explore-testnet.vechain.org/address/\(address)")!
+            } else {
+                return URL(string: "https://explore.vechain.org/address/\(address)")!
+            }
         }
     }
 }
@@ -948,6 +972,7 @@ extension Blockchain {
         case "terra": return .terraV1
         case "terra-2": return .terraV2
         case "cronos": return .cronos
+        case "vechain": return .veChain(testnet: isTestnet)
         default: return nil
         }
     }
@@ -995,7 +1020,7 @@ extension Blockchain {
             return DogecoinWalletAssembly()
         case .stellar:
             return StellarWalletAssembly()
-        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava, .cronos:
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava, .cronos, .veChain:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()

@@ -78,6 +78,8 @@ public struct DerivationConfigV2: DerivationConfig {
             return [.default: "m/44'/118'/0'/0/0"]
         case .terraV1, .terraV2:
             return [.default: "m/44'/330'/0'/0/0"]
+        case .veChain:
+            return [.default: "m/44'/818'/0'/0/0"]
         }
     }
 }
