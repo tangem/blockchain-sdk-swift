@@ -86,8 +86,8 @@ class StellarNetworkProvider: HostProvider {
         stellarSdk.feeStats.getFeeStats()
             .tryMap { [blockchain] feeStats -> [Amount] in
                 guard let feeChargedModeInStroops = Decimal(feeStats.feeCharged.mode),
-                      let feeChargedMaxInStroops = Decimal(feeStats.feeCharged.max),
-                      let maxFeeBidModeInStroops = Decimal(feeStats.maxFee.mode)
+                      let feeChargedP80InStroops = Decimal(feeStats.feeCharged.p80),
+                      let feeChargedP99InStroops = Decimal(feeStats.feeCharged.p99)
                 else {
                     throw WalletError.failedToGetFee
                 }
@@ -95,18 +95,16 @@ class StellarNetworkProvider: HostProvider {
                 let divider =  blockchain.decimalValue
                 
                 let feeChargedMode = feeChargedModeInStroops / divider
-                let feeChargedMax = feeChargedMaxInStroops / divider
-                let maxFeeBidMode = maxFeeBidModeInStroops / divider
+                let feeChargedP80 = feeChargedP80InStroops / divider
+                let feeChargedP99 = feeChargedP99InStroops / divider
                 
                 let fees = [
                     feeChargedMode,
-                    feeChargedMax,
-                    maxFeeBidMode,
-                ]
-                    .sorted()
-                    .map {
-                        Amount(with: blockchain, value: $0)
-                    }
+                    feeChargedP80,
+                    feeChargedP99,
+                ].map {
+                    Amount(with: blockchain, value: $0)
+                }
                 
                 return fees
             }
