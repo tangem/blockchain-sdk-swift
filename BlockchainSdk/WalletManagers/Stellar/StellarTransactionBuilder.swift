@@ -120,8 +120,8 @@ class StellarTransactionBuilder {
         }
         
         let currentTime = specificTxTime ?? Date().timeIntervalSince1970
-        let minTime = currentTime - 60.0
-        let maxTime = currentTime + 60.0
+        let minTime = currentTime - 2.5 * 60.0
+        let maxTime = currentTime + 2.5 * 60.0
         
         let cond: PreconditionsXDR = useTimebounds ? .time(TimeBoundsXDR(minTime: UInt64(minTime), maxTime: UInt64(maxTime))) : .none
         let tx = TransactionXDR(sourceAccount: sourceKeyPair.publicKey,
