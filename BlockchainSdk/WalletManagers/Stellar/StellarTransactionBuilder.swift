@@ -118,10 +118,12 @@ class StellarTransactionBuilder {
               let seqNumber = sequence else {
             throw WalletError.failedToBuildTx
         }
-        
+
+        // Extended the interval from 2 minutes to 5 to make sure the transaction lives longer
+        // and has more chance of getting through when the network is under heavy load
         let currentTime = specificTxTime ?? Date().timeIntervalSince1970
-        let minTime = currentTime - 60.0
-        let maxTime = currentTime + 60.0
+        let minTime = currentTime - 2.5 * 60.0
+        let maxTime = currentTime + 2.5 * 60.0
         
         let cond: PreconditionsXDR = useTimebounds ? .time(TimeBoundsXDR(minTime: UInt64(minTime), maxTime: UInt64(maxTime))) : .none
         let tx = TransactionXDR(sourceAccount: sourceKeyPair.publicKey,

@@ -455,6 +455,7 @@ extension Blockchain {
                     // https://developer.offchainlabs.com/docs/mainnet#connect-your-wallet
                     URL(string: "https://arb1.arbitrum.io/rpc")!,
                     URL(string: "https://arbitrum-mainnet.infura.io/v3/\(infuraProjectId)")!,
+                    URL(string: "https://arbitrum.nownodes.io/\(nowNodesApiKey)")!,
                 ]
             }
         case .gnosis:
