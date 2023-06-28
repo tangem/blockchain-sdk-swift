@@ -118,7 +118,9 @@ class StellarTransactionBuilder {
               let seqNumber = sequence else {
             throw WalletError.failedToBuildTx
         }
-        
+
+        // Extended the interval from 2 minutes to 5 to make sure the transaction lives longer
+        // and has more chance of getting through when the network is under heavy load
         let currentTime = specificTxTime ?? Date().timeIntervalSince1970
         let minTime = currentTime - 2.5 * 60.0
         let maxTime = currentTime + 2.5 * 60.0
