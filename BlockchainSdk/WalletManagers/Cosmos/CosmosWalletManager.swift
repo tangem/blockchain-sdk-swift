@@ -58,7 +58,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 
                 let transactionParameters = transaction.params as? CosmosTransactionParams
                 
-                let input = try self.txBuilder.buildForSign(
+                return try self.txBuilder.buildForSign(
                     amount: transaction.amount,
                     source: self.wallet.address,
                     destination: transaction.destinationAddress,
@@ -66,24 +66,28 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     gas: feeParameters.gas,
                     params: transactionParameters
                 )
-                
-                guard let publicKey = PublicKey(tangemPublicKey: self.wallet.publicKey.blockchainKey, publicKeyType: self.cosmosChain.coin.publicKeyType) else {
-                    throw WalletError.failedToBuildTx
+            }
+            .flatMap { [weak self] hash -> AnyPublisher<Data, Error> in
+                guard let self else {
+                    return .anyFail(error: WalletError.empty)
                 }
-                
-                let signer = WalletCoreSigner(
-                    sdkSigner: signer,
-                    blockchainKey: publicKey.data,
-                    walletPublicKey: self.wallet.publicKey,
-                    curve: self.cosmosChain.blockchain.curve
+
+                return signer.sign(hash: hash, walletPublicKey: self.wallet.publicKey)
+            }
+            .tryMap { [weak self] signature -> Data in
+                guard let self else { throw WalletError.empty }
+
+                let transactionParameters = transaction.params as? CosmosTransactionParams
+
+                return try self.txBuilder.buildForSend(
+                    amount: transaction.amount,
+                    source: self.wallet.address,
+                    destination: transaction.destinationAddress,
+                    feeAmount: transaction.fee.amount.value,
+                    gas: feeParameters.gas,
+                    params: transactionParameters,
+                    signature: signature
                 )
-                let output: CosmosSigningOutput = try AnySigner.signExternally(input: input, coin: self.cosmosChain.coin, signer: signer)
-                
-                guard let outputData = output.serialized.data(using: .utf8) else {
-                    throw WalletError.failedToBuildTx
-                }
-                
-                return outputData
             }
             .flatMap { [weak self] transaction -> AnyPublisher<String, Error> in
                 guard let self else {
@@ -145,16 +149,15 @@ class CosmosWalletManager: BaseManager, WalletManager {
             .tryMap { [weak self] Void -> Data in
                 guard let self else { throw WalletError.empty }
                 
-                let input = try self.txBuilder.buildForSign(
+                return try self.txBuilder.buildForSend(
                     amount: amount,
                     source: self.wallet.address,
                     destination: destination,
                     feeAmount: nil,
                     gas: nil,
-                    params: nil
+                    params: nil,
+                    signature: Data()
                 )
-                
-                return try self.txBuilder.buildForSend(input: input, signer: nil)
             }
             .tryCatch { _ -> AnyPublisher<Data, Error> in
                 .anyFail(error: WalletError.failedToGetFee)

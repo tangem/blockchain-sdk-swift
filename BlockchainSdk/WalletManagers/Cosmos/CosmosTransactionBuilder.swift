@@ -27,8 +27,53 @@ class CosmosTransactionBuilder {
     func setAccountNumber(_ accountNumber: UInt64) {
         self.accountNumber = accountNumber
     }
+
+    func buildForSign(amount: Amount, source: String, destination: String, feeAmount: Decimal?, gas: UInt64?, params: CosmosTransactionParams?) throws -> Data {
+        let input = try makeInput(amount: amount, source: source, destination: destination, feeAmount: feeAmount, gas: gas, params: params)
+        let txInputData = try input.serializedData()
+        let preImageHashes = TransactionCompiler.preImageHashes(coinType: cosmosChain.coin, txInputData: txInputData)
+        let output = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
+
+        if output.error != .ok {
+            assertionFailure("\(output.errorMessage)")
+            throw WalletError.failedToBuildTx
+        }
+
+        return output.dataHash
+    }
     
-    func buildForSign(amount: Amount, source: String, destination: String, feeAmount: Decimal?, gas: UInt64?, params: CosmosTransactionParams?) throws -> CosmosSigningInput {
+    func buildForSend(amount: Amount, source: String, destination: String, feeAmount: Decimal?, gas: UInt64?, params: CosmosTransactionParams?, signature: Data) throws -> Data {
+        let input = try makeInput(amount: amount, source: source, destination: destination, feeAmount: feeAmount, gas: gas, params: params)
+        let txInputData = try input.serializedData()
+
+        let publicKeys = DataVector()
+        publicKeys.add(data: wallet.publicKey.blockchainKey)
+
+        let signatures = DataVector()
+        signatures.add(data: signature)
+
+        let compileWithSignatures = TransactionCompiler.compileWithSignatures(
+            coinType: cosmosChain.coin,
+            txInputData: txInputData,
+            signatures: signatures,
+            publicKeys: publicKeys
+        )
+
+        let output = try CosmosSigningOutput(serializedData: compileWithSignatures)
+
+        if output.error != .ok {
+            assertionFailure("\(output.errorMessage)")
+            throw WalletError.failedToBuildTx
+        }
+
+        guard let outputData = output.serialized.data(using: .utf8) else {
+            throw WalletError.failedToBuildTx
+        }
+
+        return outputData
+    }
+
+    private func makeInput(amount: Amount, source: String, destination: String, feeAmount: Decimal?, gas: UInt64?, params: CosmosTransactionParams?) throws -> CosmosSigningInput {
         let decimalValue = amount.type.token?.decimalValue ?? cosmosChain.blockchain.decimalValue
         let amountInSmallestDenomination = ((amount.value * decimalValue) as NSDecimalNumber).uint64Value
         
@@ -79,35 +124,10 @@ class CosmosTransactionBuilder {
             if let fee = fee {
                 $0.fee = fee
             }
-            $0.privateKey = Data(repeating: 1, count: 32)
+            $0.publicKey = wallet.publicKey.blockchainKey
         }
         
         return input
-    }
-    
-    func buildForSend(input: CosmosSigningInput, signer: TransactionSigner?) throws -> Data {
-        let output: CosmosSigningOutput
-        if let signer {
-            guard let publicKey = PublicKey(tangemPublicKey: self.wallet.publicKey.blockchainKey, publicKeyType: self.cosmosChain.coin.publicKeyType) else {
-                throw WalletError.failedToBuildTx
-            }
-            
-            let coreSigner = WalletCoreSigner(
-                sdkSigner: signer,
-                blockchainKey: publicKey.data,
-                walletPublicKey: self.wallet.publicKey,
-                curve: cosmosChain.blockchain.curve
-            )
-            output = try AnySigner.signExternally(input: input, coin: cosmosChain.coin, signer: coreSigner)
-        } else {
-            output = AnySigner.sign(input: input, coin: cosmosChain.coin)
-        }
-        
-        guard let outputData = output.serialized.data(using: .utf8) else {
-            throw WalletError.failedToBuildTx
-        }
-        
-        return outputData
     }
     
     private func denomination(for amount: Amount) throws -> String {
