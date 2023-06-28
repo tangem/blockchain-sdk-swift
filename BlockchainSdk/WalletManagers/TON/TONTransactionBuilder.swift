@@ -64,7 +64,7 @@ final class TONTransactionBuilder {
     /// - Returns: TheOpenNetworkSigningInput for sign transaction with external signer
     private func input(amount: Amount, destination: String, params: TONTransactionParams?) throws -> TheOpenNetworkSigningInput {
         let transfer = try self.transfer(amount: amount, destination: destination, params: params)
-
+        
         // Sign input with dummy key of Curve25519 private key
         let input = TheOpenNetworkSigningInput.with {
             $0.transfer = transfer

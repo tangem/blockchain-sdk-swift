@@ -52,14 +52,14 @@ class CosmosTransactionBuilder {
         // We should delete last byte from signature
         signatures.add(data: signature.dropLast(1))
 
-        let compileWithSignatures = TransactionCompiler.compileWithSignatures(
+        let transactionData = TransactionCompiler.compileWithSignatures(
             coinType: cosmosChain.coin,
             txInputData: txInputData,
             signatures: signatures,
             publicKeys: publicKeys
         )
 
-        let output = try CosmosSigningOutput(serializedData: compileWithSignatures)
+        let output = try CosmosSigningOutput(serializedData: transactionData)
 
         if output.error != .ok {
             throw WalletError.failedToBuildTx
@@ -103,7 +103,7 @@ class CosmosTransactionBuilder {
             $0.signingMode = .protobuf;
             $0.accountNumber = accountNumber
             $0.chainID = cosmosChain.chainID
-            $0.memo =  params?.memo ?? ""
+            $0.memo = params?.memo ?? ""
             $0.sequence = sequenceNumber
             $0.messages = [message]
             $0.publicKey = wallet.publicKey.blockchainKey
