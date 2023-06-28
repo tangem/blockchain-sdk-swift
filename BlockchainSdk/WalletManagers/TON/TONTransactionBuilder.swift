@@ -64,7 +64,7 @@ final class TONTransactionBuilder {
     /// - Returns: TheOpenNetworkSigningInput for sign transaction with external signer
     private func input(amount: Amount, destination: String, params: TONTransactionParams?) throws -> TheOpenNetworkSigningInput {
         let transfer = try self.transfer(amount: amount, destination: destination, params: params)
-        
+
         // Sign input with dummy key of Curve25519 private key
         let input = TheOpenNetworkSigningInput.with {
             $0.transfer = transfer
@@ -86,7 +86,7 @@ final class TONTransactionBuilder {
             $0.amount = ((amount.value * wallet.blockchain.decimalValue) as NSDecimalNumber).uint64Value
             $0.sequenceNumber = UInt32(sequenceNumber)
             $0.mode = modeTransactionConstant
-            $0.bounceBehavior = .nonBounceable
+            $0.bounceable = false
             $0.comment = params?.memo ?? ""
          }
     }
