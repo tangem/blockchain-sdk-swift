@@ -38,5 +38,10 @@ extension Wallet.PublicKey {
     public struct Derivation: Codable, Hashable {
         let path: DerivationPath
         let derivedKey: ExtendedPublicKey
+
+        public init(path: DerivationPath, derivedKey: ExtendedPublicKey) {
+            self.path = path
+            self.derivedKey = derivedKey
+        }
     }
 }
