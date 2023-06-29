@@ -69,7 +69,12 @@ public struct Wallet {
             .compactMapValues { $0.publicKey.xpubKey(isTestnet: blockchain.isTestnet) }
             .map { $0.value }
     }
-    
+
+    public init(blockchain: Blockchain, addresses: [AddressType: Address]) {
+        self.blockchain = blockchain
+        self.walletAddresses = addresses
+    }
+
     @available(*, deprecated, message: "Use init(blockchain:, addresses:)")
     init(blockchain: Blockchain, addresses: [Address], publicKey: PublicKey) {
         self.blockchain = blockchain
@@ -80,11 +85,6 @@ public struct Wallet {
         
         assert(addresses.contains { $0.key == .default }, "Addresses have to contains default address")
 
-        self.walletAddresses = addresses
-    }
-    
-    init(blockchain: Blockchain, addresses: [AddressType: Address]) {
-        self.blockchain = blockchain
         self.walletAddresses = addresses
     }
     
