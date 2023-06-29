@@ -51,7 +51,7 @@ class TONTests: XCTestCase {
                 destination: "EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2"
             )
             
-            XCTAssertEqual(try! input.jsonString(), "{\"privateKey\":\"hfyhNLP+P9Uj2LUoYI2AOJDibJPIbcPZe41Zx7NUDJc=\",\"transfer\":{\"walletVersion\":\"WALLET_V4_R2\",\"dest\":\"EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2\",\"amount\":\"1000000000\",\"mode\":3,\"bounceBehavior\":\"NON_BOUNCEABLE\"}}"
+            XCTAssertEqual(try! input.jsonString(), "{\"privateKey\":\"hfyhNLP+P9Uj2LUoYI2AOJDibJPIbcPZe41Zx7NUDJc=\",\"transfer\":{\"walletVersion\":\"WALLET_V4_R2\",\"dest\":\"EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2\",\"amount\":\"1000000000\",\"mode\":3}}"
             )
             
             let output = try walletManager.buildTransaction(
@@ -78,7 +78,7 @@ class TONTests: XCTestCase {
                 params: .init(memo: "Hello world!")
             )
             
-            XCTAssertEqual(try! input.jsonString(), "{\"privateKey\":\"hfyhNLP+P9Uj2LUoYI2AOJDibJPIbcPZe41Zx7NUDJc=\",\"transfer\":{\"walletVersion\":\"WALLET_V4_R2\",\"dest\":\"EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2\",\"amount\":\"1000000000\",\"mode\":3,\"comment\":\"Hello world!\",\"bounceBehavior\":\"NON_BOUNCEABLE\"}}"
+            XCTAssertEqual(try! input.jsonString(), "{\"privateKey\":\"hfyhNLP+P9Uj2LUoYI2AOJDibJPIbcPZe41Zx7NUDJc=\",\"transfer\":{\"walletVersion\":\"WALLET_V4_R2\",\"dest\":\"EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2\",\"amount\":\"1000000000\",\"mode\":3,\"comment\":\"Hello world!\"}}"
             )
             
             let output = try walletManager.buildTransaction(
