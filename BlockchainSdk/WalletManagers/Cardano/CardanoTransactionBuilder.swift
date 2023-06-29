@@ -22,6 +22,7 @@ class CardanoTransactionBuilder {
     
     private let coinType: CoinType = .cardano
     private var decimalValue: Decimal {
+        // It isn't important shelley or byron, decimalValue is equal for both cases.
         Blockchain.cardano(shelley: true).decimalValue
     }
 
@@ -43,9 +44,6 @@ extension CardanoTransactionBuilder {
 
         let preImageHashes = TransactionCompiler.preImageHashes(coinType: .cardano, txInputData: txInputData)
         let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
-        
-        print("preSigningOutput.data ->> ", preSigningOutput.data.hex)
-//        print("walletPublicKey.hex ->> ", walletPublicKey.hex)
 
         if preSigningOutput.error != .ok {
             throw WalletError.failedToBuildTx
@@ -71,28 +69,22 @@ extension CardanoTransactionBuilder {
             publicKeys: publicKeys
         )
 
-        let output: CardanoSigningOutput = try CardanoSigningOutput(serializedData: compileWithSignatures)
+        let output = try CardanoSigningOutput(serializedData: compileWithSignatures)
 
         if output.error != .ok {
             throw WalletError.failedToBuildTx
         }
 
-        print("wallet core ->> output.encoded", output.encoded.hex)
-
         return output.encoded
     }
 
     func estimatedFee(transaction: Transaction) throws -> Decimal {
-        var input = try buildCardanoSigningInput(transaction: transaction)
-        print("wallet core ->> fee", input.plan.fee)
-
+        let input = try buildCardanoSigningInput(transaction: transaction)
         return Decimal(input.plan.fee)
     }
 
     func buildCardanoSigningInput(transaction: Transaction) throws -> CardanoSigningInput {
         let amount = transaction.amount.value * decimalValue
-        print("wallet core ->> amount", amount)
-
         var input = CardanoSigningInput.with {
             $0.transferMessage.toAddress = transaction.destinationAddress
             $0.transferMessage.changeAddress = transaction.changeAddress
@@ -117,7 +109,7 @@ extension CardanoTransactionBuilder {
         input.plan = AnySigner.plan(input: input, coin: coinType)
 
         let minChange = 1 * decimalValue
-        if input.plan.change < minChange.roundedDecimalNumber.uint64Value {
+        if input.plan.change < minChange.uint64Value {
             throw CardanoError.lowAda
         }
 
