@@ -54,10 +54,12 @@ enum PolkadotNetwork {
             if isTestnet {
                 return [
                     URL(string: "https://rpc.test.azero.dev")!,
+                    URL(string: "https://aleph-zero-rpc.dwellir.com")!,
                 ]
             } else {
                 return [
                     URL(string: "https://rpc.azero.dev")!,
+                    URL(string: "aleph-zero-testnet-rpc.dwellir.com")!,
                 ]
             }
         }
