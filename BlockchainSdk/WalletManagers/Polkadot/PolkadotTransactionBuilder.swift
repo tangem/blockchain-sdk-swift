@@ -33,7 +33,7 @@ class PolkadotTransactionBuilder {
             https://github.com/paritytech/polkadot/blob/3b68869e14f84b043aa65bd83f9fe44359e4d626/runtime/westend/src/lib.rs#L982
         */
         switch network {
-        case .polkadot:
+        case .polkadot, .azero:
             return Data(hexString: "0x0500")
         case .kusama:
             return Data(hexString: "0x0400")
@@ -46,9 +46,9 @@ class PolkadotTransactionBuilder {
     private let signedBit: UInt8 = 0x80
     private let sigTypeEd25519: UInt8 = 0x00
     
-    init(walletPublicKey: Data, network: PolkadotNetwork) {
+    init(blockchain: Blockchain, walletPublicKey: Data, network: PolkadotNetwork) {
         self.walletPublicKey = walletPublicKey
-        self.blockchain = network.blockchain
+        self.blockchain = blockchain
         self.network = network
     }
     
@@ -117,7 +117,7 @@ class PolkadotTransactionBuilder {
             return specVersion < 28
         case .kusama:
             return specVersion < 2028
-        case .westend:
+        case .westend, .azero:
             return false
         }
     }

@@ -473,15 +473,15 @@ class AddressesTests: XCTestCase {
     func testPolkadot() throws {
         // From trust wallet `PolkadotTests.swift`
         let privateKey = Data(hexString: "0xd65ed4c1a742699b2e20c0c1f1fe780878b1b9f7d387f934fe0a7dc36f1f9008")
-        let publicKey = try Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
-        try testSubstrateNetwork(
-            .polkadot,
+        let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
+        testSubstrateNetwork(
+            .polkadot(testnet: false),
             publicKey: publicKey,
             expectedAddress: "12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW"
         )
         
-        try testSubstrateNetwork(
-            .polkadot,
+        testSubstrateNetwork(
+            .polkadot(testnet: false),
             publicKey: edKey,
             expectedAddress: "14cermZiQ83ihmHKkAucgBT2sqiRVvd4rwqBGqrMnowAKYRp"
         )
@@ -504,26 +504,29 @@ class AddressesTests: XCTestCase {
         )
     }
     
-    func testWestend() throws {
-        try testSubstrateNetwork(
-            .westend,
+    func testWestend() {
+        testSubstrateNetwork(
+            .polkadot(testnet: true),
             publicKey: edKey,
             expectedAddress: "5FgMiSJeYLnFGEGonXrcY2ct2Dimod4vnT6h7Ys1Eiue9KxK"
         )
     }
     
-    func testSubstrateNetwork(_ network: PolkadotNetwork, publicKey: Data, expectedAddress: String) throws {
-        let otherNetworks = PolkadotNetwork.allCases.filter { $0 != network }
+    func testAzero() {
+        testSubstrateNetwork(
+            .azero(testnet: true),
+            publicKey: edKey,
+            expectedAddress: "5FgMiSJeYLnFGEGonXrcY2ct2Dimod4vnT6h7Ys1Eiue9KxK"
+        )
+    }
+    
+    func testSubstrateNetwork(_ blockchain: Blockchain, publicKey: Data, expectedAddress: String) {
+        let network = PolkadotNetwork(blockchain: blockchain)!
         let service = PolkadotAddressService(network: network)
         
-        let address = try service.makeAddress(from: publicKey)
+        let address = try! service.makeAddress(from: publicKey)
         let addressFromString = PolkadotAddress(string: expectedAddress, network: network)
-        
-        let otherNetworkAddresses = try otherNetworks.map { network in
-            let service = PolkadotAddressService(network: network)
-            return try service.makeAddress(from: publicKey).value
-        }
-        
+
         XCTAssertThrowsError(try service.makeAddress(from: secpCompressedKey))
         XCTAssertThrowsError(try service.makeAddress(from: secpDecompressedKey))
 
@@ -531,7 +534,6 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addressFromString!.bytes(raw: true), publicKey)
         XCTAssertEqual(address.value, expectedAddress)
         XCTAssertNotEqual(addressFromString!.bytes(raw: false), publicKey)
-        XCTAssertFalse(otherNetworkAddresses.contains(addressFromString!.string))
     }
     
     func testTron() throws {

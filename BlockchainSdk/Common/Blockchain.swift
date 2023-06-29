@@ -35,6 +35,7 @@ public enum Blockchain: Equatable, Hashable {
     case fantom(testnet: Bool)
     case polkadot(testnet: Bool)
     case kusama
+    case azero(testnet: Bool)
     case tron(testnet: Bool)
     case arbitrum(testnet: Bool)
     case dash(testnet: Bool)
@@ -76,6 +77,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .polkadot(let testnet):
             return testnet
+        case .azero(let testnet):
+            return testnet
         case .tron(let testnet):
             return testnet
         case .arbitrum(let testnet):
@@ -107,7 +110,7 @@ public enum Blockchain: Equatable, Hashable {
     
     public var curve: EllipticCurve {
         switch self {
-        case .stellar, .cardano, .solana, .polkadot, .kusama, .ton:
+        case .stellar, .cardano, .solana, .polkadot, .kusama, .azero, .ton:
             return .ed25519
         case .xrp(let curve):
             return curve
@@ -132,7 +135,7 @@ public enum Blockchain: Equatable, Hashable {
             return 9
         case .polkadot(let testnet):
             return testnet ? 12 : 10
-        case .kusama:
+        case .kusama, .azero:
             return 12
         }
     }
@@ -177,6 +180,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet ? "WND" : "DOT"
         case .kusama:
             return "KSM"
+        case .azero:
+            return "AZERO"
         case .tron:
             return "TRX"
         case .dash(let testnet):
@@ -232,6 +237,8 @@ public enum Blockchain: Equatable, Hashable {
             return isTestnet ? "Fantom" + testnetSuffix : "Fantom Opera"
         case .polkadot:
             return "Polkadot" + testnetSuffix + (isTestnet ? " (Westend)" : "")
+        case .azero:
+            return "Aleph Zero" + testnetSuffix
         case .gnosis:
             return "Gnosis Chain" + testnetSuffix
         case .optimism:
@@ -599,6 +606,7 @@ extension Blockchain: Codable {
         case .fantom: return "fantom"
         case .polkadot: return "polkadot"
         case .kusama: return "kusama"
+        case .azero: return "aleph-zero"
         case .tron: return "tron"
         case .arbitrum: return "arbitrum"
         case .dash: return "dash"
@@ -656,6 +664,7 @@ extension Blockchain: Codable {
         case "fantom": self = .fantom(testnet: isTestnet)
         case "polkadot": self = .polkadot(testnet: isTestnet)
         case "kusama": self = .kusama
+        case "aleph-zero": self = .azero(testnet: isTestnet)
         case "tron": self = .tron(testnet: isTestnet)
         case "arbitrum": self = .arbitrum(testnet: isTestnet)
         case "dash": self = .dash(testnet: isTestnet)
@@ -725,6 +734,8 @@ extension Blockchain {
             return URL(string: "https://faucet.fantom.network")
         case .polkadot:
             return URL(string: "https://matrix.to/#/!cJFtAIkwxuofiSYkPN:matrix.org?via=matrix.org&via=matrix.parity.io&via=web3.foundation")
+        case .azero:
+            return URL(string: "https://faucet.test.azero.dev")
         case .tron:
             return URL(string: "https://nileex.io/join/getJoinPage")!
         case .dash:
@@ -832,6 +843,9 @@ extension Blockchain {
             return URL(string: "https://\(subdomain).subscan.io/account/\(address)")
         case .kusama:
             return URL(string: "https://kusama.subscan.io/account/\(address)")
+        case .azero:
+            guard !isTestnet else { return nil } // So far only available for mainnet
+            return URL(string: "https://alephzero.subscan.io/account/\(address)")
         case .tron:
             let subdomain = isTestnet ? "nile." : ""
             return URL(string: "https://\(subdomain)tronscan.org/#/address/\(address)")!
@@ -938,6 +952,7 @@ extension Blockchain {
         case "fantom": return .fantom(testnet: isTestnet)
         case "polkadot": return .polkadot(testnet: isTestnet)
         case "kusama": return .kusama
+        case "aleph-zero": return .azero(testnet: isTestnet)
         case "tron": return .tron(testnet: isTestnet)
         case "arbitrum": return .arbitrum(testnet: isTestnet)
         case "dash": return .dash(testnet: isTestnet)
@@ -1012,7 +1027,7 @@ extension Blockchain {
             return TezosWalletAssembly()
         case .solana:
             return SolanaWalletAssembly()
-        case .polkadot, .kusama:
+        case .polkadot, .kusama, .azero:
             return SubstrateWalletAssembly()
         case .tron:
             return TronWalletAssembly()

@@ -53,6 +53,8 @@ public struct AddressServiceFactory {
             return PolkadotAddressService(network: isTestnet ? .westend : .polkadot)
         case .kusama:
             return PolkadotAddressService(network: .kusama)
+        case .azero(let isTestnet):
+            return PolkadotAddressService(network: .azero(testnet: isTestnet))
         case .tron:
             return TronAddressService()
         case .dash:

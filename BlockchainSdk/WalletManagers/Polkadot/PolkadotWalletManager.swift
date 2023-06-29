@@ -40,8 +40,7 @@ class PolkadotWalletManager: BaseManager, WalletManager {
     }
     
     private func updateInfo(_ balance: BigUInt) {
-        let blockchain = network.blockchain
-        let decimals = blockchain.decimalCount
+        let decimals = wallet.blockchain.decimalCount
         guard
             let formatted = Web3.Utils.formatToPrecision(balance, numberDecimals: decimals, formattingDecimals: decimals, decimalSeparator: ".", fallbackToScientific: false),
             let value = Decimal(formatted)
@@ -49,7 +48,7 @@ class PolkadotWalletManager: BaseManager, WalletManager {
             return
         }
         
-        wallet.add(amount: .init(with: blockchain, value: value))
+        wallet.add(amount: .init(with: wallet.blockchain, value: value))
         
         let currentDate = Date()
         for (index, transaction) in wallet.transactions.enumerated() {
@@ -167,7 +166,7 @@ extension PolkadotWalletManager: ExistentialDepositProvider {
 
 extension PolkadotWalletManager: MinimumBalanceRestrictable {
     var minimumBalance: Amount {
-        network.existentialDeposit
+        self.network.existentialDeposit
     }
 }
 
