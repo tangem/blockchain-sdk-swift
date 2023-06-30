@@ -50,6 +50,7 @@ public enum Blockchain: Equatable, Hashable {
     case terraV1
     case terraV2
     case cronos
+    case telos(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -105,6 +106,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .cosmos(let testnet):
             return testnet
+        case .telos(let testnet):
+            return testnet
         }
     }
     
@@ -125,7 +128,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .binance, .dogecoin, .dash, .kaspa, .ravencoin:
             return 8
-        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos:
+        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos, .telos:
             return 18
         case  .cardano, .xrp, .tezos, .tron, .cosmos, .terraV1, .terraV2:
             return 6
@@ -208,6 +211,8 @@ public enum Blockchain: Equatable, Hashable {
             return "LUNA"
         case .cronos:
             return "CRO"
+        case .telos:
+            return "TLOS"
         }
     }
     
@@ -325,6 +330,7 @@ extension Blockchain {
         case .saltPay: return 29313331
         case .kava: return isTestnet ? 2221 : 2222
         case .cronos: return 25
+        case .telos: return isTestnet ? 41 : 40
         default: return nil
         }
     }
@@ -504,6 +510,18 @@ extension Blockchain {
                 URL(string: "https://cronos.blockpi.network/v1/rpc/public")!,
                 URL(string: "https://cronos-evm.publicnode.com")!,
             ]
+        case .telos:
+            if isTestnet {
+                return [
+                    URL(string: "https://telos-evm-testnet.rpc.thirdweb.com")!
+                ]
+            } else {
+                return [
+                    URL(string: "https://mainnet.telos.net/evm")!,
+                    URL(string: "https://api.kainosbp.com/evm")!,
+                    URL(string: "https://telos-evm.rpc.thirdweb.com")!
+                ]
+            }
         default:
             return nil
         }
@@ -623,6 +641,7 @@ extension Blockchain: Codable {
         case .terraV1: return "terra"
         case .terraV2: return "terra-2"
         case .cronos: return "cronos"
+        case .telos: return "telos"
         }
     }
     
@@ -681,6 +700,7 @@ extension Blockchain: Codable {
         case "terra": self = .terraV1
         case "terra-2": self = .terraV2
         case "cronos": self = .cronos
+        case "telos": self = .telos(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -749,6 +769,8 @@ extension Blockchain {
             return URL(string: "https://faucet.kaspanet.io")!
         case .cosmos:
             return URL(string: "https://discord.com/channels/669268347736686612/953697793476821092")!
+        case .telos:
+            return URL(string: "https://app.telos.net/testnet/developers")
         default:
             return nil
         }
@@ -913,6 +935,12 @@ extension Blockchain {
             return URL(string: "https://terrasco.pe/mainnet/address/\(address)")!
         case .cronos:
             return URL(string: "https://cronoscan.com/address/\(address)")!
+        case .telos:
+            if isTestnet {
+                return URL(string: "https://testnet.teloscan.io/")!
+            } else {
+                return URL(string: "https://teloscan.io/")!
+            }
         }
     }
 }
@@ -1011,7 +1039,7 @@ extension Blockchain {
             return DogecoinWalletAssembly()
         case .stellar:
             return StellarWalletAssembly()
-        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava, .cronos:
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava, .cronos, .telos:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()

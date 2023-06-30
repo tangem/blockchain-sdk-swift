@@ -49,6 +49,7 @@ extension Blockchain {
         case .terraV1: break
         case .terraV2: break
         case .cronos: break
+        case .telos: break
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
