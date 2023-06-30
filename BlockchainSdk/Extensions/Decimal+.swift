@@ -55,4 +55,8 @@ extension Decimal {
     public func rounded(blockchain: Blockchain) -> Decimal {
         return rounded(scale: Int(blockchain.decimalCount))
     }
+
+    var uint64Value: UInt64 {
+        (self as NSDecimalNumber).uint64Value
+    }
 }
