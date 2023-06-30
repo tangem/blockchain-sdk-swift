@@ -70,7 +70,7 @@ extension CardanoWalletManager: TransactionSender {
                         return .anyFail(error: WalletError.empty)
                     }
 
-                    return signer.sign(hash: dataForSign, walletPublicKey: wallet.publicKey)
+                    return signer.sign(hash: dataForSign, walletPublicKey: self.wallet.publicKey)
                 }
                 .tryMap { [weak self] signature -> Data in
                     guard let self else {
@@ -90,7 +90,9 @@ extension CardanoWalletManager: TransactionSender {
                         .eraseToAnyPublisher()
                 }
                 .tryMap { [weak self] txHash in
-                    guard let self = self else { throw WalletError.empty }
+                    guard let self = self else {
+                        throw WalletError.empty
+                    }
 
                     var sendedTx = transaction
                     sendedTx.hash = txHash
@@ -117,9 +119,9 @@ extension CardanoWalletManager: TransactionSender {
                     throw WalletError.empty
                 }
 
-                var feeValue = try transactionBuilder.estimatedFee(transaction: dummy)
-                feeValue.round(scale: wallet.blockchain.decimalCount, roundingMode: .up)
-                feeValue /= wallet.blockchain.decimalValue
+                var feeValue = try self.transactionBuilder.estimatedFee(transaction: dummy)
+                feeValue.round(scale: self.wallet.blockchain.decimalCount, roundingMode: .up)
+                feeValue /= self.wallet.blockchain.decimalValue
                 let feeAmount = Amount(with: self.wallet.blockchain, value: feeValue)
                 let fee = Fee(feeAmount)
                 return [fee]
