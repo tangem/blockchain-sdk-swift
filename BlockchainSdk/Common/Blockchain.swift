@@ -937,9 +937,9 @@ extension Blockchain {
             return URL(string: "https://cronoscan.com/address/\(address)")!
         case .telos:
             if isTestnet {
-                return URL(string: "https://testnet.teloscan.io/")!
+                return URL(string: "https://testnet.teloscan.io/address/\(address)")!
             } else {
-                return URL(string: "https://teloscan.io/")!
+                return URL(string: "https://teloscan.io/address/\(address)")!
             }
         }
     }
