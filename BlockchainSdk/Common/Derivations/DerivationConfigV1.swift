@@ -38,8 +38,7 @@ public struct DerivationConfigV1: DerivationConfig {
         case .ethereum,
                 .ethereumPoW,
                 .ethereumFair,
-                .saltPay,
-                .telos:
+                .saltPay
             return [.default: "m/44'/60'/0'/0/0"]
         case .ethereumClassic:
             return [.default: "m/44'/61'/0'/0/0"]
@@ -91,6 +90,8 @@ public struct DerivationConfigV1: DerivationConfig {
             return [.default: "m/44'/330'/0'/0/0"]
         case .cronos:
             return [.default: "m/44'/10000025'/0'/0/0"]
+        case .telos:
+            return [.default: "m/44'/977'/0'/0/0"]
         }
     }
 }
