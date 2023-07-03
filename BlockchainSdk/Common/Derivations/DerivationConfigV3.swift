@@ -50,7 +50,8 @@ public struct DerivationConfigV3: DerivationConfig {
                 .gnosis,
                 .optimism,
                 .kava,
-                .cronos:
+                .cronos,
+                .telos:
             return [.default: "m/44'/60'/0'/0/0"]
         case .ethereumClassic:
             return [.default: "m/44'/61'/0'/0/0"]
