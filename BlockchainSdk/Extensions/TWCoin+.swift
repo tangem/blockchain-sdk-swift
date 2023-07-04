@@ -70,7 +70,7 @@ extension CoinType {
             self = .terra
         case .terraV2:
             self = .terraV2        
-        case .ethereumPoW, .ethereumFair, .rsk, .gnosis, .saltPay, .kaspa, .cronos, .azero, .telos:
+        case .ethereumPoW, .ethereumFair, .rsk, .gnosis, .saltPay, .kaspa, .cronos, .azero, .telos, .ducatus:
             // Blockchains that are not in WalletCore yet
             return nil
         }
