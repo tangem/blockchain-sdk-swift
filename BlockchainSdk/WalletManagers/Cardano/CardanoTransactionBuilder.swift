@@ -42,7 +42,7 @@ extension CardanoTransactionBuilder {
         let input = try buildCardanoSigningInput(transaction: transaction)
         let txInputData = try input.serializedData()
 
-        let preImageHashes = TransactionCompiler.preImageHashes(coinType: .cardano, txInputData: txInputData)
+        let preImageHashes = TransactionCompiler.preImageHashes(coinType: coinType, txInputData: txInputData)
         let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
 
         if preSigningOutput.error != .ok {
@@ -62,16 +62,22 @@ extension CardanoTransactionBuilder {
         let publicKeys = DataVector()
         publicKeys.add(data: signature.publicKey)
 
-        let compileWithSignatures = TransactionCompiler.compileWithSignatures(
+        
+        let compileWithSignatures = TransactionCompiler.compileWithSignaturesAndPubKeyType(
             coinType: coinType,
             txInputData: txInputData,
             signatures: signatures,
-            publicKeys: publicKeys
+            publicKeys: publicKeys,
+            pubKeyType: .ed25519
         )
 
         let output = try CardanoSigningOutput(serializedData: compileWithSignatures)
 
         if output.error != .ok {
+            throw WalletError.failedToBuildTx
+        }
+        
+        if output.encoded.isEmpty {
             throw WalletError.failedToBuildTx
         }
 
@@ -109,7 +115,7 @@ extension CardanoTransactionBuilder {
         input.plan = AnySigner.plan(input: input, coin: coinType)
 
         let minChange = 1 * decimalValue
-        if input.plan.change < minChange.uint64Value {
+        if input.plan.change <= minChange.uint64Value {
             throw CardanoError.lowAda
         }
 

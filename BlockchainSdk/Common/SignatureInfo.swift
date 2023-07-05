@@ -8,7 +8,11 @@
 
 import Foundation
 
-struct SignatureInfo {
+struct SignatureInfo: CustomStringConvertible {
     let signature: Data
     let publicKey: Data
+    
+    var description: String {
+        "signature: \(signature.hex)\npublicKey: \(publicKey.hex)"
+    }
 }
