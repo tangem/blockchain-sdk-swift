@@ -12,14 +12,6 @@ import WalletCore
 // You can decode your CBOR transaction here: https://cbor.me
 class CardanoTransactionBuilder {
     private var outputs: [CardanoUnspentOutput] = []
-    
-    // Transaction validity time. Currently we are using absolute values.
-    // At 16 April 2023 was 90007700 slot number.
-    // We need to rework this logic to use relative validity time.
-    // TODO: https://tangem.atlassian.net/browse/IOS-3471
-    // This can be constructed using absolute ttl slot from `/metadata` endpoint.
-    private var timeToLife: UInt64 = 190000000
-    
     private let coinType: CoinType = .cardano
     private var decimalValue: Decimal {
         // It isn't important shelley or byron, decimalValue is equal for both cases.
@@ -30,10 +22,6 @@ class CardanoTransactionBuilder {
 }
 
 extension CardanoTransactionBuilder {
-    func update(timeToLife: UInt64) {
-        self.timeToLife = timeToLife
-    }
-    
     func update(outputs: [CardanoUnspentOutput]) {
         self.outputs = outputs
     }
@@ -96,7 +84,12 @@ extension CardanoTransactionBuilder {
             $0.transferMessage.changeAddress = transaction.changeAddress
             $0.transferMessage.amount = amount.roundedDecimalNumber.uint64Value
             $0.transferMessage.useMaxAmount = false
-            $0.ttl = timeToLife
+            // Transaction validity time. Currently we are using absolute values.
+            // At 16 April 2023 was 90007700 slot number.
+            // We need to rework this logic to use relative validity time.
+            // TODO: https://tangem.atlassian.net/browse/IOS-3471
+            // This can be constructed using absolute ttl slot from `/metadata` endpoint.
+            $0.ttl = 190000000
         }
 
         if outputs.isEmpty {
