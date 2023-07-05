@@ -53,7 +53,7 @@ class PublicKeyDerivationAddressTests: XCTestCase {
                 
                 // MARK: -  Step - 0
 
-                XCTAssertEqual(test.derivation, blockchain.derivationPath(for: .new)!.rawPath, "-> \(blockchain.displayName)")
+                XCTAssertEqual(test.derivation, blockchain.derivationPath(for: .v3)!.rawPath, "-> \(blockchain.displayName)")
                 
                 // MARK: -  Step - 1 / 2
 

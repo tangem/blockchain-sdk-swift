@@ -8,20 +8,17 @@
             "blockchain": "bitcoin",
             "derivation": "m/84'/0'/0'/0/0",
             "addressType": "default",
-            "walletPublicKey": "032A08567430A46A47CFFBF3FFD7FBB17A7850E75E7AC8E3E034BB1D8D5625A30D",
-            "skip": true
+            "walletPublicKey": "02616104143281b4679afeb669392b073d63564606f431d13df3ebede75d269509",
         },
         {
             "blockchain": "litecoin",
             "derivation": "m/84'/2'/0'/0/0",
-            "walletPublicKey": "0361607CC77FF2AF9C985C7E3791E8209E0F274B243CF81D9932E8C6A014A0F9F0",
-            "skip": true
+            "walletPublicKey": "03ecd3d2bb5e37ac533689f005606735ba2e3c2305ee7fc632a6f8b2186d75c011",
         },
         {
             "blockchain": "stellar",
             "derivation": "m/44'/148'/0'",
-            "walletPublicKey": "C42FFE4F0EC064D0324E6018BE66A053C0F0BF50B01FCA3646FBC160656285C0",
-            "skip": true
+            "walletPublicKey": "8b6fe3c36a1fb5930c009f6b2321dafb44209a8ef32553672e339a2e6efd32ac",
         },
         {
             "blockchain": "ethereum",
@@ -31,8 +28,7 @@
         {
             "blockchain": "ethereumClassic",
             "derivation": "m/44'/61'/0'/0/0",
-            "walletPublicKey": "023A291DBF3427922A22D166C8D3333253A0E383115CF5DB36BE47EC5EA81D7D56",
-            "skip": true
+            "walletPublicKey": "03f100470226d199d0b8493b4fb95e2b331ab120c156d9a4990e457c57bee583db",
         },
         {
             "blockchain": "bitcoinCash",
@@ -52,8 +48,7 @@
         {
             "blockchain": "tezos",
             "derivation": "m/44'/1729'/0'/0/0",
-            "walletPublicKey": "5D09117F61B9944546041D8DF5EECC1CEDFF325D12C17DB10B495245AB93F9A5",
-            "skip": true
+            "walletPublicKey": "66d78737416e499e603dc6c96de63916bfa359d5fb29bdc41fc7fc27d7a64cb1",
         },
         {
             "blockchain": "dogecoin",
@@ -78,8 +73,7 @@
         {
             "blockchain": "solana",
             "derivation": "m/44'/501'/0'",
-            "walletPublicKey": "034D2D2A3F4A2099FDC9414607706F6C8F1B4C7439002C256CB12CE4AF90D3FE",
-            "skip": true
+            "walletPublicKey": "7b10ba13fd5bd7e5341af59594b53180f0481e67f018ed96b2c6f355d69f2884",
         },
         {
             "blockchain": "fantom",
@@ -89,14 +83,12 @@
         {
             "blockchain": "polkadot",
             "derivation": "m/44'/354'/0'/0'/0'",
-            "walletPublicKey": "0BA9AB99A3A07ED502CB14A35CDBE92F5882AC1B690E8AFA195F98121FB4FC3D",
-            "skip": true
+            "walletPublicKey": "1a32f68faabffeaa618cd6b03d7cf0985e60688399a047166de2f8686f074ebe",
         },
         {
             "blockchain": "kusama",
             "derivation": "m/44'/434'/0'/0'/0'",
-            "walletPublicKey": "6E19C225663EEDB1BB3786DBBB262B7172141947317FFD1A97E0AA6F4380BCF0",
-            "skip": true
+            "walletPublicKey": "fa62b0563fe34a1c2efe0544542a3e197612143d4b5d1f515ff2c9335af1ba6b",
         },
         {
             "blockchain": "tron",
@@ -126,8 +118,7 @@
         {
             "blockchain": "ton",
             "derivation": "m/44'/607'/0'",
-            "walletPublicKey": "5D09117F61B9944546041D8DF5EECC1CEDFF325D12C17DB10B495245AB93F9A5",
-            "skip": true
+            "walletPublicKey": "f97af5962195e73685d3eaf8439a2113c9c1d91f5cba4c60d3d7184f23001d62",
         },
         {
             "blockchain": "kava",
