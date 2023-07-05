@@ -454,6 +454,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .binance(testnet: false),
             .cardano(shelley: false),
             .xrp(curve: .ed25519),
+            .ducatus,
             .tezos(curve: .ed25519),
             .dogecoin,
             .bsc(testnet: false),
