@@ -14,10 +14,6 @@ import BigInt
 class CardanoTransactionBuilder {
     private var outputs: [CardanoUnspentOutput] = []
     private let coinType: CoinType = .cardano
-    private var decimalValue: Decimal {
-        // It isn't important shelley or byron, decimalValue is equal for both cases.
-        Blockchain.cardano(shelley: true).decimalValue
-    }
 
     init() {}
 }
@@ -57,16 +53,18 @@ extension CardanoTransactionBuilder {
         let publicKey = signature.publicKey + Data(count: 32 * 3)
         publicKeys.add(data: publicKey)
 
-        let compileWithSignatures = TransactionCompiler.compileWithSignatures(
+        let compileWithSignatures = TransactionCompiler.compileWithSignaturesAndPubKeyType(
             coinType: coinType,
             txInputData: txInputData,
             signatures: signatures,
-            publicKeys: publicKeys
+            publicKeys: publicKeys,
+            pubKeyType: .ed25519
         )
 
         let output = try CardanoSigningOutput(serializedData: compileWithSignatures)
 
         if output.error != .ok {
+            print("CardanoSigningOutput has a error: \(output.errorMessage)")
             throw WalletError.failedToBuildTx
         }
         
@@ -79,13 +77,13 @@ extension CardanoTransactionBuilder {
 
     func estimatedFee(transaction: Transaction) throws -> Decimal {
         var input = try buildCardanoSigningInput(transaction: transaction)
-        input.plan = AnySigner.plan(input: input, coin: coinType)
-
         return Decimal(input.plan.fee)
     }
 
     func buildCardanoSigningInput(transaction: Transaction) throws -> CardanoSigningInput {
+        let decimalValue = pow(10, transaction.amount.decimals)
         let uint64Amount = (transaction.amount.value * decimalValue).roundedDecimalNumber.uint64Value
+
         var input = CardanoSigningInput.with {
             $0.transferMessage.toAddress = transaction.destinationAddress
             $0.transferMessage.changeAddress = transaction.changeAddress
@@ -100,31 +98,6 @@ extension CardanoTransactionBuilder {
 
         if outputs.isEmpty {
             throw CardanoError.noUnspents
-        }
-        
-        switch transaction.amount.type {
-        case .token(let token):
-            var toTokenBundle = CardanoTokenBundle()
-            let toToken = CardanoTokenAmount.with {
-                $0.policyID = token.contractAddress // "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
-                $0.assetName = token.symbol // "SUNDAE"
-                $0.amount = BigUInt(uint64Amount).serialize() // Data(hexString: "01312d00")! // 20000000
-            }
-            
-            toTokenBundle.token.append(toToken)
-            
-            // check min ADA amount, set it
-            let inputTokenAmountSerialized = try toTokenBundle.serializedData()
-            let minAmount = CardanoMinAdaAmount(tokenBundle: inputTokenAmountSerialized)
-            
-            // We should set minAmount because main amount in utxo must not be empty
-            input.transferMessage.amount = minAmount
-            input.transferMessage.tokenAmount = toTokenBundle
-        case .coin:
-            // For coin just set amount which will be sent
-              input.transferMessage.amount = uint64Amount
-        case .reserve:
-            throw WalletError.empty
         }
 
         input.utxos = outputs.map { output -> CardanoTxInput in
@@ -145,12 +118,39 @@ extension CardanoTransactionBuilder {
                 }
             }
         }
-
-        let minChange = (1 * decimalValue).uint64Value
-        let acceptableChangeRange: ClosedRange<UInt64> = 1 ... minChange
-
-        if acceptableChangeRange.contains(input.plan.change) {
-            throw CardanoError.lowAda
+        
+        input.plan = AnySigner.plan(input: input, coin: coinType)
+        
+        switch transaction.amount.type {
+        case .token(let token):
+            var toTokenBundle = CardanoTokenBundle()
+            let toToken = CardanoTokenAmount.with {
+                $0.policyID = token.contractAddress // "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
+                $0.assetName = token.symbol // "SUNDAE"
+                $0.amount = BigUInt(uint64Amount).serialize() // Data(hexString: "01312d00")! // 20000000
+            }
+            
+            toTokenBundle.token.append(toToken)
+            
+            // check min ADA amount, set it
+            let inputTokenAmountSerialized = try toTokenBundle.serializedData()
+            let minAmount = CardanoMinAdaAmount(tokenBundle: inputTokenAmountSerialized)
+            
+            // We should set minAmount because main amount in utxo must not be empty
+            input.transferMessage.amount = minAmount
+            input.transferMessage.tokenAmount = toTokenBundle
+        case .coin:
+            let minChange = (1 * decimalValue).uint64Value
+            let acceptableChangeRange: ClosedRange<UInt64> = 1 ... minChange
+            
+            if acceptableChangeRange.contains(input.plan.change) {
+                throw CardanoError.lowAda
+            }
+            
+            // For coin just set amount which will be sent
+              input.transferMessage.amount = uint64Amount
+        case .reserve:
+            throw WalletError.empty
         }
 
         return input

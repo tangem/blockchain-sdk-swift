@@ -73,28 +73,24 @@ extension CardanoWalletManager: TransactionSender {
                     guard let self else {
                         return .anyFail(error: WalletError.empty)
                     }
-//                    print("dataForSign ->>", dataForSign.hexString)
+                    print("dataForSign ->>", dataForSign.hexString)
                     
-                    return .justWithError(output: Data()) // signer.sign(hash: dataForSign, walletPublicKey: self.wallet.publicKey)
+                    return signer.sign(hash: dataForSign, walletPublicKey: self.wallet.publicKey)
                 }
                 .tryMap { [weak self] signature -> Data in
                     guard let self else {
                         throw WalletError.empty
                     }
 
-//                    let signature = Data(hexString:"3bc9667cbcae52b03b4494bc331ff7c98d426998916ba1ee8e4cbdfddb3eca31098737c7d9fa04f6720188441ae58b59f1c04259a00abfffc8393da5333c1a04")
-//                    let publicKey = Data(hexString: "d163c8c4f0be7c22cd3a1152abb013c855ea614b92201497a568c5d93ceeb41ea7f484aa383806735c46fd769c679ee41f8952952036a6e2338ada940b8a91f40b5aaa6103dc10842894a1eeefc5447b9bcb9bcf227d77e57be195d17bc03263d46f19d0fbf75afb0b9a24e31d533f4fd74cee3b56e162568e8defe37123afc4")
-//                    let signatureInfo = SignatureInfo(signature: signature, publicKey: publicKey)
-                    return  Data() // try self.transactionBuilder.buildForSend(transaction: transaction, signature: signatureInfo)
+                    let signatureInfo = SignatureInfo(signature: signature, publicKey: wallet.publicKey.blockchainKey)
+                    return try self.transactionBuilder.buildForSend(transaction: transaction, signature: signatureInfo)
                 }
                 .flatMap { [weak self] builtTransaction -> AnyPublisher<String, Error> in
                     guard let self else {
                         return .anyFail(error: WalletError.empty)
                     }
-                    
-                    let builtTransaction = Data(hex: "83a400828258208316e5007d61fb90652cabb41141972a38b5bc60954d602cf843476aa3f67f6300825820e29392c59c903fefb905730587d22cae8bda30bd8d9aeec3eca082ae77675946000182825839015fcbab3d70db82b3b9da5686d1ff51c83b97e032e52bd45a6ce6fe7908ec32633484b152fa756444e5fc62128210bc1fd7b8253ec5490b281a002dc6c082583901a9426fe0cee6d01d1fe32af650e1e7b5d52c35d8a53218f3d0861531621c2b1ebdf4f11f96da67fdcb0e1d97a7e778566166be55f193c30f1a000f9ec1021a0002b0bf031a0b532b80a20081825820d163c8c4f0be7c22cd3a1152abb013c855ea614b92201497a568c5d93ceeb41e58406a23ab9267867fbf021c1cb2232bc83d2cdd663d651d22d59b6cddbca5cb106d4db99da50672f69a2309ca8a329a3f9576438afe4538b013de4591a6dfcd4d090281845820d163c8c4f0be7c22cd3a1152abb013c855ea614b92201497a568c5d93ceeb41e58406a23ab9267867fbf021c1cb2232bc83d2cdd663d651d22d59b6cddbca5cb106d4db99da50672f69a2309ca8a329a3f9576438afe4538b013de4591a6dfcd4d095820a7f484aa383806735c46fd769c679ee41f8952952036a6e2338ada940b8a91f441a0f6")
-                    // 
-//                    print("builtTransaction.hex ->> ", builtTransaction.hex)
+
+                    print("builtTransaction.hex ->> ", builtTransaction.hex)
 
                     return self.networkService.send(transaction: builtTransaction)
                         .mapError { SendTxError(error: $0, tx: builtTransaction.hex) }
