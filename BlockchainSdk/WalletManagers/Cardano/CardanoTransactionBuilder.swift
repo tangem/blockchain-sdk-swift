@@ -48,15 +48,13 @@ extension CardanoTransactionBuilder {
         signatures.add(data: signature.signature)
         
         let publicKeys = DataVector()
-        publicKeys.add(data: signature.publicKey)
+        publicKeys.add(data: signature.publicKey.aligned(to: 128)) // extend public key
 
-        
-        let compileWithSignatures = TransactionCompiler.compileWithSignaturesAndPubKeyType(
+        let compileWithSignatures = TransactionCompiler.compileWithSignatures(
             coinType: coinType,
             txInputData: txInputData,
             signatures: signatures,
-            publicKeys: publicKeys,
-            pubKeyType: .ed25519
+            publicKeys: publicKeys
         )
 
         let output = try CardanoSigningOutput(serializedData: compileWithSignatures)
@@ -73,7 +71,9 @@ extension CardanoTransactionBuilder {
     }
 
     func estimatedFee(transaction: Transaction) throws -> Decimal {
-        let input = try buildCardanoSigningInput(transaction: transaction)
+        var input = try buildCardanoSigningInput(transaction: transaction)
+        input.plan = AnySigner.plan(input: input, coin: coinType)
+
         return Decimal(input.plan.fee)
     }
 
@@ -105,10 +105,10 @@ extension CardanoTransactionBuilder {
             }
         }
 
-        input.plan = AnySigner.plan(input: input, coin: coinType)
+        let minChange = (1 * decimalValue).uint64Value
+        let acceptableChangeRange: ClosedRange<UInt64> = 1 ... minChange
 
-        let minChange = 1 * decimalValue
-        if input.plan.change <= minChange.uint64Value {
+        if acceptableChangeRange.contains(input.plan.change) {
             throw CardanoError.lowAda
         }
 
