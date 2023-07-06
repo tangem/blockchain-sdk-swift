@@ -55,7 +55,7 @@ Use BlockchainSdk for Tangem wallet integration
   s.dependency 'AnyCodable-FlightSchool'
   s.dependency 'BitcoinCore.swift'
   s.dependency 'Solana.Swift'
-  s.dependency 'ScaleCodec'
+  s.dependency 'ScaleCodec', '0.2.1'
   s.dependency 'SwiftProtobuf'
   s.dependency 'TangemWalletCore'
 
