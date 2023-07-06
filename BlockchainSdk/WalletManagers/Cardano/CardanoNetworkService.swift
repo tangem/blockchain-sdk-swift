@@ -10,7 +10,7 @@ import Foundation
 import Combine
 
 protocol CardanoNetworkProvider: HostProvider {
-    func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error>
+    func getInfo(addresses: [String], tokens: [Token]) -> AnyPublisher<CardanoAddressResponse, Error>
     func send(transaction: Data) -> AnyPublisher<String, Error>
 }
 
@@ -29,8 +29,8 @@ class AnyCardanoNetworkProvider: CardanoNetworkProvider {
         self.provider = provider
     }
     
-    func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
-        provider.getInfo(addresses: addresses)
+    func getInfo(addresses: [String], tokens: [Token]) -> AnyPublisher<CardanoAddressResponse, Error> {
+        provider.getInfo(addresses: addresses, tokens: tokens)
     }
     
     func send(transaction: Data) -> AnyPublisher<String, Error> {
@@ -46,8 +46,8 @@ class CardanoNetworkService: MultiNetworkProvider, CardanoNetworkProvider {
         self.providers = providers
     }
     
-    func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
-        providerPublisher { $0.getInfo(addresses: addresses) }
+    func getInfo(addresses: [String], tokens: [Token]) -> AnyPublisher<CardanoAddressResponse, Error> {
+        providerPublisher { $0.getInfo(addresses: addresses, tokens: tokens) }
     }
     
     func send(transaction: Data) -> AnyPublisher<String, Error> {
@@ -57,6 +57,7 @@ class CardanoNetworkService: MultiNetworkProvider, CardanoNetworkProvider {
 
 public struct CardanoAddressResponse {
     let balance: Decimal
+    let tokenBalances: [Token: Decimal]
     let recentTransactionsHashes: [String]
     let unspentOutputs: [CardanoUnspentOutput]
 }
@@ -66,4 +67,13 @@ public struct CardanoUnspentOutput {
     let amount: Decimal
     let outputIndex: Int
     let transactionHash: String
+    let assets: [Asset]
+}
+
+extension CardanoUnspentOutput {
+    struct Asset {
+        let policyID: String
+        let assetName: String
+        let amount: Int
+    }
 }

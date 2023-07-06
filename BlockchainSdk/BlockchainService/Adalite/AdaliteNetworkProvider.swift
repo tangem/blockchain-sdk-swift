@@ -31,7 +31,7 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
             .eraseError()
     }
     
-    func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
+    func getInfo(addresses: [String], tokens: [Token]) -> AnyPublisher<CardanoAddressResponse, Error> {
         getUnspents(addresses: addresses)
             .flatMap {[weak self] unspents -> AnyPublisher<CardanoAddressResponse, Error> in
                 guard let self = self else { return .emptyFail }
@@ -43,7 +43,7 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
                         var balance = unspents.reduce(0, { $0 + $1.amount })
                         balance /= Blockchain.cardano(shelley: false).decimalValue
                         let txHashes = balanceResponse.reduce([], { $0 + $1.transactions })
-                        return CardanoAddressResponse(balance: balance, recentTransactionsHashes: txHashes, unspentOutputs: unspents)
+                        return CardanoAddressResponse(balance: balance, tokenBalances: [:], recentTransactionsHashes: txHashes, unspentOutputs: unspents)
                     }
                     .eraseToAnyPublisher()
             }
@@ -74,7 +74,8 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
                     return CardanoUnspentOutput(address: output.cuAddress,
                                                 amount: amount,
                                                 outputIndex: output.cuOutIndex,
-                                                transactionHash: output.cuId)
+                                                transactionHash: output.cuId,
+                                                assets: [])
                 }
             }
             .eraseToAnyPublisher()

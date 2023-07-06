@@ -8,6 +8,7 @@
 
 import Foundation
 import WalletCore
+import BigInt
 
 // You can decode your CBOR transaction here: https://cbor.me
 class CardanoTransactionBuilder {
@@ -84,11 +85,10 @@ extension CardanoTransactionBuilder {
     }
 
     func buildCardanoSigningInput(transaction: Transaction) throws -> CardanoSigningInput {
-        let amount = transaction.amount.value * decimalValue
+        let uint64Amount = (transaction.amount.value * decimalValue).roundedDecimalNumber.uint64Value
         var input = CardanoSigningInput.with {
             $0.transferMessage.toAddress = transaction.destinationAddress
             $0.transferMessage.changeAddress = transaction.changeAddress
-            $0.transferMessage.amount = amount.roundedDecimalNumber.uint64Value
             $0.transferMessage.useMaxAmount = false
             // Transaction validity time. Currently we are using absolute values.
             // At 16 April 2023 was 90007700 slot number.
@@ -101,6 +101,31 @@ extension CardanoTransactionBuilder {
         if outputs.isEmpty {
             throw CardanoError.noUnspents
         }
+        
+        switch transaction.amount.type {
+        case .token(let token):
+            var toTokenBundle = CardanoTokenBundle()
+            let toToken = CardanoTokenAmount.with {
+                $0.policyID = token.contractAddress // "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
+                $0.assetName = token.symbol // "SUNDAE"
+                $0.amount = BigUInt(uint64Amount).serialize() // Data(hexString: "01312d00")! // 20000000
+            }
+            
+            toTokenBundle.token.append(toToken)
+            
+            // check min ADA amount, set it
+            let inputTokenAmountSerialized = try toTokenBundle.serializedData()
+            let minAmount = CardanoMinAdaAmount(tokenBundle: inputTokenAmountSerialized)
+            
+            // We should set minAmount because main amount in utxo must not be empty
+            input.transferMessage.amount = minAmount
+            input.transferMessage.tokenAmount = toTokenBundle
+        case .coin:
+            // For coin just set amount which will be sent
+              input.transferMessage.amount = uint64Amount
+        case .reserve:
+            throw WalletError.empty
+        }
 
         input.utxos = outputs.map { output -> CardanoTxInput in
             CardanoTxInput.with {
@@ -108,6 +133,16 @@ extension CardanoTransactionBuilder {
                 $0.outPoint.outputIndex = UInt64(output.outputIndex)
                 $0.address = output.address
                 $0.amount = output.amount.roundedDecimalNumber.uint64Value
+                
+                if !output.assets.isEmpty {
+                    $0.tokenAmount = output.assets.map { asset in
+                        CardanoTokenAmount.with {
+                            $0.policyID = asset.policyID // "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
+                            $0.assetName = asset.assetName // "CUBY"
+                            $0.amount = BigInt(asset.amount).serialize() //  Data(hexString: "2dc6c0")! // 3000000
+                        }
+                    }
+                }
             }
         }
 

@@ -31,7 +31,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
         provider = NetworkProvider<RosettaTarget>(configuration: configuration)
     }
     
-    func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
+    func getInfo(addresses: [String], tokens: [Token]) -> AnyPublisher<CardanoAddressResponse, Error> {
         typealias Response = (coins: RosettaCoinsResponse, address: String)
         
         return AnyPublisher<Response, Error>.multiAddressPublisher(addresses: addresses) { [weak self] address -> AnyPublisher<Response, Error> in
@@ -53,11 +53,25 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
             }
 
             // We should calculate the balance from outputs
-            // Because they don't contain tokens
-            var balance = unspentOutputs.reduce(0) { $0 + $1.amount }
-            balance = balance / Blockchain.cardano(shelley: false).decimalValue
+            // If we will use balance from response it'll be contains token amounts
+            var coinBalance: Decimal = 0
+            var tokenBalances: [Token: Decimal] = [:]
+
+            unspentOutputs.forEach { output in
+                coinBalance += output.amount / Blockchain.cardano(shelley: false).decimalValue
+                let reducedTokenBalances: [Token: Decimal] = output.assets.reduce(into: [:]) { result, asset in
+                    
+                    if let token = tokens.first(where: { $0.contractAddress == asset.policyID }) {
+                        result[token] = (result[token] ?? 0) + (Decimal(asset.amount) / token.decimalValue)
+                    }
+                }
+
+                reducedTokenBalances.forEach { key, value in
+                    tokenBalances[key] = (tokenBalances[key] ?? 0) + value
+                }
+            }
             
-            return CardanoAddressResponse(balance: balance, recentTransactionsHashes: [], unspentOutputs: unspentOutputs)
+            return CardanoAddressResponse(balance: coinBalance, tokenBalances: tokenBalances, recentTransactionsHashes: [], unspentOutputs: unspentOutputs)
         }
         .eraseToAnyPublisher()
     }
@@ -96,22 +110,85 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     }
     
     private func mapToCardanoUnspentOutput(response: RosettaCoinsResponse, address: String) -> [CardanoUnspentOutput] {
-        let coins = response.coins ?? []
+        guard let coins = response.coins else {
+            return []
+        }
+
         let outputs: [CardanoUnspentOutput] = coins.compactMap { coin -> CardanoUnspentOutput? in
-            guard coin.amount?.currency?.symbol == cardanoCurrencySymbol,
-                  coin.metadata == nil, // filter tokens while we don't support them
-                  let splittedIdentifier = coin.coinIdentifier?.identifier?.split(separator: ":"),
-                  splittedIdentifier.count == 2,
-                  let index = Int(splittedIdentifier[1]) else {
+            // It should be always true, but someone added this check
+            // I'll leave like exist
+            guard coin.amount?.currency?.symbol == cardanoCurrencySymbol else {
                 return nil
             }
             
-            return CardanoUnspentOutput(address: address,
-                                        amount: Decimal(coin.amount?.value) ?? 0,
-                                        outputIndex: index,
-                                        transactionHash: String(splittedIdentifier[0]))
+            guard let (index, hash) = parseIdentifier(coin.coinIdentifier?.identifier),
+                  let amountValue = coin.amount?.value,
+                  let amount = Decimal(amountValue) else {
+                return nil
+            }
+
+            let assets = mapToAssets(metadata: coin.metadata)
+            return CardanoUnspentOutput(
+                address: address,
+                amount: amount,
+                outputIndex: index,
+                transactionHash: hash,
+                assets: assets
+            )
         }
 
         return outputs
+    }
+    
+    /// We receive every identifier in format
+    /// `482d88eb2d3b40b8a4e6bb8545cef842a5703e8f9eab9e3caca5c2edd1f31a7f:0`
+    /// When the first part is transactionHash
+    /// And the second path is outputIndex
+    func parseIdentifier(_ identifier: String?) -> (index: Int, hash: String)? {
+        guard let splittedIdentifier = identifier?.split(separator: ":"), splittedIdentifier.count == 2 else {
+            return nil
+        }
+        
+        guard let index = Int(splittedIdentifier[1])else {
+            return nil
+        }
+        
+        return (index: index, hash: String(splittedIdentifier[0]))
+    }
+        
+    func mapToAssets(metadata: [String: [RosettaMetadataValue]]?) -> [CardanoUnspentOutput.Asset] {
+        guard let metadata = metadata else {
+            return []
+        }
+        
+        let assets = metadata.values.reduce([]) { result, values -> [CardanoUnspentOutput.Asset] in
+            let tokens = values.reduce([]) { result, value -> [CardanoUnspentOutput.Asset] in
+                    guard let tokens = value.tokens else {
+                        return result
+                    }
+
+                    return result + tokens.compactMap { tokenValue in
+                        guard let amount = Int(tokenValue.value ?? ""),
+                              // symbol in ASCII HEX, e.g. 41474958 = AGIX
+                              let hexSymbol = tokenValue.currency?.symbol,
+                              let policyId = tokenValue.currency?.metadata?.policyId else {
+                            return nil
+                        }
+                        
+                        let symbolData = Data(hexString: hexSymbol)
+
+                        guard let assetName = String(bytes: symbolData, encoding: .ascii) else {
+                            return nil
+                        }
+                        
+                        return CardanoUnspentOutput.Asset(policyID: policyId, assetName: assetName, amount: amount)
+                    }
+                }
+            
+            
+            return result + tokens
+        }
+        
+        return assets
     }
 }
