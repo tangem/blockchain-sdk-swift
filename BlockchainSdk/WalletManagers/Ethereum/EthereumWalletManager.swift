@@ -29,6 +29,20 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable {
     func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
         getFee(to: destination, from: wallet.address, value: value, data: data)
     }
+
+    override func update(completion: @escaping (Result<Void, Error>)-> Void) {
+        cancellable = networkService
+            .getInfo(address: wallet.address, tokens: cardTokens)
+            .sink(receiveCompletion: {[unowned self] completionSubscription in
+                if case let .failure(error) = completionSubscription {
+                    self.wallet.amounts = [:]
+                    completion(.failure(error))
+                }
+            }, receiveValue: { [unowned self] response in
+                self.updateWallet(with: response)
+                completion(.success(()))
+            })
+    }
 }
 
 // MARK: - EthereumTransactionSigner
@@ -70,24 +84,6 @@ extension EthereumWalletManager: EthereumNetworkProvider {
     
     func getPendingTxCount(_ address: String) -> AnyPublisher<Int, Error> {
         networkService.getPendingTxCount(address)
-    }
-}
-
-// MARK: - WalletManager
-
-extension EthereumWalletManager {
-    func update(completion: @escaping (Result<Void, Error>)-> Void) {
-        cancellable = networkService
-            .getInfo(address: wallet.address, tokens: cardTokens)
-            .sink(receiveCompletion: {[unowned self] completionSubscription in
-                if case let .failure(error) = completionSubscription {
-                    self.wallet.amounts = [:]
-                    completion(.failure(error))
-                }
-            }, receiveValue: { [unowned self] response in
-                self.updateWallet(with: response)
-                completion(.success(()))
-            })
     }
 }
 

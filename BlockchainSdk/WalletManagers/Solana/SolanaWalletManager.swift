@@ -16,7 +16,7 @@ class SolanaWalletManager: BaseManager, WalletManager {
     
     var currentHost: String { networkService.host }
     
-    func update(completion: @escaping (Result<(), Error>) -> Void) {
+    override func update(completion: @escaping (Result<(), Error>) -> Void) {
         let transactionIDs = wallet.transactions.compactMap { $0.hash }
         
         cancellable = networkService.getInfo(accountId: wallet.address, transactionIDs: transactionIDs)

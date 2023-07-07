@@ -25,7 +25,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
         super.init(wallet: wallet)
     }
     
-    func update(completion: @escaping (Result<Void, Error>) -> Void) {
+    override func update(completion: @escaping (Result<Void, Error>) -> Void) {
         let transactionHashes = wallet.transactions
             .filter { $0.status == .unconfirmed }
             .compactMap { $0.hash }

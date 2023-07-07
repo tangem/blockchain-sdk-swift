@@ -24,7 +24,7 @@ class TronWalletManager: BaseManager, WalletManager {
     
     private let feeSigner = DummySigner()
     
-    func update(completion: @escaping (Result<Void, Error>) -> Void) {
+    override func update(completion: @escaping (Result<Void, Error>) -> Void) {
         let transactionIDs = wallet.transactions
             .filter { $0.status == .unconfirmed }
             .compactMap { $0.hash }
