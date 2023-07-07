@@ -48,18 +48,19 @@ extension CardanoTransactionBuilder {
         signatures.add(data: signature.signature)
         
         let publicKeys = DataVector()
-        publicKeys.add(data: signature.publicKey)
+        
+        // WalletCore used here `.ed25519Cardano` curve with 128 bytes publicKey.
+        // Calculated as: chainCode + secondPubKey + chainCode
+        // The number of bytes in a Cardano public key (two ed25519 public key + chain code).
+        // We should add dummy chain code in publicKey
+        let publicKey = signature.publicKey + Data(count: 32 * 3)
+        publicKeys.add(data: publicKey)
 
-        let compileWithSignatures = TransactionCompiler.compileWithSignaturesAndPubKeyType(
+        let compileWithSignatures = TransactionCompiler.compileWithSignatures(
             coinType: coinType,
             txInputData: txInputData,
             signatures: signatures,
-            publicKeys: publicKeys,
-            // WalletCore used here `.ed25519Cardano` curve with 128 bytes publicKey.
-            // Unfortunately our cards support only usual ed25519 curve
-            // And we can't use this expanded curve here.
-            pubKeyType: .ed25519
-            
+            publicKeys: publicKeys
         )
 
         let output = try CardanoSigningOutput(serializedData: compileWithSignatures)

@@ -310,7 +310,6 @@
 		EF32FED92A38A04E002ED43F /* AddressServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FED82A38A04E002ED43F /* AddressServiceFactory.swift */; };
 		EF32FEDB2A38C288002ED43F /* BitcoinScriptAddressProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FEDA2A38C288002ED43F /* BitcoinScriptAddressProvider.swift */; };
 		EF32FEE02A38D43A002ED43F /* BitcoinScriptAddressesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FEDD2A38D015002ED43F /* BitcoinScriptAddressesProvider.swift */; };
-		EF32FEE32A3B626E002ED43F /* CardanoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FEE22A3B626E002ED43F /* CardanoTests.swift */; };
 		EF332D17288EACB000AE3C85 /* HostProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D16288EACB000AE3C85 /* HostProvider.swift */; };
 		EF332D19288EAEAC00AE3C85 /* NetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D18288EAEAC00AE3C85 /* NetworkProvider.swift */; };
 		EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */; };
@@ -335,6 +334,7 @@
 		EF9F9086299F88D1006F638F /* EthereumWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9F9085299F88D1006F638F /* EthereumWalletManager.swift */; };
 		EF9F9088299F8B70006F638F /* ETHError.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9F9087299F8B70006F638F /* ETHError.swift */; };
 		EFBA17FE2988623F00C23955 /* TransactionSendResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */; };
+		EFCD1D192A586BEF009C8624 /* CardanoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FEE22A3B626E002ED43F /* CardanoTests.swift */; };
 		EFD32AE429E9B7800026353E /* RavencoinTransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD32AE329E9B7800026353E /* RavencoinTransactionHistory.swift */; };
 		EFD717B82A24B20700E5430D /* OptimismContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF5BA8329B881440070694A /* OptimismContract.swift */; };
 		EFD717CA2A25EA8500E5430D /* WalletCoreABIEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717C92A25EA8500E5430D /* WalletCoreABIEncoder.swift */; };
@@ -2468,7 +2468,7 @@
 				DA63B08D29CB3FAF00AC6E49 /* KaspaTests.swift in Sources */,
 				2DBBE95029C8DBEA00971539 /* TONTests.swift in Sources */,
 				2D535E782A0CC5E50081EB76 /* KeysServiceManagerUtility.swift in Sources */,
-				EF32FEE32A3B626E002ED43F /* CardanoTests.swift in Sources */,
+				EFCD1D192A586BEF009C8624 /* CardanoTests.swift in Sources */,
 				2D535E872A0CC5FA0081EB76 /* AddressesValidationTests.swift in Sources */,
 				EF0DA78928523FAC0081092A /* LitecoinTests.swift in Sources */,
 				EF0DA78828523FAC0081092A /* BitcoinTests.swift in Sources */,
