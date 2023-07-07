@@ -63,9 +63,9 @@ class BaseManager: WalletProvider {
 
             switch result {
             case .success:
-                didFinishUpdating(error: nil)
+                self.didFinishUpdating(error: nil)
             case .failure(let error):
-                didFinishUpdating(error: error)
+                self.didFinishUpdating(error: error)
             }
         }
     }
