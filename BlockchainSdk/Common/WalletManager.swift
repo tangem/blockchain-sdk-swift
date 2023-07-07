@@ -51,6 +51,7 @@ public enum WalletManagerState {
 public protocol WalletProvider: AnyObject {
     var wallet: Wallet { get set }
     var walletPublisher: AnyPublisher<Wallet, Never> { get }
+    var statePublisher: AnyPublisher<WalletManagerState, Never> { get }
 }
 
 public protocol BlockchainDataProvider {

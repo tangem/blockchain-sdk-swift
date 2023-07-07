@@ -24,6 +24,7 @@ class BaseManager: WalletProvider {
     var cancellable: Cancellable? = nil
 
     var walletPublisher: AnyPublisher<Wallet, Never> { _wallet.eraseToAnyPublisher() }
+    var statePublisher: AnyPublisher<WalletManagerState, Never> { state.eraseToAnyPublisher() }
 
     private var latestUpdateTime: Date?
 

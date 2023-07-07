@@ -91,6 +91,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     private let tokenDecimalPlacesKey = "tokenDecimalPlaces"
     
     private var bag: Set<AnyCancellable> = []
+    private var walletManagerBag: Set<AnyCancellable> = []
 
     
     init() {
@@ -239,37 +240,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     
     func updateBalance() {
         balance = "--"
-        
-        walletManager?.update { [weak self] result in
-            let balanceDescription: String
-            switch result {
-            case .failure(let error):
-                Log.error(error)
-                balanceDescription = error.localizedDescription
-            case .success:
-                var balances: [String] = []
-                if let balance = self?.walletManager?.wallet.amounts[.coin]?.description {
-                    balances = [balance]
-                } else {
-                    balances = ["--"]
-                }
-            
-                let tokens = self?.walletManager?.cardTokens ?? []
-                for token in tokens {
-                    if let tokenAmount = self?.walletManager?.wallet.amounts[.token(value: token)] {
-                        balances.append(tokenAmount.description)
-                    } else {
-                        balances.append("--- \(token.symbol)")
-                    }
-                }
-                
-                balanceDescription = balances.joined(separator: "\n")
-            }
-         
-            DispatchQueue.main.async {
-                self?.balance = balanceDescription
-            }
-        }   
+        walletManager?.update()
     }
     
     func copySourceAddressToClipboard(_ sourceAddress: Address) {
@@ -384,7 +355,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         self.feeDescriptions = []
         self.transactionResult = "--"
         self.balance = "--"
-        
+        self.walletManagerBag.removeAll()
+
         guard
             let card = card,
             let blockchain = blockchain,
@@ -403,6 +375,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             }
             
             self.walletManager = walletManager
+            self.bindWalletManager(walletManager)
             self.sourceAddresses = walletManager.wallet.addresses
             if let enteredToken = enteredToken {
                 walletManager.addToken(enteredToken)
@@ -411,6 +384,38 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         } catch {
             Log.error(error)
         }
+    }
+
+    private func bindWalletManager(_ walletManager: WalletManager) {
+        walletManager
+            .statePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] state in
+                switch state {
+                case .failed(let error):
+                    Log.error(error)
+                    self?.balance = error.localizedDescription
+                case .initial, .loaded, .loading:
+                    var balances: [String] = []
+                    if let balance = self?.walletManager?.wallet.amounts[.coin]?.description {
+                        balances = [balance]
+                    } else {
+                        balances = ["--"]
+                    }
+
+                    let tokens = self?.walletManager?.cardTokens ?? []
+                    for token in tokens {
+                        if let tokenAmount = self?.walletManager?.wallet.amounts[.token(value: token)] {
+                            balances.append(tokenAmount.description)
+                        } else {
+                            balances.append("--- \(token.symbol)")
+                        }
+                    }
+
+                    self?.balance = balances.joined(separator: "\n")
+                }
+            }
+            .store(in: &walletManagerBag)
     }
     
     private func createWalletManager(blockchain: Blockchain, wallet: Card.Wallet) throws -> WalletManager {
