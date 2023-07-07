@@ -129,18 +129,18 @@ private extension EthereumWalletManager {
         // TODO: This should be removed when integrating transaction history for all blockchains
         // If we can load transaction history for specified blockchain - we can ignore loading pending txs
         if !wallet.blockchain.canLoadTransactionHistory {
-            if !response.pendingTxs.isEmpty {
+            if txCount == pendingTxCount {
+                for index in wallet.transactions.indices {
+                    wallet.transactions[index].status = .confirmed
+                }
+            } else if response.pendingTxs.isEmpty {
+                if wallet.transactions.isEmpty {
+                    wallet.addDummyPendingTransaction()
+                }
+            } else {
                 wallet.transactions.removeAll()
                 response.pendingTxs.forEach {
                     wallet.addPendingTransaction($0)
-                }
-            } else if txCount == pendingTxCount {
-                for  index in wallet.transactions.indices {
-                    wallet.transactions[index].status = .confirmed
-                }
-            } else {
-                if wallet.transactions.isEmpty {
-                    wallet.addDummyPendingTransaction()
                 }
             }
         }
