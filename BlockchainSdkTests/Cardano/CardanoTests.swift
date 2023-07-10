@@ -37,11 +37,13 @@ class CardanoTests: XCTestCase {
             CardanoUnspentOutput(address: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn",
                                  amount: 2500000,
                                  outputIndex: 0,
-                                 transactionHash: "1992f01dfd9a94d7a2896617a96b3deb5f007ca32e8860e7c1720714ae6a17e5"),
+                                 transactionHash: "1992f01dfd9a94d7a2896617a96b3deb5f007ca32e8860e7c1720714ae6a17e5",
+                                 assets: []),
             CardanoUnspentOutput(address: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn",
                                  amount: 1450000,
                                  outputIndex: 0,
-                                 transactionHash: "2a14228eb7d7ac30ed019ec139f0120e4538fb3f6d52dd97c8d416468ef87c24"),
+                                 transactionHash: "2a14228eb7d7ac30ed019ec139f0120e4538fb3f6d52dd97c8d416468ef87c24",
+                                 assets: []),
         ]
 
         transactionBuilder.update(outputs: utxos)
@@ -79,11 +81,13 @@ class CardanoTests: XCTestCase {
             CardanoUnspentOutput(address: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn",
                                  amount: 1981037,
                                  outputIndex: 1,
-                                 transactionHash: "db2306d819d848f67f70ab898028d9827e5d1fccc7033531534fdd39e93a796e"),
+                                 transactionHash: "db2306d819d848f67f70ab898028d9827e5d1fccc7033531534fdd39e93a796e",
+                                 assets: []),
             CardanoUnspentOutput(address: "Ae2tdPwUPEZH7acU3Qm7L8HdDmw3fGMZ4Gg1wzfB9AMQH2nEgmjtSCWbFsJ",
                                  amount: 1300000,
                                  outputIndex: 0,
-                                 transactionHash: "848c0861a3dc02a806d71cb35de83ffbc2a8553d161e2449c37572d7c2de44a7"),
+                                 transactionHash: "848c0861a3dc02a806d71cb35de83ffbc2a8553d161e2449c37572d7c2de44a7",
+                                 assets: []),
         ]
         
         transactionBuilder.update(outputs: utxos)
