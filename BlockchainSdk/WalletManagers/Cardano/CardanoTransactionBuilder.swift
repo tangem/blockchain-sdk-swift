@@ -53,12 +53,11 @@ extension CardanoTransactionBuilder {
         let publicKey = signature.publicKey + Data(count: 32 * 3)
         publicKeys.add(data: publicKey)
 
-        let compileWithSignatures = TransactionCompiler.compileWithSignaturesAndPubKeyType(
+        let compileWithSignatures = TransactionCompiler.compileWithSignatures(
             coinType: coinType,
             txInputData: txInputData,
             signatures: signatures,
-            publicKeys: publicKeys,
-            pubKeyType: .ed25519
+            publicKeys: publicKeys
         )
 
         let output = try CardanoSigningOutput(serializedData: compileWithSignatures)
