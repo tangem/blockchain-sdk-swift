@@ -90,6 +90,11 @@ extension CardanoAddressService: AddressProvider {
 
         switch addressType {
         case .default:
+            if !shelley {
+                let byron =  makeByronAddress(from: publicKey.blockchainKey)
+                return PlainAddress(value: byron, publicKey: publicKey, type: addressType)
+            }
+            
             let shelley = makeShelleyAddress(from: publicKey.blockchainKey)
             return PlainAddress(value: shelley, publicKey: publicKey, type: addressType)
         case .legacy:
