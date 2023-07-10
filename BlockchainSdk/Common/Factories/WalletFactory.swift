@@ -21,7 +21,13 @@ public struct WalletFactory {
     /// With one public key
     func makeWallet(publicKey: Wallet.PublicKey) throws -> Wallet {
         // Temporary for get count on addresses
-        let addressTypes: [AddressType] = Array(blockchain.derivationPaths(for: .v2).keys)
+        var addressTypes: [AddressType] = Array(blockchain.derivationPaths(for: .v2).keys)
+        
+        // Hotfix. Will be removed.
+        // addressTypes can not be empty
+        if addressTypes.isEmpty {
+            addressTypes = [.default]
+        }
 
         let addresses: [AddressType: PlainAddress] = try addressTypes.reduce(into: [:]) { result, addressType in
             result[addressType] = try addressProvider.makeAddress(for: publicKey, with: addressType)
