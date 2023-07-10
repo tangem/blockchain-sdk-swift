@@ -24,9 +24,9 @@ public struct WalletFactory {
         var addressTypes: [AddressType] = Array(blockchain.derivationPaths(for: .v2).keys)
         
         // Hotfix. Will be removed.
-        // addressTypes can not be empty
-        if blockchain == .cardano(shelley: false) {
-            addressTypes = [.legacy]
+        // addressTypes can not be empty. Actual only for ADA
+        if addressTypes.isEmpty {
+            addressTypes = [.default]
         }
 
         let addresses: [AddressType: PlainAddress] = try addressTypes.reduce(into: [:]) { result, addressType in
