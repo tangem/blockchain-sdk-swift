@@ -65,7 +65,20 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     return .anyFail(error: WalletError.empty)
                 }
 
-                return signer.sign(hash: hash, walletPublicKey: self.wallet.publicKey)
+                return signer
+                    .sign(hash: hash, walletPublicKey: self.wallet.publicKey)
+                    .tryMap { [weak self] signature -> Data in
+                        guard let self else {
+                            throw WalletError.empty
+                        }
+
+                        return try SignatureUtils.unmarshal(
+                            hash: hash,
+                            signature: signature,
+                            publicKey: self.wallet.publicKey.blockchainKey
+                        )
+                    }
+                    .eraseToAnyPublisher()
             }
             .tryMap { [weak self] signature -> Data in
                 guard let self else {
@@ -143,7 +156,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
 
                 return try self.txBuilder.buildForSend(
                     transaction: transaction,
-                    signature: Data(repeating: 1, count: 64) // Dummy signature
+                    signature: Data(repeating: 1, count: 65) // Dummy signature
                 )
             }
             .tryCatch { _ -> AnyPublisher<Data, Error> in
