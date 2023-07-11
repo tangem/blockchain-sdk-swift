@@ -89,7 +89,6 @@ class WalletCoreSigner: Signer {
     
     private func unmarshal(_ signature: Data, for data: Data) throws -> Data {
         let secpSignature = try Secp256k1Signature(with: signature)
-        let (v, r, s) = try secpSignature.unmarshal(with: publicKey, hash: data)
-        return r + s + v
+        return try secpSignature.unmarshal(with: publicKey, hash: data).data
     }
 }
