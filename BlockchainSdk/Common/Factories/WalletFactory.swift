@@ -24,7 +24,7 @@ public struct WalletFactory {
         var addressTypes: [AddressType] = Array(blockchain.derivationPaths(for: .v2).keys)
         
         // Hotfix. Will be removed.
-        // addressTypes can not be empty
+        // addressTypes can not be empty. Actual only for ADA
         if addressTypes.isEmpty {
             addressTypes = [.default]
         }
