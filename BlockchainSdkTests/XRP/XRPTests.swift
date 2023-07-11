@@ -30,13 +30,19 @@ class XRPTests: XCTestCase {
     func testAcccountIntoTxEncoding() {
         let account = "rrpCDJ3yxMGC1XPfg1iMRVwsg8a8rar4fa"
 
-        let fields: [String:Any] = [
-            "Account" : account
+        let fieldsWithAccount: [String:Any] = [
+            "Account" : account,
         ]
 
-        let tx = XRPTransaction(fields: fields)
-        let blob = tx.getBlob()
-        XCTAssertEqual(blob, "81140050505050505050505050505050505050505050")
+        let blobAccount = XRPTransaction(fields: fieldsWithAccount).getBlob()
+        XCTAssertEqual(blobAccount, "81140050505050505050505050505050505050505050")
+
+        let fieldsWithDestination: [String:Any] = [
+            "Destination" : account,
+        ]
+
+        let blobDestination = XRPTransaction(fields: fieldsWithDestination).getBlob()
+        XCTAssertEqual(blobDestination, "83140050505050505050505050505050505050505050")
     }
 
     func testXAddressEncode() throws {
