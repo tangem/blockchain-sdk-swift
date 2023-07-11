@@ -9,6 +9,7 @@
 import Foundation
 import TangemSdk
 
+/// XRP transactions decoder https://fluxw42.github.io/ripple-tx-decoder/
 class XRPTransactionBuilder {
     var account: String? = nil
     var sequence: Int? = nil
