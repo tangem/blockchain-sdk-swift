@@ -233,9 +233,9 @@ class TronWalletManager: BaseManager, WalletManager {
         
         do {
             let signature = try Secp256k1Signature(with: signatureData)
-            let components = try signature.unmarshal(with: publicKey.blockchainKey, hash: hash)
+            let unmarshalledSignature = try signature.unmarshal(with: publicKey.blockchainKey, hash: hash).data
             
-            return components.r + components.s + components.v
+            return unmarshalledSignature
         } catch {
             Log.error(error)
             return Data()

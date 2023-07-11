@@ -167,15 +167,10 @@ class Serializer {
     }
     
     private func decodeAddress(address: String) -> Data {
-        let _array = [UInt8](XRPBase58.getData(from: address)!)
-        let array = _array.prefix(_array.count-4)
-        
-        //FIXME: base58Decoding
-        if (array[0] == 0 || array[0] == 114) && array.count == 21 {
-            return Data(array.suffix(from: 1))
-        } else {
-            fatalError()
-        }
+        let decodedData = XRPBase58.getData(from: address)!
+        let decodedDataWithoutCheksum = Data(decodedData.dropLast(4))
+        let accountId = decodedDataWithoutCheksum.leadingZeroPadding(toLength: 20)
+        return accountId
     }
     
     private func accountIDToBytes(address: String) -> Data {

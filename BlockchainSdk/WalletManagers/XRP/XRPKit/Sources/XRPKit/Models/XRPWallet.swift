@@ -25,7 +25,7 @@ protocol XRPWallet {
     var publicKey: String {get}
     var address: String {get}
     var accountID: [UInt8] {get}
-    init()
+
     static func deriveAddress(publicKey: String) -> String
     static func accountID(for address: String) ->  [UInt8]
     static func validate(address: String) -> Bool
@@ -52,10 +52,10 @@ extension XRPWallet {
     }
     
     static func accountID(for address: String) ->  [UInt8] {
-        let data = XRPBase58.getData(from: address)!
-        let withoutCheck = data.prefix(data.count-4)
-        let withoutPrefix = withoutCheck.suffix(from: 1)
-        return withoutPrefix.bytes
+        let decodedData = XRPBase58.getData(from: address)!
+        let decodedDataWithoutCheksum = Data(decodedData.dropLast(4))
+        let accountId = decodedDataWithoutCheksum.leadingZeroPadding(toLength: 20)
+        return accountId.bytes
     }
     
     /// Validates a String is a valid XRP address.
@@ -71,12 +71,10 @@ extension XRPWallet {
             return false
         }
         if let _addressData = XRPBase58.getData(from: address) {
-            var addressData = [UInt8](_addressData)
-            // FIXME: base58Decoding
-            addressData[0] = 0
-            let accountID = [UInt8](addressData.prefix(addressData.count-4))
-            let checksum = [UInt8](addressData.suffix(4))
-            let _checksum = [UInt8](Data(accountID).sha256().sha256().prefix(through: 3))
+            let decodedDataWithoutCheksum = Data(_addressData.dropLast(4))
+            let prefixedAccountId = decodedDataWithoutCheksum.leadingZeroPadding(toLength: 21)
+            let checksum = [UInt8](_addressData.suffix(4))
+            let _checksum = [UInt8](prefixedAccountId.sha256().sha256().prefix(4))
             if checksum == _checksum {
                 return true
             }
@@ -86,55 +84,16 @@ extension XRPWallet {
 }
 
 class XRPSeedWallet: XRPWallet {
-
     var privateKey: String
     var publicKey: String
     var seed: String
     var address: String
-    
-    required convenience init() {
-        let entropy = Entropy()
-        self.init(entropy: entropy, type: .secp256k1)
-    }
 
-    convenience init(type: SeedType = .secp256k1) {
-        let entropy = Entropy()
-        self.init(entropy: entropy, type: type)
-    }
-    
     private init(privateKey: String, publicKey: String, seed: String, address: String) {
         self.privateKey = privateKey
         self.publicKey = publicKey
         self.seed = seed
         self.address = address
-    }
-
-    private convenience init(entropy: Entropy, type: SeedType) {
-        fatalError("unimplemented")
-        //        switch type {
-        //        case .ed25519:
-        //            let keyPair = try! ED25519.deriveKeyPair(seed: entropy.bytes)
-        //            let publicKey = [0xED] + keyPair.publicKey.hexadecimal!
-        //            let seed = try! XRPSeedWallet.encodeSeed(entropy: entropy, type: .ed25519)
-        //            let address = XRPSeedWallet.deriveAddress(publicKey: publicKey.toHexString())
-        //            self.init(privateKey: keyPair.privateKey, publicKey: publicKey.toHexString(), seed: seed, address: address)
-        //        case .secp256k1:
-        //            let keyPair = try! SECP256K1.deriveKeyPair(seed: entropy.bytes)
-        //            let seed = try! XRPSeedWallet.encodeSeed(entropy: entropy, type: .secp256k1)
-        //            let address = XRPSeedWallet.deriveAddress(publicKey: keyPair.publicKey)
-        //            self.init(privateKey: keyPair.privateKey, publicKey: keyPair.publicKey, seed: seed, address: address)
-        //        }
-    }
-
-    /// Generates an XRPWallet from an existing family seed.
-    ///
-    /// - Parameter seed: amily seed using XRP alphabet and standard format.
-    /// - Throws: SeedError
-    convenience init(seed: String) throws {
-        let bytes = try XRPSeedWallet.decodeSeed(seed: seed)!
-        let entropy = Entropy(bytes: bytes)
-        let type = seed.prefix(3) == "sEd" ? SeedType.ed25519 : SeedType.secp256k1
-        self.init(entropy: entropy, type: type)
     }
 
     private static func encodeSeed(entropy: Entropy, type: SeedType) throws -> String {
@@ -147,50 +106,9 @@ class XRPSeedWallet: XRPWallet {
         return XRPBase58.getString(from: Data(versionEntropyCheck))
     }
 
-    private static func decodeSeed(seed: String) throws -> [UInt8]? {
-        // make sure seed will at least parse for checksum validation
-        // FIXME: this needs work
-        if seed.count < 10 || XRPBase58.getData(from: seed) == nil || seed.first != "s" {
-            throw SeedError.invalidSeed
-        }
-        let versionEntropyCheck = [UInt8](XRPBase58.getData(from: seed)!)
-        let check = Array(versionEntropyCheck.suffix(4))
-        let versionEntropy = versionEntropyCheck.prefix(versionEntropyCheck.count-4)
-        if check == [UInt8](Data(versionEntropy).sha256().sha256().prefix(through: 3)) {
-            if versionEntropy[0] == 0x21 {
-                // secp256k1
-                let entropy = Array(versionEntropy.suffix(versionEntropy.count-1))
-                return entropy
-            } else if versionEntropy[0] == 0x01 && versionEntropy[1] == 0xE1 && versionEntropy[2] == 0x4B {
-                // ed25519
-                let entropy = Array(versionEntropy.suffix(versionEntropy.count-3))
-                return entropy
-            }
-        }
-        throw SeedError.invalidSeed
-    }
-
-
     static func getSeedTypeFrom(publicKey: String) -> SeedType {
         let data = [UInt8](publicKey.hexadecimal!)
         // FIXME: Is this correct?
         return data.count == 33 && data[0] == 0xED ? .ed25519 : .secp256k1
     }
-    
-    /// Validates a String is a valid XRP family seed.
-    ///
-    /// - Parameter seed: seed encoded using XRP alphabet
-    /// - Returns: true if valid
-    ///
-    static func validate(seed: String) -> Bool {
-        do {
-            if let _ = try XRPSeedWallet.decodeSeed(seed: seed) {
-                return true
-            }
-            return false
-        } catch {
-            return false
-        }
-    }
-    
 }
