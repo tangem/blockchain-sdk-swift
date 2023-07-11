@@ -12,10 +12,12 @@ import BigInt
 enum XRPBase58 {
     fileprivate static let xrpAlphabet = [UInt8]("rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz".utf8)
 
+    /// returns string preserving leading zeroes
     static func getString(from data: Data) -> String {
         return String(base58: data, alphabet: XRPBase58.xrpAlphabet)
     }
 
+    /// returns data with stripped zeroes
     static func getData(from string: String) -> Data? {
         return Data(base58: string, alphabet: XRPBase58.xrpAlphabet)
     }
@@ -60,6 +62,6 @@ fileprivate extension Data {
         }
 
         let bytes = answer.serialize()
-        self = byteString.prefix(while: { i in i == alphabet[0]}) + bytes
+        self = bytes
     }
 }
