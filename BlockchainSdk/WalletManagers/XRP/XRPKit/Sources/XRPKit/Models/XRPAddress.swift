@@ -34,20 +34,18 @@ public struct XRPAddress {
             throw XRPAddressError.invalidAddress
         }
         let check = data.suffix(4).bytes
-        let concatenated = data.prefix(31).bytes
-        if concatenated.count < 23 {
-            throw XRPAddressError.invalidAddress
-        }
-        let tagBytes = concatenated[23...]
-        let flags = concatenated[22]
-        let prefix = concatenated[..<2]
-        let accountID = concatenated[2..<22]
-        let prefixedAccountID = Data([0x00]) + accountID
+        let prefix = data.prefix(2).bytes
+        let withoutCheksum = data.dropLast(4)
+        let tagBytes = withoutCheksum.suffix(8).bytes
+        let flags = withoutCheksum.dropLast(8).suffix(1).first
+        let accountId = withoutCheksum.dropLast(9).dropFirst(2)
+
+        let prefixedAccountID = Data([0x00]) + accountId
         let checksum = Data(prefixedAccountID).sha256().sha256().prefix(through: 3)
         let addrrssData = prefixedAccountID + checksum
         let address = XRPBase58.getString(from: addrrssData)
                 
-        if check == [UInt8](Data(concatenated).sha256().sha256().prefix(through: 3)) {
+        if check == [UInt8](Data(withoutCheksum).sha256().sha256().prefix(through: 3)) {
             let data = Data(tagBytes)
             let _tag: UInt64 = data.withUnsafeBytes { $0.load(as: UInt64.self) }
             let tag: UInt32? = flags == 0x00 ? nil : UInt32(String(_tag))!

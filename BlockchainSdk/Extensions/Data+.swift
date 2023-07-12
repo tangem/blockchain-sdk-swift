@@ -35,4 +35,11 @@ extension Data {
     func validateAsSecp256k1Key() throws {
         _ = try Secp256k1Key(with: self)
     }
+
+    func leadingZeroPadding(toLength newLength: Int) -> Data {
+        guard count < newLength else { return self }
+
+        let prefix = Data(repeating: UInt8(0), count: newLength - count)
+        return prefix + self
+    }
 }
