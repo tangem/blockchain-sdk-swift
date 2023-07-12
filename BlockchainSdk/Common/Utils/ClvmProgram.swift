@@ -7,14 +7,15 @@
 //
 
 import Foundation
-import CryptoKit
+import TangemSdk
+import CryptoSwift
 
 class ClvmNode {
-    private(set) var value: Array<Int8>?
+    private(set) var value: Array<Byte>?
     private(set) var left: ClvmNode?
     private(set) var right: ClvmNode?
 
-    init(value: Array<Int8>? = nil, left: ClvmNode? = nil, right: ClvmNode? = nil) {
+    init(value: Array<Byte>? = nil, left: ClvmNode? = nil, right: ClvmNode? = nil) {
         self.value = value
         self.left = left
         self.right = right
@@ -26,22 +27,69 @@ class ClvmNode {
         let hash: Data
         
         if let value = value {
-            hash = Data(([Int8()] + value).map { UInt8(bitPattern: $0) }).sha256()
+            hash = Data([1] + value).sha256()
         } else {
-            if
-                let left = try left?.hash().map({ Int8(bitPattern: $0) }),
-                let right = try right?.hash().map({ Int8(bitPattern: $0) })
-            {
-                hash = Data(([Int8(), Int8()] + left + right).map { .init(bitPattern: $0) }).sha256()
+            if let left = try left?.hash(), let right = try right?.hash() {
+                hash = Data([2] + left + right).sha256()
             } else {
                 throw NSError()
             }
         }
         
-        print(hash.bytes)
-        print(hash.hex)
-        
         return hash
+    }
+}
+
+extension ClvmNode {
+    class Decoder {
+        // MARK: - Properties
+        
+        private(set) var iterator: ClvmNode.Iterator<Byte>
+        
+        // MARK: - Init
+        
+        init(programBytes: Array<Byte>) {
+            self.iterator = ClvmNode.Iterator(programBytes: programBytes)
+        }
+        
+        // MARK: - Public Implementation
+        
+        func deserialize() throws -> ClvmNode {
+            try deserialize(with: &iterator)
+        }
+        
+        // MARK: - Private Implementation
+        
+        private func deserialize(with programByteIterator: inout ClvmNode.Iterator<Byte>) throws -> ClvmNode {
+            var sizeBytes = Array<Byte>()
+
+            let currentByte = programByteIterator.next()!
+
+            if currentByte <= 0x7F {
+                return ClvmNode(value: [currentByte])
+            } else if currentByte <= 0xBF {
+                sizeBytes = [currentByte & 0x3F]
+            } else if currentByte <= 0xDF {
+                sizeBytes = try [currentByte & 0x1F] + [programByteIterator.next()]
+            } else if currentByte <= 0xEF {
+                sizeBytes = try [currentByte & 0x0F] + programByteIterator.next(byteCount: 2)
+            } else if currentByte <= 0xF7 {
+                sizeBytes = try [currentByte & 0x07] + programByteIterator.next(byteCount: 3)
+            } else if currentByte <= 0xFB {
+                sizeBytes = try [currentByte & 0x03] + programByteIterator.next(byteCount: 4)
+            } else if currentByte == 0xFF {
+                let left = try deserialize(with: &programByteIterator)
+                let right = try deserialize(with: &programByteIterator)
+                return ClvmNode(value: nil, left: left, right: right)
+            } else {
+                throw NSError()
+            }
+
+            let size = sizeBytes.toInt()
+            let nextBytes = try programByteIterator.next(byteCount: size)
+            return ClvmNode(value: nextBytes)
+        }
+        
     }
 }
 
@@ -84,57 +132,5 @@ extension ClvmNode {
             
             return result
         }
-    }
-    
-    class Decoder {
-        // MARK: - Properties
-        
-        private(set) var iterator: ClvmNode.Iterator<Int8>
-        
-        // MARK: - Init
-        
-        init(programBytes: Array<Int8>) {
-            self.iterator = ClvmNode.Iterator(programBytes: programBytes)
-        }
-        
-        // MARK: - Public Implementation
-        
-        func deserialize() throws -> ClvmNode {
-            try deserialize(with: &iterator)
-        }
-        
-        // MARK: - Private Implementation
-        
-        private func deserialize(with programByteIterator: inout ClvmNode.Iterator<Int8>) throws -> ClvmNode {
-            var sizeBytes = Array<Int8>()
-
-            let currentByte = programByteIterator.next()!
-            let currentUByte = UInt8(bitPattern: currentByte)
-
-            if currentUByte <= UInt8(0x7F) {
-                return ClvmNode(value: [currentByte])
-            } else if currentUByte <= UInt8(0xBF) {
-                sizeBytes = [currentByte & Int8(0x3F)]
-            } else if currentUByte <= UInt8(0xDF) {
-                sizeBytes = try [currentByte & Int8(0x1F)] + [programByteIterator.next()]
-            } else if currentUByte <= UInt8(0xEF) {
-                sizeBytes = try [currentByte & Int8(0x0F)] + programByteIterator.next(byteCount: 2)
-            } else if currentUByte <= UInt8(0xF7) {
-                sizeBytes = try [currentByte & Int8(0x07)] + programByteIterator.next(byteCount: 3)
-            } else if currentUByte <= UInt8(0xFB) {
-                sizeBytes = try [currentByte & Int8(0x03)] + programByteIterator.next(byteCount: 4)
-            } else if currentUByte == UInt8(0xFF) {
-                let left = try deserialize(with: &programByteIterator)
-                let right = try deserialize(with: &programByteIterator)
-                return ClvmNode(value: nil, left: left, right: right)
-            } else {
-                throw NSError()
-            }
-
-            let size = sizeBytes.count
-            let nextBytes = try programByteIterator.next(byteCount: size)
-            return ClvmNode(value: nextBytes)
-        }
-        
     }
 }

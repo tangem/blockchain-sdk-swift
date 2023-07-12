@@ -90,7 +90,8 @@ public class Bech32m {
         var ret = hrpBytes
         ret.append("1".data(using: .utf8)!)
         for i in combined {
-            ret.append(encCharset[Int(i)])
+            let encChr = encCharset.bytes[Int(i)]
+            ret.append(encChr)
         }
         return String(data: ret, encoding: .utf8) ?? ""
     }

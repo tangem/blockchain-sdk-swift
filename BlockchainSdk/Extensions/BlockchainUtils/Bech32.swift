@@ -14,6 +14,9 @@ import Foundation
 
 /// Bech32 checksum implementation
 public class Bech32 {
+    
+    private static let BECH32M_CONST = UInt32(0x2bc830a3)
+    private static let BECH32_CONST = UInt32(1)
   
     private let gen: [UInt32] = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3]
     /// Bech32 checksum delimiter
@@ -72,7 +75,7 @@ public class Bech32 {
         var enc = expandHrp(hrp)
         enc.append(values)
         enc.append(Data(repeating: 0x00, count: 6))
-        let mod: UInt32 = polymod(enc) ^ 1
+        let mod: UInt32 = polymod(enc) ^ Bech32.BECH32M_CONST
         var ret: Data = Data(repeating: 0x00, count: 6)
         for i in 0..<6 {
             ret[i] = UInt8((mod >> (5 * (5 - i))) & 31)
