@@ -1,20 +1,24 @@
 //
-//  Bech32.swift
+//  Bech32m.swift
+//  BlockchainSdk
 //
-//  Created by Evolution Group Ltd on 12.02.2018.
-//  Copyright © 2018 Evolution Group Ltd. All rights reserved.
+//  Created by skibinalexander on 11.07.2023.
+//  Copyright © 2023 Tangem AG. All rights reserved.
 //
-//  Base32 address format for native v0-16 witness outputs implementation
-//  https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki
-//  Inspired by Pieter Wuille C++ implementation
-//
-
 
 import Foundation
 
 /// Bech32 checksum implementation
-public class Bech32 {
-  
+public class Bech32m {
+
+    private static let BECH32M_CONST = UInt32(0x2bc830a3)
+    private static let BECH32_CONST = UInt32(1)
+    private let checksumConst: UInt32
+
+    public init(bech32m: Bool = false) {
+        checksumConst = bech32m ? Self.BECH32M_CONST : Self.BECH32_CONST
+    }
+
     private let gen: [UInt32] = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3]
     /// Bech32 checksum delimiter
     private let checksumMarker: String = "1"
@@ -47,11 +51,8 @@ public class Bech32 {
     
     /// Expand a HRP for use in checksum computation.
     private func expandHrp(_ hrp: String) -> Data {
-        guard let hrpBytes = hrp.data(using: .utf8) else {
-            return Data()
-        }
-        
-        var result = Data(repeating: 0x00, count: hrpBytes.count * 2 + 1)
+        guard let hrpBytes = hrp.data(using: .utf8) else { return Data() }
+        var result = Data(repeating: 0x00, count: hrpBytes.count*2+1)
         for (i, c) in hrpBytes.enumerated() {
             result[i] = c >> 5
             result[i + hrpBytes.count + 1] = c & 0x1f
@@ -64,7 +65,7 @@ public class Bech32 {
     private func verifyChecksum(hrp: String, checksum: Data) -> Bool {
         var data = expandHrp(hrp)
         data.append(checksum)
-        return polymod(data) == 1
+        return polymod(data) == checksumConst
     }
     
     /// Create checksum
@@ -72,7 +73,7 @@ public class Bech32 {
         var enc = expandHrp(hrp)
         enc.append(values)
         enc.append(Data(repeating: 0x00, count: 6))
-        let mod: UInt32 = polymod(enc) ^ 1
+        let mod: UInt32 = polymod(enc) ^ checksumConst
         var ret: Data = Data(repeating: 0x00, count: 6)
         for i in 0..<6 {
             ret[i] = UInt8((mod >> (5 * (5 - i))) & 31)
@@ -82,18 +83,12 @@ public class Bech32 {
     
     /// Encode Bech32 string
     public func encode(_ hrp: String, values: Data) -> String {
-        guard let convertedValues = try? convertBits(data: values.bytes, fromBits: 8, toBits: 5, pad: true) else {
-            assertionFailure()
-            return ""
-        }
-        
-        var combined = Data(convertedValues)
-        let checksum = createChecksum(hrp: hrp, values: combined)
+        let checksum = createChecksum(hrp: hrp, values: values)
+        var combined = values
         combined.append(checksum)
         guard let hrpBytes = hrp.data(using: .utf8) else { return "" }
         var ret = hrpBytes
         ret.append("1".data(using: .utf8)!)
-        
         for i in combined {
             ret.append(encCharset[Int(i)])
         }
@@ -154,92 +149,9 @@ public class Bech32 {
         }
         return (hrp, Data(values[..<(vSize-6)]))
     }
-    
-    /// Decode long Bech32 string
-        public func decodeLong(_ str: String) throws -> (hrp: String, checksum: Data) {
-            guard let strBytes = str.data(using: .utf8) else {
-                throw DecodingError.nonUTF8String
-            }
-    //        guard strBytes.count <= 90 else {
-    //            throw DecodingError.stringLengthExceeded
-    //        }
-            
-            var lower: Bool = false
-            var upper: Bool = false
-            for c in strBytes {
-                // printable range
-                if c < 33 || c > 126 {
-                    throw DecodingError.nonPrintableCharacter
-                }
-                // 'a' to 'z'
-                if c >= 97 && c <= 122 {
-                    lower = true
-                }
-                // 'A' to 'Z'
-                if c >= 65 && c <= 90 {
-                    upper = true
-                }
-            }
-            if lower && upper {
-                throw DecodingError.invalidCase
-            }
-            guard let pos = str.range(of: checksumMarker, options: .backwards)?.lowerBound else {
-                throw DecodingError.noChecksumMarker
-            }
-            let intPos: Int = str.distance(from: str.startIndex, to: pos)
-            guard intPos >= 1 else {
-                throw DecodingError.incorrectHrpSize
-            }
-            guard intPos + 7 <= str.count else {
-                throw DecodingError.incorrectChecksumSize
-            }
-            let vSize: Int = str.count - 1 - intPos
-            var values: Data = Data(repeating: 0x00, count: vSize)
-            for i in 0..<vSize {
-                let c = strBytes[i + intPos + 1]
-                let decInt = decCharset[Int(c)]
-                if decInt == -1 {
-                    throw DecodingError.invalidCharacter
-                }
-                values[i] = UInt8(decInt)
-            }
-            let hrp = String(str[..<pos]).lowercased()
-            guard verifyChecksum(hrp: hrp, checksum: values) else {
-                throw DecodingError.checksumMismatch
-            }
-            return (hrp, Data(values[..<(vSize-6)]))
-        }
-    
-    func convertBits(data: [UInt8], fromBits: Int, toBits: Int, pad: Bool) throws -> [UInt8] {
-        var acc: Int = 0
-        var bits: Int = 0
-        var out = [UInt8]()
-        let maxv = (1 << toBits) - 1
-        let maxAcc = Int(1 << (fromBits + toBits - 1)) - 1
-        for i in 0..<data.count {
-            let value = Int(data[Int(i)] & 0xFF)
-            if (value >> fromBits) != 0 {
-                assertionFailure()
-            }
-            acc = ((acc << fromBits) | value) & maxAcc
-            bits += fromBits
-            while bits >= toBits {
-                bits -= toBits
-                out.append(UInt8((acc >> bits) & maxv))
-            }
-        }
-        
-        let padding = pad && bits > 0 ? [acc << (toBits - Int(bits)) & maxv] : []
-        
-        if !pad && (bits >= fromBits || ((acc << (toBits - bits)) & maxv) > 0) {
-            assertionFailure()
-        }
-        
-        return out + padding.map({ return UInt8($0) })
-    }
 }
 
-extension Bech32 {
+extension Bech32m {
     public enum DecodingError: LocalizedError {
         case nonUTF8String
         case nonPrintableCharacter

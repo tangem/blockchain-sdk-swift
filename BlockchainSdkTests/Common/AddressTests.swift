@@ -753,4 +753,12 @@ class AddressesTests: XCTestCase {
         XCTAssertTrue(addressService.validate("terravaloper1pdx498r0hrc2fj36sjhs8vuhrz9hd2cw0yhqtk"))
         XCTAssertFalse(addressService.validate("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02"))
     }
+    
+    func testChiaAddressService() throws {
+        let blockchain = Blockchain.chia(testnet: true)
+        let addressService = ChiaAddressService(isTestnet: true)
+//
+//        addressService.validate("txch14gxuvfmw2xdxqnws5agt3ma483wktd2lrzwvpj3f6jvdgkmf5gtq8g3aw3")
+        try! addressService.make()
+    }
 }

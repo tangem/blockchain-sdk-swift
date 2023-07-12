@@ -52,6 +52,7 @@ public enum Blockchain: Equatable, Hashable {
     case terraV2
     case cronos
     case telos(testnet: Bool)
+    case chia(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -109,6 +110,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .telos(let testnet):
             return testnet
+        case .chia(let testnet):
+            return testnet
         }
     }
     
@@ -120,6 +123,8 @@ public enum Blockchain: Equatable, Hashable {
             return curve
         case .tezos(let curve):
             return curve
+        case .chia:
+            return .bls12381_G2_AUG
         default:
             return .secp256k1
         }
@@ -141,6 +146,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet ? 12 : 10
         case .kusama, .azero:
             return 12
+        case .chia:
+            return 18
         }
     }
     
@@ -216,6 +223,8 @@ public enum Blockchain: Equatable, Hashable {
             return "CRO"
         case .telos:
             return "TLOS"
+        case .chia:
+            return "XCH"
         }
     }
     
@@ -646,6 +655,7 @@ extension Blockchain: Codable {
         case .terraV2: return "terra-2"
         case .cronos: return "cronos"
         case .telos: return "telos"
+        case .chia: return "chia"
         }
     }
     
@@ -706,6 +716,7 @@ extension Blockchain: Codable {
         case "terra-2": self = .terraV2
         case "cronos": self = .cronos
         case "telos": self = .telos(testnet: isTestnet)
+        case "chia": self = .chia(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -948,6 +959,8 @@ extension Blockchain {
             } else {
                 return URL(string: "https://teloscan.io/address/\(address)")!
             }
+        case .chia(let testnet):
+            return URL(string: "https://xchscan.com/address/\(address)")!
         }
     }
 }
@@ -1079,6 +1092,8 @@ extension Blockchain {
             return RavencoinWalletAssembly()
         case .cosmos, .terraV1, .terraV2:
             return CosmosWalletAssembly()
+        case .chia:
+            return ChiaWalletAssembly()
         }
     }
     
