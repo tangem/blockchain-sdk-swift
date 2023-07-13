@@ -11,12 +11,12 @@ import TangemSdk
 import CryptoSwift
 
 class ClvmNode {
-    private(set) var value: Array<Byte>?
+    private(set) var atom: Array<Byte>?
     private(set) var left: ClvmNode?
     private(set) var right: ClvmNode?
 
-    init(value: Array<Byte>? = nil, left: ClvmNode? = nil, right: ClvmNode? = nil) {
-        self.value = value
+    init(atom: Array<Byte>? = nil, left: ClvmNode? = nil, right: ClvmNode? = nil) {
+        self.atom = atom
         self.left = left
         self.right = right
     }
@@ -26,7 +26,7 @@ class ClvmNode {
     func hash() throws -> Data {
         let hash: Data
         
-        if let value = value {
+        if let value = atom {
             hash = Data([1] + value).sha256()
         } else {
             if let left = try left?.hash(), let right = try right?.hash() {
@@ -66,7 +66,7 @@ extension ClvmNode {
             let currentByte = programByteIterator.next()!
 
             if currentByte <= 0x7F {
-                return ClvmNode(value: [currentByte])
+                return ClvmNode(atom: [currentByte])
             } else if currentByte <= 0xBF {
                 sizeBytes = [currentByte & 0x3F]
             } else if currentByte <= 0xDF {
@@ -80,16 +80,19 @@ extension ClvmNode {
             } else if currentByte == 0xFF {
                 let left = try deserialize(with: &programByteIterator)
                 let right = try deserialize(with: &programByteIterator)
-                return ClvmNode(value: nil, left: left, right: right)
+                return ClvmNode(atom: nil, left: left, right: right)
             } else {
-                throw NSError()
+                throw DecoderError.errorCompareCurrentByte
             }
 
             let size = sizeBytes.toInt()
             let nextBytes = try programByteIterator.next(byteCount: size)
-            return ClvmNode(value: nextBytes)
+            return ClvmNode(atom: nextBytes)
         }
-        
+    }
+    
+    enum DecoderError: Error {
+        case errorCompareCurrentByte
     }
 }
 
@@ -113,7 +116,7 @@ extension ClvmNode {
             }
             
             guard let element = programBytes.first else {
-                throw NSError()
+                throw IteratorError.undefinedElement
             }
 
             return element
@@ -124,7 +127,7 @@ extension ClvmNode {
             
             for _ in 0..<byteCount {
                 guard let next = next() else {
-                    throw NSError()
+                    throw IteratorError.undefinedElement
                 }
                 
                 result.append(next)
@@ -132,5 +135,9 @@ extension ClvmNode {
             
             return result
         }
+    }
+    
+    enum IteratorError: Error {
+        case undefinedElement
     }
 }

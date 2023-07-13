@@ -35,6 +35,16 @@ public class Bech32 {
         1,  0,  3, 16, 11, 28, 12, 14,  6,  4,  2, -1, -1, -1, -1, -1
     ]
     
+    private let isBech32m: Bool
+    
+    // MARK: - Init
+    
+    init(isBech32m: Bool = false) {
+        self.isBech32m = isBech32m
+    }
+    
+    // MARK: - Implementation
+    
     /// Find the polynomial with value coefficients mod the generator as 30-bit.
     private func polymod(_ values: Data) -> UInt32 {
         var chk: UInt32 = 1
@@ -75,7 +85,7 @@ public class Bech32 {
         var enc = expandHrp(hrp)
         enc.append(values)
         enc.append(Data(repeating: 0x00, count: 6))
-        let mod: UInt32 = polymod(enc) ^ Bech32.BECH32M_CONST
+        let mod: UInt32 = polymod(enc) ^ (isBech32m ? Bech32.BECH32M_CONST : Bech32.BECH32_CONST)
         var ret: Data = Data(repeating: 0x00, count: 6)
         for i in 0..<6 {
             ret[i] = UInt8((mod >> (5 * (5 - i))) & 31)
