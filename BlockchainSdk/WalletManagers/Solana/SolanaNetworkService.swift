@@ -196,14 +196,14 @@ class SolanaNetworkService {
         tokenAccountsInfo: [TokenAccount<AccountInfoData>],
         confirmedTransactionIDs: [String]
     ) -> SolanaAccountInfoResponse {
-        let balance = Decimal(mainAccountInfo.balance) / blockchain.decimalValue
+        let balance = (Decimal(mainAccountInfo.balance) / blockchain.decimalValue).rounded(blockchain: blockchain)
         let accountExists = mainAccountInfo.accountExists
         
         let tokens: [SolanaTokenAccountInfoResponse] = tokenAccountsInfo.compactMap {
             guard let info = $0.account.data.value?.parsed.info else { return nil }
             let address = $0.pubkey
             let mint = info.mint
-            let amount = Decimal(info.tokenAmount.uiAmount)
+            let amount = Decimal(info.tokenAmount.uiAmount).rounded(scale: Int(info.tokenAmount.decimals))
             
             return SolanaTokenAccountInfoResponse(address: address, mint: mint, balance: amount)
         }
