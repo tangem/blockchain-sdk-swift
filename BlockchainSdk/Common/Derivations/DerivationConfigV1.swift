@@ -92,7 +92,7 @@ public struct DerivationConfigV1: DerivationConfig {
         case .telos:
             return [.default: "m/44'/977'/0'/0/0"]
         case .chia:
-            return [.default: "m/84'/8444'/0'/0/0"]
+            return [:]
         }
     }
 }

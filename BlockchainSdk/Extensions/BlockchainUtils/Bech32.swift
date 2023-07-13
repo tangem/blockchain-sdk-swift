@@ -5,7 +5,8 @@
 //  Copyright © 2018 Evolution Group Ltd. All rights reserved.
 //
 //  Base32 address format for native v0-16 witness outputs implementation
-//  https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki
+//  BECH32 - https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki
+//  BECH32M - https://github.com/bitcoin/bips/blob/master/bip-0350.mediawiki#L4
 //  Inspired by Pieter Wuille C++ implementation
 //
 
