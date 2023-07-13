@@ -13,12 +13,7 @@ import CryptoSwift
 
 public struct CardanoAddressService {
     private let addressHeaderByte = Data([UInt8(97)])
-
-    private let shelley: Bool
-
-    public init(shelley: Bool) {
-        self.shelley = shelley
-    }
+    public init() {}
 
     private func makeByronAddress(from walletPublicKey: Data) -> String {
         let hexPublicKeyExtended = walletPublicKey + Data(repeating: 0, count: 32) // extendedPublicKey
@@ -89,12 +84,7 @@ extension CardanoAddressService: AddressProvider {
         try publicKey.blockchainKey.validateAsEdKey()
 
         switch addressType {
-        case .default:
-            if !shelley {
-                let byron =  makeByronAddress(from: publicKey.blockchainKey)
-                return PlainAddress(value: byron, publicKey: publicKey, type: addressType)
-            }
-            
+        case .default:            
             let shelley = makeShelleyAddress(from: publicKey.blockchainKey)
             return PlainAddress(value: shelley, publicKey: publicKey, type: addressType)
         case .legacy:

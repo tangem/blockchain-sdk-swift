@@ -24,7 +24,7 @@ public enum Blockchain: Equatable, Hashable {
     case rsk
     case bitcoinCash(testnet: Bool)
     case binance(testnet: Bool)
-    case cardano(shelley: Bool)
+    case cardano
     case xrp(curve: EllipticCurve)
     case ducatus
     case tezos(curve: EllipticCurve)
@@ -661,7 +661,6 @@ extension Blockchain: Codable {
         let key = try container.decode(String.self, forKey: Keys.key)
         let curveString = try container.decode(String.self, forKey: Keys.curve)
         let isTestnet = try container.decode(Bool.self, forKey: Keys.testnet)
-        let shelley = try? container.decode(Bool.self, forKey: Keys.shelley)
         
         guard let curve = EllipticCurve(rawValue: curveString) else {
             throw BlockchainSdkError.decodingFailed
@@ -676,7 +675,7 @@ extension Blockchain: Codable {
         case "rsk": self = .rsk
         case "bitcoinCash": self = .bitcoinCash(testnet: isTestnet)
         case "binance": self = .binance(testnet: isTestnet)
-        case "cardano": self =  .cardano(shelley: shelley!)
+        case "cardano": self = .cardano
         case "xrp": self = .xrp(curve: curve)
         case "ducatus": self = .ducatus
         case "tezos": self = .tezos(curve: curve)
@@ -716,10 +715,6 @@ extension Blockchain: Codable {
         try container.encode(codingKey, forKey: Keys.key)
         try container.encode(curve.rawValue, forKey: Keys.curve)
         try container.encode(isTestnet, forKey: Keys.testnet)
-        
-        if case let .cardano(shelley) = self {
-            try container.encode(shelley, forKey: Keys.shelley)
-        }
     }
 }
 
@@ -975,8 +970,7 @@ extension Blockchain {
         case "rsk", "rsktoken": return .rsk
         case "bch": return .bitcoinCash(testnet: isTestnet)
         case "binance", "binanceasset": return .binance(testnet: isTestnet)
-        case "cardano": return .cardano(shelley: false)
-        case "cardano-s": return .cardano(shelley: true)
+        case "cardano", "cardano-s": return .cardano
         case "xrp": return .xrp(curve: curve)
         case "duc": return .ducatus
         case "xtz": return .tezos(curve: curve)

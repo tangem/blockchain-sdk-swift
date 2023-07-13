@@ -22,7 +22,6 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     @Published var curves: [EllipticCurve] = []
     @Published var blockchainName: String = ""
     @Published var isTestnet: Bool = false
-    @Published var isShelley: Bool = false
     @Published var curve: EllipticCurve = .ed25519
     @Published var tokenExpanded: Bool = false
     @Published var tokenEnabled = false
@@ -61,7 +60,6 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     }
     
     let blockchainsWithCurveSelection: [String]
-    let blockchainsWithShelleySelection: [String]
 
     private let sdk: TangemSdk
     private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKeys: [],
@@ -108,16 +106,12 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             Blockchain.xrp(curve: .ed25519),
             Blockchain.tezos(curve: .ed25519),
         ].map { $0.codingKey }
-        self.blockchainsWithShelleySelection = [
-            Blockchain.cardano(shelley: false),
-        ].map { $0.codingKey }
 
         self.destination = UserDefaults.standard.string(forKey: destinationKey) ?? ""
         self.amountToSend = UserDefaults.standard.string(forKey: amountKey) ?? ""
         self.blockchainName = UserDefaults.standard.string(forKey: blockchainNameKey) ?? blockchains.first?.1 ?? ""
         self.isTestnet = UserDefaults.standard.bool(forKey: isTestnetKey)
         self.curve = EllipticCurve(rawValue: UserDefaults.standard.string(forKey: curveKey) ?? "") ?? self.curve
-        self.isShelley = UserDefaults.standard.bool(forKey: isShelleyKey)
         self.tokenEnabled = UserDefaults.standard.bool(forKey: tokenEnabledKey)
         self.tokenSymbol = UserDefaults.standard.string(forKey: tokenSymbolKey) ?? ""
         self.tokenContractAddress = UserDefaults.standard.string(forKey: tokenContractAddressKey) ?? ""
@@ -139,7 +133,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .dropFirst()
             .sink { [unowned self] in
                 UserDefaults.standard.set($0, forKey: self.blockchainNameKey)
-                self.updateBlockchain(from: $0, isTestnet: isTestnet, curve: curve, isShelley: isShelley)
+                self.updateBlockchain(from: $0, isTestnet: isTestnet, curve: curve)
                 self.updateWalletManager()
             }
             .store(in: &bag)
@@ -148,7 +142,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .dropFirst()
             .sink { [unowned self] in
                 UserDefaults.standard.set($0, forKey: isTestnetKey)
-                self.updateBlockchain(from: blockchainName, isTestnet: $0, curve: curve, isShelley: isShelley)
+                self.updateBlockchain(from: blockchainName, isTestnet: $0, curve: curve)
                 self.updateWalletManager()
             }
             .store(in: &bag)
@@ -157,16 +151,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .dropFirst()
             .sink { [unowned self] in
                 UserDefaults.standard.set($0.rawValue, forKey: curveKey)
-                self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: $0, isShelley: isShelley)
-                self.updateWalletManager()
-            }
-            .store(in: &bag)
-        
-        $isShelley
-            .dropFirst()
-            .sink { [unowned self] in
-                UserDefaults.standard.set($0, forKey: isShelleyKey)
-                self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: curve, isShelley: $0)
+                self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: $0)
                 self.updateWalletManager()
             }
             .store(in: &bag)
@@ -221,7 +206,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                 Log.error(error)
             case .success(let card):
                 self.card = card
-                self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: curve, isShelley: isShelley)
+                self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: curve)
                 self.updateWalletManager()
             }
         }
@@ -352,18 +337,16 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     private func updateBlockchain(
         from blockchainName: String,
         isTestnet: Bool,
-        curve: EllipticCurve,
-        isShelley: Bool
+        curve: EllipticCurve
     ) {
         struct BlockchainInfo: Codable {
             let key: String
             let curve: String
             let testnet: Bool
-            let shelley: Bool
         }
         
         do {
-            let blockchainInfo = BlockchainInfo(key: blockchainName, curve: curve.rawValue, testnet: isTestnet, shelley: isShelley)
+            let blockchainInfo = BlockchainInfo(key: blockchainName, curve: curve.rawValue, testnet: isTestnet)
             let encodedInfo = try JSONEncoder().encode(blockchainInfo)
             let newBlockchain = try JSONDecoder().decode(Blockchain.self, from: encodedInfo)
             
@@ -452,7 +435,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .rsk,
             .bitcoinCash(testnet: false),
             .binance(testnet: false),
-            .cardano(shelley: false),
+            .cardano,
             .xrp(curve: .ed25519),
             .ducatus,
             .tezos(curve: .ed25519),
