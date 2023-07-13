@@ -9,6 +9,10 @@
 import Foundation
 import BitcoinCore
 
+/*
+ PuzzleHash Chia documentation - https://docs.chia.net/guides/crash-course/signatures/
+ */
+
 public struct ChiaAddressService: AddressService {
     // MARK: - Private Properties
     
@@ -27,7 +31,7 @@ public struct ChiaAddressService: AddressService {
     
     public func validate(_ address: String) -> Bool {
         do {
-            try Bech32(isBech32m: true).decode(address)
+            try Bech32(isBech32m: true).tryDecode(address)
             return true
         } catch {
             assertionFailure(error.localizedDescription)
