@@ -39,8 +39,8 @@ public struct AddressServiceFactory {
             return BitcoinCashAddressService(networkParams: networkParams)
         case .binance:
             return BinanceAddressService(testnet: isTestnet)
-        case .cardano(let shelley):
-            return CardanoAddressService(shelley: shelley)
+        case .cardano:
+            return CardanoAddressService()
         case .xrp(let curve):
             return XRPAddressService(curve: curve)
         case .tezos(let curve):
