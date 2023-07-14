@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import WalletCore
+import TangemSdk
 
 class CosmosWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkService.host }
@@ -65,7 +66,17 @@ class CosmosWalletManager: BaseManager, WalletManager {
                     return .anyFail(error: WalletError.empty)
                 }
 
-                return signer.sign(hash: hash, walletPublicKey: self.wallet.publicKey)
+                return signer
+                    .sign(hash: hash, walletPublicKey: self.wallet.publicKey)
+                    .tryMap { [weak self] signature -> Data in
+                        guard let self else {
+                            throw WalletError.empty
+                        }
+ 
+                        let signature = try Secp256k1Signature(with: signature)
+                        return try signature.unmarshal(with: self.wallet.publicKey.blockchainKey, hash: hash).data
+                    }
+                    .eraseToAnyPublisher()
             }
             .tryMap { [weak self] signature -> Data in
                 guard let self else {
@@ -143,7 +154,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
 
                 return try self.txBuilder.buildForSend(
                     transaction: transaction,
-                    signature: Data(repeating: 1, count: 64) // Dummy signature
+                    signature: Data(repeating: 1, count: 65) // Dummy signature
                 )
             }
             .tryCatch { _ -> AnyPublisher<Data, Error> in

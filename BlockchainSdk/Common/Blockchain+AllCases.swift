@@ -67,7 +67,7 @@ extension Blockchain {
             .binance(testnet: false),
             .tezos(curve: .secp256k1),
             .stellar(testnet: false),
-            .cardano(shelley: true),
+            .cardano,
             .ducatus,
             .dogecoin,
             .bsc(testnet: false),
