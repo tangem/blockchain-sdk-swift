@@ -28,11 +28,7 @@ public struct DerivationConfigV2: DerivationConfig {
             return [.default: "m/44'/148'/0'"]
         case .solana:
             return [.default: "m/44'/501'/0'"]
-        case .cardano(let shelley):
-            // We use shelley for all new cards with HD wallets feature.
-            guard shelley else {
-                return [:]
-            }
+        case .cardano:
             return [.legacy: "m/1852'/1815'/0'/0/0", .default: "m/1852'/1815'/0'/0/0"]
         case .bitcoinCash:
             return [.legacy: "m/44'/145'/0'/0/0", .default: "m/44'/145'/0'/0/0"]
