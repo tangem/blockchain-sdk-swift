@@ -31,15 +31,5 @@ struct CardanoWalletAssembly: WalletManagerAssembly {
             ])
             $0.networkService = service
         }
-    }
-    
-    private func isShelley(for blockchain: Blockchain) ->  Bool {
-        switch blockchain {
-        case .cardano(let shelley):
-            return shelley
-        default:
-            return false
-        }
-    }
-    
+    }    
 }

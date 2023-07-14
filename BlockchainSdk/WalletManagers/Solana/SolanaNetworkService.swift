@@ -26,7 +26,7 @@ class SolanaNetworkService {
         self.hostProvider = hostProvider
     }
     
-    func getInfo(accountId: String, transactionIDs: [String]) -> AnyPublisher<SolanaAccountInfoResponse, Error> {
+    func getInfo(accountId: String, tokens: [Token], transactionIDs: [String]) -> AnyPublisher<SolanaAccountInfoResponse, Error> {
         Publishers.Zip3(
             mainAccountInfo(accountId: accountId),
             tokenAccountsInfo(accountId: accountId),
@@ -37,7 +37,7 @@ class SolanaNetworkService {
                     throw WalletError.empty
                 }
                 
-                return self.mapInfo(mainAccountInfo: mainAccount, tokenAccountsInfo: tokenAccounts, confirmedTransactionIDs: confirmedTransactionIDs)
+                return self.mapInfo(mainAccountInfo: mainAccount, tokenAccountsInfo: tokenAccounts, tokens: tokens, confirmedTransactionIDs: confirmedTransactionIDs)
             }
             .eraseToAnyPublisher()
     }
@@ -194,21 +194,29 @@ class SolanaNetworkService {
     private func mapInfo(
         mainAccountInfo: SolanaMainAccountInfoResponse,
         tokenAccountsInfo: [TokenAccount<AccountInfoData>],
+        tokens: [Token],
         confirmedTransactionIDs: [String]
     ) -> SolanaAccountInfoResponse {
-        let balance = Decimal(mainAccountInfo.balance) / blockchain.decimalValue
+        let balance = (Decimal(mainAccountInfo.balance) / blockchain.decimalValue).rounded(blockchain: blockchain)
         let accountExists = mainAccountInfo.accountExists
         
-        let tokens: [SolanaTokenAccountInfoResponse] = tokenAccountsInfo.compactMap {
-            guard let info = $0.account.data.value?.parsed.info else { return nil }
+        let tokenInfoResponses: [SolanaTokenAccountInfoResponse] = tokenAccountsInfo.compactMap {
+            guard
+                let info = $0.account.data.value?.parsed.info,
+                let token = tokens.first(where: { $0.contractAddress == info.mint }),
+                let integerAmount = Decimal(info.tokenAmount.amount)
+            else {
+                return nil
+            }
+            
             let address = $0.pubkey
             let mint = info.mint
-            let amount = Decimal(info.tokenAmount.uiAmount)
+            let amount = (integerAmount / token.decimalValue).rounded(scale: token.decimalCount)
             
             return SolanaTokenAccountInfoResponse(address: address, mint: mint, balance: amount)
         }
         
-        let tokenPairs = tokens.map { ($0.mint, $0) }
+        let tokenPairs = tokenInfoResponses.map { ($0.mint, $0) }
         let tokensByMint = Dictionary(tokenPairs) { token1, _ in
             return token1
         }
