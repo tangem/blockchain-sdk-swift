@@ -11,6 +11,7 @@ import Combine
 import Moya
 import SwiftCBOR
 
+/// https://docs.cardano.org/cardano-components/cardano-rosetta/get-started-rosetta
 class RosettaNetworkProvider: CardanoNetworkProvider {
     var host: String {
         URL(string: baseUrl.url)!.hostOrUnknown
