@@ -13,10 +13,6 @@ import WalletCore
 class CardanoTransactionBuilder {
     private var outputs: [CardanoUnspentOutput] = []
     private let coinType: CoinType = .cardano
-    private var decimalValue: Decimal {
-        // It isn't important shelley or byron, decimalValue is equal for both cases.
-        Blockchain.cardano(shelley: true).decimalValue
-    }
 
     init() {}
 }
@@ -84,7 +80,7 @@ extension CardanoTransactionBuilder {
     }
 
     func buildCardanoSigningInput(transaction: Transaction) throws -> CardanoSigningInput {
-        let amount = transaction.amount.value * decimalValue
+        let amount = transaction.amount.value * Blockchain.cardano.decimalValue
         var input = CardanoSigningInput.with {
             $0.transferMessage.toAddress = transaction.destinationAddress
             $0.transferMessage.changeAddress = transaction.changeAddress
@@ -111,7 +107,7 @@ extension CardanoTransactionBuilder {
             }
         }
 
-        let minChange = (1 * decimalValue).uint64Value
+        let minChange = (1 * Blockchain.cardano.decimalValue).uint64Value
         let acceptableChangeRange: ClosedRange<UInt64> = 1 ... minChange
 
         if acceptableChangeRange.contains(input.plan.change) {
