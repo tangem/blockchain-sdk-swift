@@ -284,8 +284,7 @@ class AddressesTests: XCTestCase {
     }
     
     func testAda() throws {
-        let service = CardanoAddressService(shelley: false)
-
+        let service = CardanoAddressService()
         let addrs = try service.makeAddress(from: edKey, type: .legacy)
         
         XCTAssertThrowsError(try service.makeAddress(from: secpCompressedKey))
@@ -296,7 +295,7 @@ class AddressesTests: XCTestCase {
     }
     
     func testAdaShelley() throws {
-        let service = CardanoAddressService(shelley: true)
+        let service = CardanoAddressService()
 
         let addrs_shelley = try service.makeAddress(from: edKey, type: .default) // default is shelley
         let addrs_byron = try service.makeAddress(from: edKey, type: .legacy) // legacy is byron

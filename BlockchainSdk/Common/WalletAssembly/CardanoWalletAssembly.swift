@@ -13,10 +13,7 @@ struct CardanoWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return CardanoWalletManager(wallet: input.wallet).then {
-            $0.txBuilder = CardanoTransactionBuilder(
-                walletPublicKey: input.wallet.publicKey.blockchainKey,
-                shelleyCard: self.isShelley(for: input.blockchain)
-            )
+            $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey)
             let service = CardanoNetworkService(providers: [
                 RosettaNetworkProvider(
                     baseUrl: .getBlockRosetta(apiKey: input.blockchainConfig.getBlockApiKey),
@@ -33,15 +30,5 @@ struct CardanoWalletAssembly: WalletManagerAssembly {
             ])
             $0.networkService = service
         }
-    }
-    
-    private func isShelley(for blockchain: Blockchain) ->  Bool {
-        switch blockchain {
-        case .cardano(let shelley):
-            return shelley
-        default:
-            return false
-        }
-    }
-    
+    }    
 }
