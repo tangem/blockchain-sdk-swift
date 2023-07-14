@@ -73,7 +73,7 @@ extension CardanoWalletManager: TransactionSender {
                     guard let self else {
                         return .anyFail(error: WalletError.empty)
                     }
-                    print("dataForSign ->>", dataForSign.hexString)
+                    print("dataForSign ->>", dataForSign.hex)
                     
                     return signer.sign(hash: dataForSign, walletPublicKey: self.wallet.publicKey)
                 }

@@ -29,10 +29,12 @@ extension CardanoTransactionBuilder {
 
         let preImageHashes = TransactionCompiler.preImageHashes(coinType: coinType, txInputData: txInputData)
         let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
-
+        
         if preSigningOutput.error != .ok {
             throw WalletError.failedToBuildTx
         }
+        
+        print("preSigningOutput.dataHash ->>", preSigningOutput.dataHash)
 
         return preSigningOutput.dataHash
     }
@@ -45,6 +47,8 @@ extension CardanoTransactionBuilder {
         signatures.add(data: signature.signature)
         
         let publicKeys = DataVector()
+        
+        print("signature ->>", signature.description)
         
         // WalletCore used here `.ed25519Cardano` curve with 128 bytes publicKey.
         // Calculated as: chainCode + secondPubKey + chainCode
@@ -71,11 +75,13 @@ extension CardanoTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
 
+        print("output.encoded ->>", output.encoded.hex)
+        
         return output.encoded
     }
 
     func estimatedFee(transaction: Transaction) throws -> Decimal {
-        var input = try buildCardanoSigningInput(transaction: transaction)
+        let input = try buildCardanoSigningInput(transaction: transaction)
         return Decimal(input.plan.fee)
     }
 
@@ -98,7 +104,7 @@ extension CardanoTransactionBuilder {
         if outputs.isEmpty {
             throw CardanoError.noUnspents
         }
-
+        print("outputs ->>", outputs)
         input.utxos = outputs.map { output -> CardanoTxInput in
             CardanoTxInput.with {
                 $0.outPoint.txHash = Data(hexString: output.transactionHash)
@@ -124,9 +130,10 @@ extension CardanoTransactionBuilder {
         case .token(let token):
             var toTokenBundle = CardanoTokenBundle()
             let toToken = CardanoTokenAmount.with {
-                $0.policyID = token.contractAddress // "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
-                $0.assetName = token.symbol // "SUNDAE"
-                $0.amount = BigUInt(uint64Amount).serialize() // Data(hexString: "01312d00")! // 20000000
+                $0.policyID = token.contractAddress
+                $0.assetName = token.symbol
+                // Should set amount as hex e.g. "01312d00" = 20000000
+                $0.amount = BigUInt(uint64Amount).serialize()
             }
             
             toTokenBundle.token.append(toToken)
