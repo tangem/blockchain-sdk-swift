@@ -113,7 +113,7 @@ extension CardanoWalletManager: TransactionSender {
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         let dummy = Transaction(
             amount: amount,
-            fee: .zero(for: .cardano(shelley: true)),
+            fee: Fee(.zeroCoin(for: .cardano)),
             sourceAddress: defaultSourceAddress,
             destinationAddress: destination,
             changeAddress: defaultChangeAddress
