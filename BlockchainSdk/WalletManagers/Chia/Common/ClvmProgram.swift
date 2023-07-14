@@ -11,9 +11,9 @@ import TangemSdk
 import CryptoSwift
 
 class ClvmNode {
-    private(set) var atom: Array<Byte>?
-    private(set) var left: ClvmNode?
-    private(set) var right: ClvmNode?
+    private let atom: Array<Byte>?
+    private let left: ClvmNode?
+    private let right: ClvmNode?
 
     init(atom: Array<Byte>? = nil, left: ClvmNode? = nil, right: ClvmNode? = nil) {
         self.atom = atom
@@ -44,7 +44,7 @@ extension ClvmNode {
     class Decoder {
         // MARK: - Properties
         
-        private(set) var iterator: ClvmNode.Iterator<Byte>
+        private var iterator: ClvmNode.Iterator<Byte>
         
         // MARK: - Init
         
@@ -97,7 +97,7 @@ extension ClvmNode {
 }
 
 extension ClvmNode {
-    struct Iterator<T>: IteratorProtocol {
+    private struct Iterator<T>: IteratorProtocol {
         typealias Element = T
         
         private(set) var programBytes: Array<Element>

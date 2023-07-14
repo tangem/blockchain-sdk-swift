@@ -781,6 +781,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2D19767B2A613F27006C4D3E /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				2D78F4132A5D955700962CCA /* ClvmProgram.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
 		2D535E7A2A0CC5FA0081EB76 /* Vectors */ = {
 			isa = PBXGroup;
 			children = (
@@ -804,6 +812,7 @@
 		2D78F4082A5C3CA400962CCA /* Chia */ = {
 			isa = PBXGroup;
 			children = (
+				2D19767B2A613F27006C4D3E /* Common */,
 				2D78F4092A5C3CBE00962CCA /* ChiaAddressService.swift */,
 				2D78F40B2A5C3CCF00962CCA /* ChiaWalletManager.swift */,
 			);
@@ -1528,7 +1537,6 @@
 			isa = PBXGroup;
 			children = (
 				B0A1D39C2625A1150013F0BF /* EthereumUtils.swift */,
-				2D78F4132A5D955700962CCA /* ClvmProgram.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
