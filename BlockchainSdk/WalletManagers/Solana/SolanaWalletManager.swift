@@ -19,7 +19,7 @@ class SolanaWalletManager: BaseManager, WalletManager {
     func update(completion: @escaping (Result<(), Error>) -> Void) {
         let transactionIDs = wallet.transactions.compactMap { $0.hash }
         
-        cancellable = networkService.getInfo(accountId: wallet.address, transactionIDs: transactionIDs)
+        cancellable = networkService.getInfo(accountId: wallet.address, tokens: cardTokens, transactionIDs: transactionIDs)
             .sink { [unowned self] in
                 switch $0 {
                 case .failure(let error):
@@ -153,7 +153,7 @@ extension SolanaWalletManager: TransactionSender {
         }
         
         let accountExistsPublisher: AnyPublisher<Bool, Error> = networkService
-            .getInfo(accountId: destination, transactionIDs: [])
+            .getInfo(accountId: destination, tokens: [], transactionIDs: [])
             .map { info in
                 switch amount.type {
                 case .coin:
