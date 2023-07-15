@@ -33,8 +33,8 @@ public struct ChiaAddressService: AddressService {
     
     public func validate(_ address: String) -> Bool {
         do {
-            try Bech32(constant: .bech32m).tryDecode(address)
-            return true
+            let result = try Bech32(constant: .bech32m).decode(address)
+            return HRP(isTestnet: isTestnet).rawValue == result.hrp
         } catch {
             assertionFailure(error.localizedDescription)
             return false

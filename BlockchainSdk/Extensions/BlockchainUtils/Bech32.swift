@@ -165,15 +165,6 @@ public class Bech32 {
         return (hrp, Data(values[..<(vSize-6)]))
     }
     
-    public func tryDecode(_ str: String) throws {
-        do {
-            let _ = try decode(str)
-            return
-        } catch {
-            throw error
-        }
-    }
-    
     /// Decode long Bech32 string
         public func decodeLong(_ str: String) throws -> (hrp: String, checksum: Data) {
             guard let strBytes = str.data(using: .utf8) else {

@@ -144,7 +144,7 @@ public enum Blockchain: Equatable, Hashable {
             return 9
         case .polkadot(let testnet):
             return testnet ? 12 : 10
-        case .kusama, .azero:
+        case .kusama, .azero, .chia:
             return 12
         case .chia:
             return 18
@@ -268,6 +268,8 @@ public enum Blockchain: Equatable, Hashable {
             return "Terra Classic"
         case .terraV2:
             return "Terra"
+        case .chia:
+            return "Chia Network"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -782,6 +784,8 @@ extension Blockchain {
             return URL(string: "https://discord.com/channels/669268347736686612/953697793476821092")!
         case .telos:
             return URL(string: "https://app.telos.net/testnet/developers")
+        case .chia:
+            return URL(string: "https://xchdev.com/#!faucet.md")!
         default:
             return nil
         }
@@ -955,7 +959,11 @@ extension Blockchain {
                 return URL(string: "https://teloscan.io/address/\(address)")!
             }
         case .chia(let testnet):
-            return URL(string: "https://xchscan.com/address/\(address)")!
+            if testnet {
+                return URL(string: "https://testnet10.spacescan.io/")!
+            } else {
+                return URL(string: "https://xchscan.com/")!
+            }
         }
     }
 }
