@@ -41,7 +41,7 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
                         // We should calculate the balance from outputs
                         // Because they don't contain tokens
                         var balance = unspents.reduce(0, { $0 + $1.amount })
-                        balance /= Blockchain.cardano(shelley: false).decimalValue
+                        balance /= Blockchain.cardano.decimalValue
                         let txHashes = balanceResponse.reduce([], { $0 + $1.transactions })
                         return CardanoAddressResponse(balance: balance, recentTransactionsHashes: txHashes, unspentOutputs: unspents)
                     }
@@ -94,7 +94,7 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
                     }
 
                     let balance = Decimal(string: addressData.caBalance.getCoin) ?? 0
-                    let convertedValue = balance / Blockchain.cardano(shelley: false).decimalValue
+                    let convertedValue = balance / Blockchain.cardano.decimalValue
                     let transactions = addressData.caTxList.map { $0.ctbId }
 
                     return AdaliteBalanceResponse(balance: convertedValue, transactions: transactions)

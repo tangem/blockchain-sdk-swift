@@ -822,6 +822,7 @@
 		2D78F4082A5C3CA400962CCA /* Chia */ = {
 			isa = PBXGroup;
 			children = (
+				2D19767B2A613F27006C4D3E /* Common */,
 				2D78F4092A5C3CBE00962CCA /* ChiaAddressService.swift */,
 				2D78F40B2A5C3CCF00962CCA /* ChiaWalletManager.swift */,
 				2D1976722A613AC3006C4D3E /* ChiaTransactionBuilder.swift */,
@@ -1548,7 +1549,6 @@
 			isa = PBXGroup;
 			children = (
 				B0A1D39C2625A1150013F0BF /* EthereumUtils.swift */,
-				2D78F4132A5D955700962CCA /* ClvmProgram.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";

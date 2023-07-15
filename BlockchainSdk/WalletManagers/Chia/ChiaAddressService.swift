@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import BitcoinCore
 
 /*
  PuzzleHash Chia documentation - https://docs.chia.net/guides/crash-course/signatures/
@@ -18,21 +17,24 @@ public struct ChiaAddressService: AddressService {
     
     private(set) var isTestnet: Bool
     
+    private let constans = ChiaAddressService.Constans.self
+    
     // MARK: - Implementation
     
     public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
-        let puzzle = Data(hex: "ff02ffff01ff02ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff0bff80808080ff80808080ff0b80ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b0") + (publicKey.blockchainKey) + Data(hex: "ff018080")
+        let puzzle = Data(hex: constans.puzzleReveal.rawValue) + (publicKey.blockchainKey) + Data(hex: constans.fingerprint.rawValue)
         
         let puzzleHash = try ClvmNode.Decoder(programBytes: puzzle.bytes).deserialize().hash()
-        let encodeValue = Bech32(isBech32m: true).encode(HRP(isTestnet: isTestnet).rawValue, values: puzzleHash)
+        let hrp = HRP(isTestnet: isTestnet).rawValue
+        let encodeValue = Bech32(constant: .bech32m).encode(hrp, values: puzzleHash)
         
         return .init(value: encodeValue, publicKey: publicKey, type: addressType)
     }
     
     public func validate(_ address: String) -> Bool {
         do {
-            try Bech32(isBech32m: true).tryDecode(address)
-            return true
+            let result = try Bech32(constant: .bech32m).decode(address)
+            return HRP(isTestnet: isTestnet).rawValue == result.hrp
         } catch {
             assertionFailure(error.localizedDescription)
             return false
@@ -42,17 +44,24 @@ public struct ChiaAddressService: AddressService {
 }
 
 extension ChiaAddressService {
-    public enum HRP: String {
+    enum HRP: String {
         case txch, xch
         
-        public init(isTestnet: Bool) {
+        init(isTestnet: Bool) {
             self = isTestnet ? .txch : .xch
         }
     }
 }
 
 extension ChiaAddressService {
-    public enum ChiaAddressError: Error {
+    enum ChiaAddressError: Error {
         case invalidHumanReadablePart
+    }
+}
+
+extension ChiaAddressService {
+    enum Constans: String {
+        case puzzleReveal = "ff02ffff01ff02ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff0bff80808080ff80808080ff0b80ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b0"
+        case fingerprint = "ff018080"
     }
 }

@@ -24,7 +24,7 @@ public enum Blockchain: Equatable, Hashable {
     case rsk
     case bitcoinCash(testnet: Bool)
     case binance(testnet: Bool)
-    case cardano(shelley: Bool)
+    case cardano
     case xrp(curve: EllipticCurve)
     case ducatus
     case tezos(curve: EllipticCurve)
@@ -144,7 +144,7 @@ public enum Blockchain: Equatable, Hashable {
             return 9
         case .polkadot(let testnet):
             return testnet ? 12 : 10
-        case .kusama, .azero:
+        case .kusama, .azero, .chia:
             return 12
         case .chia:
             return 18
@@ -268,6 +268,8 @@ public enum Blockchain: Equatable, Hashable {
             return "Terra Classic"
         case .terraV2:
             return "Terra"
+        case .chia:
+            return "Chia Network"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -671,7 +673,6 @@ extension Blockchain: Codable {
         let key = try container.decode(String.self, forKey: Keys.key)
         let curveString = try container.decode(String.self, forKey: Keys.curve)
         let isTestnet = try container.decode(Bool.self, forKey: Keys.testnet)
-        let shelley = try? container.decode(Bool.self, forKey: Keys.shelley)
         
         guard let curve = EllipticCurve(rawValue: curveString) else {
             throw BlockchainSdkError.decodingFailed
@@ -686,7 +687,7 @@ extension Blockchain: Codable {
         case "rsk": self = .rsk
         case "bitcoinCash": self = .bitcoinCash(testnet: isTestnet)
         case "binance": self = .binance(testnet: isTestnet)
-        case "cardano": self =  .cardano(shelley: shelley!)
+        case "cardano": self = .cardano
         case "xrp": self = .xrp(curve: curve)
         case "ducatus": self = .ducatus
         case "tezos": self = .tezos(curve: curve)
@@ -727,10 +728,6 @@ extension Blockchain: Codable {
         try container.encode(codingKey, forKey: Keys.key)
         try container.encode(curve.rawValue, forKey: Keys.curve)
         try container.encode(isTestnet, forKey: Keys.testnet)
-        
-        if case let .cardano(shelley) = self {
-            try container.encode(shelley, forKey: Keys.shelley)
-        }
     }
 }
 
@@ -787,6 +784,8 @@ extension Blockchain {
             return URL(string: "https://discord.com/channels/669268347736686612/953697793476821092")!
         case .telos:
             return URL(string: "https://app.telos.net/testnet/developers")
+        case .chia:
+            return URL(string: "https://xchdev.com/#!faucet.md")!
         default:
             return nil
         }
@@ -960,7 +959,11 @@ extension Blockchain {
                 return URL(string: "https://teloscan.io/address/\(address)")!
             }
         case .chia(let testnet):
-            return URL(string: "https://xchscan.com/address/\(address)")!
+            if testnet {
+                return URL(string: "https://testnet10.spacescan.io/")!
+            } else {
+                return URL(string: "https://xchscan.com/")!
+            }
         }
     }
 }
@@ -988,8 +991,7 @@ extension Blockchain {
         case "rsk", "rsktoken": return .rsk
         case "bch": return .bitcoinCash(testnet: isTestnet)
         case "binance", "binanceasset": return .binance(testnet: isTestnet)
-        case "cardano": return .cardano(shelley: false)
-        case "cardano-s": return .cardano(shelley: true)
+        case "cardano", "cardano-s": return .cardano
         case "xrp": return .xrp(curve: curve)
         case "duc": return .ducatus
         case "xtz": return .tezos(curve: curve)

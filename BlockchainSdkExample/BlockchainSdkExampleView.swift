@@ -45,11 +45,6 @@ struct BlockchainSdkExampleView: View {
                     Toggle("Testnet", isOn: $model.isTestnet)
                         .disabled(model.card == nil)
                     
-                    if model.blockchainsWithShelleySelection.contains(model.blockchainName) {
-                        Toggle("Shelley", isOn: $model.isShelley)
-                            .disabled(model.card == nil)
-                    }
-    
                     if #available(iOS 14.0, *) {
                         DisclosureGroup(model.tokenSectionName, isExpanded: $model.tokenExpanded) {
                             Toggle("Enabled", isOn: $model.tokenEnabled)

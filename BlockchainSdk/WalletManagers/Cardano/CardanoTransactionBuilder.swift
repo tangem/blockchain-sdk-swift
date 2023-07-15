@@ -16,11 +16,9 @@ class CardanoTransactionBuilder {
     var unspentOutputs: [CardanoUnspentOutput]? = nil
     let kDecimalNumber: Int16 = 6
     let kProtocolMagic: UInt64 = 764824073
-    let shelleyCard: Bool
     
-    internal init(walletPublicKey: Data, shelleyCard: Bool) {
+    internal init(walletPublicKey: Data) {
         self.walletPublicKey = walletPublicKey
-        self.shelleyCard = shelleyCard
     }
     
 	public func buildForSign(transaction: Transaction, walletAmount: Decimal, isEstimated: Bool) throws -> (hash:Data, bodyItem: CBOR)  {
@@ -64,7 +62,7 @@ class CardanoTransactionBuilder {
             throw CardanoError.noUnspents
         }
         
-        let convertValue = Blockchain.cardano(shelley: shelleyCard).decimalValue
+        let convertValue = Blockchain.cardano.decimalValue
         let feeConverted = transaction.fee.amount.value * convertValue
         let amountConverted = transaction.amount.value * convertValue
         let walletAmountConverted = walletAmount * convertValue
