@@ -8,6 +8,36 @@
 
 import Foundation
 
-struct ChiaNetworkUrl {
+enum ChiaEndpointType {
+    case fireacademy(isTestnet: Bool)
+}
+
+struct ChiaNetworkEndpoint {
+    public let url: URL
+    public let apiKeyValue: String?
     
+    init(url: URL, apiKeyValue: String?) {
+        self.url = url
+        self.apiKeyValue = apiKeyValue
+    }
+}
+
+struct ChiaNetworkNode {
+    let apiKeyValue: String
+    let endpointType: ChiaEndpointType
+    
+    var endpoint: ChiaNetworkEndpoint {
+        switch endpointType {
+        case .fireacademy(let testnet):
+            let url = testnet ?
+                URL(string: "https://kraken.fireacademy.io/leaflet-testnet10/")! :
+                URL(string: "https://kraken.fireacademy.io/leaflet/")!
+            return ChiaNetworkEndpoint(url: url, apiKeyValue: apiKeyValue)
+        }
+    }
+    
+    init(apiKeyValue: String, endpointType: ChiaEndpointType) {
+        self.apiKeyValue = apiKeyValue
+        self.endpointType = endpointType
+    }
 }
