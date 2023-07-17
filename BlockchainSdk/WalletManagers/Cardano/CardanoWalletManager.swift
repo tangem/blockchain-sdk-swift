@@ -71,8 +71,7 @@ extension CardanoWalletManager: TransactionSender {
                     guard let self else {
                         return .anyFail(error: WalletError.empty)
                     }
-                    print("dataForSign ->>", dataForSign.hex)
-                    
+
                     return signer.sign(hash: dataForSign, walletPublicKey: self.wallet.publicKey)
                 }
                 .tryMap { [weak self] signature -> Data in
@@ -87,8 +86,6 @@ extension CardanoWalletManager: TransactionSender {
                     guard let self else {
                         return .anyFail(error: WalletError.empty)
                     }
-
-                    print("builtTransaction.hex ->> ", builtTransaction.hex)
 
                     return self.networkService.send(transaction: builtTransaction)
                         .mapError { SendTxError(error: $0, tx: builtTransaction.hex) }

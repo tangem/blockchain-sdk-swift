@@ -138,7 +138,7 @@ class CardanoTests: XCTestCase {
                                  assets: [
                                     CardanoUnspentOutput.Asset(
                                         policyID: "f43a62fdc3965df486de8a0d32fe800963589c41b38946602a0dc535",
-                                        assetNameHex: 41474958,
+                                        assetNameHex: "41474958",
                                         amount: 50000000
                                     )
                                  ]),
@@ -154,7 +154,7 @@ class CardanoTests: XCTestCase {
                                  assets: [
                                     CardanoUnspentOutput.Asset(
                                         policyID: "f43a62fdc3965df486de8a0d32fe800963589c41b38946602a0dc535",
-                                        assetNameHex: 41474958,
+                                        assetNameHex: "41474958",
                                         amount: 42070000
                                     )
                                  ]),

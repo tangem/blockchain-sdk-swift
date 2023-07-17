@@ -33,8 +33,6 @@ extension CardanoTransactionBuilder {
         if preSigningOutput.error != .ok {
             throw WalletError.failedToBuildTx
         }
-        
-        print("preSigningOutput.dataHash ->>", preSigningOutput.dataHash)
 
         return preSigningOutput.dataHash
     }
@@ -47,9 +45,6 @@ extension CardanoTransactionBuilder {
         signatures.add(data: signature.signature)
         
         let publicKeys = DataVector()
-        
-        print("signature ->>", signature.description)
-        
         // WalletCore used here `.ed25519Cardano` curve with 128 bytes publicKey.
         // Calculated as: chainCode + secondPubKey + chainCode
         // The number of bytes in a Cardano public key (two ed25519 public key + chain code).
@@ -74,8 +69,6 @@ extension CardanoTransactionBuilder {
         if output.encoded.isEmpty {
             throw WalletError.failedToBuildTx
         }
-
-        print("output.encoded ->>", output.encoded.hex)
         
         return output.encoded
     }
@@ -104,7 +97,7 @@ extension CardanoTransactionBuilder {
         if outputs.isEmpty {
             throw CardanoError.noUnspents
         }
-        print("outputs ->>", outputs)
+
         input.utxos = outputs.map { output -> CardanoTxInput in
             CardanoTxInput.with {
                 $0.outPoint.txHash = Data(hexString: output.transactionHash)
