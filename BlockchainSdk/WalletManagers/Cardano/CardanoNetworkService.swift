@@ -73,7 +73,8 @@ public struct CardanoUnspentOutput {
 extension CardanoUnspentOutput {
     struct Asset {
         let policyID: String
-        let assetName: String
+        /// Token/Asset symbol in hexadecimal format `ASCII` encoding e.g. `41474958 = AGIX`
+        let assetNameHex: String
         let amount: Int
     }
 }

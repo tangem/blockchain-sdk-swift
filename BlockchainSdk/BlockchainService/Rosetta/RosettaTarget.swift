@@ -11,14 +11,11 @@ import Moya
 
 enum RosettaUrl {
     case getBlockRosetta(apiKey: String)
-    case tangemRosetta
     
     var url: String {
         switch self {
         case .getBlockRosetta(let apiKey):
             return "https://ada.getblock.io/mainnet/\(apiKey)"
-        case .tangemRosetta:
-            return "https://ada.tangem.com"
         }
     }
 }

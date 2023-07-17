@@ -32,20 +32,14 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
     }
     
     func getInfo(addresses: [String], tokens: [Token]) -> AnyPublisher<CardanoAddressResponse, Error> {
-        getUnspents(addresses: addresses)
-            .flatMap {[weak self] unspents -> AnyPublisher<CardanoAddressResponse, Error> in
-                guard let self = self else { return .emptyFail }
+        Publishers
+            .Zip(getUnspents(addresses: addresses), getBalance(addresses: addresses))
+            .tryMap { [weak self] unspents, responses -> CardanoAddressResponse in
+                guard let self = self else {
+                    throw WalletError.empty
+                }
 
-                return self.getBalance(addresses: addresses)
-                    .map { balanceResponse -> CardanoAddressResponse in
-                        // We should calculate the balance from outputs
-                        // Because they don't contain tokens
-                        var balance = unspents.reduce(0, { $0 + $1.amount })
-                        balance /= Blockchain.cardano.decimalValue
-                        let txHashes = balanceResponse.reduce([], { $0 + $1.transactions })
-                        return CardanoAddressResponse(balance: balance, tokenBalances: [:], recentTransactionsHashes: txHashes, unspentOutputs: unspents)
-                    }
-                    .eraseToAnyPublisher()
+                return mapToCardanoAddressResponse(responses: responses, unspentOutputs: unspents, tokens: tokens)
             }
             .retry(2)
             .eraseToAnyPublisher()
@@ -56,51 +50,96 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
             .requestPublisher(.unspents(addresses: addresses, url: adaliteUrl))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(AdaliteBaseResponseDTO<String, [AdaliteUnspentOutputResponseDTO]>.self)
-            .tryMap { response throws -> [CardanoUnspentOutput] in
-                guard let unspentOutputs = response.right else {
+            .tryMap { [weak self] response throws -> [CardanoUnspentOutput] in
+                guard let self, let unspentOutputs = response.right else {
                     throw response.left ?? WalletError.empty
                 }
 
-                return unspentOutputs.compactMap { output -> CardanoUnspentOutput? in
-                    // We need to ignore unspents with tokens (until we start supporting tokens)
-                    guard output.cuCoins.getTokens.isEmpty else {
-                        return nil
-                    }
-                    
-                    guard let amount = Decimal(string: output.cuCoins.getCoin) else {
-                        return nil
-                    }
-                    
-                    return CardanoUnspentOutput(address: output.cuAddress,
-                                                amount: amount,
-                                                outputIndex: output.cuOutIndex,
-                                                transactionHash: output.cuId,
-                                                assets: [])
-                }
+                return unspentOutputs.compactMap { self.mapToCardanoUnspentOutput($0) }
             }
             .eraseToAnyPublisher()
     }
     
     private func getBalance(addresses: [String]) -> AnyPublisher<[AdaliteBalanceResponse], Error> {
-        .multiAddressPublisher(addresses: addresses, requestFactory: { [weak self] in
+        .multiAddressPublisher(addresses: addresses) { [weak self] in
             guard let self = self else { return .emptyFail }
             
             return self.provider
                 .requestPublisher(.address(address: $0, url: self.adaliteUrl))
                 .filterSuccessfulStatusAndRedirectCodes()
                 .map(AdaliteBaseResponseDTO<String, AdaliteBalanceResponseDTO>.self)
-                .tryMap { response throws -> AdaliteBalanceResponse in
-                    guard let addressData = response.right else {
+                .tryMap { [weak self] response throws -> AdaliteBalanceResponse in
+                    guard let self, let balanceResponse = response.right else {
                         throw response.left ?? WalletError.empty
                     }
 
-                    let balance = Decimal(string: addressData.caBalance.getCoin) ?? 0
-                    let convertedValue = balance / Blockchain.cardano.decimalValue
-                    let transactions = addressData.caTxList.map { $0.ctbId }
-
-                    return AdaliteBalanceResponse(balance: convertedValue, transactions: transactions)
+                    return self.mapToAdaliteBalanceResponse(balanceResponse)
                 }
                 .eraseToAnyPublisher()
-        })
+        }
+    }
+}
+
+// MARK: - Mapping
+
+private extension AdaliteNetworkProvider {
+    func mapToAdaliteBalanceResponse(_ balanceResponse: AdaliteBalanceResponseDTO) -> AdaliteBalanceResponse {
+        let transactions = balanceResponse.caTxList.map { $0.ctbId }
+        return AdaliteBalanceResponse(transactions: transactions)
+    }
+    
+    func mapToCardanoUnspentOutput(_ output: AdaliteUnspentOutputResponseDTO) -> CardanoUnspentOutput? {
+        guard let amount = Decimal(string: output.cuCoins.getCoin) else {
+            return nil
+        }
+        
+        let assets: [CardanoUnspentOutput.Asset] = output.cuCoins.getTokens.compactMap { token in
+            guard let amount = Int(token.quantity) else {
+                return nil
+            }
+            
+            return CardanoUnspentOutput.Asset(policyID: token.policyId, assetNameHex: token.assetName, amount: amount)
+        }
+        
+        return CardanoUnspentOutput(address: output.cuAddress,
+                                    amount: amount,
+                                    outputIndex: output.cuOutIndex,
+                                    transactionHash: output.cuId,
+                                    assets: assets)
+    }
+    
+    func mapToCardanoAddressResponse(
+        responses: [AdaliteBalanceResponse],
+        unspentOutputs: [CardanoUnspentOutput],
+        tokens: [Token]
+    ) -> CardanoAddressResponse {
+        let txHashes = responses.flatMap { $0.transactions }
+
+        var coinBalance: Decimal = unspentOutputs.reduce(0) { result, output in
+            result + output.amount / Blockchain.cardano.decimalValue
+        }
+
+        var tokenBalances: [Token: Decimal] = tokens.reduce(into: [:]) { tokenBalances, token in
+            // Collecting of all output balance
+            tokenBalances[token, default: 0] += unspentOutputs.reduce(0) { result, output in
+                // Sum with each asset in output amount
+                result + output.assets.reduce(into: 0) { result, asset in
+                    // We can not compare full contractAddress and policyId
+                    // Because from API we receive only the policyId e.g. `1d7f33bd23d85e1a25d87d86fac4f199c3197a2f7afeb662a0f34e1e`
+                    // But from our API sometimes we receive the contractAddress like `policyId + assetNameHex`
+                    // e.g. 1d7f33bd23d85e1a25d87d86fac4f199c3197a2f7afeb662a0f34e1e776f726c646d6f62696c65746f6b656e
+                    if token.contractAddress.contains(asset.policyID) {
+                        result += Decimal(asset.amount) / token.decimalValue
+                    }
+                }
+            }
+        }
+        
+        return CardanoAddressResponse(
+            balance: coinBalance,
+            tokenBalances: tokenBalances,
+            recentTransactionsHashes: txHashes,
+            unspentOutputs: unspentOutputs
+        )
     }
 }

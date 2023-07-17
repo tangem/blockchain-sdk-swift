@@ -45,10 +45,8 @@ class CardanoWalletManager: BaseManager, WalletManager {
                     response.unspentOutputs.first(where: { $0.transactionHash.lowercased() == hashLowercased }) != nil {
                     mutableTx.status = .confirmed
                 }
-            } else {
-                if response.recentTransactionsHashes.first(where: { $0.lowercased() == hashLowercased }) != nil {
-                    mutableTx.status = .confirmed
-                }
+            } else if response.recentTransactionsHashes.first(where: { $0.lowercased() == hashLowercased }) != nil {
+                mutableTx.status = .confirmed
             }
             return mutableTx
         }

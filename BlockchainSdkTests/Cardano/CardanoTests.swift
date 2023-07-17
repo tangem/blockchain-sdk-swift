@@ -111,10 +111,10 @@ class CardanoTests: XCTestCase {
     // https://cardanoscan.io/transaction/3ac6b76c63e109494823fe13e6f6d52544896a5ab81ae711ce56f039d6777bd1
     func testSignTransferToken() throws {
         let token = Token(
-                name: "SingularityNET",
-                symbol: "AGIX",
-                contractAddress: "f43a62fdc3965df486de8a0d32fe800963589c41b38946602a0dc535",
-                decimalCount: 8
+            name: "SingularityNET",
+            symbol: "AGIX",
+            contractAddress: "f43a62fdc3965df486de8a0d32fe800963589c41b38946602a0dc535",
+            decimalCount: 8
         )
         
         let transaction = Transaction(
@@ -138,7 +138,7 @@ class CardanoTests: XCTestCase {
                                  assets: [
                                     CardanoUnspentOutput.Asset(
                                         policyID: "f43a62fdc3965df486de8a0d32fe800963589c41b38946602a0dc535",
-                                        assetName: "AGIX",
+                                        assetNameHex: 41474958,
                                         amount: 50000000
                                     )
                                  ]),
@@ -150,11 +150,11 @@ class CardanoTests: XCTestCase {
             CardanoUnspentOutput(address: "addr1vyn6tvyc3daxl8wwvm2glay287dfa7xjgdm2jdl308ksy9canqafn",
                                  amount: 3384392,
                                  outputIndex: 1,
-                                 transactionHash: "482d88eb2d3b40b8a4e6bb8545cef842a5703e8f9eab9e3caca5c2edd1f31a7f",
+                                 transactionHash: "d5958a70c20fdc7aa3537bf830730b1cef3dd5b2d12dc0360be130a18df71cd9",
                                  assets: [
                                     CardanoUnspentOutput.Asset(
                                         policyID: "f43a62fdc3965df486de8a0d32fe800963589c41b38946602a0dc535",
-                                        assetName: "AGIX",
+                                        assetNameHex: 41474958,
                                         amount: 42070000
                                     )
                                  ]),

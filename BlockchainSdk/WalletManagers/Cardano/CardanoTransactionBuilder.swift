@@ -115,23 +115,35 @@ extension CardanoTransactionBuilder {
                 if !output.assets.isEmpty {
                     $0.tokenAmount = output.assets.map { asset in
                         CardanoTokenAmount.with {
-                            $0.policyID = asset.policyID // "9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d77"
-                            $0.assetName = asset.assetName // "CUBY"
-                            $0.amount = BigInt(asset.amount).serialize() //  Data(hexString: "2dc6c0")! // 3000000
+                            $0.policyID = asset.policyID
+                            $0.assetNameHex = asset.assetNameHex
+                            // Amount in hexadecimal e.g. 2dc6c0 = 3000000
+                            $0.amount = BigInt(asset.amount).serialize()
                         }
                     }
                 }
             }
         }
-        
-        input.plan = AnySigner.plan(input: input, coin: coinType)
-        
+                
         switch transaction.amount.type {
         case .token(let token):
+            // We should use this HACK here to find
+            // right policyID and the exadecimal asset name
+            // Must be used exactly same as in utxo
+            let asset = outputs.first(where: { output in
+                output.assets.contains(where: { asset in
+                    token.contractAddress.contains(asset.policyID)
+                })
+            })?.assets.first
+
+            guard let asset else {
+                throw WalletError.failedToBuildTx
+            }
+            
             var toTokenBundle = CardanoTokenBundle()
             let toToken = CardanoTokenAmount.with {
-                $0.policyID = token.contractAddress
-                $0.assetName = token.symbol
+                $0.policyID = asset.policyID
+                $0.assetNameHex = asset.assetNameHex
                 // Should set amount as hex e.g. "01312d00" = 20000000
                 $0.amount = BigUInt(uint64Amount).serialize()
             }
@@ -158,7 +170,13 @@ extension CardanoTransactionBuilder {
         case .reserve:
             throw WalletError.empty
         }
-
+        
+        input.plan = AnySigner.plan(input: input, coin: coinType)
+        
+        if input.plan.error != .ok {
+            throw WalletError.failedToBuildTx
+        }
+        
         return input
     }
 }
