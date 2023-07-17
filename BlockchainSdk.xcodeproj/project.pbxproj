@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D0F67902A6542EE000865A5 /* ChiaModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0F678F2A6542EE000865A5 /* ChiaModels.swift */; };
+		2D0F67922A658DBE000865A5 /* ChiaConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0F67912A658DBE000865A5 /* ChiaConstant.swift */; };
 		2D1976732A613AC3006C4D3E /* ChiaTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1976722A613AC3006C4D3E /* ChiaTransactionBuilder.swift */; };
 		2D1976762A613B58006C4D3E /* ChiaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1976752A613B58006C4D3E /* ChiaNetworkService.swift */; };
 		2D1976782A613B86006C4D3E /* ChiaNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1976772A613B86006C4D3E /* ChiaNetworkProvider.swift */; };
@@ -391,6 +393,8 @@
 
 /* Begin PBXFileReference section */
 		0C79DB7FEDD8D4029AFA208D /* Pods-BlockchainSdk.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.release.xcconfig"; sourceTree = "<group>"; };
+		2D0F678F2A6542EE000865A5 /* ChiaModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaModels.swift; sourceTree = "<group>"; };
+		2D0F67912A658DBE000865A5 /* ChiaConstant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaConstant.swift; sourceTree = "<group>"; };
 		2D1976722A613AC3006C4D3E /* ChiaTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaTransactionBuilder.swift; sourceTree = "<group>"; };
 		2D1976752A613B58006C4D3E /* ChiaNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaNetworkService.swift; sourceTree = "<group>"; };
 		2D1976772A613B86006C4D3E /* ChiaNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaNetworkProvider.swift; sourceTree = "<group>"; };
@@ -808,6 +812,8 @@
 			isa = PBXGroup;
 			children = (
 				2D19767D2A6331D3006C4D3E /* ClvmProgram.swift */,
+				2D0F678F2A6542EE000865A5 /* ChiaModels.swift */,
+				2D0F67912A658DBE000865A5 /* ChiaConstant.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -2392,7 +2398,9 @@
 				2D535E892A0CC9920081EB76 /* TWCurve+.swift in Sources */,
 				5DC7DD60243F83E6008F83F2 /* XRPAddressService.swift in Sources */,
 				B0CDFF252641488900B9BA9D /* EthereumJsonRpcProvider.swift in Sources */,
+				2D0F67922A658DBE000865A5 /* ChiaConstant.swift in Sources */,
 				2DA8AB0D2A433A1000C75D85 /* ExceptionHandler.swift in Sources */,
+				2D0F67902A6542EE000865A5 /* ChiaModels.swift in Sources */,
 				DAD65BB02955F201003B3E8D /* EthereumApiKeys.swift in Sources */,
 				2DDE5BAD29C4F8D200A5B708 /* EthereumWalletAssembly.swift in Sources */,
 				B0A63E0D26259D01001FDB7A /* EthereumTransactionParams.swift in Sources */,

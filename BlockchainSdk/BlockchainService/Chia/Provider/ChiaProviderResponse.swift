@@ -17,5 +17,5 @@ struct ChiaSendTransactionResponse: Decodable {
 }
 
 struct ChiaCoinRecordResponse: Decodable {
-    let coin: String
+    let coin: ChiaCoin
 }

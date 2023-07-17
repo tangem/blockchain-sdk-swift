@@ -27,16 +27,15 @@ class ChiaNetworkService: MultiNetworkProvider {
     
     // MARK: - Implementation
     
-    func getInfo(address: String) -> AnyPublisher<TONWalletInfo, Error> {
-        return .emptyFail
-    }
-    
-    func getFee(address: String, message: String) -> AnyPublisher<[Fee], Error> {
-        return .emptyFail
-    }
-    
-    func send(message: String) -> AnyPublisher<String, Error> {
-        return .emptyFail
+    func getUnspents(puzzleHash: String) -> AnyPublisher<[ChiaCoin], Error> {
+        providerPublisher { provider in
+            provider
+                .getUnspents(puzzleHash: puzzleHash)
+                .map { response in
+                    return response.map { $0.coin }
+                }
+                .eraseToAnyPublisher()
+        }
     }
     
 }

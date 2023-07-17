@@ -17,12 +17,12 @@ public struct ChiaAddressService: AddressService {
     
     private(set) var isTestnet: Bool
     
-    private let constans = ChiaAddressService.Constans.self
+    private let constants = ChiaConstant.self
     
     // MARK: - Implementation
     
     public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
-        let puzzle = Data(hex: constans.puzzleReveal.rawValue) + (publicKey.blockchainKey) + Data(hex: constans.fingerprint.rawValue)
+        let puzzle = constants.getPuzzle(walletPublicKey: publicKey.blockchainKey)
         
         let puzzleHash = try ClvmNode.Decoder(programBytes: puzzle.bytes).deserialize().hash()
         let hrp = HRP(isTestnet: isTestnet).rawValue
@@ -40,7 +40,6 @@ public struct ChiaAddressService: AddressService {
             return false
         }
     }
-    
 }
 
 extension ChiaAddressService {
@@ -56,12 +55,5 @@ extension ChiaAddressService {
 extension ChiaAddressService {
     enum ChiaAddressError: Error {
         case invalidHumanReadablePart
-    }
-}
-
-extension ChiaAddressService {
-    enum Constans: String {
-        case puzzleReveal = "ff02ffff01ff02ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff0bff80808080ff80808080ff0b80ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b0"
-        case fingerprint = "ff018080"
     }
 }

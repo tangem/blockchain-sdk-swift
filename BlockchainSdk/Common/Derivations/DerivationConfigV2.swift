@@ -80,7 +80,7 @@ public struct DerivationConfigV2: DerivationConfig {
         case .terraV1, .terraV2:
             return [.default: "m/44'/330'/0'/0/0"]
         case .chia:
-            return [:]
+            return [.default: "m"]
         }
     }
 }

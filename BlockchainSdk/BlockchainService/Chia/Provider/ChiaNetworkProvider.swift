@@ -38,4 +38,33 @@ struct ChiaNetworkProvider: HostProvider {
     
     // MARK: - Implementation
     
+    func getUnspents(puzzleHash: String) -> AnyPublisher<[ChiaCoinRecordResponse], Error> {
+        let target = ChiaProviderTarget(
+            node: node,
+            targetType: .getCoinRecordsBy(puzzleHashBody: .init(puzzleHash: puzzleHash))
+        )
+        
+        return requestPublisher(for: target)
+    }
+    
+    func sendTransaction(body: ChiaTransactionBody) -> AnyPublisher<Void, Error> {
+        return .emptyFail
+    }
+    
+    // MARK: - Private Implementation
+    
+    private func requestPublisher<T: Decodable>(for target: ChiaProviderTarget) -> AnyPublisher<T, Error> {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        
+        return network.requestPublisher(target)
+            .filterSuccessfulStatusAndRedirectCodes()
+            .map(T.self, using: decoder)
+            .mapError { error in
+//                assertionFailure(error.localizedDescription)
+                return WalletError.empty
+            }
+            .eraseToAnyPublisher()
+    }
+    
 }

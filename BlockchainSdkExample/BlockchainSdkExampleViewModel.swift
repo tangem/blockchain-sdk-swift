@@ -70,6 +70,10 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                                                                           kaspaSecondaryApiUrl: nil,
                                                                           tronGridApiKey: "",
                                                                           tonCenterApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
+                                                                          fireacademyApiKeys: .init(
+                                                                            mainnetApiKey: "be200a1d-2b9f-4716-b428-d393f564e999",
+                                                                            testnetApiKey: "be200a1d-2b9f-4716-b428-d393f564e999"
+                                                                          ),
                                                                           quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
                                                                           quickNodeBscCredentials: .init(apiKey: "", subdomain: ""),
                                                                           blockscoutCredentials: .init(login: "", password: ""),
@@ -462,6 +466,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .terraV1,
             .terraV2,
             .cronos,
+            .chia(testnet: false)
         ]
         
         return blockchains.map { ($0.displayName, $0.codingKey) }
