@@ -8,6 +8,12 @@
 
 import Foundation
 
+protocol ChiaCondition {
+    var conditionCode: Int64 { get set }
+
+    func toProgram() -> ClvmProgram
+}
+
 struct CreateCoinCondition {
     private let destinationPuzzleHash: Data
     private let amount: Int64

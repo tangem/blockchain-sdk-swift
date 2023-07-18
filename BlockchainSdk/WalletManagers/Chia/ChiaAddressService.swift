@@ -24,7 +24,7 @@ public struct ChiaAddressService: AddressService {
     public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
         let puzzle = constants.getPuzzle(walletPublicKey: publicKey.blockchainKey)
         
-        let puzzleHash = try ClvmNode.Decoder(programBytes: puzzle.bytes).deserialize().hash()
+        let puzzleHash = try ClvmProgram.Decoder(programBytes: puzzle.bytes).deserialize().hash()
         let hrp = ChiaConstant.HRP(isTestnet: isTestnet).rawValue
         let encodeValue = Bech32(constant: .bech32m).encode(hrp, values: puzzleHash)
         
