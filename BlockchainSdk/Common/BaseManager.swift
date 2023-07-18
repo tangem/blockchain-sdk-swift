@@ -94,7 +94,7 @@ class BaseManager: WalletProvider {
     func updatePublisher() -> AnyPublisher<WalletManagerState, Never> {
         if !state.value.isLoading {
             // we should postpone an update call to prevent missing a cached value by PassthroughSubject
-            DispatchQueue.global().async {
+            DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
                 self.update()
             }
         }
