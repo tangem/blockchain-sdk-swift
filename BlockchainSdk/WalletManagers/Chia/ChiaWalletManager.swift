@@ -29,7 +29,7 @@ final class ChiaWalletManager: BaseManager, WalletManager {
     init(wallet: Wallet, networkService: ChiaNetworkService, txBuilder: ChiaTransactionBuilder) throws {
         self.networkService = networkService
         self.txBuilder = txBuilder
-        self.puzzleHash = ChiaConstant.getPuzzle(walletPublicKey: wallet.publicKey.blockchainKey).hex
+        self.puzzleHash = try ChiaConstant.getPuzzleHash(address: wallet.address).hex
         super.init(wallet: wallet)
     }
     
@@ -39,15 +39,13 @@ final class ChiaWalletManager: BaseManager, WalletManager {
         cancellable = networkService
             .getUnspents(puzzleHash: puzzleHash)
             .sink(
-                receiveCompletion: { [unowned self] completionSubscription in
+                receiveCompletion: { completionSubscription in
                     if case let .failure(error) = completionSubscription {
-                        // TODO: - Hander error completion
                         completion(.failure(error))
                     }
                 },
                 receiveValue: { [unowned self] response in
-                    print(response)
-                    completion(.success(()))
+                    self.update(with: response, completion: completion)
                 }
             )
     }
@@ -91,4 +89,21 @@ final class ChiaWalletManager: BaseManager, WalletManager {
         return .emptyFail
     }
     
+}
+
+// MARK: - Private Implementation
+
+private extension ChiaWalletManager {
+    private func update(with coins: [ChiaCoin], completion: @escaping (Result<Void, Error>) -> Void) {
+        let balance = coins.map { $0.amount }.reduce(0, +)
+        
+        if balance != wallet.amounts[.coin]?.value.int64Value {
+            wallet.transactions = []
+        }
+        
+        wallet.add(coinValue: .init(balance / wallet.blockchain.decimalValue.int64Value))
+        txBuilder.unspentCoins = coins
+        
+        completion(.success(()))
+    }
 }

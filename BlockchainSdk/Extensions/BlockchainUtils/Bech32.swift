@@ -53,6 +53,7 @@ public class Bech32 {
                 chk ^= ((top >> i) & 1) == 0 ? 0 : gen[Int(i)]
             }
         }
+        
         return chk
     }
     
@@ -75,7 +76,7 @@ public class Bech32 {
     private func verifyChecksum(hrp: String, checksum: Data) -> Bool {
         var data = expandHrp(hrp)
         data.append(checksum)
-        return polymod(data) == 1
+        return polymod(data) == constant.rawValue
     }
     
     /// Create checksum

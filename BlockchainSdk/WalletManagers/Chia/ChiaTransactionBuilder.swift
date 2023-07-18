@@ -10,13 +10,19 @@ import Foundation
 import CryptoKit
 
 final class ChiaTransactionBuilder {
-    // MARK: - Properties
+    // MARK: - Public Properties
     
-    let unspentCoins: [String]
+    var unspentCoins: [ChiaCoin]
+    
+    // MARK: - Private Properties
+    
+    private let walletPublicKey: Data
+    private var coinSpends: [ChiaCoinSpend] = []
     
     // MARK: - Init
     
-    init(unspentCoins: [String] = []) {
+    init(walletPublicKey: Data, unspentCoins: [ChiaCoin] = []) {
+        self.walletPublicKey = walletPublicKey
         self.unspentCoins = unspentCoins
     }
     
@@ -28,7 +34,25 @@ final class ChiaTransactionBuilder {
     ///   - destination: Destination address transaction
     /// - Returns: Array of bytes for transaction
     func buildForSign(amount: Amount, destination: String) throws -> Data {
-        throw WalletError.empty
+        guard !unspentCoins.isEmpty else {
+            throw WalletError.failedToBuildTx
+        }
+        
+        let change = try calculateChange(amount: amount, destination: destination)
+        let coinSpends = try toChiaCoinSpends(change: change, destination: destination, amount: amount)
+        
+        let hashesForSign = coinSpends.map { _ in
+//            let solutionHash = ClvmNode.Decoder(
+//                programBytes: Data(hex: $0.solution).dro .hexToBytes().drop(1).dropLast(1).toByteArray()
+//            ).deserialize().hash()
+
+//            (solutionHash + it.coin.calculateId() + genesisChallenge).hashAugScheme()
+//            return Data()
+        }
+        
+//        return Data(hashesForSign)
+        
+        return Data()
     }
     
     func buildToSend(signatures: Data) throws -> ChiaTransactionBody {
@@ -37,18 +61,20 @@ final class ChiaTransactionBuilder {
     
     // MARK: - Private Implementation
     
-    private func toChiaCoinSpends(
-        unspentCoins: [ChiaCoin],
-        change: Int64
-    ) throws -> [ChiaCoinSpend] {
+    private func toChiaCoinSpends(change: Int64, destination: String, amount: Amount) throws -> [ChiaCoinSpend] {
+        let coinSpends = unspentCoins.map {
+            ChiaCoinSpend(coin: $0, puzzleReveal: ChiaConstant.getPuzzle(walletPublicKey: walletPublicKey).hex, solution: "")
+        }
+        
+        let sendCondition = try CreateCoinCondition(
+            destinationPuzzleHash: ChiaConstant.getPuzzleHash(address: destination),
+            amount: amount.value.int64Value
+        )
+        
         throw WalletError.empty
     }
     
-    private func calculateChange(
-        amount: Amount,
-        destination: String,
-        unspentCoins: [String]
-    ) throws -> UInt64 {
+    private func calculateChange(amount: Amount, destination: String) throws -> Int64 {
         throw WalletError.empty
     }
     

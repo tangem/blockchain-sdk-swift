@@ -25,7 +25,7 @@ public struct ChiaAddressService: AddressService {
         let puzzle = constants.getPuzzle(walletPublicKey: publicKey.blockchainKey)
         
         let puzzleHash = try ClvmNode.Decoder(programBytes: puzzle.bytes).deserialize().hash()
-        let hrp = HRP(isTestnet: isTestnet).rawValue
+        let hrp = ChiaConstant.HRP(isTestnet: isTestnet).rawValue
         let encodeValue = Bech32(constant: .bech32m).encode(hrp, values: puzzleHash)
         
         return .init(value: encodeValue, publicKey: publicKey, type: addressType)
@@ -34,20 +34,10 @@ public struct ChiaAddressService: AddressService {
     public func validate(_ address: String) -> Bool {
         do {
             let result = try Bech32(constant: .bech32m).decode(address)
-            return HRP(isTestnet: isTestnet).rawValue == result.hrp
+            return ChiaConstant.HRP(isTestnet: isTestnet).rawValue == result.hrp
         } catch {
             assertionFailure(error.localizedDescription)
             return false
-        }
-    }
-}
-
-extension ChiaAddressService {
-    enum HRP: String {
-        case txch, xch
-        
-        init(isTestnet: Bool) {
-            self = isTestnet ? .txch : .xch
         }
     }
 }

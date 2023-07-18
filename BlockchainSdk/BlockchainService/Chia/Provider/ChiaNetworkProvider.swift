@@ -38,7 +38,7 @@ struct ChiaNetworkProvider: HostProvider {
     
     // MARK: - Implementation
     
-    func getUnspents(puzzleHash: String) -> AnyPublisher<[ChiaCoinRecordResponse], Error> {
+    func getUnspents(puzzleHash: String) -> AnyPublisher<ChiaCoinRecordsResponse, Error> {
         let target = ChiaProviderTarget(
             node: node,
             targetType: .getCoinRecordsBy(puzzleHashBody: .init(puzzleHash: puzzleHash))
@@ -61,7 +61,7 @@ struct ChiaNetworkProvider: HostProvider {
             .filterSuccessfulStatusAndRedirectCodes()
             .map(T.self, using: decoder)
             .mapError { error in
-//                assertionFailure(error.localizedDescription)
+                print(error.localizedDescription)
                 return WalletError.empty
             }
             .eraseToAnyPublisher()

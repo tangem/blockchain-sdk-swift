@@ -9,13 +9,15 @@
 /* Begin PBXBuildFile section */
 		2D0F67902A6542EE000865A5 /* ChiaModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0F678F2A6542EE000865A5 /* ChiaModels.swift */; };
 		2D0F67922A658DBE000865A5 /* ChiaConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0F67912A658DBE000865A5 /* ChiaConstant.swift */; };
+		2D0F67962A66C036000865A5 /* ChiaProviderRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0F67952A66C036000865A5 /* ChiaProviderRequests.swift */; };
+		2D0F67982A66C491000865A5 /* ChiaCreateCoinCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0F67972A66C491000865A5 /* ChiaCreateCoinCondition.swift */; };
 		2D1976732A613AC3006C4D3E /* ChiaTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1976722A613AC3006C4D3E /* ChiaTransactionBuilder.swift */; };
 		2D1976762A613B58006C4D3E /* ChiaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1976752A613B58006C4D3E /* ChiaNetworkService.swift */; };
 		2D1976782A613B86006C4D3E /* ChiaNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1976772A613B86006C4D3E /* ChiaNetworkProvider.swift */; };
 		2D19767A2A613B9A006C4D3E /* ChiaNetworkUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1976792A613B9A006C4D3E /* ChiaNetworkUrl.swift */; };
 		2D19767E2A6331D3006C4D3E /* ClvmProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D19767D2A6331D3006C4D3E /* ClvmProgram.swift */; };
 		2D1976812A633EDD006C4D3E /* ChiaProviderTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1976802A633EDD006C4D3E /* ChiaProviderTarget.swift */; };
-		2D1976832A633EFA006C4D3E /* ChiaProviderResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1976822A633EFA006C4D3E /* ChiaProviderResponse.swift */; };
+		2D1976832A633EFA006C4D3E /* ChiaProviderResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1976822A633EFA006C4D3E /* ChiaProviderResponses.swift */; };
 		2D19768A2A63E82B006C4D3E /* TONProviderModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1976852A63E82B006C4D3E /* TONProviderModels.swift */; };
 		2D19768B2A63E82B006C4D3E /* TONProviderResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1976862A63E82B006C4D3E /* TONProviderResponse.swift */; };
 		2D19768C2A63E82B006C4D3E /* TONProviderTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1976872A63E82B006C4D3E /* TONProviderTarget.swift */; };
@@ -395,13 +397,15 @@
 		0C79DB7FEDD8D4029AFA208D /* Pods-BlockchainSdk.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.release.xcconfig"; sourceTree = "<group>"; };
 		2D0F678F2A6542EE000865A5 /* ChiaModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaModels.swift; sourceTree = "<group>"; };
 		2D0F67912A658DBE000865A5 /* ChiaConstant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaConstant.swift; sourceTree = "<group>"; };
+		2D0F67952A66C036000865A5 /* ChiaProviderRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaProviderRequests.swift; sourceTree = "<group>"; };
+		2D0F67972A66C491000865A5 /* ChiaCreateCoinCondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaCreateCoinCondition.swift; sourceTree = "<group>"; };
 		2D1976722A613AC3006C4D3E /* ChiaTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaTransactionBuilder.swift; sourceTree = "<group>"; };
 		2D1976752A613B58006C4D3E /* ChiaNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaNetworkService.swift; sourceTree = "<group>"; };
 		2D1976772A613B86006C4D3E /* ChiaNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaNetworkProvider.swift; sourceTree = "<group>"; };
 		2D1976792A613B9A006C4D3E /* ChiaNetworkUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaNetworkUrl.swift; sourceTree = "<group>"; };
 		2D19767D2A6331D3006C4D3E /* ClvmProgram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClvmProgram.swift; sourceTree = "<group>"; };
 		2D1976802A633EDD006C4D3E /* ChiaProviderTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaProviderTarget.swift; sourceTree = "<group>"; };
-		2D1976822A633EFA006C4D3E /* ChiaProviderResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaProviderResponse.swift; sourceTree = "<group>"; };
+		2D1976822A633EFA006C4D3E /* ChiaProviderResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaProviderResponses.swift; sourceTree = "<group>"; };
 		2D1976852A63E82B006C4D3E /* TONProviderModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProviderModels.swift; sourceTree = "<group>"; };
 		2D1976862A63E82B006C4D3E /* TONProviderResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProviderResponse.swift; sourceTree = "<group>"; };
 		2D1976872A63E82B006C4D3E /* TONProviderTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProviderTarget.swift; sourceTree = "<group>"; };
@@ -812,6 +816,7 @@
 			isa = PBXGroup;
 			children = (
 				2D19767D2A6331D3006C4D3E /* ClvmProgram.swift */,
+				2D0F67972A66C491000865A5 /* ChiaCreateCoinCondition.swift */,
 				2D0F678F2A6542EE000865A5 /* ChiaModels.swift */,
 				2D0F67912A658DBE000865A5 /* ChiaConstant.swift */,
 			);
@@ -823,7 +828,8 @@
 			children = (
 				2D1976772A613B86006C4D3E /* ChiaNetworkProvider.swift */,
 				2D1976802A633EDD006C4D3E /* ChiaProviderTarget.swift */,
-				2D1976822A633EFA006C4D3E /* ChiaProviderResponse.swift */,
+				2D1976822A633EFA006C4D3E /* ChiaProviderResponses.swift */,
+				2D0F67952A66C036000865A5 /* ChiaProviderRequests.swift */,
 			);
 			path = Provider;
 			sourceTree = "<group>";
@@ -2329,6 +2335,8 @@
 				2D29A7F729D5C2AE00359A0C /* TWPublicKeyType+.swift in Sources */,
 				DA67A69629E51FEA001B6799 /* CosmosWalletManager.swift in Sources */,
 				2D78F40C2A5C3CCF00962CCA /* ChiaWalletManager.swift in Sources */,
+				2D0F67962A66C036000865A5 /* ChiaProviderRequests.swift in Sources */,
+				2D0F67982A66C491000865A5 /* ChiaCreateCoinCondition.swift in Sources */,
 				DAB87CB1297ADCDC00FF30EB /* GetBlockBlockBookConfig.swift in Sources */,
 				EF0DA78D285246A90081092A /* DashWalletManager.swift in Sources */,
 				EF32FEBF2A306E51002ED43F /* AddressService.swift in Sources */,
@@ -2455,7 +2463,7 @@
 				5DF8D5B5243DB80C00186BF0 /* CardanoAddressService.swift in Sources */,
 				EF3FFFFD2A27740400C6E7D9 /* AdaliteUnspentOutputResponseDTO.swift in Sources */,
 				2D9A919529BB8BFF00476EA6 /* TONWalletManager.swift in Sources */,
-				2D1976832A633EFA006C4D3E /* ChiaProviderResponse.swift in Sources */,
+				2D1976832A633EFA006C4D3E /* ChiaProviderResponses.swift in Sources */,
 				5DF91519253DB7B300B927DD /* TezosAddress.swift in Sources */,
 				5DF91521253DB89800B927DD /* TezosTarget.swift in Sources */,
 				EFF56B4129C30265002B6952 /* EthereumFeeParameters.swift in Sources */,

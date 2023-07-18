@@ -8,26 +8,18 @@
 
 import Foundation
 
-struct ChiaPuzzleHashBody: Encodable {
-    let puzzleHash: String
-}
-
-struct ChiaTransactionBody {
-    let spendBundle: ChiaSpendBundle
-}
-
-struct ChiaSpendBundle {
+struct ChiaSpendBundle: Codable {
     let aggregatedSignature: String
     let coinSpends: ChiaCoinSpend
 }
 
-struct ChiaCoinSpend {
+struct ChiaCoinSpend: Codable {
     let coin: ChiaCoin
     let puzzleReveal: String
     let solution: String
 }
 
-struct ChiaCoin: Decodable {
+struct ChiaCoin: Codable {
     // Has to be encoded as a number in JSON, therefore Long is used. It's enough to encode ~1/3 of Chia total supply.
     let amount: Int64
     let parentCoinInfo: String

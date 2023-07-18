@@ -223,8 +223,8 @@ public enum Blockchain: Equatable, Hashable {
             return "CRO"
         case .telos:
             return "TLOS"
-        case .chia:
-            return "XCH"
+        case .chia(let testnet):
+            return testnet ? "TXCH" : "XCH"
         }
     }
     

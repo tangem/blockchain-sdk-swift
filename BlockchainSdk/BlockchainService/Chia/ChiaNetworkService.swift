@@ -32,7 +32,7 @@ class ChiaNetworkService: MultiNetworkProvider {
             provider
                 .getUnspents(puzzleHash: puzzleHash)
                 .map { response in
-                    return response.map { $0.coin }
+                    return response.coinRecords.map { $0.coin }
                 }
                 .eraseToAnyPublisher()
         }
