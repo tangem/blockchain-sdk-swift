@@ -46,7 +46,7 @@ extension CosmosChain {
             }
         case .terraV1:
             return [
-                "https://terra.nownodes.io/\(config.nowNodesApiKey)",
+                "https://lunc.nownodes.io/\(config.nowNodesApiKey)",
                 "https://terra-classic-lcd.publicnode.com", // This is a redirect from https://columbus-lcd.terra.dev
             ]
         case .terraV2:
