@@ -64,6 +64,7 @@ class BaseManager: WalletProvider {
             switch result {
             case .success:
                 self.didFinishUpdating(error: nil)
+                self.latestUpdateTime = Date()
             case .failure(let error):
                 self.didFinishUpdating(error: error)
             }
@@ -109,7 +110,6 @@ class BaseManager: WalletProvider {
             newState = .failed(error)
         } else {
             newState = .loaded(wallet)
-            latestUpdateTime = Date()
         }
 
         state.send(newState)
