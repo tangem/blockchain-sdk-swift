@@ -17,7 +17,7 @@ class CardanoWalletManager: BaseManager, WalletManager {
     
     func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
-            .getInfo(addresses: wallet.addresses.map { $0.value })
+            .getInfo(addresses: wallet.addresses.map { $0.value }, tokens: cardTokens)
             .sink(receiveCompletion: {[unowned self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
                     self.wallet.amounts = [:]
@@ -32,6 +32,10 @@ class CardanoWalletManager: BaseManager, WalletManager {
     private func updateWallet(with response: CardanoAddressResponse) {
         wallet.add(coinValue: response.balance)
         transactionBuilder.update(outputs: response.unspentOutputs)
+        
+        for (key, value) in response.tokenBalances {
+            wallet.add(tokenValue: value, for: key)
+        }
 
         wallet.transactions = wallet.transactions.map {
             var mutableTx = $0
@@ -41,10 +45,8 @@ class CardanoWalletManager: BaseManager, WalletManager {
                     response.unspentOutputs.first(where: { $0.transactionHash.lowercased() == hashLowercased }) != nil {
                     mutableTx.status = .confirmed
                 }
-            } else {
-                if response.recentTransactionsHashes.first(where: { $0.lowercased() == hashLowercased }) != nil {
-                    mutableTx.status = .confirmed
-                }
+            } else if response.recentTransactionsHashes.first(where: { $0.lowercased() == hashLowercased }) != nil {
+                mutableTx.status = .confirmed
             }
             return mutableTx
         }
@@ -76,8 +78,8 @@ extension CardanoWalletManager: TransactionSender {
                     guard let self else {
                         throw WalletError.empty
                     }
-                    
-                    let signatureInfo = SignatureInfo(signature: signature, publicKey: self.wallet.publicKey.blockchainKey)
+
+                    let signatureInfo = SignatureInfo(signature: signature, publicKey: wallet.publicKey.blockchainKey)
                     return try self.transactionBuilder.buildForSend(transaction: transaction, signature: signatureInfo)
                 }
                 .flatMap { [weak self] builtTransaction -> AnyPublisher<String, Error> in
@@ -106,7 +108,7 @@ extension CardanoWalletManager: TransactionSender {
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         let dummy = Transaction(
             amount: amount,
-            fee: .zero(for: .cardano(shelley: true)),
+            fee: Fee(.zeroCoin(for: .cardano)),
             sourceAddress: defaultSourceAddress,
             destinationAddress: destination,
             changeAddress: defaultChangeAddress

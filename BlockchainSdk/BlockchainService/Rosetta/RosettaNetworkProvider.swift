@@ -31,7 +31,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
         provider = NetworkProvider<RosettaTarget>(configuration: configuration)
     }
     
-    func getInfo(addresses: [String]) -> AnyPublisher<CardanoAddressResponse, Error> {
+    func getInfo(addresses: [String], tokens: [Token]) -> AnyPublisher<CardanoAddressResponse, Error> {
         typealias Response = (coins: RosettaCoinsResponse, address: String)
         
         return AnyPublisher<Response, Error>.multiAddressPublisher(addresses: addresses) { [weak self] address -> AnyPublisher<Response, Error> in
@@ -52,12 +52,28 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
                 self.mapToCardanoUnspentOutput(response: $0.coins, address: $0.address)
             }
 
-            // We should calculate the balance from outputs
-            // Because they don't contain tokens
-            var balance = unspentOutputs.reduce(0) { $0 + $1.amount }
-            balance = balance / Blockchain.cardano.decimalValue
+            var coinBalance: Decimal = 0
+            var tokenBalances: [Token: Decimal] = tokens.reduce(into: [:]) { tokenBalances, token in
+                // Collecting of all output balance
+                tokenBalances[token, default: 0] += unspentOutputs.reduce(0) { result, output in
+                    // Sum with each asset in output amount
+                    result + output.assets.reduce(into: 0) { result, asset in
+                        // We can not compare full contractAddress and policyId
+                        // Because from API we receive only the policyId e.g. `1d7f33bd23d85e1a25d87d86fac4f199c3197a2f7afeb662a0f34e1e`
+                        // But from our API sometimes we receive the contractAddress like `policyId + assetNameHex`
+                        // e.g. 1d7f33bd23d85e1a25d87d86fac4f199c3197a2f7afeb662a0f34e1e776f726c646d6f62696c65746f6b656e
+                        if token.contractAddress.hasPrefix(asset.policyID) {
+                            result += Decimal(asset.amount) / token.decimalValue
+                        }
+                    }
+                }
+            }
+
+            unspentOutputs.forEach { output in
+                coinBalance += output.amount / Blockchain.cardano.decimalValue
+            }
             
-            return CardanoAddressResponse(balance: balance, recentTransactionsHashes: [], unspentOutputs: unspentOutputs)
+            return CardanoAddressResponse(balance: coinBalance, tokenBalances: tokenBalances, recentTransactionsHashes: [], unspentOutputs: unspentOutputs)
         }
         .eraseToAnyPublisher()
     }
@@ -96,22 +112,80 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     }
     
     private func mapToCardanoUnspentOutput(response: RosettaCoinsResponse, address: String) -> [CardanoUnspentOutput] {
-        let coins = response.coins ?? []
+        guard let coins = response.coins else {
+            return []
+        }
+
         let outputs: [CardanoUnspentOutput] = coins.compactMap { coin -> CardanoUnspentOutput? in
-            guard coin.amount?.currency?.symbol == cardanoCurrencySymbol,
-                  coin.metadata == nil, // filter tokens while we don't support them
-                  let splittedIdentifier = coin.coinIdentifier?.identifier?.split(separator: ":"),
-                  splittedIdentifier.count == 2,
-                  let index = Int(splittedIdentifier[1]) else {
+            // It should be always true, but someone added this check
+            // I'll leave like exist
+            guard coin.amount?.currency?.symbol == cardanoCurrencySymbol else {
                 return nil
             }
             
-            return CardanoUnspentOutput(address: address,
-                                        amount: Decimal(coin.amount?.value) ?? 0,
-                                        outputIndex: index,
-                                        transactionHash: String(splittedIdentifier[0]))
+            guard let (index, hash) = parseIdentifier(coin.coinIdentifier?.identifier),
+                  let amountValue = coin.amount?.value,
+                  let amount = Decimal(amountValue) else {
+                return nil
+            }
+
+            let assets = mapToAssets(metadata: coin.metadata)
+            return CardanoUnspentOutput(
+                address: address,
+                amount: amount,
+                outputIndex: index,
+                transactionHash: hash,
+                assets: assets
+            )
         }
 
         return outputs
+    }
+    
+    /// We receive every identifier in format
+    /// `482d88eb2d3b40b8a4e6bb8545cef842a5703e8f9eab9e3caca5c2edd1f31a7f:0`
+    /// When the first part is transactionHash
+    /// And the second path is outputIndex
+    func parseIdentifier(_ identifier: String?) -> (index: Int, hash: String)? {
+        guard let splittedIdentifier = identifier?.split(separator: ":"), splittedIdentifier.count == 2 else {
+            return nil
+        }
+        
+        guard let index = Int(splittedIdentifier[1])else {
+            return nil
+        }
+        
+        return (index: index, hash: String(splittedIdentifier[0]))
+    }
+        
+    func mapToAssets(metadata: [String: [RosettaMetadataValue]]?) -> [CardanoUnspentOutput.Asset] {
+        guard let metadata = metadata else {
+            return []
+        }
+        
+        let assets = metadata.values.reduce([]) { result, values -> [CardanoUnspentOutput.Asset] in
+            let tokens = values.reduce([]) { result, value -> [CardanoUnspentOutput.Asset] in
+                    guard let tokens = value.tokens else {
+                        return result
+                    }
+
+                    return result + tokens.compactMap { tokenValue -> CardanoUnspentOutput.Asset? in
+                        guard let value = tokenValue.value,
+                              let amount = Int(value),
+                              // symbol in ASCII HEX, e.g. 41474958 = AGIX
+                              let assetNameHex = tokenValue.currency?.symbol,
+                              let policyId = tokenValue.currency?.metadata?.policyId else {
+                            return nil
+                        }
+                        
+                        return CardanoUnspentOutput.Asset(policyID: policyId, assetNameHex: assetNameHex, amount: amount)
+                    }
+                }
+            
+            
+            return result + tokens
+        }
+        
+        return assets
     }
 }
