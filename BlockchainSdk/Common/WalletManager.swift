@@ -13,36 +13,45 @@ import Combine
 @available(iOS 13.0, *)
 public protocol WalletManager: WalletProvider, BlockchainDataProvider, TransactionSender, TransactionCreator, TransactionFeeProvider {
     var cardTokens: [Token] { get }
-    func update(completion: @escaping (Result<Void, Error>) -> Void)
-    func updatePublisher() -> AnyPublisher<Wallet, Error>
-    
+    func update()
+    func updatePublisher() -> AnyPublisher<WalletManagerState, Never>
+    func setNeedsUpdate()
     func removeToken(_ token: Token)
     func addToken(_ token: Token)
     func addTokens(_ tokens: [Token])
 }
 
-extension WalletManager {
-    func updatePublisher() -> AnyPublisher<Wallet, Error> {
-        Deferred {
-            Future { promise in
-                self.update { result in
-                    switch result {
-                    case .success:
-                        promise(.success(self.wallet))
-                    case .failure(let error):
-                        promise(.failure(error))
-                    }
-                }
-            }
+@available(iOS 13.0, *)
+public enum WalletManagerState {
+    case initial
+    case loading
+    case loaded(Wallet)
+    case failed(Error)
+
+    public var isInitialState: Bool {
+        switch self {
+        case .initial:
+            return true
+        default:
+            return false
         }
-        .eraseToAnyPublisher()
+    }
+
+    public var isLoading: Bool {
+        switch self {
+        case .loading:
+            return true
+        default:
+            return false
+        }
     }
 }
 
 @available(iOS 13.0, *)
 public protocol WalletProvider: AnyObject {
     var wallet: Wallet { get set }
-    var walletPublisher: Published<Wallet>.Publisher { get }
+    var walletPublisher: AnyPublisher<Wallet, Never> { get }
+    var statePublisher: AnyPublisher<WalletManagerState, Never> { get }
 }
 
 public protocol BlockchainDataProvider {

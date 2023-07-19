@@ -24,7 +24,7 @@ class BitcoinWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkService.host }
     var outputsCount: Int? { loadedUnspents.count }
     
-    func update(completion: @escaping (Result<Void, Error>)-> Void)  {
+    override func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService.getInfo(addresses: wallet.addresses.map { $0.value })
             .eraseToAnyPublisher()
             .subscribe(on: DispatchQueue.global())

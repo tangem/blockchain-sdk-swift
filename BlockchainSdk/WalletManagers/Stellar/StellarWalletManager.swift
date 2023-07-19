@@ -52,7 +52,7 @@ class StellarWalletManager: BaseManager, WalletManager {
     var networkService: StellarNetworkService!
     var currentHost: String { networkService.host  }
     
-    func update(completion: @escaping (Result<(), Error>)-> Void)  {
+    override func update(completion: @escaping (Result<(), Error>)-> Void)  {
         cancellable = networkService
             .getInfo(accountId: wallet.address, isAsset: !cardTokens.isEmpty)
             .sink(receiveCompletion: {[unowned self] completionSubscription in
