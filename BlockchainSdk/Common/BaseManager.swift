@@ -11,19 +11,72 @@ import Combine
 
 @available(iOS 13.0, *)
 class BaseManager: WalletProvider {
-    @Published var wallet: Wallet
+    var wallet: Wallet {
+        get { _wallet.value }
+        set { _wallet.value = newValue }
+    }
+    
     var cardTokens: [Token] = []
     
     var defaultSourceAddress: String { wallet.address }
     var defaultChangeAddress: String { wallet.address }
-    
+
     var cancellable: Cancellable? = nil
-    var walletPublisher: Published<Wallet>.Publisher { $wallet }
+
+    var walletPublisher: AnyPublisher<Wallet, Never> { _wallet.eraseToAnyPublisher() }
+    var statePublisher: AnyPublisher<WalletManagerState, Never> { state.eraseToAnyPublisher() }
+
+    private var latestUpdateTime: Date?
+
+    // TODO: move constant into config
+    private var canUpdate: Bool {
+        if let latestUpdateTime,
+           latestUpdateTime.distance(to: Date()) <= 10 {
+            return false
+        }
+
+        return true
+    }
+
+    private var _wallet: CurrentValueSubject<Wallet, Never>
+    private var state: CurrentValueSubject<WalletManagerState, Never> = .init(.initial)
+    private var loadingPublisher: PassthroughSubject<WalletManagerState, Never> = .init()
 
     init(wallet: Wallet) {
-        self.wallet = wallet
+        self._wallet = .init(wallet)
     }
-    
+
+    func update() {
+        if state.value.isLoading {
+            return
+        }
+
+        guard canUpdate else {
+            didFinishUpdating(error: nil)
+            return
+        }
+
+        state.send(.loading)
+
+        update { [weak self] result in
+            guard let self else { return }
+
+            switch result {
+            case .success:
+                self.didFinishUpdating(error: nil)
+                self.latestUpdateTime = Date()
+            case .failure(let error):
+                self.didFinishUpdating(error: error)
+            }
+        }
+    }
+
+    func update(completion: @escaping (Result<Void, Error>) -> Void) {}
+
+    func setNeedsUpdate() {
+        latestUpdateTime = nil
+    }
+
     func removeToken(_ token: Token) {
         cardTokens.removeAll(where: { $0 == token })
         wallet.remove(token: token)
@@ -37,6 +90,30 @@ class BaseManager: WalletProvider {
     
     func addTokens(_ tokens: [Token]) {
         tokens.forEach { addToken($0) }
+    }
+
+    func updatePublisher() -> AnyPublisher<WalletManagerState, Never> {
+        if !state.value.isLoading {
+            // we should postpone an update call to prevent missing a cached value by PassthroughSubject
+            DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+                self.update()
+            }
+        }
+
+        return loadingPublisher.eraseToAnyPublisher()
+    }
+
+    private func didFinishUpdating(error: Error?) {
+        var newState: WalletManagerState
+
+        if let error {
+            newState = .failed(error)
+        } else {
+            newState = .loaded(wallet)
+        }
+
+        state.send(newState)
+        loadingPublisher.send(newState)
     }
 }
 
