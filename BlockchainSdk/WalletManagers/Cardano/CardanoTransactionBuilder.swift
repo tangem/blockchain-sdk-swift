@@ -153,10 +153,8 @@ extension CardanoTransactionBuilder {
             input.transferMessage.amount = minAmount
             input.transferMessage.tokenAmount = toTokenBundle
         case .coin:
-            let minChange = (1 * decimalValue).uint64Value
-            let acceptableChangeRange: ClosedRange<UInt64> = 1 ... minChange
-            
-            if acceptableChangeRange.contains(input.plan.change) {
+            // Min change is 1 ADA. Cardano decimal is 6.
+            if (1 ... 1000000).contains(input.plan.change) {
                 throw CardanoError.lowAda
             }
             
