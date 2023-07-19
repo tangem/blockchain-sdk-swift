@@ -127,7 +127,7 @@ extension CardanoTransactionBuilder {
             // Must be used exactly same as in utxo
             let asset = outputs.first(where: { output in
                 output.assets.contains(where: { asset in
-                    token.contractAddress.contains(asset.policyID)
+                    token.contractAddress.hasPrefix(asset.policyID)
                 })
             })?.assets.first
 
