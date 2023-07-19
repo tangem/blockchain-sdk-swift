@@ -170,7 +170,8 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
                     }
 
                     return result + tokens.compactMap { tokenValue -> CardanoUnspentOutput.Asset? in
-                        guard let amount = Int(tokenValue.value ?? ""),
+                        guard let value = tokenValue.value,
+                              let amount = Int(value),
                               // symbol in ASCII HEX, e.g. 41474958 = AGIX
                               let assetNameHex = tokenValue.currency?.symbol,
                               let policyId = tokenValue.currency?.metadata?.policyId else {
