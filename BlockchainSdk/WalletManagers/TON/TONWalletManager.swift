@@ -33,7 +33,7 @@ final class TONWalletManager: BaseManager, WalletManager {
     
     // MARK: - Implementation
     
-    func update(completion: @escaping (Result<Void, Error>) -> Void) {
+    override func update(completion: @escaping (Result<Void, Error>) -> Void) {
         cancellable = networkService
             .getInfo(address: wallet.address)
             .sink(

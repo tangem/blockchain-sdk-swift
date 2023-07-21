@@ -10,7 +10,6 @@ import Foundation
 import TangemSdk
 
 public struct Wallet {
-    
     // MARK: - Properties
 
     public let blockchain: Blockchain

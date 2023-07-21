@@ -25,7 +25,7 @@ class PolkadotWalletManager: BaseManager, WalletManager {
         super.init(wallet: wallet)
     }
     
-    func update(completion: @escaping (Result<(), Error>) -> Void) {
+    override func update(completion: @escaping (Result<(), Error>) -> Void) {
         cancellable = networkService.getInfo(for: wallet.address)
             .sink {
                 switch $0 {

@@ -18,7 +18,7 @@ class BinanceWalletManager: BaseManager, WalletManager {
     
     var currentHost: String { networkService.host }
     
-    func update(completion: @escaping (Result<Void, Error>)-> Void) {
+    override func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(address: wallet.address)
             .sink(receiveCompletion: {[unowned self] completionSubscription in
