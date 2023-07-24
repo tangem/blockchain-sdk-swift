@@ -33,13 +33,13 @@ final class ChiaTransactionBuilder {
     ///   - amount: Amount transaction
     ///   - destination: Destination address transaction
     /// - Returns: Array of bytes for transaction
-    func buildForSign(amount: Amount, destination: String) throws -> Data {
+    func buildForSign(transaction: Transaction) throws -> Data {
         guard !unspentCoins.isEmpty else {
             throw WalletError.failedToBuildTx
         }
         
-        let change = try calculateChange(amount: amount, destination: destination)
-        let coinSpends = try toChiaCoinSpends(change: change, destination: destination, amount: amount)
+        let change = try calculateChange(transaction: transaction, unspentCoins: unspentCoins)
+        let coinSpends = try toChiaCoinSpends(change: change, destination: transaction.destinationAddress, amount: transaction.amount)
         
         let hashesForSign = coinSpends.map { _ in
 //            let solutionHash = ClvmNode.Decoder(
@@ -74,8 +74,9 @@ final class ChiaTransactionBuilder {
         throw WalletError.empty
     }
     
-    private func calculateChange(amount: Amount, destination: String) throws -> Int64 {
-        throw WalletError.empty
+    private func calculateChange(transaction: Transaction, unspentCoins: [ChiaCoin]) throws -> Int64 {
+        let fullAmount = unspentCoins.map { $0.amount }.reduce(0, +)
+        return fullAmount - (transaction.amount.value.int64Value + transaction.fee.amount.value.int64Value)
     }
     
 }

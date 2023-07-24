@@ -58,10 +58,7 @@ final class ChiaWalletManager: BaseManager, WalletManager {
                     throw WalletError.failedToBuildTx
                 }
                 
-                let input = try self.txBuilder.buildForSign(
-                    amount: transaction.amount,
-                    destination: transaction.destinationAddress
-                )
+                let input = try self.txBuilder.buildForSign(transaction: transaction)
                 
                 throw WalletError.empty
             }
