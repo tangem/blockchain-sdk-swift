@@ -16,7 +16,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkService.host }
     var allowsFeeSelection: Bool { false }
     
-    func update(completion: @escaping (Result<Void, Error>) -> Void) {
+    override func update(completion: @escaping (Result<Void, Error>) -> Void) {
         let unconfirmedTransactionHashes = wallet.transactions
             .filter { $0.status == .unconfirmed }
             .compactMap { $0.hash }

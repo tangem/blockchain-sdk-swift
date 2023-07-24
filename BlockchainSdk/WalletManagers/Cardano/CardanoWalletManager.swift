@@ -43,7 +43,7 @@ class CardanoWalletManager: BaseManager, WalletManager {
     
     var currentHost: String { networkService.host }
     
-    func update(completion: @escaping (Result<Void, Error>)-> Void) {
+    override func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(addresses: wallet.addresses.map { $0.value })
             .sink(receiveCompletion: {[unowned self] completionSubscription in
