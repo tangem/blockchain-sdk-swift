@@ -24,6 +24,10 @@ struct CardanoWalletAssembly: WalletManagerAssembly {
                     baseUrl: .main,
                     configuration: input.networkConfig
                 ).eraseToAnyCardanoNetworkProvider(),
+                RosettaNetworkProvider(
+                    baseUrl: .tangemRosetta,
+                    configuration: input.networkConfig
+                ).eraseToAnyCardanoNetworkProvider(),
             ])
             $0.networkService = service
         }
