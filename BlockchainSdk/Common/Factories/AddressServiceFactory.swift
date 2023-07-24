@@ -30,7 +30,7 @@ public struct AddressServiceFactory {
         case .stellar:
             return StellarAddressService()
         case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair,
-                .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos, .telos:
+                .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos, .telos, .octa:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
