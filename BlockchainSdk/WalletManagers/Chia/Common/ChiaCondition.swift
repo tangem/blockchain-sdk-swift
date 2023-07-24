@@ -24,3 +24,12 @@ struct CreateCoinCondition {
         self.amount = amount
     }
 }
+
+// always valid condition
+struct RemarkCondition: ChiaCondition {
+    var conditionCode: Int64 = 1
+    
+    func toProgram() -> ClvmProgram {
+        ClvmProgram.fromList(list: [])
+    }
+}

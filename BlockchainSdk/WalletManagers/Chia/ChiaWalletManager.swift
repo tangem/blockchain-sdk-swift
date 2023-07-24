@@ -35,7 +35,7 @@ final class ChiaWalletManager: BaseManager, WalletManager {
     
     // MARK: - Implementation
     
-    func update(completion: @escaping (Result<Void, Error>) -> Void) {
+    override func update(completion: @escaping (Result<Void, Error>) -> Void) {
         cancellable = networkService
             .getUnspents(puzzleHash: puzzleHash)
             .sink(

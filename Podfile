@@ -11,6 +11,9 @@ def common_pods
   
   pod 'TangemWalletCore', :git => 'https://github.com/tangem/wallet-core-binaries-ios.git', :tag => '3.2.1-tangem2'
 # pod 'TangemWalletCore', :path => '../wallet-core-binaries-ios'
+
+  # Pods for Chia-BLS
+  pod 'Chia-BLS', :path => '../chia-bls'
 end
 
 

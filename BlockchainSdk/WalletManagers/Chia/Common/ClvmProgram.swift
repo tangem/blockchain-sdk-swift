@@ -23,6 +23,22 @@ class ClvmProgram {
         self.right = right
     }
     
+    // MARK: - Static
+    
+    static func fromBytes(bytes: Array<Byte>) -> ClvmProgram {
+        return ClvmProgram(atom: bytes, left: nil, right: nil)
+    }
+    
+    static func fromList(list: [ClvmProgram]) -> ClvmProgram {
+        var result: ClvmProgram? = nil
+        
+        for item in list.reversed() {
+            result = ClvmProgram(atom: nil, left: item, right: result)
+        }
+        
+        return result ?? .init()
+    }
+    
     // MARK: - Hashable
     
     func hash() throws -> Data {

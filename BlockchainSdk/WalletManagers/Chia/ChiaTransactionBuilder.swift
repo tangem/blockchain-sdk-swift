@@ -79,3 +79,12 @@ final class ChiaTransactionBuilder {
     }
     
 }
+
+extension ChiaCoin {
+    
+    private func calculateId() -> Data {
+        return Data()
+//        parentCoinInfo.hexadecimal + puzzleHash.hexadecimal + amount.
+    }
+    
+}
