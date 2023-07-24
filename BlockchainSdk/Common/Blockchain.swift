@@ -130,7 +130,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash, .kaspa, .ravencoin:
             return 8
-        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos, .telos:
+        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos, .telos, .octa:
             return 18
         case  .cardano, .xrp, .tezos, .tron, .cosmos, .terraV1, .terraV2:
             return 6
@@ -142,8 +142,6 @@ public enum Blockchain: Equatable, Hashable {
             return testnet ? 12 : 10
         case .kusama, .azero:
             return 12
-        case .octa:
-            return 18
         }
     }
     

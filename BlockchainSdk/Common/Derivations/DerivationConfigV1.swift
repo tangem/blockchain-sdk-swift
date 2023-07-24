@@ -31,7 +31,7 @@ public struct DerivationConfigV1: DerivationConfig {
             return [.legacy: "m/1852'/1815'/0'/0/0", .default: "m/1852'/1815'/0'/0/0"]
         case .bitcoinCash:
             return [.legacy: "m/44'/145'/0'/0/0", .default: "m/44'/145'/0'/0/0"]
-        case .ethereum, .ethereumPoW, .ethereumFair, .saltPay:
+        case .ethereum, .ethereumPoW, .ethereumFair, .saltPay, .octa:
             return [.default: "m/44'/60'/0'/0/0"]
         case .ethereumClassic:
             return [.default: "m/44'/61'/0'/0/0"]
@@ -86,9 +86,7 @@ public struct DerivationConfigV1: DerivationConfig {
         case .cronos:
             return [.default: "m/44'/10000025'/0'/0/0"]
         case .telos:
-            return [.default: "m/44'/977'/0'/0/0"]
-        case .octa:
-            return [.default: "m/44'/60'/0'/0/0"]
+                return [.default: "m/44'/977'/0'/0/0"]
         }
     }
 }
