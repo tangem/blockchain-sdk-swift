@@ -10,6 +10,7 @@ import Foundation
 
 public struct WalletFactory {
     private let blockchain: Blockchain
+
     private var addressProvider: AddressProvider {
         AddressServiceFactory(blockchain: blockchain).makeAddressService()
     }
@@ -41,19 +42,5 @@ public struct WalletFactory {
             blockchain: blockchain,
             addresses: addresses.reduce(into: [:]) { $0[$1.type] = $1 }
         )
-    }
-
-    /// With different public keys
-    func makeWallet(publicKeys: [AddressType: Wallet.PublicKey]) throws -> Wallet {
-        assert(publicKeys[.default] != nil, "PublicKeys have to contains default publicKey")
-
-        let addressProvider = AddressServiceFactory(blockchain: blockchain).makeAddressService()
-        let addresses: [AddressType: PlainAddress] = try publicKeys.reduce(into: [:]) { result, args in
-            let (addressType, publicKey) = args
-
-            result[addressType] = try addressProvider.makeAddress(for: publicKey, with: addressType)
-        }
-
-        return Wallet(blockchain: blockchain, addresses: addresses)
     }
 }

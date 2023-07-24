@@ -10,5 +10,11 @@ import Foundation
 import TangemSdk
 
 public protocol DerivationConfig {
-    func derivations(for blockchain: Blockchain) -> [AddressType: String]
+    func derivationPath(for blockchain: Blockchain) -> String
+}
+
+extension DerivationConfig {
+    func derivationPath(for blockchain: Blockchain) -> DerivationPath? {
+        try? DerivationPath(rawPath: derivationPath(for: blockchain))
+    }
 }
