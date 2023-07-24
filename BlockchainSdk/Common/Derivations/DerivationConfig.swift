@@ -14,7 +14,7 @@ public protocol DerivationConfig {
 }
 
 extension DerivationConfig {
-    func derivationPath(for blockchain: Blockchain) -> DerivationPath? {
-        try? DerivationPath(rawPath: derivationPath(for: blockchain))
+    func derivationPath(for blockchain: Blockchain) -> DerivationPath {
+        try! DerivationPath(rawPath: derivationPath(for: blockchain))
     }
 }
