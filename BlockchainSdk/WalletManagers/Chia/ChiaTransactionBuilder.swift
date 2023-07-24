@@ -38,8 +38,17 @@ final class ChiaTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
         
-        let change = try calculateChange(transaction: transaction, unspentCoins: unspentCoins)
-        let coinSpends = try toChiaCoinSpends(change: change, destination: transaction.destinationAddress, amount: transaction.amount)
+        let change = try calculateChange(
+            transaction: transaction,
+            unspentCoins: unspentCoins
+        )
+        
+        let coinSpends = try toChiaCoinSpends(
+            change: change,
+            destination: transaction.destinationAddress,
+            source: transaction.sourceAddress,
+            amount: transaction.amount
+        )
         
         let hashesForSign = coinSpends.map { _ in
 //            let solutionHash = ClvmNode.Decoder(
@@ -61,22 +70,41 @@ final class ChiaTransactionBuilder {
     
     // MARK: - Private Implementation
     
-    private func toChiaCoinSpends(change: Int64, destination: String, amount: Amount) throws -> [ChiaCoinSpend] {
+    private func toChiaCoinSpends(change: Int64, destination: String, source: String, amount: Amount) throws -> [ChiaCoinSpend] {
         let coinSpends = unspentCoins.map {
-            ChiaCoinSpend(coin: $0, puzzleReveal: ChiaConstant.getPuzzle(walletPublicKey: walletPublicKey).hex, solution: "")
+            ChiaCoinSpend(
+                coin: $0,
+                puzzleReveal: ChiaConstant.getPuzzle(walletPublicKey: walletPublicKey).hex,
+                solution: ""
+            )
         }
         
-        let sendCondition = try CreateCoinCondition(
-            destinationPuzzleHash: ChiaConstant.getPuzzleHash(address: destination),
-            amount: amount.value.int64Value
-        )
+        let sendCondition = try createCoinCondition(for: destination, with: amount.value.int64Value)
+        let changeCondition = try change != 0 ? createCoinCondition(for: source, with: change) : nil
         
-        throw WalletError.empty
+        let solutions = [sendCondition, changeCondition].compactMap { $0 }
+        
+        sol
+        
+        self.coinSpends[0].solution = [sendCondition, changeCondition].compactMap { $0 }.toSolution().toHexString()
+
+//        for (coinSpend in coinSpends.drop(1)) {
+//            coinSpend.solution = listOf(RemarkCondition()).toSolution().toHexString()
+//        }
+
+        return coinSpends
     }
     
     private func calculateChange(transaction: Transaction, unspentCoins: [ChiaCoin]) throws -> Int64 {
         let fullAmount = unspentCoins.map { $0.amount }.reduce(0, +)
         return fullAmount - (transaction.amount.value.int64Value + transaction.fee.amount.value.int64Value)
+    }
+    
+    private func createCoinCondition(for address: String, with change: Int64) throws -> CreateCoinCondition {
+        return try CreateCoinCondition(
+            destinationPuzzleHash: ChiaConstant.getPuzzleHash(address: address),
+            amount: change
+        )
     }
     
 }
@@ -86,6 +114,17 @@ extension ChiaCoin {
     private func calculateId() -> Data {
         return Data()
 //        parentCoinInfo.hexadecimal + puzzleHash.hexadecimal + amount.
+    }
+    
+}
+
+extension Array where Element == ChiaCondition {
+    
+    func toSolution() throws -> Data {
+        let conditions = ClvmProgram.from(list: self.map { $0.toProgram() })
+        let solutionArguments = ClvmProgram.from(list: [conditions]) // might be more than one for other puzzles
+
+        return try solutionArguments.serialize()
     }
     
 }

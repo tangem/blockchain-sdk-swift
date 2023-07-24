@@ -25,11 +25,11 @@ class ClvmProgram {
     
     // MARK: - Static
     
-    static func fromBytes(bytes: Array<Byte>) -> ClvmProgram {
+    static func from(bytes: Array<Byte>) -> ClvmProgram {
         return ClvmProgram(atom: bytes, left: nil, right: nil)
     }
     
-    static func fromList(list: [ClvmProgram]) -> ClvmProgram {
+    static func from(list: [ClvmProgram]) -> ClvmProgram {
         var result: ClvmProgram? = nil
         
         for item in list.reversed() {

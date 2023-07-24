@@ -16,7 +16,7 @@ struct ChiaSpendBundle: Codable {
 struct ChiaCoinSpend: Codable {
     let coin: ChiaCoin
     let puzzleReveal: String
-    let solution: String
+    var solution: String
 }
 
 struct ChiaCoin: Codable {
