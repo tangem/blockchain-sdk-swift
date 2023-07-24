@@ -39,7 +39,7 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
                     throw WalletError.empty
                 }
 
-                return mapToCardanoAddressResponse(responses: responses, unspentOutputs: unspents, tokens: tokens)
+                return self.mapToCardanoAddressResponse(responses: responses, unspentOutputs: unspents, tokens: tokens)
             }
             .retry(2)
             .eraseToAnyPublisher()
