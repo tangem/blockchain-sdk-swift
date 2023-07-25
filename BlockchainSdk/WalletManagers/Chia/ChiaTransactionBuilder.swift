@@ -33,6 +33,28 @@ final class ChiaTransactionBuilder {
         self.unspentCoins = unspentCoins
     }
     
+    
+    // MARK: - Need after test remove
+    
+    func test() {
+        let address = "txch14gxuvfmw2xdxqnws5agt3ma483wktd2lrzwvpj3f6jvdgkmf5gtq8g3aw3"
+        let amount = 235834596465
+        let encodedAmount = amount.data.bytes.drop(while: { $0 == 0x00 })
+
+        let solution1 = try! "ffffff33ffa0" +
+            ChiaConstant.getPuzzleHash(address: address).hex + "ff8" + String(encodedAmount.count) + "808080"
+        let condition = try! CreateCoinCondition(
+            destinationPuzzleHash: ChiaConstant.getPuzzleHash(address: address),
+            amount: Int64(amount)
+        ).toProgram()
+        
+        let solution2 = try! ClvmProgram.from(list: [ClvmProgram.from(list: [condition])]).serialize().hex
+
+        let equal = solution1.lowercased() == solution2.lowercased()
+        
+        print(equal)
+    }
+    
     // MARK: - Implementation
     
     /// Build input for sign transaction from Parameters
