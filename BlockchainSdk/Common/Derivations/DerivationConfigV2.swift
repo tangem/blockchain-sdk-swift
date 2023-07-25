@@ -47,7 +47,8 @@ public struct DerivationConfigV2: DerivationConfig {
                 .optimism,
                 .kava,
                 .cronos,
-                .telos:
+                .telos,
+                .octa:
             return "m/44'/60'/0'/0/0"
         case .binance:
             return "m/44'/714'/0'/0/0"

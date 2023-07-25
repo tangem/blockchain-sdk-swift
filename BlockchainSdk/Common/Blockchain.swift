@@ -52,12 +52,13 @@ public enum Blockchain: Equatable, Hashable {
     case terraV2
     case cronos
     case telos(testnet: Bool)
+    case octa
     
     public var isTestnet: Bool {
         switch self {
         case .bitcoin(let testnet):
             return testnet
-        case .litecoin, .ducatus, .cardano, .xrp, .rsk, .tezos, .dogecoin, .kusama, .terraV1, .terraV2, .cronos:
+        case .litecoin, .ducatus, .cardano, .xrp, .rsk, .tezos, .dogecoin, .kusama, .terraV1, .terraV2, .cronos, .octa:
             return false
         case .stellar(let testnet):
             return testnet
@@ -129,7 +130,7 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash, .kaspa, .ravencoin:
             return 8
-        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos, .telos:
+        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos, .telos, .octa:
             return 18
         case  .cardano, .xrp, .tezos, .tron, .cosmos, .terraV1, .terraV2:
             return 6
@@ -216,6 +217,8 @@ public enum Blockchain: Equatable, Hashable {
             return "CRO"
         case .telos:
             return "TLOS"
+        case .octa:
+            return "OCTA"
         }
     }
     
@@ -259,6 +262,8 @@ public enum Blockchain: Equatable, Hashable {
             return "Terra Classic"
         case .terraV2:
             return "Terra"
+        case .octa:
+            return "OctaSpace"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -334,6 +339,7 @@ extension Blockchain {
         case .kava: return isTestnet ? 2221 : 2222
         case .cronos: return 25
         case .telos: return isTestnet ? 41 : 40
+        case .octa: return isTestnet ? 800002 : 800001
         default: return nil
         }
     }
@@ -525,6 +531,11 @@ extension Blockchain {
                     URL(string: "https://telos-evm.rpc.thirdweb.com")!
                 ]
             }
+        case .octa:
+            return [
+                URL(string: "https://rpc.octa.space")!,
+                URL(string: "https://octaspace.rpc.thirdweb.com")!,
+            ]
         default:
             return nil
         }
@@ -628,6 +639,7 @@ extension Blockchain: Codable {
         case .terraV2: return "terra-2"
         case .cronos: return "cronos"
         case .telos: return "telos"
+        case .octa: return "octaspace"
         }
     }
     
@@ -687,6 +699,7 @@ extension Blockchain: Codable {
         case "terra-2": self = .terraV2
         case "cronos": self = .cronos
         case "telos": self = .telos(testnet: isTestnet)
+        case "octaspace": self = .octa
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -925,6 +938,8 @@ extension Blockchain {
             } else {
                 return URL(string: "https://teloscan.io/address/\(address)")!
             }
+        case .octa:
+            return URL(string: "https://explorer.octa.space/address/\(address)")!
         }
     }
 }
@@ -976,6 +991,7 @@ extension Blockchain {
         case "terra": return .terraV1
         case "terra-2": return .terraV2
         case "cronos": return .cronos
+        case "octaspace": return .octa
         default: return nil
         }
     }
@@ -1025,7 +1041,7 @@ extension Blockchain {
             return DucatusWalletAssembly()
         case .stellar:
             return StellarWalletAssembly()
-        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava, .cronos, .telos:
+        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava, .cronos, .telos, .octa:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
