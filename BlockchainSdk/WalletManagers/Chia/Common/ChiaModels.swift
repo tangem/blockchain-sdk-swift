@@ -10,7 +10,7 @@ import Foundation
 
 struct ChiaSpendBundle: Codable {
     let aggregatedSignature: String
-    let coinSpends: ChiaCoinSpend
+    let coinSpends: [ChiaCoinSpend]
 }
 
 struct ChiaCoinSpend: Codable {
@@ -24,4 +24,12 @@ struct ChiaCoin: Codable {
     let amount: Int64
     let parentCoinInfo: String
     let puzzleHash: String
+}
+
+extension ChiaCoin {
+    
+    func calculateId() -> Data {
+        (Data(hex: parentCoinInfo) + Data(hex: puzzleHash) + amount.chiaEncode()).sha256()
+    }
+    
 }

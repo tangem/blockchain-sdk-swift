@@ -24,6 +24,9 @@
 		2D19768D2A63E82B006C4D3E /* TONProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1976882A63E82B006C4D3E /* TONProvider.swift */; };
 		2D19768E2A63E82B006C4D3E /* TONProviderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1976892A63E82B006C4D3E /* TONProviderRequest.swift */; };
 		2D29A7F729D5C2AE00359A0C /* TWPublicKeyType+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D29A7F629D5C2AE00359A0C /* TWPublicKeyType+.swift */; };
+		2D2CB45B2A6FBE2A00AE24EC /* Chia+Int64.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2CB45A2A6FBE2A00AE24EC /* Chia+Int64.swift */; };
+		2D2CB45D2A6FC94F00AE24EC /* Chia+Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2CB45C2A6FC94F00AE24EC /* Chia+Array.swift */; };
+		2D2CB45F2A6FC95C00AE24EC /* Chia+Aug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2CB45E2A6FC95C00AE24EC /* Chia+Aug.swift */; };
 		2D3829C929D34A93001D4785 /* TWCoin+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829C829D34A93001D4785 /* TWCoin+.swift */; };
 		2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */; };
 		2D535E772A0CC5E50081EB76 /* DecodableVectors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E742A0CC5E50081EB76 /* DecodableVectors.swift */; };
@@ -412,6 +415,9 @@
 		2D1976882A63E82B006C4D3E /* TONProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProvider.swift; sourceTree = "<group>"; };
 		2D1976892A63E82B006C4D3E /* TONProviderRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProviderRequest.swift; sourceTree = "<group>"; };
 		2D29A7F629D5C2AE00359A0C /* TWPublicKeyType+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWPublicKeyType+.swift"; sourceTree = "<group>"; };
+		2D2CB45A2A6FBE2A00AE24EC /* Chia+Int64.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chia+Int64.swift"; sourceTree = "<group>"; };
+		2D2CB45C2A6FC94F00AE24EC /* Chia+Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chia+Array.swift"; sourceTree = "<group>"; };
+		2D2CB45E2A6FC95C00AE24EC /* Chia+Aug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chia+Aug.swift"; sourceTree = "<group>"; };
 		2D3829C829D34A93001D4785 /* TWCoin+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWCoin+.swift"; sourceTree = "<group>"; };
 		2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressServiceManagerUtility.swift; sourceTree = "<group>"; };
 		2D535E742A0CC5E50081EB76 /* DecodableVectors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecodableVectors.swift; sourceTree = "<group>"; };
@@ -819,6 +825,9 @@
 				2D0F67972A66C491000865A5 /* ChiaCondition.swift */,
 				2D0F678F2A6542EE000865A5 /* ChiaModels.swift */,
 				2D0F67912A658DBE000865A5 /* ChiaConstant.swift */,
+				2D2CB45A2A6FBE2A00AE24EC /* Chia+Int64.swift */,
+				2D2CB45C2A6FC94F00AE24EC /* Chia+Array.swift */,
+				2D2CB45E2A6FC95C00AE24EC /* Chia+Aug.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -2483,8 +2492,11 @@
 				EF5F1B9729C9C0500093307B /* Fee.swift in Sources */,
 				DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */,
 				5D7D243025136254001B9A4F /* XRPKeypair.swift in Sources */,
+				2D2CB45D2A6FC94F00AE24EC /* Chia+Array.swift in Sources */,
 				B04E8D5025F8F67F00821CBE /* RosettaNetworkProvider.swift in Sources */,
+				2D2CB45B2A6FBE2A00AE24EC /* Chia+Int64.swift in Sources */,
 				5D845516243DEAC80072155E /* AdaliteTarget.swift in Sources */,
+				2D2CB45F2A6FC95C00AE24EC /* Chia+Aug.swift in Sources */,
 				5DCC817823FAE6F700DFC460 /* MoyaPublisher.swift in Sources */,
 				5D7D242B25136254001B9A4F /* HTTP.swift in Sources */,
 				5D7D242E25136254001B9A4F /* XrpData.swift in Sources */,

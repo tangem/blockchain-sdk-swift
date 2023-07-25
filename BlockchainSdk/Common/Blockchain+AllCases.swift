@@ -97,7 +97,7 @@ public extension Blockchain {
             .terraV2,
             .cronos,
             .telos(testnet: false),
-            .octa
+            .octa,
             .chia(testnet: false)
         ]
     }

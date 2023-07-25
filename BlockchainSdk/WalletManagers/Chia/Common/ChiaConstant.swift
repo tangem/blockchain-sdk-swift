@@ -18,6 +18,7 @@ enum ChiaConstant: String {
     case fingerprint = "ff018080"
     case genesisChallengeMainnet = "ccd5bb71183532bff220ba46c268991a3ff07eb358e8255a65c30a2dce0e5fbb"
     case genesisChallengeTestnet = "ae83525ba8d1dd3f09b277de18ca3e43fc0af20d20c4b3e92ef2a48bd291ccb2"
+    case AUG_SCHEME_DST = "BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_AUG_"
     
     static func getPuzzle(walletPublicKey: Data) -> Data {
         return Data(hex: ChiaConstant.puzzleReveal.rawValue) + walletPublicKey + Data(hex: ChiaConstant.fingerprint.rawValue)
@@ -27,6 +28,10 @@ enum ChiaConstant: String {
         let bech32 = Bech32(constant: .bech32m)
         let dataBytes = try bech32.decode(address).checksum
         return try Data(bech32.convertBits(data: dataBytes.bytes, fromBits: 5, toBits: 8, pad: false))
+    }
+    
+    static func genesisChallenge(isTestnet: Bool) -> String {
+        return isTestnet ? ChiaConstant.genesisChallengeTestnet.rawValue : ChiaConstant.genesisChallengeMainnet.rawValue
     }
 }
 

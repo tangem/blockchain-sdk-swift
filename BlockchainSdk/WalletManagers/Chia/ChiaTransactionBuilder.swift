@@ -16,12 +16,18 @@ final class ChiaTransactionBuilder {
     
     // MARK: - Private Properties
     
+    private let isTestnet: Bool
     private let walletPublicKey: Data
     private var coinSpends: [ChiaCoinSpend] = []
     
+    private var genesisChallenge: Data {
+        Data(hex: ChiaConstant.genesisChallenge(isTestnet: isTestnet))
+    }
+    
     // MARK: - Init
     
-    init(walletPublicKey: Data, unspentCoins: [ChiaCoin] = []) {
+    init(isTestnet: Bool, walletPublicKey: Data, unspentCoins: [ChiaCoin] = []) {
+        self.isTestnet = isTestnet
         self.walletPublicKey = walletPublicKey
         self.unspentCoins = unspentCoins
     }
@@ -33,7 +39,7 @@ final class ChiaTransactionBuilder {
     ///   - amount: Amount transaction
     ///   - destination: Destination address transaction
     /// - Returns: Array of bytes for transaction
-    func buildForSign(transaction: Transaction) throws -> Data {
+    func buildForSign(transaction: Transaction) throws -> [Data] {
         guard !unspentCoins.isEmpty else {
             throw WalletError.failedToBuildTx
         }
@@ -50,25 +56,36 @@ final class ChiaTransactionBuilder {
             amount: transaction.amount
         )
         
-        let hashesForSign = coinSpends.map { _ in
-//            let solutionHash = ClvmNode.Decoder(
-//                programBytes: Data(hex: $0.solution).dro .hexToBytes().drop(1).dropLast(1).toByteArray()
-//            ).deserialize().hash()
+        let hashesForSign = try coinSpends.map {
+            let solutionHash = try ClvmProgram.Decoder(
+                programBytes: Data(hex: $0.solution).dropFirst(1).dropLast(1).bytes
+            ).deserialize().hash()
 
-//            (solutionHash + it.coin.calculateId() + genesisChallenge).hashAugScheme()
-//            return Data()
+            return try (solutionHash + $0.coin.calculateId() + genesisChallenge).hashAugScheme()
         }
         
-//        return Data(hashesForSign)
-        
-        return Data()
+        return hashesForSign
     }
     
     func buildToSend(signatures: Data) throws -> ChiaTransactionBody {
-        throw WalletError.empty
+//        let aggregatedSignature = AugSchemeMPL.aggregate(
+//            signatures.map { JacobianPoint.fromBytesG2(it.toUByteArray()) }
+//        ).toHex().value
+
+        return ChiaTransactionBody(
+            spendBundle: ChiaSpendBundle(
+                aggregatedSignature: "",
+                coinSpends: coinSpends
+            )
+        )
     }
     
     // MARK: - Private Implementation
+    
+    private func calculateChange(transaction: Transaction, unspentCoins: [ChiaCoin]) throws -> Int64 {
+        let fullAmount = unspentCoins.map { $0.amount }.reduce(0, +)
+        return fullAmount - (transaction.amount.value.int64Value + transaction.fee.amount.value.int64Value)
+    }
     
     private func toChiaCoinSpends(change: Int64, destination: String, source: String, amount: Amount) throws -> [ChiaCoinSpend] {
         let coinSpends = unspentCoins.map {
@@ -82,22 +99,13 @@ final class ChiaTransactionBuilder {
         let sendCondition = try createCoinCondition(for: destination, with: amount.value.int64Value)
         let changeCondition = try change != 0 ? createCoinCondition(for: source, with: change) : nil
         
-        let solutions = [sendCondition, changeCondition].compactMap { $0 }
+        self.coinSpends[0].solution = try [sendCondition, changeCondition].compactMap { $0 }.toSolution().hex
         
-        sol
-        
-        self.coinSpends[0].solution = [sendCondition, changeCondition].compactMap { $0 }.toSolution().toHexString()
-
-//        for (coinSpend in coinSpends.drop(1)) {
-//            coinSpend.solution = listOf(RemarkCondition()).toSolution().toHexString()
-//        }
+        for var coinSpend in coinSpends.dropFirst(1) {
+            coinSpend.solution = try [RemarkCondition()].toSolution().hex
+        }
 
         return coinSpends
-    }
-    
-    private func calculateChange(transaction: Transaction, unspentCoins: [ChiaCoin]) throws -> Int64 {
-        let fullAmount = unspentCoins.map { $0.amount }.reduce(0, +)
-        return fullAmount - (transaction.amount.value.int64Value + transaction.fee.amount.value.int64Value)
     }
     
     private func createCoinCondition(for address: String, with change: Int64) throws -> CreateCoinCondition {
@@ -105,26 +113,6 @@ final class ChiaTransactionBuilder {
             destinationPuzzleHash: ChiaConstant.getPuzzleHash(address: address),
             amount: change
         )
-    }
-    
-}
-
-extension ChiaCoin {
-    
-    private func calculateId() -> Data {
-        return Data()
-//        parentCoinInfo.hexadecimal + puzzleHash.hexadecimal + amount.
-    }
-    
-}
-
-extension Array where Element == ChiaCondition {
-    
-    func toSolution() throws -> Data {
-        let conditions = ClvmProgram.from(list: self.map { $0.toProgram() })
-        let solutionArguments = ClvmProgram.from(list: [conditions]) // might be more than one for other puzzles
-
-        return try solutionArguments.serialize()
     }
     
 }

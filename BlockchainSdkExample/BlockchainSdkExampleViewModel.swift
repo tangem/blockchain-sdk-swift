@@ -471,7 +471,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .terraV1,
             .terraV2,
             .cronos,
-            .octa
+            .octa,
             .chia(testnet: false)
         ]
         

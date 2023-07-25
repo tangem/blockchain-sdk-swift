@@ -14,7 +14,9 @@ protocol ChiaCondition {
     func toProgram() -> ClvmProgram
 }
 
-struct CreateCoinCondition {
+struct CreateCoinCondition: ChiaCondition {
+    var conditionCode: Int64 = 51
+    
     private let destinationPuzzleHash: Data
     private let amount: Int64
     private let memos: Data
@@ -26,13 +28,11 @@ struct CreateCoinCondition {
     }
 }
 
-extension CreateCoinCondition: ChiaCondition {
-    var conditionCode = 51
-
+extension CreateCoinCondition {
     func toProgram() -> ClvmProgram {
         var programList = [
             ClvmProgram.from(long: conditionCode),
-            ClvmProgram.from(bytes: destinationPuzzleHash),
+            ClvmProgram.from(bytes: destinationPuzzleHash.bytes),
             ClvmProgram.from(long: amount)
         ]
 
