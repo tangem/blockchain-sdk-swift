@@ -57,7 +57,7 @@ struct NetworkProviderAssembly {
             return []
         }
         
-        let provider = EtheremJsonRpsProvider(
+        let provider = EthereumJsonRpcList(
             apiKeys: EthereumApiKeys(
                 infuraProjectId: input.blockchainConfig.infuraProjectId,
                 nowNodesApiKey: input.blockchainConfig.nowNodesApiKey,

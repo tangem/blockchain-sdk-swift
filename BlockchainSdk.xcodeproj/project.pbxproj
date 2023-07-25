@@ -34,7 +34,7 @@
 		2D9A91A529BB8C1700476EA6 /* TONProviderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A919E29BB8C1700476EA6 /* TONProviderRequest.swift */; };
 		2D9A91A729BB8C2E00476EA6 /* WalletCoreAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A91A629BB8C2E00476EA6 /* WalletCoreAddressService.swift */; };
 		2DA8AB0D2A433A1000C75D85 /* ExceptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8AB0C2A433A1000C75D85 /* ExceptionHandler.swift */; };
-		2DA950E42A70316C00140475 /* EtheremJsonRpsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA950E32A70316C00140475 /* EtheremJsonRpsProvider.swift */; };
+		2DA950E42A70316C00140475 /* EthereumJsonRpcList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA950E32A70316C00140475 /* EthereumJsonRpcList.swift */; };
 		2DBBE94D29C8686000971539 /* OptimismWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBBE94C29C8686000971539 /* OptimismWalletAssembly.swift */; };
 		2DBBE95029C8DBEA00971539 /* TONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBBE94F29C8DBEA00971539 /* TONTests.swift */; };
 		2DC5796129C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5796029C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift */; };
@@ -408,7 +408,7 @@
 		2D9A919E29BB8C1700476EA6 /* TONProviderRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProviderRequest.swift; sourceTree = "<group>"; };
 		2D9A91A629BB8C2E00476EA6 /* WalletCoreAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletCoreAddressService.swift; sourceTree = "<group>"; };
 		2DA8AB0C2A433A1000C75D85 /* ExceptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionHandler.swift; sourceTree = "<group>"; };
-		2DA950E32A70316C00140475 /* EtheremJsonRpsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtheremJsonRpsProvider.swift; sourceTree = "<group>"; };
+		2DA950E32A70316C00140475 /* EthereumJsonRpcList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumJsonRpcList.swift; sourceTree = "<group>"; };
 		2DBBE94C29C8686000971539 /* OptimismWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismWalletAssembly.swift; sourceTree = "<group>"; };
 		2DBBE94F29C8DBEA00971539 /* TONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONTests.swift; sourceTree = "<group>"; };
 		2DC5796029C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreSignerTesterUtility.swift; sourceTree = "<group>"; };
@@ -835,12 +835,12 @@
 			path = TONProviderProvider;
 			sourceTree = "<group>";
 		};
-		2DA950E22A70314A00140475 /* EtheremJsonRps */ = {
+		2DA950E22A70314A00140475 /* EtheremJsonRpсProvider */ = {
 			isa = PBXGroup;
 			children = (
-				2DA950E32A70316C00140475 /* EtheremJsonRpsProvider.swift */,
+				2DA950E32A70316C00140475 /* EthereumJsonRpcList.swift */,
 			);
-			path = EtheremJsonRps;
+			path = "EtheremJsonRpсProvider";
 			sourceTree = "<group>";
 		};
 		2DBBE94E29C8DBD900971539 /* TON */ = {
@@ -1091,7 +1091,7 @@
 		5D4B33B923F6E9BD00C93A84 /* BlockchainService */ = {
 			isa = PBXGroup;
 			children = (
-				2DA950E22A70314A00140475 /* EtheremJsonRps */,
+				2DA950E22A70314A00140475 /* EtheremJsonRpсProvider */,
 				5D845512243DEAAE0072155E /* Adalite */,
 				5D7D244125136280001B9A4F /* Bitcoinfees */,
 				5D4B33D623FAACE400C93A84 /* Bitcore */,
@@ -2186,7 +2186,7 @@
 				EFBA17FE2988623F00C23955 /* TransactionSendResult.swift in Sources */,
 				EFD717CE2A25ECB500E5430D /* SmartContractMethodParameterType.swift in Sources */,
 				2DDE5BB029C4F8D200A5B708 /* WalletManagerAssembly.swift in Sources */,
-				2DA950E42A70316C00140475 /* EtheremJsonRpsProvider.swift in Sources */,
+				2DA950E42A70316C00140475 /* EthereumJsonRpcList.swift in Sources */,
 				5D304390239A58C90066B8D9 /* BitcoinWalletManager.swift in Sources */,
 				5D4B33DA23FAAD1B00C93A84 /* BitcoreResponse.swift in Sources */,
 				EF57BEE32A1E682D00C2A493 /* Blockchain+AllCases.swift in Sources */,

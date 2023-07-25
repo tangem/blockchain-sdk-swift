@@ -1,5 +1,5 @@
 //
-//  EtheremJsonRpsProvider.swift
+//  EthereumJsonRpcList.swift
 //  BlockchainSdk
 //
 //  Created by skibinalexander on 25.07.2023.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct EtheremJsonRpsProvider {
+struct EthereumJsonRpcList {
     // MARK: - Private Properties
     
     private let infuraProjectId: String
