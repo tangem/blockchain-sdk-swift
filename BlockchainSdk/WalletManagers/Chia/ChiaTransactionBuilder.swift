@@ -8,6 +8,7 @@
 
 import Foundation
 import CryptoKit
+import ChiaBLS
 
 final class ChiaTransactionBuilder {
     // MARK: - Public Properties
@@ -68,13 +69,11 @@ final class ChiaTransactionBuilder {
     }
     
     func buildToSend(signatures: Data) throws -> ChiaTransactionBody {
-//        let aggregatedSignature = AugSchemeMPL.aggregate(
-//            signatures.map { JacobianPoint.fromBytesG2(it.toUByteArray()) }
-//        ).toHex().value
+        let aggregatedSignature = try ChiaBLS.aggregate(signatures: signatures.map { $0.hexString })
 
         return ChiaTransactionBody(
             spendBundle: ChiaSpendBundle(
-                aggregatedSignature: "",
+                aggregatedSignature: aggregatedSignature,
                 coinSpends: coinSpends
             )
         )

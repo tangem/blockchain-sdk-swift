@@ -7,11 +7,12 @@
 //
 
 import Foundation
+import ChiaBLS
 
 extension Data {
     
     func hashAugScheme() throws -> Data {
-        return Data()
+        try Data(hex: ChiaBLS.augSchemeMplG2Map(hashPublicKey: self.hex))
     }
     
 }
