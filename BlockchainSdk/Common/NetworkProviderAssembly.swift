@@ -53,21 +53,25 @@ struct NetworkProviderAssembly {
     }
     
     func makeEthereumJsonRpcProviders(with input: WalletManagerAssemblyInput) -> [EthereumJsonRpcProvider] {
-        let endpoints = input.blockchain.getJsonRpcEndpoints(
-            keys: EthereumApiKeys(
+        guard input.blockchain.isEvm else {
+            return []
+        }
+        
+        let provider = EtheremJsonRpsProvider(
+            apiKeys: EthereumApiKeys(
                 infuraProjectId: input.blockchainConfig.infuraProjectId,
                 nowNodesApiKey: input.blockchainConfig.nowNodesApiKey,
                 getBlockApiKey: input.blockchainConfig.getBlockApiKey,
                 quickNodeBscCredentials: input.blockchainConfig.quickNodeBscCredentials
             )
-        )!
+        )
         
-        return endpoints.map {
+        return provider.getJsonRpc(for: input.blockchain)?.map {
             return EthereumJsonRpcProvider(
                 url: $0,
                 configuration: input.networkConfig
             )
-        }
+        } ?? []
     }
     
 }
