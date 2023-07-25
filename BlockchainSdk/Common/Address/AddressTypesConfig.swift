@@ -51,7 +51,8 @@ struct AddressTypesConfig {
              .cosmos,
              .terraV1, .terraV2,
              .cronos,
-             .telos:
+             .telos,
+             .octa:
             return [.default]
         }
     }
