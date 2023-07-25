@@ -11,8 +11,8 @@ import ChiaBLS
 
 extension Data {
     
-    func hashAugScheme() throws -> Data {
-        try Data(hex: ChiaBLS.augSchemeMplG2Map(hashPublicKey: self.hex))
+    func hashAugScheme(with publicKey: Data) throws -> Data {
+        try Data(hex: ChiaBLS.augSchemeMplG2Map(publicKeyHash: publicKey.hex, messageHash: self.hex))
     }
     
 }

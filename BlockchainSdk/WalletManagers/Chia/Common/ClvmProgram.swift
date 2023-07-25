@@ -68,18 +68,48 @@ class ClvmProgram {
             } else if atom.count == 1 && atom[0] <= 0x7F {
                 return Data(atom[0])
             } else {
-                // TODO: - Make serialize
-                let size = atom.count
+                let size = UInt64(atom.count)
                 var result = [Byte]()
-                throw NSError()
+                
+                if size < 0x40 {
+                    result.append(Byte(size & 0x0F))
+                } else if size < 0x2000 {
+                    result.append(Byte((size >> 8) | 0xC0))
+                    result.append(Byte(size & 0xFF))
+                } else if size < 0x100000 {
+                    result.append(Byte((size >> 16) & 0xE0))
+                    result.append(Byte((size >> 8) & 0xFF))
+                    result.append(Byte(size & 0xFF))
+                } else if size < 0x8000000 {
+                    result.append(Byte((size >> 24) | 0xF0))
+                    result.append(Byte((size >> 16) & 0xFF))
+                    result.append(Byte((size >> 8) & 0xFF))
+                    result.append(Byte(size & 0xFF))
+                } else if size < 0x400000000 {
+                    result.append(Byte((size >> 32) | 0xF8))
+                    result.append(Byte((size >> 24) & 0xFF))
+                    result.append(Byte((size >> 16) & 0xFF))
+                    result.append(Byte((size >> 8) & 0xFF))
+                    result.append(Byte(size & 0xFF))
+                } else {
+                    throw EncoderError.manyBytesToEncode
+                }
+                
+                result.append(contentsOf: atom)
+                return Data(result)
             }
         } else {
             if let left = left, let right = right {
                 return try Data(Byte(0xff)) + left.serialize() + right.serialize()
             } else {
-                throw NSError()
+                throw EncoderError.undefinedEncodeException
             }
         }
+    }
+    
+    enum EncoderError: Error {
+        case manyBytesToEncode
+        case undefinedEncodeException
     }
 }
 

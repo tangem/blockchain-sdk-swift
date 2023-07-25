@@ -62,7 +62,7 @@ final class ChiaTransactionBuilder {
                 programBytes: Data(hex: $0.solution).dropFirst(1).dropLast(1).bytes
             ).deserialize().hash()
 
-            return try (solutionHash + $0.coin.calculateId() + genesisChallenge).hashAugScheme()
+            return try (solutionHash + $0.coin.calculateId() + genesisChallenge).hashAugScheme(with: walletPublicKey)
         }
         
         return hashesForSign

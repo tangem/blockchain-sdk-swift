@@ -83,7 +83,15 @@ final class ChiaWalletManager: BaseManager, WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        return .emptyFail
+        Just(())
+            .receive(on: DispatchQueue.global())
+            .map { [weak self] hash in
+                return [.init(.zeroCoin(for: .chia(testnet: true)))]
+            }
+            .mapError({ res in
+                return WalletError.empty
+            })
+            .eraseToAnyPublisher()
     }
     
 }
