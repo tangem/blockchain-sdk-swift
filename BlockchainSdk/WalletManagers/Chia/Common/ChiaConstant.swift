@@ -25,7 +25,7 @@ enum ChiaConstant: String {
     }
     
     static func getPuzzleHash(address: String) throws -> Data {
-        let bech32 = Bech32(constant: .bech32m)
+        let bech32 = Bech32(type: .bech32m)
         let dataBytes = try bech32.decode(address).checksum
         return try Data(bech32.convertBits(data: dataBytes.bytes, fromBits: 5, toBits: 8, pad: false))
     }
