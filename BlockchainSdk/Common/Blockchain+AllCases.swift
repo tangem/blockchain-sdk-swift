@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension Blockchain {
+public extension Blockchain {
     /// Temporary solution unlit we removed `testnet` flag from a `case` blockchain
     static var allMainnetCases: [Blockchain] {
         // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -51,6 +51,7 @@ extension Blockchain {
         case .terraV2: break
         case .cronos: break
         case .telos: break
+        case .octa: break
         case .chia: break
             // READ BELOW:
             //
@@ -95,7 +96,9 @@ extension Blockchain {
             .terraV1,
             .terraV2,
             .cronos,
-            .chia(testnet: false)
+            .telos(testnet: false),
+            .octa,
+            .chia(testnet: false),
         ]
     }
 }

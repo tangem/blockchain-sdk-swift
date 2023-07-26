@@ -33,12 +33,12 @@ public class Bech32 {
         1,  0,  3, 16, 11, 28, 12, 14,  6,  4,  2, -1, -1, -1, -1, -1
     ]
     
-    private let constant: Constant
+    private let constantType: ConstantType
     
     // MARK: - Init
     
-    init(constant: Constant = .bech32) {
-        self.constant = constant
+    init(type: ConstantType = .bech32) {
+        self.constantType = type
     }
     
     // MARK: - Implementation
@@ -83,7 +83,7 @@ public class Bech32 {
         var enc = expandHrp(hrp)
         enc.append(values)
         enc.append(Data(repeating: 0x00, count: 6))
-        let mod: UInt32 = polymod(enc) ^ constant.rawValue
+        let mod: UInt32 = polymod(enc) ^ constantType.rawValue
         var ret: Data = Data(repeating: 0x00, count: 6)
         for i in 0..<6 {
             ret[i] = UInt8((mod >> (5 * (5 - i))) & 31)
@@ -289,7 +289,7 @@ extension Bech32 {
 
 extension Bech32 {
     
-    public enum Constant: UInt32 {
+    public enum ConstantType: UInt32 {
         case bech32
         case bech32m
         

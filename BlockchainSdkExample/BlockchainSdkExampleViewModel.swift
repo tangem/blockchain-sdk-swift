@@ -467,6 +467,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .terraV1,
             .terraV2,
             .cronos,
+            .octa
         ]
         
         return blockchains.map { ($0.displayName, $0.codingKey) }

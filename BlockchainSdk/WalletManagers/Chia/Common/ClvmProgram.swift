@@ -24,19 +24,13 @@ class ClvmNode {
     // MARK: - Hashable
     
     func hash() throws -> Data {
-        let hash: Data
-        
         if let value = atom {
-            hash = Data([1] + value).sha256()
-        } else {
-            if let left = try left?.hash(), let right = try right?.hash() {
-                hash = Data([2] + left + right).sha256()
-            } else {
-                throw NSError()
-            }
+            return Data([1] + value).sha256()
+        } else if let left = try left?.hash(), let right = try right?.hash() {
+            return Data([2] + left + right).sha256()
         }
         
-        return hash
+        throw NSError()
     }
 }
 
@@ -98,11 +92,9 @@ extension ClvmNode {
 
 extension ClvmNode {
     private struct Iterator<T>: IteratorProtocol {
-        typealias Element = T
+        private(set) var programBytes: Array<T>
         
-        private(set) var programBytes: Array<Element>
-        
-        mutating func next() -> Element? {
+        mutating func next() -> T? {
             defer {
                 if !programBytes.isEmpty { programBytes.removeFirst() }
             }
@@ -123,17 +115,13 @@ extension ClvmNode {
         }
         
         mutating func next(byteCount: Int) throws -> Array<Element> {
-            var result = Array<Element>()
-            
-            for _ in 0..<byteCount {
+            try (0 ..< byteCount).map { _ in
                 guard let next = next() else {
                     throw IteratorError.undefinedElement
                 }
                 
-                result.append(next)
+                return next
             }
-            
-            return result
         }
     }
     
