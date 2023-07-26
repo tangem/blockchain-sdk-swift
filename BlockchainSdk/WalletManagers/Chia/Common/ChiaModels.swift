@@ -21,7 +21,7 @@ struct ChiaCoinSpend: Codable {
 
 struct ChiaCoin: Codable {
     // Has to be encoded as a number in JSON, therefore Long is used. It's enough to encode ~1/3 of Chia total supply.
-    let amount: Int64
+    let amount: UInt64
     let parentCoinInfo: String
     let puzzleHash: String
 }

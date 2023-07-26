@@ -104,11 +104,11 @@ private extension ChiaWalletManager {
     private func update(with coins: [ChiaCoin], completion: @escaping (Result<Void, Error>) -> Void) {
         let balance = coins.map { $0.amount }.reduce(0, +)
         
-        if balance != wallet.amounts[.coin]?.value.int64Value {
+        if balance != wallet.amounts[.coin]?.value.uint64Value {
             wallet.transactions = []
         }
         
-        wallet.add(coinValue: .init(balance / wallet.blockchain.decimalValue.int64Value))
+        wallet.add(coinValue: .init(balance / wallet.blockchain.decimalValue.uint64Value))
         txBuilder.unspentCoins = coins
         
         completion(.success(()))

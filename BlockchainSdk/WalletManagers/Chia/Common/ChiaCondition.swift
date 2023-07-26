@@ -9,19 +9,19 @@
 import Foundation
 
 protocol ChiaCondition {
-    var conditionCode: Int64 { get set }
+    var conditionCode: UInt64 { get set }
 
     func toProgram() -> ClvmProgram
 }
 
 struct CreateCoinCondition: ChiaCondition {
-    var conditionCode: Int64 = 51
+    var conditionCode: UInt64 = 51
     
     private let destinationPuzzleHash: Data
-    private let amount: Int64
+    private let amount: UInt64
     private let memos: Data
     
-    init(destinationPuzzleHash: Data, amount: Int64, memos: Data = Data()) {
+    init(destinationPuzzleHash: Data, amount: UInt64, memos: Data = Data()) {
         self.destinationPuzzleHash = destinationPuzzleHash
         self.amount = amount
         self.memos = memos
@@ -36,7 +36,7 @@ extension CreateCoinCondition {
             ClvmProgram.from(long: amount)
         ]
 
-        if memos.isEmpty {
+        if !memos.isEmpty {
             programList.append(
                 ClvmProgram.from(list: [ClvmProgram.from(bytes: memos.bytes)])
             )
@@ -48,7 +48,7 @@ extension CreateCoinCondition {
 
 // always valid condition
 struct RemarkCondition: ChiaCondition {
-    var conditionCode: Int64 = 1
+    var conditionCode: UInt64 = 1
     
     func toProgram() -> ClvmProgram {
         ClvmProgram.from(list: [])

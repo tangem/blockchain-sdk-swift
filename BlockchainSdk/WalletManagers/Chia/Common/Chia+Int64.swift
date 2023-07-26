@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension Int64 {
+extension UInt64 {
     
     func chiaEncode() -> Data {
         let data = withUnsafeBytes(of: self) { Data($0) }

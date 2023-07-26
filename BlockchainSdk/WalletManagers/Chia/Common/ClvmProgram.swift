@@ -25,7 +25,7 @@ class ClvmProgram {
     
     // MARK: - Static
     
-    static func from(long: Int64) -> ClvmProgram {
+    static func from(long: UInt64) -> ClvmProgram {
         return .init(atom: long.chiaEncode().bytes)
     }
     
@@ -34,13 +34,13 @@ class ClvmProgram {
     }
     
     static func from(list: [ClvmProgram]) -> ClvmProgram {
-        var result: ClvmProgram? = nil
+        var result: ClvmProgram = ClvmProgram(atom: [])
         
         for item in list.reversed() {
             result = ClvmProgram(atom: nil, left: item, right: result)
         }
         
-        return result ?? .init()
+        return result
     }
     
     // MARK: - Hashable
@@ -66,12 +66,12 @@ class ClvmProgram {
                 var result = [Byte]()
                 
                 if size < 0x40 {
-                    result.append(Byte(size & 0x0F))
+                    result.append(Byte(size | 0x0F))
                 } else if size < 0x2000 {
                     result.append(Byte((size >> 8) | 0xC0))
                     result.append(Byte(size & 0xFF))
                 } else if size < 0x100000 {
-                    result.append(Byte((size >> 16) & 0xE0))
+                    result.append(Byte((size >> 16) | 0xE0))
                     result.append(Byte((size >> 8) & 0xFF))
                     result.append(Byte(size & 0xFF))
                 } else if size < 0x8000000 {

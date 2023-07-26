@@ -165,7 +165,7 @@ SPEC CHECKSUMS:
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
   BinanceChain: b77d4c0e496efbf13bdb1f428621480fd52f4ba1
   BitcoinCore.swift: 64ac4e69d9a6ef917bcbb0c23f1324cf57a822fb
-  Chia-BLS: cc61e286b028fa584303f969bb2f34251869cb82
+  Chia-BLS: 27c004fcab3852ac3bd128c86c445b13a74124b4
   CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
   HDWalletKit: 602ec664633cc6bae1c697e4e17af42efb69bfad
   Moya: 138f0573e53411fb3dc17016add0b748dfbd78ee
