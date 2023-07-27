@@ -38,4 +38,19 @@ class ChiaNetworkService: MultiNetworkProvider {
         }
     }
     
+    func send(_ spendBundle: ChiaSpendBundle) -> AnyPublisher<String, Error> {
+        providerPublisher { provider in
+            provider
+                .sendTransaction(body: ChiaTransactionBody(spendBundle: spendBundle))
+                .tryMap { response in
+                    guard response.success else {
+                        throw WalletError.failedToSendTx
+                    }
+                    
+                    return ""
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+    
 }

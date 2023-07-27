@@ -47,7 +47,7 @@ struct ChiaNetworkProvider: HostProvider {
         return requestPublisher(for: target)
     }
     
-    func sendTransaction(body: ChiaTransactionBody) -> AnyPublisher<Void, Error> {
+    func sendTransaction(body: ChiaTransactionBody) -> AnyPublisher<ChiaSendTransactionResponse, Error> {
         return .emptyFail
     }
     

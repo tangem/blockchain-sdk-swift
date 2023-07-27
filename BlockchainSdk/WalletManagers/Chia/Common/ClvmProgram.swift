@@ -66,7 +66,7 @@ class ClvmProgram {
                 var result = [Byte]()
                 
                 if size < 0x40 {
-                    result.append(Byte(size | 0x0F))
+                    result.append(Byte(size | 0x80))
                 } else if size < 0x2000 {
                     result.append(Byte((size >> 8) | 0xC0))
                     result.append(Byte(size & 0xFF))

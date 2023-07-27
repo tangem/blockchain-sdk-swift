@@ -39,7 +39,7 @@ final class ChiaTransactionBuilder {
     func test() {
         let address = "txch14gxuvfmw2xdxqnws5agt3ma483wktd2lrzwvpj3f6jvdgkmf5gtq8g3aw3"
         let amount: UInt64 = 235834596465
-        let encodedAmount = amount.data.bytes.drop(while: { $0 == 0x00 })
+        let encodedAmount = amount.chiaEncode()
 
         let solution1 = try! "ffffff33ffa0" +
             ChiaConstant.getPuzzleHash(address: address).hex + "ff8" + String(encodedAmount.count) +
@@ -94,14 +94,12 @@ final class ChiaTransactionBuilder {
         return hashesForSign
     }
     
-    func buildToSend(signatures: Data) throws -> ChiaTransactionBody {
+    func buildToSend(signatures: [Data]) throws -> ChiaSpendBundle {
         let aggregatedSignature = try ChiaBLS.aggregate(signatures: signatures.map { $0.hexString })
-
-        return ChiaTransactionBody(
-            spendBundle: ChiaSpendBundle(
-                aggregatedSignature: aggregatedSignature,
-                coinSpends: coinSpends
-            )
+        
+        return ChiaSpendBundle(
+            aggregatedSignature: aggregatedSignature,
+            coinSpends: coinSpends
         )
     }
     

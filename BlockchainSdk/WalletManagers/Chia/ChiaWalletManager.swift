@@ -53,35 +53,33 @@ final class ChiaWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        Just(())
-            .receive(on: DispatchQueue.global())
-            .tryMap { [weak self] _ -> String in
-                guard let self = self else {
-                    throw WalletError.failedToBuildTx
-                }
+        do {
+            let hashesForSign = try self.txBuilder.buildForSign(transaction: transaction)
+            
+            return signer.sign(
+                hashes: hashesForSign,
+                walletPublicKey: self.wallet.publicKey
+            )
+            .tryMap { [weak self] signatures -> ChiaSpendBundle in
+                guard let self = self else { throw WalletError.empty }
                 
-                let input = try self.txBuilder.buildForSign(transaction: transaction)
-                
-                throw WalletError.empty
+                return try self.txBuilder.buildToSend(signatures: signatures)
             }
-            .flatMap { [weak self] message -> AnyPublisher<String, Error> in
+            .flatMap { [weak self] spendBundle -> AnyPublisher<String, Error> in
                 guard let self = self else {
                     return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
                 }
                 
-                return .emptyFail
-                
-//                return self.networkService.send(message: message)
+                return self.networkService.send(spendBundle)
             }
             .map { [weak self] hash in
                 self?.wallet.add(transaction: transaction)
                 return TransactionSendResult(hash: hash)
             }
             .eraseToAnyPublisher()
-    }
-
-    func build(transaction: TheOpenNetworkSigningInput, with signer: TransactionSigner? = nil) throws -> String {
-        throw WalletError.empty
+        } catch {
+            return .anyFail(error: error)
+        }
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {

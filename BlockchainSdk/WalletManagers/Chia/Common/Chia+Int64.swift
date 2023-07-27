@@ -12,7 +12,8 @@ extension UInt64 {
     
     func chiaEncode() -> Data {
         let data = withUnsafeBytes(of: self) { Data($0) }
-        return Data(data.bytes.drop(while: { $0 == 0x00 }))
+        let result = data.bytes.reversed().drop(while: { $0 == 0x00 })
+        return Data(result)
     }
     
 }
