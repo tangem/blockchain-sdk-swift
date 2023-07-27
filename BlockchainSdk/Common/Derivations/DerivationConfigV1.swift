@@ -86,9 +86,9 @@ public struct DerivationConfigV1: DerivationConfig {
         case .cronos:
             return "m/44'/10000025'/0'/0/0"
         case .telos:
-            return [.default: "m/44'/977'/0'/0/0"]
+            return "m/44'/977'/0'/0/0"
         case .chia:
-            return [:]
+            return ""
         }
     }
 }

@@ -84,9 +84,9 @@ public struct DerivationConfigV3: DerivationConfig {
         case .cosmos:
             return "m/44'/118'/0'/0/0"
         case .terraV1, .terraV2:
-            return [.default: "m/44'/330'/0'/0/0"]
+            return "m/44'/330'/0'/0/0"
         case .chia:
-            return [:]
+            return ""
         }
     }
 }

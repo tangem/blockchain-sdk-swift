@@ -17,11 +17,13 @@ public struct ChiaAddressService: AddressService {
     
     private(set) var isTestnet: Bool
     
+    private let constants = ChiaConstant.self
+    
     // MARK: - Implementation
     
     public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
-        let puzzle = ChiaConstant.getPuzzle(walletPublicKey: publicKey.blockchainKey)
-        let puzzleHash = try ClvmNode.Decoder(programBytes: puzzle.bytes).deserialize().hash()
+        let puzzle = constants.getPuzzle(walletPublicKey: publicKey.blockchainKey)
+        let puzzleHash = try ClvmProgram.Decoder(programBytes: puzzle.bytes).deserialize().hash()
         let hrp = ChiaConstant.HRP(isTestnet: isTestnet).rawValue
         let encodeValue = Bech32(variant: .bech32m).encode(hrp, values: puzzleHash)
         
@@ -37,7 +39,6 @@ public struct ChiaAddressService: AddressService {
             return false
         }
     }
-    
 }
 
 extension ChiaAddressService {

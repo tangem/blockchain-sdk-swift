@@ -10,12 +10,12 @@ import Foundation
 import TangemSdk
 import CryptoSwift
 
-class ClvmNode {
+class ClvmProgram {
     private let atom: Array<Byte>?
-    private let left: ClvmNode?
-    private let right: ClvmNode?
+    private let left: ClvmProgram?
+    private let right: ClvmProgram?
 
-    init(atom: Array<Byte>? = nil, left: ClvmNode? = nil, right: ClvmNode? = nil) {
+    init(atom: Array<Byte>? = nil, left: ClvmProgram? = nil, right: ClvmProgram? = nil) {
         self.atom = atom
         self.left = left
         self.right = right
@@ -34,33 +34,33 @@ class ClvmNode {
     }
 }
 
-extension ClvmNode {
+extension ClvmProgram {
     class Decoder {
         // MARK: - Properties
         
-        private var iterator: ClvmNode.Iterator<Byte>
+        private var iterator: ClvmProgram.Iterator<Byte>
         
         // MARK: - Init
         
         init(programBytes: Array<Byte>) {
-            self.iterator = ClvmNode.Iterator(programBytes: programBytes)
+            self.iterator = ClvmProgram.Iterator(programBytes: programBytes)
         }
         
         // MARK: - Public Implementation
         
-        func deserialize() throws -> ClvmNode {
+        func deserialize() throws -> ClvmProgram {
             try deserialize(with: &iterator)
         }
         
         // MARK: - Private Implementation
         
-        private func deserialize(with programByteIterator: inout ClvmNode.Iterator<Byte>) throws -> ClvmNode {
+        private func deserialize(with programByteIterator: inout ClvmProgram.Iterator<Byte>) throws -> ClvmProgram {
             var sizeBytes = Array<Byte>()
 
             let currentByte = programByteIterator.next()!
 
             if currentByte <= 0x7F {
-                return ClvmNode(atom: [currentByte])
+                return ClvmProgram(atom: [currentByte])
             } else if currentByte <= 0xBF {
                 sizeBytes = [currentByte & 0x3F]
             } else if currentByte <= 0xDF {
@@ -74,14 +74,14 @@ extension ClvmNode {
             } else if currentByte == 0xFF {
                 let left = try deserialize(with: &programByteIterator)
                 let right = try deserialize(with: &programByteIterator)
-                return ClvmNode(atom: nil, left: left, right: right)
+                return ClvmProgram(atom: nil, left: left, right: right)
             } else {
                 throw DecoderError.errorCompareCurrentByte
             }
 
             let size = sizeBytes.toInt()
             let nextBytes = try programByteIterator.next(byteCount: size)
-            return ClvmNode(atom: nextBytes)
+            return ClvmProgram(atom: nextBytes)
         }
     }
     
@@ -90,7 +90,7 @@ extension ClvmNode {
     }
 }
 
-extension ClvmNode {
+extension ClvmProgram {
     private struct Iterator<T>: IteratorProtocol {
         private(set) var programBytes: Array<T>
         
