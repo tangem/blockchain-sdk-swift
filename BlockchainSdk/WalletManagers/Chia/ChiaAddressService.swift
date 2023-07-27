@@ -26,14 +26,14 @@ public struct ChiaAddressService: AddressService {
         
         let puzzleHash = try ClvmNode.Decoder(programBytes: puzzle.bytes).deserialize().hash()
         let hrp = HRP(isTestnet: isTestnet).rawValue
-        let encodeValue = Bech32(type: .bech32m).encode(hrp, values: puzzleHash)
+        let encodeValue = Bech32(variant: .bech32m).encode(hrp, values: puzzleHash)
         
         return .init(value: encodeValue, publicKey: publicKey, type: addressType)
     }
     
     public func validate(_ address: String) -> Bool {
         do {
-            let result = try Bech32(type: .bech32m).decode(address)
+            let result = try Bech32(variant: .bech32m).decode(address)
             return HRP(isTestnet: isTestnet).rawValue == result.hrp
         } catch {
             assertionFailure(error.localizedDescription)
