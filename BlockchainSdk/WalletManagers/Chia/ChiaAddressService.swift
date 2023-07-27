@@ -17,15 +17,12 @@ public struct ChiaAddressService: AddressService {
     
     private(set) var isTestnet: Bool
     
-    private let constans = ChiaAddressService.Constans.self
-    
     // MARK: - Implementation
     
     public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
-        let puzzle = Data(hex: constans.puzzleReveal.rawValue) + (publicKey.blockchainKey) + Data(hex: constans.fingerprint.rawValue)
-        
+        let puzzle = ChiaConstant.getPuzzle(walletPublicKey: publicKey.blockchainKey)
         let puzzleHash = try ClvmNode.Decoder(programBytes: puzzle.bytes).deserialize().hash()
-        let hrp = HRP(isTestnet: isTestnet).rawValue
+        let hrp = ChiaConstant.HRP(isTestnet: isTestnet).rawValue
         let encodeValue = Bech32(variant: .bech32m).encode(hrp, values: puzzleHash)
         
         return .init(value: encodeValue, publicKey: publicKey, type: addressType)
@@ -34,7 +31,7 @@ public struct ChiaAddressService: AddressService {
     public func validate(_ address: String) -> Bool {
         do {
             let result = try Bech32(variant: .bech32m).decode(address)
-            return HRP(isTestnet: isTestnet).rawValue == result.hrp
+            return ChiaConstant.HRP(isTestnet: isTestnet).rawValue == result.hrp
         } catch {
             assertionFailure(error.localizedDescription)
             return false
@@ -44,24 +41,7 @@ public struct ChiaAddressService: AddressService {
 }
 
 extension ChiaAddressService {
-    enum HRP: String {
-        case txch, xch
-        
-        init(isTestnet: Bool) {
-            self = isTestnet ? .txch : .xch
-        }
-    }
-}
-
-extension ChiaAddressService {
     enum ChiaAddressError: Error {
         case invalidHumanReadablePart
-    }
-}
-
-extension ChiaAddressService {
-    enum Constans: String {
-        case puzzleReveal = "ff02ffff01ff02ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff0bff80808080ff80808080ff0b80ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b0"
-        case fingerprint = "ff018080"
     }
 }
