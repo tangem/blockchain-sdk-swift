@@ -557,11 +557,6 @@ extension Blockchain {
 
         return style.provider.derivationPath(for: self)
     }
-
-    @available(*, deprecated, message: "Use AddressServiceFactory(blockchain:).validate(_:)")
-    public func validate(address: String) -> Bool {
-        AddressServiceFactory(blockchain: self).makeAddressService().validate(address)
-    }
 }
 
 // MARK: - Sharing options
