@@ -23,10 +23,9 @@ public class WalletManagerFactory {
         self.config = config
     }
     
-    public func makeWalletManager(blockchain: Blockchain, publicKeys: [AddressType: Wallet.PublicKey]) throws -> WalletManager {
-        // It'll moved in Assembly in next task
+    public func makeWalletManager(blockchain: Blockchain, publicKey: Wallet.PublicKey) throws -> WalletManager {
         let walletFactory = WalletFactory(blockchain: blockchain)
-        let wallet = try walletFactory.makeWallet(publicKeys: publicKeys)
+        let wallet = try walletFactory.makeWallet(publicKey: publicKey)
         return try makeWalletManager(from: blockchain, wallet: wallet)
     }
 

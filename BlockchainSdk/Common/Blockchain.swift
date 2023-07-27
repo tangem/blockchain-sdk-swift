@@ -545,35 +545,17 @@ extension Blockchain {
 // MARK: - Address creation
 @available(iOS 13.0, *)
 extension Blockchain {
-    @available(*, deprecated, message: "Use derivationPaths(for:)")
-    public func derivationPath(for style: DerivationStyle = .legacy) -> DerivationPath? {
+    public func derivationPath(for style: DerivationStyle) -> DerivationPath? {
         guard curve == .secp256k1 || curve == .ed25519 else {
+            Log.debug("Wrong attempt to get a `DerivationPath` for a unsupported derivation curve")
             return nil
         }
         
         if isTestnet {
             return BIP44(coinType: 1).buildPath()
         }
-        
-        guard let rawPath = style.provider.derivations(for: self)[.default] else {
-            return nil
-        }
-        
-        return try? DerivationPath(rawPath: rawPath)
-    }
-    
-    public func derivationPaths(for style: DerivationStyle) -> [AddressType: DerivationPath] {
-        guard curve == .secp256k1 || curve == .ed25519 else {
-            return [:]
-        }
-        
-        if isTestnet {
-            return style.provider.derivations(for: self)
-                .mapValues { _ in BIP44(coinType: 1).buildPath() }
-        }
-        
-        return style.provider.derivations(for: self)
-            .compactMapValues { try? DerivationPath(rawPath: $0) }
+
+        return style.provider.derivationPath(for: self)
     }
 
     @available(*, deprecated, message: "Use AddressServiceFactory(blockchain:).validate(_:)")
