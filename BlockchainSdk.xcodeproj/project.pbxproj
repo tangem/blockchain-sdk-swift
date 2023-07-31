@@ -56,6 +56,9 @@
 		2DBBE95029C8DBEA00971539 /* TONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBBE94F29C8DBEA00971539 /* TONTests.swift */; };
 		2DC5796129C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5796029C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift */; };
 		2DC5DAB429B9E6A10039154A /* WalletCoreSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5DAB329B9E6A10039154A /* WalletCoreSigner.swift */; };
+		2DD6C5E62A73F19C00AE2C15 /* BlsSignature.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6C5E52A73F19C00AE2C15 /* BlsSignature.xcframework */; };
+		2DD6C5EB2A73FED500AE2C15 /* BlsSignature.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6C5E52A73F19C00AE2C15 /* BlsSignature.xcframework */; };
+		2DD6C5EC2A73FED500AE2C15 /* BlsSignature.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD6C5E52A73F19C00AE2C15 /* BlsSignature.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2DDE5B9F29C4F8D200A5B708 /* NetworkProviderAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDE5B8C29C4F8D200A5B708 /* NetworkProviderAssembly.swift */; };
 		2DDE5BA029C4F8D200A5B708 /* BlockBookProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDE5B8D29C4F8D200A5B708 /* BlockBookProviderType.swift */; };
 		2DDE5BA129C4F8D200A5B708 /* DucatusWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDE5B8F29C4F8D200A5B708 /* DucatusWalletAssembly.swift */; };
@@ -389,6 +392,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				2DD6C5EC2A73FED500AE2C15 /* BlsSignature.xcframework in Embed Frameworks */,
 				DA59751727D747CD009F0A1F /* BlockchainSdk.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -448,6 +452,7 @@
 		2DBBE94F29C8DBEA00971539 /* TONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONTests.swift; sourceTree = "<group>"; };
 		2DC5796029C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreSignerTesterUtility.swift; sourceTree = "<group>"; };
 		2DC5DAB329B9E6A10039154A /* WalletCoreSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreSigner.swift; sourceTree = "<group>"; };
+		2DD6C5E52A73F19C00AE2C15 /* BlsSignature.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = BlsSignature.xcframework; sourceTree = "<group>"; };
 		2DDE5B8C29C4F8D200A5B708 /* NetworkProviderAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkProviderAssembly.swift; sourceTree = "<group>"; };
 		2DDE5B8D29C4F8D200A5B708 /* BlockBookProviderType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockBookProviderType.swift; sourceTree = "<group>"; };
 		2DDE5B8F29C4F8D200A5B708 /* DucatusWalletAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DucatusWalletAssembly.swift; sourceTree = "<group>"; };
@@ -782,6 +787,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DD6C5E62A73F19C00AE2C15 /* BlsSignature.xcframework in Frameworks */,
 				88095B618D07D706BB871FE6 /* Pods_BlockchainSdk.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -801,6 +807,7 @@
 			files = (
 				DA59751E27D749A9009F0A1F /* MapKit.framework in Frameworks */,
 				DA59751627D747CD009F0A1F /* BlockchainSdk.framework in Frameworks */,
+				2DD6C5EB2A73FED500AE2C15 /* BlsSignature.xcframework in Frameworks */,
 				BFD88160E080534F13A7C7A6 /* Pods_BlockchainSdkExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -973,6 +980,7 @@
 		5D14E4642397B80F00C15FC8 = {
 			isa = PBXGroup;
 			children = (
+				2DD6C5E52A73F19C00AE2C15 /* BlsSignature.xcframework */,
 				5D14E4722397B80F00C15FC8 /* Info.plist */,
 				5D14E4702397B80F00C15FC8 /* BlockchainSdk */,
 				5D14E47B2397B80F00C15FC8 /* BlockchainSdkTests */,

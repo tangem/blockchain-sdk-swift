@@ -8,7 +8,7 @@
 
 import Foundation
 import CryptoKit
-import ChiaBLS
+import Bls_Signature
 
 final class ChiaTransactionBuilder {
     // MARK: - Public Properties
@@ -31,32 +31,6 @@ final class ChiaTransactionBuilder {
         self.isTestnet = isTestnet
         self.walletPublicKey = walletPublicKey
         self.unspentCoins = unspentCoins
-    }
-    
-    
-    // MARK: - Need after test remove
-    
-    func test() {
-        let address = "txch14gxuvfmw2xdxqnws5agt3ma483wktd2lrzwvpj3f6jvdgkmf5gtq8g3aw3"
-        let amount: UInt64 = 235834596465
-        let encodedAmount = amount.chiaEncode()
-
-        let solution1 = try! "ffffff33ffa0" +
-            ChiaConstant.getPuzzleHash(address: address).hex + "ff8" + String(encodedAmount.count) +
-            Data(encodedAmount).hex + "808080"
-        
-        let condition = try! CreateCoinCondition(
-            destinationPuzzleHash: ChiaConstant.getPuzzleHash(address: address),
-            amount: amount
-        ).toProgram()
-        
-        let solution2 = try! ClvmProgram.from(list: [ClvmProgram.from(list: [condition])]).serialize().hex
-
-        let equal = solution1.lowercased() == solution2.lowercased()
-        
-        print(solution1)
-        print(solution2)
-        print(equal)
     }
     
     // MARK: - Implementation
@@ -95,7 +69,7 @@ final class ChiaTransactionBuilder {
     }
     
     func buildToSend(signatures: [Data]) throws -> ChiaSpendBundle {
-        let aggregatedSignature = try ChiaBLS.aggregate(signatures: signatures.map { $0.hexString })
+        let aggregatedSignature = try BlsSignatureSwift.aggregate(signatures: signatures.map { $0.hexString })
         
         return ChiaSpendBundle(
             aggregatedSignature: aggregatedSignature,
@@ -111,7 +85,7 @@ final class ChiaTransactionBuilder {
     }
     
     private func toChiaCoinSpends(change: UInt64, destination: String, source: String, amount: Amount) throws -> [ChiaCoinSpend] {
-        let coinSpends = unspentCoins.map {
+        var coinSpends = unspentCoins.map {
             ChiaCoinSpend(
                 coin: $0,
                 puzzleReveal: ChiaConstant.getPuzzle(walletPublicKey: walletPublicKey).hex,
@@ -122,7 +96,8 @@ final class ChiaTransactionBuilder {
         let sendCondition = try createCoinCondition(for: destination, with: amount.value.uint64Value)
         let changeCondition = try change != 0 ? createCoinCondition(for: source, with: change) : nil
         
-        self.coinSpends[0].solution = try [sendCondition, changeCondition].compactMap { $0 }.toSolution().hex
+        let solution: [ChiaCondition] = [sendCondition, changeCondition].compactMap { $0 }
+        coinSpends[0].solution = try solution.toSolution().hex
         
         for var coinSpend in coinSpends.dropFirst(1) {
             coinSpend.solution = try [RemarkCondition()].toSolution().hex

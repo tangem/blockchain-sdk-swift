@@ -1,0 +1,11 @@
+framework module Bls_Signature {
+  umbrella header "Bls_Signature.h"
+
+  export *
+  module * { export * }
+}
+
+module Bls_Signature.Swift {
+  header "Bls_Signature-Swift.h"
+  requires objc
+}

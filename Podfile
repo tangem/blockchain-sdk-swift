@@ -13,7 +13,7 @@ def common_pods
 # pod 'TangemWalletCore', :path => '../wallet-core-binaries-ios'
 
   # Pods for Chia-BLS
-  pod 'Chia-BLS', :path => '../chia-bls'
+#  pod 'Chia-BLS', :path => '../chia-bls'
 end
 
 

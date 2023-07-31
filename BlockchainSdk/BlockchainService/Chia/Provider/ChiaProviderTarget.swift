@@ -48,8 +48,8 @@ struct ChiaProviderTarget: TargetType {
         switch targetType {
         case .getCoinRecordsBy(let puzzleHashBody):
             jrpcRequest = (try? puzzleHashBody.asDictionary(with: encoder)) ?? [:]
-        default:
-            jrpcRequest = [:]
+        case .sendTransaction(let body):
+            jrpcRequest = (try? body.asDictionary(with: encoder)) ?? [:]
         }
         
         return .requestParameters(parameters: jrpcRequest, encoding: JSONEncoding.default)

@@ -1,0 +1,107 @@
+{
+  "ABIRoot": {
+    "kind": "Root",
+    "name": "TopLevel",
+    "printedName": "TopLevel",
+    "children": [
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "Bls_Signature",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "BlsSignatureSwift",
+        "printedName": "BlsSignatureSwift",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "augSchemeMplG2Map",
+            "printedName": "augSchemeMplG2Map(publicKeyHash:messageHash:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:13Bls_Signature0aB5SwiftV17augSchemeMplG2Map13publicKeyHash07messageK0S2S_SStKFZ",
+            "mangledName": "$s13Bls_Signature0aB5SwiftV17augSchemeMplG2Map13publicKeyHash07messageK0S2S_SStKFZ",
+            "moduleName": "Bls_Signature",
+            "static": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "aggregate",
+            "printedName": "aggregate(signatures:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[Swift.String]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sa"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:13Bls_Signature0aB5SwiftV9aggregate10signaturesSSSaySSG_tKFZ",
+            "mangledName": "$s13Bls_Signature0aB5SwiftV9aggregate10signaturesSSSaySSG_tKFZ",
+            "moduleName": "Bls_Signature",
+            "static": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:13Bls_Signature0aB5SwiftV",
+        "mangledName": "$s13Bls_Signature0aB5SwiftV",
+        "moduleName": "Bls_Signature",
+        "declAttributes": [
+          "AccessControl"
+        ]
+      }
+    ],
+    "json_format_version": 8
+  },
+  "ConstValues": []
+}

@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import Moya
 
 struct ChiaNetworkProvider: HostProvider {
     
@@ -44,16 +45,21 @@ struct ChiaNetworkProvider: HostProvider {
             targetType: .getCoinRecordsBy(puzzleHashBody: .init(puzzleHash: puzzleHash))
         )
         
-        return requestPublisher(for: target)
+        return requestPublisher(for: target, completionError: { _ in return .failedToParseNetworkResponse })
     }
     
     func sendTransaction(body: ChiaTransactionBody) -> AnyPublisher<ChiaSendTransactionResponse, Error> {
-        return .emptyFail
+        let target = ChiaProviderTarget(
+            node: node,
+            targetType: .sendTransaction(body: body)
+        )
+        
+        return requestPublisher(for: target, completionError: { _ in return .failedToParseNetworkResponse })
     }
     
     // MARK: - Private Implementation
     
-    private func requestPublisher<T: Decodable>(for target: ChiaProviderTarget) -> AnyPublisher<T, Error> {
+    private func requestPublisher<T: Decodable>(for target: ChiaProviderTarget, completionError: @escaping (MoyaError) -> WalletError) -> AnyPublisher<T, Error> {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
@@ -61,8 +67,7 @@ struct ChiaNetworkProvider: HostProvider {
             .filterSuccessfulStatusAndRedirectCodes()
             .map(T.self, using: decoder)
             .mapError { error in
-                print(error.localizedDescription)
-                return WalletError.empty
+                return completionError(error)
             }
             .eraseToAnyPublisher()
     }

@@ -36,8 +36,6 @@ final class ChiaWalletManager: BaseManager, WalletManager {
     // MARK: - Implementation
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        txBuilder.test()
-        
         cancellable = networkService
             .getUnspents(puzzleHash: puzzleHash)
             .sink(
@@ -62,7 +60,6 @@ final class ChiaWalletManager: BaseManager, WalletManager {
             )
             .tryMap { [weak self] signatures -> ChiaSpendBundle in
                 guard let self = self else { throw WalletError.empty }
-                
                 return try self.txBuilder.buildToSend(signatures: signatures)
             }
             .flatMap { [weak self] spendBundle -> AnyPublisher<String, Error> in
@@ -100,13 +97,15 @@ final class ChiaWalletManager: BaseManager, WalletManager {
 
 private extension ChiaWalletManager {
     private func update(with coins: [ChiaCoin], completion: @escaping (Result<Void, Error>) -> Void) {
-        let balance = coins.map { $0.amount }.reduce(0, +)
+        let decimalBalance = coins.map { Decimal($0.amount) }.reduce(0, +)
         
-        if balance != wallet.amounts[.coin]?.value.uint64Value {
+        if decimalBalance != wallet.amounts[.coin]?.value {
             wallet.transactions = []
         }
         
-        wallet.add(coinValue: .init(balance / wallet.blockchain.decimalValue.uint64Value))
+        let coinBalance = decimalBalance / wallet.blockchain.decimalValue
+        
+        wallet.add(coinValue: coinBalance)
         txBuilder.unspentCoins = coins
         
         completion(.success(()))

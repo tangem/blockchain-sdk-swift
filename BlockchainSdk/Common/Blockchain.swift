@@ -147,8 +147,6 @@ public enum Blockchain: Equatable, Hashable {
             return testnet ? 12 : 10
         case .kusama, .azero, .chia:
             return 12
-        case .chia:
-            return 18
         }
     }
     
