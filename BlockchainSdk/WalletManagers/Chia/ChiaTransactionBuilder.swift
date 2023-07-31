@@ -17,18 +17,18 @@ final class ChiaTransactionBuilder {
     
     // MARK: - Private Properties
     
-    private let isTestnet: Bool
+    private let blockchain: Blockchain
     private let walletPublicKey: Data
     private var coinSpends: [ChiaCoinSpend] = []
     
     private var genesisChallenge: Data {
-        Data(hex: ChiaGenesisChallenge.genesisChallenge(isTestnet: isTestnet))
+        Data(hex: ChiaGenesisChallenge.genesisChallenge(isTestnet: blockchain.isTestnet))
     }
     
     // MARK: - Init
     
-    init(isTestnet: Bool, walletPublicKey: Data, unspentCoins: [ChiaCoin] = []) {
-        self.isTestnet = isTestnet
+    init(blockchain: Blockchain, walletPublicKey: Data, unspentCoins: [ChiaCoin] = []) {
+        self.blockchain = blockchain
         self.walletPublicKey = walletPublicKey
         self.unspentCoins = unspentCoins
     }
@@ -50,7 +50,7 @@ final class ChiaTransactionBuilder {
             unspentCoins: unspentCoins
         )
         
-        let coinSpends = try toChiaCoinSpends(
+        coinSpends = try toChiaCoinSpends(
             change: change,
             destination: transaction.destinationAddress,
             source: transaction.sourceAddress,
@@ -81,7 +81,11 @@ final class ChiaTransactionBuilder {
     
     private func calculateChange(transaction: Transaction, unspentCoins: [ChiaCoin]) throws -> UInt64 {
         let fullAmount = unspentCoins.map { $0.amount }.reduce(0, +)
-        return fullAmount - (transaction.amount.value.uint64Value + transaction.fee.amount.value.uint64Value)
+        let transactionAmount = transaction.amount.value * blockchain.decimalValue
+        let transactionFeeAmount = transaction.fee.amount.value * blockchain.decimalValue
+        let changeAmount = fullAmount - (transactionAmount.uint64Value + transactionFeeAmount.uint64Value)
+        
+        return changeAmount
     }
     
     private func toChiaCoinSpends(change: UInt64, destination: String, source: String, amount: Amount) throws -> [ChiaCoinSpend] {

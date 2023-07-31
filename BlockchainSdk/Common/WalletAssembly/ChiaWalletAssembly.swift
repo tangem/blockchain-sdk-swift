@@ -29,7 +29,7 @@ struct ChiaWalletAssembly: WalletManagerAssembly {
                 blockchain: input.blockchain
             ),
             txBuilder: .init(
-                isTestnet: input.blockchain.isTestnet,
+                blockchain: input.blockchain,
                 walletPublicKey: input.wallet.publicKey.blockchainKey
             )
         )
