@@ -8,6 +8,11 @@
 
 import Foundation
 
+/*
+ Use this list only for EVM-like blockchains
+ Support link - https://chainlist.org
+*/
+
 struct EthereumJsonRpcList {
     // MARK: - Private Properties
     
@@ -26,7 +31,7 @@ struct EthereumJsonRpcList {
     
     // MARK: - Implementation
     
-    public func getJsonRpc(for blockchain: Blockchain) -> [URL]? {
+    public func getJsonRpc(for blockchain: Blockchain) -> [URL] {
         switch blockchain {
         case .ethereum:
             if blockchain.isTestnet {
@@ -213,7 +218,7 @@ struct EthereumJsonRpcList {
                 URL(string: "https://octaspace.rpc.thirdweb.com")!,
             ]
         default:
-            return nil
+            return []
         }
     }
 }

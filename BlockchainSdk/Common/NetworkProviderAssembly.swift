@@ -54,6 +54,7 @@ struct NetworkProviderAssembly {
     
     func makeEthereumJsonRpcProviders(with input: WalletManagerAssemblyInput) -> [EthereumJsonRpcProvider] {
         guard input.blockchain.isEvm else {
+            assertionFailure("Don't use jsonRpc list for non-evm blockchains")
             return []
         }
         
@@ -71,7 +72,7 @@ struct NetworkProviderAssembly {
                 url: $0,
                 configuration: input.networkConfig
             )
-        } ?? []
+        }
     }
     
 }
