@@ -48,8 +48,11 @@ struct NetworkProviderAssembly {
         }
     }
     
-    func makeBlockscoutNetworkProvider(canLoad: Bool, with input: WalletManagerAssemblyInput) -> BlockscoutNetworkProvider? {
-        return canLoad ? BlockscoutNetworkProvider(configuration: .init(credentials: input.blockchainConfig.blockscoutCredentials)) : nil
+    func makeBlockscoutNetworkProvider(with input: WalletManagerAssemblyInput) -> BlockscoutNetworkProvider {
+        BlockscoutNetworkProvider(
+            configuration: .init(credentials: input.blockchainConfig.blockscoutCredentials),
+            mapper: BlockscoutResponseMapper(decimalValue: input.blockchain.decimalValue)
+        )
     }
     
     func makeEthereumJsonRpcProviders(with input: WalletManagerAssemblyInput) -> [EthereumJsonRpcProvider] {

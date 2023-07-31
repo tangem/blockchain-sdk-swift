@@ -14,17 +14,14 @@ struct OptimismWalletAssembly: WalletManagerAssembly {
         let providers = networkProviderAssembly.makeEthereumJsonRpcProviders(with: input)        
         return try OptimismWalletManager(wallet: input.wallet).then {
             let chainId = input.blockchain.chainId!
-            
+                        
             $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, chainId: chainId)
             $0.networkService = EthereumNetworkService(
                 decimals: input.blockchain.decimalCount,
                 providers: providers,
                 blockcypherProvider: nil,
                 blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
-                transactionHistoryProvider: networkProviderAssembly.makeBlockscoutNetworkProvider(
-                    canLoad: input.blockchain.canLoadTransactionHistory,
-                    with: input
-                ),
+                blockscoutNetworkProvider: nil,
                 abiEncoder: WalletCoreABIEncoder()
             )
         }
