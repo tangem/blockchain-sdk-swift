@@ -766,7 +766,11 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(expectedAddress, address)
         
         XCTAssertTrue(addressService.validate("txch14gxuvfmw2xdxqnws5agt3ma483wktd2lrzwvpj3f6jvdgkmf5gtq8g3aw3"))
-        XCTAssertTrue(addressService.validate("terravaloper1pdx498r0hrc2fj36sjhs8vuhrz9hd2cw0yhqtk"))
-        XCTAssertFalse(addressService.validate("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02"))
+        XCTAssertTrue(addressService.validate("txch1rpu5dtkfkn48dv5dmpl00hd86t8jqvskswv8vlqz2nlucrrysxfscxm96k"))
+        XCTAssertTrue(addressService.validate("txch1lhfzlt7tz8whecqnnrha4kcxgfk9ct77j0aq0a844766fpjfv2rsp9wgas"))
+        
+        XCTAssertFalse(addressService.validate("txch14gxuvfmw2xdxqnws5agt3ma483wktd2lrzwvpj3f"))
+        XCTAssertFalse(addressService.validate("txch1rpu5dtkfkn48dv5dmpl00hd86t8jqvskswv8vlqz2nlucrrysxfscxm96667d233ms"))
+        XCTAssertFalse(addressService.validate("xch1lhfzlt7tz8whecqnnrha4kcxgfk9ct77j0aq0a844766fpjfv2rsp9wgas"))
     }
 }

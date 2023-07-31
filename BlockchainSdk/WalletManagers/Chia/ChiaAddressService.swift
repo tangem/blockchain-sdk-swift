@@ -33,7 +33,6 @@ public struct ChiaAddressService: AddressService {
             let result = try Bech32(variant: .bech32m).decode(address)
             return ChiaHRP(isTestnet: isTestnet).rawValue == result.hrp
         } catch {
-            assertionFailure(error.localizedDescription)
             return false
         }
     }

@@ -10,7 +10,6 @@
 //  Inspired by Pieter Wuille C++ implementation
 //
 
-
 import Foundation
 
 /// Bech32 checksum implementation
@@ -53,6 +52,7 @@ public class Bech32 {
                 chk ^= ((top >> i) & 1) == 0 ? 0 : gen[Int(i)]
             }
         }
+        
         return chk
     }
     
@@ -75,7 +75,7 @@ public class Bech32 {
     private func verifyChecksum(hrp: String, checksum: Data) -> Bool {
         var data = expandHrp(hrp)
         data.append(checksum)
-        return polymod(data) == 1
+        return polymod(data) == variant.rawValue
     }
     
     /// Create checksum
@@ -289,7 +289,7 @@ extension Bech32 {
 
 extension Bech32 {
     
-    public enum Variant: UInt32 {
+    enum Variant: UInt32 {
         case bech32
         case bech32m
         
