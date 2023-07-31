@@ -336,7 +336,7 @@
 		EF9F9088299F8B70006F638F /* ETHError.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9F9087299F8B70006F638F /* ETHError.swift */; };
 		EFB9523D2A6FDB2A00996D16 /* TransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB9523C2A6FDB2A00996D16 /* TransactionHistoryProvider.swift */; };
 		EFB952402A6FEF1700996D16 /* TransactionRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB9523F2A6FEF1700996D16 /* TransactionRecord.swift */; };
-		EFB952422A6FF30B00996D16 /* BlockscoutResponceMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB952412A6FF30B00996D16 /* BlockscoutResponceMapper.swift */; };
+		EFB952422A6FF30B00996D16 /* BlockscoutResponseMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB952412A6FF30B00996D16 /* BlockscoutResponseMapper.swift */; };
 		EFBA17FE2988623F00C23955 /* TransactionSendResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */; };
 		EFD32AE429E9B7800026353E /* RavencoinTransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD32AE329E9B7800026353E /* RavencoinTransactionHistory.swift */; };
 		EFD717B82A24B20700E5430D /* OptimismContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF5BA8329B881440070694A /* OptimismContract.swift */; };
@@ -732,7 +732,7 @@
 		EF9F9087299F8B70006F638F /* ETHError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ETHError.swift; sourceTree = "<group>"; };
 		EFB9523C2A6FDB2A00996D16 /* TransactionHistoryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryProvider.swift; sourceTree = "<group>"; };
 		EFB9523F2A6FEF1700996D16 /* TransactionRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRecord.swift; sourceTree = "<group>"; };
-		EFB952412A6FF30B00996D16 /* BlockscoutResponceMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockscoutResponceMapper.swift; sourceTree = "<group>"; };
+		EFB952412A6FF30B00996D16 /* BlockscoutResponseMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockscoutResponseMapper.swift; sourceTree = "<group>"; };
 		EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSendResult.swift; sourceTree = "<group>"; };
 		EFD32AE329E9B7800026353E /* RavencoinTransactionHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RavencoinTransactionHistory.swift; sourceTree = "<group>"; };
 		EFD717C92A25EA8500E5430D /* WalletCoreABIEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreABIEncoder.swift; sourceTree = "<group>"; };
@@ -1486,7 +1486,7 @@
 				B00FBED72996A1A300FDB874 /* BlockscoutNetworkProvider.swift */,
 				B00FBED92996A1B700FDB874 /* BlockscoutTarget.swift */,
 				B06D0D842996A9A700D74A5E /* BlockscoutResponse.swift */,
-				EFB952412A6FF30B00996D16 /* BlockscoutResponceMapper.swift */,
+				EFB952412A6FF30B00996D16 /* BlockscoutResponseMapper.swift */,
 			);
 			path = Blockscout;
 			sourceTree = "<group>";
@@ -2288,7 +2288,7 @@
 				B04DC65E25AC6538009AA7B3 /* EthereumAdditionalInfoProvider.swift in Sources */,
 				5D65D5C9260B261F00F84BED /* TezosPrefix.swift in Sources */,
 				2DDE5BA829C4F8D200A5B708 /* BitcoinWalletAssembly.swift in Sources */,
-				EFB952422A6FF30B00996D16 /* BlockscoutResponceMapper.swift in Sources */,
+				EFB952422A6FF30B00996D16 /* BlockscoutResponseMapper.swift in Sources */,
 				5D03D2D0253DE61B009A8A9F /* TezosAddressService.swift in Sources */,
 				5D5CE0D52625C8EC009023EC /* XrpNetworkProvider.swift in Sources */,
 				5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */,

@@ -10,35 +10,32 @@ import Foundation
 
 public struct TransactionRecord: Hashable {
     let hash: String
-    let sourceAddress: String
-    let destinationAddress: String
-    let amount: Decimal
-    let fee: Decimal
+    let source: AddressType
+    let destination: AddressType
+    let amount: Amount
+    let fee: Fee
     let status: TransactionStatus
     let type: TransactionType
     let date: Date?
-    let contractAddress: String?
     
     public init(
         hash: String,
-        sourceAddress: String,
-        destinationAddress: String,
-        amount: Decimal,
-        fee: Decimal,
+        source: AddressType,
+        destination: AddressType,
+        amount: Amount,
+        fee: Fee,
         status: TransactionStatus,
         type: TransactionType,
-        date: Date? = nil,
-        contractAddress: String? = nil
+        date: Date? = nil
     ) {
         self.hash = hash
-        self.sourceAddress = sourceAddress
-        self.destinationAddress = destinationAddress
+        self.source = source
+        self.destination = destination
         self.amount = amount
         self.fee = fee
         self.status = status
         self.type = type
         self.date = date
-        self.contractAddress = contractAddress
     }
 }
 
@@ -46,5 +43,11 @@ public extension TransactionRecord {
     enum TransactionType: String, Hashable {
         case send
         case receive
+    }
+    
+    enum AddressType: Hashable {
+        case single(_ address: String)
+        case multi(_ addresses: [String])
+        case contract(_ address: String)
     }
 }
