@@ -30,18 +30,25 @@ struct BlockscoutResponseMapper {
         }
 
         let amount = amountWei / decimalValue
-        let fee = (gasPriceWei * spentGasWei) / decimalValue
-
+        let feeAmount = (gasPriceWei * spentGasWei) / decimalValue
+        let fee = Fee(Amount(with: .ethereum(testnet: false), value: feeAmount))
+        
+        let destination: TransactionRecord.AddressType
+        if !response.contractAddress.isEmpty {
+            destination = .contract(response.contractAddress)
+        } else {
+            destination = .single(response.to)
+        }
+        
         return TransactionRecord(
             hash: response.hash,
-            sourceAddress: response.from,
-            destinationAddress: response.to,
-            amount: amount,
+            source: .single(response.from),
+            destination: destination,
+            amount: Amount(with: .ethereum(testnet: false), value: amount),
             fee: fee,
             status: confirmations > 0 ? .confirmed : .unconfirmed,
             type: .send,
-            date: date,
-            contractAddress: response.contractAddress
-        )
+            date: date
+        ) 
     }
 }
