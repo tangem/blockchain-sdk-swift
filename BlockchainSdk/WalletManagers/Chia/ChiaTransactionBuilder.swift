@@ -22,7 +22,7 @@ final class ChiaTransactionBuilder {
     private var coinSpends: [ChiaCoinSpend] = []
     
     private var genesisChallenge: Data {
-        Data(hex: ChiaConstant.genesisChallenge(isTestnet: isTestnet))
+        Data(hex: ChiaGenesisChallenge.genesisChallenge(isTestnet: isTestnet))
     }
     
     // MARK: - Init
@@ -88,7 +88,7 @@ final class ChiaTransactionBuilder {
         var coinSpends = unspentCoins.map {
             ChiaCoinSpend(
                 coin: $0,
-                puzzleReveal: ChiaConstant.getPuzzle(walletPublicKey: walletPublicKey).hex,
+                puzzleReveal: ChiaPuzzle.getPuzzle(walletPublicKey: walletPublicKey).hex,
                 solution: ""
             )
         }
@@ -108,7 +108,7 @@ final class ChiaTransactionBuilder {
     
     private func createCoinCondition(for address: String, with change: UInt64) throws -> CreateCoinCondition {
         return try CreateCoinCondition(
-            destinationPuzzleHash: ChiaConstant.getPuzzleHash(address: address),
+            destinationPuzzleHash: ChiaPuzzle.getPuzzleHash(address: address),
             amount: change
         )
     }

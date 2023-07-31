@@ -757,10 +757,20 @@ class AddressesTests: XCTestCase {
         let blockchain = Blockchain.chia(testnet: true)
         let addressService = ChiaAddressService(isTestnet: blockchain.isTestnet)
         
-        let expectedAddress = try addressService.makeAddress(
+        let address = try addressService.makeAddress(
             from: Data(hex: "b8f7dd239557ff8c49d338f89ac1a258a863fa52cd0a502e3aaae4b6738ba39ac8d982215aa3fa16bc5f8cb7e44b954d")
         ).value
         
-        XCTAssertEqual("txch14gxuvfmw2xdxqnws5agt3ma483wktd2lrzwvpj3f6jvdgkmf5gtq8g3aw3", expectedAddress)
+        let expectedAddress = "txch14gxuvfmw2xdxqnws5agt3ma483wktd2lrzwvpj3f6jvdgkmf5gtq8g3aw3"
+        
+        XCTAssertEqual(expectedAddress, address)
+        
+        XCTAssertTrue(addressService.validate("txch14gxuvfmw2xdxqnws5agt3ma483wktd2lrzwvpj3f6jvdgkmf5gtq8g3aw3"))
+        XCTAssertTrue(addressService.validate("txch1rpu5dtkfkn48dv5dmpl00hd86t8jqvskswv8vlqz2nlucrrysxfscxm96k"))
+        XCTAssertTrue(addressService.validate("txch1lhfzlt7tz8whecqnnrha4kcxgfk9ct77j0aq0a844766fpjfv2rsp9wgas"))
+        
+        XCTAssertFalse(addressService.validate("txch14gxuvfmw2xdxqnws5agt3ma483wktd2lrzwvpj3f"))
+        XCTAssertFalse(addressService.validate("txch1rpu5dtkfkn48dv5dmpl00hd86t8jqvskswv8vlqz2nlucrrysxfscxm96667d233ms"))
+        XCTAssertFalse(addressService.validate("xch1lhfzlt7tz8whecqnnrha4kcxgfk9ct77j0aq0a844766fpjfv2rsp9wgas"))
     }
 }
