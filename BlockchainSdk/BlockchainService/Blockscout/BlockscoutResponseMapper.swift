@@ -8,6 +8,7 @@
 
 import Foundation
 
+// Will be changed in https://tangem.atlassian.net/browse/IOS-3979
 struct BlockscoutResponseMapper {
     let decimalValue: Decimal
 
@@ -24,14 +25,16 @@ struct BlockscoutResponseMapper {
         
         let confirmations = Int(response.confirmations) ?? 0
 
-        var date: Date?
+        let date: Date?
         if let timestamp = TimeInterval(response.timeStamp) {
             date = Date(timeIntervalSince1970: timestamp)
+        } else {
+            date = nil
         }
 
         let amount = amountWei / decimalValue
         let feeAmount = (gasPriceWei * spentGasWei) / decimalValue
-        let fee = Fee(Amount(with: .ethereum(testnet: false), value: feeAmount))
+        let fee = Fee(Amount(with: .saltPay, value: feeAmount))
         
         let destination: TransactionRecord.AddressType
         if !response.contractAddress.isEmpty {
@@ -44,7 +47,7 @@ struct BlockscoutResponseMapper {
             hash: response.hash,
             source: .single(response.from),
             destination: destination,
-            amount: Amount(with: .ethereum(testnet: false), value: amount),
+            amount: Amount(with: .saltPay, value: amount),
             fee: fee,
             status: confirmations > 0 ? .confirmed : .unconfirmed,
             type: .send,

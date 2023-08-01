@@ -21,7 +21,6 @@ struct OptimismWalletAssembly: WalletManagerAssembly {
                 providers: providers,
                 blockcypherProvider: nil,
                 blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
-                blockscoutNetworkProvider: nil,
                 abiEncoder: WalletCoreABIEncoder()
             )
         }

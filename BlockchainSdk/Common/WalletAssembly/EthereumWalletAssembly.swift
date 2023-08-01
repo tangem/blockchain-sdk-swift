@@ -29,20 +29,12 @@ struct EthereumWalletAssembly: WalletManagerAssembly {
                 blockcypherProvider = nil
             }
             
-            var blockscoutNetworkProvider: BlockscoutNetworkProvider?
-            if input.blockchain.canLoadTransactionHistory {
-                blockscoutNetworkProvider = networkProviderAssembly.makeBlockscoutNetworkProvider(
-                    with: input
-                )
-            }
-            
             $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, chainId: chainId)
             $0.networkService = EthereumNetworkService(
                 decimals: input.blockchain.decimalCount,
                 providers: networkProviderAssembly.makeEthereumJsonRpcProviders(with: input),
                 blockcypherProvider: blockcypherProvider,
                 blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
-                blockscoutNetworkProvider: blockscoutNetworkProvider,
                 abiEncoder: WalletCoreABIEncoder()
             )
         }

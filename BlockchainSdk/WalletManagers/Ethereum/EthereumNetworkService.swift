@@ -20,7 +20,6 @@ class EthereumNetworkService: MultiNetworkProvider {
     private let decimals: Int
     private let ethereumInfoNetworkProvider: EthereumAdditionalInfoProvider?
     private let blockchairProvider: BlockchairNetworkProvider?
-    private let blockscoutNetworkProvider: BlockscoutNetworkProvider?
     private let abiEncoder: ABIEncoder
     
     init(
@@ -28,14 +27,12 @@ class EthereumNetworkService: MultiNetworkProvider {
         providers: [EthereumJsonRpcProvider],
         blockcypherProvider: BlockcypherNetworkProvider?,
         blockchairProvider: BlockchairNetworkProvider?,
-        blockscoutNetworkProvider: BlockscoutNetworkProvider?,
         abiEncoder: ABIEncoder
     ) {
         self.providers = providers
         self.decimals = decimals
         self.ethereumInfoNetworkProvider = blockcypherProvider
         self.blockchairProvider = blockchairProvider
-        self.blockscoutNetworkProvider = blockscoutNetworkProvider
         self.abiEncoder = abiEncoder
     }
     
@@ -265,15 +262,5 @@ class EthereumNetworkService: MultiNetworkProvider {
         let maxGasPrice = gasPrice * BigUInt(15) / BigUInt(10)
         
         return EthereumFeeResponse(gasPrices: [minGasPrice, normalGasPrice, maxGasPrice], gasLimit: gasLimit)
-    }
-}
-
-extension EthereumNetworkService {
-    func loadTransactionHistory(address: String) -> AnyPublisher<[TransactionRecord], Error> {
-        guard let blockscoutNetworkProvider = blockscoutNetworkProvider else {
-            return Fail(error: ETHError.unsupportedFeature).eraseToAnyPublisher()
-        }
-
-        return blockscoutNetworkProvider.loadTransactionHistory(address: address)
     }
 }

@@ -8,12 +8,12 @@
 
 import Foundation
 
-public struct PageParameters {
-    public let page: Int
-    public let pageSize: Int
+public struct Page {
+    public let number: Int
+    public let size: Int
     
-    public init(page: Int, pageSize: Int = 20) {
-        self.page = page
-        self.pageSize = pageSize
+    public init(number: Int, size: Int = 20) {
+        self.number = number
+        self.size = size
     }
 }

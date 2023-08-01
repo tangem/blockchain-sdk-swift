@@ -47,7 +47,7 @@ public extension TransactionRecord {
     
     enum AddressType: Hashable {
         case single(_ address: String)
-        case multi(_ addresses: [String])
+        case multiple(_ addresses: [String])
         case contract(_ address: String)
     }
 }

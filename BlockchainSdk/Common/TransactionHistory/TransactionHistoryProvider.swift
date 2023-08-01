@@ -11,5 +11,5 @@ import Combine
 
 @available(iOS 13.0, *)
 public protocol TransactionHistoryProvider {
-    func loadTransactionHistory(page: PageParameters) -> AnyPublisher<[TransactionRecord], Error>
+    func loadTransactionHistory(page: Page) -> AnyPublisher<[TransactionRecord], Error>
 }
