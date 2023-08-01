@@ -79,7 +79,7 @@ extension CardanoWalletManager: TransactionSender {
                         throw WalletError.empty
                     }
 
-                    let signatureInfo = SignatureInfo(signature: signature, publicKey: wallet.publicKey.blockchainKey)
+                    let signatureInfo = SignatureInfo(signature: signature, publicKey: self.wallet.publicKey.blockchainKey)
                     return try self.transactionBuilder.buildForSend(transaction: transaction, signature: signatureInfo)
                 }
                 .flatMap { [weak self] builtTransaction -> AnyPublisher<String, Error> in
