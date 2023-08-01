@@ -32,26 +32,28 @@ struct BlockscoutResponseMapper {
             date = nil
         }
 
-        let amount = amountWei / decimalValue
+        let amount = Amount(with: .saltPay, value: amountWei / decimalValue)
         let feeAmount = (gasPriceWei * spentGasWei) / decimalValue
         let fee = Fee(Amount(with: .saltPay, value: feeAmount))
         
-        let destination: TransactionRecord.AddressType
+        let destinationAddress: TransactionRecord.Destination.Address
         if !response.contractAddress.isEmpty {
-            destination = .contract(response.contractAddress)
+            destinationAddress = .contract(response.contractAddress)
         } else {
-            destination = .single(response.to)
+            destinationAddress = .user(response.to)
         }
+        
+        let source = TransactionRecord.Source(address: response.from, amount: amount)
+        let destination = TransactionRecord.Destination(address: destinationAddress, amount: amount)
         
         return TransactionRecord(
             hash: response.hash,
-            source: .single(response.from),
-            destination: destination,
-            amount: Amount(with: .saltPay, value: amount),
+            source: .single(source),
+            destination: .single(destination),
             fee: fee,
             status: confirmations > 0 ? .confirmed : .unconfirmed,
             type: .send,
             date: date
-        ) 
+        )
     }
 }

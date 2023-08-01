@@ -10,9 +10,8 @@ import Foundation
 
 public struct TransactionRecord: Hashable {
     let hash: String
-    let source: AddressType
-    let destination: AddressType
-    let amount: Amount
+    let source: SourceType
+    let destination: DestinationType
     let fee: Fee
     let status: TransactionStatus
     let type: TransactionType
@@ -20,18 +19,16 @@ public struct TransactionRecord: Hashable {
     
     public init(
         hash: String,
-        source: AddressType,
-        destination: AddressType,
-        amount: Amount,
+        source: SourceType,
+        destination: DestinationType,
         fee: Fee,
         status: TransactionStatus,
         type: TransactionType,
-        date: Date? = nil
+        date: Date?
     ) {
         self.hash = hash
         self.source = source
         self.destination = destination
-        self.amount = amount
         self.fee = fee
         self.status = status
         self.type = type
@@ -39,15 +36,45 @@ public struct TransactionRecord: Hashable {
     }
 }
 
+// MARK: - TransactionType
+
 public extension TransactionRecord {
     enum TransactionType: String, Hashable {
         case send
         case receive
     }
+}
+
+// MARK: - Source
+
+public extension TransactionRecord {
+    enum SourceType: Hashable {
+        case single(Source)
+        case multiple([Source])
+    }
     
-    enum AddressType: Hashable {
-        case single(_ address: String)
-        case multiple(_ addresses: [String])
-        case contract(_ address: String)
+    struct Source: Hashable {
+        let address: String
+        let amount: Amount
+    }
+}
+
+// MARK: - Destination
+
+public extension TransactionRecord {
+    enum DestinationType: Hashable {
+        case single(Destination)
+        case multiple([Destination])
+    }
+    
+    struct Destination: Hashable {
+        let address: Address
+        let amount: Amount
+        
+        enum Address: Hashable {
+            /// Contact address for token-supported blockchains
+            case contract(String)
+            case user(String)
+        }
     }
 }
