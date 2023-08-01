@@ -20,7 +20,7 @@ struct BlockBookAddressResponse: Decodable {
 extension BlockBookAddressResponse {
     struct Transaction: Decodable {
         let txid: String
-        let version: Int
+        let version: Int?
         let vin: [Vin]
         let vout: [Vout]
         let blockHash: String?
@@ -30,11 +30,11 @@ extension BlockBookAddressResponse {
         let value: String
         let valueIn: String
         let fees: String
-        let hex: String
+        let hex: String?
     }
     
     struct Vin: Decodable {
-        let txid: String
+        let txid: String?
         let sequence: Int?
         let n: Int
         let addresses: [String]
@@ -48,7 +48,7 @@ extension BlockBookAddressResponse {
     struct Vout: Codable {
         let value: String
         let n: Int
-        let hex: String
+        let hex: String?
         let addresses: [String]
         let isAddress: Bool
         let spent: Bool?

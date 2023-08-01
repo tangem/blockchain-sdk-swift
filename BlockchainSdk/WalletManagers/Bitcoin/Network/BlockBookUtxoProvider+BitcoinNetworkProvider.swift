@@ -89,7 +89,8 @@ private extension BlockBookUtxoProvider {
                     guard
                         let address = input.addresses.first,
                         let value = UInt64(input.value ?? ""),
-                        let outputIndex = input.vout
+                        let outputIndex = input.vout,
+                        let txid = input.txid
                     else {
                         return nil
                     }
@@ -99,7 +100,7 @@ private extension BlockBookUtxoProvider {
                         address: address,
                         outputIndex: outputIndex,
                         outputValue: value,
-                        prevHash: input.txid
+                        prevHash: txid
                     )
                 }
                 
@@ -161,7 +162,7 @@ private extension BlockBookUtxoProvider {
                     $0.addresses.contains(address)
                 }
             }
-            .map { vout in
+            .compactMap { vout in
                 vout.hex
             }
             .first
