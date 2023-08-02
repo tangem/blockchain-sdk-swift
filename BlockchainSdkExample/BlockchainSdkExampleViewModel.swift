@@ -406,14 +406,15 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     }
     
     private func createWalletManager(blockchain: Blockchain, wallet: Card.Wallet) throws -> WalletManager {
-        return try walletManagerFactory.makeWalletManager(blockchain: blockchain, walletPublicKey: wallet.publicKey)
+        let publicKey = Wallet.PublicKey(seedKey: wallet.publicKey, derivation: .none)
+        return try walletManagerFactory.makeWalletManager(blockchain: blockchain, publicKey: publicKey)
     }
     
     private func createStubWalletManager(blockchain: Blockchain, wallet: Card.Wallet) throws -> WalletManager {
         return try walletManagerFactory.makeStubWalletManager(
             blockchain: blockchain,
-            walletPublicKey: dummyPublicKey.isEmpty ? wallet.publicKey : Data(hex: dummyPublicKey),
-            addresses: dummyAddress.isEmpty ? [] : [dummyAddress]
+            dummyPublicKey: dummyPublicKey.isEmpty ? wallet.publicKey : Data(hex: dummyPublicKey),
+            dummyAddress: dummyAddress
         )
     }
     

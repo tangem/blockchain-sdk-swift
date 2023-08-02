@@ -19,7 +19,6 @@ class EthereumNetworkService: MultiNetworkProvider {
     
     private let decimals: Int
     private let ethereumInfoNetworkProvider: EthereumAdditionalInfoProvider?
-    private let blockchairProvider: BlockchairNetworkProvider?
     private let transactionHistoryProvider: TransactionHistoryProvider?
     private let abiEncoder: ABIEncoder
     
@@ -27,14 +26,12 @@ class EthereumNetworkService: MultiNetworkProvider {
         decimals: Int,
         providers: [EthereumJsonRpcProvider],
         blockcypherProvider: BlockcypherNetworkProvider?,
-        blockchairProvider: BlockchairNetworkProvider?,
         transactionHistoryProvider: TransactionHistoryProvider?,
         abiEncoder: ABIEncoder
     ) {
         self.providers = providers
         self.decimals = decimals
         self.ethereumInfoNetworkProvider = blockcypherProvider
-        self.blockchairProvider = blockchairProvider
         self.transactionHistoryProvider = transactionHistoryProvider
         self.abiEncoder = abiEncoder
     }
@@ -94,7 +91,7 @@ class EthereumNetworkService: MultiNetworkProvider {
                     throw BlockchainSdkError.failedToLoadFee
                 }
 
-                return try self.mapToEthereumFeeResponse(
+                return self.mapToEthereumFeeResponse(
                     gasPrice: gasPrice,
                     gasLimit: gasLimit,
                     decimalCount: self.decimals
@@ -182,14 +179,6 @@ class EthereumNetworkService: MultiNetworkProvider {
         }
         
         return networkProvider.getSignatureCount(address: address)
-    }
-    
-    func findErc20Tokens(address: String) -> AnyPublisher<[BlockchairToken], Error> {
-        guard let blockchairProvider = blockchairProvider else {
-            return Fail(error: ETHError.unsupportedFeature).eraseToAnyPublisher()
-        }
-        
-        return blockchairProvider.findErc20Tokens(address: address)
     }
 
     func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<String, Error> {
