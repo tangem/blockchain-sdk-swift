@@ -54,7 +54,6 @@ struct BlockchairTarget: TargetType {
 
         case txDetails(txHash: String, endpoint: BlockchairEndpoint)
         case txsDetails(hashes: [String], endpoint: BlockchairEndpoint)
-        case findErc20Tokens(address: String, endpoint: BlockchairEndpoint)
     }
     
     let type: BlockchairTargetType
@@ -73,8 +72,6 @@ struct BlockchairTarget: TargetType {
         case .txDetails(_, let endpoint):
             endpointString = endpoint.path
         case .txsDetails(_, let endpoint):
-            endpointString = endpoint.path
-        case .findErc20Tokens(_, let endpoint):
             endpointString = endpoint.path
         }
         
@@ -101,15 +98,12 @@ struct BlockchairTarget: TargetType {
                 path.removeLast()
             }
             return path
-        
-        case .findErc20Tokens(let address, _):
-            return "/dashboards/address/\(address)"
         }
     }
     
     var method: Moya.Method {
         switch type {
-        case .address, .fee, .txDetails, .txsDetails, .findErc20Tokens:
+        case .address, .fee, .txDetails, .txsDetails:
             return .get
         case .send:
             return .post
@@ -139,8 +133,6 @@ struct BlockchairTarget: TargetType {
             parameters["data"] = txHex
         case .txDetails(_, _), .txsDetails(_, _):
             break
-        case .findErc20Tokens(_, _):
-            parameters["erc_20"] = "true"
         }
         
         return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
@@ -148,7 +140,7 @@ struct BlockchairTarget: TargetType {
     
     var headers: [String: String]? {
         switch type {
-        case .address, .fee, .txDetails, .txsDetails, .findErc20Tokens:
+        case .address, .fee, .txDetails, .txsDetails:
             return ["Content-Type": "application/json"]
         case .send:
             return ["Content-Type": "application/x-www-form-urlencoded"]

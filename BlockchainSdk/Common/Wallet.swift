@@ -58,7 +58,6 @@ public struct Wallet {
             .reduce(0, { $0 + $1.amount.value + $1.fee.amount.value })
     }
 
-    @available(*, deprecated, message: "Use xpubKeys with each address support")
     public var xpubKey: String? {
         defaultAddress.publicKey.xpubKey(isTestnet: blockchain.isTestnet)
     }
@@ -71,19 +70,6 @@ public struct Wallet {
 
     public init(blockchain: Blockchain, addresses: [AddressType: Address]) {
         self.blockchain = blockchain
-        self.walletAddresses = addresses
-    }
-
-    @available(*, deprecated, message: "Use init(blockchain:, addresses:)")
-    init(blockchain: Blockchain, addresses: [Address], publicKey: PublicKey) {
-        self.blockchain = blockchain
-                
-        let addresses: [AddressType: Address] = addresses.reduce(into: [:]) { result, address in
-            result[address.type] = PlainAddress(value: address.value, publicKey: publicKey, type: address.type)
-        }
-        
-        assert(addresses.contains { $0.key == .default }, "Addresses have to contains default address")
-
         self.walletAddresses = addresses
     }
     

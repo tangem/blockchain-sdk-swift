@@ -22,7 +22,7 @@ struct EthereumWalletAssembly: WalletManagerAssembly {
             if case .ethereum = input.blockchain {
                 blockcypherProvider = BlockcypherNetworkProvider(
                     endpoint: .ethereum,
-                    tokens: input.blockchainConfig.blockcypherTokens,
+                    tokens: input.blockchainSdkConfig.blockcypherTokens,
                     configuration: input.networkConfig
                 )
             } else {
@@ -34,7 +34,6 @@ struct EthereumWalletAssembly: WalletManagerAssembly {
                 decimals: input.blockchain.decimalCount,
                 providers: networkProviderAssembly.makeEthereumJsonRpcProviders(with: input),
                 blockcypherProvider: blockcypherProvider,
-                blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
                 transactionHistoryProvider: networkProviderAssembly.makeBlockscoutNetworkProvider(
                     canLoad: input.blockchain.canLoadTransactionHistory,
                     with: input
