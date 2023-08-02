@@ -22,7 +22,7 @@ struct EthereumWalletAssembly: WalletManagerAssembly {
             if case .ethereum = input.blockchain {
                 blockcypherProvider = BlockcypherNetworkProvider(
                     endpoint: .ethereum,
-                    tokens: input.blockchainConfig.blockcypherTokens,
+                    tokens: input.blockchainSdkConfig.blockcypherTokens,
                     configuration: input.networkConfig
                 )
             } else {

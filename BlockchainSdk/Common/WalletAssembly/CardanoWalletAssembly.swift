@@ -16,7 +16,7 @@ struct CardanoWalletAssembly: WalletManagerAssembly {
             $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey)
             let service = CardanoNetworkService(providers: [
                 RosettaNetworkProvider(
-                    baseUrl: .getBlockRosetta(apiKey: input.blockchainConfig.getBlockApiKey),
+                    baseUrl: .getBlockRosetta(apiKey: input.blockchainSdkConfig.getBlockApiKey),
                     configuration: input.networkConfig
                 ).eraseToAnyCardanoNetworkProvider(),
                 AdaliteNetworkProvider(

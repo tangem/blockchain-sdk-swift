@@ -1,5 +1,5 @@
 //
-//  BlockchainSdkConfig.swift
+//  blockchainSdkConfig.swift
 //  BlockchainSdk
 //
 //  Created by Alexander Osokin on 14.12.2020.

@@ -17,8 +17,8 @@ struct StellarWalletAssembly: WalletManagerAssembly {
             let urls: [String]
             if !input.blockchain.isTestnet {
                 urls = [
-                    "https://xlm.nownodes.io/\(input.blockchainConfig.nowNodesApiKey)",
-                    "https://xlm.getblock.io/mainnet/\(input.blockchainConfig.getBlockApiKey)",
+                    "https://xlm.nownodes.io/\(input.blockchainSdkConfig.nowNodesApiKey)",
+                    "https://xlm.getblock.io/mainnet/\(input.blockchainSdkConfig.getBlockApiKey)",
                     "https://horizon.stellar.org",
                 ]
             } else {

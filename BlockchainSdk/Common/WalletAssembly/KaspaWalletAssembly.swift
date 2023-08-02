@@ -22,7 +22,7 @@ struct KaspaWalletAssembly: WalletManagerAssembly {
                 ),
             ]
             
-            if let kaspaSecondaryApiUrl = URL(string: input.blockchainConfig.kaspaSecondaryApiUrl ?? "") {
+            if let kaspaSecondaryApiUrl = URL(string: input.blockchainSdkConfig.kaspaSecondaryApiUrl ?? "") {
                 providers.append(
                     KaspaNetworkProvider(
                         url: kaspaSecondaryApiUrl,

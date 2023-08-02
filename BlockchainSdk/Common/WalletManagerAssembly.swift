@@ -13,14 +13,14 @@ import TangemSdk
 struct WalletManagerAssemblyInput {
     let wallet: Wallet
     let pairPublicKey: Data?
-    let blockchainConfig: BlockchainSdkConfig
+    let blockchainSdkConfig: BlockchainSdkConfig
     
     var blockchain: Blockchain {
         wallet.blockchain
     }
 
     var networkConfig: NetworkProviderConfiguration {
-        blockchainConfig.networkProviderConfiguration(for: blockchain)
+        blockchainSdkConfig.networkProviderConfiguration(for: blockchain)
     }
 }
 

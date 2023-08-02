@@ -53,7 +53,7 @@ private extension WalletManagerFactory {
         let input = WalletManagerAssemblyInput(
             wallet: wallet,
             pairPublicKey: pairPublicKey,
-            blockchainConfig: config
+            blockchainSdkConfig: config
         )
         return try blockchain.assembly.make(with: input)
     }
@@ -88,7 +88,7 @@ extension WalletManagerFactory {
         let input = WalletManagerAssemblyInput(
             wallet: wallet,
             pairPublicKey: nil,
-            blockchainConfig: config
+            blockchainSdkConfig: config
         )
         return try blockchain.assembly.make(with: input)
     }
