@@ -67,7 +67,7 @@ final class ChiaWalletManager: BaseManager, WalletManager {
                     return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
                 }
                 
-                return self.networkService.send(spendBundle)
+                return self.networkService.send(spendBundle: spendBundle)
             }
             .map { [weak self] hash in
                 self?.wallet.add(transaction: transaction)
@@ -82,12 +82,20 @@ final class ChiaWalletManager: BaseManager, WalletManager {
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         Just(())
             .receive(on: DispatchQueue.global())
-            .map { [weak self] hash in
-                return [.init(.zeroCoin(for: .chia(testnet: true)))]
+            .tryMap { [weak self] _ in
+                guard let self = self else {
+                    throw WalletError.failedToGetFee
+                }
+                
+                return self.txBuilder.getTransactionCost(amount: amount)
             }
-            .mapError({ res in
-                return WalletError.empty
-            })
+            .flatMap { [weak self] costs -> AnyPublisher<[Fee], Error> in
+                guard let self = self else {
+                    return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+                }
+                
+                return self.networkService.getFee(with: costs)
+            }
             .eraseToAnyPublisher()
     }
     

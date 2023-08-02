@@ -77,6 +77,15 @@ final class ChiaTransactionBuilder {
         )
     }
     
+    func getTransactionCost(amount: Amount) -> UInt64 {
+        let decimalAmount = amount.value / blockchain.decimalValue
+        let decimalBalance = unspentCoins.map { Decimal($0.amount) }.reduce(0, +)
+        let change = decimalBalance - decimalAmount
+        let numberOfCoinsCreated: Int = change > 0 ? 2 : 1
+
+        return UInt64((coinSpends.count * CostConstants.COIN_SPEND_COST) + (numberOfCoinsCreated * CostConstants.CREATE_COIN_COST))
+    }
+    
     // MARK: - Private Implementation
     
     private func calculateChange(transaction: Transaction, unspentCoins: [ChiaCoin]) throws -> UInt64 {
@@ -117,4 +126,11 @@ final class ChiaTransactionBuilder {
         )
     }
     
+}
+
+extension ChiaTransactionBuilder {
+    enum CostConstants {
+        static let COIN_SPEND_COST: Int = 4500000
+        static let CREATE_COIN_COST: Int = 2400000
+    }
 }

@@ -38,7 +38,7 @@ class ChiaNetworkService: MultiNetworkProvider {
         }
     }
     
-    func send(_ spendBundle: ChiaSpendBundle) -> AnyPublisher<String, Error> {
+    func send(spendBundle: ChiaSpendBundle) -> AnyPublisher<String, Error> {
         providerPublisher { provider in
             provider
                 .sendTransaction(body: ChiaTransactionBody(spendBundle: spendBundle))
@@ -48,6 +48,22 @@ class ChiaNetworkService: MultiNetworkProvider {
                     }
                     
                     return ""
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+    
+    func getFee(with cost: UInt64) -> AnyPublisher<[Fee], Error> {
+        providerPublisher { [unowned self] provider in
+            provider
+                .getFeeEstimate(body: .init(cost: cost, targetTimes: [60, 300]))
+                .tryMap { response in
+                    let decimalEstimates = response.estimates.map { Decimal($0) }
+                    let fees: [Fee] = decimalEstimates
+                        .map { $0 / self.blockchain.decimalValue }
+                        .map { Amount(with: self.blockchain, value: $0) }
+                        .map { Fee($0) }
+                    return fees
                 }
                 .eraseToAnyPublisher()
         }

@@ -57,6 +57,15 @@ struct ChiaNetworkProvider: HostProvider {
         return requestPublisher(for: target, completionError: { _ in return .failedToParseNetworkResponse })
     }
     
+    func getFeeEstimate(body: ChiaFeeEstimateBody) -> AnyPublisher<ChiaEstimateFeeResponse, Error> {
+        let target = ChiaProviderTarget(
+            node: node,
+            targetType: .getFeeEstimate(body: body)
+        )
+        
+        return requestPublisher(for: target, completionError: { _ in return .failedToParseNetworkResponse })
+    }
+    
     // MARK: - Private Implementation
     
     private func requestPublisher<T: Decodable>(for target: ChiaProviderTarget, completionError: @escaping (MoyaError) -> WalletError) -> AnyPublisher<T, Error> {

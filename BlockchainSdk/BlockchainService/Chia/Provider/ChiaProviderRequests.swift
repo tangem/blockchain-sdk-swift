@@ -15,3 +15,8 @@ struct ChiaPuzzleHashBody: Encodable {
 struct ChiaTransactionBody: Encodable {
     let spendBundle: ChiaSpendBundle
 }
+
+struct ChiaFeeEstimateBody: Encodable {
+    let cost: UInt64
+    let targetTimes: [Int]
+}

@@ -25,3 +25,7 @@ struct ChiaSendTransactionResponse: Decodable {
 struct ChiaCoinRecord: Decodable {
     let coin: ChiaCoin
 }
+
+struct ChiaEstimateFeeResponse: Decodable {
+    let estimates: [UInt16]
+}

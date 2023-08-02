@@ -32,6 +32,8 @@ struct ChiaProviderTarget: TargetType {
             return "get_coin_records_by_puzzle_hash"
         case .sendTransaction:
             return "push_tx"
+        case .getFeeEstimate:
+            return "get_fee_estimate"
         }
     }
     
@@ -49,6 +51,8 @@ struct ChiaProviderTarget: TargetType {
         case .getCoinRecordsBy(let puzzleHashBody):
             jrpcRequest = (try? puzzleHashBody.asDictionary(with: encoder)) ?? [:]
         case .sendTransaction(let body):
+            jrpcRequest = (try? body.asDictionary(with: encoder)) ?? [:]
+        case .getFeeEstimate(let body):
             jrpcRequest = (try? body.asDictionary(with: encoder)) ?? [:]
         }
         
@@ -75,5 +79,6 @@ extension ChiaProviderTarget {
     enum TargetType {
         case getCoinRecordsBy(puzzleHashBody: ChiaPuzzleHashBody)
         case sendTransaction(body: ChiaTransactionBody)
+        case getFeeEstimate(body: ChiaFeeEstimateBody)
     }
 }
