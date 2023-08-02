@@ -19,20 +19,17 @@ class EthereumNetworkService: MultiNetworkProvider {
     
     private let decimals: Int
     private let ethereumInfoNetworkProvider: EthereumAdditionalInfoProvider?
-    private let blockchairProvider: BlockchairNetworkProvider?
     private let abiEncoder: ABIEncoder
     
     init(
         decimals: Int,
         providers: [EthereumJsonRpcProvider],
         blockcypherProvider: BlockcypherNetworkProvider?,
-        blockchairProvider: BlockchairNetworkProvider?,
         abiEncoder: ABIEncoder
     ) {
         self.providers = providers
         self.decimals = decimals
         self.ethereumInfoNetworkProvider = blockcypherProvider
-        self.blockchairProvider = blockchairProvider
         self.abiEncoder = abiEncoder
     }
     
