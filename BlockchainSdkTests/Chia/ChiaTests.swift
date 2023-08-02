@@ -20,11 +20,11 @@ class ChiaTests: XCTestCase {
         let encodedAmount = amount.chiaEncode()
 
         let solution1 = try! "ffffff33ffa0" +
-        ChiaPuzzle.getPuzzleHash(address: address).hex + "ff8" + String(encodedAmount.count) +
+        ChiaPuzzleUtils().getPuzzleHash(from: address).hex + "ff8" + String(encodedAmount.count) +
             Data(encodedAmount).hex + "808080"
         
         let condition = try! CreateCoinCondition(
-            destinationPuzzleHash: ChiaPuzzle.getPuzzleHash(address: address),
+            destinationPuzzleHash: ChiaPuzzleUtils().getPuzzleHash(from: address),
             amount: amount
         ).toProgram()
         

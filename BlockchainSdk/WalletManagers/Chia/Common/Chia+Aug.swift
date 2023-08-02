@@ -10,9 +10,7 @@ import Foundation
 import Bls_Signature
 
 extension Data {
-    
     func hashAugScheme(with publicKey: Data) throws -> Data {
         try Data(hex: BlsSignatureSwift.augSchemeMplG2Map(publicKeyHash: publicKey.hex, messageHash: self.hex))
     }
-    
 }

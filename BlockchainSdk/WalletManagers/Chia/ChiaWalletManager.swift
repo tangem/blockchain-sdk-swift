@@ -29,7 +29,7 @@ final class ChiaWalletManager: BaseManager, WalletManager {
     init(wallet: Wallet, networkService: ChiaNetworkService, txBuilder: ChiaTransactionBuilder) throws {
         self.networkService = networkService
         self.txBuilder = txBuilder
-        self.puzzleHash = try ChiaPuzzle.getPuzzleHash(address: wallet.address).hex
+        self.puzzleHash = try ChiaPuzzleUtils().getPuzzleHash(from: wallet.address).hex
         super.init(wallet: wallet)
     }
     
