@@ -8,24 +8,26 @@
 
 import Foundation
 
-enum ChiaStatusResponse: String, Decodable {
-    case success, error
+protocol ChiaStatusResponse: Decodable {
+    var success: Bool { get }
 }
 
-struct ChiaCoinRecordsResponse: Decodable {
+struct ChiaCoinRecordsResponse: ChiaStatusResponse {
+    let success: Bool
     let coinRecords: [ChiaCoinRecord]
 }
 
-struct ChiaSendTransactionResponse: Decodable {
+struct ChiaSendTransactionResponse: ChiaStatusResponse {
     let success: Bool
     let status: String?
     let error: String?
 }
 
-struct ChiaCoinRecord: Decodable {
-    let coin: ChiaCoin
+struct ChiaEstimateFeeResponse: ChiaStatusResponse {
+    let success: Bool
+    let estimates: [UInt64]
 }
 
-struct ChiaEstimateFeeResponse: Decodable {
-    let estimates: [UInt16]
+struct ChiaCoinRecord: Decodable {
+    let coin: ChiaCoin
 }

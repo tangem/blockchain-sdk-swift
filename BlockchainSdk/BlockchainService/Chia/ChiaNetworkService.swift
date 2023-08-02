@@ -31,7 +31,7 @@ class ChiaNetworkService: MultiNetworkProvider {
         providerPublisher { provider in
             provider
                 .getUnspents(puzzleHash: puzzleHash)
-                .map { response in
+                .tryMap { response in
                     return response.coinRecords.map { $0.coin }
                 }
                 .eraseToAnyPublisher()
@@ -43,10 +43,6 @@ class ChiaNetworkService: MultiNetworkProvider {
             provider
                 .sendTransaction(body: ChiaTransactionBody(spendBundle: spendBundle))
                 .tryMap { response in
-                    guard response.success else {
-                        throw WalletError.failedToSendTx
-                    }
-                    
                     return ""
                 }
                 .eraseToAnyPublisher()

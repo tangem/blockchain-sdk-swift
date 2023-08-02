@@ -45,7 +45,7 @@ struct ChiaNetworkProvider: HostProvider {
             targetType: .getCoinRecordsBy(puzzleHashBody: .init(puzzleHash: puzzleHash))
         )
         
-        return requestPublisher(for: target, completionError: { _ in return .failedToParseNetworkResponse })
+        return requestPublisher(for: target)
     }
     
     func sendTransaction(body: ChiaTransactionBody) -> AnyPublisher<ChiaSendTransactionResponse, Error> {
@@ -54,7 +54,7 @@ struct ChiaNetworkProvider: HostProvider {
             targetType: .sendTransaction(body: body)
         )
         
-        return requestPublisher(for: target, completionError: { _ in return .failedToParseNetworkResponse })
+        return requestPublisher(for: target)
     }
     
     func getFeeEstimate(body: ChiaFeeEstimateBody) -> AnyPublisher<ChiaEstimateFeeResponse, Error> {
@@ -63,20 +63,27 @@ struct ChiaNetworkProvider: HostProvider {
             targetType: .getFeeEstimate(body: body)
         )
         
-        return requestPublisher(for: target, completionError: { _ in return .failedToParseNetworkResponse })
+        return requestPublisher(for: target)
     }
     
     // MARK: - Private Implementation
     
-    private func requestPublisher<T: Decodable>(for target: ChiaProviderTarget, completionError: @escaping (MoyaError) -> WalletError) -> AnyPublisher<T, Error> {
+    private func requestPublisher<T: ChiaStatusResponse>(for target: ChiaProviderTarget) -> AnyPublisher<T, Error> {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
         return network.requestPublisher(target)
             .filterSuccessfulStatusAndRedirectCodes()
             .map(T.self, using: decoder)
+            .tryMap{ response in
+                guard response.success else {
+                    throw WalletError.empty
+                }
+                
+                return response
+            }
             .mapError { error in
-                return completionError(error)
+                return WalletError.failedToParseNetworkResponse
             }
             .eraseToAnyPublisher()
     }
