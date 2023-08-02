@@ -70,6 +70,8 @@ public struct AddressServiceFactory {
             return WalletCoreAddressService(blockchain: blockchain)
         case .ducatus:
             return BitcoinLegacyAddressService(networkParams: DucatusNetworkParams())
+        case .chia:
+            return ChiaAddressService(isTestnet: isTestnet)
         }
     }
 }

@@ -159,14 +159,6 @@ class EthereumNetworkService: MultiNetworkProvider {
         
         return networkProvider.getSignatureCount(address: address)
     }
-    
-    func findErc20Tokens(address: String) -> AnyPublisher<[BlockchairToken], Error> {
-        guard let blockchairProvider = blockchairProvider else {
-            return Fail(error: ETHError.unsupportedFeature).eraseToAnyPublisher()
-        }
-        
-        return blockchairProvider.findErc20Tokens(address: address)
-    }
 
     func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<String, Error> {
         providerPublisher {

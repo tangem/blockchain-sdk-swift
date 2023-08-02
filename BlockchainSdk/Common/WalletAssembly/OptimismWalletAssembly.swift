@@ -20,7 +20,6 @@ struct OptimismWalletAssembly: WalletManagerAssembly {
                 decimals: input.blockchain.decimalCount,
                 providers: providers,
                 blockcypherProvider: nil,
-                blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
                 abiEncoder: WalletCoreABIEncoder()
             )
         }

@@ -53,6 +53,7 @@ public enum Blockchain: Equatable, Hashable {
     case cronos
     case telos(testnet: Bool)
     case octa
+    case chia(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -110,6 +111,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .telos(let testnet):
             return testnet
+        case .chia(let testnet):
+            return testnet
         }
     }
     
@@ -121,6 +124,8 @@ public enum Blockchain: Equatable, Hashable {
             return curve
         case .tezos(let curve):
             return curve
+        case .chia:
+            return .bls12381_G2_AUG
         default:
             return .secp256k1
         }
@@ -140,7 +145,7 @@ public enum Blockchain: Equatable, Hashable {
             return 9
         case .polkadot(let testnet):
             return testnet ? 12 : 10
-        case .kusama, .azero:
+        case .kusama, .azero, .chia:
             return 12
         }
     }
@@ -219,6 +224,8 @@ public enum Blockchain: Equatable, Hashable {
             return "TLOS"
         case .octa:
             return "OCTA"
+        case .chia:
+            return "XCH"
         }
     }
     
@@ -264,6 +271,8 @@ public enum Blockchain: Equatable, Hashable {
             return "Terra"
         case .octa:
             return "OctaSpace"
+        case .chia:
+            return "Chia Network"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -545,40 +554,17 @@ extension Blockchain {
 // MARK: - Address creation
 @available(iOS 13.0, *)
 extension Blockchain {
-    @available(*, deprecated, message: "Use derivationPaths(for:)")
-    public func derivationPath(for style: DerivationStyle = .legacy) -> DerivationPath? {
+    public func derivationPath(for style: DerivationStyle) -> DerivationPath? {
         guard curve == .secp256k1 || curve == .ed25519 else {
+            Log.debug("Wrong attempt to get a `DerivationPath` for a unsupported derivation curve")
             return nil
         }
         
         if isTestnet {
             return BIP44(coinType: 1).buildPath()
         }
-        
-        guard let rawPath = style.provider.derivations(for: self)[.default] else {
-            return nil
-        }
-        
-        return try? DerivationPath(rawPath: rawPath)
-    }
-    
-    public func derivationPaths(for style: DerivationStyle) -> [AddressType: DerivationPath] {
-        guard curve == .secp256k1 || curve == .ed25519 else {
-            return [:]
-        }
-        
-        if isTestnet {
-            return style.provider.derivations(for: self)
-                .mapValues { _ in BIP44(coinType: 1).buildPath() }
-        }
-        
-        return style.provider.derivations(for: self)
-            .compactMapValues { try? DerivationPath(rawPath: $0) }
-    }
 
-    @available(*, deprecated, message: "Use AddressServiceFactory(blockchain:).validate(_:)")
-    public func validate(address: String) -> Bool {
-        AddressServiceFactory(blockchain: self).makeAddressService().validate(address)
+        return style.provider.derivationPath(for: self)
     }
 }
 
@@ -658,6 +644,7 @@ extension Blockchain: Codable {
         case .cronos: return "cronos"
         case .telos: return "telos"
         case .octa: return "octaspace"
+        case .chia: return "chia"
         }
     }
     
@@ -718,6 +705,7 @@ extension Blockchain: Codable {
         case "cronos": self = .cronos
         case "telos": self = .telos(testnet: isTestnet)
         case "octaspace": self = .octa
+        case "chia": self = .chia(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -784,6 +772,8 @@ extension Blockchain {
             return URL(string: "https://discord.com/channels/669268347736686612/953697793476821092")!
         case .telos:
             return URL(string: "https://app.telos.net/testnet/developers")
+        case .chia:
+            return URL(string: "https://xchdev.com/#!faucet.md")!
         default:
             return nil
         }
@@ -958,6 +948,12 @@ extension Blockchain {
             }
         case .octa:
             return URL(string: "https://explorer.octa.space/address/\(address)")!
+        case .chia(let testnet):
+            if testnet {
+                return URL(string: "https://testnet10.spacescan.io/")!
+            } else {
+                return URL(string: "https://xchscan.com/")!
+            }
         }
     }
 }
@@ -1084,6 +1080,8 @@ extension Blockchain {
             return RavencoinWalletAssembly()
         case .cosmos, .terraV1, .terraV2:
             return CosmosWalletAssembly()
+        case .chia:
+            return ChiaWalletAssembly()
         }
     }
     

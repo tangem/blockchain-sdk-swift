@@ -213,42 +213,6 @@ extension EthereumWalletManager: SignatureCountValidator {
     }
 }
 
-// MARK: - TokenFinder
-
-extension EthereumWalletManager: TokenFinder {
-    func findErc20Tokens(knownTokens: [Token], completion: @escaping (Result<Bool, Error>)-> Void) {
-        findTokensSubscription?.cancel()
-        findTokensSubscription = networkService
-            .findErc20Tokens(address: wallet.address)
-            .sink(receiveCompletion: { subscriptionCompletion in
-                if case let .failure(error) = subscriptionCompletion {
-                    completion(.failure(error))
-                    return
-                }
-            }, receiveValue: {[unowned self] blockchairTokens in
-                if blockchairTokens.isEmpty {
-                    completion(.success(false))
-                    return
-                }
-                
-                var tokensAdded = false
-                blockchairTokens.forEach { blockchairToken in
-                    let foundToken = Token(blockchairToken, blockchain: self.wallet.blockchain)
-                    if !self.cardTokens.contains(foundToken) {
-                        let token: Token = knownTokens.first(where: { $0 == foundToken }) ?? foundToken
-                        self.cardTokens.append(token)
-                        let balanceValue = Decimal(blockchairToken.balance) ?? 0
-                        let balanceWeiValue = balanceValue / pow(Decimal(10), blockchairToken.decimals)
-                        self.wallet.add(tokenValue: balanceWeiValue, for: token)
-                        tokensAdded = true
-                    }
-                }
-                
-                completion(.success(tokensAdded))
-            })
-    }
-}
-
 // MARK: - EthereumTransactionProcessor
 
 extension EthereumWalletManager: EthereumTransactionProcessor {
