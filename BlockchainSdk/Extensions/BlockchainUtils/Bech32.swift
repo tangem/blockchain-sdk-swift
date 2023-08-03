@@ -5,10 +5,10 @@
 //  Copyright © 2018 Evolution Group Ltd. All rights reserved.
 //
 //  Base32 address format for native v0-16 witness outputs implementation
-//  https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki
+//  BECH32 - https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki
+//  BECH32M - https://github.com/bitcoin/bips/blob/master/bip-0350.mediawiki#L4
 //  Inspired by Pieter Wuille C++ implementation
 //
-
 
 import Foundation
 
@@ -32,6 +32,16 @@ public class Bech32 {
         1,  0,  3, 16, 11, 28, 12, 14,  6,  4,  2, -1, -1, -1, -1, -1
     ]
     
+    private let variant: Variant
+    
+    // MARK: - Init
+    
+    init(variant: Variant = .bech32) {
+        self.variant = variant
+    }
+    
+    // MARK: - Implementation
+    
     /// Find the polynomial with value coefficients mod the generator as 30-bit.
     private func polymod(_ values: Data) -> UInt32 {
         var chk: UInt32 = 1
@@ -42,6 +52,7 @@ public class Bech32 {
                 chk ^= ((top >> i) & 1) == 0 ? 0 : gen[Int(i)]
             }
         }
+        
         return chk
     }
     
@@ -64,7 +75,7 @@ public class Bech32 {
     private func verifyChecksum(hrp: String, checksum: Data) -> Bool {
         var data = expandHrp(hrp)
         data.append(checksum)
-        return polymod(data) == 1
+        return polymod(data) == variant.rawValue
     }
     
     /// Create checksum
@@ -72,7 +83,7 @@ public class Bech32 {
         var enc = expandHrp(hrp)
         enc.append(values)
         enc.append(Data(repeating: 0x00, count: 6))
-        let mod: UInt32 = polymod(enc) ^ 1
+        let mod: UInt32 = polymod(enc) ^ variant.rawValue
         var ret: Data = Data(repeating: 0x00, count: 6)
         for i in 0..<6 {
             ret[i] = UInt8((mod >> (5 * (5 - i))) & 31)
@@ -274,4 +285,22 @@ extension Bech32 {
             }
         }
     }
+}
+
+extension Bech32 {
+    
+    enum Variant: UInt32 {
+        case bech32
+        case bech32m
+        
+        public var rawValue: UInt32 {
+            switch self {
+            case .bech32:
+                return UInt32(1)
+            case .bech32m:
+                return UInt32(0x2bc830a3)
+            }
+        }
+    }
+    
 }

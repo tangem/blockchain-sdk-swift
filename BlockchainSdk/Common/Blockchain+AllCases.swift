@@ -52,6 +52,7 @@ public extension Blockchain {
         case .cronos: break
         case .telos: break
         case .octa: break
+        case .chia: break
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -96,7 +97,8 @@ public extension Blockchain {
             .terraV2,
             .cronos,
             .telos(testnet: false),
-            .octa
+            .octa,
+            .chia(testnet: false),
         ]
     }
 }

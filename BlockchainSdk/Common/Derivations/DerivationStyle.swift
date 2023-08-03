@@ -8,13 +8,7 @@
 
 import Foundation
 
-public enum DerivationStyle {
-    @available(*, deprecated, message: "Will be removed after refactoring")
-    case legacy
-    
-    @available(*, deprecated, message: "Will be removed after refactoring")
-    case new
-    
+public enum DerivationStyle {    
     /// All have derivation according to BIP44 `coinType`
     /// https://github.com/satoshilabs/slips/blob/master/slip-0044.md
     case v1
@@ -31,9 +25,9 @@ public enum DerivationStyle {
 public extension DerivationStyle {
     var provider: DerivationConfig {
         switch self {
-        case .legacy, .v1:
+        case .v1:
             return DerivationConfigV1()
-        case .new, .v2:
+        case .v2:
             return DerivationConfigV2()
         case .v3:
             return DerivationConfigV3()

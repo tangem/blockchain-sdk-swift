@@ -18,7 +18,7 @@ struct TONWalletAssembly: WalletManagerAssembly {
         providers.append(
             TONProvider(
                 node: .init(
-                    apiKeyValue: input.blockchainConfig.tonCenterApiKeys.getApiKey(for: input.blockchain.isTestnet),
+                    apiKeyValue: input.blockchainSdkConfig.tonCenterApiKeys.getApiKey(for: input.blockchain.isTestnet),
                     endpointType: .toncenter(input.blockchain.isTestnet)
                 ),
                 networkConfig: input.networkConfig
@@ -30,14 +30,14 @@ struct TONWalletAssembly: WalletManagerAssembly {
                 contentsOf: [
                     TONProvider(
                         node: .init(
-                            apiKeyValue: input.blockchainConfig.nowNodesApiKey,
+                            apiKeyValue: input.blockchainSdkConfig.nowNodesApiKey,
                             endpointType: .nownodes
                         ),
                         networkConfig: input.networkConfig
                     ),
                     TONProvider(
                         node: .init(
-                            apiKeyValue: input.blockchainConfig.getBlockApiKey,
+                            apiKeyValue: input.blockchainSdkConfig.getBlockApiKey,
                             endpointType: .getblock
                         ),
                         networkConfig: input.networkConfig

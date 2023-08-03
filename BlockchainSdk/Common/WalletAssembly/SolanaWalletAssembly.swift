@@ -22,10 +22,10 @@ struct SolanaWalletAssembly: WalletManagerAssembly {
                 ]
             } else {
                 endpoints = [
-                    .nowNodes(apiKey: input.blockchainConfig.nowNodesApiKey),
+                    .nowNodes(apiKey: input.blockchainSdkConfig.nowNodesApiKey),
                     .quiknode(
-                        apiKey: input.blockchainConfig.quickNodeSolanaCredentials.apiKey,
-                        subdomain: input.blockchainConfig.quickNodeSolanaCredentials.subdomain
+                        apiKey: input.blockchainSdkConfig.quickNodeSolanaCredentials.apiKey,
+                        subdomain: input.blockchainSdkConfig.quickNodeSolanaCredentials.subdomain
                     ),
                     .mainnetBetaSolana,
                 ]
