@@ -9,14 +9,14 @@
 import Foundation
 import Combine
 
-class BlockscoutNetworkProvider: TransactionHistoryProvider {
+struct BlockscoutNetworkProvider {
     private let networkProvider: NetworkProvider<BlockscoutTarget>
     
     init(configuration: NetworkProviderConfiguration) {
         self.networkProvider = NetworkProvider(configuration: configuration)
     }
     
-    func loadTransactionHistory(address: String) -> AnyPublisher<[TransactionHistoryRecordConvertible], Error> {
+    func loadTransactionHistory(address: String) -> AnyPublisher<[BlockscoutTransaction], Error> {
         return networkProvider.requestPublisher(.tokenTransfersHistory(address: address, contractAddress: nil))
             .filterSuccessfulStatusAndRedirectCodes()
             .tryMap { response in

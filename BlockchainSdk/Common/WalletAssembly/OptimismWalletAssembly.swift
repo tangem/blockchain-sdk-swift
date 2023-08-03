@@ -20,10 +20,6 @@ struct OptimismWalletAssembly: WalletManagerAssembly {
                 decimals: input.blockchain.decimalCount,
                 providers: providers,
                 blockcypherProvider: nil,
-                transactionHistoryProvider: networkProviderAssembly.makeBlockscoutNetworkProvider(
-                    canLoad: input.blockchain.canLoadTransactionHistory,
-                    with: input
-                ),
                 abiEncoder: WalletCoreABIEncoder()
             )
         }

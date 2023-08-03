@@ -1015,12 +1015,7 @@ extension Blockchain {
 
 extension Blockchain {
     public var canLoadTransactionHistory: Bool {
-        switch self {
-        case .saltPay:
-            return true
-        default:
-            return false
-        }
+        return false
     }
 }
 
