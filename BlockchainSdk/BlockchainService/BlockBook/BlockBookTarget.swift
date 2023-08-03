@@ -145,4 +145,3 @@ fileprivate struct BitcoinNodeEstimateSmartFeeParameters: Encodable {
         self.params = [confirmationBlocks]
     }
 }
-
