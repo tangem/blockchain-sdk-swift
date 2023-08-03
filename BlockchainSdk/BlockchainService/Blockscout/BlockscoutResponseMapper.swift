@@ -1,5 +1,5 @@
 //
-//  BlockscoutResponceMapper.swift
+//  BlockscoutResponseMapper.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 25.07.2023.

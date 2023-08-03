@@ -49,10 +49,7 @@ struct NetworkProviderAssembly {
     }
     
     func makeBlockscoutNetworkProvider(with input: WalletManagerAssemblyInput) -> BlockscoutNetworkProvider {
-        BlockscoutNetworkProvider(
-            configuration: .init(credentials: input.blockchainSdkConfig.blockscoutCredentials),
-            mapper: BlockscoutResponseMapper(decimalValue: input.blockchain.decimalValue)
-        )
+        BlockscoutNetworkProvider(configuration: .init(credentials: input.blockchainSdkConfig.blockscoutCredentials))
     }
     
     func makeEthereumJsonRpcProviders(with input: WalletManagerAssemblyInput) -> [EthereumJsonRpcProvider] {

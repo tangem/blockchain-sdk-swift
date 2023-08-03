@@ -1,5 +1,5 @@
 //
-//  PageParameters.swift
+//  Page.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 26.07.2023.

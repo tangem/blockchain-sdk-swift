@@ -11,14 +11,12 @@ import Combine
 
 struct BlockscoutNetworkProvider {
     private let networkProvider: NetworkProvider<BlockscoutTarget>
-    private let mapper: BlockscoutResponseMapper
     
-    init(configuration: NetworkProviderConfiguration, mapper: BlockscoutResponseMapper) {
+    init(configuration: NetworkProviderConfiguration) {
         self.networkProvider = NetworkProvider(configuration: configuration)
-        self.mapper = mapper
     }
     
-    func loadTransactionHistory(address: String) -> AnyPublisher<[TransactionRecord], Error> {
+    func loadTransactionHistory(address: String) -> AnyPublisher<[BlockscoutTransaction], Error> {
         return networkProvider.requestPublisher(.tokenTransfersHistory(address: address, contractAddress: nil))
             .filterSuccessfulStatusAndRedirectCodes()
             .tryMap { response in
@@ -29,8 +27,7 @@ struct BlockscoutNetworkProvider {
                 let decodedResponse = try jsonDecoder.decode(BlockscoutResponse<[BlockscoutTransaction]?>.self, from: response.data)
                 
                 if let result = decodedResponse.result {
-                    let records = result.compactMap { self.mapper.mapToTransactionRecord($0) }
-                    return records
+                    return result
                 }
                 
                 throw decodedResponse.message
