@@ -71,8 +71,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                                                                           tronGridApiKey: "",
                                                                           tonCenterApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
                                                                           fireacademyApiKeys: .init(
-                                                                            mainnetApiKey: "be200a1d-2b9f-4716-b428-d393f564e999",
-                                                                            testnetApiKey: "be200a1d-2b9f-4716-b428-d393f564e999"
+                                                                            mainnetApiKey: "",
+                                                                            testnetApiKey: ""
                                                                           ),
                                                                           quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
                                                                           quickNodeBscCredentials: .init(apiKey: "", subdomain: ""),
