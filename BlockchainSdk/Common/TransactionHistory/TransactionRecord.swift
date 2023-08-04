@@ -55,9 +55,9 @@ public extension TransactionRecord {
     
     struct Source: Hashable {
         public let address: String
-        public let amount: Amount
+        public let amount: Decimal
         
-        public init(address: String, amount: Amount) {
+        public init(address: String, amount: Decimal) {
             self.address = address
             self.amount = amount
         }
@@ -74,9 +74,9 @@ public extension TransactionRecord {
     
     struct Destination: Hashable {
         public let address: Address
-        public let amount: Amount
+        public let amount: Decimal
         
-        public init(address: TransactionRecord.Destination.Address, amount: Amount) {
+        public init(address: TransactionRecord.Destination.Address, amount: Decimal) {
             self.address = address
             self.amount = amount
         }

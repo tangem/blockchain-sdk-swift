@@ -22,7 +22,7 @@ public struct TransactionHistoryProviderFactory {
         let input = CommonNetworkProviderAssemblyInput(blockchainSdkConfig: config, blockchain: blockchain)
         
         switch blockchain {
-        case .bitcoin:
+        case .bitcoin, .litecoin, .dogecoin, .dash:
             return BitcoinTransactionHistoryProvider(
                 blockBookProviders: [
                     networkAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock),

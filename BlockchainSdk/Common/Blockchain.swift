@@ -1011,19 +1011,6 @@ extension Blockchain {
     }
 }
 
-// MARK: - Transaction history
-
-extension Blockchain {
-    public var canLoadTransactionHistory: Bool {
-        switch self {
-        case .bitcoin, .ravencoin, .dash:
-            return true
-        default:
-            return true
-        }
-    }
-}
-
 // MARK: - Token transaction fee currency
 
 extension Blockchain {

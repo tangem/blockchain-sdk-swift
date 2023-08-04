@@ -31,11 +31,8 @@ struct BitcoinTransactionHistoryMapper {
             }
             
             let isOutgoing = transaction.vin.contains(where: { $0.isOwn == true })
-            let amountSatoshi = transaction.vin.compactMap { Decimal($0.value ?? "") }.reduce(0, +)
             let status: TransactionStatus = transaction.confirmations > 0 ? .confirmed : .unconfirmed
-            
             let fee = feeSatoshi / decimalValue
-            let amount = amountSatoshi / decimalValue
             
             return TransactionRecord(
                 hash: transaction.txid,
@@ -56,7 +53,7 @@ struct BitcoinTransactionHistoryMapper {
                     return result
                 }
                 
-                let amount = Amount(with: blockchain, value: amountSatoshi / decimalValue)
+                let amount = amountSatoshi / decimalValue
                 return result + [TransactionRecord.Source(address: address, amount: amount)]
             }
             
@@ -69,17 +66,12 @@ struct BitcoinTransactionHistoryMapper {
         
         func destinationType(vout: [BlockBookAddressResponse.Vout]) -> TransactionRecord.DestinationType {
             let destinations: [TransactionRecord.Destination] = vout.reduce([]) { result, output in
-                // Skip the change to wallet address
-                // The value isOwn will be in the response only if it's true
-                if output.isOwn == true {
+                guard let amountSatoshi = Decimal(output.value),
+                      let address = output.addresses.first else {
                     return result
                 }
                 
-                guard let amountSatoshi = Decimal(output.value), let address = output.addresses.first else {
-                    return result
-                }
-                
-                let amount = Amount(with: blockchain, value: amountSatoshi / decimalValue)
+                let amount = amountSatoshi / decimalValue
                 return result + [TransactionRecord.Destination(address: .user(address), amount: amount)]
             }
             
