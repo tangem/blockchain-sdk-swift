@@ -9,10 +9,14 @@
 import Foundation
 
 struct BlockBookAddressResponse: Decodable {
+    let page: Int
+    let totalPages: Int
+    let itemsOnPage: Int
     let address: String
     let balance: String
     let unconfirmedBalance: String
     let unconfirmedTxs: Int
+    /// All transactions count
     let txs: Int
     let transactions: [Transaction]?
 }

@@ -9,13 +9,13 @@
 import Foundation
 
 public struct TransactionRecord: Hashable {
-    let hash: String
-    let source: SourceType
-    let destination: DestinationType
-    let fee: Fee
-    let status: TransactionStatus
-    let type: TransactionType
-    let date: Date?
+    public let hash: String
+    public let source: SourceType
+    public let destination: DestinationType
+    public let fee: Fee
+    public let status: TransactionStatus
+    public let type: TransactionType
+    public let date: Date
     
     public init(
         hash: String,
@@ -24,7 +24,7 @@ public struct TransactionRecord: Hashable {
         fee: Fee,
         status: TransactionStatus,
         type: TransactionType,
-        date: Date?
+        date: Date
     ) {
         self.hash = hash
         self.source = source
@@ -54,8 +54,13 @@ public extension TransactionRecord {
     }
     
     struct Source: Hashable {
-        let address: String
-        let amount: Amount
+        public let address: String
+        public let amount: Amount
+        
+        public init(address: String, amount: Amount) {
+            self.address = address
+            self.amount = amount
+        }
     }
 }
 
@@ -68,13 +73,27 @@ public extension TransactionRecord {
     }
     
     struct Destination: Hashable {
-        let address: Address
-        let amount: Amount
+        public let address: Address
+        public let amount: Amount
         
-        enum Address: Hashable {
+        public init(address: TransactionRecord.Destination.Address, amount: Amount) {
+            self.address = address
+            self.amount = amount
+        }
+        
+        public enum Address: Hashable {
+            case user(String)
             /// Contact address for token-supported blockchains
             case contract(String)
-            case user(String)
+            
+            public var string: String {
+                switch self {
+                case .user(let address):
+                    return address
+                case .contract(let address):
+                    return address
+                }
+            }
         }
     }
 }

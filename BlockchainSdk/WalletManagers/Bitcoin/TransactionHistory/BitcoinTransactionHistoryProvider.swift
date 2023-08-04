@@ -14,39 +14,42 @@ class BitcoinTransactionHistoryProvider: MultiNetworkProvider {
     var providers: [BlockBookUtxoProvider] {
         blockBookProviders
     }
-    
-    private let address: String
+
     private let blockBookProviders: [BlockBookUtxoProvider]
     private let mapper: BitcoinTransactionHistoryMapper
 
     init(
-        address: String,
         blockBookProviders: [BlockBookUtxoProvider],
         mapper: BitcoinTransactionHistoryMapper
     ) {
-        self.address = address
         self.blockBookProviders = blockBookProviders
         self.mapper = mapper
     }
 }
 
 extension BitcoinTransactionHistoryProvider: TransactionHistoryProvider {
-    func loadTransactionHistory(page: Page) -> AnyPublisher<[TransactionRecord], Error> {
+    func loadTransactionHistory(address: String, page: Page) -> AnyPublisher<TransactionHistoryResponse, Error> {
         providerPublisher { [weak self] provider in
             guard let self else {
                 return .anyFail(error: WalletError.empty)
             }
             
             return provider.addressData(
-                address: self.address,
-                parameters: .init(page: page.number, pageSize: page.number, details: [.txslight])
+                address: address,
+                parameters: .init(page: page.number, pageSize: page.size, details: [.txslight])
             )
-            .tryMap { [weak self] response -> [TransactionRecord] in
+            .tryMap { [weak self] response -> TransactionHistoryResponse in
                 guard let self else {
                     throw WalletError.empty
                 }
-
-                return self.mapper.mapToTransactionRecords(response)
+                
+                let records = self.mapper.mapToTransactionRecords(response)
+                return TransactionHistoryResponse(
+                    totalPages: response.totalPages,
+                    totalRecordsCount: response.txs,
+                    page: Page(number: response.page, size: response.itemsOnPage),
+                    records: records
+                )
             }
             .eraseToAnyPublisher()
         }

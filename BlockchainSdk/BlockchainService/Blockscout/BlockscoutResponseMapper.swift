@@ -19,19 +19,14 @@ struct BlockscoutResponseMapper {
     func mapToTransactionRecord(_ response: BlockscoutTransaction) -> TransactionRecord? {
         guard let amountWei = Decimal(response.value),
               let gasPriceWei = Decimal(response.gasPrice),
-              let spentGasWei = Decimal(response.gasUsed) else {
+              let spentGasWei = Decimal(response.gasUsed),
+              let timestamp = TimeInterval(response.timeStamp) else {
             return nil
         }
         
         let confirmations = Int(response.confirmations) ?? 0
 
-        let date: Date?
-        if let timestamp = TimeInterval(response.timeStamp) {
-            date = Date(timeIntervalSince1970: timestamp)
-        } else {
-            date = nil
-        }
-
+        let date = Date(timeIntervalSince1970: timestamp)
         let amount = Amount(with: .saltPay, value: amountWei / decimalValue)
         let feeAmount = (gasPriceWei * spentGasWei) / decimalValue
         let fee = Fee(Amount(with: .saltPay, value: feeAmount))

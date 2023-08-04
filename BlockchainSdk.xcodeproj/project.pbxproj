@@ -346,6 +346,7 @@
 		EFBA17FE2988623F00C23955 /* TransactionSendResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */; };
 		EFBE768E2A79435200CD918B /* BitcoinTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBE768C2A79435200CD918B /* BitcoinTransactionHistoryProvider.swift */; };
 		EFBE768F2A79435200CD918B /* BitcoinTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBE768D2A79435200CD918B /* BitcoinTransactionHistoryMapper.swift */; };
+		EFBE76912A7C066C00CD918B /* TransactionHistoryProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFBE76902A7C066C00CD918B /* TransactionHistoryProviderFactory.swift */; };
 		EFD32AE429E9B7800026353E /* RavencoinTransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD32AE329E9B7800026353E /* RavencoinTransactionHistory.swift */; };
 		EFD39C9F2A6E6C700055D215 /* AddressTypesConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD39C9E2A6E6C700055D215 /* AddressTypesConfig.swift */; };
 		EFD717B82A24B20700E5430D /* OptimismContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF5BA8329B881440070694A /* OptimismContract.swift */; };
@@ -751,6 +752,7 @@
 		EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSendResult.swift; sourceTree = "<group>"; };
 		EFBE768C2A79435200CD918B /* BitcoinTransactionHistoryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoinTransactionHistoryProvider.swift; sourceTree = "<group>"; };
 		EFBE768D2A79435200CD918B /* BitcoinTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoinTransactionHistoryMapper.swift; sourceTree = "<group>"; };
+		EFBE76902A7C066C00CD918B /* TransactionHistoryProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryProviderFactory.swift; sourceTree = "<group>"; };
 		EFD32AE329E9B7800026353E /* RavencoinTransactionHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RavencoinTransactionHistory.swift; sourceTree = "<group>"; };
 		EFD39C9E2A6E6C700055D215 /* AddressTypesConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddressTypesConfig.swift; sourceTree = "<group>"; };
 		EFD717C92A25EA8500E5430D /* WalletCoreABIEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreABIEncoder.swift; sourceTree = "<group>"; };
@@ -1918,6 +1920,7 @@
 				EF666C292A2DFB120044986F /* WalletManagerFactory.swift */,
 				EFD717D42A26330F00E5430D /* WalletFactory.swift */,
 				EF32FED82A38A04E002ED43F /* AddressServiceFactory.swift */,
+				EFBE76902A7C066C00CD918B /* TransactionHistoryProviderFactory.swift */,
 			);
 			path = Factories;
 			sourceTree = "<group>";
@@ -2412,6 +2415,7 @@
 				B0BAEE9C25FF1E4200F318A6 /* RosettaData.swift in Sources */,
 				2DDE5BA129C4F8D200A5B708 /* DucatusWalletAssembly.swift in Sources */,
 				DA198B6529E44D2600DB6EEA /* CosmosChain.swift in Sources */,
+				EFBE76912A7C066C00CD918B /* TransactionHistoryProviderFactory.swift in Sources */,
 				5D8653FA23A8C481000DE52D /* StellarNetworkService.swift in Sources */,
 				DC63F266293F243200F953EF /* Credentials.swift in Sources */,
 				5D7D242F25136254001B9A4F /* XRPTransaction.swift in Sources */,

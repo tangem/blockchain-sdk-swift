@@ -1015,7 +1015,12 @@ extension Blockchain {
 
 extension Blockchain {
     public var canLoadTransactionHistory: Bool {
-        return false
+        switch self {
+        case .bitcoin, .ravencoin, .dash:
+            return true
+        default:
+            return true
+        }
     }
 }
 
