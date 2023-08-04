@@ -1,5 +1,5 @@
 //
-//  BitcoinTransactionHistoryMapper.swift
+//  TransactionHistoryMapper.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 26.07.2023.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct BitcoinTransactionHistoryMapper {
+struct TransactionHistoryMapper {
     let blockchain: Blockchain
     var decimalValue: Decimal {
         blockchain.decimalValue

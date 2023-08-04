@@ -14,15 +14,6 @@ protocol NetworkProviderAssemblyInput {
     var networkConfig: NetworkProviderConfiguration { get }
 }
 
-struct CommonNetworkProviderAssemblyInput: NetworkProviderAssemblyInput {
-    let blockchainSdkConfig: BlockchainSdkConfig
-    let blockchain: Blockchain
-
-    var networkConfig: NetworkProviderConfiguration {
-        blockchainSdkConfig.networkProviderConfiguration(for: blockchain)
-    }
-}
-
 struct NetworkProviderAssembly {
     
     func makeBlockBookUtxoProvider(with input: NetworkProviderAssemblyInput, for type: BlockBookProviderType) -> BlockBookUtxoProvider {
@@ -85,4 +76,15 @@ struct NetworkProviderAssembly {
         }
     }
     
+}
+
+extension NetworkProviderAssembly {
+    struct Input: NetworkProviderAssemblyInput {
+        let blockchainSdkConfig: BlockchainSdkConfig
+        let blockchain: Blockchain
+
+        var networkConfig: NetworkProviderConfiguration {
+            blockchainSdkConfig.networkProviderConfiguration(for: blockchain)
+        }
+    }
 }

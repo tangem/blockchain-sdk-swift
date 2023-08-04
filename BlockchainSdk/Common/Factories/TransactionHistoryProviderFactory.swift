@@ -19,16 +19,16 @@ public struct TransactionHistoryProviderFactory {
     
     public func makeProvider(for blockchain: Blockchain) -> TransactionHistoryProvider? {
         let networkAssembly = NetworkProviderAssembly()
-        let input = CommonNetworkProviderAssemblyInput(blockchainSdkConfig: config, blockchain: blockchain)
+        let input = NetworkProviderAssembly.Input(blockchainSdkConfig: config, blockchain: blockchain)
         
         switch blockchain {
         case .bitcoin, .litecoin, .dogecoin, .dash:
-            return BitcoinTransactionHistoryProvider(
+            return UTXOTransactionHistoryProvider(
                 blockBookProviders: [
                     networkAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock),
                     networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes)
                 ],
-                mapper: BitcoinTransactionHistoryMapper(blockchain: blockchain)
+                mapper: TransactionHistoryMapper(blockchain: blockchain)
             )
         default:
             return nil

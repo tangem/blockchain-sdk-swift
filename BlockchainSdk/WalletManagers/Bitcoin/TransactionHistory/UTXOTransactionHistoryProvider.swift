@@ -1,5 +1,5 @@
 //
-//  BitcoinTransactionHistoryProvider.swift
+//  UTXOTransactionHistoryProvider.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 26.07.2023.
@@ -9,25 +9,25 @@
 import Foundation
 import Combine
 
-class BitcoinTransactionHistoryProvider: MultiNetworkProvider {
+class UTXOTransactionHistoryProvider: MultiNetworkProvider {
     var currentProviderIndex: Int = 0
     var providers: [BlockBookUtxoProvider] {
         blockBookProviders
     }
 
     private let blockBookProviders: [BlockBookUtxoProvider]
-    private let mapper: BitcoinTransactionHistoryMapper
+    private let mapper: TransactionHistoryMapper
 
     init(
         blockBookProviders: [BlockBookUtxoProvider],
-        mapper: BitcoinTransactionHistoryMapper
+        mapper: TransactionHistoryMapper
     ) {
         self.blockBookProviders = blockBookProviders
         self.mapper = mapper
     }
 }
 
-extension BitcoinTransactionHistoryProvider: TransactionHistoryProvider {
+extension UTXOTransactionHistoryProvider: TransactionHistoryProvider {
     func loadTransactionHistory(address: String, page: Page) -> AnyPublisher<TransactionHistoryResponse, Error> {
         providerPublisher { [weak self] provider in
             guard let self else {
