@@ -34,10 +34,6 @@ struct EthereumWalletAssembly: WalletManagerAssembly {
                 decimals: input.blockchain.decimalCount,
                 providers: networkProviderAssembly.makeEthereumJsonRpcProviders(with: input),
                 blockcypherProvider: blockcypherProvider,
-                transactionHistoryProvider: networkProviderAssembly.makeBlockscoutNetworkProvider(
-                    canLoad: input.blockchain.canLoadTransactionHistory,
-                    with: input
-                ),
                 abiEncoder: WalletCoreABIEncoder()
             )
         }

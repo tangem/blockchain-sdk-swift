@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 
+/// Documentation: https://github.com/trezor/blockbook/blob/master/docs/api.md
 class BlockBookUtxoProvider {
     var host: String {
         config.host
@@ -17,6 +18,10 @@ class BlockBookUtxoProvider {
     private let blockchain: Blockchain
     private let config: BlockBookConfig
     private let provider: NetworkProvider<BlockBookTarget>
+
+    var decimalValue: Decimal {
+        blockchain.decimalValue
+    }
     
     init(blockchain: Blockchain, blockBookConfig: BlockBookConfig, networkConfiguration: NetworkProviderConfiguration) {
         self.blockchain = blockchain
@@ -24,7 +29,7 @@ class BlockBookUtxoProvider {
         self.provider = NetworkProvider<BlockBookTarget>(configuration: networkConfiguration)
     }
     
-    private func addressData(address: String) -> AnyPublisher<BlockBookAddressResponse, Error> {
+    func addressData(address: String) -> AnyPublisher<BlockBookAddressResponse, Error> {
         provider
             .requestPublisher(target(for: .address(address: address)))
             .filterSuccessfulStatusAndRedirectCodes()
@@ -33,7 +38,7 @@ class BlockBookUtxoProvider {
             .eraseToAnyPublisher()
     }
     
-    private func unspentTxData(address: String) -> AnyPublisher<[BlockBookUnspentTxResponse], Error> {
+    func unspentTxData(address: String) -> AnyPublisher<[BlockBookUnspentTxResponse], Error> {
         provider
             .requestPublisher(target(for: .utxo(address: address)))
             .filterSuccessfulStatusAndRedirectCodes()
@@ -42,188 +47,31 @@ class BlockBookUtxoProvider {
             .eraseToAnyPublisher()
     }
     
-    private func target(for request: BlockBookTarget.Request) -> BlockBookTarget {
-        BlockBookTarget(request: request, config: config, blockchain: blockchain)
-    }
-    
-    private func pendingTransactions(from transactions: [BlockBookAddressResponse.Transaction], address: String) -> [PendingTransaction] {
-        transactions
-            .filter {
-                $0.confirmations == 0
-            }
-            .compactMap { tx -> PendingTransaction? in
-                let bitcoinInputs: [BitcoinInput] = tx.vin.compactMap { input -> BitcoinInput? in
-                    guard
-                        let address = input.addresses.first,
-                        let value = UInt64(input.value ?? ""),
-                        let outputIndex = input.vout
-                    else {
-                        return nil
-                    }
-                    
-                    return BitcoinInput(
-                        sequence: input.n,
-                        address: address,
-                        outputIndex: outputIndex,
-                        outputValue: value,
-                        prevHash: input.txid
-                    )
-                }
-                
-                guard
-                    let pendingTransactionInfo = pendingTransactionInfo(from: tx, address: address),
-                    let fetchedFees = Decimal(string: tx.fees)
-                else {
-                    return nil
-                }
-
-                return PendingTransaction(hash: tx.txid,
-                                          destination: pendingTransactionInfo.destination,
-                                          value: pendingTransactionInfo.value / self.blockchain.decimalValue,
-                                          source: pendingTransactionInfo.source,
-                                          fee: fetchedFees / self.blockchain.decimalValue,
-                                          date: Date(timeIntervalSince1970: Double(tx.blockTime)),
-                                          isIncoming: pendingTransactionInfo.isIncoming,
-                                          transactionParams: BitcoinTransactionParams(inputs: bitcoinInputs))
-            }
-    }
-    
-    private func pendingTransactionInfo(from tx: BlockBookAddressResponse.Transaction, address: String) -> PendingTransactionInfo? {
-        if tx.vin.contains(where: { $0.addresses.contains(address) }), let destinationUtxo = tx.vout.first(where: { !$0.addresses.contains(address) }) {
-            guard let destination = destinationUtxo.addresses.first,
-                  let value = Decimal(string: destinationUtxo.value)
-            else {
-                return nil
-            }
-            
-            return PendingTransactionInfo(
-                isIncoming: false,
-                source: address,
-                destination: destination,
-                value: value
-            )
-        } else if let txDestination = tx.vout.first(where: { $0.addresses.contains(address) }), !tx.vin.contains(where: { $0.addresses.contains(address) }), let txSource = tx.vin.first {
-            guard
-                let source = txSource.addresses.first,
-                let value = Decimal(string: txDestination.value)
-            else {
-                return nil
-            }
-            
-            return PendingTransactionInfo(
-                isIncoming: true,
-                source: source,
-                destination: address,
-                value: value
-            )
-        } else {
-            return nil
-        }
-    }
-    
-    private func unspentOutputs(from utxos: [BlockBookUnspentTxResponse], transactions: [BlockBookAddressResponse.Transaction], address: String) -> [BitcoinUnspentOutput] {
-        let outputScript = transactions
-            .compactMap { transaction in
-                transaction.vout.first {
-                    $0.addresses.contains(address)
-                }
-            }
-            .map { vout in
-                vout.hex
-            }
-            .first
-        
-        guard let outputScript = outputScript else {
-            return []
-        }
-        
-        return utxos.compactMap { utxo in
-            guard let value = UInt64(utxo.value), utxo.confirmations > 0 else {
-                return nil
-            }
-            
-            return BitcoinUnspentOutput(
-                transactionHash: utxo.txid,
-                outputIndex: utxo.vout,
-                amount: value,
-                outputScript: outputScript
-            )
-        }
-    }
-    
-    private func getFeeRatePerByte(for confirmationBlocks: Int) -> AnyPublisher<Decimal, Error> {
+    func getFeeRatePerByte(for confirmationBlocks: Int) -> AnyPublisher<Decimal, Error> {
         provider
             .requestPublisher(target(for: .fees(confirmationBlocks: confirmationBlocks)))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(BlockBookFeeResponse.self)
-            .tryMap { [weak self] in
+            .tryMap { [weak self] response in
                 guard let self else {
                     throw WalletError.empty
                 }
                 
-                if $0.result.feerate <= 0 {
+                if response.result.feerate <= 0 {
                     throw BlockchainSdkError.failedToLoadFee
                 }
                 
                 // estimatesmartfee returns fee in currency per kilobyte
                 let bytesInKiloByte: Decimal = 1024
-                let feeRatePerByte = Decimal($0.result.feerate) * self.blockchain.decimalValue / bytesInKiloByte
+                let feeRatePerByte = Decimal(response.result.feerate) * self.decimalValue / bytesInKiloByte
                 
                 return feeRatePerByte.rounded(roundingMode: .up)
             }
             .eraseToAnyPublisher()
     }
-}
-
-extension BlockBookUtxoProvider: BitcoinNetworkProvider {
-    var supportsTransactionPush: Bool { false }
     
-    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        Publishers
-            .Zip(addressData(address: address), unspentTxData(address: address))
-            .tryMap { [weak self] (addressResponse, unspentTxResponse) in
-                guard let self else {
-                    throw WalletError.empty
-                }
-                
-                let transactions = addressResponse.transactions ?? []
-                
-                return BitcoinResponse(
-                    balance: (Decimal(string: addressResponse.balance) ?? 0) / self.blockchain.decimalValue,
-                    hasUnconfirmed: addressResponse.unconfirmedTxs != 0,
-                    pendingTxRefs: self.pendingTransactions(from: transactions, address: address),
-                    unspentOutputs: self.unspentOutputs(from: unspentTxResponse, transactions: transactions, address: address)
-                )
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    func getFee() -> AnyPublisher<BitcoinFee, Error> {
-        // Number of blocks we want the transaction to be confirmed in.
-        // The lower the number the bigger the fee returned by 'estimatesmartfee'.
-        let confirmationBlocks = [8, 4, 1]
-        
-        return Publishers.MergeMany(confirmationBlocks.map {
-            getFeeRatePerByte(for: $0)
-        })
-        .collect()
-        .map { $0.sorted() }
-        .tryMap { fees -> BitcoinFee in
-            guard fees.count == confirmationBlocks.count else {
-                throw BlockchainSdkError.failedToLoadFee
-            }
-            
-            return BitcoinFee(
-                minimalSatoshiPerByte: fees[0],
-                normalSatoshiPerByte: fees[1],
-                prioritySatoshiPerByte: fees[2]
-            )
-        }
-        .eraseToAnyPublisher()
-    }
-    
-    func send(transaction: String) -> AnyPublisher<String, Error> {
-        guard let transactionData = transaction.data(using: .utf8) else {
+    func sendTransaction(hex: String) -> AnyPublisher<String, Error> {
+        guard let transactionData = hex.data(using: .utf8) else {
             return .anyFail(error: WalletError.failedToSendTx)
         }
         
@@ -235,24 +83,7 @@ extension BlockBookUtxoProvider: BitcoinNetworkProvider {
             .eraseToAnyPublisher()
     }
     
-    func push(transaction: String) -> AnyPublisher<String, Error> {
-        .anyFail(error: "RBF not supported")
-    }
-    
-    func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-        addressData(address: address)
-            .tryMap {
-                $0.txs + $0.unconfirmedTxs
-            }
-            .eraseToAnyPublisher()
-    }
-}
-
-fileprivate extension BlockBookUtxoProvider {
-    struct PendingTransactionInfo {
-        let isIncoming: Bool
-        let source: String
-        let destination: String
-        let value: Decimal
+    private func target(for request: BlockBookTarget.Request) -> BlockBookTarget {
+        BlockBookTarget(request: request, config: config, blockchain: blockchain)
     }
 }
