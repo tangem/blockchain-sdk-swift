@@ -9,12 +9,10 @@
 import Foundation
 
 extension Array where Element == ChiaCondition {
-    
     func toSolution() throws -> Data {
         let conditions = ClvmProgram.from(list: self.map { $0.toProgram() })
         let solutionArguments = ClvmProgram.from(list: [conditions]) // might be more than one for other puzzles
 
         return try solutionArguments.serialize()
     }
-    
 }

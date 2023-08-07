@@ -23,13 +23,11 @@ public struct WalletFactory {
     func makeWallet(publicKey: Wallet.PublicKey) throws -> Wallet {
         let addressTypes: [AddressType] = AddressTypesConfig().types(for: blockchain)
 
-//        let addresses: [AddressType: PlainAddress] = try addressTypes.reduce(into: [:]) { result, addressType in
-//            result[addressType] = try addressProvider.makeAddress(for: publicKey, with: addressType)
-//        }
-        
-        let address = try addressProvider.makeAddress(for: publicKey, with: .default)
+        let addresses: [AddressType: PlainAddress] = try addressTypes.reduce(into: [:]) { result, addressType in
+            result[addressType] = try addressProvider.makeAddress(for: publicKey, with: addressType)
+        }
 
-        return Wallet(blockchain: blockchain, addresses: [.default: address])
+        return Wallet(blockchain: blockchain, addresses: addresses)
     }
 
     /// With multisig script public key

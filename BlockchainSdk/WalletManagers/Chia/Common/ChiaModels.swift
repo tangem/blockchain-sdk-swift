@@ -27,9 +27,7 @@ struct ChiaCoin: Codable {
 }
 
 extension ChiaCoin {
-    
     func calculateId() -> Data {
         (Data(hex: parentCoinInfo) + Data(hex: puzzleHash) + amount.chiaEncode()).sha256()
     }
-    
 }

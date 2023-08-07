@@ -11,7 +11,6 @@ import Combine
 import Moya
 
 struct ChiaNetworkProvider: HostProvider {
-    
     // MARK: - HostProvider
     
     /// Blockchain API host
@@ -87,5 +86,4 @@ struct ChiaNetworkProvider: HostProvider {
             }
             .eraseToAnyPublisher()
     }
-    
 }

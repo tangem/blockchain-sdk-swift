@@ -10,7 +10,6 @@ import Foundation
 import Combine
 
 class ChiaNetworkService: MultiNetworkProvider {
-    
     // MARK: - Protperties
     
     let providers: [ChiaNetworkProvider]
@@ -64,5 +63,4 @@ class ChiaNetworkService: MultiNetworkProvider {
                 .eraseToAnyPublisher()
         }
     }
-    
 }

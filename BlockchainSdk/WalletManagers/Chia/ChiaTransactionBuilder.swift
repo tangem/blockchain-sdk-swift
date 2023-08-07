@@ -35,11 +35,6 @@ final class ChiaTransactionBuilder {
     
     // MARK: - Implementation
     
-    /// Build input for sign transaction from Parameters
-    /// - Parameters:
-    ///   - amount: Amount transaction
-    ///   - destination: Destination address transaction
-    /// - Returns: Array of bytes for transaction
     func buildForSign(transaction: Transaction) throws -> [Data] {
         guard !unspentCoins.isEmpty else {
             throw WalletError.failedToBuildTx
@@ -77,6 +72,9 @@ final class ChiaTransactionBuilder {
         )
     }
     
+    /// Calculate standart costs for fee transaction
+    /// - Parameter amount: Amount of send transaction
+    /// - Returns: Sum value for transaction
     func getTransactionCost(amount: Amount) -> UInt64 {
         let decimalAmount = amount.value / blockchain.decimalValue
         let decimalBalance = unspentCoins.map { Decimal($0.amount) }.reduce(0, +)
