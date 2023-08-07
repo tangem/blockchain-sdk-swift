@@ -112,7 +112,7 @@ final class ChiaTransactionBuilder {
         let solution: [ChiaCondition] = [sendCondition, changeCondition].compactMap { $0 }
         coinSpends[0].solution = try solution.toSolution().hex
         
-        for var coinSpend in coinSpends.dropFirst(1) {
+        for coinSpend in coinSpends.dropFirst(1) {
             coinSpend.solution = try [RemarkCondition()].toSolution().hex
         }
 

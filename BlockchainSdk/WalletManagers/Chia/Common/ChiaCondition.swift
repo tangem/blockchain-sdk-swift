@@ -51,6 +51,6 @@ struct RemarkCondition: ChiaCondition {
     var conditionCode: UInt64 = 1
     
     func toProgram() -> ClvmProgram {
-        ClvmProgram.from(list: [])
+        ClvmProgram.from(list: [ClvmProgram.from(long: conditionCode)])
     }
 }
