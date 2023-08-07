@@ -130,7 +130,9 @@ extension ClvmProgram {
         private func deserialize(with programByteIterator: inout ClvmProgram.Iterator<Byte>) throws -> ClvmProgram {
             var sizeBytes = Array<Byte>()
 
-            let currentByte = programByteIterator.next()!
+            guard let currentByte = programByteIterator.next() else {
+                throw DecoderError.errorEmptyCurrentByte
+            }
 
             if currentByte <= 0x7F {
                 return ClvmProgram(atom: [currentByte])
@@ -159,6 +161,7 @@ extension ClvmProgram {
     }
     
     enum DecoderError: Error {
+        case errorEmptyCurrentByte
         case errorCompareCurrentByte
     }
 }
