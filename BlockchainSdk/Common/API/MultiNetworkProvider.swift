@@ -73,6 +73,11 @@ extension MultiNetworkProvider {
         
         currentProviderIndex += 1
         if currentProviderIndex < providers.count {
+            // Validate correct form value host for next switch provider
+            guard providers[currentProviderIndex].host.hostOrNil != nil else {
+                return nil
+            }
+            
             return providers[currentProviderIndex].host
         }
         resetProviders()
