@@ -73,3 +73,13 @@ extension String: Error, LocalizedError {
         return self
     }
 }
+
+extension String {
+    var hostOrNil: String? {
+        if let url = URL(string: self) {
+            return url.scheme == nil ? URL(string: "https://" + self)?.hostOrUnknown : url.hostOrUnknown
+        } else {
+            return nil
+        }
+    }
+}

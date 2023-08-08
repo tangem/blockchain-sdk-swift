@@ -15,13 +15,18 @@ struct NetworkProviderAssembly {
         case .nowNodes:
             return BlockBookUtxoProvider(
                 blockchain: input.blockchain,
-                blockBookConfig: NowNodesBlockBookConfig(apiKey: input.blockchainSdkConfig.nowNodesApiKey),
+                blockBookConfig: NowNodesBlockBookConfig(
+                    currencySymbol: input.blockchain.currencySymbol.lowercased(),
+                    apiKey: input.blockchainSdkConfig.nowNodesApiKey),
                 networkConfiguration: input.networkConfig
             )
         case .getBlock:
             return BlockBookUtxoProvider(
                 blockchain: input.blockchain,
-                blockBookConfig: GetBlockBlockBookConfig(apiKey: input.blockchainSdkConfig.getBlockApiKey),
+                blockBookConfig: GetBlockBlockBookConfig(
+                    currencySymbol: input.blockchain.currencySymbol.lowercased(),
+                    apiKey: input.blockchainSdkConfig.getBlockApiKey
+                ),
                 networkConfiguration: input.networkConfig
             )
         }

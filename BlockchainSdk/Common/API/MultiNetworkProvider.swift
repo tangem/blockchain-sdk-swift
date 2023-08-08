@@ -24,10 +24,9 @@ extension MultiNetworkProvider {
         providers[currentProviderIndex]
     }
     
-    var host: String { provider.host }
+    var host: String { provider.host.hostOrNil ?? "" }
     
     func providerPublisher<T>(for requestPublisher: @escaping (_ provider: Provider) -> AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
-        let currentHost = provider.host
         return requestPublisher(provider)
             .catch { [weak self] error -> AnyPublisher<T, Error> in
                 guard let self = self else { return .anyFail(error: error) }
@@ -42,11 +41,14 @@ extension MultiNetworkProvider {
                 
                 Log.network("Switchable publisher catched error: \(error)")
                 
+                let currentHost = self.host
+                
                 if let nextHost = self.switchProviderIfNeeded(for: currentHost) {
                     // Send event if api did switched by host value
+                    
                     if currentHost != nextHost {
-                        Log.network("Switching to next publisher on host")
-                        
+                        Log.network("Switching to next publisher on host \(nextHost)")
+
                         ExceptionHandler.shared.handleAPISwitch(
                             currentHost: currentHost,
                             nextHost: nextHost,
@@ -65,13 +67,15 @@ extension MultiNetworkProvider {
     // NOTE: There also copy of this behaviour in the wild, if you want to update something
     // in the code, don't forget to update also Solano.Swift framework, class NetworkingRouter
     private func switchProviderIfNeeded(for errorHost: String) -> String? {
+        guard let errorHost = errorHost.hostOrNil, !errorHost.isEmpty else { return nil }
+        
         if errorHost != self.host { // Do not switch the provider, if it was switched already
-            return providers[currentProviderIndex].host
+            return providers[currentProviderIndex].host.hostOrNil
         }
         
         currentProviderIndex += 1
         if currentProviderIndex < providers.count {
-            return providers[currentProviderIndex].host
+            return providers[currentProviderIndex].host.hostOrNil
         }
         resetProviders()
         return nil
