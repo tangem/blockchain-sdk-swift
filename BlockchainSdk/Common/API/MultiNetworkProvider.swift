@@ -24,7 +24,7 @@ extension MultiNetworkProvider {
         providers[currentProviderIndex]
     }
     
-    var host: String { provider.host.hostOrNil ?? "" }
+    var host: String { provider.host }
     
     func providerPublisher<T>(for requestPublisher: @escaping (_ provider: Provider) -> AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
         return requestPublisher(provider)
@@ -46,7 +46,7 @@ extension MultiNetworkProvider {
                 if let nextHost = self.switchProviderIfNeeded(for: currentHost) {
                     // Send event if api did switched by host value
                     
-                    if currentHost != nextHost {
+                    if currentHost.hostOrNil != nextHost {
                         Log.network("Switching to next publisher on host \(nextHost)")
 
                         ExceptionHandler.shared.handleAPISwitch(
@@ -69,13 +69,13 @@ extension MultiNetworkProvider {
     private func switchProviderIfNeeded(for errorHost: String) -> String? {
         guard let errorHost = errorHost.hostOrNil, !errorHost.isEmpty else { return nil }
         
-        if errorHost != self.host { // Do not switch the provider, if it was switched already
-            return providers[currentProviderIndex].host.hostOrNil
+        if errorHost != self.host.hostOrNil { // Do not switch the provider, if it was switched already
+            return providers[currentProviderIndex].host
         }
         
         currentProviderIndex += 1
         if currentProviderIndex < providers.count {
-            return providers[currentProviderIndex].host.hostOrNil
+            return providers[currentProviderIndex].host
         }
         resetProviders()
         return nil
