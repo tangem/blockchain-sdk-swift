@@ -46,7 +46,7 @@ extension MultiNetworkProvider {
                 if let nextHost = self.switchProviderIfNeeded(for: currentHost) {
                     // Send event if api did switched by host value
                     
-                    if currentHost.hostOrNil != nextHost {
+                    if currentHost != nextHost {
                         Log.network("Switching to next publisher on host \(nextHost)")
 
                         ExceptionHandler.shared.handleAPISwitch(
@@ -67,9 +67,7 @@ extension MultiNetworkProvider {
     // NOTE: There also copy of this behaviour in the wild, if you want to update something
     // in the code, don't forget to update also Solano.Swift framework, class NetworkingRouter
     private func switchProviderIfNeeded(for errorHost: String) -> String? {
-        guard let errorHost = errorHost.hostOrNil, !errorHost.isEmpty else { return nil }
-        
-        if errorHost != self.host.hostOrNil { // Do not switch the provider, if it was switched already
+        if errorHost.hostOrNil != self.host.hostOrNil { // Do not switch the provider, if it was switched already and hostOrNil compare only host value
             return providers[currentProviderIndex].host
         }
         
