@@ -10,13 +10,16 @@ import Foundation
 import WalletCore
 
 class CosmosTransactionBuilder {
-    private let wallet: Wallet
+    private let publicKey: Data
     private let cosmosChain: CosmosChain
     private var sequenceNumber: UInt64?
     private var accountNumber: UInt64?
     
-    init(wallet: Wallet, cosmosChain: CosmosChain) {
-        self.wallet = wallet
+    init(publicKey: Data, cosmosChain: CosmosChain) throws {
+        let isValid = try PublicKey.isValid(data: publicKey, type: PublicKeyType(cosmosChain.blockchain))
+        assert(isValid, "CosmosTransactionBuilder received invalid public key")
+
+        self.publicKey = publicKey
         self.cosmosChain = cosmosChain
     }
     
@@ -46,7 +49,7 @@ class CosmosTransactionBuilder {
         let txInputData = try input.serializedData()
 
         let publicKeys = DataVector()
-        publicKeys.add(data: wallet.publicKey.blockchainKey)
+        publicKeys.add(data: publicKey)
 
         let signatures = DataVector()
         // We should delete last byte from signature
@@ -106,7 +109,7 @@ class CosmosTransactionBuilder {
             $0.memo = params?.memo ?? ""
             $0.sequence = sequenceNumber
             $0.messages = [message]
-            $0.publicKey = wallet.publicKey.blockchainKey
+            $0.publicKey = publicKey
 
             if let fee, let parameters = fee.parameters as? CosmosFeeParameters {
                 let feeAmountInSmallestDenomination = (fee.amount.value * decimalValue).uint64Value
