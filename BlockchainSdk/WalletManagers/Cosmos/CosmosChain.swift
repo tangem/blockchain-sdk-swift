@@ -32,7 +32,6 @@ extension CosmosChain {
             } else {
                 return [
                     "https://atom.nownodes.io/\(config.nowNodesApiKey)",
-                    "https://atom.getblock.io/\(config.getBlockApiKey)",
                     
                     "https://cosmos-mainnet-rpc.allthatnode.com:1317",
                     
