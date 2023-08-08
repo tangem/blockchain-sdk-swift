@@ -354,6 +354,7 @@
 		EF9F9088299F8B70006F638F /* ETHError.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9F9087299F8B70006F638F /* ETHError.swift */; };
 		EFAD40A72A9756A200364D65 /* CardanoResponseMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFAD40A62A9756A200364D65 /* CardanoResponseMapper.swift */; };
 		EFAD40A52A965BA800364D65 /* BlockBookNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFAD40A42A965BA800364D65 /* BlockBookNode.swift */; };
+		EFAD02452A80F32600E9B959 /* EthereumTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFAD02442A80F32600E9B959 /* EthereumTransactionHistoryProvider.swift */; };
 		EFB9523D2A6FDB2A00996D16 /* TransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB9523C2A6FDB2A00996D16 /* TransactionHistoryProvider.swift */; };
 		EFB952402A6FEF1700996D16 /* TransactionRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB9523F2A6FEF1700996D16 /* TransactionRecord.swift */; };
 		EFB952422A6FF30B00996D16 /* BlockscoutResponseMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB952412A6FF30B00996D16 /* BlockscoutResponseMapper.swift */; };
@@ -776,6 +777,7 @@
 		EF9F9087299F8B70006F638F /* ETHError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ETHError.swift; sourceTree = "<group>"; };
 		EFAD40A62A9756A200364D65 /* CardanoResponseMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoResponseMapper.swift; sourceTree = "<group>"; };
 		EFAD40A42A965BA800364D65 /* BlockBookNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookNode.swift; sourceTree = "<group>"; };
+		EFAD02442A80F32600E9B959 /* EthereumTransactionHistoryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTransactionHistoryProvider.swift; sourceTree = "<group>"; };
 		EFB9523C2A6FDB2A00996D16 /* TransactionHistoryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryProvider.swift; sourceTree = "<group>"; };
 		EFB9523F2A6FEF1700996D16 /* TransactionRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRecord.swift; sourceTree = "<group>"; };
 		EFB952412A6FF30B00996D16 /* BlockscoutResponseMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockscoutResponseMapper.swift; sourceTree = "<group>"; };
@@ -1376,6 +1378,7 @@
 		5D94E55F23A37EF7009C7482 /* Ethereum */ = {
 			isa = PBXGroup;
 			children = (
+				EFAD02432A80F30D00E9B959 /* TransactionHistory */,
 				B0CDFF242641488900B9BA9D /* EthereumJsonRpcProvider.swift */,
 				5D557CAD23AA771E009B32AF /* EthereumNetworkService.swift */,
 				B004DABF26416B8A000863A4 /* EthereumResponse.swift */,
@@ -1954,6 +1957,14 @@
 				EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */,
 			);
 			path = Dash;
+			sourceTree = "<group>";
+		};
+		EFAD02432A80F30D00E9B959 /* TransactionHistory */ = {
+			isa = PBXGroup;
+			children = (
+				EFAD02442A80F32600E9B959 /* EthereumTransactionHistoryProvider.swift */,
+			);
+			path = TransactionHistory;
 			sourceTree = "<group>";
 		};
 		EFB9523E2A6FEF0200996D16 /* TransactionHistory */ = {
@@ -2557,6 +2568,7 @@
 				EF5F1B9729C9C0500093307B /* Fee.swift in Sources */,
 				DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */,
 				5D7D243025136254001B9A4F /* XRPKeypair.swift in Sources */,
+				EFAD02452A80F32600E9B959 /* EthereumTransactionHistoryProvider.swift in Sources */,
 				B04E8D5025F8F67F00821CBE /* RosettaNetworkProvider.swift in Sources */,
 				5D845516243DEAC80072155E /* AdaliteTarget.swift in Sources */,
 				EFD39C9F2A6E6C700055D215 /* AddressTypesConfig.swift in Sources */,

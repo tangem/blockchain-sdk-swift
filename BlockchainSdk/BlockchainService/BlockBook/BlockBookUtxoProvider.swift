@@ -33,6 +33,11 @@ class BlockBookUtxoProvider {
         provider
             .requestPublisher(target(for: .address(address: address, parameters: parameters)))
             .filterSuccessfulStatusAndRedirectCodes()
+            .map { response in
+                print("response: ", String(bytes: response.data, encoding: .utf8)!)
+                return response
+            }
+            .eraseToAnyPublisher()
             .map(BlockBookAddressResponse.self)
             .eraseError()
             .eraseToAnyPublisher()

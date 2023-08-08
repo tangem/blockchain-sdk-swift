@@ -7,6 +7,114 @@
 //
 
 import Foundation
+import BigInt
+
+struct EthereumTransactionHistoryMapper {
+    let blockchain: Blockchain
+    var decimalValue: Decimal {
+        blockchain.decimalValue
+    }
+    
+    init(blockchain: Blockchain, abiEncoder: WalletCoreABIEncoder) {
+        self.blockchain = blockchain
+    }
+    
+    func mapToTransactionRecords(_ response: BlockBookAddressResponse) -> [TransactionRecord] {
+        let transactions = response.transactions ?? []
+        
+        guard !transactions.isEmpty else {
+            return []
+        }
+        
+        return transactions.compactMap { transaction -> TransactionRecord? in
+            guard let feeWei = Decimal(transaction.fees),
+                  let ethereumSpecific = transaction.ethereumSpecific,
+                  let source = sourceType(transaction),
+                  let destination = destinationType(transaction),
+                  let type = transactionType(transaction) else {
+                return nil
+            }
+            
+            let status: TransactionStatus = transaction.confirmations > 0 ? .confirmed : .unconfirmed
+            let fee = Fee(Amount(with: blockchain, value: feeWei / decimalValue))
+            
+            return TransactionRecord(
+                hash: transaction.txid,
+                source: source,
+                destination: destination,
+                fee: fee,
+                status: status,
+                type: type,
+                date: Date(timeIntervalSince1970: TimeInterval(transaction.blockTime)),
+                tokenTransfers: tokenTransfers(transaction)
+            )
+        }
+    }
+    
+    func sourceType(_ transaction: BlockBookAddressResponse.Transaction) -> TransactionRecord.SourceType? {
+        guard let vin = transaction.vin.first,
+              let address = vin.addresses.first,
+              let amount = Decimal(transaction.value) else {
+            print("Source information not found")
+            return nil
+        }
+
+        let source = TransactionRecord.Source(address: address, amount: amount)
+        return .single(source)
+    }
+    
+    func destinationType(_ transaction: BlockBookAddressResponse.Transaction) -> TransactionRecord.DestinationType? {
+        guard let vout = transaction.vout.first, let destination = vout.addresses.first, let amount = Decimal(vout.value) else {
+            print("Destination information not found")
+            return nil
+        }
+        
+        let isContract = transaction.tokenTransfers?.contains(where: { $0.contract == destination }) ?? false
+        let address: TransactionRecord.Destination.Address = isContract ? .contract(destination) : .user(destination)
+        let source = TransactionRecord.Destination(address: address, amount: amount / decimalValue)
+
+        return .single(source)
+    }
+    
+    func transactionType(_ transaction: BlockBookAddressResponse.Transaction) -> TransactionRecord.TransactionType? {
+        guard let ethereumSpecific = transaction.ethereumSpecific  else {
+            return nil
+        }
+        
+        let isOutgoing = transaction.vin.first?.isOwn == true
+        let parsedData = ethereumSpecific.parsedData
+        
+        switch parsedData.name {
+        case "Transfer":
+            return isOutgoing ? .send : .receive
+        default:
+            return .ethereumMethod(parsedData.methodId) // TODO: add decoding
+        }
+        
+    }
+    
+    func tokenTransfers(_ transaction: BlockBookAddressResponse.Transaction) -> [TransactionRecord.TokenTransfer]? {
+        guard let tokenTransfers = transaction.tokenTransfers else {
+            return nil
+        }
+        
+        return tokenTransfers.compactMap { transfer -> TransactionRecord.TokenTransfer? in
+            guard let amount = Decimal(transfer.value) else {
+                return nil
+            }
+            
+            return TransactionRecord.TokenTransfer(
+                source: transfer.from,
+                destination: transfer.to,
+                amount: amount,
+                name: transfer.name,
+                symbol: transfer.symbol,
+                decimals: transfer.decimals,
+                contract: transfer.contract
+            )
+        }
+    }
+}
 
 struct TransactionHistoryMapper {
     private let blockchain: Blockchain

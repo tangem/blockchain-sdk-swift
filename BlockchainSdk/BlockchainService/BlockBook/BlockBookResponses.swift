@@ -18,6 +18,8 @@ struct BlockBookAddressResponse: Decodable {
     let unconfirmedTxs: Int
     /// All transactions count
     let txs: Int
+    /// Only for EVM-like. Main network transactions count
+    let nonTokenTxs: Int
     let transactions: [Transaction]?
 }
 
@@ -32,9 +34,11 @@ extension BlockBookAddressResponse {
         let confirmations: Int
         let blockTime: Int
         let value: String
-        let valueIn: String
+        let valueIn: String?
         let fees: String
         let hex: String?
+        let tokenTransfers: [TokenTransfer]?
+        let ethereumSpecific: EthereumSpecific?
     }
     
     struct Vin: Decodable {
@@ -58,6 +62,35 @@ extension BlockBookAddressResponse {
         let spent: Bool?
         let isOwn: Bool?
     }
+    
+    /// For EVM-like blockchains
+    struct TokenTransfer: Decodable {
+        let type: String
+        let from: String
+        let to: String
+        let contract: String
+        let name: String
+        let symbol: String
+        let decimals: Int
+        let value: String
+    }
+    /// For EVM-like blockchains
+    struct EthereumSpecific: Decodable {
+        let status: Int?
+        let nonce: Int
+        let gasLimit: Decimal
+        let gasUsed: Decimal
+        let gasPrice: String
+        let data: String
+        let parsedData : ParsedData
+        
+        struct ParsedData: Decodable {
+            /// 0x617ba037
+            let methodId: String
+            let name: String
+        }
+    }
+    
 }
 
 struct BlockBookUnspentTxResponse: Decodable {

@@ -15,7 +15,8 @@ public struct TransactionRecord: Hashable {
     public let fee: Fee
     public let status: TransactionStatus
     public let type: TransactionType
-    public let date: Date?
+    public let date: Date
+    public let tokenTransfers: [TokenTransfer]?
     
     public init(
         hash: String,
@@ -24,7 +25,8 @@ public struct TransactionRecord: Hashable {
         fee: Fee,
         status: TransactionStatus,
         type: TransactionType,
-        date: Date?
+        date: Date,
+        tokenTransfers: [TokenTransfer]? = nil
     ) {
         self.hash = hash
         self.source = source
@@ -33,15 +35,17 @@ public struct TransactionRecord: Hashable {
         self.status = status
         self.type = type
         self.date = date
+        self.tokenTransfers = tokenTransfers
     }
 }
 
 // MARK: - TransactionType
 
 public extension TransactionRecord {
-    enum TransactionType: String, Hashable {
+    enum TransactionType: Hashable {
         case send
         case receive
+        case ethereumMethod(_ name: String)
     }
 }
 
@@ -95,5 +99,19 @@ public extension TransactionRecord {
                 }
             }
         }
+    }
+}
+
+// MARK: - TokenTransfer
+
+public extension TransactionRecord {
+    struct TokenTransfer: Hashable {
+        public let source: String
+        public let destination: String
+        public let amount: Decimal
+        public let name: String?
+        public let symbol: String?
+        public let decimals: Int?
+        public let contract: String?
     }
 }
