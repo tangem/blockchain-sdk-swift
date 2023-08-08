@@ -377,12 +377,12 @@ extension Blockchain {
         case .ethereumClassic:
             if isTestnet {
                 return [
-                    URL(string: "https://www.ethercluster.com/kotti")!,
+                    URL(string: "https://etc.rivet.link/kotti")!,
                 ]
             } else {
                 return [
                     URL(string: "https://etc.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
-                    URL(string: "https://www.ethercluster.com/etc")!,
+                    URL(string: "https://etc.rivet.link/etc")!,
                     URL(string: "https://etc.etcdesktop.com")!,
                     URL(string: "https://blockscout.com/etc/mainnet/api/eth-rpc")!,
                     URL(string: "https://etc.mytokenpocket.vip")!,
