@@ -33,8 +33,6 @@ extension CosmosChain {
                 return [
                     "https://atom.nownodes.io/\(config.nowNodesApiKey)",
                     
-                    "https://cosmos-mainnet-rpc.allthatnode.com:1317",
-                    
                     // This is a REST proxy combining the servers below (and others)
                     "https://rest.cosmos.directory/cosmoshub",
                     
