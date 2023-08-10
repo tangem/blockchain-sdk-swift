@@ -131,7 +131,7 @@ extension ClvmProgram {
             var sizeBytes = Array<Byte>()
 
             guard let currentByte = programByteIterator.next() else {
-                throw DecoderError.errorCurrentByte
+                throw DecoderError.errorEmptyCurrentByte
             }
 
             if currentByte <= 0x7F {
@@ -161,7 +161,7 @@ extension ClvmProgram {
     }
     
     enum DecoderError: Error {
-        case errorCurrentByte
+        case errorEmptyCurrentByte
         case errorCompareCurrentByte
     }
 }

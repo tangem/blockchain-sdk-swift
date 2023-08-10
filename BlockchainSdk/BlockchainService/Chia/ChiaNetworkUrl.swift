@@ -9,7 +9,7 @@
 import Foundation
 
 enum ChiaEndpointType {
-    case fireacademy(isTestnet: Bool)
+    case fireAcademy(isTestnet: Bool)
 }
 
 struct ChiaNetworkEndpoint {
@@ -28,7 +28,7 @@ struct ChiaNetworkNode {
     
     var endpoint: ChiaNetworkEndpoint {
         switch endpointType {
-        case .fireacademy(let testnet):
+        case .fireAcademy(let testnet):
             let url = testnet ?
                 URL(string: "https://kraken.fireacademy.io/leaflet-testnet10/")! :
                 URL(string: "https://kraken.fireacademy.io/leaflet/")!

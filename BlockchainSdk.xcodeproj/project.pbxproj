@@ -38,14 +38,11 @@
 		2DBBE95029C8DBEA00971539 /* TONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBBE94F29C8DBEA00971539 /* TONTests.swift */; };
 		2DC5796129C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5796029C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift */; };
 		2DC5DAB429B9E6A10039154A /* WalletCoreSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5DAB329B9E6A10039154A /* WalletCoreSigner.swift */; };
-		2DCBACF22A7A5F3300450CD2 /* Chia+Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBACEB2A7A5F3300450CD2 /* Chia+Array.swift */; };
 		2DCBACF32A7A5F3300450CD2 /* ClvmProgram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBACEC2A7A5F3300450CD2 /* ClvmProgram.swift */; };
 		2DCBACF42A7A5F3300450CD2 /* ChiaPuzzleUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBACED2A7A5F3300450CD2 /* ChiaPuzzleUtils.swift */; };
 		2DCBACF52A7A5F3300450CD2 /* ChiaCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBACEE2A7A5F3300450CD2 /* ChiaCondition.swift */; };
 		2DCBACF62A7A5F3300450CD2 /* ChiaModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBACEF2A7A5F3300450CD2 /* ChiaModels.swift */; };
-		2DCBACF72A7A5F3300450CD2 /* Chia+Aug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBACF02A7A5F3300450CD2 /* Chia+Aug.swift */; };
 		2DCBACF82A7A5F3300450CD2 /* Chia+Int64.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBACF12A7A5F3300450CD2 /* Chia+Int64.swift */; };
-		2DCBACFA2A7A5F6200450CD2 /* ChiaGenesisChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBACF92A7A5F6200450CD2 /* ChiaGenesisChallenge.swift */; };
 		2DCBACFF2A7A5FB900450CD2 /* ChiaNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBACFB2A7A5FB900450CD2 /* ChiaNetworkProvider.swift */; };
 		2DCBAD002A7A5FB900450CD2 /* ChiaProviderResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBACFC2A7A5FB900450CD2 /* ChiaProviderResponses.swift */; };
 		2DCBAD012A7A5FB900450CD2 /* ChiaProviderTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBACFD2A7A5FB900450CD2 /* ChiaProviderTarget.swift */; };
@@ -451,14 +448,11 @@
 		2DBBE94F29C8DBEA00971539 /* TONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONTests.swift; sourceTree = "<group>"; };
 		2DC5796029C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreSignerTesterUtility.swift; sourceTree = "<group>"; };
 		2DC5DAB329B9E6A10039154A /* WalletCoreSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreSigner.swift; sourceTree = "<group>"; };
-		2DCBACEB2A7A5F3300450CD2 /* Chia+Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Chia+Array.swift"; sourceTree = "<group>"; };
 		2DCBACEC2A7A5F3300450CD2 /* ClvmProgram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClvmProgram.swift; sourceTree = "<group>"; };
 		2DCBACED2A7A5F3300450CD2 /* ChiaPuzzleUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaPuzzleUtils.swift; sourceTree = "<group>"; };
 		2DCBACEE2A7A5F3300450CD2 /* ChiaCondition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaCondition.swift; sourceTree = "<group>"; };
 		2DCBACEF2A7A5F3300450CD2 /* ChiaModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaModels.swift; sourceTree = "<group>"; };
-		2DCBACF02A7A5F3300450CD2 /* Chia+Aug.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Chia+Aug.swift"; sourceTree = "<group>"; };
 		2DCBACF12A7A5F3300450CD2 /* Chia+Int64.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Chia+Int64.swift"; sourceTree = "<group>"; };
-		2DCBACF92A7A5F6200450CD2 /* ChiaGenesisChallenge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaGenesisChallenge.swift; sourceTree = "<group>"; };
 		2DCBACFB2A7A5FB900450CD2 /* ChiaNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaNetworkProvider.swift; sourceTree = "<group>"; };
 		2DCBACFC2A7A5FB900450CD2 /* ChiaProviderResponses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaProviderResponses.swift; sourceTree = "<group>"; };
 		2DCBACFD2A7A5FB900450CD2 /* ChiaProviderTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaProviderTarget.swift; sourceTree = "<group>"; };
@@ -936,13 +930,10 @@
 		2DCBACEA2A7A5F3300450CD2 /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				2DCBACF92A7A5F6200450CD2 /* ChiaGenesisChallenge.swift */,
-				2DCBACEB2A7A5F3300450CD2 /* Chia+Array.swift */,
 				2DCBACEC2A7A5F3300450CD2 /* ClvmProgram.swift */,
 				2DCBACED2A7A5F3300450CD2 /* ChiaPuzzleUtils.swift */,
 				2DCBACEE2A7A5F3300450CD2 /* ChiaCondition.swift */,
 				2DCBACEF2A7A5F3300450CD2 /* ChiaModels.swift */,
-				2DCBACF02A7A5F3300450CD2 /* Chia+Aug.swift */,
 				2DCBACF12A7A5F3300450CD2 /* Chia+Int64.swift */,
 			);
 			path = Common;
@@ -2390,7 +2381,6 @@
 				EF2BC62929DAD93A003D3F18 /* RavencoinWalletUTXO.swift in Sources */,
 				DA60AF1229E8308E0013F5AC /* CosmosWalletAssembly.swift in Sources */,
 				5D845514243DEABB0072155E /* AdaliteResponse.swift in Sources */,
-				2DCBACF72A7A5F3300450CD2 /* Chia+Aug.swift in Sources */,
 				B0C2C89D25FBCF0200A61622 /* RosettaTarget.swift in Sources */,
 				EFD717DF2A27310E00E5430D /* AddressType.swift in Sources */,
 				5D908C5726A6D39C00270FA3 /* BinanceTransactionParams.swift in Sources */,
@@ -2403,7 +2393,6 @@
 				DA67A69629E51FEA001B6799 /* CosmosWalletManager.swift in Sources */,
 				2D78F40C2A5C3CCF00962CCA /* ChiaWalletManager.swift in Sources */,
 				DAB87CB1297ADCDC00FF30EB /* GetBlockBlockBookConfig.swift in Sources */,
-				2DCBACF22A7A5F3300450CD2 /* Chia+Array.swift in Sources */,
 				EF0DA78D285246A90081092A /* DashWalletManager.swift in Sources */,
 				EF32FEBF2A306E51002ED43F /* AddressService.swift in Sources */,
 				5D7D243625136254001B9A4F /* XRPAccount.swift in Sources */,
@@ -2571,7 +2560,6 @@
 				5DC7DD6824408266008F83F2 /* XrpResponse.swift in Sources */,
 				2DCBAD022A7A5FB900450CD2 /* ChiaProviderRequests.swift in Sources */,
 				5D7D243D25136254001B9A4F /* Serializer.swift in Sources */,
-				2DCBACFA2A7A5F6200450CD2 /* ChiaGenesisChallenge.swift in Sources */,
 				5D7D242D25136254001B9A4F /* XRPLResponse.swift in Sources */,
 				EF2BC61E29DAC649003D3F18 /* RavencoinNetworkProvider.swift in Sources */,
 				DA63B09E29CB3FC700AC6E49 /* KaspaTransaction.swift in Sources */,

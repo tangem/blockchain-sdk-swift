@@ -12,7 +12,6 @@ import TangemSdk
 import WalletCore
 
 final class ChiaWalletManager: BaseManager, WalletManager {
-    
     // MARK: - Properties
     
     var currentHost: String { networkService.host }

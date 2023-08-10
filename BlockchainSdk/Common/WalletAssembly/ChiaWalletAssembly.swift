@@ -15,8 +15,8 @@ struct ChiaWalletAssembly: WalletManagerAssembly {
         providers.append(
             ChiaNetworkProvider(
                 node: .init(
-                    apiKeyValue: input.blockchainSdkConfig.fireacademyApiKeys.getApiKey(for: input.blockchain.isTestnet),
-                    endpointType: .fireacademy(isTestnet: input.blockchain.isTestnet)
+                    apiKeyValue: input.blockchainSdkConfig.fireAcademyApiKeys.getApiKey(for: input.blockchain.isTestnet),
+                    endpointType: .fireAcademy(isTestnet: input.blockchain.isTestnet)
                 ),
                 networkConfig: input.networkConfig
             )

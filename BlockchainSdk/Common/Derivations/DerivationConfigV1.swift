@@ -88,7 +88,7 @@ public struct DerivationConfigV1: DerivationConfig {
         case .telos:
             return "m/44'/977'/0'/0/0"
         case .chia:
-            return "m"
+            return ""
         }
     }
 }
