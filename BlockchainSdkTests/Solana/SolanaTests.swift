@@ -14,6 +14,7 @@ import Combine
 
 private let raisedError = SolanaError.other("Just tx size test")
 
+// TODO: Will be refactor https://tangem.atlassian.net/browse/IOS-4260
 final class SolanaTests: XCTestCase {
     private class CoinSigner: TransactionSigner {
         private let sizeTester = TransactionSizeTesterUtility()

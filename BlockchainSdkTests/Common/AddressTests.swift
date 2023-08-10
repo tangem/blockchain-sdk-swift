@@ -120,8 +120,15 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(leg_comp.value, "LcxUXkP9KGqWHtbKyENSS8HQoQ9LK8DQLX")
     }
     
-    func testXlm() throws {
-        let blockchain = Blockchain.stellar(curve: .ed25519_slip0010, testnet: false)
+    func testXlmEd25519() throws {
+        try testXlm(blockchain: .stellar(curve: .ed25519, testnet: false))
+    }
+    
+    func testXlmEd25519Slip0010() throws {
+        try testXlm(blockchain: .stellar(curve: .ed25519_slip0010, testnet: false))
+    }
+    
+    func testXlm(blockchain: Blockchain) throws {
         let service = StellarAddressService()
 
         let addrs = try service.makeAddress(from: edKey)
@@ -330,20 +337,15 @@ class AddressesTests: XCTestCase {
     }
     
     func testXrpEd() throws {
-        let service = XRPAddressService(curve: .ed25519)
-        let address = try service.makeAddress(from: edKey)
-
-        XCTAssertTrue(service.validate(address.value))
-
-        XCTAssertThrowsError(try service.makeAddress(from: secpCompressedKey))
-        XCTAssertThrowsError(try service.makeAddress(from: secpDecompressedKey))
-
-        XCTAssertEqual(address.localizedName, AddressType.default.defaultLocalizedName)
-        XCTAssertEqual(address.value, "rPhmKhkYoMiqC2xqHYhtPLnicWQi85uDf2") //todo: validate
+        try testXrpEd(curve: .ed25519)
     }
     
     func testXrpEdSlip0010() throws {
-        let service = XRPAddressService(curve: .ed25519_slip0010)
+        try testXrpEd(curve: .ed25519_slip0010)
+    }
+    
+    func testXrpEd(curve: EllipticCurve) throws {
+        let service = XRPAddressService(curve: curve)
         let address = try service.makeAddress(from: edKey)
 
         XCTAssertTrue(service.validate(address.value))
@@ -386,18 +388,15 @@ class AddressesTests: XCTestCase {
     }
     
     func testXTZEd() throws {
-        let service = TezosAddressService(curve: .ed25519)
-        let address = try service.makeAddress(from: edKey)
-        
-        XCTAssertThrowsError(try service.makeAddress(from: secpCompressedKey))
-        XCTAssertThrowsError(try service.makeAddress(from: secpDecompressedKey))
-
-        XCTAssertEqual(address.localizedName, AddressType.default.defaultLocalizedName)
-        XCTAssertEqual(address.value, "tz1VS42nEFHoTayE44ZKANQWNhZ4QbWFV8qd")
+        try testXTZ(curve: .ed25519)
     }
     
-    func testXTZEdSlip0010() throws {
-        let service = TezosAddressService(curve: .ed25519_slip0010)
+    func testXtestXTZEdSlip0010TZEd() throws {
+        try testXTZ(curve: .ed25519_slip0010)
+    }
+    
+    func testXTZ(curve: EllipticCurve) throws {
+        let service = TezosAddressService(curve: curve)
         let address = try service.makeAddress(from: edKey)
         
         XCTAssertThrowsError(try service.makeAddress(from: secpCompressedKey))
@@ -475,9 +474,17 @@ class AddressesTests: XCTestCase {
         try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: secpDecompressedKey, for: blockchain), addr_comp.value)
     }
     
-    func testSolana() throws {
+    func testSolanaEd25519() throws {
+        try testSolana(curve: .ed25519)
+    }
+
+    func testSolanaEd25519Slip0010() throws {
+        try testSolana(curve: .ed25519_slip0010)
+    }
+    
+    func testSolana(curve: EllipticCurve) throws {
         let key = Data(hexString: "0300000000000000000000000000000000000000000000000000000000000000")
-        let blockchain = Blockchain.solana(curve: .ed25519_slip0010, testnet: false)
+        let blockchain = Blockchain.solana(curve: curve, testnet: false)
         let service = SolanaAddressService()
 
         let addrs = try service.makeAddress(from: key)
@@ -498,9 +505,21 @@ class AddressesTests: XCTestCase {
         let privateKey = Data(hexString: "0xd65ed4c1a742699b2e20c0c1f1fe780878b1b9f7d387f934fe0a7dc36f1f9008")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         testSubstrateNetwork(
+            .polkadot(curve: .ed25519, testnet: false),
+            publicKey: publicKey,
+            expectedAddress: "12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW"
+        )
+        
+        testSubstrateNetwork(
             .polkadot(curve: .ed25519_slip0010, testnet: false),
             publicKey: publicKey,
             expectedAddress: "12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW"
+        )
+        
+        testSubstrateNetwork(
+            .polkadot(curve: .ed25519, testnet: false),
+            publicKey: edKey,
+            expectedAddress: "14cermZiQ83ihmHKkAucgBT2sqiRVvd4rwqBGqrMnowAKYRp"
         )
         
         testSubstrateNetwork(
@@ -515,9 +534,21 @@ class AddressesTests: XCTestCase {
         let privateKey = Data(hexString: "0x85fca134b3fe3fd523d8b528608d803890e26c93c86dc3d97b8d59c7b3540c97")
         let publicKey = try Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         try testSubstrateNetwork(
+            .kusama(curve: .ed25519),
+            publicKey: publicKey,
+            expectedAddress: "HewiDTQv92L2bVtkziZC8ASxrFUxr6ajQ62RXAnwQ8FDVmg"
+        )
+        
+        try testSubstrateNetwork(
             .kusama(curve: .ed25519_slip0010),
             publicKey: publicKey,
             expectedAddress: "HewiDTQv92L2bVtkziZC8ASxrFUxr6ajQ62RXAnwQ8FDVmg"
+        )
+        
+        try testSubstrateNetwork(
+            .kusama(curve: .ed25519),
+            publicKey: edKey,
+            expectedAddress: "GByNkeXAhoB1t6FZEffRyytAp11cHt7EpwSWD8xiX88tLdQ"
         )
         
         try testSubstrateNetwork(
@@ -529,6 +560,12 @@ class AddressesTests: XCTestCase {
     
     func testWestend() {
         testSubstrateNetwork(
+            .polkadot(curve: .ed25519, testnet: true),
+            publicKey: edKey,
+            expectedAddress: "5FgMiSJeYLnFGEGonXrcY2ct2Dimod4vnT6h7Ys1Eiue9KxK"
+        )
+        
+        testSubstrateNetwork(
             .polkadot(curve: .ed25519_slip0010, testnet: true),
             publicKey: edKey,
             expectedAddress: "5FgMiSJeYLnFGEGonXrcY2ct2Dimod4vnT6h7Ys1Eiue9KxK"
@@ -536,6 +573,12 @@ class AddressesTests: XCTestCase {
     }
     
     func testAzero() {
+        testSubstrateNetwork(
+            .azero(curve: .ed25519, testnet: true),
+            publicKey: edKey,
+            expectedAddress: "5FgMiSJeYLnFGEGonXrcY2ct2Dimod4vnT6h7Ys1Eiue9KxK"
+        )
+        
         testSubstrateNetwork(
             .azero(curve: .ed25519_slip0010, testnet: true),
             publicKey: edKey,
@@ -623,8 +666,16 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(address.value, expectedAddress)
     }
     
-    func testTON() {
-        let blockchain = Blockchain.ton(curve: .ed25519_slip0010, testnet: false)
+    func testTONEd25519() {
+        testTON(curve: .ed25519)
+    }
+    
+    func testTONEd25519Slip0010() {
+        testTON(curve: .ed25519_slip0010)
+    }
+    
+    func testTON(curve: EllipticCurve) {
+        let blockchain = Blockchain.ton(curve: curve, testnet: false)
         let addressService = WalletCoreAddressService(coin: .ton)
         
         let walletPubkey1 = Data(hex: "e7287a82bdcd3a5c2d0ee2150ccbc80d6a00991411fb44cd4d13cef46618aadb")
