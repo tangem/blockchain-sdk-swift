@@ -470,7 +470,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             .terraV2,
             .cronos,
             .octa,
-            .chia(testnet: false)
+            .chia(testnet: false),
         ]
         
         return blockchains.map { ($0.displayName, $0.codingKey) }
