@@ -19,8 +19,8 @@ class PolkadotTests: XCTestCase {
     func testTransaction9fd062() {
         let privateKey = Data(hexString: "70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
-        let network: PolkadotNetwork = .polkadot
-        let blockchain: Blockchain = .polkadot(testnet: false)
+        let network: PolkadotNetwork = .polkadot(curve: .ed25519_slip0010)
+        let blockchain: Blockchain = .polkadot(curve: .ed25519_slip0010, testnet: false)
         
         let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
         
@@ -56,7 +56,7 @@ class PolkadotTests: XCTestCase {
         
         let privateKey = Data(hexString: "0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
-        let blockchain: Blockchain = .polkadot(testnet: false)
+        let blockchain: Blockchain = .polkadot(curve: .ed25519_slip0010, testnet: false)
         let network: PolkadotNetwork = .init(blockchain: blockchain)!
         
         let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
@@ -91,7 +91,7 @@ class PolkadotTests: XCTestCase {
     func testTransaction72dd5b() {
         let privateKey = Data(hexString: "37932b086586a6675e66e562fe68bd3eeea4177d066619c602fe3efc290ada62")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
-        let blockchain: Blockchain = .polkadot(testnet: false)
+        let blockchain: Blockchain = .polkadot(curve: .ed25519_slip0010, testnet: false)
         let network: PolkadotNetwork = .init(blockchain: blockchain)!
         
         let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
@@ -128,7 +128,7 @@ class PolkadotTests: XCTestCase {
         
         let privateKey = Data(hexString: "0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
-        let blockchain: Blockchain = .azero(testnet: false)
+        let blockchain: Blockchain = .azero(curve: .ed25519_slip0010, testnet: false)
         let network: PolkadotNetwork = .init(blockchain: blockchain)!
         
         let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)

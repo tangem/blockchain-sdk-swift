@@ -26,14 +26,14 @@ extension PublicKeyType {
             switch curve {
             case .secp256k1:
                 self = PublicKeyType.secp256k1
-            case .ed25519:
+            case .ed25519, .ed25519_slip0010:
                 self = PublicKeyType.ed25519
             default:
                 throw NSError()
             }
         case .tezos(let curve):
             switch curve {
-            case .ed25519:
+            case .ed25519, .ed25519_slip0010:
                 self = .ed25519
             default:
                 throw NSError()

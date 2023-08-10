@@ -121,7 +121,7 @@ class AddressesTests: XCTestCase {
     }
     
     func testXlm() throws {
-        let blockchain = Blockchain.stellar(testnet: false)
+        let blockchain = Blockchain.stellar(curve: .ed25519_slip0010, testnet: false)
         let service = StellarAddressService()
 
         let addrs = try service.makeAddress(from: edKey)
@@ -477,7 +477,7 @@ class AddressesTests: XCTestCase {
     
     func testSolana() throws {
         let key = Data(hexString: "0300000000000000000000000000000000000000000000000000000000000000")
-        let blockchain = Blockchain.solana(testnet: false)
+        let blockchain = Blockchain.solana(curve: .ed25519_slip0010, testnet: false)
         let service = SolanaAddressService()
 
         let addrs = try service.makeAddress(from: key)
@@ -498,13 +498,13 @@ class AddressesTests: XCTestCase {
         let privateKey = Data(hexString: "0xd65ed4c1a742699b2e20c0c1f1fe780878b1b9f7d387f934fe0a7dc36f1f9008")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         testSubstrateNetwork(
-            .polkadot(testnet: false),
+            .polkadot(curve: .ed25519_slip0010, testnet: false),
             publicKey: publicKey,
             expectedAddress: "12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW"
         )
         
         testSubstrateNetwork(
-            .polkadot(testnet: false),
+            .polkadot(curve: .ed25519_slip0010, testnet: false),
             publicKey: edKey,
             expectedAddress: "14cermZiQ83ihmHKkAucgBT2sqiRVvd4rwqBGqrMnowAKYRp"
         )
@@ -515,13 +515,13 @@ class AddressesTests: XCTestCase {
         let privateKey = Data(hexString: "0x85fca134b3fe3fd523d8b528608d803890e26c93c86dc3d97b8d59c7b3540c97")
         let publicKey = try Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
         try testSubstrateNetwork(
-            .kusama,
+            .kusama(curve: .ed25519_slip0010),
             publicKey: publicKey,
             expectedAddress: "HewiDTQv92L2bVtkziZC8ASxrFUxr6ajQ62RXAnwQ8FDVmg"
         )
         
         try testSubstrateNetwork(
-            .kusama,
+            .kusama(curve: .ed25519_slip0010),
             publicKey: edKey,
             expectedAddress: "GByNkeXAhoB1t6FZEffRyytAp11cHt7EpwSWD8xiX88tLdQ"
         )
@@ -529,7 +529,7 @@ class AddressesTests: XCTestCase {
     
     func testWestend() {
         testSubstrateNetwork(
-            .polkadot(testnet: true),
+            .polkadot(curve: .ed25519_slip0010, testnet: true),
             publicKey: edKey,
             expectedAddress: "5FgMiSJeYLnFGEGonXrcY2ct2Dimod4vnT6h7Ys1Eiue9KxK"
         )
@@ -537,7 +537,7 @@ class AddressesTests: XCTestCase {
     
     func testAzero() {
         testSubstrateNetwork(
-            .azero(testnet: true),
+            .azero(curve: .ed25519_slip0010, testnet: true),
             publicKey: edKey,
             expectedAddress: "5FgMiSJeYLnFGEGonXrcY2ct2Dimod4vnT6h7Ys1Eiue9KxK"
         )
@@ -624,7 +624,7 @@ class AddressesTests: XCTestCase {
     }
     
     func testTON() {
-        let blockchain = Blockchain.ton(testnet: false)
+        let blockchain = Blockchain.ton(curve: .ed25519_slip0010, testnet: false)
         let addressService = WalletCoreAddressService(coin: .ton)
         
         let walletPubkey1 = Data(hex: "e7287a82bdcd3a5c2d0ee2150ccbc80d6a00991411fb44cd4d13cef46618aadb")
