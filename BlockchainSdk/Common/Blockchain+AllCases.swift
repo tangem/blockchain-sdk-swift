@@ -69,7 +69,7 @@ public extension Blockchain {
             .binance(testnet: false),
             .tezos(curve: .secp256k1),
             .stellar(curve: .ed25519_slip0010, testnet: false),
-            .cardano,
+            .cardano(extended: false),
             .ducatus,
             .dogecoin,
             .bsc(testnet: false),

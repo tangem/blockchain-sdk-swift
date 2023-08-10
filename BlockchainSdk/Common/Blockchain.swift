@@ -24,7 +24,7 @@ public enum Blockchain: Equatable, Hashable {
     case rsk
     case bitcoinCash(testnet: Bool)
     case binance(testnet: Bool)
-    case cardano
+    case cardano(extended: Bool)
     case xrp(curve: EllipticCurve)
     case ducatus
     case tezos(curve: EllipticCurve)
@@ -658,6 +658,7 @@ extension Blockchain: Codable {
         case testnet
         case curve
         case shelley
+        case extended
     }
     
     public init(from decoder: Decoder) throws {
@@ -679,7 +680,9 @@ extension Blockchain: Codable {
         case "rsk": self = .rsk
         case "bitcoinCash": self = .bitcoinCash(testnet: isTestnet)
         case "binance": self = .binance(testnet: isTestnet)
-        case "cardano": self = .cardano
+        case "cardano":
+            let extended = try container.decodeIfPresent(Bool.self, forKey: Keys.extended)
+            self = .cardano(extended: extended ?? false)
         case "xrp": self = .xrp(curve: curve)
         case "ducatus": self = .ducatus
         case "tezos": self = .tezos(curve: curve)
@@ -721,6 +724,10 @@ extension Blockchain: Codable {
         try container.encode(codingKey, forKey: Keys.key)
         try container.encode(curve.rawValue, forKey: Keys.curve)
         try container.encode(isTestnet, forKey: Keys.testnet)
+
+        if case .cardano(let extended) = self {
+            try container.encode(extended, forKey: Keys.extended)
+        }
     }
 }
 
@@ -986,7 +993,8 @@ extension Blockchain {
         case "rsk", "rsktoken": return .rsk
         case "bch": return .bitcoinCash(testnet: isTestnet)
         case "binance", "binanceasset": return .binance(testnet: isTestnet)
-        case "cardano", "cardano-s": return .cardano
+        // For old cards cardano will work like ed25519_slip0010
+        case "cardano", "cardano-s": return .cardano(extended: false)
         case "xrp": return .xrp(curve: curve)
         case "duc": return .ducatus
         case "xtz": return .tezos(curve: curve)

@@ -34,7 +34,7 @@ final class KeysServiceManagerUtility {
     }
     
     func getMasterKeyFromTrustWallet(for blockchain: BlockchainSdk.Blockchain) throws -> PrivateKey {
-        try hdWallet.getMasterKey(curve: .init(blockchain.curve))
+        try hdWallet.getMasterKey(curve: .init(blockchain: blockchain))
     }
     
     func getMasterKeyFromBIP32(with seed: Data, for blockchain: BlockchainSdk.Blockchain) throws -> ExtendedPrivateKey {
