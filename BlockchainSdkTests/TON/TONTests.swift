@@ -15,7 +15,7 @@ import WalletCore
 
 class TONTests: XCTestCase {
     
-    private var blockchain = Blockchain.ton(testnet: true)
+    private var blockchain = Blockchain.ton(curve: .ed25519_slip0010, testnet: true)
     private var privateKey = try! Curve25519.Signing.PrivateKey(
         rawRepresentation: Data(hexString: "0x85fca134b3fe3fd523d8b528608d803890e26c93c86dc3d97b8d59c7b3540c97")
     )

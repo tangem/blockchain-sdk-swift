@@ -13,7 +13,7 @@ import Combine
 @testable import BlockchainSdk
 
 class StellarTests: XCTestCase {
-    private let blockchain = Blockchain.stellar(testnet: false)
+    private let blockchain = Blockchain.stellar(curve: .ed25519_slip0010, testnet: false)
     private let sizeTester = TransactionSizeTesterUtility()
     
     private lazy var addressService = StellarAddressService()

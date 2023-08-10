@@ -560,7 +560,7 @@ extension Blockchain {
 @available(iOS 13.0, *)
 extension Blockchain {
     public func derivationPath(for style: DerivationStyle) -> DerivationPath? {
-        guard curve == .secp256k1 || curve == .ed25519 else {
+        guard curve == .secp256k1 || curve == .ed25519 || curve == .ed25519_slip0010 else {
             Log.debug("Wrong attempt to get a `DerivationPath` for a unsupported derivation curve")
             return nil
         }

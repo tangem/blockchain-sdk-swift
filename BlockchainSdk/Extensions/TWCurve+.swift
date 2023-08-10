@@ -17,7 +17,7 @@ extension Curve {
         switch curve {
         case .secp256k1:
             self = .secp256k1
-        case .ed25519:
+        case .ed25519, .ed25519_slip0010:
             self = .ed25519
         default:
             throw NSError()

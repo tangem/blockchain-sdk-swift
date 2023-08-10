@@ -342,6 +342,19 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(address.value, "rPhmKhkYoMiqC2xqHYhtPLnicWQi85uDf2") //todo: validate
     }
     
+    func testXrpEdSlip0010() throws {
+        let service = XRPAddressService(curve: .ed25519_slip0010)
+        let address = try service.makeAddress(from: edKey)
+
+        XCTAssertTrue(service.validate(address.value))
+
+        XCTAssertThrowsError(try service.makeAddress(from: secpCompressedKey))
+        XCTAssertThrowsError(try service.makeAddress(from: secpDecompressedKey))
+
+        XCTAssertEqual(address.localizedName, AddressType.default.defaultLocalizedName)
+        XCTAssertEqual(address.value, "rPhmKhkYoMiqC2xqHYhtPLnicWQi85uDf2") //todo: validate
+    }
+    
     func testDuc() throws {
         let blockchain = Blockchain.dogecoin
         let service = BitcoinLegacyAddressService(networkParams: DogecoinNetworkParams())
@@ -374,6 +387,17 @@ class AddressesTests: XCTestCase {
     
     func testXTZEd() throws {
         let service = TezosAddressService(curve: .ed25519)
+        let address = try service.makeAddress(from: edKey)
+        
+        XCTAssertThrowsError(try service.makeAddress(from: secpCompressedKey))
+        XCTAssertThrowsError(try service.makeAddress(from: secpDecompressedKey))
+
+        XCTAssertEqual(address.localizedName, AddressType.default.defaultLocalizedName)
+        XCTAssertEqual(address.value, "tz1VS42nEFHoTayE44ZKANQWNhZ4QbWFV8qd")
+    }
+    
+    func testXTZEdSlip0010() throws {
+        let service = TezosAddressService(curve: .ed25519_slip0010)
         let address = try service.makeAddress(from: edKey)
         
         XCTAssertThrowsError(try service.makeAddress(from: secpCompressedKey))

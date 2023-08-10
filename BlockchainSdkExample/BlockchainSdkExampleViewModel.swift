@@ -104,6 +104,12 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         self.blockchains = Self.blockchainList()
         self.curves = EllipticCurve.allCases.sorted { $0.rawValue < $1.rawValue }
         self.blockchainsWithCurveSelection = [
+            Blockchain.stellar(curve: .ed25519, testnet: false),
+            Blockchain.solana(curve: .ed25519, testnet: false),
+            Blockchain.polkadot(curve: .ed25519, testnet: false),
+            Blockchain.kusama(curve: .ed25519),
+            Blockchain.azero(curve: .ed25519, testnet: false),
+            Blockchain.ton(curve: .ed25519, testnet: false),
             Blockchain.xrp(curve: .ed25519),
             Blockchain.tezos(curve: .ed25519),
         ].map { $0.codingKey }
@@ -431,46 +437,6 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     }
     
     static private func blockchainList() -> [(String, String)] {
-        let blockchains: [Blockchain] = [
-            .bitcoin(testnet: false),
-            .litecoin,
-            .stellar(testnet: false),
-            .ethereum(testnet: false),
-            .ethereumClassic(testnet: false),
-            .ethereumPoW(testnet: false),
-            .rsk,
-            .bitcoinCash(testnet: false),
-            .binance(testnet: false),
-            .cardano,
-            .xrp(curve: .ed25519),
-            .ducatus,
-            .tezos(curve: .ed25519),
-            .dogecoin,
-            .bsc(testnet: false),
-            .polygon(testnet: false),
-            .avalanche(testnet: false),
-            .solana(testnet: false),
-            .fantom(testnet: false),
-            .polkadot(testnet: false),
-            .kusama,
-            .azero(testnet: false),
-            .tron(testnet: false),
-            .ton(testnet: false),
-            .arbitrum(testnet: false),
-            .dash(testnet: false),
-            .gnosis,
-            .saltPay,
-            .optimism(testnet: false),
-            .kava(testnet: false),
-            .kaspa,
-            .ravencoin(testnet: false),
-            .cosmos(testnet: false),
-            .terraV1,
-            .terraV2,
-            .cronos,
-            .octa
-        ]
-        
-        return blockchains.map { ($0.displayName, $0.codingKey) }
+        return Blockchain.allMainnetCases.map { ($0.displayName, $0.codingKey) }
     }
 }
