@@ -128,15 +128,13 @@ final class ChiaTransactionBuilder {
 
 // MARK: - Constants
 
-extension ChiaTransactionBuilder {
-    fileprivate enum CostConstants {
+fileprivate extension ChiaTransactionBuilder {
+    enum CostConstants {
         static let COIN_SPEND_COST: Int = 4500000
         static let CREATE_COIN_COST: Int = 2400000
     }
-}
-
-extension ChiaTransactionBuilder {
-    fileprivate enum ChiaGenesisChallenge {
+    
+    enum ChiaGenesisChallenge {
         private static let genesisChallengeMainnet = "ccd5bb71183532bff220ba46c268991a3ff07eb358e8255a65c30a2dce0e5fbb"
         private static let genesisChallengeTestnet = "ae83525ba8d1dd3f09b277de18ca3e43fc0af20d20c4b3e92ef2a48bd291ccb2"
         
@@ -148,8 +146,8 @@ extension ChiaTransactionBuilder {
 
 // MARK: - Helpers
 
-extension Array where Element == ChiaCondition {
-    fileprivate func toSolution() throws -> Data {
+fileprivate extension Array where Element == ChiaCondition {
+    func toSolution() throws -> Data {
         let conditions = ClvmProgram.from(list: self.map { $0.toProgram() })
         let solutionArguments = ClvmProgram.from(list: [conditions]) // might be more than one for other puzzles
 
@@ -157,8 +155,8 @@ extension Array where Element == ChiaCondition {
     }
 }
 
-extension Data {
-    fileprivate func hashAugScheme(with publicKey: Data) throws -> Data {
+fileprivate extension Data {
+    func hashAugScheme(with publicKey: Data) throws -> Data {
         try Data(hex: BlsSignatureSwift.augSchemeMplG2Map(publicKeyHash: publicKey.hex, messageHash: self.hex))
     }
 }
