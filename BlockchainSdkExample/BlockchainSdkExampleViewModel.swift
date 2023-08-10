@@ -70,7 +70,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                                                                           kaspaSecondaryApiUrl: nil,
                                                                           tronGridApiKey: "",
                                                                           tonCenterApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
-                                                                          fireacademyApiKeys: .init(
+                                                                          fireAcademyApiKeys: .init(
                                                                             mainnetApiKey: "",
                                                                             testnetApiKey: ""
                                                                           ),
