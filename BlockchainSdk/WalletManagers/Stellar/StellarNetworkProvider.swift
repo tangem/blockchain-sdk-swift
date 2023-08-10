@@ -103,12 +103,7 @@ class StellarNetworkProvider: HostProvider {
                     feeChargedP80,
                     feeChargedP99,
                 ].map {
-                    Amount(
-                        type: .coin,
-                        currencySymbol: blockchain.currencySymbol,
-                        value: $0,
-                        decimals: blockchain.decimalCount
-                    )
+                    Amount(with: blockchain, value: $0)
                 }
                 
                 return fees
