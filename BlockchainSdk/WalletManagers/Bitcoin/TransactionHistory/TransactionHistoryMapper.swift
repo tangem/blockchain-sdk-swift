@@ -9,8 +9,8 @@
 import Foundation
 
 struct TransactionHistoryMapper {
-    let blockchain: Blockchain
-    var decimalValue: Decimal {
+    private let blockchain: Blockchain
+    private var decimalValue: Decimal {
         blockchain.decimalValue
     }
     
@@ -21,7 +21,7 @@ struct TransactionHistoryMapper {
     func mapToTransactionRecords(_ response: BlockBookAddressResponse) -> [TransactionRecord] {
         let transactions = response.transactions ?? []
         
-        guard !transactions.isEmpty else {
+        if transactions.isEmpty {
             return []
         }
         

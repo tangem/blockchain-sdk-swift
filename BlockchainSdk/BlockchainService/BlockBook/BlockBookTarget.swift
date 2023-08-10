@@ -85,9 +85,10 @@ extension BlockBookTarget {
     }
     
     struct AddressRequestParameters: Encodable {
-        /// page: specifies page of returned transactions, starting from 1. If out of range, Blockbook returns the closest possible page.
+        /// Specifies page of returned transactions, starting from 1. 
+        /// If out of range, Blockbook returns the closest possible page.
         let page: Int
-        /// pageSize: number of transactions returned by call (default and maximum 1000)
+        /// The number of transactions returned by call (default and maximum 1000)
         let pageSize: Int
         let details: [Details]
         
@@ -102,17 +103,17 @@ extension BlockBookTarget {
         }
         
         enum Details: String, Encodable {
-            /// basic: return only address balances, without any transactions
+            /// Return only address balances, without any transactions
             case basic
-            /// tokens: basic + tokens belonging to the address (applicable only to some coins)
+            /// Basic + tokens belonging to the address (applicable only to some coins)
             case tokens
-            /// tokenBalances: basic + tokens with balances + belonging to the address (applicable only to some coins)
+            /// Basic + tokens with balances + belonging to the address (applicable only to some coins)
             case tokenBalances
-            /// txids: tokenBalances + list of txids, subject to from, to filter and paging
+            /// TokenBalances + list of txids, subject to from, to filter and paging
             case txids
-            /// txslight: tokenBalances + list of transaction with limited details (only data from index), subject to from, to filter and paging
+            /// TokenBalances + list of transaction with limited details (only data from index), subject to from, to filter and paging
             case txslight
-            /// txs: tokenBalances + list of transaction with details, subject to from, to filter and paging
+            /// TokenBalances + list of transaction with details, subject to from, to filter and paging
             case txs
         }
         

@@ -15,7 +15,7 @@ public struct TransactionRecord: Hashable {
     public let fee: Fee
     public let status: TransactionStatus
     public let type: TransactionType
-    public let date: Date
+    public let date: Date?
     
     public init(
         hash: String,
@@ -24,7 +24,7 @@ public struct TransactionRecord: Hashable {
         fee: Fee,
         status: TransactionStatus,
         type: TransactionType,
-        date: Date
+        date: Date?
     ) {
         self.hash = hash
         self.source = source
