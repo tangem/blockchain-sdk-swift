@@ -25,8 +25,8 @@ class PublicKeyDerivationAddressTests: XCTestCase {
     let addressesUtility = AddressServiceManagerUtility()
     let testVectorsUtility = TestVectorsUtility()
     
-    func testPublicKeyDerivationAddressVector() throws {
-//        do {
+    func testPublicKeyDerivationAddressVector() {
+        do {
             guard let blockchains: [BlockchainSdk.Blockchain] = try testVectorsUtility.getTestVectors(from: DecodableVectors.blockchain.rawValue) else {
                 XCTFail("__INVALID_VECTOR__ BLOCKCHAIN DATA IS NIL")
                 return
@@ -103,9 +103,9 @@ class PublicKeyDerivationAddressTests: XCTestCase {
                 }
             }
             
-//        } catch {
-//            XCTFail("__INVALID_VECTOR__ \(error)")
-//            return
-//        }
+        } catch {
+            XCTFail("__INVALID_VECTOR__ \(error)")
+            return
+        }
     }
 }
