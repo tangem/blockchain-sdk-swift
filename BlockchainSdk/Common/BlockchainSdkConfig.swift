@@ -17,7 +17,7 @@ public struct BlockchainSdkConfig {
     let kaspaSecondaryApiUrl: String?
     let tronGridApiKey: String
     let tonCenterApiKeys: TonCenterApiKeys
-    let fireacademyApiKeys: FireacamyApiKeys
+    let fireAcademyApiKeys: FireAcamyApiKeys
     let quickNodeSolanaCredentials: QuickNodeCredentials
     let quickNodeBscCredentials: QuickNodeCredentials
     let blockscoutCredentials: NetworkProviderConfiguration.Credentials
@@ -33,7 +33,7 @@ public struct BlockchainSdkConfig {
         kaspaSecondaryApiUrl: String?,
         tronGridApiKey: String,
         tonCenterApiKeys: TonCenterApiKeys,
-        fireacademyApiKeys: FireacamyApiKeys,
+        fireAcademyApiKeys: FireAcamyApiKeys,
         quickNodeSolanaCredentials: QuickNodeCredentials,
         quickNodeBscCredentials: QuickNodeCredentials,
         blockscoutCredentials: NetworkProviderConfiguration.Credentials,
@@ -48,7 +48,7 @@ public struct BlockchainSdkConfig {
         self.kaspaSecondaryApiUrl = kaspaSecondaryApiUrl
         self.tronGridApiKey = tronGridApiKey
         self.tonCenterApiKeys = tonCenterApiKeys
-        self.fireacademyApiKeys = fireacademyApiKeys
+        self.fireAcademyApiKeys = fireAcademyApiKeys
         self.quickNodeSolanaCredentials = quickNodeSolanaCredentials
         self.quickNodeBscCredentials = quickNodeBscCredentials
         self.blockscoutCredentials = blockscoutCredentials
@@ -86,7 +86,7 @@ public extension BlockchainSdkConfig {
         }
     }
     
-    struct FireacamyApiKeys {
+    struct FireAcamyApiKeys {
         let mainnetApiKey: String
         let testnetApiKey: String
         
