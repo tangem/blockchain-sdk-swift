@@ -26,7 +26,7 @@ class ClvmProgram {
     // MARK: - Static
     
     static func from(long: UInt64) -> ClvmProgram {
-        return .init(atom: long.chiaEncode().bytes)
+        return .init(atom: long.chiaEncode.bytes)
     }
     
     static func from(bytes: Array<Byte>) -> ClvmProgram {
