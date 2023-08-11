@@ -48,7 +48,8 @@
         {
             "blockchain": "tezos",
             "derivation": "m/44'/1729'/0'/0'",
-            "walletPublicKey": "66d78737416e499e603dc6c96de63916bfa359d5fb29bdc41fc7fc27d7a64cb1",
+            "walletPublicKey": "0372B211C46A7D9F7428D237A17DFBF27ABA664FE8E55FA73B48B45C10C3543897",
+            "skip": true
         },
         {
             "blockchain": "dogecoin",
