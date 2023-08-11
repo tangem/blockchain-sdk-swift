@@ -157,6 +157,6 @@ fileprivate extension Array where Element == ChiaCondition {
 
 fileprivate extension Data {
     func hashAugScheme(with publicKey: Data) throws -> Data {
-        try Data(hex: BlsSignatureSwift.augSchemeMplG2Map(publicKeyHash: publicKey.hex, messageHash: self.hex))
+        try Data(hex: BlsSignatureSwift.augSchemeMplG2Map(publicKey: publicKey.hex, message: self.hex))
     }
 }

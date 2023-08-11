@@ -47,7 +47,7 @@
         },
         {
             "blockchain": "tezos",
-            "derivation": "m/44'/1729'/0'/0/0",
+            "derivation": "m/44'/1729'/0'/0'/0'",
             "walletPublicKey": "66d78737416e499e603dc6c96de63916bfa359d5fb29bdc41fc7fc27d7a64cb1",
         },
         {
