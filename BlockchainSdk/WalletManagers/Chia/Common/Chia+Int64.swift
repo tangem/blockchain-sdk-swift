@@ -11,7 +11,7 @@ import Foundation
 extension UInt64 {
     /// Convert amount value for use in ClvmProgram for serialization
     /// - Returns: Binary data encoded
-    var chiaEncode: Data {
+    var chiaEncoded: Data {
         let data = withUnsafeBytes(of: self) { Data($0) }
         let result = data.bytes.reversed().drop(while: { $0 == 0x00 })
         return Data(result)
