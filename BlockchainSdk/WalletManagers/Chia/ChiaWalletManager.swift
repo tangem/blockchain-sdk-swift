@@ -50,15 +50,19 @@ final class ChiaWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        do {
-            let hashesForSign = try self.txBuilder.buildForSign(transaction: transaction)
-            
-            return signer.sign(
-                hashes: hashesForSign,
-                walletPublicKey: self.wallet.publicKey
-            )
-            .tryMap { [weak self] signatures -> ChiaSpendBundle in
+        Just(())
+            .receive(on: DispatchQueue.global())
+            .tryMap { [weak self] Void -> [Data] in
                 guard let self = self else { throw WalletError.empty }
+                return try self.txBuilder.buildForSign(transaction: transaction)
+            }
+            .flatMap { [weak self] hashesForSign -> AnyPublisher<[Data], Error> in
+                guard let self = self else { return .anyFail(error: WalletError.empty) }
+                
+                return signer.sign(hashes: hashesForSign, walletPublicKey: self.wallet.publicKey).eraseToAnyPublisher()
+            }
+            .tryMap { [weak self] signatures -> ChiaSpendBundle in
+                guard let self else { throw WalletError.empty }
                 return try self.txBuilder.buildToSend(signatures: signatures)
             }
             .flatMap { [weak self] spendBundle -> AnyPublisher<String, Error> in
@@ -73,9 +77,6 @@ final class ChiaWalletManager: BaseManager, WalletManager {
                 return TransactionSendResult(hash: hash)
             }
             .eraseToAnyPublisher()
-        } catch {
-            return .anyFail(error: error)
-        }
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
@@ -103,7 +104,7 @@ final class ChiaWalletManager: BaseManager, WalletManager {
 // MARK: - Private Implementation
 
 private extension ChiaWalletManager {
-    private func update(with coins: [ChiaCoin], completion: @escaping (Result<Void, Error>) -> Void) {
+    func update(with coins: [ChiaCoin], completion: @escaping (Result<Void, Error>) -> Void) {
         let decimalBalance = coins.map { Decimal($0.amount) }.reduce(0, +)
         
         if decimalBalance != wallet.amounts[.coin]?.value {

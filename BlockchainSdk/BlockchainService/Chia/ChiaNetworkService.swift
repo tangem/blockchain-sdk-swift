@@ -30,7 +30,7 @@ class ChiaNetworkService: MultiNetworkProvider {
         providerPublisher { provider in
             provider
                 .getUnspents(puzzleHash: puzzleHash)
-                .tryMap { response in
+                .map { response in
                     return response.coinRecords.map { $0.coin }
                 }
                 .eraseToAnyPublisher()
@@ -41,7 +41,7 @@ class ChiaNetworkService: MultiNetworkProvider {
         providerPublisher { provider in
             provider
                 .sendTransaction(body: ChiaTransactionBody(spendBundle: spendBundle))
-                .tryMap { response in
+                .map { response in
                     return ""
                 }
                 .eraseToAnyPublisher()
@@ -52,12 +52,12 @@ class ChiaNetworkService: MultiNetworkProvider {
         providerPublisher { [unowned self] provider in
             provider
                 .getFeeEstimate(body: .init(cost: cost, targetTimes: [60, 300]))
-                .tryMap { response in
-                    let decimalEstimates = response.estimates.map { Decimal($0) }
-                    let fees: [Fee] = decimalEstimates
-                        .map { $0 / self.blockchain.decimalValue }
-                        .map { Amount(with: self.blockchain, value: $0) }
-                        .map { Fee($0) }
+                .map { response in
+                    let fees = response.estimates.map { estimate in
+                        let value = estimate / self.blockchain.decimalValue.uint64Value
+                        let amount = Amount(with: self.blockchain, value: Decimal(value))
+                        return Fee(amount)
+                    }
                     return fees
                 }
                 .eraseToAnyPublisher()

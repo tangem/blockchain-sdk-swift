@@ -9,8 +9,9 @@
 import Foundation
 
 extension UInt64 {
-    // Use in any Chia entities
-    func chiaEncode() -> Data {
+    /// Convert amount value for use in ClvmProgram for serialization
+    /// - Returns: Binary data encoded
+    var chiaEncoded: Data {
         let data = withUnsafeBytes(of: self) { Data($0) }
         let result = data.bytes.reversed().drop(while: { $0 == 0x00 })
         return Data(result)

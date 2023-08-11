@@ -26,7 +26,7 @@ class ClvmProgram {
     // MARK: - Static
     
     static func from(long: UInt64) -> ClvmProgram {
-        return .init(atom: long.chiaEncode().bytes)
+        return .init(atom: long.chiaEncoded.bytes)
     }
     
     static func from(bytes: Array<Byte>) -> ClvmProgram {
@@ -86,23 +86,21 @@ class ClvmProgram {
                     result.append(Byte((size >> 8) & 0xFF))
                     result.append(Byte(size & 0xFF))
                 } else {
-                    throw EncoderError.manyBytesToEncode
+                    throw EncoderError.tooManyBytesToEncode
                 }
                 
                 result.append(contentsOf: atom)
                 return Data(result)
             }
+        } else if let left = left, let right = right {
+            return try Data(Byte(0xff)) + left.serialize() + right.serialize()
         } else {
-            if let left = left, let right = right {
-                return try Data(Byte(0xff)) + left.serialize() + right.serialize()
-            } else {
-                throw EncoderError.undefinedEncodeException
-            }
+            throw EncoderError.undefinedEncodeException
         }
     }
     
     enum EncoderError: Error {
-        case manyBytesToEncode
+        case tooManyBytesToEncode
         case undefinedEncodeException
     }
 }
