@@ -100,7 +100,7 @@ class ClvmProgram {
     }
     
     enum EncoderError: Error {
-        case manyBytesToEncode
+        case tooManyBytesToEncode
         case undefinedEncodeException
     }
 }
