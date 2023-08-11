@@ -86,7 +86,7 @@ class ClvmProgram {
                     result.append(Byte((size >> 8) & 0xFF))
                     result.append(Byte(size & 0xFF))
                 } else {
-                    throw EncoderError.manyBytesToEncode
+                    throw EncoderError.tooManyBytesToEncode
                 }
                 
                 result.append(contentsOf: atom)
