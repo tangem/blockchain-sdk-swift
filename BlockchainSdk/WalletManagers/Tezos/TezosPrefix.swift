@@ -78,7 +78,7 @@ enum TezosPrefix {
 extension TezosPrefix {
     static func publicPrefix(for curve: EllipticCurve) -> Data {
         switch curve {
-        case .ed25519:
+        case .ed25519, .ed25519_slip0010:
             return PublicKey.ed25519.bytesValue
         case .secp256k1:
             return PublicKey.secp256k1.bytesValue
@@ -91,7 +91,7 @@ extension TezosPrefix {
     
     static func signaturePrefix(for curve: EllipticCurve) -> Data {
         switch curve {
-        case .ed25519:
+        case .ed25519, .ed25519_slip0010:
             return Signature.ed25519.bytesValue
         case .secp256k1:
             return Signature.secp256k1.bytesValue
@@ -104,7 +104,7 @@ extension TezosPrefix {
     
     static func addressPrefix(for curve: EllipticCurve) -> Data {
         switch curve {
-        case .ed25519:
+        case .ed25519, .ed25519_slip0010:
             return Address.tz1.bytesValue
         case .secp256k1:
             return Address.tz2.bytesValue

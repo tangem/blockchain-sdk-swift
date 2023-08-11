@@ -21,7 +21,7 @@ class XRPTransactionBuilder {
         switch curve {
         case .secp256k1:
             key = try Secp256k1Key(with: walletPublicKey).compress()
-        case .ed25519:
+        case .ed25519, .ed25519_slip0010:
             key = [UInt8(0xED)] + walletPublicKey
         default:
             fatalError("unsupported curve")
@@ -37,7 +37,7 @@ class XRPTransactionBuilder {
         
         let dataToSign = tx.dataToSign(publicKey: walletPublicKey.hexString)
         switch curve {
-        case .ed25519:
+        case .ed25519, .ed25519_slip0010:
             return (tx, dataToSign)
         case .secp256k1:
             return  (tx, dataToSign.sha512Half())
@@ -49,7 +49,7 @@ class XRPTransactionBuilder {
     public func buildForSend(transaction: XRPTransaction,  signature: Data) throws -> String  {
         var sig: Data
         switch curve {
-        case .ed25519:
+        case .ed25519, .ed25519_slip0010:
             sig = signature
         case .secp256k1:
             sig = try Secp256k1Signature(with: signature).serializeDer()

@@ -33,7 +33,7 @@ public struct DerivationConfigV3: DerivationConfig {
         case .solana:
             return "m/44'/501'/0'"
         case .cardano:
-            return "m/44'/1815'/0'/0/0"
+            return "m/1852'/1815'/0'/0/0"
         case .bitcoinCash:
             return "m/44'/145'/0'/0/0"
         case .ethereum,
@@ -62,7 +62,7 @@ public struct DerivationConfigV3: DerivationConfig {
         case .ducatus:
             return "m/44'/0'/0'/0/0"
         case .tezos:
-            return "m/44'/1729'/0'/0/0"
+            return "m/44'/1729'/0'/0'"
         case .dogecoin:
             return "m/44'/3'/0'/0/0"
         case .polkadot:

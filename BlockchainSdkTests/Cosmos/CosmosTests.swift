@@ -24,7 +24,7 @@ class CosmosTests: XCTestCase {
         let address = try WalletCoreAddressService(blockchain: blockchain).makeAddress(for: publicKey, with: .default)
         let wallet = Wallet(blockchain: blockchain, addresses: [.default: address])
         
-        let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)
+        let txBuilder = try CosmosTransactionBuilder(publicKey: wallet.publicKey.blockchainKey, cosmosChain: cosmosChain)
         txBuilder.setAccountNumber(1037)
         txBuilder.setSequenceNumber(8)
         
@@ -64,7 +64,7 @@ class CosmosTests: XCTestCase {
         let address = try WalletCoreAddressService(blockchain: blockchain).makeAddress(for: publicKey, with: .default)
         let wallet = Wallet(blockchain: blockchain, addresses: [.default: address])
         
-        let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)
+        let txBuilder = try CosmosTransactionBuilder(publicKey: wallet.publicKey.blockchainKey, cosmosChain: cosmosChain)
         txBuilder.setAccountNumber(158)
         txBuilder.setSequenceNumber(0)
         
@@ -105,7 +105,7 @@ class CosmosTests: XCTestCase {
         let address = try WalletCoreAddressService(blockchain: blockchain).makeAddress(for: publicKey, with: .default)
         let wallet = Wallet(blockchain: blockchain, addresses: [.default: address])
         
-        let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)
+        let txBuilder = try CosmosTransactionBuilder(publicKey: wallet.publicKey.blockchainKey, cosmosChain: cosmosChain)
         txBuilder.setAccountNumber(1037)
         txBuilder.setSequenceNumber(1)
         
@@ -146,7 +146,7 @@ class CosmosTests: XCTestCase {
         let address = try WalletCoreAddressService(blockchain: blockchain).makeAddress(for: publicKey, with: .default)
         let wallet = Wallet(blockchain: blockchain, addresses: [.default: address])
         
-        let txBuilder = CosmosTransactionBuilder(wallet: wallet, cosmosChain: cosmosChain)
+        let txBuilder = try CosmosTransactionBuilder(publicKey: wallet.publicKey.blockchainKey, cosmosChain: cosmosChain)
         txBuilder.setAccountNumber(1037)
         txBuilder.setSequenceNumber(1)
         

@@ -27,7 +27,7 @@ extension TezosAddressService: AddressProvider {
     public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
         var key: Data
         switch curve {
-        case .ed25519:
+        case .ed25519, .ed25519_slip0010:
             try publicKey.blockchainKey.validateAsEdKey()
             key = publicKey.blockchainKey
         case .secp256k1:
