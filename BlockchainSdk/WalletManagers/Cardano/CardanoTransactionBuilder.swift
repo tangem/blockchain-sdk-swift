@@ -62,7 +62,7 @@ class CardanoTransactionBuilder {
             throw CardanoError.noUnspents
         }
         
-        let convertValue = Blockchain.cardano.decimalValue
+        let convertValue = Blockchain.cardano(extended: false).decimalValue
         let feeConverted = transaction.fee.amount.value * convertValue
         let amountConverted = transaction.amount.value * convertValue
         let walletAmountConverted = walletAmount * convertValue

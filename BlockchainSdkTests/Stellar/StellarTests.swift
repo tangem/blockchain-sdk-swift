@@ -13,7 +13,6 @@ import Combine
 @testable import BlockchainSdk
 
 class StellarTests: XCTestCase {
-    private let blockchain = Blockchain.stellar(testnet: false)
     private let sizeTester = TransactionSizeTesterUtility()
     
     private lazy var addressService = StellarAddressService()
@@ -35,7 +34,15 @@ class StellarTests: XCTestCase {
         XCTAssertTrue(addressService.validate("GDWFHB6YWOF5T34AXW6HRUGX4HCT6CHCNFBWZGOVWPBN6SZM44YBFUDZ"))
     }
     
-    func testCorrectCoinTransaction() {
+    func testCorrectCoinTransactionEd25519() {
+        testCorrectCoinTransaction(blockchain: .stellar(curve: .ed25519, testnet: false))
+    }
+    
+    func testCorrectCoinTransactionEd25519Slip0010() {
+        testCorrectCoinTransaction(blockchain: .stellar(curve: .ed25519_slip0010, testnet: false))
+    }
+    
+    func testCorrectCoinTransaction(blockchain: Blockchain) {
         let walletPubkey = Data(hex: "9FE5BB2CC7D83C1DA10845AFD8A34B141FD8FD72500B95B1547E12B9BB8AAC3D")
         let signature = Data(hex: "EA1908DD1B2B0937758E5EFFF18DB583E41DD47199F575C2D83B354E29BF439C850DC728B9D0B166F6F7ACD160041EE3332DAD04DD08904CB0D2292C1A9FB802")
         

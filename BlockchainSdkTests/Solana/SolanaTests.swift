@@ -14,6 +14,7 @@ import Combine
 
 private let raisedError = SolanaError.other("Just tx size test")
 
+// TODO: Will be refactor https://tangem.atlassian.net/browse/IOS-4260
 final class SolanaTests: XCTestCase {
     private class CoinSigner: TransactionSigner {
         private let sizeTester = TransactionSizeTesterUtility()
@@ -60,7 +61,7 @@ final class SolanaTests: XCTestCase {
     private let network: RPCEndpoint = .devnetSolana
     private let walletPubKey = Data(hex: "B148CC30B144E8F214AE5754C753C40A9BF2A3359DB4246E03C6A2F61A82C282")
     private let address = "Cw3YcfqzRSa7xT7ecpR5E4FKDQU6aaxz5cWje366CZbf"
-    private let blockchain = Blockchain.solana(testnet: false)
+    private let blockchain = Blockchain.solana(curve: .ed25519_slip0010, testnet: false)
     
     private let coinSigner = CoinSigner()
     private let tokenSigner = TokenSigner()
