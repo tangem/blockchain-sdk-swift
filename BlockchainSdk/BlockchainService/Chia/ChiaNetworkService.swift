@@ -48,7 +48,7 @@ class ChiaNetworkService: MultiNetworkProvider {
         }
     }
     
-    func getFee(with cost: UInt64) -> AnyPublisher<[Fee], Error> {
+    func getFee(with cost: Int64) -> AnyPublisher<[Fee], Error> {
         providerPublisher { [unowned self] provider in
             provider
                 .getFeeEstimate(body: .init(cost: cost, targetTimes: [60, 300]))
