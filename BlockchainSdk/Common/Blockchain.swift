@@ -1018,6 +1018,7 @@ extension Blockchain {
         case "terra-2": return .terraV2
         case "cronos": return .cronos
         case "octaspace": return .octa
+        case "chia": return .chia(testnet: isTestnet)
         default: return nil
         }
     }
