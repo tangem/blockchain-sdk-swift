@@ -65,9 +65,7 @@ struct ChiaProviderTarget: TargetType {
             "Content-Type": "application/json"
         ]
         
-        if let apiKeyHeaderValue = node.endpoint.apiKeyValue {
-            headers["X-API-Key"] = apiKeyHeaderValue
-        }
+        headers["X-API-Key"] = node.endpoint.apiKeyValue
         
         return headers
     }

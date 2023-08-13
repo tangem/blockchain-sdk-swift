@@ -9,6 +9,7 @@
 import XCTest
 import Combine
 import CryptoKit
+import TangemSdk
 
 @testable import BlockchainSdk
 
@@ -16,11 +17,19 @@ class PolkadotTests: XCTestCase {
     // Taken from trust wallet, `SignerTests.cpp`
     private let sizeTester = TransactionSizeTesterUtility()
     
-    func testTransaction9fd062() {
+    func testTransaction9fd062Ed25519() {
+        testTransaction9fd062(curve: .ed25519)
+    }
+    
+    func testTransaction9fd062Ed25519Slip0010() {
+        testTransaction9fd062(curve: .ed25519_slip0010)
+    }
+
+    func testTransaction9fd062(curve: EllipticCurve) {
         let privateKey = Data(hexString: "70a794d4f1019c3ce002f33062f45029c4f930a56b3d20ec477f7668c6bbc37f")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
-        let network: PolkadotNetwork = .polkadot
-        let blockchain: Blockchain = .polkadot(testnet: false)
+        let network: PolkadotNetwork = .polkadot(curve: curve)
+        let blockchain: Blockchain = .polkadot(curve: curve, testnet: false)
         
         let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
         
@@ -51,12 +60,20 @@ class PolkadotTests: XCTestCase {
         XCTAssertEqual(imageWithoutSignature, expectedImageWithoutSignature)
     }
     
-    func testTransaction() throws {
+    func testTransactionEd25519() throws {
+        try testTransaction(curve: .ed25519)
+    }
+    
+    func testTransactionEd25519Slip0010() throws {
+        try testTransaction(curve: .ed25519_slip0010)
+    }
+    
+    func testTransaction(curve: EllipticCurve) throws {
         let toAddress = Data(hexString: "0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48")
         
         let privateKey = Data(hexString: "0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
-        let blockchain: Blockchain = .polkadot(testnet: false)
+        let blockchain: Blockchain = .polkadot(curve: curve, testnet: false)
         let network: PolkadotNetwork = .init(blockchain: blockchain)!
         
         let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
@@ -88,10 +105,18 @@ class PolkadotTests: XCTestCase {
         XCTAssertEqual(imageWithoutSignature, expectedImageWithoutSignature)
     }
     
-    func testTransaction72dd5b() {
+    func testTransaction72dd5bEd25519() {
+        testTransaction72dd5b(curve: .ed25519)
+    }
+    
+    func testTransaction72dd5bEd25519Slip0010() {
+        testTransaction72dd5b(curve: .ed25519_slip0010)
+    }
+    
+    func testTransaction72dd5b(curve: EllipticCurve) {
         let privateKey = Data(hexString: "37932b086586a6675e66e562fe68bd3eeea4177d066619c602fe3efc290ada62")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
-        let blockchain: Blockchain = .polkadot(testnet: false)
+        let blockchain: Blockchain = .polkadot(curve: curve, testnet: false)
         let network: PolkadotNetwork = .init(blockchain: blockchain)!
         
         let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)
@@ -123,12 +148,20 @@ class PolkadotTests: XCTestCase {
         XCTAssertEqual(imageWithoutSignature, expectedImageWithoutSignature)
     }
     
-    func testAzeroTransaction() {
+    func testAzeroTransactionEd25519() {
+        testAzeroTransaction(curve: .ed25519)
+    }
+    
+    func testAzeroTransactionEd25519Slip0010() {
+        testAzeroTransaction(curve: .ed25519_slip0010)
+    }
+    
+    func testAzeroTransaction(curve: EllipticCurve) {
         let toAddress = Data(hexString: "0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48")
         
         let privateKey = Data(hexString: "0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115")
         let publicKey = try! Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
-        let blockchain: Blockchain = .azero(testnet: false)
+        let blockchain: Blockchain = .azero(curve: curve, testnet: false)
         let network: PolkadotNetwork = .init(blockchain: blockchain)!
         
         let txBuilder = PolkadotTransactionBuilder(blockchain: blockchain, walletPublicKey: publicKey, network: network)

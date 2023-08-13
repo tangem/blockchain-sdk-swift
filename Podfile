@@ -3,14 +3,14 @@ use_frameworks!
 inhibit_all_warnings!
 
 def common_pods
-  pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'develop-bls-signature'
+  pod 'TangemSdk', :git => 'https://github.com/Tangem/tangem-sdk-ios.git', :tag => 'develop'
 #  pod 'TangemSdk', :path => '../tangem-sdk-ios'
   
   pod 'BitcoinCore.swift', :git => 'https://github.com/tangem/bitcoincore.git', :tag => '0.0.19'
-#   pod 'BitcoinCore.swift', :path => '../bitcoincore'
+  #pod 'BitcoinCore.swift', :path => '../bitcoincore'
   
   pod 'TangemWalletCore', :git => 'https://github.com/tangem/wallet-core-binaries-ios.git', :tag => '3.2.1-tangem2'
-# pod 'TangemWalletCore', :path => '../wallet-core-binaries-ios'
+  #pod 'TangemWalletCore', :path => '../wallet-core-binaries-ios'
 end
 
 
