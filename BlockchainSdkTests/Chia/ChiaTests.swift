@@ -20,9 +20,7 @@ class ChiaTests: XCTestCase {
     private let addressService = ChiaAddressService(isTestnet: false)
     private var decimals: Int { blockchain.decimalCount }
     
-    private let walletPublicKey = Data(hexString: "B6B57E5E5BFDE70E404CE83732548DB6E5BD1740C96F878B699E896FD99269B0EF10BD1C6A64E65A87C9AD444BA6E3CC")
-    private let signature1 = Data(hexString: "8C7470BEE98156B48A0909F6EF321DE86F073101399ACD160ACFEF57B943B6E76E22DC89D9C75ABBFAC97DC317FEA3CC0AD744F55E2EAA3AE3C099AFC89FE652B8B054C5AB1F6A11559A9BCFD132EE0F434BA4D7968A33EA1807CFAB097789B7")
-    private let signature2 = Data(hexString: "93CFBA81239EAD3358E780073DCC9553097F377B217A8FE04CB07D4FC634F2A094425D8A9E8E2373880AD944EDB55ECF16D59F031986E9EFEB92290C3E7285227890E7FC3EAFFC84B84F225E62CFA5ED681DCE6993C9845543AA493180B28B04")
+    private let walletPublicKey = Data(hexString: "A259D941E9C70ADB0DFA5B7DDC399D7EDA3FE263B24CFD8123114B6C89A2E8C5263D063F48DABF50D72C05A2AFC0F4FC")
     
     func testConditionSpend() {
         let address = "txch14gxuvfmw2xdxqnws5agt3ma483wktd2lrzwvpj3f6jvdgkmf5gtq8g3aw3"
@@ -43,9 +41,67 @@ class ChiaTests: XCTestCase {
     }
     
     @available(iOS 16.0, *)
-    func testTransaction() {
+    func testTransactionVector1() {
+        let sendValue = Decimal("0.00001")!
+        let feeValue = Decimal("0.000000087099")!
+        let destinationAddress = "xch1jjy2utm0p5n9tt9ff3hxtr7uxx7jy9lhf4nkgpc39sz4357jzlfqrn6g0s"
+        let sourceAddress = try! addressService.makeAddress(from: walletPublicKey)
+        
+        let transactionBuilder = ChiaTransactionBuilder(
+            blockchain: blockchain,
+            walletPublicKey: walletPublicKey
+        )
+        
+        let unspentCoins = [
+             ChiaCoin(
+                amount: 108941365490,
+                parentCoinInfo: "0x5f668219d248bb9a879e7b511d9efc640f006d021a697f88e15f20de1dd0e092",
+                puzzleHash: "0x4475f8f79d773327466c03ce1517eeaba0ba80602ddad62e65630b311d4aeb11"
+             )
+        ]
+        
+        transactionBuilder.unspentCoins = unspentCoins
+        
+        let amountToSend = Amount(with: blockchain, value: sendValue)
+        let fee = Fee(Amount(with: amountToSend, value: feeValue))
+        
+        let transactionData = Transaction(
+            amount: amountToSend,
+            fee: fee,
+            sourceAddress: sourceAddress.value,
+            destinationAddress: destinationAddress,
+            changeAddress: sourceAddress.value
+        )
+        
+        let expectedHashToSign1 = Data(hexString: "814D6BDCF1DDE6ADFAD8A33F984576FC3AFDDAE6EB908E97D24428BAD106005246C14763CB678553356E5108DEB0C14D0FA14A11483AC4C28635690A1B64739924572E15160742833443F263D2845AEF6E8541C90AB00FCE4F234F206F5DEB05")
+        
+        let expectedSignedTransaction = ChiaSpendBundle(
+            aggregatedSignature: "b3bf217ec0521ea9aac8d7ade52797997919cb6dcb768d1c7894da38b6238746cb917f3dfe13ae7a1a67ba6f1495375c0ba0380214282f6ae7a446fe7968a46bbe32c91940b01dbc1bd702099c7da787ef2151a3a7ec9c7831f499933886c70d",
+            coinSpends: [
+                ChiaCoinSpend(
+                    coin: unspentCoins[0],
+                    puzzleReveal: "ff02ffff01ff02ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff0bff80808080ff80808080ff0b80ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b0a259d941e9c70adb0dfa5b7ddc399d7eda3fe263b24cfd8123114b6c89a2e8c5263d063f48dabf50d72c05a2afc0f4fcff018080",
+                    solution: "ffffff33ffa09488ae2f6f0d2655aca94c6e658fdc31bd2217f74d676407112c0558d3d217d2ff8080ffff33ffa04475f8f79d773327466c03ce1517eeaba0ba80602ddad62e65630b311d4aeb11ff85195ccf6637808080"
+                )
+            ]
+        )
+        
+        let signature1 = Data(hexString: "B3BF217EC0521EA9AAC8D7ADE52797997919CB6DCB768D1C7894DA38B6238746CB917F3DFE13AE7A1A67BA6F1495375C0BA0380214282F6AE7A446FE7968A46BBE32C91940B01DBC1BD702099C7DA787EF2151A3A7EC9C7831F499933886C70D")
+        
+        let buildToSignResult = try! transactionBuilder.buildForSign(transaction: transactionData)
+        let signedTransaction = try! transactionBuilder.buildToSend(signatures: [signature1])
+        
+        XCTAssertTrue(buildToSignResult.contains([expectedHashToSign1]))
+        try! XCTAssertEqual(jsonEncoder.encode(signedTransaction), jsonEncoder.encode(expectedSignedTransaction))
+    }
+    
+    @available(iOS 16.0, *)
+    func testTransactionVector2() {
+        let signature1 = Data(hexString: "8C7470BEE98156B48A0909F6EF321DE86F073101399ACD160ACFEF57B943B6E76E22DC89D9C75ABBFAC97DC317FEA3CC0AD744F55E2EAA3AE3C099AFC89FE652B8B054C5AB1F6A11559A9BCFD132EE0F434BA4D7968A33EA1807CFAB097789B7")
+        let signature2 = Data(hexString: "93CFBA81239EAD3358E780073DCC9553097F377B217A8FE04CB07D4FC634F2A094425D8A9E8E2373880AD944EDB55ECF16D59F031986E9EFEB92290C3E7285227890E7FC3EAFFC84B84F225E62CFA5ED681DCE6993C9845543AA493180B28B04")
+        
         let sendValue = Decimal("0.1")!
-        let feeValue = Decimal("0.000000105869")!
+        let feeValue = Decimal("0.000000164238")!
         let destinationAddress = "xch1wd52fhrnp2jjyxsqecfvkzq6geu3kxg9trq7m49ff0aadyxlclns7es9ph"
         let sourceAddress = try! addressService.makeAddress(from: walletPublicKey)
         
@@ -108,6 +164,9 @@ class ChiaTests: XCTestCase {
     }
     
     func testSizeTransaction() throws {
+        let signature1 = Data(hexString: "8C7470BEE98156B48A0909F6EF321DE86F073101399ACD160ACFEF57B943B6E76E22DC89D9C75ABBFAC97DC317FEA3CC0AD744F55E2EAA3AE3C099AFC89FE652B8B054C5AB1F6A11559A9BCFD132EE0F434BA4D7968A33EA1807CFAB097789B7")
+        let signature2 = Data(hexString: "93CFBA81239EAD3358E780073DCC9553097F377B217A8FE04CB07D4FC634F2A094425D8A9E8E2373880AD944EDB55ECF16D59F031986E9EFEB92290C3E7285227890E7FC3EAFFC84B84F225E62CFA5ED681DCE6993C9845543AA493180B28B04")
+        
         sizeUtility.testTxSizes([signature1, signature2])
     }
     
