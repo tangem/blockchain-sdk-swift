@@ -75,27 +75,27 @@ final class ChiaTransactionBuilder {
     /// Calculate standart costs for fee transaction
     /// - Parameter amount: Amount of send transaction
     /// - Returns: Sum value for transaction
-    func getTransactionCost(amount: Amount) -> UInt64 {
+    func getTransactionCost(amount: Amount) -> Int64 {
         let decimalAmount = amount.value / blockchain.decimalValue
         let decimalBalance = unspentCoins.map { Decimal($0.amount) }.reduce(0, +)
         let change = decimalBalance - decimalAmount
         let numberOfCoinsCreated: Int = change > 0 ? 2 : 1
 
-        return UInt64((coinSpends.count * CostConstants.COIN_SPEND_COST) + (numberOfCoinsCreated * CostConstants.CREATE_COIN_COST))
+        return Int64((coinSpends.count * CostConstants.COIN_SPEND_COST) + (numberOfCoinsCreated * CostConstants.CREATE_COIN_COST))
     }
     
     // MARK: - Private Implementation
     
-    private func calculateChange(transaction: Transaction, unspentCoins: [ChiaCoin]) throws -> UInt64 {
+    private func calculateChange(transaction: Transaction, unspentCoins: [ChiaCoin]) throws -> Int64 {
         let fullAmount = unspentCoins.map { $0.amount }.reduce(0, +)
         let transactionAmount = transaction.amount.value * blockchain.decimalValue
         let transactionFeeAmount = transaction.fee.amount.value * blockchain.decimalValue
-        let changeAmount = fullAmount - (transactionAmount.uint64Value + transactionFeeAmount.uint64Value)
+        let changeAmount = fullAmount - (transactionAmount.int64Value + transactionFeeAmount.int64Value)
         
         return changeAmount
     }
     
-    private func toChiaCoinSpends(change: UInt64, destination: String, source: String, amount: Amount) throws -> [ChiaCoinSpend] {
+    private func toChiaCoinSpends(change: Int64, destination: String, source: String, amount: Amount) throws -> [ChiaCoinSpend] {
         var coinSpends = unspentCoins.map {
             ChiaCoinSpend(
                 coin: $0,
@@ -104,7 +104,7 @@ final class ChiaTransactionBuilder {
             )
         }
         
-        let sendCondition = try createCoinCondition(for: destination, with: amount.value.uint64Value)
+        let sendCondition = try createCoinCondition(for: destination, with: amount.value.int64Value)
         let changeCondition = try change != 0 ? createCoinCondition(for: source, with: change) : nil
         
         let solution: [ChiaCondition] = [sendCondition, changeCondition].compactMap { $0 }
@@ -117,7 +117,7 @@ final class ChiaTransactionBuilder {
         return coinSpends
     }
     
-    private func createCoinCondition(for address: String, with change: UInt64) throws -> CreateCoinCondition {
+    private func createCoinCondition(for address: String, with change: Int64) throws -> CreateCoinCondition {
         return try CreateCoinCondition(
             destinationPuzzleHash: ChiaPuzzleUtils().getPuzzleHash(from: address),
             amount: change

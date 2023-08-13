@@ -17,6 +17,6 @@ struct ChiaTransactionBody: Encodable {
 }
 
 struct ChiaFeeEstimateBody: Encodable {
-    let cost: UInt64
+    let cost: Int64
     let targetTimes: [Int]
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension UInt64 {
+extension Int64 {
     /// Convert amount value for use in ClvmProgram for serialization
     /// - Returns: Binary data encoded
     var chiaEncoded: Data {
