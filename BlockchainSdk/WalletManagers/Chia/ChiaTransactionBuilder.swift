@@ -17,7 +17,7 @@ final class ChiaTransactionBuilder {
     
     // MARK: - Private Properties
     
-    private let blockchain: Blockchain
+    private let isTestnet: Bool
     private let walletPublicKey: Data
     private var coinSpends: [ChiaCoinSpend] = []
     
@@ -25,10 +25,14 @@ final class ChiaTransactionBuilder {
         Data(hex: GenesisChallenge.challenge(isTestnet: blockchain.isTestnet))
     }
     
+    private var blockchain: Blockchain {
+        .chia(testnet: isTestnet)
+    }
+    
     // MARK: - Init
     
-    init(blockchain: Blockchain, walletPublicKey: Data, unspentCoins: [ChiaCoin] = []) {
-        self.blockchain = blockchain
+    init(isTestnet: Bool, walletPublicKey: Data, unspentCoins: [ChiaCoin] = []) {
+        self.isTestnet = isTestnet
         self.walletPublicKey = walletPublicKey
         self.unspentCoins = unspentCoins
     }
@@ -83,7 +87,7 @@ final class ChiaTransactionBuilder {
         let change = decimalBalance - decimalAmount
         let numberOfCoinsCreated: Int = change > 0 ? 2 : 1
 
-        return Int64((coinSpends.count * CostConstants.COIN_SPEND_COST) + (numberOfCoinsCreated * CostConstants.CREATE_COIN_COST))
+        return Int64((coinSpends.count * Constants.coinSpendCost) + (numberOfCoinsCreated * Constants.createCoinCost))
     }
     
     // MARK: - Private Implementation
@@ -131,9 +135,10 @@ final class ChiaTransactionBuilder {
 // MARK: - Constants
 
 fileprivate extension ChiaTransactionBuilder {
-    enum CostConstants {
-        static let COIN_SPEND_COST: Int = 4500000
-        static let CREATE_COIN_COST: Int = 2400000
+    /// Cost constants from empirically case
+    enum Constants {
+        static let coinSpendCost: Int = 4500000
+        static let createCoinCost: Int = 2400000
     }
     
     enum GenesisChallenge {

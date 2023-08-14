@@ -20,13 +20,7 @@ extension JSONDecoder.DateDecodingStrategy {
 }
 
 extension Encodable {
-    func asDictionary() throws -> [String: Any] {
-        let data = try JSONEncoder().encode(self)
-        let dictionary = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-        return dictionary as? [String: Any] ?? [:]
-    }
-    
-    func asDictionary(with encoder: JSONEncoder) throws -> [String: Any] {
+    func asDictionary(encoder: JSONEncoder = JSONEncoder()) throws -> [String: Any] {
         let data = try encoder.encode(self)
         let dictionary = try JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed)
         return dictionary as? [String: Any] ?? [:]
