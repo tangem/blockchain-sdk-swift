@@ -14,7 +14,9 @@ struct WalletManagerAssemblyInput {
     let wallet: Wallet
     let pairPublicKey: Data?
     let blockchainSdkConfig: BlockchainSdkConfig
-    
+}
+
+extension WalletManagerAssemblyInput: NetworkProviderAssemblyInput {
     var blockchain: Blockchain {
         wallet.blockchain
     }
