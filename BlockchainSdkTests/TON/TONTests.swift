@@ -21,7 +21,7 @@ class TONTests: XCTestCase {
     private func makeWalletManager(blockchain: BlockchainSdk.Blockchain) -> TONWalletManager {
         let walletPubKey = privateKey.publicKey.rawRepresentation
         let address = try! WalletCoreAddressService(coin: .ton).makeAddress(
-            for: .init(seedKey: walletPubKey, derivation: .none),
+            for: .init(seedKey: walletPubKey, derivationType: .none),
             with: .default
         )
         
