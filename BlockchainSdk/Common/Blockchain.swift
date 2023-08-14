@@ -1023,14 +1023,6 @@ extension Blockchain {
     }
 }
 
-// MARK: - Transaction history
-
-extension Blockchain {
-    public var canLoadTransactionHistory: Bool {
-        return false
-    }
-}
-
 // MARK: - Token transaction fee currency
 
 extension Blockchain {

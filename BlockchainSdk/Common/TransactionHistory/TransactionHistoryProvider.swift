@@ -11,5 +11,12 @@ import Combine
 
 @available(iOS 13.0, *)
 public protocol TransactionHistoryProvider {
-    func loadTransactionHistory(page: Page) -> AnyPublisher<[TransactionRecord], Error>
+    func loadTransactionHistory(address: String, page: Page) -> AnyPublisher<TransactionHistoryResponse, Error>
+}
+
+public struct TransactionHistoryResponse: Hashable {
+    public let totalPages: Int
+    public let totalRecordsCount: Int
+    public let page: Page
+    public let records: [TransactionRecord]
 }
