@@ -27,7 +27,7 @@ extension XRPAddressService: AddressProvider {
         switch curve {
         case .secp256k1:
             key = try Secp256k1Key(with: publicKey.blockchainKey).compress()
-        case .ed25519:
+        case .ed25519, .ed25519_slip0010:
             try publicKey.blockchainKey.validateAsEdKey()
             key = [UInt8(0xED)] + publicKey.blockchainKey
         default:

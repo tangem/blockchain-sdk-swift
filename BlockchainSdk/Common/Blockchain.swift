@@ -16,7 +16,7 @@ import enum WalletCore.CoinType
 public enum Blockchain: Equatable, Hashable {
     case bitcoin(testnet: Bool)
     case litecoin
-    case stellar(testnet: Bool)
+    case stellar(curve: EllipticCurve, testnet: Bool)
     case ethereum(testnet: Bool)
     case ethereumPoW(testnet: Bool)
     case ethereumFair
@@ -24,7 +24,7 @@ public enum Blockchain: Equatable, Hashable {
     case rsk
     case bitcoinCash(testnet: Bool)
     case binance(testnet: Bool)
-    case cardano
+    case cardano(extended: Bool)
     case xrp(curve: EllipticCurve)
     case ducatus
     case tezos(curve: EllipticCurve)
@@ -32,18 +32,18 @@ public enum Blockchain: Equatable, Hashable {
     case bsc(testnet: Bool)
     case polygon(testnet: Bool)
     case avalanche(testnet: Bool)
-    case solana(testnet: Bool)
+    case solana(curve: EllipticCurve, testnet: Bool)
     case fantom(testnet: Bool)
-    case polkadot(testnet: Bool)
-    case kusama
-    case azero(testnet: Bool)
+    case polkadot(curve: EllipticCurve, testnet: Bool)
+    case kusama(curve: EllipticCurve)
+    case azero(curve: EllipticCurve, testnet: Bool)
     case tron(testnet: Bool)
     case arbitrum(testnet: Bool)
     case dash(testnet: Bool)
     case gnosis
     case optimism(testnet: Bool)
     case saltPay
-    case ton(testnet: Bool)
+    case ton(curve: EllipticCurve, testnet: Bool)
     case kava(testnet: Bool)
     case kaspa
     case ravencoin(testnet: Bool)
@@ -61,7 +61,7 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .litecoin, .ducatus, .cardano, .xrp, .rsk, .tezos, .dogecoin, .kusama, .terraV1, .terraV2, .cronos, .octa:
             return false
-        case .stellar(let testnet):
+        case .stellar(_, let testnet):
             return testnet
         case .ethereum(let testnet), .bsc(let testnet):
             return testnet
@@ -75,13 +75,13 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .avalanche(let testnet):
             return testnet
-        case .solana(let testnet):
+        case .solana(_, let testnet):
             return testnet
         case .fantom(let testnet):
             return testnet
-        case .polkadot(let testnet):
+        case .polkadot(_, let testnet):
             return testnet
-        case .azero(let testnet):
+        case .azero(_, let testnet):
             return testnet
         case .tron(let testnet):
             return testnet
@@ -99,7 +99,7 @@ public enum Blockchain: Equatable, Hashable {
             return false
         case .saltPay:
             return false
-        case .ton(let testnet):
+        case .ton(_, let testnet):
             return testnet
         case .kava(let testnet):
             return testnet
@@ -118,11 +118,16 @@ public enum Blockchain: Equatable, Hashable {
     
     public var curve: EllipticCurve {
         switch self {
-        case .stellar, .cardano, .solana, .polkadot, .kusama, .azero, .ton:
+        case .cardano:
             return .ed25519
-        case .xrp(let curve):
-            return curve
-        case .tezos(let curve):
+        case .stellar(let curve, _),
+                .solana(let curve, _),
+                .polkadot(let curve, _),
+                .kusama(let curve),
+                .azero(let curve, _),
+                .ton(let curve, _),
+                .xrp(let curve),
+                .tezos(let curve):
             return curve
         case .chia:
             return .bls12381_G2_AUG
@@ -143,7 +148,7 @@ public enum Blockchain: Equatable, Hashable {
             return 7
         case .solana, .ton:
             return 9
-        case .polkadot(let testnet):
+        case .polkadot(_, let testnet):
             return testnet ? 12 : 10
         case .kusama, .azero, .chia:
             return 12
@@ -188,7 +193,7 @@ public enum Blockchain: Equatable, Hashable {
             return "SOL"
         case .fantom:
             return "FTM"
-        case .polkadot(let testnet):
+        case .polkadot(_, let testnet):
             return testnet ? "WND" : "DOT"
         case .kusama:
             return "KSM"
@@ -436,7 +441,6 @@ extension Blockchain {
                     URL(string: "https://polygon-rpc.com")!,
                     URL(string: "https://matic.nownodes.io/\(nowNodesApiKey)")!,
                     URL(string: "https://matic.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
-                    URL(string: "https://matic-mainnet.chainstacklabs.com")!,
                     URL(string: "https://rpc-mainnet.maticvigil.com")!,
                     URL(string: "https://rpc-mainnet.matic.quiknode.pro")!,
                 ]
@@ -555,7 +559,7 @@ extension Blockchain {
 @available(iOS 13.0, *)
 extension Blockchain {
     public func derivationPath(for style: DerivationStyle) -> DerivationPath? {
-        guard curve == .secp256k1 || curve == .ed25519 else {
+        guard curve.supportsDerivation else {
             Log.debug("Wrong attempt to get a `DerivationPath` for a unsupported derivation curve")
             return nil
         }
@@ -653,6 +657,7 @@ extension Blockchain: Codable {
         case testnet
         case curve
         case shelley
+        case extended
     }
     
     public init(from decoder: Decoder) throws {
@@ -667,14 +672,16 @@ extension Blockchain: Codable {
         
         switch key {
         case "bitcoin": self = .bitcoin(testnet: isTestnet)
-        case "stellar": self = .stellar(testnet: isTestnet)
+        case "stellar": self = .stellar(curve: curve, testnet: isTestnet)
         case "ethereum": self = .ethereum(testnet: isTestnet)
         case "ethereumClassic": self = .ethereumClassic(testnet: isTestnet)
         case "litecoin": self = .litecoin
         case "rsk": self = .rsk
         case "bitcoinCash": self = .bitcoinCash(testnet: isTestnet)
         case "binance": self = .binance(testnet: isTestnet)
-        case "cardano": self = .cardano
+        case "cardano":
+            let extended = try container.decodeIfPresent(Bool.self, forKey: Keys.extended)
+            self = .cardano(extended: extended ?? false)
         case "xrp": self = .xrp(curve: curve)
         case "ducatus": self = .ducatus
         case "tezos": self = .tezos(curve: curve)
@@ -682,11 +689,11 @@ extension Blockchain: Codable {
         case "bsc": self = .bsc(testnet: isTestnet)
         case "polygon", "matic": self = .polygon(testnet: isTestnet)
         case "avalanche": self = .avalanche(testnet: isTestnet)
-        case "solana": self = .solana(testnet: isTestnet)
+        case "solana": self = .solana(curve: curve, testnet: isTestnet)
         case "fantom": self = .fantom(testnet: isTestnet)
-        case "polkadot": self = .polkadot(testnet: isTestnet)
-        case "kusama": self = .kusama
-        case "aleph-zero": self = .azero(testnet: isTestnet)
+        case "polkadot": self = .polkadot(curve: curve, testnet: isTestnet)
+        case "kusama": self = .kusama(curve: curve)
+        case "aleph-zero": self = .azero(curve: curve, testnet: isTestnet)
         case "tron": self = .tron(testnet: isTestnet)
         case "arbitrum": self = .arbitrum(testnet: isTestnet)
         case "dash": self = .dash(testnet: isTestnet)
@@ -695,7 +702,7 @@ extension Blockchain: Codable {
         case "ethereum-pow-iou": self = .ethereumPoW(testnet: isTestnet)
         case "ethereumfair": self = .ethereumFair
         case "sxdai": self = .saltPay
-        case "ton": self = .ton(testnet: isTestnet)
+        case "ton": self = .ton(curve: curve, testnet: isTestnet)
         case "kava": self = .kava(testnet: isTestnet)
         case "kaspa": self = .kaspa
         case "ravencoin": self = .ravencoin(testnet: isTestnet)
@@ -716,6 +723,10 @@ extension Blockchain: Codable {
         try container.encode(codingKey, forKey: Keys.key)
         try container.encode(curve.rawValue, forKey: Keys.curve)
         try container.encode(isTestnet, forKey: Keys.testnet)
+
+        if case .cardano(let extended) = self {
+            try container.encode(extended, forKey: Keys.extended)
+        }
     }
 }
 
@@ -975,13 +986,14 @@ extension Blockchain {
         let cleanName = blockchainName.remove(testnetAttribute).lowercased()
         switch cleanName {
         case "btc": return .bitcoin(testnet: isTestnet)
-        case "xlm", "asset", "xlm-tag": return .stellar(testnet: isTestnet)
+        case "xlm", "asset", "xlm-tag": return .stellar(curve: curve, testnet: isTestnet)
         case "eth", "token", "nfttoken": return .ethereum(testnet: isTestnet)
         case "ltc": return .litecoin
         case "rsk", "rsktoken": return .rsk
         case "bch": return .bitcoinCash(testnet: isTestnet)
         case "binance", "binanceasset": return .binance(testnet: isTestnet)
-        case "cardano", "cardano-s": return .cardano
+        // For old cards cardano will work like ed25519_slip0010
+        case "cardano", "cardano-s": return .cardano(extended: false)
         case "xrp": return .xrp(curve: curve)
         case "duc": return .ducatus
         case "xtz": return .tezos(curve: curve)
@@ -989,11 +1001,11 @@ extension Blockchain {
         case "bsc": return .bsc(testnet: isTestnet)
         case "polygon": return .polygon(testnet: isTestnet)
         case "avalanche": return .avalanche(testnet: isTestnet)
-        case "solana": return .solana(testnet: isTestnet)
+        case "solana": return .solana(curve: curve, testnet: isTestnet)
         case "fantom": return .fantom(testnet: isTestnet)
-        case "polkadot": return .polkadot(testnet: isTestnet)
-        case "kusama": return .kusama
-        case "aleph-zero": return .azero(testnet: isTestnet)
+        case "polkadot": return .polkadot(curve: curve, testnet: isTestnet)
+        case "kusama": return .kusama(curve: curve)
+        case "aleph-zero": return .azero(curve: curve, testnet: isTestnet)
         case "tron": return .tron(testnet: isTestnet)
         case "arbitrum": return .arbitrum(testnet: isTestnet)
         case "dash": return .dash(testnet: isTestnet)
@@ -1001,7 +1013,7 @@ extension Blockchain {
         case "ethereum-pow-iou": return .ethereumPoW(testnet: isTestnet)
         case "ethereumfair": return .ethereumFair
         case "sxdai": return .saltPay
-        case "ton": return .ton(testnet: isTestnet)
+        case "ton": return .ton(curve: curve, testnet: isTestnet)
         case "terra": return .terraV1
         case "terra-2": return .terraV2
         case "cronos": return .cronos

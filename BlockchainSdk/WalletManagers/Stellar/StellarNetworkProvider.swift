@@ -20,7 +20,7 @@ class StellarNetworkProvider: HostProvider {
     }
     
     private var blockchain: Blockchain {
-        Blockchain.stellar(testnet: isTestnet)
+        Blockchain.stellar(curve: .ed25519_slip0010, testnet: isTestnet)
     }
     
     init(isTestnet: Bool, stellarSdk: StellarSDK) {
@@ -70,7 +70,7 @@ class StellarNetworkProvider: HostProvider {
                         return StellarAssetResponse(code: code, issuer: issuer, balance: balance)
                     }
                 
-                let divider =  Blockchain.stellar(testnet: self.isTestnet).decimalValue
+                let divider = self.blockchain.decimalValue
                 let baseReserve = baseReserveStroops/divider
                 
                 return StellarResponse(baseReserve: baseReserve,
