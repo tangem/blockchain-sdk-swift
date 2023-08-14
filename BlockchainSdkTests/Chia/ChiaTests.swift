@@ -20,8 +20,6 @@ class ChiaTests: XCTestCase {
     private let addressService = ChiaAddressService(isTestnet: false)
     private var decimals: Int { blockchain.decimalCount }
     
-    private let walletPublicKey = Data(hexString: "A259D941E9C70ADB0DFA5B7DDC399D7EDA3FE263B24CFD8123114B6C89A2E8C5263D063F48DABF50D72C05A2AFC0F4FC")
-    
     func testConditionSpend() {
         let address = "txch14gxuvfmw2xdxqnws5agt3ma483wktd2lrzwvpj3f6jvdgkmf5gtq8g3aw3"
         let amount: Int64 = 235834596465
@@ -42,21 +40,22 @@ class ChiaTests: XCTestCase {
     
     @available(iOS 16.0, *)
     func testTransactionVector1() {
-        let sendValue = Decimal("0.00001")!
-        let feeValue = Decimal("0.000000087099")!
-        let destinationAddress = "xch1jjy2utm0p5n9tt9ff3hxtr7uxx7jy9lhf4nkgpc39sz4357jzlfqrn6g0s"
+        let walletPublicKey = Data(hexString: "8FAC07255C7F3FE670E21E49CC5E70328F4181440A535CC18CF369FD280BA18FA26E28B52035717DB29BFF67105894B2")
+        let sendValue = Decimal("0.0003")!
+        let feeValue = Decimal("0.000000164238")!
+        let destinationAddress = "xch1g36l3auawuejw3nvq08p29lw4wst4qrq9hddvtn9vv9nz822avgsrwte2v"
         let sourceAddress = try! addressService.makeAddress(from: walletPublicKey)
         
         let transactionBuilder = ChiaTransactionBuilder(
-            blockchain: blockchain,
+            isTestnet: blockchain.isTestnet,
             walletPublicKey: walletPublicKey
         )
         
         let unspentCoins = [
              ChiaCoin(
-                amount: 108941365490,
-                parentCoinInfo: "0x5f668219d248bb9a879e7b511d9efc640f006d021a697f88e15f20de1dd0e092",
-                puzzleHash: "0x4475f8f79d773327466c03ce1517eeaba0ba80602ddad62e65630b311d4aeb11"
+                amount: 5199843583,
+                parentCoinInfo: "0x34ddaf3f1500f45b2afe2d8783f8abbde57f82be02bf2f6661095c6b20cd12cb",
+                puzzleHash: "0x9488ae2f6f0d2655aca94c6e658fdc31bd2217f74d676407112c0558d3d217d2"
              )
         ]
         
@@ -73,20 +72,20 @@ class ChiaTests: XCTestCase {
             changeAddress: sourceAddress.value
         )
         
-        let expectedHashToSign1 = Data(hexString: "814D6BDCF1DDE6ADFAD8A33F984576FC3AFDDAE6EB908E97D24428BAD106005246C14763CB678553356E5108DEB0C14D0FA14A11483AC4C28635690A1B64739924572E15160742833443F263D2845AEF6E8541C90AB00FCE4F234F206F5DEB05")
+        let expectedHashToSign1 = Data(hexString: "8242AB52301FF9B0DDBD5C3219729720794D96C4BDE074BEC3FB4FEFBAC5AA37831B02578BF5C3AAAF37835F9B83C29709B3DF84D9A33CCB6700CCC2B3FFF9777603CD4F12A3EE3F26C2F425B6998BA9F586E5ADF5BCBBD1935995607C9E0DC0")
         
         let expectedSignedTransaction = ChiaSpendBundle(
-            aggregatedSignature: "b3bf217ec0521ea9aac8d7ade52797997919cb6dcb768d1c7894da38b6238746cb917f3dfe13ae7a1a67ba6f1495375c0ba0380214282f6ae7a446fe7968a46bbe32c91940b01dbc1bd702099c7da787ef2151a3a7ec9c7831f499933886c70d",
+            aggregatedSignature: "a1af85f8f921d18c1e6a81481d3e9cbf89caad7632a825dbbdeefa4c7a918903436f0b37cad1156dfd90ae94d2c0270d08e07190543dcd4e0e2a94ae2f15960ed3adb40e7ac1166bd5bfbfcc536389cfe0e1967db9ff00d09df1a1e3210460ee",
             coinSpends: [
                 ChiaCoinSpend(
                     coin: unspentCoins[0],
-                    puzzleReveal: "ff02ffff01ff02ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff0bff80808080ff80808080ff0b80ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b0a259d941e9c70adb0dfa5b7ddc399d7eda3fe263b24cfd8123114b6c89a2e8c5263d063f48dabf50d72c05a2afc0f4fcff018080",
-                    solution: "ffffff33ffa09488ae2f6f0d2655aca94c6e658fdc31bd2217f74d676407112c0558d3d217d2ff8080ffff33ffa04475f8f79d773327466c03ce1517eeaba0ba80602ddad62e65630b311d4aeb11ff85195ccf6637808080"
+                    puzzleReveal: "ff02ffff01ff02ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff0bff80808080ff80808080ff0b80ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b08fac07255c7f3fe670e21e49cc5e70328f4181440a535cc18cf369fd280ba18fa26e28b52035717db29bff67105894b2ff018080",
+                    solution: "ffffff33ffa04475f8f79d773327466c03ce1517eeaba0ba80602ddad62e65630b311d4aeb11ff8411e1a30080ffff33ffa09488ae2f6f0d2655aca94c6e658fdc31bd2217f74d676407112c0558d3d217d2ff8501240b2c71808080"
                 )
             ]
         )
         
-        let signature1 = Data(hexString: "B3BF217EC0521EA9AAC8D7ADE52797997919CB6DCB768D1C7894DA38B6238746CB917F3DFE13AE7A1A67BA6F1495375C0BA0380214282F6AE7A446FE7968A46BBE32C91940B01DBC1BD702099C7DA787EF2151A3A7EC9C7831F499933886C70D")
+        let signature1 = Data(hexString: "A1AF85F8F921D18C1E6A81481D3E9CBF89CAAD7632A825DBBDEEFA4C7A918903436F0B37CAD1156DFD90AE94D2C0270D08E07190543DCD4E0E2A94AE2F15960ED3ADB40E7AC1166BD5BFBFCC536389CFE0E1967DB9FF00D09DF1A1E3210460EE")
         
         let buildToSignResult = try! transactionBuilder.buildForSign(transaction: transactionData)
         let signedTransaction = try! transactionBuilder.buildToSend(signatures: [signature1])
@@ -97,29 +96,28 @@ class ChiaTests: XCTestCase {
     
     @available(iOS 16.0, *)
     func testTransactionVector2() {
-        let signature1 = Data(hexString: "8C7470BEE98156B48A0909F6EF321DE86F073101399ACD160ACFEF57B943B6E76E22DC89D9C75ABBFAC97DC317FEA3CC0AD744F55E2EAA3AE3C099AFC89FE652B8B054C5AB1F6A11559A9BCFD132EE0F434BA4D7968A33EA1807CFAB097789B7")
-        let signature2 = Data(hexString: "93CFBA81239EAD3358E780073DCC9553097F377B217A8FE04CB07D4FC634F2A094425D8A9E8E2373880AD944EDB55ECF16D59F031986E9EFEB92290C3E7285227890E7FC3EAFFC84B84F225E62CFA5ED681DCE6993C9845543AA493180B28B04")
+        let walletPublicKey = Data(hexString: "8FAC07255C7F3FE670E21E49CC5E70328F4181440A535CC18CF369FD280BA18FA26E28B52035717DB29BFF67105894B2")
         
-        let sendValue = Decimal("0.1")!
+        let sendValue = Decimal("0.006")!
         let feeValue = Decimal("0.000000164238")!
-        let destinationAddress = "xch1wd52fhrnp2jjyxsqecfvkzq6geu3kxg9trq7m49ff0aadyxlclns7es9ph"
+        let destinationAddress = "xch1g36l3auawuejw3nvq08p29lw4wst4qrq9hddvtn9vv9nz822avgsrwte2v"
         let sourceAddress = try! addressService.makeAddress(from: walletPublicKey)
         
         let transactionBuilder = ChiaTransactionBuilder(
-            blockchain: blockchain,
+            isTestnet: blockchain.isTestnet,
             walletPublicKey: walletPublicKey
         )
         
         let unspentCoins = [
              ChiaCoin(
-                amount: 99790386,
-                parentCoinInfo: "0x380ae38b677990a085ad7a9501da51a548f4241dbe73f78e969f019585e268a4",
-                puzzleHash: "0x5d467bdc46c20f175024977ef0c2ae985abf9aea5151acbd6c54071de87a402b"
+                amount: 6000000000,
+                parentCoinInfo: "0x352edeba78e03024c377790db1ad7b0ade3ecc412b17c4d3a149138d1f5229ee",
+                puzzleHash: "0x9488ae2f6f0d2655aca94c6e658fdc31bd2217f74d676407112c0558d3d217d2"
              ),
              ChiaCoin(
-                amount: 114599994000,
-                parentCoinInfo: "114599994000",
-                puzzleHash: "0x5d467bdc46c20f175024977ef0c2ae985abf9aea5151acbd6c54071de87a402b"
+                amount: 4899679345,
+                parentCoinInfo: "0xfc62fff2391312518bcf08feabc842ca2c21ff1e0de2f97f36bae58194b1fb98",
+                puzzleHash: "0x9488ae2f6f0d2655aca94c6e658fdc31bd2217f74d676407112c0558d3d217d2"
              )
         ]
         
@@ -136,31 +134,41 @@ class ChiaTests: XCTestCase {
             changeAddress: sourceAddress.value
         )
         
-        let expectedHashToSign1 = Data(hexString: "A3A6136282A97B09CAE57DFAD492B78EAE685E2D55E3279D18B41CB11D2B0260EF6E5B2AE15E98956B0C4E652F86714203FFF9EFA7FED9D3ACF053FE697EE4D832B21484A711EB70989E2720FD262E8AD3E474909E7098DABD33870EF5DBC13A")
-        
-        let expectedHashToSign2 = Data(hexString: "8A4D295B39FF301BD565A98FC44E3F07D6B16421BC03FAF1B340AC7DF6230F979AA26CFA7086E9E3C4C09F2904FF5E8614AEA5F7F5883A2F7F20FF5F18C1BAAD0F895B2ABC8BBFF36254A5442CD6A6700A4E8ADFA1C9F7F8558EE23327592036")
+        let hashToSignes = [
+            Data(hexString: "AD7DD23E9E3D1F758CAE501DB0BE3B46C9C0DEF54EB0420A8398D7E200C3CECA64B689608AF33E4CAEE72D8A5560B2AA15E64256AE6FE0300F913A9DCB5C99A7CD5FAFA144C3AA9BE5F9965F84F92AF5880F91A4BB81A8795DA622E90B15E97B"),
+            Data(hexString: "8AF2B9F9905F119B63D33E11CCD98B0D41F4EF13A32F109CCC8A31DEA7FCED00FC6C976E66B0F4E97065DE0BAE61986F16FBEE581C5CFC860EFEA49506A1CFAF05FB2F9C47ED47C128C6EE89872FD67856A64ACFE88244BBB6B9E6A7729F494A"),
+        ]
         
         let expectedSignedTransaction = ChiaSpendBundle(
-            aggregatedSignature: "93821E46F8A8FD5F38A63EF8B31D5DC0575B537DFE90CB2C03ADCF49C0AC3864BB5510B7908AC7D9B6DA41DFB09AEFC317C264697D40CA58C93A6EF8C66E0310B72389FFFCE69022FDC63E5B0CDD911FFDC4B45E56EE55ACBA936C4B26A8E71F",
+            aggregatedSignature: "b6e6ec29d4475e1ac063eb1c915fa8e4277d5ca184fe9cbe9c1b43e70ddb36f0c9cf35aa17c18adcf7feb1e966cce3b41910ef036e37ac8b7aabdf88811bbf479e9e847cbfed1fa22c198c1d4928303f2136bdddb266137abd3d39a98130669b",
             coinSpends: [
                 ChiaCoinSpend(
                     coin: unspentCoins[0],
-                    puzzleReveal: "FF02FFFF01FF02FFFF01FF04FFFF04FF04FFFF04FF05FFFF04FFFF02FF06FFFF04FF02FFFF04FF0BFF80808080FF80808080FF0B80FFFF04FFFF01FF32FF02FFFF03FFFF07FF0580FFFF01FF0BFFFF0102FFFF02FF06FFFF04FF02FFFF04FF09FF80808080FFFF02FF06FFFF04FF02FFFF04FF0DFF8080808080FFFF01FF0BFFFF0101FF058080FF0180FF018080FFFF04FFFF01B0B6B57E5E5BFDE70E404CE83732548DB6E5BD1740C96F878B699E896FD99269B0EF10BD1C6A64E65A87C9AD444BA6E3CCFF018080",
-                    solution: "FFFFFF33FFA07368A4DC730AA5221A00CE12CB081A46791B190558C1EDD4A94BFBD690DFC7E7FF85174876E80080FFFF33FFA05D467BDC46C20F175024977EF0C2AE985ABF9AEA5151ACBD6C54071DE87A402BFF85036C2B4B35808080"
+                    puzzleReveal: "ff02ffff01ff02ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff0bff80808080ff80808080ff0b80ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b08fac07255c7f3fe670e21e49cc5e70328f4181440a535cc18cf369fd280ba18fa26e28b52035717db29bff67105894b2ff018080",
+                    solution: "ffffff33ffa04475f8f79d773327466c03ce1517eeaba0ba80602ddad62e65630b311d4aeb11ff850165a0bc0080ffff33ffa09488ae2f6f0d2655aca94c6e658fdc31bd2217f74d676407112c0558d3d217d2ff85012403f7f8808080"
                 ),
                 ChiaCoinSpend(
-                    coin: unspentCoins[0],
-                    puzzleReveal: "FF02FFFF01FF02FFFF01FF04FFFF04FF04FFFF04FF05FFFF04FFFF02FF06FFFF04FF02FFFF04FF0BFF80808080FF80808080FF0B80FFFF04FFFF01FF32FF02FFFF03FFFF07FF0580FFFF01FF0BFFFF0102FFFF02FF06FFFF04FF02FFFF04FF09FF80808080FFFF02FF06FFFF04FF02FFFF04FF0DFF8080808080FFFF01FF0BFFFF0101FF058080FF0180FF018080FFFF04FFFF01B0B6B57E5E5BFDE70E404CE83732548DB6E5BD1740C96F878B699E896FD99269B0EF10BD1C6A64E65A87C9AD444BA6E3CCFF018080",
-                    solution: "FFFFFF01808080"
-                )
+                    coin: unspentCoins[1],
+                    puzzleReveal: "ff02ffff01ff02ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff0bff80808080ff80808080ff0b80ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b08fac07255c7f3fe670e21e49cc5e70328f4181440a535cc18cf369fd280ba18fa26e28b52035717db29bff67105894b2ff018080",
+                    solution: "ffffff01808080"
+                ),
             ]
         )
         
+        let signatures = [
+            Data(hexString: "A85B6F48DE90005DAC80C5ACD6883631B5B192F5ED6CAF4C811EEBF8E1C533840913E7DE497544AE70E2F80CB306EA5D04EF9889FC179E8C71591E3A0E4035C9E1A4504C1E7CC22E59872787D2E6C620B2F90D2512D041709F47DB9A35F95F75"),
+            Data(hexString: "8171CC308912AEEB71F0A5FCA36E1098775349D9D5B09D65371C1A0150B71575836542900CE91540A133B0A8F955BF60144DD33C0BED093E4C08DB9C4141D3C7DC6E466BC90B31F72366C919F036B35CA411E2CB709D29398A5DD614788050A0"),
+        ]
+        
         let buildToSignResult = try! transactionBuilder.buildForSign(transaction: transactionData)
-        let signedTransaction = try! transactionBuilder.buildToSend(signatures: [signature1, signature2])
-
-//        XCTAssertTrue(buildToSignResult.contains([expectedHashToSign1, expectedHashToSign2]))
-//        try! XCTAssertEqual(jsonEncoder.encode(signedTransaction), jsonEncoder.encode(expectedSignedTransaction))
+        let signedTransaction = try! transactionBuilder.buildToSend(signatures: signatures)
+        
+        try! print(jsonEncoder.encode(signedTransaction).hex)
+        try! print(jsonEncoder.encode(expectedSignedTransaction).hex)
+        
+        
+        XCTAssertTrue(buildToSignResult.contains(hashToSignes))
+//        try! XCTAssertEqual(jsonEncoder.encode(signedTransaction).hexString, jsonEncoder.encode(expectedSignedTransaction).hexString)
     }
     
     func testSizeTransaction() throws {
