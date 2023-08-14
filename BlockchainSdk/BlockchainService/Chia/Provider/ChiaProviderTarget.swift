@@ -45,18 +45,18 @@ struct ChiaProviderTarget: TargetType {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         
-        let jrpcRequest: Dictionary<String, Any>
+        let jrpcRequest: Dictionary<String, Any>?
         
         switch targetType {
         case .getCoinRecordsBy(let puzzleHashBody):
-            jrpcRequest = (try? puzzleHashBody.asDictionary(with: encoder)) ?? [:]
+            jrpcRequest = try? puzzleHashBody.asDictionary(encoder: encoder)
         case .sendTransaction(let body):
-            jrpcRequest = (try? body.asDictionary(with: encoder)) ?? [:]
+            jrpcRequest = try? body.asDictionary(encoder: encoder)
         case .getFeeEstimate(let body):
-            jrpcRequest = (try? body.asDictionary(with: encoder)) ?? [:]
+            jrpcRequest = try? body.asDictionary(encoder: encoder)
         }
         
-        return .requestParameters(parameters: jrpcRequest, encoding: JSONEncoding.default)
+        return .requestParameters(parameters: jrpcRequest ?? [:], encoding: JSONEncoding.default)
     }
     
     var headers: [String : String]? {
@@ -69,8 +69,6 @@ struct ChiaProviderTarget: TargetType {
         
         return headers
     }
-    
-    
 }
 
 extension ChiaProviderTarget {

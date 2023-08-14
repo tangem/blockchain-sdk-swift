@@ -98,7 +98,7 @@ public extension Blockchain {
             .cronos,
             .telos(testnet: false),
             .octa,
-            .chia(testnet: false)
+            .chia(testnet: false),
         ]
     }
 }

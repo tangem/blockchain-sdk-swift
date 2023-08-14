@@ -960,8 +960,8 @@ extension Blockchain {
         case .octa:
             return URL(string: "https://explorer.octa.space/address/\(address)")!
         case .chia(let testnet):
-                return URL(string: "https://testnet10.spacescan.io/")!
             if testnet {
+                return URL(string: "https://testnet10.spacescan.io/")!
             } else {
                 return URL(string: "https://xchscan.com/")!
             }
