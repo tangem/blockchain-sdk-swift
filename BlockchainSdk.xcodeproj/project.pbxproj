@@ -325,6 +325,7 @@
 		EF3FFFFD2A27740400C6E7D9 /* AdaliteUnspentOutputResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3FFFFA2A27740400C6E7D9 /* AdaliteUnspentOutputResponseDTO.swift */; };
 		EF3FFFFE2A27740400C6E7D9 /* AdaliteBalanceResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3FFFFB2A27740400C6E7D9 /* AdaliteBalanceResponseDTO.swift */; };
 		EF3FFFFF2A27740400C6E7D9 /* AdaliteBaseResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3FFFFC2A27740400C6E7D9 /* AdaliteBaseResponseDTO.swift */; };
+		EF54FC292A8A8A0E00968C52 /* CardanoUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF54FC282A8A8A0E00968C52 /* CardanoUtil.swift */; };
 		EF57BEC82A1E13BE00C2A493 /* DerivationConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BEC72A1E13BE00C2A493 /* DerivationConfig.swift */; };
 		EF57BED62A1E19E800C2A493 /* DerivationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BED52A1E19E700C2A493 /* DerivationStyle.swift */; };
 		EF57BED82A1E624100C2A493 /* DerivationConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF57BED72A1E624100C2A493 /* DerivationConfigV1.swift */; };
@@ -727,6 +728,7 @@
 		EF3FFFFA2A27740400C6E7D9 /* AdaliteUnspentOutputResponseDTO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdaliteUnspentOutputResponseDTO.swift; sourceTree = "<group>"; };
 		EF3FFFFB2A27740400C6E7D9 /* AdaliteBalanceResponseDTO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdaliteBalanceResponseDTO.swift; sourceTree = "<group>"; };
 		EF3FFFFC2A27740400C6E7D9 /* AdaliteBaseResponseDTO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdaliteBaseResponseDTO.swift; sourceTree = "<group>"; };
+		EF54FC282A8A8A0E00968C52 /* CardanoUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardanoUtil.swift; sourceTree = "<group>"; };
 		EF57BEC72A1E13BE00C2A493 /* DerivationConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationConfig.swift; sourceTree = "<group>"; };
 		EF57BED52A1E19E700C2A493 /* DerivationStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DerivationStyle.swift; sourceTree = "<group>"; };
 		EF57BED72A1E624100C2A493 /* DerivationConfigV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationConfigV1.swift; sourceTree = "<group>"; };
@@ -1417,6 +1419,7 @@
 				5D845510243DE9CD0072155E /* CardanoTransactionBuilder.swift */,
 				B0C8222925F8DA860027E3BF /* CardanoNetworkService.swift */,
 				B06AFAEE261496E600E7AAB0 /* CardanoAddressUtils.swift */,
+				EF54FC282A8A8A0E00968C52 /* CardanoUtil.swift */,
 			);
 			path = Cardano;
 			sourceTree = "<group>";
@@ -2418,6 +2421,7 @@
 				5D4B33BC23F6EA0500C93A84 /* BlockchairTarget.swift in Sources */,
 				5D94E56723A3946C009C7482 /* Data+.swift in Sources */,
 				B0AD566425AC8DD50084F924 /* PendingTransaction.swift in Sources */,
+				EF54FC292A8A8A0E00968C52 /* CardanoUtil.swift in Sources */,
 				DAE30DFD279164500056C5A3 /* SolanaAddressService.swift in Sources */,
 				EFD717CC2A25EB0B00E5430D /* ABIEncoder.swift in Sources */,
 				5DA6F7BC243F3C0B0040AB4B /* CBOR+.swift in Sources */,

@@ -40,14 +40,25 @@ class CardanoTransactionBuilder {
         let useShelleyWitness = unspents.contains(where: { CardanoAddressUtils.isShelleyAddress($0.address) })
 
         var witnessMap = CBOR.map([:])
+        let skey = Array(walletPublicKey.bytes[0 ..< 32])
         if useShelleyWitness {
-            witnessMap[0] = CBOR.array([CBOR.array([CBOR.byteString(walletPublicKey.bytes),
+            witnessMap[0] = CBOR.array([CBOR.array([CBOR.byteString(skey),
                                                     CBOR.byteString(signature.bytes)])])
         }
         if useByronWitness {
-            witnessMap[2] = CBOR.array([CBOR.array([CBOR.byteString(walletPublicKey.bytes),
+            // vkey a.k.a chainCode
+            let vkey: [UInt8] = {
+                // If the expanded pubic key
+                if walletPublicKey.count == 128 {
+                    return Array(walletPublicKey.bytes[32 ... 64])
+                } else {
+                    return Data(repeating: 0, count: 32).bytes
+                }
+            }()
+
+            witnessMap[2] = CBOR.array([CBOR.array([CBOR.byteString(skey),
                                                     CBOR.byteString(signature.bytes),
-                                                    CBOR.byteString(Data(repeating: 0, count: 32).bytes),
+                                                    CBOR.byteString(vkey),
                                                     CBOR.byteString(Data(hexString: "A0").bytes)
                             ])])
         }

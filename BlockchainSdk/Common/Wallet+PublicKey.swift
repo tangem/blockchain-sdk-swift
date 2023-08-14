@@ -12,36 +12,59 @@ import TangemSdk
 extension Wallet {
     public struct PublicKey: Codable, Hashable {
         public let seedKey: Data
-        public let derivation: Derivation?
+        public let derivationType: DerivationType?
 
         /// Derived or non-derived key that should be used to create an address in a blockchain
         public var blockchainKey: Data {
-            derivation?.derivedKey.publicKey ?? seedKey
+            switch derivationType {
+            case .none:
+                return seedKey
+            case .plain(let derivationKey):
+                return derivationKey.extendedPublicKey.publicKey
+            case .double(let first, let second):
+                return CardanoUtil().extendPublicKey(first.extendedPublicKey, with: second.extendedPublicKey)
+            }
         }
 
         public var derivationPath: DerivationPath? {
-            derivation?.path
+            derivationType?.derivationKey.path
         }
 
         public func xpubKey(isTestnet: Bool) -> String? {
-            try? derivation?.derivedKey.serialize(for: isTestnet ? .testnet : .mainnet)
+            try? derivationType?.derivationKey.extendedPublicKey.serialize(for: isTestnet ? .testnet : .mainnet)
         }
         
-        public init(seedKey: Data, derivation: Derivation?) {
+        public init(seedKey: Data, derivationType: DerivationType?) {
             self.seedKey = seedKey
-            self.derivation = derivation
+            self.derivationType = derivationType
         }
     }
 }
 
 extension Wallet.PublicKey {
-    public struct Derivation: Codable, Hashable {
-        let path: DerivationPath
-        let derivedKey: ExtendedPublicKey
+    public enum DerivationType: Codable, Hashable {
+        case plain(DerivationKey)
 
-        public init(path: DerivationPath, derivedKey: ExtendedPublicKey) {
+        /// Used only for Cardano
+        case double(first: DerivationKey, second: DerivationKey)
+        
+        var derivationKey: DerivationKey {
+            switch self {
+            case .plain(let derivationKey):
+                return derivationKey
+            case .double(let derivationKey, _):
+                return derivationKey
+            }
+        }
+    }
+    
+    public struct DerivationKey: Codable, Hashable {
+        let path: DerivationPath
+        let extendedPublicKey: ExtendedPublicKey
+
+        public init(path: DerivationPath, extendedPublicKey: ExtendedPublicKey) {
             self.path = path
-            self.derivedKey = derivedKey
+            self.extendedPublicKey = extendedPublicKey
         }
     }
 }
