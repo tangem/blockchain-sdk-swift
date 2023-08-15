@@ -14,11 +14,33 @@ class ClvmProgram {
     private let atom: Array<Byte>?
     private let left: ClvmProgram?
     private let right: ClvmProgram?
+    
+    // MARK: - Init
 
     init(atom: Array<Byte>? = nil, left: ClvmProgram? = nil, right: ClvmProgram? = nil) {
         self.atom = atom
         self.left = left
         self.right = right
+    }
+    
+    // MARK: - Static
+    
+    static func from(long: Int64) -> ClvmProgram {
+        return .init(atom: long.chiaEncoded.bytes)
+    }
+    
+    static func from(bytes: Array<Byte>) -> ClvmProgram {
+        return .init(atom: bytes, left: nil, right: nil)
+    }
+    
+    static func from(list: [ClvmProgram]) -> ClvmProgram {
+        var result: ClvmProgram = ClvmProgram(atom: [])
+        
+        for item in list.reversed() {
+            result = ClvmProgram(atom: nil, left: item, right: result)
+        }
+        
+        return result
     }
     
     // MARK: - Hashable
@@ -31,6 +53,55 @@ class ClvmProgram {
         }
         
         throw NSError()
+    }
+    
+    func serialize() throws -> Data {
+        if let atom = atom {
+            if atom.isEmpty {
+                return Data(Byte(0x80))
+            } else if atom.count == 1 && atom[0] <= 0x7F {
+                return Data(atom[0])
+            } else {
+                let size = UInt64(atom.count)
+                var result = [Byte]()
+                
+                if size < 0x40 {
+                    result.append(Byte(size | 0x80))
+                } else if size < 0x2000 {
+                    result.append(Byte((size >> 8) | 0xC0))
+                    result.append(Byte(size & 0xFF))
+                } else if size < 0x100000 {
+                    result.append(Byte((size >> 16) | 0xE0))
+                    result.append(Byte((size >> 8) & 0xFF))
+                    result.append(Byte(size & 0xFF))
+                } else if size < 0x8000000 {
+                    result.append(Byte((size >> 24) | 0xF0))
+                    result.append(Byte((size >> 16) & 0xFF))
+                    result.append(Byte((size >> 8) & 0xFF))
+                    result.append(Byte(size & 0xFF))
+                } else if size < 0x400000000 {
+                    result.append(Byte((size >> 32) | 0xF8))
+                    result.append(Byte((size >> 24) & 0xFF))
+                    result.append(Byte((size >> 16) & 0xFF))
+                    result.append(Byte((size >> 8) & 0xFF))
+                    result.append(Byte(size & 0xFF))
+                } else {
+                    throw EncoderError.tooManyBytesToEncode
+                }
+                
+                result.append(contentsOf: atom)
+                return Data(result)
+            }
+        } else if let left = left, let right = right {
+            return try Data(Byte(0xff)) + left.serialize() + right.serialize()
+        } else {
+            throw EncoderError.undefinedEncodeException
+        }
+    }
+    
+    enum EncoderError: Error {
+        case tooManyBytesToEncode
+        case undefinedEncodeException
     }
 }
 
@@ -57,7 +128,9 @@ extension ClvmProgram {
         private func deserialize(with programByteIterator: inout ClvmProgram.Iterator<Byte>) throws -> ClvmProgram {
             var sizeBytes = Array<Byte>()
 
-            let currentByte = programByteIterator.next()!
+            guard let currentByte = programByteIterator.next() else {
+                throw DecoderError.errorEmptyCurrentByte
+            }
 
             if currentByte <= 0x7F {
                 return ClvmProgram(atom: [currentByte])
@@ -86,6 +159,7 @@ extension ClvmProgram {
     }
     
     enum DecoderError: Error {
+        case errorEmptyCurrentByte
         case errorCompareCurrentByte
     }
 }

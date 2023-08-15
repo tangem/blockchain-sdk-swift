@@ -14,4 +14,22 @@ import TangemSdk
 
 class ChiaTests: XCTestCase {
     
+    func testConditionSpend() {
+        let address = "txch14gxuvfmw2xdxqnws5agt3ma483wktd2lrzwvpj3f6jvdgkmf5gtq8g3aw3"
+        let amount: Int64 = 235834596465
+        let encodedAmount = amount.chiaEncoded
+
+        let solution1 = try! "ffffff33ffa0" +
+        ChiaPuzzleUtils().getPuzzleHash(from: address).hex + "ff8" + String(encodedAmount.count) + encodedAmount.hex + "808080"
+        
+        let condition = try! CreateCoinCondition(
+            destinationPuzzleHash: ChiaPuzzleUtils().getPuzzleHash(from: address),
+            amount: amount
+        ).toProgram()
+        
+        let solution2 = try! ClvmProgram.from(list: [ClvmProgram.from(list: [condition])]).serialize().hex
+        
+        XCTAssertEqual(solution1.lowercased(), solution2.lowercased())
+    }
+    
 }

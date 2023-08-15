@@ -229,8 +229,8 @@ public enum Blockchain: Equatable, Hashable {
             return "TLOS"
         case .octa:
             return "OCTA"
-        case .chia:
-            return "XCH"
+        case .chia(let testnet):
+            return testnet ? "TXCH" : "XCH"
         }
     }
     
