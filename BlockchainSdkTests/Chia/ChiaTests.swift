@@ -96,11 +96,11 @@ class ChiaTests: XCTestCase {
     
     @available(iOS 16.0, *)
     func testTransactionVector2() {
-        let walletPublicKey = Data(hexString: "8FAC07255C7F3FE670E21E49CC5E70328F4181440A535CC18CF369FD280BA18FA26E28B52035717DB29BFF67105894B2")
+        let walletPublicKey = Data(hexString: "a259d941e9c70adb0dfa5b7ddc399d7eda3fe263b24cfd8123114b6c89a2e8c5263d063f48dabf50d72c05a2afc0f4fc")
         
-        let sendValue = Decimal("0.006")!
-        let feeValue = Decimal("0.000000164238")!
-        let destinationAddress = "xch1g36l3auawuejw3nvq08p29lw4wst4qrq9hddvtn9vv9nz822avgsrwte2v"
+        let sendValue = Decimal("0.02")!
+        let feeValue = Decimal("0.000000027006")!
+        let destinationAddress = "xch1m2g36ha9krk4xr7aazzhl98ghy5gzklxtrga3ce62zf6at7ef72s22xhyx"
         let sourceAddress = try! addressService.makeAddress(from: walletPublicKey)
         
         let transactionBuilder = ChiaTransactionBuilder(
@@ -110,14 +110,14 @@ class ChiaTests: XCTestCase {
         
         let unspentCoins = [
              ChiaCoin(
-                amount: 6000000000,
+                amount: 98030270081,
                 parentCoinInfo: "0x352edeba78e03024c377790db1ad7b0ade3ecc412b17c4d3a149138d1f5229ee",
-                puzzleHash: "0x9488ae2f6f0d2655aca94c6e658fdc31bd2217f74d676407112c0558d3d217d2"
+                puzzleHash: "0x4475f8f79d773327466c03ce1517eeaba0ba80602ddad62e65630b311d4aeb11"
              ),
              ChiaCoin(
-                amount: 4899679345,
-                parentCoinInfo: "0xfc62fff2391312518bcf08feabc842ca2c21ff1e0de2f97f36bae58194b1fb98",
-                puzzleHash: "0x9488ae2f6f0d2655aca94c6e658fdc31bd2217f74d676407112c0558d3d217d2"
+                amount: 6000000000,
+                parentCoinInfo: "0xea2f576d1225fbfe485bc8b605b1a6abd111592925b2e0113d3041aeb7efb684",
+                puzzleHash: "0x4475f8f79d773327466c03ce1517eeaba0ba80602ddad62e65630b311d4aeb11"
              )
         ]
         
@@ -135,30 +135,30 @@ class ChiaTests: XCTestCase {
         )
         
         let hashToSignes = [
-            Data(hexString: "AD7DD23E9E3D1F758CAE501DB0BE3B46C9C0DEF54EB0420A8398D7E200C3CECA64B689608AF33E4CAEE72D8A5560B2AA15E64256AE6FE0300F913A9DCB5C99A7CD5FAFA144C3AA9BE5F9965F84F92AF5880F91A4BB81A8795DA622E90B15E97B"),
-            Data(hexString: "8AF2B9F9905F119B63D33E11CCD98B0D41F4EF13A32F109CCC8A31DEA7FCED00FC6C976E66B0F4E97065DE0BAE61986F16FBEE581C5CFC860EFEA49506A1CFAF05FB2F9C47ED47C128C6EE89872FD67856A64ACFE88244BBB6B9E6A7729F494A"),
-        ]
+            "A45B057958AF4E155FDF2470F43BE8E2B26A9084EC28A34021FBE0F288881E197A73CC27FF88E82DB4C6BD0DD9D5A55A0B080381D4C4314C2473B2C4325BED52989D810869D7466540B0A896EF79011550E34C0B0AB6BB61429A7AA7699DF9EF",
+            "AED861A416CD4B3F06B80658C86B5A66B7998988382F5BE448CAC67C4097F78E3F25E1976F70C033370DDF84A69AA7C0186B1EC7D693D87B21B5B03B35C3B1A0E6BDF1487D70994D05E5F151D3F84F70EEE322D1662B19F8873011392823950B"
+        ].map { Data(hexString: $0) }
         
         let expectedSignedTransaction = ChiaSpendBundle(
-            aggregatedSignature: "b6e6ec29d4475e1ac063eb1c915fa8e4277d5ca184fe9cbe9c1b43e70ddb36f0c9cf35aa17c18adcf7feb1e966cce3b41910ef036e37ac8b7aabdf88811bbf479e9e847cbfed1fa22c198c1d4928303f2136bdddb266137abd3d39a98130669b",
+            aggregatedSignature: "98e46525cfef4e221e2e1813a3738e73c5be98b50e6f092e7a28f1e51bd5306e4d4e9859159bb507543117e74688732601969087ead4ae26c132a8ddea3052fa4b41a409ebbe0ab63d03c43be76e38047ec77a31c7db5b62c12c877c36193a2e",
             coinSpends: [
                 ChiaCoinSpend(
                     coin: unspentCoins[0],
-                    puzzleReveal: "ff02ffff01ff02ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff0bff80808080ff80808080ff0b80ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b08fac07255c7f3fe670e21e49cc5e70328f4181440a535cc18cf369fd280ba18fa26e28b52035717db29bff67105894b2ff018080",
-                    solution: "ffffff33ffa04475f8f79d773327466c03ce1517eeaba0ba80602ddad62e65630b311d4aeb11ff850165a0bc0080ffff33ffa09488ae2f6f0d2655aca94c6e658fdc31bd2217f74d676407112c0558d3d217d2ff85012403f7f8808080"
+                    puzzleReveal: "ff02ffff01ff02ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff0bff80808080ff80808080ff0b80ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b0a259d941e9c70adb0dfa5b7ddc399d7eda3fe263b24cfd8123114b6c89a2e8c5263d063f48dabf50d72c05a2afc0f4fcff018080",
+                    solution: "ffffff33ffa0da911d5fa5b0ed530fdde8857f94e8b928815be658d1d8e33a5093aeafd94f95ff8504a817c80080ffff33ffa04475f8f79d773327466c03ce1517eeaba0ba80602ddad62e65630b311d4aeb11ff85139097c103808080"
                 ),
                 ChiaCoinSpend(
                     coin: unspentCoins[1],
-                    puzzleReveal: "ff02ffff01ff02ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff0bff80808080ff80808080ff0b80ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b08fac07255c7f3fe670e21e49cc5e70328f4181440a535cc18cf369fd280ba18fa26e28b52035717db29bff67105894b2ff018080",
+                    puzzleReveal: "ff02ffff01ff02ffff01ff04ffff04ff04ffff04ff05ffff04ffff02ff06ffff04ff02ffff04ff0bff80808080ff80808080ff0b80ffff04ffff01ff32ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080ffff04ffff01b0a259d941e9c70adb0dfa5b7ddc399d7eda3fe263b24cfd8123114b6c89a2e8c5263d063f48dabf50d72c05a2afc0f4fcff018080",
                     solution: "ffffff01808080"
                 ),
             ]
         )
         
         let signatures = [
-            Data(hexString: "A85B6F48DE90005DAC80C5ACD6883631B5B192F5ED6CAF4C811EEBF8E1C533840913E7DE497544AE70E2F80CB306EA5D04EF9889FC179E8C71591E3A0E4035C9E1A4504C1E7CC22E59872787D2E6C620B2F90D2512D041709F47DB9A35F95F75"),
-            Data(hexString: "8171CC308912AEEB71F0A5FCA36E1098775349D9D5B09D65371C1A0150B71575836542900CE91540A133B0A8F955BF60144DD33C0BED093E4C08DB9C4141D3C7DC6E466BC90B31F72366C919F036B35CA411E2CB709D29398A5DD614788050A0"),
-        ]
+            "A91765A3A213BC635431E6B3750F75153CC80E607AC8CC1A297FF2EE7CAC3B7A2A2A67513FCA1A83083A73F121A7AD64124FD684611C5F625DD70E098893B4292D378E087F25ECEB6F6942324F10A461820C006549B307A9CEB79B362AB2D7D3",
+            "A9838F9A7F05C3B7175A963C3AF8EEB7DB2B9C61A6247EA6C5224CDC2DABA26B811BFBDF396288C34ECA6ABE3E98E0740FDD24033FBC659695C137F5793E4FAF61F9657DC41C09FE9D336A1F0D7563142C876B3842135CD2965D50FFD31C541A"
+        ].map { Data(hexString: $0) }
         
         let buildToSignResult = try! transactionBuilder.buildForSign(transaction: transactionData)
         let signedTransaction = try! transactionBuilder.buildToSend(signatures: signatures)
@@ -168,7 +168,7 @@ class ChiaTests: XCTestCase {
         
         
         XCTAssertTrue(buildToSignResult.contains(hashToSignes))
-//        try! XCTAssertEqual(jsonEncoder.encode(signedTransaction).hexString, jsonEncoder.encode(expectedSignedTransaction).hexString)
+        try! XCTAssertEqual(jsonEncoder.encode(signedTransaction).hexString, jsonEncoder.encode(expectedSignedTransaction).hexString)
     }
     
     func testSizeTransaction() throws {
