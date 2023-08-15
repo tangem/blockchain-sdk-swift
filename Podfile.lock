@@ -84,7 +84,7 @@ DEPENDENCIES:
   - SwiftCBOR
   - SwiftProtobuf
   - SwiftyJSON
-  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-263-fix`)
+  - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-264`)
   - TangemWalletCore (from `https://github.com/tangem/wallet-core-binaries-ios.git`, tag `3.2.1-tangem2`)
   - web3swift (from `https://github.com/tangem/web3swift.git`, tag `2.2.12`)
 
@@ -124,7 +124,7 @@ EXTERNAL SOURCES:
     :tag: add-external-signer-7
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-263-fix
+    :tag: develop-264
   TangemWalletCore:
     :git: https://github.com/tangem/wallet-core-binaries-ios.git
     :tag: 3.2.1-tangem2
@@ -147,7 +147,7 @@ CHECKOUT OPTIONS:
     :tag: add-external-signer-7
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
-    :tag: develop-263-fix
+    :tag: develop-264
   TangemWalletCore:
     :git: https://github.com/tangem/wallet-core-binaries-ios.git
     :tag: 3.2.1-tangem2
@@ -182,6 +182,6 @@ SPEC CHECKSUMS:
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 5866b9e04b4406554229ab6524c6b3805839a957
+PODFILE CHECKSUM: cd1a5753954fd6a0bb10db09a9c4b6f525ba4a02
 
 COCOAPODS: 1.12.1
