@@ -25,14 +25,11 @@ struct BlockscoutResponseMapper {
         
         let confirmations = Int(response.confirmations) ?? 0
 
-        let date: Date?
+        var date: Date?
         if let timestamp = TimeInterval(response.timeStamp) {
             date = Date(timeIntervalSince1970: timestamp)
-        } else {
-            date = nil
         }
-
-        let amount = Amount(with: .saltPay, value: amountWei / decimalValue)
+        let amount = amountWei / decimalValue
         let feeAmount = (gasPriceWei * spentGasWei) / decimalValue
         let fee = Fee(Amount(with: .saltPay, value: feeAmount))
         

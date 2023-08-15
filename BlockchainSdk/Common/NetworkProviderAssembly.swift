@@ -8,9 +8,15 @@
 
 import Foundation
 
+protocol NetworkProviderAssemblyInput {
+    var blockchain: Blockchain { get }
+    var blockchainSdkConfig: BlockchainSdkConfig { get }
+    var networkConfig: NetworkProviderConfiguration { get }
+}
+
 struct NetworkProviderAssembly {
     
-    func makeBlockBookUtxoProvider(with input: WalletManagerAssemblyInput, for type: BlockBookProviderType) -> BlockBookUtxoProvider {
+    func makeBlockBookUtxoProvider(with input: NetworkProviderAssemblyInput, for type: BlockBookProviderType) -> BlockBookUtxoProvider {
         switch type {
         case .nowNodes:
             return BlockBookUtxoProvider(
@@ -27,11 +33,11 @@ struct NetworkProviderAssembly {
         }
     }
     
-    func makeBlockchainInfoNetworkProvider(with input: WalletManagerAssemblyInput) -> BlockchainInfoNetworkProvider {
+    func makeBlockchainInfoNetworkProvider(with input: NetworkProviderAssemblyInput) -> BlockchainInfoNetworkProvider {
         return BlockchainInfoNetworkProvider(configuration: input.networkConfig)
     }
     
-    func makeBlockcypherNetworkProvider(endpoint: BlockcypherEndpoint, with input: WalletManagerAssemblyInput) -> BlockcypherNetworkProvider {
+    func makeBlockcypherNetworkProvider(endpoint: BlockcypherEndpoint, with input: NetworkProviderAssemblyInput) -> BlockcypherNetworkProvider {
         return BlockcypherNetworkProvider(
             endpoint: endpoint,
             tokens: input.blockchainSdkConfig.blockcypherTokens,
@@ -39,7 +45,7 @@ struct NetworkProviderAssembly {
         )
     }
     
-    func makeBlockchairNetworkProviders(endpoint: BlockchairEndpoint, with input: WalletManagerAssemblyInput) -> [AnyBitcoinNetworkProvider] {
+    func makeBlockchairNetworkProviders(endpoint: BlockchairEndpoint, with input: NetworkProviderAssemblyInput) -> [AnyBitcoinNetworkProvider] {
         let apiKeys: [String?] = [nil] + input.blockchainSdkConfig.blockchairApiKeys
         
         return apiKeys.map {
@@ -48,11 +54,11 @@ struct NetworkProviderAssembly {
         }
     }
     
-    func makeBlockscoutNetworkProvider(with input: WalletManagerAssemblyInput) -> BlockscoutNetworkProvider {
+    func makeBlockscoutNetworkProvider(with input: NetworkProviderAssemblyInput) -> BlockscoutNetworkProvider {
         BlockscoutNetworkProvider(configuration: .init(credentials: input.blockchainSdkConfig.blockscoutCredentials))
     }
     
-    func makeEthereumJsonRpcProviders(with input: WalletManagerAssemblyInput) -> [EthereumJsonRpcProvider] {
+    func makeEthereumJsonRpcProviders(with input: NetworkProviderAssemblyInput) -> [EthereumJsonRpcProvider] {
         let endpoints = input.blockchain.getJsonRpcEndpoints(
             keys: EthereumApiKeys(
                 infuraProjectId: input.blockchainSdkConfig.infuraProjectId,
@@ -70,4 +76,15 @@ struct NetworkProviderAssembly {
         }
     }
     
+}
+
+extension NetworkProviderAssembly {
+    struct Input: NetworkProviderAssemblyInput {
+        let blockchainSdkConfig: BlockchainSdkConfig
+        let blockchain: Blockchain
+
+        var networkConfig: NetworkProviderConfiguration {
+            blockchainSdkConfig.networkProviderConfiguration(for: blockchain)
+        }
+    }
 }

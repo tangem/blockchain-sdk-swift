@@ -8,7 +8,7 @@
 
 import Foundation
 import CryptoKit
-import Bls_Signature
+import TangemSdk
 
 final class ChiaTransactionBuilder {
     // MARK: - Public Properties
@@ -68,7 +68,7 @@ final class ChiaTransactionBuilder {
     }
     
     func buildToSend(signatures: [Data]) throws -> ChiaSpendBundle {
-        let aggregatedSignature = try BlsSignatureSwift.aggregate(signatures: signatures.map { $0.hexString })
+        let aggregatedSignature = try BLSUtils().aggregate(signatures: signatures.map { $0.hexString })
         
         let spendBundle = ChiaSpendBundle(
             aggregatedSignature: aggregatedSignature,
@@ -164,6 +164,6 @@ fileprivate extension Array where Element == ChiaCondition {
 
 fileprivate extension Data {
     func hashAugScheme(with publicKey: Data) throws -> Data {
-        try Data(hex: BlsSignatureSwift.augSchemeMplG2Map(publicKey: publicKey.hex, message: self.hex))
+        try Data(hex: BLSUtils().augSchemeMplG2Map(publicKey: publicKey.hex, message: self.hex))
     }
 }
