@@ -163,10 +163,6 @@ class ChiaTests: XCTestCase {
         let buildToSignResult = try! transactionBuilder.buildForSign(transaction: transactionData)
         let signedTransaction = try! transactionBuilder.buildToSend(signatures: signatures)
         
-        try! print(jsonEncoder.encode(signedTransaction).hex)
-        try! print(jsonEncoder.encode(expectedSignedTransaction).hex)
-        
-        
         XCTAssertTrue(buildToSignResult.contains(hashToSignes))
         try! XCTAssertEqual(jsonEncoder.encode(signedTransaction).hexString, jsonEncoder.encode(expectedSignedTransaction).hexString)
     }
