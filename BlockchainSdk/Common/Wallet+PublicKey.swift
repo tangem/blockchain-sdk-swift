@@ -27,11 +27,11 @@ extension Wallet {
         }
 
         public var derivationPath: DerivationPath? {
-            derivationType?.derivationKey.path
+            derivationType?.hdKey.path
         }
 
         public func xpubKey(isTestnet: Bool) -> String? {
-            try? derivationType?.derivationKey.extendedPublicKey.serialize(for: isTestnet ? .testnet : .mainnet)
+            try? derivationType?.hdKey.extendedPublicKey.serialize(for: isTestnet ? .testnet : .mainnet)
         }
         
         public init(seedKey: Data, derivationType: DerivationType?) {
@@ -43,12 +43,12 @@ extension Wallet {
 
 extension Wallet.PublicKey {
     public enum DerivationType: Codable, Hashable {
-        case plain(DerivationKey)
+        case plain(HDKey)
 
         /// Used only for Cardano
-        case double(first: DerivationKey, second: DerivationKey)
+        case double(first: HDKey, second: HDKey)
         
-        var derivationKey: DerivationKey {
+        var hdKey: HDKey {
             switch self {
             case .plain(let derivationKey):
                 return derivationKey
@@ -58,7 +58,7 @@ extension Wallet.PublicKey {
         }
     }
     
-    public struct DerivationKey: Codable, Hashable {
+    public struct HDKey: Codable, Hashable {
         let path: DerivationPath
         let extendedPublicKey: ExtendedPublicKey
 
