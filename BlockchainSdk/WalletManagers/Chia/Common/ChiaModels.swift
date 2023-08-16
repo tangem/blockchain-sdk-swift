@@ -13,10 +13,16 @@ struct ChiaSpendBundle: Codable {
     let coinSpends: [ChiaCoinSpend]
 }
 
-struct ChiaCoinSpend: Codable {
+class ChiaCoinSpend: Codable {
     let coin: ChiaCoin
     let puzzleReveal: String
     var solution: String
+    
+    init(coin: ChiaCoin, puzzleReveal: String, solution: String) {
+        self.coin = coin
+        self.puzzleReveal = puzzleReveal
+        self.solution = solution
+    }
 }
 
 struct ChiaCoin: Codable {

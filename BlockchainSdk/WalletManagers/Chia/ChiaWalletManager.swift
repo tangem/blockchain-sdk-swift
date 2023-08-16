@@ -58,7 +58,6 @@ final class ChiaWalletManager: BaseManager, WalletManager {
             }
             .flatMap { [weak self] hashesForSign -> AnyPublisher<[Data], Error> in
                 guard let self = self else { return .anyFail(error: WalletError.empty) }
-                
                 return signer.sign(hashes: hashesForSign, walletPublicKey: self.wallet.publicKey).eraseToAnyPublisher()
             }
             .tryMap { [weak self] signatures -> ChiaSpendBundle in
@@ -69,7 +68,6 @@ final class ChiaWalletManager: BaseManager, WalletManager {
                 guard let self = self else {
                     return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
                 }
-                
                 return self.networkService.send(spendBundle: spendBundle)
             }
             .map { [weak self] hash in

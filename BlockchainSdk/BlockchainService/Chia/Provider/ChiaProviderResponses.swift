@@ -25,7 +25,7 @@ struct ChiaSendTransactionResponse: ChiaStatusResponse {
 
 struct ChiaEstimateFeeResponse: ChiaStatusResponse {
     let success: Bool
-    let estimates: [UInt64]
+    let estimates: [Int64]
 }
 
 struct ChiaCoinRecord: Decodable {
