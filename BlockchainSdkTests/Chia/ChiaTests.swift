@@ -20,31 +20,39 @@ class ChiaTests: XCTestCase {
     private let addressService = ChiaAddressService(isTestnet: false)
     private var decimals: Int { blockchain.decimalCount }
     
-    func testConditionSpend() {
+    private var testSignatures: [Data] {
+        [
+            "8C7470BEE98156B48A0909F6EF321DE86F073101399ACD160ACFEF57B943B6E76E22DC89D9C75ABBFAC97DC317FEA3CC0AD744F55E2EAA3AE3C099AFC89FE652B8B054C5AB1F6A11559A9BCFD132EE0F434BA4D7968A33EA1807CFAB097789B7",
+            "93CFBA81239EAD3358E780073DCC9553097F377B217A8FE04CB07D4FC634F2A094425D8A9E8E2373880AD944EDB55ECF16D59F031986E9EFEB92290C3E7285227890E7FC3EAFFC84B84F225E62CFA5ED681DCE6993C9845543AA493180B28B04"
+        ].map {
+            Data(hexString: $0)
+        }
+    }
+    
+    func testConditionSpend() throws {
         let address = "txch14gxuvfmw2xdxqnws5agt3ma483wktd2lrzwvpj3f6jvdgkmf5gtq8g3aw3"
         let amount: Int64 = 235834596465
         let encodedAmount = amount.chiaEncoded
 
-        let solution1 = try! "ffffff33ffa0" +
+        let solution1 = try "ffffff33ffa0" +
         ChiaPuzzleUtils().getPuzzleHash(from: address).hex + "ff8" + String(encodedAmount.count) + encodedAmount.hex + "808080"
         
-        let condition = try! CreateCoinCondition(
+        let condition = try CreateCoinCondition(
             destinationPuzzleHash: ChiaPuzzleUtils().getPuzzleHash(from: address),
             amount: amount
         ).toProgram()
         
-        let solution2 = try! ClvmProgram.from(list: [ClvmProgram.from(list: [condition])]).serialize().hex
+        let solution2 = try ClvmProgram.from(list: [ClvmProgram.from(list: [condition])]).serialize().hex
         
         XCTAssertEqual(solution1.lowercased(), solution2.lowercased())
     }
     
-    @available(iOS 16.0, *)
-    func testTransactionVector1() {
+    func testTransactionVector1() throws {
         let walletPublicKey = Data(hexString: "8FAC07255C7F3FE670E21E49CC5E70328F4181440A535CC18CF369FD280BA18FA26E28B52035717DB29BFF67105894B2")
         let sendValue = Decimal("0.0003")!
         let feeValue = Decimal("0.000000164238")!
         let destinationAddress = "xch1g36l3auawuejw3nvq08p29lw4wst4qrq9hddvtn9vv9nz822avgsrwte2v"
-        let sourceAddress = try! addressService.makeAddress(from: walletPublicKey)
+        let sourceAddress = try addressService.makeAddress(from: walletPublicKey)
         
         let transactionBuilder = ChiaTransactionBuilder(
             isTestnet: blockchain.isTestnet,
@@ -87,21 +95,20 @@ class ChiaTests: XCTestCase {
         
         let signature1 = Data(hexString: "A1AF85F8F921D18C1E6A81481D3E9CBF89CAAD7632A825DBBDEEFA4C7A918903436F0B37CAD1156DFD90AE94D2C0270D08E07190543DCD4E0E2A94AE2F15960ED3ADB40E7AC1166BD5BFBFCC536389CFE0E1967DB9FF00D09DF1A1E3210460EE")
         
-        let buildToSignResult = try! transactionBuilder.buildForSign(transaction: transactionData)
-        let signedTransaction = try! transactionBuilder.buildToSend(signatures: [signature1])
+        let buildToSignResult = try transactionBuilder.buildForSign(transaction: transactionData)
+        let signedTransaction = try transactionBuilder.buildToSend(signatures: [signature1])
         
-        XCTAssertTrue(buildToSignResult.contains([expectedHashToSign1]))
-        try! XCTAssertEqual(jsonEncoder.encode(signedTransaction), jsonEncoder.encode(expectedSignedTransaction))
+        XCTAssertEqual(buildToSignResult, [expectedHashToSign1])
+        try XCTAssertEqual(jsonEncoder.encode(signedTransaction).hexString, jsonEncoder.encode(expectedSignedTransaction).hexString)
     }
     
-    @available(iOS 16.0, *)
-    func testTransactionVector2() {
+    func testTransactionVector2() throws {
         let walletPublicKey = Data(hexString: "a259d941e9c70adb0dfa5b7ddc399d7eda3fe263b24cfd8123114b6c89a2e8c5263d063f48dabf50d72c05a2afc0f4fc")
         
         let sendValue = Decimal("0.02")!
         let feeValue = Decimal("0.000000027006")!
         let destinationAddress = "xch1m2g36ha9krk4xr7aazzhl98ghy5gzklxtrga3ce62zf6at7ef72s22xhyx"
-        let sourceAddress = try! addressService.makeAddress(from: walletPublicKey)
+        let sourceAddress = try addressService.makeAddress(from: walletPublicKey)
         
         let transactionBuilder = ChiaTransactionBuilder(
             isTestnet: blockchain.isTestnet,
@@ -137,7 +144,9 @@ class ChiaTests: XCTestCase {
         let hashToSignes = [
             "A45B057958AF4E155FDF2470F43BE8E2B26A9084EC28A34021FBE0F288881E197A73CC27FF88E82DB4C6BD0DD9D5A55A0B080381D4C4314C2473B2C4325BED52989D810869D7466540B0A896EF79011550E34C0B0AB6BB61429A7AA7699DF9EF",
             "AED861A416CD4B3F06B80658C86B5A66B7998988382F5BE448CAC67C4097F78E3F25E1976F70C033370DDF84A69AA7C0186B1EC7D693D87B21B5B03B35C3B1A0E6BDF1487D70994D05E5F151D3F84F70EEE322D1662B19F8873011392823950B"
-        ].map { Data(hexString: $0) }
+        ].map {
+            Data(hexString: $0)
+        }
         
         let expectedSignedTransaction = ChiaSpendBundle(
             aggregatedSignature: "98e46525cfef4e221e2e1813a3738e73c5be98b50e6f092e7a28f1e51bd5306e4d4e9859159bb507543117e74688732601969087ead4ae26c132a8ddea3052fa4b41a409ebbe0ab63d03c43be76e38047ec77a31c7db5b62c12c877c36193a2e",
@@ -158,20 +167,19 @@ class ChiaTests: XCTestCase {
         let signatures = [
             "A91765A3A213BC635431E6B3750F75153CC80E607AC8CC1A297FF2EE7CAC3B7A2A2A67513FCA1A83083A73F121A7AD64124FD684611C5F625DD70E098893B4292D378E087F25ECEB6F6942324F10A461820C006549B307A9CEB79B362AB2D7D3",
             "A9838F9A7F05C3B7175A963C3AF8EEB7DB2B9C61A6247EA6C5224CDC2DABA26B811BFBDF396288C34ECA6ABE3E98E0740FDD24033FBC659695C137F5793E4FAF61F9657DC41C09FE9D336A1F0D7563142C876B3842135CD2965D50FFD31C541A"
-        ].map { Data(hexString: $0) }
+        ].map {
+            Data(hexString: $0)
+        }
         
-        let buildToSignResult = try! transactionBuilder.buildForSign(transaction: transactionData)
-        let signedTransaction = try! transactionBuilder.buildToSend(signatures: signatures)
+        let buildToSignResult = try transactionBuilder.buildForSign(transaction: transactionData)
+        let signedTransaction = try transactionBuilder.buildToSend(signatures: signatures)
         
-        XCTAssertTrue(buildToSignResult.contains(hashToSignes))
-        try! XCTAssertEqual(jsonEncoder.encode(signedTransaction).hexString, jsonEncoder.encode(expectedSignedTransaction).hexString)
+        XCTAssertEqual(buildToSignResult, hashToSignes)
+        try XCTAssertEqual(jsonEncoder.encode(signedTransaction).hexString, jsonEncoder.encode(expectedSignedTransaction).hexString)
     }
     
-    func testSizeTransaction() throws {
-        let signature1 = Data(hexString: "8C7470BEE98156B48A0909F6EF321DE86F073101399ACD160ACFEF57B943B6E76E22DC89D9C75ABBFAC97DC317FEA3CC0AD744F55E2EAA3AE3C099AFC89FE652B8B054C5AB1F6A11559A9BCFD132EE0F434BA4D7968A33EA1807CFAB097789B7")
-        let signature2 = Data(hexString: "93CFBA81239EAD3358E780073DCC9553097F377B217A8FE04CB07D4FC634F2A094425D8A9E8E2373880AD944EDB55ECF16D59F031986E9EFEB92290C3E7285227890E7FC3EAFFC84B84F225E62CFA5ED681DCE6993C9845543AA493180B28B04")
-        
-        sizeUtility.testTxSizes([signature1, signature2])
+    func testSizeTransaction() {
+        sizeUtility.testTxSizes(testSignatures)
     }
     
 }

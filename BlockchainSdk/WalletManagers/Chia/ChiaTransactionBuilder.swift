@@ -70,12 +70,10 @@ final class ChiaTransactionBuilder {
     func buildToSend(signatures: [Data]) throws -> ChiaSpendBundle {
         let aggregatedSignature = try BLSUtils().aggregate(signatures: signatures.map { $0.hexString })
         
-        let spendBundle = ChiaSpendBundle(
+        return ChiaSpendBundle(
             aggregatedSignature: aggregatedSignature,
             coinSpends: coinSpends
         )
-        
-        return spendBundle
     }
     
     /// Calculate standart costs for fee transaction
