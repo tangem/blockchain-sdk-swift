@@ -253,7 +253,7 @@ fileprivate class DummySigner: TransactionSigner {
     init() {
         let keyPair = try! Secp256k1Utils().generateKeyPair()
         let compressedPublicKey = try! Secp256k1Key(with: keyPair.publicKey).compress()
-        self.publicKey = Wallet.PublicKey(seedKey: compressedPublicKey, derivation: .none)
+        self.publicKey = Wallet.PublicKey(seedKey: compressedPublicKey, derivationType: .none)
         self.privateKey = keyPair.privateKey
     }
         
