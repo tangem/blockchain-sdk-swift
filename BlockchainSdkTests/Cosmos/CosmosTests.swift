@@ -20,7 +20,7 @@ class CosmosTests: XCTestCase {
         let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"))!
         let publicKeyData = privateKey.getPublicKeySecp256k1(compressed: true).data
         
-        let publicKey: BlockchainSdk.Wallet.PublicKey = .init(seedKey: publicKeyData, derivation: .none)
+        let publicKey: BlockchainSdk.Wallet.PublicKey = .init(seedKey: publicKeyData, derivationType: .none)
         let address = try WalletCoreAddressService(blockchain: blockchain).makeAddress(for: publicKey, with: .default)
         let wallet = Wallet(blockchain: blockchain, addresses: [.default: address])
         
@@ -60,7 +60,7 @@ class CosmosTests: XCTestCase {
         let privateKey = PrivateKey(data: Data(hexString: "1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6"))!
         let publicKeyData = privateKey.getPublicKeySecp256k1(compressed: true).data
 
-        let publicKey: BlockchainSdk.Wallet.PublicKey = .init(seedKey: publicKeyData, derivation: .none)
+        let publicKey: BlockchainSdk.Wallet.PublicKey = .init(seedKey: publicKeyData, derivationType: .none)
         let address = try WalletCoreAddressService(blockchain: blockchain).makeAddress(for: publicKey, with: .default)
         let wallet = Wallet(blockchain: blockchain, addresses: [.default: address])
         
@@ -101,7 +101,7 @@ class CosmosTests: XCTestCase {
         let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"))!
         let publicKeyData = privateKey.getPublicKeySecp256k1(compressed: true).data
         
-        let publicKey: BlockchainSdk.Wallet.PublicKey = .init(seedKey: publicKeyData, derivation: .none)
+        let publicKey: BlockchainSdk.Wallet.PublicKey = .init(seedKey: publicKeyData, derivationType: .none)
         let address = try WalletCoreAddressService(blockchain: blockchain).makeAddress(for: publicKey, with: .default)
         let wallet = Wallet(blockchain: blockchain, addresses: [.default: address])
         
@@ -142,7 +142,7 @@ class CosmosTests: XCTestCase {
         let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"))!
         let publicKeyData = privateKey.getPublicKeySecp256k1(compressed: true).data
         
-        let publicKey: BlockchainSdk.Wallet.PublicKey = .init(seedKey: publicKeyData, derivation: .none)
+        let publicKey: BlockchainSdk.Wallet.PublicKey = .init(seedKey: publicKeyData, derivationType: .none)
         let address = try WalletCoreAddressService(blockchain: blockchain).makeAddress(for: publicKey, with: .default)
         let wallet = Wallet(blockchain: blockchain, addresses: [.default: address])
         
