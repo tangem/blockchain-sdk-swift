@@ -132,11 +132,10 @@ private extension EthereumTransactionHistoryMapper {
     }
     
     func transactionType(_ transaction: BlockBookAddressResponse.Transaction) -> TransactionRecord.TransactionType {
-        guard let ethereumSpecific = transaction.ethereumSpecific else {
+        guard let parsedData = transaction.ethereumSpecific?.parsedData else {
             return .transfer
         }
         
-        let parsedData = ethereumSpecific.parsedData
         if parsedData.methodId.isEmpty {
             return .transfer
         }

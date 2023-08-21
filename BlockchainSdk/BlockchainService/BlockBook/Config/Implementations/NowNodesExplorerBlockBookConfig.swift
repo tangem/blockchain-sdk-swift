@@ -30,6 +30,10 @@ extension NowNodesExplorerBlockBookConfig: BlockBookConfig {
     }
     
     func domain(for request: BlockBookTarget.Request, blockchain: Blockchain) -> String {
+        if case .bsc = blockchain {
+            return "https://bsc-blockbook.\(host)"
+        }
+
         let currencySymbolPrefix = blockchain.currencySymbol.lowercased()
         return "https://\(currencySymbolPrefix)-blockbook.\(host)"
     }

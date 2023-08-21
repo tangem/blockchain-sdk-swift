@@ -95,12 +95,12 @@ extension BlockBookAddressResponse {
     
     /// For EVM-like blockchains
     struct TokenTransfer: Decodable {
-        let type: String
+        let type: String?
         let from: String
         let to: String
         let contract: String
-        let name: String
-        let symbol: String
+        let name: String?
+        let symbol: String?
         let decimals: Int
         let value: String
         
@@ -118,12 +118,12 @@ extension BlockBookAddressResponse {
         
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            type = try container.decode(forKey: .type)
+            type = try container.decodeIfPresent(forKey: .type)
             from = try container.decode(forKey: .from)
             to = try container.decode(forKey: .to)
             contract = try container.decode(forKey: .contract)
-            name = try container.decode(forKey: .name)
-            symbol = try container.decode(forKey: .symbol)
+            name = try container.decodeIfPresent(forKey: .name)
+            symbol = try container.decodeIfPresent(forKey: .symbol)
             decimals = try container.decode(forKey: .decimals)
             value = try container.decode(forKey: .value, default: "0")
         }
@@ -131,12 +131,12 @@ extension BlockBookAddressResponse {
     /// For EVM-like blockchains
     struct EthereumSpecific: Decodable {
         let status: StatusType?
-        let nonce: Int
-        let gasLimit: Decimal
-        let gasUsed: Decimal
-        let gasPrice: String
-        let data: String
-        let parsedData : ParsedData
+        let nonce: Int?
+        let gasLimit: Decimal?
+        let gasUsed: Decimal?
+        let gasPrice: String?
+        let data: String?
+        let parsedData : ParsedData?
         
         enum StatusType: Int, Decodable {
             case pending = -1
@@ -152,40 +152,13 @@ extension BlockBookAddressResponse {
     }
     
     struct Token: Decodable {
-        let type: TokenType?
-        let name: String
-        let contract: String
-        let transfers: Int
-        let symbol: String
-        let decimals: Int
-        let balance: String
-        
-        enum TokenType: String, Decodable {
-            case erc20 = "ERC20"
-            case erc721 = "ERC721"
-            case erc1155 = "ERC1155"
-        }
-        
-        enum CodingKeys: CodingKey {
-            case type
-            case name
-            case contract
-            case transfers
-            case symbol
-            case decimals
-            case balance
-        }
-        
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            type = try container.decode(forKey: .type)
-            name = try container.decode(forKey: .name)
-            contract = try container.decode(forKey: .contract)
-            transfers = try container.decode(forKey: .transfers)
-            symbol = try container.decode(forKey: .symbol)
-            decimals = try container.decode(forKey: .decimals, default: 0)
-            balance = try container.decode(forKey: .balance, default: "0")
-        }
+        let type: String?
+        let name: String?
+        let contract: String?
+        let transfers: Int?
+        let symbol: String?
+        let decimals: Int?
+        let balance: String?
     }
 }
 
