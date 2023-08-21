@@ -38,12 +38,20 @@ extension WalletCoreAddressService {
 
 extension WalletCoreAddressService: AddressProvider {
     public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
-        guard let walletCorePublicKey = PublicKey(tangemPublicKey: publicKey.blockchainKey, publicKeyType: publicKeyType) else {
-            throw TWError.makeAddressFailed
-        }
+        switch addressType {
+        case .default:
+            guard let walletCorePublicKey = PublicKey(tangemPublicKey: publicKey.blockchainKey, publicKeyType: publicKeyType) else {
+                throw TWError.makeAddressFailed
+            }
 
-        let address = AnyAddress(publicKey: walletCorePublicKey, coin: coin).description
-        return PlainAddress(value: address, publicKey: publicKey, type: addressType)
+            let address = AnyAddress(publicKey: walletCorePublicKey, coin: coin).description
+            return PlainAddress(value: address, publicKey: publicKey, type: addressType)
+        case .legacy:
+            assertionFailure("WalletCoreAddressService don't support legacy address for \(coin)")
+            
+            // Cardano legacy address will be supported after merge Cardano tokens
+            return try makeAddress(for: publicKey, with: .default)
+        }
     }
 }
 

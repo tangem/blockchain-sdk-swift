@@ -67,13 +67,13 @@ class AddressesTests: XCTestCase {
         let secpPairCompressedKey = Data(hexString: "022A5741873B88C383A7CFF4AA23792754B5D20248F1A24DF1DAC35641B3F97D89")
         let service = BitcoinAddressService(networkParams: BitcoinNetwork.mainnet.networkParams)
 
-        let addr_dec = try service.makeAddresses(publicKey: .init(seedKey: secpDecompressedKey, derivation: .none),
+        let addr_dec = try service.makeAddresses(publicKey: .init(seedKey: secpDecompressedKey, derivationType: .none),
                                                  pairPublicKey: secpPairDecompressedKey)
-        let addr_dec1 = try service.makeAddresses(publicKey: .init(seedKey: secpDecompressedKey, derivation: .none),
+        let addr_dec1 = try service.makeAddresses(publicKey: .init(seedKey: secpDecompressedKey, derivationType: .none),
                                                   pairPublicKey: secpPairCompressedKey)
-        let addr_comp = try service.makeAddresses(publicKey: .init(seedKey: secpCompressedKey, derivation: .none),
+        let addr_comp = try service.makeAddresses(publicKey: .init(seedKey: secpCompressedKey, derivationType: .none),
                                                   pairPublicKey: secpPairCompressedKey)
-        let addr_comp1 = try service.makeAddresses(publicKey: .init(seedKey: secpCompressedKey, derivation: .none),
+        let addr_comp1 = try service.makeAddresses(publicKey: .init(seedKey: secpCompressedKey, derivationType: .none),
                                                    pairPublicKey: secpPairDecompressedKey)
         XCTAssertEqual(addr_dec.count, 2)
         XCTAssertEqual(addr_dec1.count, 2)
