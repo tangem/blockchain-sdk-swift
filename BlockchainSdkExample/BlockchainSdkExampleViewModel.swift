@@ -70,7 +70,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                                                                           kaspaSecondaryApiUrl: nil,
                                                                           tronGridApiKey: "",
                                                                           tonCenterApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
-                                                                          fireAcademyApiKeys: .init(mainnetApiKey: "6cc55930-4406-49ac-a820-586394758472", testnetApiKey: ""),
+                                                                          fireAcademyApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
                                                                           quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
                                                                           quickNodeBscCredentials: .init(apiKey: "", subdomain: ""),
                                                                           blockscoutCredentials: .init(login: "", password: ""),
