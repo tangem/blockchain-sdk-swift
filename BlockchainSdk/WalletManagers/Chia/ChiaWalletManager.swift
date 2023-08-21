@@ -112,8 +112,31 @@ private extension ChiaWalletManager {
         let coinBalance = decimalBalance / wallet.blockchain.decimalValue
         
         wallet.add(coinValue: coinBalance)
-        txBuilder.unspentCoins = coins
+        txBuilder.setUnspent(coins: coins)
         
         completion(.success(()))
+    }
+}
+
+// MARK: - WithdrawalValidator
+
+extension ChiaWalletManager: WithdrawalValidator {
+    func validate(_ transaction: Transaction) -> WithdrawalWarning? {
+        let availableAmount = txBuilder.availableAmount()
+        let amountAvailableToSend = availableAmount - transaction.fee.amount
+        
+        if transaction.amount <= amountAvailableToSend {
+            return nil
+        }
+        
+        let amountToReduceBy = transaction.amount - amountAvailableToSend
+        
+        return WithdrawalWarning(
+            warningMessage: "common_utxo_validate_withdrawal_message_warning".localized(
+                [wallet.blockchain.displayName, txBuilder.maxInputCount, amountAvailableToSend.description]
+            ),
+            reduceMessage: "common_ok".localized,
+            suggestedReduceAmount: amountToReduceBy
+        )
     }
 }

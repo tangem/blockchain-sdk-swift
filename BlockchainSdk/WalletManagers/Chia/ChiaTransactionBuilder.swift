@@ -11,15 +11,14 @@ import CryptoKit
 import TangemSdk
 
 final class ChiaTransactionBuilder {
-    // MARK: - Public Properties
-    
-    var unspentCoins: [ChiaCoin]
-    
     // MARK: - Private Properties
+    
+    let maxInputCount = 15
     
     private let isTestnet: Bool
     private let walletPublicKey: Data
     private var coinSpends: [ChiaCoinSpend] = []
+    private var unspentCoins: [ChiaCoin] = []
     
     private var genesisChallenge: Data {
         Data(hex: GenesisChallenge.challenge(isTestnet: blockchain.isTestnet))
@@ -39,8 +38,26 @@ final class ChiaTransactionBuilder {
     
     // MARK: - Implementation
     
+    func setUnspent(coins: [ChiaCoin]) {
+        let sortedCoins = coins.sorted {
+            $0.amount > $1.amount
+        }
+        
+        self.unspentCoins = Array(sortedCoins.prefix(maxInputCount))
+    }
+    
+    /// This limitation is due to the number of possible signatures
+    /// - Returns: Max amount for withdraw of use the number of signatures
+    func availableAmount() -> Amount {
+        let decimalBalance = unspentCoins.map { Decimal($0.amount) }.reduce(0, +)
+        let maxAmountBalance = decimalBalance / blockchain.decimalValue
+        return Amount(with: blockchain, value: maxAmountBalance)
+    }
+    
     func buildForSign(transaction: Transaction) throws -> [Data] {
-        guard !unspentCoins.isEmpty else {
+        let availableInputValue = availableAmount()
+        
+        guard !unspentCoins.isEmpty, transaction.amount <= availableInputValue else {
             throw WalletError.failedToBuildTx
         }
         

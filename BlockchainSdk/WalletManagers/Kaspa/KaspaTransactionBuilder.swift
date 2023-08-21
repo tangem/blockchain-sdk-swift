@@ -40,6 +40,7 @@ class KaspaTransactionBuilder {
     
     func buildForSign(_ transaction: Transaction) throws -> (KaspaTransaction, [Data]) {
         let availableInputValue = self.availableAmount()
+        
         if transaction.amount > availableInputValue{
             throw WalletError.failedToBuildTx
         }
