@@ -14,6 +14,7 @@ public struct TransactionRecord: Hashable {
     public let destination: DestinationType
     public let fee: Fee
     public let status: TransactionStatus
+    public let isOutgoing: Bool
     public let type: TransactionType
     public let date: Date
     public let tokenTransfers: [TokenTransfer]?
@@ -24,6 +25,7 @@ public struct TransactionRecord: Hashable {
         destination: DestinationType,
         fee: Fee,
         status: TransactionStatus,
+        isOutgoing: Bool,
         type: TransactionType,
         date: Date,
         tokenTransfers: [TokenTransfer]? = nil
@@ -33,6 +35,7 @@ public struct TransactionRecord: Hashable {
         self.destination = destination
         self.fee = fee
         self.status = status
+        self.isOutgoing = isOutgoing
         self.type = type
         self.date = date
         self.tokenTransfers = tokenTransfers
@@ -43,9 +46,15 @@ public struct TransactionRecord: Hashable {
 
 public extension TransactionRecord {
     enum TransactionType: Hashable {
-        case send
-        case receive
-        case ethereumMethod(_ name: String)
+        case transfer
+        case submit
+        case approve
+        case supply
+        case withdraw
+        case deposit
+        case swap
+        case unoswap
+        case custom(id: String)
     }
 }
 

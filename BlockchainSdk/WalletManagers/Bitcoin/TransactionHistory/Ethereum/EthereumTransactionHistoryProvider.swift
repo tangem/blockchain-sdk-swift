@@ -1,15 +1,15 @@
 //
-//  UTXOTransactionHistoryProvider.swift
+//  EthereumTransactionHistoryProvider.swift
 //  BlockchainSdk
 //
-//  Created by Sergey Balashov on 26.07.2023.
+//  Created by Sergey Balashov on 07.08.2023.
 //  Copyright © 2023 Tangem AG. All rights reserved.
 //
 
 import Foundation
 import Combine
 
-class UTXOTransactionHistoryProvider: MultiNetworkProvider {
+class EthereumTransactionHistoryProvider: MultiNetworkProvider {
     var currentProviderIndex: Int = 0
     var providers: [BlockBookUtxoProvider] {
         blockBookProviders
@@ -27,24 +27,29 @@ class UTXOTransactionHistoryProvider: MultiNetworkProvider {
     }
 }
 
-extension UTXOTransactionHistoryProvider: TransactionHistoryProvider {
-    func loadTransactionHistory(address: String, page: Page) -> AnyPublisher<TransactionHistoryResponse, Error> {
+extension EthereumTransactionHistoryProvider: TransactionHistoryProvider {
+    func loadTransactionHistory(request: TransactionHistory.Request) -> AnyPublisher<TransactionHistory.Response, Error> {
         providerPublisher { [weak self] provider in
             guard let self else {
                 return .anyFail(error: WalletError.empty)
             }
             
             return provider.addressData(
-                address: address,
-                parameters: .init(page: page.number, pageSize: page.size, details: [.txslight])
+                address: request.address,
+                parameters: .init(
+                    page: request.page.number,
+                    pageSize: request.page.size,
+                    details: [.txslight],
+                    filterType: request.contract == nil ? .coin : .contract(request.contract!)
+                )
             )
-            .tryMap { [weak self] response -> TransactionHistoryResponse in
+            .tryMap { [weak self] response -> TransactionHistory.Response in
                 guard let self else {
                     throw WalletError.empty
                 }
                 
                 let records = self.mapper.mapToTransactionRecords(response)
-                return TransactionHistoryResponse(
+                return TransactionHistory.Response(
                     totalPages: response.totalPages,
                     totalRecordsCount: response.txs,
                     page: Page(number: response.page, size: response.itemsOnPage),

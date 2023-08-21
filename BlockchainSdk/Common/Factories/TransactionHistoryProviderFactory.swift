@@ -17,7 +17,7 @@ public struct TransactionHistoryProviderFactory {
         self.config = config
     }
     
-    public func makeProvider(for blockchain: Blockchain) -> TransactionHistoryProvider? {
+    public func makeProvider(for blockchain: Blockchain, type: Amount.AmountType) -> TransactionHistoryProvider? {
         let networkAssembly = NetworkProviderAssembly()
         let input = NetworkProviderAssembly.Input(blockchainSdkConfig: config, blockchain: blockchain)
         
@@ -28,15 +28,12 @@ public struct TransactionHistoryProviderFactory {
                     networkAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock),
                     networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes)
                 ],
-                mapper: TransactionHistoryMapper(blockchain: blockchain)
+                mapper: UTXOTransactionHistoryMapper(blockchain: blockchain)
             )
         case .ethereum:
             return EthereumTransactionHistoryProvider(
-                blockBookProviders: [
-//                    networkAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock),
-                    networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes)
-                ],
-                mapper: TransactionHistoryMapper(blockchain: blockchain)
+                blockBookProviders: [networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodesExplorer)],
+                mapper: EthereumTransactionHistoryMapper(blockchain: blockchain, contract: type.token?.contractAddress)
             )
         default:
             return nil

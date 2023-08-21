@@ -20,7 +20,37 @@ struct BlockBookAddressResponse: Decodable {
     let txs: Int
     /// Only for EVM-like. Main network transactions count
     let nonTokenTxs: Int
-    let transactions: [Transaction]?
+    let transactions: [Transaction]
+    let tokens: [Token]
+
+    enum CodingKeys: String, CodingKey {
+        case page
+        case totalPages
+        case itemsOnPage
+        case address
+        case balance
+        case unconfirmedBalance
+        case unconfirmedTxs
+        case txs
+        case nonTokenTxs
+        case transactions
+        case tokens
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        page = try values.decode(forKey: .page, default: 0)
+        totalPages = try values.decode(forKey: .totalPages, default: 0)
+        itemsOnPage = try values.decode(forKey: .itemsOnPage, default: 0)
+        address = try values.decode(forKey: .address)
+        balance = try values.decode(forKey: .balance)
+        unconfirmedBalance = try values.decode(forKey: .unconfirmedBalance)
+        unconfirmedTxs = try values.decode(forKey: .unconfirmedTxs)
+        txs = try values.decode(forKey: .txs)
+        nonTokenTxs = try values.decode(forKey: .nonTokenTxs, default: 0)
+        transactions = try values.decode(forKey: .transactions, default: [])
+        tokens = try values.decode(forKey: .tokens, default: [])
+    }
 }
 
 extension BlockBookAddressResponse {
@@ -73,6 +103,30 @@ extension BlockBookAddressResponse {
         let symbol: String
         let decimals: Int
         let value: String
+        
+        enum CodingKeys: CodingKey {
+            case type
+            case from
+            case to
+            case contract
+            case token
+            case name
+            case symbol
+            case decimals
+            case value
+        }
+        
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            type = try container.decode(String.self, forKey: .type)
+            from = try container.decode(String.self, forKey: .from)
+            to = try container.decode(String.self, forKey: .to)
+            contract = try container.decode(String.self, forKey: .contract)
+            name = try container.decode(String.self, forKey: .name)
+            symbol = try container.decode(String.self, forKey: .symbol)
+            decimals = try container.decode(Int.self, forKey: .decimals)
+            value = try container.decode(forKey: .value, default: "0")
+        }
     }
     /// For EVM-like blockchains
     struct EthereumSpecific: Decodable {
@@ -91,7 +145,38 @@ extension BlockBookAddressResponse {
         }
     }
     
+    struct Token: Decodable {
+        let type: String
+        let name: String
+        let contract: String
+        let transfers: Int
+        let symbol: String
+        let decimals: Int
+        let balance: String
+        
+        enum CodingKeys: CodingKey {
+            case type
+            case name
+            case contract
+            case transfers
+            case symbol
+            case decimals
+            case balance
+        }
+        
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: BlockBookAddressResponse.Token.CodingKeys.self)
+            type = try container.decode(String.self, forKey: .type)
+            name = try container.decode(String.self, forKey: .name)
+            contract = try container.decode(String.self, forKey: .contract)
+            transfers = try container.decode(Int.self, forKey: .transfers)
+            symbol = try container.decode(String.self, forKey: .symbol)
+            decimals = try container.decode(forKey: .decimals, default: 0)
+            balance = try container.decode(forKey: .balance, default: "0")
+        }
+    }
 }
+
 
 struct BlockBookUnspentTxResponse: Decodable {
     let txid: String

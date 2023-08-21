@@ -46,7 +46,7 @@ extension EthereumAddressService: AddressProvider {
         let hexAddressBytes = addressBytes.toHexString()
         let address = "0x" + hexAddressBytes
         let checksumAddress = toChecksumAddress(address)!
-        return PlainAddress(value: checksumAddress, publicKey: publicKey, type: addressType)
+        return PlainAddress(value: checksumAddress, publicKey: publicKey, type: addressType) // "0x4BeA6238E0b0f1Fc40e2231B3093511C41F08585"
     }
 }
 
