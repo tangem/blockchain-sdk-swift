@@ -67,7 +67,7 @@ class ChiaTests: XCTestCase {
              )
         ]
         
-        transactionBuilder.unspentCoins = unspentCoins
+        transactionBuilder.setUnspent(coins: unspentCoins)
         
         let amountToSend = Amount(with: blockchain, value: sendValue)
         let fee = Fee(Amount(with: amountToSend, value: feeValue))
@@ -128,7 +128,7 @@ class ChiaTests: XCTestCase {
              )
         ]
         
-        transactionBuilder.unspentCoins = unspentCoins
+        transactionBuilder.setUnspent(coins: unspentCoins)
         
         let amountToSend = Amount(with: blockchain, value: sendValue)
         let fee = Fee(Amount(with: amountToSend, value: feeValue))
