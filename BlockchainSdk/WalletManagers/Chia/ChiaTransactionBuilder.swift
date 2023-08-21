@@ -13,7 +13,7 @@ import TangemSdk
 final class ChiaTransactionBuilder {
     // MARK: - Private Properties
     
-    /// Obtained by test imperial bls curve testing for various ios devide versions
+    /// Max BLS hashes count to handle by single iOS NFS session. IPhone 7/7+ doesn’t support BLS signing due to hardware limitations.
     let maxInputCount = 15
     
     private let isTestnet: Bool
