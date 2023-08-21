@@ -104,12 +104,11 @@ final class ChiaWalletManager: BaseManager, WalletManager {
 private extension ChiaWalletManager {
     func update(with coins: [ChiaCoin], completion: @escaping (Result<Void, Error>) -> Void) {
         let decimalBalance = coins.map { Decimal($0.amount) }.reduce(0, +)
+        let coinBalance = decimalBalance / wallet.blockchain.decimalValue
         
-        if decimalBalance != wallet.amounts[.coin]?.value {
+        if coinBalance != wallet.amounts[.coin]?.value {
             wallet.transactions = []
         }
-        
-        let coinBalance = decimalBalance / wallet.blockchain.decimalValue
         
         wallet.add(coinValue: coinBalance)
         txBuilder.setUnspent(coins: coins)
