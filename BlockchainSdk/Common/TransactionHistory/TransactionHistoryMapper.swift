@@ -8,6 +8,7 @@
 
 import Foundation
 
-protocol TransactionHistoryMapper {
-    func mapToTransactionRecords(_ response: BlockBookAddressResponse) -> [TransactionRecord]
+@available(iOS 13.0, *)
+protocol BlockBookTransactionHistoryMapper {
+    func mapToTransactionRecords(_ response: BlockBookAddressResponse, amountType: Amount.AmountType) -> [TransactionRecord]
 }

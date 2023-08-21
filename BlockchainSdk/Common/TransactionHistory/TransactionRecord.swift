@@ -16,7 +16,7 @@ public struct TransactionRecord: Hashable {
     public let status: TransactionStatus
     public let isOutgoing: Bool
     public let type: TransactionType
-    public let date: Date
+    public let date: Date?
     public let tokenTransfers: [TokenTransfer]?
     
     public init(
@@ -27,7 +27,7 @@ public struct TransactionRecord: Hashable {
         status: TransactionStatus,
         isOutgoing: Bool,
         type: TransactionType,
-        date: Date,
+        date: Date?,
         tokenTransfers: [TokenTransfer]? = nil
     ) {
         self.hash = hash
@@ -55,6 +55,16 @@ public extension TransactionRecord {
         case swap
         case unoswap
         case custom(id: String)
+    }
+}
+
+// MARK: - TransactionStatus
+
+public extension TransactionRecord {
+    enum TransactionStatus: Hashable {
+        case unconfirmed
+        case failed
+        case confirmed
     }
 }
 

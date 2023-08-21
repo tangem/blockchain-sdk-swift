@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// https://nownodes.io/nodes
 struct NowNodesExplorerBlockBookConfig {
     private let apiKey: String
     

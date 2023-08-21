@@ -17,7 +17,12 @@ public struct TransactionHistoryProviderFactory {
         self.config = config
     }
     
-    public func makeProvider(for blockchain: Blockchain, type: Amount.AmountType) -> TransactionHistoryProvider? {
+    public func makeProvider(for blockchain: Blockchain) -> TransactionHistoryProvider? {
+        // Transaction history is only supported on the mainnet
+        guard !blockchain.isTestnet else {
+            return nil
+        }
+
         let networkAssembly = NetworkProviderAssembly()
         let input = NetworkProviderAssembly.Input(blockchainSdkConfig: config, blockchain: blockchain)
         
@@ -32,8 +37,8 @@ public struct TransactionHistoryProviderFactory {
             )
         case .ethereum:
             return EthereumTransactionHistoryProvider(
-                blockBookProviders: [networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodesExplorer)],
-                mapper: EthereumTransactionHistoryMapper(blockchain: blockchain, contract: type.token?.contractAddress)
+                blockBookProvider: networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodesExplorer),
+                mapper: EthereumTransactionHistoryMapper(blockchain: blockchain)
             )
         default:
             return nil

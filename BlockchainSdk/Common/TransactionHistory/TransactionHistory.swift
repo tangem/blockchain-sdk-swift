@@ -13,12 +13,12 @@ extension TransactionHistory {
     public struct Request: Hashable {
         public let address: String
         public let page: Page
-        public let contract: String?
+        public let amountType: Amount.AmountType
         
-        public init(address: String, page: Page, contract: String? = nil) {
+        public init(address: String, page: Page, amountType: Amount.AmountType) {
             self.address = address
             self.page = page
-            self.contract = contract
+            self.amountType = amountType
         }
     }
 }

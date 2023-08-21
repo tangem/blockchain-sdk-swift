@@ -18,24 +18,24 @@ struct UTXOTransactionHistoryMapper {
     }
 }
 
-// MARK: - TransactionHistoryMapper
+// MARK: - BlockBookTransactionHistoryMapper
 
-extension UTXOTransactionHistoryMapper: TransactionHistoryMapper {
+extension UTXOTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
     
-    func mapToTransactionRecords(_ response: BlockBookAddressResponse) -> [TransactionRecord] {
-        let transactions = response.transactions ?? []
-        
-        if transactions.isEmpty {
+    func mapToTransactionRecords(_ response: BlockBookAddressResponse, amountType: Amount.AmountType) -> [TransactionRecord] {
+        assert(amountType == .coin, "UTXOTransactionHistoryMapper doesn't support a token amount")
+
+        if response.transactions.isEmpty {
             return []
         }
         
-        return transactions.compactMap { transaction -> TransactionRecord? in
+        return response.transactions.compactMap { transaction -> TransactionRecord? in
             guard let feeSatoshi = Decimal(transaction.fees) else {
                 return nil
             }
             
             let isOutgoing = transaction.vin.contains(where: { $0.isOwn == true })
-            let status: TransactionStatus = transaction.confirmations > 0 ? .confirmed : .unconfirmed
+            let status: TransactionRecord.TransactionStatus = transaction.confirmations > 0 ? .confirmed : .unconfirmed
             let fee = feeSatoshi / decimalValue
             
             return TransactionRecord(

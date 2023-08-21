@@ -7,45 +7,37 @@
 //
 
 import Foundation
-
-/// ETH -> ETH Transfer
-/// Contract -> Contract
-/// ETH -> Contract -> Contract add token = SWAP to token
-/// Contract -> ETH = SWAP to coin
-/// Contract -> Contract = SWAP token to token
+import TangemSdk
 
 struct EthereumTransactionHistoryMapper {
     private let blockchain: Blockchain
-    private let contract: String?
     
     private var decimalValue: Decimal {
         blockchain.decimalValue
     }
     
-    init(blockchain: Blockchain, contract: String?) {
+    init(blockchain: Blockchain) {
         self.blockchain = blockchain
-        self.contract = contract
     }
 }
 
-// MARK: - TransactionHistoryMapper
+// MARK: - BlockBookTransactionHistoryMapper
 
-extension EthereumTransactionHistoryMapper: TransactionHistoryMapper {
+extension EthereumTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
     
-    func mapToTransactionRecords(_ response: BlockBookAddressResponse) -> [TransactionRecord] {
+    func mapToTransactionRecords(_ response: BlockBookAddressResponse, amountType: Amount.AmountType) -> [TransactionRecord] {
         if response.transactions.isEmpty {
             return []
         }
         
         return response.transactions.compactMap { transaction -> TransactionRecord? in
-            guard let feeWei = Decimal(transaction.fees),
-                  let source = source(transaction, walletAddress: response.address),
-                  let destination = destination(transaction, walletAddress: response.address) else {
-                assertionFailure("BlockBookAddressResponse.Transaction doesn't contain a required information")
+            guard let source = source(transaction, amountType: amountType),
+                  let destination = destination(transaction, amountType: amountType),
+                  let feeWei = Decimal(transaction.fees) else {
+                Log.debug("BlockBookAddressResponse.Transaction \(transaction) doesn't contain a required information")
                 return nil
             }
-
-            let status: TransactionStatus = transaction.confirmations > 0 ? .confirmed : .unconfirmed
+            
             let fee = Fee(Amount(with: blockchain, value: feeWei / decimalValue))
             
             return TransactionRecord(
@@ -53,40 +45,59 @@ extension EthereumTransactionHistoryMapper: TransactionHistoryMapper {
                 source: .single(source),
                 destination: .single(destination),
                 fee: fee,
-                status: status,
-                isOutgoing: isOutgoing(transaction, walletAddress: response.address),
+                status: status(transaction),
+                isOutgoing: isOutgoing(transaction, walletAddress: response.address, amountType: amountType),
                 type: transactionType(transaction),
                 date: Date(timeIntervalSince1970: TimeInterval(transaction.blockTime)),
                 tokenTransfers: tokenTransfers(transaction)
             )
         }
     }
+}
+
+// MARK: - Private
+
+private extension EthereumTransactionHistoryMapper {
+    func status(_ transaction: BlockBookAddressResponse.Transaction) -> TransactionRecord.TransactionStatus {
+        guard let status = transaction.ethereumSpecific?.status else {
+            return transaction.confirmations > 0 ? .confirmed : .unconfirmed
+        }
+        
+        switch status {
+        case .failure:
+            return .failed
+        case .ok:
+            return .confirmed
+        case .pending:
+            return .unconfirmed
+        }
+    }
     
-    func isOutgoing(_ transaction: BlockBookAddressResponse.Transaction, walletAddress: String) -> Bool {
-        switch contract {
-        case .none:
+    func isOutgoing(_ transaction: BlockBookAddressResponse.Transaction, walletAddress: String, amountType: Amount.AmountType) -> Bool {
+        switch amountType {
+        case .coin, .reserve:
             return transaction.vin.first?.addresses.first == walletAddress
-        case .some(let contract):
-            let transfer = transaction.tokenTransfers?.first(where: { insensitiveCompare(lhs: contract, rhs: $0.contract) })
+        case .token(let token):
+            let transfer = transaction.tokenTransfers?.first(where: { insensitiveCompare(lhs: token.contractAddress, rhs: $0.contract) })
             return transfer?.from == walletAddress
         }
     }
     
-    func source(_ transaction: BlockBookAddressResponse.Transaction, walletAddress: String) -> TransactionRecord.Source? {
+    func source(_ transaction: BlockBookAddressResponse.Transaction, amountType: Amount.AmountType) -> TransactionRecord.Source? {
         guard let vin = transaction.vin.first, let address = vin.addresses.first else {
-            print("Source information not found")
+            Log.debug("Source information in transaction \(transaction) not found")
             return nil
         }
         
-        switch contract {
-        case .none:
+        switch amountType {
+        case .coin, .reserve:
             if let amount = Decimal(string: transaction.value) {
                 return TransactionRecord.Source(address: address, amount: amount / decimalValue)
             }
-        case .some(let contract):
+        case .token(let token):
             let tokenTransfers = transaction.tokenTransfers ?? []
-            let transfer = tokenTransfers.first(where: { insensitiveCompare(lhs: contract, rhs: $0.contract) })
-
+            let transfer = tokenTransfers.first(where: { insensitiveCompare(lhs: token.contractAddress, rhs: $0.contract) })
+            
             if let transfer, let amount = Decimal(string: transfer.value) {
                 let decimalValue = pow(10, transfer.decimals)
                 return TransactionRecord.Source(address: address, amount: amount / decimalValue)
@@ -96,21 +107,21 @@ extension EthereumTransactionHistoryMapper: TransactionHistoryMapper {
         return nil
     }
     
-    func destination(_ transaction: BlockBookAddressResponse.Transaction, walletAddress: String) -> TransactionRecord.Destination? {
+    func destination(_ transaction: BlockBookAddressResponse.Transaction, amountType: Amount.AmountType) -> TransactionRecord.Destination? {
         guard let vout = transaction.vout.first, let address = vout.addresses.first else {
-            print("Destination information not found")
+            Log.debug("Destination information in transaction \(transaction) not found")
             return nil
         }
-
-        switch contract {
-        case .none:
+        
+        switch amountType {
+        case .coin, .reserve:
             if let amount = Decimal(string: transaction.value) {
                 return TransactionRecord.Destination(address: .user(address), amount: amount / decimalValue)
             }
-        case .some(let contract):
+        case .token(let token):
             let tokenTransfers = transaction.tokenTransfers ?? []
-            let transfer = tokenTransfers.last(where: { insensitiveCompare(lhs: contract, rhs: $0.contract) })
-
+            let transfer = tokenTransfers.last(where: { insensitiveCompare(lhs: token.contractAddress, rhs: $0.contract) })
+            
             if let transfer, let amount = Decimal(string: transfer.value) {
                 let decimalValue = pow(10, transfer.decimals)
                 return TransactionRecord.Destination(address: .contract(address), amount: amount / decimalValue)
