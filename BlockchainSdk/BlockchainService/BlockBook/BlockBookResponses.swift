@@ -162,7 +162,6 @@ extension BlockBookAddressResponse {
     }
 }
 
-
 struct BlockBookUnspentTxResponse: Decodable {
     let txid: String
     let vout: Int

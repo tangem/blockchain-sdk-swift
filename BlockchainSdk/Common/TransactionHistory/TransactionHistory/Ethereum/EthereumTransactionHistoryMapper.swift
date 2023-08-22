@@ -26,11 +26,7 @@ struct EthereumTransactionHistoryMapper {
 extension EthereumTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
     
     func mapToTransactionRecords(_ response: BlockBookAddressResponse, amountType: Amount.AmountType) -> [TransactionRecord] {
-        if response.transactions.isEmpty {
-            return []
-        }
-        
-        return response.transactions.compactMap { transaction -> TransactionRecord? in
+        response.transactions.compactMap { transaction -> TransactionRecord? in
             guard let source = source(transaction, amountType: amountType),
                   let destination = destination(transaction, amountType: amountType),
                   let feeWei = Decimal(transaction.fees) else {
@@ -78,7 +74,7 @@ private extension EthereumTransactionHistoryMapper {
         case .coin, .reserve:
             return transaction.vin.first?.addresses.first == walletAddress
         case .token(let token):
-            let transfer = transaction.tokenTransfers?.first(where: { insensitiveCompare(lhs: token.contractAddress, rhs: $0.contract) })
+            let transfer = transaction.tokenTransfers?.first(where: { isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: $0.contract) })
             return transfer?.from == walletAddress
         }
     }
@@ -96,7 +92,7 @@ private extension EthereumTransactionHistoryMapper {
             }
         case .token(let token):
             let tokenTransfers = transaction.tokenTransfers ?? []
-            let transfer = tokenTransfers.first(where: { insensitiveCompare(lhs: token.contractAddress, rhs: $0.contract) })
+            let transfer = tokenTransfers.first(where: { isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: $0.contract) })
             
             if let transfer, let amount = Decimal(string: transfer.value) {
                 let decimalValue = pow(10, transfer.decimals)
@@ -120,7 +116,7 @@ private extension EthereumTransactionHistoryMapper {
             }
         case .token(let token):
             let tokenTransfers = transaction.tokenTransfers ?? []
-            let transfer = tokenTransfers.last(where: { insensitiveCompare(lhs: token.contractAddress, rhs: $0.contract) })
+            let transfer = tokenTransfers.last(where: { isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: $0.contract) })
             
             if let transfer, let amount = Decimal(string: transfer.value) {
                 let decimalValue = pow(10, transfer.decimals)
@@ -165,8 +161,8 @@ private extension EthereumTransactionHistoryMapper {
         }
     }
     
-    func insensitiveCompare(lhs: String, rhs: String) -> Bool {
-        return lhs.caseInsensitiveCompare(rhs) == .orderedSame
+    func isCaseInsensitiveMatch(lhs: String, rhs: String) -> Bool {
+        return lhs.caseisCaseInsensitiveMatch(rhs) == .orderedSame
     }
 }
 
