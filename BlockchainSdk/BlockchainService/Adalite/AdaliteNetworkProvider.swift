@@ -18,6 +18,10 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
         AdaliteTarget.address(address: "", url: adaliteUrl).baseURL.hostOrUnknown
     }
     
+    var decimalValue: Decimal {
+        Blockchain.cardano(extended: false).decimalValue
+    }
+    
     init(baseUrl: AdaliteUrl, configuration: NetworkProviderConfiguration) {
         adaliteUrl = baseUrl
         provider = NetworkProvider<AdaliteTarget>(configuration: configuration)
@@ -114,12 +118,11 @@ private extension AdaliteNetworkProvider {
         tokens: [Token]
     ) -> CardanoAddressResponse {
         let txHashes = responses.flatMap { $0.transactions }
-
-        var coinBalance: Decimal = unspentOutputs.reduce(0) { result, output in
-            result + output.amount / Blockchain.cardano.decimalValue
+        let coinBalance: Decimal = unspentOutputs.reduce(0) { result, output in
+            result + output.amount / decimalValue
         }
 
-        var tokenBalances: [Token: Decimal] = tokens.reduce(into: [:]) { tokenBalances, token in
+        let tokenBalances: [Token: Decimal] = tokens.reduce(into: [:]) { tokenBalances, token in
             // Collecting of all output balance
             tokenBalances[token, default: 0] += unspentOutputs.reduce(0) { result, output in
                 // Sum with each asset in output amount

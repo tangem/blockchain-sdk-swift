@@ -20,6 +20,10 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     private let provider: NetworkProvider<RosettaTarget>
     private let baseUrl: RosettaUrl
     private let cardanoCurrencySymbol: String = Blockchain.cardano(extended: false).currencySymbol
+    private var decimalValue: Decimal {
+        Blockchain.cardano(extended: false).decimalValue
+    }
+    
     private var decoder: JSONDecoder {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -70,7 +74,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
             }
 
             unspentOutputs.forEach { output in
-                coinBalance += output.amount / Blockchain.cardano.decimalValue
+                coinBalance += output.amount / self.decimalValue
             }
             
             return CardanoAddressResponse(balance: coinBalance, tokenBalances: tokenBalances, recentTransactionsHashes: [], unspentOutputs: unspentOutputs)
