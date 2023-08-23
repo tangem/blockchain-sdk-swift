@@ -20,7 +20,7 @@ class TezosTransactionBuilder {
     
     internal init(walletPublicKey: Data, curve: EllipticCurve) throws {
         switch curve {
-        case .ed25519:
+        case .ed25519, .ed25519_slip0010:
             self.walletPublicKey = walletPublicKey
         case .secp256k1:
             self.walletPublicKey = try Secp256k1Key(with: walletPublicKey).compress()

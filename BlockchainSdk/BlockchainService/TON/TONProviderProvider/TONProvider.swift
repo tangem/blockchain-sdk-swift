@@ -10,9 +10,6 @@ import Foundation
 import Combine
 
 struct TONProvider: HostProvider {
-    
-    // MARK: - HostProvider
-    
     /// Blockchain API host
     var host: String {
         node.endpoint.url.hostOrUnknown

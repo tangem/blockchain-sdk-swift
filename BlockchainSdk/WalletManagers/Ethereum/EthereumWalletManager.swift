@@ -100,7 +100,7 @@ private extension EthereumWalletManager {
                 let gasLimit = ethereumFeeResponse.gasLimit
                 let fees = ethereumFeeResponse.gasPrices.map { gasPrice in
                     let feeValue = gasLimit * gasPrice
-                    let fee = Decimal(Int(feeValue)) / self.wallet.blockchain.decimalValue
+                    let fee = Decimal(Double(feeValue)) / self.wallet.blockchain.decimalValue
 
                     let amount = Amount(with: self.wallet.blockchain, value: fee)
                     let parameters = EthereumFeeParameters(gasLimit: gasLimit, gasPrice: gasPrice)
@@ -122,22 +122,18 @@ private extension EthereumWalletManager {
         txCount = response.txCount
         pendingTxCount = response.pendingTxCount
         
-        // TODO: This should be removed when integrating transaction history for all blockchains
-        // If we can load transaction history for specified blockchain - we can ignore loading pending txs
-        if !wallet.blockchain.canLoadTransactionHistory {
-            if txCount == pendingTxCount {
-                for index in wallet.transactions.indices {
-                    wallet.transactions[index].status = .confirmed
-                }
-            } else if response.pendingTxs.isEmpty {
-                if wallet.transactions.isEmpty {
-                    wallet.addDummyPendingTransaction()
-                }
-            } else {
-                wallet.transactions.removeAll()
-                response.pendingTxs.forEach {
-                    wallet.addPendingTransaction($0)
-                }
+        if txCount == pendingTxCount {
+            for index in wallet.transactions.indices {
+                wallet.transactions[index].status = .confirmed
+            }
+        } else if response.pendingTxs.isEmpty {
+            if wallet.transactions.isEmpty {
+                wallet.addDummyPendingTransaction()
+            }
+        } else {
+            wallet.transactions.removeAll()
+            response.pendingTxs.forEach {
+                wallet.addPendingTransaction($0)
             }
         }
     }

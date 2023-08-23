@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct Page {
+public struct Page: Hashable {
     public let number: Int
     public let size: Int
     

@@ -35,7 +35,7 @@ public class WalletManagerFactory {
     ///   - pairKey: Pair public key
     public func makeTwinWalletManager(walletPublicKey: Data, pairKey: Data, isTestnet: Bool) throws -> WalletManager {
         let blockchain: Blockchain = .bitcoin(testnet: isTestnet)
-        let publicKey = Wallet.PublicKey(seedKey: walletPublicKey, derivation: .none)
+        let publicKey = Wallet.PublicKey(seedKey: walletPublicKey, derivationType: .none)
         let walletFactory = WalletFactory(blockchain: blockchain)
         let wallet = try walletFactory.makeWallet(publicKey: publicKey, pairPublicKey: pairKey)
         return try makeWalletManager(wallet: wallet, pairPublicKey: pairKey)
@@ -74,7 +74,7 @@ extension WalletManagerFactory {
         dummyPublicKey: Data,
         dummyAddress: String
     ) throws -> WalletManager {
-        let publicKey = Wallet.PublicKey(seedKey: dummyPublicKey, derivation: .none)
+        let publicKey = Wallet.PublicKey(seedKey: dummyPublicKey, derivationType: .none)
         let address: PlainAddress
 
         if dummyAddress.isEmpty {

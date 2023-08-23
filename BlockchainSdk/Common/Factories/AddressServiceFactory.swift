@@ -39,7 +39,10 @@ public struct AddressServiceFactory {
             return BitcoinCashAddressService(networkParams: networkParams)
         case .binance:
             return BinanceAddressService(testnet: isTestnet)
-        case .cardano:
+        case .cardano(let extended):
+            if extended {
+                return WalletCoreAddressService(coin: .cardano)
+            }
             return CardanoAddressService()
         case .xrp(let curve):
             return XRPAddressService(curve: curve)
@@ -49,12 +52,12 @@ public struct AddressServiceFactory {
             return BitcoinLegacyAddressService(networkParams: DogecoinNetworkParams())
         case .solana:
             return SolanaAddressService()
-        case .polkadot:
-            return PolkadotAddressService(network: isTestnet ? .westend : .polkadot)
-        case .kusama:
-            return PolkadotAddressService(network: .kusama)
-        case .azero(let isTestnet):
-            return PolkadotAddressService(network: .azero(testnet: isTestnet))
+        case .polkadot(let curve, _):
+            return PolkadotAddressService(network: isTestnet ? .westend(curve: curve) : .polkadot(curve: curve))
+        case .kusama(let curve):
+            return PolkadotAddressService(network: .kusama(curve: curve))
+        case .azero(let curve, let isTestnet):
+            return PolkadotAddressService(network: .azero(curve: curve, testnet: isTestnet))
         case .tron:
             return TronAddressService()
         case .dash:
