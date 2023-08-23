@@ -37,7 +37,7 @@ public struct TransactionHistoryProviderFactory {
             )
         case .ethereum, .ethereumPoW, .bsc, .avalanche:
             return EthereumTransactionHistoryProvider(
-                blockBookProvider: networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodesExplorer),
+                blockBookProvider: networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes),
                 mapper: EthereumTransactionHistoryMapper(blockchain: blockchain)
             )
         default:

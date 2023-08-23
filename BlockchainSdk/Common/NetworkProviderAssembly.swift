@@ -24,12 +24,6 @@ struct NetworkProviderAssembly {
                 blockBookConfig: NowNodesBlockBookConfig(apiKey: input.blockchainSdkConfig.nowNodesApiKey),
                 networkConfiguration: input.networkConfig
             )
-        case .nowNodesExplorer:
-            return BlockBookUtxoProvider(
-                blockchain: input.blockchain,
-                blockBookConfig: NowNodesExplorerBlockBookConfig(apiKey: input.blockchainSdkConfig.nowNodesApiKey),
-                networkConfiguration: input.networkConfig
-            )
         case .getBlock:
             return BlockBookUtxoProvider(
                 blockchain: input.blockchain,

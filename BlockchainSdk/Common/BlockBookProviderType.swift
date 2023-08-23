@@ -10,6 +10,5 @@ import Foundation
 
 enum BlockBookProviderType {
     case nowNodes
-    case nowNodesExplorer
     case getBlock
 }

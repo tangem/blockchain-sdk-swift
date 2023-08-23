@@ -34,24 +34,27 @@ extension UTXOTransactionHistoryProvider: TransactionHistoryProvider {
                 return .anyFail(error: WalletError.empty)
             }
             
-            return provider.addressData(
-                address: request.address,
-                parameters: .init(page: request.page.number, pageSize: request.page.size, details: [.txslight])
+            let parameters = BlockBookTarget.AddressRequestParameters(
+                page: request.page.number,
+                pageSize: request.page.size,
+                details: [.txslight]
             )
-            .tryMap { [weak self] response -> TransactionHistory.Response in
-                guard let self else {
-                    throw WalletError.empty
+            
+            return provider.addressData(address: request.address, parameters: parameters)
+                .tryMap { [weak self] response -> TransactionHistory.Response in
+                    guard let self else {
+                        throw WalletError.empty
+                    }
+                    
+                    let records = self.mapper.mapToTransactionRecords(response, amountType: .coin)
+                    return TransactionHistory.Response(
+                        totalPages: response.totalPages ?? 0,
+                        totalRecordsCount: response.txs,
+                        page: Page(number: response.page ?? 0, size: response.itemsOnPage ?? 0),
+                        records: records
+                    )
                 }
-                
-                let records = self.mapper.mapToTransactionRecords(response, amountType: .coin)
-                return TransactionHistory.Response(
-                    totalPages: response.totalPages ?? 0,
-                    totalRecordsCount: response.txs,
-                    page: Page(number: response.page ?? 0, size: response.itemsOnPage ?? 0),
-                    records: records
-                )
-            }
-            .eraseToAnyPublisher()
+                .eraseToAnyPublisher()
         }
     }
 }
