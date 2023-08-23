@@ -30,13 +30,13 @@ extension NowNodesBlockBookConfig: BlockBookConfig {
         return "nownodes.io"
     }
     
-    func node(for blockchain: Blockchain) -> NodeConfig {
+    func node(for blockchain: Blockchain) -> BlockBookNode {
         var currencySymbolPrefix = blockchain.currencySymbol.lowercased()
         
         switch blockchain {
         case .bitcoin, .dash, .dogecoin, .litecoin:
             let testnetSuffix = blockchain.isTestnet ? "-testnet" : ""
-            return NodeConfig(
+            return BlockBookNode(
                 rpcNode: "https://\(currencySymbolPrefix).\(host)",
                 restNode: "https://\(currencySymbolPrefix)book\(testnetSuffix).\(host)"
             )
@@ -45,7 +45,7 @@ extension NowNodesBlockBookConfig: BlockBookConfig {
                 currencySymbolPrefix = "bsc"
             }
             
-            return NodeConfig(
+            return BlockBookNode(
                 rpcNode: "https://\(currencySymbolPrefix).\(host)",
                 restNode: "https://\(currencySymbolPrefix)-blockbook.\(host)"
             )

@@ -29,10 +29,10 @@ extension GetBlockBlockBookConfig: BlockBookConfig {
         return "getblock.io"
     }
     
-    func node(for blockchain: Blockchain) -> NodeConfig {
+    func node(for blockchain: Blockchain) -> BlockBookNode {
         let currencySymbolPrefix = blockchain.currencySymbol.lowercased()
         
-        return NodeConfig(
+        return BlockBookNode(
             rpcNode: "https://\(currencySymbolPrefix).\(host)",
             restNode: "https://\(currencySymbolPrefix).\(host)"
         )
