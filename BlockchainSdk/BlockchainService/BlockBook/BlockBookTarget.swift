@@ -15,7 +15,12 @@ struct BlockBookTarget: TargetType {
     let blockchain: Blockchain
     
     var baseURL: URL {
-        URL(string: config.domain(for: request, blockchain: blockchain))!
+        switch request {
+        case .fees:
+            return URL(string: config.node(for: blockchain).rpcNode)!
+        default:
+            return URL(string: config.node(for: blockchain).restNode)!
+        }
     }
     
     var path: String {
