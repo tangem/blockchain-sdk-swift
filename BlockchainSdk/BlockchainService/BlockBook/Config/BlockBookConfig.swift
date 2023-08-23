@@ -16,8 +16,3 @@ protocol BlockBookConfig {
     func node(for blockchain: Blockchain) -> BlockBookNode
     func path(for request: BlockBookTarget.Request) -> String
 }
-
-struct NodeConfig {
-    let rpcNode: String
-    let restNode: String
-}
