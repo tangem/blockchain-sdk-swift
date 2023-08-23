@@ -97,6 +97,12 @@ private extension AdaliteNetworkProvider {
             return nil
         }
         
+        // We should ignore the output with metadata
+        // Because we don't support a cardano tokens yet
+        guard output.cuCoins.getTokens.isEmpty else {
+            return nil
+        }
+        
         let assets: [CardanoUnspentOutput.Asset] = output.cuCoins.getTokens.compactMap { token in
             guard let amount = Int(token.quantity) else {
                 return nil
