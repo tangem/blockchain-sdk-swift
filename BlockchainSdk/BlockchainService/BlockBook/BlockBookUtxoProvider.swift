@@ -12,7 +12,7 @@ import Combine
 /// Documentation: https://github.com/trezor/blockbook/blob/master/docs/api.md
 class BlockBookUtxoProvider {
     var host: String {
-        config.host
+        "\(blockchain.currencySymbol).\(config.host)"
     }
     
     private let blockchain: Blockchain

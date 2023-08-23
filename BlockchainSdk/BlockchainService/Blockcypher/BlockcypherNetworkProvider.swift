@@ -15,7 +15,7 @@ import TangemSdk
 class BlockcypherNetworkProvider: BitcoinNetworkProvider {
     var supportsTransactionPush: Bool { false }
     var host: String {
-        return getTarget(for: .fee).baseURL.absoluteString
+        getTarget(for: .fee).baseURL.absoluteString
     }
     
     private let provider: NetworkProvider<BlockcypherTarget>

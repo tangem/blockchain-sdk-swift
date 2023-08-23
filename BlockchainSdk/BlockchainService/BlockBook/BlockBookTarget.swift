@@ -15,7 +15,11 @@ struct BlockBookTarget: TargetType {
     let blockchain: Blockchain
     
     var baseURL: URL {
-        URL(string: config.domain(for: request, blockchain: blockchain))!
+        URL(string: config.domain(
+            for: request,
+            prefix: blockchain.currencySymbol.lowercased(),
+            isTestnet: blockchain.isTestnet)
+        )!
     }
     
     var path: String {

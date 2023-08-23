@@ -9,13 +9,9 @@
 import Foundation
 
 struct GetBlockBlockBookConfig {
-    private let currencySymbol: String
     private let apiKey: String
     
-    private let basicHost = "getblock.io"
-    
-    init(currencySymbol: String, apiKey: String) {
-        self.currencySymbol = currencySymbol
+    init(apiKey: String) {
         self.apiKey = apiKey
     }
 }
@@ -30,17 +26,15 @@ extension GetBlockBlockBookConfig: BlockBookConfig {
     }
     
     var host: String {
-        return "\(currencySymbol).\(basicHost)"
+        return "getblock.io"
     }
     
-    func domain(for request: BlockBookTarget.Request, blockchain: Blockchain) -> String {
-        let currencySymbolPrefix = currencySymbol
-        
+    func domain(for request: BlockBookTarget.Request, prefix: String, isTestnet: Bool) -> String {
         switch request {
         case .fees:
-            return "https://\(currencySymbolPrefix).\(basicHost)"
+            return "https://\(prefix).\(host)"
         default:
-            return "https://\(currencySymbolPrefix).\(basicHost)"
+            return "https://\(prefix).\(host)"
         }
     }
     

@@ -409,7 +409,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     }
     
     private func createWalletManager(blockchain: Blockchain, wallet: Card.Wallet) throws -> WalletManager {
-        let publicKey = Wallet.PublicKey(seedKey: wallet.publicKey, derivation: .none)
+        let publicKey = Wallet.PublicKey(seedKey: wallet.publicKey, derivationType: .none)
         return try walletManagerFactory.makeWalletManager(blockchain: blockchain, publicKey: publicKey)
     }
     

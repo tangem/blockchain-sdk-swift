@@ -13,6 +13,6 @@ protocol BlockBookConfig {
     var apiKeyName: String { get }
     var host: String { get }
     
-    func domain(for request: BlockBookTarget.Request, blockchain: Blockchain) -> String
+    func domain(for request: BlockBookTarget.Request, prefix: String, isTestnet: Bool) -> String
     func path(for request: BlockBookTarget.Request) -> String
 }

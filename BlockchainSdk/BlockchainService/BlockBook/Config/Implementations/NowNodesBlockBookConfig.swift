@@ -9,13 +9,9 @@
 import Foundation
 
 struct NowNodesBlockBookConfig {
-    private let currencySymbol: String
     private let apiKey: String
     
-    private let basicHost = "nownodes.io"
-    
-    init(currencySymbol: String, apiKey: String) {
-        self.currencySymbol = currencySymbol
+    init(apiKey: String) {
         self.apiKey = apiKey
     }
 }
@@ -31,18 +27,16 @@ extension NowNodesBlockBookConfig: BlockBookConfig {
     }
     
     var host: String {
-        return "\(currencySymbol).\(basicHost)"
+        return "nownodes.io"
     }
     
-    func domain(for request: BlockBookTarget.Request, blockchain: Blockchain) -> String {
-        let currencySymbolPrefix = currencySymbol
-        
+    func domain(for request: BlockBookTarget.Request, prefix: String, isTestnet: Bool) -> String {
         switch request {
         case .fees:
-            return "https://\(currencySymbolPrefix).\(basicHost)"
+            return "https://\(prefix).\(host)"
         default:
-            let testnetSuffix = blockchain.isTestnet ? "-testnet" : ""
-            return "https://\(currencySymbolPrefix)book\(testnetSuffix).\(basicHost)"
+            let testnetSuffix = isTestnet ? "-testnet" : ""
+            return "https://\(prefix)book\(testnetSuffix).\(host)"
         }
     }
     
