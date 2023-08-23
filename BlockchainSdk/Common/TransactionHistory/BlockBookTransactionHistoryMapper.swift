@@ -1,5 +1,5 @@
 //
-//  TransactionHistoryMapper.swift
+//  BlockBookTransactionHistoryMapper.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 17.08.2023.

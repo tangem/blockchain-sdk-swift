@@ -21,15 +21,14 @@ struct UTXOTransactionHistoryMapper {
 // MARK: - BlockBookTransactionHistoryMapper
 
 extension UTXOTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
-    
     func mapToTransactionRecords(_ response: BlockBookAddressResponse, amountType: Amount.AmountType) -> [TransactionRecord] {
         assert(amountType == .coin, "UTXOTransactionHistoryMapper doesn't support a token amount")
 
-        if response.transactions.isEmpty {
+        guard let transactions = response.transactions else {
             return []
         }
         
-        return response.transactions.compactMap { transaction -> TransactionRecord? in
+        return transactions.compactMap { transaction -> TransactionRecord? in
             guard let feeSatoshi = Decimal(transaction.fees) else {
                 return nil
             }

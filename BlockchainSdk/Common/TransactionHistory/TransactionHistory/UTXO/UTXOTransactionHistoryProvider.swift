@@ -45,9 +45,9 @@ extension UTXOTransactionHistoryProvider: TransactionHistoryProvider {
                 
                 let records = self.mapper.mapToTransactionRecords(response, amountType: .coin)
                 return TransactionHistory.Response(
-                    totalPages: response.totalPages,
+                    totalPages: response.totalPages ?? 0,
                     totalRecordsCount: response.txs,
-                    page: Page(number: response.page, size: response.itemsOnPage),
+                    page: Page(number: response.page ?? 0, size: response.itemsOnPage ?? 0),
                     records: records
                 )
             }

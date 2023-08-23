@@ -24,9 +24,12 @@ struct EthereumTransactionHistoryMapper {
 // MARK: - BlockBookTransactionHistoryMapper
 
 extension EthereumTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
-    
     func mapToTransactionRecords(_ response: BlockBookAddressResponse, amountType: Amount.AmountType) -> [TransactionRecord] {
-        response.transactions.compactMap { transaction -> TransactionRecord? in
+        guard let transactions = response.transactions else {
+            return []
+        }
+        
+        return transactions.compactMap { transaction -> TransactionRecord? in
             guard let source = source(transaction, amountType: amountType),
                   let destination = destination(transaction, amountType: amountType),
                   let feeWei = Decimal(transaction.fees) else {
@@ -94,7 +97,7 @@ private extension EthereumTransactionHistoryMapper {
             let tokenTransfers = transaction.tokenTransfers ?? []
             let transfer = tokenTransfers.first(where: { isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: $0.contract) })
             
-            if let transfer, let amount = Decimal(string: transfer.value) {
+            if let transfer, let amount = Decimal(transfer.value) {
                 let decimalValue = pow(10, transfer.decimals)
                 return TransactionRecord.Source(address: address, amount: amount / decimalValue)
             }
@@ -118,7 +121,7 @@ private extension EthereumTransactionHistoryMapper {
             let tokenTransfers = transaction.tokenTransfers ?? []
             let transfer = tokenTransfers.last(where: { isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: $0.contract) })
             
-            if let transfer, let amount = Decimal(string: transfer.value) {
+            if let transfer, let amount = Decimal(transfer.value) {
                 let decimalValue = pow(10, transfer.decimals)
                 return TransactionRecord.Destination(address: .contract(address), amount: amount / decimalValue)
             }
@@ -162,7 +165,7 @@ private extension EthereumTransactionHistoryMapper {
     }
     
     func isCaseInsensitiveMatch(lhs: String, rhs: String) -> Bool {
-        return lhs.caseisCaseInsensitiveMatch(rhs) == .orderedSame
+        return lhs.caseInsensitiveCompare(rhs) == .orderedSame
     }
 }
 
