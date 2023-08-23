@@ -305,7 +305,7 @@ public enum Blockchain: Equatable, Hashable {
         }
         
         switch self {
-        case .binance, .solana, .tron, .cardano:
+        case .binance, .solana, .tron:
             return true
         default:
             return false

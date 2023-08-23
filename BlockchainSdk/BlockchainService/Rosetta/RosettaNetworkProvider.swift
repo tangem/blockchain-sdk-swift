@@ -127,6 +127,12 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
                 return nil
             }
             
+            // We should ignore the output with metadata
+            // Because we don't support a cardano tokens yet
+            guard coin.metadata == nil else {
+                return nil
+            }
+            
             guard let (index, hash) = parseIdentifier(coin.coinIdentifier?.identifier),
                   let amountValue = coin.amount?.value,
                   let amount = Decimal(amountValue) else {
