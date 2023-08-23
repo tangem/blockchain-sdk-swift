@@ -100,7 +100,9 @@ private extension EthereumWalletManager {
                 let gasLimit = ethereumFeeResponse.gasLimit
                 let fees = ethereumFeeResponse.gasPrices.map { gasPrice in
                     let feeValue = gasLimit * gasPrice
-                    let fee = Decimal(Double(feeValue)) / self.wallet.blockchain.decimalValue
+                    // TODO: Fix integer overflow. Think about BigInt
+                    // https://tangem.atlassian.net/browse/IOS-4268
+                    let fee = Decimal(Int(feeValue)) / self.wallet.blockchain.decimalValue
 
                     let amount = Amount(with: self.wallet.blockchain, value: fee)
                     let parameters = EthereumFeeParameters(gasLimit: gasLimit, gasPrice: gasPrice)
