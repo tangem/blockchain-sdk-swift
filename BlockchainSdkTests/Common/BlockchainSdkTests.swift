@@ -42,7 +42,8 @@ class BlockchainSdkTests: XCTestCase {
     }
     
     func testDucatusAddressValidation() {
-        XCTAssertTrue(Blockchain.ducatus.validate(address: "LokyqymHydUE3ZC1hnZeZo6nuART3VcsSU"))
+        let service = AddressServiceFactory(blockchain: .ducatus).makeAddressService()
+        XCTAssertTrue(service.validate("LokyqymHydUE3ZC1hnZeZo6nuART3VcsSU"))
     }
     
     func testLTCAddressValidation() {
@@ -94,7 +95,11 @@ class BlockchainSdkTests: XCTestCase {
     func testTxValidation() {
         let wallet = Wallet(
             blockchain: .bitcoin(testnet: false),
-            addresses: [.default: PlainAddress(value: "adfjbajhfaldfh", publicKey: .init(seedKey: Data(), derivation: .none), type: .default)]
+            addresses: [.default: PlainAddress(
+                value: "adfjbajhfaldfh",
+                publicKey: .init(seedKey: Data(), derivationType: .none),
+                type: .default
+            )]
         )
 
         let vm: WalletManager = BitcoinWalletManager(wallet: wallet)
@@ -134,8 +139,8 @@ class BlockchainSdkTests: XCTestCase {
     }
     
     func testDerivationStyle() {
-        let legacy: DerivationStyle = .legacy
-        let new: DerivationStyle = .new
+        let legacy: DerivationStyle = .v1
+        let new: DerivationStyle = .v2
 
         let fantom: Blockchain = .fantom(testnet: false)
         XCTAssertEqual(fantom.derivationPath(for: legacy)!.rawPath, "m/44'/1007'/0'/0/0")

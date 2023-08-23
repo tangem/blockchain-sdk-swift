@@ -52,7 +52,8 @@ struct AddressTypesConfig {
              .terraV1, .terraV2,
              .cronos,
              .telos,
-             .octa:
+             .octa,
+             .chia:
             return [.default]
         }
     }

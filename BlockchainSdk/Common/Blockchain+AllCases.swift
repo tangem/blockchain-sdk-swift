@@ -52,6 +52,7 @@ public extension Blockchain {
         case .cronos: break
         case .telos: break
         case .octa: break
+        case .chia: break
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -67,17 +68,17 @@ public extension Blockchain {
             .rsk,
             .binance(testnet: false),
             .tezos(curve: .secp256k1),
-            .stellar(testnet: false),
-            .cardano,
+            .stellar(curve: .ed25519_slip0010, testnet: false),
+            .cardano(extended: false),
             .ducatus,
             .dogecoin,
             .bsc(testnet: false),
             .polygon(testnet: false),
             .avalanche(testnet: false),
-            .solana(testnet: false),
-            .polkadot(testnet: false),
-            .kusama,
-            .azero(testnet: false),
+            .solana(curve: .ed25519_slip0010, testnet: false),
+            .polkadot(curve: .ed25519_slip0010, testnet: false),
+            .kusama(curve: .ed25519_slip0010),
+            .azero(curve: .ed25519_slip0010, testnet: false),
             .fantom(testnet: false),
             .tron(testnet: false),
             .arbitrum(testnet: false),
@@ -87,7 +88,7 @@ public extension Blockchain {
             .ethereumFair,
             .ethereumPoW(testnet: false),
             .saltPay,
-            .ton(testnet: false),
+            .ton(curve: .ed25519_slip0010, testnet: false),
             .kava(testnet: false),
             .kaspa,
             .ravencoin(testnet: false),
@@ -96,7 +97,8 @@ public extension Blockchain {
             .terraV2,
             .cronos,
             .telos(testnet: false),
-            .octa
+            .octa,
+            .chia(testnet: false),
         ]
     }
 }

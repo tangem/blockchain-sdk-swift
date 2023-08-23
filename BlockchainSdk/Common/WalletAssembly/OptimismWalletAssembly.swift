@@ -20,11 +20,6 @@ struct OptimismWalletAssembly: WalletManagerAssembly {
                 decimals: input.blockchain.decimalCount,
                 providers: providers,
                 blockcypherProvider: nil,
-                blockchairProvider: nil, // TODO: TBD Do we need the TokenFinder feature?
-                transactionHistoryProvider: networkProviderAssembly.makeBlockscoutNetworkProvider(
-                    canLoad: input.blockchain.canLoadTransactionHistory,
-                    with: input
-                ),
                 abiEncoder: WalletCoreABIEncoder()
             )
         }

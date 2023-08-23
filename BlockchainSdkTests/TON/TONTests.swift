@@ -14,16 +14,14 @@ import WalletCore
 @testable import BlockchainSdk
 
 class TONTests: XCTestCase {
-    
-    private var blockchain = Blockchain.ton(testnet: true)
     private var privateKey = try! Curve25519.Signing.PrivateKey(
         rawRepresentation: Data(hexString: "0x85fca134b3fe3fd523d8b528608d803890e26c93c86dc3d97b8d59c7b3540c97")
     )
     
-    lazy var walletManager: TONWalletManager = {
+    private func makeWalletManager(blockchain: BlockchainSdk.Blockchain) -> TONWalletManager {
         let walletPubKey = privateKey.publicKey.rawRepresentation
         let address = try! WalletCoreAddressService(coin: .ton).makeAddress(
-            for: .init(seedKey: walletPubKey, derivation: .none),
+            for: .init(seedKey: walletPubKey, derivationType: .none),
             with: .default
         )
         
@@ -32,20 +30,31 @@ class TONTests: XCTestCase {
             wallet: wallet,
             networkService: TONNetworkService(providers: [], blockchain: blockchain)
         )
-    }()
+    }
     
-    lazy var txBuilder: TONTransactionBuilder = {
+    private func makeTransactionBuilder(wallet: BlockchainSdk.Wallet) -> TONTransactionBuilder {
         return TONTransactionBuilder.makeDummyBuilder(
             with: .init(
-                wallet: walletManager.wallet,
+                wallet: wallet,
                 inputPrivateKey: privateKey,
                 sequenceNumber: 0
             )
         )
-    }()
+    }
     
-    func testCorrectCoinTransaction() {
+    func testCorrectCoinTransactionEd25519() {
+        testCorrectCoinTransaction(curve: .ed25519)
+    }
+    
+    func testCorrectCoinTransactionEd25519Slip0010() {
+        testCorrectCoinTransaction(curve: .ed25519_slip0010)
+    }
+    
+    func testCorrectCoinTransaction(curve: EllipticCurve) {
         do {
+            let blockchain = Blockchain.ton(curve: curve, testnet: true)
+            let walletManager = makeWalletManager(blockchain: blockchain)
+            let txBuilder = makeTransactionBuilder(wallet: walletManager.wallet)
             let input = try txBuilder.buildForSign(
                 amount: .init(with: blockchain, value: 1),
                 destination: "EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2"
@@ -70,8 +79,20 @@ class TONTests: XCTestCase {
         }
     }
     
-    func testCorrectCoinWithMemoTransaction() {
+    func testCorrectCoinWithMemoTransactionEd25519() {
+        testCorrectCoinWithMemoTransaction(curve: .ed25519)
+    }
+    
+    func testCorrectCoinWithMemoTransactionEd25519Slip0010() {
+        testCorrectCoinWithMemoTransaction(curve: .ed25519_slip0010)
+    }
+    
+    func testCorrectCoinWithMemoTransaction(curve: EllipticCurve) {
         do {
+            let blockchain = Blockchain.ton(curve: curve, testnet: true)
+            let walletManager = makeWalletManager(blockchain: blockchain)
+            let txBuilder = makeTransactionBuilder(wallet: walletManager.wallet)
+            
             let input = try txBuilder.buildForSign(
                 amount: .init(with: blockchain, value: 1),
                 destination: "EQAoDMgtvyuYaUj-iHjrb_yZiXaAQWSm4pG2K7rWTBj9eOC2",
@@ -96,5 +117,4 @@ class TONTests: XCTestCase {
             XCTFail("Transaction build for sign is nil")
         }
     }
-    
 }

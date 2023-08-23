@@ -19,23 +19,17 @@ class EthereumNetworkService: MultiNetworkProvider {
     
     private let decimals: Int
     private let ethereumInfoNetworkProvider: EthereumAdditionalInfoProvider?
-    private let blockchairProvider: BlockchairNetworkProvider?
-    private let transactionHistoryProvider: TransactionHistoryProvider?
     private let abiEncoder: ABIEncoder
     
     init(
         decimals: Int,
         providers: [EthereumJsonRpcProvider],
         blockcypherProvider: BlockcypherNetworkProvider?,
-        blockchairProvider: BlockchairNetworkProvider?,
-        transactionHistoryProvider: TransactionHistoryProvider?,
         abiEncoder: ABIEncoder
     ) {
         self.providers = providers
         self.decimals = decimals
         self.ethereumInfoNetworkProvider = blockcypherProvider
-        self.blockchairProvider = blockchairProvider
-        self.transactionHistoryProvider = transactionHistoryProvider
         self.abiEncoder = abiEncoder
     }
     
@@ -60,27 +54,6 @@ class EthereumNetworkService: MultiNetworkProvider {
             .map { (result: (Decimal, [Token: Decimal], Int, Int)) in
                 EthereumInfoResponse(balance: result.0, tokenBalances: result.1, txCount: result.2, pendingTxCount: result.3, pendingTxs: [])
             }
-            .flatMap { [weak self] resp -> AnyPublisher<EthereumInfoResponse, Error> in
-                guard let self = self else { return .emptyFail }
-                
-                guard
-                    let provider = self.ethereumInfoNetworkProvider,
-                    resp.pendingTxCount > 0,
-                    self.transactionHistoryProvider == nil // We don't want to load pending txs if history is available
-                else {
-                    return .justWithError(output: resp)
-                }
-                
-                return provider.getEthTxsInfo(address: address)
-                    .map { ethResponse -> EthereumInfoResponse in
-                        var newResp = resp
-                        newResp.pendingTxs = ethResponse.pendingTxs
-                        return newResp
-                    }
-                    .replaceError(with: resp)
-                    .setFailureType(to: Error.self)
-                    .eraseToAnyPublisher()
-            }
             .eraseToAnyPublisher()
     }
     
@@ -94,7 +67,7 @@ class EthereumNetworkService: MultiNetworkProvider {
                     throw BlockchainSdkError.failedToLoadFee
                 }
 
-                return try self.mapToEthereumFeeResponse(
+                return self.mapToEthereumFeeResponse(
                     gasPrice: gasPrice,
                     gasLimit: gasLimit,
                     decimalCount: self.decimals
@@ -182,14 +155,6 @@ class EthereumNetworkService: MultiNetworkProvider {
         }
         
         return networkProvider.getSignatureCount(address: address)
-    }
-    
-    func findErc20Tokens(address: String) -> AnyPublisher<[BlockchairToken], Error> {
-        guard let blockchairProvider = blockchairProvider else {
-            return Fail(error: ETHError.unsupportedFeature).eraseToAnyPublisher()
-        }
-        
-        return blockchairProvider.findErc20Tokens(address: address)
     }
 
     func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<String, Error> {
@@ -286,15 +251,5 @@ class EthereumNetworkService: MultiNetworkProvider {
         let maxGasPrice = gasPrice * BigUInt(15) / BigUInt(10)
         
         return EthereumFeeResponse(gasPrices: [minGasPrice, normalGasPrice, maxGasPrice], gasLimit: gasLimit)
-    }
-}
-
-extension EthereumNetworkService: TransactionHistoryProvider {
-    func loadTransactionHistory(address: String) -> AnyPublisher<[TransactionHistoryRecordConvertible], Error> {
-        guard let historyProvider = transactionHistoryProvider else {
-            return Fail(error: ETHError.unsupportedFeature).eraseToAnyPublisher()
-        }
-        
-        return historyProvider.loadTransactionHistory(address: address)
     }
 }

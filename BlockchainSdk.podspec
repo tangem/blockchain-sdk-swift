@@ -41,22 +41,22 @@ Use BlockchainSdk for Tangem wallet integration
 		    'BlockchainSdk/WalletManagers/Tron/protobuf/Contracts.proto',
 		    'BlockchainSdk/WalletManagers/Tron/protobuf/Tron.proto'
 
-
-  s.dependency 'BigInt'
-  s.dependency 'SwiftyJSON'
-  s.dependency 'Moya'
-  s.dependency 'Sodium' 
+  s.dependency 'TangemSdk'
+  s.dependency 'BigInt', '5.2.0'
+  s.dependency 'SwiftyJSON', '5.0.1'
+  s.dependency 'Moya', '15.0.0'
+  s.dependency 'Sodium', '0.9.1'
   s.dependency 'SwiftCBOR', '0.4.5'
   s.dependency 'stellar-ios-mac-sdk', '2.3.2'
-  s.dependency 'BinanceChain'
-  s.dependency 'HDWalletKit'
-  s.dependency 'web3swift'
-  s.dependency 'TangemSdk'
-  s.dependency 'AnyCodable-FlightSchool'
-  s.dependency 'BitcoinCore.swift'
-  s.dependency 'Solana.Swift'
-  s.dependency 'ScaleCodec'
-  s.dependency 'SwiftProtobuf'
-  s.dependency 'TangemWalletCore'
+  s.dependency 'AnyCodable-FlightSchool', '0.6.7'
+  s.dependency 'ScaleCodec', '0.2.1'
+  s.dependency 'SwiftProtobuf', '1.21.0'
+
+  s.dependency 'BinanceChain' # Fork https://github.com/tangem/swiftbinancechain.git
+  s.dependency 'HDWalletKit' # Fork https://github.com/tangem/hdwallet.git
+  s.dependency 'web3swift' # Fork https://github.com/tangem/web3swift.git
+  s.dependency 'BitcoinCore.swift' # Fork https://github.com/tangem/bitcoincore.git
+  s.dependency 'Solana.Swift' # Fork https://github.com/tangem/Solana.Swift.git
+  s.dependency 'TangemWalletCore' # Fork https://github.com/tangem/wallet-core-binaries-ios.git
 
 end

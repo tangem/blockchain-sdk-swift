@@ -143,17 +143,20 @@ extension SolanaWalletManager: TransactionSender {
     
     private func accountCreationFee(destination: String, amount: Amount) -> AnyPublisher<Decimal, Error> {
         let accountCreationFeePublisher: AnyPublisher<Decimal, Error>
+        let tokens: [Token]
         switch amount.type {
         case .coin:
             accountCreationFeePublisher = networkService.mainAccountCreationFee()
-        case .token:
+            tokens = []
+        case .token(let token):
             accountCreationFeePublisher = networkService.tokenAccountCreationFee()
+            tokens = [token]
         case .reserve:
             return .anyFail(error: BlockchainSdkError.failedToLoadFee)
         }
         
         let accountExistsPublisher: AnyPublisher<Bool, Error> = networkService
-            .getInfo(accountId: destination, tokens: [], transactionIDs: [])
+            .getInfo(accountId: destination, tokens: tokens, transactionIDs: [])
             .map { info in
                 switch amount.type {
                 case .coin:

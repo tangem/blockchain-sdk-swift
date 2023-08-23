@@ -11,17 +11,21 @@ import TangemSdk
 import WalletCore
 
 extension Curve {
-    
-    /// Сonstructor that maps the sdk blockchain type into the TrustWallet public key type
-    init(_ curve: EllipticCurve) throws {
-        switch curve {
-        case .secp256k1:
-            self = .secp256k1
-        case .ed25519:
-            self = .ed25519
+    /// Сonstructor that maps the sdk blockchain curve into the TrustWallet Curve
+    init(blockchain: Blockchain) throws {
+        switch blockchain {
+        case .cardano(let extended):
+            self = extended ? .ed25519ExtendedCardano : .ed25519
         default:
-            throw NSError()
+            switch blockchain.curve {
+            case .secp256k1:
+                self = .secp256k1
+            case .ed25519_slip0010:
+                self = .ed25519
+            default:
+                throw NSError()
+            }
         }
+        
     }
-    
 }

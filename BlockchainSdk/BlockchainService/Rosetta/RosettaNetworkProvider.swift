@@ -19,7 +19,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     
     private let provider: NetworkProvider<RosettaTarget>
     private let baseUrl: RosettaUrl
-    private let cardanoCurrencySymbol: String = Blockchain.cardano.currencySymbol
+    private let cardanoCurrencySymbol: String = Blockchain.cardano(extended: false).currencySymbol
     private var decoder: JSONDecoder {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase

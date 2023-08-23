@@ -11,11 +11,19 @@ import TangemSdk
 
 /// Input data for assembly wallet manager
 struct WalletManagerAssemblyInput {
-    let blockchain: Blockchain
-    let blockchainConfig: BlockchainSdkConfig
-    let pairPublicKey: Data?
     let wallet: Wallet
-    let networkConfig: NetworkProviderConfiguration
+    let pairPublicKey: Data?
+    let blockchainSdkConfig: BlockchainSdkConfig
+}
+
+extension WalletManagerAssemblyInput: NetworkProviderAssemblyInput {
+    var blockchain: Blockchain {
+        wallet.blockchain
+    }
+
+    var networkConfig: NetworkProviderConfiguration {
+        blockchainSdkConfig.networkProviderConfiguration(for: blockchain)
+    }
 }
 
 /// Main assembly wallet manager interface
@@ -34,9 +42,7 @@ protocol WalletManagerAssembly {
 }
 
 extension WalletManagerAssembly {
-    
     var networkProviderAssembly: NetworkProviderAssembly {
         return NetworkProviderAssembly()
     }
-    
 }
