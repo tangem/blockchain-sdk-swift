@@ -14,7 +14,7 @@ import WalletCore
 
 class CardanoTests: XCTestCase {
     var transactionBuilder: CardanoTransactionBuilder!
-    let blockchain = BlockchainSdk.Blockchain.cardano
+    let blockchain = BlockchainSdk.Blockchain.cardano(extended: false)
     let coinType = CoinType.cardano
 
     override func setUp() {
@@ -174,6 +174,46 @@ class CardanoTests: XCTestCase {
         XCTAssertEqual(
             encoded.hex,
             "83a40084825820d5958a70c20fdc7aa3537bf830730b1cef3dd5b2d12dc0360be130a18df71cd90182582003946fe122634d05e93219fde628ce55a5e0d06f23afa456864897357c5dade801825820482d88eb2d3b40b8a4e6bb8545cef842a5703e8f9eab9e3caca5c2edd1f31a7f00825820967e971cb5bcb1723ef24140c6d6689eb6453548ee47478996dcc6677ce7f62f00018282583901a9426fe0cee6d01d1fe32af650e1e7b5d52c35d8a53218f3d0861531621c2b1ebdf4f11f96da67fdcb0e1d97a7e778566166be55f193c30f821a00160a5ba1581cf43a62fdc3965df486de8a0d32fe800963589c41b38946602a0dc535a144414749581a03dfd24082581d6127a5b0988b7a6f9dce66d48ff48a3f9a9ef8d24376a937f179ed0217821a005e6b9da1581cf43a62fdc3965df486de8a0d32fe800963589c41b38946602a0dc535a144414749581a019d0e30021a0002af32031a0b532b80a10081825820de60f41ab5045ce1b9b37e386570ed63499a53ee93ca3073e54a80065678384d5840a3c14e049b3192c64af175ff3650f9c0a6f833d168634b3ec73f2f5609bce107d2e39a1387c844bbe521bf3d11a63c4927f62a7c06dc40a8c28da74cb072d70df6"
+        )
+    }
+    
+    func testSignTransferExtendedKey() throws {
+        let transaction = Transaction(
+            amount: Amount(with: blockchain, value: 7),
+            fee: Fee(.zeroCoin(for: blockchain)),
+            sourceAddress: "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23",
+            destinationAddress: "addr1q92cmkgzv9h4e5q7mnrzsuxtgayvg4qr7y3gyx97ukmz3dfx7r9fu73vqn25377ke6r0xk97zw07dqr9y5myxlgadl2s0dgke5",
+            changeAddress: "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23"
+        )
+        
+        let utxos = [
+            CardanoUnspentOutput(address: "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23",
+                                 amount: 1500000,
+                                 outputIndex: 1,
+                                 transactionHash: "f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e767",
+                                 assets: []),
+            CardanoUnspentOutput(address: "addr1q8043m5heeaydnvtmmkyuhe6qv5havvhsf0d26q3jygsspxlyfpyk6yqkw0yhtyvtr0flekj84u64az82cufmqn65zdsylzk23",
+                                 amount: 6500000,
+                                 outputIndex: 0,
+                                 transactionHash: "554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af0",
+                                 assets: []),
+        ]
+
+        transactionBuilder.update(outputs: utxos)
+        let dataForSign = try transactionBuilder.buildForSign(transaction: transaction)
+        XCTAssertEqual(
+            dataForSign.hex,
+            "b4f4bc9bc56de11d3a45d640e935108fcb57cd53945257516c0a9dc683077b04"
+        )
+        
+        // Sign
+        let signature = Data(hex: "f0a916cf55df99f595b49b3ead2052a17fdf3357b2e04c97c0144b1ee7a88f9a33883d9483e9c9c54cf7d496ac8c7aa31b4eb23a8a2c277fab8e406ba7af2c05")
+        let publicKey = Data(hex: "6d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df29003391c68824881ae3fc23a56a1a75ada3b96382db502e37564e84a5413cfaf12e554163344aafc2bbefe778a6953ddce0583c2f8e0a0686929c020ca33e06932154425dfbb01a2c5c042da411703603f89af89e57faae2946e2a5c18b1c5ca0e")
+        let signatureInfo = SignatureInfo(signature: signature, publicKey: publicKey)
+        let encoded = try transactionBuilder.buildForSend(transaction: transaction, signature: signatureInfo)
+        XCTAssertEqual(
+            encoded.hex,
+            "83a40082825820554f2fd942a23d06835d26bbd78f0106fa94c8a551114a0bef81927f66467af000825820f074134aabbfb13b8aec7cf5465b1e5a862bde5cb88532cc7e64619179b3e76701018282583901558dd902616f5cd01edcc62870cb4748c45403f1228218bee5b628b526f0ca9e7a2c04d548fbd6ce86f358be139fe680652536437d1d6fd51a006acfc082583901df58ee97ce7a46cd8bdeec4e5f3a03297eb197825ed5681191110804df22424b6880b39e4bac8c58de9fe6d23d79aaf44756389d827aa09b1a000ca96c021a000298d4031a0b532b80a100818258206d8a0b425bd2ec9692af39b1c0cf0e51caa07a603550e22f54091e872c7df2905840f0a916cf55df99f595b49b3ead2052a17fdf3357b2e04c97c0144b1ee7a88f9a33883d9483e9c9c54cf7d496ac8c7aa31b4eb23a8a2c277fab8e406ba7af2c05f6"
         )
     }
 }
