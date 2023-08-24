@@ -31,23 +31,24 @@ extension NowNodesBlockBookConfig: BlockBookConfig {
     }
     
     func node(for blockchain: Blockchain) -> BlockBookNode {
-        var currencySymbolPrefix = blockchain.currencySymbol.lowercased()
+        let prefix = blockchain.currencySymbol.lowercased()
         
         switch blockchain {
         case .bitcoin, .dash, .dogecoin, .litecoin:
             let testnetSuffix = blockchain.isTestnet ? "-testnet" : ""
             return BlockBookNode(
-                rpcNode: "https://\(currencySymbolPrefix).\(host)",
-                restNode: "https://\(currencySymbolPrefix)book\(testnetSuffix).\(host)"
+                rpcNode: "https://\(prefix).\(host)",
+                restNode: "https://\(prefix)book\(testnetSuffix).\(host)"
             )
-        case .ethereum, .ethereumPoW, .bsc, .ethereumClassic, .avalanche, .tron, .arbitrum:
-            if case .bsc = blockchain {
-                currencySymbolPrefix = "bsc"
-            }
-            
+        case .ethereum, .ethereumPoW, .ethereumClassic, .avalanche, .tron, .arbitrum:
             return BlockBookNode(
-                rpcNode: "https://\(currencySymbolPrefix).\(host)",
-                restNode: "https://\(currencySymbolPrefix)-blockbook.\(host)"
+                rpcNode: "https://\(prefix).\(host)",
+                restNode: "https://\(prefix)-blockbook.\(host)"
+            )
+        case .bsc:
+            return BlockBookNode(
+                rpcNode: "https://bsc.\(host)",
+                restNode: "https://bsc-blockbook.\(host)"
             )
         default:
             fatalError("NowNodesBlockBookConfig don't support blockchain: \(blockchain.displayName)")
