@@ -52,8 +52,7 @@ extension WalletCoreAddressService: AddressProvider {
                 return PlainAddress(value: address, publicKey: publicKey, type: addressType)
             }
             
-            assertionFailure("WalletCoreAddressService don't support legacy address for \(coin)")
-            return try makeAddress(for: publicKey, with: .default)
+            fatalError("WalletCoreAddressService don't support legacy address for \(coin)")
         }
     }
 }
