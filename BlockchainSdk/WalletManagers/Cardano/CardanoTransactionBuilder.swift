@@ -48,10 +48,8 @@ extension CardanoTransactionBuilder {
         
         let publicKeys = DataVector()
         // WalletCore used here `.ed25519Cardano` curve with 128 bytes publicKey.
-        // Calculated as: chainCode + secondPubKey + chainCode
-        // The number of bytes in a Cardano public key (two ed25519 public key + chain code).
-        // We should add dummy chain code in publicKey
-        let publicKey = signature.publicKey + Data(count: 32 * 3)
+        // For more info see CardanoUtil
+        let publicKey = signature.publicKey.trailingZeroPadding(toLength: CardanoUtil.extendedPublicKeyCount)
         publicKeys.add(data: publicKey)
 
         let compileWithSignatures = TransactionCompiler.compileWithSignatures(
