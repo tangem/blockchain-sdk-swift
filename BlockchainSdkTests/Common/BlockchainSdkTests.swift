@@ -112,7 +112,7 @@ class BlockchainSdkTests: XCTestCase {
         assert(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: -1),
                                         fee: Fee(Amount(with: vm.wallet.amounts[.coin]!, value: 3)),
                                         destinationAddress: ""),
-               throws: TransactionErrors(errors: [.invalidAmount]))
+               throws: TransactionErrors(errors: [.invalidAmount, .dustAmount(minimumAmount: Amount(with: wallet.blockchain, value: 0.00001))]))
         
         
         
@@ -124,18 +124,18 @@ class BlockchainSdkTests: XCTestCase {
         assert(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 11),
                                         fee: Fee(Amount(with: vm.wallet.amounts[.coin]!, value: 1)),
                                         destinationAddress: ""),
-               throws: TransactionErrors(errors: [.amountExceedsBalance, .totalExceedsBalance]))
+               throws: TransactionErrors(errors: [.amountExceedsBalance, .totalExceedsBalance, .dustChange(minimumAmount: Amount(with: wallet.blockchain, value: 0.00001))]))
         
         
         assert(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 1),
                                         fee: Fee(Amount(with: vm.wallet.amounts[.coin]!, value: 11)),
                                         destinationAddress: ""),
-               throws: TransactionErrors(errors: [.feeExceedsBalance, .totalExceedsBalance]))
+               throws: TransactionErrors(errors: [.feeExceedsBalance, .totalExceedsBalance,  .dustChange(minimumAmount: Amount(with: wallet.blockchain, value: 0.00001))]))
         
         assert(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 3),
                                         fee: Fee(Amount(with: vm.wallet.amounts[.coin]!, value: 8)),
                                         destinationAddress: ""),
-               throws: TransactionErrors(errors: [.totalExceedsBalance]))
+               throws: TransactionErrors(errors: [.totalExceedsBalance, .dustChange(minimumAmount: Amount(with: wallet.blockchain, value: 0.00001))]))
     }
     
     func testDerivationStyle() {
