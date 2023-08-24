@@ -14,25 +14,27 @@ import SwiftCBOR
 /// https://docs.cardano.org/cardano-components/cardano-rosetta/get-started-rosetta
 class RosettaNetworkProvider: CardanoNetworkProvider {
     var host: String {
-        URL(string: baseUrl.url)!.hostOrUnknown
+        URL(string: rosettaUrl.url)!.hostOrUnknown
     }
     
     private let provider: NetworkProvider<RosettaTarget>
-    private let baseUrl: RosettaUrl
-    private let cardanoCurrencySymbol: String = Blockchain.cardano(extended: false).currencySymbol
-    private var decimalValue: Decimal {
-        Blockchain.cardano(extended: false).decimalValue
-    }
-    
+    private let rosettaUrl: RosettaUrl
+    private let cardanoResponseMapper: CardanoResponseMapper
+
     private var decoder: JSONDecoder {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         return decoder
     }
     
-    init(baseUrl: RosettaUrl, configuration: NetworkProviderConfiguration) {
-        self.baseUrl = baseUrl
+    init(
+        rosettaUrl: RosettaUrl,
+        configuration: NetworkProviderConfiguration,
+        cardanoResponseMapper: CardanoResponseMapper
+    ) {
+        self.rosettaUrl = rosettaUrl
         provider = NetworkProvider<RosettaTarget>(configuration: configuration)
+        self.cardanoResponseMapper = cardanoResponseMapper
     }
     
     func getInfo(addresses: [String], tokens: [Token]) -> AnyPublisher<CardanoAddressResponse, Error> {
@@ -56,28 +58,11 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
                 self.mapToCardanoUnspentOutput(response: $0.coins, address: $0.address)
             }
 
-            var coinBalance: Decimal = 0
-            var tokenBalances: [Token: Decimal] = tokens.reduce(into: [:]) { tokenBalances, token in
-                // Collecting of all output balance
-                tokenBalances[token, default: 0] += unspentOutputs.reduce(0) { result, output in
-                    // Sum with each asset in output amount
-                    result + output.assets.reduce(into: 0) { result, asset in
-                        // We can not compare full contractAddress and policyId
-                        // Because from API we receive only the policyId e.g. `1d7f33bd23d85e1a25d87d86fac4f199c3197a2f7afeb662a0f34e1e`
-                        // But from our API sometimes we receive the contractAddress like `policyId + assetNameHex`
-                        // e.g. 1d7f33bd23d85e1a25d87d86fac4f199c3197a2f7afeb662a0f34e1e776f726c646d6f62696c65746f6b656e
-                        if token.contractAddress.hasPrefix(asset.policyID) {
-                            result += Decimal(asset.amount) / token.decimalValue
-                        }
-                    }
-                }
-            }
-
-            unspentOutputs.forEach { output in
-                coinBalance += output.amount / self.decimalValue
-            }
-            
-            return CardanoAddressResponse(balance: coinBalance, tokenBalances: tokenBalances, recentTransactionsHashes: [], unspentOutputs: unspentOutputs)
+            return self.cardanoResponseMapper.mapToCardanoAddressResponse(
+                tokens: tokens,
+                unspentOutputs: unspentOutputs,
+                recentTransactionsHashes: []
+            )
         }
         .eraseToAnyPublisher()
     }
@@ -88,7 +73,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
         ).encode().toHexString()
         
         let submitBody = RosettaSubmitBody(networkIdentifier: .mainNet, signedTransaction: txHex)
-        return provider.requestPublisher(.submitTransaction(baseUrl: baseUrl, submitBody: submitBody))
+        return provider.requestPublisher(.submitTransaction(baseUrl: rosettaUrl, submitBody: submitBody))
             .map(RosettaSubmitResponse.self, using: decoder)
             .eraseError()
             .map { $0.transactionIdentifier.hash ?? "" }
@@ -97,7 +82,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     
     private func balancePublisher(for address: String) -> AnyPublisher<RosettaBalanceResponse, Error> {
         provider
-            .requestPublisher(.address(baseUrl: self.baseUrl,
+            .requestPublisher(.address(baseUrl: rosettaUrl,
                                        addressBody: RosettaAddressBody(networkIdentifier: .mainNet,
                                                                        accountIdentifier: RosettaAccountIdentifier(address: address))))
             .map(RosettaBalanceResponse.self, using: decoder)
@@ -107,7 +92,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     
     private func coinsPublisher(for address: String) -> AnyPublisher<RosettaCoinsResponse, Error> {
         provider
-            .requestPublisher(.coins(baseUrl: self.baseUrl,
+            .requestPublisher(.coins(baseUrl: rosettaUrl,
                                      addressBody: RosettaAddressBody(networkIdentifier: .mainNet,
                                                                      accountIdentifier: RosettaAccountIdentifier(address: address))))
             .map(RosettaCoinsResponse.self, using: decoder)
@@ -121,12 +106,6 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
         }
 
         let outputs: [CardanoUnspentOutput] = coins.compactMap { coin -> CardanoUnspentOutput? in
-            // It should be always true, but someone added this check
-            // I'll leave like exist
-            guard coin.amount?.currency?.symbol == cardanoCurrencySymbol else {
-                return nil
-            }
-            
             // We should ignore the output with metadata
             // Because we don't support a cardano tokens yet
             guard coin.metadata == nil else {
