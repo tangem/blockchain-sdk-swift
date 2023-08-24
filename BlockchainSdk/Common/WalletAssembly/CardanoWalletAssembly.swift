@@ -13,20 +13,25 @@ struct CardanoWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return CardanoWalletManager(wallet: input.wallet).then {
-            $0.txBuilder = CardanoTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey)
+            $0.transactionBuilder = CardanoTransactionBuilder()
+            let cardanoResponseMapper = CardanoResponseMapper()
+            
             let service = CardanoNetworkService(providers: [
                 RosettaNetworkProvider(
-                    baseUrl: .getBlockRosetta(apiKey: input.blockchainSdkConfig.getBlockApiKey),
-                    configuration: input.networkConfig
+                    rosettaUrl: .getBlockRosetta(apiKey: input.blockchainSdkConfig.getBlockApiKey),
+                    configuration: input.networkConfig,
+                    cardanoResponseMapper: cardanoResponseMapper
                 ).eraseToAnyCardanoNetworkProvider(),
                 AdaliteNetworkProvider(
-                    baseUrl: .main,
-                    configuration: input.networkConfig
+                    adaliteUrl: .main,
+                    configuration: input.networkConfig,
+                    cardanoResponseMapper: cardanoResponseMapper
                 ).eraseToAnyCardanoNetworkProvider(),
                 RosettaNetworkProvider(
-                    baseUrl: .tangemRosetta,
-                    configuration: input.networkConfig
-                ).eraseToAnyCardanoNetworkProvider()
+                    rosettaUrl: .tangemRosetta,
+                    configuration: input.networkConfig,
+                    cardanoResponseMapper: cardanoResponseMapper
+                ).eraseToAnyCardanoNetworkProvider(),
             ])
             $0.networkService = service
         }

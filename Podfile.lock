@@ -55,7 +55,7 @@ PODS:
   - SwiftProtobuf (1.18.0)
   - SwiftyJSON (5.0.1)
   - TangemSdk (3.8.0)
-  - TangemWalletCore (3.2.1-tangem2):
+  - TangemWalletCore (3.2.4-tangem1):
     - SwiftProtobuf
   - TweetNacl (1.0.2)
   - web3swift (2.2.1):
@@ -85,7 +85,7 @@ DEPENDENCIES:
   - SwiftProtobuf
   - SwiftyJSON
   - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-264`)
-  - TangemWalletCore (from `https://github.com/tangem/wallet-core-binaries-ios.git`, tag `3.2.1-tangem2`)
+  - TangemWalletCore (from `https://github.com/tangem/wallet-core-binaries-ios.git`, tag `3.2.4-tangem1`)
   - web3swift (from `https://github.com/tangem/web3swift.git`, tag `2.2.12`)
 
 SPEC REPOS:
@@ -127,7 +127,7 @@ EXTERNAL SOURCES:
     :tag: develop-264
   TangemWalletCore:
     :git: https://github.com/tangem/wallet-core-binaries-ios.git
-    :tag: 3.2.1-tangem2
+    :tag: 3.2.4-tangem1
   web3swift:
     :git: https://github.com/tangem/web3swift.git
     :tag: 2.2.12
@@ -150,7 +150,7 @@ CHECKOUT OPTIONS:
     :tag: develop-264
   TangemWalletCore:
     :git: https://github.com/tangem/wallet-core-binaries-ios.git
-    :tag: 3.2.1-tangem2
+    :tag: 3.2.4-tangem1
   web3swift:
     :git: https://github.com/tangem/web3swift.git
     :tag: 2.2.12
@@ -177,11 +177,11 @@ SPEC CHECKSUMS:
   SwiftProtobuf: c3c12645230d9b09c72267e0de89468c5543bd86
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
   TangemSdk: f3adf8d0c18bf7a76406462fa31c0efa9f2efa93
-  TangemWalletCore: 9ebace26036611f637ecef2a86c1da7636f83384
+  TangemWalletCore: 8495b203106e8246aaa2a51ff99dd19f29209942
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: cd1a5753954fd6a0bb10db09a9c4b6f525ba4a02
+PODFILE CHECKSUM: 72e2a528b7d3ef81afeef9ff84bbe6698c007f62
 
 COCOAPODS: 1.12.1

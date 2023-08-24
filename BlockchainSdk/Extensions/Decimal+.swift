@@ -60,6 +60,10 @@ extension Decimal {
         (self as NSDecimalNumber).uint64Value
     }
     
+    var roundedDecimalNumber: NSDecimalNumber {
+        rounded(roundingMode: .up) as NSDecimalNumber
+    }
+    
     var int64Value: Int64 {
         (self as NSDecimalNumber).int64Value
     }

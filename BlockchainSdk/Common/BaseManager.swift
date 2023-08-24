@@ -203,7 +203,7 @@ private extension BaseManager {
         }
         
         if let dustAmount = (self as? DustRestrictable)?.dustValue {
-            if amount < dustAmount {
+            if amount.type == dustAmount.type, amount < dustAmount {
                 errors.append(.dustAmount(minimumAmount: dustAmount))
             }
             
