@@ -946,7 +946,7 @@ extension Blockchain {
                 return URL(string: "https://www.mintscan.io/cosmos/account/\(address)")!
             }
         case .terraV1:
-            return URL(string: "https://atomscan.com/terra/transactions/\(address)")!
+            return URL(string: "https://atomscan.com/terra/accounts/\(address)")!
         case .terraV2:
             return URL(string: "https://terrasco.pe/mainnet/address/\(address)")!
         case .cronos:
