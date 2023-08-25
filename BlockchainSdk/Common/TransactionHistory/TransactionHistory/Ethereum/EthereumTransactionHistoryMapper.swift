@@ -134,15 +134,26 @@ private extension EthereumTransactionHistoryMapper {
     }
     
     func transactionType(_ transaction: BlockBookAddressResponse.Transaction) -> TransactionRecord.TransactionType {
-        guard let parsedData = transaction.ethereumSpecific?.parsedData else {
+        guard let methodId = transaction.ethereumSpecific?.parsedData?.methodId else {
             return .transfer
         }
         
-        if parsedData.methodId.isEmpty {
+        // MethodId is empty for the coin transfers
+        if methodId.isEmpty {
             return .transfer
         }
         
-        return TransactionRecord.TransactionType.from(hex: parsedData.methodId)
+        switch methodId {
+        case "0xa9059cbb": return .transfer
+        case "0xa1903eab": return .submit
+        case "0x095ea7b3": return .approve
+        case "0x617ba037": return .supply
+        case "0x69328dec": return .withdraw
+        case "0xe8eda9df": return .deposit
+        case "0x12aa3caf": return .swap
+        case "0x0502b1c5",  "0x2e95b6c8": return .unoswap
+        default: return .custom(id: methodId)
+        }
     }
     
     func tokenTransfers(_ transaction: BlockBookAddressResponse.Transaction) -> [TransactionRecord.TokenTransfer]? {
@@ -167,25 +178,4 @@ private extension EthereumTransactionHistoryMapper {
     func isCaseInsensitiveMatch(lhs: String, rhs: String) -> Bool {
         return lhs.caseInsensitiveCompare(rhs) == .orderedSame
     }
-}
-
-public extension TransactionRecord.TransactionType {
-    static func from(hex: String) -> Self {
-        if let method = TransactionRecord.TransactionType.data.first(where: { $0.value.contains(hex) })?.key {
-            return method
-        }
-        
-        return .custom(id: hex)
-    }
-    
-    static let data: [TransactionRecord.TransactionType: [String]] = [
-        .transfer: ["0xa9059cbb"],
-        .submit: ["0xa1903eab"],
-        .approve: ["0x095ea7b3"],
-        .supply: ["0x617ba037"],
-        .withdraw: ["0x69328dec"],
-        .deposit: ["0xe8eda9df"],
-        .swap: ["0x12aa3caf"],
-        .unoswap: ["0x0502b1c5", "0x2e95b6c8"],
-    ]
 }
