@@ -49,7 +49,8 @@ struct BlockscoutResponseMapper {
             destination: .single(destination),
             fee: fee,
             status: confirmations > 0 ? .confirmed : .unconfirmed,
-            type: .send,
+            isOutgoing: true,
+            type: .transfer,
             date: date
         )
     }

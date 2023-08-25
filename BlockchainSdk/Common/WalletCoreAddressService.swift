@@ -47,10 +47,12 @@ extension WalletCoreAddressService: AddressProvider {
             let address = AnyAddress(publicKey: walletCorePublicKey, coin: coin).description
             return PlainAddress(value: address, publicKey: publicKey, type: addressType)
         case .legacy:
-            assertionFailure("WalletCoreAddressService don't support legacy address for \(coin)")
+            if coin == .cardano {
+                let address = try makeByronAddress(publicKey: publicKey)
+                return PlainAddress(value: address, publicKey: publicKey, type: addressType)
+            }
             
-            // Cardano legacy address will be supported after merge Cardano tokens
-            return try makeAddress(for: publicKey, with: .default)
+            fatalError("WalletCoreAddressService don't support legacy address for \(coin)")
         }
     }
 }
@@ -60,6 +62,17 @@ extension WalletCoreAddressService: AddressProvider {
 extension WalletCoreAddressService: AddressValidator {
     public func validate(_ address: String) -> Bool {
         return AnyAddress(string: address, coin: coin) != nil
+    }
+}
+
+private extension WalletCoreAddressService {
+    func makeByronAddress(publicKey: Wallet.PublicKey) throws -> String {
+        guard let publicKey = PublicKey(data: publicKey.blockchainKey, type: .ed25519Cardano) else {
+            throw TWError.makeAddressFailed
+        }
+        
+        let byronAddress = Cardano.getByronAddress(publicKey: publicKey)
+        return byronAddress
     }
 }
 

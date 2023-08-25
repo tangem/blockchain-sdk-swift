@@ -13,8 +13,6 @@ public struct AdaliteUnspentOutput {
     let index: Int
 }
 
-
 public struct AdaliteBalanceResponse {
-    let balance: Decimal
     let transactions: [String]
 }

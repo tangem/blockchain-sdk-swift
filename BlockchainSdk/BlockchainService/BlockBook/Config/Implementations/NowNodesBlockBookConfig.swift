@@ -8,6 +8,7 @@
 
 import Foundation
 
+// https://nownodes.io/nodes
 struct NowNodesBlockBookConfig {
     private let apiKey: String
     
@@ -30,13 +31,28 @@ extension NowNodesBlockBookConfig: BlockBookConfig {
         return "nownodes.io"
     }
     
-    func domain(for request: BlockBookTarget.Request, prefix: String, isTestnet: Bool) -> String {
-        switch request {
-        case .fees:
-            return "https://\(prefix).\(host)"
+    func node(for blockchain: Blockchain) -> BlockBookNode {
+        let prefix = blockchain.currencySymbol.lowercased()
+        
+        switch blockchain {
+        case .bitcoin, .dash, .dogecoin, .litecoin:
+            let testnetSuffix = blockchain.isTestnet ? "-testnet" : ""
+            return BlockBookNode(
+                rpcNode: "https://\(prefix).\(host)",
+                restNode: "https://\(prefix)book\(testnetSuffix).\(host)"
+            )
+        case .ethereum, .ethereumPoW, .ethereumClassic, .avalanche, .tron, .arbitrum:
+            return BlockBookNode(
+                rpcNode: "https://\(prefix).\(host)",
+                restNode: "https://\(prefix)-blockbook.\(host)"
+            )
+        case .bsc:
+            return BlockBookNode(
+                rpcNode: "https://bsc.\(host)",
+                restNode: "https://bsc-blockbook.\(host)"
+            )
         default:
-            let testnetSuffix = isTestnet ? "-testnet" : ""
-            return "https://\(prefix)book\(testnetSuffix).\(host)"
+            fatalError("NowNodesBlockBookConfig don't support blockchain: \(blockchain.displayName)")
         }
     }
     

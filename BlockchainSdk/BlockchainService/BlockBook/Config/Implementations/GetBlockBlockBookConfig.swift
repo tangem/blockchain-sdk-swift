@@ -29,13 +29,13 @@ extension GetBlockBlockBookConfig: BlockBookConfig {
         return "getblock.io"
     }
     
-    func domain(for request: BlockBookTarget.Request, prefix: String, isTestnet: Bool) -> String {
-        switch request {
-        case .fees:
-            return "https://\(prefix).\(host)"
-        default:
-            return "https://\(prefix).\(host)"
-        }
+    func node(for blockchain: Blockchain) -> BlockBookNode {
+        let currencySymbolPrefix = blockchain.currencySymbol.lowercased()
+        
+        return BlockBookNode(
+            rpcNode: "https://\(currencySymbolPrefix).\(host)",
+            restNode: "https://\(currencySymbolPrefix).\(host)"
+        )
     }
     
     func path(for request: BlockBookTarget.Request) -> String {

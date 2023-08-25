@@ -2,126 +2,176 @@
 //  CardanoTransactionBuilder.swift
 //  BlockchainSdk
 //
-//  Created by Alexander Osokin on 08.04.2020.
-//  Copyright © 2020 Tangem AG. All rights reserved.
+//  Created by Sergey Balashov on 20.06.2023.
+//  Copyright © 2023 Tangem AG. All rights reserved.
 //
 
 import Foundation
-import SwiftCBOR
-import Sodium
+import WalletCore
+import BigInt
 import TangemSdk
 
+// You can decode your CBOR transaction here: https://cbor.me
 class CardanoTransactionBuilder {
-    let walletPublicKey: Data
-    var unspentOutputs: [CardanoUnspentOutput]? = nil
-    let kDecimalNumber: Int16 = 6
-    let kProtocolMagic: UInt64 = 764824073
-    
-    internal init(walletPublicKey: Data) {
-        self.walletPublicKey = walletPublicKey
+    private var outputs: [CardanoUnspentOutput] = []
+    private let coinType: CoinType = .cardano
+
+    init() {}
+}
+
+extension CardanoTransactionBuilder {
+    func update(outputs: [CardanoUnspentOutput]) {
+        self.outputs = outputs
     }
-    
-	public func buildForSign(transaction: Transaction, walletAmount: Decimal, isEstimated: Bool) throws -> (hash:Data, bodyItem: CBOR)  {
-        let bodyItem = try buildTransactionBody(from: transaction, walletAmount: walletAmount, isEstimated: isEstimated)
-        let transactionBody = bodyItem.encode()
-        guard let transactionHash = Sodium().genericHash.hash(message: transactionBody, outputLength: 32) else {
+
+    func buildForSign(transaction: Transaction) throws -> Data {
+        let input = try buildCardanoSigningInput(transaction: transaction)
+        let txInputData = try input.serializedData()
+
+        let preImageHashes = TransactionCompiler.preImageHashes(coinType: coinType, txInputData: txInputData)
+        let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
+        
+        if preSigningOutput.error != .ok {
+            Log.debug("CardanoPreSigningOutput has a error: \(preSigningOutput.errorMessage)")
+            throw WalletError.failedToBuildTx
+        }
+
+        return preSigningOutput.dataHash
+    }
+
+    func buildForSend(transaction: Transaction, signature: SignatureInfo) throws -> Data {
+        let input = try buildCardanoSigningInput(transaction: transaction)
+        let txInputData = try input.serializedData()
+
+        let signatures = DataVector()
+        signatures.add(data: signature.signature)
+        
+        let publicKeys = DataVector()
+        // WalletCore used here `.ed25519Cardano` curve with 128 bytes publicKey.
+        // For more info see CardanoUtil
+        let publicKey = signature.publicKey.trailingZeroPadding(toLength: CardanoUtil.extendedPublicKeyCount)
+        publicKeys.add(data: publicKey)
+
+        let compileWithSignatures = TransactionCompiler.compileWithSignatures(
+            coinType: coinType,
+            txInputData: txInputData,
+            signatures: signatures,
+            publicKeys: publicKeys
+        )
+
+        let output = try CardanoSigningOutput(serializedData: compileWithSignatures)
+
+        if output.error != .ok {
+            Log.debug("CardanoSigningOutput has a error: \(output.errorMessage)")
             throw WalletError.failedToBuildTx
         }
         
-        return (hash: Data(transactionHash), bodyItem: bodyItem)
-    }
-    
-    public func buildForSend(bodyItem: CBOR, signature: Data) throws -> Data {
-        guard let unspents = unspentOutputs else {
-            throw CardanoError.noUnspents
+        if output.encoded.isEmpty {
+            throw WalletError.failedToBuildTx
         }
         
-        let useByronWitness = unspents.contains(where: { !CardanoAddressUtils.isShelleyAddress($0.address) })
-        let useShelleyWitness = unspents.contains(where: { CardanoAddressUtils.isShelleyAddress($0.address) })
+        return output.encoded
+    }
 
-        var witnessMap = CBOR.map([:])
-        let skey = Array(walletPublicKey.bytes[0 ..< 32])
-        if useShelleyWitness {
-            witnessMap[0] = CBOR.array([CBOR.array([CBOR.byteString(skey),
-                                                    CBOR.byteString(signature.bytes)])])
+    func estimatedFee(transaction: Transaction) throws -> Decimal {
+        let input = try buildCardanoSigningInput(transaction: transaction)
+        return Decimal(input.plan.fee)
+    }
+
+    func buildCardanoSigningInput(transaction: Transaction) throws -> CardanoSigningInput {
+        let decimalValue = pow(10, transaction.amount.decimals)
+        let uint64Amount = (transaction.amount.value * decimalValue).roundedDecimalNumber.uint64Value
+
+        var input = CardanoSigningInput.with {
+            $0.transferMessage.toAddress = transaction.destinationAddress
+            $0.transferMessage.changeAddress = transaction.changeAddress
+            $0.transferMessage.useMaxAmount = false
+            // Transaction validity time. Currently we are using absolute values.
+            // At 16 April 2023 was 90007700 slot number.
+            // We need to rework this logic to use relative validity time.
+            // TODO: https://tangem.atlassian.net/browse/IOS-3471
+            // This can be constructed using absolute ttl slot from `/metadata` endpoint.
+            $0.ttl = 190000000
         }
-        if useByronWitness {
-            // vkey a.k.a chainCode
-            let vkey: [UInt8] = {
-                // If the expanded pubic key
-                if walletPublicKey.count == 128 {
-                    return Array(walletPublicKey.bytes[32 ... 64])
-                } else {
-                    return Data(repeating: 0, count: 32).bytes
+
+        if outputs.isEmpty {
+            throw CardanoError.noUnspents
+        }
+
+        input.utxos = outputs.map { output -> CardanoTxInput in
+            CardanoTxInput.with {
+                $0.outPoint.txHash = Data(hexString: output.transactionHash)
+                $0.outPoint.outputIndex = UInt64(output.outputIndex)
+                $0.address = output.address
+                $0.amount = output.amount.roundedDecimalNumber.uint64Value
+                
+                if !output.assets.isEmpty {
+                    $0.tokenAmount = output.assets.map { asset in
+                        CardanoTokenAmount.with {
+                            $0.policyID = asset.policyID
+                            $0.assetNameHex = asset.assetNameHex
+                            // Amount in hexadecimal e.g. 2dc6c0 = 3000000
+                            $0.amount = BigInt(asset.amount).serialize()
+                        }
+                    }
                 }
-            }()
+            }
+        }
+                
+        switch transaction.amount.type {
+        case .token(let token):
+            // We should use this HACK here to find
+            // right policyID and the exadecimal asset name
+            // Must be used exactly same as in utxo
+            let asset = outputs.first(where: { output in
+                output.assets.contains(where: { asset in
+                    token.contractAddress.hasPrefix(asset.policyID)
+                })
+            })?.assets.first
 
-            witnessMap[2] = CBOR.array([CBOR.array([CBOR.byteString(skey),
-                                                    CBOR.byteString(signature.bytes),
-                                                    CBOR.byteString(vkey),
-                                                    CBOR.byteString(Data(hexString: "A0").bytes)
-                            ])])
+            guard let asset else {
+                throw WalletError.failedToBuildTx
+            }
+            
+            var toTokenBundle = CardanoTokenBundle()
+            let toToken = CardanoTokenAmount.with {
+                $0.policyID = asset.policyID
+                $0.assetNameHex = asset.assetNameHex
+                // Should set amount as hex e.g. "01312d00" = 20000000
+                $0.amount = BigUInt(uint64Amount).serialize()
+            }
+            
+            toTokenBundle.token.append(toToken)
+            
+            // check min ADA amount, set it
+            let inputTokenAmountSerialized = try toTokenBundle.serializedData()
+            let minAmount = CardanoMinAdaAmount(tokenBundle: inputTokenAmountSerialized)
+            
+            // We should set minAmount because main amount in utxo must not be empty
+            input.transferMessage.amount = minAmount
+            input.transferMessage.tokenAmount = toTokenBundle
+        case .coin:
+            // Min change is 1 ADA. It's also a dust value.
+            let minChange = (1 * decimalValue).uint64Value
+            let change = input.plan.change
+            
+            if change > 0, change < minChange {
+                throw CardanoError.lowAda
+            }
+            
+            // For coin just set amount which will be sent
+              input.transferMessage.amount = uint64Amount
+        case .reserve:
+            throw WalletError.empty
         }
         
-        let tx = CBOR.array([bodyItem, witnessMap, nil])
-        let txForSend = tx.encode()
-        return Data(txForSend)
-    }
-    
-	private func buildTransactionBody(from transaction: Transaction, walletAmount: Decimal, isEstimated: Bool = false) throws -> CBOR {
-        guard let unspentOutputs = self.unspentOutputs else {
-            throw CardanoError.noUnspents
-        }
+        input.plan = AnySigner.plan(input: input, coin: coinType)
         
-        let convertValue = Blockchain.cardano(extended: false).decimalValue
-        let feeConverted = transaction.fee.amount.value * convertValue
-        let amountConverted = transaction.amount.value * convertValue
-        let walletAmountConverted = walletAmount * convertValue
-        let change = walletAmountConverted - amountConverted - feeConverted
-        let amountLong = (amountConverted.rounded() as NSDecimalNumber).uint64Value
-        let changeLong = (change.rounded() as NSDecimalNumber).uint64Value
-        let feesLong = (feeConverted.rounded() as NSDecimalNumber).uint64Value
-        
-        if !isEstimated && (amountLong < 1000000 || (changeLong < 1000000 && changeLong != 0)) {
-            throw CardanoError.lowAda
-        }
-        
-        guard let targetAddressBytes = CardanoAddressUtils.decode(transaction.destinationAddress)?.bytes else {
+        if input.plan.error != .ok {
+            Log.debug("CardanoSigningInput has a error: \(input.plan.error)")
             throw WalletError.failedToBuildTx
         }
         
-        var transactionMap = CBOR.map([:])
-        var inputsArray = [CBOR]()
-        for unspentOutput in unspentOutputs {
-            let array = CBOR.array(
-                [CBOR.byteString(Data(hexString: unspentOutput.transactionHash).bytes),
-                 CBOR.unsignedInt(UInt64(unspentOutput.outputIndex))])
-            inputsArray.append(array)
-        }
-        
-        
-        
-        var outputsArray = [CBOR]()
-        outputsArray.append(CBOR.array([CBOR.byteString(targetAddressBytes), CBOR.unsignedInt(amountLong)]))
-           
-        guard let changeAddressBytes = CardanoAddressUtils.decode(transaction.sourceAddress)?.bytes else {
-            throw WalletError.failedToBuildTx
-        }
-        
-        if (changeLong > 0) {
-            outputsArray.append(CBOR.array([CBOR.byteString(changeAddressBytes), CBOR.unsignedInt(changeLong)]))
-        }
-        
-        transactionMap[CBOR.unsignedInt(0)] = CBOR.array(inputsArray)
-        transactionMap[CBOR.unsignedInt(1)] = CBOR.array(outputsArray)
-        transactionMap[2] = CBOR.unsignedInt(feesLong)
-        
-        // Transaction validity time. Currently we are using absolute values.
-        // At 16 April 2023 was 90007700 slot number.
-        // We need to rework this logic to use relative validity time. TODO: https://tangem.atlassian.net/browse/IOS-3471
-        // This can be constructed using absolute ttl slot from `/metadata` endpoint.
-        transactionMap[3] = CBOR.unsignedInt(190000000)
-        
-        return transactionMap
+        return input
     }
 }

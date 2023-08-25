@@ -1,14 +1,13 @@
 //
-//  TransactionHistoryMapper.swift
+//  UTXOTransactionHistoryMapper.swift
 //  BlockchainSdk
 //
-//  Created by Sergey Balashov on 26.07.2023.
-//  Copyright © 2023 Tangem AG. All rights reserved.
+//  Created by Sergey Balashov on 16.08.2023.
 //
 
 import Foundation
 
-struct TransactionHistoryMapper {
+struct UTXOTransactionHistoryMapper {
     private let blockchain: Blockchain
     private var decimalValue: Decimal {
         blockchain.decimalValue
@@ -17,11 +16,15 @@ struct TransactionHistoryMapper {
     init(blockchain: Blockchain) {
         self.blockchain = blockchain
     }
-    
-    func mapToTransactionRecords(_ response: BlockBookAddressResponse) -> [TransactionRecord] {
-        let transactions = response.transactions ?? []
-        
-        if transactions.isEmpty {
+}
+
+// MARK: - BlockBookTransactionHistoryMapper
+
+extension UTXOTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
+    func mapToTransactionRecords(_ response: BlockBookAddressResponse, amountType: Amount.AmountType) -> [TransactionRecord] {
+        assert(amountType == .coin, "UTXOTransactionHistoryMapper doesn't support a token amount")
+
+        guard let transactions = response.transactions else {
             return []
         }
         
@@ -31,7 +34,7 @@ struct TransactionHistoryMapper {
             }
             
             let isOutgoing = transaction.vin.contains(where: { $0.isOwn == true })
-            let status: TransactionStatus = transaction.confirmations > 0 ? .confirmed : .unconfirmed
+            let status: TransactionRecord.TransactionStatus = transaction.confirmations > 0 ? .confirmed : .unconfirmed
             let fee = feeSatoshi / decimalValue
             
             return TransactionRecord(
@@ -40,7 +43,8 @@ struct TransactionHistoryMapper {
                 destination: destinationType(vout: transaction.vout),
                 fee: Fee(Amount(with: blockchain, value: fee)),
                 status: status,
-                type: isOutgoing ? .send : .receive,
+                isOutgoing: isOutgoing,
+                type: .transfer,
                 date: Date(timeIntervalSince1970: TimeInterval(transaction.blockTime))
             )
         }

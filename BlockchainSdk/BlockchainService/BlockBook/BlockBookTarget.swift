@@ -15,11 +15,12 @@ struct BlockBookTarget: TargetType {
     let blockchain: Blockchain
     
     var baseURL: URL {
-        URL(string: config.domain(
-            for: request,
-            prefix: blockchain.currencySymbol.lowercased(),
-            isTestnet: blockchain.isTestnet)
-        )!
+        switch request {
+        case .fees:
+            return URL(string: config.node(for: blockchain).rpcNode)!
+        default:
+            return URL(string: config.node(for: blockchain).restNode)!
+        }
     }
     
     var path: String {
@@ -95,15 +96,18 @@ extension BlockBookTarget {
         /// The number of transactions returned by call (default and maximum 1000)
         let pageSize: Int
         let details: [Details]
+        let filterType: FilterType?
         
         init(
             page: Int = 1,
             pageSize: Int = 1000,
-            details: [BlockBookTarget.AddressRequestParameters.Details] = [.txs]
+            details: [BlockBookTarget.AddressRequestParameters.Details] = [.txids],
+            filterType: FilterType? = nil
         ) {
             self.page = page
             self.pageSize = pageSize
             self.details = details
+            self.filterType = filterType
         }
         
         enum Details: String, Encodable {
@@ -121,20 +125,39 @@ extension BlockBookTarget {
             case txs
         }
         
+        enum FilterType {
+            /// Return only related with coin transactions
+            case coin
+            /// Return only transactions which affect specified contract (applicable only to coins which support contracts)
+            case contract(String)
+        }
+        
         enum CodingKeys: CodingKey {
             case page
             case pageSize
             case details
+            case contract
+            case filter
         }
         
         func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: BlockBookTarget.AddressRequestParameters.CodingKeys.self)
-            try container.encode(self.page, forKey: BlockBookTarget.AddressRequestParameters.CodingKeys.page)
-            try container.encode(self.pageSize, forKey: BlockBookTarget.AddressRequestParameters.CodingKeys.pageSize)
-            try container.encode(
-                self.details.map { $0.rawValue }.joined(separator: ","),
-                forKey: BlockBookTarget.AddressRequestParameters.CodingKeys.details
-            )
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(page, forKey: .page)
+            try container.encode(pageSize, forKey: .pageSize)
+            try container.encode(details.map { $0.rawValue }.joined(separator: ","), forKey: .details)
+            switch filterType {
+            case .none:
+                break
+            case .coin:
+                // A contributor comment:
+                // Actually, there is kind of undocumented feature, if you specify the parameter filter=0
+                // it will return only non-contract transactions.
+                // We may add some more friendly alias for that and document it in the future.
+                // https://github.com/trezor/blockbook/issues/829#issuecomment-1320981721
+                try container.encode(0, forKey: .filter)
+            case .contract(let contract):
+                try container.encode(contract, forKey: .contract)
+            }
         }
     }
 }

@@ -15,10 +15,8 @@ import Foundation
 
 class RavencoinWalletManager: BitcoinWalletManager {
     override var minimalFeePerByte: Decimal { 10 }
-}
-
-extension RavencoinWalletManager: DustRestrictable {
-    var dustValue: Amount {
+    
+    override var dustValue: Amount {
         let value = 642 / wallet.blockchain.decimalValue
         return Amount(with: wallet.blockchain, value: value)
     }

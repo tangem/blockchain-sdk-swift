@@ -11,13 +11,16 @@ import TangemSdk
 import Combine
 import BitcoinCore
 
-class BitcoinWalletManager: BaseManager, WalletManager {
+class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
     var allowsFeeSelection: Bool { true }
     var txBuilder: BitcoinTransactionBuilder!
     var networkService: BitcoinNetworkProvider!
     
     var minimalFeePerByte: Decimal { 10 }
     var minimalFee: Decimal { 0.00001 }
+    var dustValue: Amount {
+        Amount(with: wallet.blockchain, value: minimalFee)
+    }
     
     var loadedUnspents: [BitcoinUnspentOutput] = []
     
