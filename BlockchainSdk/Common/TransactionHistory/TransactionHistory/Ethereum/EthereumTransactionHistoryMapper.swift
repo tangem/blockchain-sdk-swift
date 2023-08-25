@@ -117,8 +117,8 @@ private extension EthereumTransactionHistoryMapper {
         switch amountType {
         case .coin, .reserve:
             if let amount = Decimal(string: transaction.value) {
-                let isContact = !tokenTransfers.isEmpty
-                return TransactionRecord.Destination(address: isContact ? .contract(address) : .user(address), amount: amount / decimalValue)
+                let isContract = !tokenTransfers.isEmpty
+                return TransactionRecord.Destination(address: isContract ? .contract(address) : .user(address), amount: amount / decimalValue)
             }
         case .token(let token):
             let transfer = tokenTransfers.last(where: { isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: $0.contract) })
@@ -150,11 +150,8 @@ private extension EthereumTransactionHistoryMapper {
             return nil
         }
         
-        return tokenTransfers.compactMap { transfer -> TransactionRecord.TokenTransfer? in
-            guard let amount = Decimal(transfer.value) else {
-                return nil
-            }
-            
+        return tokenTransfers.map { transfer -> TransactionRecord.TokenTransfer in
+            let amount = Decimal(transfer.value) ?? 0
             return TransactionRecord.TokenTransfer(
                 source: transfer.from,
                 destination: transfer.to,
