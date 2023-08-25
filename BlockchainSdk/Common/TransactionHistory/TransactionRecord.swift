@@ -14,8 +14,10 @@ public struct TransactionRecord: Hashable {
     public let destination: DestinationType
     public let fee: Fee
     public let status: TransactionStatus
+    public let isOutgoing: Bool
     public let type: TransactionType
     public let date: Date?
+    public let tokenTransfers: [TokenTransfer]?
     
     public init(
         hash: String,
@@ -23,25 +25,46 @@ public struct TransactionRecord: Hashable {
         destination: DestinationType,
         fee: Fee,
         status: TransactionStatus,
+        isOutgoing: Bool,
         type: TransactionType,
-        date: Date?
+        date: Date?,
+        tokenTransfers: [TokenTransfer]? = nil
     ) {
         self.hash = hash
         self.source = source
         self.destination = destination
         self.fee = fee
         self.status = status
+        self.isOutgoing = isOutgoing
         self.type = type
         self.date = date
+        self.tokenTransfers = tokenTransfers
     }
 }
 
 // MARK: - TransactionType
 
 public extension TransactionRecord {
-    enum TransactionType: String, Hashable {
-        case send
-        case receive
+    enum TransactionType: Hashable {
+        case transfer
+        case submit
+        case approve
+        case supply
+        case withdraw
+        case deposit
+        case swap
+        case unoswap
+        case custom(id: String)
+    }
+}
+
+// MARK: - TransactionStatus
+
+public extension TransactionRecord {
+    enum TransactionStatus: Hashable {
+        case unconfirmed
+        case failed
+        case confirmed
     }
 }
 
@@ -95,5 +118,19 @@ public extension TransactionRecord {
                 }
             }
         }
+    }
+}
+
+// MARK: - TokenTransfer
+
+public extension TransactionRecord {
+    struct TokenTransfer: Hashable {
+        public let source: String
+        public let destination: String
+        public let amount: Decimal
+        public let name: String?
+        public let symbol: String?
+        public let decimals: Int?
+        public let contract: String?
     }
 }

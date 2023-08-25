@@ -18,6 +18,11 @@ public struct TransactionHistoryProviderFactory {
     }
     
     public func makeProvider(for blockchain: Blockchain) -> TransactionHistoryProvider? {
+        // Transaction history is only supported on the mainnet
+        guard !blockchain.isTestnet else {
+            return nil
+        }
+
         let networkAssembly = NetworkProviderAssembly()
         let input = NetworkProviderAssembly.Input(blockchainSdkConfig: config, blockchain: blockchain)
         
@@ -28,7 +33,12 @@ public struct TransactionHistoryProviderFactory {
                     networkAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock),
                     networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes)
                 ],
-                mapper: TransactionHistoryMapper(blockchain: blockchain)
+                mapper: UTXOTransactionHistoryMapper(blockchain: blockchain)
+            )
+        case .ethereum, .ethereumPoW, .bsc, .avalanche:
+            return EthereumTransactionHistoryProvider(
+                blockBookProvider: networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes),
+                mapper: EthereumTransactionHistoryMapper(blockchain: blockchain)
             )
         default:
             return nil
