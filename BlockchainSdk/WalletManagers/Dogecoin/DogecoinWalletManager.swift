@@ -42,9 +42,3 @@ class DogecoinWalletManager: BitcoinWalletManager {
         return .justWithError(output: fees)
     }
 }
-
-extension DogecoinWalletManager: DustRestrictable {
-    var dustValue: Amount {
-        .init(with: wallet.blockchain, value: minimalFee)
-    }
-}
