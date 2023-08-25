@@ -31,7 +31,7 @@ extension EthereumTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
         
         return transactions.compactMap { transaction -> TransactionRecord? in
             guard let source = source(transaction, amountType: amountType),
-                  let destination = destination(transaction, amountType: amountType),
+                  let destination = destination(transaction, walletAddress: response.address, amountType: amountType),
                   let feeWei = Decimal(transaction.fees) else {
                 Log.debug("BlockBookAddressResponse.Transaction \(transaction) doesn't contain a required information")
                 return nil
@@ -106,24 +106,27 @@ private extension EthereumTransactionHistoryMapper {
         return nil
     }
     
-    func destination(_ transaction: BlockBookAddressResponse.Transaction, amountType: Amount.AmountType) -> TransactionRecord.Destination? {
+    func destination(_ transaction: BlockBookAddressResponse.Transaction, walletAddress: String, amountType: Amount.AmountType) -> TransactionRecord.Destination? {
         guard let vout = transaction.vout.first, let address = vout.addresses.first else {
             Log.debug("Destination information in transaction \(transaction) not found")
             return nil
         }
         
+        let tokenTransfers = transaction.tokenTransfers ?? []
+        
         switch amountType {
         case .coin, .reserve:
             if let amount = Decimal(string: transaction.value) {
-                return TransactionRecord.Destination(address: .user(address), amount: amount / decimalValue)
+                let isContact = !tokenTransfers.isEmpty
+                return TransactionRecord.Destination(address: isContact ? .contract(address) : .user(address), amount: amount / decimalValue)
             }
         case .token(let token):
-            let tokenTransfers = transaction.tokenTransfers ?? []
             let transfer = tokenTransfers.last(where: { isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: $0.contract) })
-            
+
             if let transfer, let amount = Decimal(transfer.value) {
                 let decimalValue = pow(10, transfer.decimals)
-                return TransactionRecord.Destination(address: .contract(address), amount: amount / decimalValue)
+                let isOutgoing = transfer.from == walletAddress
+                return TransactionRecord.Destination(address: isOutgoing ? .user(transfer.to) : .user(transfer.from), amount: amount / decimalValue)
             }
         }
         
