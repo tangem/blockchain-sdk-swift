@@ -18,6 +18,7 @@ public struct BlockchainSdkConfig {
     let tronGridApiKey: String
     let tonCenterApiKeys: TonCenterApiKeys
     let fireAcademyApiKeys: FireAcademyApiKeys
+    let chiaTangemApiKeys: ChiaTangemApiKeys
     let quickNodeSolanaCredentials: QuickNodeCredentials
     let quickNodeBscCredentials: QuickNodeCredentials
     let blockscoutCredentials: NetworkProviderConfiguration.Credentials
@@ -34,6 +35,7 @@ public struct BlockchainSdkConfig {
         tronGridApiKey: String,
         tonCenterApiKeys: TonCenterApiKeys,
         fireAcademyApiKeys: FireAcademyApiKeys,
+        chiaTangeApiKeys: ChiaTangemApiKeys,
         quickNodeSolanaCredentials: QuickNodeCredentials,
         quickNodeBscCredentials: QuickNodeCredentials,
         blockscoutCredentials: NetworkProviderConfiguration.Credentials,
@@ -49,6 +51,7 @@ public struct BlockchainSdkConfig {
         self.tronGridApiKey = tronGridApiKey
         self.tonCenterApiKeys = tonCenterApiKeys
         self.fireAcademyApiKeys = fireAcademyApiKeys
+        self.chiaTangemApiKeys = chiaTangeApiKeys
         self.quickNodeSolanaCredentials = quickNodeSolanaCredentials
         self.quickNodeBscCredentials = quickNodeBscCredentials
         self.blockscoutCredentials = blockscoutCredentials
@@ -97,6 +100,14 @@ public extension BlockchainSdkConfig {
         
         func getApiKey(for testnet: Bool) -> String {
             return testnet ? testnetApiKey : mainnetApiKey
+        }
+    }
+    
+    struct ChiaTangemApiKeys {
+        let mainnetApiKey: String
+        
+        public init(mainnetApiKey: String) {
+            self.mainnetApiKey = mainnetApiKey
         }
     }
 }

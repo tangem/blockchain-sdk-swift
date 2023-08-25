@@ -10,15 +10,33 @@ import Foundation
 
 struct ChiaWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        let providers: [ChiaNetworkProvider] = [
-            ChiaNetworkProvider(
-                node: .init(
-                    apiKeyValue: input.blockchainSdkConfig.fireAcademyApiKeys.getApiKey(for: input.blockchain.isTestnet),
-                    endpointType: .fireAcademy(isTestnet: input.blockchain.isTestnet)
-                ),
-                networkConfig: input.networkConfig
+        var providers: [ChiaNetworkProvider] = []
+        
+        if input.blockchain.isTestnet {
+            providers.append(
+                ChiaNetworkProvider(
+                    node: .init(
+                        apiKeyValue: input.blockchainSdkConfig.fireAcademyApiKeys.getApiKey(for: input.blockchain.isTestnet),
+                        endpointType: .fireAcademy(isTestnet: input.blockchain.isTestnet)
+                    ),
+                    networkConfig: input.networkConfig
+                )
             )
-        ]
+        } else {
+            providers.append(contentsOf: [
+                ChiaNetworkProvider(
+                    node: .init(apiKeyValue: input.blockchainSdkConfig.chiaTangemApiKeys.mainnetApiKey, endpointType: .tangem),
+                    networkConfig: input.networkConfig
+                ),
+                ChiaNetworkProvider(
+                    node: .init(
+                        apiKeyValue: input.blockchainSdkConfig.fireAcademyApiKeys.getApiKey(for: input.blockchain.isTestnet),
+                        endpointType: .fireAcademy(isTestnet: input.blockchain.isTestnet)
+                    ),
+                    networkConfig: input.networkConfig
+                )
+            ])
+        }
         
         return try ChiaWalletManager(
             wallet: input.wallet,
