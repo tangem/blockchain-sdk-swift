@@ -18,7 +18,6 @@ struct NowNodesBlockBookConfig {
 }
 
 extension NowNodesBlockBookConfig: BlockBookConfig {
-    
     var apiKeyValue: String {
         return apiKey
     }
