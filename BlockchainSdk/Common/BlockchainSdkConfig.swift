@@ -35,7 +35,7 @@ public struct BlockchainSdkConfig {
         tronGridApiKey: String,
         tonCenterApiKeys: TonCenterApiKeys,
         fireAcademyApiKeys: FireAcademyApiKeys,
-        chiaTangeApiKeys: ChiaTangemApiKeys,
+        chiaTangemApiKeys: ChiaTangemApiKeys,
         quickNodeSolanaCredentials: QuickNodeCredentials,
         quickNodeBscCredentials: QuickNodeCredentials,
         blockscoutCredentials: NetworkProviderConfiguration.Credentials,
@@ -51,7 +51,7 @@ public struct BlockchainSdkConfig {
         self.tronGridApiKey = tronGridApiKey
         self.tonCenterApiKeys = tonCenterApiKeys
         self.fireAcademyApiKeys = fireAcademyApiKeys
-        self.chiaTangemApiKeys = chiaTangeApiKeys
+        self.chiaTangemApiKeys = chiaTangemApiKeys
         self.quickNodeSolanaCredentials = quickNodeSolanaCredentials
         self.quickNodeBscCredentials = quickNodeBscCredentials
         self.blockscoutCredentials = blockscoutCredentials
