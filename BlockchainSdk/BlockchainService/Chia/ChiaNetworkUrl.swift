@@ -10,6 +10,7 @@ import Foundation
 
 enum ChiaEndpointType {
     case fireAcademy(isTestnet: Bool)
+    case tangem
 }
 
 struct ChiaNetworkEndpoint {
@@ -32,6 +33,9 @@ struct ChiaNetworkNode {
             let url = testnet ?
                 URL(string: "https://kraken.fireacademy.io/leaflet-testnet10/")! :
                 URL(string: "https://kraken.fireacademy.io/leaflet/")!
+            return ChiaNetworkEndpoint(url: url, apiKeyValue: apiKeyValue)
+        case .tangem:
+            let url = URL(string: "https://chia.tangem.com/")!
             return ChiaNetworkEndpoint(url: url, apiKeyValue: apiKeyValue)
         }
     }
