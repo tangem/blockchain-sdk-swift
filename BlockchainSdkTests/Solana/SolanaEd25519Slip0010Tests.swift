@@ -1,9 +1,9 @@
 //
-//  SolanaTests.swift
+//  SolanaEd25519Slip0010Tests.swift
 //  BlockchainSdkTests
 //
-//  Created by Andrew Son on 19/10/22.
-//  Copyright © 2022 Tangem AG. All rights reserved.
+//  Created by Sergey Balashov on 25.08.2023.
+//  Copyright © 2023 Tangem AG. All rights reserved.
 //
 
 import XCTest
@@ -14,8 +14,7 @@ import Combine
 
 private let raisedError = SolanaError.other("Just tx size test")
 
-// TODO: Will be refactor https://tangem.atlassian.net/browse/IOS-4260
-final class SolanaTests: XCTestCase {
+final class SolanaEd25519Slip0010Tests: XCTestCase {
     private class CoinSigner: TransactionSigner {
         private let sizeTester = TransactionSizeTesterUtility()
         
@@ -128,16 +127,5 @@ final class SolanaTests: XCTestCase {
                 XCTFail("Test shouldn't receive value")
             })
         )
-    }
-}
-
-extension SolanaError: Equatable {
-    public static func == (lhs: Solana_Swift.SolanaError, rhs: Solana_Swift.SolanaError) -> Bool {
-        switch (lhs, rhs) {
-        case (.other(let message1), .other(let message2)):
-            return message1 == message2
-        default:
-            return false
-        }
     }
 }
