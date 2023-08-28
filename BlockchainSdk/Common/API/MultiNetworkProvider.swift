@@ -27,7 +27,6 @@ extension MultiNetworkProvider {
     var host: String { provider.host }
     
     func providerPublisher<T>(for requestPublisher: @escaping (_ provider: Provider) -> AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
-        let currentHost = provider.host
         return requestPublisher(provider)
             .catch { [weak self] error -> AnyPublisher<T, Error> in
                 guard let self = self else { return .anyFail(error: error) }
@@ -41,6 +40,8 @@ extension MultiNetworkProvider {
                 }
                 
                 Log.network("Switchable publisher catched error: \(error)")
+                
+                let currentHost = self.host
                 
                 if let nextHost = self.switchProviderIfNeeded(for: currentHost) {
                     // Send event if api did switched by host value
