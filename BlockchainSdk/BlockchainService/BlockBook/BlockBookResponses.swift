@@ -9,16 +9,19 @@
 import Foundation
 
 struct BlockBookAddressResponse: Decodable {
-    let page: Int
-    let totalPages: Int
-    let itemsOnPage: Int
+    let page: Int?
+    let totalPages: Int?
+    let itemsOnPage: Int?
     let address: String
     let balance: String
     let unconfirmedBalance: String
     let unconfirmedTxs: Int
     /// All transactions count
     let txs: Int
+    /// Only for EVM-like. Main network transactions count
+    let nonTokenTxs: Int?
     let transactions: [Transaction]?
+    let tokens: [Token]?
 }
 
 extension BlockBookAddressResponse {
@@ -32,9 +35,11 @@ extension BlockBookAddressResponse {
         let confirmations: Int
         let blockTime: Int
         let value: String
-        let valueIn: String
+        let valueIn: String?
         let fees: String
         let hex: String?
+        let tokenTransfers: [TokenTransfer]?
+        let ethereumSpecific: EthereumSpecific?
     }
     
     struct Vin: Decodable {
@@ -57,6 +62,51 @@ extension BlockBookAddressResponse {
         let isAddress: Bool
         let spent: Bool?
         let isOwn: Bool?
+    }
+    
+    /// For EVM-like blockchains
+    struct TokenTransfer: Decodable {
+        let type: String?
+        let from: String
+        let to: String
+        let contract: String
+        let name: String?
+        let symbol: String?
+        let decimals: Int
+        let value: String?
+    }
+
+    /// For EVM-like blockchains
+    struct EthereumSpecific: Decodable {
+        let status: StatusType?
+        let nonce: Int?
+        let gasLimit: Decimal?
+        let gasUsed: Decimal?
+        let gasPrice: String?
+        let data: String?
+        let parsedData : ParsedData?
+        
+        enum StatusType: Int, Decodable {
+            case pending = -1
+            case failure = 0
+            case ok = 1
+        }
+        
+        struct ParsedData: Decodable {
+            /// First 4byte from data. E.g. `0x617ba037`
+            let methodId: String
+            let name: String
+        }
+    }
+    
+    struct Token: Decodable {
+        let type: String?
+        let name: String?
+        let contract: String?
+        let transfers: Int?
+        let symbol: String?
+        let decimals: Int?
+        let balance: String?
     }
 }
 
