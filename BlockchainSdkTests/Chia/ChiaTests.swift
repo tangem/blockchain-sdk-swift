@@ -174,7 +174,7 @@ class ChiaTests: XCTestCase {
         let buildToSignResult = try transactionBuilder.buildForSign(transaction: transactionData)
         let signedTransaction = try transactionBuilder.buildToSend(signatures: signatures)
         
-//        XCTAssertEqual(buildToSignResult, hashToSignes)
+        XCTAssertEqual(buildToSignResult, hashToSignes)
         try XCTAssertEqual(jsonEncoder.encode(signedTransaction).hexString, jsonEncoder.encode(expectedSignedTransaction).hexString)
     }
     
