@@ -15,6 +15,6 @@ extension Int64 {
     var chiaEncoded: Data {
         let unsafeDataValue = withUnsafeBytes(of: self) { Data($0) }.reversed().drop(while: { $0 == 0x00 })
         let serializeValue = BigInt(self).serialize()
-        return unsafeDataValue.first ?? 0x00 >= 0x80 ? serializeValue : serializeValue.dropFirst()
+        return (unsafeDataValue.first ?? 0x00) >= 0x80 ? serializeValue : serializeValue.dropFirst()
     }
 }
