@@ -182,4 +182,18 @@ class ChiaTests: XCTestCase {
         sizeUtility.testTxSizes(testSignatures)
     }
     
+    func testNegativeChiaEncoded() {
+        let amountValue: Int64 = 10000000
+        let encodedValue = amountValue.chiaEncoded
+        
+        XCTAssertEqual(encodedValue.hexString, "00989680")
+    }
+    
+    func testPositiveChiaEncoded() {
+        let amountValue: Int64 = 235834596465
+        let encodedValue = amountValue.chiaEncoded
+        
+        XCTAssertEqual(encodedValue.hexString, "36E8D65C71")
+    }
+    
 }
