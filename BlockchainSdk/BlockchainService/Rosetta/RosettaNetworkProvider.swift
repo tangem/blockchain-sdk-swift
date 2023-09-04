@@ -73,7 +73,9 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
         ).encode().toHexString()
         
         let submitBody = RosettaSubmitBody(networkIdentifier: .mainNet, signedTransaction: txHex)
-        return provider.requestPublisher(.submitTransaction(baseUrl: rosettaUrl, submitBody: submitBody))
+        return provider
+            .requestPublisher(.submitTransaction(baseUrl: rosettaUrl, submitBody: submitBody))
+            .filterSuccessfulStatusAndRedirectCodes()
             .map(RosettaSubmitResponse.self, using: decoder)
             .eraseError()
             .map { $0.transactionIdentifier.hash ?? "" }
@@ -85,6 +87,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
             .requestPublisher(.address(baseUrl: rosettaUrl,
                                        addressBody: RosettaAddressBody(networkIdentifier: .mainNet,
                                                                        accountIdentifier: RosettaAccountIdentifier(address: address))))
+            .filterSuccessfulStatusAndRedirectCodes()
             .map(RosettaBalanceResponse.self, using: decoder)
             .eraseError()
             .eraseToAnyPublisher()
@@ -95,6 +98,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
             .requestPublisher(.coins(baseUrl: rosettaUrl,
                                      addressBody: RosettaAddressBody(networkIdentifier: .mainNet,
                                                                      accountIdentifier: RosettaAccountIdentifier(address: address))))
+            .filterSuccessfulStatusAndRedirectCodes()
             .map(RosettaCoinsResponse.self, using: decoder)
             .eraseError()
             .eraseToAnyPublisher()
