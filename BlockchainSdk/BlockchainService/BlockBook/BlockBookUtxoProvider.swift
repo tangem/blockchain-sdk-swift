@@ -29,7 +29,7 @@ class BlockBookUtxoProvider {
         self.provider = NetworkProvider<BlockBookTarget>(configuration: networkConfiguration)
     }
     
-    func addressData(address: String, parameters: BlockBookTarget.AddressRequestParameters = .init()) -> AnyPublisher<BlockBookAddressResponse, Error> {
+    func addressData(address: String, parameters: BlockBookTarget.AddressRequestParameters) -> AnyPublisher<BlockBookAddressResponse, Error> {
         provider
             .requestPublisher(target(for: .address(address: address, parameters: parameters)))
             .filterSuccessfulStatusAndRedirectCodes()
