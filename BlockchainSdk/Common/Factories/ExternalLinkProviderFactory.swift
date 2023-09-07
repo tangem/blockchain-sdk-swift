@@ -9,7 +9,9 @@
 import Foundation
 
 public struct ExternalLinkProviderFactory {
-    public func makeProvider(for blockchain: Blockchain) -> ExternalLinkProvider? {
+    public init() {}
+
+    public func makeProvider(for blockchain: Blockchain) -> ExternalLinkProvider {
         let isTestnet = blockchain.isTestnet
 
         switch blockchain {

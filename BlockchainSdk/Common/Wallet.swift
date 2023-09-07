@@ -77,12 +77,25 @@ public struct Wallet {
         return !transactions.filter { $0.status == .unconfirmed && $0.amount.type == amountType }.isEmpty
     }
     
-    /// Explore URL for specific address
+    /// Explore URL for a specific address
     /// - Parameter address: If nil, default address will be used
     /// - Returns: URL
-    public func getExploreURL(for address: String? = nil, token: Token? = nil) -> URL? {
+    public func getExploreURL(for address: String? = nil, token: Token? = nil) -> URL {
         let address = address ?? self.address
-        return blockchain.getExploreURL(from: address, tokenContractAddress: token?.contractAddress)
+        let provider = ExternalLinkProviderFactory().makeProvider(for: blockchain)
+        return provider.url(address: address, contractAddress: token?.contractAddress)
+    }
+    
+    /// Explore URL for a specific transaction by hash
+    public func getExploreURL(for transaction: String) -> URL {
+        let provider = ExternalLinkProviderFactory().makeProvider(for: blockchain)
+        return provider.url(transaction: transaction)
+    }
+    
+    /// Will return faucet URL for only testnet blockchain. Should use for top-up wallet
+    public func getTestnetFaucetURL() -> URL? {
+        let provider = ExternalLinkProviderFactory().makeProvider(for: blockchain)
+        return provider.testnetFaucetURL
     }
     
     /// Share string for specific address
