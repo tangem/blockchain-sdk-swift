@@ -19,6 +19,8 @@ protocol MultiNetworkProvider: AnyObject, HostProvider {
     var currentProviderIndex: Int { get set }
 }
 
+private typealias SwitchedNetworkProviderParams = (nextHost: String, isSwitched: Bool)
+
 extension MultiNetworkProvider {
     var provider: Provider {
         providers[currentProviderIndex]
@@ -27,6 +29,8 @@ extension MultiNetworkProvider {
     var host: String { provider.host }
     
     func providerPublisher<T>(for requestPublisher: @escaping (_ provider: Provider) -> AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
+        let currentHost = self.host
+        
         return requestPublisher(provider)
             .catch { [weak self] error -> AnyPublisher<T, Error> in
                 guard let self = self else { return .anyFail(error: error) }
@@ -41,16 +45,15 @@ extension MultiNetworkProvider {
                 
                 Log.network("Switchable publisher catched error: \(error)")
                 
-                let currentHost = self.host
-                
-                if let nextHost = self.switchProviderIfNeeded(for: currentHost) {
+                if let providerParams = self.switchProviderIfNeeded(for: currentHost) {
                     // Send event if api did switched by host value
-                    if currentHost != nextHost {
+                    
+                    if providerParams.isSwitched {
                         Log.network("Switching to next publisher on host")
                         
                         ExceptionHandler.shared.handleAPISwitch(
                             currentHost: currentHost,
-                            nextHost: nextHost,
+                            nextHost: providerParams.nextHost,
                             message: error.localizedDescription
                         )
                     }
@@ -65,14 +68,18 @@ extension MultiNetworkProvider {
     
     // NOTE: There also copy of this behaviour in the wild, if you want to update something
     // in the code, don't forget to update also Solano.Swift framework, class NetworkingRouter
-    private func switchProviderIfNeeded(for errorHost: String) -> String? {
+    /// - Returns: Return of tuple value with next host provider and flag did switch api
+    private func switchProviderIfNeeded(for errorHost: String) -> SwitchedNetworkProviderParams? {
+        print(self.host)
+        print(errorHost)
+        
         if errorHost != self.host { // Do not switch the provider, if it was switched already
-            return providers[currentProviderIndex].host
+            return (providers[currentProviderIndex].host, false)
         }
         
         currentProviderIndex += 1
         if currentProviderIndex < providers.count {
-            return providers[currentProviderIndex].host
+            return (providers[currentProviderIndex].host, true)
         }
         resetProviders()
         return nil
