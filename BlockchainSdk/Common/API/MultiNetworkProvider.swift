@@ -66,7 +66,6 @@ extension MultiNetworkProvider {
     
     // NOTE: There also copy of this behaviour in the wild, if you want to update something
     // in the code, don't forget to update also Solano.Swift framework, class NetworkingRouter
-    /// - Returns: Return of tuple value with next host provider and flag did switch api
     private func switchProviderIfNeeded(for errorHost: String) -> String? {
         if errorHost != self.host { // Do not switch the provider, if it was switched already
             return providers[currentProviderIndex].host
