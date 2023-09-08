@@ -29,8 +29,7 @@ extension MultiNetworkProvider {
     var host: String { provider.host }
     
     func providerPublisher<T>(for requestPublisher: @escaping (_ provider: Provider) -> AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
-        let currentHost = self.host
-        
+        let currentHost = provider.host
         return requestPublisher(provider)
             .catch { [weak self] error -> AnyPublisher<T, Error> in
                 guard let self = self else { return .anyFail(error: error) }
