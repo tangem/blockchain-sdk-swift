@@ -92,16 +92,16 @@ extension BlockBookTarget {
     struct AddressRequestParameters: Encodable {
         /// Specifies page of returned transactions, starting from 1. 
         /// If out of range, Blockbook returns the closest possible page.
-        let page: Int
+        let page: Int?
         /// The number of transactions returned by call (default and maximum 1000)
-        let pageSize: Int
+        let pageSize: Int?
         let details: [Details]
         let filterType: FilterType?
         
         init(
-            page: Int = 1,
-            pageSize: Int = 1000,
-            details: [BlockBookTarget.AddressRequestParameters.Details] = [.txids],
+            page: Int? = nil,
+            pageSize: Int? = nil,
+            details: [BlockBookTarget.AddressRequestParameters.Details],
             filterType: FilterType? = nil
         ) {
             self.page = page

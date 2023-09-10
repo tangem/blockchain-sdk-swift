@@ -15,9 +15,13 @@ import Combine
 extension BlockBookUtxoProvider: BitcoinNetworkProvider {
     var supportsTransactionPush: Bool { false }
     
+    private var addressParameters: BlockBookTarget.AddressRequestParameters {
+        .init(details: [.txs])
+    }
+    
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        Publishers
-            .Zip(addressData(address: address), unspentTxData(address: address))
+        return Publishers
+            .Zip(addressData(address: address, parameters: addressParameters), unspentTxData(address: address))
             .tryMap { [weak self] (addressResponse, unspentTxResponse) in
                 guard let self else {
                     throw WalletError.empty
@@ -68,7 +72,7 @@ extension BlockBookUtxoProvider: BitcoinNetworkProvider {
     }
     
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-        addressData(address: address)
+        addressData(address: address, parameters: addressParameters)
             .tryMap {
                 $0.txs + $0.unconfirmedTxs
             }
