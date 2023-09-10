@@ -29,7 +29,7 @@ extension BitcoinExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://www.blockchair.com/bitcoin/transaction/\(hash)")!
     }
     
-    func url(address: String) -> URL {
+    func url(address: String, contractAddress: String?) -> URL {
         if isTestnet {
             return URL(string: "https://www.blockchair.com/bitcoin/testnet/address/\(address)")!
         }

@@ -15,7 +15,7 @@ struct LitecoinExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://blockchair.com/litecoin/transaction/\(hash)")!
     }
     
-    func url(address: String) -> URL {
+    func url(address: String, contractAddress: String?) -> URL {
         return URL(string: "https://blockchair.com/litecoin/address/\(address)")!
     }
 }

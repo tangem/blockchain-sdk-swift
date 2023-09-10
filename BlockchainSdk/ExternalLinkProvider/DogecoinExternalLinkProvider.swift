@@ -15,7 +15,7 @@ struct DogecoinExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://blockchair.com/dogecoin/transaction/\(hash)")!
     }
 
-    func url(address: String) -> URL {
+    func url(address: String, contractAddress: String?) -> URL {
         return URL(string: "https://blockchair.com/dogecoin/address/\(address)")!
     }
 }

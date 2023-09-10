@@ -29,7 +29,7 @@ extension EthereumPoWExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://www.oklink.com/ethw/tx/\(hash)")!
     }
     
-    func url(address: String) -> URL {
+    func url(address: String, contractAddress: String?) -> URL {
         if isTestnet {
             return URL(string: "http://iceberg.ethwscan.com/address/\(address)")!
         }

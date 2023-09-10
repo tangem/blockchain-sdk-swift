@@ -27,7 +27,7 @@ extension DashExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://blockexplorer.one/dash/\(network)/tx/\(hash)")!
     }
     
-    func url(address: String) -> URL {
+    func url(address: String, contractAddress: String?) -> URL {
         let network = isTestnet ? "testnet" : "mainnet"
         return URL(string: "https://blockexplorer.one/dash/\(network)/address/\(address)")!
     }

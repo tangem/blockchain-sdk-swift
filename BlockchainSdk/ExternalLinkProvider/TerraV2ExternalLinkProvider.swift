@@ -15,7 +15,7 @@ struct TerraV2ExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://terrasco.pe/mainnet/tx/\(hash)")!
     }
     
-    func url(address: String) -> URL {
+    func url(address: String, contractAddress: String?) -> URL {
         return URL(string: "https://terrasco.pe/mainnet/address/\(address)")!
     }
 }

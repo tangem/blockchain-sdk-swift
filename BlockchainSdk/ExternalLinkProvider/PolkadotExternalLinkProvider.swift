@@ -26,7 +26,7 @@ extension PolkadotExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://\(subdomain).subscan.io/extrinsic/\(hash)")!
     }
     
-    func url(address: String) -> URL {
+    func url(address: String, contractAddress: String?) -> URL {
         let subdomain = isTestnet ? "westend" : "polkadot"
         return URL(string: "https://\(subdomain).subscan.io/account/\(address)")!
     }

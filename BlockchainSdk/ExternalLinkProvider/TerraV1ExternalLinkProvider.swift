@@ -15,7 +15,7 @@ struct TerraV1ExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://atomscan.com/terra/transactions/\(hash)")!
     }
     
-    func url(address: String) -> URL {
+    func url(address: String, contractAddress: String?) -> URL {
         return URL(string: "https://atomscan.com/terra/accounts/\(address)")!
     }
 }

@@ -29,7 +29,7 @@ extension CosmosExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://www.mintscan.io/cosmos/transactions/\(hash)")!
     }
     
-    func url(address: String) -> URL {
+    func url(address: String, contractAddress: String?) -> URL {
         if isTestnet {
             return URL(string: "https://explorer.theta-testnet.polypore.xyz/accounts/\(address)")!
         }

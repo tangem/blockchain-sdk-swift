@@ -15,7 +15,7 @@ struct EthereumFairExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://www.oklink.com/ethf/tx/\(hash)")!
     }
     
-    func url(address: String) -> URL {
+    func url(address: String, contractAddress: String?) -> URL {
         return URL(string: "https://www.oklink.com/ethf/address/\(address)")!
     }
 }

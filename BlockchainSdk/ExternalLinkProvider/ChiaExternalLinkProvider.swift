@@ -29,7 +29,7 @@ extension ChiaExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://xchscan.com/txns/\(hash)")!
     }
     
-    func url(address: String) -> URL {
+    func url(address: String, contractAddress: String?) -> URL {
         if isTestnet {
             return URL(string: "https://testnet10.spacescan.io/address/\(address)")!
         }

@@ -15,7 +15,7 @@ struct XRPExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://xrpscan.com/tx/\(hash)")!
     }
     
-    func url(address: String) -> URL {
+    func url(address: String, contractAddress: String?) -> URL {
         return URL(string: "https://xrpscan.com/account/\(address)")!
     }
 }

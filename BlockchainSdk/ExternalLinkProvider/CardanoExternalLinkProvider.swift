@@ -17,7 +17,7 @@ extension CardanoExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://www.blockchair.com/cardano/transaction/\(hash)")!
     }
         
-    func url(address: String) -> URL {
+    func url(address: String, contractAddress: String?) -> URL {
         return URL(string: "https://www.blockchair.com/cardano/address/\(address)")!
     }
 }

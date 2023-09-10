@@ -15,7 +15,7 @@ struct KusamaExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://kusama.subscan.io/extrinsic/\(hash)")!
     }
     
-    func url(address: String) -> URL {
+    func url(address: String, contractAddress: String?) -> URL {
         return URL(string: "https://kusama.subscan.io/account/\(address)")!
     }
 }

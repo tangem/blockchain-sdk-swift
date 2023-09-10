@@ -15,7 +15,7 @@ struct GnosisExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://gnosis.blockscout.com/tx/\(hash)")!
     }
     
-    func url(address: String) -> URL {
+    func url(address: String, contractAddress: String?) -> URL {
         return URL(string: "https://gnosis.blockscout.com/address/\(address)")!
     }
 }

@@ -29,7 +29,7 @@ extension StellarExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://stellar.expert/explorer/public/tx/\(hash)")!
     }
     
-    func url(address: String) -> URL {
+    func url(address: String, contractAddress: String?) -> URL {
         if isTestnet {
             return URL(string: "https://stellar.expert/explorer/testnet/account/\(address)")!
         }
