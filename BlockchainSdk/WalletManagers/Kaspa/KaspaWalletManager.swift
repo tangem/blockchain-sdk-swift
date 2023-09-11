@@ -114,7 +114,9 @@ extension KaspaWalletManager: WithdrawalValidator {
         let amountToReduceBy = transaction.amount - amountAvailableToSend
         
         return WithdrawalWarning(
-            warningMessage: "kaspa_withdrawal_message_warning".localized([txBuilder.maxInputCount, amountAvailableToSend.description]),
+            warningMessage: "common_utxo_validate_withdrawal_message_warning".localized(
+                [wallet.blockchain.displayName, txBuilder.maxInputCount, amountAvailableToSend.description]
+            ),
             reduceMessage: "common_ok".localized,
             suggestedReduceAmount: amountToReduceBy
         )
