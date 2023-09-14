@@ -96,15 +96,19 @@ private extension EthereumWalletManager {
                 guard let self = self else {
                     throw BlockchainSdkError.failedToLoadFee
                 }
+                
+                let decimalValue = self.wallet.blockchain.decimalValue
+                let blockchain = self.wallet.blockchain
 
-                let gasLimit = ethereumFeeResponse.gasLimit
                 let fees = ethereumFeeResponse.gasPrices.map { gasPrice in
+                    let gasLimit = ethereumFeeResponse.gasLimit
                     let feeValue = gasLimit * gasPrice
+
                     // TODO: Fix integer overflow. Think about BigInt
                     // https://tangem.atlassian.net/browse/IOS-4268
-                    let fee = Decimal(Int(feeValue)) / self.wallet.blockchain.decimalValue
+                    let fee = Decimal(Int(feeValue)) / decimalValue
 
-                    let amount = Amount(with: self.wallet.blockchain, value: fee)
+                    let amount = Amount(with: blockchain, value: fee)
                     let parameters = EthereumFeeParameters(gasLimit: gasLimit, gasPrice: gasPrice)
 
                     return Fee(amount, parameters: parameters)
