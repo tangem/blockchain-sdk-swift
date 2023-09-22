@@ -69,7 +69,7 @@ extension BlockBookAddressResponse {
         let type: String?
         let from: String
         let to: String
-        let contract: String
+        let contract: String?
         let name: String?
         let symbol: String?
         let decimals: Int
