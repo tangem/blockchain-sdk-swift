@@ -41,8 +41,13 @@ struct EthereumTarget: TargetType {
             let dataValue = ["data": "0x70a08231\(rawAddress)", "to": contractAddress]
             params.append(dataValue)
         case .getAllowance(let fromAddress, let toAddress, let contractAddress):
-            let dataValue = ["data": "0xdd62ed3e\(fromAddress.serialize())\(toAddress.serialize())",
-                             "to": contractAddress]
+            let data = AllowanceERC20TokenMethod(spender: fromAddress, destination: toAddress).data
+            let data2 = "0xdd62ed3e\(fromAddress.serialize())\(toAddress.serialize())"
+            
+            let isEqual = data.hexString.lowercased() == data2.lowercased()
+            assert(isEqual)
+
+            let dataValue = ["data": data2, "to": contractAddress]
             params.append(dataValue)
         case .gasLimit(let to, let from, let value, let data):
             var gasLimitParams = [String: String]()

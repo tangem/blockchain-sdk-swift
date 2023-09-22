@@ -91,16 +91,12 @@ class EthereumTransactionBuilder {
             return Data()
         }
         
-        guard let amountData = amount.encodedAligned else {
+        guard let amount = amount.bigUIntValue else {
             return nil
         }
-        
-        guard let addressData = EthereumAddress(targetAddress, network: web3Network)?.addressData else {
-            return nil
-        }
-        
-        let transferMethodPrefix = Data(hex: "a9059cbb")
-        return transferMethodPrefix + addressData.aligned(to: 32) + amountData
+
+        let method = TransferERC20TokenMethod(destination: targetAddress, amount: amount)
+        return method.data
     }
 }
 
