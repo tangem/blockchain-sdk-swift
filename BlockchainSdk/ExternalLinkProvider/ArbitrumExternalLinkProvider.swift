@@ -30,7 +30,7 @@ extension ArbitrumExternalLinkProvider: ExternalLinkProvider {
     }
     
     func url(address: String, contractAddress: String?) -> URL {
-        let baseUrl = isTestnet ? "https://testnet.arbiscan.com/" : "https://arbiscan.com/"
+        let baseUrl = isTestnet ? "https://testnet.arbiscan.io/" : "https://arbiscan.io/"
         if let contractAddress {
             let url = baseUrl + "token/\(contractAddress)?a=\(address)"
             return URL(string: url)!
