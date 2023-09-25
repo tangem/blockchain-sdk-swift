@@ -33,7 +33,7 @@ extension UTXOTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
                 return nil
             }
             
-            let isOutgoing = transaction.vin.contains(where: { $0.isOwn == true })
+            let isOutgoing = transaction.vin.contains(where: { $0.addresses.contains(response.address) })
             let status: TransactionRecord.TransactionStatus = transaction.confirmations > 0 ? .confirmed : .unconfirmed
             let fee = feeSatoshi / decimalValue
             
