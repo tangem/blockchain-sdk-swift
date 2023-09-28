@@ -31,6 +31,11 @@ extension StellarAddressService: AddressProvider {
 @available(iOS 13.0, *)
 extension StellarAddressService: AddressValidator {
     public func validate(_ address: String) -> Bool {
+        /// Need verify for use KeyPair(accountId: address) in library stellar-sdk for skip bad condition [Array(([UInt8](data))[1...data.count - 3])]
+        guard let baseData = address.base32DecodedData, baseData.count >= 4 else {
+            return false
+        }
+        
         let keyPair = try? KeyPair(accountId: address)
         return keyPair != nil
     }
