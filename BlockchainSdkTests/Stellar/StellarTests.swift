@@ -31,6 +31,8 @@ class StellarTests: XCTestCase {
     }
     
     func testValidateCorrectAddress() {
+        XCTAssertFalse(addressService.validate("GDWFc"))
+        XCTAssertFalse(addressService.validate("GDWFHядыфлвФЫВЗФЫВЛ++EÈ"))
         XCTAssertTrue(addressService.validate("GDWFHB6YWOF5T34AXW6HRUGX4HCT6CHCNFBWZGOVWPBN6SZM44YBFUDZ"))
     }
     
