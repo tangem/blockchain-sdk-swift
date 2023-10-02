@@ -73,8 +73,13 @@ extension BlockBookUtxoProvider: BitcoinNetworkProvider {
     
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
         addressData(address: address, parameters: addressParameters)
-            .tryMap {
-                $0.txs + $0.unconfirmedTxs
+            .tryMap { response in
+                let outgoingTxsCount = response.transactions?.filter { transaction in
+                    return transaction.vin.contains(where: { inputs in
+                        inputs.addresses.contains(address)
+                    })
+                }.count ?? 0
+                return outgoingTxsCount
             }
             .eraseToAnyPublisher()
     }
