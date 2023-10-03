@@ -528,7 +528,6 @@ extension Blockchain {
                 URL(string: "https://evm.cronos.org")!,
                 URL(string: "https://evm-cronos.crypto.org")!,
                 URL(string: "https://cro.getblock.io/mainnet/\(getBlockApiKey)")!,
-                URL(string: "https://node.croswap.com/rpc")!,
                 URL(string: "https://cronos.blockpi.network/v1/rpc/public")!,
                 URL(string: "https://cronos-evm.publicnode.com")!,
             ]
