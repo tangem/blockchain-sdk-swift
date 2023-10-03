@@ -148,7 +148,14 @@ private extension EthereumWalletManager {
 // MARK: - TransactionFeeProvider
 
 extension EthereumWalletManager: TransactionFeeProvider {
-    var allowsFeeSelection: Bool { true }
+    var allowsFeeSelection: Bool {
+        switch wallet.blockchain {
+        case .telos:
+            return false
+        default:
+            return true
+        }
+    }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee],Error> {
         switch amount.type {
