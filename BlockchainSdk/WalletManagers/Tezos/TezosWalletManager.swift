@@ -35,7 +35,7 @@ class TezosWalletManager: BaseManager, WalletManager {
         txBuilder.counter = response.counter
         
         if response.balance != wallet.amounts[.coin]?.value {
-            wallet.transactions = []
+            wallet.clearPendingTransaction()
         }
         
         wallet.add(coinValue: response.balance)
@@ -93,8 +93,10 @@ extension TezosWalletManager: TransactionSender {
                     .tryMap{[weak self] response in
                         guard let self = self else { throw WalletError.empty }
                         
-                        self.wallet.add(transaction: transaction)
-                        return TransactionSendResult(hash: txToSend)
+                        let hash = txToSend
+
+                        self.wallet.addPendingTransaction(transaction.asPending(hash: hash))
+                        return TransactionSendResult(hash: hash)
                     }
                     .mapError { SendTxError(error: $0, tx: txToSend) }
                     .eraseToAnyPublisher()

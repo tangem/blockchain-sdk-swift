@@ -49,15 +49,7 @@ class PolkadotWalletManager: BaseManager, WalletManager {
         }
         
         wallet.add(amount: .init(with: wallet.blockchain, value: value))
-        
-        let currentDate = Date()
-        for (index, transaction) in wallet.transactions.enumerated() {
-            if let date = transaction.date,
-               DateInterval(start: date, end: currentDate).duration > 10
-            {
-                wallet.transactions[index].status = .confirmed
-            }
-        }
+        wallet.clearPendingTransaction(timeInterval: 10)
     }
 }
 
@@ -93,11 +85,9 @@ extension PolkadotWalletManager: TransactionSender {
                 .eraseToAnyPublisher()
         }
         .tryMap { [weak self] transactionID in
-            var submittedTransaction = transaction
-            submittedTransaction.hash = transactionID
-            self?.wallet.transactions.append(submittedTransaction)
-            
-            return TransactionSendResult(hash: transactionID)
+            let hash = transactionID
+            self?.wallet.addPendingTransaction(transaction.asPending(hash: hash))
+            return TransactionSendResult(hash: hash)
         }
         .eraseToAnyPublisher()
     }

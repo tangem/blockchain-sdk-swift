@@ -16,7 +16,7 @@ public struct Wallet {
     public let walletAddresses: [AddressType: Address]
     
     public internal(set) var amounts: [Amount.AmountType: Amount] = [:]
-    public internal(set) var transactions: [Transaction] = []
+    public private(set) var pendingTransactions: [PendingTransactionRecord] = []
     
     // MARK: - Calculations
     
@@ -34,28 +34,7 @@ public struct Wallet {
     }
 
     public var hasPendingTx: Bool {
-        return !transactions.filter { $0.status == .unconfirmed }.isEmpty
-    }
-    
-    public var pendingOutgoingTransactions: [Transaction] {
-        transactions.filter { tx in
-            tx.status == .unconfirmed &&
-            tx.destinationAddress != .unknown &&
-            addresses.contains(where: { $0.value == tx.sourceAddress })
-        }
-    }
-    
-    public var pendingIncomingTransactions: [Transaction] {
-        transactions.filter { tx in
-            tx.status == .unconfirmed &&
-            tx.sourceAddress != .unknown &&
-            addresses.contains(where: { $0.value == tx.destinationAddress })
-        }
-    }
-    
-    public var pendingBalance: Decimal {
-        pendingOutgoingTransactions
-            .reduce(0, { $0 + $1.amount.value + $1.fee.amount.value })
+        return !pendingTransactions.isEmpty
     }
 
     public var xpubKey: String? {
@@ -74,7 +53,7 @@ public struct Wallet {
     }
     
     public func hasPendingTx(for amountType: Amount.AmountType) -> Bool {
-        return !transactions.filter { $0.status == .unconfirmed && $0.amount.type == amountType }.isEmpty
+        return pendingTransactions.contains { $0.amount.type == amountType }
     }
     
     /// Explore URL for a specific address
@@ -132,67 +111,65 @@ public struct Wallet {
     mutating func clearAmounts() {
         amounts = [:]
     }
-    
-    mutating func add(transaction: Transaction) {
-        var tx = transaction
-        tx.date = Date()
-        transactions.append(tx)
+
+    mutating func remove(token: Token) {
+        amounts[.token(value: token)] = nil
     }
-    
-    mutating func addPendingTransaction(amount: Amount,
-                                        fee: Amount,
-                                        sourceAddress: String,
-                                        destinationAddress: String,
-                                        date: Date,
-                                        changeAddress: String = .unknown,
-                                        transactionHash: String,
-                                        transactionParams: TransactionParams? = nil) {
-        if transactions.contains(where: { $0.hash == transactionHash }) {
-            return
-        }
-        
-        if addresses.contains(where: { $0.value == sourceAddress }) &&
-            addresses.contains(where: { $0.value == destinationAddress }) {
-            return
-        }
-        
-        var tx = Transaction(amount: amount,
-                             fee: Fee(fee),
-                             sourceAddress: sourceAddress,
-                             destinationAddress: destinationAddress,
-                             changeAddress: changeAddress,
-                             date: date,
-                             hash: transactionHash)
-        tx.params = transactionParams
-        transactions.append(tx)
-    }
-    
+
+}
+
+// MARK: - Pending Transaction
+
+extension Wallet {
     mutating func addPendingTransaction(_ tx: PendingTransaction) {
-        addPendingTransaction(amount: Amount(with: blockchain, value: tx.value),
-                              fee: Amount(with: blockchain, value: tx.fee ?? 0),
-                              sourceAddress: tx.source,
-                              destinationAddress: tx.destination,
-                              date: tx.date,
-                              transactionHash: tx.hash,
-                              transactionParams: tx.transactionParams)
+        // If already added
+        if pendingTransactions.contains(where: { $0.hash == tx.hash }) {
+            return
+        }
+        
+        // Only with the correct address
+        if addresses.contains(where: { $0.value == tx.source }),
+            addresses.contains(where: { $0.value == tx.destination }) {
+            return
+        }
+        
+        let mapper = PendingTransactionRecordMapper()
+        let record = mapper.mapToPendingTransactionRecord(tx, blockchain: blockchain)
+        addPendingTransaction(record)
     }
     
     mutating func addDummyPendingTransaction() {
-        let dummyAmount = Amount.dummyCoin(for: blockchain)
-        var tx = Transaction(amount: dummyAmount,
-                             fee: Fee(dummyAmount),
-                             sourceAddress: .unknown,
-                             destinationAddress: address,
-                             changeAddress: .unknown)
-        tx.date = Date()
-        transactions.append(tx)
+        let mapper = PendingTransactionRecordMapper()
+        let record = mapper.makeDummy(blockchain: blockchain)
+        
+        addPendingTransaction(record)
     }
     
-    mutating func setTransactionHistoryList(_ transactions: [Transaction]) {
-        self.transactions = transactions
+    mutating func addPendingTransaction(_ transaction: PendingTransactionRecord) {
+        if pendingTransactions.contains(where: { $0.hash == transaction.hash }) {
+            return
+        }
+
+        pendingTransactions.append(transaction)
     }
     
-    mutating func remove(token: Token) {
-        amounts[.token(value: token)] = nil
+    mutating func removePendingTransaction(hashes: [String]) {
+        pendingTransactions = pendingTransactions.filter { transaction in
+            !hashes.contains(transaction.hash)
+        }
+    }
+    
+    /// Clear a pending transaction which was sent early then timeInterval in seconds
+    mutating func clearPendingTransaction(timeInterval: TimeInterval) {
+        let currentDate = Date()
+
+        pendingTransactions = pendingTransactions.filter { transaction in
+            let interval = currentDate.timeIntervalSince(transaction.date)
+            return interval < timeInterval
+        }
+    }
+    
+    mutating func clearPendingTransaction() {
+        pendingTransactions.removeAll()
     }
 }

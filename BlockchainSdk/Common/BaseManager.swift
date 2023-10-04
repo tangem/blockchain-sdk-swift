@@ -126,9 +126,7 @@ extension BaseManager: TransactionCreator {
         sourceAddress: String? = nil,
         destinationAddress: String,
         changeAddress: String? = nil,
-        contractAddress: String? = nil,
-        date: Date = Date(),
-        status: TransactionStatus = .unconfirmed
+        contractAddress: String? = nil
     ) throws -> Transaction {
         let transaction = Transaction(
             amount: amount,
@@ -136,10 +134,7 @@ extension BaseManager: TransactionCreator {
             sourceAddress: sourceAddress ?? defaultSourceAddress,
             destinationAddress: destinationAddress,
             changeAddress: changeAddress ?? defaultChangeAddress,
-            contractAddress: contractAddress ?? amount.type.token?.contractAddress,
-            date: date,
-            status: status,
-            hash: nil
+            contractAddress: contractAddress ?? amount.type.token?.contractAddress
         )
         
         try validateTransaction(amount: amount, fee: fee)

@@ -25,9 +25,7 @@ class TronWalletManager: BaseManager, WalletManager {
     private let feeSigner = DummySigner()
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        let transactionIDs = wallet.transactions
-            .filter { $0.status == .unconfirmed }
-            .compactMap { $0.hash }
+        let transactionIDs = wallet.pendingTransactions.map { $0.hash }
         
         cancellable = networkService.accountInfo(for: wallet.address, tokens: cardTokens, transactionIDs: transactionIDs)
             .sink { [unowned self] in
@@ -57,11 +55,9 @@ class TronWalletManager: BaseManager, WalletManager {
                     throw WalletError.failedToSendTx
                 }
                 
-                var submittedTransaction = transaction
-                submittedTransaction.hash = broadcastResponse.txid
-                self?.wallet.transactions.append(submittedTransaction)
-                
-                return TransactionSendResult(hash: broadcastResponse.txid)
+                let hash = broadcastResponse.txid
+                self?.wallet.addPendingTransaction(transaction.asPending(hash: hash))
+                return TransactionSendResult(hash: hash)
             }
             .eraseToAnyPublisher()
     }
@@ -219,11 +215,7 @@ class TronWalletManager: BaseManager, WalletManager {
             wallet.add(tokenValue: balance, for: token)
         }
         
-        for (index, transaction) in wallet.transactions.enumerated() {
-            if let hash = transaction.hash, accountInfo.confirmedTransactionIDs.contains(hash) {
-                wallet.transactions[index].status = .confirmed
-            }
-        }
+        wallet.removePendingTransaction(hashes: accountInfo.confirmedTransactionIDs)
     }
     
     private func unmarshal(_ signatureData: Data, hash: Data, publicKey: Wallet.PublicKey) -> Data {

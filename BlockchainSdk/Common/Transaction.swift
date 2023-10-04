@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import BitcoinCore
 
 public protocol TransactionParams {}
 
@@ -18,56 +17,57 @@ public struct Transaction {
     public let destinationAddress: String
     public let changeAddress: String
     public let contractAddress: String?
-    public internal(set) var date: Date? = nil
-    public internal(set) var status: TransactionStatus = .unconfirmed
-    public internal(set) var hash: String? = nil
     public var params: TransactionParams? = nil
     
-    public init(amount: Amount,
+    public init(
+        amount: Amount,
                 fee: Fee,
                 sourceAddress: String,
                 destinationAddress: String,
                 changeAddress: String,
-                contractAddress: String? = nil,
-                date: Date? = nil,
-                status: TransactionStatus = .unconfirmed,
-                hash: String? = nil) {
+                contractAddress: String? = nil
+//                date: Date? = nil,
+//                status: TransactionStatus = .unconfirmed,
+//                hash: String? = nil
+    ) {
         self.amount = amount
         self.fee = fee
         self.sourceAddress = sourceAddress
         self.destinationAddress = destinationAddress
         self.changeAddress = changeAddress
         self.contractAddress = contractAddress
-        self.date = date
-        self.status = status
-        self.hash = hash
+//        self.date = date
+//        self.status = status
+//        self.hash = hash
     }
     
-    public static func dummyTx(blockchain: Blockchain,
-                               type: Amount.AmountType,
-                               sourceAddress: String = .unknown,
-                               destinationAddress: String) -> Transaction {
-        Transaction(amount: Amount(with: blockchain, type: type, value: 0),
-                    fee: Fee(Amount(with: blockchain, type: type, value: 0)),
-                    sourceAddress: sourceAddress,
-                    destinationAddress: destinationAddress,
-                    changeAddress: sourceAddress)
+    func asPending(hash: String, date: Date = Date(), isIncoming: Bool = false) -> PendingTransactionRecord {
+        PendingTransactionRecord(
+            hash: hash,
+            source: sourceAddress,
+            destination: destinationAddress,
+            amount: amount,
+            fee: fee,
+            date: date,
+            isIncoming: isIncoming,
+            transactionParams: params
+        )
     }
 }
 
 extension Transaction: Equatable {
     public static func == (lhs: Transaction, rhs: Transaction) -> Bool {
-        if lhs.hash != nil && rhs.hash != nil {
-            return lhs.hash == rhs.hash
-        }
+//        if lhs.hash != nil && rhs.hash != nil {
+//            return lhs.hash == rhs.hash
+//        }
         
         return lhs.amount == rhs.amount &&
             lhs.fee == rhs.fee &&
             lhs.sourceAddress == rhs.sourceAddress &&
             lhs.destinationAddress == rhs.destinationAddress &&
-            lhs.changeAddress == rhs.changeAddress &&
-            lhs.date == rhs.date &&
-            lhs.status == rhs.status
+            lhs.changeAddress == rhs.changeAddress
+//            lhs.date == rhs.date &&
+//            lhs.status == rhs.status
     }
 }
 

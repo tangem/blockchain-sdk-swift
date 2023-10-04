@@ -13,19 +13,10 @@ class DucatusWalletManager: BitcoinWalletManager {
         wallet.add(coinValue: singleResponse.balance)
         txBuilder.unspentOutputs = singleResponse.unspentOutputs
         loadedUnspents = singleResponse.unspentOutputs
-        if singleResponse.hasUnconfirmed {
-            if wallet.transactions.isEmpty {
-                wallet.addDummyPendingTransaction()
-            }
+        if singleResponse.hasUnconfirmed, wallet.pendingTransactions.isEmpty {
+            wallet.addDummyPendingTransaction()
         } else {
-            for index in wallet.transactions.indices {
-                if let txDate = wallet.transactions[index].date {
-                    let interval = Date().timeIntervalSince(txDate)
-                    if interval > 30 {
-                        wallet.transactions[index].status = .confirmed
-                    }
-                }
-            }
+            wallet.clearPendingTransaction(timeInterval: 30)
         }
     }
 }

@@ -17,9 +17,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
     var allowsFeeSelection: Bool { false }
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        let unconfirmedTransactionHashes = wallet.transactions
-            .filter { $0.status == .unconfirmed }
-            .compactMap { $0.hash }
+        let unconfirmedTransactionHashes = wallet.pendingTransactions.map { $0.hash }
         
         cancellable = networkService.getInfo(address: wallet.address, unconfirmedTransactionHashes: unconfirmedTransactionHashes)
             .sink { result in
@@ -59,9 +57,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
                 return self.networkService.send(transaction: KaspaTransactionRequest(transaction: tx))
             }
             .handleEvents(receiveOutput: { [weak self] in
-                var submittedTransaction = transaction
-                submittedTransaction.hash = $0.transactionId
-                self?.wallet.transactions.append(submittedTransaction)
+                self?.wallet.addPendingTransaction(transaction.asPending(hash: $0.transactionId))
             })
             .map {
                 TransactionSendResult(hash: $0.transactionId)
@@ -87,12 +83,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
     private func updateWallet(_ info: KaspaAddressInfo) {
         self.wallet.add(amount: Amount(with: self.wallet.blockchain, value: info.balance))
         txBuilder.setUnspentOutputs(info.unspentOutputs)
-        
-        for (index, transaction) in wallet.transactions.enumerated() {
-            if let hash = transaction.hash, info.confirmedTransactionHashes.contains(hash) {
-                wallet.transactions[index].status = .confirmed
-            }
-        }
+        wallet.removePendingTransaction(hashes: info.confirmedTransactionHashes)
     }
 }
 

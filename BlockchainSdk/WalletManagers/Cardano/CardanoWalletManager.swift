@@ -36,19 +36,12 @@ class CardanoWalletManager: BaseManager, WalletManager {
         for (key, value) in response.tokenBalances {
             wallet.add(tokenValue: value, for: key)
         }
-
-        wallet.transactions = wallet.transactions.map {
-            var mutableTx = $0
-            let hashLowercased = mutableTx.hash?.lowercased()
-            if response.recentTransactionsHashes.isEmpty {
-                if response.unspentOutputs.isEmpty ||
-                    response.unspentOutputs.first(where: { $0.transactionHash.lowercased() == hashLowercased }) != nil {
-                    mutableTx.status = .confirmed
-                }
-            } else if response.recentTransactionsHashes.first(where: { $0.lowercased() == hashLowercased }) != nil {
-                mutableTx.status = .confirmed
-            }
-            return mutableTx
+       
+        wallet.removePendingTransaction(hashes: response.recentTransactionsHashes)
+        
+        // If we have pending transaction but we haven't unspentOutputs then clear it
+        if !wallet.pendingTransactions.isEmpty, response.unspentOutputs.isEmpty {
+            wallet.clearPendingTransaction()
         }
     }
 }
@@ -91,16 +84,13 @@ extension CardanoWalletManager: TransactionSender {
                         .mapError { SendTxError(error: $0, tx: builtTransaction.hex) }
                         .eraseToAnyPublisher()
                 }
-                .tryMap { [weak self] txHash in
+                .tryMap { [weak self] hash in
                     guard let self = self else {
                         throw WalletError.empty
                     }
 
-                    var sendedTx = transaction
-                    sendedTx.hash = txHash
-                    self.wallet.add(transaction: sendedTx)
-
-                    return TransactionSendResult(hash: txHash)
+                    self.wallet.addPendingTransaction(transaction.asPending(hash: hash))
+                    return TransactionSendResult(hash: hash)
                 }
                 .eraseToAnyPublisher()
     }

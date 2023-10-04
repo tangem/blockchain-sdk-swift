@@ -52,12 +52,10 @@ class XRPWalletManager: BaseManager, WalletManager {
         
         txBuilder.account = wallet.address
         txBuilder.sequence = response.sequence
-        if response.balance != response.unconfirmedBalance {
-            if wallet.transactions.isEmpty {
-                wallet.addDummyPendingTransaction()
-            }
+        if response.balance != response.unconfirmedBalance, wallet.pendingTransactions.isEmpty {
+            wallet.addDummyPendingTransaction()
         } else {
-            wallet.transactions = []
+            wallet.clearPendingTransaction()
         }
     }
 }
@@ -101,9 +99,9 @@ extension XRPWalletManager: TransactionSender {
                     .tryMap{[weak self] response in
                         guard let self = self else { throw WalletError.empty }
                         
-                        self.wallet.add(transaction: transaction)
-                        
-                        return TransactionSendResult(hash: builderResponse)
+                        let hash = builderResponse
+                        self.wallet.addPendingTransaction(transaction.asPending(hash: hash))
+                        return TransactionSendResult(hash: hash)
                     }
                     .mapError { SendTxError(error: $0, tx: builderResponse) }
                     .eraseToAnyPublisher() ?? .emptyFail
