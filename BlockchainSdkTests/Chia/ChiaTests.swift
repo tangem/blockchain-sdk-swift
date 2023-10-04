@@ -14,7 +14,11 @@ import TangemSdk
 
 class ChiaTests: XCTestCase {
     private let sizeUtility = TransactionSizeTesterUtility()
-    private let jsonEncoder = JSONEncoder()
+    private let jsonEncoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
+        return encoder
+    }()
     
     private let blockchain = Blockchain.chia(testnet: false)
     private let addressService = ChiaAddressService(isTestnet: false)
@@ -175,6 +179,9 @@ class ChiaTests: XCTestCase {
         let signedTransaction = try transactionBuilder.buildToSend(signatures: signatures)
         
         XCTAssertEqual(buildToSignResult, hashToSignes)
+        
+        jsonEncoder.outputFormatting = .sortedKeys
+        
         try XCTAssertEqual(jsonEncoder.encode(signedTransaction).hexString, jsonEncoder.encode(expectedSignedTransaction).hexString)
     }
     

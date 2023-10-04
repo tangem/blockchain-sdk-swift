@@ -116,6 +116,7 @@ class KaspaTests: XCTestCase {
         )
         
         let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
         let encodedBuiltTransaction = try! encoder.encode(builtTransaction)
         let encodedExpectedTransaction = try! encoder.encode(expectedTransaction)
         XCTAssertEqual(encodedBuiltTransaction, encodedExpectedTransaction)
@@ -184,6 +185,7 @@ class KaspaTests: XCTestCase {
         )
         
         let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
         let encodedBuiltTransaction = try! encoder.encode(builtTransaction)
         let encodedExpectedTransaction = try! encoder.encode(expectedTransaction)
         XCTAssertEqual(encodedBuiltTransaction, encodedExpectedTransaction)
