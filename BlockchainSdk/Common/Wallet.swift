@@ -159,7 +159,7 @@ extension Wallet {
         }
     }
     
-    /// Clear a pending transaction which was sent early then timeInterval in seconds
+    /// Delete a pending transaction that was sent earlier than the time interval in seconds
     mutating func clearPendingTransaction(timeInterval: TimeInterval) {
         let currentDate = Date()
 

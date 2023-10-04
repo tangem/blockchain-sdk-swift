@@ -8,7 +8,6 @@
 
 import Foundation
 
-/// Use it in the `Wallet`model like a pending transaction which
 public struct PendingTransactionRecord {
     public let hash: String
     public let source: String

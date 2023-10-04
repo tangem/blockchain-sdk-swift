@@ -21,14 +21,11 @@ public struct Transaction {
     
     public init(
         amount: Amount,
-                fee: Fee,
-                sourceAddress: String,
-                destinationAddress: String,
-                changeAddress: String,
-                contractAddress: String? = nil
-//                date: Date? = nil,
-//                status: TransactionStatus = .unconfirmed,
-//                hash: String? = nil
+        fee: Fee,
+        sourceAddress: String,
+        destinationAddress: String,
+        changeAddress: String,
+        contractAddress: String? = nil
     ) {
         self.amount = amount
         self.fee = fee
@@ -36,9 +33,6 @@ public struct Transaction {
         self.destinationAddress = destinationAddress
         self.changeAddress = changeAddress
         self.contractAddress = contractAddress
-//        self.date = date
-//        self.status = status
-//        self.hash = hash
     }
     
     func asPending(hash: String, date: Date = Date(), isIncoming: Bool = false) -> PendingTransactionRecord {
@@ -57,23 +51,12 @@ public struct Transaction {
 
 extension Transaction: Equatable {
     public static func == (lhs: Transaction, rhs: Transaction) -> Bool {
-//        if lhs.hash != nil && rhs.hash != nil {
-//            return lhs.hash == rhs.hash
-//        }
-        
-        return lhs.amount == rhs.amount &&
-            lhs.fee == rhs.fee &&
-            lhs.sourceAddress == rhs.sourceAddress &&
-            lhs.destinationAddress == rhs.destinationAddress &&
-            lhs.changeAddress == rhs.changeAddress
-//            lhs.date == rhs.date &&
-//            lhs.status == rhs.status
+        lhs.amount == rhs.amount &&
+        lhs.fee == rhs.fee &&
+        lhs.sourceAddress == rhs.sourceAddress &&
+        lhs.destinationAddress == rhs.destinationAddress &&
+        lhs.changeAddress == rhs.changeAddress
     }
-}
-
-public enum TransactionStatus: Equatable {
-    case unconfirmed
-    case confirmed
 }
 
 public struct TransactionErrors: Error, LocalizedError, Equatable {
