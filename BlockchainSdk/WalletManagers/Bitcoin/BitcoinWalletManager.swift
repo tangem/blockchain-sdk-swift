@@ -55,7 +55,11 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
         if hasUnconfirmed {
             response
                 .flatMap { $0.pendingTxRefs }
-                .forEach { wallet.addPendingTransaction($0) }
+                .forEach {
+                    let mapper = PendingTransactionRecordMapper()
+                    let transaction = mapper.mapToPendingTransactionRecord($0, blockchain: wallet.blockchain)
+                    wallet.addPendingTransaction(transaction)
+                }
         }
     }
     

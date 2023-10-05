@@ -121,21 +121,12 @@ public struct Wallet {
 // MARK: - Pending Transaction
 
 extension Wallet {
-    mutating func addPendingTransaction(_ tx: PendingTransaction) {
-        // If already added
-        if pendingTransactions.contains(where: { $0.hash == tx.hash }) {
+    mutating func addPendingTransaction(_ transaction: PendingTransactionRecord) {
+        if pendingTransactions.contains(where: { $0.hash == transaction.hash }) {
             return
         }
-        
-        // Only with the correct address
-        if addresses.contains(where: { $0.value == tx.source }),
-            addresses.contains(where: { $0.value == tx.destination }) {
-            return
-        }
-        
-        let mapper = PendingTransactionRecordMapper()
-        let record = mapper.mapToPendingTransactionRecord(tx, blockchain: blockchain)
-        addPendingTransaction(record)
+
+        pendingTransactions.append(transaction)
     }
     
     mutating func addDummyPendingTransaction() {
@@ -143,14 +134,6 @@ extension Wallet {
         let record = mapper.makeDummy(blockchain: blockchain)
         
         addPendingTransaction(record)
-    }
-    
-    mutating func addPendingTransaction(_ transaction: PendingTransactionRecord) {
-        if pendingTransactions.contains(where: { $0.hash == transaction.hash }) {
-            return
-        }
-
-        pendingTransactions.append(transaction)
     }
     
     mutating func removePendingTransaction(hashes: [String]) {

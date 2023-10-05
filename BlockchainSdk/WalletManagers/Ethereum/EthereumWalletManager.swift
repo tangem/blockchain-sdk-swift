@@ -135,7 +135,9 @@ private extension EthereumWalletManager {
         } else {
             wallet.clearPendingTransaction()
             response.pendingTxs.forEach {
-                wallet.addPendingTransaction($0)
+                let mapper = PendingTransactionRecordMapper()
+                let transaction = mapper.mapToPendingTransactionRecord($0, blockchain: wallet.blockchain)
+                wallet.addPendingTransaction(transaction)
             }
         }
     }
