@@ -57,7 +57,9 @@ class KaspaWalletManager: BaseManager, WalletManager {
                 return self.networkService.send(transaction: KaspaTransactionRequest(transaction: tx))
             }
             .handleEvents(receiveOutput: { [weak self] in
-                self?.wallet.addPendingTransaction(transaction.asPending(hash: $0.transactionId))
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: $0.transactionId)
+                self?.wallet.addPendingTransaction(record)
             })
             .map {
                 TransactionSendResult(hash: $0.transactionId)

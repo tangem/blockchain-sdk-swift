@@ -130,8 +130,10 @@ private extension EthereumWalletManager {
         
         if txCount == pendingTxCount {
             wallet.clearPendingTransaction()
-        } else if response.pendingTxs.isEmpty, wallet.pendingTransactions.isEmpty {
-            wallet.addDummyPendingTransaction()
+        } else if response.pendingTxs.isEmpty {
+            if wallet.pendingTransactions.isEmpty {
+                wallet.addDummyPendingTransaction()
+            }
         } else {
             wallet.clearPendingTransaction()
             response.pendingTxs.forEach {
@@ -172,11 +174,12 @@ extension EthereumWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         sign(transaction, signer: signer)
             .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
-                self?.networkService.send(transaction: tx).tryMap {[weak self] sendResponse in
+                self?.networkService.send(transaction: tx).tryMap {[weak self] hash in
                     guard let self = self else { throw WalletError.empty }
                     
-                    let hash = sendResponse
-                    self.wallet.addPendingTransaction(transaction.asPending(hash: hash))
+                    let mapper = PendingTransactionRecordMapper()
+                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                    self.wallet.addPendingTransaction(record)
                     return TransactionSendResult(hash: hash)
                 }
                 .mapError { SendTxError(error: $0, tx: tx) }

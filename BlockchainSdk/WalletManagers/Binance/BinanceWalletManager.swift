@@ -44,7 +44,7 @@ class BinanceWalletManager: BaseManager, WalletManager {
         
         txBuilder.binanceWallet.sequence = response.sequence
         txBuilder.binanceWallet.accountNumber = response.accountNumber
-        wallet.clearPendingTransaction(timeInterval: 10)
+        wallet.clearPendingTransaction(older: 10)
     }
 }
 
@@ -70,7 +70,9 @@ extension BinanceWalletManager: TransactionSender {
                 self?.networkService.send(transaction: tx).tryMap { [weak self] response in
                     guard let self = self else { throw WalletError.empty }
                     let hash = response.tx.txHash
-                    self.wallet.addPendingTransaction(transaction.asPending(hash: hash))
+                    let mapper = PendingTransactionRecordMapper()
+                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                    self.wallet.addPendingTransaction(record)
                     self.latestTxDate = Date()
                     return TransactionSendResult(hash: hash)
 

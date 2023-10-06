@@ -100,11 +100,12 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
                     txHashPublisher = self.networkService.send(transaction: tx)
                 }
                 
-                return txHashPublisher.tryMap {[weak self] sendResponse in
+                return txHashPublisher.tryMap {[weak self] hash in
                     guard let self = self else { throw WalletError.empty }
                     
-                    let hash = sendResponse
-                    self.wallet.addPendingTransaction(transaction.asPending(hash: hash))
+                    let mapper = PendingTransactionRecordMapper()
+                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                    self.wallet.addPendingTransaction(record)
                     return TransactionSendResult(hash: hash)
                 }
                 .mapError { SendTxError(error: $0, tx: tx) }

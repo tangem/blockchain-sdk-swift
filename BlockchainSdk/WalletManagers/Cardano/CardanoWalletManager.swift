@@ -40,9 +40,7 @@ class CardanoWalletManager: BaseManager, WalletManager {
         wallet.removePendingTransaction(hashes: response.recentTransactionsHashes)
         
         // If we have pending transaction but we haven't unspentOutputs then clear it
-        if response.recentTransactionsHashes.isEmpty,
-           !wallet.pendingTransactions.isEmpty,
-           response.unspentOutputs.isEmpty {
+        if response.recentTransactionsHashes.isEmpty, response.unspentOutputs.isEmpty {
             wallet.clearPendingTransaction()
         }
     }
@@ -91,7 +89,9 @@ extension CardanoWalletManager: TransactionSender {
                         throw WalletError.empty
                     }
 
-                    self.wallet.addPendingTransaction(transaction.asPending(hash: hash))
+                    let mapper = PendingTransactionRecordMapper()
+                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                    self.wallet.addPendingTransaction(record)
                     return TransactionSendResult(hash: hash)
                 }
                 .eraseToAnyPublisher()

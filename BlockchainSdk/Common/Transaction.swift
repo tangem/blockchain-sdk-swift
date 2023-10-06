@@ -34,19 +34,6 @@ public struct Transaction {
         self.changeAddress = changeAddress
         self.contractAddress = contractAddress
     }
-    
-    func asPending(hash: String, date: Date = Date(), isIncoming: Bool = false) -> PendingTransactionRecord {
-        PendingTransactionRecord(
-            hash: hash,
-            source: sourceAddress,
-            destination: destinationAddress,
-            amount: amount,
-            fee: fee,
-            date: date,
-            isIncoming: isIncoming,
-            transactionParams: params
-        )
-    }
 }
 
 extension Transaction: Equatable {

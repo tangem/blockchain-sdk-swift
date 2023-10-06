@@ -88,7 +88,7 @@ class StellarWalletManager: BaseManager, WalletManager {
             }
         }
 
-        wallet.clearPendingTransaction(timeInterval: 10)
+        wallet.clearPendingTransaction(older: 10)
     }
 }
 
@@ -118,15 +118,16 @@ extension StellarWalletManager: TransactionSender {
                 
                 return tx
             }
-            .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
-                self?.networkService.send(transaction: tx).tryMap {[weak self] sendResponse in
+            .flatMap {[weak self] hash -> AnyPublisher<TransactionSendResult, Error> in
+                self?.networkService.send(transaction: hash).tryMap {[weak self] sendResponse in
                     guard let self = self else { throw WalletError.empty }
                     
-                    let hash = tx
-                    self.wallet.addPendingTransaction(transaction.asPending(hash: hash))
+                    let mapper = PendingTransactionRecordMapper()
+                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                    self.wallet.addPendingTransaction(record)
                     return TransactionSendResult(hash: hash)
                 }
-                .mapError { SendTxError(error: $0, tx: tx) }
+                .mapError { SendTxError(error: $0, tx: hash) }
                 .eraseToAnyPublisher() ?? .emptyFail
             }
             .eraseToAnyPublisher()

@@ -22,6 +22,24 @@ struct PendingTransactionRecordMapper {
         )
     }
     
+    func mapToPendingTransactionRecord(
+        transaction: Transaction,
+        hash: String,
+        date: Date = Date(),
+        isIncoming: Bool = false
+    ) -> PendingTransactionRecord {
+        PendingTransactionRecord(
+            hash: hash,
+            source: transaction.sourceAddress,
+            destination: transaction.destinationAddress,
+            amount: transaction.amount,
+            fee: transaction.fee,
+            date: date,
+            isIncoming: isIncoming,
+            transactionParams: transaction.params
+        )
+    }
+    
     func mapToPendingTransactionRecord(_ pendingTransaction: PendingTransaction, blockchain: Blockchain) -> PendingTransactionRecord {
         PendingTransactionRecord(
             hash: pendingTransaction.hash,

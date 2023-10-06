@@ -87,18 +87,18 @@ extension TezosWalletManager: TransactionSender {
             .flatMap {[weak self] (forgedContents, signature) -> AnyPublisher<TransactionSendResult, Error> in
                 guard let self = self else { return .emptyFail }
                 
-                let txToSend = self.txBuilder.buildToSend(signature: signature, forgedContents: forgedContents)
+                let hash = self.txBuilder.buildToSend(signature: signature, forgedContents: forgedContents)
                 return self.networkService
-                    .sendTransaction(txToSend)
+                    .sendTransaction(hash)
                     .tryMap{[weak self] response in
                         guard let self = self else { throw WalletError.empty }
                         
-                        let hash = txToSend
-
-                        self.wallet.addPendingTransaction(transaction.asPending(hash: hash))
+                        let mapper = PendingTransactionRecordMapper()
+                        let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                        self.wallet.addPendingTransaction(record)
                         return TransactionSendResult(hash: hash)
                     }
-                    .mapError { SendTxError(error: $0, tx: txToSend) }
+                    .mapError { SendTxError(error: $0, tx: hash) }
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()

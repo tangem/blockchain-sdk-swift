@@ -49,7 +49,7 @@ class PolkadotWalletManager: BaseManager, WalletManager {
         }
         
         wallet.add(amount: .init(with: wallet.blockchain, value: value))
-        wallet.clearPendingTransaction(timeInterval: 10)
+        wallet.clearPendingTransaction(older: 10)
     }
 }
 
@@ -84,9 +84,10 @@ extension PolkadotWalletManager: TransactionSender {
                 .mapError { SendTxError(error: $0, tx: image.hexString) }
                 .eraseToAnyPublisher()
         }
-        .tryMap { [weak self] transactionID in
-            let hash = transactionID
-            self?.wallet.addPendingTransaction(transaction.asPending(hash: hash))
+        .tryMap { [weak self] hash in
+            let mapper = PendingTransactionRecordMapper()
+            let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+            self?.wallet.addPendingTransaction(record)
             return TransactionSendResult(hash: hash)
         }
         .eraseToAnyPublisher()

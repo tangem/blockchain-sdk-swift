@@ -61,13 +61,15 @@ extension SolanaWalletManager: TransactionSender {
         }
         
         return sendPublisher
-            .tryMap { [weak self] transactionID in
+            .tryMap { [weak self] hash in
                 guard let self = self else {
                     throw WalletError.empty
                 }
 
-                self.wallet.addPendingTransaction(transaction.asPending(hash: transactionID))
-                return TransactionSendResult(hash: transactionID)
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                self.wallet.addPendingTransaction(record)
+                return TransactionSendResult(hash: hash)
             }
             .eraseToAnyPublisher()
     }

@@ -137,16 +137,18 @@ extension Wallet {
     }
     
     mutating func removePendingTransaction(hashes: [String]) {
-        pendingTransactions = pendingTransactions.filter { transaction in
-            !hashes.contains(transaction.hash)
+        pendingTransactions.removeAll { transaction in
+            !hashes.contains { hash in
+                hash.caseInsensitiveCompare(transaction.hash) == .orderedSame
+            }
         }
     }
     
     /// Delete a pending transaction that was sent earlier than the time interval in seconds
-    mutating func clearPendingTransaction(timeInterval: TimeInterval) {
+    mutating func clearPendingTransaction(older timeInterval: TimeInterval) {
         let currentDate = Date()
 
-        pendingTransactions = pendingTransactions.filter { transaction in
+        pendingTransactions.removeAll { transaction in
             let interval = currentDate.timeIntervalSince(transaction.date)
             return interval < timeInterval
         }

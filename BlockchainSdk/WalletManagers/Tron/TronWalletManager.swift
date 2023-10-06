@@ -56,7 +56,9 @@ class TronWalletManager: BaseManager, WalletManager {
                 }
                 
                 let hash = broadcastResponse.txid
-                self?.wallet.addPendingTransaction(transaction.asPending(hash: hash))
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                self?.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: hash)
             }
             .eraseToAnyPublisher()

@@ -52,8 +52,10 @@ class XRPWalletManager: BaseManager, WalletManager {
         
         txBuilder.account = wallet.address
         txBuilder.sequence = response.sequence
-        if response.balance != response.unconfirmedBalance, wallet.pendingTransactions.isEmpty {
-            wallet.addDummyPendingTransaction()
+        if response.balance != response.unconfirmedBalance {
+            if wallet.pendingTransactions.isEmpty {
+                wallet.addDummyPendingTransaction()
+            }
         } else {
             wallet.clearPendingTransaction()
         }
@@ -94,16 +96,17 @@ extension XRPWalletManager: TransactionSender {
 
                 return try self.txBuilder.buildForSend(transaction: response.0, signature: response.1)
             }
-            .flatMap{[weak self] builderResponse -> AnyPublisher<TransactionSendResult, Error> in
-                self?.networkService.send(blob: builderResponse)
+            .flatMap{[weak self] hash -> AnyPublisher<TransactionSendResult, Error> in
+                self?.networkService.send(blob: hash)
                     .tryMap{[weak self] response in
                         guard let self = self else { throw WalletError.empty }
                         
-                        let hash = builderResponse
-                        self.wallet.addPendingTransaction(transaction.asPending(hash: hash))
+                        let mapper = PendingTransactionRecordMapper()
+                        let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                        self.wallet.addPendingTransaction(record)
                         return TransactionSendResult(hash: hash)
                     }
-                    .mapError { SendTxError(error: $0, tx: builderResponse) }
+                    .mapError { SendTxError(error: $0, tx: hash) }
                     .eraseToAnyPublisher() ?? .emptyFail
             }
             .eraseToAnyPublisher()

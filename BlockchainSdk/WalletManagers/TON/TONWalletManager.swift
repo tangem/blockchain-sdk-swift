@@ -75,7 +75,9 @@ final class TONWalletManager: BaseManager, WalletManager {
                 return self.networkService.send(message: message)
             }
             .map { [weak self] hash in
-                self?.wallet.addPendingTransaction(transaction.asPending(hash: hash))
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                self?.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: hash)
             }
             .eraseToAnyPublisher()

@@ -91,7 +91,9 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 return self.networkService.send(transaction: transaction)
             }
             .handleEvents(receiveOutput: { [weak self] hash in
-                self?.wallet.addPendingTransaction(transaction.asPending(hash: hash))
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                self?.wallet.addPendingTransaction(record)
             })
             .map {
                 TransactionSendResult(hash: $0)
