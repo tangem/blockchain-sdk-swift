@@ -49,7 +49,9 @@ class PolkadotWalletManager: BaseManager, WalletManager {
         }
         
         wallet.add(amount: .init(with: wallet.blockchain, value: value))
-        wallet.clearPendingTransaction(older: 10)
+        // We believe that a transaction will be confirmed within 10 seconds
+        let date = Date(timeIntervalSinceNow: -10)
+        wallet.removePendingTransaction(older: date)
     }
 }
 

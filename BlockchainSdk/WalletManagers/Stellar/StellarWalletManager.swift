@@ -88,7 +88,9 @@ class StellarWalletManager: BaseManager, WalletManager {
             }
         }
 
-        wallet.clearPendingTransaction(older: 10)
+        // We believe that a transaction will be confirmed within 10 seconds
+        let date = Date(timeIntervalSinceNow: -10)
+        wallet.removePendingTransaction(older: date)
     }
 }
 

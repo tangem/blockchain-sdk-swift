@@ -18,7 +18,9 @@ class DucatusWalletManager: BitcoinWalletManager {
                 wallet.addDummyPendingTransaction()
             }
         } else {
-            wallet.clearPendingTransaction(older: 30)
+            // We believe that a transaction will be confirmed within 30 seconds
+            let date = Date(timeIntervalSinceNow: -30)
+            wallet.removePendingTransaction(older: date)
         }
     }
 }

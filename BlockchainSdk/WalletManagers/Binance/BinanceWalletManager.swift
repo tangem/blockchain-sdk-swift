@@ -44,7 +44,9 @@ class BinanceWalletManager: BaseManager, WalletManager {
         
         txBuilder.binanceWallet.sequence = response.sequence
         txBuilder.binanceWallet.accountNumber = response.accountNumber
-        wallet.clearPendingTransaction(older: 10)
+        // We believe that a transaction will be confirmed within 10 seconds
+        let date = Date(timeIntervalSinceNow: -10)
+        wallet.removePendingTransaction(older: date)
     }
 }
 

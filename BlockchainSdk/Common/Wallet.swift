@@ -144,13 +144,9 @@ extension Wallet {
         }
     }
     
-    /// Delete a pending transaction that was sent earlier than the time interval in seconds
-    mutating func clearPendingTransaction(older timeInterval: TimeInterval) {
-        let currentDate = Date()
-
+    mutating func removePendingTransaction(older date: Date) {
         pendingTransactions.removeAll { transaction in
-            let interval = currentDate.timeIntervalSince(transaction.date)
-            return interval < timeInterval
+            transaction.date < date
         }
     }
     
