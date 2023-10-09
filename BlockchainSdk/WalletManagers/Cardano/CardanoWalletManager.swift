@@ -39,7 +39,7 @@ class CardanoWalletManager: BaseManager, WalletManager {
        
         wallet.removePendingTransaction { hash in
             response.recentTransactionsHashes.contains {
-                $0.lowercased() == hash.lowercased()
+                $0.caseInsensitiveCompare(hash) == .orderedSame
             }
         }
 
