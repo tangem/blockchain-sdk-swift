@@ -70,6 +70,33 @@ extension EthereumWalletManager: EthereumTransactionSigner {
 // MARK: - EthereumNetworkProvider
 
 extension EthereumWalletManager: EthereumNetworkProvider {
+    func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error> {
+        buildForSend(transaction)
+            .flatMap {[weak self] serializedTransaction -> AnyPublisher<String, Error> in
+                guard let self = self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+                
+                return self.networkService
+                    .send(transaction: serializedTransaction)
+                    .mapError { SendTxError(error: $0, tx: serializedTransaction) }
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<Decimal, Error> {
+        networkService.getAllowance(from: from, to: to, contractAddress: contractAddress)
+            .tryMap { response in
+                if let allowance = EthereumUtils.parseEthereumDecimal(response, decimalsCount: 0) {
+                    return allowance
+                }
+
+                throw ETHError.failedToParseAllowance
+            }
+            .eraseToAnyPublisher()
+    }
+    
     func getBalance(_ address: String) -> AnyPublisher<Decimal, Error> {
         networkService.getBalance(address)
     }
@@ -240,30 +267,11 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
         return .justWithError(output: "0x\(tx.toHexString())")
     }
     
-    func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error> {
-        buildForSend(transaction)
-            .flatMap {[weak self] serializedTransaction -> AnyPublisher<String, Error> in
-                guard let self = self else {
-                    return .anyFail(error: WalletError.empty)
-                }
-                
-                return self.networkService
-                    .send(transaction: serializedTransaction)
-                    .mapError { SendTxError(error: $0, tx: serializedTransaction) }
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
-    }
-
-    func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<Decimal, Error> {
-        networkService.getAllowance(from: from, to: to, contractAddress: contractAddress)
-            .tryMap { response in
-                if let allowance = EthereumUtils.parseEthereumDecimal(response, decimalsCount: 0) {
-                    return allowance
-                }
-
-                throw ETHError.failedToParseAllowance
-            }
-            .eraseToAnyPublisher()
+    func buildForApprove(spender: String, amount: Amount) throws -> Data {
+        guard let amount = amount.bigUIntValue else {
+            throw WalletError.empty
+        }
+        
+        return ApproveERC20TokenMethod(spender: spender, amount: amount).data
     }
 }
