@@ -36,15 +36,6 @@ struct EthereumTarget: TargetType {
             params.append(address)
         case .send(let transaction):
             params.append(transaction)
-        case .tokenBalance(let address, let contractAddress):
-            let rawAddress = address.serialize()
-            let dataValue = ["data": "0x70a08231\(rawAddress)", "to": contractAddress]
-            params.append(dataValue)
-//        case .getAllowance(let fromAddress, let toAddress, let contractAddress):
-//            let data = AllowanceERC20TokenMethod(spender: fromAddress, destination: toAddress).data
-//            let hex = data.hexString.addHexPrefix()
-//            let dataValue = ["data": hex, "to": contractAddress]
-//            params.append(dataValue)
         case .gasLimit(let to, let from, let value, let data):
             var gasLimitParams = [String: String]()
             gasLimitParams["from"] = from
@@ -82,7 +73,7 @@ struct EthereumTarget: TargetType {
         case .balance: return "eth_getBalance"
         case .transactions, .pending: return "eth_getTransactionCount"
         case .send: return "eth_sendRawTransaction"
-        case .tokenBalance, .call: return "eth_call"
+        case .call: return "eth_call"
         case .gasLimit: return "eth_estimateGas"
         case .gasPrice: return "eth_gasPrice"
         }
@@ -90,7 +81,7 @@ struct EthereumTarget: TargetType {
     
     private var blockParams: String? {
         switch targetType {
-        case .balance, .transactions, .tokenBalance, .call: return "latest"
+        case .balance, .transactions, .call: return "latest"
         case .pending: return "pending"
         case .send, .gasLimit, .gasPrice: return nil
         }
@@ -103,8 +94,6 @@ extension EthereumTarget {
         case transactions(address: String)
         case pending(address: String)
         case send(transaction: String)
-        case tokenBalance(address: String, contractAddress: String)
-//        case getAllowance(from: String, to: String, contractAddress: String)
         case gasLimit(to: String, from: String, value: String?, data: String?)
         case gasPrice
         case call(contractAddress: String, encodedData: String)

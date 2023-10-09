@@ -339,6 +339,7 @@
 		EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */; };
 		EF34FCF72A41CA8700E18670 /* CardanoTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF34FCF62A41CA8700E18670 /* CardanoTransactionBuilder.swift */; };
 		EF34FD002A43378000E18670 /* CardanoError.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF34FCFF2A43378000E18670 /* CardanoError.swift */; };
+		EF39A6502AD43DA800AAB518 /* TokenBalanceERC20TokenMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF39A64F2AD43DA800AAB518 /* TokenBalanceERC20TokenMethod.swift */; };
 		EF3B19162AA5C9530084AA1C /* ExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B19152AA5C9530084AA1C /* ExternalLinkProvider.swift */; };
 		EF3B19182AA5CDF70084AA1C /* BitcoinExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B19172AA5CDF70084AA1C /* BitcoinExternalLinkProvider.swift */; };
 		EF3B191A2AA85BF00084AA1C /* BinanceExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B19192AA85BF00084AA1C /* BinanceExternalLinkProvider.swift */; };
@@ -814,6 +815,7 @@
 		EF332D1A288EB3D900AE3C85 /* NetworkProviderConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProviderConfiguration.swift; sourceTree = "<group>"; };
 		EF34FCF62A41CA8700E18670 /* CardanoTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoTransactionBuilder.swift; sourceTree = "<group>"; };
 		EF34FCFF2A43378000E18670 /* CardanoError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoError.swift; sourceTree = "<group>"; };
+		EF39A64F2AD43DA800AAB518 /* TokenBalanceERC20TokenMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenBalanceERC20TokenMethod.swift; sourceTree = "<group>"; };
 		EF3B19152AA5C9530084AA1C /* ExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalLinkProvider.swift; sourceTree = "<group>"; };
 		EF3B19172AA5CDF70084AA1C /* BitcoinExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinExternalLinkProvider.swift; sourceTree = "<group>"; };
 		EF3B19192AA85BF00084AA1C /* BinanceExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceExternalLinkProvider.swift; sourceTree = "<group>"; };
@@ -1982,6 +1984,7 @@
 				EF1339B52AB4B2A600B78BA3 /* TransferERC20TokenMethod.swift */,
 				EF1339B92AB4B38000B78BA3 /* ApproveERC20TokenMethod.swift */,
 				EF1339BB2AB8E45D00B78BA3 /* AllowanceERC20TokenMethod.swift */,
+				EF39A64F2AD43DA800AAB518 /* TokenBalanceERC20TokenMethod.swift */,
 			);
 			path = ERC20TokenMethods;
 			sourceTree = "<group>";
@@ -2853,6 +2856,7 @@
 				B0ED2011267C9E4500D5C3E5 /* BitcoinTransactionParams.swift in Sources */,
 				5D4B33C623F72F1100C93A84 /* BitcoinCashAddressService.swift in Sources */,
 				5D14E4982397B87000C15FC8 /* Blockchain.swift in Sources */,
+				EF39A6502AD43DA800AAB518 /* TokenBalanceERC20TokenMethod.swift in Sources */,
 				EF3B19222AA85C320084AA1C /* EthereumExternalLinkProvider.swift in Sources */,
 				B004DAC026416B8A000863A4 /* EthereumResponse.swift in Sources */,
 				B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */,

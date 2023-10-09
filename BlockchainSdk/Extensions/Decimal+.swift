@@ -67,8 +67,4 @@ extension Decimal {
     var int64Value: Int64 {
         (self as NSDecimalNumber).int64Value
     }
-    
-    var intValue: Int {
-        (self as NSDecimalNumber).intValue
-    }
 }

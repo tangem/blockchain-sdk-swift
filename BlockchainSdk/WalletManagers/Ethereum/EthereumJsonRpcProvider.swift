@@ -33,10 +33,6 @@ class EthereumJsonRpcProvider: HostProvider {
         requestPublisher(for: .balance(address: address))
     }
     
-    func getTokenBalance(for address: String, contractAddress: String) -> AnyPublisher<EthereumResponse, Error> {
-        requestPublisher(for: .tokenBalance(address: address, contractAddress: contractAddress))
-    }
-    
     func getTxCount(for address: String) -> AnyPublisher<EthereumResponse, Error> {
         requestPublisher(for: .transactions(address: address))
     }
