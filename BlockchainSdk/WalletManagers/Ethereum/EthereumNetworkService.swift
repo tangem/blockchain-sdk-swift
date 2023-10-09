@@ -128,7 +128,7 @@ class EthereumNetworkService: MultiNetworkProvider {
             .publisher
             .setFailureType(to: Error.self)
             .flatMap {[weak self] token in
-                self?.providerPublisher { provider in
+                self?.providerPublisher { provider -> AnyPublisher<(Token, Decimal), Error> in
                     let method = TokenBalanceERC20TokenMethod(owner: address)
                     let encodedData = method.data.hexString.addHexPrefix()
                     return provider.call(contractAddress: token.contractAddress, encodedData: encodedData)
