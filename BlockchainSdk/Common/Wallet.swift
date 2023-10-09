@@ -136,10 +136,14 @@ extension Wallet {
         addPendingTransaction(record)
     }
     
-    mutating func removePendingTransaction(hashes: [String]) {
+    mutating func removePendingTransaction(hashes: [String], isSensitiveCase: Bool = false) {
         pendingTransactions.removeAll { transaction in
             !hashes.contains { hash in
-                hash.caseInsensitiveCompare(transaction.hash) == .orderedSame
+                if isSensitiveCase {
+                    return hash == transaction.hash
+                }
+                
+                return hash.caseInsensitiveCompare(transaction.hash) == .orderedSame
             }
         }
     }

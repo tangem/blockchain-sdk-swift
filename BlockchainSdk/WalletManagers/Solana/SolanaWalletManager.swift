@@ -42,7 +42,7 @@ class SolanaWalletManager: BaseManager, WalletManager {
             self.wallet.add(tokenValue: balance, for: cardToken)
         }
         
-        wallet.removePendingTransaction(hashes: info.confirmedTransactionIDs)
+        wallet.removePendingTransaction(hashes: info.confirmedTransactionIDs, isSensitiveCase: true)
     }
 }
 
