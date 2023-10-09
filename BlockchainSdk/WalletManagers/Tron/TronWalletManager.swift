@@ -217,7 +217,9 @@ class TronWalletManager: BaseManager, WalletManager {
             wallet.add(tokenValue: balance, for: token)
         }
         
-        wallet.removePendingTransaction(hashes: accountInfo.confirmedTransactionIDs, isSensitiveCase: true)
+        wallet.removePendingTransaction { hash in
+            accountInfo.confirmedTransactionIDs.contains(hash)
+        }
     }
     
     private func unmarshal(_ signatureData: Data, hash: Data, publicKey: Wallet.PublicKey) -> Data {

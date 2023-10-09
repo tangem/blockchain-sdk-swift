@@ -18,7 +18,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
         let unconfirmedTransactionHashes = wallet.pendingTransactions.map { $0.hash }
-        
+
         cancellable = networkService.getInfo(address: wallet.address, unconfirmedTransactionHashes: unconfirmedTransactionHashes)
             .sink { result in
                 switch result {
@@ -85,7 +85,9 @@ class KaspaWalletManager: BaseManager, WalletManager {
     private func updateWallet(_ info: KaspaAddressInfo) {
         self.wallet.add(amount: Amount(with: self.wallet.blockchain, value: info.balance))
         txBuilder.setUnspentOutputs(info.unspentOutputs)
-        wallet.removePendingTransaction(hashes: info.confirmedTransactionHashes)
+        wallet.removePendingTransaction { hash in
+            info.confirmedTransactionHashes.contains(hash)
+        }
     }
 }
 

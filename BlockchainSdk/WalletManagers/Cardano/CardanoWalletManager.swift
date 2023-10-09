@@ -37,8 +37,12 @@ class CardanoWalletManager: BaseManager, WalletManager {
             wallet.add(tokenValue: value, for: key)
         }
        
-        wallet.removePendingTransaction(hashes: response.recentTransactionsHashes)
-        
+        wallet.removePendingTransaction { hash in
+            response.recentTransactionsHashes.contains {
+                $0.lowercased() == hash.lowercased()
+            }
+        }
+
         // If we have pending transaction but we haven't unspentOutputs then clear it
         if response.recentTransactionsHashes.isEmpty, response.unspentOutputs.isEmpty {
             wallet.clearPendingTransaction()

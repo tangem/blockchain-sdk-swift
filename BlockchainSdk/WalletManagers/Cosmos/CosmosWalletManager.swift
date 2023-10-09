@@ -179,7 +179,9 @@ class CosmosWalletManager: BaseManager, WalletManager {
             wallet.add(tokenValue: balance, for: token)
         }
         
-        wallet.removePendingTransaction(hashes: accountInfo.confirmedTransactionHashes)
+        wallet.removePendingTransaction { hash in
+            accountInfo.confirmedTransactionHashes.contains(hash)
+        }
     }
     
     private func tax(for amount: Amount) -> UInt64? {
