@@ -21,8 +21,8 @@ public struct ApproveERC20TokenMethod: SmartContractMethod {
     public var prefix: String { "0x095ea7b3" }
     public var data: Data {
         let prefix = Data(hexString: prefix)
-        let addressData = Data(hexString: spender).aligned(to: 32)
+        let spenderData = Data(hexString: spender).aligned(to: 32)
         let amountData = amount.serialize().aligned(to: 32)
-        return [addressData, amountData].reduce(prefix, +)
+        return [spenderData, amountData].reduce(prefix, +)
     }
 }

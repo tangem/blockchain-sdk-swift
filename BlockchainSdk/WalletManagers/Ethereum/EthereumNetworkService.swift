@@ -157,14 +157,17 @@ class EthereumNetworkService: MultiNetworkProvider {
         return networkProvider.getSignatureCount(address: address)
     }
 
-    func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<String, Error> {
-        providerPublisher {
-            $0.getAllowance(from: from, to: to, contractAddress: contractAddress)
+    func getAllowance(owner: String, spender: String, contractAddress: String) -> AnyPublisher<String, Error> {
+        let method = AllowanceERC20TokenMethod(owner: owner, spender: spender)
+        let encodedData = method.data.hexString.addHexPrefix()
+
+        return providerPublisher {
+            $0.call(contractAddress: contractAddress, encodedData: encodedData)
                 .tryMap { [weak self] in
                     guard let self = self else { throw WalletError.empty }
-
+                    
                     return try self.getResult(from: $0)
-                  }
+                }
                 .eraseToAnyPublisher()
         }
     }
@@ -202,7 +205,7 @@ class EthereumNetworkService: MultiNetworkProvider {
         let encodedData = abiEncoder.encode(method: target.methodName, parameters: target.parameters)
 
         return providerPublisher {
-            $0.read(contractAddress: target.contactAddress, encodedData: encodedData)
+            $0.call(contractAddress: target.contactAddress, encodedData: encodedData)
                 .tryMap { [weak self] in
                     guard let self = self else { throw WalletError.empty }
                     

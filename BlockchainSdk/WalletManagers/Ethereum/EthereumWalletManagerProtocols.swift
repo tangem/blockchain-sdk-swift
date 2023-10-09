@@ -29,7 +29,7 @@ public protocol EthereumTransactionProcessor {
     var initialNonce: Int { get }
     func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompiledEthereumTransaction, Error>
     func buildForSend(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
-    func buildForApprove(spender: String, amount: Amount) throws -> Data
+    func buildForApprove(spender: String, amount: Decimal) throws -> Data
 }
 
 @available(iOS 13.0, *)
@@ -41,7 +41,7 @@ public protocol EthereumNetworkProvider {
     /// - Returns: `[Fees]` with `EthereumFeeParameters`
     func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error>
     func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
-    func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<Decimal, Error>
+    func getAllowance(owner: String, spender: String, contractAddress: String) -> AnyPublisher<Decimal, Error>
     func getBalance(_ address: String) -> AnyPublisher<Decimal, Error>
     func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error>
     func getTxCount(_ address: String) -> AnyPublisher<Int, Error>
