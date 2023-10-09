@@ -16,9 +16,7 @@ public protocol TransactionCreator {
         sourceAddress: String?,
         destinationAddress: String,
         changeAddress: String?,
-        contractAddress: String?,
-        date: Date,
-        status: TransactionStatus
+        contractAddress: String?
     ) throws -> Transaction
     
     func validate(fee: Fee) throws
@@ -33,9 +31,7 @@ public extension TransactionCreator {
         sourceAddress: String? = nil,
         destinationAddress: String,
         changeAddress: String? = nil,
-        contractAddress: String? = nil,
-        date: Date = Date(),
-        status: TransactionStatus = .unconfirmed
+        contractAddress: String? = nil
     ) throws -> Transaction {
         try self.createTransaction(
             amount: amount,
@@ -43,9 +39,7 @@ public extension TransactionCreator {
             sourceAddress: sourceAddress,
             destinationAddress: destinationAddress,
             changeAddress: changeAddress,
-            contractAddress: contractAddress,
-            date: date,
-            status: status
+            contractAddress: contractAddress
         )
     }
 }

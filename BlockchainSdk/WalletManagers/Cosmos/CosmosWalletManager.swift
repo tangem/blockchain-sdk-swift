@@ -27,9 +27,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
     }
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        let transactionHashes = wallet.transactions
-            .filter { $0.status == .unconfirmed }
-            .compactMap { $0.hash }
+        let transactionHashes = wallet.pendingTransactions.map { $0.hash }
         
         cancellable = networkService
             .accountInfo(for: wallet.address, tokens: cardTokens, transactionHashes: transactionHashes)
@@ -92,10 +90,10 @@ class CosmosWalletManager: BaseManager, WalletManager {
                 
                 return self.networkService.send(transaction: transaction)
             }
-            .handleEvents(receiveOutput: { [weak self] in
-                var submittedTransaction = transaction
-                submittedTransaction.hash = $0
-                self?.wallet.add(transaction: submittedTransaction)
+            .handleEvents(receiveOutput: { [weak self] hash in
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                self?.wallet.addPendingTransaction(record)
             })
             .map {
                 TransactionSendResult(hash: $0)
@@ -181,10 +179,8 @@ class CosmosWalletManager: BaseManager, WalletManager {
             wallet.add(tokenValue: balance, for: token)
         }
         
-        for (index, transaction) in wallet.transactions.enumerated() {
-            if let hash = transaction.hash, accountInfo.confirmedTransactionHashes.contains(hash) {
-                wallet.transactions[index].status = .confirmed
-            }
+        wallet.removePendingTransaction { hash in
+            accountInfo.confirmedTransactionHashes.contains(hash)
         }
     }
     
