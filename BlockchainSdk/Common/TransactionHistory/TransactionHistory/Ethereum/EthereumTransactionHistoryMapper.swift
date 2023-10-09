@@ -77,7 +77,13 @@ private extension EthereumTransactionHistoryMapper {
         case .coin, .reserve:
             return transaction.vin.first?.addresses.first == walletAddress
         case .token(let token):
-            let transfer = transaction.tokenTransfers?.first(where: { isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: $0.contract) })
+            let transfer = transaction.tokenTransfers?.first(where: { transfer in
+                guard let contract = transfer.contract else { 
+                    return false
+                }
+
+                return isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: contract)
+            })
             return transfer?.from == walletAddress
         }
     }
@@ -95,7 +101,13 @@ private extension EthereumTransactionHistoryMapper {
             }
         case .token(let token):
             let tokenTransfers = transaction.tokenTransfers ?? []
-            let transfer = tokenTransfers.first(where: { isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: $0.contract) })
+            let transfer = tokenTransfers.first(where: { transfer in
+                guard let contract = transfer.contract else {
+                    return false
+                }
+                
+                return isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: contract)
+            })
             
             if let transfer, let amount = Decimal(transfer.value) {
                 let decimalValue = pow(10, transfer.decimals)
@@ -121,7 +133,13 @@ private extension EthereumTransactionHistoryMapper {
                 return TransactionRecord.Destination(address: isContract ? .contract(address) : .user(address), amount: amount / decimalValue)
             }
         case .token(let token):
-            let transfer = tokenTransfers.last(where: { isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: $0.contract) })
+            let transfer = tokenTransfers.last(where: {  transfer in
+                guard let contract = transfer.contract else {
+                    return false
+                }
+                
+                return isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: contract)
+            })
 
             if let transfer, let amount = Decimal(transfer.value) {
                 let decimalValue = pow(10, transfer.decimals)
