@@ -267,7 +267,7 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
         return .justWithError(output: "0x\(tx.toHexString())")
     }
     
-    func buildForApprove(spender: String, amount: Decimal) throws -> Data {
+    func buildForApprove(spender: String, amount: Decimal) -> Data {
         let bigUInt = BigUInt(amount)
         return ApproveERC20TokenMethod(spender: spender, amount: bigUInt).data
     }

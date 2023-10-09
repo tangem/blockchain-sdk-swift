@@ -29,7 +29,7 @@ public protocol EthereumTransactionProcessor {
     var initialNonce: Int { get }
     func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompiledEthereumTransaction, Error>
     func buildForSend(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
-    func buildForApprove(spender: String, amount: Decimal) throws -> Data
+    func buildForApprove(spender: String, amount: Decimal) -> Data
 }
 
 @available(iOS 13.0, *)
