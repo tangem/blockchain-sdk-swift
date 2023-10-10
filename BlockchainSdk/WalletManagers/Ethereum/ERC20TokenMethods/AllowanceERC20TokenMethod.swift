@@ -8,7 +8,8 @@
 
 import Foundation
 
-public struct AllowanceERC20TokenMethod: SmartContractMethod {
+/// https://eips.ethereum.org/EIPS/eip-20#allowance
+public struct AllowanceERC20TokenMethod {
     public let spender: String
     public let owner: String
     
@@ -16,13 +17,18 @@ public struct AllowanceERC20TokenMethod: SmartContractMethod {
         self.owner = owner
         self.spender = spender
     }
-    
+}
+
+// MARK: - SmartContractMethod
+
+extension AllowanceERC20TokenMethod: SmartContractMethod {
     public var prefix: String { "0xdd62ed3e" }
+
     public var data: Data {
-        let prefix = Data(hexString: prefix)
+        let prefixData = Data(hexString: prefix)
         let ownerData = Data(hexString: owner).aligned(to: 32)
         let spenderData = Data(hexString: spender).aligned(to: 32)
         
-        return [ownerData, spenderData].reduce(prefix, +)
+        return prefixData + ownerData + spenderData
     }
 }

@@ -311,7 +311,7 @@
 		EF0DA78D285246A90081092A /* DashWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF680A72284F524300F6B1BD /* DashWalletManager.swift */; };
 		EF0DA78E285246A90081092A /* DashTestNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */; };
 		EF1339B62AB4B2A600B78BA3 /* TransferERC20TokenMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF1339B52AB4B2A600B78BA3 /* TransferERC20TokenMethod.swift */; };
-		EF1339B82AB4B2C300B78BA3 /* ERC20TokenMethodType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF1339B72AB4B2C300B78BA3 /* ERC20TokenMethodType.swift */; };
+		EF1339B82AB4B2C300B78BA3 /* SmartContractMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF1339B72AB4B2C300B78BA3 /* SmartContractMethod.swift */; };
 		EF1339BA2AB4B38000B78BA3 /* ApproveERC20TokenMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF1339B92AB4B38000B78BA3 /* ApproveERC20TokenMethod.swift */; };
 		EF1339BC2AB8E45D00B78BA3 /* AllowanceERC20TokenMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF1339BB2AB8E45D00B78BA3 /* AllowanceERC20TokenMethod.swift */; };
 		EF1339BF2AB8EF8C00B78BA3 /* SmartContractMethodTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF1339BE2AB8EF8C00B78BA3 /* SmartContractMethodTests.swift */; };
@@ -786,7 +786,7 @@
 		E9941ACA2927B07300399DE3 /* BlockBookUtxoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookUtxoProvider.swift; sourceTree = "<group>"; };
 		E9EECB5228E9F50600899D6C /* OptimismWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismWalletManager.swift; sourceTree = "<group>"; };
 		EF1339B52AB4B2A600B78BA3 /* TransferERC20TokenMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferERC20TokenMethod.swift; sourceTree = "<group>"; };
-		EF1339B72AB4B2C300B78BA3 /* ERC20TokenMethodType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERC20TokenMethodType.swift; sourceTree = "<group>"; };
+		EF1339B72AB4B2C300B78BA3 /* SmartContractMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContractMethod.swift; sourceTree = "<group>"; };
 		EF1339B92AB4B38000B78BA3 /* ApproveERC20TokenMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApproveERC20TokenMethod.swift; sourceTree = "<group>"; };
 		EF1339BB2AB8E45D00B78BA3 /* AllowanceERC20TokenMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllowanceERC20TokenMethod.swift; sourceTree = "<group>"; };
 		EF1339BE2AB8EF8C00B78BA3 /* SmartContractMethodTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContractMethodTests.swift; sourceTree = "<group>"; };
@@ -1980,7 +1980,6 @@
 		EF1339B42AB4B29800B78BA3 /* ERC20TokenMethods */ = {
 			isa = PBXGroup;
 			children = (
-				EF1339B72AB4B2C300B78BA3 /* ERC20TokenMethodType.swift */,
 				EF1339B52AB4B2A600B78BA3 /* TransferERC20TokenMethod.swift */,
 				EF1339B92AB4B38000B78BA3 /* ApproveERC20TokenMethod.swift */,
 				EF1339BB2AB8E45D00B78BA3 /* AllowanceERC20TokenMethod.swift */,
@@ -2197,6 +2196,7 @@
 		EFF56B3929C20AEC002B6952 /* SmartContract */ = {
 			isa = PBXGroup;
 			children = (
+				EF1339B72AB4B2C300B78BA3 /* SmartContractMethod.swift */,
 				EFF56B3C29C20CCE002B6952 /* SmartContractTargetType.swift */,
 				EFD717CD2A25ECB500E5430D /* SmartContractMethodParameterType.swift */,
 			);
@@ -2733,7 +2733,7 @@
 				2DDE5BA429C4F8D200A5B708 /* BitcoinCashWalletAssembly.swift in Sources */,
 				DA82434327A2B0C100CFC2C0 /* PolkadotResponse.swift in Sources */,
 				2D9A919229BB8BFF00476EA6 /* TONWalletInfo.swift in Sources */,
-				EF1339B82AB4B2C300B78BA3 /* ERC20TokenMethodType.swift in Sources */,
+				EF1339B82AB4B2C300B78BA3 /* SmartContractMethod.swift in Sources */,
 				5D006ACD239950F9008BA04D /* Wallet.swift in Sources */,
 				5DC7DD66244077F2008F83F2 /* XRPWalletManager.swift in Sources */,
 				DA3081322817EC1A00DE41F1 /* TronTransactionBuilder.swift in Sources */,

@@ -9,7 +9,8 @@
 import Foundation
 import BigInt
 
-public struct TransferERC20TokenMethod: SmartContractMethod {
+/// https://eips.ethereum.org/EIPS/eip-20#transfer
+public struct TransferERC20TokenMethod {
     public let destination: String
     public let amount: BigUInt
     
@@ -17,12 +18,17 @@ public struct TransferERC20TokenMethod: SmartContractMethod {
         self.amount = amount
         self.destination = destination
     }
-    
+}
+
+// MARK: - SmartContractMethod
+
+extension TransferERC20TokenMethod: SmartContractMethod {
     public var prefix: String { "0xa9059cbb" }
-    public var data: Data {        
-        let prefix = Data(hexString: prefix)
+
+    public var data: Data {
+        let prefixData = Data(hexString: prefix)
         let addressData = Data(hexString: destination).aligned(to: 32)
         let amountData = amount.serialize().aligned(to: 32)
-        return [addressData, amountData].reduce(prefix, +)
+        return prefixData + addressData + amountData
     }
 }

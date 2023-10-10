@@ -9,20 +9,26 @@
 import Foundation
 import BigInt
 
-public struct ApproveERC20TokenMethod: SmartContractMethod {
+/// https://eips.ethereum.org/EIPS/eip-20#approve
+public struct ApproveERC20TokenMethod {
     public let spender: String
     public let amount: BigUInt
-
+    
     public init(spender: String, amount: BigUInt) {
         self.spender = spender
         self.amount = amount
     }
-    
+}
+
+// MARK: - SmartContractMethod
+
+extension ApproveERC20TokenMethod: SmartContractMethod {
     public var prefix: String { "0x095ea7b3" }
+
     public var data: Data {
-        let prefix = Data(hexString: prefix)
+        let prefixData = Data(hexString: prefix)
         let spenderData = Data(hexString: spender).aligned(to: 32)
         let amountData = amount.serialize().aligned(to: 32)
-        return [spenderData, amountData].reduce(prefix, +)
+        return prefixData + spenderData + amountData
     }
 }

@@ -94,7 +94,7 @@ class EthereumTransactionBuilder {
         guard let amount = amount.bigUIntValue else {
             return nil
         }
-
+        
         let method = TransferERC20TokenMethod(destination: targetAddress, amount: amount)
         return method.data
     }
