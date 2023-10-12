@@ -268,7 +268,7 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
     }
     
     func buildForApprove(spender: String, amount: Decimal) -> Data {
-        let bigUInt = BigUInt(amount)
+        let bigUInt = EthereumUtils.mapToBigUInt(amount)
         return ApproveERC20TokenMethod(spender: spender, amount: bigUInt).data
     }
 }

@@ -130,8 +130,8 @@ class EthereumNetworkService: MultiNetworkProvider {
             .flatMap {[weak self] token in
                 self?.providerPublisher { provider -> AnyPublisher<(Token, Decimal), Error> in
                     let method = TokenBalanceERC20TokenMethod(owner: address)
-                    let encodedData = method.data.hexString.addHexPrefix()
-                    return provider.call(contractAddress: token.contractAddress, encodedData: encodedData)
+                    
+                    return provider.call(contractAddress: token.contractAddress, encodedData: method .encodedData)
                         .tryMap {[weak self] resp -> Decimal in
                             guard let self = self else { throw WalletError.empty }
                             
@@ -161,10 +161,8 @@ class EthereumNetworkService: MultiNetworkProvider {
 
     func getAllowance(owner: String, spender: String, contractAddress: String) -> AnyPublisher<String, Error> {
         let method = AllowanceERC20TokenMethod(owner: owner, spender: spender)
-        let encodedData = method.data.hexString.addHexPrefix()
-
         return providerPublisher {
-            $0.call(contractAddress: contractAddress, encodedData: encodedData)
+            $0.call(contractAddress: contractAddress, encodedData: method.encodedData)
                 .tryMap { [weak self] in
                     guard let self = self else { throw WalletError.empty }
 
