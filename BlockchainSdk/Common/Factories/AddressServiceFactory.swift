@@ -75,6 +75,10 @@ public struct AddressServiceFactory {
             return BitcoinLegacyAddressService(networkParams: DucatusNetworkParams())
         case .chia:
             return ChiaAddressService(isTestnet: isTestnet)
+        case .near:
+            // TODO: Andrey Fedorov - Use a generic `WalletCoreAddressService` or specific address service?
+            return NEARAddressService()
+            return WalletCoreAddressService(blockchain: blockchain)
         }
     }
 }

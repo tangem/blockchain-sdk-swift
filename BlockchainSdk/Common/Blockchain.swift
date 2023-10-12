@@ -54,6 +54,7 @@ public enum Blockchain: Equatable, Hashable {
     case telos(testnet: Bool)
     case octa
     case chia(testnet: Bool)
+    case near(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -113,12 +114,15 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .chia(let testnet):
             return testnet
+        case .near(let testnet):
+            return testnet
         }
     }
     
     public var curve: EllipticCurve {
         switch self {
-        case .cardano:
+        case .cardano,
+                .near:
             return .ed25519
         case .stellar(let curve, _),
                 .solana(let curve, _),
@@ -152,6 +156,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet ? 12 : 10
         case .kusama, .azero, .chia:
             return 12
+        case .near:
+            return 24
         }
     }
     
@@ -231,6 +237,8 @@ public enum Blockchain: Equatable, Hashable {
             return "OCTA"
         case .chia(let testnet):
             return testnet ? "TXCH" : "XCH"
+        case .near:
+            return "NEAR"
         }
     }
     
@@ -278,6 +286,8 @@ public enum Blockchain: Equatable, Hashable {
             return "OctaSpace"
         case .chia:
             return "Chia Network"
+        case .near:
+            return "NEAR Protocol" + testnetSuffix   // TODO: Andrey Fedorov - Is this a correct value?
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -648,6 +658,7 @@ extension Blockchain: Codable {
         case .telos: return "telos"
         case .octa: return "octaspace"
         case .chia: return "chia"
+        case .near: return "near"
         }
     }
     
@@ -712,6 +723,7 @@ extension Blockchain: Codable {
         case "telos": self = .telos(testnet: isTestnet)
         case "octaspace": self = .octa
         case "chia": self = .chia(testnet: isTestnet)
+        case "near": self = .near(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -779,6 +791,7 @@ extension Blockchain {
         case "cronos": return .cronos
         case "octaspace": return .octa
         case "chia": return .chia(testnet: isTestnet)
+        case "near": return .near(testnet: isTestnet)
         default: return nil
         }
     }
@@ -847,6 +860,8 @@ extension Blockchain {
             return CosmosWalletAssembly()
         case .chia:
             return ChiaWalletAssembly()
+        case .near:
+            return NEARWalletAssembly()
         }
     }
     
