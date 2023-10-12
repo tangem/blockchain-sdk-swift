@@ -87,6 +87,8 @@ public struct DerivationConfigV3: DerivationConfig {
             return "m/44'/330'/0'/0/0"
         case .chia:
             return ""
+        case .near:
+            return "m/44'/397'/0'"
         }
     }
 }
