@@ -374,9 +374,9 @@ extension Blockchain {
                 ]
             } else {
                 return [
-                    URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
                     URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")!,
                     URL(string: "https://eth.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                    URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
                 ]
             }
         case .ethereumClassic:
@@ -482,8 +482,8 @@ extension Blockchain {
                 return [
                     // https://developer.offchainlabs.com/docs/mainnet#connect-your-wallet
                     URL(string: "https://arb1.arbitrum.io/rpc")!,
-                    URL(string: "https://arbitrum-mainnet.infura.io/v3/\(infuraProjectId)")!,
                     URL(string: "https://arbitrum.nownodes.io/\(nowNodesApiKey)")!,
+                    URL(string: "https://arbitrum-mainnet.infura.io/v3/\(infuraProjectId)")!,
                 ]
             }
         case .gnosis:
