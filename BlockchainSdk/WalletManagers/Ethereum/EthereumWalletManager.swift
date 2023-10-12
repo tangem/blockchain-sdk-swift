@@ -156,17 +156,17 @@ private extension EthereumWalletManager {
         pendingTxCount = response.pendingTxCount
         
         if txCount == pendingTxCount {
-            for index in wallet.transactions.indices {
-                wallet.transactions[index].status = .confirmed
-            }
+            wallet.clearPendingTransaction()
         } else if response.pendingTxs.isEmpty {
-            if wallet.transactions.isEmpty {
+            if wallet.pendingTransactions.isEmpty {
                 wallet.addDummyPendingTransaction()
             }
         } else {
-            wallet.transactions.removeAll()
+            wallet.clearPendingTransaction()
             response.pendingTxs.forEach {
-                wallet.addPendingTransaction($0)
+                let mapper = PendingTransactionRecordMapper()
+                let transaction = mapper.mapToPendingTransactionRecord($0, blockchain: wallet.blockchain)
+                wallet.addPendingTransaction(transaction)
             }
         }
     }
@@ -201,13 +201,13 @@ extension EthereumWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         sign(transaction, signer: signer)
             .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
-                self?.networkService.send(transaction: tx).tryMap {[weak self] sendResponse in
+                self?.networkService.send(transaction: tx).tryMap {[weak self] hash in
                     guard let self = self else { throw WalletError.empty }
                     
-                    var tx = transaction
-                    tx.hash = sendResponse
-                    self.wallet.add(transaction: tx)
-                    return TransactionSendResult(hash: sendResponse)
+                    let mapper = PendingTransactionRecordMapper()
+                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                    self.wallet.addPendingTransaction(record)
+                    return TransactionSendResult(hash: hash)
                 }
                 .mapError { SendTxError(error: $0, tx: tx) }
                 .eraseToAnyPublisher() ?? .emptyFail

@@ -71,7 +71,9 @@ final class ChiaWalletManager: BaseManager, WalletManager {
                 return self.networkService.send(spendBundle: spendBundle)
             }
             .map { [weak self] hash in
-                self?.wallet.add(transaction: transaction)
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                self?.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: hash)
             }
             .eraseToAnyPublisher()
@@ -107,7 +109,7 @@ private extension ChiaWalletManager {
         let coinBalance = decimalBalance / wallet.blockchain.decimalValue
         
         if coinBalance != wallet.amounts[.coin]?.value {
-            wallet.transactions = []
+            wallet.clearPendingTransaction()
         }
         
         wallet.add(coinValue: coinBalance)

@@ -44,13 +44,9 @@ class BinanceWalletManager: BaseManager, WalletManager {
         
         txBuilder.binanceWallet.sequence = response.sequence
         txBuilder.binanceWallet.accountNumber = response.accountNumber
-        
-        let currentDate = Date()
-        for index in wallet.transactions.indices {
-            if DateInterval(start: wallet.transactions[index].date!, end: currentDate).duration > 10 {
-                wallet.transactions[index].status = .confirmed
-            }
-        }
+        // We believe that a transaction will be confirmed within 10 seconds
+        let date = Date(timeIntervalSinceNow: -10)
+        wallet.removePendingTransaction(older: date)
     }
 }
 
@@ -73,11 +69,14 @@ extension BinanceWalletManager: TransactionSender {
                 return tx
             }
             .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
-                self?.networkService.send(transaction: tx).tryMap {[weak self] response in
+                self?.networkService.send(transaction: tx).tryMap { [weak self] response in
                     guard let self = self else { throw WalletError.empty }
-                    self.wallet.add(transaction: transaction)
+                    let hash = response.tx.txHash
+                    let mapper = PendingTransactionRecordMapper()
+                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                    self.wallet.addPendingTransaction(record)
                     self.latestTxDate = Date()
-                    return TransactionSendResult(hash: response.tx.txHash)
+                    return TransactionSendResult(hash: hash)
 
                 }.eraseToAnyPublisher() ?? .emptyFail
             }

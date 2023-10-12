@@ -51,11 +51,15 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
         loadedUnspents = unspents
         txBuilder.unspentOutputs = unspents
         
-        wallet.transactions.removeAll()
+        wallet.clearPendingTransaction()
         if hasUnconfirmed {
-            response.forEach {
-                $0.pendingTxRefs.forEach { wallet.addPendingTransaction($0) }
-            }
+            response
+                .flatMap { $0.pendingTxRefs }
+                .forEach {
+                    let mapper = PendingTransactionRecordMapper()
+                    let transaction = mapper.mapToPendingTransactionRecord($0, blockchain: wallet.blockchain)
+                    wallet.addPendingTransaction(transaction)
+                }
         }
     }
     
@@ -96,13 +100,13 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
                     txHashPublisher = self.networkService.send(transaction: tx)
                 }
                 
-                return txHashPublisher.tryMap {[weak self] sendResponse in
+                return txHashPublisher.tryMap {[weak self] hash in
                     guard let self = self else { throw WalletError.empty }
                     
-                    var sendedTx = transaction
-                    sendedTx.hash = sendResponse
-                    self.wallet.add(transaction: sendedTx)
-                    return TransactionSendResult(hash: sendResponse)
+                    let mapper = PendingTransactionRecordMapper()
+                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                    self.wallet.addPendingTransaction(record)
+                    return TransactionSendResult(hash: hash)
                 }
                 .mapError { SendTxError(error: $0, tx: tx) }
                 .eraseToAnyPublisher()
@@ -164,17 +168,17 @@ extension BitcoinWalletManager: TransactionPusher {
             return false
         }
         
-        guard let tx = wallet.transactions.first(where: { $0.hash == transactionHash }) else {
+        guard let tx = wallet.pendingTransactions.first(where: { $0.hash == transactionHash }) else {
             return false
         }
         
         let userAddresses = wallet.addresses.map { $0.value }
         
-        guard userAddresses.contains(tx.sourceAddress) else {
+        guard userAddresses.contains(tx.source) else {
             return false
         }
         
-        guard let params = tx.params as? BitcoinTransactionParams, tx.status == .unconfirmed else {
+        guard let params = tx.transactionParams as? BitcoinTransactionParams else {
             return false
         }
         
@@ -193,13 +197,13 @@ extension BitcoinWalletManager: TransactionPusher {
     }
     
     func getPushFee(for transactionHash: String) -> AnyPublisher<[Fee], Error> {
-        guard let tx = wallet.transactions.first(where: { $0.hash == transactionHash }) else {
+        guard let tx = wallet.pendingTransactions.first(where: { $0.hash == transactionHash }) else {
             return .anyFail(error: BlockchainSdkError.failedToFindTransaction)
         }
         
         txBuilder.unspentOutputs = loadedUnspents.filter { $0.transactionHash != transactionHash }
         
-        return getFee(amount: tx.amount, destination: tx.destinationAddress)
+        return getFee(amount: tx.amount, destination: tx.destination)
             .map { [weak self] feeDataModel in
                 self?.txBuilder.unspentOutputs = self?.loadedUnspents
                 return feeDataModel
@@ -208,7 +212,7 @@ extension BitcoinWalletManager: TransactionPusher {
     }
     
     func pushTransaction(with transactionHash: String, newTransaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error> {
-        guard let oldTx = wallet.transactions.first(where: { $0.hash == transactionHash }) else {
+        guard let oldTx = wallet.pendingTransactions.first(where: { $0.hash == transactionHash }) else {
             return .anyFail(error: BlockchainSdkError.failedToFindTransaction)
         }
         
@@ -217,7 +221,7 @@ extension BitcoinWalletManager: TransactionPusher {
         }
         
         guard
-            let params = oldTx.params as? BitcoinTransactionParams,
+            let params = oldTx.transactionParams as? BitcoinTransactionParams,
             let sequence = params.inputs.max(by: { $0.sequence < $1.sequence })?.sequence
         else {
             return .anyFail(error: BlockchainSdkError.failedToFindTxInputs)

@@ -87,12 +87,10 @@ class StellarWalletManager: BaseManager, WalletManager {
                 
             }
         }
-        let currentDate = Date()
-        for  index in wallet.transactions.indices {
-            if DateInterval(start: wallet.transactions[index].date!, end: currentDate).duration > 10 {
-                wallet.transactions[index].status = .confirmed
-            }
-        }
+
+        // We believe that a transaction will be confirmed within 10 seconds
+        let date = Date(timeIntervalSinceNow: -10)
+        wallet.removePendingTransaction(older: date)
     }
 }
 
@@ -122,15 +120,16 @@ extension StellarWalletManager: TransactionSender {
                 
                 return tx
             }
-            .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
-                self?.networkService.send(transaction: tx).tryMap {[weak self] sendResponse in
+            .flatMap {[weak self] hash -> AnyPublisher<TransactionSendResult, Error> in
+                self?.networkService.send(transaction: hash).tryMap {[weak self] sendResponse in
                     guard let self = self else { throw WalletError.empty }
                     
-                    self.wallet.add(transaction: transaction)
-                    
-                    return TransactionSendResult(hash: tx)
+                    let mapper = PendingTransactionRecordMapper()
+                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                    self.wallet.addPendingTransaction(record)
+                    return TransactionSendResult(hash: hash)
                 }
-                .mapError { SendTxError(error: $0, tx: tx) }
+                .mapError { SendTxError(error: $0, tx: hash) }
                 .eraseToAnyPublisher() ?? .emptyFail
             }
             .eraseToAnyPublisher()

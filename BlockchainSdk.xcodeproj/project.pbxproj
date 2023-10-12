@@ -428,6 +428,8 @@
 		EFD717DB2A272D1B00E5430D /* PlainAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717DA2A272D1B00E5430D /* PlainAddress.swift */; };
 		EFD717DF2A27310E00E5430D /* AddressType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717DE2A27310E00E5430D /* AddressType.swift */; };
 		EFEADBDE2A4D737F00744407 /* SignatureInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEADBDD2A4D737F00744407 /* SignatureInfo.swift */; };
+		EFF466E82ACD851700ACC3EA /* PendingTransactionRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF466E72ACD851700ACC3EA /* PendingTransactionRecord.swift */; };
+		EFF466EF2ACECF8000ACC3EA /* PendingTransactionRecordMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF466EE2ACECF8000ACC3EA /* PendingTransactionRecordMapper.swift */; };
 		EFF56B3D29C20CCE002B6952 /* SmartContractTargetType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B3C29C20CCE002B6952 /* SmartContractTargetType.swift */; };
 		EFF56B4129C30265002B6952 /* EthereumFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF56B4029C30265002B6952 /* EthereumFeeParameters.swift */; };
 /* End PBXBuildFile section */
@@ -903,6 +905,8 @@
 		EFD717DA2A272D1B00E5430D /* PlainAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainAddress.swift; sourceTree = "<group>"; };
 		EFD717DE2A27310E00E5430D /* AddressType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressType.swift; sourceTree = "<group>"; };
 		EFEADBDD2A4D737F00744407 /* SignatureInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureInfo.swift; sourceTree = "<group>"; };
+		EFF466E72ACD851700ACC3EA /* PendingTransactionRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTransactionRecord.swift; sourceTree = "<group>"; };
+		EFF466EE2ACECF8000ACC3EA /* PendingTransactionRecordMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTransactionRecordMapper.swift; sourceTree = "<group>"; };
 		EFF56B3C29C20CCE002B6952 /* SmartContractTargetType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContractTargetType.swift; sourceTree = "<group>"; };
 		EFF56B4029C30265002B6952 /* EthereumFeeParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumFeeParameters.swift; sourceTree = "<group>"; };
 		EFF5BA8329B881440070694A /* OptimismContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismContract.swift; sourceTree = "<group>"; };
@@ -1233,6 +1237,8 @@
 				EF5F1B9629C9C0500093307B /* Fee.swift */,
 				2DA8AB0C2A433A1000C75D85 /* ExceptionHandler.swift */,
 				EFEADBDD2A4D737F00744407 /* SignatureInfo.swift */,
+				EFF466E72ACD851700ACC3EA /* PendingTransactionRecord.swift */,
+				EFF466EE2ACECF8000ACC3EA /* PendingTransactionRecordMapper.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -2508,6 +2514,7 @@
 				5D4B33D123F7DC7500C93A84 /* BinanceAddressService.swift in Sources */,
 				5D01BCE2243F7F7E0048D1BA /* XrpTarget.swift in Sources */,
 				5D7D242925136254001B9A4F /* XRPLedger.swift in Sources */,
+				EFF466E82ACD851700ACC3EA /* PendingTransactionRecord.swift in Sources */,
 				5DF9151D253DB85500B927DD /* TezosNetworkService.swift in Sources */,
 				5DEAFA9224447D350032E316 /* ThenProcessable.swift in Sources */,
 				2DA13A022A8AD83B00E3C374 /* ChiaNetworkProvider.swift in Sources */,
@@ -2726,6 +2733,7 @@
 				EF3B19182AA5CDF70084AA1C /* BitcoinExternalLinkProvider.swift in Sources */,
 				DA198B6529E44D2600DB6EEA /* CosmosChain.swift in Sources */,
 				EFBE76912A7C066C00CD918B /* TransactionHistoryProviderFactory.swift in Sources */,
+				EFF466EF2ACECF8000ACC3EA /* PendingTransactionRecordMapper.swift in Sources */,
 				5D8653FA23A8C481000DE52D /* StellarNetworkService.swift in Sources */,
 				DC63F266293F243200F953EF /* Credentials.swift in Sources */,
 				5D7D242F25136254001B9A4F /* XRPTransaction.swift in Sources */,
