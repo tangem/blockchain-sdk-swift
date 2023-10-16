@@ -9,7 +9,7 @@
 "eth_gas_required_exceeds_allowance" = "Not enough funds for the transaction. Please top up your account.";
 "generic_error_code" = "An error occurred. Code: %@.";
 "no_account_bnb" = "Pour créer un compte, envoyez des fonds monétaires à cette adresse";
-"no_account_generic" = "Pour créer un compte, téléchargez %1$@+ %2$@";
+"no_account_generic" = "To use the %1$@ network, you must pay the account reserve (%2$@ %3$@), which locks up and hides that amount indefinitely";
 "no_account_polkadot" = "Destination account is not active. Send %@ or more to activate the account.";
 "no_trustline_xlm_asset" = "The destination account does not have a trustline for the asset being sent.";
 "send_error_dust_amount_format" = "Le montant minimal est de %@";

@@ -26,13 +26,14 @@ public enum StellarError: Int, Error, LocalizedError {
     // WARNING: Make sure to preserve the error codes when removing or inserting errors
     
     public var errorDescription: String? {
+        let networkName = Blockchain.stellar(curve: .ed25519, testnet: false).displayName
         switch self {
         case .requiresMemo:
             return "xlm_requires_memo_error".localized
         case .xlmCreateAccount:
-            return "no_account_generic".localized(["1", "XLM"])
+            return "no_account_generic".localized([networkName, "1", "XLM"])
         case .assetCreateAccount:
-            return "no_account_generic".localized(["1.5", "XLM"])
+            return "no_account_generic".localized([networkName, "1.5", "XLM"])
         case .assetNoAccountOnDestination:
             return "send_error_no_target_account".localized(["1 XLM"])
         case .assetNoTrustline:
