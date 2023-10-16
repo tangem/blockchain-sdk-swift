@@ -47,14 +47,7 @@ public struct TransactionRecord: Hashable {
 public extension TransactionRecord {
     enum TransactionType: Hashable {
         case transfer
-        case submit
-        case approve
-        case supply
-        case withdraw
-        case deposit
-        case swap
-        case unoswap
-        case custom(id: String)
+        case contractMethod(id: String)
     }
 }
 
