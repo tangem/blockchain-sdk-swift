@@ -835,7 +835,6 @@
 		EF31EA1229DC31E000A59FBE /* RavencoinMainNetworkParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RavencoinMainNetworkParams.swift; sourceTree = "<group>"; };
 		EF31EA1329DC31E000A59FBE /* RavencoinWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RavencoinWalletManager.swift; sourceTree = "<group>"; };
 		EF31EA1729DC6B4700A59FBE /* RavencoinFee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RavencoinFee.swift; sourceTree = "<group>"; };
-		EF32FEBB2A306D40002ED43F /* DucatusNetworkParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DucatusNetworkParams.swift; sourceTree = "<group>"; };
 		EF32FEC12A3072B9002ED43F /* CashAddrService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CashAddrService.swift; sourceTree = "<group>"; };
 		EF32FED82A38A04E002ED43F /* AddressServiceFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddressServiceFactory.swift; sourceTree = "<group>"; };
 		EF32FEDA2A38C288002ED43F /* BitcoinScriptAddressProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinScriptAddressProvider.swift; sourceTree = "<group>"; };
@@ -1143,7 +1142,6 @@
 				5D14E46F2397B80F00C15FC8 /* Products */,
 				5D14E49A2397B8B000C15FC8 /* Frameworks */,
 				C78C27BD063723008A1058A7 /* Pods */,
-				EF34FCFA2A41E44200E18670 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2127,14 +2125,6 @@
 			path = API;
 			sourceTree = "<group>";
 		};
-		EF34FCFA2A41E44200E18670 /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				EF32FEBB2A306D40002ED43F /* DucatusNetworkParams.swift */,
-			);
-			name = "Recovered References";
-			sourceTree = "<group>";
-		};
 		EF3B19142AA5C9230084AA1C /* ExternalLinkProvider */ = {
 			isa = PBXGroup;
 			children = (
@@ -2885,7 +2875,6 @@
 				2D9A91A729BB8C2E00476EA6 /* WalletCoreAddressService.swift in Sources */,
 				EFAD40A52A965BA800364D65 /* BlockBookNode.swift in Sources */,
 				EF3B191E2AA85C150084AA1C /* CardanoExternalLinkProvider.swift in Sources */,
-				2D9A91A729BB8C2E00476EA6 /* WalletCoreAddressService.swift in Sources */,
 				DA9F76FB27ECA49F00F0665C /* TronNetwork.swift in Sources */,
 				EF2BC62029DACE33003D3F18 /* RavencoinTarget.swift in Sources */,
 				5DC7DD62244077D7008F83F2 /* XRPNetworkService.swift in Sources */,
