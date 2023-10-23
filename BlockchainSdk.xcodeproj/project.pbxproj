@@ -231,6 +231,7 @@
 		B6B083572AE6B11C0099D6F8 /* NEARAccessKeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B083552AE6B11C0099D6F8 /* NEARAccessKeyInfo.swift */; };
 		B6B083582AE6B11C0099D6F8 /* NEARProtocolConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B083562AE6B11C0099D6F8 /* NEARProtocolConfig.swift */; };
 		B6B0835A2AE6B1480099D6F8 /* NEARAccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B083592AE6B1480099D6F8 /* NEARAccountInfo.swift */; };
+		B6B0835C2AE6BED40099D6F8 /* NullValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B0835B2AE6BED40099D6F8 /* NullValue.swift */; };
 		B6D345F62AD8B4A50009D1B2 /* NEARWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D345F52AD8B4A50009D1B2 /* NEARWalletManager.swift */; };
 		B6D345F82AD8B8040009D1B2 /* NEARNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D345F72AD8B8040009D1B2 /* NEARNetworkProvider.swift */; };
 		B6D346002AD9450D0009D1B2 /* NEARTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D345FF2AD9450D0009D1B2 /* NEARTransactionBuilder.swift */; };
@@ -726,6 +727,7 @@
 		B6B083552AE6B11C0099D6F8 /* NEARAccessKeyInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NEARAccessKeyInfo.swift; sourceTree = "<group>"; };
 		B6B083562AE6B11C0099D6F8 /* NEARProtocolConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NEARProtocolConfig.swift; sourceTree = "<group>"; };
 		B6B083592AE6B1480099D6F8 /* NEARAccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARAccountInfo.swift; sourceTree = "<group>"; };
+		B6B0835B2AE6BED40099D6F8 /* NullValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NullValue.swift; sourceTree = "<group>"; };
 		B6D345F52AD8B4A50009D1B2 /* NEARWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARWalletManager.swift; sourceTree = "<group>"; };
 		B6D345F72AD8B8040009D1B2 /* NEARNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARNetworkProvider.swift; sourceTree = "<group>"; };
 		B6D345FF2AD9450D0009D1B2 /* NEARTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARTransactionBuilder.swift; sourceTree = "<group>"; };
@@ -1811,6 +1813,7 @@
 			children = (
 				B619208B2AE6AC8F001D6DDF /* JSONRPCParams.swift */,
 				B619208D2AE6AC95001D6DDF /* JSONRPCResult.swift */,
+				B6B0835B2AE6BED40099D6F8 /* NullValue.swift */,
 			);
 			path = DTO;
 			sourceTree = "<group>";
@@ -2658,6 +2661,7 @@
 				5DED72BC239FEEEC006D79AE /* BitcoinTransactionBuilder.swift in Sources */,
 				2D8501F729DEC20A00F4A11B /* TONTransactionParams.swift in Sources */,
 				5D8653FC23A8C4A9000DE52D /* StellarTransactionBuilder.swift in Sources */,
+				B6B0835C2AE6BED40099D6F8 /* NullValue.swift in Sources */,
 				B6F3AA6E2ADD92230059C99A /* Moya+.swift in Sources */,
 				B044B3A126047F5500D9864F /* RosettaResponse.swift in Sources */,
 				5DACA35B255E97FE0096BC48 /* Address.swift in Sources */,

@@ -59,7 +59,7 @@ extension NEARTarget: TargetType {
             return .requestJSONRPC(
                 id: Constants.jsonRPCMethodId,
                 method: "gas_price",
-                params: "[null]"
+                params: [NullValue()]
             )
         case .protocolConfig:
             return .requestJSONRPC(
