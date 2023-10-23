@@ -10,6 +10,23 @@ import Foundation
 import Combine
 
 final class NEARWalletManager: BaseManager {
+    /// Current actual values, fetched once per app session.
+    private static var cachedProtocolConfig: NEARProtocolConfig?
+
+    /// Fallback values that are actual at the time of implementation (Q4 2023).
+    private static var fallbackProtocolConfig: NEARProtocolConfig {
+        NEARProtocolConfig(
+           senderIsReceiver: .init(
+               cumulativeExecutionCost: Decimal(115123062500) + Decimal(108059500000),
+               cumulativeSendCost: Decimal(115123062500) + Decimal(108059500000)
+           ),
+           senderIsNotReceiver: .init(
+               cumulativeExecutionCost: Decimal(115123062500) + Decimal(108059500000),
+               cumulativeSendCost: Decimal(115123062500) + Decimal(108059500000)
+           )
+       )
+    }
+
     private let networkService: NEARNetworkService
     private let transactionBuilder: NEARTransactionBuilder
 
@@ -45,6 +62,22 @@ final class NEARWalletManager: BaseManager {
                     self?.wallet.add(amount: value.amount)
                 }
             )
+    }
+
+    private func getProtocolConfig() -> AnyPublisher<NEARProtocolConfig, Never> {
+        return Deferred { [networkService] in
+            if let protocolConfig = Self.cachedProtocolConfig {
+                return Just(protocolConfig)
+                    .eraseToAnyPublisher()
+            }
+
+            return networkService
+                .getProtocolConfig()
+                .handleEvents(receiveOutput: { Self.cachedProtocolConfig = $0 })
+                .replaceError(with: Self.fallbackProtocolConfig)
+                .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
     }
 }
 
