@@ -1824,10 +1824,10 @@
 		B65D2E772AD9B1ED004DF330 /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				B6D345F72AD8B8040009D1B2 /* NEARNetworkProvider.swift */,
 				B6F3AA6F2ADD925D0059C99A /* NEARNetworkParams.swift */,
 				B61920882AE6ABD3001D6DDF /* NEARNetworkResult.swift */,
 				B6F3AA702ADD925D0059C99A /* NEARTarget.swift */,
+				B6D345F72AD8B8040009D1B2 /* NEARNetworkProvider.swift */,
 				B65D2E782AD9B208004DF330 /* NEARNetworkService.swift */,
 			);
 			path = Network;
