@@ -92,8 +92,35 @@ extension NEARWalletManager: WalletManager {
         amount: Amount,
         destination: String
     ) -> AnyPublisher<[Fee], Error> {
-        // TODO: Andrey Fedorov - Add actual implementation (IOS-4071)
-        return .emptyFail
+        return Publishers.CombineLatest(
+            getProtocolConfig().setFailureType(to: Error.self),
+            networkService.getGasPrice()
+        )
+        .withWeakCaptureOf(self)
+        .map { walletManager, input in
+            let (config, gasPrice) = input
+            // The gas units on this next block (where the `execution` action takes place) could be multiplied
+            // by a gas price that's up to 1% different, since gas price is recalculated on each block
+            let approximateGasPriceForNextBlock = gasPrice * 1.01
+            let source = walletManager.wallet.address
+            let senderIsReceiver = source.lowercased() == destination.lowercased()
+
+            let costsSum: Decimal
+            if senderIsReceiver {
+                costsSum = config.senderIsReceiver.cumulativeSendCost * gasPrice
+                + config.senderIsReceiver.cumulativeExecutionCost * approximateGasPriceForNextBlock
+            } else {
+                costsSum = config.senderIsNotReceiver.cumulativeSendCost * gasPrice
+                + config.senderIsNotReceiver.cumulativeExecutionCost * approximateGasPriceForNextBlock
+            }
+
+            let blockchain = walletManager.wallet.blockchain
+            let feeValue = costsSum / blockchain.decimalValue
+            let amount = Amount(with: blockchain, value: feeValue)
+
+            return [Fee(amount)]
+        }
+        .eraseToAnyPublisher()
     }
 
     func send(
