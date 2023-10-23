@@ -11,28 +11,11 @@ import Foundation
 struct NEARWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         let blockchain = input.blockchain
-        var providers: [NEARNetworkProvider] = []
-
-        if blockchain.isTestnet {
-            providers.append(
-                NEARNetworkProvider(
-                    baseURL: URL(string: "https://rpc.testnet.near.org")!,
-                    configuration: input.networkConfig
-                )
-            )
-        } else {
-            let baseURLs = [
-                "https://rpc.mainnet.near.org",
-                "https://getblock.io/nodes/near/",  // TODO: Andrey Fedorov - Requires API key
-                "https://near-mainnet.infura.io/v3/",   // TODO: Andrey Fedorov - Requires API key
-                "https://near.nownodes.io/",    // TODO: Andrey Fedorov - Requires API key
-            ]
-            providers = baseURLs
-                .map { URL(string: $0)! }
-                .map { NEARNetworkProvider(baseURL: $0, configuration: input.networkConfig) }
-        }
-
-        let networkService = NEARNetworkService(blockchain: blockchain, providers: providers)
+        let sdkConfig = input.blockchainSdkConfig
+        let networkConfig = input.networkConfig
+        let baseURLs = baseURLs(for: blockchain, with: sdkConfig)
+        let networkProviders = baseURLs.map { NEARNetworkProvider(baseURL: $0, configuration: networkConfig) }
+        let networkService = NEARNetworkService(blockchain: blockchain, providers: networkProviders)
         let transactionBuilder = NEARTransactionBuilder(blockchain: blockchain)
 
         return NEARWalletManager(
@@ -40,5 +23,23 @@ struct NEARWalletAssembly: WalletManagerAssembly {
             networkService: networkService,
             transactionBuilder: transactionBuilder
         )
+    }
+
+    private func baseURLs(for blockchain: Blockchain, with sdkConfig: BlockchainSdkConfig) -> [URL] {
+        var baseURLStrings: [String] = []
+
+        if blockchain.isTestnet {
+            baseURLStrings.append("https://rpc.testnet.near.org")
+        } else {
+            baseURLStrings.append(contentsOf: [
+                "https://rpc.mainnet.near.org",
+                "https://near.getblock.io/\(sdkConfig.getBlockApiKey)/",
+                "https://near-mainnet.infura.io/v3/\(sdkConfig.infuraProjectId)",
+                "https://near.nownodes.io/\(sdkConfig.nowNodesApiKey)",
+            ])
+        }
+
+        return baseURLStrings
+            .map { URL(string: $0)! }
     }
 }
