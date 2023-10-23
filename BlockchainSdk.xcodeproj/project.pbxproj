@@ -232,6 +232,7 @@
 		B6D345F62AD8B4A50009D1B2 /* NEARWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D345F52AD8B4A50009D1B2 /* NEARWalletManager.swift */; };
 		B6D345F82AD8B8040009D1B2 /* NEARNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D345F72AD8B8040009D1B2 /* NEARNetworkProvider.swift */; };
 		B6D346002AD9450D0009D1B2 /* NEARTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D345FF2AD9450D0009D1B2 /* NEARTransactionBuilder.swift */; };
+		B6F3AA6E2ADD92230059C99A /* Moya+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F3AA6C2ADD92230059C99A /* Moya+.swift */; };
 		B6F3AA712ADD925D0059C99A /* NEARNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F3AA6F2ADD925D0059C99A /* NEARNetworkParams.swift */; };
 		BFF1171432045E1915ABA71F /* Pods_BlockchainSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF8BC4C03E68061ED530292C /* Pods_BlockchainSdk.framework */; };
 		DA11507727DB217200CDC879 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA11507627DB217200CDC879 /* Launch Screen.storyboard */; };
@@ -723,6 +724,7 @@
 		B6D345F52AD8B4A50009D1B2 /* NEARWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARWalletManager.swift; sourceTree = "<group>"; };
 		B6D345F72AD8B8040009D1B2 /* NEARNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARNetworkProvider.swift; sourceTree = "<group>"; };
 		B6D345FF2AD9450D0009D1B2 /* NEARTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARTransactionBuilder.swift; sourceTree = "<group>"; };
+		B6F3AA6C2ADD92230059C99A /* Moya+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Moya+.swift"; sourceTree = "<group>"; };
 		B6F3AA6F2ADD925D0059C99A /* NEARNetworkParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NEARNetworkParams.swift; sourceTree = "<group>"; };
 		BF8BC4C03E68061ED530292C /* Pods_BlockchainSdk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1A207847B605E0517D9A55F /* Pods_BlockchainSdkTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlockchainSdkTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1319,6 +1321,7 @@
 				DADF5F922A1B7C6B00D58DC3 /* TWPublicKey+.swift */,
 				EF72578F2A8F938400EA8CB2 /* KeyedDecodingContainer+.swift */,
 				B65D2E7C2AD9BA64004DF330 /* JSONRPC.swift */,
+				B6F3AA6C2ADD92230059C99A /* Moya+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2646,6 +2649,7 @@
 				5DED72BC239FEEEC006D79AE /* BitcoinTransactionBuilder.swift in Sources */,
 				2D8501F729DEC20A00F4A11B /* TONTransactionParams.swift in Sources */,
 				5D8653FC23A8C4A9000DE52D /* StellarTransactionBuilder.swift in Sources */,
+				B6F3AA6E2ADD92230059C99A /* Moya+.swift in Sources */,
 				B044B3A126047F5500D9864F /* RosettaResponse.swift in Sources */,
 				5DACA35B255E97FE0096BC48 /* Address.swift in Sources */,
 				EF3B19582AA85ED50084AA1C /* RavencoinExternalLinkProvider.swift in Sources */,
