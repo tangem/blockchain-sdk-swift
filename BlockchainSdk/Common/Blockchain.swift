@@ -287,7 +287,7 @@ public enum Blockchain: Equatable, Hashable {
         case .chia:
             return "Chia Network"
         case .near:
-            return "NEAR Protocol" + testnetSuffix   // TODO: Andrey Fedorov - Is this a correct value?
+            return "NEAR Protocol" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {

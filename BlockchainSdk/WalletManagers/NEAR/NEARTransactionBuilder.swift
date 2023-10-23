@@ -19,13 +19,12 @@ final class NEARTransactionBuilder {
     }
 
     func buildForSign(transaction: Transaction) throws -> Data {
-//        let input = try NEARSigningInput.with { input in
-//            // TODO: Andrey Fedorov - Add actual implementation
-//        }.serializedData()
-        fatalError()
+        // TODO: Andrey Fedorov - Add actual implementation (IOS-4071)
+        return Data()
     }
 
     func buildForSend(transaction: Transaction, signature: Data) throws -> Data {
-        fatalError()
+        // TODO: Andrey Fedorov - Add actual implementation (IOS-4071)
+        return Data()
     }
 }

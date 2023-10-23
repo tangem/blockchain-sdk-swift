@@ -11,19 +11,24 @@ import Foundation
 struct NEARExternalLinkProvider: ExternalLinkProvider {
     private let isTestnet: Bool
 
-    init(isTestnet: Bool) {
+    init(
+        isTestnet: Bool
+    ) {
         self.isTestnet = isTestnet
     }
 
     var testnetFaucetURL: URL? {
-        fatalError("\(#function) not implemented yet!")
+        // TODO: Andrey Fedorov - Add actual implementation (IOS-4070)
+        return URL(string: "about:blank")!
     }
 
     func url(address: String, contractAddress: String?) -> URL {
-        fatalError("\(#function) not implemented yet!")
+        // TODO: Andrey Fedorov - Add actual implementation (IOS-4070)
+        return URL(string: "about:blank")!
     }
 
     func url(transaction hash: String) -> URL {
-        fatalError("\(#function) not implemented yet!")
+        // TODO: Andrey Fedorov - Add actual implementation (IOS-4070)
+        return URL(string: "about:blank")!
     }
 }

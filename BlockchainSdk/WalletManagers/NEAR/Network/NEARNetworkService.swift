@@ -8,9 +8,7 @@
 
 import Foundation
 import Combine
-import BigInt
 
-// TODO: Andrey Fedorov - Do we need blockchain info here?
 final class NEARNetworkService: MultiNetworkProvider {
     let providers: [NEARNetworkProvider]
     var currentProviderIndex: Int = 0
@@ -23,15 +21,5 @@ final class NEARNetworkService: MultiNetworkProvider {
     ) {
         self.blockchain = blockchain
         self.providers = providers
-    }
-
-    func getInfo(accountId: String) -> AnyPublisher<NEARAccountInfo, Error> {
-        // TODO: Andrey Fedorov - Add actual implementation
-        let value: Decimal = 10.0
-        let info = NEARAccountInfo(
-            accountId: accountId,
-            amount: Amount(with: blockchain, value: value)
-        )
-        return .justWithError(output: info)
     }
 }
