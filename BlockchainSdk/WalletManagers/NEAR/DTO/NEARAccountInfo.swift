@@ -11,4 +11,5 @@ import Foundation
 struct NEARAccountInfo {
     let accountId: String
     let amount: Amount
+    let recentBlockHash: String
 }
