@@ -1231,7 +1231,7 @@
 				EFD717C82A25EA7D00E5430D /* ABI */,
 				EFF56B3929C20AEC002B6952 /* SmartContract */,
 				EF332D15288EAC9000AE3C85 /* API */,
-				B619208A2AE6AC79001D6DDF /* JSON-RPC */,
+				B619208A2AE6AC79001D6DDF /* DTO */,
 				5DACA35C255E98220096BC48 /* Address */,
 				5D5E058A24FE736E00F04DE1 /* Localizations */,
 				B0A1D39B2625A10B0013F0BF /* Utils */,
@@ -1806,13 +1806,13 @@
 			path = Dogecoin;
 			sourceTree = "<group>";
 		};
-		B619208A2AE6AC79001D6DDF /* JSON-RPC */ = {
+		B619208A2AE6AC79001D6DDF /* DTO */ = {
 			isa = PBXGroup;
 			children = (
 				B619208B2AE6AC8F001D6DDF /* JSONRPCParams.swift */,
 				B619208D2AE6AC95001D6DDF /* JSONRPCResult.swift */,
 			);
-			path = "JSON-RPC";
+			path = DTO;
 			sourceTree = "<group>";
 		};
 		B63B79302AD854010055BD06 /* NEAR */ = {
