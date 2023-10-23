@@ -69,7 +69,11 @@ public struct AddressServiceFactory {
         case .ravencoin:
             let networkParams: INetwork = isTestnet ? RavencoinTestNetworkParams() : RavencoinMainNetworkParams()
             return BitcoinLegacyAddressService(networkParams: networkParams)
-        case .ton, .cosmos, .terraV1, .terraV2:
+        case .ton,
+                .cosmos,
+                .terraV1,
+                .terraV2,
+                .near:
             return WalletCoreAddressService(blockchain: blockchain)
         case .ducatus:
             return BitcoinLegacyAddressService(networkParams: DucatusNetworkParams())
