@@ -10,8 +10,7 @@ import Foundation
 
 struct NEARExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? {
-        // TODO: Andrey Fedorov - Add actual implementation
-        return URL(string: "about:blank")!
+        return URL(string: "https://near-faucet.io/")
     }
 
     private let isTestnet: Bool
@@ -23,12 +22,20 @@ struct NEARExternalLinkProvider: ExternalLinkProvider {
     }
 
     func url(address: String, contractAddress: String?) -> URL {
-        // TODO: Andrey Fedorov - Add actual implementation
-        return URL(string: "about:blank")!
+        if isTestnet {
+            return URL(string: "https://testnet.nearblocks.io/address/\(address)")!
+        }
+
+        return URL(string: "https://nearblocks.io/address/\(address)")!
     }
 
     func url(transaction hash: String) -> URL {
-        // TODO: Andrey Fedorov - Add actual implementation
-        return URL(string: "about:blank")!
+        if isTestnet {
+            if isTestnet {
+                return URL(string: "https://testnet.nearblocks.io/txns/\(hash)")!
+            }
+        }
+
+        return URL(string: "https://nearblocks.io/txns/\(hash)")!
     }
 }
