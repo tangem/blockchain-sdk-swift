@@ -29,7 +29,22 @@ final class NEARWalletManager: BaseManager {
     }
 
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        // TODO: Andrey Fedorov - Add actual implementation (IOS-4071)
+        cancellable = networkService
+            .getInfo(accountId: wallet.address)
+            .sink(
+                receiveCompletion: { result in
+                    switch result {
+                    case .failure(let error):
+                        self.wallet.clearAmounts()
+                        completion(.failure(error))
+                    case .finished:
+                        completion(.success(()))
+                    }
+                },
+                receiveValue: { [weak self] value in
+                    self?.wallet.add(amount: value.amount)
+                }
+            )
     }
 }
 
