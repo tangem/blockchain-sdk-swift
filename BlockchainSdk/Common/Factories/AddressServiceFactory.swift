@@ -29,8 +29,22 @@ public struct AddressServiceFactory {
             return BitcoinAddressService(networkParams: LitecoinNetworkParams())
         case .stellar:
             return StellarAddressService()
-        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair,
-                .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos, .telos, .octa:
+        case .ethereum,
+                .ethereumClassic,
+                .ethereumPoW,
+                .ethereumFair,
+                .bsc,
+                .polygon,
+                .avalanche,
+                .fantom,
+                .arbitrum,
+                .gnosis,
+                .optimism,
+                .saltPay,
+                .kava,
+                .cronos,
+                .telos,
+                .octa:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
