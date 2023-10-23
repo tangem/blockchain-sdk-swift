@@ -9,22 +9,17 @@
 import Foundation
 
 enum NEARNetworkParams {
-    /// https://docs.near.org/api/rpc/setup#using-finality-param.
-    struct Finality: Encodable {
-        static var optimistic: Self { Self(value: .optimistic) }
-        static var final: Self { Self(value: .final) }
+    enum Finality: String, Encodable {
+        /// Uses the latest block recorded on the node that responded to your query
+        /// (<1 second delay after the transaction is submitted).
+        case optimistic
+        /// Uses a block that has been validated on at least 66% of the nodes in the network
+        /// (usually takes 2 blocks / approx. 2 second delay).
+        case final
+    }
 
-        enum Value: String, Encodable {
-            case optimistic
-            case final
-        }
-
-        let value: Value
-
-        func encode(to encoder: Encoder) throws {
-            var container = encoder.singleValueContainer()
-            try container.encode(value.rawValue)
-        }
+    struct ProtocolConfig: Encodable {
+        let finality: Finality
     }
 
     struct ViewAccount: Encodable {

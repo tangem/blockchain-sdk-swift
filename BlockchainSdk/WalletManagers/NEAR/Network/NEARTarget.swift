@@ -65,9 +65,7 @@ extension NEARTarget: TargetType {
             return .requestJSONRPC(
                 id: Constants.jsonRPCMethodId,
                 method: "EXPERIMENTAL_protocol_config",
-                params: NEARNetworkParams.Finality(
-                    value: .final
-                )
+                params: NEARNetworkParams.ProtocolConfig(finality: .final)
             )
         case .viewAccount(let accountId):
             return .requestJSONRPC(
