@@ -1821,6 +1821,7 @@
 		B63B79302AD854010055BD06 /* NEAR */ = {
 			isa = PBXGroup;
 			children = (
+				B6B3512B2AE7AEB800E794D3 /* DTO */,
 				B6B083542AE6B0FF0099D6F8 /* Domain */,
 				B65D2E772AD9B1ED004DF330 /* Network */,
 				B6D345F52AD8B4A50009D1B2 /* NEARWalletManager.swift */,
@@ -1832,8 +1833,6 @@
 		B65D2E772AD9B1ED004DF330 /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				B6F3AA6F2ADD925D0059C99A /* NEARNetworkParams.swift */,
-				B61920882AE6ABD3001D6DDF /* NEARNetworkResult.swift */,
 				B6F3AA702ADD925D0059C99A /* NEARTarget.swift */,
 				B6D345F72AD8B8040009D1B2 /* NEARNetworkProvider.swift */,
 				B65D2E782AD9B208004DF330 /* NEARNetworkService.swift */,
@@ -1849,6 +1848,15 @@
 				B6B083562AE6B11C0099D6F8 /* NEARProtocolConfig.swift */,
 			);
 			path = Domain;
+			sourceTree = "<group>";
+		};
+		B6B3512B2AE7AEB800E794D3 /* DTO */ = {
+			isa = PBXGroup;
+			children = (
+				B6F3AA6F2ADD925D0059C99A /* NEARNetworkParams.swift */,
+				B61920882AE6ABD3001D6DDF /* NEARNetworkResult.swift */,
+			);
+			path = DTO;
 			sourceTree = "<group>";
 		};
 		C78C27BD063723008A1058A7 /* Pods */ = {
