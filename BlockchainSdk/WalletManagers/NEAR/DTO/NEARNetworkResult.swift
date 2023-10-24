@@ -65,10 +65,11 @@ enum NEARNetworkResult {
 
         struct CostConfig: Decodable {
             /// The "sir" here stands for "sender is receiver".
-            let sendNotSir: UInt64
+            let sendNotSir: UInt
             /// The "sir" here stands for "sender is receiver".
-            let sendSir: UInt64
-            let execution: UInt64
+            let sendSir: UInt
+            /// Execution cost is the same for both "sender is receiver" and  "sender is not receiver" cases.
+            let execution: UInt
         }
 
         struct ActionCreationConfig: Decodable {
