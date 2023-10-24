@@ -13,20 +13,6 @@ final class NEARWalletManager: BaseManager {
     /// Current actual values, fetched once per app session.
     private static var cachedProtocolConfig: NEARProtocolConfig?
 
-    /// Fallback values that are actual at the time of implementation (Q4 2023).
-    private static var fallbackProtocolConfig: NEARProtocolConfig {
-        NEARProtocolConfig(
-           senderIsReceiver: .init(
-               cumulativeExecutionCost: Decimal(115123062500) + Decimal(108059500000),
-               cumulativeSendCost: Decimal(115123062500) + Decimal(108059500000)
-           ),
-           senderIsNotReceiver: .init(
-               cumulativeExecutionCost: Decimal(115123062500) + Decimal(108059500000),
-               cumulativeSendCost: Decimal(115123062500) + Decimal(108059500000)
-           )
-       )
-    }
-
     private let networkService: NEARNetworkService
     private let transactionBuilder: NEARTransactionBuilder
 
@@ -74,7 +60,7 @@ final class NEARWalletManager: BaseManager {
             return networkService
                 .getProtocolConfig()
                 .handleEvents(receiveOutput: { Self.cachedProtocolConfig = $0 })
-                .replaceError(with: Self.fallbackProtocolConfig)
+                .replaceError(with: Constants.fallbackProtocolConfig)
                 .eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
@@ -169,5 +155,25 @@ extension NEARWalletManager: WalletManager {
                 return walletManager.networkService.send(transaction: transaction)
             }
             .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - Constants
+
+private extension NEARWalletManager {
+    enum Constants {
+        /// Fallback values that are actual at the time of implementation (Q4 2023).
+        static var fallbackProtocolConfig: NEARProtocolConfig {
+            NEARProtocolConfig(
+               senderIsReceiver: .init(
+                   cumulativeExecutionCost: Decimal(115123062500) + Decimal(108059500000),
+                   cumulativeSendCost: Decimal(115123062500) + Decimal(108059500000)
+               ),
+               senderIsNotReceiver: .init(
+                   cumulativeExecutionCost: Decimal(115123062500) + Decimal(108059500000),
+                   cumulativeSendCost: Decimal(115123062500) + Decimal(108059500000)
+               )
+           )
+        }
     }
 }
