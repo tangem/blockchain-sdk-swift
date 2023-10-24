@@ -46,6 +46,7 @@ final class NEARNetworkService: MultiNetworkProvider {
                     let result = jsonRPCResult.result
                     let actionCreationConfig = result.runtimeConfig.transactionCosts.actionCreationConfig.transferCost
                     let actionReceiptCreationConfig = result.runtimeConfig.transactionCosts.actionReceiptCreationConfig
+
                     let cumulativeExecutionCost = Decimal(actionCreationConfig.execution)
                     + Decimal(actionReceiptCreationConfig.execution)
 
