@@ -126,8 +126,48 @@ extension NEARWalletManager: WalletManager {
     func send(
         _ transaction: Transaction,
         signer: TransactionSigner
-    ) -> AnyPublisher<TransactionSendResult, Error> {
-        // TODO: Andrey Fedorov - Add actual implementation (IOS-4071)
-        return .emptyFail
+    ) -> AnyPublisher<TransactionSendResult, Swift.Error> {
+        return networkService
+            .getAccessKeyInfo(accountId: wallet.address, publicKey: wallet.publicKey)
+            .tryMap { accessKeyInfo -> NEARAccessKeyInfo in
+                guard accessKeyInfo.canBeUsedForTransfer else {
+                    throw WalletError.failedToBuildTx
+                }
+
+                return accessKeyInfo
+            }
+            .withWeakCaptureOf(self)
+            .map { walletManager, accessKeyInfo in
+                return NEARTransactionParams(
+                    publicKey: walletManager.wallet.publicKey,
+                    currentNonce: accessKeyInfo.currentNonce,
+                    recentBlockHash: accessKeyInfo.recentBlockHash
+                )
+            }
+            .withWeakCaptureOf(self)
+            .tryMap { walletManager, transactionParams in
+                let transaction = transaction.then { $0.params = transactionParams }
+                let hash = try walletManager.transactionBuilder.buildForSign(transaction: transaction)
+
+                return (hash, transactionParams)
+            }
+            .flatMap { hash, transactionParams in
+                let signaturePublisher = signer.sign(hash: hash, walletPublicKey: transactionParams.publicKey)
+                let transactionParamsPublisher = Just(transactionParams).setFailureType(to: Error.self)
+
+                return Publishers.Zip(signaturePublisher, transactionParamsPublisher)
+            }
+            .withWeakCaptureOf(self)
+            .tryMap { walletManager, input in
+                let (signature, transactionParams) = input
+                let transaction = transaction.then { $0.params = transactionParams }
+
+                return try walletManager.transactionBuilder.buildForSend(transaction: transaction, signature: signature)
+            }
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, transaction in
+                return walletManager.networkService.send(transaction: transaction)
+            }
+            .eraseToAnyPublisher()
     }
 }
