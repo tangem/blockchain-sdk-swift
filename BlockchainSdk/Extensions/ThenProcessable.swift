@@ -12,13 +12,10 @@ import Foundation
 protocol ThenProcessable {}
 
 extension ThenProcessable where Self: Any {
-    func then(_ block: (Self) -> Void) -> Self {
-        block(self)
-        return self
-    }
-    
-    func then(_ block: (Self) throws -> Void) throws -> Self {
-        try block(self)
-        return self
+    func then(_ block: (inout Self) throws -> Void) rethrows -> Self {
+        var copy = self
+        try block(&copy)
+
+        return copy
     }
 }
