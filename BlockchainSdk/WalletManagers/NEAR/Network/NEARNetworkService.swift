@@ -27,8 +27,8 @@ final class NEARNetworkService: MultiNetworkProvider {
         return providerPublisher { provider in
             return provider
                 .getGasPrice()
-                .tryMap { jsonRPCResult in
-                    guard let gasPrice = Decimal(string: jsonRPCResult.result.gasPrice) else {
+                .tryMap { result in
+                    guard let gasPrice = Decimal(string: result.gasPrice) else {
                         throw WalletError.failedToParseNetworkResponse
                     }
 
@@ -42,8 +42,8 @@ final class NEARNetworkService: MultiNetworkProvider {
         return providerPublisher { provider in
             return provider
                 .getProtocolConfig()
-                .map { jsonRPCResult in
-                    let transactionCosts = jsonRPCResult.result.runtimeConfig.transactionCosts
+                .map { result in
+                    let transactionCosts = result.runtimeConfig.transactionCosts
                     let actionCreationConfig = transactionCosts.actionCreationConfig.transferCost
                     let createAccountCostConfig = transactionCosts.actionCreationConfig.createAccountCost
                     let addKeyCostConfig = transactionCosts.actionCreationConfig.addKeyCost.fullAccessCost
@@ -92,9 +92,7 @@ final class NEARNetworkService: MultiNetworkProvider {
         return providerPublisher { provider in
             return provider
                 .getInfo(accountId: accountId)
-                .tryMap { jsonRPCResult in
-                    let result = jsonRPCResult.result
-
+                .tryMap { result in
                     guard let rawAmount = Decimal(string: result.amount) else {
                         throw WalletError.failedToParseNetworkResponse
                     }
@@ -118,9 +116,7 @@ final class NEARNetworkService: MultiNetworkProvider {
         return providerPublisher { provider in
             return provider
                 .getAccessKeyInfo(accountId: accountId, publicKey: publicKeyPayload)
-                .map { jsonRPCResult in
-                    let result = jsonRPCResult.result
-
+                .map { result in
                     return NEARAccessKeyInfo(
                         currentNonce: result.nonce,
                         recentBlockHash: result.blockHash,
@@ -135,8 +131,8 @@ final class NEARNetworkService: MultiNetworkProvider {
         return providerPublisher { provider in
             return provider
                 .sendTransactionAwait(transaction.base64EncodedString())
-                .map { jsonRPCResult in
-                    return TransactionSendResult(hash: jsonRPCResult.result.transactionOutcome.id)
+                .map { result in
+                    return TransactionSendResult(hash: result.transactionOutcome.id)
                 }
                 .eraseToAnyPublisher()
         }

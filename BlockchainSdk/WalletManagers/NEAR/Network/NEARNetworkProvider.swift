@@ -21,36 +21,36 @@ struct NEARNetworkProvider {
         provider = NetworkProvider<NEARTarget>(configuration: configuration)
     }
 
-    func getProtocolConfig() -> AnyPublisher<JSONRPCResult<NEARNetworkResult.ProtocolConfig>, Error> {
+    func getProtocolConfig() -> AnyPublisher<NEARNetworkResult.ProtocolConfig, Error> {
         return requestPublisher(for: .protocolConfig)
     }
 
-    func getGasPrice() -> AnyPublisher<JSONRPCResult<NEARNetworkResult.GasPrice>, Error> {
+    func getGasPrice() -> AnyPublisher<NEARNetworkResult.GasPrice, Error> {
         return requestPublisher(for: .gasPrice)
     }
 
     func getInfo(
         accountId: String
-    ) -> AnyPublisher<JSONRPCResult<NEARNetworkResult.AccountInfo>, Error> {
+    ) -> AnyPublisher<NEARNetworkResult.AccountInfo, Error> {
         return requestPublisher(for: .viewAccount(accountId: accountId))
     }
 
     func getAccessKeyInfo(
         accountId: String,
         publicKey: String
-    ) -> AnyPublisher<JSONRPCResult<NEARNetworkResult.AccessKeyInfo>, Error> {
+    ) -> AnyPublisher<NEARNetworkResult.AccessKeyInfo, Error> {
         return requestPublisher(for: .viewAccessKey(accountId: accountId, publicKey: publicKey))
     }
 
     func sendTransactionAsync(
         _ transaction: String
-    ) -> AnyPublisher<JSONRPCResult<NEARNetworkResult.TransactionSendAsync>, Error> {
+    ) -> AnyPublisher<NEARNetworkResult.TransactionSendAsync, Error> {
         return requestPublisher(for: .sendTransactionAsync(transaction: transaction))
     }
 
     func sendTransactionAwait(
         _ transaction: String
-    ) -> AnyPublisher<JSONRPCResult<NEARNetworkResult.TransactionSendAwait>, Error> {
+    ) -> AnyPublisher<NEARNetworkResult.TransactionSendAwait, Error> {
         return requestPublisher(for: .sendTransactionAwait(transaction: transaction))
     }
 
@@ -62,11 +62,26 @@ struct NEARNetworkProvider {
 
         return provider.requestPublisher(NEARTarget(baseURL: baseURL, target: target))
             .filterSuccessfulStatusCodes()
-            .map(T.self, using: decoder)
-            .mapError { moyaError in
-                // TODO: Andrey Fedorov - Map to NEAR API JSON-RPC errors if needed (https://docs.near.org/api/rpc/contracts#what-could-go-wrong)
-                return WalletError.failedToParseNetworkResponse
+            .map(JSONRPCResult<T, NEARNetworkResult.APIError>.self, using: decoder)
+            .mapError { moyaError -> Swift.Error in
+                switch moyaError {
+                case .jsonMapping,
+                        .objectMapping:
+                    return WalletError.failedToParseNetworkResponse
+                case .imageMapping,
+                        .stringMapping,
+                        .encodableMapping,
+                        .statusCode,
+                        .underlying,
+                        .requestMapping,
+                        .parameterEncoding:
+                    return moyaError
+                @unknown default:
+                    assertionFailure("Unknown error kind received: \(moyaError)")
+                    return moyaError
+                }
             }
+            .tryMap { try $0.result.get() }
             .eraseToAnyPublisher()
     }
 }
