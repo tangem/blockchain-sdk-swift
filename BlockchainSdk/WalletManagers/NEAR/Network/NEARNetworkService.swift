@@ -43,23 +43,42 @@ final class NEARNetworkService: MultiNetworkProvider {
             return provider
                 .getProtocolConfig()
                 .map { jsonRPCResult in
-                    let result = jsonRPCResult.result
-                    let actionCreationConfig = result.runtimeConfig.transactionCosts.actionCreationConfig.transferCost
-                    let actionReceiptCreationConfig = result.runtimeConfig.transactionCosts.actionReceiptCreationConfig
+                    let transactionCosts = jsonRPCResult.result.runtimeConfig.transactionCosts
+                    let actionCreationConfig = transactionCosts.actionCreationConfig.transferCost
+                    let createAccountCostConfig = transactionCosts.actionCreationConfig.createAccountCost
+                    let addKeyCostConfig = transactionCosts.actionCreationConfig.addKeyCost.fullAccessCost
+                    let actionReceiptCreationConfig = transactionCosts.actionReceiptCreationConfig
 
-                    let cumulativeExecutionCost = Decimal(actionCreationConfig.execution)
+                    let cumulativeBasicExecutionCost = Decimal(actionCreationConfig.execution)
                     + Decimal(actionReceiptCreationConfig.execution)
+
+                    let cumulativeAdditionalExecutionCost = Decimal(createAccountCostConfig.execution)
+                    + Decimal(addKeyCostConfig.execution)
+
+                    let senderIsReceiverCumulativeBasicSendCost = Decimal(actionCreationConfig.sendSir)
+                    + Decimal(actionReceiptCreationConfig.sendSir)
+
+                    let senderIsReceiverCumulativeAdditionalSendCost = Decimal(createAccountCostConfig.sendSir)
+                    + Decimal(addKeyCostConfig.sendSir)
+
+                    let senderIsNotReceiverCumulativeBasicSendCost = Decimal(actionCreationConfig.sendNotSir)
+                    + Decimal(actionReceiptCreationConfig.sendNotSir)
+
+                    let senderIsNotReceiverCumulativeAdditionalSendCost = Decimal(createAccountCostConfig.sendNotSir)
+                    + Decimal(addKeyCostConfig.sendNotSir)
 
                     return NEARProtocolConfig(
                         senderIsReceiver: .init(
-                            cumulativeExecutionCost: cumulativeExecutionCost,
-                            cumulativeSendCost: Decimal(actionCreationConfig.sendSir)
-                            + Decimal(actionReceiptCreationConfig.sendSir)
+                            cumulativeBasicSendCost: senderIsReceiverCumulativeBasicSendCost,
+                            cumulativeBasicExecutionCost: cumulativeBasicExecutionCost,
+                            cumulativeAdditionalSendCost: senderIsReceiverCumulativeAdditionalSendCost,
+                            cumulativeAdditionalExecutionCost: cumulativeAdditionalExecutionCost
                         ),
                         senderIsNotReceiver: .init(
-                            cumulativeExecutionCost: cumulativeExecutionCost,
-                            cumulativeSendCost: Decimal(actionCreationConfig.sendNotSir)
-                            + Decimal(actionReceiptCreationConfig.sendNotSir)
+                            cumulativeBasicSendCost: senderIsNotReceiverCumulativeBasicSendCost,
+                            cumulativeBasicExecutionCost: cumulativeBasicExecutionCost,
+                            cumulativeAdditionalSendCost: senderIsNotReceiverCumulativeAdditionalSendCost,
+                            cumulativeAdditionalExecutionCost: cumulativeAdditionalExecutionCost
                         )
                     )
                 }
