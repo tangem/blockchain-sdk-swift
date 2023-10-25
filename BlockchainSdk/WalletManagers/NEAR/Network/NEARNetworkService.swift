@@ -67,6 +67,9 @@ final class NEARNetworkService: MultiNetworkProvider {
                     let senderIsNotReceiverCumulativeAdditionalSendCost = Decimal(createAccountCostConfig.sendNotSir)
                     + Decimal(addKeyCostConfig.sendNotSir)
 
+                    let storageAmountPerByte = Decimal(result.runtimeConfig.storageAmountPerByte)
+                    ?? NEARProtocolConfig.fallbackProtocolConfig.storageAmountPerByte
+
                     return NEARProtocolConfig(
                         senderIsReceiver: .init(
                             cumulativeBasicSendCost: senderIsReceiverCumulativeBasicSendCost,
@@ -79,7 +82,8 @@ final class NEARNetworkService: MultiNetworkProvider {
                             cumulativeBasicExecutionCost: cumulativeBasicExecutionCost,
                             cumulativeAdditionalSendCost: senderIsNotReceiverCumulativeAdditionalSendCost,
                             cumulativeAdditionalExecutionCost: cumulativeAdditionalExecutionCost
-                        )
+                        ),
+                        storageAmountPerByte: storageAmountPerByte
                     )
                 }
                 .eraseToAnyPublisher()

@@ -59,8 +59,8 @@ final class NEARWalletManager: BaseManager {
 
             return networkService
                 .getProtocolConfig()
+                .replaceError(with: NEARProtocolConfig.fallbackProtocolConfig)
                 .handleEvents(receiveOutput: { Self.cachedProtocolConfig = $0 })
-                .replaceError(with: Constants.fallbackProtocolConfig)
                 .eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
@@ -216,24 +216,6 @@ extension NEARWalletManager: WalletManager {
 
 private extension NEARWalletManager {
     enum Constants {
-        /// Fallback values that are actual at the time of implementation (Q4 2023).
-        static var fallbackProtocolConfig: NEARProtocolConfig {
-            NEARProtocolConfig(
-                senderIsReceiver: .init(
-                    cumulativeBasicSendCost: Decimal(115123062500) + Decimal(108059500000),
-                    cumulativeBasicExecutionCost: Decimal(115123062500) + Decimal(108059500000),
-                    cumulativeAdditionalSendCost: Decimal(3850000000000) + Decimal(101765125000),
-                    cumulativeAdditionalExecutionCost: Decimal(3850000000000) + Decimal(101765125000)
-                ),
-                senderIsNotReceiver: .init(
-                    cumulativeBasicSendCost: Decimal(115123062500) + Decimal(108059500000),
-                    cumulativeBasicExecutionCost: Decimal(115123062500) + Decimal(108059500000),
-                    cumulativeAdditionalSendCost: Decimal(3850000000000) + Decimal(101765125000),
-                    cumulativeAdditionalExecutionCost: Decimal(3850000000000) + Decimal(101765125000)
-                )
-            )
-        }
-
         static let implicitAccountAddressLength = 64
     }
 }

@@ -57,6 +57,7 @@ enum NEARNetworkResult {
     struct ProtocolConfig: Decodable {
         struct RuntimeConfig: Decodable {
             let transactionCosts: TransactionCosts
+            let storageAmountPerByte: String
         }
 
         struct TransactionCosts: Decodable {

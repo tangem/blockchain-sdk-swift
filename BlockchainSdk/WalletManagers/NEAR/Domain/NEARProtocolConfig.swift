@@ -27,4 +27,28 @@ struct NEARProtocolConfig {
 
     let senderIsReceiver: Costs
     let senderIsNotReceiver: Costs
+    let storageAmountPerByte: Decimal
+}
+
+// MARK: - Convenience extensions
+
+extension NEARProtocolConfig {
+    /// Fallback values that are actual at the time of implementation (Q4 2023).
+    static var fallbackProtocolConfig: NEARProtocolConfig {
+        NEARProtocolConfig(
+            senderIsReceiver: .init(
+                cumulativeBasicSendCost: Decimal(115123062500) + Decimal(108059500000),
+                cumulativeBasicExecutionCost: Decimal(115123062500) + Decimal(108059500000),
+                cumulativeAdditionalSendCost: Decimal(3850000000000) + Decimal(101765125000),
+                cumulativeAdditionalExecutionCost: Decimal(3850000000000) + Decimal(101765125000)
+            ),
+            senderIsNotReceiver: .init(
+                cumulativeBasicSendCost: Decimal(115123062500) + Decimal(108059500000),
+                cumulativeBasicExecutionCost: Decimal(115123062500) + Decimal(108059500000),
+                cumulativeAdditionalSendCost: Decimal(3850000000000) + Decimal(101765125000),
+                cumulativeAdditionalExecutionCost: Decimal(3850000000000) + Decimal(101765125000)
+            ),
+            storageAmountPerByte: Decimal("10000000000000000000")!
+        )
+    }
 }
