@@ -35,10 +35,10 @@ final class NEARWalletManager: BaseManager {
         cancellable = networkService
             .getInfo(accountId: wallet.address)
             .sink(
-                receiveCompletion: { result in
+                receiveCompletion: { [weak self] result in
                     switch result {
                     case .failure(let error):
-                        self.wallet.clearAmounts()
+                        self?.wallet.clearAmounts()
                         completion(.failure(error))
                     case .finished:
                         completion(.success(()))
