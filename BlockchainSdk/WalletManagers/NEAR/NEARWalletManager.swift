@@ -65,6 +65,54 @@ final class NEARWalletManager: BaseManager {
         }
         .eraseToAnyPublisher()
     }
+
+    /// See https://nomicon.io/DataStructures/Account#account-id-rules for infomation about implicit/named account IDs.
+    private func isImplicitAccount(accountId: String) -> Bool {
+        guard accountId.count == Constants.implicitAccountAddressLength else {
+            return false
+        }
+
+        // `CharacterSet.alphanumerics` contains other non-ASCII characters, like diacritics, arabic, etc -
+        // so it can't be used to match the regex `[a-zA-Z\d]+`
+        return accountId.allSatisfy { $0.isASCII && ($0.isLetter || $0.isNumber) }
+    }
+
+    private func calculateBasicCostsSum(
+        config: NEARProtocolConfig,
+        gasPriceForCurrentBlock: Decimal,
+        gasPriceForNextBlock: Decimal,
+        senderIsReceiver: Bool
+    ) -> Decimal {
+        if senderIsReceiver {
+            return config.senderIsReceiver.cumulativeBasicSendCost * gasPriceForCurrentBlock
+            + config.senderIsReceiver.cumulativeBasicExecutionCost * gasPriceForNextBlock
+        }
+
+        return config.senderIsNotReceiver.cumulativeBasicSendCost * gasPriceForCurrentBlock
+        + config.senderIsNotReceiver.cumulativeBasicExecutionCost * gasPriceForNextBlock
+    }
+
+    /// Additional fees for transer action are used only if the receiver has an implicit accound ID,
+    /// see https://nomicon.io/RuntimeSpec/Fees/ for details.
+    private func calculateAdditionalCostsSum(
+        config: NEARProtocolConfig,
+        gasPriceForCurrentBlock: Decimal,
+        gasPriceForNextBlock: Decimal,
+        senderIsReceiver: Bool,
+        destination: String
+    ) -> Decimal {
+        guard isImplicitAccount(accountId: destination) else {
+            return .zero
+        }
+
+        if senderIsReceiver {
+            return config.senderIsReceiver.cumulativeAdditionalSendCost * gasPriceForCurrentBlock
+            + config.senderIsReceiver.cumulativeAdditionalExecutionCost * gasPriceForNextBlock
+        }
+
+        return config.senderIsNotReceiver.cumulativeAdditionalSendCost * gasPriceForCurrentBlock
+        + config.senderIsNotReceiver.cumulativeAdditionalExecutionCost * gasPriceForNextBlock
+    }
 }
 
 // MARK: - WalletManager protocol conformance
@@ -91,17 +139,23 @@ extension NEARWalletManager: WalletManager {
             let source = walletManager.wallet.address
             let senderIsReceiver = source.lowercased() == destination.lowercased()
 
-            let costsSum: Decimal
-            if senderIsReceiver {
-                costsSum = config.senderIsReceiver.cumulativeSendCost * gasPrice
-                + config.senderIsReceiver.cumulativeExecutionCost * approximateGasPriceForNextBlock
-            } else {
-                costsSum = config.senderIsNotReceiver.cumulativeSendCost * gasPrice
-                + config.senderIsNotReceiver.cumulativeExecutionCost * approximateGasPriceForNextBlock
-            }
+            let basicCostsSum = walletManager.calculateBasicCostsSum(
+                config: config,
+                gasPriceForCurrentBlock: gasPrice,
+                gasPriceForNextBlock: approximateGasPriceForNextBlock,
+                senderIsReceiver: senderIsReceiver
+            )
+
+            let additionalCostsSum = walletManager.calculateAdditionalCostsSum(
+                config: config,
+                gasPriceForCurrentBlock: gasPrice,
+                gasPriceForNextBlock: approximateGasPriceForNextBlock,
+                senderIsReceiver: senderIsReceiver,
+                destination: destination
+            )
 
             let blockchain = walletManager.wallet.blockchain
-            let feeValue = costsSum / blockchain.decimalValue
+            let feeValue = (basicCostsSum + additionalCostsSum) / blockchain.decimalValue
             let amount = Amount(with: blockchain, value: feeValue)
 
             return [Fee(amount)]
@@ -179,5 +233,7 @@ private extension NEARWalletManager {
                 )
             )
         }
+
+        static let implicitAccountAddressLength = 64
     }
 }
