@@ -88,22 +88,13 @@ enum NEARNetworkResult {
     /// Hash of the transaction.
     typealias TransactionSendAsync = String
 
-    // There are much more fields in this response, but we only care about
-    // the hash of the transaction, the last block hash, and the last nonce.
+    // There are much more fields in this response, but we only care about the hash of the transaction.
     struct TransactionSendAwait: Decodable {
-        struct Transaction: Decodable {
-            /// Hash of the transaction.
-            let hash: String
-            let nonce: UInt
-        }
-
         struct TransactionOutcome: Decodable {
             /// Hash of the transaction.
             let id: String
-            let blockHash: String
         }
 
-        let transaction: Transaction
         let transactionOutcome: TransactionOutcome
     }
 }

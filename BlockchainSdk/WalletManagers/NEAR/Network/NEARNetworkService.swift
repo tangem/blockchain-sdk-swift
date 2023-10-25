@@ -136,7 +136,7 @@ final class NEARNetworkService: MultiNetworkProvider {
             return provider
                 .sendTransactionAwait(transaction.base64EncodedString())
                 .map { jsonRPCResult in
-                    return TransactionSendResult(hash: jsonRPCResult.result.transaction.hash)
+                    return TransactionSendResult(hash: jsonRPCResult.result.transactionOutcome.id)
                 }
                 .eraseToAnyPublisher()
         }
