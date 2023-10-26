@@ -97,7 +97,30 @@ enum NEARNetworkResult {
             let id: String
         }
 
+        enum Status: Decodable {
+            private enum CodingKeys: String, CodingKey {
+                case success = "SuccessValue"
+                case failure = "Failure"
+            }
+
+            case success
+            case failure(AnyDecodable?)
+
+            init(
+                from decoder: Decoder
+            ) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+
+                if container.contains(.success) {
+                    self = .success
+                } else {
+                    self = .failure(try? container.decodeIfPresent(forKey: .failure))
+                }
+            }
+        }
+
         let transactionOutcome: TransactionOutcome
+        let status: Status
     }
 
     struct APIError: Decodable, Error {

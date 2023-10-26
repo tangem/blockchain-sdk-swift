@@ -149,8 +149,14 @@ final class NEARNetworkService: MultiNetworkProvider {
         return providerPublisher { provider in
             return provider
                 .sendTransactionAwait(transaction.base64EncodedString())
-                .map { result in
-                    return TransactionSendResult(hash: result.transactionOutcome.id)
+                .tryMap { result in
+                    switch result.status {
+                    case .success:
+                        return TransactionSendResult(hash: result.transactionOutcome.id)
+                    case .failure:
+                        throw WalletError.failedToSendTx
+                    }
+
                 }
                 .eraseToAnyPublisher()
         }
