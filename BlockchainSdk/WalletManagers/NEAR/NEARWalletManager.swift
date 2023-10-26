@@ -11,6 +11,7 @@ import Combine
 
 final class NEARWalletManager: BaseManager {
     /// Current actual values, fetched once per app session.
+    /// - Warning: Don't use directly, use `getProtocolConfig()` instance method to get the most recent protocol config.
     private static var cachedProtocolConfig: NEARProtocolConfig?
 
     private let networkService: NEARNetworkService
@@ -82,6 +83,7 @@ final class NEARWalletManager: BaseManager {
         return WalletError.noAccount(message: errorMessage)
     }
 
+    /// - Note: Never fails; if a network request fails, the local fallback value will be used.
     private func getProtocolConfig() -> AnyPublisher<NEARProtocolConfig, Never> {
         return Deferred { [networkService] in
             if let protocolConfig = Self.cachedProtocolConfig {
@@ -248,6 +250,11 @@ extension NEARWalletManager: WalletManager {
 
 private extension NEARWalletManager {
     enum Constants {
+        /// For existing accounts this value can be fetched using the `view_account` RPC API endpoint.
+        ///
+        /// For newly created implicit accounts with a single access key (the default) we have to use this constant.
+        /// See https://docs.near.org/integrator/accounts and
+        /// https://pages.near.org/papers/economics-in-sharded-blockchain/#transaction-and-storage-fees for details.
         static let accountStorageUsageInBytes: Decimal = 182
         static let implicitAccountAddressLength = 64
     }

@@ -100,6 +100,7 @@ final class NEARTransactionBuilder {
         }
     }
 
+    /// Converts given amount to a uint128 with little-endian byte order.
     private func depositPayload(from amount: Amount) throws -> Data {
         let decimalValue = amount.value * pow(Decimal(10), amount.decimals)
         let bigUIntValue = try bigUIntValue(from: decimalValue)
