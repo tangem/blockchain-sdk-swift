@@ -59,7 +59,7 @@ extension String {
         return String(format: localized, arguments: arguments)
     }
 
-    func localized(_ arguments: CVarArg) -> String {
+    func localized(_ arguments: CVarArg...) -> String {
         return String(format: localized, arguments)
     }
     
