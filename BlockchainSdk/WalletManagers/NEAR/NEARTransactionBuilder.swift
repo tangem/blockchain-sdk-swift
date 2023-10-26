@@ -117,9 +117,7 @@ final class NEARTransactionBuilder {
             return BigUInt(2).power(256) - 1
         }
 
-        let decimalNumber = decimalValue as NSDecimalNumber
-
-        guard let bigUIntValue = BigUInt(decimalNumber.stringValue) else {
+        guard let bigUIntValue = BigUInt(decimalValue.decimalNumber.stringValue) else {
             throw WalletError.failedToBuildTx
         }
 
