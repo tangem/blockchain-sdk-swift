@@ -104,11 +104,25 @@ final class NEARNetworkService: MultiNetworkProvider {
                     let value = rawAmount / blockchain.decimalValue
                     let amount = Amount(with: blockchain, value: value)
 
-                    return NEARAccountInfo(
-                        accountId: accountId,
-                        amount: amount,
-                        recentBlockHash: result.blockHash
+                    return NEARAccountInfo.initialized(
+                        .init(
+                            accountId: accountId,
+                            amount: amount,
+                            recentBlockHash: result.blockHash,
+                            storageUsageInBytes: Decimal(result.storageUsage)
+                        )
                     )
+                }
+                .tryCatch { error in
+                    guard
+                        let apiError = error as? NEARNetworkResult.APIError,
+                        apiError.name == .handlerError,
+                        apiError.cause.name == .unknownAccount
+                    else {
+                        throw error
+                    }
+
+                    return Just(NEARAccountInfo.notInitialized)
                 }
                 .eraseToAnyPublisher()
         }

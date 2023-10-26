@@ -32,22 +32,54 @@ final class NEARWalletManager: BaseManager {
     }
 
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        cancellable = networkService
-            .getInfo(accountId: wallet.address)
-            .sink(
-                receiveCompletion: { [weak self] result in
-                    switch result {
-                    case .failure(let error):
-                        self?.wallet.clearAmounts()
-                        completion(.failure(error))
-                    case .finished:
-                        completion(.success(()))
-                    }
-                },
-                receiveValue: { [weak self] value in
-                    self?.wallet.add(amount: value.amount)
+        cancellable = Publishers.CombineLatest(
+            getProtocolConfig().setFailureType(to: Error.self),
+            networkService.getInfo(accountId: wallet.address)
+        )
+        .withWeakCaptureOf(self)
+        .tryMap { walletManager, input in
+            let (protocolConfig, accountInfo) = input
+            switch accountInfo {
+            case .notInitialized:
+                throw walletManager.makeNoAccountError(using: protocolConfig)
+            case .initialized(let account):
+                return (account, protocolConfig)
+            }
+        }
+        .sink(
+            receiveCompletion: { [weak self] result in
+                switch result {
+                case .failure(let error):
+                    self?.wallet.clearAmounts()
+                    completion(.failure(error))
+                case .finished:
+                    completion(.success(()))
                 }
-            )
+            },
+            receiveValue: { [weak self] account, protocolConfig in
+                self?.updateWallet(account: account, protocolConfig: protocolConfig)
+            }
+        )
+    }
+
+    private func updateWallet(account: NEARAccountInfo.Account, protocolConfig: NEARProtocolConfig) {
+        let decimalValue = wallet.blockchain.decimalValue
+        let reserveValue = account.storageUsageInBytes * protocolConfig.storageAmountPerByte / decimalValue
+        wallet.add(reserveValue: reserveValue)
+
+        let coinValue = max(account.amount.value - reserveValue, .zero)
+        wallet.add(coinValue: coinValue)
+    }
+
+    private func makeNoAccountError(using protocolConfig: NEARProtocolConfig) -> WalletError {
+        let networkName = wallet.blockchain.displayName
+        let decimalValue = wallet.blockchain.decimalValue
+        let reserveValue = Constants.accountStorageUsageInBytes * protocolConfig.storageAmountPerByte / decimalValue
+        let reserveValueString = reserveValue.decimalNumber.stringValue
+        let currencySymbol = wallet.blockchain.currencySymbol
+        let errorMessage = "no_account_generic".localized(networkName, reserveValueString, currencySymbol)
+
+        return WalletError.noAccount(message: errorMessage)
     }
 
     private func getProtocolConfig() -> AnyPublisher<NEARProtocolConfig, Never> {
@@ -216,6 +248,7 @@ extension NEARWalletManager: WalletManager {
 
 private extension NEARWalletManager {
     enum Constants {
+        static let accountStorageUsageInBytes: Decimal = 182
         static let implicitAccountAddressLength = 64
     }
 }
