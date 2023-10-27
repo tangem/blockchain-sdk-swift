@@ -14,9 +14,7 @@ struct NullValue {}
 // MARK: - Codable protocol conformance
 
 extension NullValue: Codable {
-    init(
-        from decoder: Decoder
-    ) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
         guard container.decodeNil() else {
