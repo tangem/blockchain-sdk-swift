@@ -62,7 +62,7 @@ struct NEARNetworkProvider {
             .filterSuccessfulStatusCodes()
             .map(T.self, using: decoder)
             .mapError { moyaError in
-                // TODO: Andrey Fedorov - Map to NEAR API JSON-RPC errors if needed (https://docs.near.org/api/rpc/contracts#what-could-go-wrong)
+                // TODO: Andrey Fedorov - Map to NEAR API JSON-RPC errors if needed (https://docs.near.org/api/rpc/contracts#what-could-go-wrong) (IOS-4071)
                 return WalletError.failedToParseNetworkResponse
             }
             .eraseToAnyPublisher()
