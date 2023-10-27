@@ -28,7 +28,9 @@ extension SolanaAddressService: AddressProvider {
 @available(iOS 13.0, *)
 extension SolanaAddressService: AddressValidator {
     public func validate(_ address: String) -> Bool {
-        let publicKey = PublicKey(string: address)
-        return publicKey != nil
+        guard let publicKey = PublicKey(string: address) else {
+            return false
+        }
+        return publicKey.bytes.count == PublicKey.LENGTH
     }
 }
