@@ -129,7 +129,7 @@ final class NEARNetworkService: MultiNetworkProvider {
     }
 
     func getAccessKeyInfo(accountId: String, publicKey: Wallet.PublicKey) -> AnyPublisher<NEARAccessKeyInfo, Error> {
-        let publicKeyPayload = "ed25519:" + publicKey.blockchainKey.base58EncodedString
+        let publicKeyPayload = Constants.ed25519SerializationPrefix + publicKey.blockchainKey.base58EncodedString
 
         return providerPublisher { provider in
             return provider
@@ -160,5 +160,13 @@ final class NEARNetworkService: MultiNetworkProvider {
                 }
                 .eraseToAnyPublisher()
         }
+    }
+}
+
+// MARK: - Constants
+
+private extension NEARNetworkService {
+    enum Constants {
+        static let ed25519SerializationPrefix = "ed25519:"
     }
 }

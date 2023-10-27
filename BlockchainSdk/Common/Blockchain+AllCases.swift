@@ -100,7 +100,7 @@ public extension Blockchain {
             .telos(testnet: false),
             .octa,
             .chia(testnet: false),
-            .near(testnet: false),
+            .near(curve: .ed25519_slip0010, testnet: false),
         ]
     }
 }

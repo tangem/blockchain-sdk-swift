@@ -94,13 +94,13 @@ extension NEARTarget: TargetType {
             return .requestJSONRPC(
                 id: Constants.jsonRPCMethodId,
                 method: "broadcast_tx_async",
-                params: NEARNetworkParams.Transaction(repeating: transaction, count: 1)
+                params: NEARNetworkParams.Transaction(payload: transaction)
             )
         case .sendTransactionAwait(let transaction):
             return .requestJSONRPC(
                 id: Constants.jsonRPCMethodId,
                 method: "broadcast_tx_commit",
-                params: NEARNetworkParams.Transaction(repeating: transaction, count: 1)
+                params: NEARNetworkParams.Transaction(payload: transaction)
             )
         }
     }

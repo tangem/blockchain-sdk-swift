@@ -15,9 +15,7 @@ struct NEARExternalLinkProvider: ExternalLinkProvider {
 
     private let isTestnet: Bool
 
-    init(
-        isTestnet: Bool
-    ) {
+    init(isTestnet: Bool) {
         self.isTestnet = isTestnet
     }
 
@@ -31,9 +29,7 @@ struct NEARExternalLinkProvider: ExternalLinkProvider {
 
     func url(transaction hash: String) -> URL {
         if isTestnet {
-            if isTestnet {
-                return URL(string: "https://testnet.nearblocks.io/txns/\(hash)")!
-            }
+            return URL(string: "https://testnet.nearblocks.io/txns/\(hash)")!
         }
 
         return URL(string: "https://nearblocks.io/txns/\(hash)")!

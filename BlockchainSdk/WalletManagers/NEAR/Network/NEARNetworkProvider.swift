@@ -29,9 +29,7 @@ struct NEARNetworkProvider {
         return requestPublisher(for: .gasPrice)
     }
 
-    func getInfo(
-        accountId: String
-    ) -> AnyPublisher<NEARNetworkResult.AccountInfo, Error> {
+    func getInfo(accountId: String) -> AnyPublisher<NEARNetworkResult.AccountInfo, Error> {
         return requestPublisher(for: .viewAccount(accountId: accountId))
     }
 
