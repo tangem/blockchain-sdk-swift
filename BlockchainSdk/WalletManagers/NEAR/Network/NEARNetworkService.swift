@@ -50,16 +50,20 @@ final class NEARNetworkService: MultiNetworkProvider {
                     let cumulativeExecutionCost = Decimal(actionCreationConfig.execution)
                     + Decimal(actionReceiptCreationConfig.execution)
 
+                    let senderIsReceiverCumulativeSendCost = Decimal(actionCreationConfig.sendSir)
+                    + Decimal(actionReceiptCreationConfig.sendSir)
+
+                    let senderIsNotReceiverCumulativeSendCost = Decimal(actionCreationConfig.sendNotSir)
+                    + Decimal(actionReceiptCreationConfig.sendNotSir)
+
                     return NEARProtocolConfig(
                         senderIsReceiver: .init(
                             cumulativeExecutionCost: cumulativeExecutionCost,
-                            cumulativeSendCost: Decimal(actionCreationConfig.sendSir)
-                            + Decimal(actionReceiptCreationConfig.sendSir)
+                            cumulativeSendCost: senderIsReceiverCumulativeSendCost
                         ),
                         senderIsNotReceiver: .init(
                             cumulativeExecutionCost: cumulativeExecutionCost,
-                            cumulativeSendCost: Decimal(actionCreationConfig.sendNotSir)
-                            + Decimal(actionReceiptCreationConfig.sendNotSir)
+                            cumulativeSendCost: senderIsNotReceiverCumulativeSendCost
                         )
                     )
                 }
