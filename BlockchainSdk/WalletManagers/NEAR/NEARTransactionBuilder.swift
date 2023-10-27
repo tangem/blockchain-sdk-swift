@@ -12,9 +12,7 @@ import WalletCore
 final class NEARTransactionBuilder {
     private let blockchain: Blockchain
 
-    init(
-        blockchain: Blockchain
-    ) {
+    init(blockchain: Blockchain) {
         self.blockchain = blockchain
     }
 
