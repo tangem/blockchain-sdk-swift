@@ -60,7 +60,18 @@ public enum Blockchain: Equatable, Hashable {
         switch self {
         case .bitcoin(let testnet):
             return testnet
-        case .litecoin, .ducatus, .cardano, .xrp, .rsk, .tezos, .dogecoin, .kusama, .terraV1, .terraV2, .cronos, .octa:
+        case .litecoin,
+                .ducatus,
+                .cardano,
+                .xrp,
+                .rsk,
+                .tezos,
+                .dogecoin,
+                .kusama,
+                .terraV1,
+                .terraV2,
+                .cronos,
+                .octa:
             return false
         case .stellar(_, let testnet):
             return testnet
@@ -142,11 +153,41 @@ public enum Blockchain: Equatable, Hashable {
     
     public var decimalCount: Int {
         switch self {
-        case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash, .kaspa, .ravencoin:
+        case .bitcoin,
+                .litecoin,
+                .bitcoinCash,
+                .ducatus,
+                .binance,
+                .dogecoin,
+                .dash,
+                .kaspa,
+                .ravencoin:
             return 8
-        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos, .telos, .octa:
+        case .ethereum,
+                .ethereumClassic,
+                .ethereumPoW,
+                .ethereumFair,
+                .rsk,
+                .bsc,
+                .polygon,
+                .avalanche,
+                .fantom,
+                .arbitrum,
+                .gnosis,
+                .optimism,
+                .saltPay,
+                .kava,
+                .cronos,
+                .telos,
+                .octa:
             return 18
-        case  .cardano, .xrp, .tezos, .tron, .cosmos, .terraV1, .terraV2:
+        case  .cardano,
+                .xrp,
+                .tezos,
+                .tron,
+                .cosmos,
+                .terraV1,
+                .terraV2:
             return 6
         case .stellar:
             return 7
@@ -828,7 +869,22 @@ extension Blockchain {
             return DucatusWalletAssembly()
         case .stellar:
             return StellarWalletAssembly()
-        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava, .cronos, .telos, .octa:
+        case .ethereum,
+                .ethereumClassic,
+                .rsk,
+                .bsc,
+                .polygon,
+                .avalanche,
+                .fantom,
+                .arbitrum,
+                .gnosis,
+                .ethereumPoW,
+                .ethereumFair,
+                .saltPay,
+                .kava,
+                .cronos,
+                .telos,
+                .octa:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
