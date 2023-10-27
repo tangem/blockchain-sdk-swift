@@ -54,13 +54,24 @@ public enum Blockchain: Equatable, Hashable {
     case telos(testnet: Bool)
     case octa
     case chia(testnet: Bool)
-    case near(testnet: Bool)
+    case near(curve: EllipticCurve, testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
         case .bitcoin(let testnet):
             return testnet
-        case .litecoin, .ducatus, .cardano, .xrp, .rsk, .tezos, .dogecoin, .kusama, .terraV1, .terraV2, .cronos, .octa:
+        case .litecoin,
+                .ducatus,
+                .cardano,
+                .xrp,
+                .rsk,
+                .tezos,
+                .dogecoin,
+                .kusama,
+                .terraV1,
+                .terraV2,
+                .cronos,
+                .octa:
             return false
         case .stellar(_, let testnet):
             return testnet
@@ -114,15 +125,14 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .chia(let testnet):
             return testnet
-        case .near(let testnet):
+        case .near(_, let testnet):
             return testnet
         }
     }
     
     public var curve: EllipticCurve {
         switch self {
-        case .cardano,
-                .near:
+        case .cardano:
             return .ed25519
         case .stellar(let curve, _),
                 .solana(let curve, _),
@@ -131,7 +141,8 @@ public enum Blockchain: Equatable, Hashable {
                 .azero(let curve, _),
                 .ton(let curve, _),
                 .xrp(let curve),
-                .tezos(let curve):
+                .tezos(let curve),
+                .near(let curve, _):
             return curve
         case .chia:
             return .bls12381_G2_AUG
@@ -142,11 +153,41 @@ public enum Blockchain: Equatable, Hashable {
     
     public var decimalCount: Int {
         switch self {
-        case .bitcoin, .litecoin, .bitcoinCash, .ducatus, .binance, .dogecoin, .dash, .kaspa, .ravencoin:
+        case .bitcoin,
+                .litecoin,
+                .bitcoinCash,
+                .ducatus,
+                .binance,
+                .dogecoin,
+                .dash,
+                .kaspa,
+                .ravencoin:
             return 8
-        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos, .telos, .octa:
+        case .ethereum,
+                .ethereumClassic,
+                .ethereumPoW,
+                .ethereumFair,
+                .rsk,
+                .bsc,
+                .polygon,
+                .avalanche,
+                .fantom,
+                .arbitrum,
+                .gnosis,
+                .optimism,
+                .saltPay,
+                .kava,
+                .cronos,
+                .telos,
+                .octa:
             return 18
-        case  .cardano, .xrp, .tezos, .tron, .cosmos, .terraV1, .terraV2:
+        case  .cardano,
+                .xrp,
+                .tezos,
+                .tron,
+                .cosmos,
+                .terraV1,
+                .terraV2:
             return 6
         case .stellar:
             return 7
@@ -723,7 +764,7 @@ extension Blockchain: Codable {
         case "telos": self = .telos(testnet: isTestnet)
         case "octaspace": self = .octa
         case "chia": self = .chia(testnet: isTestnet)
-        case "near": self = .near(testnet: isTestnet)
+        case "near": self = .near(curve: curve, testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -791,7 +832,7 @@ extension Blockchain {
         case "cronos": return .cronos
         case "octaspace": return .octa
         case "chia": return .chia(testnet: isTestnet)
-        case "near": return .near(testnet: isTestnet)
+        case "near": return .near(curve: curve, testnet: isTestnet)
         default: return nil
         }
     }
@@ -828,7 +869,22 @@ extension Blockchain {
             return DucatusWalletAssembly()
         case .stellar:
             return StellarWalletAssembly()
-        case .ethereum, .ethereumClassic, .rsk, .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .ethereumPoW, .ethereumFair, .saltPay, .kava, .cronos, .telos, .octa:
+        case .ethereum,
+                .ethereumClassic,
+                .rsk,
+                .bsc,
+                .polygon,
+                .avalanche,
+                .fantom,
+                .arbitrum,
+                .gnosis,
+                .ethereumPoW,
+                .ethereumFair,
+                .saltPay,
+                .kava,
+                .cronos,
+                .telos,
+                .octa:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
