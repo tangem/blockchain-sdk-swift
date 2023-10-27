@@ -63,7 +63,22 @@ struct NEARNetworkProvider {
             .map(T.self, using: decoder)
             .mapError { moyaError in
                 // TODO: Andrey Fedorov - Map to NEAR API JSON-RPC errors if needed (https://docs.near.org/api/rpc/contracts#what-could-go-wrong) (IOS-4071)
-                return WalletError.failedToParseNetworkResponse
+                switch moyaError {
+                case .jsonMapping,
+                        .objectMapping:
+                    return WalletError.failedToParseNetworkResponse
+                case .imageMapping,
+                        .stringMapping,
+                        .encodableMapping,
+                        .statusCode,
+                        .underlying,
+                        .requestMapping,
+                        .parameterEncoding:
+                    return moyaError
+                @unknown default:
+                    assertionFailure("Unknown error kind received: \(moyaError)")
+                    return moyaError
+                }
             }
             .eraseToAnyPublisher()
     }
