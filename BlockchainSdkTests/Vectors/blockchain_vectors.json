@@ -216,7 +216,7 @@
         "shelley": false
     },
     {
-        "key": "near-protocol",
+        "key": "near",
         "testnet": false,
         "curve": "ed25519_slip0010",
         "shelley": false
