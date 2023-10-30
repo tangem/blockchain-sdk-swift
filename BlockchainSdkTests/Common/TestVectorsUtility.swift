@@ -17,11 +17,7 @@ final class TestVectorsUtility {
 
         let data = try Data(contentsOf: url)
 
-        guard let model = try JSONDecoder().decode(T?.self, from: data) else {
-            return nil
-        }
-
-        return model
+        return try JSONDecoder().decode(T?.self, from: data)
     }
     
 }
