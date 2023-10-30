@@ -17,7 +17,6 @@ final class NEARAddressService {
     }
 }
 
-
 // MARK: - AddressProvider protocol conformance
 
 extension NEARAddressService: AddressProvider {

@@ -19,7 +19,7 @@ enum NEARAddressUtil {
     }
 
     /// - Warning: In theory, every valid implicit account ID is also a valid named account ID (but not vise-versa).
-    /// Therefore, always first check whether the account ID is implicit or not, and only if it isn't,
+    /// Therefore, always check whether the account ID is implicit or not first, and only if it isn't,
     /// consider it a named account and check its validity.
     static func isValidNamedAccount(accountId: String) -> Bool {
         return accountId.count >= Constants.namedAccountIdMinLength
