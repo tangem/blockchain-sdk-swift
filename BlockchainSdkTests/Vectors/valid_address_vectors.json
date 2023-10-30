@@ -189,6 +189,15 @@
             "LokyqymHydUE3ZC1hnZeZo6nuART3VcsSU"
         ],
         "negative": []
-    }
+    },
+    {
+        "blockchain": "near-protocol",
+        "positive": [
+            "// TODO: Andrey Fedorov - What to add here?",
+        ],
+        "negative": [
+            "// TODO: Andrey Fedorov - What to add here?",
+        ]
+    },
 ]
 

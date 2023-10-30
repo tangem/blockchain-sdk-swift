@@ -149,6 +149,11 @@
             "blockchain": "terra-2",
             "derivation": "m/44'/330'/0'/0/0",
             "walletPublicKey": "0243ac5946c42ff532bf6375cd62ce766da829d3942d0f33811c1d72694b1d3b5d"
+        },
+        {
+            "blockchain": "near",
+            "derivation": "m/44'/330'/0'/0/0",
+            "walletPublicKey": "// TODO: Andrey Fedorov - Get public key from wallet v2 (only for ed25519_slip0010, but not for ed25519?)"
         }
     ]
 }
