@@ -78,7 +78,7 @@ final class NEARWalletManager: BaseManager {
     private func makeNoAccountError(using protocolConfig: NEARProtocolConfig) -> WalletError {
         let networkName = wallet.blockchain.displayName
         let decimalValue = wallet.blockchain.decimalValue
-        let reserveValue = Constants.accountStorageUsageInBytes * protocolConfig.storageAmountPerByte / decimalValue
+        let reserveValue = Constants.accountDefaultStorageUsageInBytes * protocolConfig.storageAmountPerByte / decimalValue
         let reserveValueString = reserveValue.decimalNumber.stringValue
         let currencySymbol = wallet.blockchain.currencySymbol
         let errorMessage = "no_account_generic".localized(networkName, reserveValueString, currencySymbol)
@@ -101,17 +101,6 @@ final class NEARWalletManager: BaseManager {
                 .eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
-    }
-
-    /// See https://nomicon.io/DataStructures/Account#account-id-rules for infomation about implicit/named account IDs.
-    private func isImplicitAccount(accountId: String) -> Bool {
-        guard accountId.count == Constants.implicitAccountAddressLength else {
-            return false
-        }
-
-        // `CharacterSet.alphanumerics` contains other non-ASCII characters, like diacritics, arabic, etc -
-        // so it can't be used to match the regex `[a-zA-Z\d]+`
-        return accountId.allSatisfy { $0.isASCII && $0.isHexDigit }
     }
 
     private func calculateBasicCostsSum(
@@ -138,7 +127,7 @@ final class NEARWalletManager: BaseManager {
         senderIsReceiver: Bool,
         destination: String
     ) -> Decimal {
-        guard isImplicitAccount(accountId: destination) else {
+        guard NEARAddressUtil.isImplicitAccount(accountId: destination) else {
             return .zero
         }
 
@@ -258,7 +247,6 @@ private extension NEARWalletManager {
         /// For newly created implicit accounts with a single access key (the default) we have to use this constant.
         /// See https://docs.near.org/integrator/accounts and
         /// https://pages.near.org/papers/economics-in-sharded-blockchain/#transaction-and-storage-fees for details.
-        static let accountStorageUsageInBytes: Decimal = 182
-        static let implicitAccountAddressLength = 64
+        static let accountDefaultStorageUsageInBytes: Decimal = 182
     }
 }
