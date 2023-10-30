@@ -111,7 +111,7 @@ final class NEARWalletManager: BaseManager {
 
         // `CharacterSet.alphanumerics` contains other non-ASCII characters, like diacritics, arabic, etc -
         // so it can't be used to match the regex `[a-zA-Z\d]+`
-        return accountId.allSatisfy { $0.isASCII && ($0.isLetter || $0.isNumber) }
+        return accountId.allSatisfy { $0.isASCII && $0.isHexDigit }
     }
 
     private func calculateBasicCostsSum(
