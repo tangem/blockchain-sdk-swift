@@ -18,7 +18,7 @@ extension PublicKeyType {
             self = PublicKeyType.secp256k1
         case .ethereum, .bsc, .tron, .polygon, .arbitrum, .avalanche, .ethereumClassic, .optimism, .fantom, .kava:
             self = PublicKeyType.secp256k1Extended
-        case .stellar, .ton, .solana, .polkadot, .kusama:
+        case .stellar, .ton, .solana, .polkadot, .kusama, .near:
             self = PublicKeyType.ed25519
         case .cardano(let extended):
             self = extended ? PublicKeyType.ed25519Cardano : .ed25519
