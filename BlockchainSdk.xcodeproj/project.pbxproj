@@ -252,6 +252,7 @@
 		B6D345F82AD8B8040009D1B2 /* NEARNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D345F72AD8B8040009D1B2 /* NEARNetworkProvider.swift */; };
 		B6D346002AD9450D0009D1B2 /* NEARTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D345FF2AD9450D0009D1B2 /* NEARTransactionBuilder.swift */; };
 		B6D7131F2AEBEF750095FE6A /* NEARNetworkResult.APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D7131E2AEBEF750095FE6A /* NEARNetworkResult.APIError.swift */; };
+		B6E9F3F32AEF5A8E00209FCA /* NEARAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E9F3F22AEF5A8E00209FCA /* NEARAddressService.swift */; };
 		B6F3AA6D2ADD92230059C99A /* Publisher+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F3AA6B2ADD92230059C99A /* Publisher+.swift */; };
 		B6F3AA6E2ADD92230059C99A /* Moya+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F3AA6C2ADD92230059C99A /* Moya+.swift */; };
 		B6F3AA712ADD925D0059C99A /* NEARNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F3AA6F2ADD925D0059C99A /* NEARNetworkParams.swift */; };
@@ -766,6 +767,7 @@
 		B6D345F72AD8B8040009D1B2 /* NEARNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARNetworkProvider.swift; sourceTree = "<group>"; };
 		B6D345FF2AD9450D0009D1B2 /* NEARTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARTransactionBuilder.swift; sourceTree = "<group>"; };
 		B6D7131E2AEBEF750095FE6A /* NEARNetworkResult.APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARNetworkResult.APIError.swift; sourceTree = "<group>"; };
+		B6E9F3F22AEF5A8E00209FCA /* NEARAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARAddressService.swift; sourceTree = "<group>"; };
 		B6F3AA6B2ADD92230059C99A /* Publisher+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Publisher+.swift"; sourceTree = "<group>"; };
 		B6F3AA6C2ADD92230059C99A /* Moya+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Moya+.swift"; sourceTree = "<group>"; };
 		B6F3AA6F2ADD925D0059C99A /* NEARNetworkParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NEARNetworkParams.swift; sourceTree = "<group>"; };
@@ -1865,6 +1867,7 @@
 				B65D2E772AD9B1ED004DF330 /* Network */,
 				B6D345F52AD8B4A50009D1B2 /* NEARWalletManager.swift */,
 				B68507072AEF494E004A431B /* NEARProtocolConfigCache.swift */,
+				B6E9F3F22AEF5A8E00209FCA /* NEARAddressService.swift */,
 				B641EC482AEF5CC100B44CF8 /* NEARAddressUtil.swift */,
 				B6D345FF2AD9450D0009D1B2 /* NEARTransactionBuilder.swift */,
 				B62A12052AE308DA0080BAEC /* NEARTransactionParams.swift */,
@@ -3014,6 +3017,7 @@
 				DAED921F27A150E500F188D7 /* PolkadotAddressService.swift in Sources */,
 				5D4B33CD23F7DC0400C93A84 /* BinanceWalletManager.swift in Sources */,
 				5D0906C227DBB7A10053B2CD /* BitcoinCashNetworkParams.swift in Sources */,
+				B6E9F3F32AEF5A8E00209FCA /* NEARAddressService.swift in Sources */,
 				B07EE8B225AC1504009DB163 /* DateFormatter+.swift in Sources */,
 				5D557CB523ACCAD2009B32AF /* BlockcypherNetworkProvider.swift in Sources */,
 				5D7D243725136254001B9A4F /* XRPCurrentLedgerInfo.swift in Sources */,

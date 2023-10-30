@@ -86,13 +86,14 @@ public struct AddressServiceFactory {
         case .ton,
                 .cosmos,
                 .terraV1,
-                .terraV2,
-                .near:
+                .terraV2:
             return WalletCoreAddressService(blockchain: blockchain)
         case .ducatus:
             return BitcoinLegacyAddressService(networkParams: DucatusNetworkParams())
         case .chia:
             return ChiaAddressService(isTestnet: isTestnet)
+        case .near:
+            return NEARAddressService(blockchain: blockchain)
         }
     }
 }
