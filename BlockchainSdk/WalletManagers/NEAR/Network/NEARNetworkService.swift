@@ -155,8 +155,13 @@ final class NEARNetworkService: MultiNetworkProvider {
                         return TransactionSendResult(hash: result.transactionOutcome.id)
                     case .failure:
                         throw WalletError.failedToSendTx
+                }
+                .mapError { error in
+                    if let error = error as? WalletError {
+                        return error
                     }
 
+                    return WalletError.failedToSendTx
                 }
                 .eraseToAnyPublisher()
         }
