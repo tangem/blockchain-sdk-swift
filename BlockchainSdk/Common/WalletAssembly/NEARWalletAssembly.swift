@@ -21,7 +21,8 @@ struct NEARWalletAssembly: WalletManagerAssembly {
         return NEARWalletManager(
             wallet: input.wallet,
             networkService: networkService,
-            transactionBuilder: transactionBuilder
+            transactionBuilder: transactionBuilder,
+            protocolConfigCache: .shared
         )
     }
 

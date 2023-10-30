@@ -10,20 +10,23 @@ import Foundation
 import Combine
 
 final class NEARWalletManager: BaseManager {
-    /// Current actual values, fetched once per app session.
-    /// - Warning: Don't use directly, use `getProtocolConfig()` instance method to get the most recent protocol config.
-    private static var cachedProtocolConfig: NEARProtocolConfig?
-
     private let networkService: NEARNetworkService
+
     private let transactionBuilder: NEARTransactionBuilder
+
+    /// Contains an actual NEAR protocol configuration, fetched once per app session.
+    /// - Warning: Don't use directly, use `getProtocolConfig()` instance method to get the most recent protocol config.
+    private let protocolConfigCache: NEARProtocolConfigCache
 
     init(
         wallet: Wallet,
         networkService: NEARNetworkService,
-        transactionBuilder: NEARTransactionBuilder
+        transactionBuilder: NEARTransactionBuilder,
+        protocolConfigCache: NEARProtocolConfigCache
     ) {
         self.networkService = networkService
         self.transactionBuilder = transactionBuilder
+        self.protocolConfigCache = protocolConfigCache
         super.init(wallet: wallet)
     }
 
@@ -85,8 +88,8 @@ final class NEARWalletManager: BaseManager {
 
     /// - Note: Never fails; if a network request fails, the local fallback value will be used.
     private func getProtocolConfig() -> AnyPublisher<NEARProtocolConfig, Never> {
-        return Deferred { [networkService] in
-            if let protocolConfig = Self.cachedProtocolConfig {
+        return Deferred { [weak self, networkService] in
+            if let protocolConfig = self?.protocolConfigCache.get() {
                 return Just(protocolConfig)
                     .eraseToAnyPublisher()
             }
@@ -94,7 +97,7 @@ final class NEARWalletManager: BaseManager {
             return networkService
                 .getProtocolConfig()
                 .replaceError(with: NEARProtocolConfig.fallbackProtocolConfig)
-                .handleEvents(receiveOutput: { Self.cachedProtocolConfig = $0 })
+                .handleEvents(receiveOutput: { self?.protocolConfigCache.set($0) })
                 .eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
