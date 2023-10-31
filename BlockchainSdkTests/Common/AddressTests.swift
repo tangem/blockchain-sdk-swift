@@ -498,6 +498,13 @@ class AddressesTests: XCTestCase {
         XCTAssertEqual(addrFromTangemKey.value, "BmAzxn8WLYU3gEw79ATUdSUkMT53MeS5LjapBQB8gTPJ")
         
         try XCTAssertEqual(addressesUtility.makeTrustWalletAddress(publicKey: edKey, for: blockchain), addrFromTangemKey.value)
+
+        // From WalletCore
+        XCTAssertTrue(service.validate("2gVkYWexTHR5Hb2aLeQN3tnngvWzisFKXDUPrgMHpdST")) // OK
+        XCTAssertFalse(service.validate("2gVkYWexTHR5Hb2aLeQN3tnngvWzisFKXDUPrgMHpdSl"))  // Contains invalid base-58 character
+        XCTAssertFalse(service.validate("2gVkYWexTHR5Hb2aLeQN3tnngvWzisFKXDUPrgMHpd")) // Is invalid length
+        
+        XCTAssertFalse(service.validate("0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d")) // Ethereum address
     }
     
     func testPolkadot() throws {
