@@ -8,8 +8,7 @@
 
 import Foundation
 import XCTest
-import class WalletCore.PrivateKey
-import enum WalletCore.Curve
+import WalletCore
 
 @testable import BlockchainSdk
 
@@ -98,40 +97,33 @@ final class NEARTests: XCTestCase {
         XCTAssertFalse(NEARAddressUtil.isValidNamedAccount(accountId: "abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz"))
     }
 
-    // TODO: Andrey Fedorov - Do both `ed25519` and `ed25519_slip0010` curves need to be tested?
-    func testSigningTransactionEd25519() throws {
-        let blockchain: Blockchain = .near(curve: .ed25519, testnet: false)
-        try testSigningTransaction(blockchain: blockchain)
-    }
+    // NEAR transfer transaction https://testnet.nearblocks.io/txns/Cr3QyJoFNtQvFTfc45WDTM4GvLxQtFigSjP7wcRrwiwW
+    // Made using NEAR JS API, see https://github.com/deprecated-near-examples/transaction-examples for examples
+    func testSigningTransaction() throws {
+        let blockchain: BlockchainSdk.Blockchain = .near(curve: .ed25519_slip0010, testnet: false)
 
-    // TODO: Andrey Fedorov - Do both `ed25519` and `ed25519_slip0010` curves need to be tested?
-    func testSigningTransactionEd25519Slip0010() throws {
-        let blockchain: Blockchain = .near(curve: .ed25519_slip0010, testnet: false)
-        try testSigningTransaction(blockchain: blockchain)
-    }
-
-    // Constants are taken from TrustWalletCore's `NEARTests.swift`
-    private func testSigningTransaction(blockchain: Blockchain) throws {
-        let privateKeyData = "3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv"
+        // Private key for the "tiny escape drive pupil flavor endless love walk gadget match filter luxury" mnemonic
+        let privateKeyRawRepresentation = "4z9uzXnZHE6huxMbnV7egjpvQk6ov7eji3FM12buV8DDtkARhiDqiCoDxSa3VpBMKYzzjmJcVXXyw8qhYgTs6MfH"
             .base58DecodedData[0..<32]
-        let privateKey = try XCTUnwrap(PrivateKey(data: privateKeyData))
+        let privateKey = try XCTUnwrap(PrivateKey(data: privateKeyRawRepresentation))
 
-        let publicKeyData = privateKey.getPublicKeyEd25519().data
-        let publicKey = Wallet.PublicKey(seedKey: publicKeyData, derivationType: nil)
+        let publicKeyRawRepresentation = privateKey.getPublicKey(coinType: try XCTUnwrap(CoinType(blockchain))).data
+        let publicKey = Wallet.PublicKey(seedKey: publicKeyRawRepresentation, derivationType: nil)
 
-        let addressServiceFactory = AddressServiceFactory(blockchain: blockchain)
-        let addressService = addressServiceFactory.makeAddressService()
-        let sourceAddress = "test.near"
-        let destinationAddress = "whatever.near"
+        let sourceAddress = try makeAddress(for: publicKey, blockchain: blockchain)
+        let expectedSourceAddress = "b5cf12d432ee87dbc664e2700eeef72b3e814879b978bb9491e5796a63e85ee4"
 
-        let value = 1.0 / blockchain.decimalValue   // 1 yoctoNEAR, 1 * 10^-24
+        XCTAssertEqual(sourceAddress, expectedSourceAddress)
+
+        let destinationAddress = "jhj909.testnet"
+        let value = try XCTUnwrap(Decimal(string: "3.891"))
         let amount = Amount(with: blockchain, value: value)
-        let fee = Fee(.dummyCoin(for: blockchain))  // Isn't included in the transaction, therefore a dummy value is used
+        let fee = Fee(.dummyCoin(for: blockchain))  // Not used in the transaction, therefore a dummy value is used
 
         let transactionParams = NEARTransactionParams(
             publicKey: publicKey,
-            currentNonce: 1,
-            recentBlockHash: "244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM"
+            currentNonce: 143936156000003,
+            recentBlockHash: "5M4mFZLMT6Qe9fNpXBipmYQ6u2gk4kkzXgd1ebt1zW23"
         )
 
         let transaction = Transaction(
@@ -146,11 +138,9 @@ final class NEARTests: XCTestCase {
 
         let transactionHash = try transactionBuilder.buildForSign(transaction: transaction)
 
-        let transactionSignature = try XCTUnwrap(
-            privateKey.sign(
-                digest: transactionHash,
-                curve: try Curve(blockchain: blockchain)
-            )
+        let transactionSignature = try XCTUnwrap(privateKey.sign(
+            digest: transactionHash,
+            curve: try Curve(blockchain: blockchain))
         )
 
         let signedTransaction = try transactionBuilder.buildForSend(
@@ -161,11 +151,22 @@ final class NEARTests: XCTestCase {
         let base64EncodedTransaction = signedTransaction.base64EncodedString()
 
         let expectedBase64EncodedTransaction = """
-CQAAAHRlc3QubmVhcgCRez0mjUtY9/7BsVC9aNab4+5dTMOYVeNBU4Rlu3eGDQEAAAAAAAAADQAAAHdoYXRldmVyLm5lYX\
-IPpHP9JpAd8pa+atxMxN800EDvokNSJLaYaRDmMML+9gEAAAADAQAAAAAAAAAAAAAAAAAAAACWmoMzIYbul1Xkg5MlUlgG4\
-Ymj0tK7S0dg6URD6X4cTyLe7vAFmo6XExAO2m4ZFE2n6KDvflObIHCLodjQIb0B
+QAAAAGI1Y2YxMmQ0MzJlZTg3ZGJjNjY0ZTI3MDBlZWVmNzJiM2U4MTQ4NzliOTc4YmI5NDkxZTU3OTZhNjNlODVlZTQAtc8S1DL\
+uh9vGZOJwDu73Kz6BSHm5eLuUkeV5amPoXuQE33K/6IIAAA4AAABqaGo5MDkudGVzdG5ldECSnmDjrfGWWZfgb+lcQvfOE8jy8/\
+OdCy4+7VFwsBwYAQAAAAMAAOC5djZciPM3AwAAAAAAAEvPwwDL+M+IGs7G69be8CXlnKwbPp6NTpoWoAHukon9gCjyKhBpfWQwU\
+mvfgIZi953LT5fMzOlUEX6l9MlpzwM=
 """
 
         XCTAssertEqual(base64EncodedTransaction, expectedBase64EncodedTransaction)
+    }
+
+    private func makeAddress(
+        for publicKey: BlockchainSdk.Wallet.PublicKey,
+        blockchain: BlockchainSdk.Blockchain
+    ) throws -> String {
+        let addressServiceFactory = AddressServiceFactory(blockchain: blockchain)
+        let addressService = addressServiceFactory.makeAddressService()
+
+        return try addressService.makeAddress(for: publicKey, with: .default).value
     }
 }
