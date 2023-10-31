@@ -15,9 +15,11 @@ import WalletCore
 final class NEARTests: XCTestCase {
     private let blockchain: BlockchainSdk.Blockchain = .near(curve: .ed25519_slip0010, testnet: false)
     private var transactionBuilder: NEARTransactionBuilder!
+    private var sizeTester: TransactionSizeTesterUtility!
 
     override func setUp() {
         transactionBuilder = .init(blockchain: blockchain)
+        sizeTester = .init()
     }
 
     // Using example values from https://nomicon.io/DataStructures/Account#examples
@@ -141,6 +143,7 @@ final class NEARTests: XCTestCase {
 
         let transactionHash = try transactionBuilder.buildForSign(transaction: transaction)
 
+        sizeTester.testTxSize(transactionHash)
 
         let curve = try Curve(blockchain: blockchain)
         let transactionSignature = try XCTUnwrap(privateKey.sign(digest: transactionHash, curve: curve))
