@@ -13,6 +13,13 @@ import WalletCore
 @testable import BlockchainSdk
 
 final class NEARTests: XCTestCase {
+    private let blockchain: BlockchainSdk.Blockchain = .near(curve: .ed25519_slip0010, testnet: false)
+    private var transactionBuilder: NEARTransactionBuilder!
+
+    override func setUp() {
+        transactionBuilder = .init(blockchain: blockchain)
+    }
+
     // Using example values from https://nomicon.io/DataStructures/Account#examples
     func testAddressUtilImplicitAccountsDetection() {
         XCTAssertTrue(NEARAddressUtil.isImplicitAccount(accountId: "f69cd39f654845e2059899a888681187f2cda95f29256329aea1700f50f8ae86"))
@@ -100,8 +107,6 @@ final class NEARTests: XCTestCase {
     // NEAR transfer transaction https://testnet.nearblocks.io/txns/Cr3QyJoFNtQvFTfc45WDTM4GvLxQtFigSjP7wcRrwiwW
     // Made using NEAR JS API, see https://github.com/deprecated-near-examples/transaction-examples for examples
     func testSigningTransaction() throws {
-        let blockchain: BlockchainSdk.Blockchain = .near(curve: .ed25519_slip0010, testnet: false)
-
         // Private key for the "tiny escape drive pupil flavor endless love walk gadget match filter luxury" mnemonic
         let privateKeyRawRepresentation = "4z9uzXnZHE6huxMbnV7egjpvQk6ov7eji3FM12buV8DDtkARhiDqiCoDxSa3VpBMKYzzjmJcVXXyw8qhYgTs6MfH"
             .base58DecodedData[0..<32]
@@ -110,7 +115,7 @@ final class NEARTests: XCTestCase {
         let publicKeyRawRepresentation = privateKey.getPublicKey(coinType: try XCTUnwrap(CoinType(blockchain))).data
         let publicKey = Wallet.PublicKey(seedKey: publicKeyRawRepresentation, derivationType: nil)
 
-        let sourceAddress = try makeAddress(for: publicKey, blockchain: blockchain)
+        let sourceAddress = try makeAddress(for: publicKey)
         let expectedSourceAddress = "b5cf12d432ee87dbc664e2700eeef72b3e814879b978bb9491e5796a63e85ee4"
 
         XCTAssertEqual(sourceAddress, expectedSourceAddress)
@@ -134,20 +139,13 @@ final class NEARTests: XCTestCase {
             changeAddress: sourceAddress
         ).then { $0.params = transactionParams }
 
-        let transactionBuilder = NEARTransactionBuilder(blockchain: blockchain)
-
         let transactionHash = try transactionBuilder.buildForSign(transaction: transaction)
 
-        let transactionSignature = try XCTUnwrap(privateKey.sign(
-            digest: transactionHash,
-            curve: try Curve(blockchain: blockchain))
-        )
 
-        let signedTransaction = try transactionBuilder.buildForSend(
-            transaction: transaction,
-            signature: transactionSignature
-        )
+        let curve = try Curve(blockchain: blockchain)
+        let transactionSignature = try XCTUnwrap(privateKey.sign(digest: transactionHash, curve: curve))
 
+        let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signature: transactionSignature)
         let base64EncodedTransaction = signedTransaction.base64EncodedString()
 
         let expectedBase64EncodedTransaction = """
@@ -160,10 +158,7 @@ mvfgIZi953LT5fMzOlUEX6l9MlpzwM=
         XCTAssertEqual(base64EncodedTransaction, expectedBase64EncodedTransaction)
     }
 
-    private func makeAddress(
-        for publicKey: BlockchainSdk.Wallet.PublicKey,
-        blockchain: BlockchainSdk.Blockchain
-    ) throws -> String {
+    private func makeAddress(for publicKey: BlockchainSdk.Wallet.PublicKey) throws -> String {
         let addressServiceFactory = AddressServiceFactory(blockchain: blockchain)
         let addressService = addressServiceFactory.makeAddressService()
 
