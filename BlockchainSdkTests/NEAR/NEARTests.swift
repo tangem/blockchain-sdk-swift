@@ -18,7 +18,7 @@ final class NEARTests: XCTestCase {
     private var sizeTester: TransactionSizeTesterUtility!
 
     override func setUp() {
-        transactionBuilder = .init(blockchain: blockchain)
+        transactionBuilder = .init()
         sizeTester = .init()
     }
 
