@@ -9,14 +9,8 @@
 import Foundation
 
 final class NEARAddressService {
-    private let blockchain: Blockchain
-    private lazy var walletCoreAddressService = WalletCoreAddressService(blockchain: blockchain)
-
-    init(blockchain: Blockchain) {
-        self.blockchain = blockchain
-    }
+    private lazy var walletCoreAddressService = WalletCoreAddressService(coin: .near)
 }
-
 
 // MARK: - AddressProvider protocol conformance
 

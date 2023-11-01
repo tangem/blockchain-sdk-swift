@@ -93,7 +93,7 @@ public struct AddressServiceFactory {
         case .chia:
             return ChiaAddressService(isTestnet: isTestnet)
         case .near:
-            return NEARAddressService(blockchain: blockchain)
+            return NEARAddressService()
         }
     }
 }

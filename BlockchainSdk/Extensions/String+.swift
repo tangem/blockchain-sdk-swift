@@ -59,8 +59,8 @@ extension String {
         return String(format: localized, arguments: arguments)
     }
 
-    func localized(_ arguments: CVarArg...) -> String {
-        return String(format: localized, arguments)
+    func localized(_ argument: CVarArg) -> String {
+        return String(format: localized, argument)
     }
     
     public static var unknown: String {

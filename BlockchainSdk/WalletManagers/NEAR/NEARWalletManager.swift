@@ -36,18 +36,22 @@ final class NEARWalletManager: BaseManager {
     }
 
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        cancellable = Publishers.CombineLatest(
+        let accountId = wallet.address
+        let transactionHashes = wallet.pendingTransactions.map(\.hash)
+
+        cancellable = Publishers.CombineLatest3(
             getProtocolConfig().setFailureType(to: Error.self),
-            networkService.getInfo(accountId: wallet.address)
+            networkService.getInfo(accountId: accountId),
+            networkService.getTransactionsInfo(accountId: accountId, transactionHashes: transactionHashes)
         )
         .withWeakCaptureOf(self)
         .tryMap { walletManager, input in
-            let (protocolConfig, accountInfo) = input
+            let (protocolConfig, accountInfo, transactionsInfo) = input
             switch accountInfo {
             case .notInitialized:
                 throw walletManager.makeNoAccountError(using: protocolConfig)
             case .initialized(let account):
-                return (account, protocolConfig)
+                return (account, transactionsInfo, protocolConfig)
             }
         }
         .sink(
@@ -60,19 +64,37 @@ final class NEARWalletManager: BaseManager {
                     completion(.success(()))
                 }
             },
-            receiveValue: { [weak self] account, protocolConfig in
-                self?.updateWallet(account: account, protocolConfig: protocolConfig)
+            receiveValue: { [weak self] account, transactionsInfo, protocolConfig in
+                self?.updateWallet(account: account, transactionsInfo: transactionsInfo, protocolConfig: protocolConfig)
             }
         )
     }
 
-    private func updateWallet(account: NEARAccountInfo.Account, protocolConfig: NEARProtocolConfig) {
+    private func updateWallet(
+        account: NEARAccountInfo.Account,
+        transactionsInfo: NEARTransactionsInfo,
+        protocolConfig: NEARProtocolConfig
+    ) {
         let decimalValue = wallet.blockchain.decimalValue
         let reserveValue = account.storageUsageInBytes * protocolConfig.storageAmountPerByte / decimalValue
         wallet.add(reserveValue: reserveValue)
 
         let coinValue = max(account.amount.value - reserveValue, .zero)
         wallet.add(coinValue: coinValue)
+
+        let completedTransactionHashes = transactionsInfo.transactions
+            .filter { $0.status != .other }
+            .map(\.result.hash)
+            .toSet()
+        wallet.removePendingTransaction(where: completedTransactionHashes.contains(_:))
+    }
+
+    private func updateWalletWithPendingTransaction(_ transaction: Transaction, sendResult: TransactionSendResult) {
+        let mapper = PendingTransactionRecordMapper()
+        let hash = sendResult.hash
+        let pendingTransaction = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+
+        wallet.addPendingTransaction(pendingTransaction)
     }
 
     private func makeNoAccountError(using protocolConfig: NEARProtocolConfig) -> WalletError {
@@ -81,7 +103,7 @@ final class NEARWalletManager: BaseManager {
         let reserveValue = Constants.accountDefaultStorageUsageInBytes * protocolConfig.storageAmountPerByte / decimalValue
         let reserveValueString = reserveValue.decimalNumber.stringValue
         let currencySymbol = wallet.blockchain.currencySymbol
-        let errorMessage = "no_account_generic".localized(networkName, reserveValueString, currencySymbol)
+        let errorMessage = "no_account_generic".localized([networkName, reserveValueString, currencySymbol])
 
         return WalletError.noAccount(message: errorMessage)
     }
@@ -163,7 +185,7 @@ extension NEARWalletManager: WalletManager {
             // by a gas price that's up to 1% different, since gas price is recalculated on each block
             let approximateGasPriceForNextBlock = gasPrice * 1.01
             let source = walletManager.wallet.address
-            let senderIsReceiver = source.lowercased() == destination.lowercased()
+            let senderIsReceiver = source.caseInsensitiveCompare(destination) == .orderedSame
 
             let basicCostsSum = walletManager.calculateBasicCostsSum(
                 config: config,
@@ -234,14 +256,19 @@ extension NEARWalletManager: WalletManager {
             .flatMap { walletManager, transaction in
                 return walletManager.networkService.send(transaction: transaction)
             }
+            .handleEvents(
+                receiveOutput: { [weak self] sendResult in
+                    self?.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)
+                }
+            )
             .eraseToAnyPublisher()
     }
 }
 
-// MARK: - AddressModifier protocol conformance
+// MARK: - AddressResolver protocol conformance
 
-extension NEARWalletManager: AddressModifier {
-    func modify(_ address: String) async throws -> String {
+extension NEARWalletManager: AddressResolver {
+    func resolve(_ address: String) async throws -> String {
         // Implicit accounts don't require any modification or verification
         if NEARAddressUtil.isImplicitAccount(accountId: address) {
             return address

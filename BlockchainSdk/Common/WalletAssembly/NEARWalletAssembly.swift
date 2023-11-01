@@ -16,7 +16,7 @@ struct NEARWalletAssembly: WalletManagerAssembly {
         let baseURLs = baseURLs(for: blockchain, with: sdkConfig)
         let networkProviders = baseURLs.map { NEARNetworkProvider(baseURL: $0, configuration: networkConfig) }
         let networkService = NEARNetworkService(blockchain: blockchain, providers: networkProviders)
-        let transactionBuilder = NEARTransactionBuilder(blockchain: blockchain)
+        let transactionBuilder = NEARTransactionBuilder()
 
         return NEARWalletManager(
             wallet: input.wallet,
