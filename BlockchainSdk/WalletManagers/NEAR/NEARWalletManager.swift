@@ -238,10 +238,10 @@ extension NEARWalletManager: WalletManager {
     }
 }
 
-// MARK: - AddressModifier protocol conformance
+// MARK: - AddressResolver protocol conformance
 
-extension NEARWalletManager: AddressModifier {
-    func modify(_ address: String) async throws -> String {
+extension NEARWalletManager: AddressResolver {
+    func resolve(_ address: String) async throws -> String {
         // Implicit accounts don't require any modification or verification
         if NEARAddressUtil.isImplicitAccount(accountId: address) {
             return address

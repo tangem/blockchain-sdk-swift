@@ -106,8 +106,8 @@ public protocol WithdrawalValidator {
 }
 
 @available(iOS 13.0, *)
-public protocol AddressModifier {
-    func modify(_ address: String) async throws -> String
+public protocol AddressResolver {
+    func resolve(_ address: String) async throws -> String
 }
 
 public struct WithdrawalWarning {
