@@ -93,7 +93,7 @@ final class NEARTransactionBuilder {
                     action.transfer = NEARTransfer.with { transfer in
                         transfer.deposit = deposit
                     }
-                }
+                },
             ]
         }
     }
