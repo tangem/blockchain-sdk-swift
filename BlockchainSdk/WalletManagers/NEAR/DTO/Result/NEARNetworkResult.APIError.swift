@@ -38,6 +38,7 @@ extension NEARNetworkResult {
             case parseError = "PARSE_ERROR"
             case internalError = "INTERNAL_ERROR"
             case invalidTransaction = "INVALID_TRANSACTION"
+            case unknownTransaction = "UNKNOWN_TRANSACTION"
             case timeoutError = "TIMEOUT_ERROR"
             case unknownError
 
