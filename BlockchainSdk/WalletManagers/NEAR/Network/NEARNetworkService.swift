@@ -150,12 +150,68 @@ final class NEARNetworkService: MultiNetworkProvider {
             return provider
                 .sendTransactionAsync(transaction.base64EncodedString())
                 .map(TransactionSendResult.init(hash:))
+//                .sendTransactionAwait(transaction.base64EncodedString())
+//                .map { TransactionSendResult(hash: $0.transactionOutcome.id) }
                 .mapError { error in
                     if let error = error as? WalletError {
                         return error
                     }
 
                     return WalletError.failedToSendTx
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+
+    func getTransactionsInfo(accountId: String, transactionHashes: [String]) -> AnyPublisher<NEARTransactionsInfo, Error> {
+        transactionHashes
+            .publisher
+            .setFailureType(to: Error.self)
+            .withWeakCaptureOf(self)
+            .flatMap { networkService, transactionHash in
+                return networkService.getTransactionInfo(accountId: accountId, transactionHash: transactionHash)
+            }
+            .collect()
+            .map(NEARTransactionsInfo.init(transactions:))
+            .eraseToAnyPublisher()
+    }
+
+    private func getTransactionInfo(
+        accountId: String,
+        transactionHash: String
+    ) -> AnyPublisher<NEARTransactionsInfo.Transaction, Error> {
+        return providerPublisher { provider in
+            return provider
+                .getTransactionStatus(accountId: accountId, transactionHash: transactionHash)
+                .map { result in
+                    let status: NEARTransactionsInfo.Status
+                    switch result.status {
+                    case .success:
+                        status = .success
+                    case .failure:
+                        status = .failure
+                    case .other:
+                        status = .other
+                    }
+
+                    return NEARTransactionsInfo.Transaction(hash: transactionHash, status: status)
+                }
+                .tryCatch { error -> AnyPublisher<NEARTransactionsInfo.Transaction, Error> in
+                    guard let apiError = error as? NEARNetworkResult.APIError else {
+                        throw error
+                    }
+
+                    // Most likely, the transaction hasn't been recorded on the chain yet
+                    if apiError.isUnknownTransaction {
+                        return .justWithError(output: .init(hash: transactionHash, status: .other))
+                    }
+
+                    // The transaction indeed failed
+                    if apiError.isInvalidTransaction {
+                        return .justWithError(output: .init(hash: transactionHash, status: .failure))
+                    }
+
+                    throw error
                 }
                 .eraseToAnyPublisher()
         }
