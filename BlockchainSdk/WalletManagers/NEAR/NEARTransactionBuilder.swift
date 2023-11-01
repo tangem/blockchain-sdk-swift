@@ -101,25 +101,13 @@ final class NEARTransactionBuilder {
     /// Converts given amount to a uint128 with little-endian byte order.
     private func depositPayload(from amount: Amount) throws -> Data {
         let decimalValue = amount.value * pow(Decimal(10), amount.decimals)
-        let bigUIntValue = try bigUIntValue(from: decimalValue)
-        let rawPayload = Data(bigUIntValue.serialize().reversed())
 
-        return rawPayload.trailingZeroPadding(toLength: 16)
-    }
-
-    private func bigUIntValue(from decimalValue: Decimal) throws -> BigUInt {
-        if decimalValue.isZero || decimalValue < .zero {
-            return .zero
-        }
-
-        if decimalValue >= .greatestFiniteMagnitude {
-            return BigUInt(2).power(256) - 1
-        }
-
-        guard let bigUIntValue = BigUInt(decimalValue.decimalNumber.stringValue) else {
+        guard let bigUIntValue = BigUInt(decimal: decimalValue) else {
             throw WalletError.failedToBuildTx
         }
 
-        return bigUIntValue
+        let rawPayload = Data(bigUIntValue.serialize().reversed())
+
+        return rawPayload.trailingZeroPadding(toLength: 16)
     }
 }

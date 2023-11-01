@@ -225,6 +225,7 @@
 		B61920892AE6ABD3001D6DDF /* NEARNetworkResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61920882AE6ABD3001D6DDF /* NEARNetworkResult.swift */; };
 		B619208C2AE6AC8F001D6DDF /* JSONRPCParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B619208B2AE6AC8F001D6DDF /* JSONRPCParams.swift */; };
 		B619208E2AE6AC95001D6DDF /* JSONRPCResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B619208D2AE6AC95001D6DDF /* JSONRPCResult.swift */; };
+		B62344992AF26C0F00B82306 /* BigUInt+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62344982AF26C0F00B82306 /* BigUInt+.swift */; };
 		B62A12062AE308DA0080BAEC /* NEARTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62A12052AE308DA0080BAEC /* NEARTransactionParams.swift */; };
 		B63B792D2AD850DF0055BD06 /* NEARWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B792C2AD850DF0055BD06 /* NEARWalletAssembly.swift */; };
 		B63B792F2AD852E80055BD06 /* NEARExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */; };
@@ -737,6 +738,7 @@
 		B61920882AE6ABD3001D6DDF /* NEARNetworkResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NEARNetworkResult.swift; sourceTree = "<group>"; };
 		B619208B2AE6AC8F001D6DDF /* JSONRPCParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONRPCParams.swift; sourceTree = "<group>"; };
 		B619208D2AE6AC95001D6DDF /* JSONRPCResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONRPCResult.swift; sourceTree = "<group>"; };
+		B62344982AF26C0F00B82306 /* BigUInt+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "BigUInt+.swift"; sourceTree = "<group>"; };
 		B62A12052AE308DA0080BAEC /* NEARTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARTransactionParams.swift; sourceTree = "<group>"; };
 		B63B792C2AD850DF0055BD06 /* NEARWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARWalletAssembly.swift; sourceTree = "<group>"; };
 		B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARExternalLinkProvider.swift; sourceTree = "<group>"; };
@@ -1362,6 +1364,7 @@
 				EF72578F2A8F938400EA8CB2 /* KeyedDecodingContainer+.swift */,
 				B6F3AA6C2ADD92230059C99A /* Moya+.swift */,
 				B6F3AA6B2ADD92230059C99A /* Publisher+.swift */,
+				B62344982AF26C0F00B82306 /* BigUInt+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2870,6 +2873,7 @@
 				5D86540023A906DF000DE52D /* CommonSigner.swift in Sources */,
 				DAB6548D2796C5F00002A5E8 /* SolanaTransactionSigner.swift in Sources */,
 				EF57BEDC2A1E626700C2A493 /* DerivationConfigV3.swift in Sources */,
+				B62344992AF26C0F00B82306 /* BigUInt+.swift in Sources */,
 				5D54FE1E23E4313A009FAC2F /* LitecoinWalletManager.swift in Sources */,
 				2DDE5BA629C4F8D200A5B708 /* CardanoWalletAssembly.swift in Sources */,
 				5D557CAE23AA771E009B32AF /* EthereumNetworkService.swift in Sources */,
