@@ -52,6 +52,13 @@ struct NEARNetworkProvider {
         return requestPublisher(for: .sendTransactionAwait(transaction: transaction))
     }
 
+    func getTransactionStatus(
+        accountId: String,
+        transactionHash: String
+    ) -> AnyPublisher<NEARNetworkResult.TransactionStatus, Error> {
+        return requestPublisher(for: .transactionStatus(accountId: accountId, transactionHash: transactionHash))
+    }
+
     private func requestPublisher<T: Decodable>(
         for target: NEARTarget.Target
     ) -> AnyPublisher<T, Error> {

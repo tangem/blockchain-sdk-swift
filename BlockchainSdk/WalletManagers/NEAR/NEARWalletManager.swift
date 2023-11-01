@@ -36,18 +36,22 @@ final class NEARWalletManager: BaseManager {
     }
 
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        cancellable = Publishers.CombineLatest(
+        let accountId = wallet.address
+        let transactionHashes = wallet.pendingTransactions.map(\.hash)
+
+        cancellable = Publishers.CombineLatest3(
             getProtocolConfig().setFailureType(to: Error.self),
-            networkService.getInfo(accountId: wallet.address)
+            networkService.getInfo(accountId: accountId),
+            networkService.getTransactionsInfo(accountId: accountId, transactionHashes: transactionHashes)
         )
         .withWeakCaptureOf(self)
         .tryMap { walletManager, input in
-            let (protocolConfig, accountInfo) = input
+            let (protocolConfig, accountInfo, transactionsInfo) = input
             switch accountInfo {
             case .notInitialized:
                 throw walletManager.makeNoAccountError(using: protocolConfig)
             case .initialized(let account):
-                return (account, protocolConfig)
+                return (account, transactionsInfo, protocolConfig)
             }
         }
         .sink(
@@ -60,19 +64,37 @@ final class NEARWalletManager: BaseManager {
                     completion(.success(()))
                 }
             },
-            receiveValue: { [weak self] account, protocolConfig in
-                self?.updateWallet(account: account, protocolConfig: protocolConfig)
+            receiveValue: { [weak self] account, transactionsInfo, protocolConfig in
+                self?.updateWallet(account: account, transactionsInfo: transactionsInfo, protocolConfig: protocolConfig)
             }
         )
     }
 
-    private func updateWallet(account: NEARAccountInfo.Account, protocolConfig: NEARProtocolConfig) {
+    private func updateWallet(
+        account: NEARAccountInfo.Account,
+        transactionsInfo: NEARTransactionsInfo,
+        protocolConfig: NEARProtocolConfig
+    ) {
         let decimalValue = wallet.blockchain.decimalValue
         let reserveValue = account.storageUsageInBytes * protocolConfig.storageAmountPerByte / decimalValue
         wallet.add(reserveValue: reserveValue)
 
         let coinValue = max(account.amount.value - reserveValue, .zero)
         wallet.add(coinValue: coinValue)
+
+        let completedTransactionHashes = transactionsInfo.transactions
+            .filter { $0.status != .other }
+            .map(\.result.hash)
+            .toSet()
+        wallet.removePendingTransaction(where: completedTransactionHashes.contains(_:))
+    }
+
+    private func updateWalletWithPendingTransaction(_ transaction: Transaction, sendResult: TransactionSendResult) {
+        let mapper = PendingTransactionRecordMapper()
+        let hash = sendResult.hash
+        let pendingTransaction = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+
+        wallet.addPendingTransaction(pendingTransaction)
     }
 
     private func makeNoAccountError(using protocolConfig: NEARProtocolConfig) -> WalletError {
@@ -234,6 +256,11 @@ extension NEARWalletManager: WalletManager {
             .flatMap { walletManager, transaction in
                 return walletManager.networkService.send(transaction: transaction)
             }
+            .handleEvents(
+                receiveOutput: { [weak self] sendResult in
+                    self?.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)
+                }
+            )
             .eraseToAnyPublisher()
     }
 }

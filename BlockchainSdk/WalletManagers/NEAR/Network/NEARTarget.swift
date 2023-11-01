@@ -39,6 +39,8 @@ extension NEARTarget {
         /// Sends a transaction and waits until transaction is fully complete. (Has a 10 second timeout)
         /// - transaction: a Base64 encoded string.
         case sendTransactionAwait(transaction: String)
+        /// Queries status of a transaction by hash and returns the final transaction result.
+        case transactionStatus(accountId: String, transactionHash: String)
     }
 }
 
@@ -101,6 +103,15 @@ extension NEARTarget: TargetType {
                 id: Constants.jsonRPCMethodId,
                 method: "broadcast_tx_commit",
                 params: NEARNetworkParams.Transaction(payload: transaction)
+            )
+        case .transactionStatus(let accountId, let transactionHash):
+            return .requestJSONRPC(
+                id: Constants.jsonRPCMethodId,
+                method: "tx",
+                params: [
+                    transactionHash,
+                    accountId,
+                ]
             )
         }
     }

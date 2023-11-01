@@ -11,17 +11,9 @@ import WalletCore
 import BigInt
 
 final class NEARTransactionBuilder {
-    private let blockchain: Blockchain
-
-    init(blockchain: Blockchain) {
-        self.blockchain = blockchain
-    }
+    private var coinType: CoinType { .near }
 
     func buildForSign(transaction: Transaction) throws -> Data {
-        guard let coinType = CoinType(blockchain) else {
-            throw WalletError.failedToBuildTx
-        }
-
         let input = try buildInput(transaction: transaction)
         let txInputData = try input.serializedData()
 
@@ -40,10 +32,7 @@ final class NEARTransactionBuilder {
     }
 
     func buildForSend(transaction: Transaction, signature: Data) throws -> Data {
-        guard 
-            let coinType = CoinType(blockchain),
-            let transactionParams = transaction.params as? NEARTransactionParams
-        else {
+        guard let transactionParams = transaction.params as? NEARTransactionParams else {
             throw WalletError.failedToBuildTx
         }
 
@@ -93,7 +82,7 @@ final class NEARTransactionBuilder {
                     action.transfer = NEARTransfer.with { transfer in
                         transfer.deposit = deposit
                     }
-                }
+                },
             ]
         }
     }
