@@ -13,72 +13,38 @@ extension NEARNetworkResult {
     struct APIError: Decodable, Error {
             // There are many more types of errors, but we only care about the ones
             // that can be returned from API endpoints in the 'NEARTarget.swift' file.
-        enum ErrorTypeName: Decodable {
-            case handlerError
-            case requestValidationError
-            case internalError
+        enum ErrorTypeName: String, Decodable {
+            case handlerError = "HANDLER_ERROR"
+            case requestValidationError = "REQUEST_VALIDATION_ERROR"
+            case internalError = "INTERNAL_ERROR"
             case unknownError
 
             init(from decoder: Decoder) throws {
                 let container = try decoder.singleValueContainer()
                 let rawValue = try container.decode(String.self)
-
-                switch rawValue {
-                case "HANDLER_ERROR":
-                    self = .handlerError
-                case "REQUEST_VALIDATION_ERROR":
-                    self = .requestValidationError
-                case "INTERNAL_ERROR":
-                    self = .internalError
-                default:
-                    self = .unknownError
-                }
+                self = ErrorTypeName(rawValue: rawValue) ?? .unknownError
             }
         }
 
             //  There are many more causes of errors, but we only care about the ones
             // that can be returned from API endpoints in the 'NEARTarget.swift' file.
-        enum ErrorCauseName: Decodable {
-            case unknownBlock
-            case invalidAccount
-            case unknownAccount
-            case unknownAccessKey
-            case unavailableShard
-            case noSyncedBlocks
-            case parseError
-            case internalError
-            case invalidTransaction
-            case timeoutError
+        enum ErrorCauseName: String, Decodable {
+            case unknownBlock = "UNKNOWN_BLOCK"
+            case invalidAccount = "INVALID_ACCOUNT"
+            case unknownAccount = "UNKNOWN_ACCOUNT"
+            case unknownAccessKey = "UNKNOWN_ACCESS_KEY"
+            case unavailableShard = "UNAVAILABLE_SHARD"
+            case noSyncedBlocks = "NO_SYNCED_BLOCKS"
+            case parseError = "PARSE_ERROR"
+            case internalError = "INTERNAL_ERROR"
+            case invalidTransaction = "INVALID_TRANSACTION"
+            case timeoutError = "TIMEOUT_ERROR"
             case unknownError
 
             init(from decoder: Decoder) throws {
                 let container = try decoder.singleValueContainer()
                 let rawValue = try container.decode(String.self)
-
-                switch rawValue {
-                case "UNKNOWN_BLOCK":
-                    self = .unknownBlock
-                case "INVALID_ACCOUNT":
-                    self = .invalidAccount
-                case "UNKNOWN_ACCOUNT":
-                    self = .unknownAccount
-                case "UNKNOWN_ACCESS_KEY":
-                    self = .unknownAccessKey
-                case "UNAVAILABLE_SHARD":
-                    self = .unavailableShard
-                case "NO_SYNCED_BLOCKS":
-                    self = .noSyncedBlocks
-                case "PARSE_ERROR":
-                    self = .parseError
-                case "INTERNAL_ERROR":
-                    self = .internalError
-                case "INVALID_TRANSACTION":
-                    self = .invalidTransaction
-                case "TIMEOUT_ERROR":
-                    self = .timeoutError
-                default:
-                    self = .unknownError
-                }
+                self = ErrorCauseName(rawValue: rawValue) ?? .unknownError
             }
         }
 
