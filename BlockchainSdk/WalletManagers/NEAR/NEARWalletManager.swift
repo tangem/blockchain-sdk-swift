@@ -81,7 +81,7 @@ final class NEARWalletManager: BaseManager {
         let reserveValue = Constants.accountStorageUsageInBytes * protocolConfig.storageAmountPerByte / decimalValue
         let reserveValueString = reserveValue.decimalNumber.stringValue
         let currencySymbol = wallet.blockchain.currencySymbol
-        let errorMessage = "no_account_generic".localized(networkName, reserveValueString, currencySymbol)
+        let errorMessage = "no_account_generic".localized([networkName, reserveValueString, currencySymbol])
 
         return WalletError.noAccount(message: errorMessage)
     }
@@ -172,7 +172,7 @@ extension NEARWalletManager: WalletManager {
             // by a gas price that's up to 1% different, since gas price is recalculated on each block
             let approximateGasPriceForNextBlock = gasPrice * 1.01
             let source = walletManager.wallet.address
-            let senderIsReceiver = source.lowercased() == destination.lowercased()
+            let senderIsReceiver = source.caseInsensitiveCompare(destination) == .orderedSame
 
             let basicCostsSum = walletManager.calculateBasicCostsSum(
                 config: config,
