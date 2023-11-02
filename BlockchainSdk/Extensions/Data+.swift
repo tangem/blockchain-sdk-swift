@@ -5,17 +5,18 @@
 //  Created by Alexander Osokin on 13.12.2019.
 //  Copyright © 2019 Tangem AG. All rights reserved.
 //
-//extension Data {
-//    func sha3(_ variant: SHA3.Variant) -> Data {
-//        return Data(Digest.sha3(bytes, variant: variant))
-//    }
-//}
 
 import Foundation
 import CryptoKit
 import TangemSdk
+import class WalletCore.DataVector
 
 extension Data {
+    // TODO: Andrey Fedorov - There are several problems with this extension (IOS-4990):
+    // - It has basically the same implementation as `leadingZeroPadding(toLength:)` method
+    // - It ignores the `length` parameter
+    // - The naming is quite ambigious
+    @available(*, deprecated, message: "Use 'leadingZeroPadding(toLength:)' instead")
     public func aligned(to length: Int = 32) -> Data {
         let bytesCount = self.count
         
@@ -48,5 +49,9 @@ extension Data {
 
         let suffix = Data(repeating: UInt8(0), count: newLength - count)
         return self + suffix
+    }
+
+    func asDataVector() -> DataVector {
+        return DataVector(data: self)
     }
 }
