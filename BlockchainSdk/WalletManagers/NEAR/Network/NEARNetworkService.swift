@@ -114,11 +114,7 @@ final class NEARNetworkService: MultiNetworkProvider {
                     )
                 }
                 .tryCatch { error in
-                    guard
-                        let apiError = error as? NEARNetworkResult.APIError,
-                        apiError.name == .handlerError,
-                        apiError.cause.name == .unknownAccount
-                    else {
+                    guard let apiError = error as? NEARNetworkResult.APIError, apiError.isUnknownAccount else {
                         throw error
                     }
 

@@ -100,7 +100,7 @@ final class NEARWalletManager: BaseManager {
     private func makeNoAccountError(using protocolConfig: NEARProtocolConfig) -> WalletError {
         let networkName = wallet.blockchain.displayName
         let decimalValue = wallet.blockchain.decimalValue
-        let reserveValue = Constants.accountStorageUsageInBytes * protocolConfig.storageAmountPerByte / decimalValue
+        let reserveValue = Constants.accountDefaultStorageUsageInBytes * protocolConfig.storageAmountPerByte / decimalValue
         let reserveValueString = reserveValue.decimalNumber.stringValue
         let currencySymbol = wallet.blockchain.currencySymbol
         let errorMessage = "no_account_generic".localized([networkName, reserveValueString, currencySymbol])
@@ -123,15 +123,6 @@ final class NEARWalletManager: BaseManager {
                 .eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
-    }
-
-    /// See https://nomicon.io/DataStructures/Account#account-id-rules for infomation about implicit/named account IDs.
-    private func isImplicitAccount(accountId: String) -> Bool {
-        guard accountId.count == Constants.implicitAccountAddressLength else {
-            return false
-        }
-
-        return accountId.allSatisfy { $0.isASCII && $0.isHexDigit }
     }
 
     private func calculateBasicCostsSum(
@@ -158,7 +149,7 @@ final class NEARWalletManager: BaseManager {
         senderIsReceiver: Bool,
         destination: String
     ) -> Decimal {
-        guard isImplicitAccount(accountId: destination) else {
+        guard NEARAddressUtil.isImplicitAccount(accountId: destination) else {
             return .zero
         }
 
@@ -274,6 +265,46 @@ extension NEARWalletManager: WalletManager {
     }
 }
 
+// MARK: - AddressResolver protocol conformance
+
+extension NEARWalletManager: AddressResolver {
+    func resolve(_ address: String) async throws -> String {
+        // Implicit accounts don't require any modification or verification
+        if NEARAddressUtil.isImplicitAccount(accountId: address) {
+            return address
+        }
+
+        // Here we're verifying if the account with the given named account ID exists
+        // and just throwing an error if it doesn't
+        return try await withCheckedThrowingContinuation { continuation in
+            var getInfoSubscription: AnyCancellable?
+
+            getInfoSubscription = networkService
+                .getInfo(accountId: address)
+                .tryMap { accountInfo in
+                    switch accountInfo {
+                    case .notInitialized:
+                        throw WalletError.empty // The particular type of this error doesn't matter
+                    case .initialized(let account):
+                        return account
+                    }
+                }
+                .sink(
+                    receiveCompletion: { result in
+                        switch result {
+                        case .failure(let error):
+                            continuation.resume(throwing: error)
+                        case .finished:
+                            continuation.resume(returning: address)
+                        }
+                        withExtendedLifetime(getInfoSubscription) {}
+                    },
+                    receiveValue: { _ in }
+                )
+        }
+    }
+}
+
 // MARK: - Constants
 
 private extension NEARWalletManager {
@@ -283,7 +314,6 @@ private extension NEARWalletManager {
         /// For newly created implicit accounts with a single access key (the default) we have to use this constant.
         /// See https://docs.near.org/integrator/accounts and
         /// https://pages.near.org/papers/economics-in-sharded-blockchain/#transaction-and-storage-fees for details.
-        static let accountStorageUsageInBytes: Decimal = 182
-        static let implicitAccountAddressLength = 64
+        static let accountDefaultStorageUsageInBytes: Decimal = 182
     }
 }
