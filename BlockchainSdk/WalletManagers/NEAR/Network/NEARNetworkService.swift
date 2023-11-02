@@ -22,4 +22,116 @@ final class NEARNetworkService: MultiNetworkProvider {
         self.blockchain = blockchain
         self.providers = providers
     }
+
+    func getGasPrice() -> AnyPublisher<Decimal, Error> {
+        return providerPublisher { provider in
+            return provider
+                .getGasPrice()
+                .tryMap { jsonRPCResult in
+                    guard let gasPrice = Decimal(string: jsonRPCResult.result.gasPrice) else {
+                        throw WalletError.failedToParseNetworkResponse
+                    }
+
+                    return gasPrice
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+
+    func getProtocolConfig() -> AnyPublisher<NEARProtocolConfig, Error> {
+        return providerPublisher { provider in
+            return provider
+                .getProtocolConfig()
+                .map { jsonRPCResult in
+                    let result = jsonRPCResult.result
+                    let actionCreationConfig = result.runtimeConfig.transactionCosts.actionCreationConfig.transferCost
+                    let actionReceiptCreationConfig = result.runtimeConfig.transactionCosts.actionReceiptCreationConfig
+
+                    let cumulativeExecutionCost = Decimal(actionCreationConfig.execution)
+                    + Decimal(actionReceiptCreationConfig.execution)
+
+                    let senderIsReceiverCumulativeSendCost = Decimal(actionCreationConfig.sendSir)
+                    + Decimal(actionReceiptCreationConfig.sendSir)
+
+                    let senderIsNotReceiverCumulativeSendCost = Decimal(actionCreationConfig.sendNotSir)
+                    + Decimal(actionReceiptCreationConfig.sendNotSir)
+
+                    return NEARProtocolConfig(
+                        senderIsReceiver: .init(
+                            cumulativeExecutionCost: cumulativeExecutionCost,
+                            cumulativeSendCost: senderIsReceiverCumulativeSendCost
+                        ),
+                        senderIsNotReceiver: .init(
+                            cumulativeExecutionCost: cumulativeExecutionCost,
+                            cumulativeSendCost: senderIsNotReceiverCumulativeSendCost
+                        )
+                    )
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+
+    func getInfo(accountId: String) -> AnyPublisher<NEARAccountInfo, Error> {
+        let blockchain = self.blockchain
+
+        return providerPublisher { provider in
+            return provider
+                .getInfo(accountId: accountId)
+                .tryMap { jsonRPCResult in
+                    let result = jsonRPCResult.result
+
+                    guard let rawAmount = Decimal(string: result.amount) else {
+                        throw WalletError.failedToParseNetworkResponse
+                    }
+
+                    let value = rawAmount / blockchain.decimalValue
+                    let amount = Amount(with: blockchain, value: value)
+
+                    return NEARAccountInfo(
+                        accountId: accountId,
+                        amount: amount,
+                        recentBlockHash: result.blockHash
+                    )
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+
+    func getAccessKeyInfo(accountId: String, publicKey: Wallet.PublicKey) -> AnyPublisher<NEARAccessKeyInfo, Error> {
+        let publicKeyPayload = Constants.ed25519SerializationPrefix + publicKey.blockchainKey.base58EncodedString
+
+        return providerPublisher { provider in
+            return provider
+                .getAccessKeyInfo(accountId: accountId, publicKey: publicKeyPayload)
+                .map { jsonRPCResult in
+                    let result = jsonRPCResult.result
+
+                    return NEARAccessKeyInfo(
+                        currentNonce: result.nonce,
+                        recentBlockHash: result.blockHash,
+                        canBeUsedForTransfer: result.permission == .fullAccess
+                    )
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+
+    func send(transaction: Data) -> AnyPublisher<TransactionSendResult, Error> {
+        return providerPublisher { provider in
+            return provider
+                .sendTransactionAwait(transaction.base64EncodedString())
+                .map { jsonRPCResult in
+                    return TransactionSendResult(hash: jsonRPCResult.result.transactionOutcome.id)
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+}
+
+// MARK: - Constants
+
+private extension NEARNetworkService {
+    enum Constants {
+        static let ed25519SerializationPrefix = "ed25519:"
+    }
 }

@@ -10,9 +10,11 @@ import Foundation
 
 struct NEARWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        // TODO: Andrey Fedorov - Add actual implementation (IOS-4070)
         let blockchain = input.blockchain
-        let networkProviders: [NEARNetworkProvider] = []
+        let sdkConfig = input.blockchainSdkConfig
+        let networkConfig = input.networkConfig
+        let baseURLs = baseURLs(for: blockchain, with: sdkConfig)
+        let networkProviders = baseURLs.map { NEARNetworkProvider(baseURL: $0, configuration: networkConfig) }
         let networkService = NEARNetworkService(blockchain: blockchain, providers: networkProviders)
         let transactionBuilder = NEARTransactionBuilder(blockchain: blockchain)
 
@@ -21,5 +23,29 @@ struct NEARWalletAssembly: WalletManagerAssembly {
             networkService: networkService,
             transactionBuilder: transactionBuilder
         )
+    }
+
+    private func baseURLs(for blockchain: Blockchain, with sdkConfig: BlockchainSdkConfig) -> [URL] {
+        var baseURLStrings: [String] = []
+
+        if blockchain.isTestnet {
+            baseURLStrings.append(
+                contentsOf: [
+                    "https://rpc.testnet.near.org",
+                ]
+            )
+        } else {
+            baseURLStrings.append(
+                contentsOf: [
+                    "https://rpc.mainnet.near.org",
+                    "https://near.nownodes.io/\(sdkConfig.nowNodesApiKey)",
+                    "https://near.getblock.io/\(sdkConfig.getBlockApiKey)",
+                    "https://near-mainnet.infura.io/v3/\(sdkConfig.infuraProjectId)",
+                ]
+            )
+        }
+
+        return baseURLStrings
+            .map { URL(string: $0)! }
     }
 }
