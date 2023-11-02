@@ -8,6 +8,7 @@
 
 import Combine
 
+// TODO: Andrey Fedorov - These extensions aren't made for `AnyPublisher`, move them to the correct location and fix visibility (IOS-4990)
 @available(iOS 13.0, *)
 public extension Publisher {
     static func anyFail(error: Failure) -> AnyPublisher<Output, Failure> {
