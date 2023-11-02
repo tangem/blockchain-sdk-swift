@@ -8,10 +8,20 @@
 
 import Foundation
 import XCTest
+import WalletCore
 
 @testable import BlockchainSdk
 
 final class NEARTests: XCTestCase {
+    private let blockchain: BlockchainSdk.Blockchain = .near(curve: .ed25519_slip0010, testnet: false)
+    private var transactionBuilder: NEARTransactionBuilder!
+    private var sizeTester: TransactionSizeTesterUtility!
+
+    override func setUp() {
+        transactionBuilder = .init()
+        sizeTester = .init()
+    }
+
     // Using example values from https://nomicon.io/DataStructures/Account#examples
     func testAddressUtilImplicitAccountsDetection() {
         XCTAssertTrue(NEARAddressUtil.isImplicitAccount(accountId: "f69cd39f654845e2059899a888681187f2cda95f29256329aea1700f50f8ae86"))
@@ -94,5 +104,67 @@ final class NEARTests: XCTestCase {
         XCTAssertFalse(NEARAddressUtil.isValidNamedAccount(accountId: "me@google.com"))
         XCTAssertFalse(NEARAddressUtil.isValidNamedAccount(accountId: "system"))
         XCTAssertFalse(NEARAddressUtil.isValidNamedAccount(accountId: "abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz"))
+    }
+
+    // NEAR transfer transaction https://testnet.nearblocks.io/txns/Cr3QyJoFNtQvFTfc45WDTM4GvLxQtFigSjP7wcRrwiwW
+    // Made using NEAR JS API, see https://github.com/deprecated-near-examples/transaction-examples for examples
+    func testSigningTransaction() throws {
+        // Private key for the "tiny escape drive pupil flavor endless love walk gadget match filter luxury" mnemonic
+        let privateKeyRawRepresentation = "4z9uzXnZHE6huxMbnV7egjpvQk6ov7eji3FM12buV8DDtkARhiDqiCoDxSa3VpBMKYzzjmJcVXXyw8qhYgTs6MfH"
+            .base58DecodedData[0..<32]
+        let privateKey = try XCTUnwrap(PrivateKey(data: privateKeyRawRepresentation))
+
+        let publicKeyRawRepresentation = privateKey.getPublicKey(coinType: try XCTUnwrap(CoinType(blockchain))).data
+        let publicKey = Wallet.PublicKey(seedKey: publicKeyRawRepresentation, derivationType: nil)
+
+        let sourceAddress = try makeAddress(for: publicKey)
+        let expectedSourceAddress = "b5cf12d432ee87dbc664e2700eeef72b3e814879b978bb9491e5796a63e85ee4"
+
+        XCTAssertEqual(sourceAddress, expectedSourceAddress)
+
+        let destinationAddress = "jhj909.testnet"
+        let value = try XCTUnwrap(Decimal(string: "3.891"))
+        let amount = Amount(with: blockchain, value: value)
+        let fee = Fee(.dummyCoin(for: blockchain))  // Not used in the transaction, therefore a dummy value is used
+
+        let transactionParams = NEARTransactionParams(
+            publicKey: publicKey,
+            currentNonce: 143936156000003,
+            recentBlockHash: "5M4mFZLMT6Qe9fNpXBipmYQ6u2gk4kkzXgd1ebt1zW23"
+        )
+
+        let transaction = Transaction(
+            amount: amount,
+            fee: fee,
+            sourceAddress: sourceAddress,
+            destinationAddress: destinationAddress,
+            changeAddress: sourceAddress
+        ).then { $0.params = transactionParams }
+
+        let transactionHash = try transactionBuilder.buildForSign(transaction: transaction)
+
+        sizeTester.testTxSize(transactionHash)
+
+        let curve = try Curve(blockchain: blockchain)
+        let transactionSignature = try XCTUnwrap(privateKey.sign(digest: transactionHash, curve: curve))
+
+        let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signature: transactionSignature)
+        let base64EncodedTransaction = signedTransaction.base64EncodedString()
+
+        let expectedBase64EncodedTransaction = """
+QAAAAGI1Y2YxMmQ0MzJlZTg3ZGJjNjY0ZTI3MDBlZWVmNzJiM2U4MTQ4NzliOTc4YmI5NDkxZTU3OTZhNjNlODVlZTQAtc8S1DL\
+uh9vGZOJwDu73Kz6BSHm5eLuUkeV5amPoXuQE33K/6IIAAA4AAABqaGo5MDkudGVzdG5ldECSnmDjrfGWWZfgb+lcQvfOE8jy8/\
+OdCy4+7VFwsBwYAQAAAAMAAOC5djZciPM3AwAAAAAAAEvPwwDL+M+IGs7G69be8CXlnKwbPp6NTpoWoAHukon9gCjyKhBpfWQwU\
+mvfgIZi953LT5fMzOlUEX6l9MlpzwM=
+"""
+
+        XCTAssertEqual(base64EncodedTransaction, expectedBase64EncodedTransaction)
+    }
+
+    private func makeAddress(for publicKey: BlockchainSdk.Wallet.PublicKey) throws -> String {
+        let addressServiceFactory = AddressServiceFactory(blockchain: blockchain)
+        let addressService = addressServiceFactory.makeAddressService()
+
+        return try addressService.makeAddress(for: publicKey, with: .default).value
     }
 }
