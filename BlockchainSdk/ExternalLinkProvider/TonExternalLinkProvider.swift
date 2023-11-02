@@ -20,11 +20,12 @@ extension TonExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? { nil }
     
     func url(transaction hash: String) -> URL {
-        fatalError()
+        let prefix = isTestnet ? "testnet." : ""
+        return URL(string: "https://\(prefix)tonscan.org/tx/\(hash)")!
     }
     
     func url(address: String, contractAddress: String?) -> URL {
-        let subdomain = isTestnet ? "testnet." : ""
-        return URL(string: "https://\(subdomain)tonscan.org/address/\(address)")!
+        let prefix = isTestnet ? "testnet." : ""
+        return URL(string: "https://\(prefix)tonscan.org/address/\(address)")!
     }
 }
