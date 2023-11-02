@@ -29,8 +29,22 @@ public struct AddressServiceFactory {
             return BitcoinAddressService(networkParams: LitecoinNetworkParams())
         case .stellar:
             return StellarAddressService()
-        case .ethereum, .ethereumClassic, .ethereumPoW, .ethereumFair,
-                .bsc, .polygon, .avalanche, .fantom, .arbitrum, .gnosis, .optimism, .saltPay, .kava, .cronos, .telos, .octa:
+        case .ethereum,
+                .ethereumClassic,
+                .ethereumPoW,
+                .ethereumFair,
+                .bsc,
+                .polygon,
+                .avalanche,
+                .fantom,
+                .arbitrum,
+                .gnosis,
+                .optimism,
+                .saltPay,
+                .kava,
+                .cronos,
+                .telos,
+                .octa:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -69,7 +83,11 @@ public struct AddressServiceFactory {
         case .ravencoin:
             let networkParams: INetwork = isTestnet ? RavencoinTestNetworkParams() : RavencoinMainNetworkParams()
             return BitcoinLegacyAddressService(networkParams: networkParams)
-        case .ton, .cosmos, .terraV1, .terraV2:
+        case .ton,
+                .cosmos,
+                .terraV1,
+                .terraV2,
+                .near:
             return WalletCoreAddressService(blockchain: blockchain)
         case .ducatus:
             return BitcoinLegacyAddressService(networkParams: DucatusNetworkParams())
