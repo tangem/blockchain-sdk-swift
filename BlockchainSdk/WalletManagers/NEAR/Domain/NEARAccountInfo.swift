@@ -8,8 +8,14 @@
 
 import Foundation
 
-struct NEARAccountInfo {
-    let accountId: String
-    let amount: Amount
-    let recentBlockHash: String
+enum NEARAccountInfo {
+    struct Account {
+        let accountId: String
+        let amount: Amount
+        let recentBlockHash: String
+        let storageUsageInBytes: Decimal
+    }
+
+    case notInitialized
+    case initialized(Account)
 }

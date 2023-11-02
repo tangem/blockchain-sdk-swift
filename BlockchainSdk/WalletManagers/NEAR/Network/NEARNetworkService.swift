@@ -27,8 +27,8 @@ final class NEARNetworkService: MultiNetworkProvider {
         return providerPublisher { provider in
             return provider
                 .getGasPrice()
-                .tryMap { jsonRPCResult in
-                    guard let gasPrice = Decimal(string: jsonRPCResult.result.gasPrice) else {
+                .tryMap { result in
+                    guard let gasPrice = Decimal(string: result.gasPrice) else {
                         throw WalletError.failedToParseNetworkResponse
                     }
 
@@ -42,29 +42,48 @@ final class NEARNetworkService: MultiNetworkProvider {
         return providerPublisher { provider in
             return provider
                 .getProtocolConfig()
-                .map { jsonRPCResult in
-                    let result = jsonRPCResult.result
-                    let actionCreationConfig = result.runtimeConfig.transactionCosts.actionCreationConfig.transferCost
-                    let actionReceiptCreationConfig = result.runtimeConfig.transactionCosts.actionReceiptCreationConfig
+                .map { result in
+                    let transactionCosts = result.runtimeConfig.transactionCosts
+                    let actionCreationConfig = transactionCosts.actionCreationConfig.transferCost
+                    let createAccountCostConfig = transactionCosts.actionCreationConfig.createAccountCost
+                    let addKeyCostConfig = transactionCosts.actionCreationConfig.addKeyCost.fullAccessCost
+                    let actionReceiptCreationConfig = transactionCosts.actionReceiptCreationConfig
 
-                    let cumulativeExecutionCost = Decimal(actionCreationConfig.execution)
+                    let cumulativeBasicExecutionCost = Decimal(actionCreationConfig.execution)
                     + Decimal(actionReceiptCreationConfig.execution)
 
-                    let senderIsReceiverCumulativeSendCost = Decimal(actionCreationConfig.sendSir)
+                    let cumulativeAdditionalExecutionCost = Decimal(createAccountCostConfig.execution)
+                    + Decimal(addKeyCostConfig.execution)
+
+                    let senderIsReceiverCumulativeBasicSendCost = Decimal(actionCreationConfig.sendSir)
                     + Decimal(actionReceiptCreationConfig.sendSir)
 
-                    let senderIsNotReceiverCumulativeSendCost = Decimal(actionCreationConfig.sendNotSir)
+                    let senderIsReceiverCumulativeAdditionalSendCost = Decimal(createAccountCostConfig.sendSir)
+                    + Decimal(addKeyCostConfig.sendSir)
+
+                    let senderIsNotReceiverCumulativeBasicSendCost = Decimal(actionCreationConfig.sendNotSir)
                     + Decimal(actionReceiptCreationConfig.sendNotSir)
+
+                    let senderIsNotReceiverCumulativeAdditionalSendCost = Decimal(createAccountCostConfig.sendNotSir)
+                    + Decimal(addKeyCostConfig.sendNotSir)
+
+                    let storageAmountPerByte = Decimal(result.runtimeConfig.storageAmountPerByte)
+                    ?? NEARProtocolConfig.fallbackProtocolConfig.storageAmountPerByte
 
                     return NEARProtocolConfig(
                         senderIsReceiver: .init(
-                            cumulativeExecutionCost: cumulativeExecutionCost,
-                            cumulativeSendCost: senderIsReceiverCumulativeSendCost
+                            cumulativeBasicSendCost: senderIsReceiverCumulativeBasicSendCost,
+                            cumulativeBasicExecutionCost: cumulativeBasicExecutionCost,
+                            cumulativeAdditionalSendCost: senderIsReceiverCumulativeAdditionalSendCost,
+                            cumulativeAdditionalExecutionCost: cumulativeAdditionalExecutionCost
                         ),
                         senderIsNotReceiver: .init(
-                            cumulativeExecutionCost: cumulativeExecutionCost,
-                            cumulativeSendCost: senderIsNotReceiverCumulativeSendCost
-                        )
+                            cumulativeBasicSendCost: senderIsNotReceiverCumulativeBasicSendCost,
+                            cumulativeBasicExecutionCost: cumulativeBasicExecutionCost,
+                            cumulativeAdditionalSendCost: senderIsNotReceiverCumulativeAdditionalSendCost,
+                            cumulativeAdditionalExecutionCost: cumulativeAdditionalExecutionCost
+                        ),
+                        storageAmountPerByte: storageAmountPerByte
                     )
                 }
                 .eraseToAnyPublisher()
@@ -77,9 +96,7 @@ final class NEARNetworkService: MultiNetworkProvider {
         return providerPublisher { provider in
             return provider
                 .getInfo(accountId: accountId)
-                .tryMap { jsonRPCResult in
-                    let result = jsonRPCResult.result
-
+                .tryMap { result in
                     guard let rawAmount = Decimal(string: result.amount) else {
                         throw WalletError.failedToParseNetworkResponse
                     }
@@ -87,11 +104,25 @@ final class NEARNetworkService: MultiNetworkProvider {
                     let value = rawAmount / blockchain.decimalValue
                     let amount = Amount(with: blockchain, value: value)
 
-                    return NEARAccountInfo(
-                        accountId: accountId,
-                        amount: amount,
-                        recentBlockHash: result.blockHash
+                    return NEARAccountInfo.initialized(
+                        .init(
+                            accountId: accountId,
+                            amount: amount,
+                            recentBlockHash: result.blockHash,
+                            storageUsageInBytes: Decimal(result.storageUsage)
+                        )
                     )
+                }
+                .tryCatch { error in
+                    guard
+                        let apiError = error as? NEARNetworkResult.APIError,
+                        apiError.name == .handlerError,
+                        apiError.cause.name == .unknownAccount
+                    else {
+                        throw error
+                    }
+
+                    return Just(NEARAccountInfo.notInitialized)
                 }
                 .eraseToAnyPublisher()
         }
@@ -103,9 +134,7 @@ final class NEARNetworkService: MultiNetworkProvider {
         return providerPublisher { provider in
             return provider
                 .getAccessKeyInfo(accountId: accountId, publicKey: publicKeyPayload)
-                .map { jsonRPCResult in
-                    let result = jsonRPCResult.result
-
+                .map { result in
                     return NEARAccessKeyInfo(
                         currentNonce: result.nonce,
                         recentBlockHash: result.blockHash,
@@ -119,9 +148,70 @@ final class NEARNetworkService: MultiNetworkProvider {
     func send(transaction: Data) -> AnyPublisher<TransactionSendResult, Error> {
         return providerPublisher { provider in
             return provider
-                .sendTransactionAwait(transaction.base64EncodedString())
-                .map { jsonRPCResult in
-                    return TransactionSendResult(hash: jsonRPCResult.result.transactionOutcome.id)
+                .sendTransactionAsync(transaction.base64EncodedString())
+                .map(TransactionSendResult.init(hash:))
+//                .sendTransactionAwait(transaction.base64EncodedString())
+//                .map { TransactionSendResult(hash: $0.transactionOutcome.id) }
+                .mapError { error in
+                    if let error = error as? WalletError {
+                        return error
+                    }
+
+                    return WalletError.failedToSendTx
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+
+    func getTransactionsInfo(accountId: String, transactionHashes: [String]) -> AnyPublisher<NEARTransactionsInfo, Error> {
+        transactionHashes
+            .publisher
+            .setFailureType(to: Error.self)
+            .withWeakCaptureOf(self)
+            .flatMap { networkService, transactionHash in
+                return networkService.getTransactionInfo(accountId: accountId, transactionHash: transactionHash)
+            }
+            .collect()
+            .map(NEARTransactionsInfo.init(transactions:))
+            .eraseToAnyPublisher()
+    }
+
+    private func getTransactionInfo(
+        accountId: String,
+        transactionHash: String
+    ) -> AnyPublisher<NEARTransactionsInfo.Transaction, Error> {
+        return providerPublisher { provider in
+            return provider
+                .getTransactionStatus(accountId: accountId, transactionHash: transactionHash)
+                .map { result in
+                    let status: NEARTransactionsInfo.Status
+                    switch result.status {
+                    case .success:
+                        status = .success
+                    case .failure:
+                        status = .failure
+                    case .other:
+                        status = .other
+                    }
+
+                    return NEARTransactionsInfo.Transaction(hash: transactionHash, status: status)
+                }
+                .tryCatch { error -> AnyPublisher<NEARTransactionsInfo.Transaction, Error> in
+                    guard let apiError = error as? NEARNetworkResult.APIError else {
+                        throw error
+                    }
+
+                    // Most likely, the transaction hasn't been recorded on the chain yet
+                    if apiError.isUnknownTransaction {
+                        return .justWithError(output: .init(hash: transactionHash, status: .other))
+                    }
+
+                    // The transaction indeed failed
+                    if apiError.isInvalidTransaction {
+                        return .justWithError(output: .init(hash: transactionHash, status: .failure))
+                    }
+
+                    throw error
                 }
                 .eraseToAnyPublisher()
         }

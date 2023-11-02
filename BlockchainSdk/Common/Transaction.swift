@@ -46,6 +46,8 @@ extension Transaction: Equatable {
     }
 }
 
+extension Transaction: ThenProcessable {}
+
 public struct TransactionErrors: Error, LocalizedError, Equatable {
     public let errors: [TransactionError]
     
