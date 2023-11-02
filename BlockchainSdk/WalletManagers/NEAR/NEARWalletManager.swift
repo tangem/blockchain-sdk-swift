@@ -239,11 +239,11 @@ extension NEARWalletManager: WalletManager {
 
                 return (hash, transactionParams)
             }
-            .flatMap { hash, transactionParams in
+            .flatMap { hash, transactionParams -> AnyPublisher<(Data, NEARTransactionParams), Error> in
                 let signaturePublisher = signer.sign(hash: hash, walletPublicKey: transactionParams.publicKey)
                 let transactionParamsPublisher = Just(transactionParams).setFailureType(to: Error.self)
 
-                return Publishers.Zip(signaturePublisher, transactionParamsPublisher)
+                return Publishers.Zip(signaturePublisher, transactionParamsPublisher).eraseToAnyPublisher()
             }
             .withWeakCaptureOf(self)
             .tryMap { walletManager, input in
@@ -253,7 +253,7 @@ extension NEARWalletManager: WalletManager {
                 return try walletManager.transactionBuilder.buildForSend(transaction: transaction, signature: signature)
             }
             .withWeakCaptureOf(self)
-            .flatMap { walletManager, transaction in
+            .flatMap { walletManager, transaction -> AnyPublisher<TransactionSendResult, Error> in
                 return walletManager.networkService.send(transaction: transaction)
             }
             .handleEvents(
