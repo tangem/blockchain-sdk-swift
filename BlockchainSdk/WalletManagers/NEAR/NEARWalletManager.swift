@@ -233,7 +233,7 @@ extension NEARWalletManager: WalletManager {
                 )
             }
             .withWeakCaptureOf(self)
-            .tryMap { walletManager, transactionParams in
+            .tryMap { walletManager, transactionParams -> (Data, NEARTransactionParams) in
                 let transaction = transaction.then { $0.params = transactionParams }
                 let hash = try walletManager.transactionBuilder.buildForSign(transaction: transaction)
 
