@@ -27,7 +27,7 @@ public struct TransactionHistoryProviderFactory {
         let input = NetworkProviderAssembly.Input(blockchainSdkConfig: config, blockchain: blockchain)
         
         switch blockchain {
-        case .bitcoin:
+        case .bitcoin, .litecoin, .dogecoin, .dash:
             return UTXOTransactionHistoryProvider(
                 blockBookProviders: [
                     networkAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock),
@@ -35,7 +35,7 @@ public struct TransactionHistoryProviderFactory {
                 ],
                 mapper: UTXOTransactionHistoryMapper(blockchain: blockchain)
             )
-        case .ethereum:
+        case .ethereum, .ethereumPoW, .bsc, .avalanche:
             return EthereumTransactionHistoryProvider(
                 blockBookProvider: networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes),
                 mapper: EthereumTransactionHistoryMapper(blockchain: blockchain)
