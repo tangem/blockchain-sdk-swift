@@ -8,19 +8,33 @@
 
 import Foundation
 
+fileprivate var hexPrefix = "0x"
+
 extension String {
     func contains(_ string: String, ignoreCase: Bool = true) -> Bool {
         return self.range(of: string, options: ignoreCase ? .caseInsensitive : []) != nil
     }
-    
-    func removeHexPrefix() -> String {
-        if self.lowercased().starts(with: "0x") {
+
+    public func hasHexPrefix() -> Bool {
+        return self.lowercased().hasPrefix(hexPrefix)
+    }
+
+    public func removeHexPrefix() -> String {
+        if hasHexPrefix() {
             return String(self[self.index(self.startIndex, offsetBy: 2)...])
         }
         
         return self
     }
-    
+
+    public func addHexPrefix() -> String {
+        if lowercased().hasPrefix(hexPrefix) {
+            return self
+        }
+
+        return hexPrefix.appending(self)
+    }
+
     func removeBchPrefix() -> String {
         if let index = self.firstIndex(where: { $0 == ":" }) {
             let startIndex = self.index(index, offsetBy: 1)

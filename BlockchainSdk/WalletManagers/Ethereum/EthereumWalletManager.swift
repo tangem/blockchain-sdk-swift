@@ -61,7 +61,7 @@ extension EthereumWalletManager: EthereumTransactionSigner {
                     throw WalletError.failedToBuildTx
                 }
                 
-                return "0x\(tx.toHexString())"
+                return tx.hexString.lowercased().addHexPrefix()
             }
             .eraseToAnyPublisher()
     }
@@ -264,7 +264,7 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
             return .anyFail(error: WalletError.failedToBuildTx)
         }
         
-        return .justWithError(output: "0x\(tx.toHexString())")
+        return .justWithError(output: tx.hexString.lowercased().addHexPrefix())
     }
     
     func buildForApprove(spender: String, amount: Decimal) -> Data {
