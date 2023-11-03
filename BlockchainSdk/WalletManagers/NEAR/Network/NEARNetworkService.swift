@@ -164,7 +164,7 @@ final class NEARNetworkService: MultiNetworkProvider {
             .publisher
             .setFailureType(to: Error.self)
             .withWeakCaptureOf(self)
-            .flatMap { networkService, transactionHash -> AnyPublisher<NEARTransactionsInfo.Transaction, Error> in
+            .flatMap { networkService, transactionHash in
                 return networkService.getTransactionInfo(accountId: accountId, transactionHash: transactionHash)
             }
             .collect()
