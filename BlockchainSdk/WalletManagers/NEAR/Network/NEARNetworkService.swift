@@ -146,8 +146,6 @@ final class NEARNetworkService: MultiNetworkProvider {
             return provider
                 .sendTransactionAsync(transaction.base64EncodedString())
                 .map(TransactionSendResult.init(hash:))
-//                .sendTransactionAwait(transaction.base64EncodedString())
-//                .map { TransactionSendResult(hash: $0.transactionOutcome.id) }
                 .mapError { error in
                     if let error = error as? WalletError {
                         return error

@@ -179,11 +179,15 @@ extension NEARWalletManager: WalletManager {
             networkService.getGasPrice()
         )
         .withWeakCaptureOf(self)
-        .map { walletManager, input in
-            let (config, gasPrice) = input
+        .tryMap { walletManager, input in
             // The gas units on this next block (where the `execution` action takes place) could be multiplied
             // by a gas price that's up to 1% different, since gas price is recalculated on each block
-            let approximateGasPriceForNextBlock = gasPrice * 1.01
+            guard let nextBlockGasMultiplier = Decimal(string: "1.01") else {
+                throw WalletError.failedToGetFee
+            }
+
+            let (config, gasPrice) = input
+            let approximateGasPriceForNextBlock = gasPrice * nextBlockGasMultiplier
             let source = walletManager.wallet.address
             let senderIsReceiver = source.caseInsensitiveCompare(destination) == .orderedSame
 
@@ -233,7 +237,7 @@ extension NEARWalletManager: WalletManager {
                 )
             }
             .withWeakCaptureOf(self)
-            .tryMap { walletManager, transactionParams in
+            .tryMap { walletManager, transactionParams -> (Data, NEARTransactionParams) in
                 let transaction = transaction.then { $0.params = transactionParams }
                 let hash = try walletManager.transactionBuilder.buildForSign(transaction: transaction)
 
