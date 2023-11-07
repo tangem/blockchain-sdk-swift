@@ -21,7 +21,7 @@ extension String {
 
     public func removeHexPrefix() -> String {
         if hasHexPrefix() {
-            return String(self[self.index(self.startIndex, offsetBy: 2)...])
+            return String(dropFirst(2))
         }
         
         return self
