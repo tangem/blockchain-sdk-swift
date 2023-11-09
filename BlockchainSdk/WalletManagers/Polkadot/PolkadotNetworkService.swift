@@ -33,7 +33,7 @@ class PolkadotNetworkService: MultiNetworkProvider {
                     return try self.storageKey(forAddress: address)
                 }
                 .flatMap { key -> AnyPublisher<String, Error> in
-                    return provider.storage(key: "0x" + key.hexString)
+                    return provider.storage(key: key.hexString.addHexPrefix())
                 }
                 .tryMap { [weak self] storage -> PolkadotAccountInfo in
                     guard let self = self else {
@@ -99,7 +99,7 @@ class PolkadotNetworkService: MultiNetworkProvider {
     
     func fee(for extrinsic: Data) -> AnyPublisher<UInt64, Error> {
         providerPublisher { provider in
-            provider.queryInfo("0x" + extrinsic.hexString)
+            provider.queryInfo(extrinsic.hexString.addHexPrefix())
                 .tryMap {
                     guard let fee = UInt64($0.partialFee) else {
                         throw WalletError.failedToGetFee
@@ -112,7 +112,7 @@ class PolkadotNetworkService: MultiNetworkProvider {
     
     func submitExtrinsic(data: Data) -> AnyPublisher<String, Error> {
         providerPublisher { provider in
-            provider.submitExtrinsic("0x" + data.hexString)
+            provider.submitExtrinsic(data.hexString.addHexPrefix())
         }
     }
     

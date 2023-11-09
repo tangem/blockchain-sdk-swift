@@ -11,8 +11,8 @@ import TangemSdk
 
 public struct EthereumAddressService {
     func toChecksumAddress(_ address: String) -> String? {
-        let address = address.lowercased().remove("0x")
-        guard let hash = address.data(using: .utf8)?.sha3(.keccak256).toHexString() else {
+        let address = address.lowercased().removeHexPrefix()
+        guard let hash = address.data(using: .utf8)?.sha3(.keccak256).hexString.lowercased().removeHexPrefix() else {
             return nil
         }
         
@@ -43,8 +43,7 @@ extension EthereumAddressService: AddressProvider {
         //skip secp256k1 prefix
         let keccak = walletPublicKey[1...].sha3(.keccak256)
         let addressBytes = keccak[12...]
-        let hexAddressBytes = addressBytes.toHexString()
-        let address = "0x" + hexAddressBytes
+        let address = addressBytes.hexString.addHexPrefix()
         let checksumAddress = toChecksumAddress(address)!
         return PlainAddress(value: checksumAddress, publicKey: publicKey, type: addressType)
     }
@@ -56,7 +55,7 @@ extension EthereumAddressService: AddressProvider {
 extension EthereumAddressService: AddressValidator {
     public func validate(_ address: String) -> Bool {
         guard !address.isEmpty,
-              address.lowercased().starts(with: "0x"),
+              address.hasHexPrefix(),
               address.count == 42
         else {
             return false

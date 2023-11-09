@@ -88,7 +88,7 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
                     throw WalletError.failedToBuildTx
                 }
                 
-                return tx.toHexString()
+                return tx.hexString.lowercased()
             }
             .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
                 guard let self = self else { return .emptyFail }
