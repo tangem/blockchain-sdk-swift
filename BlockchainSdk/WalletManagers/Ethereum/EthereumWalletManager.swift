@@ -13,7 +13,7 @@ import TangemSdk
 import Moya
 import web3swift
 
-class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable {
+class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, TransactionFeeProvider {
     var txBuilder: EthereumTransactionBuilder!
     var networkService: EthereumNetworkService!
     
@@ -21,6 +21,7 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable {
     var pendingTxCount: Int = -1
     
     var currentHost: String { networkService.host }
+    var allowsFeeSelection: Bool { true }
     
     private var findTokensSubscription: AnyCancellable? = nil
 
@@ -174,9 +175,7 @@ private extension EthereumWalletManager {
 
 // MARK: - TransactionFeeProvider
 
-extension EthereumWalletManager: TransactionFeeProvider {
-    var allowsFeeSelection: Bool { true }
-    
+extension EthereumWalletManager {
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee],Error> {
         switch amount.type {
         case .coin:
