@@ -892,7 +892,6 @@ extension Blockchain {
                 .saltPay,
                 .kava,
                 .cronos,
-                .telos,
                 .octa:
             return EthereumWalletAssembly()
         case .optimism:
@@ -927,6 +926,8 @@ extension Blockchain {
             return ChiaWalletAssembly()
         case .near:
             return NEARWalletAssembly()
+        case .telos:
+            return TelosWalletAssembly()
         }
     }
     
