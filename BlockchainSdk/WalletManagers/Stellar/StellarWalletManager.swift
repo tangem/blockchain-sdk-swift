@@ -26,13 +26,14 @@ public enum StellarError: Int, Error, LocalizedError {
     // WARNING: Make sure to preserve the error codes when removing or inserting errors
     
     public var errorDescription: String? {
+        let networkName = Blockchain.stellar(curve: .ed25519, testnet: false).displayName
         switch self {
         case .requiresMemo:
             return "xlm_requires_memo_error".localized
         case .xlmCreateAccount:
-            return "no_account_generic".localized(["1", "XLM"])
+            return "no_account_generic".localized([networkName, "1", "XLM"])
         case .assetCreateAccount:
-            return "no_account_generic".localized(["1.5", "XLM"])
+            return "no_account_generic".localized([networkName, "1.5", "XLM"])
         case .assetNoAccountOnDestination:
             return "send_error_no_target_account".localized(["1 XLM"])
         case .assetNoTrustline:
@@ -87,12 +88,10 @@ class StellarWalletManager: BaseManager, WalletManager {
                 
             }
         }
-        let currentDate = Date()
-        for  index in wallet.transactions.indices {
-            if DateInterval(start: wallet.transactions[index].date!, end: currentDate).duration > 10 {
-                wallet.transactions[index].status = .confirmed
-            }
-        }
+
+        // We believe that a transaction will be confirmed within 10 seconds
+        let date = Date(timeIntervalSinceNow: -10)
+        wallet.removePendingTransaction(older: date)
     }
 }
 
@@ -122,15 +121,16 @@ extension StellarWalletManager: TransactionSender {
                 
                 return tx
             }
-            .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
-                self?.networkService.send(transaction: tx).tryMap {[weak self] sendResponse in
+            .flatMap {[weak self] hash -> AnyPublisher<TransactionSendResult, Error> in
+                self?.networkService.send(transaction: hash).tryMap {[weak self] sendResponse in
                     guard let self = self else { throw WalletError.empty }
                     
-                    self.wallet.add(transaction: transaction)
-                    
-                    return TransactionSendResult(hash: tx)
+                    let mapper = PendingTransactionRecordMapper()
+                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                    self.wallet.addPendingTransaction(record)
+                    return TransactionSendResult(hash: hash)
                 }
-                .mapError { SendTxError(error: $0, tx: tx) }
+                .mapError { SendTxError(error: $0, tx: hash) }
                 .eraseToAnyPublisher() ?? .emptyFail
             }
             .eraseToAnyPublisher()

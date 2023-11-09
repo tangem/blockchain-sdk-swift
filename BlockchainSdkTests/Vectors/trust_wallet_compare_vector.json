@@ -149,6 +149,11 @@
             "blockchain": "terra-2",
             "derivation": "m/44'/330'/0'/0/0",
             "walletPublicKey": "0243ac5946c42ff532bf6375cd62ce766da829d3942d0f33811c1d72694b1d3b5d"
+        },
+        {
+            "blockchain": "near",
+            "derivation": "m/44'/397'/0'",
+            "walletPublicKey": "b5cf12d432ee87dbc664e2700eeef72b3e814879b978bb9491e5796a63e85ee4"
         }
     ]
 }

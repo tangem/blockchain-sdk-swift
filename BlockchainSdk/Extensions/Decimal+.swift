@@ -56,15 +56,19 @@ extension Decimal {
         return rounded(scale: Int(blockchain.decimalCount))
     }
 
-    var uint64Value: UInt64 {
-        (self as NSDecimalNumber).uint64Value
+    var int64Value: Int64 {
+        decimalNumber.int64Value
     }
-    
+
+    var uint64Value: UInt64 {
+        decimalNumber.uint64Value
+    }
+
+    var decimalNumber: NSDecimalNumber {
+        self as NSDecimalNumber
+    }
+
     var roundedDecimalNumber: NSDecimalNumber {
         rounded(roundingMode: .up) as NSDecimalNumber
-    }
-    
-    var int64Value: Int64 {
-        (self as NSDecimalNumber).int64Value
     }
 }

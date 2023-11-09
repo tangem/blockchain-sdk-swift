@@ -14,18 +14,13 @@ class DucatusWalletManager: BitcoinWalletManager {
         txBuilder.unspentOutputs = singleResponse.unspentOutputs
         loadedUnspents = singleResponse.unspentOutputs
         if singleResponse.hasUnconfirmed {
-            if wallet.transactions.isEmpty {
+            if wallet.pendingTransactions.isEmpty {
                 wallet.addDummyPendingTransaction()
             }
         } else {
-            for index in wallet.transactions.indices {
-                if let txDate = wallet.transactions[index].date {
-                    let interval = Date().timeIntervalSince(txDate)
-                    if interval > 30 {
-                        wallet.transactions[index].status = .confirmed
-                    }
-                }
-            }
+            // We believe that a transaction will be confirmed within 30 seconds
+            let date = Date(timeIntervalSinceNow: -30)
+            wallet.removePendingTransaction(older: date)
         }
     }
 }

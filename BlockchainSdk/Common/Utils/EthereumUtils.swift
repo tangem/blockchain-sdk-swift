@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import BigInt
 
 public enum EthereumUtils {
     public static func parseEthereumDecimal(_ string: String, decimalsCount: Int) -> Decimal? {
@@ -39,6 +40,16 @@ public enum EthereumUtils {
         }
         
         return balanceEth as Decimal
+    }
+    
+    public static func mapToBigUInt(_ decimal: Decimal) -> BigUInt {
+        if decimal == .zero {
+            return .zero
+        } else if decimal == .greatestFiniteMagnitude {
+            return BigUInt(2).power(256) - 1
+        } else {
+            return BigUInt(decimal.uint64Value)
+        }
     }
     
     private static func dataToDecimal(_ data: Data, withBehavior handler: NSDecimalNumberHandler) -> NSDecimalNumber {

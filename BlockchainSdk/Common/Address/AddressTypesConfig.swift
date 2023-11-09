@@ -53,7 +53,8 @@ struct AddressTypesConfig {
              .cronos,
              .telos,
              .octa,
-             .chia:
+             .chia,
+             .near:
             return [.default]
         }
     }

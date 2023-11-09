@@ -105,6 +105,11 @@ public protocol WithdrawalValidator {
     func validate(_ transaction: Transaction) -> WithdrawalWarning?
 }
 
+@available(iOS 13.0, *)
+public protocol AddressResolver {
+    func resolve(_ address: String) async throws -> String
+}
+
 public struct WithdrawalWarning {
     public let warningMessage: String
     public let reduceMessage: String

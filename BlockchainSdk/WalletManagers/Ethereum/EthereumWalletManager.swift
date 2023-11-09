@@ -70,6 +70,33 @@ extension EthereumWalletManager: EthereumTransactionSigner {
 // MARK: - EthereumNetworkProvider
 
 extension EthereumWalletManager: EthereumNetworkProvider {
+    func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error> {
+        buildForSend(transaction)
+            .flatMap {[weak self] serializedTransaction -> AnyPublisher<String, Error> in
+                guard let self = self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+                
+                return self.networkService
+                    .send(transaction: serializedTransaction)
+                    .mapError { SendTxError(error: $0, tx: serializedTransaction) }
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func getAllowance(owner: String, spender: String, contractAddress: String) -> AnyPublisher<Decimal, Error> {
+        networkService.getAllowance(owner: owner, spender: spender, contractAddress: contractAddress)
+            .tryMap { response in
+                if let allowance = EthereumUtils.parseEthereumDecimal(response, decimalsCount: 0) {
+                    return allowance
+                }
+
+                throw ETHError.failedToParseAllowance
+            }
+            .eraseToAnyPublisher()
+    }
+    
     func getBalance(_ address: String) -> AnyPublisher<Decimal, Error> {
         networkService.getBalance(address)
     }
@@ -129,17 +156,17 @@ private extension EthereumWalletManager {
         pendingTxCount = response.pendingTxCount
         
         if txCount == pendingTxCount {
-            for index in wallet.transactions.indices {
-                wallet.transactions[index].status = .confirmed
-            }
+            wallet.clearPendingTransaction()
         } else if response.pendingTxs.isEmpty {
-            if wallet.transactions.isEmpty {
+            if wallet.pendingTransactions.isEmpty {
                 wallet.addDummyPendingTransaction()
             }
         } else {
-            wallet.transactions.removeAll()
+            wallet.clearPendingTransaction()
             response.pendingTxs.forEach {
-                wallet.addPendingTransaction($0)
+                let mapper = PendingTransactionRecordMapper()
+                let transaction = mapper.mapToPendingTransactionRecord($0, blockchain: wallet.blockchain)
+                wallet.addPendingTransaction(transaction)
             }
         }
     }
@@ -181,13 +208,13 @@ extension EthereumWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         sign(transaction, signer: signer)
             .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
-                self?.networkService.send(transaction: tx).tryMap {[weak self] sendResponse in
+                self?.networkService.send(transaction: tx).tryMap {[weak self] hash in
                     guard let self = self else { throw WalletError.empty }
                     
-                    var tx = transaction
-                    tx.hash = sendResponse
-                    self.wallet.add(transaction: tx)
-                    return TransactionSendResult(hash: sendResponse)
+                    let mapper = PendingTransactionRecordMapper()
+                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                    self.wallet.addPendingTransaction(record)
+                    return TransactionSendResult(hash: hash)
                 }
                 .mapError { SendTxError(error: $0, tx: tx) }
                 .eraseToAnyPublisher() ?? .emptyFail
@@ -247,30 +274,8 @@ extension EthereumWalletManager: EthereumTransactionProcessor {
         return .justWithError(output: "0x\(tx.toHexString())")
     }
     
-    func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error> {
-        buildForSend(transaction)
-            .flatMap {[weak self] serializedTransaction -> AnyPublisher<String, Error> in
-                guard let self = self else {
-                    return .anyFail(error: WalletError.empty)
-                }
-                
-                return self.networkService
-                    .send(transaction: serializedTransaction)
-                    .mapError { SendTxError(error: $0, tx: serializedTransaction) }
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
-    }
-
-    func getAllowance(from: String, to: String, contractAddress: String) -> AnyPublisher<Decimal, Error> {
-        networkService.getAllowance(from: from, to: to, contractAddress: contractAddress)
-            .tryMap { response in
-                if let allowance = EthereumUtils.parseEthereumDecimal(response, decimalsCount: 0) {
-                    return allowance
-                }
-
-                throw ETHError.failedToParseAllowance
-            }
-            .eraseToAnyPublisher()
+    func buildForApprove(spender: String, amount: Decimal) -> Data {
+        let bigUInt = EthereumUtils.mapToBigUInt(amount)
+        return ApproveERC20TokenMethod(spender: spender, amount: bigUInt).data
     }
 }

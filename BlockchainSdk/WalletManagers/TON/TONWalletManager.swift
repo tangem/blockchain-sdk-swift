@@ -75,7 +75,9 @@ final class TONWalletManager: BaseManager, WalletManager {
                 return self.networkService.send(message: message)
             }
             .map { [weak self] hash in
-                self?.wallet.add(transaction: transaction)
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                self?.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: hash)
             }
             .eraseToAnyPublisher()
@@ -136,9 +138,7 @@ private extension TONWalletManager {
     
     private func update(with info: TONWalletInfo, completion: @escaping (Result<Void, Error>) -> Void) {
         if info.sequenceNumber != txBuilder.sequenceNumber {
-            for index in wallet.transactions.indices {
-                wallet.transactions[index].status = .confirmed
-            }
+            wallet.clearPendingTransaction()
         }
         
         wallet.add(coinValue: info.balance)

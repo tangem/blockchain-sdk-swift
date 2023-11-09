@@ -17,7 +17,7 @@ class SolanaWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkService.host }
     
     override func update(completion: @escaping (Result<(), Error>) -> Void) {
-        let transactionIDs = wallet.transactions.compactMap { $0.hash }
+        let transactionIDs = wallet.pendingTransactions.map { $0.hash }
         
         cancellable = networkService.getInfo(accountId: wallet.address, tokens: cardTokens, transactionIDs: transactionIDs)
             .sink { [unowned self] in
@@ -42,10 +42,8 @@ class SolanaWalletManager: BaseManager, WalletManager {
             self.wallet.add(tokenValue: balance, for: cardToken)
         }
         
-        for (index, transaction) in wallet.transactions.enumerated() {
-            if let hash = transaction.hash, info.confirmedTransactionIDs.contains(hash) {
-                wallet.transactions[index].status = .confirmed
-            }
+        wallet.removePendingTransaction { hash in
+            info.confirmedTransactionIDs.contains(hash)
         }
     }
 }
@@ -65,15 +63,15 @@ extension SolanaWalletManager: TransactionSender {
         }
         
         return sendPublisher
-            .tryMap { [weak self] transactionID in
+            .tryMap { [weak self] hash in
                 guard let self = self else {
                     throw WalletError.empty
                 }
-                var sentTransaction = transaction
-                sentTransaction.hash = transactionID
-                self.wallet.add(transaction: sentTransaction)
-                
-                return TransactionSendResult(hash: transactionID)
+
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                self.wallet.addPendingTransaction(record)
+                return TransactionSendResult(hash: hash)
             }
             .eraseToAnyPublisher()
     }

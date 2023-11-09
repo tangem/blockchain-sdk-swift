@@ -36,19 +36,16 @@ class CardanoWalletManager: BaseManager, WalletManager {
         for (key, value) in response.tokenBalances {
             wallet.add(tokenValue: value, for: key)
         }
-
-        wallet.transactions = wallet.transactions.map {
-            var mutableTx = $0
-            let hashLowercased = mutableTx.hash?.lowercased()
-            if response.recentTransactionsHashes.isEmpty {
-                if response.unspentOutputs.isEmpty ||
-                    response.unspentOutputs.first(where: { $0.transactionHash.lowercased() == hashLowercased }) != nil {
-                    mutableTx.status = .confirmed
-                }
-            } else if response.recentTransactionsHashes.first(where: { $0.lowercased() == hashLowercased }) != nil {
-                mutableTx.status = .confirmed
+       
+        wallet.removePendingTransaction { hash in
+            response.recentTransactionsHashes.contains {
+                $0.caseInsensitiveCompare(hash) == .orderedSame
             }
-            return mutableTx
+        }
+
+        // If we have pending transaction but we haven't unspentOutputs then clear it
+        if response.recentTransactionsHashes.isEmpty, response.unspentOutputs.isEmpty {
+            wallet.clearPendingTransaction()
         }
     }
 }
@@ -91,16 +88,15 @@ extension CardanoWalletManager: TransactionSender {
                         .mapError { SendTxError(error: $0, tx: builtTransaction.hex) }
                         .eraseToAnyPublisher()
                 }
-                .tryMap { [weak self] txHash in
+                .tryMap { [weak self] hash in
                     guard let self = self else {
                         throw WalletError.empty
                     }
 
-                    var sendedTx = transaction
-                    sendedTx.hash = txHash
-                    self.wallet.add(transaction: sendedTx)
-
-                    return TransactionSendResult(hash: txHash)
+                    let mapper = PendingTransactionRecordMapper()
+                    let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+                    self.wallet.addPendingTransaction(record)
+                    return TransactionSendResult(hash: hash)
                 }
                 .eraseToAnyPublisher()
     }

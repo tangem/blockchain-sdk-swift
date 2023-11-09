@@ -16,8 +16,10 @@ class CosmosTransactionBuilder {
     private var accountNumber: UInt64?
     
     init(publicKey: Data, cosmosChain: CosmosChain) throws {
-        let isValid = try PublicKey.isValid(data: publicKey, type: PublicKeyType(cosmosChain.blockchain))
-        assert(isValid, "CosmosTransactionBuilder received invalid public key")
+        assert(
+            PublicKey.isValid(data: publicKey, type: .secp256k1),
+            "CosmosTransactionBuilder received invalid public key"
+        )
 
         self.publicKey = publicKey
         self.cosmosChain = cosmosChain

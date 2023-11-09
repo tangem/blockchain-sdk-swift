@@ -9,7 +9,7 @@
 "eth_gas_required_exceeds_allowance" = "沒有足夠的資金進行交易。請先入金";
 "generic_error_code" = "An error occurred. Code: %@.";
 "no_account_bnb" = "要創建帳戶，請將資金發送到此地址";
-"no_account_generic" = "加載 %1$@+ %2$@ 以創建帳戶";
+"no_account_generic" = "To use the %1$@ network, you must pay the account reserve (%2$@ %3$@), which locks up and hides that amount indefinitely";
 "no_account_polkadot" = "目標帳戶未激活。發送 %@ 或更多以激活帳戶";
 "no_trustline_xlm_asset" = "目標帳戶沒有用於發送資產的 trustline";
 "send_error_dust_amount_format" = "最小數量是 %@";

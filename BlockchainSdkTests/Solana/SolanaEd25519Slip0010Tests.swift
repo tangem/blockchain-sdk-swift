@@ -80,11 +80,15 @@ final class SolanaEd25519Slip0010Tests: XCTestCase {
     }
     
     func testCoinTransactionSize() {
-        let transaction = Transaction.dummyTx(blockchain: blockchain,
-                                              type: .coin,
-                                              sourceAddress: manager.wallet.address,
-                                              destinationAddress: "BmAzxn8WLYU3gEw79ATUdSUkMT53MeS5LjapBQB8gTPJ")
-        
+        let transaction = Transaction(
+            amount: .zeroCoin(for: blockchain),
+            fee: Fee(.zeroCoin(for: blockchain)),
+            sourceAddress: manager.wallet.address,
+            destinationAddress: "BmAzxn8WLYU3gEw79ATUdSUkMT53MeS5LjapBQB8gTPJ",
+            changeAddress: manager.wallet.address,
+            contractAddress: nil
+        )
+
         let expected = expectation(description: "Waiting for response")
         
         processResult(manager.send(transaction, signer: coinSigner), expectationToFill: expected)
@@ -92,13 +96,19 @@ final class SolanaEd25519Slip0010Tests: XCTestCase {
     }
     
     func testTokenTransactionSize() {
-        let transaction = Transaction.dummyTx(blockchain: blockchain,
-                                              type: .token(value: .init(name: "Solanax",
-                                                                        symbol: "SOLD",
-                                                                        contractAddress: "5v6tZ1SiAi7G8Qg4rBF1ZdAn4cn6aeQtefewMr1NLy61",
-                                                                        decimalCount: 9)),
-                                              sourceAddress: manager.wallet.address,
-                                              destinationAddress: "BmAzxn8WLYU3gEw79ATUdSUkMT53MeS5LjapBQB8gTPJ")
+        let type: Amount.AmountType = .token(
+            value: .init(name: "Solanax",
+                         symbol: "SOLD",
+                         contractAddress: "5v6tZ1SiAi7G8Qg4rBF1ZdAn4cn6aeQtefewMr1NLy61",
+                         decimalCount: 9)
+        )
+        let transaction = Transaction(
+            amount: Amount(with: blockchain, type: type, value: 0),
+            fee: Fee(Amount(with: blockchain, type: type, value: 0)),
+            sourceAddress: manager.wallet.address,
+            destinationAddress: "BmAzxn8WLYU3gEw79ATUdSUkMT53MeS5LjapBQB8gTPJ",
+            changeAddress: manager.wallet.address
+        )
         let expected = expectation(description: "Waiting for response")
         
         processResult(manager.send(transaction, signer: tokenSigner), expectationToFill: expected)

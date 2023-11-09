@@ -161,17 +161,7 @@ private extension EthereumTransactionHistoryMapper {
             return .transfer
         }
         
-        switch methodId {
-        case "0xa9059cbb": return .transfer
-        case "0xa1903eab": return .submit
-        case "0x095ea7b3": return .approve
-        case "0x617ba037": return .supply
-        case "0x69328dec": return .withdraw
-        case "0xe8eda9df": return .deposit
-        case "0x12aa3caf": return .swap
-        case "0x0502b1c5",  "0x2e95b6c8": return .unoswap
-        default: return .custom(id: methodId)
-        }
+        return .contractMethod(id: methodId)
     }
     
     func tokenTransfers(_ transaction: BlockBookAddressResponse.Transaction) -> [TransactionRecord.TokenTransfer]? {
