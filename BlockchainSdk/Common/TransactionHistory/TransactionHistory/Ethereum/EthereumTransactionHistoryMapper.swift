@@ -30,7 +30,7 @@ extension EthereumTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
         }
         
         return transactions.compactMap { transaction -> TransactionRecord? in
-            guard let source = source(transaction, amountType: amountType),
+            guard let source = source(transaction, walletAddress: response.address, amountType: amountType),
                   let destination = destination(transaction, walletAddress: response.address, amountType: amountType),
                   let feeWei = Decimal(transaction.fees) else {
                 Log.debug("BlockBookAddressResponse.Transaction \(transaction) doesn't contain a required information")
@@ -88,7 +88,7 @@ private extension EthereumTransactionHistoryMapper {
         }
     }
     
-    func source(_ transaction: BlockBookAddressResponse.Transaction, amountType: Amount.AmountType) -> TransactionRecord.Source? {
+    func source(_ transaction: BlockBookAddressResponse.Transaction,  walletAddress: String, amountType: Amount.AmountType) -> TransactionRecord.Source? {
         guard let vin = transaction.vin.first, let address = vin.addresses.first else {
             Log.debug("Source information in transaction \(transaction) not found")
             return nil
@@ -101,13 +101,21 @@ private extension EthereumTransactionHistoryMapper {
             }
         case .token(let token):
             let tokenTransfers = transaction.tokenTransfers ?? []
-            let transfer = tokenTransfers.first(where: { transfer in
+            let transfers = tokenTransfers.filter { transfer in
                 guard let contract = transfer.contract else {
                     return false
                 }
                 
                 return isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: contract)
-            })
+            }
+            
+            let transfer: BlockBookAddressResponse.TokenTransfer? = {
+                if transfers.count == 1, let first = transfers.first {
+                    return first
+                }
+                
+                return transfers.first { isCaseInsensitiveMatch(lhs: $0.from, rhs: walletAddress) }
+            }()
             
             if let transfer, let amount = Decimal(transfer.value) {
                 let decimalValue = pow(10, transfer.decimals)
@@ -133,13 +141,21 @@ private extension EthereumTransactionHistoryMapper {
                 return TransactionRecord.Destination(address: isContract ? .contract(address) : .user(address), amount: amount / decimalValue)
             }
         case .token(let token):
-            let transfer = tokenTransfers.last(where: {  transfer in
+            let transfers = tokenTransfers.filter { transfer in
                 guard let contract = transfer.contract else {
                     return false
                 }
                 
                 return isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: contract)
-            })
+            }
+            
+            let transfer: BlockBookAddressResponse.TokenTransfer? = {
+                if transfers.count == 1, let first = transfers.first {
+                    return first
+                }
+                
+                return transfers.first { isCaseInsensitiveMatch(lhs: $0.to, rhs: walletAddress) }
+            }()
 
             if let transfer, let amount = Decimal(transfer.value) {
                 let decimalValue = pow(10, transfer.decimals)
