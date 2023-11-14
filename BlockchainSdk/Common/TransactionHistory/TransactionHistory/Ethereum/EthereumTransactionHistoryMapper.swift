@@ -203,3 +203,10 @@ private extension EthereumTransactionHistoryMapper {
         return lhs.caseInsensitiveCompare(rhs) == .orderedSame
     }
 }
+
+// MARK: - Convenience extensions
+
+@inline(__always)
+fileprivate func log(file: StaticString = #fileID, line: UInt = #line, _ message: @autoclosure () -> String) {
+    Log.debug("\(file):\(line): \(message())")
+}
