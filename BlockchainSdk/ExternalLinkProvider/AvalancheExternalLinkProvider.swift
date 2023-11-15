@@ -18,25 +18,32 @@ struct AvalancheExternalLinkProvider {
 
 extension AvalancheExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? {
-        return URL(string: "https://faucet.avax-test.network/")
+        return URL(string: "https://core.app/tools/testnet-faucet/")
     }
     
     func url(transaction hash: String) -> URL {
         if isTestnet {
-            return URL(string: "https://testnet.snowtrace.io/tx/\(hash)")!
+            return URL(string: "https://testnet.avascan.info/blockchain/c/tx/\(hash)")!
         }
 
-        return URL(string: "https://snowtrace.io/tx/\(hash)")!
-    }
-    
-    func url(address: String, contractAddress: String?) -> URL {
-        let baseUrl = isTestnet ? "https://testnet.snowtrace.io/" : "https://snowtrace.io/"
-        if let contractAddress {
-            let url = baseUrl + "token/\(contractAddress)?a=\(address)"
-            return URL(string: url)!
+        // The official network explorer ('subnets.avax.network') simply won't load in any browser on iOS 15 and earlier versions
+        if #available(iOS 16.0, *) {
+            return URL(string: "https://subnets.avax.network/c-chain/tx/\(hash)")!
         }
-        
-        let url = baseUrl + "address/\(address)"
-        return URL(string: url)!
+
+        return URL(string: "https://avascan.info/blockchain/c/tx/\(hash)")!
+    }
+
+    func url(address: String, contractAddress: String?) -> URL {
+        if isTestnet {
+            return URL(string: "https://testnet.avascan.info/blockchain/c/address/\(address)")!
+        }
+
+        // The official network explorer ('subnets.avax.network') simply won't load in any browser on iOS 15 and earlier versions
+        if #available(iOS 16.0, *) {
+            return URL(string: "https://subnets.avax.network/c-chain/address/\(address)")!
+        }
+
+        return URL(string: "https://avascan.info/blockchain/c/address/\(address)")!
     }
 }
