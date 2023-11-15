@@ -941,4 +941,13 @@ class AddressesTests: XCTestCase {
         XCTAssertFalse(addressService.validate(""))
         XCTAssertFalse(addressService.validate("9a4b6c1e2d8f3a5b7e8d9a1c3b2e4d5f6a7b8c9d0e1f2a3b4c5d6e7f8a4b6c1e2d8f3"))
     }
+    
+    func testDecimalAddressService() throws {
+        let walletPublicKey = Data(hexString: "04BAEC8CD3BA50FDFE1E8CF2B04B58E17041245341CD1F1C6B3A496B48956DB4C896A6848BCF8FCFC33B88341507DD25E5F4609386C68086C74CF472B86E5C3820")
+        
+        let addressService = DecimalAddressService(isTestnet: false)
+        let addressValue = try addressService.makeAddress(from: walletPublicKey)
+        
+        let expectedAddress = "0xc63763572D45171e4C25cA0818b44E5Dd7F5c15B"
+    }
 }

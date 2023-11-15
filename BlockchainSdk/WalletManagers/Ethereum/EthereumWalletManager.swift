@@ -44,11 +44,9 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Transa
                 completion(.success(()))
             })
     }
-}
-
-// MARK: - EthereumTransactionSigner
-
-extension EthereumWalletManager: EthereumTransactionSigner {
+    
+    // MARK: - EthereumTransactionSigner
+    
     func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
         guard let txForSign = txBuilder.buildForSign(transaction: transaction, nonce: txCount) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
