@@ -94,6 +94,8 @@ public struct AddressServiceFactory {
             return ChiaAddressService(isTestnet: isTestnet)
         case .near:
             return NEARAddressService()
+        case .decimal:
+            return DecimalAddressService(isTestnet: isTestnet)
         }
     }
 }
