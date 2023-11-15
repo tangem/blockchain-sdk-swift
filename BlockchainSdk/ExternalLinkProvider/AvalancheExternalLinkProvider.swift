@@ -31,16 +31,8 @@ extension AvalancheExternalLinkProvider: ExternalLinkProvider {
 
     func url(address: String, contractAddress: String?) -> URL {
         if isTestnet {
-            let baseUrlString = "https://testnet.avascan.info/blockchain/c/"
+            return URL(string: "https://testnet.avascan.info/blockchain/c/address/\(address)")!
 
-            if let contractAddress = contractAddress {
-                let urlString = baseUrlString + "token/\(contractAddress)?a=\(address)"
-                return URL(string: urlString)!
-            }
-
-            let urlString = baseUrlString + "address/\(address)"
-
-            return URL(string: urlString)!
         }
 
         return URL(string: "https://subnets.avax.network/c-chain/address/\(address)")!
