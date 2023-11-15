@@ -69,7 +69,10 @@ extension BlockBookAddressResponse {
         let type: String?
         let from: String
         let to: String
+        /// - Warning: For some blockchains (e.g. Ethereum POW) the contract address is stored
+        /// in the `token` field instead of the `contract` field of the response.
         let contract: String?
+        let token: String?
         let name: String?
         let symbol: String?
         let decimals: Int

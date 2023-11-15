@@ -30,10 +30,12 @@ extension EthereumTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
         }
         
         return transactions.compactMap { transaction -> TransactionRecord? in
-            guard let source = source(transaction, amountType: amountType),
-                  let destination = destination(transaction, walletAddress: response.address, amountType: amountType),
-                  let feeWei = Decimal(transaction.fees) else {
-                Log.debug("BlockBookAddressResponse.Transaction \(transaction) doesn't contain a required information")
+            guard
+                let source = source(transaction, walletAddress: response.address, amountType: amountType),
+                let destination = destination(transaction, walletAddress: response.address, amountType: amountType),
+                let feeWei = Decimal(transaction.fees)
+            else {
+                log("BlockBookAddressResponse.Transaction \(transaction) doesn't contain a required information")
                 return nil
             }
             
@@ -71,26 +73,96 @@ private extension EthereumTransactionHistoryMapper {
             return .unconfirmed
         }
     }
-    
-    func isOutgoing(_ transaction: BlockBookAddressResponse.Transaction, walletAddress: String, amountType: Amount.AmountType) -> Bool {
+
+    /// Determines the direction of tokens transfer from a given transaction for a given address and token pair.
+    ///
+    /// - Note: Currently, we don't support and therefore can't parse and display multiple transfers of the same token
+    /// to/from the same address in a single transaction.
+    /// Because of that, the direction of token transfer may be determined incorrectly in such cases.
+    /// Consider adding such support (refactoring will likely be required).
+    func isOutgoing(
+        _ transaction: BlockBookAddressResponse.Transaction,
+        walletAddress: String,
+        amountType: Amount.AmountType
+    ) -> Bool {
         switch amountType {
         case .coin, .reserve:
             return transaction.vin.first?.addresses.first == walletAddress
         case .token(let token):
-            let transfer = transaction.tokenTransfers?.first(where: { transfer in
-                guard let contract = transfer.contract else { 
+            if transaction.tokenTransfers == nil {
+                log("""
+                Unable to determine the direction of a tokens transfer in transaction \(transaction) \
+                due to missing tokens transfers field
+                """)
+            }
+
+            let allTokenTransfers = transaction.tokenTransfers ?? []
+            let filteredTokenTransfers = allTokenTransfers.filter { transfer in
+                guard let contract = transfer._contract else {
                     return false
                 }
 
                 return isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: contract)
-            })
-            return transfer?.from == walletAddress
+            }
+
+            if filteredTokenTransfers.isEmpty {
+                log("""
+                Unable to determine the direction of a tokens transfer in transaction \(transaction) \
+                due to empty tokens transfers array
+                """)
+            }
+
+            return filteredTokenTransfers.contains { $0.from == walletAddress }
         }
     }
+
+    /// Build information about exactly one tokens transfer from a given transaction for a given address and token pair.
+    ///
+    /// - Note: Currently, we don't support and therefore can't parse and display multiple transfers of the same token
+    /// to/from the same address in a single transaction.
+    /// Consider adding such support (refactoring will likely be required).
+    func tokensTransferInfo(
+        from transaction: BlockBookAddressResponse.Transaction,
+        walletAddress: String,
+        amountType: Amount.AmountType
+    ) -> (transfer: BlockBookAddressResponse.TokenTransfer, isOutgoing: Bool)? {
+        guard let token = amountType.token else {
+            log("Incorrect amount type \(amountType) for transaction \(transaction)")
+            return nil
+        }
+
+        let isOutgoing = isOutgoing(transaction, walletAddress: walletAddress, amountType: amountType)
+        let allTokenTransfers = transaction.tokenTransfers ?? []
+
+        let filteredTokenTransfers = allTokenTransfers.filter { transfer in
+            guard let contract = transfer._contract else {
+                return false
+            }
+
+            return isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: contract)
+        }
+
+        if filteredTokenTransfers.count == 1 {
+            return (filteredTokenTransfers[0], isOutgoing)
+        }
+
+        // In the case of multiple token transfers to and from different addresses within a single EVM transaction,
+        // we have to find a single token transfer that was made by us
+        return filteredTokenTransfers
+            .first { transfer in
+                let otherAddress = isOutgoing ? transfer.from : transfer.to
+                return isCaseInsensitiveMatch(lhs: walletAddress, rhs: otherAddress)
+            }
+            .map { ($0, isOutgoing) }
+    }
     
-    func source(_ transaction: BlockBookAddressResponse.Transaction, amountType: Amount.AmountType) -> TransactionRecord.Source? {
+    func source(
+        _ transaction: BlockBookAddressResponse.Transaction,
+        walletAddress: String,
+        amountType: Amount.AmountType
+    ) -> TransactionRecord.Source? {
         guard let vin = transaction.vin.first, let address = vin.addresses.first else {
-            Log.debug("Source information in transaction \(transaction) not found")
+            log("Source information in transaction \(transaction) not found")
             return nil
         }
         
@@ -100,51 +172,47 @@ private extension EthereumTransactionHistoryMapper {
                 return TransactionRecord.Source(address: address, amount: amount / decimalValue)
             }
         case .token(let token):
-            let tokenTransfers = transaction.tokenTransfers ?? []
-            let transfer = tokenTransfers.first(where: { transfer in
-                guard let contract = transfer.contract else {
-                    return false
-                }
-                
-                return isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: contract)
-            })
-            
-            if let transfer, let amount = Decimal(transfer.value) {
+            let info = tokensTransferInfo(from: transaction, walletAddress: walletAddress, amountType: amountType)
+            if let transfer = info?.transfer, let amount = Decimal(transfer.value) {
                 let decimalValue = pow(10, transfer.decimals)
-                return TransactionRecord.Source(address: address, amount: amount / decimalValue)
+                return TransactionRecord.Source(
+                    address: address,
+                    amount: amount / decimalValue
+                )
             }
         }
         
         return nil
     }
     
-    func destination(_ transaction: BlockBookAddressResponse.Transaction, walletAddress: String, amountType: Amount.AmountType) -> TransactionRecord.Destination? {
+    func destination(
+        _ transaction: BlockBookAddressResponse.Transaction,
+        walletAddress: String,
+        amountType: Amount.AmountType
+    ) -> TransactionRecord.Destination? {
         guard let vout = transaction.vout.first, let address = vout.addresses.first else {
-            Log.debug("Destination information in transaction \(transaction) not found")
+            log("Destination information in transaction \(transaction) not found")
             return nil
         }
-        
-        let tokenTransfers = transaction.tokenTransfers ?? []
-        
+
         switch amountType {
         case .coin, .reserve:
             if let amount = Decimal(string: transaction.value) {
+                let tokenTransfers = transaction.tokenTransfers ?? []
                 let isContract = !tokenTransfers.isEmpty
-                return TransactionRecord.Destination(address: isContract ? .contract(address) : .user(address), amount: amount / decimalValue)
+                return TransactionRecord.Destination(
+                    address: isContract ? .contract(address) : .user(address),
+                    amount: amount / decimalValue
+                )
             }
         case .token(let token):
-            let transfer = tokenTransfers.last(where: {  transfer in
-                guard let contract = transfer.contract else {
-                    return false
-                }
-                
-                return isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: contract)
-            })
-
-            if let transfer, let amount = Decimal(transfer.value) {
+            let info = tokensTransferInfo(from: transaction, walletAddress: walletAddress, amountType: amountType)
+            if let (transfer, isOutgoing) = info, let amount = Decimal(transfer.value) {
                 let decimalValue = pow(10, transfer.decimals)
-                let isOutgoing = transfer.from == walletAddress
-                return TransactionRecord.Destination(address: isOutgoing ? .user(transfer.to) : .user(transfer.from), amount: amount / decimalValue)
+                return TransactionRecord.Destination(
+                    address: isOutgoing ? .user(transfer.to) : .user(transfer.from),
+                    amount: amount / decimalValue
+                )
             }
         }
         
@@ -178,7 +246,7 @@ private extension EthereumTransactionHistoryMapper {
                 name: transfer.name,
                 symbol: transfer.symbol,
                 decimals: transfer.decimals,
-                contract: transfer.contract
+                contract: transfer._contract
             )
         }
     }
@@ -186,4 +254,17 @@ private extension EthereumTransactionHistoryMapper {
     func isCaseInsensitiveMatch(lhs: String, rhs: String) -> Bool {
         return lhs.caseInsensitiveCompare(rhs) == .orderedSame
     }
+}
+
+// MARK: - Convenience extensions
+
+private extension BlockBookAddressResponse.TokenTransfer {
+    /// For some blockchains (e.g. Ethereum POW) the contract address is stored
+    /// in the `token` field instead of the `contract` field of the response.
+    var _contract: String? { contract ?? token }
+}
+
+@inline(__always)
+fileprivate func log(file: StaticString = #fileID, line: UInt = #line, _ message: @autoclosure () -> String) {
+    Log.debug("\(file):\(line): \(message())")
 }

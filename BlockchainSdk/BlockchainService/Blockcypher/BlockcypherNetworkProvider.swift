@@ -200,11 +200,7 @@ extension BlockcypherNetworkProvider: EthereumAdditionalInfoProvider {
                 let ethBalance = balance / self.endpoint.blockchain.decimalValue
                 var pendingTxs: [PendingTransaction] = []
                 
-                var croppedAddress = address
-                if croppedAddress.starts(with: "0x") {
-                    croppedAddress.removeFirst(2)
-                }
-                croppedAddress = croppedAddress.lowercased()
+                let croppedAddress = address.removeHexPrefix().lowercased()
                 
                 response.txs?.forEach { tx in
                     guard tx.blockHeight == -1 else { return }
@@ -212,10 +208,10 @@ extension BlockcypherNetworkProvider: EthereumAdditionalInfoProvider {
                     var pendingTx = tx.toPendingTx(userAddress: croppedAddress, decimalValue: self.endpoint.blockchain.decimalValue)
                     if pendingTx.source == croppedAddress {
                         pendingTx.source = address
-                        pendingTx.destination = "0x" + pendingTx.destination
+                        pendingTx.destination = pendingTx.destination.addHexPrefix()
                     } else if pendingTx.destination == croppedAddress {
                         pendingTx.destination = address
-                        pendingTx.source = "0x" + pendingTx.source
+                        pendingTx.source = pendingTx.source.addHexPrefix()
                     }
                     pendingTxs.append(pendingTx)
                }
