@@ -146,6 +146,8 @@ private extension EthereumTransactionHistoryMapper {
             return (filteredTokenTransfers[0], isOutgoing)
         }
 
+        // In the case of multiple token transfers to and from different addresses within a single EVM transaction,
+        // we have to find a single token transfer that was made by us
         return filteredTokenTransfers
             .first { transfer in
                 let otherAddress = isOutgoing ? transfer.from : transfer.to
