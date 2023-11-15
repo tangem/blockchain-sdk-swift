@@ -78,7 +78,7 @@ private extension EthereumTransactionHistoryMapper {
             return transaction.vin.first?.addresses.first == walletAddress
         case .token(let token):
             let transfer = transaction.tokenTransfers?.first(where: { transfer in
-                guard let contract = transfer.contract else { 
+                guard let contract = transfer._contract else {
                     return false
                 }
 
@@ -102,7 +102,7 @@ private extension EthereumTransactionHistoryMapper {
         case .token(let token):
             let tokenTransfers = transaction.tokenTransfers ?? []
             let transfers = tokenTransfers.filter { transfer in
-                guard let contract = transfer.contract else {
+                guard let contract = transfer._contract else {
                     return false
                 }
                 
@@ -142,7 +142,7 @@ private extension EthereumTransactionHistoryMapper {
             }
         case .token(let token):
             let transfers = tokenTransfers.filter { transfer in
-                guard let contract = transfer.contract else {
+                guard let contract = transfer._contract else {
                     return false
                 }
                 
@@ -194,7 +194,7 @@ private extension EthereumTransactionHistoryMapper {
                 name: transfer.name,
                 symbol: transfer.symbol,
                 decimals: transfer.decimals,
-                contract: transfer.contract
+                contract: transfer._contract
             )
         }
     }
@@ -202,4 +202,12 @@ private extension EthereumTransactionHistoryMapper {
     func isCaseInsensitiveMatch(lhs: String, rhs: String) -> Bool {
         return lhs.caseInsensitiveCompare(rhs) == .orderedSame
     }
+}
+
+// MARK: - Convenience extensions
+
+private extension BlockBookAddressResponse.TokenTransfer {
+    /// For some blockchains (e.g. Ethereum POW) the contract address is stored
+    /// in the `token` field instead of the `contract` field of the response.
+    var _contract: String? { contract ?? token }
 }
