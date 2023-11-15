@@ -98,7 +98,7 @@ private extension EthereumTransactionHistoryMapper {
 
             let allTokenTransfers = transaction.tokenTransfers ?? []
             let filteredTokenTransfers = allTokenTransfers.filter { transfer in
-                guard let contract = transfer.contract else {
+                guard let contract = transfer._contract else {
                     return false
                 }
 
@@ -135,7 +135,7 @@ private extension EthereumTransactionHistoryMapper {
         let allTokenTransfers = transaction.tokenTransfers ?? []
 
         let filteredTokenTransfers = allTokenTransfers.filter { transfer in
-            guard let contract = transfer.contract else {
+            guard let contract = transfer._contract else {
                 return false
             }
 
@@ -246,7 +246,7 @@ private extension EthereumTransactionHistoryMapper {
                 name: transfer.name,
                 symbol: transfer.symbol,
                 decimals: transfer.decimals,
-                contract: transfer.contract
+                contract: transfer._contract
             )
         }
     }
@@ -257,6 +257,12 @@ private extension EthereumTransactionHistoryMapper {
 }
 
 // MARK: - Convenience extensions
+
+private extension BlockBookAddressResponse.TokenTransfer {
+    /// For some blockchains (e.g. Ethereum POW) the contract address is stored
+    /// in the `token` field instead of the `contract` field of the response.
+    var _contract: String? { contract ?? token }
+}
 
 @inline(__always)
 fileprivate func log(file: StaticString = #fileID, line: UInt = #line, _ message: @autoclosure () -> String) {
