@@ -7,35 +7,40 @@
 //
 
 import Foundation
+import HDWalletKit
 
 struct DecimalUtils {
+    
+    // MARK: - Private Properties
+    
+    private let bech32 = Bech32()
+    
+    // MARK: - Implementation
+    
     func convertDscAddressToErcAddress(addressHex: String) -> String? {
-        let bech32 = Bech32()
-        
         if addressHex.starts(with: Constants.erc55AddressPrefix) {
             return addressHex
         }
-
+        
         guard let decodeValue = try? bech32.decode(addressHex) else {
             return nil
         }
+        
+        guard let convertedAddressBytes = try? bech32.convertBits(data: decodeValue.checksum.bytes, fromBits: 5, toBits: 8, pad: false) else {
+            return nil
+        }
 
-        let checksumBytes = try? Data(bech32.convertBits(data: decodeValue.checksum.bytes, fromBits: 5, toBits: 8, pad: false))
-
-        return checksumBytes?.toHexString()
+        return convertedAddressBytes.toHexString()
     }
 
     func convertErcAddressToDscAddress(addressHex: String) throws -> String {
-        let bech32 = Bech32()
-        
-        if addressHex.starts(with:Constants.addressPrefix) || addressHex.starts(with: Constants.legacyAddressPrefix) {
+        if addressHex.starts(with: Constants.addressPrefix) || addressHex.starts(with: Constants.legacyAddressPrefix) {
             return addressHex
         }
 
         let addressBytes = Data(hexString: addressHex)
-        let checksumBytes = try Data(bech32.convertBits(data: addressBytes.bytes, fromBits: 5, toBits: 8, pad: false))
 
-        return bech32.encode(Constants.addressPrefix, values: checksumBytes)
+        return bech32.encode(Constants.addressPrefix, values: addressBytes)
     }
 }
 

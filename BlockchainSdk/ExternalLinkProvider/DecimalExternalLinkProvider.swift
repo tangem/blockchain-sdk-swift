@@ -26,7 +26,8 @@ struct DecimalExternalLinkProvider: ExternalLinkProvider {
     }
 
     func url(address: String, contractAddress: String?) -> URL {
-        URL(string: "\(baseExplorerUrl)/address/\(address)")!
+        let copyAddress = (try? DecimalUtils().convertErcAddressToDscAddress(addressHex: address)) ?? address
+        return URL(string: "\(baseExplorerUrl)/address/\(copyAddress)")!
     }
 
     func url(transaction hash: String) -> URL {
