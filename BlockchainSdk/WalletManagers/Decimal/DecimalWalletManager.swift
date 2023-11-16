@@ -13,7 +13,18 @@ import TangemSdk
 final class DecimalWalletManager: EthereumWalletManager {
     
     override func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
-        super.sign(transaction, signer: signer)
+        let convertedDestinationAddress = convertAddress(destinationAddress: transaction.destinationAddress)
+        
+        let copyTransaction = Transaction(
+            amount: transaction.amount,
+            fee: transaction.fee,
+            sourceAddress: transaction.sourceAddress,
+            destinationAddress: convertedDestinationAddress,
+            changeAddress: transaction.changeAddress,
+            params: transaction.params
+        )
+        
+        return super.sign(copyTransaction, signer: signer)
     }
     
     // MARK: - Private Implementation

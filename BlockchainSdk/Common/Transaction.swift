@@ -25,7 +25,8 @@ public struct Transaction {
         sourceAddress: String,
         destinationAddress: String,
         changeAddress: String,
-        contractAddress: String? = nil
+        contractAddress: String? = nil,
+        params: TransactionParams? = nil
     ) {
         self.amount = amount
         self.fee = fee
@@ -33,6 +34,7 @@ public struct Transaction {
         self.destinationAddress = destinationAddress
         self.changeAddress = changeAddress
         self.contractAddress = contractAddress
+        self.params = params
     }
 }
 

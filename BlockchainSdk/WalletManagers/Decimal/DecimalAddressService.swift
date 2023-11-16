@@ -7,15 +7,15 @@
 //
 
 import Foundation
-import HDWalletKit
 import TangemSdk
 
-final class DecimalAddressService {
+struct DecimalAddressService {
     
     // MARK: - Private Properties
     
     private let isTestnet: Bool
-    private let bech32 = Bech32()
+    private let bech32 = Bech32(variant: .bech32)
+    private let utils = DecimalUtils()
     
     init(isTestnet: Bool) {
         self.isTestnet = isTestnet
@@ -27,21 +27,54 @@ final class DecimalAddressService {
 extension DecimalAddressService: AddressProvider {
     func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
         var valueAddress = try makeErcAddress(walletPublicKey: publicKey)
+        let dscAddress = try utils.convertErcAddressToDscAddress(addressHex: valueAddress)
+        
+        
+//        print(valueAddress)
+//        print(dscAddress)
+//        try print(utils.convertDscAddressToErcAddress(addressHex: dscAddress))
         
         switch addressType {
         case .default:
             break
         case .legacy:
-            valueAddress = try convertErcAddressToDscAddress(addressHex: valueAddress)
+            valueAddress = try utils.convertErcAddressToDscAddress(addressHex: valueAddress)
         }
         
         return .init(value: valueAddress, publicKey: publicKey, type: addressType)
     }
     
     private func makeErcAddress(walletPublicKey: Wallet.PublicKey) throws -> String {
-        let walletPublicKeyData = try Secp256k1Key(with: walletPublicKey.blockchainKey).decompress().bytes[1...64]
-        let ercAddress = EIP55.encode(Data(walletPublicKeyData))
-        return ercAddress
+        let walletPublicKey = try Secp256k1Key(with: walletPublicKey.blockchainKey).decompress()
+        //skip secp256k1 prefix
+        let keccak = walletPublicKey[1...].sha3(.keccak256)
+        let addressBytes = keccak[12...]
+        let address = addressBytes.hexString.addHexPrefix()
+        let checksumAddress = toChecksumAddress(address)!
+        return checksumAddress
+    }
+    
+    private func toChecksumAddress(_ address: String) -> String? {
+        let address = address.lowercased().removeHexPrefix()
+        guard let hash = address.data(using: .utf8)?.sha3(.keccak256).hexString.lowercased().removeHexPrefix() else {
+            return nil
+        }
+        
+        var ret = "0x"
+        let hashChars = Array(hash)
+        let addressChars = Array(address)
+        for i in 0..<addressChars.count {
+            guard let intValue = Int(String(hashChars[i]), radix: 16) else {
+                return nil
+            }
+            
+            if intValue >= 8 {
+                ret.append(addressChars[i].uppercased())
+            } else {
+                ret.append(addressChars[i])
+            }
+        }
+        return ret
     }
 }
 
@@ -49,39 +82,30 @@ extension DecimalAddressService: AddressProvider {
 
 extension DecimalAddressService: AddressValidator {
     func validate(_ address: String) -> Bool {
-        return false
-    }
-}
-
-// MARK: - Convertation
-
-extension DecimalAddressService {
-    
-    func convertDscAddressToErcAddress(addressHex: String) -> String? {
-        if addressHex.starts(with: Constants.erc55AddressPrefix) {
-            return addressHex
+        guard let ercAddress = utils.convertDscAddressToErcAddress(addressHex: address) else {
+            return false
         }
 
-        guard let decodeValue = try? bech32.decode(addressHex) else {
-            return nil
+        guard !ercAddress.isEmpty,
+              ercAddress.hasHexPrefix(),
+              ercAddress.count == 42
+        else {
+            return false
         }
 
-        let checksumBytes = try? Data(bech32.convertBits(data: decodeValue.checksum.bytes, fromBits: 5, toBits: 8, pad: false))
 
-        return checksumBytes?.toHexString()
-    }
-
-    func convertErcAddressToDscAddress(addressHex: String) throws -> String {
-        if addressHex.starts(with:Constants.addressPrefix) || addressHex.starts(with: Constants.legacyAddressPrefix) {
-            return addressHex
+        if let checksummed = toChecksumAddress(ercAddress),
+           checksummed == address {
+            return true
+        } else {
+            let cleanHex = address.stripHexPrefix()
+            if cleanHex.lowercased() != cleanHex && cleanHex.uppercased() != cleanHex {
+                return false
+            }
         }
 
-        let addressBytes = Data(hexString: addressHex)
-        let checksumBytes = try Data(bech32.convertBits(data: addressBytes.bytes, fromBits: 5, toBits: 8, pad: false))
-
-        return bech32.encode(Constants.addressPrefix, values: checksumBytes)
+        return true
     }
-    
 }
 
 // MARK: - Constants
