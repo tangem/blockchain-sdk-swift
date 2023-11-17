@@ -22,15 +22,19 @@ struct DecimalUtils {
             return addressHex
         }
         
-        guard let decodeValue = try? bech32.decode(addressHex) else {
-            return nil
-        }
-        
-        guard let convertedAddressBytes = try? bech32.convertBits(data: decodeValue.checksum.bytes, fromBits: 5, toBits: 8, pad: false) else {
+        guard 
+            let decodeValue = try? bech32.decode(addressHex),
+            let convertedAddressBytes = try? bech32.convertBits(
+                data: decodeValue.checksum.bytes,
+                fromBits: 5,
+                toBits: 8,
+                pad: false
+            )
+        else {
             return nil
         }
 
-        return convertedAddressBytes.toHexString()
+        return convertedAddressBytes.toHexString().addHexPrefix()
     }
 
     func convertErcAddressToDscAddress(addressHex: String) throws -> String {
