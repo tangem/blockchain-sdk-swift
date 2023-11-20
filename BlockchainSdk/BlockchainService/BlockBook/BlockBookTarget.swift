@@ -64,10 +64,13 @@ struct BlockBookTarget: TargetType {
     }
     
     var headers: [String : String]? {
-        [
-            "Content-Type": contentType,
-            config.apiKeyName: config.apiKeyValue,
-        ]
+        var headers = ["Content-Type": contentType]
+        
+        if case .header(let name, let value) = config.rawValue {
+            headers[name] = value
+        }
+        
+        return headers
     }
     
     private var contentType: String {

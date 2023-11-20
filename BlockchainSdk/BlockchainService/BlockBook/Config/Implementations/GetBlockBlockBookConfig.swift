@@ -8,34 +8,33 @@
 
 import Foundation
 
-struct GetBlockBlockBookConfig {
-    private let apiKey: String
+struct GetBlockBlockBookConfig: BlockBookConfig {
+    let rawValue: BlockBookConfigTypeValue
     
-    init(apiKey: String) {
-        self.apiKey = apiKey
+    init(_ rawValue: BlockBookConfigTypeValue) {
+        self.rawValue = rawValue
     }
 }
 
-extension GetBlockBlockBookConfig: BlockBookConfig {
-    var apiKeyValue: String {
-        return apiKey
-    }
-    
-    var apiKeyName: String {
-        return Constants.xApiKeyHeaderName
-    }
+extension GetBlockBlockBookConfig {
     
     var host: String {
         return "getblock.io"
     }
     
     func node(for blockchain: Blockchain) -> BlockBookNode {
-        let currencySymbolPrefix = blockchain.currencySymbol.lowercased()
+        if case .host(let values) = rawValue {
+            if let apiKeyValue = values[blockchain] {
+                return BlockBookNode(
+                    rpcNode: "https://go.\(host)/\(apiKeyValue)",
+                    restNode: "https://go.\(host)/\(apiKeyValue)"
+                )
+            } else {
+                fatalError("GetBlockBlockBookConfig don't support blockchain: \(blockchain.displayName)")
+            }
+        }
         
-        return BlockBookNode(
-            rpcNode: "https://\(currencySymbolPrefix).\(host)",
-            restNode: "https://\(currencySymbolPrefix).\(host)"
-        )
+        fatalError("NowNodesBlockBookConfig don't support HEADER API KEY value type blockchain: \(blockchain.displayName)")
     }
     
     func path(for request: BlockBookTarget.Request) -> String {
