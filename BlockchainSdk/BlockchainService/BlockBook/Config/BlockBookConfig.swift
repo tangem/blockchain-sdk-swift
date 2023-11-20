@@ -9,16 +9,11 @@
 import Foundation
 
 protocol BlockBookConfig {
-    var rawValue: BlockBookConfigTypeValue { get }
-    var host: String { get }
+    var apiKeyHeaderName: String? { get }
+    var apiKeyHeaderValue: String? { get }
     
-    init(_ value: BlockBookConfigTypeValue)
+    var host: String { get }
     
     func node(for blockchain: Blockchain) -> BlockBookNode
     func path(for request: BlockBookTarget.Request) -> String
-}
-
-enum BlockBookConfigTypeValue {
-    case host(_ values: [Blockchain: String])
-    case header(name: String, value: String)
 }

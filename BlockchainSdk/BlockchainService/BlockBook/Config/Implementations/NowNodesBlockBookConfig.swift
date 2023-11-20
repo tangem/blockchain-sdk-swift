@@ -9,11 +9,13 @@
 import Foundation
 
 // https://nownodes.io/nodes
-struct NowNodesBlockBookConfig {
-    let rawValue: BlockBookConfigTypeValue
+struct NowNodesBlockBookConfig: BlockBookConfig {
+    let apiKeyHeaderName: String?
+    let apiKeyHeaderValue: String?
     
-    init(_ rawValue: BlockBookConfigTypeValue) {
-        self.rawValue = rawValue
+    init(apiKeyHeaderName: String?, apiKeyHeaderValue: String?) {
+        self.apiKeyHeaderName = apiKeyHeaderName
+        self.apiKeyHeaderValue = apiKeyHeaderValue
     }
 }
 
@@ -23,45 +25,41 @@ extension NowNodesBlockBookConfig {
     }
     
     func node(for blockchain: Blockchain) -> BlockBookNode {
-        if case .header = rawValue {
-            let prefix = blockchain.currencySymbol.lowercased()
-            
-            switch blockchain {
-            case .bitcoin,
-                    .dash,
-                    .dogecoin,
-                    .litecoin:
-                let testnetSuffix = blockchain.isTestnet ? "-testnet" : ""
-                return BlockBookNode(
-                    rpcNode: "https://\(prefix).\(host)",
-                    restNode: "https://\(prefix)book\(testnetSuffix).\(host)"
-                )
-            case .ethereum,
-                    .ethereumPoW,
-                    .ethereumClassic,
-                    .avalanche:
-                return BlockBookNode(
-                    rpcNode: "https://\(prefix).\(host)",
-                    restNode: "https://\(prefix)-blockbook.\(host)"
-                )
-            case .bsc:
-                return BlockBookNode(
-                    rpcNode: "https://bsc.\(host)",
-                    restNode: "https://bsc-blockbook.\(host)"
-                )
-            case .arbitrum:
-                // L2 blockchains use `currencySymbol` from their L1s, so we can't just
-                // use the `prefix` variable here for L2s like Arbitrum, Optimism, etc
-                return BlockBookNode(
-                    rpcNode: "https://arbitrum.\(host)",
-                    restNode: "https://arb-blockbook.\(host)"
-                )
-            default:
-                fatalError("NowNodesBlockBookConfig don't support blockchain: \(blockchain.displayName)")
-            }
-        }
+        let prefix = blockchain.currencySymbol.lowercased()
         
-        fatalError("NowNodesBlockBookConfig don't support HOST value type blockchain: \(blockchain.displayName)")
+        switch blockchain {
+        case .bitcoin,
+                .dash,
+                .dogecoin,
+                .litecoin:
+            let testnetSuffix = blockchain.isTestnet ? "-testnet" : ""
+            return BlockBookNode(
+                rpcNode: "https://\(prefix).\(host)",
+                restNode: "https://\(prefix)book\(testnetSuffix).\(host)"
+            )
+        case .ethereum,
+                .ethereumPoW,
+                .ethereumClassic,
+                .avalanche:
+            return BlockBookNode(
+                rpcNode: "https://\(prefix).\(host)",
+                restNode: "https://\(prefix)-blockbook.\(host)"
+            )
+        case .bsc:
+            return BlockBookNode(
+                rpcNode: "https://bsc.\(host)",
+                restNode: "https://bsc-blockbook.\(host)"
+            )
+        case .arbitrum:
+            // L2 blockchains use `currencySymbol` from their L1s, so we can't just
+            // use the `prefix` variable here for L2s like Arbitrum, Optimism, etc
+            return BlockBookNode(
+                rpcNode: "https://arbitrum.\(host)",
+                restNode: "https://arb-blockbook.\(host)"
+            )
+        default:
+            fatalError("NowNodesBlockBookConfig don't support blockchain: \(blockchain.displayName)")
+        }
     }
     
     func path(for request: BlockBookTarget.Request) -> String {
