@@ -798,6 +798,7 @@ extension Blockchain: Codable {
         case "octaspace": self = .octa
         case "chia": self = .chia(testnet: isTestnet)
         case "near": self = .near(curve: curve, testnet: isTestnet)
+        case "decimal": self = .decimal(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -866,6 +867,7 @@ extension Blockchain {
         case "octaspace": return .octa
         case "chia": return .chia(testnet: isTestnet)
         case "near": return .near(curve: curve, testnet: isTestnet)
+        case "decimal": return .decimal(testnet: isTestnet)
         default: return nil
         }
     }
