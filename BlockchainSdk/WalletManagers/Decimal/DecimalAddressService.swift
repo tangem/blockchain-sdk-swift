@@ -26,13 +26,10 @@ struct DecimalAddressService {
 
 extension DecimalAddressService: AddressProvider {
     func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
-        var addressValue = try makeErcAddress(walletPublicKey: publicKey)
+        let ercAddressValue = try makeErcAddress(walletPublicKey: publicKey)
+        let dscAddressValue = try utils.convertErcAddressToDscAddress(addressHex: ercAddressValue)
         
-        if case .legacy = addressType {
-            addressValue = try utils.convertErcAddressToDscAddress(addressHex: addressValue)
-        }
-        
-        return .init(value: addressValue, publicKey: publicKey, type: addressType)
+        return .init(value: dscAddressValue, publicKey: publicKey, type: addressType)
     }
     
     private func makeErcAddress(walletPublicKey: Wallet.PublicKey) throws -> String {
