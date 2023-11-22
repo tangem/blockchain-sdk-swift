@@ -46,7 +46,8 @@ extension NowNodesBlockBookConfig: BlockBookConfig {
         case .ethereum,
                 .ethereumPoW,
                 .ethereumClassic,
-                .avalanche:
+                .avalanche,
+                .tron:
             return BlockBookNode(
                 rpcNode: "https://\(prefix).\(host)",
                 restNode: "https://\(prefix)-blockbook.\(host)"
