@@ -28,10 +28,7 @@ extension DecimalAddressService: AddressProvider {
     func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
         var addressValue = try makeErcAddress(walletPublicKey: publicKey)
         
-        switch addressType {
-        case .default:
-            break
-        case .legacy:
+        if case .legacy = addressType {
             addressValue = try utils.convertErcAddressToDscAddress(addressHex: addressValue)
         }
         
