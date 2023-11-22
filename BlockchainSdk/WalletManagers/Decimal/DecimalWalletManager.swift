@@ -12,6 +12,8 @@ import TangemSdk
 
 final class DecimalWalletManager: EthereumWalletManager {
     
+    override var allowsFeeSelection: Bool { false }
+    
     override func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
         let convertedDestinationAddress = convertAddress(destinationAddress: transaction.destinationAddress)
         
