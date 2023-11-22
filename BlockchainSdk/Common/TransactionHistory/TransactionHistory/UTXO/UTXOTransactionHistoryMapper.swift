@@ -33,14 +33,14 @@ extension UTXOTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
                 return nil
             }
             
-            let isOutgoing = transaction.vin.contains(where: { $0.addresses.contains(response.address) })
+            let isOutgoing = transaction._vin.contains(where: { $0.addresses.contains(response.address) })
             let status: TransactionRecord.TransactionStatus = transaction.confirmations > 0 ? .confirmed : .unconfirmed
             let fee = feeSatoshi / decimalValue
             
             return TransactionRecord(
                 hash: transaction.txid,
-                source: sourceType(vin: transaction.vin),
-                destination: destinationType(vout: transaction.vout),
+                source: sourceType(vin: transaction._vin),
+                destination: destinationType(vout: transaction._vout),
                 fee: Fee(Amount(with: blockchain, value: fee)),
                 status: status,
                 isOutgoing: isOutgoing,

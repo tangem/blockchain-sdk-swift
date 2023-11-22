@@ -75,7 +75,7 @@ extension BlockBookUtxoProvider: BitcoinNetworkProvider {
         addressData(address: address, parameters: addressParameters)
             .tryMap { response in
                 let outgoingTxsCount = response.transactions?.filter { transaction in
-                    return transaction.vin.contains(where: { inputs in
+                    return transaction._vin.contains(where: { inputs in
                         inputs.addresses.contains(address)
                     })
                 }.count ?? 0
@@ -94,7 +94,7 @@ private extension BlockBookUtxoProvider {
                 $0.confirmations == 0
             }
             .compactMap { tx -> PendingTransaction? in
-                let bitcoinInputs: [BitcoinInput] = tx.vin.compactMap { input -> BitcoinInput? in
+                let bitcoinInputs: [BitcoinInput] = tx._vin.compactMap { input -> BitcoinInput? in
                     guard
                         let address = input.addresses.first,
                         let value = UInt64(input.value ?? ""),
@@ -132,7 +132,7 @@ private extension BlockBookUtxoProvider {
     }
     
     private func pendingTransactionInfo(from tx: BlockBookAddressResponse.Transaction, address: String) -> PendingTransactionInfo? {
-        if tx.vin.contains(where: { $0.addresses.contains(address) }), let destinationUtxo = tx.vout.first(where: { !$0.addresses.contains(address) }) {
+        if tx._vin.contains(where: { $0.addresses.contains(address) }), let destinationUtxo = tx._vout.first(where: { !$0.addresses.contains(address) }) {
             guard let destination = destinationUtxo.addresses.first,
                   let value = Decimal(string: destinationUtxo.value)
             else {
@@ -145,7 +145,7 @@ private extension BlockBookUtxoProvider {
                 destination: destination,
                 value: value
             )
-        } else if let txDestination = tx.vout.first(where: { $0.addresses.contains(address) }), !tx.vin.contains(where: { $0.addresses.contains(address) }), let txSource = tx.vin.first {
+        } else if let txDestination = tx._vout.first(where: { $0.addresses.contains(address) }), !tx._vin.contains(where: { $0.addresses.contains(address) }), let txSource = tx._vin.first {
             guard
                 let source = txSource.addresses.first,
                 let value = Decimal(string: txDestination.value)
@@ -167,7 +167,7 @@ private extension BlockBookUtxoProvider {
     private func unspentOutputs(from utxos: [BlockBookUnspentTxResponse], transactions: [BlockBookAddressResponse.Transaction], address: String) -> [BitcoinUnspentOutput] {
         let outputScript = transactions
             .compactMap { transaction in
-                transaction.vout.first {
+                transaction._vout.first {
                     $0.addresses.contains(address)
                 }
             }

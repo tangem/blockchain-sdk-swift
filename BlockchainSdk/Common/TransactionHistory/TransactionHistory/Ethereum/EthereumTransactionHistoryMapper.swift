@@ -87,7 +87,7 @@ private extension EthereumTransactionHistoryMapper {
     ) -> Bool {
         switch amountType {
         case .coin, .reserve:
-            return transaction.vin.first?.addresses.first == walletAddress
+            return transaction._vin.first?.addresses.first == walletAddress
         case .token(let token):
             if transaction.tokenTransfers == nil {
                 log("""
@@ -161,8 +161,8 @@ private extension EthereumTransactionHistoryMapper {
         walletAddress: String,
         amountType: Amount.AmountType
     ) -> TransactionRecord.Source? {
-        guard let vin = transaction.vin.first, let address = vin.addresses.first else {
             log("Source information in transaction \(transaction) not found")
+        guard let vin = transaction._vin.first, let address = vin.addresses.first else {
             return nil
         }
         
@@ -190,8 +190,8 @@ private extension EthereumTransactionHistoryMapper {
         walletAddress: String,
         amountType: Amount.AmountType
     ) -> TransactionRecord.Destination? {
-        guard let vout = transaction.vout.first, let address = vout.addresses.first else {
             log("Destination information in transaction \(transaction) not found")
+        guard let vout = transaction._vout.first, let address = vout.addresses.first else {
             return nil
         }
 
@@ -257,12 +257,6 @@ private extension EthereumTransactionHistoryMapper {
 }
 
 // MARK: - Convenience extensions
-
-private extension BlockBookAddressResponse.TokenTransfer {
-    /// For some blockchains (e.g. Ethereum POW) the contract address is stored
-    /// in the `token` field instead of the `contract` field of the response.
-    var _contract: String? { contract ?? token }
-}
 
 @inline(__always)
 fileprivate func log(file: StaticString = #fileID, line: UInt = #line, _ message: @autoclosure () -> String) {

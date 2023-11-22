@@ -14,8 +14,8 @@ struct BlockBookAddressResponse: Decodable {
     let itemsOnPage: Int?
     let address: String
     let balance: String
-    let unconfirmedBalance: String
-    let unconfirmedTxs: Int
+    let unconfirmedBalance: String?
+    let unconfirmedTxs: Int?
     /// All transactions count
     let txs: Int
     /// Only for EVM-like. Main network transactions count
@@ -28,8 +28,8 @@ extension BlockBookAddressResponse {
     struct Transaction: Decodable {
         let txid: String
         let version: Int?
-        let vin: [Vin]
-        let vout: [Vout]
+        let vin: [Vin]?
+        let vout: [Vout]?
         let blockHash: String?
         let blockHeight: Int
         let confirmations: Int
@@ -40,6 +40,9 @@ extension BlockBookAddressResponse {
         let hex: String?
         let tokenTransfers: [TokenTransfer]?
         let ethereumSpecific: EthereumSpecific?
+        let tronTXReceipt: TronTXReceipt?
+        let fromAddress: String?
+        let toAddress: String?
     }
     
     struct Vin: Decodable {
@@ -79,6 +82,12 @@ extension BlockBookAddressResponse {
         let value: String?
     }
 
+    enum StatusType: Int, Decodable {
+        case pending = -1
+        case failure = 0
+        case ok = 1
+    }
+
     /// For EVM-like blockchains
     struct EthereumSpecific: Decodable {
         let status: StatusType?
@@ -88,18 +97,18 @@ extension BlockBookAddressResponse {
         let gasPrice: String?
         let data: String?
         let parsedData : ParsedData?
-        
-        enum StatusType: Int, Decodable {
-            case pending = -1
-            case failure = 0
-            case ok = 1
-        }
-        
+
         struct ParsedData: Decodable {
             /// First 4byte from data. E.g. `0x617ba037`
             let methodId: String
             let name: String
         }
+    }
+
+    /// Tron blockchain specific info.
+    /// There are many more fields in this response, but we map only the required ones.
+    struct TronTXReceipt: Decodable {
+        let status: StatusType?
     }
     
     struct Token: Decodable {
@@ -130,4 +139,21 @@ struct BlockBookFeeResponse: Decodable {
     }
     
     let result: Result
+}
+
+// MARK: - Convenience extensions
+
+extension BlockBookAddressResponse.Transaction {
+    // TODO: Andrey Fedorov - Improve naming
+    var _vin: [BlockBookAddressResponse.Vin] { vin ?? [] }
+
+    // TODO: Andrey Fedorov - Improve naming
+    var _vout: [BlockBookAddressResponse.Vout] { vout ?? [] }
+}
+
+extension BlockBookAddressResponse.TokenTransfer {
+    /// For some blockchains (e.g. Ethereum POW) the contract address is stored
+    /// in the `token` field instead of the `contract` field of the response.
+    // TODO: Andrey Fedorov - Improve naming
+    var _contract: String? { contract ?? token }
 }
