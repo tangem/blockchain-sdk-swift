@@ -229,6 +229,7 @@
 		B626D11F2AF02C40003A8929 /* TWPublicKeyType+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B626D11E2AF02C40003A8929 /* TWPublicKeyType+.swift */; };
 		B62A12062AE308DA0080BAEC /* NEARTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62A12052AE308DA0080BAEC /* NEARTransactionParams.swift */; };
 		B62EC6832B0E88A10018F51C /* Log+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62EC6822B0E88A10018F51C /* Log+.swift */; };
+		B62EC6892B0E89120018F51C /* TronTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62EC6882B0E89120018F51C /* TronTransactionHistoryMapper.swift */; };
 		B63B792D2AD850DF0055BD06 /* NEARWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B792C2AD850DF0055BD06 /* NEARWalletAssembly.swift */; };
 		B63B792F2AD852E80055BD06 /* NEARExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */; };
 		B641EC492AEF5CC100B44CF8 /* NEARAddressUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = B641EC482AEF5CC100B44CF8 /* NEARAddressUtil.swift */; };
@@ -753,6 +754,7 @@
 		B626D11E2AF02C40003A8929 /* TWPublicKeyType+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWPublicKeyType+.swift"; sourceTree = "<group>"; };
 		B62A12052AE308DA0080BAEC /* NEARTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARTransactionParams.swift; sourceTree = "<group>"; };
 		B62EC6822B0E88A10018F51C /* Log+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Log+.swift"; sourceTree = "<group>"; };
+		B62EC6882B0E89120018F51C /* TronTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TronTransactionHistoryMapper.swift; path = BlockchainSdk/Common/TransactionHistory/TransactionHistory/Tron/TronTransactionHistoryMapper.swift; sourceTree = SOURCE_ROOT; };
 		B63B792C2AD850DF0055BD06 /* NEARWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARWalletAssembly.swift; sourceTree = "<group>"; };
 		B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARExternalLinkProvider.swift; sourceTree = "<group>"; };
 		B641EC482AEF5CC100B44CF8 /* NEARAddressUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARAddressUtil.swift; sourceTree = "<group>"; };
@@ -1891,6 +1893,14 @@
 			path = DTO;
 			sourceTree = "<group>";
 		};
+		B62EC6852B0E88E20018F51C /* Tron */ = {
+			isa = PBXGroup;
+			children = (
+				B62EC6882B0E89120018F51C /* TronTransactionHistoryMapper.swift */,
+			);
+			path = Tron;
+			sourceTree = "<group>";
+		};
 		B63B79302AD854010055BD06 /* NEAR */ = {
 			isa = PBXGroup;
 			children = (
@@ -2366,13 +2376,14 @@
 		EFB9523E2A6FEF0200996D16 /* TransactionHistory */ = {
 			isa = PBXGroup;
 			children = (
+				EF7257942A93B8B900EA8CB2 /* UTXO */,
+				EF7257972A93B8B900EA8CB2 /* Ethereum */,
+				B62EC6852B0E88E20018F51C /* Tron */,
 				EF72577D2A8D42A100EA8CB2 /* TransactionHistory.swift */,
 				EFB9523C2A6FDB2A00996D16 /* TransactionHistoryProvider.swift */,
 				EFB9523F2A6FEF1700996D16 /* TransactionRecord.swift */,
 				EF193BFD2A77ED9E0048C0C3 /* Page.swift */,
 				EF2EB7A72A963E250036DA24 /* BlockBookTransactionHistoryMapper.swift */,
-				EF7257942A93B8B900EA8CB2 /* UTXO */,
-				EF7257972A93B8B900EA8CB2 /* Ethereum */,
 			);
 			path = TransactionHistory;
 			sourceTree = "<group>";
@@ -2751,6 +2762,7 @@
 				B61920892AE6ABD3001D6DDF /* NEARNetworkResult.swift in Sources */,
 				EF3B195A2AA85EE70084AA1C /* TerraV1ExternalLinkProvider.swift in Sources */,
 				2D9A919329BB8BFF00476EA6 /* TONTransactionBuilder.swift in Sources */,
+				B62EC6892B0E89120018F51C /* TronTransactionHistoryMapper.swift in Sources */,
 				B0F9DCA125FB4C9B00C0AF18 /* MultiNetworkProvider.swift in Sources */,
 				5D7D243B25136254001B9A4F /* URandom.swift in Sources */,
 				EFAD40A72A9756A200364D65 /* CardanoResponseMapper.swift in Sources */,
