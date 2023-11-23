@@ -16,21 +16,15 @@ struct TronTransactionHistoryMapper {
         self.blockchain = blockchain
     }
 
-    private func mapCoinTransactionToTransactionRecord(
-        _ transaction: BlockBookAddressResponse.Transaction,
+    private func extractTransactionInfo(
+        from transaction: BlockBookAddressResponse.Transaction,
+        sourceAddress: String,
+        destinationAddress: String,
         walletAddress: String
-    ) -> TransactionRecord? {
+    ) -> TransactionInfo? {
         guard
-            let sourceAddress = transaction.fromAddress,
-            let destinationAddress = transaction.toAddress,
-            let fees = Decimal(transaction.fees)
+            sourceAddress.caseInsensitiveEquals(to: walletAddress) || destinationAddress.caseInsensitiveEquals(to: walletAddress)
         else {
-            Log.log("Transaction \(transaction) doesn't contain a required information")
-            return nil
-        }
-
-        guard sourceAddress.caseInsensitiveEquals(to: walletAddress)
-        || destinationAddress.caseInsensitiveEquals(to: walletAddress) else {
             Log.log("Unrelated transaction \(transaction) received")
             return nil
         }
@@ -40,43 +34,109 @@ struct TronTransactionHistoryMapper {
             return nil
         }
 
-        let decimalValue = blockchain.decimalValue
-        let transactionAmount = transactionValue / decimalValue
-        let fee = Fee(Amount(with: blockchain, value: fees / decimalValue))
-        let isContract = false  // TODO: Andrey Fedorov - Add actual implementation
+        let transactionAmount = transactionValue / blockchain.decimalValue
         let isOutgoing = sourceAddress.caseInsensitiveEquals(to: walletAddress)
 
         let source = TransactionRecord.Source(
             address: sourceAddress,
-            amount: transactionValue
+            amount: transactionAmount
         )
 
         let destination = TransactionRecord.Destination(
-            address: isContract ? .contract(destinationAddress) : .user(destinationAddress),
-            amount: transactionValue
+            address: .user(destinationAddress),
+            amount: transactionAmount
         )
 
-        // Nownodes appends `0x` prefixes to TRON txids, so we have to strip these prefixes
-        return TransactionRecord(
-            hash: transaction.txid.removeHexPrefix(),
-            source: .single(source),
-            destination: .single(destination),
-            fee: fee,
-            status: status(transaction),
-            isOutgoing: isOutgoing,
-            type: transactionType(transaction),
-            date: Date(timeIntervalSince1970: TimeInterval(transaction.blockTime)),
-            tokenTransfers: tokenTransfers(transaction)
+        return TransactionInfo(
+            source: source,
+            destination: destination,
+            isOutgoing: isOutgoing
         )
     }
 
-    private func mapTokensTransactionsToTransactionRecords(
-        _ tokenTransfers: [BlockBookAddressResponse.TokenTransfer],
+    private func extractTransactionInfos(
+        from tokenTransfers: [BlockBookAddressResponse.TokenTransfer],
         token: Token,
-        walletAddress: String
+        walletAddress: String,
+        isOutgoing: Bool
+    ) -> [TransactionInfo] {
+        // Double check to exclude token transfers sent to self.
+        // Actually, this is a feasible case, but we don't support such transfers at the moment
+        let filteredTokenTransfers = tokenTransfers.filter { transfer in
+            return isOutgoing
+            ? transfer.from.caseInsensitiveEquals(to: walletAddress) && !transfer.to.caseInsensitiveEquals(to: walletAddress)
+            : transfer.to.caseInsensitiveEquals(to: walletAddress) && !transfer.from.caseInsensitiveEquals(to: walletAddress)
+        }
+
+        let otherAddresses = isOutgoing
+        ? filteredTokenTransfers.uniqueProperties(\.to)
+        : filteredTokenTransfers.uniqueProperties(\.from)
+
+        let groupedFilteredTokenTransfers = isOutgoing
+        ? filteredTokenTransfers.grouped(by: \.to)
+        : filteredTokenTransfers.grouped(by: \.from)
+
+        return otherAddresses.map { otherAddress in
+            let transfers = groupedFilteredTokenTransfers[otherAddress] ?? []
+            // Multiple transactions between the same pair of src-dst addresses are aggregated into single `TransactionInfo`
+            let value = transfers.reduce(into: Decimal.zero) { partialResult, transfer in
+                guard
+                    let rawValue = transfer.value,
+                    let value = Decimal(string: rawValue)
+                else {
+                    Log.log("Token transfer \(transfer) with invalid value received")
+                    return
+                }
+
+                partialResult += value
+            }
+
+            let transactionAmount = value / token.decimalValue
+
+            let source = TransactionRecord.Source(
+                address: isOutgoing ? walletAddress : otherAddress,
+                amount: transactionAmount
+            )
+
+            let destination = TransactionRecord.Destination(
+                address: .user(isOutgoing ? otherAddress : walletAddress),
+                amount: transactionAmount
+            )
+
+            return TransactionInfo(
+                source: source,
+                destination: destination,
+                isOutgoing: isOutgoing
+            )
+        }
+    }
+
+    private func mapToTransactionRecords(
+        transaction: BlockBookAddressResponse.Transaction,
+        transactionInfos: [TransactionInfo],
+        fees: Decimal
     ) -> [TransactionRecord] {
-        // TODO: Andrey Fedorov - Add actual implementation
-        return []
+        // Nownodes appends `0x` prefixes to TRON txids, so we have to strip these prefixes
+        let hash = transaction.txid.removeHexPrefix()
+        let fee = Fee(Amount(with: blockchain, value: fees / blockchain.decimalValue))
+        let date = Date(timeIntervalSince1970: TimeInterval(transaction.blockTime))
+        let status = status(transaction)
+        let type = transactionType(transaction)
+        let tokenTransfers = tokenTransfers(transaction)
+
+        return transactionInfos.map { transactionInfo in
+            return TransactionRecord(
+                hash: hash,
+                source: .single(transactionInfo.source),
+                destination: .single(transactionInfo.destination),
+                fee: fee,
+                status: status,
+                isOutgoing: transactionInfo.isOutgoing,
+                type: type,
+                date: date,
+                tokenTransfers: tokenTransfers
+            )
+        }
     }
 
     private func status(_ transaction: BlockBookAddressResponse.Transaction) -> TransactionRecord.TransactionStatus {
@@ -117,6 +177,17 @@ struct TronTransactionHistoryMapper {
     }
 }
 
+// MARK: - Convenience types
+
+private extension TronTransactionHistoryMapper {
+    /// Intermediate model for simpler mapping.
+    struct TransactionInfo {
+        let source: TransactionRecord.Source
+        let destination: TransactionRecord.Destination
+        let isOutgoing: Bool
+    }
+}
+
 // MARK: - BlockBookTransactionHistoryMapper protocol conformance
 
 extension TronTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
@@ -132,17 +203,47 @@ extension TronTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
 
         return transactions
             .reduce(into: []) { partialResult, transaction in
+                guard
+                    let sourceAddress = transaction.fromAddress,
+                    let destinationAddress = transaction.toAddress,
+                    let fees = Decimal(transaction.fees)
+                else {
+                    Log.log("Transaction \(transaction) doesn't contain a required information")
+                    return
+                }
+
                 switch amountType {
                 case .coin, .reserve:
-                    if let record = mapCoinTransactionToTransactionRecord(transaction, walletAddress: walletAddress) {
-                        partialResult.append(record)
+                    if let transactionInfo = extractTransactionInfo(
+                        from: transaction,
+                        sourceAddress: sourceAddress,
+                        destinationAddress: destinationAddress,
+                        walletAddress: walletAddress
+                    ) {
+                        partialResult += mapToTransactionRecords(
+                            transaction: transaction,
+                            transactionInfos: [transactionInfo],
+                            fees: fees
+                        )
                     }
                 case .token(let token):
                     if let transfers = transaction.tokenTransfers, !transfers.isEmpty {
-                        partialResult += mapTokensTransactionsToTransactionRecords(
-                            transfers,
+                        let outgoingTransactionInfos = extractTransactionInfos(
+                            from: transfers,
                             token: token,
-                            walletAddress: walletAddress
+                            walletAddress: walletAddress,
+                            isOutgoing: true
+                        )
+                        let incomingTransactionInfos = extractTransactionInfos(
+                            from: transfers,
+                            token: token,
+                            walletAddress: walletAddress,
+                            isOutgoing: false
+                        )
+                        partialResult += mapToTransactionRecords(
+                            transaction: transaction,
+                            transactionInfos: outgoingTransactionInfos + incomingTransactionInfos,
+                            fees: fees
                         )
                     }
                 }
