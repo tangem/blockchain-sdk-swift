@@ -19,6 +19,8 @@ struct AddressTypesConfig {
             return [.default, .legacy]
         case .cardano:
             return [.default, .legacy]
+        case .decimal:
+            return [.default, .legacy]
         case .stellar,
              .solana,
              .ethereum,
@@ -54,8 +56,7 @@ struct AddressTypesConfig {
              .telos,
              .octa,
              .chia,
-             .near,
-             .decimal:
+             .near:
             return [.default]
         }
     }

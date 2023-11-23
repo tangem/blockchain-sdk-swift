@@ -13,8 +13,8 @@ public protocol TransactionParams {}
 public struct Transaction {
     public let amount: Amount
     public var fee: Fee
-    public let sourceAddress: String
-    public let destinationAddress: String
+    public var sourceAddress: String
+    public var destinationAddress: String
     public let changeAddress: String
     public let contractAddress: String?
     public var params: TransactionParams? = nil

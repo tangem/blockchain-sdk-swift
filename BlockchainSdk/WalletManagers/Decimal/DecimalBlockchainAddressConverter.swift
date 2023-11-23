@@ -9,7 +9,7 @@
 import Foundation
 import HDWalletKit
 
-struct DecimalUtils {
+struct DecimalBlockchainAddressConverter {
     
     // MARK: - Private Properties
     
@@ -18,7 +18,7 @@ struct DecimalUtils {
     // MARK: - Implementation
     
     func convertDscAddressToErcAddress(addressHex: String) -> String? {
-        if addressHex.starts(with: Constants.erc55AddressPrefix) {
+        if addressHex.hasHexPrefix() {
             return addressHex
         }
         
@@ -38,7 +38,7 @@ struct DecimalUtils {
     }
 
     func convertErcAddressToDscAddress(addressHex: String) throws -> String {
-        if addressHex.starts(with: Constants.addressPrefix) || addressHex.starts(with: Constants.legacyAddressPrefix) {
+        if addressHex.lowercased().hasPrefix(Constants.addressPrefix) || addressHex.lowercased().hasPrefix(Constants.legacyAddressPrefix) {
             return addressHex
         }
 
@@ -48,10 +48,9 @@ struct DecimalUtils {
     }
 }
 
-extension DecimalUtils {
+extension DecimalBlockchainAddressConverter {
     enum Constants {
         static let addressPrefix = "d0"
         static let legacyAddressPrefix = "dx"
-        static let erc55AddressPrefix = "0x"
     }
 }

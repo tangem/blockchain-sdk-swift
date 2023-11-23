@@ -10,7 +10,7 @@
 		2D01EBFD2B04FC6700DEF1CC /* DecimalAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EBFC2B04FC6700DEF1CC /* DecimalAddressService.swift */; };
 		2D01EC002B05223900DEF1CC /* DecimalExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EBFF2B05223900DEF1CC /* DecimalExternalLinkProvider.swift */; };
 		2D01EC022B0526E400DEF1CC /* DecimalWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EC012B0526E400DEF1CC /* DecimalWalletManager.swift */; };
-		2D01EC042B05281800DEF1CC /* DecimalUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EC032B05281800DEF1CC /* DecimalUtils.swift */; };
+		2D01EC042B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EC032B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift */; };
 		2D01EC062B052A0A00DEF1CC /* DecimalWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EC052B052A0A00DEF1CC /* DecimalWalletAssembly.swift */; };
 		2D3328C52A779ACC00C4A84C /* ChiaPuzzleUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3328C22A779ACC00C4A84C /* ChiaPuzzleUtils.swift */; };
 		2D3829C929D34A93001D4785 /* TWCoin+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829C829D34A93001D4785 /* TWCoin+.swift */; };
@@ -517,7 +517,7 @@
 		2D01EBFC2B04FC6700DEF1CC /* DecimalAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalAddressService.swift; sourceTree = "<group>"; };
 		2D01EBFF2B05223900DEF1CC /* DecimalExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalExternalLinkProvider.swift; sourceTree = "<group>"; };
 		2D01EC012B0526E400DEF1CC /* DecimalWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalWalletManager.swift; sourceTree = "<group>"; };
-		2D01EC032B05281800DEF1CC /* DecimalUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalUtils.swift; sourceTree = "<group>"; };
+		2D01EC032B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalBlockchainAddressConverter.swift; sourceTree = "<group>"; };
 		2D01EC052B052A0A00DEF1CC /* DecimalWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalWalletAssembly.swift; sourceTree = "<group>"; };
 		2D3328C22A779ACC00C4A84C /* ChiaPuzzleUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaPuzzleUtils.swift; sourceTree = "<group>"; };
 		2D3829C829D34A93001D4785 /* TWCoin+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWCoin+.swift"; sourceTree = "<group>"; };
@@ -1042,7 +1042,7 @@
 			children = (
 				2D01EBFC2B04FC6700DEF1CC /* DecimalAddressService.swift */,
 				2D01EC012B0526E400DEF1CC /* DecimalWalletManager.swift */,
-				2D01EC032B05281800DEF1CC /* DecimalUtils.swift */,
+				2D01EC032B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift */,
 			);
 			path = Decimal;
 			sourceTree = "<group>";
@@ -2835,7 +2835,7 @@
 				DA198B6329E41AD800DB6EEA /* CosmosNetworkService.swift in Sources */,
 				DA656FCC2954B5220092CC61 /* EthereumTarget.swift in Sources */,
 				5D7D243425136254001B9A4F /* XRPAccountInfo.swift in Sources */,
-				2D01EC042B05281800DEF1CC /* DecimalUtils.swift in Sources */,
+				2D01EC042B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift in Sources */,
 				EF3B19342AA85CE90084AA1C /* DogecoinExternalLinkProvider.swift in Sources */,
 				EF0DA78C285246A90081092A /* DashMainNetworkParams.swift in Sources */,
 				DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */,
