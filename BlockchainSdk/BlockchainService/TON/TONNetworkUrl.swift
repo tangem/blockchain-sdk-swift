@@ -10,7 +10,7 @@ import Foundation
 
 enum TONEndpointType {
     case toncenter(_ testnet: Bool)
-    case getblock
+    case getblock(_ key: String)
     case nownodes
 }
 
@@ -43,14 +43,14 @@ struct TONNetworkNode {
                 apiKeyHeaderName: Constants.xApiKeyHeaderName,
                 apiKeyHeaderValue: apiKeyValue
             )
-        case .getblock:
-            return TONEndpoint(url: URL(string: "https://ton.getblock.io/\(apiKeyValue)/mainnet")!)
+        case .getblock(let apiKeyValue):
+            return TONEndpoint(url: URL(string: "https://go.getblock.io/\(apiKeyValue)")!)
         case .nownodes:
             return TONEndpoint(url: URL(string: "https://ton.nownodes.io/\(apiKeyValue)")!)
         }
     }
     
-    init(apiKeyValue: String?, endpointType: TONEndpointType) {
+    init(apiKeyValue: String? = nil, endpointType: TONEndpointType) {
         self.apiKeyValue = apiKeyValue ?? ""
         self.endpointType = endpointType
     }

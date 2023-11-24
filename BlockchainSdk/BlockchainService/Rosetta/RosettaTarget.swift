@@ -16,7 +16,7 @@ enum RosettaUrl {
     var url: String {
         switch self {
         case .getBlockRosetta(let apiKey):
-            return "https://ada.getblock.io/mainnet/\(apiKey)"
+            return "https://go.getblock.io/\(apiKey)"
         case .tangemRosetta:
             return "https://ada.tangem.com"
         }

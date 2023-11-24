@@ -13,7 +13,7 @@ public struct BlockchainSdkConfig {
     let blockcypherTokens: [String]
     let infuraProjectId: String
     let nowNodesApiKey: String
-    let getBlockApiKey: String
+    let getBlockAccessTokens: GetBlockBlockchainAccessTokens
     let kaspaSecondaryApiUrl: String?
     let tronGridApiKey: String
     let tonCenterApiKeys: TonCenterApiKeys
@@ -30,7 +30,7 @@ public struct BlockchainSdkConfig {
         blockcypherTokens: [String],
         infuraProjectId: String,
         nowNodesApiKey: String,
-        getBlockApiKey: String,
+        getBlockAccessTokens: GetBlockBlockchainAccessTokens,
         kaspaSecondaryApiUrl: String?,
         tronGridApiKey: String,
         tonCenterApiKeys: TonCenterApiKeys,
@@ -46,7 +46,7 @@ public struct BlockchainSdkConfig {
         self.blockcypherTokens = blockcypherTokens
         self.infuraProjectId = infuraProjectId
         self.nowNodesApiKey = nowNodesApiKey
-        self.getBlockApiKey = getBlockApiKey
+        self.getBlockAccessTokens = getBlockAccessTokens
         self.kaspaSecondaryApiUrl = kaspaSecondaryApiUrl
         self.tronGridApiKey = tronGridApiKey
         self.tonCenterApiKeys = tonCenterApiKeys
@@ -108,6 +108,42 @@ public extension BlockchainSdkConfig {
         
         public init(mainnetApiKey: String) {
             self.mainnetApiKey = mainnetApiKey
+        }
+    }
+    
+    struct GetBlockBlockchainAccessTokens {
+        let credentials: [Credential]
+        
+        public init(credentials: [Credential]) {
+            self.credentials = credentials
+        }
+        
+        func credential(
+            for blockchain: Blockchain,
+            at type: BlockchainSdkConfig.GetBlockBlockchainAccessTokens.Credential.TypeValue
+        ) -> String {
+            return credentials.first {
+                $0.blockchain == blockchain && $0.type == type
+            }?.key ?? ""
+        }
+        
+        public struct Credential {
+            let blockchain: Blockchain
+            let type: TypeValue
+            let key: String
+            
+            public init(blockchain: Blockchain, type: TypeValue, key: String) {
+                self.blockchain = blockchain
+                self.type = type
+                self.key = key
+            }
+            
+            public enum TypeValue {
+                case blockBook
+                case rest
+                case jsonRpc
+                case rosseta
+            }
         }
     }
 }

@@ -20,7 +20,9 @@ struct TronWalletAssembly: WalletManagerAssembly {
                     .tronGrid(apiKey: nil),
                     .tronGrid(apiKey: input.blockchainSdkConfig.tronGridApiKey),
                     .nowNodes(apiKey: input.blockchainSdkConfig.nowNodesApiKey),
-                    .getBlock(apiKey: input.blockchainSdkConfig.getBlockApiKey),
+                    .getBlock(
+                        apiKey: input.blockchainSdkConfig.getBlockAccessTokens.credential(for: input.blockchain, at: .rest)
+                    ),
                 ]
             } else {
                 networks = [

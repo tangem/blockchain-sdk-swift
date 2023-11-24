@@ -66,7 +66,7 @@ struct NetworkProviderAssembly {
             keys: EthereumApiKeys(
                 infuraProjectId: input.blockchainSdkConfig.infuraProjectId,
                 nowNodesApiKey: input.blockchainSdkConfig.nowNodesApiKey,
-                getBlockApiKey: input.blockchainSdkConfig.getBlockApiKey,
+                getBlockApiKeys: filterEthereumJsonRpcGetBlockCredentials(from: input.blockchainSdkConfig),
                 quickNodeBscCredentials: input.blockchainSdkConfig.quickNodeBscCredentials
             )
         )!
@@ -77,6 +77,18 @@ struct NetworkProviderAssembly {
                 configuration: input.networkConfig
             )
         }
+    }
+    
+    // MARK: - Private Implementation
+    
+    private func filterEthereumJsonRpcGetBlockCredentials(from config: BlockchainSdkConfig) -> [Blockchain: String] {
+        var resultJsonRpcApiKeys = [Blockchain: String]()
+        
+        config.getBlockAccessTokens.credentials
+            .filter { $0.type == .jsonRpc }
+            .forEach { resultJsonRpcApiKeys[$0.blockchain] = $0.key }
+        
+        return resultJsonRpcApiKeys
     }
     
 }

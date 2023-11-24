@@ -37,8 +37,9 @@ struct TONWalletAssembly: WalletManagerAssembly {
                     ),
                     TONProvider(
                         node: .init(
-                            apiKeyValue: input.blockchainSdkConfig.getBlockApiKey,
-                            endpointType: .getblock
+                            endpointType: .getblock(
+                                input.blockchainSdkConfig.getBlockAccessTokens.credential(for: input.blockchain, at: .jsonRpc)
+                            )
                         ),
                         networkConfig: input.networkConfig
                     )
