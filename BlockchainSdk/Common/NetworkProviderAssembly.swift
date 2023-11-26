@@ -30,7 +30,7 @@ struct NetworkProviderAssembly {
         case .getBlock:
             return BlockBookUtxoProvider(
                 blockchain: input.blockchain,
-                blockBookConfig: GetBlockBlockBookConfig([:]),
+                blockBookConfig: GetBlockBlockBookConfig(input.blockchainSdkConfig.getBlockCredentials),
                 networkConfiguration: input.networkConfig
             )
         }
@@ -66,7 +66,7 @@ struct NetworkProviderAssembly {
             keys: EthereumApiKeys(
                 infuraProjectId: input.blockchainSdkConfig.infuraProjectId,
                 nowNodesApiKey: input.blockchainSdkConfig.nowNodesApiKey,
-                getBlockApiKeys: filterEthereumJsonRpcGetBlockCredentials(from: input.blockchainSdkConfig),
+                getBlockApiKeys: input.blockchainSdkConfig.getBlockCredentials.credentials(at: .jsonRpc),
                 quickNodeBscCredentials: input.blockchainSdkConfig.quickNodeBscCredentials
             )
         )!
@@ -77,18 +77,6 @@ struct NetworkProviderAssembly {
                 configuration: input.networkConfig
             )
         }
-    }
-    
-    // MARK: - Private Implementation
-    
-    private func filterEthereumJsonRpcGetBlockCredentials(from config: BlockchainSdkConfig) -> [Blockchain: String] {
-        var resultJsonRpcApiKeys = [Blockchain: String]()
-        
-        config.getBlockAccessTokens.credentials
-            .filter { $0.type == .jsonRpc }
-            .forEach { resultJsonRpcApiKeys[$0.blockchain] = $0.key }
-        
-        return resultJsonRpcApiKeys
     }
     
 }

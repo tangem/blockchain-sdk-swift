@@ -12,10 +12,10 @@ struct GetBlockBlockBookConfig: BlockBookConfig {
     var apiKeyHeaderName: String?
     var apiKeyHeaderValue: String?
     
-    private let values: [Blockchain: String]
+    private let credentialsConfig: BlockchainSdkConfig.GetBlockCredentials
     
-    init(_ values: [Blockchain: String]) {
-        self.values = values
+    init(_ credentialsConfig: BlockchainSdkConfig.GetBlockCredentials) {
+        self.credentialsConfig = credentialsConfig
     }
 }
 
@@ -29,20 +29,21 @@ extension GetBlockBlockBookConfig {
     }
     
     func node(for blockchain: Blockchain) -> BlockBookNode {
-        let apiKeyValue = values[blockchain] ?? ""
+        let rpcApiKeyValue = credentialsConfig.credential(for: blockchain, at: .jsonRpc)
+        let blockBookApiKeyValue = credentialsConfig.credential(for: blockchain, at: .blockBook)
         
         return BlockBookNode(
-            rpcNode: "https://go.\(host)/\(apiKeyValue)",
-            restNode: "https://go.\(host)/\(apiKeyValue)"
+            rpcNode: "https://go.\(host)/\(rpcApiKeyValue)",
+            restNode: "https://go.\(host)/\(blockBookApiKeyValue)"
         )
     }
     
     func path(for request: BlockBookTarget.Request) -> String {
         switch request {
         case .fees:
-            return "/mainnet"
+            return "/"
         default:
-            return "/mainnet/blockbook/api/v2"
+            return "/api/v2"
         }
     }
 }
