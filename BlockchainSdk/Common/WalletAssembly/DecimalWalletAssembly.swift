@@ -15,7 +15,7 @@ struct DecimalWalletAssembly: WalletManagerAssembly {
         return try DecimalWalletManager(wallet: input.wallet).then {
             let chainId = input.blockchain.chainId!
             
-            $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, chainId: chainId)
+            $0.txBuilder = try DecimalTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, chainId: chainId)
             $0.networkService = EthereumNetworkService(
                 decimals: input.blockchain.decimalCount,
                 providers: networkProviderAssembly.makeEthereumJsonRpcProviders(with: input),

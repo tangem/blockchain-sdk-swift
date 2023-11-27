@@ -11,6 +11,7 @@ import Combine
 import TangemSdk
 
 final class DecimalWalletManager: EthereumWalletManager {
+    private let addressConverter = DecimalBlockchainAddressConverter()
     
     override func getInfo(address: String, tokens: [Token], _ completion: @escaping (Result<Void, Error>) -> Void) {
         let convertedDestinationAddress = convertAddressIfNeeded(destinationAddress: address)
@@ -23,22 +24,10 @@ final class DecimalWalletManager: EthereumWalletManager {
         return super.getFee(to: toConvertedAddress, from: fromConvertedAddress, value: value, data: data)
     }
     
-    override func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
-        let sourceConvertedAddress = convertAddressIfNeeded(destinationAddress: transaction.sourceAddress)
-        let destinationConvertedAddress = convertAddressIfNeeded(destinationAddress: transaction.destinationAddress)
-        
-        let copyTransaction = transaction.then { trx in
-            trx.sourceAddress = sourceConvertedAddress
-            trx.destinationAddress = destinationConvertedAddress
-        }
-        
-        return super.sign(copyTransaction, signer: signer)
-    }
-    
     // MARK: - Private Implementation
 
     private func convertAddressIfNeeded(destinationAddress: String) -> String {
-        return DecimalBlockchainAddressConverter().convertDscAddressToErcAddress(addressHex: destinationAddress) ?? destinationAddress
+        addressConverter.convertDscAddressToErcAddress(addressHex: destinationAddress) ?? destinationAddress
     }
     
 }
