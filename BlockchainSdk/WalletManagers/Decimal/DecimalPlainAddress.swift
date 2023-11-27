@@ -13,7 +13,7 @@ struct DecimalPlainAddress: Address {
     let publicKey: Wallet.PublicKey
     let type: AddressType
 
-    public var localizedName: String {
+    var localizedName: String {
         switch type {
         case .default:
             return Constants.mainLocalizedName
@@ -22,7 +22,7 @@ struct DecimalPlainAddress: Address {
         }
     }
     
-    public init(value: String, publicKey: Wallet.PublicKey, type: AddressType) {
+    init(value: String, publicKey: Wallet.PublicKey, type: AddressType) {
         self.value = value
         self.publicKey = publicKey
         self.type = type
