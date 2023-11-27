@@ -15,12 +15,12 @@ public protocol AddressValidator {
 }
 
 public protocol AddressProvider {
-    func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress
+    func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address
 }
 
 // A convenient extension for using a raw public key
 public extension AddressProvider {
-    func makeAddress(from publicKey: Data, type: AddressType = .default) throws -> PlainAddress {
+    func makeAddress(from publicKey: Data, type: AddressType = .default) throws -> Address {
         try makeAddress(for: Wallet.PublicKey(seedKey: publicKey, derivationType: .none), with: type)
     }
 }

@@ -27,19 +27,19 @@ struct DecimalAddressService {
 // MARK: - AddressProvider protocol conformance
 
 extension DecimalAddressService: AddressProvider {
-    func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
+    func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
         var address = try ethereumAddressService.makeAddress(for: publicKey, with: addressType)
         
         // If need to convert address to decimal native type
         if case .default = addressType {
-            address = try .init(
+            address = try DecimalPlainAddress(
                 value: utils.convertErcAddressToDscAddress(addressHex: address.value),
                 publicKey: publicKey,
                 type: addressType
             )
         }
         
-        return .init(value: address.value, publicKey: publicKey, type: addressType)
+        return DecimalPlainAddress(value: address.value, publicKey: publicKey, type: addressType)
     }
 }
 

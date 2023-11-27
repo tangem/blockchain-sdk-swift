@@ -59,6 +59,8 @@
 		2DBBE95029C8DBEA00971539 /* TONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBBE94F29C8DBEA00971539 /* TONTests.swift */; };
 		2DC5796129C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5796029C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift */; };
 		2DC5DAB429B9E6A10039154A /* WalletCoreSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5DAB329B9E6A10039154A /* WalletCoreSigner.swift */; };
+		2DCAEE4D2B147BCD00C87E09 /* DecimalTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCAEE4C2B147BCD00C87E09 /* DecimalTransactionBuilder.swift */; };
+		2DCAEE4F2B147E2800C87E09 /* DecimalPlainAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCAEE4E2B147E2800C87E09 /* DecimalPlainAddress.swift */; };
 		2DDE5B9F29C4F8D200A5B708 /* NetworkProviderAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDE5B8C29C4F8D200A5B708 /* NetworkProviderAssembly.swift */; };
 		2DDE5BA029C4F8D200A5B708 /* BlockBookProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDE5B8D29C4F8D200A5B708 /* BlockBookProviderType.swift */; };
 		2DDE5BA129C4F8D200A5B708 /* DucatusWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDE5B8F29C4F8D200A5B708 /* DucatusWalletAssembly.swift */; };
@@ -566,6 +568,8 @@
 		2DBBE94F29C8DBEA00971539 /* TONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONTests.swift; sourceTree = "<group>"; };
 		2DC5796029C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreSignerTesterUtility.swift; sourceTree = "<group>"; };
 		2DC5DAB329B9E6A10039154A /* WalletCoreSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreSigner.swift; sourceTree = "<group>"; };
+		2DCAEE4C2B147BCD00C87E09 /* DecimalTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalTransactionBuilder.swift; sourceTree = "<group>"; };
+		2DCAEE4E2B147E2800C87E09 /* DecimalPlainAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalPlainAddress.swift; sourceTree = "<group>"; };
 		2DDE5B8C29C4F8D200A5B708 /* NetworkProviderAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkProviderAssembly.swift; sourceTree = "<group>"; };
 		2DDE5B8D29C4F8D200A5B708 /* BlockBookProviderType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockBookProviderType.swift; sourceTree = "<group>"; };
 		2DDE5B8F29C4F8D200A5B708 /* DucatusWalletAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DucatusWalletAssembly.swift; sourceTree = "<group>"; };
@@ -1043,6 +1047,8 @@
 				2D01EBFC2B04FC6700DEF1CC /* DecimalAddressService.swift */,
 				2D01EC012B0526E400DEF1CC /* DecimalWalletManager.swift */,
 				2D01EC032B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift */,
+				2DCAEE4C2B147BCD00C87E09 /* DecimalTransactionBuilder.swift */,
+				2DCAEE4E2B147E2800C87E09 /* DecimalPlainAddress.swift */,
 			);
 			path = Decimal;
 			sourceTree = "<group>";
@@ -2900,6 +2906,7 @@
 				5D5CE0D52625C8EC009023EC /* XrpNetworkProvider.swift in Sources */,
 				EF3B19602AA85F0E0084AA1C /* TelosExternalLinkProvider.swift in Sources */,
 				5D94E56323A38204009C7482 /* EthereumAddressService.swift in Sources */,
+				2DCAEE4D2B147BCD00C87E09 /* DecimalTransactionBuilder.swift in Sources */,
 				EF3B193E2AA85D300084AA1C /* FantomExternalLinkProvider.swift in Sources */,
 				2D9A91A029BB8C1700476EA6 /* TONNetworkUrl.swift in Sources */,
 				E93532CE292D0E86008FD979 /* BlockBookUtxoProvider.swift in Sources */,
@@ -3008,6 +3015,7 @@
 				5D4B33BC23F6EA0500C93A84 /* BlockchairTarget.swift in Sources */,
 				2D01EBFD2B04FC6700DEF1CC /* DecimalAddressService.swift in Sources */,
 				5D94E56723A3946C009C7482 /* Data+.swift in Sources */,
+				2DCAEE4F2B147E2800C87E09 /* DecimalPlainAddress.swift in Sources */,
 				EF3B19382AA85D090084AA1C /* PolygonExternalLinkProvider.swift in Sources */,
 				B0AD566425AC8DD50084F924 /* PendingTransaction.swift in Sources */,
 				EF54FC292A8A8A0E00968C52 /* CardanoUtil.swift in Sources */,
