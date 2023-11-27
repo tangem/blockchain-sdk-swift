@@ -11,7 +11,6 @@ import BigInt
 import Combine
 import TangemSdk
 import Moya
-import web3swift
 
 @available(iOS 13.0, *)
 public protocol EthereumGasLoader: AnyObject {

@@ -11,7 +11,6 @@ import BigInt
 import Combine
 import TangemSdk
 import Moya
-import web3swift
 
 class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, TransactionFeeProvider {
     var txBuilder: EthereumTransactionBuilder!

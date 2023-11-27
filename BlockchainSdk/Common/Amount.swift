@@ -8,7 +8,6 @@
 
 import Foundation
 import BigInt
-import web3swift
 
 public struct Amount: CustomStringConvertible, Hashable, Comparable {
     public enum AmountType {
@@ -42,7 +41,7 @@ public struct Amount: CustomStringConvertible, Hashable, Comparable {
             return BigUInt(2).power(256) - 1
         }
 
-        return Web3.Utils.parseToBigUInt("\(value)", decimals: decimals)
+        return EthereumUtils.parseToBigUInt("\(value)", decimals: decimals)
     }
     
     public var encoded: Data? {
