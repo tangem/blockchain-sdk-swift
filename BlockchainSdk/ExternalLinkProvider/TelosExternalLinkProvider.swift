@@ -31,9 +31,9 @@ extension TelosExternalLinkProvider: ExternalLinkProvider {
     
     func url(address: String, contractAddress: String?) -> URL {
         if isTestnet {
-            return URL(string: "https://testnet.teloscan.io/tx/\(address)")!
+            return URL(string: "https://testnet.teloscan.io/address/\(address)")!
         }
         
-        return URL(string: "https://teloscan.io/tx/\(address)")!
+        return URL(string: "https://teloscan.io/address/\(address)")!
     }
 }

@@ -34,13 +34,19 @@ extension NowNodesBlockBookConfig: BlockBookConfig {
         let prefix = blockchain.currencySymbol.lowercased()
         
         switch blockchain {
-        case .bitcoin, .dash, .dogecoin, .litecoin:
+        case .bitcoin,
+                .dash,
+                .dogecoin,
+                .litecoin:
             let testnetSuffix = blockchain.isTestnet ? "-testnet" : ""
             return BlockBookNode(
                 rpcNode: "https://\(prefix).\(host)",
                 restNode: "https://\(prefix)book\(testnetSuffix).\(host)"
             )
-        case .ethereum, .ethereumPoW, .ethereumClassic, .avalanche, .tron, .arbitrum:
+        case .ethereum,
+                .ethereumPoW,
+                .ethereumClassic,
+                .avalanche:
             return BlockBookNode(
                 rpcNode: "https://\(prefix).\(host)",
                 restNode: "https://\(prefix)-blockbook.\(host)"
@@ -49,6 +55,13 @@ extension NowNodesBlockBookConfig: BlockBookConfig {
             return BlockBookNode(
                 rpcNode: "https://bsc.\(host)",
                 restNode: "https://bsc-blockbook.\(host)"
+            )
+        case .arbitrum:
+            // L2 blockchains use `currencySymbol` from their L1s, so we can't just
+            // use the `prefix` variable here for L2s like Arbitrum, Optimism, etc
+            return BlockBookNode(
+                rpcNode: "https://arbitrum.\(host)",
+                restNode: "https://arb-blockbook.\(host)"
             )
         default:
             fatalError("NowNodesBlockBookConfig don't support blockchain: \(blockchain.displayName)")
