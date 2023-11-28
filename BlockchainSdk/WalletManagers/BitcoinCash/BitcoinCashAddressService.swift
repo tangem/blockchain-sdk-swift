@@ -35,7 +35,7 @@ extension BitcoinCashAddressService: AddressValidator {
 
 @available(iOS 13.0, *)
 extension BitcoinCashAddressService: AddressProvider {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
         switch addressType {
         case .default:
             let address = try cashAddrService.makeAddress(from: publicKey.blockchainKey)
