@@ -171,7 +171,7 @@ struct TronTransactionHistoryMapper {
                 name: transfer.name,
                 symbol: transfer.symbol,
                 decimals: transfer.decimals,
-                contract: transfer._contract
+                contract: transfer.compat.contract
             )
         }
     }

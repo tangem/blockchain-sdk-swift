@@ -140,20 +140,3 @@ struct BlockBookFeeResponse: Decodable {
     
     let result: Result
 }
-
-// MARK: - Convenience extensions
-
-extension BlockBookAddressResponse.Transaction {
-    // TODO: Andrey Fedorov - Improve naming
-    var _vin: [BlockBookAddressResponse.Vin] { vin ?? [] }
-
-    // TODO: Andrey Fedorov - Improve naming
-    var _vout: [BlockBookAddressResponse.Vout] { vout ?? [] }
-}
-
-extension BlockBookAddressResponse.TokenTransfer {
-    /// For some blockchains (e.g. Ethereum POW) the contract address is stored
-    /// in the `token` field instead of the `contract` field of the response.
-    // TODO: Andrey Fedorov - Improve naming
-    var _contract: String? { contract ?? token }
-}

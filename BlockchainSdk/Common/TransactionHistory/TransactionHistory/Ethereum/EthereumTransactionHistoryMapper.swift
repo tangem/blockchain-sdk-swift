@@ -87,7 +87,7 @@ private extension EthereumTransactionHistoryMapper {
     ) -> Bool {
         switch amountType {
         case .coin, .reserve:
-            return transaction._vin.first?.addresses.first == walletAddress
+            return transaction.compat.vin.first?.addresses.first == walletAddress
         case .token(let token):
             if transaction.tokenTransfers == nil {
                 Log.log("""
@@ -98,7 +98,7 @@ private extension EthereumTransactionHistoryMapper {
 
             let allTokenTransfers = transaction.tokenTransfers ?? []
             let filteredTokenTransfers = allTokenTransfers.filter { transfer in
-                guard let contract = transfer._contract else {
+                guard let contract = transfer.compat.contract else {
                     return false
                 }
 
@@ -135,7 +135,7 @@ private extension EthereumTransactionHistoryMapper {
         let allTokenTransfers = transaction.tokenTransfers ?? []
 
         let filteredTokenTransfers = allTokenTransfers.filter { transfer in
-            guard let contract = transfer._contract else {
+            guard let contract = transfer.compat.contract else {
                 return false
             }
 
@@ -161,7 +161,7 @@ private extension EthereumTransactionHistoryMapper {
         walletAddress: String,
         amountType: Amount.AmountType
     ) -> TransactionRecord.Source? {
-        guard let vin = transaction._vin.first, let address = vin.addresses.first else {
+        guard let vin = transaction.compat.vin.first, let address = vin.addresses.first else {
             Log.log("Source information in transaction \(transaction) not found")
             return nil
         }
@@ -190,7 +190,7 @@ private extension EthereumTransactionHistoryMapper {
         walletAddress: String,
         amountType: Amount.AmountType
     ) -> TransactionRecord.Destination? {
-        guard let vout = transaction._vout.first, let address = vout.addresses.first else {
+        guard let vout = transaction.compat.vout.first, let address = vout.addresses.first else {
             Log.log("Destination information in transaction \(transaction) not found")
             return nil
         }
@@ -246,7 +246,7 @@ private extension EthereumTransactionHistoryMapper {
                 name: transfer.name,
                 symbol: transfer.symbol,
                 decimals: transfer.decimals,
-                contract: transfer._contract
+                contract: transfer.compat.contract
             )
         }
     }
