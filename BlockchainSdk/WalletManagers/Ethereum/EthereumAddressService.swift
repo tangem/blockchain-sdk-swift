@@ -38,7 +38,7 @@ public struct EthereumAddressService {
 
 @available(iOS 13.0, *)
 extension EthereumAddressService: AddressProvider {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
         let walletPublicKey = try Secp256k1Key(with: publicKey.blockchainKey).decompress()
         //skip secp256k1 prefix
         let keccak = walletPublicKey[1...].sha3(.keccak256)

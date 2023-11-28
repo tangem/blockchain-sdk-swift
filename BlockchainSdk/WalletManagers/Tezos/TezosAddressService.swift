@@ -24,7 +24,7 @@ public struct TezosAddressService {
 
 @available(iOS 13.0, *)
 extension TezosAddressService: AddressProvider {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
         var key: Data
         switch curve {
         case .ed25519, .ed25519_slip0010:

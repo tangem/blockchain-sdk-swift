@@ -15,7 +15,7 @@ final class NEARAddressService {
 // MARK: - AddressProvider protocol conformance
 
 extension NEARAddressService: AddressProvider {
-    func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
+    func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
         return try walletCoreAddressService.makeAddress(for: publicKey, with: addressType)
     }
 }
