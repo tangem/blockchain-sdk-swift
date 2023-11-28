@@ -44,7 +44,7 @@ extension BitcoinLegacyAddressService: AddressValidator {
 
 @available(iOS 13.0, *)
 extension BitcoinLegacyAddressService: AddressProvider {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
         try publicKey.blockchainKey.validateAsSecp256k1Key()
 
         let bitcoinCorePublicKey = PublicKey(withAccount: 0,

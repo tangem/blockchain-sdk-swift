@@ -19,13 +19,13 @@ public struct ChiaAddressService: AddressService {
     
     // MARK: - Implementation
     
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
         let puzzle = ChiaPuzzleUtils().getPuzzleHash(from: publicKey.blockchainKey)
         let puzzleHash = try ClvmProgram.Decoder(programBytes: puzzle.bytes).deserialize().hash()
         let hrp = HRP.part(isTestnet: isTestnet)
         let encodeValue = Bech32(variant: .bech32m).encode(hrp, values: puzzleHash)
         
-        return .init(value: encodeValue, publicKey: publicKey, type: addressType)
+        return PlainAddress(value: encodeValue, publicKey: publicKey, type: addressType)
     }
     
     public func validate(_ address: String) -> Bool {
