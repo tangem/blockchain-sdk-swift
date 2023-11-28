@@ -47,7 +47,16 @@ extension String {
     func stripLeadingZeroes() -> String {
         self.replacingOccurrences(of: "^0+", with: "", options: .regularExpression)
     }
-    
+
+    func leftPadding(toLength: Int, withPad character: Character) -> String {
+        let stringLength = self.count
+        if stringLength < toLength {
+            return String(repeatElement(character, count: toLength - stringLength)) + self
+        } else {
+            return String(self.suffix(toLength))
+        }
+    }
+
     var toUInt8: [UInt8] {
         let v = self.utf8CString.map({ UInt8($0) })
         return Array(v[0 ..< (v.count-1)])
@@ -76,7 +85,13 @@ extension String {
     func localized(_ argument: CVarArg) -> String {
         return String(format: localized, argument)
     }
-    
+
+    subscript (bounds: CountableRange<Int>) -> String {
+        let start = index(self.startIndex, offsetBy: bounds.lowerBound)
+        let end = index(self.startIndex, offsetBy: bounds.upperBound)
+        return String(self[start..<end])
+    }
+
     public static var unknown: String {
         "Unknown"
     }

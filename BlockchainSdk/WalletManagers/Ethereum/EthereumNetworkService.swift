@@ -10,7 +10,6 @@ import Foundation
 import Moya
 import Combine
 import SwiftyJSON
-import web3swift
 import BigInt
 
 class EthereumNetworkService: MultiNetworkProvider {
