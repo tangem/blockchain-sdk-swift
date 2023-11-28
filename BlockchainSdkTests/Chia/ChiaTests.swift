@@ -39,14 +39,14 @@ class ChiaTests: XCTestCase {
         let encodedAmount = amount.chiaEncoded
 
         let solution1 = try "ffffff33ffa0" +
-        ChiaPuzzleUtils().getPuzzleHash(from: address).hex + "ff8" + String(encodedAmount.count) + encodedAmount.hex + "808080"
-        
+        ChiaPuzzleUtils().getPuzzleHash(from: address).hexString.lowercased() + "ff8" + String(encodedAmount.count) + encodedAmount.hexString.lowercased() + "808080"
+
         let condition = try CreateCoinCondition(
             destinationPuzzleHash: ChiaPuzzleUtils().getPuzzleHash(from: address),
             amount: amount
         ).toProgram()
         
-        let solution2 = try ClvmProgram.from(list: [ClvmProgram.from(list: [condition])]).serialize().hex
+        let solution2 = try ClvmProgram.from(list: [ClvmProgram.from(list: [condition])]).serialize().hexString.lowercased()
         
         XCTAssertEqual(solution1.lowercased(), solution2.lowercased())
     }

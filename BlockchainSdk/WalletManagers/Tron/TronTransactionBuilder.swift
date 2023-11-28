@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftProtobuf
+import CryptoSwift
 
 class TronTransactionBuilder {
     private let blockchain: Blockchain

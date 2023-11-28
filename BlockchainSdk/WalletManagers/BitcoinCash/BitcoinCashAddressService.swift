@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import HDWalletKit
 import TangemSdk
 import BitcoinCore
 

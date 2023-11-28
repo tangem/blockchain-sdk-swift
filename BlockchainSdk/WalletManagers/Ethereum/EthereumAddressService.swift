@@ -8,6 +8,7 @@
 
 import Foundation
 import TangemSdk
+import CryptoSwift
 
 public struct EthereumAddressService {
     func toChecksumAddress(_ address: String) -> String? {

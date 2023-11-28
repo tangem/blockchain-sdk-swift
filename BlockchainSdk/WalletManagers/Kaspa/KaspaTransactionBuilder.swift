@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import HDWalletKit
+import WalletCore
 
 class KaspaTransactionBuilder {
     let maxInputCount = 84
@@ -45,8 +45,8 @@ class KaspaTransactionBuilder {
         }
         
         
-        let destinationAddressScript = try scriptPublicKey(address: transaction.destinationAddress).hex
-        
+        let destinationAddressScript = try scriptPublicKey(address: transaction.destinationAddress).hexString.lowercased()
+
         var outputs: [KaspaOutput] = [
             KaspaOutput(
                 amount: amount(from: transaction),
@@ -55,8 +55,8 @@ class KaspaTransactionBuilder {
         ]
         
         if let change = try change(transaction, unspentOutputs: unspentOutputs) {
-            let sourceAddressScript = try scriptPublicKey(address: transaction.sourceAddress).hex
-            
+            let sourceAddressScript = try scriptPublicKey(address: transaction.sourceAddress).hexString.lowercased()
+
             outputs.append(
                 KaspaOutput(
                     amount: change,

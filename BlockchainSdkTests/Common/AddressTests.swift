@@ -10,7 +10,6 @@ import Foundation
 import XCTest
 import TangemSdk
 import CryptoKit
-import HDWalletKit
 import BitcoinCore
 
 @testable import BlockchainSdk

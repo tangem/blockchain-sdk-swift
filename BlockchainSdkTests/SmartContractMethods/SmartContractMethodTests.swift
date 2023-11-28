@@ -27,7 +27,7 @@ final class SmartContractMethodTests: XCTestCase {
             "00000000000000000000000000000000000000000000000000000000000f4240"
         ]
         
-        XCTAssertEqual(data.hex.lowercased(), expectedData.joined().lowercased())
+        XCTAssertEqual(data.hexString.lowercased(), expectedData.joined().lowercased())
     }
     
     func testApproveERC20TokenMethod() throws {
@@ -45,7 +45,7 @@ final class SmartContractMethodTests: XCTestCase {
             "00000000000000000000000000000000000000000000000000000000000f4240"
         ]
         
-        XCTAssertEqual(data.hex.lowercased(), expectedData.joined().lowercased())
+        XCTAssertEqual(data.hexString.lowercased(), expectedData.joined().lowercased())
     }
     
     func testAllowanceERC20TokenMethod() throws {
@@ -63,7 +63,7 @@ final class SmartContractMethodTests: XCTestCase {
             "0000000000000000000000001111111254EEB25477B68fb85Ed929f73A960582"
         ]
         
-        XCTAssertEqual(data.hex.lowercased(), expectedData.joined().lowercased())
+        XCTAssertEqual(data.hexString.lowercased(), expectedData.joined().lowercased())
     }
     
     func testTokenBalanceERC20TokenMethod() throws {
@@ -79,7 +79,7 @@ final class SmartContractMethodTests: XCTestCase {
             "00000000000000000000000090e4d59c8583e37426b37d1d7394b6008a987c67"
         ]
         
-        XCTAssertEqual(data.hex.lowercased(), expectedData.joined().lowercased())
+        XCTAssertEqual(data.hexString.lowercased(), expectedData.joined().lowercased())
     }
     
     
