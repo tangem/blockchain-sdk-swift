@@ -9,7 +9,7 @@
 import Foundation
 import BigInt
 
-public struct RLP {
+struct RLP {
     enum Error: Swift.Error {
         case encodingError
         case decodingError
@@ -113,7 +113,7 @@ public struct RLP {
         return encoded.bytes[0]
     }
 
-    public static func encode(_ elements: Array<AnyObject>) -> Data? {
+    static func encode(_ elements: Array<AnyObject>) -> Data? {
         var encodedData = Data()
         for e in elements {
             if let encoded = encode(e) {
@@ -131,12 +131,12 @@ public struct RLP {
         return encodedLength
     }
 
-    public static func decode(_ raw: String) -> RLPItem? {
+    static func decode(_ raw: String) -> RLPItem? {
         guard let rawData = Data.fromHex(raw) else {return nil}
         return decode(rawData)
     }
 
-    public static func decode(_ raw: Data) -> RLPItem? {
+    static func decode(_ raw: Data) -> RLPItem? {
         if raw.count == 0 {
             return RLPItem.noItem
         }
@@ -169,7 +169,7 @@ public struct RLP {
         return RLPItem.init(content: .list(outputArray, 0, Data(raw)))
     }
 
-    public struct RLPItem {
+    struct RLPItem {
 
         enum UnderlyingType {
             case empty
@@ -177,15 +177,15 @@ public struct RLP {
             case list
         }
 
-        public enum RLPContent {
+        enum RLPContent {
             case noItem
             case data(Data)
             indirect case list([RLPItem], Int, Data)
         }
 
-        public var content: RLPContent
+        var content: RLPContent
 
-        public var isData: Bool {
+        var isData: Bool {
             switch self.content {
             case .noItem:
                 return false
@@ -196,7 +196,7 @@ public struct RLP {
             }
         }
 
-        public var isList: Bool {
+        var isList: Bool {
             switch self.content {
             case .noItem:
                 return false
@@ -206,7 +206,7 @@ public struct RLP {
                 return true
             }
         }
-        public var count: Int? {
+        var count: Int? {
             switch self.content {
             case .noItem:
                 return nil
@@ -217,7 +217,7 @@ public struct RLP {
             }
         }
 
-        public subscript(index: Int) -> RLPItem? {
+        subscript(index: Int) -> RLPItem? {
             get {
                 //                guard self.hasNext else {return nil}
                 guard case .list(let list, _, _) = self.content else {return nil}
@@ -226,11 +226,11 @@ public struct RLP {
             }
         }
 
-        public var data: Data? {
+        var data: Data? {
             return self.getData()
         }
 
-        public func getData() -> Data? {
+        func getData() -> Data? {
             if self.isList {
                 guard case .list(_, _, let rawContent) = self.content else {return nil}
                 return rawContent
@@ -239,7 +239,7 @@ public struct RLP {
             return data
         }
 
-        public static var noItem: RLPItem {
+        static var noItem: RLPItem {
             return RLPItem.init(content: .noItem)
         }
     }
@@ -298,11 +298,3 @@ public struct RLP {
         }
     }
 }
-
-fileprivate extension Data {
-
-    var bytes: Array<UInt8> {
-        return Array(self)
-    }
-}
-
