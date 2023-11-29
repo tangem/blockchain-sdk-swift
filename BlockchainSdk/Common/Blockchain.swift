@@ -442,7 +442,7 @@ extension Blockchain {
         case .ethereumClassic:
             if isTestnet {
                 return [
-                    URL(string: "https://etc.rivet.link/kotti")!,
+                    URL(string: "https://rpc.mordor.etccooperative.org")!,
                 ]
             } else {
                 return [
