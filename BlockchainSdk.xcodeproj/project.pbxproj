@@ -344,6 +344,8 @@
 		DC173AEC2A5D42EE0088F79E /* XRPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC173AEB2A5D42EE0088F79E /* XRPTests.swift */; };
 		DC4E442B29BF4B4C0088617C /* XRPBase58.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC4E442A29BF4B4C0088617C /* XRPBase58.swift */; };
 		DC63F266293F243200F953EF /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC63F265293F243200F953EF /* Credentials.swift */; };
+		DC8180802B15159D00D7D53F /* RLP.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC81807F2B15159D00D7D53F /* RLP.swift */; };
+		DC8180822B1516D400D7D53F /* EthereumTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8180812B1516D400D7D53F /* EthereumTransaction.swift */; };
 		DC886FCD2AF5637D0098669C /* CommonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC886FCC2AF5637D0098669C /* CommonTests.swift */; };
 		E93532CE292D0E86008FD979 /* BlockBookUtxoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9941ACA2927B07300399DE3 /* BlockBookUtxoProvider.swift */; };
 		E95D95152929872B0068F876 /* BlockBookResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = E95D95142929872B0068F876 /* BlockBookResponses.swift */; };
@@ -880,6 +882,8 @@
 		DC173AEB2A5D42EE0088F79E /* XRPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPTests.swift; sourceTree = "<group>"; };
 		DC4E442A29BF4B4C0088617C /* XRPBase58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPBase58.swift; sourceTree = "<group>"; };
 		DC63F265293F243200F953EF /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
+		DC81807F2B15159D00D7D53F /* RLP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RLP.swift; sourceTree = "<group>"; };
+		DC8180812B1516D400D7D53F /* EthereumTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTransaction.swift; sourceTree = "<group>"; };
 		DC886FCC2AF5637D0098669C /* CommonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonTests.swift; sourceTree = "<group>"; };
 		DCE3379A28F2B7260029A6F5 /* BlockchainSdkExample.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = BlockchainSdkExample.entitlements; sourceTree = "<group>"; };
 		E95D95142929872B0068F876 /* BlockBookResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookResponses.swift; sourceTree = "<group>"; };
@@ -1634,6 +1638,8 @@
 				DA656FCB2954B5220092CC61 /* EthereumTarget.swift */,
 				EF9F9087299F8B70006F638F /* ETHError.swift */,
 				EFF56B4029C30265002B6952 /* EthereumFeeParameters.swift */,
+				DC81807F2B15159D00D7D53F /* RLP.swift */,
+				DC8180812B1516D400D7D53F /* EthereumTransaction.swift */,
 			);
 			path = Ethereum;
 			sourceTree = "<group>";
@@ -2966,6 +2972,7 @@
 				5DC7DD60243F83E6008F83F2 /* XRPAddressService.swift in Sources */,
 				2DB6C6D52AFCBEC9000D0C6A /* TelosWalletManager.swift in Sources */,
 				B0CDFF252641488900B9BA9D /* EthereumJsonRpcProvider.swift in Sources */,
+				DC8180802B15159D00D7D53F /* RLP.swift in Sources */,
 				2DA8AB0D2A433A1000C75D85 /* ExceptionHandler.swift in Sources */,
 				2DB6C6D72AFCC013000D0C6A /* TelosWalletAssembly.swift in Sources */,
 				DAD65BB02955F201003B3E8D /* EthereumApiKeys.swift in Sources */,
@@ -3159,6 +3166,7 @@
 				EF57BEDA2A1E625400C2A493 /* DerivationConfigV2.swift in Sources */,
 				B00FBEDA2996A1B700FDB874 /* BlockscoutTarget.swift in Sources */,
 				EF1339BA2AB4B38000B78BA3 /* ApproveERC20TokenMethod.swift in Sources */,
+				DC8180822B1516D400D7D53F /* EthereumTransaction.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
