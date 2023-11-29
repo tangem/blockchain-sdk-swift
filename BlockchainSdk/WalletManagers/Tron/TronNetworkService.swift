@@ -9,7 +9,6 @@
 import Foundation
 import Combine
 import BigInt
-import web3swift
 
 class TronNetworkService: MultiNetworkProvider {
     let providers: [TronJsonRpcProvider]
@@ -157,7 +156,7 @@ class TronNetworkService: MultiNetworkProvider {
                     
                     let bigIntValue = BigUInt(Data(hex: hexValue))
                     
-                    let formatted = Web3.Utils.formatToPrecision(
+                    let formatted = EthereumUtils.formatToPrecision(
                         bigIntValue,
                         numberDecimals: token.decimalCount,
                         formattingDecimals: token.decimalCount,

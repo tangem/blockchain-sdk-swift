@@ -54,7 +54,6 @@ Use BlockchainSdk for Tangem wallet integration
 
   s.dependency 'BinanceChain' # Fork https://github.com/tangem/swiftbinancechain.git
   s.dependency 'HDWalletKit' # Fork https://github.com/tangem/hdwallet.git
-  s.dependency 'web3swift' # Fork https://github.com/tangem/web3swift.git
   s.dependency 'BitcoinCore.swift' # Fork https://github.com/tangem/bitcoincore.git
   s.dependency 'Solana.Swift' # Fork https://github.com/tangem/Solana.Swift.git
   s.dependency 'TangemWalletCore' # Fork https://github.com/tangem/wallet-core-binaries-ios.git

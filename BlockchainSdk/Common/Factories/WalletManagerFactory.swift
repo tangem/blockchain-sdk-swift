@@ -75,7 +75,7 @@ extension WalletManagerFactory {
         dummyAddress: String
     ) throws -> WalletManager {
         let publicKey = Wallet.PublicKey(seedKey: dummyPublicKey, derivationType: .none)
-        let address: PlainAddress
+        let address: Address
 
         if dummyAddress.isEmpty {
             let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()

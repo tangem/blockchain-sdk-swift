@@ -10,7 +10,6 @@ import BigInt
 import Combine
 import TangemSdk
 import Moya
-import web3swift
 
 class OptimismWalletManager: EthereumWalletManager {
     /// We are override this method to combine the two fee's layers in the `Optimistic-Ethereum` network.
@@ -62,22 +61,19 @@ private extension OptimismWalletManager {
         data: Data?,
         l2FeeParameters: EthereumFeeParameters
     ) -> AnyPublisher<Decimal, Error> {
-        guard let address = EthereumAddress(destination) else {
-            return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
-        }
-
         let valueData = Data(hex: value ?? "0x0")
         let transaction = EthereumTransaction(
+            nonce: BigUInt(0),
             gasPrice: l2FeeParameters.gasPrice,
             gasLimit: l2FeeParameters.gasLimit,
-            to: address,
+            to: destination,
             value: BigUInt(valueData),
             data: data ?? Data()
         )
         
         // Just collect data to get estimated fee from contact address
         // https://github.com/ethereum/wiki/wiki/RLP
-        guard let rlpEncodedTransactionData = transaction.encodeForSend() else {
+        guard let rlpEncodedTransactionData = transaction.encode(forSignature: false) else {
             return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
         }
 

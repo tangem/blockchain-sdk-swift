@@ -25,12 +25,10 @@ target 'BlockchainSdk' do
   #pod 'BinanceChain', :path => '../SwiftBinanceChain'
   pod 'HDWalletKit', :git => 'https://github.com/tangem/hdwallet.git', :tag => '0.3.12'
   #pod 'HDWalletKit', :path => '../HDWallet'
-  pod 'web3swift', :git => 'https://github.com/tangem/web3swift.git', :tag => '2.2.12'
-  #pod 'web3swift', :path => '../web3swift'
   pod 'AnyCodable-FlightSchool'
   pod 'stellar-ios-mac-sdk'
   
-  pod 'Solana.Swift', :git => 'https://github.com/tangem/Solana.Swift', :tag => 'add-external-signer-8'
+  pod 'Solana.Swift', :git => 'https://github.com/tangem/Solana.Swift', :tag => 'add-external-signer-9'
 #  pod 'Solana.Swift', :path => '../Solana.Swift'
 
   pod 'ScaleCodec'

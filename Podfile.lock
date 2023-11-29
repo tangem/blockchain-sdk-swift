@@ -31,15 +31,6 @@ PODS:
   - ObjcExceptionBridging (1.0.1):
     - ObjcExceptionBridging/ObjcExceptionBridging (= 1.0.1)
   - ObjcExceptionBridging/ObjcExceptionBridging (1.0.1)
-  - PromiseKit (6.18.1):
-    - PromiseKit/CorePromise (= 6.18.1)
-    - PromiseKit/Foundation (= 6.18.1)
-    - PromiseKit/UIKit (= 6.18.1)
-  - PromiseKit/CorePromise (6.18.1)
-  - PromiseKit/Foundation (6.18.1):
-    - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.18.1):
-    - PromiseKit/CorePromise
   - ScaleCodec (0.2.1):
     - BigInt (~> 5.2)
   - secp256k1.swift (0.1.4)
@@ -58,12 +49,6 @@ PODS:
   - TangemWalletCore (3.2.4-tangem1):
     - SwiftProtobuf
   - TweetNacl (1.0.2)
-  - web3swift (2.2.1):
-    - BigInt
-    - CryptoSwift
-    - PromiseKit
-    - secp256k1.swift
-    - Starscream
   - XCGLogger (7.0.1):
     - XCGLogger/Core (= 7.0.1)
   - XCGLogger/Core (7.0.1):
@@ -79,14 +64,13 @@ DEPENDENCIES:
   - Moya
   - ScaleCodec
   - Sodium
-  - Solana.Swift (from `https://github.com/tangem/Solana.Swift`, tag `add-external-signer-8`)
+  - Solana.Swift (from `https://github.com/tangem/Solana.Swift`, tag `add-external-signer-9`)
   - stellar-ios-mac-sdk
   - SwiftCBOR
   - SwiftProtobuf
   - SwiftyJSON
   - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-264`)
   - TangemWalletCore (from `https://github.com/tangem/wallet-core-binaries-ios.git`, tag `3.2.4-tangem1`)
-  - web3swift (from `https://github.com/tangem/web3swift.git`, tag `2.2.12`)
 
 SPEC REPOS:
   trunk:
@@ -96,7 +80,6 @@ SPEC REPOS:
     - CryptoSwift
     - Moya
     - ObjcExceptionBridging
-    - PromiseKit
     - ScaleCodec
     - secp256k1.swift
     - Sodium
@@ -121,16 +104,13 @@ EXTERNAL SOURCES:
     :tag: 0.3.12
   Solana.Swift:
     :git: https://github.com/tangem/Solana.Swift
-    :tag: add-external-signer-8
+    :tag: add-external-signer-9
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-264
   TangemWalletCore:
     :git: https://github.com/tangem/wallet-core-binaries-ios.git
     :tag: 3.2.4-tangem1
-  web3swift:
-    :git: https://github.com/tangem/web3swift.git
-    :tag: 2.2.12
 
 CHECKOUT OPTIONS:
   BinanceChain:
@@ -144,16 +124,13 @@ CHECKOUT OPTIONS:
     :tag: 0.3.12
   Solana.Swift:
     :git: https://github.com/tangem/Solana.Swift
-    :tag: add-external-signer-8
+    :tag: add-external-signer-9
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-264
   TangemWalletCore:
     :git: https://github.com/tangem/wallet-core-binaries-ios.git
     :tag: 3.2.4-tangem1
-  web3swift:
-    :git: https://github.com/tangem/web3swift.git
-    :tag: 2.2.12
 
 SPEC CHECKSUMS:
   Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
@@ -165,7 +142,6 @@ SPEC CHECKSUMS:
   HDWalletKit: 602ec664633cc6bae1c697e4e17af42efb69bfad
   Moya: 138f0573e53411fb3dc17016add0b748dfbd78ee
   ObjcExceptionBridging: c30e00eb3700467e695faeea30e26e18bd445001
-  PromiseKit: 49d70c53d5d20e346beaea4b276b5dd2ab446bb4
   ScaleCodec: 5d7d0439940c600f49babad6ea265a09377c404b
   secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
   Sodium: 23d11554ecd556196d313cf6130d406dfe7ac6da
@@ -179,9 +155,8 @@ SPEC CHECKSUMS:
   TangemSdk: f3adf8d0c18bf7a76406462fa31c0efa9f2efa93
   TangemWalletCore: 8495b203106e8246aaa2a51ff99dd19f29209942
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
-  web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
   XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 7d76443177ba127c1e68719dcd805a3d6c7d9b1a
+PODFILE CHECKSUM: d216609ea5b5ab02f7ab6a9d5864e439ace055f6
 
-COCOAPODS: 1.13.0
+COCOAPODS: 1.14.3
