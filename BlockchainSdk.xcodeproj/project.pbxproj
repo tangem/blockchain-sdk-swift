@@ -9,12 +9,12 @@
 /* Begin PBXBuildFile section */
 		2D01EBFD2B04FC6700DEF1CC /* DecimalAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EBFC2B04FC6700DEF1CC /* DecimalAddressService.swift */; };
 		2D01EC002B05223900DEF1CC /* DecimalExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EBFF2B05223900DEF1CC /* DecimalExternalLinkProvider.swift */; };
-		2D01EC022B0526E400DEF1CC /* DecimalWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EC012B0526E400DEF1CC /* DecimalWalletManager.swift */; };
 		2D01EC042B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EC032B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift */; };
 		2D01EC062B052A0A00DEF1CC /* DecimalWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EC052B052A0A00DEF1CC /* DecimalWalletAssembly.swift */; };
 		2D3328C52A779ACC00C4A84C /* ChiaPuzzleUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3328C22A779ACC00C4A84C /* ChiaPuzzleUtils.swift */; };
 		2D3829C929D34A93001D4785 /* TWCoin+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829C829D34A93001D4785 /* TWCoin+.swift */; };
 		2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */; };
+		2D3FF8842B1754BC004416A2 /* DecimalNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3FF8832B1754BC004416A2 /* DecimalNetworkService.swift */; };
 		2D535E772A0CC5E50081EB76 /* DecodableVectors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E742A0CC5E50081EB76 /* DecodableVectors.swift */; };
 		2D535E782A0CC5E50081EB76 /* KeysServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E752A0CC5E50081EB76 /* KeysServiceManagerUtility.swift */; };
 		2D535E792A0CC5E50081EB76 /* TestVectorsUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E762A0CC5E50081EB76 /* TestVectorsUtility.swift */; };
@@ -520,12 +520,12 @@
 		0C79DB7FEDD8D4029AFA208D /* Pods-BlockchainSdk.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.release.xcconfig"; sourceTree = "<group>"; };
 		2D01EBFC2B04FC6700DEF1CC /* DecimalAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalAddressService.swift; sourceTree = "<group>"; };
 		2D01EBFF2B05223900DEF1CC /* DecimalExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalExternalLinkProvider.swift; sourceTree = "<group>"; };
-		2D01EC012B0526E400DEF1CC /* DecimalWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalWalletManager.swift; sourceTree = "<group>"; };
 		2D01EC032B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalBlockchainAddressConverter.swift; sourceTree = "<group>"; };
 		2D01EC052B052A0A00DEF1CC /* DecimalWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalWalletAssembly.swift; sourceTree = "<group>"; };
 		2D3328C22A779ACC00C4A84C /* ChiaPuzzleUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaPuzzleUtils.swift; sourceTree = "<group>"; };
 		2D3829C829D34A93001D4785 /* TWCoin+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWCoin+.swift"; sourceTree = "<group>"; };
 		2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressServiceManagerUtility.swift; sourceTree = "<group>"; };
+		2D3FF8832B1754BC004416A2 /* DecimalNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalNetworkService.swift; sourceTree = "<group>"; };
 		2D535E742A0CC5E50081EB76 /* DecodableVectors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecodableVectors.swift; sourceTree = "<group>"; };
 		2D535E752A0CC5E50081EB76 /* KeysServiceManagerUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeysServiceManagerUtility.swift; sourceTree = "<group>"; };
 		2D535E762A0CC5E50081EB76 /* TestVectorsUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestVectorsUtility.swift; sourceTree = "<group>"; };
@@ -1049,7 +1049,6 @@
 			isa = PBXGroup;
 			children = (
 				2D01EBFC2B04FC6700DEF1CC /* DecimalAddressService.swift */,
-				2D01EC012B0526E400DEF1CC /* DecimalWalletManager.swift */,
 				2D01EC032B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift */,
 				2DCAEE4C2B147BCD00C87E09 /* DecimalTransactionBuilder.swift */,
 				2DCAEE4E2B147E2800C87E09 /* DecimalPlainAddress.swift */,
@@ -1067,6 +1066,14 @@
 				2D3328C22A779ACC00C4A84C /* ChiaPuzzleUtils.swift */,
 			);
 			path = Common;
+			sourceTree = "<group>";
+		};
+		2D3FF8822B1754AF004416A2 /* Decimal */ = {
+			isa = PBXGroup;
+			children = (
+				2D3FF8832B1754BC004416A2 /* DecimalNetworkService.swift */,
+			);
+			path = Decimal;
 			sourceTree = "<group>";
 		};
 		2D535E7A2A0CC5FA0081EB76 /* Vectors */ = {
@@ -1459,6 +1466,7 @@
 				2D9A919629BB8C1700476EA6 /* TON */,
 				EF2BC61C29DAC62C003D3F18 /* Ravencoin */,
 				2DA139FA2A8AD83B00E3C374 /* Chia */,
+				2D3FF8822B1754AF004416A2 /* Decimal */,
 			);
 			path = BlockchainService;
 			sourceTree = "<group>";
@@ -2874,6 +2882,7 @@
 				5D7D243625136254001B9A4F /* XRPAccount.swift in Sources */,
 				5D7D244925136399001B9A4F /* BitcoinfeesResponse.swift in Sources */,
 				B6BA93712AEA0E8000F84E36 /* NEARNetworkParams.ViewAccessKey.swift in Sources */,
+				2D3FF8842B1754BC004416A2 /* DecimalNetworkService.swift in Sources */,
 				2DDE5BAF29C4F8D200A5B708 /* DashWalletAssembly.swift in Sources */,
 				DA30812F2817C0F900DE41F1 /* Contracts.pb.swift in Sources */,
 				5D0EEE69253EF75200758FDC /* TezosFee.swift in Sources */,
@@ -3119,7 +3128,6 @@
 				5D304399239A8C9C0066B8D9 /* BitcoinAddressService.swift in Sources */,
 				EF31EA1629DC31E000A59FBE /* RavencoinWalletManager.swift in Sources */,
 				B68507082AEF494E004A431B /* NEARProtocolConfigCache.swift in Sources */,
-				2D01EC022B0526E400DEF1CC /* DecimalWalletManager.swift in Sources */,
 				5D557CB723ACCB48009B32AF /* BlockchainInfoNetworkProvider.swift in Sources */,
 				5D26CEE7243CA4E200994CC0 /* DucatusAddressService.swift in Sources */,
 				2D3328C52A779ACC00C4A84C /* ChiaPuzzleUtils.swift in Sources */,
