@@ -40,6 +40,7 @@ public struct TransactionHistoryProviderFactory {
             )
         case .ethereum,
                 .ethereumPoW,
+                .ethereumClassic,
                 .bsc,
                 .avalanche,
                 .arbitrum:
