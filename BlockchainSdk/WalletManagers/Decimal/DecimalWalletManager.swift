@@ -33,6 +33,16 @@ final class DecimalWalletManager: EthereumWalletManager {
         }
     }
     
+    override func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
+        do {
+            let fromConvertedAddress = try convertAddressIfNeeded(destinationAddress: from)
+            let toConvertedAddress = try convertAddressIfNeeded(destinationAddress: to)
+            return super.getGasLimit(to: toConvertedAddress, from: fromConvertedAddress, value: value, data: data)
+        } catch {
+            return .anyFail(error: WalletError.failedToGetFee)
+        }
+    }
+    
     // MARK: - Private Implementation
 
     private func convertAddressIfNeeded(destinationAddress: String) throws -> String {

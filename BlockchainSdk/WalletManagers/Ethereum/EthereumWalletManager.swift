@@ -13,7 +13,7 @@ import TangemSdk
 import Moya
 import web3swift
 
-class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, TransactionFeeProvider {
+class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, TransactionFeeProvider, EthereumGasLoader {
     var txBuilder: EthereumTransactionBuilder!
     var networkService: EthereumNetworkService!
     
@@ -95,6 +95,18 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Transa
                 
                 return tx.hexString.lowercased().addHexPrefix()
             }
+            .eraseToAnyPublisher()
+    }
+    
+    // MARK: - EthereumGasLoader
+
+    func getGasPrice() -> AnyPublisher<BigUInt, Error> {
+        networkService.getGasPrice()
+    }
+    
+    func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
+        return networkService
+            .getGasLimit(to: to, from: from, value: value, data: data)
             .eraseToAnyPublisher()
     }
 }
@@ -213,20 +225,6 @@ extension EthereumWalletManager: TransactionSender {
                 .mapError { SendTxError(error: $0, tx: tx) }
                 .eraseToAnyPublisher() ?? .emptyFail
             }
-            .eraseToAnyPublisher()
-    }
-}
-
-// MARK: - EthereumGasLoader
-
-extension EthereumWalletManager: EthereumGasLoader {
-    func getGasPrice() -> AnyPublisher<BigUInt, Error> {
-        networkService.getGasPrice()
-    }
-    
-    func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
-        return networkService
-            .getGasLimit(to: to, from: from, value: value, data: data)
             .eraseToAnyPublisher()
     }
 }
