@@ -13,6 +13,8 @@ class BitcoinScriptBuilder {
     private let scriptChunkHelper = ScriptChunkHelper()
 
     func makeMultisig(publicKeys: [Data], signaturesRequired: Int) throws -> BitcoinScript {
+        let publicKeys = publicKeys.sorted(by: { $0.lexicographicallyPrecedes($1) })
+
         // First make sure the arguments make sense.
         // We need at least one signature
         guard signaturesRequired > 0 else {
