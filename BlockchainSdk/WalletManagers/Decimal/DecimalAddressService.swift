@@ -47,7 +47,7 @@ extension DecimalAddressService: AddressProvider {
 
 extension DecimalAddressService: AddressValidator {
     func validate(_ address: String) -> Bool {
-        guard let ercAddress = utils.convertDscAddressToErcAddress(addressHex: address) else {
+        guard let ercAddress = try? utils.convertDscAddressToErcAddress(addressHex: address) else {
             return false
         }
         
