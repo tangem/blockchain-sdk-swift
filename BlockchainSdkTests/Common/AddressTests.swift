@@ -949,7 +949,7 @@ class AddressesTests: XCTestCase {
         let addressService = DecimalAddressService(isTestnet: false)
         let plainAddress = try addressService.makeAddress(from: walletPublicKey)
         
-        let expectedAddress = "0xc63763572D45171e4C25cA0818b44E5Dd7F5c15B"
+        let expectedAddress = "d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9"
         
         XCTAssertEqual(plainAddress.value, expectedAddress)
     }
@@ -957,5 +957,9 @@ class AddressesTests: XCTestCase {
     func testDecimalValidateCorrectAddressWithChecksum() throws {
         XCTAssertTrue(DecimalAddressService(isTestnet: false).validate("0xc63763572D45171e4C25cA0818b44E5Dd7F5c15B"))
         XCTAssertTrue(DecimalAddressService(isTestnet: false).validate("d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9"))
+        
+        XCTAssertFalse(DecimalAddressService(isTestnet: false).validate("0xc63763572D45171e4C25cA0818b4"))
+        XCTAssertFalse(DecimalAddressService(isTestnet: false).validate("d01ccmkx4edg5t3unp9egyp3dzwtht"))
+        XCTAssertFalse(DecimalAddressService(isTestnet: false).validate(""))
     }
 }
