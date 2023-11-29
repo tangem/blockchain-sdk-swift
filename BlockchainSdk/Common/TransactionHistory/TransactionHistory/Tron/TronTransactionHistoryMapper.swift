@@ -153,7 +153,7 @@ struct TronTransactionHistoryMapper {
     }
 
     private func transactionType(_ transaction: BlockBookAddressResponse.Transaction) -> TransactionRecord.TransactionType {
-        // TODO: Andrey Fedorov - Apparently, Tron blockchain uses different method encoding; add actual implementation
+        // TODO: Andrey Fedorov - Tron methods decoding (IOS-5258)
         return .transfer
     }
 
