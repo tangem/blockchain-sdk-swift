@@ -12,7 +12,7 @@ import Combine
 import TangemSdk
 import Moya
 
-class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, TransactionFeeProvider, EthereumGasLoader {
+class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, TransactionFeeProvider {
     var txBuilder: EthereumTransactionBuilder!
     var networkService: EthereumNetworkService!
     
@@ -31,12 +31,8 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Transa
     }
 
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {
-        getInfo(address: wallet.address, tokens: cardTokens, completion)
-    }
-    
-    func getInfo(address: String, tokens: [Token], _ completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
-            .getInfo(address: address, tokens: tokens)
+            .getInfo(address: wallet.address, tokens: cardTokens)
             .sink(receiveCompletion: {[unowned self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
                     self.wallet.amounts = [:]
@@ -47,38 +43,11 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Transa
                 completion(.success(()))
             })
     }
-    
-    func getFee(to: String, from: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
-        networkService.getFee(to: to, from: from, value: value, data: data?.hexString.addHexPrefix())
-            .tryMap { [weak self] ethereumFeeResponse in
-                guard let self = self else {
-                    throw BlockchainSdkError.failedToLoadFee
-                }
-                
-                let decimalValue = self.wallet.blockchain.decimalValue
-                let blockchain = self.wallet.blockchain
+}
 
-                let fees = ethereumFeeResponse.gasPrices.map { gasPrice in
-                    let gasLimit = ethereumFeeResponse.gasLimit
-                    let feeValue = gasLimit * gasPrice
+// MARK: - EthereumTransactionSigner
 
-                    // TODO: Fix integer overflow. Think about BigInt
-                    // https://tangem.atlassian.net/browse/IOS-4268
-                    let fee = Decimal(Int(feeValue)) / decimalValue
-
-                    let amount = Amount(with: blockchain, value: fee)
-                    let parameters = EthereumFeeParameters(gasLimit: gasLimit, gasPrice: gasPrice)
-
-                    return Fee(amount, parameters: parameters)
-                }
-
-                return fees
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    // MARK: - EthereumTransactionSigner
-    
+extension EthereumWalletManager: EthereumTransactionSigner {
     func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error> {
         guard let txForSign = txBuilder.buildForSign(transaction: transaction, nonce: txCount) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
@@ -94,18 +63,6 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Transa
                 
                 return tx.hexString.lowercased().addHexPrefix()
             }
-            .eraseToAnyPublisher()
-    }
-    
-    // MARK: - EthereumGasLoader
-
-    func getGasPrice() -> AnyPublisher<BigUInt, Error> {
-        networkService.getGasPrice()
-    }
-    
-    func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
-        return networkService
-            .getGasLimit(to: to, from: from, value: value, data: data)
             .eraseToAnyPublisher()
     }
 }
@@ -160,6 +117,35 @@ extension EthereumWalletManager: EthereumNetworkProvider {
 // MARK: - Private
 
 private extension EthereumWalletManager {
+    func getFee(to: String, from: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
+        networkService.getFee(to: to, from: from, value: value, data: data?.hexString.addHexPrefix())
+            .tryMap { [weak self] ethereumFeeResponse in
+                guard let self = self else {
+                    throw BlockchainSdkError.failedToLoadFee
+                }
+                
+                let decimalValue = self.wallet.blockchain.decimalValue
+                let blockchain = self.wallet.blockchain
+
+                let fees = ethereumFeeResponse.gasPrices.map { gasPrice in
+                    let gasLimit = ethereumFeeResponse.gasLimit
+                    let feeValue = gasLimit * gasPrice
+
+                    // TODO: Fix integer overflow. Think about BigInt
+                    // https://tangem.atlassian.net/browse/IOS-4268
+                    let fee = Decimal(Int(feeValue)) / decimalValue
+
+                    let amount = Amount(with: blockchain, value: fee)
+                    let parameters = EthereumFeeParameters(gasLimit: gasLimit, gasPrice: gasPrice)
+
+                    return Fee(amount, parameters: parameters)
+                }
+
+                return fees
+            }
+            .eraseToAnyPublisher()
+    }
+    
     private func updateWallet(with response: EthereumInfoResponse) {
         wallet.add(coinValue: response.balance)
         for tokenBalance in response.tokenBalances {
@@ -224,6 +210,20 @@ extension EthereumWalletManager: TransactionSender {
                 .mapError { SendTxError(error: $0, tx: tx) }
                 .eraseToAnyPublisher() ?? .emptyFail
             }
+            .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - EthereumGasLoader
+
+extension EthereumWalletManager: EthereumGasLoader {
+    func getGasPrice() -> AnyPublisher<BigUInt, Error> {
+        networkService.getGasPrice()
+    }
+    
+    func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
+        return networkService
+            .getGasLimit(to: to, from: from, value: value, data: data)
             .eraseToAnyPublisher()
     }
 }
