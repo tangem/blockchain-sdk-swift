@@ -9,25 +9,34 @@
 import Foundation
 import Combine
 import TangemSdk
+import BigInt
 
 final class DecimalWalletManager: EthereumWalletManager {
     private let addressConverter = DecimalBlockchainAddressConverter()
     
     override func getInfo(address: String, tokens: [Token], _ completion: @escaping (Result<Void, Error>) -> Void) {
-        let convertedDestinationAddress = convertAddressIfNeeded(destinationAddress: address)
-        super.getInfo(address: convertedDestinationAddress, tokens: tokens, completion)
+        do {
+            let convertedDestinationAddress = try convertAddressIfNeeded(destinationAddress: address)
+            super.getInfo(address: convertedDestinationAddress, tokens: tokens, completion)
+        } catch {
+            completion(.failure(WalletError.empty))
+        }
     }
     
     override func getFee(to: String, from: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
-        let fromConvertedAddress = convertAddressIfNeeded(destinationAddress: from)
-        let toConvertedAddress = convertAddressIfNeeded(destinationAddress: to)
-        return super.getFee(to: toConvertedAddress, from: fromConvertedAddress, value: value, data: data)
+        do {
+            let fromConvertedAddress = try convertAddressIfNeeded(destinationAddress: from)
+            let toConvertedAddress = try convertAddressIfNeeded(destinationAddress: to)
+            return super.getFee(to: toConvertedAddress, from: fromConvertedAddress, value: value, data: data)
+        } catch {
+            return .anyFail(error: WalletError.failedToGetFee)
+        }
     }
     
     // MARK: - Private Implementation
 
-    private func convertAddressIfNeeded(destinationAddress: String) -> String {
-        addressConverter.convertDscAddressToErcAddress(addressHex: destinationAddress) ?? destinationAddress
+    private func convertAddressIfNeeded(destinationAddress: String) throws -> String {
+        try addressConverter.convertDscAddressToErcAddress(addressHex: destinationAddress)
     }
     
 }

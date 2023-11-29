@@ -17,22 +17,19 @@ struct DecimalBlockchainAddressConverter {
     
     // MARK: - Implementation
     
-    func convertDscAddressToErcAddress(addressHex: String) -> String? {
+    func convertDscAddressToErcAddress(addressHex: String) throws -> String {
         if addressHex.hasHexPrefix() {
             return addressHex
         }
         
-        guard 
-            let decodeValue = try? bech32.decode(addressHex),
-            let convertedAddressBytes = try? bech32.convertBits(
-                data: decodeValue.checksum.bytes,
-                fromBits: 5,
-                toBits: 8,
-                pad: false
-            )
-        else {
-            return nil
-        }
+        let decodeValue = try bech32.decode(addressHex)
+        
+        let convertedAddressBytes = try bech32.convertBits(
+            data: decodeValue.checksum.bytes,
+            fromBits: 5,
+            toBits: 8,
+            pad: false
+        )
 
         return convertedAddressBytes.toHexString().addHexPrefix()
     }
