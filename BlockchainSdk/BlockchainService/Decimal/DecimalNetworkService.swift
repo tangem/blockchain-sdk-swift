@@ -96,6 +96,6 @@ final class DecimalNetworkService: EthereumNetworkService {
 
 extension DecimalNetworkService {
     private func convertAddressIfNeeded(address: String) throws -> String {
-        try addressConverter.convertDscAddressToErcAddress(addressHex: address)
+        try addressConverter.convertErcAddressToDscAddress(addressHex: address)
     }
 }
