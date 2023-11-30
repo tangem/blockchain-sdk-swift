@@ -18,6 +18,16 @@ struct DecimalBlockchainAddressConverter {
     // MARK: - Implementation
     
     func convertDscAddressToErcAddress(addressHex: String) throws -> String {
+        if addressHex.lowercased().hasPrefix(Constants.addressPrefix) || addressHex.lowercased().hasPrefix(Constants.legacyAddressPrefix) {
+            return addressHex
+        }
+
+        let addressBytes = Data(hexString: addressHex)
+
+        return bech32.encode(Constants.addressPrefix, values: addressBytes)
+    }
+
+    func convertErcAddressToDscAddress(addressHex: String) throws -> String {
         if addressHex.hasHexPrefix() {
             return addressHex
         }
@@ -32,16 +42,6 @@ struct DecimalBlockchainAddressConverter {
         )
 
         return convertedAddressBytes.toHexString().addHexPrefix()
-    }
-
-    func convertErcAddressToDscAddress(addressHex: String) throws -> String {
-        if addressHex.lowercased().hasPrefix(Constants.addressPrefix) || addressHex.lowercased().hasPrefix(Constants.legacyAddressPrefix) {
-            return addressHex
-        }
-
-        let addressBytes = Data(hexString: addressHex)
-
-        return bech32.encode(Constants.addressPrefix, values: addressBytes)
     }
 }
 
