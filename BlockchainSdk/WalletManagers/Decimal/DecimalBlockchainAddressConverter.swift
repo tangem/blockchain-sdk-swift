@@ -9,6 +9,12 @@
 import Foundation
 import HDWalletKit
 
+/*
+ Decimal Blockchain Address - d01clhamkvxw8ur9afuzxqhuvsrzelcl0x25j4asd
+ DSC Address - 0xc7efddd98671f832f53c11817e3203167f8fbasd
+ Legacy Address - dx1fv0m65st02p0z93xxarsd6g4ydltg8crm78hkv no use
+ */
+
 struct DecimalBlockchainAddressConverter {
     
     // MARK: - Private Properties
@@ -17,7 +23,7 @@ struct DecimalBlockchainAddressConverter {
     
     // MARK: - Implementation
     
-    func convertDscAddressToErcAddress(addressHex: String) throws -> String {
+    func convertDscAddressToDecimalBlockchainAddress(addressHex: String) throws -> String {
         if addressHex.lowercased().hasPrefix(Constants.addressPrefix) || addressHex.lowercased().hasPrefix(Constants.legacyAddressPrefix) {
             return addressHex
         }
@@ -27,7 +33,7 @@ struct DecimalBlockchainAddressConverter {
         return bech32.encode(Constants.addressPrefix, values: addressBytes)
     }
 
-    func convertErcAddressToDscAddress(addressHex: String) throws -> String {
+    func convertDecimalBlockchainAddressToDscAddress(addressHex: String) throws -> String {
         if addressHex.hasHexPrefix() {
             return addressHex
         }

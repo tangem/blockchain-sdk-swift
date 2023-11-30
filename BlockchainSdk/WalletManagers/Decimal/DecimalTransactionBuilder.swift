@@ -30,6 +30,6 @@ class DecimalTransactionBuilder: EthereumTransactionBuilder {
     // MARK: - Private Implementation
     
     private func convertAddressIfNeeded(destinationAddress: String) throws -> String {
-        try addressConverter.convertErcAddressToDscAddress(addressHex: destinationAddress)
+        try addressConverter.convertDecimalBlockchainAddressToDscAddress(addressHex: destinationAddress)
     }
 }
