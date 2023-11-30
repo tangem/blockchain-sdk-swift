@@ -33,7 +33,7 @@ extension DecimalAddressService: AddressProvider {
         // If need to convert address to decimal native type
         if case .default = addressType {
             address = try DecimalPlainAddress(
-                value: utils.convertDscAddressToErcAddress(addressHex: address.value),
+                value: utils.convertDscAddressToDecimalBlockchainAddress(addressHex: address.value),
                 publicKey: publicKey,
                 type: addressType
             )
@@ -47,7 +47,7 @@ extension DecimalAddressService: AddressProvider {
 
 extension DecimalAddressService: AddressValidator {
     func validate(_ address: String) -> Bool {
-        guard let dscAddress = try? utils.convertErcAddressToDscAddress(addressHex: address) else {
+        guard let dscAddress = try? utils.convertDecimalBlockchainAddressToDscAddress(addressHex: address) else {
             return false
         }
         
