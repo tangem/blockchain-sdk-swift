@@ -962,4 +962,14 @@ class AddressesTests: XCTestCase {
         XCTAssertFalse(DecimalAddressService(isTestnet: false).validate("d01ccmkx4edg5t3unp9egyp3dzwtht"))
         XCTAssertFalse(DecimalAddressService(isTestnet: false).validate(""))
     }
+    
+    func testDecimalValidateConverterAddressUtils() throws {
+        let converter = DecimalBlockchainAddressConverter()
+        
+        let ercAddress = try converter.convertDscAddressToErcAddress(addressHex: "0xc63763572d45171e4c25ca0818b44e5dd7f5c15b")
+        XCTAssertEqual(ercAddress, "d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9")
+        
+        let dscAddress = try converter.convertErcAddressToDscAddress(addressHex: "d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9")
+        XCTAssertEqual(ercAddress, "0xc63763572d45171e4c25ca0818b44e5dd7f5c15b")
+    }
 }
