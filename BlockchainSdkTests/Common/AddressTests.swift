@@ -966,10 +966,10 @@ class AddressesTests: XCTestCase {
     func testDecimalValidateConverterAddressUtils() throws {
         let converter = DecimalBlockchainAddressConverter()
         
-        let ercAddress = try converter.convertDscAddressToErcAddress(addressHex: "0xc63763572d45171e4c25ca0818b44e5dd7f5c15b")
+        let ercAddress = try converter.convertDscAddressToDecimalBlockchainAddress(addressHex: "0xc63763572d45171e4c25ca0818b44e5dd7f5c15b")
         XCTAssertEqual(ercAddress, "d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9")
         
-        let dscAddress = try converter.convertErcAddressToDscAddress(addressHex: "d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9")
+        let dscAddress = try converter.convertDecimalBlockchainAddressToDscAddress(addressHex: "d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9")
         XCTAssertEqual(dscAddress, "0xc63763572d45171e4c25ca0818b44e5dd7f5c15b")
     }
 }
