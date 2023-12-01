@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import HDWalletKit
 
 /*
  Decimal Blockchain Address - d01clhamkvxw8ur9afuzxqhuvsrzelcl0x25j4asd
