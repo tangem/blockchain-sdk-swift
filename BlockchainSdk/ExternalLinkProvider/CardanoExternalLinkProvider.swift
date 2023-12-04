@@ -13,7 +13,7 @@ struct CardanoExternalLinkProvider {}
 extension CardanoExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? { nil }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         return URL(string: "https://www.blockchair.com/cardano/transaction/\(hash)")!
     }
         
