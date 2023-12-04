@@ -11,7 +11,7 @@ import Foundation
 struct TezosExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? { nil }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         return URL(string: "https://tzkt.io/tx/\(hash)")!
     }
     

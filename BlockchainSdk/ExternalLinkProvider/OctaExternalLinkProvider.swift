@@ -13,7 +13,7 @@ struct OctaExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://app.telos.net/testnet/developers")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         return URL(string: "https://explorer.octa.space/tx/\(hash)")!
     }
     

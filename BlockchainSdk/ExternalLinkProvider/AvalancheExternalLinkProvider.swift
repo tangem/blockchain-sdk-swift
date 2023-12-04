@@ -21,7 +21,7 @@ extension AvalancheExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://core.app/tools/testnet-faucet/")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://testnet.avascan.info/blockchain/c/tx/\(hash)")!
         }
