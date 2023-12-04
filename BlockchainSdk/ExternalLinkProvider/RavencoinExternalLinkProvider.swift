@@ -21,7 +21,7 @@ extension RavencoinExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://faucet.kava.io")!
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://testnet.ravencoin.network/tx/\(hash)")!
         }

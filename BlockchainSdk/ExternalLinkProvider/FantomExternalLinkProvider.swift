@@ -21,7 +21,7 @@ extension FantomExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://faucet.fantom.network")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://testnet.ftmscan.com/tx/\(hash)")!
         }

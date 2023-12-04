@@ -21,7 +21,7 @@ extension KavaExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://faucet.kava.io")!
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://explorer.testnet.kava.io/tx/\(hash)")!
         }

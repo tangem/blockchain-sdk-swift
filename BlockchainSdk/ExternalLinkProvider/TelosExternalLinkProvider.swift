@@ -21,7 +21,7 @@ extension TelosExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://app.telos.net/testnet/developers")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://testnet.teloscan.io/tx/\(hash)")!
         }

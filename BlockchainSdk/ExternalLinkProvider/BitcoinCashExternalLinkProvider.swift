@@ -23,7 +23,7 @@ extension BitcoinCashExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://coinfaucet.eu/en/bch-testnet/")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://blockexplorer.one/bitcoin-cash/testnet/tx/\(hash)")!
         }
