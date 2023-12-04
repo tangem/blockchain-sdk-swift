@@ -21,7 +21,7 @@ extension EthereumExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://goerlifaucet.com")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://goerli.etherscan.io/tx/\(hash)")!
         }

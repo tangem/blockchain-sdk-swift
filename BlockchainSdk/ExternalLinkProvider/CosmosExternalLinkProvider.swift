@@ -21,7 +21,7 @@ extension CosmosExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://discord.com/channels/669268347736686612/953697793476821092")!
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://explorer.theta-testnet.polypore.xyz/transactions/\(hash)")!
         }

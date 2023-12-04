@@ -66,7 +66,7 @@ public struct Wallet {
     }
     
     /// Explore URL for a specific transaction by hash
-    public func getExploreURL(for transaction: String) -> URL {
+    public func getExploreURL(for transaction: String) -> URL? {
         let provider = ExternalLinkProviderFactory().makeProvider(for: blockchain)
         return provider.url(transaction: transaction)
     }

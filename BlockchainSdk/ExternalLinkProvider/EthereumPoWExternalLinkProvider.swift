@@ -21,7 +21,7 @@ extension EthereumPoWExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://faucet.ethwscan.com")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "http://iceberg.ethwscan.com/tx/\(hash)")!
         }
