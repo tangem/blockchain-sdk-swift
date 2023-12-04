@@ -21,7 +21,7 @@ extension BitcoinExternalLinkProvider: ExternalLinkProvider {
         URL(string: "https://coinfaucet.eu/en/btc-testnet/")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://www.blockchair.com/bitcoin/testnet/transaction/\(hash)")!
         }

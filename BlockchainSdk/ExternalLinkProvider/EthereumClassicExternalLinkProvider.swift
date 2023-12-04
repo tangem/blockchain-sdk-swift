@@ -21,7 +21,7 @@ extension EthereumClassicExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://kottifaucet.me")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://etc-mordor.blockscout.com/tx/\(hash)")!
         }

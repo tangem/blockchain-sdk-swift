@@ -22,7 +22,7 @@ extension DashExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "http://faucet.test.dash.crowdnode.io/")!
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         let network = isTestnet ? "testnet" : "mainnet"
         return URL(string: "https://blockexplorer.one/dash/\(network)/tx/\(hash)")!
     }

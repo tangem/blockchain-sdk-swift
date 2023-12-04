@@ -30,7 +30,11 @@ struct DecimalExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "\(baseExplorerUrl)/address/\(convertedAddress)")!
     }
 
-    func url(transaction hash: String) -> URL {
-        URL(string: "\(baseExplorerUrl)/transactions/\(hash)")!
+    func url(transaction hash: String) -> URL? {
+        /*
+         - Now it’s nil because decimal scanner explorer can’t read our hash of the transaction that the evm service makes
+         
+         */
+        return nil
     }
 }

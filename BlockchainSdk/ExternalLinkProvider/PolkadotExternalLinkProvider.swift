@@ -21,7 +21,7 @@ extension PolkadotExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://matrix.to/#/!cJFtAIkwxuofiSYkPN:matrix.org?via=matrix.org&via=matrix.parity.io&via=web3.foundation")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         let subdomain = isTestnet ? "westend" : "polkadot"
         return URL(string: "https://\(subdomain).subscan.io/extrinsic/\(hash)")!
     }

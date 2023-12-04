@@ -21,7 +21,7 @@ extension TronExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://nileex.io/join/getJoinPage")!
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         let subdomain = isTestnet ? "nile." : ""
         return URL(string: "https://\(subdomain)tronscan.org/#/transaction/\(hash)")!
     }

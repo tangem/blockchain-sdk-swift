@@ -13,7 +13,7 @@ struct KaspaExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://faucet.kaspanet.io")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         return URL(string: "https://explorer.kaspa.org/txs/\(hash)")!
     }
     
