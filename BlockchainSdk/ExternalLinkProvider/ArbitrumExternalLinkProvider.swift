@@ -21,7 +21,7 @@ extension ArbitrumExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://nileex.io/join/getJoinPage")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://testnet.arbiscan.io/tx/\(hash)")!
         }

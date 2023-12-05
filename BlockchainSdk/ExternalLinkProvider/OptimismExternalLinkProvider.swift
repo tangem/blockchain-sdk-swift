@@ -22,7 +22,7 @@ extension OptimismExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://optimismfaucet.xyz")!
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://goerli-optimism.etherscan.io/tx/\(hash)")!
         }

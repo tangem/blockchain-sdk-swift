@@ -97,6 +97,8 @@ public struct ExternalLinkProviderFactory {
             return ChiaExternalLinkProvider(isTestnet: isTestnet)
         case .near:
             return NEARExternalLinkProvider(isTestnet: isTestnet)
+        case .decimal:
+            return DecimalExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }

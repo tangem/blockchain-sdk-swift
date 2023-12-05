@@ -21,7 +21,7 @@ extension PolygonExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://faucet.matic.network")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://mumbai.polygonscan.com/tx/\(hash)")!
         }

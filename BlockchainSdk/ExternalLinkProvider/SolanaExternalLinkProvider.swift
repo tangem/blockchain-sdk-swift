@@ -21,7 +21,7 @@ extension SolanaExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://solfaucet.com")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://explorer.solana.com/tx/\(hash)?cluster=devnet")!
         }

@@ -35,7 +35,8 @@ extension PublicKeyType {
                 .ethereumClassic,
                 .optimism,
                 .fantom,
-                .kava:
+                .kava,
+                .decimal:
             self = PublicKeyType.secp256k1Extended
         case .stellar,
                 .ton,

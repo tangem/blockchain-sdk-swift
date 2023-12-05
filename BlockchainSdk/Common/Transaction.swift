@@ -13,8 +13,8 @@ public protocol TransactionParams {}
 public struct Transaction {
     public let amount: Amount
     public var fee: Fee
-    public let sourceAddress: String
-    public let destinationAddress: String
+    public var sourceAddress: String
+    public var destinationAddress: String
     public let changeAddress: String
     public let contractAddress: String?
     public var params: TransactionParams? = nil
@@ -25,7 +25,8 @@ public struct Transaction {
         sourceAddress: String,
         destinationAddress: String,
         changeAddress: String,
-        contractAddress: String? = nil
+        contractAddress: String? = nil,
+        params: TransactionParams? = nil
     ) {
         self.amount = amount
         self.fee = fee
@@ -33,6 +34,7 @@ public struct Transaction {
         self.destinationAddress = destinationAddress
         self.changeAddress = changeAddress
         self.contractAddress = contractAddress
+        self.params = params
     }
 }
 
