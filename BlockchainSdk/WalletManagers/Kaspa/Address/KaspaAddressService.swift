@@ -8,7 +8,6 @@
 
 import Foundation
 import TangemSdk
-import HDWalletKit
 import BitcoinCore
 
 @available(iOS 13.0, *)
@@ -41,8 +40,7 @@ public class KaspaAddressService {
 extension KaspaAddressService: AddressProvider {
     public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
         let compressedKey = try Secp256k1Key(with: publicKey.blockchainKey).compress()
-        let address = HDWalletKit.Bech32.encode(version.rawValue.data + compressedKey, prefix: prefix)
-
+        let address = CashAddrBech32.encode(version.rawValue.data + compressedKey, prefix: prefix)
         return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
 }

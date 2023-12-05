@@ -8,6 +8,7 @@
 
 import Foundation
 import TangemSdk
+import CryptoSwift
 
 public struct TronAddressService {
     private let prefix: UInt8 = 0x41
@@ -28,7 +29,7 @@ public struct TronAddressService {
             return nil
         }
         
-        let hex = data.hex
+        let hex = data.hexString.lowercased()
         if let length = length {
             return String(repeating: "0", count: length - hex.count) + hex
         } else {

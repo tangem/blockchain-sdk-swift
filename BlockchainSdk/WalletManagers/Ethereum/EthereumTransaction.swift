@@ -8,6 +8,7 @@
 
 import Foundation
 import BigInt
+import CryptoSwift
 
 public struct EthereumTransaction {
     public var nonce: BigUInt

@@ -8,7 +8,6 @@
 
 import Foundation
 import TangemSdk
-import HDWalletKit
 import BitcoinCore
 
 @available(iOS 13.0, *)
@@ -52,10 +51,12 @@ extension BitcoinAddressService: AddressProvider {
 @available(iOS 13.0, *)
 extension BitcoinAddressService: BitcoinScriptAddressesProvider {
     public func makeAddresses(publicKey: Wallet.PublicKey, pairPublicKey: Data) throws -> [BitcoinScriptAddress] {
-        guard let script = try create1Of2MultisigOutputScript(firstPublicKey: publicKey.blockchainKey, secondPublicKey: pairPublicKey) else {
-            throw BlockchainSdkError.failedToCreateMultisigScript
+        let compressedKeys = try [publicKey.blockchainKey, pairPublicKey].map {
+            let key = try Secp256k1Key(with: $0)
+            return try key.compress()
         }
 
+        let script = try BitcoinScriptBuilder().makeMultisig(publicKeys: compressedKeys, signaturesRequired: 1)
         let legacyAddressString = try legacy.makeScriptAddress(from: script.data.sha256Ripemd160)
         let scriptAddress = BitcoinScriptAddress(script: script, value: legacyAddressString, publicKey: publicKey, type: .legacy)
 
@@ -64,20 +65,4 @@ extension BitcoinAddressService: BitcoinScriptAddressesProvider {
 
         return [bech32Address, scriptAddress]
 	}
-}
-
-// MARK: - Private
-
-@available(iOS 13.0, *)
-private extension BitcoinAddressService {
-    func create1Of2MultisigOutputScript(firstPublicKey: Data, secondPublicKey: Data) throws -> HDWalletScript? {
-        var pubKeys = try [firstPublicKey, secondPublicKey].map { (key: Data) throws -> HDWalletKit.PublicKey in
-            let key = try Secp256k1Key(with: key)
-            let compressed = try key.compress()
-            let deCompressed = try key.decompress()
-            return HDWalletKit.PublicKey(uncompressedPublicKey: deCompressed, compressedPublicKey: compressed, coin: .bitcoin)
-        }
-        pubKeys.sort(by: { $0.compressedPublicKey.lexicographicallyPrecedes($1.compressedPublicKey) })
-        return ScriptFactory.Standard.buildMultiSig(publicKeys: pubKeys, signaturesRequired: 1)
-    }
 }

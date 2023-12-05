@@ -8,7 +8,6 @@
 
 import Foundation
 import TangemSdk
-import CryptoSwift
 
 class ClvmProgram {
     private let atom: Array<Byte>?
@@ -47,9 +46,9 @@ class ClvmProgram {
     
     func hash() throws -> Data {
         if let value = atom {
-            return Data([1] + value).sha256()
+            return Data([1] + value).getSha256()
         } else if let left = try left?.hash(), let right = try right?.hash() {
-            return Data([2] + left + right).sha256()
+            return Data([2] + left + right).getSha256()
         }
         
         throw NSError()

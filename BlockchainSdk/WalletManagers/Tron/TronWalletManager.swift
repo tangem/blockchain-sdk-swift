@@ -122,7 +122,7 @@ class TronWalletManager: BaseManager, WalletManager {
             return .anyFail(error: WalletError.failedToGetFee)
         }
         
-        let parameter = (addressData + amountData).hex
+        let parameter = (addressData + amountData).hexString.lowercased()
         
         let energyUsePublisher = networkService.contractEnergyUsage(
             sourceAddress: wallet.address,
