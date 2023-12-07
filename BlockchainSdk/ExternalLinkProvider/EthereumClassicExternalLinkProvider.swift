@@ -18,10 +18,10 @@ struct EthereumClassicExternalLinkProvider {
 
 extension EthereumClassicExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? {
-        return URL(string: "https://kottifaucet.me")
+        return URL(string: "https://mordor.canhaz.net")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://etc-mordor.blockscout.com/tx/\(hash)")!
         }

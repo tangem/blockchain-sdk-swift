@@ -8,7 +8,7 @@
 
 import Foundation
 import SwiftProtobuf
-import web3swift
+import CryptoSwift
 
 class TronTransactionBuilder {
     private let blockchain: Blockchain
@@ -84,7 +84,7 @@ class TronTransactionBuilder {
             let addressData = TronAddressService.toByteForm(destination)?.aligned(to: 32) ?? Data()
             
             guard
-                let bigIntValue = Web3.Utils.parseToBigUInt("\(amount.value)", decimals: token.decimalCount)
+                let bigIntValue = EthereumUtils.parseToBigUInt("\(amount.value)", decimals: token.decimalCount)
             else {
                 throw WalletError.failedToBuildTx
             }

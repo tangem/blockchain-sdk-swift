@@ -97,7 +97,7 @@ class LitecoinTests: XCTestCase {
         let buildToSignResult = txBuilder.buildForSign(transaction: transaction, sequence: 4294967290, sortType: sortType)!
         sizeTester.testTxSizes(buildToSignResult)
         let signedTx = txBuilder.buildForSend(transaction: transaction, signatures: signatures, sequence: 4294967290, sortType: sortType)
-        XCTAssertEqual(buildToSignResult.map { $0.hex }, expectedHashes.map { $0.hex })
+        XCTAssertEqual(buildToSignResult.map { $0.hexString }, expectedHashes.map { $0.hexString })
         XCTAssertEqual(signedTx?.hexString, expectedSignedTransaction.hexString)
     }
 }

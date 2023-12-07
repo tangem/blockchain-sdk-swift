@@ -130,7 +130,7 @@ extension TezosWalletManager: TransactionSender {
     private func encodeSignature(_ signature: Data) -> String {
         let edsigPrefix = TezosPrefix.signaturePrefix(for: wallet.blockchain.curve)
         let prefixedSignature = edsigPrefix + signature
-        let checksum = prefixedSignature.sha256().sha256().prefix(4)
+        let checksum = prefixedSignature.getDoubleSha256().prefix(4)
         let prefixedSignatureWithChecksum = prefixedSignature + checksum
         return Base58.encode(prefixedSignatureWithChecksum)
     }

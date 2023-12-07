@@ -12,6 +12,10 @@ import TangemSdk
 import class WalletCore.DataVector
 
 extension Data {
+    var bytes: Array<UInt8> {
+        return Array(self)
+    }
+    
     // TODO: Andrey Fedorov - There are several problems with this extension (IOS-4990):
     // - It has basically the same implementation as `leadingZeroPadding(toLength:)` method
     // - It ignores the `length` parameter

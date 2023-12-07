@@ -8,7 +8,6 @@
 
 import Foundation
 import TangemSdk
-import HDWalletKit
 import BitcoinCore
 
 class BitcoinTransactionBuilder {
@@ -22,7 +21,7 @@ class BitcoinTransactionBuilder {
 			}
 			if let utxos = utxoDTOs {
 				let spendingScripts: [Script] = walletScripts.compactMap { script in
-					let chunks = script.scriptChunks.enumerated().map { (index, chunk) in
+					let chunks = script.chunks.enumerated().map { (index, chunk) in
 						Chunk(scriptData: script.data, index: index, payloadRange: chunk.range)
 					}
 					return Script(with: script.data, chunks: chunks)
@@ -36,7 +35,7 @@ class BitcoinTransactionBuilder {
     var bitcoinManager: BitcoinManager
     
     private(set) var changeScript: Data?
-	private let walletScripts: [HDWalletScript]
+	private let walletScripts: [BitcoinScript]
 
 	init(bitcoinManager: BitcoinManager, addresses: [Address]) {
         self.bitcoinManager = bitcoinManager

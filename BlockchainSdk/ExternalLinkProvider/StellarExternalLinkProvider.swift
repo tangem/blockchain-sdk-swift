@@ -21,7 +21,7 @@ extension StellarExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://laboratory.stellar.org/#account-creator?network=test")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://stellar.expert/explorer/testnet/tx/\(hash)")!
         }

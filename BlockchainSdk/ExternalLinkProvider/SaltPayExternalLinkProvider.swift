@@ -11,8 +11,8 @@ import Foundation
 struct SaltPayExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? { nil }
     
-    func url(transaction hash: String) -> URL {
-        fatalError("Not implement")
+    func url(transaction hash: String) -> URL? {
+        nil
     }
     
     func url(address: String, contractAddress: String?) -> URL {

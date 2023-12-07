@@ -21,7 +21,7 @@ extension ChiaExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://xchdev.com/#!faucet.md")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
             return URL(string: "https://testnet10.spacescan.io/txns/\(hash)")!
         }

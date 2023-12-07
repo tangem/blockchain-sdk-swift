@@ -48,7 +48,7 @@ extension BitcoinBech32AddressService: AddressValidator {
 
 @available(iOS 13.0, *)
 extension BitcoinBech32AddressService: AddressProvider {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
         let compressedKey = try Secp256k1Key(with: publicKey.blockchainKey).compress()
         let bitcoinCorePublicKey = PublicKey(withAccount: 0,
                                   index: 0,

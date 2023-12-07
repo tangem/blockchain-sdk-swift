@@ -13,7 +13,7 @@ struct AZeroExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://faucet.test.azero.dev")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         return URL(string: "https://alephzero.subscan.io/extrinsic/\(hash)")!
     }
     

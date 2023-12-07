@@ -55,6 +55,7 @@ public enum Blockchain: Equatable, Hashable {
     case octa
     case chia(testnet: Bool)
     case near(curve: EllipticCurve, testnet: Bool)
+    case decimal(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -127,6 +128,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .near(_, let testnet):
             return testnet
+        case .decimal(let testnet):
+            return testnet
         }
     }
     
@@ -179,7 +182,8 @@ public enum Blockchain: Equatable, Hashable {
                 .kava,
                 .cronos,
                 .telos,
-                .octa:
+                .octa,
+                .decimal:
             return 18
         case  .cardano,
                 .xrp,
@@ -280,6 +284,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet ? "TXCH" : "XCH"
         case .near:
             return "NEAR"
+        case .decimal:
+            return "DEL"
         }
     }
     
@@ -329,6 +335,8 @@ public enum Blockchain: Equatable, Hashable {
             return "Chia Network"
         case .near:
             return "NEAR Protocol" + testnetSuffix
+        case .decimal:
+            return "Decimal Smart Chain" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -414,6 +422,7 @@ extension Blockchain {
         case .cronos: return 25
         case .telos: return isTestnet ? 41 : 40
         case .octa: return isTestnet ? 800002 : 800001
+        case .decimal: return isTestnet ? 202020 : 75
         default: return nil
         }
     }
@@ -442,7 +451,7 @@ extension Blockchain {
         case .ethereumClassic:
             if isTestnet {
                 return [
-                    URL(string: "https://etc.rivet.link/kotti")!,
+                    URL(string: "https://rpc.mordor.etccooperative.org")!,
                 ]
             } else {
                 return [
@@ -608,6 +617,20 @@ extension Blockchain {
                 URL(string: "https://rpc.octa.space")!,
                 URL(string: "https://octaspace.rpc.thirdweb.com")!,
             ]
+        case .decimal(let isTestnet):
+            if isTestnet {
+                return [
+                    URL(string: "https://testnet-val.decimalchain.com/web3/")!
+                ]
+            } else {
+                return [
+                    URL(string: "https://node.decimalchain.com/web3/")!,
+                    URL(string: "https://node1-mainnet.decimalchain.com/web3/")!,
+                    URL(string: "https://node2-mainnet.decimalchain.com/web3/")!,
+                    URL(string: "https://node3-mainnet.decimalchain.com/web3/")!,
+                    URL(string: "https://node4-mainnet.decimalchain.com/web3/")!,
+                ]
+            }
         default:
             return nil
         }
@@ -721,6 +744,7 @@ extension Blockchain: Codable {
         case .octa: return "octaspace"
         case .chia: return "chia"
         case .near: return "near"
+        case .decimal: return "decimal"
         }
     }
     
@@ -786,6 +810,7 @@ extension Blockchain: Codable {
         case "octaspace": self = .octa
         case "chia": self = .chia(testnet: isTestnet)
         case "near": self = .near(curve: curve, testnet: isTestnet)
+        case "decimal": self = .decimal(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -854,6 +879,7 @@ extension Blockchain {
         case "octaspace": return .octa
         case "chia": return .chia(testnet: isTestnet)
         case "near": return .near(curve: curve, testnet: isTestnet)
+        case "decimal": return .decimal(testnet: isTestnet)
         default: return nil
         }
     }
@@ -940,6 +966,8 @@ extension Blockchain {
             return NEARWalletAssembly()
         case .telos:
             return TelosWalletAssembly()
+        case .decimal:
+            return DecimalWalletAssembly()
         }
     }
     

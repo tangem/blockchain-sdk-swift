@@ -61,13 +61,13 @@ class PublicKeyDerivationAddressTests: XCTestCase {
                 let tangemSdkPrivateKey = try keysServiceUtility.getMasterKeyFromBIP32(with: keysServiceUtility.getBIP32Seed(), for: blockchain)
 
                 // Validate private keys
-                XCTAssertEqual(trustWalletPrivateKey.data.hex, tangemSdkPrivateKey.privateKey.hex, "\(blockchain.displayName)")
+                XCTAssertEqual(trustWalletPrivateKey.data.hexString, tangemSdkPrivateKey.privateKey.hexString, "\(blockchain.displayName)")
 
                 let trustWalletPublicKey = try keysServiceUtility.getPublicKeyFromTrustWallet(blockchain: blockchain, privateKey: trustWalletPrivateKey)
                 let tangemSdkPublicKey = try keysServiceUtility.getPublicKeyFromTangemSdk(blockchain: blockchain, privateKey: tangemSdkPrivateKey)
 
                 // Compare public keys without derivations
-                XCTAssertEqual(trustWalletPublicKey.data.hex, tangemSdkPublicKey.publicKey.hex, "\(blockchain.displayName)")
+                XCTAssertEqual(trustWalletPublicKey.data.hexString, tangemSdkPublicKey.publicKey.hexString, "\(blockchain.displayName)")
 
                 // MARK: - Step 3
 
