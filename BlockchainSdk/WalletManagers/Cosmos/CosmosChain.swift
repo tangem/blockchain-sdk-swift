@@ -50,7 +50,6 @@ extension CosmosChain {
         case .terraV2:
             return [
                 "https://luna.nownodes.io/\(config.nowNodesApiKey)",
-                "https://luna.getblock.io/\(config.getBlockApiKey)/mainnet",
                 "https://phoenix-lcd.terra.dev", // Sometimes not responsive
             ]
         case .gaia:
