@@ -458,7 +458,6 @@ extension Blockchain {
                     URL(string: "https://etc.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
                     URL(string: "https://etc.rivet.link/etc")!,
                     URL(string: "https://etc.etcdesktop.com")!,
-                    URL(string: "https://blockscout.com/etc/mainnet/api/eth-rpc")!,
                     URL(string: "https://etc.mytokenpocket.vip")!,
                     URL(string: "https://besu-de.etc-network.info")!,
                     URL(string: "https://geth-at.etc-network.info")!,
