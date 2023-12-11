@@ -41,7 +41,6 @@ struct NEARWalletAssembly: WalletManagerAssembly {
                     "https://rpc.mainnet.near.org",
                     "https://near.nownodes.io/\(sdkConfig.nowNodesApiKey)",
                     "https://near.getblock.io/\(sdkConfig.getBlockApiKey)",
-                    "https://near-mainnet.infura.io/v3/\(sdkConfig.infuraProjectId)",
                 ]
             )
         }
