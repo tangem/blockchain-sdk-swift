@@ -20,7 +20,7 @@ struct XRPWalletAssembly: WalletManagerAssembly {
                     XRPNetworkProvider(baseUrl: .nowNodes(apiKey: input.blockchainSdkConfig.nowNodesApiKey), configuration: input.networkConfig),
                     XRPNetworkProvider(
                         baseUrl: .getBlock(
-                            apiKey: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, at: .jsonRpc)
+                            apiKey: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .jsonRpc)
                         ),
                         configuration: input.networkConfig
                     ),

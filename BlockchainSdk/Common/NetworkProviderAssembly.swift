@@ -66,7 +66,7 @@ struct NetworkProviderAssembly {
             keys: EthereumApiKeys(
                 infuraProjectId: input.blockchainSdkConfig.infuraProjectId,
                 nowNodesApiKey: input.blockchainSdkConfig.nowNodesApiKey,
-                getBlockApiKeys: input.blockchainSdkConfig.getBlockCredentials.credentials(at: .jsonRpc),
+                getBlockApiKeys: input.blockchainSdkConfig.getBlockCredentials.credentials(type: .jsonRpc),
                 quickNodeBscCredentials: input.blockchainSdkConfig.quickNodeBscCredentials
             )
         )!

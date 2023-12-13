@@ -40,7 +40,7 @@ struct NEARWalletAssembly: WalletManagerAssembly {
                 contentsOf: [
                     "https://rpc.mainnet.near.org",
                     "https://near.nownodes.io/\(sdkConfig.nowNodesApiKey)",
-                    "https://go.getblock.io/\(sdkConfig.getBlockCredentials.credential(for: blockchain, at: .jsonRpc))",
+                    "https://go.getblock.io/\(sdkConfig.getBlockCredentials.credential(for: blockchain, type: .jsonRpc))",
                 ]
             )
         }

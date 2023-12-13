@@ -117,40 +117,37 @@ public extension BlockchainSdkConfig {
         public init(credentials: [Credential]) {
             self.credentials = credentials
         }
+    }
+}
+
+public extension BlockchainSdkConfig.GetBlockCredentials {
+    struct Credential {
+        let blockchain: Blockchain
+        let type: TypeValue
+        let value: String
         
-        public struct Credential {
-            let blockchain: Blockchain
-            let type: TypeValue
-            let value: String
-            
-            public init(blockchain: Blockchain, type: TypeValue, key: String) {
-                self.blockchain = blockchain
-                self.type = type
-                self.value = key
-            }
-            
-            public enum TypeValue {
-                case blockBook
-                case rest
-                case jsonRpc
-                case rosseta
-            }
+        public init(blockchain: Blockchain, type: TypeValue, key: String) {
+            self.blockchain = blockchain
+            self.type = type
+            self.value = key
         }
+    }
+    
+    enum TypeValue {
+        case blockBook
+        case rest
+        case jsonRpc
+        case rosseta
     }
 }
 
 extension BlockchainSdkConfig.GetBlockCredentials {
-    func credential(
-        for blockchain: Blockchain,
-        at type: Credential.TypeValue
-    ) -> String {
+    func credential(for blockchain: Blockchain, type: TypeValue) -> String {
         let credential = credentials.first { $0.blockchain.codingKey == blockchain.codingKey && $0.type == type }
         return credential?.value ?? ""
     }
     
-    func credentials(
-        at type: Credential.TypeValue
-    ) -> [Blockchain: String] {
+    func credentials(type: TypeValue) -> [Blockchain: String] {
         var resultJsonRpcApiKeys = [Blockchain: String]()
         
         credentials

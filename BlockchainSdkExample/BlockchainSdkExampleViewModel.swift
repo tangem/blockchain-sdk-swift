@@ -66,7 +66,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                                                                           blockcypherTokens: [],
                                                                           infuraProjectId: "",
                                                                           nowNodesApiKey: "", 
-                                                                          getBlockAccessTokens: .init(credentials: []),
+                                                                          getBlockCredentials: .init(credentials: []),
                                                                           kaspaSecondaryApiUrl: nil,
                                                                           tronGridApiKey: "",
                                                                           tonCenterApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),

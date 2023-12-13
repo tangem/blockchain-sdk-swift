@@ -444,7 +444,7 @@ extension Blockchain {
             } else {
                 return [
                     URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")!,
-                    getGetBlockProvider(for: .ethereum(testnet: false)),
+                    makeGetBlockProvider(for: .ethereum(testnet: false)),
                     URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
                 ]
             }
@@ -455,7 +455,7 @@ extension Blockchain {
                 ]
             } else {
                 return [
-                    getGetBlockProvider(for: .ethereumClassic(testnet: false)),
+                    makeGetBlockProvider(for: .ethereumClassic(testnet: false)),
                     URL(string: "https://etc.rivet.link/etc")!,
                     URL(string: "https://etc.etcdesktop.com")!,
                     URL(string: "https://rpc.etcinscribe.com")!,
@@ -483,7 +483,7 @@ extension Blockchain {
             return [
                 URL(string: "https://public-node.rsk.co/")!,
                 URL(string: "https://rsk.nownodes.io/\(nowNodesApiKey)")!,
-                getGetBlockProvider(for: .rsk),
+                makeGetBlockProvider(for: .rsk),
             ]
         case .bsc:
             if isTestnet {
@@ -495,7 +495,7 @@ extension Blockchain {
                 return [
                     URL(string: "https://bsc-dataseed.binance.org/")!,
                     URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")!,
-                    getGetBlockProvider(for: .bsc(testnet: false)),
+                    makeGetBlockProvider(for: .bsc(testnet: false)),
                     URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)/")!,
                 ]
             }
@@ -509,7 +509,7 @@ extension Blockchain {
                 return [
                     URL(string: "https://polygon-rpc.com")!,
                     URL(string: "https://matic.nownodes.io/\(nowNodesApiKey)")!,
-                    getGetBlockProvider(for: .polygon(testnet: false)),
+                    makeGetBlockProvider(for: .polygon(testnet: false)),
                     URL(string: "https://rpc-mainnet.maticvigil.com")!,
                     URL(string: "https://rpc-mainnet.matic.quiknode.pro")!,
                 ]
@@ -523,7 +523,7 @@ extension Blockchain {
                 return [
                     URL(string: "https://api.avax.network/ext/bc/C/rpc")!,
                     URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)/ext/bc/C/rpc")!,
-                    getGetBlockProvider(for: .avalanche(testnet: false)),
+                    makeGetBlockProvider(for: .avalanche(testnet: false)),
                 ]
             }
         case .fantom:
@@ -534,7 +534,7 @@ extension Blockchain {
             } else {
                 return [
                     URL(string: "https://ftm.nownodes.io/\(nowNodesApiKey)")!,
-                    getGetBlockProvider(for: .fantom(testnet: false)),
+                    makeGetBlockProvider(for: .fantom(testnet: false)),
                     URL(string: "https://rpc.ftm.tools/")!,
                     URL(string: "https://rpcapi.fantom.network/")!,
                     URL(string: "https://fantom-mainnet.public.blastapi.io")!,
@@ -557,7 +557,7 @@ extension Blockchain {
             }
         case .gnosis:
             return [
-                getGetBlockProvider(for: .gnosis),
+                makeGetBlockProvider(for: .gnosis),
                 
                 // from registry.json
                 URL(string: "https://rpc.gnosischain.com")!,
@@ -596,7 +596,7 @@ extension Blockchain {
             return [
                 URL(string: "https://evm.cronos.org")!,
                 URL(string: "https://evm-cronos.crypto.org")!,
-                getGetBlockProvider(for: .cronos),
+                makeGetBlockProvider(for: .cronos),
                 URL(string: "https://cronos.blockpi.network/v1/rpc/public")!,
                 URL(string: "https://cronos-evm.publicnode.com")!,
             ]
@@ -637,7 +637,7 @@ extension Blockchain {
         
         // MARK: - Private Implementation
         
-        func getGetBlockProvider(for blockchain: Blockchain) -> URL {
+        func makeGetBlockProvider(for blockchain: Blockchain) -> URL {
             if let jsonRpcKey = getBlockApiKeys[blockchain] {
                 return URL(string: "https://go.getblock.io/\(jsonRpcKey)")!
             } else {

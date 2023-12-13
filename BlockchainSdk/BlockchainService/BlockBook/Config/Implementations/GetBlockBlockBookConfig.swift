@@ -21,20 +21,17 @@ struct GetBlockBlockBookConfig: BlockBookConfig {
 
 extension GetBlockBlockBookConfig {
     
-    var apiKeyValue: String { "" }
-    var apiKeyName: String { "" }
-    
     var host: String {
         return "getblock.io"
     }
     
     func node(for blockchain: Blockchain) -> BlockBookNode {
-        let rpcApiKeyValue = credentialsConfig.credential(for: blockchain, at: .jsonRpc)
-        let blockBookApiKeyValue = credentialsConfig.credential(for: blockchain, at: .blockBook)
+        let rpcApiKeyValue = credentialsConfig.credential(for: blockchain, type: .jsonRpc)
+        let restNodeApiKeyValue = credentialsConfig.credential(for: blockchain, type: .blockBook)
         
         return BlockBookNode(
             rpcNode: "https://go.\(host)/\(rpcApiKeyValue)",
-            restNode: "https://go.\(host)/\(blockBookApiKeyValue)"
+            restNode: "https://go.\(host)/\(restNodeApiKeyValue)"
         )
     }
     
