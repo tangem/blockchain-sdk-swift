@@ -81,7 +81,7 @@ public protocol TransactionFeeProvider {
 @available(iOS 13.0, *)
 public extension TransactionFeeProvider where Self: WalletProvider {
     func estimatedFee(amount: Amount) -> AnyPublisher<[Fee], Error> {
-        getFee(amount: amount, destination: wallet.address)
+        getFee(amount: amount, destination: wallet.blockchain.placeholderAddress)
     }
 }
 
