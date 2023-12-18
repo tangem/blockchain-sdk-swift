@@ -41,7 +41,11 @@ class ChiaNetworkService: MultiNetworkProvider {
         providerPublisher { provider in
             provider
                 .sendTransaction(body: ChiaTransactionBody(spendBundle: spendBundle))
-                .map { response in
+                .tryMap { response in
+                    guard response.status == ChiaSendTransactionResponse.Constants.successStatus else {
+                        throw WalletError.failedToSendTx
+                    }
+                    
                     return ""
                 }
                 .eraseToAnyPublisher()
