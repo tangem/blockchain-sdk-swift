@@ -12,10 +12,12 @@ import WalletCore
 extension PublicKey {
     convenience init?(tangemPublicKey: Data, publicKeyType: PublicKeyType) {
         let publicKey: Data
+
         switch publicKeyType {
         case .secp256k1:
-            // Note that this is NOT the extended Secp key
-            publicKey = Self.compressedSecp256k1Key(tangemPublicKey)
+            publicKey = Self.secp256k1Key(from: tangemPublicKey, compressed: true)
+        case .secp256k1Extended:
+            publicKey = Self.secp256k1Key(from: tangemPublicKey, compressed: false)
         default:
             publicKey = tangemPublicKey
         }
@@ -23,11 +25,12 @@ extension PublicKey {
         self.init(data: publicKey, type: publicKeyType)
     }
     
-    private static func compressedSecp256k1Key(_ publicKey: Data) -> Data {
-        guard let compressedPublicKey = try? Secp256k1Key(with: publicKey).compress() else {
+    private static func secp256k1Key(from publicKey: Data, compressed: Bool) -> Data {
+        do {
+            let secp256k1Key = try Secp256k1Key(with: publicKey)
+            return try compressed ? secp256k1Key.compress() : secp256k1Key.decompress()
+        } catch {
             return publicKey
         }
-        
-        return compressedPublicKey
     }
 }
