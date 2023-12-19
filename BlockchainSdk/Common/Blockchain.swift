@@ -965,6 +965,7 @@ extension Blockchain {
 extension Blockchain {
     /// Use this address for estimated fee
     /// DO NOT send any amounts to this address!!
+    /// https://www.notion.so/tangem/Express-Address-for-fee-calculations-53678a61de674eba9af6b166f23175fe
     var estimationFeeAddress: String {
         switch self {
         case .bitcoin:
