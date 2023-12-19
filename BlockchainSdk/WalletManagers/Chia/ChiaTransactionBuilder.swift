@@ -103,7 +103,7 @@ final class ChiaTransactionBuilder {
         let change = decimalBalance - decimalAmount
         let numberOfCoinsCreated: Int = change > 0 ? 2 : 1
 
-        return Int64((coinSpends.count * Constants.coinSpendCost) + (numberOfCoinsCreated * Constants.createCoinCost))
+        return Int64((unspentCoins.count * Constants.coinSpendCost) + (numberOfCoinsCreated * Constants.createCoinCost))
     }
     
     // MARK: - Private Implementation
