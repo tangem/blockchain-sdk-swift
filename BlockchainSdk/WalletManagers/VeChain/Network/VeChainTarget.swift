@@ -9,7 +9,6 @@
 import Foundation
 import Moya
 
-// TODO: Andrey Fedorov - Add actual implementation (IOS-5239)
 struct VeChainTarget {
     let baseURL: URL
     let target: Target
@@ -18,25 +17,55 @@ struct VeChainTarget {
 // MARK: - Auxiliary types
 
 extension VeChainTarget {
-    enum Target {}
+    enum Target {
+        case viewAccount(address: String)
+        case sendTransaction(rawTransaction: String)
+        case transactionStatus(transactionHash: String, includePending: Bool, rawOutput: Bool)
+    }
 }
 
 // MARK: - TargetType protocol conformance
 
 extension VeChainTarget: TargetType {
     var path: String {
-        return ""
+        switch target {
+        case .viewAccount(let address):
+            return "/accounts/\(address)"
+        case .sendTransaction:
+            return "/transactions"
+        case .transactionStatus(let transactionHash, _, _):
+            return "/transactions/\(transactionHash)"
+        }
     }
     
     var method: Moya.Method {
-        return .get
+        switch target {
+        case .viewAccount, .transactionStatus:
+            return .get
+        case .sendTransaction:
+            return .post
+        }
     }
     
     var task: Moya.Task {
-        return .requestPlain
+        switch target {
+        case .viewAccount:
+            return .requestPlain
+        case .transactionStatus(_, let includePending, let rawOutput):
+            let parameters = [
+                "pending": includePending,
+                "raw": rawOutput,
+            ]
+            return .requestParameters(parameters: parameters, encoding: URLEncoding.queryString)
+        case .sendTransaction(let rawTransaction):
+            return .requestJSONEncodable(VeChainNetworkParams.Transaction(raw: rawTransaction))
+        }
     }
     
     var headers: [String: String]? {
-        return nil
+        return [
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        ]
     }
 }
