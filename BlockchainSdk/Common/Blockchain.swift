@@ -965,7 +965,7 @@ extension Blockchain {
 extension Blockchain {
     /// Use this address for estimated fee
     /// DO NOT send any amounts to this address!!
-    var placeholderAddress: String {
+    var estimationFeeAddress: String {
         switch self {
         case .bitcoin:
             return "bc1qwff8ryfujqukhyjcqghs68j3ph948pwcpx24d8"
