@@ -32,6 +32,8 @@ extension ChiaSendTransactionResponse {
 struct ChiaEstimateFeeResponse: ChiaStatusResponse {
     let success: Bool
     let estimates: [Int64]
+    let feeRateLastBlock: Double
+    let currentFeeRate: Double
 }
 
 struct ChiaCoinRecord: Decodable {
