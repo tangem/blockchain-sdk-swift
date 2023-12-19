@@ -1051,6 +1051,8 @@ extension Blockchain {
             return "e6ca3ee691ed78d47cffd38ecc04f1e80ef07b7908be7fc5fa5f2e5f25a0a3d8"
         case .decimal:
             return "d01kcj4xqnwzunua62ns6zqpjd2yruk4fhm9k8xj4"
+        case .veChain:
+            fatalError("\(#function) not implemented yet!")
         }
     }
 }
