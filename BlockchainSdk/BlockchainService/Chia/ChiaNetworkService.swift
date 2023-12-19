@@ -57,8 +57,6 @@ class ChiaNetworkService: MultiNetworkProvider {
             provider
                 .getFeeEstimate(body: .init(cost: cost, targetTimes: [60, 300]))
                 .map { response in
-                    let countAllowFeeSelection = 3
-                    
                     var estimatedFees: [Decimal] = response.estimates.sorted().map { estimate in
                         let value = Decimal(estimate) / self.blockchain.decimalValue
                         return value
