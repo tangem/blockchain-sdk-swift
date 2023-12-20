@@ -98,8 +98,8 @@ final class ChiaTransactionBuilder {
     /// - Parameter amount: Amount of send transaction
     /// - Returns: Sum value for transaction
     func getTransactionCost(amount: Amount) -> Int64 {
-        let decimalAmount = (amount.value * blockchain.decimalValue).rounded()
-        let decimalBalance = unspentCoins.map { Decimal($0.amount) }.reduce(0, +)
+        let decimalAmount = (amount.value * blockchain.decimalValue).roundedDecimalNumber.int64Value
+        let decimalBalance = unspentCoins.map { $0.amount }.reduce(0, +)
         let change = decimalBalance - decimalAmount
         let numberOfCoinsCreated: Int = change > 0 ? 2 : 1
 
@@ -110,9 +110,9 @@ final class ChiaTransactionBuilder {
     
     private func calculateChange(transaction: Transaction, unspentCoins: [ChiaCoin]) throws -> Int64 {
         let fullAmount = unspentCoins.map { $0.amount }.reduce(0, +)
-        let transactionAmount = (transaction.amount.value * blockchain.decimalValue).rounded()
-        let transactionFeeAmount = (transaction.fee.amount.value * blockchain.decimalValue).rounded()
-        let changeAmount = fullAmount - (transactionAmount.int64Value + transactionFeeAmount.int64Value)
+        let transactionAmount = (transaction.amount.value * blockchain.decimalValue).roundedDecimalNumber.int64Value
+        let transactionFeeAmount = (transaction.fee.amount.value * blockchain.decimalValue).roundedDecimalNumber.int64Value
+        let changeAmount = fullAmount - (transactionAmount + transactionFeeAmount)
         
         return changeAmount
     }
@@ -126,7 +126,8 @@ final class ChiaTransactionBuilder {
             )
         }
         
-        let sendCondition = try createCoinCondition(for: destination, with: (amount.value * blockchain.decimalValue).int64Value)
+        let sendAmount = (amount.value * blockchain.decimalValue).roundedDecimalNumber.int64Value
+        let sendCondition = try createCoinCondition(for: destination, with: sendAmount)
         let changeCondition = try change != 0 ? createCoinCondition(for: source, with: change) : nil
         
         let solution: [ChiaCondition] = [sendCondition, changeCondition].compactMap { $0 }
