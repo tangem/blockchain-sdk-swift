@@ -98,7 +98,7 @@ final class ChiaTransactionBuilder {
     /// - Parameter amount: Amount of send transaction
     /// - Returns: Sum value for transaction
     func getTransactionCost(amount: Amount) -> Int64 {
-        let decimalAmount = amount.value * blockchain.decimalValue
+        let decimalAmount = (amount.value * blockchain.decimalValue).rounded()
         let decimalBalance = unspentCoins.map { Decimal($0.amount) }.reduce(0, +)
         let change = decimalBalance - decimalAmount
         let numberOfCoinsCreated: Int = change > 0 ? 2 : 1
@@ -110,8 +110,8 @@ final class ChiaTransactionBuilder {
     
     private func calculateChange(transaction: Transaction, unspentCoins: [ChiaCoin]) throws -> Int64 {
         let fullAmount = unspentCoins.map { $0.amount }.reduce(0, +)
-        let transactionAmount = transaction.amount.value * blockchain.decimalValue
-        let transactionFeeAmount = transaction.fee.amount.value * blockchain.decimalValue
+        let transactionAmount = (transaction.amount.value * blockchain.decimalValue).rounded()
+        let transactionFeeAmount = (transaction.fee.amount.value * blockchain.decimalValue).rounded()
         let changeAmount = fullAmount - (transactionAmount.int64Value + transactionFeeAmount.int64Value)
         
         return changeAmount
