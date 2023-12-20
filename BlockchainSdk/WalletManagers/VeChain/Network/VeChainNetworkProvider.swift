@@ -25,6 +25,12 @@ struct VeChainNetworkProvider {
         return requestPublisher(for: .viewAccount(address: address))
     }
 
+    func getBlockInfo(
+        request: VeChainNetworkParams.BlockInfo
+    ) -> AnyPublisher<VeChainNetworkResult.BlockInfo, Error> {
+        return requestPublisher(for: .viewBlock(request: request))
+    }
+
     func sendTransaction(
         _ rawTransaction: String
     ) -> AnyPublisher<VeChainNetworkResult.Transaction, Error> {

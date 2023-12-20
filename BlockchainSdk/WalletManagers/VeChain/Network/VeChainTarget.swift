@@ -19,6 +19,7 @@ struct VeChainTarget {
 extension VeChainTarget {
     enum Target {
         case viewAccount(address: String)
+        case viewBlock(request: VeChainNetworkParams.BlockInfo)
         case sendTransaction(rawTransaction: String)
         case transactionStatus(transactionHash: String, includePending: Bool, rawOutput: Bool)
     }
@@ -31,6 +32,19 @@ extension VeChainTarget: TargetType {
         switch target {
         case .viewAccount(let address):
             return "/accounts/\(address)"
+        case .viewBlock(let request):
+            let path: String
+            switch request.requestType {
+            case .specificWithId(let blockId):
+                path = blockId
+            case .specificWithNumber(let blockNumber):
+                path = String(blockNumber)
+            case .latest:
+                path = "best"
+            case .latestFinalized:
+                path = "finalized"
+            }
+            return "/blocks/\(path)"
         case .sendTransaction:
             return "/transactions"
         case .transactionStatus(let transactionHash, _, _):
@@ -40,7 +54,9 @@ extension VeChainTarget: TargetType {
     
     var method: Moya.Method {
         switch target {
-        case .viewAccount, .transactionStatus:
+        case .viewAccount,
+             .viewBlock,
+             .transactionStatus:
             return .get
         case .sendTransaction:
             return .post
@@ -49,7 +65,8 @@ extension VeChainTarget: TargetType {
     
     var task: Moya.Task {
         switch target {
-        case .viewAccount:
+        case .viewAccount,
+             .viewBlock:
             return .requestPlain
         case .transactionStatus(_, let includePending, let rawOutput):
             let parameters = [
