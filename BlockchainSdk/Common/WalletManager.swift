@@ -88,13 +88,7 @@ public extension TransactionFeeProvider where Self: WalletProvider {
                     throw WalletError.failedToGetFee
                 }
                 
-                
-                try Secp256k1Utils().generateKeyPair().publicKey
-                
-                let service = AddressServiceFactory(blockchain: self.wallet.blockchain).makeAddressService()
-                let publicKey = Wallet.PublicKey(seedKey: <#T##Data#>, derivationType: .none)
-                let estimationFeeAddress = try service.makeAddress(for: publicKey, with: .default).value
-
+                let estimationFeeAddress = try EstimationFeeAddressFactory().makeAddress(for: self.wallet.blockchain)
                 return self.getFee(amount: amount, destination: estimationFeeAddress)
             }
             .switchToLatest()
