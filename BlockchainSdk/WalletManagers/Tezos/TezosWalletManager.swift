@@ -104,6 +104,13 @@ extension TezosWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
+    func estimatedFee(amount: Amount) -> AnyPublisher<[Fee], Error> {
+        let fixedFee = TezosFee.transaction.rawValue
+        let amountFee = Amount(with: wallet.blockchain, value: fixedFee)
+        
+        return .justWithError(output: [Fee(amountFee)])
+    }
+    
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         networkService
             .checkPublicKeyRevealed(address: wallet.address)
