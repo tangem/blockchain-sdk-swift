@@ -9,9 +9,7 @@
 import Foundation
 import Combine
 
-struct VeChainNetworkProvider: HostProvider {
-    var host: String { baseURL.hostOrUnknown }
-
+struct VeChainNetworkProvider {
     private let baseURL: URL
     private let provider: NetworkProvider<VeChainTarget>
 
@@ -68,5 +66,13 @@ struct VeChainNetworkProvider: HostProvider {
                 }
             }
             .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - HostProvider protocol conformance
+
+extension VeChainNetworkProvider: HostProvider {
+    var host: String {
+        baseURL.hostOrUnknown
     }
 }

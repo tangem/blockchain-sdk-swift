@@ -14,9 +14,13 @@ final class VeChainNetworkService: MultiNetworkProvider {
     let providers: [VeChainNetworkProvider]
     var currentProviderIndex: Int
 
+    private let blockchain: Blockchain
+
     init(
+        blockchain: Blockchain,
         providers: [VeChainNetworkProvider]
     ) {
+        self.blockchain = blockchain
         self.providers = providers
         currentProviderIndex = 0
     }
