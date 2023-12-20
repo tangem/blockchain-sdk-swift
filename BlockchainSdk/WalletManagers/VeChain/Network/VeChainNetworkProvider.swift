@@ -38,12 +38,10 @@ struct VeChainNetworkProvider {
     }
 
     func getTransactionStatus(
-        transactionHash: String,
-        includePending: Bool,
-        rawOutput: Bool
+        request: VeChainNetworkParams.TransactionStatus
     ) -> AnyPublisher<VeChainNetworkResult.TransactionStatus, Error> {
         return requestPublisher(
-            for: .transactionStatus(transactionHash: transactionHash, includePending: includePending, rawOutput: rawOutput)
+            for: .transactionStatus(request: request)
         )
     }
 

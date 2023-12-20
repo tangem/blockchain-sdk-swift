@@ -21,7 +21,7 @@ extension VeChainTarget {
         case viewAccount(address: String)
         case viewBlock(request: VeChainNetworkParams.BlockInfo)
         case sendTransaction(rawTransaction: String)
-        case transactionStatus(transactionHash: String, includePending: Bool, rawOutput: Bool)
+        case transactionStatus(request: VeChainNetworkParams.TransactionStatus)
     }
 }
 
@@ -47,8 +47,8 @@ extension VeChainTarget: TargetType {
             return "/blocks/\(path)"
         case .sendTransaction:
             return "/transactions"
-        case .transactionStatus(let transactionHash, _, _):
-            return "/transactions/\(transactionHash)"
+        case .transactionStatus(let request):
+            return "/transactions/\(request.hash)"
         }
     }
     
@@ -68,10 +68,10 @@ extension VeChainTarget: TargetType {
         case .viewAccount,
              .viewBlock:
             return .requestPlain
-        case .transactionStatus(_, let includePending, let rawOutput):
+        case .transactionStatus(let request):
             let parameters = [
-                "pending": includePending,
-                "raw": rawOutput,
+                "pending": request.includePending,
+                "raw": request.rawOutput,
             ]
             return .requestParameters(parameters: parameters, encoding: URLEncoding.queryString)
         case .sendTransaction(let rawTransaction):
