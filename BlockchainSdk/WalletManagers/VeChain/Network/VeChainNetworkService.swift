@@ -15,12 +15,15 @@ final class VeChainNetworkService: MultiNetworkProvider {
     var currentProviderIndex: Int
 
     private let blockchain: Blockchain
+    private let energyToken: Token
 
     init(
         blockchain: Blockchain,
+        energyToken: Token,
         providers: [VeChainNetworkProvider]
     ) {
         self.blockchain = blockchain
+        self.energyToken = energyToken
         self.providers = providers
         currentProviderIndex = 0
     }

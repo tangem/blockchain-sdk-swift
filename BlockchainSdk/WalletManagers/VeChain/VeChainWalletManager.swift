@@ -15,12 +15,14 @@ final class VeChainWalletManager: BaseManager {
 
     init(
         wallet: Wallet,
+        energyToken: Token,
         networkService: VeChainNetworkService,
         transactionBuilder: VeChainTransactionBuilder
     ) {
         self.networkService = networkService
         self.transactionBuilder = transactionBuilder
         super.init(wallet: wallet)
+        cardTokens = [energyToken]
     }
 
     @available(*, unavailable)
