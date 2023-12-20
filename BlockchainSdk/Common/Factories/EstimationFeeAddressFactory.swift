@@ -18,7 +18,7 @@ struct EstimationFeeAddressFactory {
             // Can not generate and doesn't depend on destination
             return ""
         case .xrp, .stellar, .binance, .solana:
-            // XRP doesn't depend on amount and destination
+            // Doesn't depend on amount and destination
             return ""
         case .tezos:
             // Tezos has a fixed fee. See: `TezosFee.transaction`
