@@ -891,7 +891,6 @@ extension Blockchain {
 
 @available(iOS 13.0, *)
 extension Blockchain {
-    
     var assembly: WalletManagerAssembly {
         switch self {
         case .bitcoin:
@@ -958,5 +957,4 @@ extension Blockchain {
             return DecimalWalletAssembly()
         }
     }
-    
 }
