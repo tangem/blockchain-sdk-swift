@@ -121,7 +121,7 @@ final class ChiaTransactionBuilder {
         let coinSpends = unspentCoins.map {
             ChiaCoinSpend(
                 coin: $0,
-                puzzleReveal: ChiaPuzzleUtils().getPuzzleHash(from: walletPublicKey).hex,
+                puzzleReveal: ChiaPuzzleUtils().getPuzzleHash(from: walletPublicKey).hexString.lowercased(),
                 solution: ""
             )
         }
@@ -131,10 +131,10 @@ final class ChiaTransactionBuilder {
         let changeCondition = try change != 0 ? createCoinCondition(for: source, with: change) : nil
         
         let solution: [ChiaCondition] = [sendCondition, changeCondition].compactMap { $0 }
-        coinSpends[0].solution = try solution.toSolution().hex
-        
+        coinSpends[0].solution = try solution.toSolution().hexString.lowercased()
+
         for coinSpend in coinSpends.dropFirst(1) {
-            coinSpend.solution = try [RemarkCondition()].toSolution().hex
+            coinSpend.solution = try [RemarkCondition()].toSolution().hexString.lowercased()
         }
 
         return coinSpends
@@ -181,6 +181,6 @@ fileprivate extension Array where Element == ChiaCondition {
 
 fileprivate extension Data {
     func hashAugScheme(with publicKey: Data) throws -> Data {
-        try Data(hex: BLSUtils().augSchemeMplG2Map(publicKey: publicKey.hex, message: self.hex))
+        try Data(hex: BLSUtils().augSchemeMplG2Map(publicKey: publicKey.hexString.lowercased(), message: self.hexString.lowercased()))
     }
 }
