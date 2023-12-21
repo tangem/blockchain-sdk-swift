@@ -19,7 +19,7 @@ enum TronNetwork {
         case .nowNodes:
             return URL(string: "https://trx.nownodes.io")!
         case .getBlock(let apiKey):
-            return URL(string: "https://trx.getblock.io/mainnet/\(apiKey)")!
+            return URL(string: "https://go.getblock.io/\(apiKey)")!
         case .tronGrid:
             return URL(string: "https://api.trongrid.io")!
         case .nile:

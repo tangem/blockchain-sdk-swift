@@ -13,7 +13,7 @@ public struct BlockchainSdkConfig {
     let blockcypherTokens: [String]
     let infuraProjectId: String
     let nowNodesApiKey: String
-    let getBlockApiKey: String
+    let getBlockCredentials: GetBlockCredentials
     let kaspaSecondaryApiUrl: String?
     let tronGridApiKey: String
     let tonCenterApiKeys: TonCenterApiKeys
@@ -30,7 +30,7 @@ public struct BlockchainSdkConfig {
         blockcypherTokens: [String],
         infuraProjectId: String,
         nowNodesApiKey: String,
-        getBlockApiKey: String,
+        getBlockCredentials: GetBlockCredentials,
         kaspaSecondaryApiUrl: String?,
         tronGridApiKey: String,
         tonCenterApiKeys: TonCenterApiKeys,
@@ -46,7 +46,7 @@ public struct BlockchainSdkConfig {
         self.blockcypherTokens = blockcypherTokens
         self.infuraProjectId = infuraProjectId
         self.nowNodesApiKey = nowNodesApiKey
-        self.getBlockApiKey = getBlockApiKey
+        self.getBlockCredentials = getBlockCredentials
         self.kaspaSecondaryApiUrl = kaspaSecondaryApiUrl
         self.tronGridApiKey = tronGridApiKey
         self.tonCenterApiKeys = tonCenterApiKeys
@@ -109,5 +109,47 @@ public extension BlockchainSdkConfig {
         public init(mainnetApiKey: String) {
             self.mainnetApiKey = mainnetApiKey
         }
+    }
+    
+    struct GetBlockCredentials {
+        let credentials: [Credential]
+        
+        public init(credentials: [Credential]) {
+            self.credentials = credentials
+        }
+    }
+}
+
+public extension BlockchainSdkConfig.GetBlockCredentials {
+    struct Credential {
+        let blockchain: Blockchain
+        let type: TypeValue
+        let value: String
+        
+        public init(blockchain: Blockchain, type: TypeValue, key: String) {
+            self.blockchain = blockchain
+            self.type = type
+            self.value = key
+        }
+    }
+    
+    enum TypeValue: String, CaseIterable {
+        case blockBookRest
+        case rest
+        case jsonRpc
+        case rosseta
+    }
+}
+
+extension BlockchainSdkConfig.GetBlockCredentials {
+    func credential(for blockchain: Blockchain, type: TypeValue) -> String {
+        let credential = credentials.first { $0.blockchain.codingKey == blockchain.codingKey && $0.type == type }
+        return credential?.value ?? ""
+    }
+    
+    func credentials(type: TypeValue) -> [Blockchain: String] {
+        credentials
+            .filter { $0.type == type }
+            .reduce(into: [:]) { $0[$1.blockchain] = $1.value }
     }
 }

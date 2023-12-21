@@ -21,13 +21,16 @@ struct NetworkProviderAssembly {
         case .nowNodes:
             return BlockBookUtxoProvider(
                 blockchain: input.blockchain,
-                blockBookConfig: NowNodesBlockBookConfig(apiKey: input.blockchainSdkConfig.nowNodesApiKey),
+                blockBookConfig: NowNodesBlockBookConfig(
+                    apiKeyHeaderName: Constants.nowNodesApiKeyHeaderName,
+                    apiKeyHeaderValue: input.blockchainSdkConfig.nowNodesApiKey
+                ),
                 networkConfiguration: input.networkConfig
             )
         case .getBlock:
             return BlockBookUtxoProvider(
                 blockchain: input.blockchain,
-                blockBookConfig: GetBlockBlockBookConfig(apiKey: input.blockchainSdkConfig.getBlockApiKey),
+                blockBookConfig: GetBlockBlockBookConfig(input.blockchainSdkConfig.getBlockCredentials),
                 networkConfiguration: input.networkConfig
             )
         }
@@ -63,7 +66,7 @@ struct NetworkProviderAssembly {
             keys: EthereumApiKeys(
                 infuraProjectId: input.blockchainSdkConfig.infuraProjectId,
                 nowNodesApiKey: input.blockchainSdkConfig.nowNodesApiKey,
-                getBlockApiKey: input.blockchainSdkConfig.getBlockApiKey,
+                getBlockApiKeys: input.blockchainSdkConfig.getBlockCredentials.credentials(type: .jsonRpc),
                 quickNodeBscCredentials: input.blockchainSdkConfig.quickNodeBscCredentials
             )
         )!
