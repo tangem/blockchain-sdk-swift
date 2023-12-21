@@ -27,7 +27,7 @@ extension GetBlockBlockBookConfig {
     
     func node(for blockchain: Blockchain) -> BlockBookNode {
         let rpcApiKeyValue = credentialsConfig.credential(for: blockchain, type: .jsonRpc)
-        let restNodeApiKeyValue = credentialsConfig.credential(for: blockchain, type: .blockBook)
+        let restNodeApiKeyValue = credentialsConfig.credential(for: blockchain, type: .blockBookRest)
         
         return BlockBookNode(
             rpcNode: "https://go.\(host)/\(rpcApiKeyValue)",

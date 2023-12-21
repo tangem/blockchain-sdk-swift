@@ -133,8 +133,8 @@ public extension BlockchainSdkConfig.GetBlockCredentials {
         }
     }
     
-    enum TypeValue {
-        case blockBook
+    enum TypeValue: String, CaseIterable {
+        case blockBookRest
         case rest
         case jsonRpc
         case rosseta
