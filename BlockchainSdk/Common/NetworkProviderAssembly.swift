@@ -36,10 +36,6 @@ struct NetworkProviderAssembly {
         }
     }
     
-    func makeBlockchainInfoNetworkProvider(with input: NetworkProviderAssemblyInput) -> BlockchainInfoNetworkProvider {
-        return BlockchainInfoNetworkProvider(configuration: input.networkConfig)
-    }
-    
     func makeBlockcypherNetworkProvider(endpoint: BlockcypherEndpoint, with input: NetworkProviderAssemblyInput) -> BlockcypherNetworkProvider {
         return BlockcypherNetworkProvider(
             endpoint: endpoint,
