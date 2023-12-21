@@ -31,7 +31,31 @@ final class VeChainWalletManager: BaseManager {
     }
 
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        // TODO: Andrey Fedorov - Add actual implementation (IOS-5238)
+        // TODO: Andrey Fedorov - Add required logic for pending transactions
+        cancellable = networkService
+            .getAccountInfo(address: wallet.address)
+            .withWeakCaptureOf(self)
+            .sink(
+                receiveCompletion: { [weak self] result in
+                    switch result {
+                    case .failure(let error):
+                        self?.wallet.clearAmounts()
+                        completion(.failure(error))
+                    case .finished:
+                        completion(.success(()))
+                    }
+                },
+                receiveValue: { walletManager, accountInfo in
+                    walletManager.updateWallet(accountInfo: accountInfo)
+                }
+            )
+    }
+
+    private func updateWallet(
+        accountInfo: VeChainAccountInfo
+    ) {
+        let amounts = accountInfo.tokenAmounts + [accountInfo.amount]
+        amounts.forEach { wallet.add(amount: $0) }
     }
 }
 
