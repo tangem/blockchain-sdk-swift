@@ -31,7 +31,6 @@ final class VeChainWalletManager: BaseManager {
     }
 
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        // TODO: Andrey Fedorov - Add required logic for pending transactions
         cancellable = networkService
             .getAccountInfo(address: wallet.address)
             .withWeakCaptureOf(self)
@@ -78,7 +77,40 @@ extension VeChainWalletManager: WalletManager {
         _ transaction: Transaction,
         signer: TransactionSigner
     ) -> AnyPublisher<TransactionSendResult, Error> {
-        // TODO: Andrey Fedorov - Add actual implementation (IOS-5238)
-        return .emptyFail
+        return networkService
+            .getLatestBlockInfo()
+            .withWeakCaptureOf(self)
+            .map { walletManager, lastBlockInfo in
+                return VeChainTransactionParams(
+                    publicKey: walletManager.wallet.publicKey,
+                    lastBlockInfo: lastBlockInfo,
+                    nonce: .random(in: 1 ..< 100_000_000)
+                )
+            }
+            .withWeakCaptureOf(self)
+            .tryMap { walletManager, transactionParams -> (Data, VeChainTransactionParams) in
+                let transaction = transaction.then { $0.params = transactionParams }
+                let hash = try walletManager.transactionBuilder.buildForSign(transaction: transaction)
+
+                return (hash, transactionParams)
+            }
+            .flatMap { hash, transactionParams in
+                let signaturePublisher = signer.sign(hash: hash, walletPublicKey: transactionParams.publicKey)
+                let transactionParamsPublisher = Just(transactionParams).setFailureType(to: Error.self)
+
+                return Publishers.Zip(signaturePublisher, transactionParamsPublisher)
+            }
+            .withWeakCaptureOf(self)
+            .tryMap { walletManager, input in
+                let (signature, transactionParams) = input
+                let transaction = transaction.then { $0.params = transactionParams }
+
+                return try walletManager.transactionBuilder.buildForSend(transaction: transaction, signature: signature)
+            }
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, transaction in
+                return walletManager.networkService.send(transaction: transaction)
+            }
+            .eraseToAnyPublisher()
     }
 }
