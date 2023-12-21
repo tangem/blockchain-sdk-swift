@@ -23,9 +23,17 @@ struct ChiaSendTransactionResponse: ChiaStatusResponse {
     let error: String?
 }
 
+extension ChiaSendTransactionResponse {
+    enum Constants {
+        static let successStatus: String = "SUCCESS"
+    }
+}
+
 struct ChiaEstimateFeeResponse: ChiaStatusResponse {
     let success: Bool
     let estimates: [Int64]
+    let feeRateLastBlock: Double
+    let currentFeeRate: Double
 }
 
 struct ChiaCoinRecord: Decodable {

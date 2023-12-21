@@ -81,7 +81,18 @@ public protocol TransactionFeeProvider {
 @available(iOS 13.0, *)
 public extension TransactionFeeProvider where Self: WalletProvider {
     func estimatedFee(amount: Amount) -> AnyPublisher<[Fee], Error> {
-        getFee(amount: amount, destination: wallet.address)
+        Just(())
+            .receive(on: DispatchQueue.global())
+            .tryMap { [weak self] address -> AnyPublisher<[Fee], Error> in
+                guard let self else {
+                    throw WalletError.failedToGetFee
+                }
+                
+                let estimationFeeAddress = try EstimationFeeAddressFactory().makeAddress(for: self.wallet.blockchain)
+                return self.getFee(amount: amount, destination: estimationFeeAddress)
+            }
+            .switchToLatest()
+            .eraseToAnyPublisher()
     }
 }
 
