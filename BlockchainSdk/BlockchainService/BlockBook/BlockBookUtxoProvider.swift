@@ -78,8 +78,9 @@ class BlockBookUtxoProvider {
         return provider
             .requestPublisher(target(for: .send(tx: transactionData)))
             .filterSuccessfulStatusAndRedirectCodes()
-            .mapNotEmptyString()
+            .map(BlockBookSendResponse.self)
             .eraseError()
+            .map { $0.result }
             .eraseToAnyPublisher()
     }
     

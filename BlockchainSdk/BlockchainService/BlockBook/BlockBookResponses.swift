@@ -131,3 +131,8 @@ struct BlockBookFeeResponse: Decodable {
     
     let result: Result
 }
+
+
+struct BlockBookSendResponse: Decodable {
+    let result: String
+}
