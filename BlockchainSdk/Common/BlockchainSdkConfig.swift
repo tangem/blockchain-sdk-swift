@@ -148,12 +148,8 @@ extension BlockchainSdkConfig.GetBlockCredentials {
     }
     
     func credentials(type: TypeValue) -> [Blockchain: String] {
-        var resultJsonRpcApiKeys = [Blockchain: String]()
-        
         credentials
             .filter { $0.type == type }
-            .forEach { resultJsonRpcApiKeys[$0.blockchain] = $0.value }
-        
-        return resultJsonRpcApiKeys
+            .reduce(into: [:]) { $0[$1.blockchain] = $1.value }
     }
 }
