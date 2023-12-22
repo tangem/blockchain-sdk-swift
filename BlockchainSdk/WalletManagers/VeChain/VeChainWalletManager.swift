@@ -81,10 +81,12 @@ extension VeChainWalletManager: WalletManager {
             .getLatestBlockInfo()
             .withWeakCaptureOf(self)
             .map { walletManager, lastBlockInfo in
+                // Using a random nonce value for a new transaction is totally fine,
+                // see https://docs.vechain.org/core-concepts/transactions/transaction-model for details
                 return VeChainTransactionParams(
                     publicKey: walletManager.wallet.publicKey,
                     lastBlockInfo: lastBlockInfo,
-                    nonce: .random(in: 1 ..< 100_000_000)
+                    nonce: .random(in: 1 ..< UInt.max)
                 )
             }
             .withWeakCaptureOf(self)
