@@ -95,17 +95,20 @@ extension VeChainWalletManager: WalletManager {
                 return (hash, transactionParams)
             }
             .flatMap { hash, transactionParams in
-                let signaturePublisher = signer.sign(hash: hash, walletPublicKey: transactionParams.publicKey)
-                let transactionParamsPublisher = Just(transactionParams).setFailureType(to: Error.self)
-
-                return Publishers.Zip(signaturePublisher, transactionParamsPublisher)
+                return signer
+                    .sign(hash: hash, walletPublicKey: transactionParams.publicKey)
+                    .map { ($0, hash, transactionParams) }
             }
             .withWeakCaptureOf(self)
             .tryMap { walletManager, input in
-                let (signature, transactionParams) = input
+                let (signature, hash, transactionParams) = input
                 let transaction = transaction.then { $0.params = transactionParams }
 
-                return try walletManager.transactionBuilder.buildForSend(transaction: transaction, signature: signature)
+                return try walletManager.transactionBuilder.buildForSend(
+                    transaction: transaction,
+                    hash: hash,
+                    signature: signature
+                )
             }
             .withWeakCaptureOf(self)
             .flatMap { walletManager, transaction in

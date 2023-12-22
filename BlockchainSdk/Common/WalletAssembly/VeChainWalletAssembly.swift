@@ -30,7 +30,7 @@ struct VeChainWalletAssembly: WalletManagerAssembly {
             providers: networkProviders
         )
 
-        let transactionBuilder = VeChainTransactionBuilder()
+        let transactionBuilder = VeChainTransactionBuilder(blockchain: blockchain)
 
         return VeChainWalletManager(
             wallet: input.wallet,
