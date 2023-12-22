@@ -34,18 +34,13 @@ final class VeChainNetworkService: MultiNetworkProvider {
                 .getAccountInfo(address: address)
                 .withWeakCaptureOf(self)
                 .tryMap { networkService, accountInfo in
-                    guard
-                        let coinBalance = BigUInt(accountInfo.balance.removeHexPrefix(), radix: Constants.radix)?.decimal,
-                        let energyBalance = BigUInt(accountInfo.energy.removeHexPrefix(), radix: Constants.radix)?.decimal
-                    else {
-                        throw WalletError.failedToParseNetworkResponse
-                    }
-
+                    let coinBalance = try networkService.mapDecimalValue(from: accountInfo.balance)
                     let coinAmount = Amount(
                         with: networkService.blockchain,
                         value: coinBalance / networkService.blockchain.decimalValue
                     )
 
+                    let energyBalance = try networkService.mapDecimalValue(from: accountInfo.energy)
                     let energyAmount = Amount(
                         with: networkService.blockchain,
                         type: .token(value: networkService.energyToken),
@@ -65,24 +60,9 @@ final class VeChainNetworkService: MultiNetworkProvider {
         return providerPublisher { provider in
             return provider
                 .getBlockInfo(request: .init(requestType: .latest, isExpanded: false))
-                .tryMap { blockInfo in
-                    // The block ref is the first 8 bytes of the block id,
-                    // see https://mirei83.medium.com/howto-vechain-blockchain-part-2-6ccd31f320c for details
-                    let blockId = blockInfo.id
-                    let rawBlockRef = blockId.removeHexPrefix().prefix(Constants.blockRefSize * 2)
-
-                    guard 
-                        rawBlockRef.count == Constants.blockRefSize * 2,
-                        let blockRef = UInt(rawBlockRef, radix: Constants.radix)
-                    else {
-                        throw WalletError.failedToParseNetworkResponse
-                    }
-
-                    return VeChainBlockInfo(
-                        blockId: blockId,
-                        blockRef: blockRef,
-                        blockNumber: blockInfo.number
-                    )
+                .withWeakCaptureOf(self)
+                .tryMap { networkService, blockInfo in
+                    return try networkService.mapBlockInfo(from: blockInfo)
                 }
                 .eraseToAnyPublisher()
         }
@@ -104,6 +84,37 @@ final class VeChainNetworkService: MultiNetworkProvider {
                 }
                 .eraseToAnyPublisher()
         }
+    }
+
+    private func mapDecimalValue(from balance: String) throws -> Decimal {
+        guard
+            let bigUIntValue = BigUInt(balance.removeHexPrefix(), radix: Constants.radix),
+            let decimalValue = bigUIntValue.decimal
+        else {
+            throw WalletError.failedToParseNetworkResponse
+        }
+
+        return decimalValue
+    }
+
+    private func mapBlockInfo(from blockInfoDTO: VeChainNetworkResult.BlockInfo) throws -> VeChainBlockInfo {
+        // The block ref is the first 8 bytes of the block id,
+        // see https://mirei83.medium.com/howto-vechain-blockchain-part-2-6ccd31f320c for details
+        let blockId = blockInfoDTO.id
+        let rawBlockRef = blockId.removeHexPrefix().prefix(Constants.blockRefSize * 2)
+
+        guard
+            rawBlockRef.count == Constants.blockRefSize * 2,
+            let blockRef = UInt(rawBlockRef, radix: Constants.radix)
+        else {
+            throw WalletError.failedToParseNetworkResponse
+        }
+
+        return VeChainBlockInfo(
+            blockId: blockId,
+            blockRef: blockRef,
+            blockNumber: blockInfoDTO.number
+        )
     }
 }
 
