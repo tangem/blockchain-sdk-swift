@@ -98,8 +98,8 @@ final class VeChainTransactionBuilder {
             input.nonce = UInt64(transactionParams.nonce)
             input.blockRef = UInt64(transactionParams.lastBlockInfo.blockRef)
             input.expiration = UInt32(Constants.transactionExpiration)
-            input.gasPriceCoef = 0  // TODO: Andrey Fedorov - Add actual implementation (IOS-5238)
-            input.gas = 21000   // TODO: Andrey Fedorov - Add actual implementation (IOS-5238)
+            input.gasPriceCoef = 0  // TODO: Andrey Fedorov - Implement fee calculation (IOS-5238)
+            input.gas = 21000   // TODO: Andrey Fedorov - Implement fee calculation (IOS-5238)
 
             input.clauses = [
                 VeChainClause.with { input in

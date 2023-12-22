@@ -69,8 +69,8 @@ extension VeChainWalletManager: WalletManager {
         amount: Amount,
         destination: String
     ) -> AnyPublisher<[Fee], Error> {
-        // TODO: Andrey Fedorov - Add actual implementation (IOS-5238)
-        return .emptyFail
+        // TODO: Andrey Fedorov - Implement fee calculation (IOS-5238)
+        return .justWithError(output: [.init(.zeroCoin(for: wallet.blockchain))])
     }
 
     func send(
