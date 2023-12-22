@@ -20,16 +20,14 @@ enum XrpUrl {
             return URL(string: "https://xrplcluster.com/")!
         case .nowNodes:
             return URL(string: "https://xrp.nownodes.io")!
-        case .getBlock:
-            return URL(string: "https://xrp.getblock.io/mainnet")!
+        case .getBlock(let apiKey):
+            return URL(string: "https://go.getblock.io/\(apiKey)")!
         }
     }
 
     var apiKeyHeaderValue: String? {
         switch self {
         case .nowNodes(let apiKey):
-            return apiKey
-        case .getBlock(let apiKey):
             return apiKey
         default:
             return nil

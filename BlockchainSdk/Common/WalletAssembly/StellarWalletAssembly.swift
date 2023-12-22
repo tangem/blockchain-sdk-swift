@@ -19,7 +19,7 @@ struct StellarWalletAssembly: WalletManagerAssembly {
                 urls = [
                     "https://horizon.stellar.org",
                     "https://xlm.nownodes.io/\(input.blockchainSdkConfig.nowNodesApiKey)",
-                    "https://xlm.getblock.io/mainnet/\(input.blockchainSdkConfig.getBlockApiKey)",
+                    "https://go.getblock.io/\(input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .rest))",
                 ]
             } else {
                 urls = [
