@@ -23,17 +23,17 @@ extension ChiaExternalLinkProvider: ExternalLinkProvider {
     
     func url(transaction hash: String) -> URL? {
         if isTestnet {
-            return URL(string: "https://testnet10.spacescan.io/txns/\(hash)")!
+            return URL(string: "https://testnet10.spacescan.io/txns/\(hash)")
         }
         
-        return URL(string: "https://xchscan.com/txns/\(hash)")!
+        return URL(string: "https://xchscan.com/txns/\(hash)")
     }
     
-    func url(address: String, contractAddress: String?) -> URL {
+    func url(address: String, contractAddress: String?) -> URL? {
         if isTestnet {
-            return URL(string: "https://testnet10.spacescan.io/address/\(address)")!
+            return URL(string: "https://testnet10.spacescan.io/address/\(address)")
         }
         
-        return URL(string: "https://xchscan.com/address/\(address)")!
+        return URL(string: "https://xchscan.com/address/\(address)")
     }
 }
