@@ -9,23 +9,17 @@
 import Foundation
 
 // https://nownodes.io/nodes
-struct NowNodesBlockBookConfig {
-    private let apiKey: String
+struct NowNodesBlockBookConfig: BlockBookConfig {
+    let apiKeyHeaderName: String?
+    let apiKeyHeaderValue: String?
     
-    init(apiKey: String) {
-        self.apiKey = apiKey
+    init(apiKeyHeaderName: String?, apiKeyHeaderValue: String?) {
+        self.apiKeyHeaderName = apiKeyHeaderName
+        self.apiKeyHeaderValue = apiKeyHeaderValue
     }
 }
 
-extension NowNodesBlockBookConfig: BlockBookConfig {
-    var apiKeyValue: String {
-        return apiKey
-    }
-    
-    var apiKeyName: String {
-        return Constants.nowNodesApiKeyHeaderName
-    }
-    
+extension NowNodesBlockBookConfig {
     var host: String {
         return "nownodes.io"
     }

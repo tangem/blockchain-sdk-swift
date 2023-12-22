@@ -41,7 +41,11 @@ class ChiaNetworkService: MultiNetworkProvider {
         providerPublisher { provider in
             provider
                 .sendTransaction(body: ChiaTransactionBody(spendBundle: spendBundle))
-                .map { response in
+                .tryMap { response in
+                    guard response.status == ChiaSendTransactionResponse.Constants.successStatus else {
+                        throw WalletError.failedToSendTx
+                    }
+                    
                     return ""
                 }
                 .eraseToAnyPublisher()
@@ -53,23 +57,15 @@ class ChiaNetworkService: MultiNetworkProvider {
             provider
                 .getFeeEstimate(body: .init(cost: cost, targetTimes: [60, 300]))
                 .map { response in
-                    let countAllowFeeSelection = 3
+                    var estimatedFees: [Decimal] = []
                     
-                    var estimatedFees: [Fee] = response.estimates.sorted().map { estimate in
-                        let value = Decimal(estimate) / self.blockchain.decimalValue
-                        let amount = Amount(with: self.blockchain, value: value)
+                    let highEstimatedValue = Decimal(Double(cost) * response.feeRateLastBlock) / self.blockchain.decimalValue
+                    estimatedFees.append(highEstimatedValue)
+                    
+                    return estimatedFees.sorted().map {
+                        let amount = Amount(with: self.blockchain, value: $0)
                         return Fee(amount)
                     }
-                    
-                    guard estimatedFees.count < countAllowFeeSelection else {
-                        return estimatedFees
-                    }
-                    
-                    for _ in 0..<countAllowFeeSelection-response.estimates.count {
-                        estimatedFees.insert(Fee(Amount(with: self.blockchain, value: Decimal(0))), at: 0)
-                    }
-                    
-                    return estimatedFees
                 }
                 .eraseToAnyPublisher()
         }

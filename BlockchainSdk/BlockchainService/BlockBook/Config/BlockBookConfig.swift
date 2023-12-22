@@ -9,8 +9,9 @@
 import Foundation
 
 protocol BlockBookConfig {
-    var apiKeyValue: String { get }
-    var apiKeyName: String { get }
+    var apiKeyHeaderName: String? { get }
+    var apiKeyHeaderValue: String? { get }
+    
     var host: String { get }
     
     func node(for blockchain: Blockchain) -> BlockBookNode
