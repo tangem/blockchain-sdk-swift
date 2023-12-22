@@ -245,7 +245,7 @@
 		B675E95D2B320D52004AF179 /* VeChainNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B675E95C2B320D52004AF179 /* VeChainNetworkParams.swift */; };
 		B675E95F2B320D69004AF179 /* VeChainNetworkResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B675E95E2B320D69004AF179 /* VeChainNetworkResult.swift */; };
 		B675E9612B320DBE004AF179 /* VeChainNetworkResult.AccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B675E9602B320DBE004AF179 /* VeChainNetworkResult.AccountInfo.swift */; };
-		B675E9632B320E7F004AF179 /* VeChainNetworkResult.TransactionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B675E9622B320E7F004AF179 /* VeChainNetworkResult.TransactionStatus.swift */; };
+		B675E9632B320E7F004AF179 /* VeChainNetworkResult.TransactionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B675E9622B320E7F004AF179 /* VeChainNetworkResult.TransactionInfo.swift */; };
 		B675E9672B321102004AF179 /* VeChainNetworkParams.Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B675E9662B321102004AF179 /* VeChainNetworkParams.Transaction.swift */; };
 		B675E9692B321131004AF179 /* VeChainNetworkResult.Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B675E9682B321131004AF179 /* VeChainNetworkResult.Transaction.swift */; };
 		B676D9C22B33AFFE009A0D06 /* VeChainNetworkParams.TransactionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B676D9C12B33AFFE009A0D06 /* VeChainNetworkParams.TransactionStatus.swift */; };
@@ -893,7 +893,7 @@
 		B675E95C2B320D52004AF179 /* VeChainNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkParams.swift; sourceTree = "<group>"; };
 		B675E95E2B320D69004AF179 /* VeChainNetworkResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkResult.swift; sourceTree = "<group>"; };
 		B675E9602B320DBE004AF179 /* VeChainNetworkResult.AccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkResult.AccountInfo.swift; sourceTree = "<group>"; };
-		B675E9622B320E7F004AF179 /* VeChainNetworkResult.TransactionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkResult.TransactionStatus.swift; sourceTree = "<group>"; };
+		B675E9622B320E7F004AF179 /* VeChainNetworkResult.TransactionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkResult.TransactionInfo.swift; sourceTree = "<group>"; };
 		B675E9662B321102004AF179 /* VeChainNetworkParams.Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkParams.Transaction.swift; sourceTree = "<group>"; };
 		B675E9682B321131004AF179 /* VeChainNetworkResult.Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkResult.Transaction.swift; sourceTree = "<group>"; };
 		B676D9C12B33AFFE009A0D06 /* VeChainNetworkParams.TransactionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkParams.TransactionStatus.swift; sourceTree = "<group>"; };
@@ -2230,7 +2230,7 @@
 				B675E9602B320DBE004AF179 /* VeChainNetworkResult.AccountInfo.swift */,
 				B6FC8F382B3339AD00CD55ED /* VeChainNetworkResult.BlockInfo.swift */,
 				B675E9682B321131004AF179 /* VeChainNetworkResult.Transaction.swift */,
-				B675E9622B320E7F004AF179 /* VeChainNetworkResult.TransactionStatus.swift */,
+				B675E9622B320E7F004AF179 /* VeChainNetworkResult.TransactionInfo.swift */,
 			);
 			path = Result;
 			sourceTree = "<group>";
@@ -3392,7 +3392,7 @@
 				5D7D243625136254001B9A4F /* XRPAccount.swift in Sources */,
 				5D7D244925136399001B9A4F /* BitcoinfeesResponse.swift in Sources */,
 				B6BA93712AEA0E8000F84E36 /* NEARNetworkParams.ViewAccessKey.swift in Sources */,
-				B675E9632B320E7F004AF179 /* VeChainNetworkResult.TransactionStatus.swift in Sources */,
+				B675E9632B320E7F004AF179 /* VeChainNetworkResult.TransactionInfo.swift in Sources */,
 				2D3FF8842B1754BC004416A2 /* DecimalNetworkService.swift in Sources */,
 				2DDE5BAF29C4F8D200A5B708 /* DashWalletAssembly.swift in Sources */,
 				DA30812F2817C0F900DE41F1 /* Contracts.pb.swift in Sources */,

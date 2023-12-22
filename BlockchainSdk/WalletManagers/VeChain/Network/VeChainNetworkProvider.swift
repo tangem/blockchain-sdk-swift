@@ -39,7 +39,7 @@ struct VeChainNetworkProvider {
 
     func getTransactionStatus(
         request: VeChainNetworkParams.TransactionStatus
-    ) -> AnyPublisher<VeChainNetworkResult.TransactionStatus, Error> {
+    ) -> AnyPublisher<VeChainNetworkResult.TransactionInfo, Error> {
         return requestPublisher(
             for: .transactionStatus(request: request)
         )

@@ -1,5 +1,5 @@
 //
-//  VeChainNetworkResult.TransactionStatus.swift
+//  VeChainNetworkResult.TransactionInfo.swift
 //  BlockchainSdk
 //
 //  Created by Andrey Fedorov on 19.12.2023.
@@ -9,9 +9,20 @@
 import Foundation
 
 extension VeChainNetworkResult {
-    enum TransactionStatus: Decodable {
+    enum TransactionInfo: Decodable {
         case parsed(ParsedStatus)
         case raw(RawStatus)
+        case notFound
+
+        init(from decoder: Decoder) throws {
+            if try decoder.singleValueContainer().decodeNil() {
+                self = .notFound
+            } else if let raw = try? RawStatus(from: decoder) {
+                self = .raw(raw)
+            } else {
+                self = .parsed(try ParsedStatus(from: decoder))
+            }
+        }
     }
 
     struct ParsedStatus: Decodable {
