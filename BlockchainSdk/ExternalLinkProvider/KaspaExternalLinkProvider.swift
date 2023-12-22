@@ -14,10 +14,10 @@ struct KaspaExternalLinkProvider: ExternalLinkProvider {
     }
     
     func url(transaction hash: String) -> URL? {
-        return URL(string: "https://explorer.kaspa.org/txs/\(hash)")!
+        return URL(string: "https://explorer.kaspa.org/txs/\(hash)")
     }
     
-    func url(address: String, contractAddress: String?) -> URL {
-        return URL(string: "https://explorer.kaspa.org/addresses/\(address)")!
+    func url(address: String, contractAddress: String?) -> URL? {
+        return URL(string: "https://explorer.kaspa.org/addresses/\(address)")
     }
 }

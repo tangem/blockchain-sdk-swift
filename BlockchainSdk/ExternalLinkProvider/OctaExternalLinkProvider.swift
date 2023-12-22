@@ -14,10 +14,10 @@ struct OctaExternalLinkProvider: ExternalLinkProvider {
     }
     
     func url(transaction hash: String) -> URL? {
-        return URL(string: "https://explorer.octa.space/tx/\(hash)")!
+        return URL(string: "https://explorer.octa.space/tx/\(hash)")
     }
     
-    func url(address: String, contractAddress: String?) -> URL {
-        return URL(string: "https://explorer.octa.space/address/\(address)")!
+    func url(address: String, contractAddress: String?) -> URL? {
+        return URL(string: "https://explorer.octa.space/address/\(address)")
     }
 }

@@ -23,17 +23,17 @@ extension KavaExternalLinkProvider: ExternalLinkProvider {
     
     func url(transaction hash: String) -> URL? {
         if isTestnet {
-            return URL(string: "https://explorer.testnet.kava.io/tx/\(hash)")!
+            return URL(string: "https://explorer.testnet.kava.io/tx/\(hash)")
         }
 
-        return URL(string: "https://explorer.kava.io/tx/\(hash)")!
+        return URL(string: "https://explorer.kava.io/tx/\(hash)")
     }
     
-    func url(address: String, contractAddress: String?) -> URL {
+    func url(address: String, contractAddress: String?) -> URL? {
         if isTestnet {
-            return URL(string: "https://explorer.testnet.kava.io/address/\(address)")!
+            return URL(string: "https://explorer.testnet.kava.io/address/\(address)")
         }
 
-        return URL(string: "https://explorer.kava.io/address/\(address)")!
+        return URL(string: "https://explorer.kava.io/address/\(address)")
     }
 }

@@ -15,7 +15,7 @@ struct SaltPayExternalLinkProvider: ExternalLinkProvider {
         nil
     }
     
-    func url(address: String, contractAddress: String?) -> URL {
-        fatalError("Not implement")
+    func url(address: String, contractAddress: String?) -> URL? {
+        nil
     }
 }
