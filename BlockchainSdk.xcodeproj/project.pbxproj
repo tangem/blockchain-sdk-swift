@@ -251,6 +251,7 @@
 		B676D9C22B33AFFE009A0D06 /* VeChainNetworkParams.TransactionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B676D9C12B33AFFE009A0D06 /* VeChainNetworkParams.TransactionStatus.swift */; };
 		B676D9C42B33B028009A0D06 /* VeChainNetworkParams.BlockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B676D9C32B33B028009A0D06 /* VeChainNetworkParams.BlockInfo.swift */; };
 		B68507082AEF494E004A431B /* NEARProtocolConfigCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B68507072AEF494E004A431B /* NEARProtocolConfigCache.swift */; };
+		B68A7D472B35D39700822BAF /* VeChainTransactionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B68A7D462B35D39700822BAF /* VeChainTransactionInfo.swift */; };
 		B69293752AEC6A2300D6A85A /* NEARTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69293742AEC6A2300D6A85A /* NEARTests.swift */; };
 		B6931AD32B32495C00B31319 /* VeChainAccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6931AD22B32495C00B31319 /* VeChainAccountInfo.swift */; };
 		B6A7A91B2B318DA50053DCF7 /* VeChainTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A7A91A2B318DA50053DCF7 /* VeChainTarget.swift */; };
@@ -899,6 +900,7 @@
 		B676D9C12B33AFFE009A0D06 /* VeChainNetworkParams.TransactionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkParams.TransactionStatus.swift; sourceTree = "<group>"; };
 		B676D9C32B33B028009A0D06 /* VeChainNetworkParams.BlockInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkParams.BlockInfo.swift; sourceTree = "<group>"; };
 		B68507072AEF494E004A431B /* NEARProtocolConfigCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NEARProtocolConfigCache.swift; sourceTree = "<group>"; };
+		B68A7D462B35D39700822BAF /* VeChainTransactionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainTransactionInfo.swift; sourceTree = "<group>"; };
 		B69293742AEC6A2300D6A85A /* NEARTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARTests.swift; sourceTree = "<group>"; };
 		B6931AD22B32495C00B31319 /* VeChainAccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainAccountInfo.swift; sourceTree = "<group>"; };
 		B6A7A91A2B318DA50053DCF7 /* VeChainTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainTarget.swift; sourceTree = "<group>"; };
@@ -2249,6 +2251,7 @@
 			children = (
 				B6931AD22B32495C00B31319 /* VeChainAccountInfo.swift */,
 				B6FC8F3A2B333A4B00CD55ED /* VeChainBlockInfo.swift */,
+				B68A7D462B35D39700822BAF /* VeChainTransactionInfo.swift */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -3573,6 +3576,7 @@
 				EF3B193C2AA85D230084AA1C /* SolanaExternalLinkProvider.swift in Sources */,
 				EF3B19482AA85E6F0084AA1C /* ArbitrumExternalLinkProvider.swift in Sources */,
 				B63068C22B3102FA00E79053 /* VeChainTransactionBuilder.swift in Sources */,
+				B68A7D472B35D39700822BAF /* VeChainTransactionInfo.swift in Sources */,
 				EF193BFE2A77ED9E0048C0C3 /* Page.swift in Sources */,
 				EFB952402A6FEF1700996D16 /* TransactionRecord.swift in Sources */,
 				DC5E653D2B16641300E81AA5 /* BitcoinScriptBuilder.swift in Sources */,

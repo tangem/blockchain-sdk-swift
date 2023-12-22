@@ -68,6 +68,25 @@ final class VeChainNetworkService: MultiNetworkProvider {
         }
     }
 
+    func getTransactionInfo(transactionHash: String) -> AnyPublisher<VeChainTransactionInfo, Error> {
+        return providerPublisher { provider in
+            return provider
+                .getTransactionStatus(request: .init(hash: transactionHash, includePending: false, rawOutput: false))
+                .tryMap { transactionStatus in
+                    switch transactionStatus {
+                    case .parsed(let parsedStatus):
+                        VeChainTransactionInfo(transactionHash: parsedStatus.id)
+                    case .raw:
+                        // `raw` output can't be easily parsed and therefore not supported
+                        throw WalletError.failedToParseNetworkResponse
+                    case .notFound:
+                        VeChainTransactionInfo(transactionHash: nil)
+                    }
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+
     func send(transaction: Data) -> AnyPublisher<TransactionSendResult, Error> {
         let rawTransaction = transaction.hexString.lowercased().addHexPrefix()
 
