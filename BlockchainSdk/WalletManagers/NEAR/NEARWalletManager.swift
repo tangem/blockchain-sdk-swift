@@ -170,10 +170,7 @@ extension NEARWalletManager: WalletManager {
 
     var allowsFeeSelection: Bool { false }
 
-    func getFee(
-        amount: Amount,
-        destination: String
-    ) -> AnyPublisher<[Fee], Error> {
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         return Publishers.CombineLatest(
             getProtocolConfig().setFailureType(to: Error.self),
             networkService.getGasPrice()

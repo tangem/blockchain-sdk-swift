@@ -443,7 +443,7 @@ extension Blockchain {
     public func getJsonRpcEndpoints(keys: EthereumApiKeys) -> [URL]? {
         let infuraProjectId = keys.infuraProjectId
         let nowNodesApiKey = keys.nowNodesApiKey
-        let getBlockApiKey = keys.getBlockApiKey
+        let getBlockApiKeys = keys.getBlockApiKeys
         let quickNodeBscCredentials = keys.quickNodeBscCredentials
         
         switch self {
@@ -456,7 +456,7 @@ extension Blockchain {
             } else {
                 return [
                     URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://eth.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                    makeGetBlockJsonRpcProvider(),
                     URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
                 ]
             }
@@ -467,7 +467,7 @@ extension Blockchain {
                 ]
             } else {
                 return [
-                    URL(string: "https://etc.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                    makeGetBlockJsonRpcProvider(),
                     URL(string: "https://etc.rivet.link/etc")!,
                     URL(string: "https://etc.etcdesktop.com")!,
                     URL(string: "https://rpc.etcinscribe.com")!,
@@ -495,7 +495,7 @@ extension Blockchain {
             return [
                 URL(string: "https://public-node.rsk.co/")!,
                 URL(string: "https://rsk.nownodes.io/\(nowNodesApiKey)")!,
-                URL(string: "https://rsk.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                makeGetBlockJsonRpcProvider(),
             ]
         case .bsc:
             if isTestnet {
@@ -507,7 +507,7 @@ extension Blockchain {
                 return [
                     URL(string: "https://bsc-dataseed.binance.org/")!,
                     URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://bsc.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                    makeGetBlockJsonRpcProvider(),
                     URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)/")!,
                 ]
             }
@@ -521,7 +521,7 @@ extension Blockchain {
                 return [
                     URL(string: "https://polygon-rpc.com")!,
                     URL(string: "https://matic.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://matic.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                    makeGetBlockJsonRpcProvider(),
                     URL(string: "https://rpc-mainnet.maticvigil.com")!,
                     URL(string: "https://rpc-mainnet.matic.quiknode.pro")!,
                 ]
@@ -535,7 +535,7 @@ extension Blockchain {
                 return [
                     URL(string: "https://api.avax.network/ext/bc/C/rpc")!,
                     URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)/ext/bc/C/rpc")!,
-                    URL(string: "https://avax.getblock.io/mainnet/ext/bc/C/rpc?api_key=\(getBlockApiKey)")!,
+                    makeGetBlockJsonRpcProvider(),
                 ]
             }
         case .fantom:
@@ -546,7 +546,7 @@ extension Blockchain {
             } else {
                 return [
                     URL(string: "https://ftm.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://ftm.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                    makeGetBlockJsonRpcProvider(),
                     URL(string: "https://rpc.ftm.tools/")!,
                     URL(string: "https://rpcapi.fantom.network/")!,
                     URL(string: "https://fantom-mainnet.public.blastapi.io")!,
@@ -569,7 +569,7 @@ extension Blockchain {
             }
         case .gnosis:
             return [
-                URL(string: "https://gno.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                makeGetBlockJsonRpcProvider(),
                 
                 // from registry.json
                 URL(string: "https://rpc.gnosischain.com")!,
@@ -608,7 +608,7 @@ extension Blockchain {
             return [
                 URL(string: "https://evm.cronos.org")!,
                 URL(string: "https://evm-cronos.crypto.org")!,
-                URL(string: "https://cro.getblock.io/mainnet/\(getBlockApiKey)")!,
+                makeGetBlockJsonRpcProvider(),
                 URL(string: "https://cronos.blockpi.network/v1/rpc/public")!,
                 URL(string: "https://cronos-evm.publicnode.com")!,
             ]
@@ -645,6 +645,18 @@ extension Blockchain {
             }
         default:
             return nil
+        }
+        
+        // MARK: - Private Implementation
+        
+        func makeGetBlockJsonRpcProvider() -> URL {
+            if let jsonRpcKey = getBlockApiKeys[self] {
+                return URL(string: "https://go.getblock.io/\(jsonRpcKey)")!
+            } else {
+                assertionFailure("getJsonRpcEndpoints -> Not found GetBlock jsonRpc key for blockchain \(displayName)")
+                Log.network("Not found jsonRpc key GetBlock API for blockchaib \(displayName)")
+                return URL(string: "https://go.getblock.io/")!
+            }
         }
     }
 }
@@ -971,88 +983,6 @@ extension Blockchain {
             return DecimalWalletAssembly()
         case .veChain:
             return VeChainWalletAssembly()
-        }
-    }
-}
-
-// MARK: - Placeholder address
-
-@available(iOS 13.0, *)
-extension Blockchain {
-    /// Use this address for estimated fee
-    /// DO NOT send any amounts to this address!!
-    /// https://www.notion.so/tangem/Express-Address-for-fee-calculations-53678a61de674eba9af6b166f23175fe
-    var estimationFeeAddress: String {
-        switch self {
-        case .bitcoin:
-            return "bc1qwff8ryfujqukhyjcqghs68j3ph948pwcpx24d8"
-        case .litecoin:
-            return "ltc1qtcl2c7mnld8pk7kjyef9gd2d7hxxz9wqh6ylef"
-        case .stellar:
-            return "GAYK3NFZTAJQCLKGEDBRFQWMMY34MGO3PA6X3RX66XVZTCVE47A4SEK6"
-        case .ethereum,
-                .ethereumPoW,
-                .ethereumFair,
-                .rsk,
-                .bsc,
-                .polygon,
-                .avalanche,
-                .fantom,
-                .arbitrum,
-                .gnosis,
-                .saltPay,
-                .cronos,
-                .telos,
-                .octa,
-                .optimism,
-                .kava:
-            return "0xB62553026e1727cEE953868400C9AA20f96AA6fB"
-        case .ethereumClassic:
-            return "0xB835e3DBc99b7C7B232d3a4b6924C30Cf9813766"
-        case .bitcoinCash:
-            return "bitcoincash:qz42lpts8hsvf00r2wd2et6dandw9n8hmucl67puqg"
-        case .binance:
-            return "bnb1nhzmtee445kyf78a243pxacp85q866gdw74xar"
-        case .cardano:
-            return "addr1q9svm389hgtksjvawpt9nfd9twk4kfckhs23wxrdfspynw9g3emv6k6njzwqvdmtff4426vy2pfg0ngu9t6pr9xmd0ass48agt"
-        case .xrp:
-            return "rqVUVDZoBL1RN1E8sRMJXNy2baQ4p1Ekm"
-        case .ducatus:
-            return ""
-        case .tezos:
-            return "tz1T2BYR5vzmtrub9qhXzjBj7XFkTeXhHJ8R"
-        case .dogecoin:
-            return "DDL1UEGQwdcKxqD1juYhW8AgJaXhEZMY3C"
-        case .solana:
-            return "AEtkrvuucZhDbbdw4HPwad1w3dcuh9r3eVVS3GCDaHYX"
-        case .polkadot:
-            return "1mRpHu2zGPsugVJxrz41FMxopVWSn5s6HMepk3DitrP1cMf"
-        case .kusama:
-            return "Eh1V6Lqzd49RahV9ssZ6LTEvcDkWSnr53D1feYEZpM2Kdv3"
-        case .azero:
-            return "5HqqS1sYV19pP6jGVNyowBcPWvoyaJCQpwgyWDaNQaFNb93g"
-        case .tron:
-            return "TAFqkNfz3escPSdhogPX8nqDY4Rxzxv5v3"
-        case .dash:
-            return "XcN7YdKmSshcFSkL5vjJfnWUhnH2Uxqbm4"
-        case .ton:
-            return "EQCQsD3nAYO4agXyaiqVa3v0CA4K4nTdSRMJZw24ZFRQmBWT"
-        case .kaspa:
-            return "kaspa:qypwj0zh73z276kufh3u9fv8vpjcc8h4tt356hc9pzvnykxxxr32yycwqedqmt0"
-        case .ravencoin:
-            return "RCNTqArDCW57hBHrYKYdKNVs17PbpS9qN6"
-        case .cosmos:
-            return "cosmos158672lrar4kmsp29r0xw9suywp3snsgwe2gpym"
-        case .terraV1, .terraV2:
-            return "terra1frj93e573hlw7qfdln0r5ms74kudnlfvmwv0n5"
-        case .chia:
-            return "xch1zedrwdnv9jdt0an007pgk8wxjhvkveqnrxc003mceu2prt0hxknqtmggeu"
-        case .near:
-            return "e6ca3ee691ed78d47cffd38ecc04f1e80ef07b7908be7fc5fa5f2e5f25a0a3d8"
-        case .decimal:
-            return "d01kcj4xqnwzunua62ns6zqpjd2yruk4fhm9k8xj4"
-        case .veChain:
-            fatalError("\(#function) not implemented yet!")
         }
     }
 }

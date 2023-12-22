@@ -11,6 +11,6 @@ import Foundation
 public struct EthereumApiKeys {
     let infuraProjectId: String
     let nowNodesApiKey: String
-    let getBlockApiKey: String
+    let getBlockApiKeys: [Blockchain: String]
     let quickNodeBscCredentials: BlockchainSdkConfig.QuickNodeCredentials
 }
