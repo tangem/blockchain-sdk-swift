@@ -52,22 +52,7 @@ struct VeChainNetworkProvider {
             .filterSuccessfulStatusCodes()
             .map(T.self)
             .mapError { moyaError -> Swift.Error in
-                switch moyaError {
-                case .jsonMapping,
-                        .objectMapping:
-                    return WalletError.failedToParseNetworkResponse
-                case .imageMapping,
-                        .stringMapping,
-                        .encodableMapping,
-                        .statusCode,
-                        .underlying,
-                        .requestMapping,
-                        .parameterEncoding:
-                    return moyaError
-                @unknown default:
-                    assertionFailure("Unknown error kind received: \(moyaError)")
-                    return moyaError
-                }
+                return moyaError.asWalletError ?? moyaError
             }
             .eraseToAnyPublisher()
     }
