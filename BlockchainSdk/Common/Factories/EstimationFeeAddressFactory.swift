@@ -14,8 +14,6 @@ struct EstimationFeeAddressFactory {
         switch blockchain {
         case .cardano:
             return "addr1q9svm389hgtksjvawpt9nfd9twk4kfckhs23wxrdfspynw9g3emv6k6njzwqvdmtff4426vy2pfg0ngu9t6pr9xmd0ass48agt"
-        case .tron:
-            return "TAFqkNfz3escPSdhogPX8nqDY4Rxzxv5v3"
         case .chia:
             // Can not generate and doesn't depend on destination
             return ""
@@ -65,6 +63,7 @@ struct EstimationFeeAddressFactory {
                 // Cosmos-like
                 .cosmos, .terraV1, .terraV2,
                 // Others
+                .tron,
                 .ton,
                 .near:
             let mnemonic = try Mnemonic()
