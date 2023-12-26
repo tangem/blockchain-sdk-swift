@@ -139,6 +139,24 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
+    func tokenProgramId(contractAddress: String) -> AnyPublisher<PublicKey, Error> {
+        solanaSdk.api.getAccountInfo(account: contractAddress, decodedTo: AccountInfo.self)
+            .tryMap { accountInfo in
+                let tokenProgramIds: [PublicKey] = [
+                    .tokenProgramId,
+                    .token2022ProgramId
+                ]
+                
+                for tokenProgramId in tokenProgramIds {
+                    if tokenProgramId.base58EncodedString == accountInfo.owner {
+                        return tokenProgramId
+                    }
+                }
+                throw BlockchainSdkError.failedToConvertPublicKey
+            }
+            .eraseToAnyPublisher()
+    }
+    
     private func mainAccountInfo(accountId: String) -> AnyPublisher<SolanaMainAccountInfoResponse, Error> {
         solanaSdk.api.getAccountInfo(account: accountId, decodedTo: AccountInfo.self)
             .retry(1)

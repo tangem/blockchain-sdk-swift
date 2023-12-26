@@ -135,23 +135,31 @@ extension SolanaWalletManager: TransactionSender {
     }
     
     private func sendSplToken(_ transaction: Transaction, token: Token, signer: TransactionSigner) -> AnyPublisher<TransactionID, Error> {
-        guard
-            let associatedSourceTokenAccountAddress = associatedTokenAddress(accountAddress: transaction.sourceAddress, mintAddress: token.contractAddress)
-        else {
-            return .anyFail(error: BlockchainSdkError.failedToConvertPublicKey)
-        }
-        
         let decimalAmount = transaction.amount.value * token.decimalValue
         let intAmount = (decimalAmount.rounded() as NSDecimalNumber).uint64Value
         let signer = SolanaTransactionSigner(transactionSigner: signer, walletPublicKey: wallet.publicKey)
-
-        return networkService.sendSplToken(
-            amount: intAmount,
-            sourceTokenAddress: associatedSourceTokenAccountAddress,
-            destinationAddress: transaction.destinationAddress,
-            token: token,
-            signer: signer
-        )
+        
+        return networkService.tokenProgramId(contractAddress: token.contractAddress)
+            .flatMap { [weak self] tokenProgramId  -> AnyPublisher<TransactionID, Error> in
+                guard let self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+                
+                guard
+                    let associatedSourceTokenAccountAddress = associatedTokenAddress(accountAddress: transaction.sourceAddress, mintAddress: token.contractAddress, tokenProgramId: tokenProgramId)
+                else {
+                    return .anyFail(error: BlockchainSdkError.failedToConvertPublicKey)
+                }
+                
+                return networkService.sendSplToken(
+                    amount: intAmount,
+                    sourceTokenAddress: associatedSourceTokenAccountAddress,
+                    destinationAddress: transaction.destinationAddress,
+                    token: token,
+                    signer: signer
+                )
+            }
+            .eraseToAnyPublisher()
     }
     
     private func accountCreationFee(destination: String, amount: Amount) -> AnyPublisher<Decimal, Error> {
@@ -209,11 +217,11 @@ extension SolanaWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
-    private func associatedTokenAddress(accountAddress: String, mintAddress: String) -> String? {
+    private func associatedTokenAddress(accountAddress: String, mintAddress: String, tokenProgramId: PublicKey) -> String? {
         guard
             let accountPublicKey = PublicKey(string: accountAddress),
             let tokenMintPublicKey = PublicKey(string: mintAddress),
-            case let .success(associatedSourceTokenAddress) = PublicKey.associatedTokenAddress(walletAddress: accountPublicKey, tokenMintAddress: tokenMintPublicKey)
+            case let .success(associatedSourceTokenAddress) = PublicKey.associatedTokenAddress(walletAddress: accountPublicKey, tokenMintAddress: tokenMintPublicKey, tokenProgramId: tokenProgramId)
         else {
             return nil
         }
