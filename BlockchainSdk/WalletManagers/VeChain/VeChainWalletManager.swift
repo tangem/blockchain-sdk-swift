@@ -12,6 +12,7 @@ import Combine
 final class VeChainWalletManager: BaseManager {
     private let networkService: VeChainNetworkService
     private let transactionBuilder: VeChainTransactionBuilder
+    private let energyToken: Token
 
     init(
         wallet: Wallet,
@@ -21,6 +22,7 @@ final class VeChainWalletManager: BaseManager {
     ) {
         self.networkService = networkService
         self.transactionBuilder = transactionBuilder
+        self.energyToken = energyToken
         super.init(wallet: wallet)
         cardTokens = [energyToken]
     }
@@ -56,6 +58,32 @@ final class VeChainWalletManager: BaseManager {
         let amounts = accountInfo.tokenAmounts + [accountInfo.amount]
         amounts.forEach { wallet.add(amount: $0) }
     }
+
+    private func makeTransactionForFeeCalculation(amount: Amount, destination: String) -> Transaction {
+        // Doesn't affect fee calculation
+        let dummyBlockInfo = VeChainBlockInfo(
+            blockId: "",
+            blockRef: 1,
+            blockNumber: 1
+        )
+        // Doesn't affect fee calculation
+        let dummyParams = VeChainTransactionParams(
+            publicKey: wallet.publicKey,
+            lastBlockInfo: dummyBlockInfo,
+            nonce: 1
+        )
+        // Doesn't affect fee calculation
+        let dummyFee = Fee(.zeroCoin(for: wallet.blockchain))
+
+        return Transaction(
+            amount: amount,
+            fee: dummyFee,
+            sourceAddress: wallet.address,
+            destinationAddress: destination,
+            changeAddress: wallet.address,
+            params: dummyParams
+        )
+    }
 }
 
 // MARK: - WalletManager protocol conformance
@@ -69,8 +97,29 @@ extension VeChainWalletManager: WalletManager {
         amount: Amount,
         destination: String
     ) -> AnyPublisher<[Fee], Error> {
-        // TODO: Andrey Fedorov - Implement fee calculation (IOS-5238)
-        return .justWithError(output: [.init(.zeroCoin(for: wallet.blockchain))])
+        return Deferred { [weak self] in
+            Future { promise in
+                guard let self = self else {
+                    promise(.failure(WalletError.empty))
+                    return
+                }
+
+                let transaction = self.makeTransactionForFeeCalculation(amount: amount, destination: destination)
+                promise(.success(transaction))
+            }
+        }
+        .withWeakCaptureOf(self)
+        .tryMap { walletManager, transaction in
+            return try walletManager.transactionBuilder.buildInputForFeeCalculation(transaction: transaction)
+        }
+        .withWeakCaptureOf(self)
+        .map { walletManager, input in
+            let feeCalculator = VeChainFeeCalculator(blockchain: walletManager.wallet.blockchain)
+            let fee = feeCalculator.fee(for: input, amountType: .token(value: walletManager.energyToken))
+
+            return [fee]
+        }
+        .eraseToAnyPublisher()
     }
 
     func send(

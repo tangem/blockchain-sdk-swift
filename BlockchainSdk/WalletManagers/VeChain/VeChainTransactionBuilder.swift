@@ -86,6 +86,15 @@ final class VeChainTransactionBuilder {
         return serializedData
     }
 
+    func buildInputForFeeCalculation(transaction: Transaction) throws -> VeChainFeeCalculator.Input {
+        let input = try buildInput(transaction: transaction)
+
+        return VeChainFeeCalculator.Input(
+            gasPriceCoefficient: Int(input.gasPriceCoef),
+            clauses: input.clauses.map(\.asFeeCalculationInput)
+        )
+    }
+
     private func buildInput(transaction: Transaction) throws -> VeChainSigningInput {
         guard let transactionParams = transaction.params as? VeChainTransactionParams else {
             throw WalletError.failedToBuildTx
@@ -93,20 +102,24 @@ final class VeChainTransactionBuilder {
 
         let value = try transferValue(from: transaction)
 
+        let clauses = [
+            VeChainClause.with { input in
+                input.value = value
+                input.to = transaction.destinationAddress
+            }
+        ]
+
+        let feeCalculator = VeChainFeeCalculator(blockchain: blockchain)
+        let gas = feeCalculator.gas(for: clauses.map(\.asFeeCalculationInput))
+
         return VeChainSigningInput.with { input in
             input.chainTag = UInt32(chainTag)
             input.nonce = UInt64(transactionParams.nonce)
             input.blockRef = UInt64(transactionParams.lastBlockInfo.blockRef)
             input.expiration = UInt32(Constants.transactionExpiration)
-            input.gasPriceCoef = 0  // TODO: Andrey Fedorov - Implement fee calculation (IOS-5238)
-            input.gas = 21000   // TODO: Andrey Fedorov - Implement fee calculation (IOS-5238)
-
-            input.clauses = [
-                VeChainClause.with { input in
-                    input.value = value
-                    input.to = transaction.destinationAddress
-                }
-            ]
+            input.gasPriceCoef = 0
+            input.gas = UInt64(gas)
+            input.clauses = clauses
         }
     }
 
@@ -138,6 +151,14 @@ final class VeChainTransactionBuilder {
         }
 
         return unmarshalledSignature.r + unmarshalledSignature.s + Data(recoveryId)
+    }
+}
+
+// MARK: - Convenience extensions
+
+private extension VeChainClause {
+    var asFeeCalculationInput: VeChainFeeCalculator.Clause {
+        return VeChainFeeCalculator.Clause(payload: data)
     }
 }
 
