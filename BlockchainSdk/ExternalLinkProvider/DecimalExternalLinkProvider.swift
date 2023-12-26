@@ -25,9 +25,9 @@ struct DecimalExternalLinkProvider: ExternalLinkProvider {
         self.isTestnet = isTestnet
     }
 
-    func url(address: String, contractAddress: String?) -> URL {
+    func url(address: String, contractAddress: String?) -> URL? {
         let convertedAddress = (try? DecimalBlockchainAddressConverter().convertDecimalBlockchainAddressToDscAddress(addressHex: address)) ?? address
-        return URL(string: "\(baseExplorerUrl)/address/\(convertedAddress)")!
+        return URL(string: "\(baseExplorerUrl)/address/\(convertedAddress)")
     }
 
     func url(transaction hash: String) -> URL? {

@@ -19,19 +19,19 @@ struct VeChainExternalLinkProvider: ExternalLinkProvider {
         self.isTestnet = isTestnet
     }
 
-    func url(address: String, contractAddress: String?) -> URL {
+    func url(address: String, contractAddress: String?) -> URL? {
         if isTestnet {
-            return URL(string: "https://explore-testnet.vechain.org/accounts/\(address)")!
+            return URL(string: "https://explore-testnet.vechain.org/accounts/\(address)")
         }
 
-        return URL(string: "https://explore.vechain.org/accounts/\(address)")!
+        return URL(string: "https://explore.vechain.org/accounts/\(address)")
     }
 
     func url(transaction hash: String) -> URL? {
         if isTestnet {
-            return URL(string: "https://explore-testnet.vechain.org/transactions/\(hash)")!
+            return URL(string: "https://explore-testnet.vechain.org/transactions/\(hash)")
         }
 
-        return URL(string: "https://explore.vechain.org/transactions/\(hash)")!
+        return URL(string: "https://explore.vechain.org/transactions/\(hash)")
     }
 }

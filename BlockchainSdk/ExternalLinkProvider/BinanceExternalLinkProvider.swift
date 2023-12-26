@@ -23,17 +23,17 @@ extension BinanceExternalLinkProvider: ExternalLinkProvider {
     
     func url(transaction hash: String) -> URL? {
         if isTestnet {
-            return URL(string: "https://testnet-explorer.binance.org/tx/\(hash)")!
+            return URL(string: "https://testnet-explorer.binance.org/tx/\(hash)")
         }
         
-        return URL(string: "https://explorer.binance.org/tx/\(hash)")!
+        return URL(string: "https://explorer.binance.org/tx/\(hash)")
     }
     
-    func url(address: String, contractAddress: String?) -> URL {
+    func url(address: String, contractAddress: String?) -> URL? {
         if isTestnet {
-            return URL(string: "https://testnet-explorer.binance.org/address/\(address)")!
+            return URL(string: "https://testnet-explorer.binance.org/address/\(address)")
         }
         
-        return URL(string: "https://explorer.binance.org/address/\(address)")!
+        return URL(string: "https://explorer.binance.org/address/\(address)")
     }
 }

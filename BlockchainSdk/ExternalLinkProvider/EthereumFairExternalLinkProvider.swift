@@ -12,10 +12,10 @@ struct EthereumFairExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? { nil }
     
     func url(transaction hash: String) -> URL? {
-        return URL(string: "https://www.oklink.com/ethf/tx/\(hash)")!
+        return URL(string: "https://www.oklink.com/ethf/tx/\(hash)")
     }
     
-    func url(address: String, contractAddress: String?) -> URL {
-        return URL(string: "https://www.oklink.com/ethf/address/\(address)")!
+    func url(address: String, contractAddress: String?) -> URL? {
+        return URL(string: "https://www.oklink.com/ethf/address/\(address)")
     }
 }

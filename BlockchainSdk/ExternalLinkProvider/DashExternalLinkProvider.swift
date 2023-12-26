@@ -19,16 +19,16 @@ struct DashExternalLinkProvider {
 extension DashExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? {
         // Or another one https://testnet-faucet.dash.org/ - by Dash Core Group
-        return URL(string: "http://faucet.test.dash.crowdnode.io/")!
+        return URL(string: "http://faucet.test.dash.crowdnode.io/")
     }
     
     func url(transaction hash: String) -> URL? {
         let network = isTestnet ? "testnet" : "mainnet"
-        return URL(string: "https://blockexplorer.one/dash/\(network)/tx/\(hash)")!
+        return URL(string: "https://blockexplorer.one/dash/\(network)/tx/\(hash)")
     }
     
-    func url(address: String, contractAddress: String?) -> URL {
+    func url(address: String, contractAddress: String?) -> URL? {
         let network = isTestnet ? "testnet" : "mainnet"
-        return URL(string: "https://blockexplorer.one/dash/\(network)/address/\(address)")!
+        return URL(string: "https://blockexplorer.one/dash/\(network)/address/\(address)")
     }
 }
