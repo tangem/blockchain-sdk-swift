@@ -90,7 +90,7 @@ final class VeChainTransactionBuilder {
         let input = try buildInput(transaction: transaction)
 
         return VeChainFeeCalculator.Input(
-            gasPriceCoefficient: Int(input.gasPriceCoef),
+            gasPriceCoefficient: UInt(input.gasPriceCoef),
             clauses: input.clauses.map(\.asFeeCalculationInput)
         )
     }

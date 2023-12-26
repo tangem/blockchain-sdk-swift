@@ -52,9 +52,7 @@ final class VeChainWalletManager: BaseManager {
             )
     }
 
-    private func updateWallet(
-        accountInfo: VeChainAccountInfo
-    ) {
+    private func updateWallet(accountInfo: VeChainAccountInfo) {
         let amounts = accountInfo.tokenAmounts + [accountInfo.amount]
         amounts.forEach { wallet.add(amount: $0) }
     }

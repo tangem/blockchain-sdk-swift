@@ -367,7 +367,6 @@ public enum Blockchain: Equatable, Hashable {
         }
     }
     
-    // TODO: Andrey Fedorov - Only VTHO token should be supported and used as a fee payment (IOS-5238)
     public var canHandleTokens: Bool {
         switch self {
         case _ where isEvm:
@@ -382,7 +381,6 @@ public enum Blockchain: Equatable, Hashable {
         }
     }
     
-    // TODO: Andrey Fedorov - Are fees for VeChain approximate or not? (IOS-5238)
     public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
         switch self {
         case .arbitrum,

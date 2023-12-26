@@ -54,7 +54,7 @@ extension VeChainFeeCalculator {
     /// Just a shim for the `WalletCore.TW_VeChain_Proto_SigningInput` type 
     /// because we don't want to have `WalletCore` as a dependency here.
     struct Input {
-        let gasPriceCoefficient: Int
+        let gasPriceCoefficient: UInt
         let clauses: [Clause]
     }
 
