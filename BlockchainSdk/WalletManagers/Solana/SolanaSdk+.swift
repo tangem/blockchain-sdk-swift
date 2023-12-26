@@ -30,10 +30,6 @@ extension RPCEndpoint {
     }
 }
 
-public extension PublicKey {
-    static let token2022ProgramId = PublicKey(string: "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb")!
-}
-
 extension Api {
     func getFees(
         commitment: Commitment? = nil
