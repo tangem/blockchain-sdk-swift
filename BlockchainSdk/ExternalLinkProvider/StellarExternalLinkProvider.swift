@@ -23,17 +23,17 @@ extension StellarExternalLinkProvider: ExternalLinkProvider {
     
     func url(transaction hash: String) -> URL? {
         if isTestnet {
-            return URL(string: "https://stellar.expert/explorer/testnet/tx/\(hash)")!
+            return URL(string: "https://stellar.expert/explorer/testnet/tx/\(hash)")
         }
         
-        return URL(string: "https://stellar.expert/explorer/public/tx/\(hash)")!
+        return URL(string: "https://stellar.expert/explorer/public/tx/\(hash)")
     }
     
-    func url(address: String, contractAddress: String?) -> URL {
+    func url(address: String, contractAddress: String?) -> URL? {
         if isTestnet {
-            return URL(string: "https://stellar.expert/explorer/testnet/account/\(address)")!
+            return URL(string: "https://stellar.expert/explorer/testnet/account/\(address)")
         }
         
-        return URL(string: "https://stellar.expert/explorer/public/account/\(address)")!
+        return URL(string: "https://stellar.expert/explorer/public/account/\(address)")
     }
 }

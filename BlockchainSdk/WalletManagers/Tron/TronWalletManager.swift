@@ -63,12 +63,7 @@ class TronWalletManager: BaseManager, WalletManager {
             }
             .eraseToAnyPublisher()
     }
-    
-    func estimatedFee(amount: Amount) -> AnyPublisher<[Fee], Error> {
-        // In the TRON network we received zero fee if calculating on our own address
-        return getFee(amount: amount, destination: "TAFqkNfz3escPSdhogPX8nqDY4Rxzxv5v3")
-    }
-    
+
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         let energyFeePublisher = energyFee(amount: amount, destination: destination)
         

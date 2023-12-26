@@ -59,7 +59,7 @@ public struct Wallet {
     /// Explore URL for a specific address
     /// - Parameter address: If nil, default address will be used
     /// - Returns: URL
-    public func getExploreURL(for address: String? = nil, token: Token? = nil) -> URL {
+    public func getExploreURL(for address: String? = nil, token: Token? = nil) -> URL? {
         let address = address ?? self.address
         let provider = ExternalLinkProviderFactory().makeProvider(for: blockchain)
         return provider.url(address: address, contractAddress: token?.contractAddress)

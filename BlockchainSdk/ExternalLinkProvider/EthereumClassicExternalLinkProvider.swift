@@ -23,17 +23,17 @@ extension EthereumClassicExternalLinkProvider: ExternalLinkProvider {
     
     func url(transaction hash: String) -> URL? {
         if isTestnet {
-            return URL(string: "https://etc-mordor.blockscout.com/tx/\(hash)")!
+            return URL(string: "https://etc-mordor.blockscout.com/tx/\(hash)")
         }
         
-        return URL(string: "https://etc.blockscout.com/tx/\(hash)")!
+        return URL(string: "https://etc.blockscout.com/tx/\(hash)")
     }
 
-    func url(address: String, contractAddress: String?) -> URL {
+    func url(address: String, contractAddress: String?) -> URL? {
         if isTestnet {
-            return URL(string: "https://etc-mordor.blockscout.com/address/\(address)")!
+            return URL(string: "https://etc-mordor.blockscout.com/address/\(address)")
         }
         
-        return URL(string: "https://etc.blockscout.com/address/\(address)")!
+        return URL(string: "https://etc.blockscout.com/address/\(address)")
     }
 }
