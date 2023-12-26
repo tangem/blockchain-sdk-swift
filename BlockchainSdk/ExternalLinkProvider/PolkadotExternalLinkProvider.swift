@@ -23,11 +23,11 @@ extension PolkadotExternalLinkProvider: ExternalLinkProvider {
     
     func url(transaction hash: String) -> URL? {
         let subdomain = isTestnet ? "westend" : "polkadot"
-        return URL(string: "https://\(subdomain).subscan.io/extrinsic/\(hash)")!
+        return URL(string: "https://\(subdomain).subscan.io/extrinsic/\(hash)")
     }
     
-    func url(address: String, contractAddress: String?) -> URL {
+    func url(address: String, contractAddress: String?) -> URL? {
         let subdomain = isTestnet ? "westend" : "polkadot"
-        return URL(string: "https://\(subdomain).subscan.io/account/\(address)")!
+        return URL(string: "https://\(subdomain).subscan.io/account/\(address)")
     }
 }

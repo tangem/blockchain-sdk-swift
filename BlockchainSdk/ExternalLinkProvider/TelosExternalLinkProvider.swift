@@ -23,17 +23,17 @@ extension TelosExternalLinkProvider: ExternalLinkProvider {
     
     func url(transaction hash: String) -> URL? {
         if isTestnet {
-            return URL(string: "https://testnet.teloscan.io/tx/\(hash)")!
+            return URL(string: "https://testnet.teloscan.io/tx/\(hash)")
         }
         
-        return URL(string: "https://teloscan.io/tx/\(hash)")!
+        return URL(string: "https://teloscan.io/tx/\(hash)")
     }
     
-    func url(address: String, contractAddress: String?) -> URL {
+    func url(address: String, contractAddress: String?) -> URL? {
         if isTestnet {
-            return URL(string: "https://testnet.teloscan.io/address/\(address)")!
+            return URL(string: "https://testnet.teloscan.io/address/\(address)")
         }
         
-        return URL(string: "https://teloscan.io/address/\(address)")!
+        return URL(string: "https://teloscan.io/address/\(address)")
     }
 }
