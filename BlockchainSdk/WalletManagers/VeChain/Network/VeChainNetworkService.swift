@@ -25,7 +25,7 @@ final class VeChainNetworkService: MultiNetworkProvider {
         currentProviderIndex = 0
     }
 
-    func getAccountInfo(address: String, energyToken: Token) -> AnyPublisher<VeChainAccountInfo, Error> {
+    func getAccountInfo(address: String) -> AnyPublisher<VeChainAccountInfo, Error> {
         return providerPublisher { provider in
             return provider
                 .getAccountInfo(address: address)
@@ -38,16 +38,8 @@ final class VeChainNetworkService: MultiNetworkProvider {
                     )
 
                     let energyBalance = try networkService.mapDecimalValue(from: accountInfo.energy)
-                    let energyAmount = Amount(
-                        with: networkService.blockchain,
-                        type: .token(value: energyToken),
-                        value: energyBalance / energyToken.decimalValue
-                    )
 
-                    return VeChainAccountInfo(
-                        amount: coinAmount,
-                        tokenAmounts: [energyAmount]
-                    )
+                    return VeChainAccountInfo(amount: coinAmount, energyBalance: energyBalance)
                 }
                 .eraseToAnyPublisher()
         }
