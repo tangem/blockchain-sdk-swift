@@ -66,8 +66,8 @@ class SolanaNetworkService {
             allowUnfundedRecipient: true,
             signer: signer
         )
-        .retry(1)
-        .eraseToAnyPublisher()
+            .retry(1)
+            .eraseToAnyPublisher()
     }
     
     func transactionFee(numberOfSignatures: Int) -> AnyPublisher<Decimal, Error> {
