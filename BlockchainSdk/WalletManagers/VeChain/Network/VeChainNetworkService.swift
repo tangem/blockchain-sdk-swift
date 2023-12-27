@@ -15,15 +15,12 @@ final class VeChainNetworkService: MultiNetworkProvider {
     var currentProviderIndex: Int
 
     private let blockchain: Blockchain
-    private let energyToken: Token
 
     init(
         blockchain: Blockchain,
-        energyToken: Token,
         providers: [VeChainNetworkProvider]
     ) {
         self.blockchain = blockchain
-        self.energyToken = energyToken
         self.providers = providers
         currentProviderIndex = 0
     }
@@ -41,16 +38,8 @@ final class VeChainNetworkService: MultiNetworkProvider {
                     )
 
                     let energyBalance = try networkService.mapDecimalValue(from: accountInfo.energy)
-                    let energyAmount = Amount(
-                        with: networkService.blockchain,
-                        type: .token(value: networkService.energyToken),
-                        value: energyBalance / networkService.energyToken.decimalValue
-                    )
 
-                    return VeChainAccountInfo(
-                        amount: coinAmount,
-                        tokenAmounts: [energyAmount]
-                    )
+                    return VeChainAccountInfo(amount: coinAmount, energyBalance: energyBalance)
                 }
                 .eraseToAnyPublisher()
         }
