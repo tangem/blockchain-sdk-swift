@@ -7,22 +7,21 @@
 //
 
 import Foundation
+import class TangemSdk.Log
 
 struct VeChainFeeCalculator {
     let blockchain: Blockchain
 
-    /// Actual base gas price value, for details visit
-    /// https://docs.vechain.org/introduction-to-vechain/dual-token-economic-model/vethor-vtho#vtho-transaction-cost-formula
-    private static let gasPrice: Decimal = 100_000
-
     func fee(for input: Input, amountType: Amount.AmountType) -> Fee {
         // See https://learn.vechain.energy/Vechain/How-to/Calculate-Gas-Fees/#priority--gaspricecoef for details
-        let gasPriceCoefficient = Decimal(1) + ((Decimal(1) / Decimal(255)) * Decimal(input.gasPriceCoefficient))
+        let gasPriceCoefficient = Decimal(1) + ((Decimal(1) / Decimal(Constants.maxGasPriceCoefficient)) * Decimal(input.gasPriceCoefficient))
         let totalGas = Decimal(gas(for: input.clauses))
-        let value = (totalGas * gasPriceCoefficient) / Self.gasPrice
+        let value = (totalGas * gasPriceCoefficient) / Constants.gasPrice
         let amount = Amount(with: blockchain, type: amountType, value: value)
+        let priority = transactionPriority(from: input.gasPriceCoefficient)
+        let parameters = priority.flatMap(VeChainFeeParams.init)
 
-        return Fee(amount)
+        return Fee(amount, parameters: parameters)
     }
 
     func gas(for clauses: [Clause]) -> Int {
@@ -49,21 +48,63 @@ struct VeChainFeeCalculator {
 
         return baseCost + clausesCost + payloadCost + vmInvocationCost
     }
+
+    func gasPriceCoefficient(from priority: VeChainFeeParams.TransactionPriority) -> UInt {
+        switch priority {
+        case .low:
+            return Constants.lowGasPriceCoefficient
+        case .medium:
+            return Constants.mediumGasPriceCoefficient
+        case .high:
+            return Constants.highGasPriceCoefficient
+        }
+    }
+
+    private func transactionPriority(from gasPriceCoefficient: UInt) -> VeChainFeeParams.TransactionPriority? {
+        switch gasPriceCoefficient {
+        case Constants.lowGasPriceCoefficient:
+            return .low
+        case Constants.mediumGasPriceCoefficient:
+            return .medium
+        case Constants.highGasPriceCoefficient:
+            return .high
+        default:
+            let message = "VeChainFeeCalculator: unknown 'gasPriceCoefficient' value '\(gasPriceCoefficient)' received"
+            assertionFailure(message)
+            Log.error(message)
+            return nil
+        }
+    }
 }
 
 // MARK: - Auxiliary types
 
 extension VeChainFeeCalculator {
-    /// Just a shim for the `WalletCore.TW_VeChain_Proto_SigningInput` type 
+    /// Just a shim for the `WalletCore.TW_VeChain_Proto_SigningInput` type
     /// because we don't want to have `WalletCore` as a dependency here.
     struct Input {
         let gasPriceCoefficient: UInt
         let clauses: [Clause]
     }
 
-    /// Just a shim for the `WalletCore.TW_VeChain_Proto_Clause` type 
+    /// Just a shim for the `WalletCore.TW_VeChain_Proto_Clause` type
     /// because we don't want to have `WalletCore` as a dependency here.
     struct Clause {
         let payload: Data
+    }
+}
+
+// MARK: - Constants
+
+private extension VeChainFeeCalculator {
+    enum Constants {
+        /// Actual base gas price value for the time being, for details visit
+        /// https://docs.vechain.org/introduction-to-vechain/dual-token-economic-model/vethor-vtho#vtho-transaction-cost-formula
+        static let gasPrice: Decimal = 100_000
+
+        static let lowGasPriceCoefficient: UInt = 0
+        static let mediumGasPriceCoefficient: UInt = 127
+        static let highGasPriceCoefficient: UInt = 255
+        static var maxGasPriceCoefficient: UInt { highGasPriceCoefficient }
     }
 }

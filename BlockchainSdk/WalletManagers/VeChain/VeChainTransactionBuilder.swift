@@ -100,16 +100,22 @@ final class VeChainTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
 
-        let clauses = try buildClauses(transaction: transaction)
         let feeCalculator = VeChainFeeCalculator(blockchain: blockchain)
+
+        let clauses = try buildClauses(transaction: transaction)
         let gas = feeCalculator.gas(for: clauses.map(\.asFeeCalculationInput))
+
+        var gasPriceCoefficient: UInt32 = 0
+        if let feeParameters = transaction.fee.parameters as? VeChainFeeParams {
+            gasPriceCoefficient = UInt32(feeCalculator.gasPriceCoefficient(from: feeParameters.priority))
+        }
 
         return VeChainSigningInput.with { input in
             input.chainTag = UInt32(chainTag)
             input.nonce = UInt64(transactionParams.nonce)
             input.blockRef = UInt64(transactionParams.lastBlockInfo.blockRef)
             input.expiration = UInt32(Constants.transactionExpiration)
-            input.gasPriceCoef = 0
+            input.gasPriceCoef = gasPriceCoefficient
             input.gas = UInt64(gas)
             input.clauses = clauses
         }

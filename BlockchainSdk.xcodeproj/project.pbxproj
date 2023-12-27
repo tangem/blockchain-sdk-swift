@@ -241,6 +241,7 @@
 		B63B792F2AD852E80055BD06 /* NEARExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */; };
 		B641EC492AEF5CC100B44CF8 /* NEARAddressUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = B641EC482AEF5CC100B44CF8 /* NEARAddressUtil.swift */; };
 		B64B728C2AEC9C7B005C8C7C /* Lock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64B728B2AEC9C7B005C8C7C /* Lock.swift */; };
+		B6582CD92B3CA9BA00711283 /* VeChainFeeParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6582CD82B3CA9BA00711283 /* VeChainFeeParams.swift */; };
 		B65D2E792AD9B208004DF330 /* NEARNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65D2E782AD9B208004DF330 /* NEARNetworkService.swift */; };
 		B675E95D2B320D52004AF179 /* VeChainNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B675E95C2B320D52004AF179 /* VeChainNetworkParams.swift */; };
 		B675E95F2B320D69004AF179 /* VeChainNetworkResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B675E95E2B320D69004AF179 /* VeChainNetworkResult.swift */; };
@@ -892,6 +893,7 @@
 		B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARExternalLinkProvider.swift; sourceTree = "<group>"; };
 		B641EC482AEF5CC100B44CF8 /* NEARAddressUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARAddressUtil.swift; sourceTree = "<group>"; };
 		B64B728B2AEC9C7B005C8C7C /* Lock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lock.swift; sourceTree = "<group>"; };
+		B6582CD82B3CA9BA00711283 /* VeChainFeeParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainFeeParams.swift; sourceTree = "<group>"; };
 		B65D2E782AD9B208004DF330 /* NEARNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARNetworkService.swift; sourceTree = "<group>"; };
 		B675E95C2B320D52004AF179 /* VeChainNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkParams.swift; sourceTree = "<group>"; };
 		B675E95E2B320D69004AF179 /* VeChainNetworkResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkResult.swift; sourceTree = "<group>"; };
@@ -2167,8 +2169,9 @@
 				B63068CA2B31162900E79053 /* Network */,
 				B63068C02B3102FA00E79053 /* VeChainTransactionBuilder.swift */,
 				B6FC8F3C2B33555700CD55ED /* VeChainTransactionParams.swift */,
-				B63068C82B3115FD00E79053 /* VeChainWalletManager.swift */,
+				B6582CD82B3CA9BA00711283 /* VeChainFeeParams.swift */,
 				B6BE2BA02B361F1C0019D9E0 /* VeChainFeeCalculator.swift */,
+				B63068C82B3115FD00E79053 /* VeChainWalletManager.swift */,
 			);
 			path = VeChain;
 			sourceTree = "<group>";
@@ -3406,6 +3409,7 @@
 				2DDE5BAF29C4F8D200A5B708 /* DashWalletAssembly.swift in Sources */,
 				DA30812F2817C0F900DE41F1 /* Contracts.pb.swift in Sources */,
 				5D0EEE69253EF75200758FDC /* TezosFee.swift in Sources */,
+				B6582CD92B3CA9BA00711283 /* VeChainFeeParams.swift in Sources */,
 				EF3B194E2AA85E950084AA1C /* OptimismExternalLinkProvider.swift in Sources */,
 				5D4B33C223F72C0400C93A84 /* BitcoinCashNetworkService.swift in Sources */,
 				EF3B19302AA85CBF0084AA1C /* XRPExternalLinkProvider.swift in Sources */,
