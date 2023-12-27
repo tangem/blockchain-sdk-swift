@@ -100,15 +100,7 @@ final class VeChainTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
 
-        let value = try transferValue(from: transaction)
-
-        let clauses = [
-            VeChainClause.with { input in
-                input.value = value
-                input.to = transaction.destinationAddress
-            }
-        ]
-
+        let clauses = try buildClauses(transaction: transaction)
         let feeCalculator = VeChainFeeCalculator(blockchain: blockchain)
         let gas = feeCalculator.gas(for: clauses.map(\.asFeeCalculationInput))
 
@@ -123,7 +115,30 @@ final class VeChainTransactionBuilder {
         }
     }
 
-    private func transferValue(from transaction: Transaction) throws -> Data {
+    private func buildClauses(transaction: Transaction) throws -> [VeChainClause] {
+        let value = try transferValue(from: transaction)
+        let destinationAddress = transaction.destinationAddress
+        let clause = try VeChainClause.with { input in
+            switch transaction.amount.type {
+            case .coin:
+                input.value = value.serialize()
+                input.to = destinationAddress
+                input.data = Data()
+            case .token(let token):
+                let tokenMethod = TransferERC20TokenMethod(destination: destinationAddress, amount: value)
+                input.value = Data(0x0)
+                input.to = token.contractAddress
+                input.data = tokenMethod.data
+            case .reserve:
+                // Not supported
+                throw WalletError.failedToBuildTx
+            }
+        }
+
+        return [clause]
+    }
+
+    private func transferValue(from transaction: Transaction) throws -> BigUInt {
         let amount = transaction.amount
         let decimalValue = amount.value * pow(Decimal(10), amount.decimals)
 
@@ -131,7 +146,7 @@ final class VeChainTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
 
-        return bigUIntValue.serialize()
+        return bigUIntValue
     }
 
     /// VeChain is a fork of `Geth Classic`, so it expects the secp256k1's `recid` to have values in the 0...3 range.
