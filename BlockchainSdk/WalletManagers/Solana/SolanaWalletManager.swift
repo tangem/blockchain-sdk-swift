@@ -156,6 +156,7 @@ extension SolanaWalletManager: TransactionSender {
                     sourceTokenAddress: associatedSourceTokenAccountAddress,
                     destinationAddress: transaction.destinationAddress,
                     token: token,
+                    tokenProgramId: tokenProgramId,
                     signer: signer
                 )
             }
