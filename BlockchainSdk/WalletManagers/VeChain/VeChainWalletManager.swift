@@ -12,7 +12,10 @@ import Combine
 final class VeChainWalletManager: BaseManager {
     private let networkService: VeChainNetworkService
     private let transactionBuilder: VeChainTransactionBuilder
-    private let energyToken: Token
+    
+    private var energyToken: Token {
+        return cardTokens.first(where: \.isEnergyToken) ?? Constants.energyToken
+    }
 
     init(
         wallet: Wallet,
@@ -21,7 +24,6 @@ final class VeChainWalletManager: BaseManager {
     ) {
         self.networkService = networkService
         self.transactionBuilder = transactionBuilder
-        self.energyToken = energyToken
         super.init(wallet: wallet)
     }
 
@@ -50,8 +52,37 @@ final class VeChainWalletManager: BaseManager {
             )
     }
 
+    override func addToken(_ token: Token) {
+        let tokenAmount = wallet.amounts[.token(value: Constants.energyToken)]
+
+        super.addToken(token)
+
+        // When the real "VeThor" energy token is being added to the token list,
+        // we're trying to migrate the balance from the fallback energy token to the real one
+        if token.isEnergyToken, let energyTokenAmount = tokenAmount {
+            wallet.remove(token: Constants.energyToken)
+            wallet.add(tokenValue: energyTokenAmount.value, for: token)
+        }
+    }
+
+    override func removeToken(_ token: Token) {
+        let tokenAmount = wallet.amounts[.token(value: token)]
+
+        super.removeToken(token)
+
+        // When the real "VeThor" energy token is being deleted from the token list,
+        // we're trying to migrate the balance from the real energy token to the fallback one
+        if token.isEnergyToken, let energyTokenAmount = tokenAmount {
+            wallet.remove(token: token)
+            wallet.add(tokenValue: energyTokenAmount.value, for: Constants.energyToken)
+        }
+    }
+
     private func updateWallet(accountInfo: VeChainAccountInfo) {
-        let amounts = accountInfo.tokenAmounts + [accountInfo.amount]
+        let amounts = [
+            accountInfo.amount,
+            accountInfo.energyAmount(with: energyToken),
+        ]
         amounts.forEach { wallet.add(amount: $0) }
     }
 
@@ -162,5 +193,32 @@ extension VeChainWalletManager: WalletManager {
                 return walletManager.networkService.send(transaction: transaction)
             }
             .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - Constants
+
+private extension VeChainWalletManager {
+    enum Constants {
+        /// A local energy token ("VeThor"), used as a fallback for fee calculation when
+        /// the user doesn't have a real "VeThor" token added to the token list.
+        ///
+        /// See https://docs.vechain.org/introduction-to-vechain/dual-token-economic-model/vethor-vtho for details and specs.
+        static let energyToken = Token(
+            name: "VeThor",
+            symbol: "VTHO",
+            contractAddress: "0x0000000000000000000000000000456e65726779",
+            decimalCount: 18
+        )
+    }
+}
+
+// MARK: - Convenience extensions
+
+private extension Token {
+    var isEnergyToken: Bool {
+        let energyTokenContractAddress = VeChainWalletManager.Constants.energyToken.contractAddress
+
+        return contractAddress.caseInsensitiveCompare(energyTokenContractAddress) == .orderedSame
     }
 }
