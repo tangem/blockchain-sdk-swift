@@ -56,16 +56,23 @@ class SolanaNetworkService {
     }
     
     func sendSplToken(amount: UInt64, sourceTokenAddress: String, destinationAddress: String, token: Token, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
-        solanaSdk.action.sendSPLTokens(
-            mintAddress: token.contractAddress,
-            decimals: Decimals(token.decimalCount),
-            from: sourceTokenAddress,
-            to: destinationAddress,
-            amount: amount,
-            allowUnfundedRecipient: true,
-            signer: signer
-        )
-            .retry(1)
+        tokenProgramId(contractAddress: token.contractAddress)
+            .flatMap { [weak self] tokenProgramId -> AnyPublisher<TransactionID, Error> in
+                guard let self else { return .emptyFail }
+                
+                return solanaSdk.action.sendSPLTokens(
+                    mintAddress: token.contractAddress,
+                    tokenProgramId: tokenProgramId,
+                    decimals: Decimals(token.decimalCount),
+                    from: sourceTokenAddress,
+                    to: destinationAddress,
+                    amount: amount,
+                    allowUnfundedRecipient: true,
+                    signer: signer
+                )
+                .retry(1)
+                .eraseToAnyPublisher()
+            }
             .eraseToAnyPublisher()
     }
     

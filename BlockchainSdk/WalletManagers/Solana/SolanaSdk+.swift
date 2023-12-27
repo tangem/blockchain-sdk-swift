@@ -215,6 +215,7 @@ extension Action {
     
     func sendSPLTokens(
         mintAddress: String,
+        tokenProgramId: PublicKey,
         decimals: Decimals,
         from fromPublicKey: String,
         to destinationAddress: String,
@@ -231,6 +232,7 @@ extension Action {
                 
                 self.sendSPLTokens(
                     mintAddress: mintAddress,
+                    tokenProgramId: tokenProgramId,
                     decimals: decimals,
                     from: fromPublicKey,
                     to: destinationAddress,
