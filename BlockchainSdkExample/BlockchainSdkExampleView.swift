@@ -28,7 +28,7 @@ struct BlockchainSdkExampleView: View {
                                 .tag(blockchain.1)
                         }
                     }
-                    .disabled(model.card == nil)
+                    .disabled(model.cardWallets.isEmpty)
                     .modifier(PickerStyleModifier())
                     
                     if model.blockchainsWithCurveSelection.contains(model.blockchainName) {
