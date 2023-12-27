@@ -31,6 +31,7 @@ struct VeChainFeeCalculator {
         // - Each clause in the transaction incurs a cost of 16000.
         // - Zero bytes in the transaction cost 4 each.
         // - Non-zero bytes in the transaction cost 68 each.
+        // - Virtual machine invocation costs 15000.
         //
         // See https://learn.vechain.energy/Vechain/How-to/Calculate-Gas-Fees/#intrinsic-gas--bytes-submitted for details
 
@@ -44,7 +45,9 @@ struct VeChainFeeCalculator {
             }
         }
 
-        return baseCost + clausesCost + payloadCost
+        let vmInvocationCost = payloadCost > 0 ? 15000 : 0
+
+        return baseCost + clausesCost + payloadCost + vmInvocationCost
     }
 }
 
