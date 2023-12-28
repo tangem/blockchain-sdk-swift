@@ -60,14 +60,14 @@ final class SolanaEd25519Slip0010Tests: XCTestCase {
     private let network: RPCEndpoint = .devnetSolana
     private let walletPubKey = Data(hex: "B148CC30B144E8F214AE5754C753C40A9BF2A3359DB4246E03C6A2F61A82C282")
     private let address = "Cw3YcfqzRSa7xT7ecpR5E4FKDQU6aaxz5cWje366CZbf"
-    private let blockchain = Blockchain.solana(curve: .ed25519_slip0010, testnet: false)
+    private let blockchain = Blockchain.solana(curve: .ed25519_slip0010, testnet: true)
     
     private let coinSigner = CoinSigner()
     private let tokenSigner = TokenSigner()
     
     override func setUp() {
         super.setUp()
-        networkingRouter = .init(endpoints: [.devnetSolana, .devnetGenesysGo, .testnetSolana])
+        networkingRouter = .init(endpoints: [.devnetSolana, .devnetGenesysGo])
         solanaSdk = .init(router: networkingRouter, accountStorage: SolanaDummyAccountStorage())
         let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
 
@@ -97,9 +97,9 @@ final class SolanaEd25519Slip0010Tests: XCTestCase {
     
     func testTokenTransactionSize() {
         let type: Amount.AmountType = .token(
-            value: .init(name: "Solanax",
-                         symbol: "SOLD",
-                         contractAddress: "5v6tZ1SiAi7G8Qg4rBF1ZdAn4cn6aeQtefewMr1NLy61",
+            value: .init(name: "My Token",
+                         symbol: "MTK",
+                         contractAddress: "BHZxQcNpty7W8EVT2kxWREZ9QxNDigXrjRb7SWTAt9YK",
                          decimalCount: 9)
         )
         let transaction = Transaction(
