@@ -394,7 +394,8 @@ public enum Blockchain: Equatable, Hashable {
                 .gnosis,
                 .avalanche,
                 .ethereumPoW,
-                .cronos:
+                .cronos,
+                .veChain:
             if case .token = amountType {
                 return true
             }
