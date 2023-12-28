@@ -46,7 +46,19 @@ struct VeChainFeeCalculator {
 
         let vmInvocationCost = payloadCost > 0 ? 15000 : 0
 
-        return baseCost + clausesCost + payloadCost + vmInvocationCost
+        let totalCost = baseCost + clausesCost + payloadCost + vmInvocationCost
+
+        // The official VeChain wallet adds more gas than the calculated amount (roughly 30% more gas) 
+        // for transactions with virtual machine invocation (e.g. token transfers)
+        //
+        // Replicating this behavior here just to be on the safe side
+        if vmInvocationCost > 0 {
+            let additionalCost = Decimal(totalCost) * Constants.additionalCostMultiplier
+
+            return totalCost + additionalCost.roundedDecimalNumber.intValue
+        }
+
+        return totalCost
     }
 
     func gasPriceCoefficient(from priority: VeChainFeeParams.TransactionPriority) -> UInt {
@@ -101,6 +113,8 @@ private extension VeChainFeeCalculator {
         /// Actual base gas price value for the time being, for details visit
         /// https://docs.vechain.org/introduction-to-vechain/dual-token-economic-model/vethor-vtho#vtho-transaction-cost-formula
         static let gasPrice: Decimal = 100_000
+
+        static let additionalCostMultiplier: Decimal = 1.0 / 3.0
 
         static let lowGasPriceCoefficient: UInt = 0
         static let mediumGasPriceCoefficient: UInt = 127
