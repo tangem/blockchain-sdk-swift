@@ -639,7 +639,11 @@ extension Blockchain {
         
         func makeGetBlockJsonRpcProvider() -> URL {
             if let jsonRpcKey = getBlockApiKeys[self] {
-                return URL(string: "https://go.getblock.io/\(jsonRpcKey)")!
+                if case .avalanche = self {
+                    return URL(string: "https://go.getblock.io/\(jsonRpcKey)/ext/bc/C/rpc")!
+                } else {
+                    return URL(string: "https://go.getblock.io/\(jsonRpcKey)")!
+                }
             } else {
                 assertionFailure("getJsonRpcEndpoints -> Not found GetBlock jsonRpc key for blockchain \(displayName)")
                 Log.network("Not found jsonRpc key GetBlock API for blockchaib \(displayName)")
