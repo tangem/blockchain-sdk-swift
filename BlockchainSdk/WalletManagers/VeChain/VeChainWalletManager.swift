@@ -33,8 +33,20 @@ final class VeChainWalletManager: BaseManager {
     }
 
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        cancellable = networkService
+        let accountInfoPublisher = networkService
             .getAccountInfo(address: wallet.address)
+
+        let transactionStatusesPublisher = wallet
+            .pendingTransactions
+            .publisher
+            .setFailureType(to: Error.self)
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, transaction in
+                return walletManager.networkService.getTransactionInfo(transactionHash: transaction.hash)
+            }
+            .collect()
+
+        cancellable = Publishers.CombineLatest(accountInfoPublisher, transactionStatusesPublisher)
             .withWeakCaptureOf(self)
             .sink(
                 receiveCompletion: { [weak self] result in
@@ -46,8 +58,9 @@ final class VeChainWalletManager: BaseManager {
                         completion(.success(()))
                     }
                 },
-                receiveValue: { walletManager, accountInfo in
-                    walletManager.updateWallet(accountInfo: accountInfo)
+                receiveValue: { walletManager, input in
+                    let (accountInfo, transactionsInfo) = input
+                    walletManager.updateWallet(accountInfo: accountInfo, transactionsInfo: transactionsInfo)
                 }
             )
     }
@@ -78,12 +91,24 @@ final class VeChainWalletManager: BaseManager {
         }
     }
 
-    private func updateWallet(accountInfo: VeChainAccountInfo) {
+    private func updateWallet(accountInfo: VeChainAccountInfo, transactionsInfo: [VeChainTransactionInfo]) {
         let amounts = [
             accountInfo.amount,
             accountInfo.energyAmount(with: energyToken),
         ]
         amounts.forEach { wallet.add(amount: $0) }
+
+        let completedTransactionHashes = transactionsInfo
+            .compactMap(\.transactionHash)
+            .toSet()
+        wallet.removePendingTransaction(where: completedTransactionHashes.contains(_:))
+    }
+
+    private func updateWalletWithPendingTransaction(_ transaction: Transaction, sendResult: TransactionSendResult) {
+        let mapper = PendingTransactionRecordMapper()
+        let pendingTransaction = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: sendResult.hash)
+
+        wallet.addPendingTransaction(pendingTransaction)
     }
 
     private func makeTransactionForFeeCalculation(
@@ -202,6 +227,13 @@ extension VeChainWalletManager: WalletManager {
             .flatMap { walletManager, transaction in
                 return walletManager.networkService.send(transaction: transaction)
             }
+            .withWeakCaptureOf(self)
+            .handleEvents(
+                receiveOutput: { walletManager, sendResult in
+                    walletManager.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)
+                }
+            )
+            .map(\.1)
             .eraseToAnyPublisher()
     }
 }
