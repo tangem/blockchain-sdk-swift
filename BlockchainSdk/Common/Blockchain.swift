@@ -520,11 +520,16 @@ extension Blockchain {
                     URL(string: "https://api.avax-test.network/ext/bc/C/rpc")!,
                 ]
             } else {
-                return [
+                var rpcEndpoits: [URL] = [
                     URL(string: "https://api.avax.network/ext/bc/C/rpc")!,
                     URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)/ext/bc/C/rpc")!,
-                    makeGetBlockJsonRpcProvider(postfixUrl: "/ext/bc/C/rpc"),
                 ]
+                
+                if let jsonRpcKey = getBlockApiKeys[self] {
+                    rpcEndpoits.append(URL(string: "https://go.getblock.io/\(jsonRpcKey)/ext/bc/C/rpc")!)
+                }
+                
+                return rpcEndpoits
             }
         case .fantom:
             if isTestnet {
@@ -637,9 +642,9 @@ extension Blockchain {
         
         // MARK: - Private Implementation
         
-        func makeGetBlockJsonRpcProvider(postfixUrl: String? = nil) -> URL {
+        func makeGetBlockJsonRpcProvider() -> URL {
             if let jsonRpcKey = getBlockApiKeys[self] {
-                return URL(string: "https://go.getblock.io/\(jsonRpcKey)\(postfixUrl ?? "")")!
+                return URL(string: "https://go.getblock.io/\(jsonRpcKey)")!
             } else {
                 assertionFailure("getJsonRpcEndpoints -> Not found GetBlock jsonRpc key for blockchain \(displayName)")
                 Log.network("Not found jsonRpc key GetBlock API for blockchaib \(displayName)")
