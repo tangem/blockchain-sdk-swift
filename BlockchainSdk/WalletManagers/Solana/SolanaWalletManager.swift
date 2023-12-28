@@ -146,12 +146,12 @@ extension SolanaWalletManager: TransactionSender {
                 }
                 
                 guard
-                    let associatedSourceTokenAccountAddress = associatedTokenAddress(accountAddress: transaction.sourceAddress, mintAddress: token.contractAddress, tokenProgramId: tokenProgramId)
+                    let associatedSourceTokenAccountAddress = self.associatedTokenAddress(accountAddress: transaction.sourceAddress, mintAddress: token.contractAddress, tokenProgramId: tokenProgramId)
                 else {
                     return .anyFail(error: BlockchainSdkError.failedToConvertPublicKey)
                 }
                 
-                return networkService.sendSplToken(
+                return self.networkService.sendSplToken(
                     amount: intAmount,
                     sourceTokenAddress: associatedSourceTokenAccountAddress,
                     destinationAddress: transaction.destinationAddress,
