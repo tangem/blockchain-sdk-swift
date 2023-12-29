@@ -532,11 +532,16 @@ extension Blockchain {
                     URL(string: "https://api.avax-test.network/ext/bc/C/rpc")!,
                 ]
             } else {
-                return [
+                var rpcEndpoits: [URL] = [
                     URL(string: "https://api.avax.network/ext/bc/C/rpc")!,
                     URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)/ext/bc/C/rpc")!,
-                    makeGetBlockJsonRpcProvider(),
                 ]
+                
+                if let jsonRpcKey = getBlockApiKeys[self] {
+                    rpcEndpoits.append(URL(string: "https://go.getblock.io/\(jsonRpcKey)/ext/bc/C/rpc")!)
+                }
+                
+                return rpcEndpoits
             }
         case .fantom:
             if isTestnet {

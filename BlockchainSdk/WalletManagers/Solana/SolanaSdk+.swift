@@ -30,10 +30,6 @@ extension RPCEndpoint {
     }
 }
 
-public extension PublicKey {
-    static let token2022ProgramId = PublicKey(string: "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb")!
-}
-
 extension Api {
     func getFees(
         commitment: Commitment? = nil
@@ -219,6 +215,7 @@ extension Action {
     
     func sendSPLTokens(
         mintAddress: String,
+        tokenProgramId: PublicKey,
         decimals: Decimals,
         from fromPublicKey: String,
         to destinationAddress: String,
@@ -235,6 +232,7 @@ extension Action {
                 
                 self.sendSPLTokens(
                     mintAddress: mintAddress,
+                    tokenProgramId: tokenProgramId,
                     decimals: decimals,
                     from: fromPublicKey,
                     to: destinationAddress,
