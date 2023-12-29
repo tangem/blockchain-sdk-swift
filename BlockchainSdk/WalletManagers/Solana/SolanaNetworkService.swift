@@ -55,9 +55,10 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func sendSplToken(amount: UInt64, sourceTokenAddress: String, destinationAddress: String, token: Token, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
+    func sendSplToken(amount: UInt64, sourceTokenAddress: String, destinationAddress: String, token: Token, tokenProgramId: PublicKey, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
         solanaSdk.action.sendSPLTokens(
             mintAddress: token.contractAddress,
+            tokenProgramId: tokenProgramId,
             decimals: Decimals(token.decimalCount),
             from: sourceTokenAddress,
             to: destinationAddress,
@@ -135,6 +136,24 @@ class SolanaNetworkService {
                 }
                 
                 return Decimal(balanceInLamports) / self.blockchain.decimalValue
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func tokenProgramId(contractAddress: String) -> AnyPublisher<PublicKey, Error> {
+        solanaSdk.api.getAccountInfo(account: contractAddress, decodedTo: AccountInfo.self)
+            .tryMap { accountInfo in
+                let tokenProgramIds: [PublicKey] = [
+                    .tokenProgramId,
+                    .token2022ProgramId
+                ]
+                
+                for tokenProgramId in tokenProgramIds {
+                    if tokenProgramId.base58EncodedString == accountInfo.owner {
+                        return tokenProgramId
+                    }
+                }
+                throw BlockchainSdkError.failedToConvertPublicKey
             }
             .eraseToAnyPublisher()
     }
