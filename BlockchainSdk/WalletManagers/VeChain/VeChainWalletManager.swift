@@ -176,7 +176,7 @@ extension VeChainWalletManager: WalletManager {
         }
         .withWeakCaptureOf(self)
         .map { walletManager, inputs in
-            let feeCalculator = VeChainFeeCalculator(blockchain: walletManager.wallet.blockchain)
+            let feeCalculator = VeChainFeeCalculator(isTestnet: walletManager.wallet.blockchain.isTestnet)
             let amountType: Amount.AmountType = .token(value: walletManager.energyToken)
 
             return inputs.map { feeCalculator.fee(for: $0, amountType: amountType) }

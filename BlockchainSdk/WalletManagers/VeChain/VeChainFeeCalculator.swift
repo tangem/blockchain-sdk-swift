@@ -10,14 +10,18 @@ import Foundation
 import class TangemSdk.Log
 
 struct VeChainFeeCalculator {
-    let blockchain: Blockchain
+    private let isTestnet: Bool
+
+    init(isTestnet: Bool) {
+        self.isTestnet = isTestnet
+    }
 
     func fee(for input: Input, amountType: Amount.AmountType) -> Fee {
         // See https://learn.vechain.energy/Vechain/How-to/Calculate-Gas-Fees/#priority--gaspricecoef for details
         let gasPriceCoefficient = Decimal(1) + ((Decimal(1) / Decimal(Constants.maxGasPriceCoefficient)) * Decimal(input.gasPriceCoefficient))
         let totalGas = Decimal(gas(for: input.clauses))
         let value = (totalGas * gasPriceCoefficient) / Constants.gasPrice
-        let amount = Amount(with: blockchain, type: amountType, value: value)
+        let amount = Amount(with: .veChain(testnet: isTestnet), type: amountType, value: value)
         let priority = transactionPriority(from: input.gasPriceCoefficient)
         let parameters = priority.flatMap(VeChainFeeParams.init)
 

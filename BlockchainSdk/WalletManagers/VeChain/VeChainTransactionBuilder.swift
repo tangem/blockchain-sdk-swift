@@ -12,19 +12,17 @@ import WalletCore
 import BigInt
 
 final class VeChainTransactionBuilder {
-    private let blockchain: Blockchain
+    private let isTestnet: Bool
 
     private var coinType: CoinType { .veChain }
 
     /// The last byte of the genesis block ID which is used to identify a blockchain to prevent the cross-chain replay attack.
     /// Mainnet: https://explore.vechain.org/blocks/0x00000000851caf3cfdb6e899cf5958bfb1ac3413d346d43539627e6be7ec1b4a
     /// Testnet: https://explore-testnet.vechain.org/blocks/0x000000000b2bce3c70bc649a02749e8687721b09ed2e15997f466536b20bb127
-    private var chainTag: Int {
-        return blockchain.isTestnet ? 0x27 : 0x4a
-    }
+    private var chainTag: Int { isTestnet ? 0x27 : 0x4a }
 
-    init(blockchain: Blockchain) {
-        self.blockchain = blockchain
+    init(isTestnet: Bool) {
+        self.isTestnet = isTestnet
     }
 
     func buildForSign(transaction: Transaction) throws -> Data {
@@ -100,7 +98,7 @@ final class VeChainTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
 
-        let feeCalculator = VeChainFeeCalculator(blockchain: blockchain)
+        let feeCalculator = VeChainFeeCalculator(isTestnet: isTestnet)
 
         let clauses = try buildClauses(transaction: transaction)
         let gas = feeCalculator.gas(for: clauses.map(\.asFeeCalculationInput))
