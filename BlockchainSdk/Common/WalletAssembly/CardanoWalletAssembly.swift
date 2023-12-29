@@ -19,7 +19,7 @@ struct CardanoWalletAssembly: WalletManagerAssembly {
             let service = CardanoNetworkService(providers: [
                 RosettaNetworkProvider(
                     rosettaUrl: .getBlockRosetta(
-                        apiKey: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .rosseta)
+                        apiKey: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .rosetta)
                     ),
                     configuration: input.networkConfig,
                     cardanoResponseMapper: cardanoResponseMapper
