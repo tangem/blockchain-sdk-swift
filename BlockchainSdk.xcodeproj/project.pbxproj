@@ -231,6 +231,7 @@
 		B62344992AF26C0F00B82306 /* BigUInt+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62344982AF26C0F00B82306 /* BigUInt+.swift */; };
 		B626D11F2AF02C40003A8929 /* TWPublicKeyType+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B626D11E2AF02C40003A8929 /* TWPublicKeyType+.swift */; };
 		B62A12062AE308DA0080BAEC /* NEARTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62A12052AE308DA0080BAEC /* NEARTransactionParams.swift */; };
+		B62BCBAC2B3D978F007494CF /* VeChainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62BCBAB2B3D978F007494CF /* VeChainTests.swift */; };
 		B63068BE2B3102A900E79053 /* VeChainExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068BD2B3102A900E79053 /* VeChainExternalLinkProvider.swift */; };
 		B63068C22B3102FA00E79053 /* VeChainTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068C02B3102FA00E79053 /* VeChainTransactionBuilder.swift */; };
 		B63068C72B31050900E79053 /* VeChainWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068C62B31050900E79053 /* VeChainWalletAssembly.swift */; };
@@ -883,6 +884,7 @@
 		B62344982AF26C0F00B82306 /* BigUInt+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "BigUInt+.swift"; sourceTree = "<group>"; };
 		B626D11E2AF02C40003A8929 /* TWPublicKeyType+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWPublicKeyType+.swift"; sourceTree = "<group>"; };
 		B62A12052AE308DA0080BAEC /* NEARTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARTransactionParams.swift; sourceTree = "<group>"; };
+		B62BCBAB2B3D978F007494CF /* VeChainTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainTests.swift; sourceTree = "<group>"; };
 		B63068BD2B3102A900E79053 /* VeChainExternalLinkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VeChainExternalLinkProvider.swift; sourceTree = "<group>"; };
 		B63068C02B3102FA00E79053 /* VeChainTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VeChainTransactionBuilder.swift; sourceTree = "<group>"; };
 		B63068C62B31050900E79053 /* VeChainWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainWalletAssembly.swift; sourceTree = "<group>"; };
@@ -1534,6 +1536,7 @@
 				EF32FEE12A3B625E002ED43F /* Cardano */,
 				2D78F40D2A5CA54500962CCA /* Chia */,
 				B63E7DBA2AE9FD91000324CB /* NEAR */,
+				B62BCBAA2B3D973C007494CF /* VeChain */,
 				5D14E47E2397B80F00C15FC8 /* Info.plist */,
 			);
 			path = BlockchainSdkTests;
@@ -2161,6 +2164,14 @@
 				B6B0835B2AE6BED40099D6F8 /* NullValue.swift */,
 			);
 			path = DTO;
+			sourceTree = "<group>";
+		};
+		B62BCBAA2B3D973C007494CF /* VeChain */ = {
+			isa = PBXGroup;
+			children = (
+				B62BCBAB2B3D978F007494CF /* VeChainTests.swift */,
+			);
+			path = VeChain;
 			sourceTree = "<group>";
 		};
 		B63068BF2B3102D400E79053 /* VeChain */ = {
@@ -3808,6 +3819,7 @@
 				EFCD1D192A586BEF009C8624 /* CardanoTests.swift in Sources */,
 				DC173AEC2A5D42EE0088F79E /* XRPTests.swift in Sources */,
 				2D535E872A0CC5FA0081EB76 /* AddressesValidationTests.swift in Sources */,
+				B62BCBAC2B3D978F007494CF /* VeChainTests.swift in Sources */,
 				EF0DA78928523FAC0081092A /* LitecoinTests.swift in Sources */,
 				EF0DA78828523FAC0081092A /* BitcoinTests.swift in Sources */,
 				2D535E862A0CC5FA0081EB76 /* BlockchainCodingKeyTests.swift in Sources */,
