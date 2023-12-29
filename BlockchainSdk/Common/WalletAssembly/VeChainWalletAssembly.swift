@@ -13,7 +13,7 @@ struct VeChainWalletAssembly: WalletManagerAssembly {
         let blockchain = input.blockchain
         let sdkConfig = input.blockchainSdkConfig
         let networkConfig = input.networkConfig
-        let baseURLProvider = VeChainBaseURLProvider(blockchain: blockchain, sdkConfig: sdkConfig)
+        let baseURLProvider = VeChainBaseURLProvider(isTestnet: blockchain.isTestnet, sdkConfig: sdkConfig)
         let baseURLs = baseURLProvider.baseURLs()
         let networkProviders = baseURLs.map { VeChainNetworkProvider(baseURL: $0, configuration: networkConfig) }
 
@@ -22,7 +22,7 @@ struct VeChainWalletAssembly: WalletManagerAssembly {
             providers: networkProviders
         )
 
-        let transactionBuilder = VeChainTransactionBuilder(blockchain: blockchain)
+        let transactionBuilder = VeChainTransactionBuilder(isTestnet: blockchain.isTestnet)
 
         return VeChainWalletManager(
             wallet: input.wallet,

@@ -176,7 +176,7 @@ extension VeChainWalletManager: WalletManager {
         }
         .withWeakCaptureOf(self)
         .map { walletManager, inputs in
-            let feeCalculator = VeChainFeeCalculator(blockchain: walletManager.wallet.blockchain)
+            let feeCalculator = VeChainFeeCalculator(isTestnet: walletManager.wallet.blockchain.isTestnet)
             let amountType: Amount.AmountType = .token(value: walletManager.energyToken)
 
             return inputs.map { feeCalculator.fee(for: $0, amountType: amountType) }
@@ -250,7 +250,8 @@ private extension VeChainWalletManager {
             name: "VeThor",
             symbol: "VTHO",
             contractAddress: "0x0000000000000000000000000000456e65726779",
-            decimalCount: 18
+            decimalCount: 18,
+            id: "vethor-token"
         )
     }
 }
