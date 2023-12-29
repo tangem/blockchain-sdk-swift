@@ -250,7 +250,8 @@ private extension VeChainWalletManager {
             name: "VeThor",
             symbol: "VTHO",
             contractAddress: "0x0000000000000000000000000000456e65726779",
-            decimalCount: 18
+            decimalCount: 18,
+            id: "vethor-token"
         )
     }
 }
