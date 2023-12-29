@@ -903,30 +903,6 @@ extension Blockchain {
     }
 }
 
-// MARK: - Token transaction fee currency
-
-extension Blockchain {
-    /// Some networks (e.g. VeChain) require transaction fees to be paid in some token rather than the main network currency.
-    public var coinTransactionFeePaidInNetworkCurrency: Bool {
-        switch self {
-        case .veChain:
-            return false
-        default:
-            return true
-        }
-    }
-
-    /// Some networks (e.g. Terra) allow the fees to be paid in tokens themselves when sending tokens.
-    public var tokenTransactionFeePaidInNetworkCurrency: Bool {
-        switch self {
-        case .terraV1:
-            return false
-        default:
-            return true
-        }
-    }
-}
-
 // MARK: - Assembly type
 
 @available(iOS 13.0, *)
