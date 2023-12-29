@@ -41,8 +41,11 @@ final class VeChainTests: XCTestCase {
         sizeTester = nil
     }
 
+    // MARK: - Building & signing
+
     // VeChain VET coin transfer transaction:
     // https://explore-testnet.vechain.org/transactions/0x4c596f671d3b48a8a973494699875feb9d4ed8304bfde5ec1547620a4320d9dc
+    //
     // Made using VeChain Thor Devkit (SDK) for Python 3, https://github.com/vechain/thor-devkit.py
     func testSigningCoinTransaction() throws {
         // Private key for the "tiny escape drive pupil flavor endless love walk gadget match filter luxury" mnemonic
@@ -59,7 +62,7 @@ final class VeChainTests: XCTestCase {
 
         let destinationAddress = "0x207F32eB8d9E6f5178336f86c2ebc3E1A4f87211"
         let value = try XCTUnwrap(Decimal(string: "1.2"))
-        let amount = Amount(with: blockchain, value: value)
+        let amount = Amount(with: blockchain, type: .coin, value: value)
 
         let feeValue: Amount = .zeroCoin(for: blockchain)   // Doesn't affect fee calculation
         let feeParams = VeChainFeeParams(priority: .medium)
@@ -112,6 +115,7 @@ F87B27880109263B18B36F3C81B4E0DF94207F32EB8D9E6F5178336F86C2EBC3E1A4F872118810A7
 
     // VeChain VTHO token transfer transaction:
     // https://explore-testnet.vechain.org/transactions/0x5cf9d03b97460768b9d86718fbec03f09ed0e41467b7df4eaa68f1115abd4cf9
+    //
     // Made using VeChain Thor Devkit (SDK) for Python 3, https://github.com/vechain/thor-devkit.py
     func testSigningTokenTransaction() throws {
         // Private key for the "tiny escape drive pupil flavor endless love walk gadget match filter luxury" mnemonic
@@ -180,6 +184,8 @@ F8BB278801092BDF0FAF64B081B4F85EF85C940000000000000000000000000000456E6572677980
         XCTAssertEqual(encodedTransaction, expectedEncodedTransaction)
     }
 
+    // MARK: - Gas
+
     func testGasPriceCoefficientMapping() {
         XCTAssertEqual(feeCalculator.gasPriceCoefficient(from: .low), 0)
         XCTAssertEqual(feeCalculator.gasPriceCoefficient(from: .medium), 127)
@@ -229,16 +235,6 @@ F8BB278801092BDF0FAF64B081B4F85EF85C940000000000000000000000000000456E6572677980
         let payload1 = Data(hexString: "67607f6add6367f2df2f004e0092010bea2f4486ac9600523fcb74f96861b5ec11e84535000025fbc4326b00103fbeaafe00")
         // 4 zero bytes, 46 non-zero bytes
         let payload2 = Data(hexString: "3fd6c5020004339119000bf2465bea81ca9fe20a3c5943be46fde6e00ccd9659f2a4a003df003e9fd60ab3a446c6c0002a2a")
-        let clauseRaw1 = VeChainClause.with { input in
-            input.to = "0x207F32eB8d9E6f5178336f86c2ebc3E1A4f87211"
-            input.value = Data(0x0)
-            input.data = payload1
-        }
-        let clauseRaw2 = VeChainClause.with { input in
-            input.to = "0xecDA0279640ad26749061eB467155943d1BEd821"
-            input.value = Data(0x0)
-            input.data = payload1
-        }
         let clauses = [
             payload1,
             payload2
@@ -248,12 +244,15 @@ F8BB278801092BDF0FAF64B081B4F85EF85C940000000000000000000000000000456E6572677980
         XCTAssertEqual(gas, 5000 + 16000 * 2 + 4 * 7 + 68 * 43 + 4 * 4 + 68 * 46 + 15000 * 2)
     }
 
+    // MARK: - Fees
+
     func testFeeForCoinTransfers() throws {
         let expectedValues = [
             Decimal("0.21"),
             Decimal("0.31458823529"),
             Decimal("0.42"),
         ]
+
         try zip(VeChainFeeParams.TransactionPriority.allCases, expectedValues)
             .forEach { priority, expectedValue in
                 let gasPriceCoefficient = feeCalculator.gasPriceCoefficient(from: priority)
@@ -281,6 +280,7 @@ F8BB278801092BDF0FAF64B081B4F85EF85C940000000000000000000000000000456E6572677980
             Decimal("0.80822211764"),
             Decimal("1.07904"),
         ]
+
         try zip(VeChainFeeParams.TransactionPriority.allCases, expectedValues)
             .forEach { priority, expectedValue in
                 let gasPriceCoefficient = feeCalculator.gasPriceCoefficient(from: priority)
