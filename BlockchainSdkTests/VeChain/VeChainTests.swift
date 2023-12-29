@@ -29,8 +29,8 @@ final class VeChainTests: XCTestCase {
 
     override func setUp() {
         addressService = AddressServiceFactory(blockchain: blockchain).makeAddressService()
-        transactionBuilder = VeChainTransactionBuilder(blockchain: blockchain)
-        feeCalculator = VeChainFeeCalculator(blockchain: blockchain)
+        transactionBuilder = VeChainTransactionBuilder(isTestnet: blockchain.isTestnet)
+        feeCalculator = VeChainFeeCalculator(isTestnet: blockchain.isTestnet)
         sizeTester = TransactionSizeTesterUtility()
     }
 
