@@ -137,7 +137,7 @@ public extension BlockchainSdkConfig.GetBlockCredentials {
         case blockBookRest
         case rest
         case jsonRpc
-        case rosseta
+        case rosetta
     }
 }
 
