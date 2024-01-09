@@ -9,6 +9,7 @@
 import Foundation
 import XCTest
 import TangemSdk
+import BigInt
 
 @testable import BlockchainSdk
 
@@ -23,5 +24,12 @@ class CommonTests: XCTestCase {
         XCTAssertEqual("0xaabbccdd".removeHexPrefix(), "aabbccdd")
         XCTAssertEqual("0xAABBCCdd".removeHexPrefix(), "AABBCCdd")
         XCTAssertEqual("AABBCCdd".removeHexPrefix(), "AABBCCdd")
+    }
+
+    func testOverflow() {
+        let max = BigUInt(18446744073709551615)
+        let eth = Blockchain.ethereum(testnet: false)
+        let calculated = Decimal(UInt64(max)) / eth.decimalValue
+        XCTAssertEqual(calculated, 18.446744073709551615)
     }
 }
