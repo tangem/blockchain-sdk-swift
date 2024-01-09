@@ -30,6 +30,7 @@ class CommonTests: XCTestCase {
         let max = BigUInt(18446744073709551615)
         let eth = Blockchain.ethereum(testnet: false)
         let calculated = Decimal(UInt64(max)) / eth.decimalValue
-        XCTAssertEqual(calculated, 18.446744073709551615)
+        let estimated = Decimal(string: "18.446744073709551615")
+        XCTAssertEqual(calculated, estimated)
     }
 }
