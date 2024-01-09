@@ -86,7 +86,8 @@ public struct AddressServiceFactory {
         case .ton,
                 .cosmos,
                 .terraV1,
-                .terraV2:
+                .terraV2,
+                .algorand:
             return WalletCoreAddressService(blockchain: blockchain)
         case .ducatus:
             return BitcoinLegacyAddressService(networkParams: DucatusNetworkParams())

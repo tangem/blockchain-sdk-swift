@@ -65,7 +65,8 @@ struct EstimationFeeAddressFactory {
                 // Others
                 .tron,
                 .ton,
-                .near:
+                .near, 
+                .algorand:
             let mnemonic = try Mnemonic()
             let factory = AnyMasterKeyFactory(mnemonic: mnemonic, passphrase: "")
             let masterKey = try factory.makeMasterKey(for: blockchain.curve)

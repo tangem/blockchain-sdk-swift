@@ -90,6 +90,8 @@ public struct DerivationConfigV3: DerivationConfig {
             return ""
         case .near:
             return "m/44'/397'/0'"
+        case .algorand:
+            return "m/44'/283'/0'/0'/0'"
         }
     }
 }

@@ -56,7 +56,8 @@ struct AddressTypesConfig {
              .telos,
              .octa,
              .chia,
-             .near:
+             .near,
+             .algorand:
             return [.default]
         }
     }
