@@ -16,7 +16,7 @@ final class AlgorandWalletManager: BaseManager {}
 extension AlgorandWalletManager: WalletManager {
     var currentHost: String { "" }
 
-    var allowsFeeSelection: Bool { false }
+    var allowsFeeSelection: Bool { true }
 
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         return .anyFail(error: WalletError.empty)
