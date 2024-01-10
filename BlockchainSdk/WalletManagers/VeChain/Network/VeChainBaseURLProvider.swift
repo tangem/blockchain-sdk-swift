@@ -27,9 +27,9 @@ struct VeChainBaseURLProvider {
         } else {
             baseURLStrings.append(
                 contentsOf: [
+                    "https://vet.nownodes.io/\(sdkConfig.nowNodesApiKey)",
                     "https://mainnet.vecha.in",
                     "https://sync-mainnet.vechain.org",
-                    "https://vet.nownodes.io/\(sdkConfig.nowNodesApiKey)",
                     "https://mainnet.veblocks.net",
                     "https://mainnetc1.vechain.network",
                     "https://us.node.vechain.energy",
