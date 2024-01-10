@@ -11,6 +11,23 @@ import TangemSdk
 
 struct AlgorandWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        return try AlgorandWalletManager(wallet: input.wallet)
+        let providers = [
+            AlgorandNetworkProvider(
+                node: .init(
+                    type: .nownodes,
+                    apiKeyValue: input.blockchainSdkConfig.nowNodesApiKey
+                ),
+                networkConfig: input.networkConfig
+            ),
+            AlgorandNetworkProvider(
+                node: .init(
+                    type: .getblock,
+                    apiKeyValue: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .rest)
+                ),
+                networkConfig: input.networkConfig
+            )
+        ]
+        
+        return AlgorandWalletManager(wallet: input.wallet)
     }
 }
