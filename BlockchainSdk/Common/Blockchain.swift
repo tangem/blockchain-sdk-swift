@@ -367,7 +367,6 @@ public enum Blockchain: Equatable, Hashable {
         }
     }
     
-    // TODO: Andrey Fedorov - Only VTHO token should be supported and used as a fee payment (IOS-5238)
     public var canHandleTokens: Bool {
         switch self {
         case _ where isEvm:
@@ -382,7 +381,6 @@ public enum Blockchain: Equatable, Hashable {
         }
     }
     
-    // TODO: Andrey Fedorov - Are fees for VeChain approximate or not? (IOS-5238)
     public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
         switch self {
         case .arbitrum,
@@ -396,7 +394,8 @@ public enum Blockchain: Equatable, Hashable {
                 .gnosis,
                 .avalanche,
                 .ethereumPoW,
-                .cronos:
+                .cronos,
+                .veChain:
             if case .token = amountType {
                 return true
             }
@@ -900,20 +899,6 @@ extension Blockchain {
         case "near": return .near(curve: curve, testnet: isTestnet)
         case "decimal": return .decimal(testnet: isTestnet)
         default: return nil
-        }
-    }
-}
-
-// MARK: - Token transaction fee currency
-
-extension Blockchain {
-    // Some networks (Terra specifically) allow the fees to be paid in tokens themselves when transacting tokens
-    public var tokenTransactionFeePaidInNetworkCurrency: Bool {
-        switch self {
-        case .terraV1:
-            return false
-        default:
-            return true
         }
     }
 }

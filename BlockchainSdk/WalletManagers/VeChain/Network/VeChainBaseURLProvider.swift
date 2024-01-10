@@ -9,13 +9,13 @@
 import Foundation
 
 struct VeChainBaseURLProvider {
-    let blockchain: Blockchain
+    let isTestnet: Bool
     let sdkConfig: BlockchainSdkConfig
 
     func baseURLs() -> [URL] {
         var baseURLStrings: [String] = []
 
-        if blockchain.isTestnet {
+        if isTestnet {
             baseURLStrings.append(
                 contentsOf: [
                     "https://testnet.vecha.in",
