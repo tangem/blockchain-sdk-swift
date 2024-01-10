@@ -99,6 +99,8 @@ public struct ExternalLinkProviderFactory {
             return NEARExternalLinkProvider(isTestnet: isTestnet)
         case .decimal:
             return DecimalExternalLinkProvider(isTestnet: isTestnet)
+        case .veChain:
+            return VeChainExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }

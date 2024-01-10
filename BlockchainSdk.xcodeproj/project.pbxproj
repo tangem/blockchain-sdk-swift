@@ -231,6 +231,12 @@
 		B62344992AF26C0F00B82306 /* BigUInt+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62344982AF26C0F00B82306 /* BigUInt+.swift */; };
 		B626D11F2AF02C40003A8929 /* TWPublicKeyType+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B626D11E2AF02C40003A8929 /* TWPublicKeyType+.swift */; };
 		B62A12062AE308DA0080BAEC /* NEARTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62A12052AE308DA0080BAEC /* NEARTransactionParams.swift */; };
+		B63068BE2B3102A900E79053 /* VeChainExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068BD2B3102A900E79053 /* VeChainExternalLinkProvider.swift */; };
+		B63068C22B3102FA00E79053 /* VeChainTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068C02B3102FA00E79053 /* VeChainTransactionBuilder.swift */; };
+		B63068C72B31050900E79053 /* VeChainWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068C62B31050900E79053 /* VeChainWalletAssembly.swift */; };
+		B63068C92B3115FD00E79053 /* VeChainWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068C82B3115FD00E79053 /* VeChainWalletManager.swift */; };
+		B63068CC2B31163700E79053 /* VeChainNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068CB2B31163700E79053 /* VeChainNetworkProvider.swift */; };
+		B63068CE2B31164600E79053 /* VeChainNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068CD2B31164600E79053 /* VeChainNetworkService.swift */; };
 		B63B792D2AD850DF0055BD06 /* NEARWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B792C2AD850DF0055BD06 /* NEARWalletAssembly.swift */; };
 		B63B792F2AD852E80055BD06 /* NEARExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */; };
 		B641EC492AEF5CC100B44CF8 /* NEARAddressUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = B641EC482AEF5CC100B44CF8 /* NEARAddressUtil.swift */; };
@@ -238,6 +244,8 @@
 		B65D2E792AD9B208004DF330 /* NEARNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65D2E782AD9B208004DF330 /* NEARNetworkService.swift */; };
 		B68507082AEF494E004A431B /* NEARProtocolConfigCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B68507072AEF494E004A431B /* NEARProtocolConfigCache.swift */; };
 		B69293752AEC6A2300D6A85A /* NEARTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69293742AEC6A2300D6A85A /* NEARTests.swift */; };
+		B6A7A91B2B318DA50053DCF7 /* VeChainTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A7A91A2B318DA50053DCF7 /* VeChainTarget.swift */; };
+		B6A7A91D2B318FBE0053DCF7 /* VeChainBaseURLProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A7A91C2B318FBE0053DCF7 /* VeChainBaseURLProvider.swift */; };
 		B6AF184D2AF00F8600113BC2 /* TWCurve+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6AF184C2AF00F8600113BC2 /* TWCurve+.swift */; };
 		B6B083572AE6B11C0099D6F8 /* NEARAccessKeyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B083552AE6B11C0099D6F8 /* NEARAccessKeyInfo.swift */; };
 		B6B083582AE6B11C0099D6F8 /* NEARProtocolConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B083562AE6B11C0099D6F8 /* NEARProtocolConfig.swift */; };
@@ -860,6 +868,12 @@
 		B62344982AF26C0F00B82306 /* BigUInt+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "BigUInt+.swift"; sourceTree = "<group>"; };
 		B626D11E2AF02C40003A8929 /* TWPublicKeyType+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWPublicKeyType+.swift"; sourceTree = "<group>"; };
 		B62A12052AE308DA0080BAEC /* NEARTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARTransactionParams.swift; sourceTree = "<group>"; };
+		B63068BD2B3102A900E79053 /* VeChainExternalLinkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VeChainExternalLinkProvider.swift; sourceTree = "<group>"; };
+		B63068C02B3102FA00E79053 /* VeChainTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VeChainTransactionBuilder.swift; sourceTree = "<group>"; };
+		B63068C62B31050900E79053 /* VeChainWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainWalletAssembly.swift; sourceTree = "<group>"; };
+		B63068C82B3115FD00E79053 /* VeChainWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainWalletManager.swift; sourceTree = "<group>"; };
+		B63068CB2B31163700E79053 /* VeChainNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkProvider.swift; sourceTree = "<group>"; };
+		B63068CD2B31164600E79053 /* VeChainNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkService.swift; sourceTree = "<group>"; };
 		B63B792C2AD850DF0055BD06 /* NEARWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARWalletAssembly.swift; sourceTree = "<group>"; };
 		B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARExternalLinkProvider.swift; sourceTree = "<group>"; };
 		B641EC482AEF5CC100B44CF8 /* NEARAddressUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARAddressUtil.swift; sourceTree = "<group>"; };
@@ -867,6 +881,8 @@
 		B65D2E782AD9B208004DF330 /* NEARNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARNetworkService.swift; sourceTree = "<group>"; };
 		B68507072AEF494E004A431B /* NEARProtocolConfigCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NEARProtocolConfigCache.swift; sourceTree = "<group>"; };
 		B69293742AEC6A2300D6A85A /* NEARTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARTests.swift; sourceTree = "<group>"; };
+		B6A7A91A2B318DA50053DCF7 /* VeChainTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainTarget.swift; sourceTree = "<group>"; };
+		B6A7A91C2B318FBE0053DCF7 /* VeChainBaseURLProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainBaseURLProvider.swift; sourceTree = "<group>"; };
 		B6AF184C2AF00F8600113BC2 /* TWCurve+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWCurve+.swift"; sourceTree = "<group>"; };
 		B6B083552AE6B11C0099D6F8 /* NEARAccessKeyInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NEARAccessKeyInfo.swift; sourceTree = "<group>"; };
 		B6B083562AE6B11C0099D6F8 /* NEARProtocolConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NEARProtocolConfig.swift; sourceTree = "<group>"; };
@@ -1415,6 +1431,7 @@
 				B63B792C2AD850DF0055BD06 /* NEARWalletAssembly.swift */,
 				2DB6C6D62AFCC013000D0C6A /* TelosWalletAssembly.swift */,
 				2D01EC052B052A0A00DEF1CC /* DecimalWalletAssembly.swift */,
+				B63068C62B31050900E79053 /* VeChainWalletAssembly.swift */,
 			);
 			path = WalletAssembly;
 			sourceTree = "<group>";
@@ -1520,6 +1537,7 @@
 				B63B79302AD854010055BD06 /* NEAR */,
 				2DB6C6D32AFCBEBA000D0C6A /* Telos */,
 				2D01EBFB2B04FC2F00DEF1CC /* Decimal */,
+				B63068BF2B3102D400E79053 /* VeChain */,
 			);
 			path = WalletManagers;
 			sourceTree = "<group>";
@@ -2113,6 +2131,27 @@
 				B6B0835B2AE6BED40099D6F8 /* NullValue.swift */,
 			);
 			path = DTO;
+			sourceTree = "<group>";
+		};
+		B63068BF2B3102D400E79053 /* VeChain */ = {
+			isa = PBXGroup;
+			children = (
+				B63068CA2B31162900E79053 /* Network */,
+				B63068C02B3102FA00E79053 /* VeChainTransactionBuilder.swift */,
+				B63068C82B3115FD00E79053 /* VeChainWalletManager.swift */,
+			);
+			path = VeChain;
+			sourceTree = "<group>";
+		};
+		B63068CA2B31162900E79053 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				B6A7A91A2B318DA50053DCF7 /* VeChainTarget.swift */,
+				B6A7A91C2B318FBE0053DCF7 /* VeChainBaseURLProvider.swift */,
+				B63068CB2B31163700E79053 /* VeChainNetworkProvider.swift */,
+				B63068CD2B31164600E79053 /* VeChainNetworkService.swift */,
+			);
+			path = Network;
 			sourceTree = "<group>";
 		};
 		B63B79302AD854010055BD06 /* NEAR */ = {
@@ -2723,6 +2762,7 @@
 				EF3B19632AA85F280084AA1C /* ChiaExternalLinkProvider.swift */,
 				B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */,
 				2D01EBFF2B05223900DEF1CC /* DecimalExternalLinkProvider.swift */,
+				B63068BD2B3102A900E79053 /* VeChainExternalLinkProvider.swift */,
 			);
 			path = ExternalLinkProvider;
 			sourceTree = "<group>";
@@ -3130,6 +3170,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5D4B33D123F7DC7500C93A84 /* BinanceAddressService.swift in Sources */,
+				B6A7A91B2B318DA50053DCF7 /* VeChainTarget.swift in Sources */,
 				5D01BCE2243F7F7E0048D1BA /* XrpTarget.swift in Sources */,
 				5D7D242925136254001B9A4F /* XRPLedger.swift in Sources */,
 				EFF466E82ACD851700ACC3EA /* PendingTransactionRecord.swift in Sources */,
@@ -3211,6 +3252,7 @@
 				DA30812B2817BF3C00DE41F1 /* Tron.pb.swift in Sources */,
 				DC5E64DD2B1650F400E81AA5 /* OP_CHECKMULTISIG.swift in Sources */,
 				EF57BED82A1E624100C2A493 /* DerivationConfigV1.swift in Sources */,
+				B63068C72B31050900E79053 /* VeChainWalletAssembly.swift in Sources */,
 				B6D7131F2AEBEF750095FE6A /* NEARNetworkResult.APIError.swift in Sources */,
 				5D4B33C823F72F2700C93A84 /* BitcoinCashWalletManager.swift in Sources */,
 				DC5E65272B1650F400E81AA5 /* OP_0.swift in Sources */,
@@ -3397,6 +3439,7 @@
 				5D7D242A25136254001B9A4F /* WebSocket+Convenience.swift in Sources */,
 				EF3B19262AA85C670084AA1C /* EthereumPoWExternalLinkProvider.swift in Sources */,
 				EFD717DB2A272D1B00E5430D /* PlainAddress.swift in Sources */,
+				B63068C92B3115FD00E79053 /* VeChainWalletManager.swift in Sources */,
 				B6E7699C2AF2CFDA00B32745 /* NEARNetworkResult.TransactionStatus.swift in Sources */,
 				DC5E64E32B1650F400E81AA5 /* OP_EXAMPLE.swift in Sources */,
 				B6B083582AE6B11C0099D6F8 /* NEARProtocolConfig.swift in Sources */,
@@ -3407,6 +3450,7 @@
 				DC8180802B15159D00D7D53F /* RLP.swift in Sources */,
 				2DA8AB0D2A433A1000C75D85 /* ExceptionHandler.swift in Sources */,
 				2DB6C6D72AFCC013000D0C6A /* TelosWalletAssembly.swift in Sources */,
+				B63068CE2B31164600E79053 /* VeChainNetworkService.swift in Sources */,
 				DAD65BB02955F201003B3E8D /* EthereumApiKeys.swift in Sources */,
 				2DDE5BAD29C4F8D200A5B708 /* EthereumWalletAssembly.swift in Sources */,
 				B6BA936F2AEA0E7700F84E36 /* NEARNetworkParams.ViewAccount.swift in Sources */,
@@ -3424,6 +3468,7 @@
 				B6BA937B2AEA0F1D00F84E36 /* NEARNetworkResult.ProtocolConfig.swift in Sources */,
 				DADF5F932A1B7C6B00D58DC3 /* TWPublicKey+.swift in Sources */,
 				5DEAFA942444C5300032E316 /* Token.swift in Sources */,
+				B63068CC2B31163700E79053 /* VeChainNetworkProvider.swift in Sources */,
 				DC5E64D92B1650F400E81AA5 /* OP_SHA1.swift in Sources */,
 				5D557CB023AA888D009B32AF /* Uint64+.swift in Sources */,
 				5D94E56123A381F2009C7482 /* EthereumWalletManagerProtocols.swift in Sources */,
@@ -3455,6 +3500,7 @@
 				2DDE5BA729C4F8D200A5B708 /* XRPWalletAssembly.swift in Sources */,
 				EF3B193C2AA85D230084AA1C /* SolanaExternalLinkProvider.swift in Sources */,
 				EF3B19482AA85E6F0084AA1C /* ArbitrumExternalLinkProvider.swift in Sources */,
+				B63068C22B3102FA00E79053 /* VeChainTransactionBuilder.swift in Sources */,
 				EF193BFE2A77ED9E0048C0C3 /* Page.swift in Sources */,
 				EFB952402A6FEF1700996D16 /* TransactionRecord.swift in Sources */,
 				DC5E653D2B16641300E81AA5 /* BitcoinScriptBuilder.swift in Sources */,
@@ -3478,6 +3524,7 @@
 				EFD717CC2A25EB0B00E5430D /* ABIEncoder.swift in Sources */,
 				DC5E64F02B1650F400E81AA5 /* OP_SUB.swift in Sources */,
 				DC5E651A2B1650F400E81AA5 /* OP_3DUP.swift in Sources */,
+				B63068BE2B3102A900E79053 /* VeChainExternalLinkProvider.swift in Sources */,
 				DC5E65032B1650F400E81AA5 /* OP_2MUL.swift in Sources */,
 				5DA6F7BC243F3C0B0040AB4B /* CBOR+.swift in Sources */,
 				2DDE5BA529C4F8D200A5B708 /* DogecoinWalletAssembly.swift in Sources */,
@@ -3526,6 +3573,7 @@
 				EF3B191E2AA85C150084AA1C /* CardanoExternalLinkProvider.swift in Sources */,
 				DA9F76FB27ECA49F00F0665C /* TronNetwork.swift in Sources */,
 				EF2BC62029DACE33003D3F18 /* RavencoinTarget.swift in Sources */,
+				B6A7A91D2B318FBE0053DCF7 /* VeChainBaseURLProvider.swift in Sources */,
 				DC5E652A2B1650F400E81AA5 /* OP_VER.swift in Sources */,
 				DC5E65322B1650F400E81AA5 /* OP_VERIF.swift in Sources */,
 				B64B728C2AEC9C7B005C8C7C /* Lock.swift in Sources */,

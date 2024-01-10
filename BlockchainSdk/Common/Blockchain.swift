@@ -56,6 +56,7 @@ public enum Blockchain: Equatable, Hashable {
     case chia(testnet: Bool)
     case near(curve: EllipticCurve, testnet: Bool)
     case decimal(testnet: Bool)
+    case veChain(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -130,6 +131,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .decimal(let testnet):
             return testnet
+        case .veChain(let testnet):
+            return testnet
         }
     }
     
@@ -183,7 +186,8 @@ public enum Blockchain: Equatable, Hashable {
                 .cronos,
                 .telos,
                 .octa,
-                .decimal:
+                .decimal,
+                .veChain:
             return 18
         case  .cardano,
                 .xrp,
@@ -286,6 +290,8 @@ public enum Blockchain: Equatable, Hashable {
             return "NEAR"
         case .decimal:
             return "DEL"
+        case .veChain:
+            return "VET"
         }
     }
     
@@ -337,6 +343,8 @@ public enum Blockchain: Equatable, Hashable {
             return "NEAR Protocol" + testnetSuffix
         case .decimal:
             return "Decimal Smart Chain" + testnetSuffix
+        case .veChain:
+            return "VeChain" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -353,24 +361,28 @@ public enum Blockchain: Equatable, Hashable {
         case .bsc: return "BEP20"
         case .tron: return "TRC20"
         case .ton: return "TON"
+        case .veChain: return "VIP180"
         default:
             return nil
         }
     }
     
+    // TODO: Andrey Fedorov - Only VTHO token should be supported and used as a fee payment (IOS-5238)
     public var canHandleTokens: Bool {
-        if isEvm {
-            return true
-        }
-        
         switch self {
-        case .binance, .solana, .tron:
+        case _ where isEvm:
+            return true
+        case .binance,
+                .solana,
+                .tron,
+                .veChain:
             return true
         default:
             return false
         }
     }
     
+    // TODO: Andrey Fedorov - Are fees for VeChain approximate or not? (IOS-5238)
     public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
         switch self {
         case .arbitrum,
@@ -750,6 +762,7 @@ extension Blockchain: Codable {
         case .chia: return "chia"
         case .near: return "near"
         case .decimal: return "decimal"
+        case .veChain: return "vechain"
         }
     }
     
@@ -816,6 +829,7 @@ extension Blockchain: Codable {
         case "chia": self = .chia(testnet: isTestnet)
         case "near": self = .near(curve: curve, testnet: isTestnet)
         case "decimal": self = .decimal(testnet: isTestnet)
+        case "vechain": self = .veChain(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -972,6 +986,8 @@ extension Blockchain {
             return TelosWalletAssembly()
         case .decimal:
             return DecimalWalletAssembly()
+        case .veChain:
+            return VeChainWalletAssembly()
         }
     }
 }
