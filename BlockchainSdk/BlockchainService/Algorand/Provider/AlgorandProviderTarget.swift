@@ -29,7 +29,7 @@ struct AlgorandProviderTarget: TargetType {
     var path: String {
         switch targetType {
         case .getAccounts(let address):
-            return "accounts/\(address)"
+            return "v2/accounts/\(address)"
         }
     }
     
@@ -41,12 +41,17 @@ struct AlgorandProviderTarget: TargetType {
     }
     
     var task: Moya.Task {
-        let encoder = JSONEncoder()
-        encoder.keyEncodingStrategy = .convertToSnakeCase
-        
-        let jrpcRequest: Dictionary<String, Any>? = nil
-        
-        return .requestParameters(parameters: jrpcRequest ?? [:], encoding: JSONEncoding.default)
+        switch targetType {
+        case .getAccounts:
+            return .requestPlain
+        default:
+            let encoder = JSONEncoder()
+            encoder.keyEncodingStrategy = .convertToSnakeCase
+            
+            let jrpcRequest: Dictionary<String, Any>? = nil
+            
+            return .requestParameters(parameters: jrpcRequest ?? [:], encoding: JSONEncoding.default)
+        }
     }
     
     var headers: [String : String]? {

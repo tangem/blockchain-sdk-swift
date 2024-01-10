@@ -138,7 +138,7 @@ public enum Blockchain: Equatable, Hashable {
     
     public var curve: EllipticCurve {
         switch self {
-        case .cardano:
+        case .cardano, .algorand:
             return .ed25519
         case .stellar(let curve, _),
                 .solana(let curve, _),

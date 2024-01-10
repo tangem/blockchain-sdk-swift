@@ -37,7 +37,7 @@ struct AlgorandNetworkProvider: HostProvider {
     
     // MARK: - Implementation
     
-    func getAccount(address: String) -> AnyPublisher<AlgorandResponse, Error> {
+    func getAccount(address: String) -> AnyPublisher<AlgorandResponse.Account, Error> {
         let target = AlgorandProviderTarget(
             node: node,
             targetType: .getAccounts(address: address)

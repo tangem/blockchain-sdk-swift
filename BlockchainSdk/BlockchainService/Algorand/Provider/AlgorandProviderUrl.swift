@@ -26,7 +26,7 @@ struct AlgorandProviderNode: HostProvider {
         case .getblock:
             return URL(string: "https://go.getblock.io/\(apiKeyValue)/")!
         case .nownodes:
-            return URL(string: "https://algo.nownodes.io/\(apiKeyValue)/")!
+            return URL(string: "https://algo.nownodes.io/")!
         }
     }
     

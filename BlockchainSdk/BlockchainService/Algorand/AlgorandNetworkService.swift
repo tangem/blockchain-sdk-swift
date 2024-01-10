@@ -26,12 +26,12 @@ class AlgorandNetworkService: MultiNetworkProvider {
     
     // MARK: - Implementation
     
-    func getAccount(address: String) -> AnyPublisher<[String], Error> {
+    func getAccount(address: String) -> AnyPublisher<AlgorandResponse.Account, Error> {
         providerPublisher { provider in
             provider
                 .getAccount(address: address)
                 .map { response in
-                    return []
+                    return response
                 }
                 .eraseToAnyPublisher()
         }
