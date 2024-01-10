@@ -9,7 +9,6 @@
 import Foundation
 import Combine
 
-// TODO: Andrey Fedorov - Add actual implementation (IOS-5239)
 struct VeChainNetworkProvider {
     private let baseURL: URL
     private let provider: NetworkProvider<VeChainTarget>
@@ -20,6 +19,42 @@ struct VeChainNetworkProvider {
     ) {
         self.baseURL = baseURL
         provider = NetworkProvider<VeChainTarget>(configuration: configuration)
+    }
+
+    func getAccountInfo(address: String) -> AnyPublisher<VeChainNetworkResult.AccountInfo, Error> {
+        return requestPublisher(for: .viewAccount(address: address))
+    }
+
+    func getBlockInfo(
+        request: VeChainNetworkParams.BlockInfo
+    ) -> AnyPublisher<VeChainNetworkResult.BlockInfo, Error> {
+        return requestPublisher(for: .viewBlock(request: request))
+    }
+
+    func sendTransaction(
+        _ rawTransaction: String
+    ) -> AnyPublisher<VeChainNetworkResult.Transaction, Error> {
+        return requestPublisher(for: .sendTransaction(rawTransaction: rawTransaction))
+    }
+
+    func getTransactionStatus(
+        request: VeChainNetworkParams.TransactionStatus
+    ) -> AnyPublisher<VeChainNetworkResult.TransactionInfo, Error> {
+        return requestPublisher(
+            for: .transactionStatus(request: request)
+        )
+    }
+
+    private func requestPublisher<T: Decodable>(
+        for target: VeChainTarget.Target
+    ) -> AnyPublisher<T, Swift.Error> {
+        return provider.requestPublisher(VeChainTarget(baseURL: baseURL, target: target))
+            .filterSuccessfulStatusCodes()
+            .map(T.self)
+            .mapError { moyaError -> Swift.Error in
+                return moyaError.asWalletError ?? moyaError
+            }
+            .eraseToAnyPublisher()
     }
 }
 

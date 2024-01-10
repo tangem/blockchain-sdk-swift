@@ -25,6 +25,12 @@ extension BigUInt {
             self.init(stringValue, radix: 10)
         }
     }
+
+    /// - Note: Based on https://github.com/attaswift/BigInt/issues/52
+    /// - Warning: May lead to a loss of precision.
+    var decimal: Decimal? {
+        return Decimal(string: String(self), locale: Locale.enUS)
+    }
 }
 
 // MARK: - Convenience extensions

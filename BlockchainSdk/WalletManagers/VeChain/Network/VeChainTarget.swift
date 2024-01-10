@@ -9,7 +9,6 @@
 import Foundation
 import Moya
 
-// TODO: Andrey Fedorov - Add actual implementation (IOS-5239)
 struct VeChainTarget {
     let baseURL: URL
     let target: Target
@@ -18,25 +17,77 @@ struct VeChainTarget {
 // MARK: - Auxiliary types
 
 extension VeChainTarget {
-    enum Target {}
+    enum Target {
+        case viewAccount(address: String)
+        case viewBlock(request: VeChainNetworkParams.BlockInfo)
+        case sendTransaction(rawTransaction: String)
+        case transactionStatus(request: VeChainNetworkParams.TransactionStatus)
+    }
 }
 
 // MARK: - TargetType protocol conformance
 
 extension VeChainTarget: TargetType {
     var path: String {
-        return ""
+        switch target {
+        case .viewAccount(let address):
+            return "/accounts/\(address)"
+        case .viewBlock(let request):
+            let path: String
+            switch request.requestType {
+            case .specificWithId(let blockId):
+                path = blockId
+            case .specificWithNumber(let blockNumber):
+                path = String(blockNumber)
+            case .latest:
+                path = "best"
+            case .latestFinalized:
+                path = "finalized"
+            }
+            return "/blocks/\(path)"
+        case .sendTransaction:
+            return "/transactions"
+        case .transactionStatus(let request):
+            return "/transactions/\(request.hash)"
+        }
     }
     
     var method: Moya.Method {
-        return .get
+        switch target {
+        case .viewAccount,
+             .viewBlock,
+             .transactionStatus:
+            return .get
+        case .sendTransaction:
+            return .post
+        }
     }
     
     var task: Moya.Task {
-        return .requestPlain
+        switch target {
+        case .viewAccount,
+             .viewBlock:
+            return .requestPlain
+        case .transactionStatus(let request):
+            let parameters = [
+                "pending": request.includePending,
+                "raw": request.rawOutput,
+            ]
+            let encoding = URLEncoding(
+                destination: URLEncoding.queryString.destination,
+                arrayEncoding: URLEncoding.queryString.arrayEncoding,
+                boolEncoding: .literal
+            )
+            return .requestParameters(parameters: parameters, encoding: encoding)
+        case .sendTransaction(let rawTransaction):
+            return .requestJSONEncodable(VeChainNetworkParams.Transaction(raw: rawTransaction))
+        }
     }
     
     var headers: [String: String]? {
-        return nil
+        return [
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        ]
     }
 }
