@@ -27,14 +27,15 @@ final class AlgorandWalletManager: BaseManager {
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
         cancellable = networkService
             .getAccount(address: wallet.address)
+            .withWeakCaptureOf(self)
             .sink(
                 receiveCompletion: { completionSubscription in
                     if case let .failure(error) = completionSubscription {
                         completion(.failure(error))
                     }
                 },
-                receiveValue: { [unowned self] response in
-                    self.update(with: response, completion: completion)
+                receiveValue: { walletManager, account in
+                    walletManager.update(with: account, completion: completion)
                 }
             )
     }
@@ -62,7 +63,20 @@ extension AlgorandWalletManager: WalletManager {
     var allowsFeeSelection: Bool { false }
 
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        return .anyFail(error: WalletError.empty)
+        networkService
+            .getTransactionParams()
+            .withWeakCaptureOf(self)
+            .map { walletManager, response in
+                // TODO: - Фильтровать все что >= minFee
+                let fee = Decimal(response.fee) / walletManager.wallet.blockchain.decimalValue
+                let minFee = Decimal(response.minFee) / walletManager.wallet.blockchain.decimalValue
+                
+                return [
+                    Fee(.init(with: walletManager.wallet.blockchain, value: minFee)),
+                    Fee(.init(with: walletManager.wallet.blockchain, value: fee)),
+                ]
+            }
+            .eraseToAnyPublisher()
     }
 
     func send(

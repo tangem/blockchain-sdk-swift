@@ -30,21 +30,24 @@ struct AlgorandProviderTarget: TargetType {
         switch targetType {
         case .getAccounts(let address):
             return "v2/accounts/\(address)"
+        case .getTransactionParams:
+            return "v2/transaction/params"
         }
     }
     
     var method: Moya.Method {
         switch targetType {
-        case .getAccounts:
+        case .getAccounts, .getTransactionParams:
             return .get
         }
     }
     
     var task: Moya.Task {
         switch targetType {
-        case .getAccounts:
+        case .getAccounts, .getTransactionParams:
             return .requestPlain
         default:
+            // TODO: - Убрать default
             let encoder = JSONEncoder()
             encoder.keyEncodingStrategy = .convertToSnakeCase
             
@@ -71,5 +74,6 @@ struct AlgorandProviderTarget: TargetType {
 extension AlgorandProviderTarget {
     enum TargetType {
         case getAccounts(address: String)
+        case getTransactionParams
     }
 }

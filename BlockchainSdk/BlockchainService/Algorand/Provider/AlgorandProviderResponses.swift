@@ -48,5 +48,14 @@ enum AlgorandResponse {
             case totalAssetsOptedin
         }
     }
+    
+    struct TransactionParams: Decodable {
+        var genesisId: String
+        var genesisHash: String
+        var consensusVersion: String
+        var fee: UInt64
+        var lastRound: UInt64
+        var minFee: UInt64
+    }
 }
 

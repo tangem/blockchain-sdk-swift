@@ -36,4 +36,12 @@ class AlgorandNetworkService: MultiNetworkProvider {
                 .eraseToAnyPublisher()
         }
     }
+    
+    func getTransactionParams() -> AnyPublisher<AlgorandResponse.TransactionParams, Error> {
+        providerPublisher { provider in
+            provider
+                .getTransactionParams()
+                .eraseToAnyPublisher()
+        }
+    }
 }

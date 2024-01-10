@@ -46,6 +46,15 @@ struct AlgorandNetworkProvider: HostProvider {
         return requestPublisher(for: target)
     }
     
+    func getTransactionParams() -> AnyPublisher<AlgorandResponse.TransactionParams, Error> {
+        let target = AlgorandProviderTarget(
+            node: node,
+            targetType: .getTransactionParams
+        )
+        
+        return requestPublisher(for: target)
+    }
+    
     // MARK: - Private Implementation
     
     private func requestPublisher<T: Decodable>(for target: AlgorandProviderTarget) -> AnyPublisher<T, Error> {
@@ -53,6 +62,7 @@ struct AlgorandNetworkProvider: HostProvider {
             .filterSuccessfulStatusAndRedirectCodes()
             .map(T.self)
             .mapError { error in
+                // TODO: - Сделать корректный маппинг ошибок
                 return WalletError.failedToParseNetworkResponse
             }
             .eraseToAnyPublisher()
