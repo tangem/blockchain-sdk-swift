@@ -220,6 +220,12 @@
         "testnet": false,
         "curve": "ed25519_slip0010",
         "shelley": false
+    },
+    {
+        "key": "vechain",
+        "testnet": false,
+        "curve": "secp256k1",
+        "shelley": false
     }
 ]
 

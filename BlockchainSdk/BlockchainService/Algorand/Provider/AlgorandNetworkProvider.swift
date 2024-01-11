@@ -1,0 +1,85 @@
+//
+//  AlgorandNetworkProvider.swift
+//  BlockchainSdk
+//
+//  Created by skibinalexander on 10.01.2024.
+//  Copyright © 2024 Tangem AG. All rights reserved.
+//
+
+import Foundation
+import Combine
+
+struct AlgorandNetworkProvider: HostProvider {
+    // MARK: - HostProvider
+    
+    /// Blockchain API host
+    var host: String {
+        node.host
+    }
+    
+    /// Configuration connection node for provider
+    private let node: AlgorandProviderNode
+    
+    // MARK: - Properties
+    
+    /// Network provider of blockchain
+    private let network: NetworkProvider<AlgorandProviderTarget>
+    
+    // MARK: - Init
+    
+    init(
+        node: AlgorandProviderNode,
+        networkConfig: NetworkProviderConfiguration
+    ) {
+        self.node = node
+        self.network = .init(configuration: networkConfig)
+    }
+    
+    // MARK: - Implementation
+    
+    func getAccount(address: String) -> AnyPublisher<AlgorandResponse.Account, Error> {
+        let target = AlgorandProviderTarget(
+            node: node,
+            targetType: .getAccounts(address: address)
+        )
+        
+        return requestPublisher(for: target)
+    }
+    
+    func getTransactionParams() -> AnyPublisher<AlgorandResponse.TransactionParams, Error> {
+        let target = AlgorandProviderTarget(
+            node: node,
+            targetType: .getTransactionParams
+        )
+        
+        return requestPublisher(for: target)
+    }
+    
+    // MARK: - Private Implementation
+    
+    private func requestPublisher<T: Decodable>(for target: AlgorandProviderTarget) -> AnyPublisher<T, Error> {
+        return network.requestPublisher(target)
+            .filterSuccessfulStatusAndRedirectCodes()
+            .map(T.self)
+            .mapError { moyaError -> Swift.Error in
+                switch moyaError {
+                case .jsonMapping,
+                        .objectMapping:
+                    return WalletError.failedToParseNetworkResponse
+                case .imageMapping,
+                        .stringMapping,
+                        .encodableMapping,
+                        .statusCode,
+                        .underlying,
+                        .requestMapping,
+                        .parameterEncoding:
+                    return moyaError
+                @unknown default:
+                    assertionFailure("Unknown error kind received: \(moyaError)")
+                    return moyaError
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+    
+}

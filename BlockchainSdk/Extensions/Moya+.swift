@@ -30,3 +30,24 @@ extension Moya.Task {
         return .requestJSONEncodable(jsonRPCParams)
     }
 }
+
+extension MoyaError {
+    var asWalletError: WalletError? {
+        switch self {
+        case .jsonMapping,
+             .objectMapping,
+             .imageMapping,
+             .stringMapping:
+            return WalletError.failedToParseNetworkResponse
+        case .statusCode,
+             .underlying,
+             .encodableMapping,
+             .requestMapping,
+             .parameterEncoding:
+            return nil
+        @unknown default:
+            assertionFailure("Unknown error kind received: \(self)")
+            return nil
+        }
+    }
+}

@@ -36,7 +36,8 @@ extension PublicKeyType {
                 .optimism,
                 .fantom,
                 .kava,
-                .decimal:
+                .decimal,
+                .veChain:
             self = PublicKeyType.secp256k1Extended
         case .stellar,
                 .ton,
