@@ -30,7 +30,7 @@ struct AlgorandWalletAssembly: WalletManagerAssembly {
         
         return try AlgorandWalletManager(
             wallet: input.wallet,
-            networkService: .init(providers: providers, blockchain: input.blockchain)
+            networkService: .init(providers: providers)
         )
     }
 }

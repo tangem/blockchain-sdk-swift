@@ -61,9 +61,23 @@ struct AlgorandNetworkProvider: HostProvider {
         return network.requestPublisher(target)
             .filterSuccessfulStatusAndRedirectCodes()
             .map(T.self)
-            .mapError { error in
-                // TODO: - Сделать корректный маппинг ошибок
-                return WalletError.failedToParseNetworkResponse
+            .mapError { moyaError -> Swift.Error in
+                switch moyaError {
+                case .jsonMapping,
+                        .objectMapping:
+                    return WalletError.failedToParseNetworkResponse
+                case .imageMapping,
+                        .stringMapping,
+                        .encodableMapping,
+                        .statusCode,
+                        .underlying,
+                        .requestMapping,
+                        .parameterEncoding:
+                    return moyaError
+                @unknown default:
+                    assertionFailure("Unknown error kind received: \(moyaError)")
+                    return moyaError
+                }
             }
             .eraseToAnyPublisher()
     }

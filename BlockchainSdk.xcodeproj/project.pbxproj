@@ -1306,6 +1306,14 @@
 			path = VectorTests;
 			sourceTree = "<group>";
 		};
+		2D691FC92B4FC2D5003CA66A /* DTO */ = {
+			isa = PBXGroup;
+			children = (
+				2DD103362B4E89FD0068DCBC /* AlgorandProviderResponses.swift */,
+			);
+			path = DTO;
+			sourceTree = "<group>";
+		};
 		2D78F4082A5C3CA400962CCA /* Chia */ = {
 			isa = PBXGroup;
 			children = (
@@ -1416,6 +1424,7 @@
 		2DD1032C2B4E7C1E0068DCBC /* Algorand */ = {
 			isa = PBXGroup;
 			children = (
+				2D691FC92B4FC2D5003CA66A /* DTO */,
 				2DD1032F2B4E7C4D0068DCBC /* Provider */,
 				2DD1032D2B4E7C330068DCBC /* AlgorandNetworkService.swift */,
 			);
