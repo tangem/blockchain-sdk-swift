@@ -64,12 +64,12 @@ final class VeChainNetworkService: MultiNetworkProvider {
                 .tryMap { transactionStatus in
                     switch transactionStatus {
                     case .parsed(let parsedStatus):
-                        VeChainTransactionInfo(transactionHash: parsedStatus.id)
+                        return VeChainTransactionInfo(transactionHash: parsedStatus.id)
                     case .raw:
                         // `raw` output can't be easily parsed and therefore not supported
                         throw WalletError.failedToParseNetworkResponse
                     case .notFound:
-                        VeChainTransactionInfo(transactionHash: nil)
+                        return VeChainTransactionInfo(transactionHash: nil)
                     }
                 }
                 .eraseToAnyPublisher()
