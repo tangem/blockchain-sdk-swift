@@ -57,7 +57,7 @@ struct AddressTypesConfig {
              .octa,
              .chia,
              .near,
-             .veChain:
+             .veChain,
              .algorand:
             return [.default]
         }

@@ -133,6 +133,7 @@ public enum Blockchain: Equatable, Hashable {
         case .decimal(let testnet):
             return testnet
         case .veChain(let testnet):
+            return testnet
         case .algorand(let testnet):
             return testnet
         }
