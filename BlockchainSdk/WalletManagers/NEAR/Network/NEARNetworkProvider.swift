@@ -69,22 +69,7 @@ struct NEARNetworkProvider {
             .filterSuccessfulStatusCodes()
             .map(JSONRPCResult<T, NEARNetworkResult.APIError>.self, using: decoder)
             .mapError { moyaError -> Swift.Error in
-                switch moyaError {
-                case .jsonMapping,
-                        .objectMapping:
-                    return WalletError.failedToParseNetworkResponse
-                case .imageMapping,
-                        .stringMapping,
-                        .encodableMapping,
-                        .statusCode,
-                        .underlying,
-                        .requestMapping,
-                        .parameterEncoding:
-                    return moyaError
-                @unknown default:
-                    assertionFailure("Unknown error kind received: \(moyaError)")
-                    return moyaError
-                }
+                return moyaError.asWalletError ?? moyaError
             }
             .tryMap { try $0.result.get() }
             .eraseToAnyPublisher()
