@@ -38,6 +38,7 @@
 		2D9565082B5024A70024F4E5 /* AlgorandWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9565062B5024A70024F4E5 /* AlgorandWalletManager.swift */; };
 		2D9565092B5024A70024F4E5 /* AlgorandTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9565072B5024A70024F4E5 /* AlgorandTransactionBuilder.swift */; };
 		2D95650B2B5024CB0024F4E5 /* AlgorandWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95650A2B5024CB0024F4E5 /* AlgorandWalletAssembly.swift */; };
+		2D95650D2B50253F0024F4E5 /* AlgorandTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D95650C2B50253E0024F4E5 /* AlgorandTransactionParams.swift */; };
 		2D9A919229BB8BFF00476EA6 /* TONWalletInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */; };
 		2D9A919329BB8BFF00476EA6 /* TONTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */; };
 		2D9A919429BB8BFF00476EA6 /* TONError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A919029BB8BFF00476EA6 /* TONError.swift */; };
@@ -678,6 +679,7 @@
 		2D9565062B5024A70024F4E5 /* AlgorandWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandWalletManager.swift; sourceTree = "<group>"; };
 		2D9565072B5024A70024F4E5 /* AlgorandTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandTransactionBuilder.swift; sourceTree = "<group>"; };
 		2D95650A2B5024CB0024F4E5 /* AlgorandWalletAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandWalletAssembly.swift; sourceTree = "<group>"; };
+		2D95650C2B50253E0024F4E5 /* AlgorandTransactionParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandTransactionParams.swift; sourceTree = "<group>"; };
 		2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONWalletInfo.swift; sourceTree = "<group>"; };
 		2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONTransactionBuilder.swift; sourceTree = "<group>"; };
 		2D9A919029BB8BFF00476EA6 /* TONError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONError.swift; sourceTree = "<group>"; };
@@ -1406,6 +1408,7 @@
 			children = (
 				2D9565062B5024A70024F4E5 /* AlgorandWalletManager.swift */,
 				2D9565072B5024A70024F4E5 /* AlgorandTransactionBuilder.swift */,
+				2D95650C2B50253E0024F4E5 /* AlgorandTransactionParams.swift */,
 			);
 			path = Algorand;
 			sourceTree = "<group>";
@@ -3779,6 +3782,7 @@
 				5D7D243D25136254001B9A4F /* Serializer.swift in Sources */,
 				5D7D242D25136254001B9A4F /* XRPLResponse.swift in Sources */,
 				EF2BC61E29DAC649003D3F18 /* RavencoinNetworkProvider.swift in Sources */,
+				2D95650D2B50253F0024F4E5 /* AlgorandTransactionParams.swift in Sources */,
 				DA63B09E29CB3FC700AC6E49 /* KaspaTransaction.swift in Sources */,
 				DAED921F27A150E500F188D7 /* PolkadotAddressService.swift in Sources */,
 				EF5820412B31B54D00940387 /* EstimationFeeAddressFactory.swift in Sources */,
