@@ -38,7 +38,7 @@ final class AlgorandTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
 
-        return try output.data
+        return output.data
     }
 
     func buildForSend(transaction: Transaction, with params: AlgorandTransactionParams.Build, signature: Data) throws -> Data {
@@ -85,7 +85,7 @@ final class AlgorandTransactionBuilder {
         let input = AlgorandSigningInput.with { input in
             input.publicKey = buildParams.publicKey.blockchainKey
             input.genesisID = buildParams.genesisId
-            input.genesisHash = Data(base64Encoded: "wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=") ?? Data()
+            input.genesisHash = buildParams.genesisHash.data(using: .utf8) ?? Data()
             
             if let nonce = buildParams.nonce?.data(using: .utf8) {
                 input.note = nonce

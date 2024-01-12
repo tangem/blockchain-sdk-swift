@@ -9,5 +9,7 @@
 import Foundation
 
 enum AlgorandAccountStatus: String, Decodable {
-    case Offline, Online, NotParticipating
+    case offline = "Offline"
+    case online = "Online"
+    case notParticipating = "NotParticipating"
 }
