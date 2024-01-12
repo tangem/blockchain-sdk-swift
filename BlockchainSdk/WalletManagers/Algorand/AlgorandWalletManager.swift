@@ -71,7 +71,7 @@ private extension AlgorandWalletManager {
 //            let networkName = wallet.blockchain.displayName
 //            let reserveValueString = blanaceValues.reserveValue.decimalNumber.stringValue
 //            let currencySymbol = wallet.blockchain.currencySymbol
-//            
+//
 //            completion(
 //                .failure(
 //                    WalletError.noAccount(
@@ -129,7 +129,6 @@ extension AlgorandWalletManager: WalletManager {
                     publicKey: walletManager.wallet.publicKey,
                     genesisId: transactionInfoParams.genesisId,
                     genesisHash: transactionInfoParams.genesisHash,
-                    fee: (transaction.fee.amount.value * walletManager.wallet.blockchain.decimalValue).roundedDecimalNumber.uint64Value,
                     round: walletManager.currentRoundBlock,
                     lastRound: transactionInfoParams.lastRound,
                     nonce: (transaction.params as? AlgorandTransactionParams.Input)?.nonce
