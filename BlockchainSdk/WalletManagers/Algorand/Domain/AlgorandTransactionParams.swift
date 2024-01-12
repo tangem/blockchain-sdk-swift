@@ -21,7 +21,6 @@ public enum AlgorandTransactionParams {
         let publicKey: Wallet.PublicKey
         let genesisId: String
         let genesisHash: String
-        let fee: UInt64
         let round: UInt64
         let lastRound: UInt64
         let nonce: String?

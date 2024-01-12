@@ -8,11 +8,14 @@
 
 import Foundation
 import WalletCore
-import BigInt
 
 final class AlgorandTransactionBuilder {
     private let isTestnet: Bool
     private var coinType: CoinType { .algorand }
+    
+    private var decimalValue: Decimal {
+        Blockchain.algorand(testnet: isTestnet).decimalValue
+    }
     
     init(isTestnet: Bool) {
         self.isTestnet = isTestnet
@@ -35,7 +38,7 @@ final class AlgorandTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
 
-        return output.dataHash
+        return try output.data
     }
 
     func buildForSend(transaction: Transaction, with params: AlgorandTransactionParams.Build, signature: Data) throws -> Data {
@@ -76,21 +79,24 @@ final class AlgorandTransactionBuilder {
     private func buildInput(transaction: Transaction, buildParams: AlgorandTransactionParams.Build) throws -> AlgorandSigningInput {
         let transfer = AlgorandTransfer.with {
             $0.toAddress = transaction.destinationAddress
-            $0.amount = (transaction.amount.value * Blockchain.algorand(testnet: isTestnet).decimalValue).roundedDecimalNumber.uint64Value
+            $0.amount = (transaction.amount.value * decimalValue).roundedDecimalNumber.uint64Value
         }
 
-        return AlgorandSigningInput.with { input in
+        let input = AlgorandSigningInput.with { input in
             input.publicKey = buildParams.publicKey.blockchainKey
             input.genesisID = buildParams.genesisId
-            input.genesisHash = Data(hexString: buildParams.genesisHash)
-            input.fee = buildParams.fee
-            input.firstRound = buildParams.round
-            input.lastRound = buildParams.lastRound
-            input.transfer = transfer
+            input.genesisHash = Data(base64Encoded: "wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=") ?? Data()
             
             if let nonce = buildParams.nonce?.data(using: .utf8) {
                 input.note = nonce
             }
+            
+            input.firstRound = buildParams.round
+            input.lastRound = buildParams.lastRound
+            input.fee = (transaction.fee.amount.value * decimalValue).roundedDecimalNumber.uint64Value
+            input.transfer = transfer
         }
+        
+        return input
     }
 }

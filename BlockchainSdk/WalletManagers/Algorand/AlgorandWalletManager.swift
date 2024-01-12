@@ -129,7 +129,6 @@ extension AlgorandWalletManager: WalletManager {
                     publicKey: walletManager.wallet.publicKey,
                     genesisId: transactionInfoParams.genesisId,
                     genesisHash: transactionInfoParams.genesisHash,
-                    fee: (transaction.fee.amount.value * walletManager.wallet.blockchain.decimalValue).roundedDecimalNumber.uint64Value,
                     round: walletManager.currentRoundBlock,
                     lastRound: transactionInfoParams.lastRound,
                     nonce: (transaction.params as? AlgorandTransactionParams.Input)?.nonce
