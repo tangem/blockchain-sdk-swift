@@ -29,7 +29,8 @@ struct AlgorandWalletAssembly: WalletManagerAssembly {
         ]
         
         return try AlgorandWalletManager(
-            wallet: input.wallet,
+            wallet: input.wallet, 
+            transactionBuilder: AlgorandTransactionBuilder(isTestnet: input.blockchain.isTestnet),
             networkService: .init(providers: providers)
         )
     }

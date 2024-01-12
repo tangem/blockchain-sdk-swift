@@ -20,8 +20,8 @@ final class AlgorandTransactionBuilder {
     
     // MARK: - Implementation
 
-    func buildForSign(transaction: Transaction) throws -> Data {
-        let input = try buildInput(transaction: transaction)
+    func buildForSign(transaction: Transaction, with params: AlgorandTransactionParams.Build) throws -> Data {
+        let input = try buildInput(transaction: transaction, buildParams: params)
         let txInputData = try input.serializedData()
 
         guard !txInputData.isEmpty else {
@@ -38,12 +38,8 @@ final class AlgorandTransactionBuilder {
         return output.dataHash
     }
 
-    func buildForSend(transaction: Transaction, signature: Data) throws -> Data {
-        guard let transactionParams = transaction.params as? AlgorandTransactionParams else {
-            throw WalletError.failedToBuildTx
-        }
-
-        let input = try buildInput(transaction: transaction)
+    func buildForSend(transaction: Transaction, buildParams: AlgorandTransactionParams.Build, signature: Data) throws -> Data {
+        let input = try buildInput(transaction: transaction, buildParams: buildParams)
         let txInputData = try input.serializedData()
 
         guard !txInputData.isEmpty else {
@@ -54,7 +50,7 @@ final class AlgorandTransactionBuilder {
             coinType: coinType,
             txInputData: txInputData,
             signatures: signature.asDataVector(),
-            publicKeys: transactionParams.publicKey.blockchainKey.asDataVector()
+            publicKeys: buildParams.publicKey.blockchainKey.asDataVector()
         )
         let output = try AlgorandSigningOutput(serializedData: compiledTransaction)
 
@@ -77,23 +73,19 @@ final class AlgorandTransactionBuilder {
      - https://developer.algorand.org/docs/get-details/transactions/#genesis-hash
      - https://developer.algorand.org/docs/get-details/transactions/transactions/#common-fields-header-and-type
      */
-    private func buildInput(transaction: Transaction) throws -> AlgorandSigningInput {
-        guard let transactionParams = transaction.params as? AlgorandTransactionParams else {
-            throw WalletError.failedToBuildTx
-        }
-        
+    private func buildInput(transaction: Transaction, buildParams: AlgorandTransactionParams.Build) throws -> AlgorandSigningInput {
         let transfer = AlgorandTransfer.with {
             $0.toAddress = transaction.destinationAddress
             $0.amount = (transaction.amount.value * Blockchain.algorand(testnet: isTestnet).decimalValue).roundedDecimalNumber.uint64Value
         }
 
         return try AlgorandSigningInput.with { input in
-            input.publicKey = transactionParams.publicKey.blockchainKey
+            input.publicKey = buildParams.publicKey.blockchainKey
             input.genesisID = isTestnet ? GenesisChallenge.testnet : GenesisChallenge.mainnet
             input.genesisHash = try GenesisChallenge.genesisHash(isTestnet: isTestnet)
             input.fee = (transaction.fee.amount.value * Blockchain.algorand(testnet: isTestnet).decimalValue).roundedDecimalNumber.uint64Value
-            input.firstRound = transactionParams.round
-            input.lastRound = transactionParams.round + 1000
+            input.firstRound = buildParams.round
+            input.lastRound = buildParams.round + 1000
             input.transfer = transfer
         }
     }

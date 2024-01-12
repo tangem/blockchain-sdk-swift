@@ -13,11 +13,13 @@ final class AlgorandWalletManager: BaseManager {
     
     // MARK: - Private Properties
     
+    private let transactionBuilder: AlgorandTransactionBuilder
     private let networkService: AlgorandNetworkService
     
     // MARK: - Init
     
-    init(wallet: Wallet, networkService: AlgorandNetworkService) throws {
+    init(wallet: Wallet, transactionBuilder: AlgorandTransactionBuilder, networkService: AlgorandNetworkService) throws {
+        self.transactionBuilder = transactionBuilder
         self.networkService = networkService
         super.init(wallet: wallet)
     }
@@ -108,7 +110,38 @@ extension AlgorandWalletManager: WalletManager {
         _ transaction: Transaction,
         signer: TransactionSigner
     ) -> AnyPublisher<TransactionSendResult, Error> {
-        return .anyFail(error: WalletError.failedToSendTx)
+        networkService
+            .getTransactionParams()
+            .withWeakCaptureOf(self)
+            .map { walletManager, transactionInfoParams -> (AlgorandTransactionParams.Build) in
+                let buildParams = AlgorandTransactionParams.Build(
+                    publicKey: walletManager.wallet.publicKey,
+                    genesisId: transactionInfoParams.genesisId,
+                    genesisHash: transactionInfoParams.genesisHash,
+                    fee: transactionInfoParams.fee,
+                    round: 0,
+                    lastRound: transactionInfoParams.lastRound,
+                    nonce: (transaction.params as? AlgorandTransactionParams.Input)?.nonce
+                )
+                
+                return buildParams
+            }
+            .withWeakCaptureOf(self)
+        
+            .tryMap { walletManager, buildParams -> (hash: Data, params: AlgorandTransactionParams.Build) in
+                let hashForSign = try walletManager.transactionBuilder.buildForSign(transaction: transaction, with: buildParams)
+                return (hashForSign, buildParams)
+            }
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, transactionData -> AnyPublisher<Data, Error> in
+                return signer.sign(hash: transactionData.hash, walletPublicKey: transactionData.params.publicKey)
+            }
+            .withWeakCaptureOf(self)
+            .map { walletManager, signedHash in
+                print(signedHash)
+                return TransactionSendResult(hash: signedHash.hexString)
+            }
+            .eraseToAnyPublisher()
     }
 }
 
