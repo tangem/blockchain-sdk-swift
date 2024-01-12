@@ -16,6 +16,9 @@ final class AlgorandWalletManager: BaseManager {
     private let transactionBuilder: AlgorandTransactionBuilder
     private let networkService: AlgorandNetworkService
     
+    /// The round for which this information is relevant.
+    private var currentRoundBlock: UInt64 = 0
+    
     // MARK: - Init
     
     init(wallet: Wallet, transactionBuilder: AlgorandTransactionBuilder, networkService: AlgorandNetworkService) throws {
@@ -53,22 +56,30 @@ private extension AlgorandWalletManager {
         wallet.add(coinValue: blanaceValues.coinValue)
         wallet.add(reserveValue: blanaceValues.reserveValue)
         
-        switch accountModel.status {
-        case .Online:
-            completion(.success(()))
-        case .NotParticipating, .Offline:
-            let networkName = wallet.blockchain.displayName
-            let reserveValueString = blanaceValues.reserveValue.decimalNumber.stringValue
-            let currencySymbol = wallet.blockchain.currencySymbol
-            
-            completion(
-                .failure(
-                    WalletError.noAccount(
-                        message: "no_account_algorand".localized([networkName, reserveValueString, currencySymbol])
-                    )
-                )
-            )
+        if accountModel.amount < accountModel.minBalance {
+            // TODO: - Сделать отображение ошибки no_account
         }
+        
+        currentRoundBlock = accountModel.round
+        
+        completion(.success(()))
+        
+//        switch accountModel.status {
+//        case .Online, .Offline:
+//            completion(.success(()))
+//        case .NotParticipating:
+//            let networkName = wallet.blockchain.displayName
+//            let reserveValueString = blanaceValues.reserveValue.decimalNumber.stringValue
+//            let currencySymbol = wallet.blockchain.currencySymbol
+//            
+//            completion(
+//                .failure(
+//                    WalletError.noAccount(
+//                        message: "no_account_algorand".localized([networkName, reserveValueString, currencySymbol])
+//                    )
+//                )
+//            )
+//        }
     }
     
     private func calculateCoinValueWithReserveDeposit(from accountModel: AlgorandResponse.Account) -> (coinValue: Decimal, reserveValue: Decimal) {
@@ -118,28 +129,32 @@ extension AlgorandWalletManager: WalletManager {
                     publicKey: walletManager.wallet.publicKey,
                     genesisId: transactionInfoParams.genesisId,
                     genesisHash: transactionInfoParams.genesisHash,
-                    fee: transactionInfoParams.fee,
-                    round: 0,
+                    fee: (transaction.fee.amount.value * walletManager.wallet.blockchain.decimalValue).roundedDecimalNumber.uint64Value,
+                    round: walletManager.currentRoundBlock,
                     lastRound: transactionInfoParams.lastRound,
                     nonce: (transaction.params as? AlgorandTransactionParams.Input)?.nonce
                 )
                 
                 return buildParams
             }
-            .withWeakCaptureOf(self)
-        
-            .tryMap { walletManager, buildParams -> (hash: Data, params: AlgorandTransactionParams.Build) in
-                let hashForSign = try walletManager.transactionBuilder.buildForSign(transaction: transaction, with: buildParams)
+            .tryMap { buildParams -> (hash: Data, params: AlgorandTransactionParams.Build) in
+                let hashForSign = try self.transactionBuilder.buildForSign(transaction: transaction, with: buildParams)
                 return (hashForSign, buildParams)
             }
-            .withWeakCaptureOf(self)
-            .flatMap { walletManager, transactionData -> AnyPublisher<Data, Error> in
+            .tryMap { transactionData -> (hash: Data, params: AlgorandTransactionParams.Build) in
+                let hashForSend = try self.transactionBuilder.buildForSend(transaction: transaction, with: transactionData.params, signature: transactionData.hash)
+                return (hashForSend, transactionData.params)
+            }
+            .flatMap { transactionData -> AnyPublisher<Data, Error> in
                 return signer.sign(hash: transactionData.hash, walletPublicKey: transactionData.params.publicKey)
             }
             .withWeakCaptureOf(self)
-            .map { walletManager, signedHash in
-                print(signedHash)
-                return TransactionSendResult(hash: signedHash.hexString)
+            .flatMap { walletManager, transactionHash -> AnyPublisher<String, Error> in
+                walletManager.networkService.sendTransaction(hash: transactionHash.hexString)
+            }
+            .map { outputHash in
+                print(outputHash)
+                return TransactionSendResult(hash: outputHash)
             }
             .eraseToAnyPublisher()
     }
@@ -150,6 +165,7 @@ extension AlgorandWalletManager: WalletManager {
  */
 extension AlgorandWalletManager: MinimumBalanceRestrictable {
     var minimumBalance: Amount {
-        wallet.amounts[.reserve] ?? Amount(with: wallet.blockchain, value: 0)
+        let minimumBalanceAmountValue = (wallet.amounts[.reserve] ?? Amount(with: wallet.blockchain, value: 0)).value
+        return Amount(with: wallet.blockchain, value: minimumBalanceAmountValue)
     }
 }

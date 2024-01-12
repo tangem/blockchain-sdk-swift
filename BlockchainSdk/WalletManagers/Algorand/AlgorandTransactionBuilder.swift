@@ -38,8 +38,8 @@ final class AlgorandTransactionBuilder {
         return output.dataHash
     }
 
-    func buildForSend(transaction: Transaction, buildParams: AlgorandTransactionParams.Build, signature: Data) throws -> Data {
-        let input = try buildInput(transaction: transaction, buildParams: buildParams)
+    func buildForSend(transaction: Transaction, with params: AlgorandTransactionParams.Build, signature: Data) throws -> Data {
+        let input = try buildInput(transaction: transaction, buildParams: params)
         let txInputData = try input.serializedData()
 
         guard !txInputData.isEmpty else {
@@ -50,7 +50,7 @@ final class AlgorandTransactionBuilder {
             coinType: coinType,
             txInputData: txInputData,
             signatures: signature.asDataVector(),
-            publicKeys: buildParams.publicKey.blockchainKey.asDataVector()
+            publicKeys: params.publicKey.blockchainKey.asDataVector()
         )
         let output = try AlgorandSigningOutput(serializedData: compiledTransaction)
 
@@ -79,33 +79,18 @@ final class AlgorandTransactionBuilder {
             $0.amount = (transaction.amount.value * Blockchain.algorand(testnet: isTestnet).decimalValue).roundedDecimalNumber.uint64Value
         }
 
-        return try AlgorandSigningInput.with { input in
+        return AlgorandSigningInput.with { input in
             input.publicKey = buildParams.publicKey.blockchainKey
-            input.genesisID = isTestnet ? GenesisChallenge.testnet : GenesisChallenge.mainnet
-            input.genesisHash = try GenesisChallenge.genesisHash(isTestnet: isTestnet)
-            input.fee = (transaction.fee.amount.value * Blockchain.algorand(testnet: isTestnet).decimalValue).roundedDecimalNumber.uint64Value
+            input.genesisID = buildParams.genesisId
+            input.genesisHash = Data(hexString: buildParams.genesisHash)
+            input.fee = buildParams.fee
             input.firstRound = buildParams.round
-            input.lastRound = buildParams.round + 1000
+            input.lastRound = buildParams.lastRound
             input.transfer = transfer
-        }
-    }
-}
-
-extension AlgorandTransactionBuilder {
-    enum GenesisChallenge {
-        static let mainnet = "mainnet-v1.0"
-        static let testnet = "testnet-v1.0"
-        static let mainnetGenesisHash = "wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="
-        static let testnetGenesisHash = "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
-        
-        static func genesisHash(isTestnet: Bool) throws -> Data {
-            let genesisHashValue = isTestnet ? testnetGenesisHash : mainnetGenesisHash
             
-            guard let genesisHashData = genesisHashValue.data(using: .utf8) else {
-                throw WalletError.failedToBuildTx
+            if let nonce = buildParams.nonce?.data(using: .utf8) {
+                input.note = nonce
             }
-            
-            return genesisHashData
         }
     }
 }

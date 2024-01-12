@@ -38,4 +38,12 @@ class AlgorandNetworkService: MultiNetworkProvider {
                 .eraseToAnyPublisher()
         }
     }
+    
+    func sendTransaction(hash: String) -> AnyPublisher<String, Error> {
+        providerPublisher { provider in
+            provider
+                .sendTransaction(hash: hash)
+                .eraseToAnyPublisher()
+        }
+    }
 }

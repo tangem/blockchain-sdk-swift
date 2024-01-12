@@ -55,6 +55,15 @@ struct AlgorandNetworkProvider: HostProvider {
         return requestPublisher(for: target)
     }
     
+    func sendTransaction(hash: String) -> AnyPublisher<String, Error> {
+        let target = AlgorandProviderTarget(
+            node: node,
+            targetType: .transaction(trx: hash)
+        )
+        
+        return requestPublisher(for: target)
+    }
+    
     // MARK: - Private Implementation
     
     private func requestPublisher<T: Decodable>(for target: AlgorandProviderTarget) -> AnyPublisher<T, Error> {

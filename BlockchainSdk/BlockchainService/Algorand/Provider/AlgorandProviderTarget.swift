@@ -31,7 +31,9 @@ struct AlgorandProviderTarget: TargetType {
         case .getAccounts(let address):
             return "v2/accounts/\(address)"
         case .getTransactionParams:
-            return "v2/transaction/params"
+            return "v2/transactions/params"
+        case .transaction:
+            return "v2/transactions"
         }
     }
     
@@ -39,6 +41,8 @@ struct AlgorandProviderTarget: TargetType {
         switch targetType {
         case .getAccounts, .getTransactionParams:
             return .get
+        case .transaction:
+            return .post
         }
     }
     
@@ -46,22 +50,22 @@ struct AlgorandProviderTarget: TargetType {
         switch targetType {
         case .getAccounts, .getTransactionParams:
             return .requestPlain
-        default:
-            // TODO: - Убрать default
-            let encoder = JSONEncoder()
-            encoder.keyEncodingStrategy = .convertToSnakeCase
-            
-            let jrpcRequest: Dictionary<String, Any>? = nil
-            
-            return .requestParameters(parameters: jrpcRequest ?? [:], encoding: JSONEncoding.default)
+        case .transaction(let transactionHash):
+            return .requestData(Data(hexString: transactionHash).base64EncodedData())
         }
     }
     
     var headers: [String : String]? {
         var headers: [String : String] = [
-            "Accept": "application/json",
-            "Content-Type": "application/json"
+            "Accept": "application/json"
         ]
+        
+        switch self.targetType {
+        case .transaction:
+            headers["Content-Type"] = "application/x-binary"
+        default:
+            headers["Content-Type"] = "application/json"
+        }
         
         if case .nownodes = node.type, let headerName = node.apiKeyHeaderName {
             headers[headerName] = node.apiKeyValue
@@ -75,5 +79,6 @@ extension AlgorandProviderTarget {
     enum TargetType {
         case getAccounts(address: String)
         case getTransactionParams
+        case transaction(trx: String)
     }
 }
