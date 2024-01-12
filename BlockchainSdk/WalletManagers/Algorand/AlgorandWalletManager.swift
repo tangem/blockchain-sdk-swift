@@ -61,25 +61,13 @@ private extension AlgorandWalletManager {
         }
         
         currentRoundBlock = accountModel.round
-        
-        completion(.success(()))
-        
-//        switch accountModel.status {
-//        case .Online, .Offline:
-//            completion(.success(()))
-//        case .NotParticipating:
-//            let networkName = wallet.blockchain.displayName
-//            let reserveValueString = blanaceValues.reserveValue.decimalNumber.stringValue
-//            let currencySymbol = wallet.blockchain.currencySymbol
-//
-//            completion(
-//                .failure(
-//                    WalletError.noAccount(
-//                        message: "no_account_algorand".localized([networkName, reserveValueString, currencySymbol])
-//                    )
-//                )
-//            )
-//        }
+                
+        switch accountModel.status {
+        case .online, .offline:
+            completion(.success(()))
+        case .notParticipating:
+            completion(.failure(WalletError.empty))
+        }
     }
     
     private func calculateCoinValueWithReserveDeposit(from accountModel: AlgorandResponse.Account) -> (coinValue: Decimal, reserveValue: Decimal) {
@@ -149,7 +137,8 @@ extension AlgorandWalletManager: WalletManager {
             }
             .withWeakCaptureOf(self)
             .flatMap { walletManager, transactionHash -> AnyPublisher<String, Error> in
-                walletManager.networkService.sendTransaction(hash: transactionHash.hexString)
+                print(transactionHash.hexString)
+                return walletManager.networkService.sendTransaction(hash: transactionHash.hexString)
             }
             .map { outputHash in
                 print(outputHash)
