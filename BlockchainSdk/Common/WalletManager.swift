@@ -85,7 +85,7 @@ public extension TransactionFeeProvider where Self: WalletProvider {
             let estimationFeeAddress = try EstimationFeeAddressFactory().makeAddress(for: wallet.blockchain)
             return getFee(amount: amount, destination: estimationFeeAddress)
         } catch {
-            return .anyFail(error:  WalletError.failedToGetFee)
+            return .anyFail(error: error)
         }
     }
 }
