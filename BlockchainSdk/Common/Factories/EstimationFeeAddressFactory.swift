@@ -70,10 +70,14 @@ struct EstimationFeeAddressFactory {
                 .tron,
                 .ton,
                 .near:
+            // For old blockchain with the ed25519 curve except `Cardano`
+            // We have to use the new `ed25519_slip0010` curve that the `AnyMasterKeyFactory` works correctly
+            let curve = blockchain.curve == .ed25519 ? .ed25519_slip0010 : blockchain.curve
+
             let mnemonic = try Mnemonic()
             let factory = AnyMasterKeyFactory(mnemonic: mnemonic, passphrase: "")
-            let masterKey = try factory.makeMasterKey(for: blockchain.curve)
-            let extendedPublicKey = try masterKey.makePublicKey(for: blockchain.curve)
+            let masterKey = try factory.makeMasterKey(for: curve)
+            let extendedPublicKey = try masterKey.makePublicKey(for: curve)
             let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
             let publicKey = Wallet.PublicKey(seedKey: extendedPublicKey.publicKey, derivationType: .none)
             let estimationFeeAddress = try service.makeAddress(for: publicKey, with: .default).value
