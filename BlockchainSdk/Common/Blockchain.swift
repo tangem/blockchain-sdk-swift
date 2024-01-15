@@ -405,6 +405,17 @@ public enum Blockchain: Equatable, Hashable {
         
         return false
     }
+
+    public func feePaidCurrency(for amountType: Amount.AmountType) -> FeePaidCurrency {
+        switch self {
+        case .terraV1:
+            return .sameCurrency
+        case .veChain:
+            return .token(value: VeChainWalletManager.Constants.energyToken)
+        default:
+            return .coin
+        }
+    }
 }
 
 // MARK: - Ethereum based blockchain definition
