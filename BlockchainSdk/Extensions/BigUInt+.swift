@@ -9,7 +9,7 @@
 import Foundation
 import struct BigInt.BigUInt
 
-extension BigUInt {
+public extension BigUInt {
     /// 1. For integers only, will return `nil` if the value isn't an integer number.
     /// 2. The given value will be clamped in the `0..<2^256>` range.
     init?(decimal decimalValue: Decimal) {
