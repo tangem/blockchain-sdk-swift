@@ -57,6 +57,44 @@ final class VeChainNetworkService: MultiNetworkProvider {
         }
     }
 
+    func getBalance(of token: Token, for address: String) -> AnyPublisher<Amount, Error> {
+        let payload = TokenBalanceERC20TokenMethod(owner: address).encodedData
+        let value = Data(0x00).hexString.lowercased().addHexPrefix()
+        let clause = VeChainNetworkParams.ContractCall.Clause(to: token.contractAddress, value: value, data: payload)
+        let contractCall = VeChainNetworkParams.ContractCall(clauses: [clause], caller: nil, gas: nil)
+
+        return providerPublisher { provider in
+            return provider
+                .callContract(contractCall: contractCall)
+                .tryMap { contractCallResult in
+                    guard let resultPayload = contractCallResult.first else {
+                        throw WalletError.failedToParseNetworkResponse
+                    }
+
+                    return resultPayload
+                }
+                .withWeakCaptureOf(self)
+                .tryMap { networkService, resultPayload in
+                    if let vmInvocationError = resultPayload.vmError, !vmInvocationError.isEmpty {
+                        throw VeChainError.contractCallFailed
+                    }
+
+                    if resultPayload.reverted {
+                        throw VeChainError.contractCallFailed
+                    }
+
+                    if let data = resultPayload.data {
+                        let balance = try networkService.mapDecimalValue(from: data)
+                        let value = balance / token.decimalValue
+                        return Amount(with: token, value: value)
+                    }
+
+                    throw WalletError.failedToParseNetworkResponse
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+
     func getTransactionInfo(transactionHash: String) -> AnyPublisher<VeChainTransactionInfo, Error> {
         return providerPublisher { provider in
             return provider
@@ -123,6 +161,12 @@ final class VeChainNetworkService: MultiNetworkProvider {
             blockRef: blockRef,
             blockNumber: blockInfoDTO.number
         )
+    }
+}
+
+extension VeChainNetworkService {
+    enum VeChainError: Error {
+        case contractCallFailed
     }
 }
 
