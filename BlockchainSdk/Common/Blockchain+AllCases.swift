@@ -55,6 +55,7 @@ public extension Blockchain {
         case .chia: break
         case .near: break
         case .decimal: break
+        case .veChain: break
         case .algorand: break
             // READ BELOW:
             //
@@ -104,6 +105,7 @@ public extension Blockchain {
             .chia(testnet: false),
             .near(curve: .ed25519_slip0010, testnet: false),
             .decimal(testnet: false),
+            .veChain(testnet: false),
             .algorand(testnet: false),
         ]
     }

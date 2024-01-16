@@ -11,6 +11,11 @@ import TangemSdk
 
 struct AlgorandWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        return try AlgorandWalletManager(wallet: input.wallet)
+        let transactionBuilder = AlgorandTransactionBuilder()
+        
+        return AlgorandWalletManager(
+            transactionBuilder: transactionBuilder,
+            wallet: input.wallet
+        )
     }
 }

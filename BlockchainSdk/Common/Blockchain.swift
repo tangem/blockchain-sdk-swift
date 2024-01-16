@@ -56,6 +56,7 @@ public enum Blockchain: Equatable, Hashable {
     case chia(testnet: Bool)
     case near(curve: EllipticCurve, testnet: Bool)
     case decimal(testnet: Bool)
+    case veChain(testnet: Bool)
     case algorand(testnet: Bool)
     
     public var isTestnet: Bool {
@@ -131,6 +132,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .decimal(let testnet):
             return testnet
+        case .veChain(let testnet):
+			return testnet
         case .algorand(let testnet):
             return testnet
         }
@@ -186,7 +189,8 @@ public enum Blockchain: Equatable, Hashable {
                 .cronos,
                 .telos,
                 .octa,
-                .decimal:
+                .decimal,
+                .veChain:
             return 18
         case  .cardano,
                 .xrp,
@@ -291,6 +295,8 @@ public enum Blockchain: Equatable, Hashable {
             return "NEAR"
         case .decimal:
             return "DEL"
+        case .veChain:
+            return "VET"
         case .algorand:
             return "ALGO"
         }
@@ -344,6 +350,8 @@ public enum Blockchain: Equatable, Hashable {
             return "NEAR Protocol" + testnetSuffix
         case .decimal:
             return "Decimal Smart Chain" + testnetSuffix
+        case .veChain:
+            return "VeChain" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -360,18 +368,20 @@ public enum Blockchain: Equatable, Hashable {
         case .bsc: return "BEP20"
         case .tron: return "TRC20"
         case .ton: return "TON"
+        case .veChain: return "VIP180"
         default:
             return nil
         }
     }
     
     public var canHandleTokens: Bool {
-        if isEvm {
-            return true
-        }
-        
         switch self {
-        case .binance, .solana, .tron:
+        case _ where isEvm:
+            return true
+        case .binance,
+                .solana,
+                .tron,
+                .veChain:
             return true
         default:
             return false
@@ -391,7 +401,8 @@ public enum Blockchain: Equatable, Hashable {
                 .gnosis,
                 .avalanche,
                 .ethereumPoW,
-                .cronos:
+                .cronos,
+                .veChain:
             if case .token = amountType {
                 return true
             }
@@ -757,6 +768,7 @@ extension Blockchain: Codable {
         case .chia: return "chia"
         case .near: return "near"
         case .decimal: return "decimal"
+        case .veChain: return "vechain"
         case .algorand: return "algorand"
         }
     }
@@ -824,6 +836,7 @@ extension Blockchain: Codable {
         case "chia": self = .chia(testnet: isTestnet)
         case "near": self = .near(curve: curve, testnet: isTestnet)
         case "decimal": self = .decimal(testnet: isTestnet)
+        case "vechain": self = .veChain(testnet: isTestnet)
         case "algorand": self = .algorand(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
@@ -899,20 +912,6 @@ extension Blockchain {
     }
 }
 
-// MARK: - Token transaction fee currency
-
-extension Blockchain {
-    // Some networks (Terra specifically) allow the fees to be paid in tokens themselves when transacting tokens
-    public var tokenTransactionFeePaidInNetworkCurrency: Bool {
-        switch self {
-        case .terraV1:
-            return false
-        default:
-            return true
-        }
-    }
-}
-
 // MARK: - Assembly type
 
 @available(iOS 13.0, *)
@@ -981,6 +980,8 @@ extension Blockchain {
             return TelosWalletAssembly()
         case .decimal:
             return DecimalWalletAssembly()
+        case .veChain:
+            return VeChainWalletAssembly()
         case .algorand:
             return AlgorandWalletAssembly()
         }

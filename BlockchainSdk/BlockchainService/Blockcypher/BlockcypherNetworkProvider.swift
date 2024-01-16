@@ -93,7 +93,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
         publisher(for: getTarget(for: .send(txHex: transaction), withRandomToken: true))
-            .map(BlockcypherSendResponse.self)
+            .map(BlockcypherSendResponse.self, using: jsonDecoder)
             .eraseError()
             .map { $0.tx.hash }
             .eraseToAnyPublisher()

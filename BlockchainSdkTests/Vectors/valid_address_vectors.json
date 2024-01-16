@@ -238,5 +238,22 @@
             "9a4b6c1e2d8f3a5b7e8d9a1c3b2e4d5f6a7b8c9d0e1f2a3b4c5d6e7f8a4b6c1e2d8f3"
         ]
     },
+    {
+        "blockchain": "vechain",
+        "positive": [
+            "0x44bc93A8d3cEfA5a6721723a2f8d2e4F7d480BA0",
+            "0xFF5ba88a17b2E16D23FF6647E9052E937AcB1406",
+            "0xBF6ba25D7D3E28153549196CD6361fCA5e40d635",
+            "0x2d753ec6c93893273e8Ba07C8A577aDf80bdfCe8",
+            "0xBD0109Df5f9683Ec9458d579020345C713928C45"
+        ],
+        "negative": [
+            "44bc93A8d3cEfA5a6721723a2f8d2e4F7d480BA0",
+            "0xf3d468DBb386aaD46E92FF222adDdf872C8CC06",
+            "0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d1",
+            "me@google.com",
+            ""
+        ]
+    }
 ]
 

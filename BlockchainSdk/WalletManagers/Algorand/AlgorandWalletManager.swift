@@ -9,7 +9,18 @@
 import Foundation
 import Combine
 
-final class AlgorandWalletManager: BaseManager {}
+final class AlgorandWalletManager: BaseManager {
+    // MARK: - Private Properties
+    
+    private let transactionBuilder: AlgorandTransactionBuilder
+    
+    // MARK: - Init
+    
+    init(transactionBuilder: AlgorandTransactionBuilder, wallet: Wallet) {
+        self.transactionBuilder = transactionBuilder
+        super.init(wallet: wallet)
+    }
+}
 
 // MARK: - WalletManager protocol conformance
 
