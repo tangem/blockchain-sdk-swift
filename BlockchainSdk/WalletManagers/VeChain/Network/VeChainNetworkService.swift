@@ -59,7 +59,7 @@ final class VeChainNetworkService: MultiNetworkProvider {
 
     func getBalance(of token: Token, for address: String) -> AnyPublisher<Amount, Error> {
         let payload = TokenBalanceERC20TokenMethod(owner: address).encodedData
-        let value = Data(0x00).hexString.lowercased().addHexPrefix()
+        let value = "0"
         let clause = VeChainNetworkParams.ContractCall.Clause(to: token.contractAddress, value: value, data: payload)
         let contractCall = VeChainNetworkParams.ContractCall(clauses: [clause], caller: nil, gas: nil)
 
