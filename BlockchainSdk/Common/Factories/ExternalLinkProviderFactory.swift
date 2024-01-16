@@ -102,7 +102,7 @@ public struct ExternalLinkProviderFactory {
         case .veChain:
             return VeChainExternalLinkProvider(isTestnet: isTestnet)
         case .algorand:
-            fatalError()
+            return AlgorandExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }
