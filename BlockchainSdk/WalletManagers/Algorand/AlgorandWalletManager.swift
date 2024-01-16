@@ -10,104 +10,29 @@ import Foundation
 import Combine
 
 final class AlgorandWalletManager: BaseManager {
-    
     // MARK: - Private Properties
     
-    private let networkService: AlgorandNetworkService
+    private let transactionBuilder: AlgorandTransactionBuilder
     
     // MARK: - Init
     
-    init(wallet: Wallet, networkService: AlgorandNetworkService) throws {
-        self.networkService = networkService
+    init(transactionBuilder: AlgorandTransactionBuilder, wallet: Wallet) {
+        self.transactionBuilder = transactionBuilder
         super.init(wallet: wallet)
-    }
-    
-    // MARK: - Implementation
-    
-    override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        cancellable = networkService
-            .getAccount(address: wallet.address)
-            .withWeakCaptureOf(self)
-            .sink(
-                receiveCompletion: { completionSubscription in
-                    if case let .failure(error) = completionSubscription {
-                        completion(.failure(error))
-                    }
-                },
-                receiveValue: { walletManager, account in
-                    walletManager.update(with: account, completion: completion)
-                }
-            )
-    }
-    
-}
-
-// MARK: - Private Implementation
-
-private extension AlgorandWalletManager {
-    func update(with accountModel: AlgorandResponse.Account, completion: @escaping (Result<Void, Error>) -> Void) {
-        let blanaceValues = calculateCoinValueWithReserveDeposit(from: accountModel)
-        
-        wallet.add(coinValue: blanaceValues.coinValue)
-        wallet.add(reserveValue: blanaceValues.reserveValue)
-        
-        switch accountModel.status {
-        case .Online:
-            completion(.success(()))
-        case .NotParticipating, .Offline:
-            let networkName = wallet.blockchain.displayName
-            let reserveValueString = blanaceValues.reserveValue.decimalNumber.stringValue
-            let currencySymbol = wallet.blockchain.currencySymbol
-            
-            completion(
-                .failure(
-                    WalletError.noAccount(
-                        message: "no_account_algorand".localized([networkName, reserveValueString, currencySymbol])
-                    )
-                )
-            )
-        }
-    }
-    
-    private func calculateCoinValueWithReserveDeposit(from accountModel: AlgorandResponse.Account) -> (coinValue: Decimal, reserveValue: Decimal) {
-        let changeBalanceValue = accountModel.amount > accountModel.minBalance ? accountModel.amount - accountModel.minBalance : 0
-        
-        let decimalBalance = Decimal(changeBalanceValue)
-        let coinBalance = decimalBalance / wallet.blockchain.decimalValue
-        
-        let decimalReserveBalance = Decimal(accountModel.minBalance)
-        let reserveCoinBalance = decimalReserveBalance / wallet.blockchain.decimalValue
-        
-        return (coinBalance, reserveCoinBalance)
     }
 }
 
 // MARK: - WalletManager protocol conformance
 
 extension AlgorandWalletManager: WalletManager {
-    var currentHost: String { networkService.host }
-
+    var currentHost: String { "" }
     var allowsFeeSelection: Bool { false }
-
+    
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        networkService
-            .getTransactionParams()
-            .withWeakCaptureOf(self)
-            .map { walletManager, response in
-                let sourceFee = Decimal(response.fee) / walletManager.wallet.blockchain.decimalValue
-                let minFee = Decimal(response.minFee) / walletManager.wallet.blockchain.decimalValue
-                
-                let targetFee = sourceFee > minFee ? sourceFee : minFee
-                
-                return [Fee(.init(with: walletManager.wallet.blockchain, value: targetFee))]
-            }
-            .eraseToAnyPublisher()
+        return .anyFail(error: WalletError.failedToGetFee)
     }
-
-    func send(
-        _ transaction: Transaction,
-        signer: TransactionSigner
-    ) -> AnyPublisher<TransactionSendResult, Error> {
+    
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         return .anyFail(error: WalletError.failedToSendTx)
     }
 }

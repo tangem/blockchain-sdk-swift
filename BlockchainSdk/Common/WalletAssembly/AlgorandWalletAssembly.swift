@@ -27,10 +27,15 @@ struct AlgorandWalletAssembly: WalletManagerAssembly {
                 networkConfig: input.networkConfig
             )
         ]
+
+        let transactionBuilder = AlgorandTransactionBuilder(
+            publicKey: input.wallet.publicKey.blockchainKey,
+            isTestnet: input.blockchain.isTestnet
+        )
         
-        return try AlgorandWalletManager(
-            wallet: input.wallet,
-            networkService: .init(providers: providers)
+        return AlgorandWalletManager(
+            transactionBuilder: transactionBuilder,
+            wallet: input.wallet
         )
     }
 }
