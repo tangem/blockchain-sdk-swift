@@ -26,7 +26,8 @@ extension AlgorandTransactionParams {
     struct Build {
         let genesisId: String
         let genesisHash: String
-        let round: UInt64
+        let firstRound: UInt64
+        let lastRound: UInt64
         let nonce: String?
     }
 }
