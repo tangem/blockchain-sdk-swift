@@ -16,12 +16,3 @@ struct AlgorandTransactionParams: TransactionParams {
         self.nonce = nonce
     }
 }
-
-/// This model use only for domain build transaction
-struct AlgorandBuildParams {
-    let genesisId: String
-    let genesisHash: String
-    let firstRound: UInt64
-    let lastRound: UInt64
-    let nonce: String?
-}
