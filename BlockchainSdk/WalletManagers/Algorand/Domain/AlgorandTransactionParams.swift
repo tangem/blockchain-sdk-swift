@@ -8,21 +8,11 @@
 
 import Foundation
 
-public enum AlgorandTransactionParams {
-    public struct Input: TransactionParams {
-        public let nonce: String
-        
-        public init(nonce: String) {
-            self.nonce = nonce
-        }
-    }
+/// This model describe parameters from external application
+struct AlgorandTransactionParams: TransactionParams {
+    public let nonce: String
     
-    struct Build {
-        let publicKey: Wallet.PublicKey
-        let genesisId: String
-        let genesisHash: String
-        let round: UInt64
-        let lastRound: UInt64
-        let nonce: String?
+    public init(nonce: String) {
+        self.nonce = nonce
     }
 }
