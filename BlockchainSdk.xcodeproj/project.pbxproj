@@ -264,6 +264,8 @@
 		B6B083582AE6B11C0099D6F8 /* NEARProtocolConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B083562AE6B11C0099D6F8 /* NEARProtocolConfig.swift */; };
 		B6B0835A2AE6B1480099D6F8 /* NEARAccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B083592AE6B1480099D6F8 /* NEARAccountInfo.swift */; };
 		B6B0835C2AE6BED40099D6F8 /* NullValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B0835B2AE6BED40099D6F8 /* NullValue.swift */; };
+		B6B2EB6B2B56A830005FBE8E /* VeChainNetworkParams.ContractCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B2EB6A2B56A830005FBE8E /* VeChainNetworkParams.ContractCall.swift */; };
+		B6B2EB6D2B56AAB9005FBE8E /* VeChainNetworkResult.ContractCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B2EB6C2B56AAB9005FBE8E /* VeChainNetworkResult.ContractCall.swift */; };
 		B6BA936B2AEA0E1300F84E36 /* NEARNetworkParams.Finality.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6BA936A2AEA0E1300F84E36 /* NEARNetworkParams.Finality.swift */; };
 		B6BA936D2AEA0E4800F84E36 /* NEARNetworkParams.ProtocolConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6BA936C2AEA0E4800F84E36 /* NEARNetworkParams.ProtocolConfig.swift */; };
 		B6BA936F2AEA0E7700F84E36 /* NEARNetworkParams.ViewAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6BA936E2AEA0E7700F84E36 /* NEARNetworkParams.ViewAccount.swift */; };
@@ -918,6 +920,8 @@
 		B6B083562AE6B11C0099D6F8 /* NEARProtocolConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NEARProtocolConfig.swift; sourceTree = "<group>"; };
 		B6B083592AE6B1480099D6F8 /* NEARAccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARAccountInfo.swift; sourceTree = "<group>"; };
 		B6B0835B2AE6BED40099D6F8 /* NullValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NullValue.swift; sourceTree = "<group>"; };
+		B6B2EB6A2B56A830005FBE8E /* VeChainNetworkParams.ContractCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkParams.ContractCall.swift; sourceTree = "<group>"; };
+		B6B2EB6C2B56AAB9005FBE8E /* VeChainNetworkResult.ContractCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkResult.ContractCall.swift; sourceTree = "<group>"; };
 		B6BA936A2AEA0E1300F84E36 /* NEARNetworkParams.Finality.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARNetworkParams.Finality.swift; sourceTree = "<group>"; };
 		B6BA936C2AEA0E4800F84E36 /* NEARNetworkParams.ProtocolConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARNetworkParams.ProtocolConfig.swift; sourceTree = "<group>"; };
 		B6BA936E2AEA0E7700F84E36 /* NEARNetworkParams.ViewAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARNetworkParams.ViewAccount.swift; sourceTree = "<group>"; };
@@ -2242,6 +2246,7 @@
 			children = (
 				B675E95C2B320D52004AF179 /* VeChainNetworkParams.swift */,
 				B676D9C32B33B028009A0D06 /* VeChainNetworkParams.BlockInfo.swift */,
+				B6B2EB6A2B56A830005FBE8E /* VeChainNetworkParams.ContractCall.swift */,
 				B675E9662B321102004AF179 /* VeChainNetworkParams.Transaction.swift */,
 				B676D9C12B33AFFE009A0D06 /* VeChainNetworkParams.TransactionStatus.swift */,
 			);
@@ -2254,6 +2259,7 @@
 				B675E95E2B320D69004AF179 /* VeChainNetworkResult.swift */,
 				B675E9602B320DBE004AF179 /* VeChainNetworkResult.AccountInfo.swift */,
 				B6FC8F382B3339AD00CD55ED /* VeChainNetworkResult.BlockInfo.swift */,
+				B6B2EB6C2B56AAB9005FBE8E /* VeChainNetworkResult.ContractCall.swift */,
 				B675E9682B321131004AF179 /* VeChainNetworkResult.Transaction.swift */,
 				B675E9622B320E7F004AF179 /* VeChainNetworkResult.TransactionInfo.swift */,
 			);
@@ -3353,6 +3359,7 @@
 				B65D2E792AD9B208004DF330 /* NEARNetworkService.swift in Sources */,
 				2D9A91A429BB8C1700476EA6 /* TONProvider.swift in Sources */,
 				5D54FE1A23E41E5A009FAC2F /* LitecoinNetworkParams.swift in Sources */,
+				B6B2EB6B2B56A830005FBE8E /* VeChainNetworkParams.ContractCall.swift in Sources */,
 				5D31EA2F27DA1C910031DBEB /* DetailedError.swift in Sources */,
 				DA9F76EC27EC9A2900F0665C /* TronWalletManager.swift in Sources */,
 				DC5E652D2B1650F400E81AA5 /* OP_VERIFY.swift in Sources */,
@@ -3739,6 +3746,7 @@
 				2D01EC062B052A0A00DEF1CC /* DecimalWalletAssembly.swift in Sources */,
 				DAF3AD4629E916D300E057FA /* CosmosFeeParameters.swift in Sources */,
 				B6BA93792AEA0F0C00F84E36 /* NEARNetworkResult.GasPrice.swift in Sources */,
+				B6B2EB6D2B56AAB9005FBE8E /* VeChainNetworkResult.ContractCall.swift in Sources */,
 				EF57BEC82A1E13BE00C2A493 /* DerivationConfig.swift in Sources */,
 				DA198B5B29E3FF4F00DB6EEA /* CosmosTarget.swift in Sources */,
 				EF3B19502AA85EA10084AA1C /* SaltPayExternalLinkProvider.swift in Sources */,
