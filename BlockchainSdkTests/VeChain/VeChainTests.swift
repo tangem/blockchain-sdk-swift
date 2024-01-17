@@ -65,7 +65,7 @@ final class VeChainTests: XCTestCase {
         let amount = Amount(with: blockchain, type: .coin, value: value)
 
         let feeValue: Amount = .zeroCoin(for: blockchain)   // Doesn't affect fee calculation
-        let feeParams = VeChainFeeParams(priority: .medium)
+        let feeParams = VeChainFeeParams(priority: .medium, vmGas: 0)
         let fee = Fee(feeValue, parameters: feeParams)
 
         let blockInfo = VeChainBlockInfo(
@@ -135,7 +135,7 @@ F87B27880109263B18B36F3C81B4E0DF94207F32EB8D9E6F5178336F86C2EBC3E1A4F872118810A7
         let amount = Amount(with: blockchain, type: .token(value: token), value: value)
 
         let feeValue: Amount = .zeroCoin(for: blockchain)   // Doesn't affect fee calculation
-        let feeParams = VeChainFeeParams(priority: .high)
+        let feeParams = VeChainFeeParams(priority: .high, vmGas: 15000)
         let fee = Fee(feeValue, parameters: feeParams)
 
         let blockInfo = VeChainBlockInfo(
@@ -227,7 +227,7 @@ F8BB278801092BDF0FAF64B081B4F85EF85C940000000000000000000000000000456E6572677980
         let clause = VeChainFeeCalculator.Clause(payload: clauseRaw.data)
         let gas = feeCalculator.gas(for: [clause])
 
-        XCTAssertEqual(gas, 5000 + 16000 + 4 * 7 + 68 * 43 + 15000 * 2)
+        XCTAssertEqual(gas, 5000 + 16000 + 4 * 7 + 68 * 43 + 15000)
     }
 
     func testGasForMultipleTokenTransferClauses() {
@@ -241,7 +241,7 @@ F8BB278801092BDF0FAF64B081B4F85EF85C940000000000000000000000000000456E6572677980
         ].map(VeChainFeeCalculator.Clause.init(payload:))
         let gas = feeCalculator.gas(for: clauses)
 
-        XCTAssertEqual(gas, 5000 + 16000 * 2 + 4 * 7 + 68 * 43 + 4 * 4 + 68 * 46 + 15000 * 2)
+        XCTAssertEqual(gas, 5000 + 16000 * 2 + 4 * 7 + 68 * 43 + 4 * 4 + 68 * 46 + 15000)
     }
 
     // MARK: - Fees
@@ -269,7 +269,7 @@ F8BB278801092BDF0FAF64B081B4F85EF85C940000000000000000000000000000456E6572677980
         }
         let clause = VeChainFeeCalculator.Clause(payload: clauseRaw.data)
         let input = VeChainFeeCalculator.Input(gasPriceCoefficient: gasPriceCoefficient, clauses: [clause])
-        let fee = feeCalculator.fee(for: input, amountType: .token(value: token))
+        let fee = feeCalculator.fee(for: input, amountType: .token(value: token), vmGas: 0)
 
         XCTAssertEqual(fee.amount.value, expectedValue, accuracy: 0.000_000_1)
     }
@@ -299,7 +299,7 @@ F8BB278801092BDF0FAF64B081B4F85EF85C940000000000000000000000000000456E6572677980
         }
         let clause = VeChainFeeCalculator.Clause(payload: clauseRaw.data)
         let input = VeChainFeeCalculator.Input(gasPriceCoefficient: gasPriceCoefficient, clauses: [clause])
-        let fee = feeCalculator.fee(for: input, amountType: .token(value: token))
+        let fee = feeCalculator.fee(for: input, amountType: .token(value: token), vmGas: 15000)
 
         XCTAssertEqual(fee.amount.value, expectedValue, accuracy: 0.000_000_1)
     }
