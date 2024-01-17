@@ -170,7 +170,7 @@ extension Amount.AmountType: Hashable {
         case (.coin, .coin), (.reserve, .reserve):
             return true
         case (.token(let lv), .token(let rv)):
-            return lv == rv && lv.symbol == rv.symbol
+            return lv == rv
         default:
             return false
         }
