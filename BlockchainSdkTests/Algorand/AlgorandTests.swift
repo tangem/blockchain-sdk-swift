@@ -19,7 +19,7 @@ final class AlgorandTests: XCTestCase {
     
     // MARK: - Impementation
     
-    func testWalletCoreExample() throws {
+    func testCoreExample() throws {
         let privateKey = PrivateKey(data: privateKeyData)!
         
         let round: UInt64 = 1937767
