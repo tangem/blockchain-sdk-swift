@@ -31,8 +31,27 @@ public extension BigUInt {
     /// - Note: Based on https://github.com/attaswift/BigInt/issues/52
     /// - Warning: May lead to a loss of precision.
     var decimal: Decimal? {
-        return Decimal(string: String(self), locale: Locale.enUS)
+        let bigUIntFormatted = String(self)
+
+        // Check that the decimal has been correctly formatted from the string without any loss 
+        guard
+            let result = Decimal(string: bigUIntFormatted, locale: Locale.enUS),
+            let decimalFormatted = Self.decimalFormatter.string(from: NSDecimalNumber(decimal: result)),
+            decimalFormatted == bigUIntFormatted
+        else {
+            return nil
+        }
+        
+        return result
     }
+    
+    private static var decimalFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.locale = Locale(identifier: "en_US")
+        formatter.usesGroupingSeparator = false
+        return formatter
+    }()
 }
 
 // MARK: - Convenience extensions
