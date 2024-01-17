@@ -161,22 +161,16 @@ extension Amount.AmountType: Hashable {
         case .reserve:
             hasher.combine("reserve")
         case .token(let value):
-            hasher.combine(value.hashValue)
+            hasher.combine(value)
         }
     }
     
     public static func == (lhs: Amount.AmountType, rhs: Amount.AmountType) -> Bool {
         switch (lhs, rhs) {
-        case (.coin, .coin):
-            return true
-        case (.reserve, .reserve):
+        case (.coin, .coin), (.reserve, .reserve):
             return true
         case (.token(let lv), .token(let rv)):
-            if lv.symbol == rv.symbol,
-                lv.contractAddress == rv.contractAddress {
-                return true
-            }
-            return false
+            return lv == rv && lv.symbol == rv.symbol
         default:
             return false
         }
