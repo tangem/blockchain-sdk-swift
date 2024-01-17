@@ -56,7 +56,7 @@ private extension AlgorandWalletManager {
         wallet.add(coinValue: blanaceValues.coinValue)
         wallet.add(reserveValue: blanaceValues.reserveValue)
         
-        guard accountModel.amount < accountModel.minBalance else {
+        guard accountModel.amount >= accountModel.minBalance else {
             let error = makeNoAccountError(using: accountModel)
             completion(.failure(error))
             return
