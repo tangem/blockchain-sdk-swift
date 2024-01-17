@@ -162,8 +162,7 @@
         },
         {
             "blockchain": "vechain",
-            "derivation": "m/44'/283'/0'/0'/0'",
-            "walletPublicKey": "0208ba6ca86d2a090080c57f0e75dff45d0a95fcde3d4c219cdcd06c4a53dd91a0"
+            "derivation": "m/44'/283'/0'/0'/0'"
         }
     ]
 }

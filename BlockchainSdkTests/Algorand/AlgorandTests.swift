@@ -51,29 +51,47 @@ final class AlgorandTests: XCTestCase {
             isTestnet: blockchain.isTestnet
         )
         
-//        let privateKey = PrivateKey(data: privateKeyData)!
-//        let amount = Amount(with: blockchain, value: Decimal(1000000000000) / blockchain.decimalValue)
-//        let fee = Fee(Amount(with: blockchain, value: Decimal(263000) / blockchain.decimalValue))
-//        
-//        let transaction = Transaction(
-//            amount: amount,
-//            fee: fee,
-//            sourceAddress: "",
-//            destinationAddress: "CRLADAHJZEW2GFY2UPEHENLOGCUOU74WYSTUXQLVLJUJFHEUZOHYZNWYR4",
-//            changeAddress: ""
-//        )
-//        
-//        let buildForSign = try transactionBuilder.buildForSign(
-//            transaction: transaction,
-//            with: .init(
-//                publicKey: BlockchainSdk.Wallet.PublicKey(seedKey: privateKey.getPublicKeyEd25519().data, derivationType: nil),
-//                genesisId: "mainnet-v1.0",
-//                genesisHash: "wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=",
-//                round: 1937767,
-//                lastRound: 1937767 + 1000,
-//                nonce: "hello"
-//            )
-//        )
+        let amount = Amount(with: blockchain, value: 10000 / blockchain.decimalValue)
+        let fee = Fee(Amount(with: blockchain, value: 1000 / blockchain.decimalValue))
+        
+        let transaction = Transaction(
+            amount: amount,
+            fee: fee,
+            sourceAddress: "",
+            destinationAddress: "CRLADAHJZEW2GFY2UPEHENLOGCUOU74WYSTUXQLVLJUJFHEUZOHYZNWYR4",
+            changeAddress: ""
+        )
+        
+        let round: UInt64 = 35240112
+        
+        let buildParameters = AlgorandBuildParams(
+            genesisId: "mainnet-v1.0",
+            genesisHash: "wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=",
+            firstRound: round,
+            lastRound: round + 1000,
+            nonce: "hello"
+        )
+        
+        let buildForSign = try transactionBuilder.buildForSign(
+            transaction: transaction,
+            with: buildParameters
+        )
+        
+        let expectedBuildForSign = "54588AA3616D74CD2710A3666565CD03E8A26676CE0219B8B0A367656EAC6D61696E6E65742D76312E30A26768C420C061C4D8FC1DBDDED2D7604BE4568E3F6D041987AC37BDE4B620B5AB39248ADFA26C76CE0219BC98A46E6F7465C40568656C6C6FA3726376C42014560180E9C92DA3171AA3C872356E30A8EA7F96C4A74BC1755A68929C94CB8FA3736E64C42061BF060EFC02E2887DFFFC8ED85268C8C091C013EEDF315BC50794D02A8791ADA474797065A3706179"
+        
+        XCTAssertEqual(buildForSign.hexString, expectedBuildForSign)
+        
+        let signature = privateKey.sign(digest: buildForSign, curve: .ed25519)
+        
+        let buildForSend = try transactionBuilder.buildForSend(
+            transaction: transaction,
+            with: buildParameters,
+            signature: signature!
+        )
+        
+        let exexpectedBuildForSend = "82A3736967C4402556BBE3CB6498A8D375ECED4092614C70DC05AAE715B9A0E6EDB0717CC2AAFFA4B2C8FCFBD6C11373654712E4BE297C44139B1A8A147EEECEE0E3F338299904A374786E8AA3616D74CD2710A3666565CD03E8A26676CE0219B8B0A367656EAC6D61696E6E65742D76312E30A26768C420C061C4D8FC1DBDDED2D7604BE4568E3F6D041987AC37BDE4B620B5AB39248ADFA26C76CE0219BC98A46E6F7465C40568656C6C6FA3726376C42014560180E9C92DA3171AA3C872356E30A8EA7F96C4A74BC1755A68929C94CB8FA3736E64C42061BF060EFC02E2887DFFFC8ED85268C8C091C013EEDF315BC50794D02A8791ADA474797065A3706179"
+        
+        XCTAssertEqual(buildForSend.hexString, exexpectedBuildForSend)
     }
     
 }
