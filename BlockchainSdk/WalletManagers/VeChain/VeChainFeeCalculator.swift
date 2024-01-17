@@ -49,11 +49,7 @@ struct VeChainFeeCalculator {
             }
         }
 
-        // The official VeChain wallets (VeWorld, Sync2) double the amount of gas for transactions with 
-        // virtual machine invocation (30k instead of 15k as stated in the gas calculation guide above)
-        //
-        // Replicating this behavior here just to be on the safe side
-        let vmInvocationCost = payloadCost > 0 ? 15000 * 2 : 0
+        let vmInvocationCost = payloadCost > 0 ? 15000 : 0
 
         return baseCost + clausesCost + payloadCost + vmInvocationCost
     }
