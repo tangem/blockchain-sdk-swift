@@ -133,7 +133,7 @@ public enum Blockchain: Equatable, Hashable {
         case .decimal(let testnet):
             return testnet
         case .veChain(let testnet):
-			return testnet
+            return testnet
         case .algorand(let testnet):
             return testnet
         }
@@ -476,7 +476,6 @@ extension Blockchain {
                     makeGetBlockJsonRpcProvider(),
                     URL(string: "https://etc.rivet.link/etc")!,
                     URL(string: "https://etc.etcdesktop.com")!,
-                    URL(string: "https://rpc.etcinscribe.com")!,
                     URL(string: "https://etc.mytokenpocket.vip")!,
                     URL(string: "https://besu-de.etc-network.info")!,
                     URL(string: "https://geth-at.etc-network.info")!,

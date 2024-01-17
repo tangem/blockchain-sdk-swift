@@ -29,7 +29,7 @@ final class AlgorandTransactionBuilder {
     
     // MARK: - Implementation
 
-    func buildForSign(transaction: Transaction, with params: AlgorandTransactionParams.Build) throws -> Data {
+    func buildForSign(transaction: Transaction, with params: AlgorandBuildParams) throws -> Data {
         let input = try buildInput(transaction: transaction, buildParams: params)
         let txInputData = try input.serializedData()
 
@@ -48,7 +48,7 @@ final class AlgorandTransactionBuilder {
         return preSigningOutput.data
     }
 
-    func buildForSend(transaction: Transaction, with params: AlgorandTransactionParams.Build, signature: Data) throws -> Data {
+    func buildForSend(transaction: Transaction, with params: AlgorandBuildParams, signature: Data) throws -> Data {
         let input = try buildInput(transaction: transaction, buildParams: params)
         let txInputData = try input.serializedData()
 
@@ -79,7 +79,7 @@ final class AlgorandTransactionBuilder {
      - https://developer.algorand.org/docs/get-details/transactions/#genesis-hash
      - https://developer.algorand.org/docs/get-details/transactions/transactions/#common-fields-header-and-type
      */
-    private func buildInput(transaction: Transaction, buildParams: AlgorandTransactionParams.Build) throws -> AlgorandSigningInput {
+    private func buildInput(transaction: Transaction, buildParams: AlgorandBuildParams) throws -> AlgorandSigningInput {
         do {
             try publicKey.validateAsEdKey()
         } catch {
@@ -106,7 +106,7 @@ final class AlgorandTransactionBuilder {
     }
     
     // TODO: - Use for assembly asset algorand transaction write this
-    private func buildAssetInput(transaction: Transaction, buildParams: AlgorandTransactionParams.Build) throws -> AlgorandSigningInput {
+    private func buildAssetInput(transaction: Transaction, buildParams: AlgorandBuildParams) throws -> AlgorandSigningInput {
         throw WalletError.failedToBuildTx
     }
 }
