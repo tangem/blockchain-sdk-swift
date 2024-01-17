@@ -178,11 +178,6 @@ extension Amount.AmountType: Hashable {
 }
 
 extension Amount {
-    static func dummyCoin(for blockchain: Blockchain) -> Amount {
-        // TODO: Andrey Fedorov - Implementation is the same as `zeroCoin(for:)` (IOS-4990)
-        Amount(with: blockchain, type: .coin, value: 0)
-    }
-    
     public static func zeroCoin(for blockchain: Blockchain) -> Amount {
         .init(with: blockchain, type: .coin, value: 0)
     }
