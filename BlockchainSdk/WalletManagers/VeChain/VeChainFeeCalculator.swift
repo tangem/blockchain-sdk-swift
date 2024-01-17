@@ -16,14 +16,15 @@ struct VeChainFeeCalculator {
         self.isTestnet = isTestnet
     }
 
-    func fee(for input: Input, amountType: Amount.AmountType) -> Fee {
+    func fee(for input: Input, amountType: Amount.AmountType, vmGas: Int) -> Fee {
         // See https://learn.vechain.energy/Vechain/How-to/Calculate-Gas-Fees/#priority--gaspricecoef for details
         let gasPriceCoefficient = Decimal(1) + ((Decimal(1) / Decimal(Constants.maxGasPriceCoefficient)) * Decimal(input.gasPriceCoefficient))
-        let totalGas = Decimal(gas(for: input.clauses))
+        let intrinsicGas = Decimal(gas(for: input.clauses))
+        let totalGas = intrinsicGas + Decimal(vmGas)
         let value = (totalGas * gasPriceCoefficient) / Constants.gasPrice
         let amount = Amount(with: .veChain(testnet: isTestnet), type: amountType, value: value)
         let priority = transactionPriority(from: input.gasPriceCoefficient)
-        let parameters = priority.flatMap(VeChainFeeParams.init)
+        let parameters = priority.flatMap { VeChainFeeParams(priority: $0, vmGas: vmGas) }
 
         return Fee(amount, parameters: parameters)
     }
