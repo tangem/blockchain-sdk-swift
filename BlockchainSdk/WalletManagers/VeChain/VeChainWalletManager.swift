@@ -240,7 +240,7 @@ extension VeChainWalletManager: WalletManager {
 
 // MARK: - Constants
 
-private extension VeChainWalletManager {
+extension VeChainWalletManager {
     enum Constants {
         /// A local energy token ("VeThor"), used as a fallback for fee calculation when
         /// the user doesn't have a real "VeThor" token added to the token list.
