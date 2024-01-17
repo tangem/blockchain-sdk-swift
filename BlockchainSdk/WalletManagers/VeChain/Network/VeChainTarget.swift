@@ -20,6 +20,7 @@ extension VeChainTarget {
     enum Target {
         case viewAccount(address: String)
         case viewBlock(request: VeChainNetworkParams.BlockInfo)
+        case callContract(contractCall: VeChainNetworkParams.ContractCall)
         case sendTransaction(rawTransaction: String)
         case transactionStatus(request: VeChainNetworkParams.TransactionStatus)
     }
@@ -45,6 +46,8 @@ extension VeChainTarget: TargetType {
                 path = "finalized"
             }
             return "/blocks/\(path)"
+        case .callContract:
+            return "/accounts/*"
         case .sendTransaction:
             return "/transactions"
         case .transactionStatus(let request):
@@ -58,7 +61,8 @@ extension VeChainTarget: TargetType {
              .viewBlock,
              .transactionStatus:
             return .get
-        case .sendTransaction:
+        case .sendTransaction,
+             .callContract:
             return .post
         }
     }
@@ -79,6 +83,8 @@ extension VeChainTarget: TargetType {
                 boolEncoding: .literal
             )
             return .requestParameters(parameters: parameters, encoding: encoding)
+        case .callContract(let contractCall):
+            return .requestJSONEncodable(contractCall)
         case .sendTransaction(let rawTransaction):
             return .requestJSONEncodable(VeChainNetworkParams.Transaction(raw: rawTransaction))
         }

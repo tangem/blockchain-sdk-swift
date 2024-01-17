@@ -130,7 +130,7 @@ final class VeChainTransactionBuilder {
                 input.data = Data()
             case .token(let token):
                 let tokenMethod = TransferERC20TokenMethod(destination: destinationAddress, amount: value)
-                input.value = Data(0x0)
+                input.value = Data(0x00)
                 input.to = token.contractAddress
                 input.data = tokenMethod.data
             case .reserve:

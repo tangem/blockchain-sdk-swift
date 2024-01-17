@@ -44,7 +44,7 @@ struct VeChainFeeCalculator {
 
         let payloadCost = clauses.reduce(into: 0) { partialResult, element in
             partialResult += element.payload.reduce(into: 0) { partialResult, element in
-                partialResult += element == 0x0 ? 4 : 68
+                partialResult += element == 0x00 ? 4 : 68
             }
         }
 
