@@ -381,6 +381,17 @@ public enum Blockchain: Equatable, Hashable {
         }
     }
     
+    public var feePaidCurrency: FeePaidCurrency {
+        switch self {
+        case .terraV1:
+            return .sameCurrency
+        case .veChain:
+            return .token(value: VeChainWalletManager.Constants.energyToken)
+        default:
+            return .coin
+        }
+    }
+
     public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
         switch self {
         case .arbitrum,
