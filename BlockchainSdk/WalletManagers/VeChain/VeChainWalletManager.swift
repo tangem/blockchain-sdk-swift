@@ -189,7 +189,7 @@ extension VeChainWalletManager: WalletManager {
     ) -> AnyPublisher<[Fee], Error> {
         return getVMGas(amount: amount, destination: destination)
             .withWeakCaptureOf(self)
-            .map { walletManager, vmGas -> ([Transaction], Int) in
+            .map { walletManager, vmGas in
                 let transactions = VeChainFeeParams.TransactionPriority.allCases.map { priority in
                     return walletManager.makeTransactionForFeeCalculation(
                         amount: amount,
@@ -201,7 +201,7 @@ extension VeChainWalletManager: WalletManager {
                 return (transactions, vmGas)
             }
             .withWeakCaptureOf(self)
-            .tryMap { walletManager, input -> ([VeChainFeeCalculator.Input], Int) in
+            .tryMap { walletManager, input in
                 let (transactions, vmGas) = input
                 let transactionInputs = try transactions.map { transaction in
                     try walletManager.transactionBuilder.buildInputForFeeCalculation(transaction: transaction)
