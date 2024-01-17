@@ -47,6 +47,7 @@
 		2D8B65242B57BA7000D4C973 /* AlgorandNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8B65192B57BA7000D4C973 /* AlgorandNetworkProvider.swift */; };
 		2D8B65252B57BA7000D4C973 /* AlgorandProviderUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8B651A2B57BA7000D4C973 /* AlgorandProviderUrl.swift */; };
 		2D8B65262B57BA7000D4C973 /* AlgorandProviderTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8B651B2B57BA7000D4C973 /* AlgorandProviderTarget.swift */; };
+		2D8B65282B57C8A600D4C973 /* AlgorandResponse+TransactionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8B65272B57C8A600D4C973 /* AlgorandResponse+TransactionResult.swift */; };
 		2D9A919229BB8BFF00476EA6 /* TONWalletInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */; };
 		2D9A919329BB8BFF00476EA6 /* TONTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */; };
 		2D9A919429BB8BFF00476EA6 /* TONError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A919029BB8BFF00476EA6 /* TONError.swift */; };
@@ -696,6 +697,7 @@
 		2D8B65192B57BA7000D4C973 /* AlgorandNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandNetworkProvider.swift; sourceTree = "<group>"; };
 		2D8B651A2B57BA7000D4C973 /* AlgorandProviderUrl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandProviderUrl.swift; sourceTree = "<group>"; };
 		2D8B651B2B57BA7000D4C973 /* AlgorandProviderTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandProviderTarget.swift; sourceTree = "<group>"; };
+		2D8B65272B57C8A600D4C973 /* AlgorandResponse+TransactionResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AlgorandResponse+TransactionResult.swift"; sourceTree = "<group>"; };
 		2D9A918D29BB8BFF00476EA6 /* TONWalletInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONWalletInfo.swift; sourceTree = "<group>"; };
 		2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONTransactionBuilder.swift; sourceTree = "<group>"; };
 		2D9A919029BB8BFF00476EA6 /* TONError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONError.swift; sourceTree = "<group>"; };
@@ -1427,6 +1429,7 @@
 				2D8B65112B57BA7000D4C973 /* AlgorandRequest+Transaction.swift */,
 				2D8B65122B57BA7000D4C973 /* AlgorandResponse+Error.swift */,
 				2D8B65132B57BA7000D4C973 /* AlgorandResponse+Transaction.swift */,
+				2D8B65272B57C8A600D4C973 /* AlgorandResponse+TransactionResult.swift */,
 				2D8B65142B57BA7000D4C973 /* AlgorandRequest.swift */,
 				2D8B65152B57BA7000D4C973 /* AlgorandAccountStatus.swift */,
 				2D8B65162B57BA7000D4C973 /* AlgorandResponse.swift */,
@@ -3612,6 +3615,7 @@
 				EF1339B62AB4B2A600B78BA3 /* TransferERC20TokenMethod.swift in Sources */,
 				EF2BC62529DAD53B003D3F18 /* RavencoinWalletInfo.swift in Sources */,
 				B6D345F82AD8B8040009D1B2 /* NEARNetworkProvider.swift in Sources */,
+				2D8B65282B57C8A600D4C973 /* AlgorandResponse+TransactionResult.swift in Sources */,
 				5D5E058C24FE749D00F04DE1 /* Bundle+.swift in Sources */,
 				5D845518243DFCE90072155E /* AdaliteNetworkProvider.swift in Sources */,
 				DC5E65302B1650F400E81AA5 /* OP_ELSE.swift in Sources */,

@@ -55,7 +55,7 @@ struct AlgorandNetworkProvider: HostProvider {
         return requestPublisher(for: target)
     }
     
-    func sendTransaction(data: Data) -> AnyPublisher<String, Error> {
+    func sendTransaction(data: Data) -> AnyPublisher<AlgorandResponse.TransactionResult, Error> {
         let target = AlgorandProviderTarget(
             node: node,
             targetType: .transaction(trx: data)

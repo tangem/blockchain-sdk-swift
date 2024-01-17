@@ -35,11 +35,18 @@ class AlgorandNetworkService: MultiNetworkProvider {
         providerPublisher { provider in
             provider
                 .getTransactionParams()
+                .mapError { error in
+                    if let error = error as? WalletError {
+                        return error
+                    }
+
+                    return WalletError.failedToGetFee
+                }
                 .eraseToAnyPublisher()
         }
     }
     
-    func sendTransaction(data: Data) -> AnyPublisher<String, Error> {
+    func sendTransaction(data: Data) -> AnyPublisher<AlgorandResponse.TransactionResult, Error> {
         providerPublisher { provider in
             provider
                 .sendTransaction(data: data)
