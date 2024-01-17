@@ -1014,4 +1014,22 @@ class AddressesTests: XCTestCase {
         XCTAssertFalse(addressService.validate("me@google.com"))
         XCTAssertFalse(addressService.validate(""))
     }
+    
+    func testAlgorandAddressValidation() throws {
+        let addressServiceFactory = AddressServiceFactory(blockchain: .algorand(testnet: false))
+        let addressService = addressServiceFactory.makeAddressService()
+
+        XCTAssertTrue(addressService.validate("ZW3ISEHZUHPO7OZGMKLKIIMKVICOUDRCERI454I3DB2BH52HGLSO67W754"))
+        XCTAssertTrue(addressService.validate("Q7AUUQCAO3O6CLPHMPTWN3VTCWLLWZJSI6QDO5XEC4ZZR5JZWXWZL5YWOM"))
+        XCTAssertTrue(addressService.validate("ZMORINNT75RZ67ZWV2EGZYW6MKZ2LOSSB5VTKJON6NSPO5MW6TVCMXMVTU"))
+        XCTAssertTrue(addressService.validate("ZW3ISEHZUHPO7OZGMKLKIIMKVICOUDRCERI454I3DB2BH52HGLSO67W754"))
+
+        XCTAssertFalse(addressService.validate("ZW3ISEHZUHPO7OZGMKLKIIMKVICOUDRCERI454I3DB2BH52HGL"))
+        XCTAssertFalse(addressService.validate("EEQKMHD64P5FN25Y6W63ZHEPVCQZKM4PCMF6ZIIJW4IPFX4WJALA"))
+        XCTAssertFalse(addressService.validate("44bc93A8d3cEfA5a6721723a2f8d2e4F7d480BA0"))
+        XCTAssertFalse(addressService.validate("0xf3d468DBb386aaD46E92FF222adDdf872C8CC06"))
+        XCTAssertFalse(addressService.validate("0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d1"))
+        XCTAssertFalse(addressService.validate("me@google.com"))
+        XCTAssertFalse(addressService.validate(""))
+    }
 }

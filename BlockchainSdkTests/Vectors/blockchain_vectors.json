@@ -226,6 +226,12 @@
         "testnet": false,
         "curve": "secp256k1",
         "shelley": false
+    },
+    {
+        "key": "algorand",
+        "testnet": false,
+        "curve": "ed25519",
+        "shelley": false
     }
 ]
 
