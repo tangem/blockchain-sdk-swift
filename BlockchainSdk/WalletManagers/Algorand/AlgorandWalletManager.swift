@@ -25,6 +25,7 @@ final class AlgorandWalletManager: BaseManager {
 // MARK: - WalletManager protocol conformance
 
 extension AlgorandWalletManager: WalletManager {
+    // TODO: - Insert host value
     var currentHost: String { "" }
 
     var allowsFeeSelection: Bool { false }

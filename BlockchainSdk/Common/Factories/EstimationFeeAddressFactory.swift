@@ -70,7 +70,7 @@ struct EstimationFeeAddressFactory {
                 .tron,
                 .ton,
                 .near,
-				.algorand:
+                .algorand:
             // For old blockchain with the ed25519 curve except `Cardano`
             // We have to use the new `ed25519_slip0010` curve that the `AnyMasterKeyFactory` works correctly
             let curve = blockchain.curve == .ed25519 ? .ed25519_slip0010 : blockchain.curve
