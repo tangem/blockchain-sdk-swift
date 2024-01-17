@@ -57,6 +57,7 @@ public enum Blockchain: Equatable, Hashable {
     case near(curve: EllipticCurve, testnet: Bool)
     case decimal(testnet: Bool)
     case veChain(testnet: Bool)
+    case algorand(testnet: Bool)
     
     public var isTestnet: Bool {
         switch self {
@@ -133,6 +134,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .veChain(let testnet):
             return testnet
+        case .algorand(let testnet):
+            return testnet
         }
     }
     
@@ -207,6 +210,8 @@ public enum Blockchain: Equatable, Hashable {
             return 12
         case .near:
             return 24
+        case .algorand:
+            return 6
         }
     }
     
@@ -292,6 +297,8 @@ public enum Blockchain: Equatable, Hashable {
             return "DEL"
         case .veChain:
             return "VET"
+        case .algorand:
+            return "ALGO"
         }
     }
     
@@ -761,6 +768,7 @@ extension Blockchain: Codable {
         case .near: return "near"
         case .decimal: return "decimal"
         case .veChain: return "vechain"
+        case .algorand: return "algorand"
         }
     }
     
@@ -828,6 +836,7 @@ extension Blockchain: Codable {
         case "near": self = .near(curve: curve, testnet: isTestnet)
         case "decimal": self = .decimal(testnet: isTestnet)
         case "vechain": self = .veChain(testnet: isTestnet)
+        case "algorand": self = .algorand(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -972,6 +981,8 @@ extension Blockchain {
             return DecimalWalletAssembly()
         case .veChain:
             return VeChainWalletAssembly()
+        case .algorand:
+            return AlgorandWalletAssembly()
         }
     }
 }
