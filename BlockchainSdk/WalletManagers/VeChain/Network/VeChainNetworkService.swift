@@ -59,8 +59,11 @@ final class VeChainNetworkService: MultiNetworkProvider {
 
     func getBalance(of token: Token, for address: String) -> AnyPublisher<Amount, Error> {
         let payload = TokenBalanceERC20TokenMethod(owner: address).encodedData
-        let value = "0" // Placeholder value, not used for contract calls
-        let clause = VeChainNetworkParams.ContractCall.Clause(to: token.contractAddress, value: value, data: payload)
+        let clause = VeChainNetworkParams.ContractCall.Clause(
+            to: token.contractAddress,
+            value: Constants.contractCallValue,
+            data: payload
+        )
         // Sync2 also doesn't use the `caller` and/or `gas` fields for balance requests
         let contractCall = VeChainNetworkParams.ContractCall(clauses: [clause], caller: nil, gas: nil)
 
@@ -98,9 +101,16 @@ final class VeChainNetworkService: MultiNetworkProvider {
         }
 
         let payload = TransferERC20TokenMethod(destination: destination, amount: bigUIntValue).encodedData
-        let value = "0" // Placeholder value, not used for contract calls
-        let clause = VeChainNetworkParams.ContractCall.Clause(to: token.contractAddress, value: value, data: payload)
-        let contractCall = VeChainNetworkParams.ContractCall(clauses: [clause], caller: source, gas: Constants.maxAllowedVMGas)
+        let clause = VeChainNetworkParams.ContractCall.Clause(
+            to: token.contractAddress,
+            value: Constants.contractCallValue,
+            data: payload
+        )
+        let contractCall = VeChainNetworkParams.ContractCall(
+            clauses: [clause],
+            caller: source,
+            gas: Constants.maxAllowedVMGas
+        )
 
         return providerPublisher { provider in
             return provider
@@ -197,6 +207,8 @@ private extension VeChainNetworkService {
     enum Constants {
         /// Sync2 uses `20_000_000` as a maximum allowed gas amount for such contract calls.
         static let maxAllowedVMGas = 20_000_000
+        /// Placeholder value, not used in contract calls.
+        static let contractCallValue = "0"
         static let radix = 16
         static let blockRefSize = 8
     }
