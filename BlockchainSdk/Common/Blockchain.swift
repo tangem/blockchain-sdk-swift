@@ -469,7 +469,6 @@ extension Blockchain {
                     makeGetBlockJsonRpcProvider(),
                     URL(string: "https://etc.rivet.link/etc")!,
                     URL(string: "https://etc.etcdesktop.com")!,
-                    URL(string: "https://rpc.etcinscribe.com")!,
                     URL(string: "https://etc.mytokenpocket.vip")!,
                     URL(string: "https://besu-de.etc-network.info")!,
                     URL(string: "https://geth-at.etc-network.info")!,
