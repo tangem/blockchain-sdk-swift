@@ -31,6 +31,12 @@ struct VeChainNetworkProvider {
         return requestPublisher(for: .viewBlock(request: request))
     }
 
+    func callContract(
+        contractCall: VeChainNetworkParams.ContractCall
+    ) -> AnyPublisher<VeChainNetworkResult.ContractCall, Error> {
+        return requestPublisher(for: .callContract(contractCall: contractCall))
+    }
+
     func sendTransaction(
         _ rawTransaction: String
     ) -> AnyPublisher<VeChainNetworkResult.Transaction, Error> {
