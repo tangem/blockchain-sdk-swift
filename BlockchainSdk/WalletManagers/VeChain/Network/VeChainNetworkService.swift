@@ -61,6 +61,8 @@ final class VeChainNetworkService: MultiNetworkProvider {
         let payload = TokenBalanceERC20TokenMethod(owner: address).encodedData
         let value = "0"
         let clause = VeChainNetworkParams.ContractCall.Clause(to: token.contractAddress, value: value, data: payload)
+
+        // Sync2 also doesn't use the `caller` and/or `gas` fields for balance requests
         let contractCall = VeChainNetworkParams.ContractCall(clauses: [clause], caller: nil, gas: nil)
 
         return providerPublisher { provider in
@@ -75,13 +77,7 @@ final class VeChainNetworkService: MultiNetworkProvider {
                 }
                 .withWeakCaptureOf(self)
                 .tryMap { networkService, resultPayload in
-                    if let vmInvocationError = resultPayload.vmError, !vmInvocationError.isEmpty {
-                        throw VeChainError.contractCallFailed
-                    }
-
-                    if resultPayload.reverted {
-                        throw VeChainError.contractCallFailed
-                    }
+                    try resultPayload.ensureNoError()
 
                     if let data = resultPayload.data {
                         let balance = try networkService.mapDecimalValue(from: data)
@@ -161,12 +157,6 @@ final class VeChainNetworkService: MultiNetworkProvider {
             blockRef: blockRef,
             blockNumber: blockInfoDTO.number
         )
-    }
-}
-
-extension VeChainNetworkService {
-    enum VeChainError: Error {
-        case contractCallFailed
     }
 }
 
