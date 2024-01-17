@@ -91,6 +91,40 @@ final class VeChainNetworkService: MultiNetworkProvider {
         }
     }
 
+    func getVMGas(token: Token, amount: Amount, source: String, destination: String) -> AnyPublisher<Int, Error> {
+        let decimalValue = amount.value * pow(Decimal(10), amount.decimals)
+
+        guard let bigUIntValue = BigUInt(decimal: decimalValue) else {
+            return .anyFail(error: WalletError.failedToGetFee)
+        }
+
+        let payload = TransferERC20TokenMethod(destination: destination, amount: bigUIntValue).encodedData
+        let value = "0"
+        let clause = VeChainNetworkParams.ContractCall.Clause(to: token.contractAddress, value: value, data: payload)
+
+        // Sync2 uses '20000000' as a maximum allowed gas amount for such contract calls
+        let contractCall = VeChainNetworkParams.ContractCall(clauses: [clause], caller: source, gas: 20000000)
+
+        return providerPublisher { provider in
+            return provider
+                .callContract(contractCall: contractCall)
+                .tryMap { contractCallResult in
+                    guard let resultPayload = contractCallResult.first else {
+                        throw WalletError.failedToParseNetworkResponse
+                    }
+
+                    return resultPayload
+                }
+                .withWeakCaptureOf(self)
+                .tryMap { networkService, resultPayload in
+                    try resultPayload.ensureNoError()
+
+                    return resultPayload.gasUsed
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+
     func getTransactionInfo(transactionHash: String) -> AnyPublisher<VeChainTransactionInfo, Error> {
         return providerPublisher { provider in
             return provider
