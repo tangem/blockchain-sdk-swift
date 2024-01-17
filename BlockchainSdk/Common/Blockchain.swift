@@ -57,7 +57,8 @@ public enum Blockchain: Equatable, Hashable {
     case near(curve: EllipticCurve, testnet: Bool)
     case decimal(testnet: Bool)
     case veChain(testnet: Bool)
-    
+    case xdc(testnet: Bool)
+
     public var isTestnet: Bool {
         switch self {
         case .bitcoin(let testnet):
@@ -133,9 +134,11 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .veChain(let testnet):
             return testnet
+        case .xdc(let testnet):
+            return testnet
         }
     }
-    
+
     public var curve: EllipticCurve {
         switch self {
         case .cardano:
@@ -156,7 +159,7 @@ public enum Blockchain: Equatable, Hashable {
             return .secp256k1
         }
     }
-    
+
     public var decimalCount: Int {
         switch self {
         case .bitcoin,
@@ -187,7 +190,8 @@ public enum Blockchain: Equatable, Hashable {
                 .telos,
                 .octa,
                 .decimal,
-                .veChain:
+                .veChain,
+                .xdc:
             return 18
         case  .cardano,
                 .xrp,
@@ -209,7 +213,7 @@ public enum Blockchain: Equatable, Hashable {
             return 24
         }
     }
-    
+
     public var currencySymbol: String {
         switch self {
         case .bitcoin:
@@ -292,12 +296,14 @@ public enum Blockchain: Equatable, Hashable {
             return "DEL"
         case .veChain:
             return "VET"
+        case .xdc:
+            return "XDC"
         }
     }
-    
+
     public var displayName: String {
         let testnetSuffix = isTestnet ? " Testnet" : ""
-        
+
         switch self {
         case .bitcoinCash:
             return "Bitcoin Cash" + testnetSuffix
@@ -345,6 +351,8 @@ public enum Blockchain: Equatable, Hashable {
             return "Decimal Smart Chain" + testnetSuffix
         case .veChain:
             return "VeChain" + testnetSuffix
+        case .xdc:
+            return "XDC Network"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -353,7 +361,7 @@ public enum Blockchain: Equatable, Hashable {
             return name + testnetSuffix
         }
     }
-    
+
     public var tokenTypeName: String? {
         switch self {
         case .ethereum: return "ERC20"
@@ -362,11 +370,12 @@ public enum Blockchain: Equatable, Hashable {
         case .tron: return "TRC20"
         case .ton: return "TON"
         case .veChain: return "VIP180"
+        case .xdc: return "XRC20"
         default:
             return nil
         }
     }
-    
+
     public var canHandleTokens: Bool {
         switch self {
         case _ where isEvm:
@@ -406,14 +415,15 @@ public enum Blockchain: Equatable, Hashable {
                 .avalanche,
                 .ethereumPoW,
                 .cronos,
-                .veChain:
+                .veChain,
+                .xdc:
             if case .token = amountType {
                 return true
             }
         default:
             break
         }
-        
+
         return false
     }
 }
@@ -422,7 +432,7 @@ public enum Blockchain: Equatable, Hashable {
 @available(iOS 13.0, *)
 extension Blockchain {
     public var isEvm: Bool { chainId != nil }
-    
+
     // Only fot Ethereum compatible blockchains
     // https://chainlist.org
     public var chainId: Int? {
@@ -445,17 +455,18 @@ extension Blockchain {
         case .telos: return isTestnet ? 41 : 40
         case .octa: return isTestnet ? 800002 : 800001
         case .decimal: return isTestnet ? 202020 : 75
+        case .xdc: return isTestnet ? 51 : 50
         default: return nil
         }
     }
-    
+
     //Only for Ethereum compatible blockchains
     public func getJsonRpcEndpoints(keys: EthereumApiKeys) -> [URL]? {
         let infuraProjectId = keys.infuraProjectId
         let nowNodesApiKey = keys.nowNodesApiKey
         let getBlockApiKeys = keys.getBlockApiKeys
         let quickNodeBscCredentials = keys.quickNodeBscCredentials
-        
+
         switch self {
         case .ethereum:
             if isTestnet {
@@ -545,11 +556,11 @@ extension Blockchain {
                     URL(string: "https://api.avax.network/ext/bc/C/rpc")!,
                     URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)/ext/bc/C/rpc")!,
                 ]
-                
+
                 if let jsonRpcKey = getBlockApiKeys[self] {
                     rpcEndpoits.append(URL(string: "https://go.getblock.io/\(jsonRpcKey)/ext/bc/C/rpc")!)
                 }
-                
+
                 return rpcEndpoits
             }
         case .fantom:
@@ -584,10 +595,10 @@ extension Blockchain {
         case .gnosis:
             return [
                 makeGetBlockJsonRpcProvider(),
-                
+
                 // from registry.json
                 URL(string: "https://rpc.gnosischain.com")!,
-                
+
                 // from chainlist.org
                 URL(string: "https://gnosischain-rpc.gateway.pokt.network")!,
                 URL(string: "https://gnosis-mainnet.public.blastapi.io")!,
@@ -615,7 +626,7 @@ extension Blockchain {
             if isTestnet {
                 return [URL(string: "https://evm.testnet.kava.io")!]
             }
-            
+
             return [URL(string: "https://evm.kava.io")!,
                     URL(string: "https://evm2.kava.io")!]
         case .cronos:
@@ -657,12 +668,29 @@ extension Blockchain {
                     URL(string: "https://node4-mainnet.decimalchain.com/web3/")!,
                 ]
             }
+        case .xdc(let isTestnet):
+            if isTestnet {
+                return [
+                    URL(string: "https://rpc.apothem.network/")!
+                ]
+            } else {
+                return [
+                    URL(string: "https://xdc.nownodes.io/\(nowNodesApiKey)")!,
+                    URL(string: "https://rpc.xdcrpc.com")!,
+                    URL(string: "https://erpc.xdcrpc.com")!,
+                    URL(string: "https://rpc.xinfin.network")!,
+                    URL(string: "https://erpc.xinfin.network")!,
+                    URL(string: "https://rpc.xdc.org")!,
+                    URL(string: "https://rpc.ankr.com/xdc")!,
+                    URL(string: "https://rpc1.xinfin.network")!,
+                ]
+            }
         default:
             return nil
         }
-        
+
         // MARK: - Private Implementation
-        
+
         func makeGetBlockJsonRpcProvider() -> URL {
             if let jsonRpcKey = getBlockApiKeys[self] {
                 return URL(string: "https://go.getblock.io/\(jsonRpcKey)")!
@@ -683,7 +711,7 @@ extension Blockchain {
             Log.debug("Wrong attempt to get a `DerivationPath` for a unsupported derivation curve")
             return nil
         }
-        
+
         if isTestnet {
             return BIP44(coinType: 1).buildPath()
         }
@@ -713,7 +741,7 @@ extension Blockchain {
             return [""]
         }
     }
-    
+
     public func getShareString(from address: String) -> String {
         switch self {
         case .bitcoin, .ethereum, .litecoin, .binance:
@@ -772,9 +800,10 @@ extension Blockchain: Codable {
         case .near: return "near"
         case .decimal: return "decimal"
         case .veChain: return "vechain"
+        case .xdc: return "xdc"
         }
     }
-    
+
     enum Keys: CodingKey {
         case key
         case testnet
@@ -782,17 +811,17 @@ extension Blockchain: Codable {
         case shelley
         case extended
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Keys.self)
         let key = try container.decode(String.self, forKey: Keys.key)
         let curveString = try container.decode(String.self, forKey: Keys.curve)
         let isTestnet = try container.decode(Bool.self, forKey: Keys.testnet)
-        
+
         guard let curve = EllipticCurve(rawValue: curveString) else {
             throw BlockchainSdkError.decodingFailed
         }
-        
+
         switch key {
         case "bitcoin": self = .bitcoin(testnet: isTestnet)
         case "stellar": self = .stellar(curve: curve, testnet: isTestnet)
@@ -839,11 +868,12 @@ extension Blockchain: Codable {
         case "near": self = .near(curve: curve, testnet: isTestnet)
         case "decimal": self = .decimal(testnet: isTestnet)
         case "vechain": self = .veChain(testnet: isTestnet)
+        case "xdc": self = .xdc(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Keys.self)
         try container.encode(codingKey, forKey: Keys.key)
@@ -879,7 +909,7 @@ extension Blockchain {
         case "rsk", "rsktoken": return .rsk
         case "bch": return .bitcoinCash(testnet: isTestnet)
         case "binance", "binanceasset": return .binance(testnet: isTestnet)
-        // For old cards cardano will work like ed25519_slip0010
+            // For old cards cardano will work like ed25519_slip0010
         case "cardano", "cardano-s": return .cardano(extended: false)
         case "xrp": return .xrp(curve: curve)
         case "duc": return .ducatus
@@ -908,6 +938,8 @@ extension Blockchain {
         case "chia": return .chia(testnet: isTestnet)
         case "near": return .near(curve: curve, testnet: isTestnet)
         case "decimal": return .decimal(testnet: isTestnet)
+        case "vechain": return .veChain(testnet: isTestnet)
+        case "xdc": return .xdc(testnet: isTestnet)
         default: return nil
         }
     }
@@ -983,6 +1015,8 @@ extension Blockchain {
             return DecimalWalletAssembly()
         case .veChain:
             return VeChainWalletAssembly()
+        case .xdc:
+            return XDCWalletAssembly()
         }
     }
 }
