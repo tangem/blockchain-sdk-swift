@@ -14,11 +14,12 @@ import WalletCore
 
 final class AlgorandTests: XCTestCase {
     private let blockchain: BlockchainSdk.Blockchain = .algorand(testnet: false)
+    private let coinType: CoinType = .algorand
+    private let privateKeyData = Data(hexString: "d5b43d706ef0cb641081d45a2ec213b5d8281f439f2425d1af54e2afdaabf55b")
     
     // MARK: - Impementation
     
     func testWalletCoreExample() throws {
-        let privateKeyData = Data(hexString: "d5b43d706ef0cb641081d45a2ec213b5d8281f439f2425d1af54e2afdaabf55b")
         let privateKey = PrivateKey(data: privateKeyData)!
         
         let round: UInt64 = 1937767
@@ -43,9 +44,13 @@ final class AlgorandTests: XCTestCase {
     }
     
     func testTransactionBuilder() throws {
-//        let transactionBuilder = AlgorandTransactionBuilder(
-//            isTestnet: blockchain.isTestnet)
-//        
+        let privateKey = PrivateKey(data: privateKeyData)!
+        
+        let transactionBuilder = AlgorandTransactionBuilder(
+            publicKey: privateKey.getPublicKeyByType(pubkeyType: .ed25519).data,
+            isTestnet: blockchain.isTestnet
+        )
+        
 //        let privateKey = PrivateKey(data: privateKeyData)!
 //        let amount = Amount(with: blockchain, value: Decimal(1000000000000) / blockchain.decimalValue)
 //        let fee = Fee(Amount(with: blockchain, value: Decimal(263000) / blockchain.decimalValue))
