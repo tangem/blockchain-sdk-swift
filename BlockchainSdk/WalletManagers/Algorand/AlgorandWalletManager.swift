@@ -156,7 +156,11 @@ extension AlgorandWalletManager {
             .flatMap { walletManager, transactionData -> AnyPublisher<AlgorandResponse.TransactionResult, Error> in
                 return walletManager.networkService.sendTransaction(data: transactionData)
             }
-            .map { transactionResult in
+            .withWeakCaptureOf(self)
+            .map { walletManager, transactionResult in
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: transactionResult.txId)
+                walletManager.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: transactionResult.txId)
             }
             .eraseToAnyPublisher()
