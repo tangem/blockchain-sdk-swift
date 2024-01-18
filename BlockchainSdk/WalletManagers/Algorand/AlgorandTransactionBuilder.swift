@@ -13,17 +13,19 @@ import CryptoKit
 
 final class AlgorandTransactionBuilder {
     private let publicKey: Data
+    private let curve: EllipticCurve
     private let isTestnet: Bool
     private var coinType: CoinType { .algorand }
     
     private var decimalValue: Decimal {
-        Blockchain.algorand(testnet: isTestnet).decimalValue
+        Blockchain.algorand(curve: curve, testnet: isTestnet).decimalValue
     }
     
     // MARK: - Init
     
-    init(publicKey: Data, isTestnet: Bool) {
+    init(publicKey: Data, curve: EllipticCurve, isTestnet: Bool) {
         self.publicKey = publicKey
+        self.curve = curve
         self.isTestnet = isTestnet
     }
     
