@@ -367,6 +367,12 @@
 		DAF3AD4629E916D300E057FA /* CosmosFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF3AD4529E916D300E057FA /* CosmosFeeParameters.swift */; };
 		DC136B432B1A6249008A7D41 /* Bech32Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC136B412B1A5B3C008A7D41 /* Bech32Tests.swift */; };
 		DC173AEC2A5D42EE0088F79E /* XRPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC173AEB2A5D42EE0088F79E /* XRPTests.swift */; };
+		DC3550F12B57013F00A93DBA /* XDCExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F02B57013F00A93DBA /* XDCExternalLinkProvider.swift */; };
+		DC3550F42B584C5E00A93DBA /* XDCAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F32B584C5E00A93DBA /* XDCAddressService.swift */; };
+		DC3550F62B584E2D00A93DBA /* XDCAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F52B584E2D00A93DBA /* XDCAddressConverter.swift */; };
+		DC3550F82B58529900A93DBA /* XDCTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F72B58529900A93DBA /* XDCTransactionBuilder.swift */; };
+		DC3550FA2B5852F200A93DBA /* XDCNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F92B5852F200A93DBA /* XDCNetworkService.swift */; };
+		DC3550FC2B58543100A93DBA /* XDCWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550FB2B58543100A93DBA /* XDCWalletAssembly.swift */; };
 		DC4E442B29BF4B4C0088617C /* XRPBase58.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC4E442A29BF4B4C0088617C /* XRPBase58.swift */; };
 		DC5E646D2B16098C00E81AA5 /* RIPEMD160+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5E646C2B16098C00E81AA5 /* RIPEMD160+.swift */; };
 		DC5E64702B160FCD00E81AA5 /* Opcode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5E646F2B160FCD00E81AA5 /* Opcode.swift */; };
@@ -1030,6 +1036,12 @@
 		DAF3AD4529E916D300E057FA /* CosmosFeeParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosFeeParameters.swift; sourceTree = "<group>"; };
 		DC136B412B1A5B3C008A7D41 /* Bech32Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bech32Tests.swift; sourceTree = "<group>"; };
 		DC173AEB2A5D42EE0088F79E /* XRPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPTests.swift; sourceTree = "<group>"; };
+		DC3550F02B57013F00A93DBA /* XDCExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCExternalLinkProvider.swift; sourceTree = "<group>"; };
+		DC3550F32B584C5E00A93DBA /* XDCAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCAddressService.swift; sourceTree = "<group>"; };
+		DC3550F52B584E2D00A93DBA /* XDCAddressConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCAddressConverter.swift; sourceTree = "<group>"; };
+		DC3550F72B58529900A93DBA /* XDCTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCTransactionBuilder.swift; sourceTree = "<group>"; };
+		DC3550F92B5852F200A93DBA /* XDCNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCNetworkService.swift; sourceTree = "<group>"; };
+		DC3550FB2B58543100A93DBA /* XDCWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCWalletAssembly.swift; sourceTree = "<group>"; };
 		DC4E442A29BF4B4C0088617C /* XRPBase58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPBase58.swift; sourceTree = "<group>"; };
 		DC5E646C2B16098C00E81AA5 /* RIPEMD160+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RIPEMD160+.swift"; sourceTree = "<group>"; };
 		DC5E646F2B160FCD00E81AA5 /* Opcode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Opcode.swift; sourceTree = "<group>"; };
@@ -1298,6 +1310,7 @@
 		2D01EBFB2B04FC2F00DEF1CC /* Decimal */ = {
 			isa = PBXGroup;
 			children = (
+				2D3FF8832B1754BC004416A2 /* DecimalNetworkService.swift */,
 				2D01EBFC2B04FC6700DEF1CC /* DecimalAddressService.swift */,
 				2D01EC032B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift */,
 				2DCAEE4C2B147BCD00C87E09 /* DecimalTransactionBuilder.swift */,
@@ -1316,14 +1329,6 @@
 				2D3328C22A779ACC00C4A84C /* ChiaPuzzleUtils.swift */,
 			);
 			path = Common;
-			sourceTree = "<group>";
-		};
-		2D3FF8822B1754AF004416A2 /* Decimal */ = {
-			isa = PBXGroup;
-			children = (
-				2D3FF8832B1754BC004416A2 /* DecimalNetworkService.swift */,
-			);
-			path = Decimal;
 			sourceTree = "<group>";
 		};
 		2D535E7A2A0CC5FA0081EB76 /* Vectors */ = {
@@ -1472,6 +1477,7 @@
 				2DB6C6D62AFCC013000D0C6A /* TelosWalletAssembly.swift */,
 				2D01EC052B052A0A00DEF1CC /* DecimalWalletAssembly.swift */,
 				B63068C62B31050900E79053 /* VeChainWalletAssembly.swift */,
+				DC3550FB2B58543100A93DBA /* XDCWalletAssembly.swift */,
 			);
 			path = WalletAssembly;
 			sourceTree = "<group>";
@@ -1553,6 +1559,7 @@
 		5D14E4892397B87000C15FC8 /* WalletManagers */ = {
 			isa = PBXGroup;
 			children = (
+				DC3550F22B584C5100A93DBA /* XDC */,
 				E9EECB5128E9F4F700899D6C /* Optimism */,
 				EF680A71284F523100F6B1BD /* Dash */,
 				5DE3BFA1239FB41100E8815D /* Bitcoin */,
@@ -1711,7 +1718,6 @@
 				2D9A919629BB8C1700476EA6 /* TON */,
 				EF2BC61C29DAC62C003D3F18 /* Ravencoin */,
 				2DA139FA2A8AD83B00E3C374 /* Chia */,
-				2D3FF8822B1754AF004416A2 /* Decimal */,
 			);
 			path = BlockchainService;
 			sourceTree = "<group>";
@@ -2532,6 +2538,17 @@
 			path = XRP;
 			sourceTree = "<group>";
 		};
+		DC3550F22B584C5100A93DBA /* XDC */ = {
+			isa = PBXGroup;
+			children = (
+				DC3550F32B584C5E00A93DBA /* XDCAddressService.swift */,
+				DC3550F52B584E2D00A93DBA /* XDCAddressConverter.swift */,
+				DC3550F72B58529900A93DBA /* XDCTransactionBuilder.swift */,
+				DC3550F92B5852F200A93DBA /* XDCNetworkService.swift */,
+			);
+			path = XDC;
+			sourceTree = "<group>";
+		};
 		DC5E646E2B160F4D00E81AA5 /* BitcoinScript */ = {
 			isa = PBXGroup;
 			children = (
@@ -2863,6 +2880,7 @@
 				B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */,
 				2D01EBFF2B05223900DEF1CC /* DecimalExternalLinkProvider.swift */,
 				B63068BD2B3102A900E79053 /* VeChainExternalLinkProvider.swift */,
+				DC3550F02B57013F00A93DBA /* XDCExternalLinkProvider.swift */,
 			);
 			path = ExternalLinkProvider;
 			sourceTree = "<group>";
@@ -3447,6 +3465,7 @@
 				5D88838927D3BB8B008744E1 /* WalletError.swift in Sources */,
 				EF72577E2A8D42A100EA8CB2 /* TransactionHistory.swift in Sources */,
 				2DA13A092A8AD84F00E3C374 /* ChiaTransactionBuilder.swift in Sources */,
+				DC3550F42B584C5E00A93DBA /* XDCAddressService.swift in Sources */,
 				DC5E65192B1650F400E81AA5 /* OP_2DUP.swift in Sources */,
 				DC5E65112B1650F400E81AA5 /* OP_TUCK.swift in Sources */,
 				EF3B192E2AA85CA70084AA1C /* StellarExternalLinkProvider.swift in Sources */,
@@ -3575,6 +3594,7 @@
 				B6BA937B2AEA0F1D00F84E36 /* NEARNetworkResult.ProtocolConfig.swift in Sources */,
 				DADF5F932A1B7C6B00D58DC3 /* TWPublicKey+.swift in Sources */,
 				5DEAFA942444C5300032E316 /* Token.swift in Sources */,
+				DC3550F62B584E2D00A93DBA /* XDCAddressConverter.swift in Sources */,
 				B63068CC2B31163700E79053 /* VeChainNetworkProvider.swift in Sources */,
 				DC5E64D92B1650F400E81AA5 /* OP_SHA1.swift in Sources */,
 				5D557CB023AA888D009B32AF /* Uint64+.swift in Sources */,
@@ -3623,11 +3643,14 @@
 				2D01EBFD2B04FC6700DEF1CC /* DecimalAddressService.swift in Sources */,
 				5D94E56723A3946C009C7482 /* Data+.swift in Sources */,
 				2DCAEE4F2B147E2800C87E09 /* DecimalPlainAddress.swift in Sources */,
+				DC3550FA2B5852F200A93DBA /* XDCNetworkService.swift in Sources */,
 				DC5E652C2B1650F400E81AA5 /* OP_RETURN.swift in Sources */,
 				EF3B19382AA85D090084AA1C /* PolygonExternalLinkProvider.swift in Sources */,
 				B0AD566425AC8DD50084F924 /* PendingTransaction.swift in Sources */,
 				DC5E650B2B1650F400E81AA5 /* OP_BIN2NUM.swift in Sources */,
+				DC3550FC2B58543100A93DBA /* XDCWalletAssembly.swift in Sources */,
 				DC5E64E42B1650F400E81AA5 /* OP_AND.swift in Sources */,
+				DC3550F82B58529900A93DBA /* XDCTransactionBuilder.swift in Sources */,
 				EF54FC292A8A8A0E00968C52 /* CardanoUtil.swift in Sources */,
 				DAE30DFD279164500056C5A3 /* SolanaAddressService.swift in Sources */,
 				B675E9612B320DBE004AF179 /* VeChainNetworkResult.AccountInfo.swift in Sources */,
@@ -3682,6 +3705,7 @@
 				2DA13A072A8AD83B00E3C374 /* ChiaNetworkService.swift in Sources */,
 				5DEAFA8E244472CD0032E316 /* Amount.swift in Sources */,
 				2D9A91A729BB8C2E00476EA6 /* WalletCoreAddressService.swift in Sources */,
+				DC3550F12B57013F00A93DBA /* XDCExternalLinkProvider.swift in Sources */,
 				EFAD40A52A965BA800364D65 /* BlockBookNode.swift in Sources */,
 				DC5E65012B1650F400E81AA5 /* OP_NEGATE.swift in Sources */,
 				EF3B191E2AA85C150084AA1C /* CardanoExternalLinkProvider.swift in Sources */,

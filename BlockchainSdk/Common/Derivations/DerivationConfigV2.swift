@@ -87,6 +87,8 @@ public struct DerivationConfigV2: DerivationConfig {
             return "m/44'/397'/0'"
         case .veChain:
             return "m/44'/818'/0'/0/0"
+        case .xdc:
+            return "m/44'/550'/0'/0/0"
         }
     }
 }

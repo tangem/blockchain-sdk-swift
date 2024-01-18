@@ -62,6 +62,7 @@ struct EstimationFeeAddressFactory {
                 .telos,
                 .octa,
                 .decimal,
+                .xdc,
                 // Polkadot-like
                 .polkadot, .kusama, .azero,
                 // Cosmos-like
