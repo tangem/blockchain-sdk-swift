@@ -29,7 +29,8 @@ struct AlgorandWalletAssembly: WalletManagerAssembly {
         ]
 
         let transactionBuilder = AlgorandTransactionBuilder(
-            publicKey: input.wallet.publicKey.blockchainKey,
+            publicKey: input.wallet.publicKey.blockchainKey, 
+            curve: input.wallet.blockchain.curve,
             isTestnet: input.blockchain.isTestnet
         )
         

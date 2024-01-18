@@ -125,7 +125,7 @@ final class NEARTests: XCTestCase {
         let destinationAddress = "jhj909.testnet"
         let value = try XCTUnwrap(Decimal(string: "3.891"))
         let amount = Amount(with: blockchain, value: value)
-        let fee = Fee(.dummyCoin(for: blockchain))  // Not used in the transaction, therefore a dummy value is used
+        let fee = Fee(.zeroCoin(for: blockchain))  // Not used in the transaction, therefore a dummy value is used
 
         let transactionParams = NEARTransactionParams(
             publicKey: publicKey,
