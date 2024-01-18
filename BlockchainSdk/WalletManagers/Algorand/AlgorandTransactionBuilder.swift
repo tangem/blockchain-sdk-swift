@@ -13,17 +13,19 @@ import CryptoKit
 
 final class AlgorandTransactionBuilder {
     private let publicKey: Data
+    private let curve: EllipticCurve
     private let isTestnet: Bool
     private var coinType: CoinType { .algorand }
     
     private var decimalValue: Decimal {
-        Blockchain.algorand(testnet: isTestnet).decimalValue
+        Blockchain.algorand(curve: curve, testnet: isTestnet).decimalValue
     }
     
     // MARK: - Init
     
-    init(publicKey: Data, isTestnet: Bool) {
+    init(publicKey: Data, curve: EllipticCurve, isTestnet: Bool) {
         self.publicKey = publicKey
+        self.curve = curve
         self.isTestnet = isTestnet
     }
     
@@ -86,6 +88,11 @@ final class AlgorandTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
         
+        /// This paramenter mast be writen for building transaction
+        guard let genesisHash = Data(base64Encoded: buildParams.genesisHash) else {
+            throw WalletError.failedToBuildTx
+        }
+        
         let transfer = AlgorandTransfer.with {
             $0.toAddress = transaction.destinationAddress
             $0.amount = (transaction.amount.value * decimalValue).roundedDecimalNumber.uint64Value
@@ -94,7 +101,7 @@ final class AlgorandTransactionBuilder {
         let input = AlgorandSigningInput.with { input in
             input.publicKey = publicKey
             input.genesisID = buildParams.genesisId
-            input.genesisHash = Data(base64Encoded: buildParams.genesisHash) ?? Data()
+            input.genesisHash = genesisHash
             input.note = buildParams.nonce?.data(using: .utf8) ?? Data()
             input.firstRound = buildParams.firstRound
             input.lastRound = buildParams.lastRound
