@@ -86,6 +86,11 @@ final class AlgorandTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
         
+        /// This paramenter mast be writen for building transaction
+        guard let genesisHash = Data(base64Encoded: buildParams.genesisHash) else {
+            throw WalletError.failedToBuildTx
+        }
+        
         let transfer = AlgorandTransfer.with {
             $0.toAddress = transaction.destinationAddress
             $0.amount = (transaction.amount.value * decimalValue).roundedDecimalNumber.uint64Value
@@ -94,7 +99,7 @@ final class AlgorandTransactionBuilder {
         let input = AlgorandSigningInput.with { input in
             input.publicKey = publicKey
             input.genesisID = buildParams.genesisId
-            input.genesisHash = Data(base64Encoded: buildParams.genesisHash) ?? Data()
+            input.genesisHash = genesisHash
             input.note = buildParams.nonce?.data(using: .utf8) ?? Data()
             input.firstRound = buildParams.firstRound
             input.lastRound = buildParams.lastRound
