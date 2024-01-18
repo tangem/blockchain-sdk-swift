@@ -97,7 +97,9 @@ public struct AddressServiceFactory {
         case .near:
             return NEARAddressService()
         case .decimal:
-            return DecimalAddressService(isTestnet: isTestnet)
+            return DecimalAddressService()
+        case .xdc:
+            return XDCAddressService()
         }
     }
 }

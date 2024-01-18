@@ -12,11 +12,11 @@ public protocol TransactionParams {}
 
 public struct Transaction {
     public let amount: Amount
-    public var fee: Fee
-    public var sourceAddress: String
-    public var destinationAddress: String
-    public let changeAddress: String
-    public let contractAddress: String?
+    public internal(set) var fee: Fee
+    public internal(set) var sourceAddress: String
+    public internal(set) var destinationAddress: String
+    public internal(set) var changeAddress: String
+    public internal(set) var contractAddress: String?
     public var params: TransactionParams? = nil
     
     public init(

@@ -946,7 +946,7 @@ class AddressesTests: XCTestCase {
         let walletPublicKey = Data(hexString: "04BAEC8CD3BA50FDFE1E8CF2B04B58E17041245341CD1F1C6B3A496B48956DB4C896A6848BCF8FCFC33B88341507DD25E5F4609386C68086C74CF472B86E5C3820"
         )
         
-        let addressService = DecimalAddressService(isTestnet: false)
+        let addressService = DecimalAddressService()
         let plainAddress = try addressService.makeAddress(from: walletPublicKey)
         
         let expectedAddress = "d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9"
@@ -955,12 +955,12 @@ class AddressesTests: XCTestCase {
     }
     
     func testDecimalValidateCorrectAddressWithChecksum() throws {
-        XCTAssertTrue(DecimalAddressService(isTestnet: false).validate("0xc63763572D45171e4C25cA0818b44E5Dd7F5c15B"))
-        XCTAssertTrue(DecimalAddressService(isTestnet: false).validate("d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9"))
-        
-        XCTAssertFalse(DecimalAddressService(isTestnet: false).validate("0xc63763572D45171e4C25cA0818b4"))
-        XCTAssertFalse(DecimalAddressService(isTestnet: false).validate("d01ccmkx4edg5t3unp9egyp3dzwtht"))
-        XCTAssertFalse(DecimalAddressService(isTestnet: false).validate(""))
+        XCTAssertTrue(DecimalAddressService().validate("0xc63763572D45171e4C25cA0818b44E5Dd7F5c15B"))
+        XCTAssertTrue(DecimalAddressService().validate("d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9"))
+
+        XCTAssertFalse(DecimalAddressService().validate("0xc63763572D45171e4C25cA0818b4"))
+        XCTAssertFalse(DecimalAddressService().validate("d01ccmkx4edg5t3unp9egyp3dzwtht"))
+        XCTAssertFalse(DecimalAddressService().validate(""))
     }
     
     func testDecimalValidateConverterAddressUtils() throws {
@@ -1014,6 +1014,23 @@ class AddressesTests: XCTestCase {
         XCTAssertFalse(addressService.validate("me@google.com"))
         XCTAssertFalse(addressService.validate(""))
     }
+
+    func testXDCAddressConversion() throws {
+        let ethAddr = "0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d"
+        let xdcAddr = "xdc6ECa00c52AFC728CDbF42E817d712e175bb23C7d"
+        let converter = XDCAddressConverter()
+        XCTAssertEqual(converter.convertToETHAddress(ethAddr), ethAddr)
+        XCTAssertEqual(converter.convertToETHAddress(xdcAddr), ethAddr)
+        XCTAssertEqual(converter.convertToXDCAddress(ethAddr), xdcAddr)
+        XCTAssertEqual(converter.convertToXDCAddress(xdcAddr), xdcAddr)
+    }
+
+    func testXDCAddressValidation() throws {
+        let ethAddr = "0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d"
+        let xdcAddr = "xdc6ECa00c52AFC728CDbF42E817d712e175bb23C7d"
+        let validator = XDCAddressService()
+        XCTAssertTrue(validator.validate(ethAddr))
+        XCTAssertTrue(validator.validate(xdcAddr))
     
     func testAlgorandAddressValidation() throws {
         let addressServiceFactory = AddressServiceFactory(blockchain: .algorand(curve: .ed25519_slip0010, testnet: false))

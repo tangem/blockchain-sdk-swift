@@ -101,6 +101,8 @@ public struct ExternalLinkProviderFactory {
             return DecimalExternalLinkProvider(isTestnet: isTestnet)
         case .veChain:
             return VeChainExternalLinkProvider(isTestnet: isTestnet)
+        case .xdc:
+            return XDCExternalLinkProvider(isTestnet: isTestnet)
         case .algorand:
             return AlgorandExternalLinkProvider(isTestnet: isTestnet)
         }

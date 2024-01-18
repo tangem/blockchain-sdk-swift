@@ -16,9 +16,9 @@ class DecimalTransactionBuilder: EthereumTransactionBuilder {
             let sourceConvertedAddress = try convertAddressIfNeeded(destinationAddress: transaction.sourceAddress)
             let destinationConvertedAddress = try convertAddressIfNeeded(destinationAddress: transaction.destinationAddress)
             
-            let copyTransaction = transaction.then { trx in
-                trx.sourceAddress = sourceConvertedAddress
-                trx.destinationAddress = destinationConvertedAddress
+            let copyTransaction = transaction.then { tx in
+                tx.sourceAddress = sourceConvertedAddress
+                tx.destinationAddress = destinationConvertedAddress
             }
             
             return super.buildForSign(transaction: copyTransaction, nonce: nonce)
