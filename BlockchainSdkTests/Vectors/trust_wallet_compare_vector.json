@@ -163,7 +163,7 @@
         {
             "blockchain": "algorand",
             "derivation": "m/44'/283'/0'/0'/0'",
-            "skip": true
-        }
+            "walletPublicKey": "21FA8DA84314C3C0398BD9396E8506831E0F9A7D86DF462B6045DA5C40ECBF54"
+        },
     ]
 }

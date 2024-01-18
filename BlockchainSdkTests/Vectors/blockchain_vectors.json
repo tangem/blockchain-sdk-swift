@@ -230,8 +230,8 @@
     {
         "key": "algorand",
         "testnet": false,
-        "curve": "ed25519",
+        "curve": "ed25519_slip0010",
         "shelley": false
-    }
+    },
 ]
 

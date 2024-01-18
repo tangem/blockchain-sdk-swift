@@ -13,7 +13,7 @@ import WalletCore
 @testable import BlockchainSdk
 
 final class AlgorandTests: XCTestCase {
-    private let blockchain: BlockchainSdk.Blockchain = .algorand(testnet: false)
+    private let blockchain: BlockchainSdk.Blockchain = .algorand(curve: .ed25519_slip0010, testnet: false)
     private let coinType: CoinType = .algorand
     private let privateKeyData = Data(hexString: "d5b43d706ef0cb641081d45a2ec213b5d8281f439f2425d1af54e2afdaabf55b")
     
@@ -48,6 +48,7 @@ final class AlgorandTests: XCTestCase {
         
         let transactionBuilder = AlgorandTransactionBuilder(
             publicKey: privateKey.getPublicKeyByType(pubkeyType: .ed25519).data,
+            curve: .ed25519_slip0010,
             isTestnet: blockchain.isTestnet
         )
         

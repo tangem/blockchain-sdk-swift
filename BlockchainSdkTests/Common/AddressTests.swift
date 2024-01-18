@@ -1016,7 +1016,7 @@ class AddressesTests: XCTestCase {
     }
     
     func testAlgorandAddressValidation() throws {
-        let addressServiceFactory = AddressServiceFactory(blockchain: .algorand(testnet: false))
+        let addressServiceFactory = AddressServiceFactory(blockchain: .algorand(curve: .ed25519_slip0010, testnet: false))
         let addressService = addressServiceFactory.makeAddressService()
 
         XCTAssertTrue(addressService.validate("ZW3ISEHZUHPO7OZGMKLKIIMKVICOUDRCERI454I3DB2BH52HGLSO67W754"))
