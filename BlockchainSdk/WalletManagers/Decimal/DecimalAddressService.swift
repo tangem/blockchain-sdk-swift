@@ -12,16 +12,9 @@ import TangemSdk
 struct DecimalAddressService {
     
     // MARK: - Private Properties
-    
-    private let isTestnet: Bool
+
     private let ethereumAddressService = EthereumAddressService()
-    
-    private let bech32 = Bech32(variant: .bech32)
-    private let utils = DecimalBlockchainAddressConverter()
-    
-    init(isTestnet: Bool) {
-        self.isTestnet = isTestnet
-    }
+    private let converter = DecimalBlockchainAddressConverter()
 }
 
 // MARK: - AddressProvider protocol conformance
@@ -33,7 +26,7 @@ extension DecimalAddressService: AddressProvider {
         // If need to convert address to decimal native type
         if case .default = addressType {
             address = try DecimalPlainAddress(
-                value: utils.convertDscAddressToDecimalBlockchainAddress(addressHex: address.value),
+                value: converter.convertDscAddressToDecimalBlockchainAddress(addressHex: address.value),
                 publicKey: publicKey,
                 type: addressType
             )
@@ -47,7 +40,7 @@ extension DecimalAddressService: AddressProvider {
 
 extension DecimalAddressService: AddressValidator {
     func validate(_ address: String) -> Bool {
-        guard let dscAddress = try? utils.convertDecimalBlockchainAddressToDscAddress(addressHex: address) else {
+        guard let dscAddress = try? converter.convertDecimalBlockchainAddressToDscAddress(addressHex: address) else {
             return false
         }
         
