@@ -12,11 +12,11 @@ class XDCTransactionBuilder: EthereumTransactionBuilder {
     private let addressConverter = XDCAddressConverter()
 
     override func buildForSign(transaction: Transaction, nonce: Int) -> CompiledEthereumTransaction? {
-        let copyTransaction = transaction.then { trx in
-            trx.sourceAddress = addressConverter.convertToETHAddress(transaction.sourceAddress)
-            trx.destinationAddress = addressConverter.convertToETHAddress(transaction.destinationAddress)
-            trx.changeAddress = addressConverter.convertToETHAddress(transaction.changeAddress)
-            trx.contractAddress = transaction.contractAddress.map { addressConverter.convertToETHAddress($0) }
+        let copyTransaction = transaction.then { tx in
+            tx.sourceAddress = addressConverter.convertToETHAddress(transaction.sourceAddress)
+            tx.destinationAddress = addressConverter.convertToETHAddress(transaction.destinationAddress)
+            tx.changeAddress = addressConverter.convertToETHAddress(transaction.changeAddress)
+            tx.contractAddress = transaction.contractAddress.map { addressConverter.convertToETHAddress($0) }
         }
 
         return super.buildForSign(transaction: copyTransaction, nonce: nonce)
