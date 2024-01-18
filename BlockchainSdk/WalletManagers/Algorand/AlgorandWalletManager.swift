@@ -47,31 +47,17 @@ final class AlgorandWalletManager: BaseManager {
 // MARK: - Private Implementation
 
 private extension AlgorandWalletManager {
-    func update(with accountModel: AlgorandResponse.Account, completion: @escaping (Result<Void, Error>) -> Void) {
-        let blanaceValues = calculateCoinValueWithReserveDeposit(from: accountModel)
+    func update(with accountModel: AlgorandAccountModel, completion: @escaping (Result<Void, Error>) -> Void) {
+        wallet.add(coinValue: accountModel.coinValue)
+        wallet.add(reserveValue: accountModel.reserveValue)
         
-        wallet.add(coinValue: blanaceValues.coinValue)
-        wallet.add(reserveValue: blanaceValues.reserveValue)
-        
-        guard accountModel.amount >= accountModel.minBalance else {
+        guard let coinValue = wallet.amounts[.coin]?.value, coinValue >= accountModel.existentialDeposit else {
             let error = makeNoAccountError(using: accountModel)
             completion(.failure(error))
             return
         }
         
         completion(.success(()))
-    }
-    
-    private func calculateCoinValueWithReserveDeposit(from accountModel: AlgorandResponse.Account) -> (coinValue: Decimal, reserveValue: Decimal) {
-        let changeBalanceValue = accountModel.amount > accountModel.minBalance ? accountModel.amount - accountModel.minBalance : 0
-        
-        let decimalBalance = Decimal(changeBalanceValue)
-        let coinBalance = decimalBalance / wallet.blockchain.decimalValue
-        
-        let decimalReserveBalance = Decimal(accountModel.minBalance)
-        let reserveCoinBalance = decimalReserveBalance / wallet.blockchain.decimalValue
-        
-        return (coinBalance, reserveCoinBalance)
     }
 }
 
@@ -84,15 +70,11 @@ extension AlgorandWalletManager: WalletManager {
 
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         networkService
-            .getTransactionParams()
+            .getEstimatedFee()
             .withWeakCaptureOf(self)
-            .map { walletManager, response in
-                let sourceFee = Decimal(response.fee) / walletManager.wallet.blockchain.decimalValue
-                let minFee = Decimal(response.minFee) / walletManager.wallet.blockchain.decimalValue
-                
-                let targetFee = sourceFee > minFee ? sourceFee : minFee
-                
-                return [Fee(.init(with: walletManager.wallet.blockchain, value: targetFee))]
+            .map { walletManager, params in
+                let targetFee = max(params.fee, params.minFee)
+                return [Fee(targetFee)]
             }
             .eraseToAnyPublisher()
     }
@@ -115,25 +97,13 @@ extension AlgorandWalletManager {
         networkService
             .getTransactionParams()
             .withWeakCaptureOf(self)
-            .map { walletManager, transactionInfoParams -> (AlgorandBuildParams) in
-                let buildParams = AlgorandBuildParams(
-                    genesisId: transactionInfoParams.genesisId,
-                    genesisHash: transactionInfoParams.genesisHash,
-                    firstRound: transactionInfoParams.lastRound,
-                    lastRound: transactionInfoParams.lastRound + Constants.validDiffRoundValue,
-                    nonce: (transaction.params as? AlgorandTransactionParams)?.nonce
-                )
-                
-                return buildParams
+            .tryMap { (walletManager, params) in
+                let hashForSign = try walletManager.transactionBuilder.buildForSign(transaction: transaction, with: params)
+                return (hashForSign, params)
             }
-            .withWeakCaptureOf(self)
-            .tryMap { (walletManager, buildParams) in
-                let hashForSign = try walletManager.transactionBuilder.buildForSign(transaction: transaction, with: buildParams)
-                return (hashForSign, buildParams)
-            }
-            .flatMap { (hashForSign, buildParams) in
+            .flatMap { (hashForSign, params) in
                 let signaturePublisher = signer.sign(hash: hashForSign, walletPublicKey: self.wallet.publicKey)
-                let transactionParamsPublisher = Just(buildParams).setFailureType(to: Error.self)
+                let transactionParamsPublisher = Just(params).setFailureType(to: Error.self)
 
                 return Publishers.Zip(signaturePublisher, transactionParamsPublisher)
             }
@@ -150,23 +120,22 @@ extension AlgorandWalletManager {
                 return dataForSend
             }
             .withWeakCaptureOf(self)
-            .flatMap { walletManager, transactionData -> AnyPublisher<AlgorandResponse.TransactionResult, Error> in
+            .flatMap { walletManager, transactionData -> AnyPublisher<String, Error> in
                 return walletManager.networkService.sendTransaction(data: transactionData)
             }
             .withWeakCaptureOf(self)
-            .map { walletManager, transactionResult in
+            .map { walletManager, txId in
                 let mapper = PendingTransactionRecordMapper()
-                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: transactionResult.txId)
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: txId)
                 walletManager.wallet.addPendingTransaction(record)
-                return TransactionSendResult(hash: transactionResult.txId)
+                return TransactionSendResult(hash: txId)
             }
             .eraseToAnyPublisher()
     }
     
-    private func makeNoAccountError(using accountModel: AlgorandResponse.Account) -> WalletError {
+    private func makeNoAccountError(using accountModel: AlgorandAccountModel) -> WalletError {
         let networkName = wallet.blockchain.displayName
-        let decimalValue = wallet.blockchain.decimalValue
-        let reserveValue = Decimal(accountModel.minBalance) / decimalValue
+        let reserveValue = accountModel.reserveValue
         let reserveValueString = reserveValue.decimalNumber.stringValue
         let currencySymbol = wallet.blockchain.currencySymbol
         let errorMessage = "no_account_generic".localized([networkName, reserveValueString, currencySymbol])
@@ -182,16 +151,5 @@ extension AlgorandWalletManager: MinimumBalanceRestrictable {
     var minimumBalance: Amount {
         let minimumBalanceAmountValue = (wallet.amounts[.reserve] ?? Amount(with: wallet.blockchain, value: 0)).value
         return Amount(with: wallet.blockchain, value: minimumBalanceAmountValue)
-    }
-}
-
-///
-private extension AlgorandWalletManager {
-    enum Constants {
-        /*
-         https://developer.algorand.org/docs/get-details/transactions/
-         This parameter descripe transaction is valid if submitted between rounds. Look at this doc.
-         */
-        static let validDiffRoundValue: UInt64 = 1000
     }
 }
