@@ -381,6 +381,17 @@ public enum Blockchain: Equatable, Hashable {
         }
     }
     
+    public var feePaidCurrency: FeePaidCurrency {
+        switch self {
+        case .terraV1:
+            return .sameCurrency
+        case .veChain:
+            return .token(value: VeChainWalletManager.Constants.energyToken)
+        default:
+            return .coin
+        }
+    }
+
     public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
         switch self {
         case .arbitrum,
@@ -469,7 +480,6 @@ extension Blockchain {
                     makeGetBlockJsonRpcProvider(),
                     URL(string: "https://etc.rivet.link/etc")!,
                     URL(string: "https://etc.etcdesktop.com")!,
-                    URL(string: "https://rpc.etcinscribe.com")!,
                     URL(string: "https://etc.mytokenpocket.vip")!,
                     URL(string: "https://besu-de.etc-network.info")!,
                     URL(string: "https://geth-at.etc-network.info")!,

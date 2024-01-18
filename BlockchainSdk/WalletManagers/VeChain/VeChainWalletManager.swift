@@ -46,7 +46,22 @@ final class VeChainWalletManager: BaseManager {
             }
             .collect()
 
-        cancellable = Publishers.CombineLatest(accountInfoPublisher, transactionStatusesPublisher)
+        // Although multiple contract calls can be aggregated into a single request, API docs says nothing
+        // about the order of the results of these contract calls in the response.
+        // Therefore requests are sent in a one-to-one manner, one request per token.
+        let tokenBalancesPublisher = cardTokens
+            .filter { $0 != Constants.energyToken } // Balance of energy token (VTHO) is fetched in the `getAccountInfo(address:)` method call above
+            .publisher
+            .setFailureType(to: Error.self)
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, token in
+                return walletManager
+                    .networkService
+                    .getBalance(of: token, for: walletManager.wallet.address)
+            }
+            .collect()
+
+        cancellable = Publishers.CombineLatest3(accountInfoPublisher, transactionStatusesPublisher, tokenBalancesPublisher)
             .withWeakCaptureOf(self)
             .sink(
                 receiveCompletion: { [weak self] result in
@@ -59,8 +74,12 @@ final class VeChainWalletManager: BaseManager {
                     }
                 },
                 receiveValue: { walletManager, input in
-                    let (accountInfo, transactionsInfo) = input
-                    walletManager.updateWallet(accountInfo: accountInfo, transactionsInfo: transactionsInfo)
+                    let (accountInfo, transactionsInfo, tokenBalanceAmounts) = input
+                    walletManager.updateWallet(
+                        accountInfo: accountInfo,
+                        transactionsInfo: transactionsInfo,
+                        tokenBalanceAmounts: tokenBalanceAmounts
+                    )
                 }
             )
     }
@@ -91,11 +110,15 @@ final class VeChainWalletManager: BaseManager {
         }
     }
 
-    private func updateWallet(accountInfo: VeChainAccountInfo, transactionsInfo: [VeChainTransactionInfo]) {
+    private func updateWallet(
+        accountInfo: VeChainAccountInfo,
+        transactionsInfo: [VeChainTransactionInfo],
+        tokenBalanceAmounts: [Amount]
+    ) {
         let amounts = [
             accountInfo.amount,
             accountInfo.energyAmount(with: energyToken),
-        ]
+        ] + tokenBalanceAmounts
         amounts.forEach { wallet.add(amount: $0) }
 
         let completedTransactionHashes = transactionsInfo
@@ -240,7 +263,7 @@ extension VeChainWalletManager: WalletManager {
 
 // MARK: - Constants
 
-private extension VeChainWalletManager {
+extension VeChainWalletManager {
     enum Constants {
         /// A local energy token ("VeThor"), used as a fallback for fee calculation when
         /// the user doesn't have a real "VeThor" token added to the token list.
