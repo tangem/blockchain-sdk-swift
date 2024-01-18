@@ -21,6 +21,8 @@ struct AddressTypesConfig {
             return [.default, .legacy]
         case .decimal:
             return [.default, .legacy]
+        case .xdc:
+            return [.default, .legacy]
         case .stellar,
              .solana,
              .ethereum,
