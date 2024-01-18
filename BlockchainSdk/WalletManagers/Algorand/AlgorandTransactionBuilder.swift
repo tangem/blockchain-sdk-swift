@@ -32,7 +32,7 @@ final class AlgorandTransactionBuilder {
     // MARK: - Implementation
 
     func buildForSign(transaction: Transaction, with params: AlgorandTransactionBuildParams) throws -> Data {
-        let input = try buildInput(transaction: transaction, buildParams: params)
+        let input = try sendBuildInput(transaction: transaction, buildParams: params)
         let txInputData = try input.serializedData()
 
         guard !txInputData.isEmpty else {
@@ -51,7 +51,7 @@ final class AlgorandTransactionBuilder {
     }
 
     func buildForSend(transaction: Transaction, with params: AlgorandTransactionBuildParams, signature: Data) throws -> Data {
-        let input = try buildInput(transaction: transaction, buildParams: params)
+        let input = try sendBuildInput(transaction: transaction, buildParams: params)
         let txInputData = try input.serializedData()
 
         guard !txInputData.isEmpty else {
@@ -81,7 +81,7 @@ final class AlgorandTransactionBuilder {
      - https://developer.algorand.org/docs/get-details/transactions/#genesis-hash
      - https://developer.algorand.org/docs/get-details/transactions/transactions/#common-fields-header-and-type
      */
-    private func buildInput(transaction: Transaction, buildParams: AlgorandTransactionBuildParams) throws -> AlgorandSigningInput {
+    private func sendBuildInput(transaction: Transaction, buildParams: AlgorandTransactionBuildParams) throws -> AlgorandSigningInput {
         do {
             try publicKey.validateAsEdKey()
         } catch {
@@ -102,6 +102,57 @@ final class AlgorandTransactionBuilder {
             input.lastRound = buildParams.lastRound
             input.fee = (transaction.fee.amount.value * decimalValue).roundedDecimalNumber.uint64Value
             input.transfer = transfer
+        }
+        
+        return input
+    }
+    
+    /*
+     Authorized by: The account opting in
+
+     Before an account can receive a specific asset it must opt-in to receive it. An opt-in transaction places an asset holding of 0 into the account and increases its minimum balance by 100,000 microAlgos. An opt-in transaction is simply an asset transfer with an amount of 0, both to and from the account opting in. The following code illustrates this transaction.
+     */
+    private func optInInAssetInput(transaction: Transaction, buildParams: AlgorandTransactionBuildParams) throws -> AlgorandSigningInput {
+        guard let nonce = (transaction.params as? AlgorandTransactionParams)?.nonce, let assetID = UInt64(nonce) else {
+            throw WalletError.failedToBuildTx
+        }
+        
+        let transfer = AlgorandAssetOptIn.with {
+            $0.assetID = assetID
+        }
+        
+        let input = AlgorandSigningInput.with { input in
+            input.publicKey = publicKey
+            input.genesisID = buildParams.genesisId
+            input.genesisHash = buildParams.genesisHash
+            input.firstRound = buildParams.firstRound
+            input.lastRound = buildParams.lastRound
+            input.fee = 1000
+            input.assetOptIn = transfer
+        }
+        
+        return input
+    }
+    
+    private func sendAssetInput(transaction: Transaction, buildParams: AlgorandTransactionBuildParams) throws -> AlgorandSigningInput {
+        guard let nonce = (transaction.params as? AlgorandTransactionParams)?.nonce, let assetID = UInt64(nonce) else {
+            throw WalletError.failedToBuildTx
+        }
+        
+        let transfer = AlgorandAssetTransfer.with {
+            $0.toAddress = transaction.destinationAddress
+            $0.amount = (transaction.amount.value * decimalValue).roundedDecimalNumber.uint64Value
+            $0.assetID = assetID
+        }
+        
+        let input = AlgorandSigningInput.with { input in
+            input.publicKey = publicKey
+            input.genesisID = buildParams.genesisId
+            input.genesisHash = buildParams.genesisHash
+            input.firstRound = buildParams.firstRound
+            input.lastRound = buildParams.lastRound
+            input.fee = 1000
+            input.assetTransfer = transfer
         }
         
         return input
