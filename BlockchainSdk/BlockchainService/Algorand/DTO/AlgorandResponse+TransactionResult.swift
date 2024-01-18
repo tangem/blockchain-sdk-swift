@@ -12,14 +12,5 @@ extension AlgorandResponse {
     /// https://developer.algorand.org/docs/rest-apis/algod/#post-v2transactions
     struct TransactionResult: Decodable {
         let txId: String
-        
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            txId = try container.decode(String.self, forKey: .txId)
-        }
-
-        private enum CodingKeys: String, CodingKey {
-            case txId
-        }
     }
 }

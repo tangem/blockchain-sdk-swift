@@ -9,9 +9,6 @@
 import Foundation
 import Combine
 
-import Foundation
-import Combine
-
 final class AlgorandWalletManager: BaseManager {
     
     // MARK: - Private Properties
@@ -123,14 +120,14 @@ extension AlgorandWalletManager {
                     genesisId: transactionInfoParams.genesisId,
                     genesisHash: transactionInfoParams.genesisHash,
                     firstRound: transactionInfoParams.lastRound,
-                    lastRound: transactionInfoParams.lastRound + 1000,
+                    lastRound: transactionInfoParams.lastRound + Constants.validDiffRoundValue,
                     nonce: (transaction.params as? AlgorandTransactionParams)?.nonce
                 )
                 
                 return buildParams
             }
             .withWeakCaptureOf(self)
-            .tryMap { walletManager, buildParams -> (hash: Data, params: AlgorandBuildParams) in
+            .tryMap { (walletManager, buildParams) in
                 let hashForSign = try walletManager.transactionBuilder.buildForSign(transaction: transaction, with: buildParams)
                 return (hashForSign, buildParams)
             }
@@ -185,5 +182,16 @@ extension AlgorandWalletManager: MinimumBalanceRestrictable {
     var minimumBalance: Amount {
         let minimumBalanceAmountValue = (wallet.amounts[.reserve] ?? Amount(with: wallet.blockchain, value: 0)).value
         return Amount(with: wallet.blockchain, value: minimumBalanceAmountValue)
+    }
+}
+
+///
+private extension AlgorandWalletManager {
+    enum Constants {
+        /*
+         https://developer.algorand.org/docs/get-details/transactions/
+         This parameter descripe transaction is valid if submitted between rounds. Look at this doc.
+         */
+        static let validDiffRoundValue: UInt64 = 1000
     }
 }
