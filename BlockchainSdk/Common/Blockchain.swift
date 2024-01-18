@@ -135,6 +135,7 @@ public enum Blockchain: Equatable, Hashable {
         case .veChain(let testnet):
             return testnet
         case .xdc(let testnet):
+            return testnet
         case .algorand(_, let testnet):
             return testnet
         }
@@ -142,7 +143,7 @@ public enum Blockchain: Equatable, Hashable {
 
     public var curve: EllipticCurve {
         switch self {
-        case .cardano, .algorand:
+        case .cardano:
             return .ed25519
         case .stellar(let curve, _),
                 .solana(let curve, _),
@@ -152,7 +153,8 @@ public enum Blockchain: Equatable, Hashable {
                 .ton(let curve, _),
                 .xrp(let curve),
                 .tezos(let curve),
-                .near(let curve, _):
+                .near(let curve, _),
+                .algorand(let curve, _):
             return curve
         case .chia:
             return .bls12381_G2_AUG

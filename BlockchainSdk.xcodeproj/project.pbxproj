@@ -80,6 +80,12 @@
 		2DDE5BAF29C4F8D200A5B708 /* DashWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDE5B9D29C4F8D200A5B708 /* DashWalletAssembly.swift */; };
 		2DDE5BB029C4F8D200A5B708 /* WalletManagerAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDE5B9E29C4F8D200A5B708 /* WalletManagerAssembly.swift */; };
 		2DDE5BB229C4F8F700A5B708 /* TONWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDE5BB129C4F8F700A5B708 /* TONWalletAssembly.swift */; };
+		2DDEFBC22B59B36A00885675 /* AlgorandWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBBD2B59B36A00885675 /* AlgorandWalletManager.swift */; };
+		2DDEFBC32B59B36A00885675 /* AlgorandTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBBE2B59B36A00885675 /* AlgorandTransactionBuilder.swift */; };
+		2DDEFBC42B59B36A00885675 /* AlgorandBuildParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBC02B59B36A00885675 /* AlgorandBuildParams.swift */; };
+		2DDEFBC52B59B36A00885675 /* AlgorandTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBC12B59B36A00885675 /* AlgorandTransactionParams.swift */; };
+		2DDEFBC72B59B37900885675 /* AlgorandWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBC62B59B37900885675 /* AlgorandWalletAssembly.swift */; };
+		2DDEFBC92B59B39900885675 /* AlgorandExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBC82B59B39900885675 /* AlgorandExternalLinkProvider.swift */; };
 		47420109BD3DE47300C6F23F /* Pods_BlockchainSdkTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1A207847B605E0517D9A55F /* Pods_BlockchainSdkTests.framework */; };
 		592E206C6981F567C2FB1FDC /* Pods_BlockchainSdkExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B236300074DC3321FAA6A10D /* Pods_BlockchainSdkExample.framework */; };
 		5D006ACD239950F9008BA04D /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D006ACC239950F9008BA04D /* Wallet.swift */; };
@@ -722,6 +728,12 @@
 		2DDE5B9D29C4F8D200A5B708 /* DashWalletAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashWalletAssembly.swift; sourceTree = "<group>"; };
 		2DDE5B9E29C4F8D200A5B708 /* WalletManagerAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletManagerAssembly.swift; sourceTree = "<group>"; };
 		2DDE5BB129C4F8F700A5B708 /* TONWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONWalletAssembly.swift; sourceTree = "<group>"; };
+		2DDEFBBD2B59B36A00885675 /* AlgorandWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandWalletManager.swift; sourceTree = "<group>"; };
+		2DDEFBBE2B59B36A00885675 /* AlgorandTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandTransactionBuilder.swift; sourceTree = "<group>"; };
+		2DDEFBC02B59B36A00885675 /* AlgorandBuildParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandBuildParams.swift; sourceTree = "<group>"; };
+		2DDEFBC12B59B36A00885675 /* AlgorandTransactionParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandTransactionParams.swift; sourceTree = "<group>"; };
+		2DDEFBC62B59B37900885675 /* AlgorandWalletAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandWalletAssembly.swift; sourceTree = "<group>"; };
+		2DDEFBC82B59B39900885675 /* AlgorandExternalLinkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandExternalLinkProvider.swift; sourceTree = "<group>"; };
 		3452E77A600B278568F13FA9 /* Pods-BlockchainSdkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.release.xcconfig"; sourceTree = "<group>"; };
 		556382E16FB9B2894A77374E /* Pods-BlockchainSdkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.debug.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.debug.xcconfig"; sourceTree = "<group>"; };
 		5D006ACC239950F9008BA04D /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
@@ -1478,8 +1490,28 @@
 				2D01EC052B052A0A00DEF1CC /* DecimalWalletAssembly.swift */,
 				B63068C62B31050900E79053 /* VeChainWalletAssembly.swift */,
 				DC3550FB2B58543100A93DBA /* XDCWalletAssembly.swift */,
+				2DDEFBC62B59B37900885675 /* AlgorandWalletAssembly.swift */,
 			);
 			path = WalletAssembly;
+			sourceTree = "<group>";
+		};
+		2DDEFBBC2B59B36A00885675 /* Algorand */ = {
+			isa = PBXGroup;
+			children = (
+				2DDEFBBD2B59B36A00885675 /* AlgorandWalletManager.swift */,
+				2DDEFBBE2B59B36A00885675 /* AlgorandTransactionBuilder.swift */,
+				2DDEFBBF2B59B36A00885675 /* Domain */,
+			);
+			path = Algorand;
+			sourceTree = "<group>";
+		};
+		2DDEFBBF2B59B36A00885675 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				2DDEFBC02B59B36A00885675 /* AlgorandBuildParams.swift */,
+				2DDEFBC12B59B36A00885675 /* AlgorandTransactionParams.swift */,
+			);
+			path = Domain;
 			sourceTree = "<group>";
 		};
 		5D01BCE0243F7F6F0048D1BA /* XRP */ = {
@@ -1586,6 +1618,7 @@
 				2DB6C6D32AFCBEBA000D0C6A /* Telos */,
 				2D01EBFB2B04FC2F00DEF1CC /* Decimal */,
 				B63068BF2B3102D400E79053 /* VeChain */,
+				2DDEFBBC2B59B36A00885675 /* Algorand */,
 			);
 			path = WalletManagers;
 			sourceTree = "<group>";
@@ -2881,6 +2914,7 @@
 				2D01EBFF2B05223900DEF1CC /* DecimalExternalLinkProvider.swift */,
 				B63068BD2B3102A900E79053 /* VeChainExternalLinkProvider.swift */,
 				DC3550F02B57013F00A93DBA /* XDCExternalLinkProvider.swift */,
+				2DDEFBC82B59B39900885675 /* AlgorandExternalLinkProvider.swift */,
 			);
 			path = ExternalLinkProvider;
 			sourceTree = "<group>";
@@ -3343,6 +3377,7 @@
 				EF609FC72A20D4E9004E6D4E /* OptimismWalletManager.swift in Sources */,
 				DA63B09B29CB3FC700AC6E49 /* KaspaNetworkProvider.swift in Sources */,
 				B06AFAEF261496E600E7AAB0 /* CardanoAddressUtils.swift in Sources */,
+				2DDEFBC72B59B37900885675 /* AlgorandWalletAssembly.swift in Sources */,
 				DA346451279A802E00E77B1D /* SolanaSdk+.swift in Sources */,
 				DC5E65122B1650F400E81AA5 /* OP_ROLL.swift in Sources */,
 				2DDE5BAC29C4F8D200A5B708 /* SubstrateWalletAssembly.swift in Sources */,
@@ -3415,6 +3450,7 @@
 				2D01EC042B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift in Sources */,
 				DC5E646D2B16098C00E81AA5 /* RIPEMD160+.swift in Sources */,
 				DC5E65072B1650F400E81AA5 /* OP_2DIV.swift in Sources */,
+				2DDEFBC42B59B36A00885675 /* AlgorandBuildParams.swift in Sources */,
 				EF3B19342AA85CE90084AA1C /* DogecoinExternalLinkProvider.swift in Sources */,
 				EF0DA78C285246A90081092A /* DashMainNetworkParams.swift in Sources */,
 				DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */,
@@ -3438,6 +3474,7 @@
 				2DDE5BAA29C4F8D200A5B708 /* SolanaWalletAssembly.swift in Sources */,
 				DA67A69629E51FEA001B6799 /* CosmosWalletManager.swift in Sources */,
 				2D78F40C2A5C3CCF00962CCA /* ChiaWalletManager.swift in Sources */,
+				2DDEFBC92B59B39900885675 /* AlgorandExternalLinkProvider.swift in Sources */,
 				DAB87CB1297ADCDC00FF30EB /* GetBlockBlockBookConfig.swift in Sources */,
 				EF0DA78D285246A90081092A /* DashWalletManager.swift in Sources */,
 				EF3B19642AA85F280084AA1C /* ChiaExternalLinkProvider.swift in Sources */,
@@ -3506,6 +3543,7 @@
 				EF3B19682AA8EE580084AA1C /* CosmosExternalLinkProvider.swift in Sources */,
 				DC5E65332B1650F400E81AA5 /* OP_ENDIF.swift in Sources */,
 				5DE3BFA0239FA33800E8815D /* Bech32.swift in Sources */,
+				2DDEFBC32B59B36A00885675 /* AlgorandTransactionBuilder.swift in Sources */,
 				B619208C2AE6AC8F001D6DDF /* JSONRPCParams.swift in Sources */,
 				DC5E64F42B1650F400E81AA5 /* OP_MAX.swift in Sources */,
 				B00FBED82996A1A300FDB874 /* BlockscoutNetworkProvider.swift in Sources */,
@@ -3723,6 +3761,7 @@
 				DC5E65042B1650F400E81AA5 /* OP_NUMEQUAL.swift in Sources */,
 				DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */,
 				5D7D243025136254001B9A4F /* XRPKeypair.swift in Sources */,
+				2DDEFBC52B59B36A00885675 /* AlgorandTransactionParams.swift in Sources */,
 				EF72579C2A93B8B900EA8CB2 /* EthereumTransactionHistoryProvider.swift in Sources */,
 				DC5E65102B1650F400E81AA5 /* OP_2SWAP.swift in Sources */,
 				B04E8D5025F8F67F00821CBE /* RosettaNetworkProvider.swift in Sources */,
@@ -3811,6 +3850,7 @@
 				B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */,
 				DAE30DFF279164500056C5A3 /* SolanaWalletManager.swift in Sources */,
 				DA67A69829E523C6001B6799 /* CosmosTransactionBuilder.swift in Sources */,
+				2DDEFBC22B59B36A00885675 /* AlgorandWalletManager.swift in Sources */,
 				DC5E651E2B1650F400E81AA5 /* OP_NIP.swift in Sources */,
 				EF32FEC22A3072B9002ED43F /* CashAddrService.swift in Sources */,
 				EF2BC62729DAD65F003D3F18 /* RavencoinTransactionInfo.swift in Sources */,

@@ -107,7 +107,7 @@ public extension Blockchain {
             .near(curve: .ed25519_slip0010, testnet: false),
             .decimal(testnet: false),
             .veChain(testnet: false),
-            .xdc(testnet: false)
+            .xdc(testnet: false),
             .algorand(curve: .ed25519_slip0010, testnet: false),
         ]
     }
