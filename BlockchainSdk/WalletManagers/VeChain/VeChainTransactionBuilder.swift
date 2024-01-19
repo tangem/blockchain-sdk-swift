@@ -101,11 +101,12 @@ final class VeChainTransactionBuilder {
         let feeCalculator = VeChainFeeCalculator(isTestnet: isTestnet)
 
         let clauses = try buildClauses(transaction: transaction)
-        let gas = feeCalculator.gas(for: clauses.map(\.asFeeCalculationInput))
+        var gas = feeCalculator.gas(for: clauses.map(\.asFeeCalculationInput))
 
         var gasPriceCoefficient: UInt32 = 0
         if let feeParameters = transaction.fee.parameters as? VeChainFeeParams {
             gasPriceCoefficient = UInt32(feeCalculator.gasPriceCoefficient(from: feeParameters.priority))
+            gas += feeParameters.vmGas
         }
 
         return VeChainSigningInput.with { input in
@@ -130,7 +131,7 @@ final class VeChainTransactionBuilder {
                 input.data = Data()
             case .token(let token):
                 let tokenMethod = TransferERC20TokenMethod(destination: destinationAddress, amount: value)
-                input.value = Data(0x0)
+                input.value = Data(0x00)
                 input.to = token.contractAddress
                 input.data = tokenMethod.data
             case .reserve:

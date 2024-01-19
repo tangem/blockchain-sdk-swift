@@ -37,8 +37,7 @@ class DogecoinWalletManager: BitcoinWalletManager {
             prioritySatoshiPerByte: maxRate
         )
 
-        let feeAmounts = processFee(ratesModel, amount: amount, destination: destination)
-        let fees = feeAmounts.map { Fee($0) }
+        let fees = processFee(ratesModel, amount: amount, destination: destination)
         return .justWithError(output: fees)
     }
 }
