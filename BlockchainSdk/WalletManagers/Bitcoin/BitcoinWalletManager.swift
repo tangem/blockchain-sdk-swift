@@ -69,7 +69,6 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
                 guard let self = self else { throw WalletError.empty }
                 
                 return self.processFee(response, amount: amount, destination: destination)
-                    .map { Fee($0) }
             }
             .eraseToAnyPublisher()
     }
@@ -114,7 +113,7 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
             .eraseToAnyPublisher()
     }
     
-    func processFee(_ response: BitcoinFee, amount: Amount, destination: String) -> [Amount] {
+    func processFee(_ response: BitcoinFee, amount: Amount, destination: String) -> [Fee] {
         // Don't remove `.rounded` from here, intValue can sometimes go crazy
         // e.g. with the Decimal of (662701 / 3), producing 0 integer
         var minRate = (max(response.minimalSatoshiPerByte, minimalFeePerByte).rounded(roundingMode: .up) as NSDecimalNumber).intValue
@@ -141,15 +140,11 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
             maxRate = minimalFeeRate
             maxFee = minimalFee
         }
-        
-        txBuilder.feeRates = [:]
-        txBuilder.feeRates[minFee] = minRate
-        txBuilder.feeRates[normalFee] = normalRate
-        txBuilder.feeRates[maxFee] = maxRate
+
         return [
-            Amount(with: wallet.blockchain, value: minFee),
-            Amount(with: wallet.blockchain, value: normalFee),
-            Amount(with: wallet.blockchain, value: maxFee)
+            Fee(Amount(with: wallet.blockchain, value: minFee), parameters: BitcoinFeeParameters(rate: minRate)),
+            Fee(Amount(with: wallet.blockchain, value: normalFee), parameters: BitcoinFeeParameters(rate: normalRate)),
+            Fee(Amount(with: wallet.blockchain, value: maxFee), parameters: BitcoinFeeParameters(rate: maxRate)),
         ]
     }
 }
