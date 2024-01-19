@@ -56,6 +56,7 @@ public extension Blockchain {
         case .near: break
         case .decimal: break
         case .veChain: break
+        case .xdc: break
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -105,6 +106,7 @@ public extension Blockchain {
             .near(curve: .ed25519_slip0010, testnet: false),
             .decimal(testnet: false),
             .veChain(testnet: false),
+            .xdc(testnet: false)
         ]
     }
 }
