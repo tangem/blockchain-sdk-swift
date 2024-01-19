@@ -283,6 +283,7 @@
 		B6D346002AD9450D0009D1B2 /* NEARTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D345FF2AD9450D0009D1B2 /* NEARTransactionBuilder.swift */; };
 		B6D7131F2AEBEF750095FE6A /* NEARNetworkResult.APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D7131E2AEBEF750095FE6A /* NEARNetworkResult.APIError.swift */; };
 		B6DC3F3A2AF2CA8700377BB3 /* Sequence+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DC3F392AF2CA8700377BB3 /* Sequence+.swift */; };
+		B6E5C1C02B58637300AAC80D /* VeChainNetworkResult.ContractCall+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E5C1BF2B58637300AAC80D /* VeChainNetworkResult.ContractCall+.swift */; };
 		B6E7699A2AF2CFBC00B32745 /* NEARTransactionsInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E769992AF2CFBC00B32745 /* NEARTransactionsInfo.swift */; };
 		B6E7699C2AF2CFDA00B32745 /* NEARNetworkResult.TransactionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E7699B2AF2CFDA00B32745 /* NEARNetworkResult.TransactionStatus.swift */; };
 		B6E7699F2AF2D07900B32745 /* NEARNetworkResult.APIError+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E7699E2AF2D07900B32745 /* NEARNetworkResult.APIError+.swift */; };
@@ -946,6 +947,7 @@
 		B6D345FF2AD9450D0009D1B2 /* NEARTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARTransactionBuilder.swift; sourceTree = "<group>"; };
 		B6D7131E2AEBEF750095FE6A /* NEARNetworkResult.APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARNetworkResult.APIError.swift; sourceTree = "<group>"; };
 		B6DC3F392AF2CA8700377BB3 /* Sequence+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sequence+.swift"; sourceTree = "<group>"; };
+		B6E5C1BF2B58637300AAC80D /* VeChainNetworkResult.ContractCall+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VeChainNetworkResult.ContractCall+.swift"; sourceTree = "<group>"; };
 		B6E769992AF2CFBC00B32745 /* NEARTransactionsInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NEARTransactionsInfo.swift; sourceTree = "<group>"; };
 		B6E7699B2AF2CFDA00B32745 /* NEARNetworkResult.TransactionStatus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NEARNetworkResult.TransactionStatus.swift; sourceTree = "<group>"; };
 		B6E7699E2AF2D07900B32745 /* NEARNetworkResult.APIError+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NEARNetworkResult.APIError+.swift"; sourceTree = "<group>"; };
@@ -2278,6 +2280,7 @@
 		B675E96C2B32139C004AF179 /* DTO */ = {
 			isa = PBXGroup;
 			children = (
+				B6E5C1BE2B58636000AAC80D /* Extensions */,
 				B675E95A2B320D37004AF179 /* Params */,
 				B675E95B2B320D3E004AF179 /* Result */,
 			);
@@ -2342,6 +2345,14 @@
 				B6E7699B2AF2CFDA00B32745 /* NEARNetworkResult.TransactionStatus.swift */,
 			);
 			path = Result;
+			sourceTree = "<group>";
+		};
+		B6E5C1BE2B58636000AAC80D /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B6E5C1BF2B58637300AAC80D /* VeChainNetworkResult.ContractCall+.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		B6E7699D2AF2D05A00B32745 /* Extensions */ = {
@@ -3308,6 +3319,7 @@
 				DA63B09D29CB3FC700AC6E49 /* KaspaNetworkService.swift in Sources */,
 				EF57BED62A1E19E800C2A493 /* DerivationStyle.swift in Sources */,
 				EF3B194C2AA85E880084AA1C /* GnosisExternalLinkProvider.swift in Sources */,
+				B6E5C1C02B58637300AAC80D /* VeChainNetworkResult.ContractCall+.swift in Sources */,
 				2DDE5BA929C4F8D200A5B708 /* LitecoinWalletAssembly.swift in Sources */,
 				DAF0867027A9438C0024312E /* PolkadotNetworkService.swift in Sources */,
 				DA9F76E927EC8AEB00F0665C /* TronAddressService.swift in Sources */,
