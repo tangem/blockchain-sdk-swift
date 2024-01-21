@@ -52,13 +52,10 @@ class AlgorandNetworkService: MultiNetworkProvider {
                     let sourceFee = Decimal(response.fee) / service.blockchain.decimalValue
                     let minFee = Decimal(response.minFee) / service.blockchain.decimalValue
                     
-                    let feeParams = AlgorandEstimatedFeeParams(
+                    return AlgorandEstimatedFeeParams(
                         minFee: Amount(with: service.blockchain, value: minFee),
                         fee: Amount(with: service.blockchain, value: sourceFee)
                     )
-                    
-                    
-                    return feeParams
                 }
                 .mapError { error in
                     if let error = error as? WalletError {
@@ -78,7 +75,7 @@ class AlgorandNetworkService: MultiNetworkProvider {
                 .tryMap { response in
                     /// This paramenter mast be writen for building transaction
                     guard let genesisHash = Data(base64Encoded: response.genesisHash) else {
-                        throw WalletError.failedToBuildTx
+                        throw WalletError.failedToParseNetworkResponse
                     }
                     
                     let transactionParams = AlgorandTransactionBuildParams(

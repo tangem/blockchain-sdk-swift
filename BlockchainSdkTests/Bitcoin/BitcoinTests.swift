@@ -89,7 +89,6 @@ class BitcoinTests: XCTestCase {
         let segwit = addresses.first(where: { $0.type == .default } )!
         let manager = BitcoinManager(networkParams: networkParams, walletPublicKey: pubkey, compressedWalletPublicKey: compressedPubkey)
         let txBuilder = BitcoinTransactionBuilder(bitcoinManager: manager, addresses: addresses)
-        txBuilder.feeRates[feeValue] = 21
         let converter = SegWitBech32AddressConverter(prefix: networkParams.bech32PrefixPattern, scriptConverter: ScriptConverter())
         let seg: SegWitAddress = try! converter.convert(address: segwit.value) as! SegWitAddress
         XCTAssertEqual(seg.stringValue, segwit.value)
@@ -98,7 +97,7 @@ class BitcoinTests: XCTestCase {
         
         let amountToSend = Amount(with: blockchain, type: .coin, value: sendValue)
         let feeAmount = Amount(with: blockchain, type: .coin, value: feeValue)
-        let fee = Fee(feeAmount)
+        let fee = Fee(feeAmount, parameters: BitcoinFeeParameters(rate: 21))
         let transaction = Transaction(amount: amountToSend, fee: fee, sourceAddress: segwit.value, destinationAddress: destination, changeAddress: "")
         
         let expectedHashToSign1 = Data(hex: "8272779353EAD7848859916DFA4E6ED4DAA54989CA6258566D0FFEDEC2002400")
