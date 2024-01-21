@@ -163,6 +163,17 @@ final class VeChainWalletManager: BaseManager {
             params: dummyParams
         )
     }
+
+    private func getVMGas(amount: Amount, destination: String) -> AnyPublisher<Int, Error> {
+        switch amount.type {
+        case .coin:
+            return .justWithError(output: .zero)
+        case .token(let value):
+            return networkService.getVMGas(token: value, amount: amount, source: wallet.address, destination: destination)
+        case .reserve:
+            return .anyFail(error: WalletError.failedToGetFee)
+        }
+    }
 }
 
 // MARK: - WalletManager protocol conformance
@@ -176,35 +187,37 @@ extension VeChainWalletManager: WalletManager {
         amount: Amount,
         destination: String
     ) -> AnyPublisher<[Fee], Error> {
-        return Deferred { [weak self] in
-            Future<[Transaction], Error> { promise in
-                guard let self = self else {
-                    promise(.failure(WalletError.empty))
-                    return
-                }
-
+        return getVMGas(amount: amount, destination: destination)
+            .withWeakCaptureOf(self)
+            .map { walletManager, vmGas in
                 let transactions = VeChainFeeParams.TransactionPriority.allCases.map { priority in
-                    return self.makeTransactionForFeeCalculation(
+                    return walletManager.makeTransactionForFeeCalculation(
                         amount: amount,
                         destination: destination,
-                        feeParams: VeChainFeeParams(priority: priority)
+                        feeParams: VeChainFeeParams(priority: priority, vmGas: vmGas)
                     )
                 }
-                promise(.success(transactions))
-            }
-        }
-        .withWeakCaptureOf(self)
-        .tryMap { walletManager, transactions in
-            return try transactions.map { try walletManager.transactionBuilder.buildInputForFeeCalculation(transaction: $0) }
-        }
-        .withWeakCaptureOf(self)
-        .map { walletManager, inputs in
-            let feeCalculator = VeChainFeeCalculator(isTestnet: walletManager.wallet.blockchain.isTestnet)
-            let amountType: Amount.AmountType = .token(value: walletManager.energyToken)
 
-            return inputs.map { feeCalculator.fee(for: $0, amountType: amountType) }
-        }
-        .eraseToAnyPublisher()
+                return (transactions, vmGas)
+            }
+            .withWeakCaptureOf(self)
+            .tryMap { walletManager, input in
+                let (transactions, vmGas) = input
+                let transactionInputs = try transactions.map { transaction in
+                    try walletManager.transactionBuilder.buildInputForFeeCalculation(transaction: transaction)
+                }
+
+                return (transactionInputs, vmGas)
+            }
+            .withWeakCaptureOf(self)
+            .map { walletManager, input in
+                let (transactionInputs, vmGas) = input
+                let feeCalculator = VeChainFeeCalculator(isTestnet: walletManager.wallet.blockchain.isTestnet)
+                let amountType: Amount.AmountType = .token(value: walletManager.energyToken)
+
+                return transactionInputs.map { feeCalculator.fee(for: $0, amountType: amountType, vmGas: vmGas) }
+            }
+            .eraseToAnyPublisher()
     }
 
     func send(

@@ -59,8 +59,12 @@ final class VeChainNetworkService: MultiNetworkProvider {
 
     func getBalance(of token: Token, for address: String) -> AnyPublisher<Amount, Error> {
         let payload = TokenBalanceERC20TokenMethod(owner: address).encodedData
-        let value = "0"
-        let clause = VeChainNetworkParams.ContractCall.Clause(to: token.contractAddress, value: value, data: payload)
+        let clause = VeChainNetworkParams.ContractCall.Clause(
+            to: token.contractAddress,
+            value: Constants.contractCallValue,
+            data: payload
+        )
+        // Sync2 also doesn't use the `caller` and/or `gas` fields for balance requests
         let contractCall = VeChainNetworkParams.ContractCall(clauses: [clause], caller: nil, gas: nil)
 
         return providerPublisher { provider in
@@ -75,13 +79,7 @@ final class VeChainNetworkService: MultiNetworkProvider {
                 }
                 .withWeakCaptureOf(self)
                 .tryMap { networkService, resultPayload in
-                    if let vmInvocationError = resultPayload.vmError, !vmInvocationError.isEmpty {
-                        throw VeChainError.contractCallFailed
-                    }
-
-                    if resultPayload.reverted {
-                        throw VeChainError.contractCallFailed
-                    }
+                    try resultPayload.ensureNoError()
 
                     if let data = resultPayload.data {
                         let balance = try networkService.mapDecimalValue(from: data)
@@ -90,6 +88,45 @@ final class VeChainNetworkService: MultiNetworkProvider {
                     }
 
                     throw WalletError.failedToParseNetworkResponse
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+
+    func getVMGas(token: Token, amount: Amount, source: String, destination: String) -> AnyPublisher<Int, Error> {
+        let decimalValue = (amount.value * pow(Decimal(10), amount.decimals)).roundedDecimalNumber
+
+        guard let bigUIntValue = BigUInt(decimal: decimalValue as Decimal) else {
+            return .anyFail(error: WalletError.failedToGetFee)
+        }
+
+        let payload = TransferERC20TokenMethod(destination: destination, amount: bigUIntValue).encodedData
+        let clause = VeChainNetworkParams.ContractCall.Clause(
+            to: token.contractAddress,
+            value: Constants.contractCallValue,
+            data: payload
+        )
+        let contractCall = VeChainNetworkParams.ContractCall(
+            clauses: [clause],
+            caller: source,
+            gas: Constants.maxAllowedVMGas
+        )
+
+        return providerPublisher { provider in
+            return provider
+                .callContract(contractCall: contractCall)
+                .tryMap { contractCallResult in
+                    guard let resultPayload = contractCallResult.first else {
+                        throw WalletError.failedToParseNetworkResponse
+                    }
+
+                    return resultPayload
+                }
+                .withWeakCaptureOf(self)
+                .tryMap { networkService, resultPayload in
+                    try resultPayload.ensureNoError()
+
+                    return resultPayload.gasUsed
                 }
                 .eraseToAnyPublisher()
         }
@@ -164,16 +201,14 @@ final class VeChainNetworkService: MultiNetworkProvider {
     }
 }
 
-extension VeChainNetworkService {
-    enum VeChainError: Error {
-        case contractCallFailed
-    }
-}
-
 // MARK: - Constants
 
 private extension VeChainNetworkService {
     enum Constants {
+        /// Sync2 uses `20_000_000` as a maximum allowed gas amount for such contract calls.
+        static let maxAllowedVMGas = 20_000_000
+        /// Placeholder value, not used in contract calls.
+        static let contractCallValue = "0"
         static let radix = 16
         static let blockRefSize = 8
     }
