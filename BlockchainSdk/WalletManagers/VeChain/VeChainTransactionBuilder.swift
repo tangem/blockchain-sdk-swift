@@ -101,11 +101,12 @@ final class VeChainTransactionBuilder {
         let feeCalculator = VeChainFeeCalculator(isTestnet: isTestnet)
 
         let clauses = try buildClauses(transaction: transaction)
-        let gas = feeCalculator.gas(for: clauses.map(\.asFeeCalculationInput))
+        var gas = feeCalculator.gas(for: clauses.map(\.asFeeCalculationInput))
 
         var gasPriceCoefficient: UInt32 = 0
         if let feeParameters = transaction.fee.parameters as? VeChainFeeParams {
             gasPriceCoefficient = UInt32(feeCalculator.gasPriceCoefficient(from: feeParameters.priority))
+            gas += feeParameters.vmGas
         }
 
         return VeChainSigningInput.with { input in
