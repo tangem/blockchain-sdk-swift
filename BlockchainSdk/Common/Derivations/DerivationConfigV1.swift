@@ -31,7 +31,7 @@ public struct DerivationConfigV1: DerivationConfig {
             return "m/1852'/1815'/0'/0/0"
         case .bitcoinCash:
             return "m/44'/145'/0'/0/0"
-        case .ethereum, .ethereumPoW, .ethereumFair, .saltPay, .octa, .decimal:
+        case .ethereum, .ethereumPoW, .ethereumFair, .octa, .decimal:
             return "m/44'/60'/0'/0/0"
         case .ethereumClassic:
             return "m/44'/61'/0'/0/0"

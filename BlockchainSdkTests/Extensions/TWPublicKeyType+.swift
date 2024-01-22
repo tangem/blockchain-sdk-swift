@@ -84,7 +84,6 @@ extension PublicKeyType {
                 .ducatus,
                 .azero,
                 .gnosis,
-                .saltPay,
                 .kaspa,
                 .cronos,
                 .telos,
