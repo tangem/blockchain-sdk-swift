@@ -22,7 +22,7 @@ public enum Blockchain: Equatable, Hashable {
     case ethereumFair
     case ethereumClassic(testnet: Bool)
     case rsk
-    case bitcoinCash(testnet: Bool)
+    case bitcoinCash
     case binance(testnet: Bool)
     case cardano(extended: Bool)
     case xrp(curve: EllipticCurve)
@@ -42,7 +42,6 @@ public enum Blockchain: Equatable, Hashable {
     case dash(testnet: Bool)
     case gnosis
     case optimism(testnet: Bool)
-    case saltPay
     case ton(curve: EllipticCurve, testnet: Bool)
     case kava(testnet: Bool)
     case kaspa
@@ -74,15 +73,14 @@ public enum Blockchain: Equatable, Hashable {
                 .terraV1,
                 .terraV2,
                 .cronos,
-                .octa:
+                .octa,
+                .bitcoinCash:
             return false
         case .stellar(_, let testnet):
             return testnet
         case .ethereum(let testnet), .bsc(let testnet):
             return testnet
         case .ethereumClassic(let testnet):
-            return testnet
-        case .bitcoinCash(let testnet):
             return testnet
         case .binance(let testnet):
             return testnet
@@ -111,8 +109,6 @@ public enum Blockchain: Equatable, Hashable {
         case .ethereumPoW(let testnet):
             return testnet
         case .ethereumFair:
-            return false
-        case .saltPay:
             return false
         case .ton(_, let testnet):
             return testnet
@@ -184,7 +180,6 @@ public enum Blockchain: Equatable, Hashable {
                 .arbitrum,
                 .gnosis,
                 .optimism,
-                .saltPay,
                 .kava,
                 .cronos,
                 .telos,
@@ -262,7 +257,7 @@ public enum Blockchain: Equatable, Hashable {
             return "TRX"
         case .dash(let testnet):
             return testnet ? "tDASH" : "DASH"
-        case .gnosis, .saltPay:
+        case .gnosis:
             return "xDAI"
         case .ethereumPoW:
             return "ETHW"
@@ -333,8 +328,6 @@ public enum Blockchain: Equatable, Hashable {
             return "Gnosis Chain" + testnetSuffix
         case .optimism:
             return "Optimistic Ethereum" + testnetSuffix
-        case .saltPay:
-            return "Salt Pay"
         case .kava:
             return "Kava EVM"
         case .terraV1:
@@ -449,7 +442,6 @@ extension Blockchain {
         case .arbitrum: return isTestnet ? 421613 : 42161
         case .gnosis: return 100
         case .optimism: return isTestnet ? 420 : 10
-        case .saltPay: return 29313331
         case .kava: return isTestnet ? 2221 : 2222
         case .cronos: return 25
         case .telos: return isTestnet ? 41 : 40
@@ -618,10 +610,6 @@ extension Blockchain {
                     URL(string: "https://rpc.ankr.com/optimism")!,
                 ]
             }
-        case .saltPay:
-            return [
-                URL(string: "https://rpc.bicoccachain.net")!,
-            ]
         case .kava:
             if isTestnet {
                 return [URL(string: "https://evm.testnet.kava.io")!]
@@ -785,7 +773,6 @@ extension Blockchain: Codable {
         case .optimism: return "optimism"
         case .ethereumPoW: return "ethereum-pow-iou"
         case .ethereumFair: return "ethereumfair"
-        case .saltPay: return "sxdai"
         case .ton: return "ton"
         case .kava: return "kava"
         case .kaspa: return "kaspa"
@@ -808,7 +795,6 @@ extension Blockchain: Codable {
         case key
         case testnet
         case curve
-        case shelley
         case extended
     }
 
@@ -829,7 +815,7 @@ extension Blockchain: Codable {
         case "ethereumClassic": self = .ethereumClassic(testnet: isTestnet)
         case "litecoin": self = .litecoin
         case "rsk": self = .rsk
-        case "bitcoinCash": self = .bitcoinCash(testnet: isTestnet)
+        case "bitcoinCash": self = .bitcoinCash
         case "binance": self = .binance(testnet: isTestnet)
         case "cardano":
             let extended = try container.decodeIfPresent(Bool.self, forKey: Keys.extended)
@@ -853,7 +839,6 @@ extension Blockchain: Codable {
         case "optimism": self = .optimism(testnet: isTestnet)
         case "ethereum-pow-iou": self = .ethereumPoW(testnet: isTestnet)
         case "ethereumfair": self = .ethereumFair
-        case "sxdai": self = .saltPay
         case "ton": self = .ton(curve: curve, testnet: isTestnet)
         case "kava": self = .kava(testnet: isTestnet)
         case "kaspa": self = .kaspa
@@ -907,7 +892,7 @@ extension Blockchain {
         case "eth", "token", "nfttoken": return .ethereum(testnet: isTestnet)
         case "ltc": return .litecoin
         case "rsk", "rsktoken": return .rsk
-        case "bch": return .bitcoinCash(testnet: isTestnet)
+        case "bch": return .bitcoinCash
         case "binance", "binanceasset": return .binance(testnet: isTestnet)
             // For old cards cardano will work like ed25519_slip0010
         case "cardano", "cardano-s": return .cardano(extended: false)
@@ -929,7 +914,6 @@ extension Blockchain {
         case "xdai": return .gnosis
         case "ethereum-pow-iou": return .ethereumPoW(testnet: isTestnet)
         case "ethereumfair": return .ethereumFair
-        case "sxdai": return .saltPay
         case "ton": return .ton(curve: curve, testnet: isTestnet)
         case "terra": return .terraV1
         case "terra-2": return .terraV2
@@ -972,7 +956,6 @@ extension Blockchain {
                 .gnosis,
                 .ethereumPoW,
                 .ethereumFair,
-                .saltPay,
                 .kava,
                 .cronos,
                 .octa:
