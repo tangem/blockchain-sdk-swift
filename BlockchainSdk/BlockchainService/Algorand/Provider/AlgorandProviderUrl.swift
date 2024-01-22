@@ -10,6 +10,7 @@ import Foundation
 
 enum AlgorandProviderType {
     case nownodes
+    case indexNownodes
     case getblock
 }
 
@@ -27,6 +28,8 @@ struct AlgorandProviderNode: HostProvider {
             return URL(string: "https://go.getblock.io/\(apiKeyValue)/")!
         case .nownodes:
             return URL(string: "https://algo.nownodes.io/")!
+        case .indexNownodes:
+            return URL(string: "https://algo-index.nownodes.io/")!
         }
     }
     
@@ -34,7 +37,7 @@ struct AlgorandProviderNode: HostProvider {
         switch type {
         case .getblock:
             return nil
-        case .nownodes:
+        case .nownodes, .indexNownodes:
             return Constants.nowNodesApiKeyHeaderName
         }
     }

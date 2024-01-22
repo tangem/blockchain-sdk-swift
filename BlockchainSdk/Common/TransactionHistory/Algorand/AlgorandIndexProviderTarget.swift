@@ -1,15 +1,15 @@
 //
-//  AlgorandProviderTarget.swift
+//  AlgorandIndexProviderTarget.swift
 //  BlockchainSdk
 //
-//  Created by skibinalexander on 10.01.2024.
+//  Created by skibinalexander on 22.01.2024.
 //  Copyright © 2024 Tangem AG. All rights reserved.
 //
 
 import Foundation
 import Moya
 
-struct AlgorandProviderTarget: TargetType {
+struct AlgorandIndexProviderTarget: TargetType {
     // MARK: - Properties
     
     private let node: AlgorandProviderNode
@@ -28,12 +28,6 @@ struct AlgorandProviderTarget: TargetType {
 
     var path: String {
         switch targetType {
-        case .getAccounts(let address):
-            return "v2/accounts/\(address)"
-        case .getTransactionParams:
-            return "v2/transactions/params"
-        case .transaction:
-            return "v2/transactions"
         case .getTransactions:
             return "v2/transactions"
         }
@@ -41,10 +35,6 @@ struct AlgorandProviderTarget: TargetType {
     
     var method: Moya.Method {
         switch targetType {
-        case .getAccounts, .getTransactionParams:
-            return .get
-        case .transaction:
-            return .post
         case .getTransactions:
             return .get
         }
@@ -52,10 +42,6 @@ struct AlgorandProviderTarget: TargetType {
     
     var task: Moya.Task {
         switch targetType {
-        case .getAccounts, .getTransactionParams:
-            return .requestPlain
-        case .transaction(let data):
-            return .requestData(data)
         case .getTransactions(let address, let limit, let next):
             let parameters: [String: Any?] = [
                 "address": address,
@@ -75,14 +61,7 @@ struct AlgorandProviderTarget: TargetType {
             "Accept": "application/json"
         ]
         
-        switch self.targetType {
-        case .transaction:
-            headers["Content-Type"] = "application/x-binary"
-        default:
-            headers["Content-Type"] = "application/json"
-        }
-        
-        if case .nownodes = node.type, let headerName = node.apiKeyHeaderName {
+        if case .indexNownodes = node.type, let headerName = node.apiKeyHeaderName {
             headers[headerName] = node.apiKeyValue
         }
         
@@ -90,11 +69,8 @@ struct AlgorandProviderTarget: TargetType {
     }
 }
 
-extension AlgorandProviderTarget {
+extension AlgorandIndexProviderTarget {
     enum TargetType {
-        case getAccounts(address: String)
-        case getTransactionParams
-        case transaction(trx: Data)
         case getTransactions(address: String, limit: Int?, next: String?)
     }
 }

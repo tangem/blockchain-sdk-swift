@@ -25,9 +25,16 @@ extension TransactionHistory {
 
 extension TransactionHistory {
     public struct Response: Hashable {
-        public let totalPages: Int
-        public let totalRecordsCount: Int
+        public let totalPages: Int?
+        public let totalRecordsCount: Int?
         public let page: Page
         public let records: [TransactionRecord]
+        
+        public init(totalPages: Int? = nil, totalRecordsCount: Int? = nil, page: Page, records: [TransactionRecord]) {
+            self.totalPages = totalPages
+            self.totalRecordsCount = totalRecordsCount
+            self.page = page
+            self.records = records
+        }
     }
 }
