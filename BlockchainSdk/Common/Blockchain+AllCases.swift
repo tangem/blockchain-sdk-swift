@@ -41,7 +41,6 @@ public extension Blockchain {
         case .optimism: break
         case .ethereumFair: break
         case .ethereumPoW: break
-        case .saltPay: break
         case .ton: break
         case .kava: break
         case .kaspa: break
@@ -67,7 +66,7 @@ public extension Blockchain {
             .ethereumClassic(testnet: false),
             .litecoin,
             .bitcoin(testnet: false),
-            .bitcoinCash(testnet: false),
+            .bitcoinCash,
             .xrp(curve: .secp256k1),
             .rsk,
             .binance(testnet: false),
@@ -91,7 +90,6 @@ public extension Blockchain {
             .optimism(testnet: false),
             .ethereumFair,
             .ethereumPoW(testnet: false),
-            .saltPay,
             .ton(curve: .ed25519_slip0010, testnet: false),
             .kava(testnet: false),
             .kaspa,

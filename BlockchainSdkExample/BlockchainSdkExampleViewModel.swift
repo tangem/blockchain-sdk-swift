@@ -75,7 +75,6 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                                                                           chiaTangemApiKeys: .init(mainnetApiKey: ""),
                                                                           quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
                                                                           quickNodeBscCredentials: .init(apiKey: "", subdomain: ""),
-                                                                          blockscoutCredentials: .init(login: "", password: ""),
                                                                           defaultNetworkProviderConfiguration: .init(logger: .verbose)))
     @Published private(set) var card: Card?
     @Published private(set) var walletManager: WalletManager?
