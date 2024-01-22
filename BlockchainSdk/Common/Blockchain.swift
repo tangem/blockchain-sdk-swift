@@ -949,6 +949,7 @@ extension Blockchain {
         case "decimal": return .decimal(testnet: isTestnet)
         case "vechain": return .veChain(testnet: isTestnet)
         case "xdc": return .xdc(testnet: isTestnet)
+        case "algorand": return .algorand(curve: curve, testnet: isTestnet)
         default: return nil
         }
     }

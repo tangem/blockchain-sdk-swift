@@ -10,31 +10,137 @@ import Foundation
 import Combine
 
 final class AlgorandWalletManager: BaseManager {
+    
     // MARK: - Private Properties
     
     private let transactionBuilder: AlgorandTransactionBuilder
+    private let networkService: AlgorandNetworkService
     
     // MARK: - Init
     
-    init(transactionBuilder: AlgorandTransactionBuilder, wallet: Wallet) {
+    init(wallet: Wallet, transactionBuilder: AlgorandTransactionBuilder, networkService: AlgorandNetworkService) throws {
         self.transactionBuilder = transactionBuilder
+        self.networkService = networkService
         super.init(wallet: wallet)
+    }
+    
+    // MARK: - Implementation
+    
+    override func update(completion: @escaping (Result<Void, Error>) -> Void) {
+        cancellable = networkService
+            .getAccount(address: wallet.address)
+            .withWeakCaptureOf(self)
+            .sink(
+                receiveCompletion: { completionSubscription in
+                    if case let .failure(error) = completionSubscription {
+                        completion(.failure(error))
+                    }
+                },
+                receiveValue: { walletManager, account in
+                    walletManager.update(with: account, completion: completion)
+                }
+            )
+    }
+    
+}
+
+// MARK: - Private Implementation
+
+private extension AlgorandWalletManager {
+    func update(with accountModel: AlgorandAccountModel, completion: @escaping (Result<Void, Error>) -> Void) {
+        wallet.add(coinValue: accountModel.coinValue)
+        wallet.add(reserveValue: accountModel.reserveValue)
+        
+        guard let coinValue = wallet.amounts[.coin]?.value, coinValue >= accountModel.existentialDeposit else {
+            let error = makeNoAccountError(using: accountModel)
+            completion(.failure(error))
+            return
+        }
+        
+        completion(.success(()))
     }
 }
 
 // MARK: - WalletManager protocol conformance
 
 extension AlgorandWalletManager: WalletManager {
-    // TODO: - Insert host value
-    var currentHost: String { "" }
-    var allowsFeeSelection: Bool { false }
-    
+    var currentHost: String { networkService.host }
+
+    var allowsFeeSelection: Bool { true }
+
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        return .anyFail(error: WalletError.failedToGetFee)
+        networkService
+            .getEstimatedFee()
+            .withWeakCaptureOf(self)
+            .map { walletManager, params in
+                let targetFee = max(params.fee, params.minFee)
+                return [Fee(targetFee)]
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func send(
+        _ transaction: Transaction,
+        signer: TransactionSigner
+    ) -> AnyPublisher<TransactionSendResult, Error> {
+        sendViaCompileTransaction(transaction, signer: signer)
+    }
+}
+
+// MARK: - Private Implementation
+
+extension AlgorandWalletManager {
+    private func sendViaCompileTransaction(
+        _ transaction: Transaction,
+        signer: TransactionSigner
+    ) -> AnyPublisher<TransactionSendResult, Error> {
+        networkService
+            .getTransactionParams()
+            .withWeakCaptureOf(self)
+            .tryMap { (walletManager, params) in
+                let hashForSign = try walletManager.transactionBuilder.buildForSign(transaction: transaction, with: params)
+                return (hashForSign, params)
+            }
+            .flatMap { (hashForSign, params) in
+                let signaturePublisher = signer.sign(hash: hashForSign, walletPublicKey: self.wallet.publicKey)
+                let transactionParamsPublisher = Just(params).setFailureType(to: Error.self)
+
+                return Publishers.Zip(signaturePublisher, transactionParamsPublisher)
+            }
+            .withWeakCaptureOf(self)
+            .tryMap { walletManager, input -> Data in
+                let (signature, buildParams) = input
+                
+                let dataForSend = try walletManager.transactionBuilder.buildForSend(
+                    transaction: transaction,
+                    with: buildParams,
+                    signature: signature
+                )
+                
+                return dataForSend
+            }
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, transactionData -> AnyPublisher<String, Error> in
+                return walletManager.networkService.sendTransaction(data: transactionData)
+            }
+            .withWeakCaptureOf(self)
+            .map { walletManager, txId in
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: txId)
+                walletManager.wallet.addPendingTransaction(record)
+                return TransactionSendResult(hash: txId)
+            }
+            .eraseToAnyPublisher()
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        return .anyFail(error: WalletError.failedToSendTx)
+    private func makeNoAccountError(using accountModel: AlgorandAccountModel) -> WalletError {
+        let networkName = wallet.blockchain.displayName
+        let reserveValue = accountModel.reserveValue
+        let reserveValueString = reserveValue.decimalNumber.stringValue
+        let currencySymbol = wallet.blockchain.currencySymbol
+        let errorMessage = "no_account_generic".localized([networkName, reserveValueString, currencySymbol])
+
+        return WalletError.noAccount(message: errorMessage)
     }
 }
 
@@ -43,6 +149,7 @@ extension AlgorandWalletManager: WalletManager {
  */
 extension AlgorandWalletManager: MinimumBalanceRestrictable {
     var minimumBalance: Amount {
-        wallet.amounts[.reserve] ?? Amount(with: wallet.blockchain, value: 0)
+        let minimumBalanceAmountValue = (wallet.amounts[.reserve] ?? Amount(with: wallet.blockchain, value: 0)).value
+        return Amount(with: wallet.blockchain, value: minimumBalanceAmountValue)
     }
 }
