@@ -205,7 +205,7 @@ class AddressesTests: XCTestCase {
     }
     
     func testBch() throws {
-        let blockchain = Blockchain.bitcoinCash(testnet: false)
+        let blockchain = Blockchain.bitcoinCash
         let service = BitcoinCashAddressService(networkParams: BitcoinCashNetworkParams())
 
         let addr_dec_default = try service.makeAddress(from: secpDecompressedKey, type: .default)

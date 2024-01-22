@@ -40,7 +40,6 @@ public struct AddressServiceFactory {
                 .arbitrum,
                 .gnosis,
                 .optimism,
-                .saltPay,
                 .kava,
                 .cronos,
                 .telos,
