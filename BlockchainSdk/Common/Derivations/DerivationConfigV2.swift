@@ -35,7 +35,6 @@ public struct DerivationConfigV2: DerivationConfig {
         case .ethereum,
                 .ethereumPoW,
                 .ethereumFair,
-                .saltPay,
                 .ethereumClassic,
                 .rsk,
                 .bsc,

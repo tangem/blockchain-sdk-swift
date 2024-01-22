@@ -33,7 +33,7 @@ enum BlockchairEndpoint {
         case .bitcoin(let testnet):
             return .bitcoin(testnet: testnet)
         case .bitcoinCash:
-            return .bitcoinCash(testnet: false)
+            return .bitcoinCash
 		case .litecoin:
 			return .litecoin
         case .ethereum(let testnet):
