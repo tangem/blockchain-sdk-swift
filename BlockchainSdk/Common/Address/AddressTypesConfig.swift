@@ -28,7 +28,6 @@ struct AddressTypesConfig {
              .ethereum,
              .ethereumPoW,
              .ethereumFair,
-             .saltPay,
              .ethereumClassic,
              .rsk,
              .binance,

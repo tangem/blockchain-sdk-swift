@@ -48,7 +48,6 @@ struct EstimationFeeAddressFactory {
                 .ethereumPoW,
                 .ethereumFair,
                 .ethereumClassic,
-                .saltPay,
                 .rsk,
                 .bsc,
                 .polygon,
