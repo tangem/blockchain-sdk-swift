@@ -33,26 +33,26 @@ extension Data {
         return prefix + self
     }
     
-    func validateAsEdKey() throws {
-        _ = try Curve25519.Signing.PublicKey(rawRepresentation: self)
-    }
-    
-    func validateAsSecp256k1Key() throws {
-        _ = try Secp256k1Key(with: self)
-    }
-
-    func leadingZeroPadding(toLength newLength: Int) -> Data {
+    public func leadingZeroPadding(toLength newLength: Int) -> Data {
         guard count < newLength else { return self }
 
         let prefix = Data(repeating: UInt8(0), count: newLength - count)
         return prefix + self
     }
-    
-    func trailingZeroPadding(toLength newLength: Int) -> Data {
+
+    public func trailingZeroPadding(toLength newLength: Int) -> Data {
         guard count < newLength else { return self }
 
         let suffix = Data(repeating: UInt8(0), count: newLength - count)
         return self + suffix
+    }
+
+    func validateAsEdKey() throws {
+        _ = try Curve25519.Signing.PublicKey(rawRepresentation: self)
+    }
+
+    func validateAsSecp256k1Key() throws {
+        _ = try Secp256k1Key(with: self)
     }
 
     func asDataVector() -> DataVector {
