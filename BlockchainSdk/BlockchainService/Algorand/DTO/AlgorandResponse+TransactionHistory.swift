@@ -21,7 +21,7 @@ extension AlgorandResponse.TransactionHistory {
         
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            nextToken = try container.decode(String.self, forKey: .nextToken)
+            nextToken = try container.decodeIfPresent(String.self, forKey: .nextToken)
             currentRound = try container.decode(Int.self, forKey: .currentRound)
             transactions = try container.decode([Item].self, forKey: .transactions)
         }
@@ -40,7 +40,7 @@ extension AlgorandResponse.TransactionHistory {
         let id: String
         let intraRoundOffset: UInt64
         let paymentTransaction: PaymentTransaction
-        let roundTime: UInt64
+        let roundTime: Date
         let sender: String
         let txType: String
         
@@ -52,7 +52,7 @@ extension AlgorandResponse.TransactionHistory {
             id = try container.decode(String.self, forKey: .id)
             intraRoundOffset = try container.decode(UInt64.self, forKey: .intraRoundOffset)
             paymentTransaction = try container.decode(PaymentTransaction.self, forKey: .paymentTransaction)
-            roundTime = try container.decode(UInt64.self, forKey: .roundTime)
+            roundTime = try container.decode(Date.self, forKey: .roundTime)
             sender = try container.decode(String.self, forKey: .sender)
             txType = try container.decode(String.self, forKey: .txType)
         }

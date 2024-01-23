@@ -11,7 +11,6 @@ import Foundation
 // Use for indexed navigation state
 struct TransactionHistoryIndexPage: Hashable {
     let number: Int
-    let total: Int
 }
 
 // Use for linked navigation state

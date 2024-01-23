@@ -12,6 +12,10 @@ import Combine
 class EthereumTransactionHistoryProvider {
     private let blockBookProvider: BlockBookUtxoProvider
     private let mapper: BlockBookTransactionHistoryMapper
+    
+    private var page: TransactionHistoryIndexPage?
+    private var totalPages: Int = 0
+    private var totalRecordsCount: Int = 0
 
     init(
         blockBookProvider: BlockBookUtxoProvider,
@@ -25,10 +29,31 @@ class EthereumTransactionHistoryProvider {
 // MARK: - TransactionHistoryProvider
 
 extension EthereumTransactionHistoryProvider: TransactionHistoryProvider {
+    var canFetchHistory: Bool {
+        page == nil || (page?.number ?? 0) < totalPages
+    }
+    
+    var debugDescription: String {
+        return "number: \(page?.number); \(totalPages); \(totalRecordsCount)"
+    }
+    
+    func reset() {
+        page = nil
+        totalPages = 0
+        totalRecordsCount = 0
+    }
+    
     func loadTransactionHistory(request: TransactionHistory.Request) -> AnyPublisher<TransactionHistory.Response, Error> {
+        let requestPage: Int
+        
+        // if indexing is created, load the next page
+        if let page {
+            requestPage = page.number + 1
+        }
+        
         let parameters = BlockBookTarget.AddressRequestParameters(
-            page: request.page.number,
-            pageSize: request.page.limit,
+            page: page?.number ?? 0,
+            pageSize: request.limit,
             details: [.txslight],
             filterType: filterType(for: request.amountType)
         )
@@ -40,17 +65,12 @@ extension EthereumTransactionHistoryProvider: TransactionHistoryProvider {
                 }
                 
                 let records = self.mapper.mapToTransactionRecords(response, amountType: request.amountType)
-                return TransactionHistory.Response(
-                    totalPages: response.totalPages ?? 0,
-                    totalRecordsCount: response.txs,
-                    page: TransactionHistoryPage(
-                        limit: response.itemsOnPage ?? 0,
-                        type: .index,
-                        number: response.page ?? 0,
-                        total: response.txs
-                    ),
-                    records: records
-                )
+                
+                self.page = TransactionHistoryIndexPage(number: response.page ?? 0)
+                self.totalPages = response.totalPages ?? 0
+                self.totalRecordsCount = response.txs
+                
+                return TransactionHistory.Response(records: records)
             }
             .eraseToAnyPublisher()
     }

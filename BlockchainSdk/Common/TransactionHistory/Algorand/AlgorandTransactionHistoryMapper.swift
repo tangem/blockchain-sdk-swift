@@ -24,19 +24,22 @@ extension AlgorandTransactionHistoryMapper {
         currentWalletAddress: String
     ) -> [TransactionRecord] {
         items.map {
+            let decimalFeeValue = Decimal($0.fee) / blockchain.decimalValue
+            let decimalAmountValue = Decimal($0.paymentTransaction.amount) / blockchain.decimalValue
+            
             return TransactionRecord(
                 hash: $0.id,
                 source: .single(
-                    .init(address: "qwerty", amount: 123)
+                    .init(address: $0.sender, amount: decimalAmountValue)
                 ),
                 destination: .single(
-                    .init(address: .user("qdkljasldk"), amount: 321)
+                    .init(address: .user($0.paymentTransaction.receiver), amount: decimalAmountValue)
                 ),
-                fee: .init(.init(with: blockchain, value: 12)), 
+                fee: .init(.init(with: blockchain, value: decimalFeeValue)),
                 status: .confirmed,
-                isOutgoing: false,
+                isOutgoing: $0.sender.lowercased() == currentWalletAddress.lowercased() ,
                 type: .transfer,
-                date: Date()
+                date: $0.roundTime
             )
         }
     }

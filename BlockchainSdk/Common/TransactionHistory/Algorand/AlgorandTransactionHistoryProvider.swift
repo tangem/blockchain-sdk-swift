@@ -43,8 +43,8 @@ extension AlgorandTransactionHistoryProvider: TransactionHistoryProvider {
         page == nil || (page?.next != nil)
     }
     
-    var requestObjectDescription: CustomStringConvertible {
-        return ""
+    var debugDescription: String {
+        return "nextToken: \(page?.next ?? "-")"
     }
     
     func reset() {
@@ -57,9 +57,12 @@ extension AlgorandTransactionHistoryProvider: TransactionHistoryProvider {
             targetType: .getTransactions(address: request.address, limit: request.limit, next: page?.next)
         )
         
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .secondsSince1970
+        
         return network.requestPublisher(target)
             .filterSuccessfulStatusAndRedirectCodes()
-            .map(AlgorandResponse.TransactionHistory.List.self, failsOnEmptyData: false)
+            .map(AlgorandResponse.TransactionHistory.List.self, using: decoder)
             .withWeakCaptureOf(self)
             .tryMap { provider, response in
                 let records = provider.mapper.mapToTransactionRecords(
