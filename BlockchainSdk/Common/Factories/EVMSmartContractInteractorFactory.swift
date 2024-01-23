@@ -37,8 +37,12 @@ public struct EVMSmartContractInteractorFactory {
 }
 
 public extension EVMSmartContractInteractorFactory {
-    enum FactoryError: String, Error {
+    enum FactoryError: String, LocalizedError {
         case invalidBlockchain
+
+        public var errorDescription: String? {
+            rawValue
+        }
     }
 }
 
