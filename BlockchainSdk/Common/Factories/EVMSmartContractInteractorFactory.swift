@@ -37,15 +37,8 @@ public struct EVMSmartContractInteractorFactory {
 }
 
 public extension EVMSmartContractInteractorFactory {
-    enum FactoryError: LocalizedError {
+    enum FactoryError: String, Error {
         case invalidBlockchain
-
-        public var errorDescription: String? {
-            switch self {
-            case .invalidBlockchain:
-                return "Failed to create EVM Smart Contract Interactor. Passed blockchain is not an EVM blockchain"
-            }
-        }
     }
 }
 
