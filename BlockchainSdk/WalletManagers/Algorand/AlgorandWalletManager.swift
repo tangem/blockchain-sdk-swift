@@ -27,6 +27,39 @@ final class AlgorandWalletManager: BaseManager {
     // MARK: - Implementation
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
+        let transactionStatusesPublisher = wallet
+            .pendingTransactions
+            .publisher
+            .setFailureType(to: Error.self)
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, transaction in
+                return walletManager.networkService.getPendingTransaction(transactionHash: transaction.hash)
+            }
+            .collect()
+        
+        let accountInfoPublisher = networkService
+            .getAccount(address: wallet.address)
+        
+        cancellable = Publishers.CombineLatest(accountInfoPublisher, transactionStatusesPublisher)
+            .withWeakCaptureOf(self)
+            .sink(
+                receiveCompletion: { [weak self] result in
+                    switch result {
+                    case .failure(let error):
+                        self?.wallet.clearAmounts()
+                        completion(.failure(error))
+                    case .finished:
+                        completion(.success(()))
+                    }
+                },
+                receiveValue: { walletManager, input in
+                    let (accountInfo, transactionsInfo) = input
+                    
+                    walletManager.updatePendingTransactions(with: transactionsInfo)
+                    walletManager.update(with: accountInfo, completion: completion)
+                }
+            )
+        
         cancellable = networkService
             .getAccount(address: wallet.address)
             .withWeakCaptureOf(self)
@@ -58,6 +91,15 @@ private extension AlgorandWalletManager {
         }
         
         completion(.success(()))
+    }
+    
+    func updatePendingTransactions(with transactionInfo: [AlgorandTransactionInfo]) {
+        let completedTransactionHashes = transactionInfo
+            .filter { $0.status == .committed }
+            .map { $0.transactionHash }
+            .toSet()
+        
+        wallet.removePendingTransaction(where: completedTransactionHashes.contains(_:))
     }
 }
 
