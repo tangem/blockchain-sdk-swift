@@ -53,10 +53,6 @@ struct NetworkProviderAssembly {
         }
     }
     
-    func makeBlockscoutNetworkProvider(with input: NetworkProviderAssemblyInput) -> BlockscoutNetworkProvider {
-        BlockscoutNetworkProvider(configuration: .init(credentials: input.blockchainSdkConfig.blockscoutCredentials))
-    }
-    
     func makeEthereumJsonRpcProviders(with input: NetworkProviderAssemblyInput) -> [EthereumJsonRpcProvider] {
         let endpoints = input.blockchain.getJsonRpcEndpoints(
             keys: EthereumApiKeys(

@@ -71,8 +71,6 @@ public struct ExternalLinkProviderFactory {
             return GnosisExternalLinkProvider()
         case .optimism:
             return OptimismExternalLinkProvider(isTestnet: isTestnet)
-        case .saltPay:
-            return SaltPayExternalLinkProvider()
         case .ton:
             return TonExternalLinkProvider(isTestnet: isTestnet)
         case .kava:
