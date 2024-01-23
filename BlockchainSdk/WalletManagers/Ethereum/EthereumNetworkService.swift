@@ -130,7 +130,7 @@ class EthereumNetworkService: MultiNetworkProvider {
                 self?.providerPublisher { provider -> AnyPublisher<(Token, Decimal), Error> in
                     let method = TokenBalanceERC20TokenMethod(owner: address)
                     
-                    return provider.call(contractAddress: token.contractAddress, encodedData: method .encodedData)
+                    return provider.call(contractAddress: token.contractAddress, encodedData: method.encodedData)
                         .tryMap {[weak self] resp -> Decimal in
                             guard let self = self else { throw WalletError.empty }
                             
@@ -253,5 +253,21 @@ class EthereumNetworkService: MultiNetworkProvider {
         let maxGasPrice = gasPrice * BigUInt(15) / BigUInt(10)
         
         return EthereumFeeResponse(gasPrices: [minGasPrice, normalGasPrice, maxGasPrice], gasLimit: gasLimit)
+    }
+}
+
+extension EthereumNetworkService: EVMSmartContractInteractor {
+    func ethCall<Request>(request: Request) -> AnyPublisher<String, Error> where Request : SmartContractRequest {
+        return providerPublisher {
+            $0.call(contractAddress: request.contractAddress, encodedData: request.encodedData)
+                .tryMap { response -> String in
+                    guard let result = response.result else {
+                        throw response.error?.error ?? String.unknown
+                    }
+
+                    return result
+                }
+                .eraseToAnyPublisher()
+        }
     }
 }
