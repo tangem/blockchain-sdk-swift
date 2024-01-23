@@ -223,6 +223,9 @@
 		B04DC65E25AC6538009AA7B3 /* EthereumAdditionalInfoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04DC65D25AC6538009AA7B3 /* EthereumAdditionalInfoProvider.swift */; };
 		B04E556B265FB89400679EAF /* URL+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04E556A265FB89400679EAF /* URL+.swift */; };
 		B04E8D5025F8F67F00821CBE /* RosettaNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04E8D4F25F8F67F00821CBE /* RosettaNetworkProvider.swift */; };
+		B05144FD2B57F13900EDAD1E /* EVMSmartContractInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05144FC2B57F13900EDAD1E /* EVMSmartContractInteractor.swift */; };
+		B05144FF2B57F15000EDAD1E /* SmartContractRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05144FE2B57F15000EDAD1E /* SmartContractRequest.swift */; };
+		B05145012B57F18D00EDAD1E /* EVMSmartContractInteractorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05145002B57F18D00EDAD1E /* EVMSmartContractInteractorFactory.swift */; };
 		B056729B2570F9DC00A8CB59 /* BlockchainSdkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B056729A2570F9DC00A8CB59 /* BlockchainSdkError.swift */; };
 		B05BF634256F953500B50FD7 /* BitcoinScriptAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05BF633256F953500B50FD7 /* BitcoinScriptAddress.swift */; };
 		B06AFAEF261496E600E7AAB0 /* CardanoAddressUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06AFAEE261496E600E7AAB0 /* CardanoAddressUtils.swift */; };
@@ -903,6 +906,9 @@
 		B04DC65D25AC6538009AA7B3 /* EthereumAdditionalInfoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumAdditionalInfoProvider.swift; sourceTree = "<group>"; };
 		B04E556A265FB89400679EAF /* URL+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+.swift"; sourceTree = "<group>"; };
 		B04E8D4F25F8F67F00821CBE /* RosettaNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosettaNetworkProvider.swift; sourceTree = "<group>"; };
+		B05144FC2B57F13900EDAD1E /* EVMSmartContractInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EVMSmartContractInteractor.swift; sourceTree = "<group>"; };
+		B05144FE2B57F15000EDAD1E /* SmartContractRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContractRequest.swift; sourceTree = "<group>"; };
+		B05145002B57F18D00EDAD1E /* EVMSmartContractInteractorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EVMSmartContractInteractorFactory.swift; sourceTree = "<group>"; };
 		B056729A2570F9DC00A8CB59 /* BlockchainSdkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainSdkError.swift; sourceTree = "<group>"; };
 		B05BF633256F953500B50FD7 /* BitcoinScriptAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinScriptAddress.swift; sourceTree = "<group>"; };
 		B06AFAEE261496E600E7AAB0 /* CardanoAddressUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoAddressUtils.swift; sourceTree = "<group>"; };
@@ -3065,6 +3071,7 @@
 				EFBE76902A7C066C00CD918B /* TransactionHistoryProviderFactory.swift */,
 				EF3B19652AA86A620084AA1C /* ExternalLinkProviderFactory.swift */,
 				EF5820402B31B54D00940387 /* EstimationFeeAddressFactory.swift */,
+				B05145002B57F18D00EDAD1E /* EVMSmartContractInteractorFactory.swift */,
 			);
 			path = Factories;
 			sourceTree = "<group>";
@@ -3075,6 +3082,8 @@
 				EF1339B72AB4B2C300B78BA3 /* SmartContractMethod.swift */,
 				EFF56B3C29C20CCE002B6952 /* SmartContractTargetType.swift */,
 				EFD717CD2A25ECB500E5430D /* SmartContractMethodParameterType.swift */,
+				B05144FC2B57F13900EDAD1E /* EVMSmartContractInteractor.swift */,
+				B05144FE2B57F15000EDAD1E /* SmartContractRequest.swift */,
 			);
 			path = SmartContract;
 			sourceTree = "<group>";
@@ -3436,6 +3445,7 @@
 				DC5E64EF2B1650F400E81AA5 /* OP_BOOLAND.swift in Sources */,
 				2DA139F92A8AD82E00E3C374 /* ChiaCondition.swift in Sources */,
 				2DDE5BAE29C4F8D200A5B708 /* TronWalletAssembly.swift in Sources */,
+				B05145012B57F18D00EDAD1E /* EVMSmartContractInteractorFactory.swift in Sources */,
 				EF609FC72A20D4E9004E6D4E /* OptimismWalletManager.swift in Sources */,
 				DA63B09B29CB3FC700AC6E49 /* KaspaNetworkProvider.swift in Sources */,
 				B06AFAEF261496E600E7AAB0 /* CardanoAddressUtils.swift in Sources */,
@@ -3763,6 +3773,7 @@
 				EF54FC292A8A8A0E00968C52 /* CardanoUtil.swift in Sources */,
 				DAE30DFD279164500056C5A3 /* SolanaAddressService.swift in Sources */,
 				B675E9612B320DBE004AF179 /* VeChainNetworkResult.AccountInfo.swift in Sources */,
+				B05144FD2B57F13900EDAD1E /* EVMSmartContractInteractor.swift in Sources */,
 				DC5E65312B1650F400E81AA5 /* OP_VERNOTIF.swift in Sources */,
 				EFD717CC2A25EB0B00E5430D /* ABIEncoder.swift in Sources */,
 				DC5E64F02B1650F400E81AA5 /* OP_SUB.swift in Sources */,
@@ -3820,6 +3831,7 @@
 				DC5E65012B1650F400E81AA5 /* OP_NEGATE.swift in Sources */,
 				EF3B191E2AA85C150084AA1C /* CardanoExternalLinkProvider.swift in Sources */,
 				DA9F76FB27ECA49F00F0665C /* TronNetwork.swift in Sources */,
+				B05144FF2B57F15000EDAD1E /* SmartContractRequest.swift in Sources */,
 				EF2BC62029DACE33003D3F18 /* RavencoinTarget.swift in Sources */,
 				B6A7A91D2B318FBE0053DCF7 /* VeChainBaseURLProvider.swift in Sources */,
 				DC5E652A2B1650F400E81AA5 /* OP_VER.swift in Sources */,
