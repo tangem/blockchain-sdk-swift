@@ -115,6 +115,29 @@ class AlgorandNetworkService: MultiNetworkProvider {
                 .eraseToAnyPublisher()
         }
     }
+    
+    func getPendingTransaction(transactionHash: String) -> AnyPublisher<AlgorandTransactionInfo, Error> {
+        return providerPublisher { provider in
+            return provider
+                .getPendingTransaction(txId: transactionHash)
+                .tryMap { response in
+                    guard let confirmedRound = response.confirmedRound else {
+                        throw WalletError.failedToParseNetworkResponse
+                    }
+                    
+                    if confirmedRound > 0 {
+                        return AlgorandTransactionInfo(transactionHash: transactionHash, status: .committed)
+                    } else if confirmedRound == 0, response.poolError.isEmpty {
+                        return AlgorandTransactionInfo(transactionHash: transactionHash, status: .still)
+                    } else if confirmedRound == 0, !response.poolError.isEmpty {
+                        return AlgorandTransactionInfo(transactionHash: transactionHash, status: .removed)
+                    } else {
+                        throw WalletError.failedToParseNetworkResponse
+                    }
+                }
+                .eraseToAnyPublisher()
+        }
+    }
 }
 
 // MARK: - Private Implementation

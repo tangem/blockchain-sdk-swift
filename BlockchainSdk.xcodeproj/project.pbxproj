@@ -59,6 +59,8 @@
 		2DBBE95029C8DBEA00971539 /* TONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBBE94F29C8DBEA00971539 /* TONTests.swift */; };
 		2DC5796129C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5796029C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift */; };
 		2DC5DAB429B9E6A10039154A /* WalletCoreSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5DAB329B9E6A10039154A /* WalletCoreSigner.swift */; };
+		2DC823352B5FBDA500274237 /* AlgorandResponse+PendingTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC823342B5FBDA500274237 /* AlgorandResponse+PendingTransaction.swift */; };
+		2DC823372B5FBFE100274237 /* AlgorandTransactionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC823362B5FBFE100274237 /* AlgorandTransactionInfo.swift */; };
 		2DCAEE4D2B147BCD00C87E09 /* DecimalTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCAEE4C2B147BCD00C87E09 /* DecimalTransactionBuilder.swift */; };
 		2DCAEE4F2B147E2800C87E09 /* DecimalPlainAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCAEE4E2B147E2800C87E09 /* DecimalPlainAddress.swift */; };
 		2DDE5B9F29C4F8D200A5B708 /* NetworkProviderAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDE5B8C29C4F8D200A5B708 /* NetworkProviderAssembly.swift */; };
@@ -717,6 +719,8 @@
 		2DBBE94F29C8DBEA00971539 /* TONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONTests.swift; sourceTree = "<group>"; };
 		2DC5796029C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreSignerTesterUtility.swift; sourceTree = "<group>"; };
 		2DC5DAB329B9E6A10039154A /* WalletCoreSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreSigner.swift; sourceTree = "<group>"; };
+		2DC823342B5FBDA500274237 /* AlgorandResponse+PendingTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AlgorandResponse+PendingTransaction.swift"; sourceTree = "<group>"; };
+		2DC823362B5FBFE100274237 /* AlgorandTransactionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlgorandTransactionInfo.swift; sourceTree = "<group>"; };
 		2DCAEE4C2B147BCD00C87E09 /* DecimalTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalTransactionBuilder.swift; sourceTree = "<group>"; };
 		2DCAEE4E2B147E2800C87E09 /* DecimalPlainAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalPlainAddress.swift; sourceTree = "<group>"; };
 		2DDE5B8C29C4F8D200A5B708 /* NetworkProviderAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkProviderAssembly.swift; sourceTree = "<group>"; };
@@ -1531,6 +1535,7 @@
 				2DDEFBCB2B59B42E00885675 /* AlgorandAccountModel.swift */,
 				2DDEFBCA2B59B42E00885675 /* AlgorandTransactionBuildParams.swift */,
 				2DDEFBC12B59B36A00885675 /* AlgorandTransactionParams.swift */,
+				2DC823362B5FBFE100274237 /* AlgorandTransactionInfo.swift */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -1538,8 +1543,8 @@
 		2DDEFBCE2B59B44700885675 /* Algorand */ = {
 			isa = PBXGroup;
 			children = (
-				2DDEFBCF2B59B44700885675 /* DTO */,
 				2DDEFBD82B59B44700885675 /* AlgorandNetworkService.swift */,
+				2DDEFBCF2B59B44700885675 /* DTO */,
 				2DDEFBD92B59B44700885675 /* Provider */,
 			);
 			path = Algorand;
@@ -1554,6 +1559,7 @@
 				2DDEFBD32B59B44700885675 /* AlgorandResponse+Transaction.swift */,
 				2DDEFBD42B59B44700885675 /* AlgorandRequest.swift */,
 				2DDEFBD52B59B44700885675 /* AlgorandResponse+TransactionResult.swift */,
+				2DC823342B5FBDA500274237 /* AlgorandResponse+PendingTransaction.swift */,
 				2DDEFBD62B59B44700885675 /* AlgorandAccountStatus.swift */,
 				2DDEFBD72B59B44700885675 /* AlgorandResponse.swift */,
 			);
@@ -3578,6 +3584,7 @@
 				2DDEFBCC2B59B42E00885675 /* AlgorandTransactionBuildParams.swift in Sources */,
 				EF3FFFFF2A27740400C6E7D9 /* AdaliteBaseResponseDTO.swift in Sources */,
 				B6BA937D2AEA0F3900F84E36 /* NEARNetworkResult.TransactionSendAsync.swift in Sources */,
+				2DC823372B5FBFE100274237 /* AlgorandTransactionInfo.swift in Sources */,
 				B04DC65E25AC6538009AA7B3 /* EthereumAdditionalInfoProvider.swift in Sources */,
 				B63B792F2AD852E80055BD06 /* NEARExternalLinkProvider.swift in Sources */,
 				2DDEFBDE2B59B44700885675 /* AlgorandRequest+Transaction.swift in Sources */,
@@ -3896,6 +3903,7 @@
 				EF3B19202AA85C230084AA1C /* DucatusExternalLinkProvider.swift in Sources */,
 				5D84550E243DE9B40072155E /* CardanoWalletManager.swift in Sources */,
 				EF3B19442AA85E510084AA1C /* AZeroExternalLinkProvider.swift in Sources */,
+				2DC823352B5FBDA500274237 /* AlgorandResponse+PendingTransaction.swift in Sources */,
 				B0EBBEF4265D0EE600D37141 /* DogecoinWalletManager.swift in Sources */,
 				B0A1D39D2625A1150013F0BF /* EthereumUtils.swift in Sources */,
 				EF32FED92A38A04E002ED43F /* AddressServiceFactory.swift in Sources */,
