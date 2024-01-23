@@ -19,6 +19,8 @@ final class AlgorandTransactionHistoryProvider {
     /// Network provider of blockchain
     private let network: NetworkProvider<AlgorandIndexProviderTarget>
     private let mapper: AlgorandTransactionHistoryMapper
+    
+    private var page: TransactionHistoryLinkedPage? = nil
 
     // MARK: - Init
     
@@ -36,14 +38,23 @@ final class AlgorandTransactionHistoryProvider {
 // MARK: - TransactionHistoryProvider
 
 extension AlgorandTransactionHistoryProvider: TransactionHistoryProvider {
+    
+    var canFetchHistory: Bool {
+        page == nil || (page?.next != nil)
+    }
+    
+    var requestObjectDescription: CustomStringConvertible {
+        return ""
+    }
+    
+    func reset() {
+        page = nil
+    }
+    
     func loadTransactionHistory(request: TransactionHistory.Request) -> AnyPublisher<TransactionHistory.Response, Error> {
         let target = AlgorandIndexProviderTarget(
             node: node,
-            targetType: .getTransactions(
-                address: request.address,
-                limit: request.page.limit,
-                next: request.page.next
-            )
+            targetType: .getTransactions(address: request.address, limit: request.limit, next: page?.next)
         )
         
         return network.requestPublisher(target)
@@ -51,18 +62,15 @@ extension AlgorandTransactionHistoryProvider: TransactionHistoryProvider {
             .map(AlgorandResponse.TransactionHistory.List.self, failsOnEmptyData: false)
             .withWeakCaptureOf(self)
             .tryMap { provider, response in
-                let records = provider.mapper.mapToTransactionRecords(response.transactions, amountType: .coin)
-                
-                return .init(
-                    totalPages: nil,
-                    totalRecordsCount: nil,
-                    page: .init(
-                        limit: request.page.limit,
-                        type: .linked,
-                        next: response.nextToken
-                    ),
-                    records: records
+                let records = provider.mapper.mapToTransactionRecords(
+                    response.transactions,
+                    amountType: .coin,
+                    currentWalletAddress: request.address
                 )
+                
+                provider.page = .init(next: response.nextToken)
+                
+                return .init(records: records)
             }
             .mapError { moyaError -> Swift.Error in
                 return WalletError.failedToParseNetworkResponse

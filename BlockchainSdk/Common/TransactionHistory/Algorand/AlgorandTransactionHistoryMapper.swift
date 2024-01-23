@@ -12,10 +12,6 @@ import TangemSdk
 struct AlgorandTransactionHistoryMapper {
     private let blockchain: Blockchain
     
-    private var decimalValue: Decimal {
-        blockchain.decimalValue
-    }
-    
     init(blockchain: Blockchain) {
         self.blockchain = blockchain
     }
@@ -24,7 +20,8 @@ struct AlgorandTransactionHistoryMapper {
 extension AlgorandTransactionHistoryMapper {
     func mapToTransactionRecords(
         _ items: [AlgorandResponse.TransactionHistory.Item],
-        amountType: Amount.AmountType
+        amountType: Amount.AmountType,
+        currentWalletAddress: String
     ) -> [TransactionRecord] {
         items.map {
             return TransactionRecord(
