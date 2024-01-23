@@ -49,7 +49,7 @@ public struct TransactionHistoryProviderFactory {
                 mapper: EthereumTransactionHistoryMapper(blockchain: blockchain)
             )
         case .algorand:
-            return AlgorandTransactionHistoryProvider(
+            return AlgorandTransactionHistoryProvider( 
                 blockchain: input.blockchain,
                 node: .init(type: .indexNownodes, apiKeyValue: config.nowNodesApiKey),
                 networkConfig: input.networkConfig

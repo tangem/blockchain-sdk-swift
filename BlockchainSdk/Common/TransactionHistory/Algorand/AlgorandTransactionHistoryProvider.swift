@@ -41,22 +41,26 @@ extension AlgorandTransactionHistoryProvider: TransactionHistoryProvider {
             node: node,
             targetType: .getTransactions(
                 address: request.address,
-                limit: request.page.size,
-                next: nil
+                limit: request.page.limit,
+                next: request.page.next
             )
         )
         
         return network.requestPublisher(target)
             .filterSuccessfulStatusAndRedirectCodes()
-            .map(AlgorandResponse.TransactionHistory.self)
+            .map(AlgorandResponse.TransactionHistory.List.self, failsOnEmptyData: false)
             .withWeakCaptureOf(self)
             .tryMap { provider, response in
-                let records = provider.mapper.mapToTransactionRecords(response, amountType: .coin)
+                let records = provider.mapper.mapToTransactionRecords(response.transactions, amountType: .coin)
                 
                 return .init(
-                    totalPages: response.transactions.isEmpty ? 0 : nil,
-                    totalRecordsCount: response.transactions.isEmpty ? 0 : nil,
-                    page: Page(number: 0),
+                    totalPages: nil,
+                    totalRecordsCount: nil,
+                    page: .init(
+                        limit: request.page.limit,
+                        type: .linked,
+                        next: response.nextToken
+                    ),
                     records: records
                 )
             }

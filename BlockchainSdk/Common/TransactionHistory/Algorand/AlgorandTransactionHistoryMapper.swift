@@ -23,9 +23,24 @@ struct AlgorandTransactionHistoryMapper {
 
 extension AlgorandTransactionHistoryMapper {
     func mapToTransactionRecords(
-        _ response: AlgorandResponse.TransactionHistory,
+        _ items: [AlgorandResponse.TransactionHistory.Item],
         amountType: Amount.AmountType
     ) -> [TransactionRecord] {
-        return []
+        items.map {
+            return TransactionRecord(
+                hash: $0.id,
+                source: .single(
+                    .init(address: "qwerty", amount: 123)
+                ),
+                destination: .single(
+                    .init(address: .user("qdkljasldk"), amount: 321)
+                ),
+                fee: .init(.init(with: blockchain, value: 12)), 
+                status: .confirmed,
+                isOutgoing: false,
+                type: .transfer,
+                date: Date()
+            )
+        }
     }
 }

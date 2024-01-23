@@ -12,13 +12,13 @@ public enum TransactionHistory {}
 extension TransactionHistory {
     public struct Request: Hashable {
         public let address: String
-        public let page: Page
         public let amountType: Amount.AmountType
+        public let page: TransactionHistoryPage
         
-        public init(address: String, page: Page, amountType: Amount.AmountType) {
+        public init(address: String, amountType: Amount.AmountType, page: TransactionHistoryPage) {
             self.address = address
-            self.page = page
             self.amountType = amountType
+            self.page = page
         }
     }
 }
@@ -27,10 +27,10 @@ extension TransactionHistory {
     public struct Response: Hashable {
         public let totalPages: Int?
         public let totalRecordsCount: Int?
-        public let page: Page
+        public let page: TransactionHistoryPage
         public let records: [TransactionRecord]
         
-        public init(totalPages: Int? = nil, totalRecordsCount: Int? = nil, page: Page, records: [TransactionRecord]) {
+        public init(totalPages: Int? = nil, totalRecordsCount: Int? = nil, page: TransactionHistoryPage, records: [TransactionRecord]) {
             self.totalPages = totalPages
             self.totalRecordsCount = totalRecordsCount
             self.page = page

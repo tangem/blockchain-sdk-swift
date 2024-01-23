@@ -28,7 +28,7 @@ extension EthereumTransactionHistoryProvider: TransactionHistoryProvider {
     func loadTransactionHistory(request: TransactionHistory.Request) -> AnyPublisher<TransactionHistory.Response, Error> {
         let parameters = BlockBookTarget.AddressRequestParameters(
             page: request.page.number,
-            pageSize: request.page.size,
+            pageSize: request.page.limit,
             details: [.txslight],
             filterType: filterType(for: request.amountType)
         )
@@ -43,7 +43,12 @@ extension EthereumTransactionHistoryProvider: TransactionHistoryProvider {
                 return TransactionHistory.Response(
                     totalPages: response.totalPages ?? 0,
                     totalRecordsCount: response.txs,
-                    page: Page(number: response.page ?? 0, size: response.itemsOnPage ?? 0),
+                    page: TransactionHistoryPage(
+                        limit: response.itemsOnPage ?? 0,
+                        type: .index,
+                        number: response.page ?? 0,
+                        total: response.txs
+                    ),
                     records: records
                 )
             }

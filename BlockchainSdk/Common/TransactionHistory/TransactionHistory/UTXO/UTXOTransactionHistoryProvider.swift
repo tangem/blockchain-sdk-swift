@@ -36,7 +36,7 @@ extension UTXOTransactionHistoryProvider: TransactionHistoryProvider {
             
             let parameters = BlockBookTarget.AddressRequestParameters(
                 page: request.page.number,
-                pageSize: request.page.size,
+                pageSize: request.page.limit,
                 details: [.txslight]
             )
             
@@ -50,7 +50,7 @@ extension UTXOTransactionHistoryProvider: TransactionHistoryProvider {
                     return TransactionHistory.Response(
                         totalPages: response.totalPages ?? 0,
                         totalRecordsCount: response.txs,
-                        page: Page(number: response.page ?? 0, size: response.itemsOnPage ?? 0),
+                        page: TransactionHistoryPage(limit: response.itemsOnPage ?? 0, type: .index, number: response.page ?? 0),
                         records: records
                     )
                 }
