@@ -94,9 +94,10 @@ final class VeChainNetworkService: MultiNetworkProvider {
     }
 
     func getVMGas(token: Token, amount: Amount, source: String, destination: String) -> AnyPublisher<Int, Error> {
-        let decimalValue = (amount.value * pow(Decimal(10), amount.decimals)).roundedDecimalNumber
+        let decimalValue = amount.value * pow(Decimal(10), amount.decimals)
+        let roundedValue = decimalValue.rounded(roundingMode: .down)
 
-        guard let bigUIntValue = BigUInt(decimal: decimalValue as Decimal) else {
+        guard let bigUIntValue = BigUInt(decimal: roundedValue) else {
             return .anyFail(error: WalletError.failedToGetFee)
         }
 
