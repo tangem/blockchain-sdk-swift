@@ -64,7 +64,7 @@ struct AlgorandNetworkProvider: HostProvider {
         return requestPublisher(for: target)
     }
     
-    func getPendingTransaction(txId: String) -> AnyPublisher<AlgorandResponse.PendingTransaction, Error> {
+    func getPendingTransaction(txId: String) -> AnyPublisher<AlgorandResponse.PendingTransaction?, Error> {
         let target = AlgorandProviderTarget(
             node: node,
             targetType: .getPendingTransaction(txId: txId)
