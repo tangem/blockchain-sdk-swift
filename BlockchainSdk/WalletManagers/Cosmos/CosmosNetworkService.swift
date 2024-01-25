@@ -47,7 +47,7 @@ class CosmosNetworkService: MultiNetworkProvider {
                     let amount = Amount(with: self.cosmosChain.blockchain, value: rawAmount)
                     
                     let tokenAmounts: [Token: Decimal] = Dictionary(try tokens.compactMap {
-                        guard let denomination = self.cosmosChain.tokenDenominationByContractAddress[$0.contractAddress] else {
+                        guard let denomination = self.cosmosChain.tokenDenomination(contractAddress: $0.contractAddress, tokenCurrencySymbol: $0.symbol) else {
                             return nil
                         }
                         
