@@ -9,7 +9,7 @@
 import Foundation
 
 /// This model describe parameters from external application
-struct AlgorandTransactionParams: TransactionParams {
+public struct AlgorandTransactionParams: TransactionParams {
     public let nonce: String
     
     public init(nonce: String) {
