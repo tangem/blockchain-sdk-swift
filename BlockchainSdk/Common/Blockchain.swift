@@ -57,6 +57,7 @@ public enum Blockchain: Equatable, Hashable {
     case decimal(testnet: Bool)
     case veChain(testnet: Bool)
     case xdc(testnet: Bool)
+    case aptos(curve: EllipticCurve, testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -132,6 +133,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .xdc(let testnet):
             return testnet
+        case .aptos(_, let testnet):
+            return testnet
         }
     }
 
@@ -147,7 +150,8 @@ public enum Blockchain: Equatable, Hashable {
                 .ton(let curve, _),
                 .xrp(let curve),
                 .tezos(let curve),
-                .near(let curve, _):
+                .near(let curve, _),
+                .aptos(let curve, _):
             return curve
         case .chia:
             return .bls12381_G2_AUG
@@ -206,6 +210,8 @@ public enum Blockchain: Equatable, Hashable {
             return 12
         case .near:
             return 24
+        case .aptos:
+            return 8
         }
     }
 
@@ -293,6 +299,8 @@ public enum Blockchain: Equatable, Hashable {
             return "VET"
         case .xdc:
             return "XDC"
+        case .aptos:
+            return "APT"
         }
     }
 
@@ -346,6 +354,8 @@ public enum Blockchain: Equatable, Hashable {
             return "VeChain" + testnetSuffix
         case .xdc:
             return "XDC Network"
+        case .aptos:
+            return "Aptos"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -788,6 +798,7 @@ extension Blockchain: Codable {
         case .decimal: return "decimal"
         case .veChain: return "vechain"
         case .xdc: return "xdc"
+        case .aptos: return "aptos"
         }
     }
 
@@ -1000,6 +1011,8 @@ extension Blockchain {
             return VeChainWalletAssembly()
         case .xdc:
             return XDCWalletAssembly()
+        case .aptos:
+            return AptosWalletAssembly()
         }
     }
 }
