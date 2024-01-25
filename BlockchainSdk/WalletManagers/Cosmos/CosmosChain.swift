@@ -179,14 +179,36 @@ extension CosmosChain {
         }
     }
     
-    var tokenDenominationByContractAddress: [String: String] {
+    func tokenDenomination(contractAddress: String, tokenCurrencySymbol: String) -> String? {
         switch self {
         case .terraV1:
-            return [
-                "uusd": "uusd",
-            ]
-        case .cosmos, .gaia, .terraV2:
-            return [:]
+            switch contractAddress {
+            case "uusd":
+                return "uusd"
+            default:
+                return nil
+            }
+        case .terraV2:
+            return tokenCurrencySymbol
+        case .cosmos, .gaia:
+            return nil
+        }
+    }
+    
+    
+    func tokenFeeDenomination(contractAddress: String, tokenCurrencySymbol: String) -> String? {
+        switch self {
+        case .terraV1:
+            switch contractAddress {
+            case "uusd":
+                return "uusd"
+            default:
+                return nil
+            }
+        case .terraV2:
+            return smallestDenomination
+        case .cosmos, .gaia:
+            return nil
         }
     }
     
