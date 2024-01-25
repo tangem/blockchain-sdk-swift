@@ -179,6 +179,15 @@ extension CosmosChain {
         }
     }
     
+    var allowCW20Tokens: Bool {
+        switch self {
+        case .terraV2:
+            return true
+        case .cosmos, .terraV1, .gaia:
+            return false
+        }
+    }
+    
     func tokenDenomination(contractAddress: String, tokenCurrencySymbol: String) -> String? {
         switch self {
         case .terraV1:

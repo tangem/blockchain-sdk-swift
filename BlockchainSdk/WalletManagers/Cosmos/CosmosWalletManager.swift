@@ -122,8 +122,21 @@ class CosmosWalletManager: BaseManager, WalletManager {
                             feeValueInSmallestDenomination += tax
                         }
                         
-                        let decimalValue = amount.type.token?.decimalValue ?? blockchain.decimalValue
-                        var feeValue = (Decimal(feeValueInSmallestDenomination) / decimalValue)
+                        let feeDecimalValue: Decimal
+                        let feeAmountType: Amount.AmountType
+                        switch blockchain.feePaidCurrency {
+                        case .sameCurrency:
+                            feeDecimalValue = amount.type.token?.decimalValue ?? blockchain.decimalValue
+                            feeAmountType = amount.type
+                        case .coin:
+                            feeDecimalValue = blockchain.decimalValue
+                            feeAmountType = .coin
+                        case .token(let token):
+                            feeDecimalValue = token.decimalValue
+                            feeAmountType = .token(value: token)
+                        }
+                        
+                        var feeValue = (Decimal(feeValueInSmallestDenomination) / feeDecimalValue)
                         if let extraFee = self.cosmosChain.extraFee(for: amount.value) {
                             feeValue += extraFee
                         }
@@ -131,7 +144,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
                         feeValue = feeValue.rounded(blockchain: blockchain)
                         
                         let parameters = CosmosFeeParameters(gas: gas)
-                        return Fee(Amount(with: blockchain, type: amount.type, value: feeValue), parameters: parameters)
+                        return Fee(Amount(with: blockchain, type: feeAmountType, value: feeValue), parameters: parameters)
                     }
             }
             .eraseToAnyPublisher()

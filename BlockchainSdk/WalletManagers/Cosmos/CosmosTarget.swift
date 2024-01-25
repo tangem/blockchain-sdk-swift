@@ -18,6 +18,7 @@ extension CosmosTarget {
     enum CosmosTargetType {
         case accounts(address: String)
         case balances(address: String)
+        case querySmartContract(contractAddress: String, query: Data)
         case simulate(data: Data)
         case txs(data: Data)
         case transactionStatus(hash: String)
@@ -31,6 +32,8 @@ extension CosmosTarget: TargetType {
             return "/cosmos/auth/v1beta1/accounts/\(address)"
         case .balances(let address):
             return "/cosmos/bank/v1beta1/balances/\(address)"
+        case .querySmartContract(let contractAddress, let query):
+            return "/cosmwasm/wasm/v1/contract/\(contractAddress)/smart/\(query.base64EncodedString())"
         case .simulate:
             return "/cosmos/tx/v1beta1/simulate"
         case .txs:
@@ -42,7 +45,7 @@ extension CosmosTarget: TargetType {
     
     var method: Moya.Method {
         switch type {
-        case .accounts, .balances, .transactionStatus:
+        case .accounts, .balances, .transactionStatus, .querySmartContract:
             return .get
         case .simulate, .txs:
             return .post
@@ -51,7 +54,7 @@ extension CosmosTarget: TargetType {
     
     var task: Moya.Task {
         switch type {
-        case .accounts, .balances, .transactionStatus:
+        case .accounts, .balances, .transactionStatus, .querySmartContract:
             return .requestPlain
         case .simulate(let data), .txs(let data):
             return .requestData(data)
