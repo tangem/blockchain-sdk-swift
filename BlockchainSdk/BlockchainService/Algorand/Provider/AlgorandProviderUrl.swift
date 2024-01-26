@@ -11,6 +11,7 @@ import Foundation
 enum AlgorandProviderType {
     case nownodes
     case getblock
+    case algoIdx(isTestnet: Bool)
 }
 
 struct AlgorandProviderNode: HostProvider {
@@ -27,6 +28,12 @@ struct AlgorandProviderNode: HostProvider {
             return URL(string: "https://go.getblock.io/\(apiKeyValue)/")!
         case .nownodes:
             return URL(string: "https://algo.nownodes.io/")!
+        case .algoIdx(let isTestnet):
+            if isTestnet {
+                return URL(string: "https://testnet-idx.algonode.cloud/")!
+            } else {
+                return URL(string: "https://mainnet-idx.algonode.cloud/")!
+            }
         }
     }
     
@@ -36,11 +43,13 @@ struct AlgorandProviderNode: HostProvider {
             return nil
         case .nownodes:
             return Constants.nowNodesApiKeyHeaderName
+        case .algoIdx:
+            return nil
         }
     }
     
-    init(type: AlgorandProviderType, apiKeyValue: String) {
+    init(type: AlgorandProviderType, apiKeyValue: String? = nil) {
         self.type = type
-        self.apiKeyValue = apiKeyValue
+        self.apiKeyValue = apiKeyValue ?? ""
     }
 }

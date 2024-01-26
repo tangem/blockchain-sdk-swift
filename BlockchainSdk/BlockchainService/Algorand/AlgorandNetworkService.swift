@@ -80,7 +80,7 @@ class AlgorandNetworkService: MultiNetworkProvider {
                     
                     let transactionParams = AlgorandTransactionBuildParams(
                         genesisId: response.genesisId,
-                        genesisHash: genesisHash, 
+                        genesisHash: genesisHash,
                         firstRound: response.lastRound,
                         lastRound: response.lastRound + Constants.bounceRoundValue
                     )
@@ -116,13 +116,17 @@ class AlgorandNetworkService: MultiNetworkProvider {
         }
     }
     
-    func getPendingTransaction(transactionHash: String) -> AnyPublisher<AlgorandTransactionInfo, Error> {
+    func getPendingTransaction(transactionHash: String) -> AnyPublisher<AlgorandTransactionInfo?, Error> {
         return providerPublisher { provider in
             return provider
                 .getPendingTransaction(txId: transactionHash)
+                .catch { error in
+                    // Need for use non blocked any requests due to the fact that this request throws 404 after some time for trnsaction id
+                    Just(nil)
+                }
                 .tryMap { response in
-                    guard let confirmedRound = response.confirmedRound else {
-                        throw WalletError.failedToParseNetworkResponse
+                    guard let response = response, let confirmedRound = response.confirmedRound else {
+                        return nil
                     }
                     
                     if confirmedRound > 0 {

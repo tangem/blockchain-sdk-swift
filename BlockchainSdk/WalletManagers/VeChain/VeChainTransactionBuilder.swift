@@ -146,8 +146,9 @@ final class VeChainTransactionBuilder {
     private func transferValue(from transaction: Transaction) throws -> BigUInt {
         let amount = transaction.amount
         let decimalValue = amount.value * pow(Decimal(10), amount.decimals)
+        let roundedValue = decimalValue.rounded(roundingMode: .down)
 
-        guard let bigUIntValue = BigUInt(decimal: decimalValue) else {
+        guard let bigUIntValue = BigUInt(decimal: roundedValue) else {
             throw WalletError.failedToBuildTx
         }
 

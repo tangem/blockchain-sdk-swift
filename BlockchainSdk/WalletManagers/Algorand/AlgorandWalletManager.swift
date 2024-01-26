@@ -35,6 +35,7 @@ final class AlgorandWalletManager: BaseManager {
             .flatMap { walletManager, transaction in
                 return walletManager.networkService.getPendingTransaction(transactionHash: transaction.hash)
             }
+            .compactMap({$0})
             .collect()
         
         let accountInfoPublisher = networkService
@@ -53,24 +54,10 @@ final class AlgorandWalletManager: BaseManager {
                     }
                 },
                 receiveValue: { walletManager, input in
-                    let (accountInfo, transactionsInfo) = input
+                    let (accountInfo, transactionsInfos) = input
                     
-                    walletManager.updatePendingTransactions(with: transactionsInfo)
+                    walletManager.updatePendingTransactions(with: transactionsInfos)
                     walletManager.update(with: accountInfo, completion: completion)
-                }
-            )
-        
-        cancellable = networkService
-            .getAccount(address: wallet.address)
-            .withWeakCaptureOf(self)
-            .sink(
-                receiveCompletion: { completionSubscription in
-                    if case let .failure(error) = completionSubscription {
-                        completion(.failure(error))
-                    }
-                },
-                receiveValue: { walletManager, account in
-                    walletManager.update(with: account, completion: completion)
                 }
             )
     }
