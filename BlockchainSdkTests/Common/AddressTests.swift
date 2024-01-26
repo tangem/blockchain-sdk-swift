@@ -1031,6 +1031,23 @@ class AddressesTests: XCTestCase {
         let validator = XDCAddressService()
         XCTAssertTrue(validator.validate(ethAddr))
         XCTAssertTrue(validator.validate(xdcAddr))
+    }
+    
+    func testAlgorandAddressGeneration() throws {
+        let addressServiceFactory = AddressServiceFactory(blockchain: .algorand(curve: .ed25519_slip0010, testnet: false))
+        let addressService = addressServiceFactory.makeAddressService()
+        
+        let privateKey = Data(hexString: "a6c4394041e64fe93d889386d7922af1b9a87f12e433762759608e61434d6cf7")
+        
+        let publicKey = try Curve25519.Signing.PrivateKey(rawRepresentation: privateKey)
+            .publicKey
+            .rawRepresentation
+
+        let address = try addressService.makeAddress(from: publicKey).value
+        let expectedAddress = "ADIYK65L3XR5ODNNCUIQVEET455L56MRKJHRBX5GU4TZI2752QIWK4UL5A"
+        
+        XCTAssertEqual(address, expectedAddress)
+    }
     
     func testAlgorandAddressValidation() throws {
         let addressServiceFactory = AddressServiceFactory(blockchain: .algorand(curve: .ed25519_slip0010, testnet: false))
