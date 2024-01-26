@@ -93,6 +93,8 @@ public struct DerivationConfigV3: DerivationConfig {
             return "m/44'/818'/0'/0/0"
         case .xdc:
             return "m/44'/550'/0'/0/0"
+        case .hedera:
+            return "m/44'/3030'/0'/0'/0"
         }
     }
 }

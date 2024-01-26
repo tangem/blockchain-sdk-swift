@@ -101,6 +101,8 @@ public struct ExternalLinkProviderFactory {
             return VeChainExternalLinkProvider(isTestnet: isTestnet)
         case .xdc:
             return XDCExternalLinkProvider(isTestnet: isTestnet)
+        case .hedera:
+            return HederaExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }

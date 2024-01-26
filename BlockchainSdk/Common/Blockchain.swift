@@ -57,10 +57,31 @@ public enum Blockchain: Equatable, Hashable {
     case decimal(testnet: Bool)
     case veChain(testnet: Bool)
     case xdc(testnet: Bool)
+    case hedera(curve: EllipticCurve, testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
-        case .bitcoin(let testnet):
+        case .bitcoin(let testnet),
+                .ethereum(let testnet),
+                .bsc(let testnet),
+                .ethereumClassic(let testnet),
+                .binance(let testnet),
+                .polygon(let testnet),
+                .avalanche(let testnet),
+                .fantom(let testnet),
+                .tron(let testnet),
+                .arbitrum(let testnet),
+                .dash(let testnet),
+                .optimism(let testnet),
+                .ethereumPoW(let testnet),
+                .kava(let testnet),
+                .ravencoin(let testnet),
+                .cosmos(let testnet),
+                .telos(let testnet),
+                .chia(let testnet),
+                .decimal(let testnet),
+                .veChain(let testnet),
+                .xdc(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -74,63 +95,18 @@ public enum Blockchain: Equatable, Hashable {
                 .terraV2,
                 .cronos,
                 .octa,
-                .bitcoinCash:
+                .bitcoinCash,
+                .gnosis,
+                .ethereumFair,
+                .kaspa:
             return false
-        case .stellar(_, let testnet):
-            return testnet
-        case .ethereum(let testnet), .bsc(let testnet):
-            return testnet
-        case .ethereumClassic(let testnet):
-            return testnet
-        case .binance(let testnet):
-            return testnet
-        case .polygon(let testnet):
-            return testnet
-        case .avalanche(let testnet):
-            return testnet
-        case .solana(_, let testnet):
-            return testnet
-        case .fantom(let testnet):
-            return testnet
-        case .polkadot(_, let testnet):
-            return testnet
-        case .azero(_, let testnet):
-            return testnet
-        case .tron(let testnet):
-            return testnet
-        case .arbitrum(let testnet):
-            return testnet
-        case .dash(let testnet):
-            return testnet
-        case .gnosis:
-            return false
-        case .optimism(let testnet):
-            return testnet
-        case .ethereumPoW(let testnet):
-            return testnet
-        case .ethereumFair:
-            return false
-        case .ton(_, let testnet):
-            return testnet
-        case .kava(let testnet):
-            return testnet
-        case .kaspa:
-            return false
-        case .ravencoin(let testnet):
-            return testnet
-        case .cosmos(let testnet):
-            return testnet
-        case .telos(let testnet):
-            return testnet
-        case .chia(let testnet):
-            return testnet
-        case .near(_, let testnet):
-            return testnet
-        case .decimal(let testnet):
-            return testnet
-        case .veChain(let testnet):
-            return testnet
-        case .xdc(let testnet):
+        case .stellar(_, let testnet),
+                .hedera(_, let testnet),
+                .solana(_, let testnet),
+                .polkadot(_, let testnet),
+                .azero(_, let testnet),
+                .ton(_, let testnet),
+                .near(_, let testnet):
             return testnet
         }
     }
@@ -147,7 +123,8 @@ public enum Blockchain: Equatable, Hashable {
                 .ton(let curve, _),
                 .xrp(let curve),
                 .tezos(let curve),
-                .near(let curve, _):
+                .near(let curve, _),
+                .hedera(let curve, _):
             return curve
         case .chia:
             return .bls12381_G2_AUG
@@ -166,7 +143,8 @@ public enum Blockchain: Equatable, Hashable {
                 .dogecoin,
                 .dash,
                 .kaspa,
-                .ravencoin:
+                .ravencoin,
+                .hedera:
             return 8
         case .ethereum,
                 .ethereumClassic,
@@ -202,7 +180,9 @@ public enum Blockchain: Equatable, Hashable {
             return 9
         case .polkadot(_, let testnet):
             return testnet ? 12 : 10
-        case .kusama, .azero, .chia:
+        case .kusama,
+                .azero,
+                .chia:
             return 12
         case .near:
             return 24
@@ -293,6 +273,8 @@ public enum Blockchain: Equatable, Hashable {
             return "VET"
         case .xdc:
             return "XDC"
+        case .hedera:
+            return "HBAR"
         }
     }
 
@@ -400,7 +382,8 @@ public enum Blockchain: Equatable, Hashable {
                 .stellar,
                 .optimism,
                 .ton,
-                .near:
+                .near,
+                .hedera:
             return true
         case .fantom,
                 .tron,
@@ -788,6 +771,7 @@ extension Blockchain: Codable {
         case .decimal: return "decimal"
         case .veChain: return "vechain"
         case .xdc: return "xdc"
+        case .hedera: return "hedera"
         }
     }
 
@@ -854,6 +838,7 @@ extension Blockchain: Codable {
         case "decimal": self = .decimal(testnet: isTestnet)
         case "vechain": self = .veChain(testnet: isTestnet)
         case "xdc": self = .xdc(testnet: isTestnet)
+        case "hedera": self = .hedera(curve: curve, testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -924,6 +909,7 @@ extension Blockchain {
         case "decimal": return .decimal(testnet: isTestnet)
         case "vechain": return .veChain(testnet: isTestnet)
         case "xdc": return .xdc(testnet: isTestnet)
+        case "hedera": return .hedera(curve: curve, testnet: isTestnet)
         default: return nil
         }
     }
@@ -1000,6 +986,8 @@ extension Blockchain {
             return VeChainWalletAssembly()
         case .xdc:
             return XDCWalletAssembly()
+        case .hedera:
+            return HederaWalletAssembly()
         }
     }
 }
