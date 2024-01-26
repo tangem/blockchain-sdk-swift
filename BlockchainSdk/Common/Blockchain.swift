@@ -166,7 +166,7 @@ public enum Blockchain: Equatable, Hashable {
                 .veChain,
                 .xdc:
             return 18
-        case  .cardano,
+        case .cardano,
                 .xrp,
                 .tezos,
                 .tron,
@@ -351,6 +351,7 @@ public enum Blockchain: Equatable, Hashable {
         }
     }
 
+    // TODO: Andrey Fedorov - Are Hedera tokens supported?
     public var canHandleTokens: Bool {
         switch self {
         case _ where isEvm:
@@ -409,7 +410,7 @@ public enum Blockchain: Equatable, Hashable {
 extension Blockchain {
     public var isEvm: Bool { chainId != nil }
 
-    // Only fot Ethereum compatible blockchains
+    // Only for Ethereum compatible blockchains
     // https://chainlist.org
     public var chainId: Int? {
         switch self {
