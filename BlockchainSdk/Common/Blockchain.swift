@@ -57,6 +57,7 @@ public enum Blockchain: Equatable, Hashable {
     case decimal(testnet: Bool)
     case veChain(testnet: Bool)
     case xdc(testnet: Bool)
+    case shibarium(testnet: Bool, dummy: String)
 
     public var isTestnet: Bool {
         switch self {
@@ -132,6 +133,8 @@ public enum Blockchain: Equatable, Hashable {
             return testnet
         case .xdc(let testnet):
             return testnet
+        case .shibarium(let testnet, _):
+            return testnet
         }
     }
 
@@ -186,7 +189,8 @@ public enum Blockchain: Equatable, Hashable {
                 .octa,
                 .decimal,
                 .veChain,
-                .xdc:
+                .xdc,
+                .shibarium:
             return 18
         case  .cardano,
                 .xrp,
@@ -293,6 +297,8 @@ public enum Blockchain: Equatable, Hashable {
             return "VET"
         case .xdc:
             return "XDC"
+        case .shibarium:
+            return "BONE"
         }
     }
 
@@ -346,6 +352,8 @@ public enum Blockchain: Equatable, Hashable {
             return "VeChain" + testnetSuffix
         case .xdc:
             return "XDC Network"
+        case .shibarium:
+            return "Shibarium" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -448,6 +456,7 @@ extension Blockchain {
         case .octa: return isTestnet ? 800002 : 800001
         case .decimal: return isTestnet ? 202020 : 75
         case .xdc: return isTestnet ? 51 : 50
+        case .shibarium: return isTestnet ? 157 : 109
         default: return nil
         }
     }
@@ -673,6 +682,17 @@ extension Blockchain {
                     URL(string: "https://rpc1.xinfin.network")!,
                 ]
             }
+        case .shibarium(let isTestnet, _):
+            if isTestnet {
+                return [
+                    URL(string: "https://puppynet.shibrpc.com/")!
+                ]
+            } else {
+                return [
+                    URL(string: "https://www.shibrpc.com/")!,
+                    URL(string: "https://shib.nownodes.io/\(nowNodesApiKey)")!
+                ]
+            }
         default:
             return nil
         }
@@ -788,6 +808,7 @@ extension Blockchain: Codable {
         case .decimal: return "decimal"
         case .veChain: return "vechain"
         case .xdc: return "xdc"
+        case .shibarium: return "shibarium"
         }
     }
 
@@ -854,6 +875,7 @@ extension Blockchain: Codable {
         case "decimal": self = .decimal(testnet: isTestnet)
         case "vechain": self = .veChain(testnet: isTestnet)
         case "xdc": self = .xdc(testnet: isTestnet)
+        case "shibarium": self = .shibarium(testnet: isTestnet, dummy: "")
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -924,6 +946,7 @@ extension Blockchain {
         case "decimal": return .decimal(testnet: isTestnet)
         case "vechain": return .veChain(testnet: isTestnet)
         case "xdc": return .xdc(testnet: isTestnet)
+        case "shibarium": return .shibarium(testnet: isTestnet, dummy: "")
         default: return nil
         }
     }
@@ -958,7 +981,8 @@ extension Blockchain {
                 .ethereumFair,
                 .kava,
                 .cronos,
-                .octa:
+                .octa,
+                .shibarium:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()

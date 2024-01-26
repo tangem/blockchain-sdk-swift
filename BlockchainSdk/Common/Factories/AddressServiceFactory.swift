@@ -43,7 +43,8 @@ public struct AddressServiceFactory {
                 .kava,
                 .cronos,
                 .telos,
-                .octa:
+                .octa,
+                .shibarium:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
