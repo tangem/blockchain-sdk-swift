@@ -95,27 +95,8 @@ class CosmosTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
         
-        
-        
         let message: CosmosMessage
-        switch transaction.amount.type {
-            // TODO: TerraUSD goes here
-        case .coin:
-            let amountInSmallestDenomination = ((transaction.amount.value * decimalValue) as NSDecimalNumber).uint64Value
-            let denomination = try denomination(for: transaction.amount)
-
-            let sendCoinsMessage = CosmosMessage.Send.with {
-                $0.fromAddress = transaction.sourceAddress
-                $0.toAddress = transaction.destinationAddress
-                $0.amounts = [CosmosAmount.with {
-                    $0.amount = "\(amountInSmallestDenomination)"
-                    $0.denom = denomination
-                }]
-            }
-            message = CosmosMessage.with {
-                $0.sendCoinsMessage = sendCoinsMessage
-            }
-        case .token(let token):
+        if let token = transaction.amount.type.token, cosmosChain.allowCW20Tokens {
             guard let amountBytes = transaction.amount.encoded else {
                 throw WalletError.failedToBuildTx
             }
@@ -130,8 +111,21 @@ class CosmosTransactionBuilder {
             message = CosmosMessage.with {
                 $0.wasmExecuteContractTransferMessage = tokenMessage
             }
-        case .reserve:
-            throw WalletError.failedToBuildTx
+        } else {
+            let amountInSmallestDenomination = ((transaction.amount.value * decimalValue) as NSDecimalNumber).uint64Value
+            let denomination = try denomination(for: transaction.amount)
+
+            let sendCoinsMessage = CosmosMessage.Send.with {
+                $0.fromAddress = transaction.sourceAddress
+                $0.toAddress = transaction.destinationAddress
+                $0.amounts = [CosmosAmount.with {
+                    $0.amount = "\(amountInSmallestDenomination)"
+                    $0.denom = denomination
+                }]
+            }
+            message = CosmosMessage.with {
+                $0.sendCoinsMessage = sendCoinsMessage
+            }
         }
         
         guard
