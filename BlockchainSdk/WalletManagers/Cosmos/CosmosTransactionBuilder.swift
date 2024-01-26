@@ -116,15 +116,10 @@ class CosmosTransactionBuilder {
                 $0.sendCoinsMessage = sendCoinsMessage
             }
         case .token(let token):
-//            let sender = "terra1kf2vgqvgaexplzrfyqy9w3azs2rneznk6pxtnp"
-//            let contract = "terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26"
-//            let recipient = "terra16gg76qcpxckfvk87dcfcss2sjtc5gx422rpeh8"
-            
             guard let amountBytes = transaction.amount.encoded else {
                 throw WalletError.failedToBuildTx
             }
 
-            print("ZZZ amount bytes", amountBytes.hexString)
             let tokenMessage = CosmosMessage.WasmExecuteContractTransfer.with {
                 $0.senderAddress = transaction.sourceAddress
                 $0.recipientAddress = transaction.destinationAddress
