@@ -27,6 +27,12 @@ public class CashAddrService {
     }
 
     public func validate(_ address: String) -> Bool {
+        let address = if address.firstIndex(of: ":") == nil {
+            "\(addressPrefix):\(address)"
+        } else {
+            address
+        }
+        
         guard let decoded = CashAddrBech32.decode(address) else {
             return false
         }
