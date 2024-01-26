@@ -1046,6 +1046,10 @@ class AddressesTests: XCTestCase {
         let address = try addressService.makeAddress(from: publicKey).value
         let expectedAddress = "ADIYK65L3XR5ODNNCUIQVEET455L56MRKJHRBX5GU4TZI2752QIWK4UL5A"
         
+        XCTAssertNoThrow(try addressService.makeAddress(from: publicKey))
+        XCTAssertThrowsError(try addressService.makeAddress(from: secpCompressedKey))
+        XCTAssertThrowsError(try addressService.makeAddress(from: secpDecompressedKey))
+        
         XCTAssertEqual(address, expectedAddress)
     }
     
