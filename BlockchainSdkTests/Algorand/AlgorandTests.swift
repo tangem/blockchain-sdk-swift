@@ -25,6 +25,9 @@ final class AlgorandTests: XCTestCase {
     
     // MARK: - Impementation
     
+    /*
+     https://algoexplorer.io/tx/GMS3DRWDCL3SC57BCKCTOBV2SBIZZMTHNYEUZEV6A6WWH4DOS6TQ
+     */
     func testTransactionBuilder() throws {
         let privateKey = PrivateKey(data: privateKeyData)!
         let publicKey = privateKey.getPublicKeyByType(pubkeyType: .ed25519)
