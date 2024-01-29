@@ -14,11 +14,15 @@ final class AptosWalletManager: BaseManager {
     // MARK: - Private Properties
 
     private let transactionBuilder: AptosTransactionBuilder
+    private let networkService: AptosNetworkService
+    
+    private var sequenceNumber: UInt64 = 0
     
     // MARK: - Init
     
-    init(wallet: Wallet, transactionBuilder: AptosTransactionBuilder) {
+    init(wallet: Wallet, transactionBuilder: AptosTransactionBuilder, networkService: AptosNetworkService) {
         self.transactionBuilder = transactionBuilder
+        self.networkService = networkService
         super.init(wallet: wallet)
     }
     
@@ -33,12 +37,11 @@ final class AptosWalletManager: BaseManager {
 extension AptosWalletManager: WalletManager {
     
     var currentHost: String {
-        // TODO: - Make host after created network layer
-        ""
+        networkService.host
     }
     
     var allowsFeeSelection: Bool {
-        false
+        true
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {

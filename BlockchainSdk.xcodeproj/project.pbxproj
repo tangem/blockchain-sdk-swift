@@ -61,6 +61,14 @@
 		2DB6C6D52AFCBEC9000D0C6A /* TelosWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB6C6D42AFCBEC9000D0C6A /* TelosWalletManager.swift */; };
 		2DB6C6D72AFCC013000D0C6A /* TelosWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB6C6D62AFCC013000D0C6A /* TelosWalletAssembly.swift */; };
 		2DBB83472B6792580038610D /* AptosNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB83462B6792580038610D /* AptosNetworkService.swift */; };
+		2DBB834A2B6793940038610D /* AptosNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB83492B6793940038610D /* AptosNetworkProvider.swift */; };
+		2DBB834C2B6793A30038610D /* AptosProviderTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB834B2B6793A30038610D /* AptosProviderTarget.swift */; };
+		2DBB834E2B6793B30038610D /* AptosProviderUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB834D2B6793B30038610D /* AptosProviderUrl.swift */; };
+		2DBB83512B6797FE0038610D /* AptosResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB83502B6797FE0038610D /* AptosResponse.swift */; };
+		2DBB83532B67981D0038610D /* AptosResponse+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB83522B67981D0038610D /* AptosResponse+Account.swift */; };
+		2DBB83552B6799080038610D /* AptosResponse+Coin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB83542B6799080038610D /* AptosResponse+Coin.swift */; };
+		2DBB83572B679B0F0038610D /* AptosAccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB83562B679B0F0038610D /* AptosAccountInfo.swift */; };
+		2DBB83592B67A6770038610D /* AptosResponse+FeeParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBB83582B67A6770038610D /* AptosResponse+FeeParams.swift */; };
 		2DBBE94D29C8686000971539 /* OptimismWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBBE94C29C8686000971539 /* OptimismWalletAssembly.swift */; };
 		2DBBE95029C8DBEA00971539 /* TONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBBE94F29C8DBEA00971539 /* TONTests.swift */; };
 		2DC5796129C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5796029C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift */; };
@@ -709,6 +717,14 @@
 		2DB6C6D42AFCBEC9000D0C6A /* TelosWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelosWalletManager.swift; sourceTree = "<group>"; };
 		2DB6C6D62AFCC013000D0C6A /* TelosWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelosWalletAssembly.swift; sourceTree = "<group>"; };
 		2DBB83462B6792580038610D /* AptosNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AptosNetworkService.swift; sourceTree = "<group>"; };
+		2DBB83492B6793940038610D /* AptosNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AptosNetworkProvider.swift; sourceTree = "<group>"; };
+		2DBB834B2B6793A30038610D /* AptosProviderTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AptosProviderTarget.swift; sourceTree = "<group>"; };
+		2DBB834D2B6793B30038610D /* AptosProviderUrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AptosProviderUrl.swift; sourceTree = "<group>"; };
+		2DBB83502B6797FE0038610D /* AptosResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AptosResponse.swift; sourceTree = "<group>"; };
+		2DBB83522B67981D0038610D /* AptosResponse+Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AptosResponse+Account.swift"; sourceTree = "<group>"; };
+		2DBB83542B6799080038610D /* AptosResponse+Coin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AptosResponse+Coin.swift"; sourceTree = "<group>"; };
+		2DBB83562B679B0F0038610D /* AptosAccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AptosAccountInfo.swift; sourceTree = "<group>"; };
+		2DBB83582B67A6770038610D /* AptosResponse+FeeParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AptosResponse+FeeParams.swift"; sourceTree = "<group>"; };
 		2DBBE94C29C8686000971539 /* OptimismWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismWalletAssembly.swift; sourceTree = "<group>"; };
 		2DBBE94F29C8DBEA00971539 /* TONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONTests.swift; sourceTree = "<group>"; };
 		2DC5796029C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreSignerTesterUtility.swift; sourceTree = "<group>"; };
@@ -1357,6 +1373,7 @@
 			isa = PBXGroup;
 			children = (
 				2D31AAC42B626769009EC38F /* AptosBuildParams.swift */,
+				2DBB83562B679B0F0038610D /* AptosAccountInfo.swift */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -1475,8 +1492,31 @@
 			isa = PBXGroup;
 			children = (
 				2DBB83462B6792580038610D /* AptosNetworkService.swift */,
+				2DBB834F2B6797C20038610D /* DTO */,
+				2DBB83482B6793250038610D /* Provider */,
 			);
 			path = Aptos;
+			sourceTree = "<group>";
+		};
+		2DBB83482B6793250038610D /* Provider */ = {
+			isa = PBXGroup;
+			children = (
+				2DBB83492B6793940038610D /* AptosNetworkProvider.swift */,
+				2DBB834B2B6793A30038610D /* AptosProviderTarget.swift */,
+				2DBB834D2B6793B30038610D /* AptosProviderUrl.swift */,
+			);
+			path = Provider;
+			sourceTree = "<group>";
+		};
+		2DBB834F2B6797C20038610D /* DTO */ = {
+			isa = PBXGroup;
+			children = (
+				2DBB83502B6797FE0038610D /* AptosResponse.swift */,
+				2DBB83522B67981D0038610D /* AptosResponse+Account.swift */,
+				2DBB83542B6799080038610D /* AptosResponse+Coin.swift */,
+				2DBB83582B67A6770038610D /* AptosResponse+FeeParams.swift */,
+			);
+			path = DTO;
 			sourceTree = "<group>";
 		};
 		2DBBE94E29C8DBD900971539 /* TON */ = {
@@ -3389,6 +3429,7 @@
 				B06AFAEF261496E600E7AAB0 /* CardanoAddressUtils.swift in Sources */,
 				DA346451279A802E00E77B1D /* SolanaSdk+.swift in Sources */,
 				DC5E65122B1650F400E81AA5 /* OP_ROLL.swift in Sources */,
+				2DBB83552B6799080038610D /* AptosResponse+Coin.swift in Sources */,
 				2DDE5BAC29C4F8D200A5B708 /* SubstrateWalletAssembly.swift in Sources */,
 				5D88C809256BCD6C00020028 /* XRPTransactionParams.swift in Sources */,
 				DC5E64F72B1650F400E81AA5 /* OP_NUMNOTEQUAL.swift in Sources */,
@@ -3433,6 +3474,7 @@
 				5D4B33D923FAAD1B00C93A84 /* BitcoreTarget.swift in Sources */,
 				2D31AAC02B6248B7009EC38F /* AptosWalletManager.swift in Sources */,
 				5DED72BC239FEEEC006D79AE /* BitcoinTransactionBuilder.swift in Sources */,
+				2DBB83572B679B0F0038610D /* AptosAccountInfo.swift in Sources */,
 				2D8501F729DEC20A00F4A11B /* TONTransactionParams.swift in Sources */,
 				5D8653FC23A8C4A9000DE52D /* StellarTransactionBuilder.swift in Sources */,
 				B6B0835C2AE6BED40099D6F8 /* NullValue.swift in Sources */,
@@ -3651,9 +3693,11 @@
 				EFBE76912A7C066C00CD918B /* TransactionHistoryProviderFactory.swift in Sources */,
 				DC5E651D2B1650F400E81AA5 /* OP_2OVER.swift in Sources */,
 				B675E9692B321131004AF179 /* VeChainNetworkResult.Transaction.swift in Sources */,
+				2DBB834E2B6793B30038610D /* AptosProviderUrl.swift in Sources */,
 				2D31AAC22B6248C1009EC38F /* AptosTransactionBuilder.swift in Sources */,
 				EFF466EF2ACECF8000ACC3EA /* PendingTransactionRecordMapper.swift in Sources */,
 				B6931AD32B32495C00B31319 /* VeChainAccountInfo.swift in Sources */,
+				2DBB834C2B6793A30038610D /* AptosProviderTarget.swift in Sources */,
 				2DBB83472B6792580038610D /* AptosNetworkService.swift in Sources */,
 				5D8653FA23A8C481000DE52D /* StellarNetworkService.swift in Sources */,
 				DC5E64DA2B1650F400E81AA5 /* OP_HASH160.swift in Sources */,
@@ -3674,6 +3718,7 @@
 				2DDE5BA729C4F8D200A5B708 /* XRPWalletAssembly.swift in Sources */,
 				EF3B193C2AA85D230084AA1C /* SolanaExternalLinkProvider.swift in Sources */,
 				EF3B19482AA85E6F0084AA1C /* ArbitrumExternalLinkProvider.swift in Sources */,
+				2DBB83512B6797FE0038610D /* AptosResponse.swift in Sources */,
 				B63068C22B3102FA00E79053 /* VeChainTransactionBuilder.swift in Sources */,
 				B68A7D472B35D39700822BAF /* VeChainTransactionInfo.swift in Sources */,
 				EF193BFE2A77ED9E0048C0C3 /* Page.swift in Sources */,
@@ -3692,6 +3737,7 @@
 				DC5E652C2B1650F400E81AA5 /* OP_RETURN.swift in Sources */,
 				EF3B19382AA85D090084AA1C /* PolygonExternalLinkProvider.swift in Sources */,
 				B0AD566425AC8DD50084F924 /* PendingTransaction.swift in Sources */,
+				2DBB83592B67A6770038610D /* AptosResponse+FeeParams.swift in Sources */,
 				DC5E650B2B1650F400E81AA5 /* OP_BIN2NUM.swift in Sources */,
 				DC3550FC2B58543100A93DBA /* XDCWalletAssembly.swift in Sources */,
 				DC5E64E42B1650F400E81AA5 /* OP_AND.swift in Sources */,
@@ -3766,6 +3812,7 @@
 				5DC7DD62244077D7008F83F2 /* XRPNetworkService.swift in Sources */,
 				2DBBE94D29C8686000971539 /* OptimismWalletAssembly.swift in Sources */,
 				B6D346002AD9450D0009D1B2 /* NEARTransactionBuilder.swift in Sources */,
+				2DBB83532B67981D0038610D /* AptosResponse+Account.swift in Sources */,
 				EF5F1B9729C9C0500093307B /* Fee.swift in Sources */,
 				B6A71D982B553E7900039991 /* FeePaidCurrency.swift in Sources */,
 				DC5E65042B1650F400E81AA5 /* OP_NUMEQUAL.swift in Sources */,
@@ -3874,6 +3921,7 @@
 				DC5E64F32B1650F400E81AA5 /* OP_LSHIFT.swift in Sources */,
 				DC5E65222B1650F400E81AA5 /* OP_OVER.swift in Sources */,
 				DC5E65182B1650F400E81AA5 /* OP_FROMALTSTACK.swift in Sources */,
+				2DBB834A2B6793940038610D /* AptosNetworkProvider.swift in Sources */,
 				5DED72B8239FE2E3006D79AE /* Decimal+.swift in Sources */,
 				DC5E64EB2B1650F400E81AA5 /* OP_RESERVED1.swift in Sources */,
 				2D31AABD2B624849009EC38F /* AptosExternalLinkProvider.swift in Sources */,
