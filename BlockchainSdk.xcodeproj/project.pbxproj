@@ -42,6 +42,7 @@
 		2D9A91A429BB8C1700476EA6 /* TONProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A919D29BB8C1700476EA6 /* TONProvider.swift */; };
 		2D9A91A529BB8C1700476EA6 /* TONProviderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A919E29BB8C1700476EA6 /* TONProviderRequest.swift */; };
 		2D9A91A729BB8C2E00476EA6 /* WalletCoreAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A91A629BB8C2E00476EA6 /* WalletCoreAddressService.swift */; };
+		2D9E2A562B584E2E0094D811 /* AlgorandTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9E2A552B584E2E0094D811 /* AlgorandTests.swift */; };
 		2DA139F72A8AD82E00E3C374 /* ChiaModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA139F42A8AD82E00E3C374 /* ChiaModels.swift */; };
 		2DA139F82A8AD82E00E3C374 /* Chia+Int64.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA139F52A8AD82E00E3C374 /* Chia+Int64.swift */; };
 		2DA139F92A8AD82E00E3C374 /* ChiaCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA139F62A8AD82E00E3C374 /* ChiaCondition.swift */; };
@@ -705,6 +706,7 @@
 		2D9A919D29BB8C1700476EA6 /* TONProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProvider.swift; sourceTree = "<group>"; };
 		2D9A919E29BB8C1700476EA6 /* TONProviderRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProviderRequest.swift; sourceTree = "<group>"; };
 		2D9A91A629BB8C2E00476EA6 /* WalletCoreAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletCoreAddressService.swift; sourceTree = "<group>"; };
+		2D9E2A552B584E2E0094D811 /* AlgorandTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandTests.swift; sourceTree = "<group>"; };
 		2DA139F42A8AD82E00E3C374 /* ChiaModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaModels.swift; sourceTree = "<group>"; };
 		2DA139F52A8AD82E00E3C374 /* Chia+Int64.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Chia+Int64.swift"; sourceTree = "<group>"; };
 		2DA139F62A8AD82E00E3C374 /* ChiaCondition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaCondition.swift; sourceTree = "<group>"; };
@@ -1454,6 +1456,14 @@
 			path = TONProviderProvider;
 			sourceTree = "<group>";
 		};
+		2D9E2A542B584E2E0094D811 /* Algorand */ = {
+			isa = PBXGroup;
+			children = (
+				2D9E2A552B584E2E0094D811 /* AlgorandTests.swift */,
+			);
+			path = Algorand;
+			sourceTree = "<group>";
+		};
 		2DA139FA2A8AD83B00E3C374 /* Chia */ = {
 			isa = PBXGroup;
 			children = (
@@ -1651,6 +1661,7 @@
 				2D78F40D2A5CA54500962CCA /* Chia */,
 				B63E7DBA2AE9FD91000324CB /* NEAR */,
 				B62BCBAA2B3D973C007494CF /* VeChain */,
+				2D9E2A542B584E2E0094D811 /* Algorand */,
 				5D14E47E2397B80F00C15FC8 /* Info.plist */,
 			);
 			path = BlockchainSdkTests;
@@ -4005,6 +4016,7 @@
 				EFAD40B12A98DFBD00364D65 /* SolanaEd25519Slip0010Tests.swift in Sources */,
 				EF0DA78628523FAC0081092A /* XCTestCase+.swift in Sources */,
 				2D535E772A0CC5E50081EB76 /* DecodableVectors.swift in Sources */,
+				2D9E2A562B584E2E0094D811 /* AlgorandTests.swift in Sources */,
 				2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */,
 				DC886FCD2AF5637D0098669C /* CommonTests.swift in Sources */,
 			);

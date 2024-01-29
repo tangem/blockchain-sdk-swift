@@ -159,6 +159,11 @@
             "blockchain": "vechain",
             "derivation": "m/44'/818'/0'/0/0",
             "walletPublicKey": "0208ba6ca86d2a090080c57f0e75dff45d0a95fcde3d4c219cdcd06c4a53dd91a0"
-        }
+        },
+        {
+            "blockchain": "algorand",
+            "derivation": "m/44'/283'/0'/0'/0'",
+            "walletPublicKey": "21FA8DA84314C3C0398BD9396E8506831E0F9A7D86DF462B6045DA5C40ECBF54"
+        },
     ]
 }
