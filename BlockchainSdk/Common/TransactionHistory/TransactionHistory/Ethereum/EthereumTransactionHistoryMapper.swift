@@ -198,8 +198,9 @@ private extension EthereumTransactionHistoryMapper {
         switch amountType {
         case .coin, .reserve:
             if let amount = Decimal(string: transaction.value) {
-                let tokenTransfers = transaction.tokenTransfers ?? []
-                let isContract = !tokenTransfers.isEmpty
+                let isContainsData = transaction.ethereumSpecific?.data?.isEmpty == false
+                let isContainsTokenTransfers = transaction.tokenTransfers?.isEmpty == false
+                let isContract = isContainsData || isContainsTokenTransfers
                 return TransactionRecord.Destination(
                     address: isContract ? .contract(address) : .user(address),
                     amount: amount / decimalValue
