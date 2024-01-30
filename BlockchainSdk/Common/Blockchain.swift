@@ -58,6 +58,7 @@ public enum Blockchain: Equatable, Hashable {
     case veChain(testnet: Bool)
     case xdc(testnet: Bool)
     case algorand(curve: EllipticCurve, testnet: Bool)
+    
     public var isTestnet: Bool {
         switch self {
         case .bitcoin(let testnet):

@@ -106,9 +106,4 @@ final class AlgorandTransactionBuilder {
         
         return input
     }
-    
-    // TODO: - Use for assembly asset algorand transaction write this
-    private func buildAssetInput(transaction: Transaction, buildParams: AlgorandTransactionBuildParams) throws -> AlgorandSigningInput {
-        throw WalletError.failedToBuildTx
-    }
 }

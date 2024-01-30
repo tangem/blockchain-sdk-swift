@@ -80,7 +80,7 @@ class AlgorandNetworkService: MultiNetworkProvider {
                     
                     let transactionParams = AlgorandTransactionBuildParams(
                         genesisId: response.genesisId,
-                        genesisHash: genesisHash, 
+                        genesisHash: genesisHash,
                         firstRound: response.lastRound,
                         lastRound: response.lastRound + Constants.bounceRoundValue
                     )
@@ -111,6 +111,33 @@ class AlgorandNetworkService: MultiNetworkProvider {
                     }
 
                     return WalletError.failedToSendTx
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+    
+    func getPendingTransaction(transactionHash: String) -> AnyPublisher<AlgorandTransactionInfo?, Error> {
+        return providerPublisher { provider in
+            return provider
+                .getPendingTransaction(txId: transactionHash)
+                .catch { error in
+                    // Need for use non blocked any requests due to the fact that this request throws 404 after some time for trnsaction id
+                    Just(nil)
+                }
+                .tryMap { response in
+                    guard let response = response, let confirmedRound = response.confirmedRound else {
+                        return nil
+                    }
+                    
+                    if confirmedRound > 0 {
+                        return AlgorandTransactionInfo(transactionHash: transactionHash, status: .committed)
+                    } else if confirmedRound == 0, response.poolError.isEmpty {
+                        return AlgorandTransactionInfo(transactionHash: transactionHash, status: .still)
+                    } else if confirmedRound == 0, !response.poolError.isEmpty {
+                        return AlgorandTransactionInfo(transactionHash: transactionHash, status: .removed)
+                    } else {
+                        throw WalletError.failedToParseNetworkResponse
+                    }
                 }
                 .eraseToAnyPublisher()
         }

@@ -10,31 +10,28 @@ import Foundation
 
 struct AlgorandExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? {
-        // TODO: - Write faucet
-        return nil
+        URL(string: "https://dispenser.testnet.aws.algodev.network")
     }
 
     private let isTestnet: Bool
+    
+    private var baseExplorerHost: String {
+        if isTestnet {
+            return "testnet.algoexplorer.io"
+        } else {
+            return "algoexplorer.io"
+        }
+    }
 
     init(isTestnet: Bool) {
         self.isTestnet = isTestnet
     }
 
     func url(address: String, contractAddress: String?) -> URL? {
-        if isTestnet {
-            // TODO: - Insert url explorer link
-            return nil
-        }
-
-        return URL(string: "https://algoexplorer.io/address/\(address)")
+        return URL(string: "https://\(baseExplorerHost)/address/\(address)")
     }
 
     func url(transaction hash: String) -> URL? {
-        if isTestnet {
-            // TODO: - Insert url transaction link
-            return nil
-        }
-
-        return URL(string: "https://algoexplorer.io/tx/\(hash)")
+        return URL(string: "https://\(baseExplorerHost)/tx/\(hash)")
     }
 }

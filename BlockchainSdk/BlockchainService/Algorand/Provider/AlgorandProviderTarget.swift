@@ -34,6 +34,8 @@ struct AlgorandProviderTarget: TargetType {
             return "v2/transactions/params"
         case .transaction:
             return "v2/transactions"
+        case .getPendingTransaction(let txId):
+            return "v2/transactions/pending/\(txId)"
         case .getTransactions:
             return "v2/transactions"
         }
@@ -41,7 +43,7 @@ struct AlgorandProviderTarget: TargetType {
     
     var method: Moya.Method {
         switch targetType {
-        case .getAccounts, .getTransactionParams:
+        case .getAccounts, .getTransactionParams, .getPendingTransaction:
             return .get
         case .transaction:
             return .post
@@ -52,7 +54,7 @@ struct AlgorandProviderTarget: TargetType {
     
     var task: Moya.Task {
         switch targetType {
-        case .getAccounts, .getTransactionParams:
+        case .getAccounts, .getTransactionParams, .getPendingTransaction:
             return .requestPlain
         case .transaction(let data):
             return .requestData(data)
@@ -96,5 +98,6 @@ extension AlgorandProviderTarget {
         case getTransactionParams
         case transaction(trx: Data)
         case getTransactions(address: String, limit: Int?, next: String?)
+        case getPendingTransaction(txId: String)
     }
 }
