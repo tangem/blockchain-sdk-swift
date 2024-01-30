@@ -10,6 +10,5 @@ import Foundation
 
 struct AptosBuildParams {
     let chainId: UInt32
-    let sequenceNumber: Int64
-    let expirationTimestampSecs: UInt64
+    let publicKey: Data
 }

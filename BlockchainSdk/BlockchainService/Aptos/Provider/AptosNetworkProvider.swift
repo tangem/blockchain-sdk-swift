@@ -47,6 +47,24 @@ struct AptosNetworkProvider: HostProvider {
         return requestPublisher(for: target)
     }
     
+    func getGasUnitPrice() -> AnyPublisher<JSON, Error> {
+        let target = AptosProviderTarget(
+            node: node,
+            targetType: .estimateGasPrice
+        )
+        
+        return requestPublisher(for: target)
+    }
+    
+    func calculateUsedGasPriceUnit(transactionInfo: AptosRequest.TransactionInfo) -> AnyPublisher<JSON, Error> {
+        let target = AptosProviderTarget(
+            node: node,
+            targetType: .simulateTransaction(data: transactionInfo)
+        )
+        
+        return requestPublisher(for: target)
+    }
+    
     // MARK: - Private Implementation
     
     private func requestPublisher(for target: AptosProviderTarget) -> AnyPublisher<JSON, Error> {
@@ -54,7 +72,12 @@ struct AptosNetworkProvider: HostProvider {
             .filterSuccessfulStatusAndRedirectCodes()
             .mapSwiftyJSON()
             .mapError { moyaError -> Swift.Error in
-                return moyaError.asWalletError ?? moyaError
+                switch moyaError {
+                case .statusCode(let response) where response.statusCode == 404 && target.isAccountsResourcesRequest:
+                    return WalletError.noAccount(message: "no_account_bnb".localized)
+                default:
+                    return moyaError.asWalletError ?? moyaError
+                }
             }
             .eraseToAnyPublisher()
     }

@@ -16,8 +16,6 @@ final class AptosWalletManager: BaseManager {
     private let transactionBuilder: AptosTransactionBuilder
     private let networkService: AptosNetworkService
     
-    private var sequenceNumber: UInt64 = 0
-    
     // MARK: - Init
     
     init(wallet: Wallet, transactionBuilder: AptosTransactionBuilder, networkService: AptosNetworkService) {
@@ -29,7 +27,19 @@ final class AptosWalletManager: BaseManager {
     // MARK: - Implementation
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        completion(.success(()))
+        cancellable = networkService
+            .getAccount(address: wallet.address)
+            .sink(
+                receiveCompletion: { [unowned self] completionSubscription in
+                    if case let .failure(error) = completionSubscription {
+                        self.wallet.amounts = [:]
+                        completion(.failure(error))
+                    }
+                },
+                receiveValue: { [unowned self] accountInfo in
+                    self.update(with: accountInfo, completion: completion)
+                }
+            )
     }
     
 }
@@ -50,7 +60,41 @@ extension AptosWalletManager: WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        return .anyFail(error: WalletError.failedToGetFee)
+        networkService
+            .getGasUnitPrice()
+            .withWeakCaptureOf(self)
+            .tryMap { (walletManager, feeParams) -> AnyPublisher<AptosEstimatedGasPrice, Error> in
+                let transactionInfo = try walletManager.transactionBuilder.buildToCalculateFee(
+                    amount: amount,
+                    destination: destination,
+                    gasUnitPrice: feeParams.gasEstimate.uint64Value
+                )
+                
+                return walletManager
+                    .networkService
+                    .calculateUsedGasPriceUnit(info: transactionInfo)
+                    .eraseToAnyPublisher()
+            }
+            .tryMap { feeValue in
+                throw WalletError.failedToGetFee
+            }
+            .eraseToAnyPublisher()
     }
     
+}
+
+// MARK: - Private Implementation
+
+private extension AptosWalletManager {
+    func update(with accountModel: AptosAccountInfo, completion: @escaping (Result<Void, Error>) -> Void) {
+        wallet.add(coinValue: accountModel.balance)
+
+        if accountModel.sequenceNumber != transactionBuilder.currentSequenceNumber {
+            wallet.clearPendingTransaction()
+        }
+        
+        transactionBuilder.update(sequenceNumber: accountModel.sequenceNumber)
+
+        completion(.success(()))
+    }
 }

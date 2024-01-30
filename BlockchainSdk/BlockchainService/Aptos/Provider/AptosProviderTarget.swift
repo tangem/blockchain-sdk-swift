@@ -29,6 +29,14 @@ struct AptosProviderTarget: TargetType {
     var baseURL: URL {
         return node.url
     }
+    
+    var isAccountsResourcesRequest: Bool {
+        if case .accountsResources = targetType {
+            return true
+        } else {
+            return false
+        }
+    }
 
     var path: String {
         switch targetType {
@@ -38,6 +46,8 @@ struct AptosProviderTarget: TargetType {
             return "v1/accounts/\(address)/resources"
         case .estimateGasPrice:
             return "v1/estimate_gas_price"
+        case .simulateTransaction:
+            return "v1//transactions/simulate"
         case .submitTransaction:
             return "v1/transactions"
         }
@@ -47,7 +57,7 @@ struct AptosProviderTarget: TargetType {
         switch targetType {
         case .accounts, .accountsResources, .estimateGasPrice:
             return .get
-        case .submitTransaction:
+        case .simulateTransaction, .submitTransaction:
             return .post
         }
     }
@@ -56,16 +66,23 @@ struct AptosProviderTarget: TargetType {
         switch targetType {
         case .accounts, .accountsResources, .estimateGasPrice:
             return .requestPlain
+        case .simulateTransaction(let data):
+            let parameters = try? data.asDictionary()
+            return .requestParameters(parameters: parameters ?? [:], encoding: JSONEncoding.default)
         case .submitTransaction:
             return .requestParameters(parameters: [:], encoding: JSONEncoding.default)
         }
     }
     
     var headers: [String : String]? {
-        let headers: [String : String] = [
+        var headers: [String : String] = [
             "Accept": "application/json",
             "Content-Type": "application/json"
         ]
+        
+        if case .nownodes = node.type, let apiKeyHeaderName = node.apiKeyHeaderName {
+            headers[apiKeyHeaderName] = node.apiKeyValue
+        }
         
         return headers
     }
@@ -86,9 +103,23 @@ extension AptosProviderTarget {
         case accountsResources(address: String)
         
         /*
-         Retrieve on-chain committed transactions. The page size and start ledger version can be provided to get a specific sequence of transactions.
+         Gives an estimate of the gas unit price required to get a transaction on chain in a reasonable amount of time. The gas unit price is the amount that each transaction commits to pay for each unit of gas consumed in executing the transaction. The estimate is based on recent history: it gives the minimum gas that would have been required to get into recent blocks, for blocks that were full. (When blocks are not full, the estimate will match the minimum gas unit price.)
+
+         The estimation is given in three values: de-prioritized (low), regular, and prioritized (aggressive). Using a more aggressive value increases the likelihood that the transaction will make it into the next block; more aggressive values are computed with a larger history and higher percentile statistics. More details are in AIP-34.
          */
         case estimateGasPrice
+        
+        /*
+         The output of the transaction will have the exact transaction outputs and events that running an actual signed transaction would have. However, it will not have the associated state hashes, as they are not updated in storage. This can be used to estimate the maximum gas units for a submitted transaction.
+
+         To use this, you must:
+
+         - Create a SignedTransaction with a zero-padded signature.
+         - Submit a SubmitTransactionRequest containing a UserTransactionRequest containing that signature.
+         
+         To use this endpoint with BCS, you must submit a SignedTransaction encoded as BCS. See SignedTransaction in types/src/transaction/mod.rs.
+         */
+        case simulateTransaction(data: AptosRequest.TransactionInfo)
         
         /*
          This endpoint accepts transaction submissions in two formats.

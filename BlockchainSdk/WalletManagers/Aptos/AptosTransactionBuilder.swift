@@ -13,20 +13,31 @@ import CryptoKit
 
 final class AptosTransactionBuilder {
     private let publicKey: Data
+    private let walletAddress: String
     private let isTestnet: Bool
     private let decimalValue: Decimal
     
     private var coinType: CoinType { .algorand }
+    private var sequenceNumber: Int64 = 0
+    
+    var currentSequenceNumber: Int64 {
+        sequenceNumber
+    }
     
     // MARK: - Init
     
-    init(publicKey: Data, isTestnet: Bool, decimalValue: Decimal) {
+    init(publicKey: Data, walletAddress: String, isTestnet: Bool, decimalValue: Decimal) {
         self.publicKey = publicKey
         self.isTestnet = isTestnet
         self.decimalValue = decimalValue
+        self.walletAddress = walletAddress
     }
     
     // MARK: - Implementation
+    
+    func update(sequenceNumber: Int64) {
+        self.sequenceNumber = sequenceNumber
+    }
 
     func buildForSign(transaction: Transaction, with params: AptosBuildParams) throws -> Data {
         let input = try buildInput(transaction: transaction, buildParams: params)
@@ -71,6 +82,25 @@ final class AptosTransactionBuilder {
 
         return signingOutput.encoded
     }
+    
+    func buildToCalculateFee(amount: Amount, destination: String, gasUnitPrice: UInt64) throws -> AptosTransactionInfo {
+        let expirationTimestamp = createExpirationTimestampSecs()
+        
+        return AptosTransactionInfo(
+            sequenceNumber: sequenceNumber,
+            publicKey: publicKey.hexString,
+            sourceAddress: walletAddress,
+            destinationAddress: destination,
+            amount: (amount.value * decimalValue).roundedDecimalNumber.uint64Value,
+            contractAddress: amount.type.token?.contractAddress,
+            gasUnitPrice: gasUnitPrice,
+            maxGasAmount: Constants.pseudoTransactionMaxGasAmount,
+            expirationTimestamp: expirationTimestamp,
+            hash: Constants.pseudoTransactionHash
+        )
+    }
+    
+    // MARK: - Private Implementation
 
     /*
      This links describe basic structure transaction Aptos Blockchain
@@ -87,20 +117,32 @@ final class AptosTransactionBuilder {
             $0.to = transaction.destinationAddress
             $0.amount = (transaction.amount.value * decimalValue).roundedDecimalNumber.uint64Value
         }
+        
+        let expirationTimestamp = createExpirationTimestampSecs()
+        let sequenceNumber = sequenceNumber
 
         let input = AptosSigningInput.with { input in
             input.chainID = buildParams.chainId
             input.sender = transaction.sourceAddress
-            input.sequenceNumber = buildParams.sequenceNumber
-            input.expirationTimestampSecs = buildParams.expirationTimestampSecs
+            input.sequenceNumber = sequenceNumber
+            input.expirationTimestampSecs = expirationTimestamp
             input.transfer = transfer
         }
         
         return input
     }
     
-    // TODO: - Use for assembly asset algorand transaction write this
-    private func buildAssetInput(transaction: Transaction, buildParams: AptosBuildParams) throws -> AptosSigningInput {
-        throw WalletError.failedToBuildTx
+    private func createExpirationTimestampSecs() -> UInt64 {
+        let lifetime = (Constants.transactionLifetimeInMin * 50).seconds.timeInterval
+        return UInt64(Date().addingTimeInterval(lifetime).timeIntervalSinceNow)
+    }
+}
+
+extension AptosTransactionBuilder {
+    enum Constants {
+        static let transactionLifetimeInMin = 5
+        static let pseudoTransactionMaxGasAmount: UInt64 = 100_000
+        static let pseudoTransactionHash = "0x000000000000000000000000000000000000000000000000000000000000000000000" +
+                    "00000000000000000000000000000000000000000000000000000000000"
     }
 }

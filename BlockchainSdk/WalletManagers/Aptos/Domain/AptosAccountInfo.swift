@@ -9,6 +9,6 @@
 import Foundation
 
 struct AptosAccountInfo {
-    let sequenceNumber: UInt64
+    let sequenceNumber: Int64
     let balance: Decimal
 }

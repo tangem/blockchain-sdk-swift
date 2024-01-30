@@ -25,6 +25,7 @@ struct AptosWalletAssembly: WalletManagerAssembly {
         
         let txBuilder = AptosTransactionBuilder(
             publicKey: input.wallet.publicKey.blockchainKey,
+            walletAddress: input.wallet.address,
             isTestnet: input.blockchain.isTestnet,
             decimalValue: input.blockchain.decimalValue
         )
