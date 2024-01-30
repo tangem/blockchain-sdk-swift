@@ -13,10 +13,10 @@ public enum XRPAddressError: Error {
 }
 
 public struct XRPAddress {
-    var rAddress: String
-    var tag: UInt32?
-    var isTest: Bool
-    var xAddress: String {
+    public internal(set) var rAddress: String
+    public internal(set) var tag: UInt32?
+    public internal(set) var isTest: Bool
+    public var xAddress: String {
         return XRPAddress.encodeXAddress(rAddress: self.rAddress, tag: self.tag, test: self.isTest)
     }
     
