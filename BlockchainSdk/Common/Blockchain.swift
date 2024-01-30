@@ -13,7 +13,8 @@ import enum WalletCore.CoinType
 
 // MARK: - Base
 @available(iOS 13.0, *)
-public enum Blockchain: Equatable, Hashable {
+// This enum should be indirect because of memory issues on iOS15
+public indirect enum Blockchain: Equatable, Hashable {
     case bitcoin(testnet: Bool)
     case litecoin
     case stellar(curve: EllipticCurve, testnet: Bool)
