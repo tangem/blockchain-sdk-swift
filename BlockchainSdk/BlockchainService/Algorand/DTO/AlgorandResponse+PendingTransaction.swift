@@ -31,7 +31,7 @@ extension AlgorandResponse {
 
         private enum CodingKeys: String, CodingKey {
             case confirmedRound = "confirmed-round"
-            case poolError = "pool-rrror"
+            case poolError = "pool-error"
         }
     }
 }
