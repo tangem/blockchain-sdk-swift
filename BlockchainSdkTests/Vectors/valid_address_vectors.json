@@ -54,6 +54,7 @@
         "blockchain": "bitcoinCash",
         "positive": [
             "bitcoincash:qruxj7zq6yzpdx8dld0e9hfvt7u47zrw9gfr5hy0vh",
+            "qruxj7zq6yzpdx8dld0e9hfvt7u47zrw9gfr5hy0vh",
             "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd",
             "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"
         ],
