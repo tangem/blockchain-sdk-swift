@@ -37,15 +37,15 @@ final class TONWalletManager: BaseManager, WalletManager {
         cancellable = networkService
             .getInfo(address: wallet.address)
             .sink(
-                receiveCompletion: { [unowned self] completionSubscription in
+                receiveCompletion: { [weak self] completionSubscription in
                     if case let .failure(error) = completionSubscription {
-                        self.wallet.amounts = [:]
-                        self.isAvailable = false
+                        self?.wallet.amounts = [:]
+                        self?.isAvailable = false
                         completion(.failure(error))
                     }
                 },
-                receiveValue: { [unowned self] info in
-                    self.update(with: info, completion: completion)
+                receiveValue: { [weak self] info in
+                    self?.update(with: info, completion: completion)
                 }
             )
     }
