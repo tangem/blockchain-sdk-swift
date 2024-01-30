@@ -865,6 +865,7 @@ extension Blockchain: Codable {
         case "decimal": self = .decimal(testnet: isTestnet)
         case "vechain": self = .veChain(testnet: isTestnet)
         case "xdc": self = .xdc(testnet: isTestnet)
+        case "aptos": self = .aptos(curve: curve, testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -935,6 +936,7 @@ extension Blockchain {
         case "decimal": return .decimal(testnet: isTestnet)
         case "vechain": return .veChain(testnet: isTestnet)
         case "xdc": return .xdc(testnet: isTestnet)
+        case "aptos": return .aptos(curve: curve, testnet: isTestnet)
         default: return nil
         }
     }
