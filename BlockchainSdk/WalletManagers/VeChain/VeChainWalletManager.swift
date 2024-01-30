@@ -62,7 +62,6 @@ final class VeChainWalletManager: BaseManager {
             .collect()
 
         cancellable = Publishers.CombineLatest3(accountInfoPublisher, transactionStatusesPublisher, tokenBalancesPublisher)
-            .withWeakCaptureOf(self)
             .sink(
                 receiveCompletion: { [weak self] result in
                     switch result {
@@ -73,9 +72,9 @@ final class VeChainWalletManager: BaseManager {
                         completion(.success(()))
                     }
                 },
-                receiveValue: { walletManager, input in
+                receiveValue: { [weak self] input in
                     let (accountInfo, transactionsInfo, tokenBalanceAmounts) = input
-                    walletManager.updateWallet(
+                    self?.updateWallet(
                         accountInfo: accountInfo,
                         transactionsInfo: transactionsInfo,
                         tokenBalanceAmounts: tokenBalanceAmounts
