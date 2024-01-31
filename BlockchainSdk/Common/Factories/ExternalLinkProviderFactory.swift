@@ -101,6 +101,8 @@ public struct ExternalLinkProviderFactory {
             return VeChainExternalLinkProvider(isTestnet: isTestnet)
         case .xdc:
             return XDCExternalLinkProvider(isTestnet: isTestnet)
+        case .algorand:
+            return AlgorandExternalLinkProvider(isTestnet: isTestnet)
         case .aptos(_, let isTestnet):
             return AptosExternalLinkProvider(isTestnet: isTestnet)
         }
