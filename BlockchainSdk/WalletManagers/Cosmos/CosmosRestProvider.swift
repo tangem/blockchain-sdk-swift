@@ -36,6 +36,10 @@ class CosmosRestProvider: HostProvider {
             .eraseToAnyPublisher()
     }
     
+    func querySmartContract<D: Decodable>(contractAddress: String, query: Data) -> AnyPublisher<CosmosCW20QueryResult<D>, Error> {
+        requestPublisher(for: .querySmartContract(contractAddress: contractAddress, query: query))
+    }
+    
     func balances(address: String) -> AnyPublisher<CosmosBalanceResponse, Error> {
         requestPublisher(for: .balances(address: address))
     }
