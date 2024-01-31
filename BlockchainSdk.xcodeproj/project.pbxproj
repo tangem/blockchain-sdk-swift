@@ -15,6 +15,7 @@
 		2D24F5772B6A423500D502A0 /* AptosWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5752B6A423500D502A0 /* AptosWalletManager.swift */; };
 		2D24F5792B6A424800D502A0 /* AptosExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5782B6A424800D502A0 /* AptosExternalLinkProvider.swift */; };
 		2D24F57B2B6A425500D502A0 /* AptosWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F57A2B6A425500D502A0 /* AptosWalletAssembly.swift */; };
+		2D24F57E2B6A42C000D502A0 /* AptosBuildParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F57D2B6A42C000D502A0 /* AptosBuildParams.swift */; };
 		2D3328C52A779ACC00C4A84C /* ChiaPuzzleUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3328C22A779ACC00C4A84C /* ChiaPuzzleUtils.swift */; };
 		2D3829C929D34A93001D4785 /* TWCoin+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829C829D34A93001D4785 /* TWCoin+.swift */; };
 		2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */; };
@@ -683,6 +684,7 @@
 		2D24F5752B6A423500D502A0 /* AptosWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosWalletManager.swift; sourceTree = "<group>"; };
 		2D24F5782B6A424800D502A0 /* AptosExternalLinkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosExternalLinkProvider.swift; sourceTree = "<group>"; };
 		2D24F57A2B6A425500D502A0 /* AptosWalletAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosWalletAssembly.swift; sourceTree = "<group>"; };
+		2D24F57D2B6A42C000D502A0 /* AptosBuildParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosBuildParams.swift; sourceTree = "<group>"; };
 		2D3328C22A779ACC00C4A84C /* ChiaPuzzleUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaPuzzleUtils.swift; sourceTree = "<group>"; };
 		2D3829C829D34A93001D4785 /* TWCoin+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWCoin+.swift"; sourceTree = "<group>"; };
 		2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressServiceManagerUtility.swift; sourceTree = "<group>"; };
@@ -1388,8 +1390,17 @@
 			children = (
 				2D24F5742B6A423500D502A0 /* AptosTransactionBuilder.swift */,
 				2D24F5752B6A423500D502A0 /* AptosWalletManager.swift */,
+				2D24F57C2B6A42C000D502A0 /* Domain */,
 			);
 			path = Aptos;
+			sourceTree = "<group>";
+		};
+		2D24F57C2B6A42C000D502A0 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				2D24F57D2B6A42C000D502A0 /* AptosBuildParams.swift */,
+			);
+			path = Domain;
 			sourceTree = "<group>";
 		};
 		2D535E7A2A0CC5FA0081EB76 /* Vectors */ = {
@@ -3734,6 +3745,7 @@
 				DC5E64FC2B1650F400E81AA5 /* OP_GREATERTHANOREQUAL.swift in Sources */,
 				DC5E64F22B1650F400E81AA5 /* OP_RSHIFT.swift in Sources */,
 				DC5E65392B16566100E81AA5 /* OpCodeFactory.swift in Sources */,
+				2D24F57E2B6A42C000D502A0 /* AptosBuildParams.swift in Sources */,
 				B6BA936D2AEA0E4800F84E36 /* NEARNetworkParams.ProtocolConfig.swift in Sources */,
 				EF3B19322AA85CDD0084AA1C /* TezosExternalLinkProvider.swift in Sources */,
 				2D9A91A229BB8C1700476EA6 /* TONProviderResponse.swift in Sources */,
