@@ -1032,4 +1032,42 @@ class AddressesTests: XCTestCase {
         XCTAssertTrue(validator.validate(ethAddr))
         XCTAssertTrue(validator.validate(xdcAddr))
     }
+    
+    func testAlgorandAddressGeneration() throws {
+        let addressServiceFactory = AddressServiceFactory(blockchain: .algorand(curve: .ed25519_slip0010, testnet: false))
+        let addressService = addressServiceFactory.makeAddressService()
+        
+        let privateKey = Data(hexString: "a6c4394041e64fe93d889386d7922af1b9a87f12e433762759608e61434d6cf7")
+        
+        let publicKey = try Curve25519.Signing.PrivateKey(rawRepresentation: privateKey)
+            .publicKey
+            .rawRepresentation
+
+        let address = try addressService.makeAddress(from: publicKey).value
+        let expectedAddress = "ADIYK65L3XR5ODNNCUIQVEET455L56MRKJHRBX5GU4TZI2752QIWK4UL5A"
+        
+        XCTAssertNoThrow(try addressService.makeAddress(from: publicKey))
+        XCTAssertThrowsError(try addressService.makeAddress(from: secpCompressedKey))
+        XCTAssertThrowsError(try addressService.makeAddress(from: secpDecompressedKey))
+        
+        XCTAssertEqual(address, expectedAddress)
+    }
+    
+    func testAlgorandAddressValidation() throws {
+        let addressServiceFactory = AddressServiceFactory(blockchain: .algorand(curve: .ed25519_slip0010, testnet: false))
+        let addressService = addressServiceFactory.makeAddressService()
+
+        XCTAssertTrue(addressService.validate("ZW3ISEHZUHPO7OZGMKLKIIMKVICOUDRCERI454I3DB2BH52HGLSO67W754"))
+        XCTAssertTrue(addressService.validate("Q7AUUQCAO3O6CLPHMPTWN3VTCWLLWZJSI6QDO5XEC4ZZR5JZWXWZL5YWOM"))
+        XCTAssertTrue(addressService.validate("ZMORINNT75RZ67ZWV2EGZYW6MKZ2LOSSB5VTKJON6NSPO5MW6TVCMXMVTU"))
+        XCTAssertTrue(addressService.validate("ZW3ISEHZUHPO7OZGMKLKIIMKVICOUDRCERI454I3DB2BH52HGLSO67W754"))
+
+        XCTAssertFalse(addressService.validate("ZW3ISEHZUHPO7OZGMKLKIIMKVICOUDRCERI454I3DB2BH52HGL"))
+        XCTAssertFalse(addressService.validate("EEQKMHD64P5FN25Y6W63ZHEPVCQZKM4PCMF6ZIIJW4IPFX4WJALA"))
+        XCTAssertFalse(addressService.validate("44bc93A8d3cEfA5a6721723a2f8d2e4F7d480BA0"))
+        XCTAssertFalse(addressService.validate("0xf3d468DBb386aaD46E92FF222adDdf872C8CC06"))
+        XCTAssertFalse(addressService.validate("0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d1"))
+        XCTAssertFalse(addressService.validate("me@google.com"))
+        XCTAssertFalse(addressService.validate(""))
+    }
 }
