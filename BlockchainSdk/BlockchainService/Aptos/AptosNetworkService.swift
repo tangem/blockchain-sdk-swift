@@ -44,7 +44,7 @@ class AptosNetworkService: MultiNetworkProvider {
                     
                     return AptosAccountInfo(
                         sequenceNumber: accountJson[JSONParseKey.data][JSONParseKey.sequenceNumber].int64Value,
-                        balance: Decimal(balanceValue)
+                        balance: decimalBalanceValue
                     )
                 }
                 .eraseToAnyPublisher()
