@@ -78,22 +78,54 @@ class CosmosTransactionBuilder {
     }
 
     private func makeInput(transaction: Transaction, fee: Fee?) throws -> CosmosSigningInput {
-        let params = transaction.params as? CosmosTransactionParams
-        let decimalValue = transaction.amount.type.token?.decimalValue ?? cosmosChain.blockchain.decimalValue
-        let amountInSmallestDenomination = ((transaction.amount.value * decimalValue) as NSDecimalNumber).uint64Value
-        
-        let denomination = try denomination(for: transaction.amount)
-        let sendCoinsMessage = CosmosMessage.Send.with {
-            $0.fromAddress = transaction.sourceAddress
-            $0.toAddress = transaction.destinationAddress
-            $0.amounts = [CosmosAmount.with {
-                $0.amount = "\(amountInSmallestDenomination)"
-                $0.denom = denomination
-            }]
+        let decimalValue: Decimal
+        switch transaction.amount.type {
+        case .coin:
+            decimalValue = cosmosChain.blockchain.decimalValue
+        case .token(let token):
+            switch cosmosChain.blockchain.feePaidCurrency {
+            case .coin:
+                decimalValue = cosmosChain.blockchain.decimalValue
+            case .sameCurrency:
+                decimalValue = transaction.amount.type.token?.decimalValue ?? cosmosChain.blockchain.decimalValue
+            case .token(let token):
+                decimalValue = token.decimalValue
+            }
+        case .reserve:
+            throw WalletError.failedToBuildTx
         }
         
-        let message = CosmosMessage.with {
-            $0.sendCoinsMessage = sendCoinsMessage
+        let message: CosmosMessage
+        if let token = transaction.amount.type.token, cosmosChain.allowCW20Tokens {
+            guard let amountBytes = transaction.amount.encoded else {
+                throw WalletError.failedToBuildTx
+            }
+
+            let tokenMessage = CosmosMessage.WasmExecuteContractTransfer.with {
+                $0.senderAddress = transaction.sourceAddress
+                $0.recipientAddress = transaction.destinationAddress
+                $0.contractAddress = token.contractAddress
+                $0.amount = amountBytes
+            }
+            
+            message = CosmosMessage.with {
+                $0.wasmExecuteContractTransferMessage = tokenMessage
+            }
+        } else {
+            let amountInSmallestDenomination = ((transaction.amount.value * decimalValue) as NSDecimalNumber).uint64Value
+            let denomination = try denomination(for: transaction.amount)
+
+            let sendCoinsMessage = CosmosMessage.Send.with {
+                $0.fromAddress = transaction.sourceAddress
+                $0.toAddress = transaction.destinationAddress
+                $0.amounts = [CosmosAmount.with {
+                    $0.amount = "\(amountInSmallestDenomination)"
+                    $0.denom = denomination
+                }]
+            }
+            message = CosmosMessage.with {
+                $0.sendCoinsMessage = sendCoinsMessage
+            }
         }
         
         guard
@@ -103,6 +135,8 @@ class CosmosTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
         
+        let params = transaction.params as? CosmosTransactionParams
+        let feeDenomination = try feeDenomination(for: transaction.amount)
         let input = CosmosSigningInput.with {
             $0.mode = .sync
             $0.signingMode = .protobuf;
@@ -120,7 +154,7 @@ class CosmosTransactionBuilder {
                     $0.gas = parameters.gas
                     $0.amounts = [CosmosAmount.with {
                         $0.amount = "\(feeAmountInSmallestDenomination)"
-                        $0.denom = denomination
+                        $0.denom = feeDenomination
                     }]
                 }
             }
@@ -134,7 +168,25 @@ class CosmosTransactionBuilder {
         case .coin:
             return cosmosChain.smallestDenomination
         case .token(let token):
-            guard let tokenDenomination = cosmosChain.tokenDenominationByContractAddress[token.contractAddress] else {
+            guard let tokenDenomination = cosmosChain.tokenDenomination(contractAddress: token.contractAddress, tokenCurrencySymbol: token.symbol)
+            else {
+                throw WalletError.failedToBuildTx
+            }
+            
+            return tokenDenomination
+        case .reserve:
+            throw WalletError.failedToBuildTx
+        }
+    }
+    
+    
+    private func feeDenomination(for amount: Amount) throws -> String {
+        switch amount.type {
+        case .coin:
+            return cosmosChain.smallestDenomination
+        case .token(let token):
+            guard let tokenDenomination = cosmosChain.tokenFeeDenomination(contractAddress: token.contractAddress, tokenCurrencySymbol: token.symbol)
+            else {
                 throw WalletError.failedToBuildTx
             }
             
