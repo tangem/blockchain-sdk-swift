@@ -20,16 +20,16 @@ class SolanaWalletManager: BaseManager, WalletManager {
         let transactionIDs = wallet.pendingTransactions.map { $0.hash }
         
         cancellable = networkService.getInfo(accountId: wallet.address, tokens: cardTokens, transactionIDs: transactionIDs)
-            .sink { [unowned self] in
+            .sink { [weak self] in
                 switch $0 {
                 case .failure(let error):
-                    self.wallet.clearAmounts()
+                    self?.wallet.clearAmounts()
                     completion(.failure(error))
                 case .finished:
                     completion(.success(()))
                 }
-            } receiveValue: { [unowned self] info in
-                self.updateWallet(info: info)
+            } receiveValue: { [weak self] info in
+                self?.updateWallet(info: info)
             }
     }
     

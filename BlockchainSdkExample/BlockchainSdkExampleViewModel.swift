@@ -146,12 +146,12 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     }
     
     func scanCardAndGetInfo() {
-        sdk.scanCard { [unowned self] result in
+        sdk.scanCard { [weak self] result in
             switch result {
             case .failure(let error):
                 Log.error(error)
             case .success(let card):
-                self.card = card
+                self?.card = card
             }
         }
     }
@@ -189,7 +189,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         walletManager
             .getFee(amount: amount, destination: destination)
             .receive(on: RunLoop.main)
-            .sink { [unowned self] in
+            .sink { [weak self] in
+                guard let self else { return }
                 switch $0 {
                 case .failure(let error):
                     Log.error(error)
@@ -197,8 +198,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                 case .finished:
                     break
                 }
-            } receiveValue: { [unowned self] in
-                self.feeDescriptions = $0.map { $0.amount.description }
+            } receiveValue: { [weak self] in
+                self?.feeDescriptions = $0.map { $0.amount.description }
             }
             .store(in: &bag)
     }
@@ -216,8 +217,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         
         walletManager
             .getFee(amount: amount, destination: destination)
-            .flatMap { [unowned self] fees -> AnyPublisher<TransactionSendResult, Error> in
-                guard let fee = fees.first else {
+            .flatMap { [weak self] fees -> AnyPublisher<TransactionSendResult, Error> in
+                guard let self, let fee = fees.first else {
                     return .anyFail(error: WalletError.failedToGetFee)
                 }
                 
@@ -234,13 +235,13 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                 }
             }
             .receive(on: RunLoop.main)
-            .sink { [unowned self] in
+            .sink { [weak self] in
                 switch $0 {
                 case .failure(let error):
                     Log.error(error)
-                    self.transactionResult = error.localizedDescription
+                    self?.transactionResult = error.localizedDescription
                 case .finished:
-                    self.transactionResult = "OK"
+                    self?.transactionResult = "OK"
                 }
             } receiveValue: { _ in
                 
@@ -252,20 +253,21 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     
     private func bind() {
         $destination
-            .sink {
-                UserDefaults.standard.set($0, forKey: self.destinationKey)
+            .sink { [destinationKey] in
+                UserDefaults.standard.set($0, forKey: destinationKey)
             }
             .store(in: &bag)
         
         $amountToSend
-            .sink {
-                UserDefaults.standard.set($0, forKey: self.amountKey)
+            .sink { [amountKey] in
+                UserDefaults.standard.set($0, forKey: amountKey)
             }
             .store(in: &bag)
         
         $blockchainName
             .dropFirst()
-            .sink { [unowned self] in
+            .sink { [weak self] in
+                guard let self else { return }
                 UserDefaults.standard.set($0, forKey: self.blockchainNameKey)
                 self.updateBlockchain(from: $0, isTestnet: isTestnet, curve: curve)
                 self.updateWalletManager()
@@ -274,7 +276,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         
         $isTestnet
             .dropFirst()
-            .sink { [unowned self] in
+            .sink { [weak self] in
+                guard let self else { return }
                 UserDefaults.standard.set($0, forKey: isTestnetKey)
                 self.updateBlockchain(from: blockchainName, isTestnet: $0, curve: curve)
                 self.updateWalletManager()
@@ -283,7 +286,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         
         $curve
             .dropFirst()
-            .sink { [unowned self] in
+            .sink { [weak self] in
+                guard let self else { return }
                 UserDefaults.standard.set($0.rawValue, forKey: curveKey)
                 self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: $0)
                 self.updateWalletManager()
@@ -293,7 +297,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         $tokenEnabled
             .dropFirst()
             .debounce(for: 1, scheduler: RunLoop.main)
-            .sink { [unowned self] in
+            .sink { [weak self] in
+                guard let self else { return }
                 UserDefaults.standard.set($0, forKey: tokenEnabledKey)
                 self.updateWalletManager()
             }
@@ -302,7 +307,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         $tokenSymbol
             .dropFirst()
             .debounce(for: 1, scheduler: RunLoop.main)
-            .sink { [unowned self] in
+            .sink { [weak self] in
+                guard let self else { return }
                 UserDefaults.standard.set($0, forKey: tokenSymbolKey)
                 self.updateWalletManager()
             }
@@ -311,7 +317,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         $tokenContractAddress
             .dropFirst()
             .debounce(for: 1, scheduler: RunLoop.main)
-            .sink { [unowned self] in
+            .sink { [weak self] in
+                guard let self else { return }
                 UserDefaults.standard.set($0, forKey: tokenContractAddressKey)
                 self.updateWalletManager()
             }
@@ -320,15 +327,16 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         $tokenDecimalPlaces
             .dropFirst()
             .debounce(for: 1, scheduler: RunLoop.main)
-            .sink { [unowned self] in
+            .sink { [weak self] in
+                guard let self else { return }
                 UserDefaults.standard.set($0, forKey: tokenDecimalPlacesKey)
                 self.updateWalletManager()
             }
             .store(in: &bag)
         
         $card
-            .sink { [unowned self] in
-                guard let card = $0 else {
+            .sink { [weak self] in
+                guard let self, let card = $0 else {
                     return
                 }
                 
