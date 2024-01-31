@@ -59,15 +59,14 @@ post_install do |installer|
 
       config.build_settings['DEAD_CODE_STRIPPING'] = 'YES'
   end
-
-  # Need for use for TangemWalletCore in tangem-app-ios
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
-    end
-  end
   
   installer.pods_project.targets.each do |target|
+    # Exporting SwiftProtobuf library symbols for WalletCore binaries 
+    if target.name.downcase.include?('swiftprotobuf')
+      target.build_configurations.each do |config|
+        config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
+      end
+    end
 
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
