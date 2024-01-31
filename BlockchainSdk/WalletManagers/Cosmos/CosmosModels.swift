@@ -34,6 +34,30 @@ extension CosmosBalanceResponse {
     }
 }
 
+// MARK: - Cosmos WASM smart contract interaction
+
+struct CosmosCW20BalanceRequest: Encodable {
+    private let balance: CosmosCW20BalanceAddress
+    
+    init(address: String) {
+        self.balance = CosmosCW20BalanceAddress(address: address)
+    }
+}
+
+private extension CosmosCW20BalanceRequest {
+    struct CosmosCW20BalanceAddress: Encodable {
+        let address: String
+    }
+}
+
+struct CosmosCW20QueryResult<D: Decodable>: Decodable {
+    let data: D
+}
+
+struct CosmosCW20QueryBalanceData: Decodable {
+    let balance: String
+}
+
 // MARK: - Simulate
 
 struct CosmosSimulateResponse: Decodable {
