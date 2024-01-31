@@ -87,6 +87,7 @@ public struct AddressServiceFactory {
                 .terraV1,
                 .terraV2,
                 .veChain,
+                .algorand,
                 .aptos:
             return WalletCoreAddressService(blockchain: blockchain)
         case .ducatus:

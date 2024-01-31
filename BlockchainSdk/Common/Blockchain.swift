@@ -58,8 +58,8 @@ public indirect enum Blockchain: Equatable, Hashable {
     case decimal(testnet: Bool)
     case veChain(testnet: Bool)
     case xdc(testnet: Bool)
+    case algorand(curve: EllipticCurve, testnet: Bool)
     case aptos(curve: EllipticCurve, testnet: Bool)
-
     public var isTestnet: Bool {
         switch self {
         case .bitcoin(let testnet):
@@ -134,6 +134,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return testnet
         case .xdc(let testnet):
             return testnet
+        case .algorand(_, let testnet):
+			return testnet
         case .aptos(_, let testnet):
             return testnet
         }
@@ -152,6 +154,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .xrp(let curve),
                 .tezos(let curve),
                 .near(let curve, _),
+                .algorand(let curve, _),
                 .aptos(let curve, _):
             return curve
         case .chia:
@@ -211,6 +214,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return 12
         case .near:
             return 24
+        case .algorand:
+            return 6
         case .aptos:
             return 8
         }
@@ -300,6 +305,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "VET"
         case .xdc:
             return "XDC"
+        case .algorand:
+            return "ALGO"
         case .aptos:
             return "APT"
         }
@@ -799,6 +806,7 @@ extension Blockchain: Codable {
         case .decimal: return "decimal"
         case .veChain: return "vechain"
         case .xdc: return "xdc"
+        case .algorand: return "algorand"
         case .aptos: return "aptos"
         }
     }
@@ -866,6 +874,7 @@ extension Blockchain: Codable {
         case "decimal": self = .decimal(testnet: isTestnet)
         case "vechain": self = .veChain(testnet: isTestnet)
         case "xdc": self = .xdc(testnet: isTestnet)
+        case "algorand": self = .algorand(curve: curve, testnet: isTestnet)
         case "aptos": self = .aptos(curve: curve, testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
@@ -937,6 +946,7 @@ extension Blockchain {
         case "decimal": return .decimal(testnet: isTestnet)
         case "vechain": return .veChain(testnet: isTestnet)
         case "xdc": return .xdc(testnet: isTestnet)
+        case "algorand": return .algorand(curve: curve, testnet: isTestnet)
         case "aptos": return .aptos(curve: curve, testnet: isTestnet)
         default: return nil
         }
@@ -1014,6 +1024,8 @@ extension Blockchain {
             return VeChainWalletAssembly()
         case .xdc:
             return XDCWalletAssembly()
+        case .algorand:
+            return AlgorandWalletAssembly()
         case .aptos:
             return AptosWalletAssembly()
         }
