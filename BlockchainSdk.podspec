@@ -7,39 +7,30 @@
 #
 
 Pod::Spec.new do |s|
-  s.name             = 'BlockchainSdk'
-  s.version          = '0.0.1'
-  s.summary          = 'Use BlockchainSdk for Tangem wallet integration'
-
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!
-
-  s.description      = <<-DESC
+  s.name = 'BlockchainSdk'
+  s.version = '0.0.1'
+  s.summary = 'Use BlockchainSdk for Tangem wallet integration'
+  s.description = <<-DESC
 Use BlockchainSdk for Tangem wallet integration
-                       DESC
+                  DESC
 
-  s.homepage         = 'https://github.com/TangemCash/tangem-sdk-ios'
-  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
-  # s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'Tangem AG' => '' }
-  s.source           = { :git => 'https://github.com/TangemCash/tangem-sdk-ios.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
-
-  s.ios.deployment_target = '13.0'
+  s.homepage = 'https://github.com/tangem/blockchain-sdk-swift'
+  s.license = { :type => 'MIT', :file => 'LICENSE' }
+  s.author = { 'Tangem' => 'hello@tangem.com' }
+  s.source = { :git => 'https://github.com/tangem/blockchain-sdk-swift.git', :tag => s.version.to_s }
+  s.social_media_url = 'https://twitter.com/Tangem'
+  s.ios.deployment_target = '14.5'
+  s.swift_version = '5.0'
 
   s.source_files = 'BlockchainSdk/**/*'
 
-
-  s.resource_bundles = { 'BlockchainSdk' => ['BlockchainSdk/Common/Localizations/*.lproj/*.strings']}
+  s.resource_bundles = { 'BlockchainSdk' => ['BlockchainSdk/Common/Localizations/*.lproj/*.strings'] }
 
   s.exclude_files = 'BlockchainSdk/WalletManagers/XRP/XRPKit/README.md', 
-		    'BlockchainSdk/WalletManagers/XRP/XRPKit/LICENSE',
-		    'BlockchainSdk/WalletManagers/Tron/protobuf/Tron Protobuf.md',
-		    'BlockchainSdk/WalletManagers/Tron/protobuf/Contracts.proto',
-		    'BlockchainSdk/WalletManagers/Tron/protobuf/Tron.proto'
+                    'BlockchainSdk/WalletManagers/XRP/XRPKit/LICENSE',
+                    'BlockchainSdk/WalletManagers/Tron/protobuf/Tron Protobuf.md',
+                    'BlockchainSdk/WalletManagers/Tron/protobuf/Contracts.proto',
+                    'BlockchainSdk/WalletManagers/Tron/protobuf/Tron.proto'
 
   # 'SwiftProtobuf' dependency must be added via SPM
   # 'TangemWalletCore' dependency must be added via SPM
