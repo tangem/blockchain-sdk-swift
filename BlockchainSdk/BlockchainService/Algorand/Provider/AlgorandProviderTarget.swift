@@ -58,17 +58,8 @@ struct AlgorandProviderTarget: TargetType {
             return .requestPlain
         case .transaction(let data):
             return .requestData(data)
-        case .getTransactions(let address, let limit, let next):
-            let parameters: [String: Any?] = [
-                "address": address,
-                "limit": limit,
-                "next": next
-            ]
-            
-            return .requestParameters(
-                parameters: parameters.compactMapValues({$0}),
-                encoding: URLEncoding.default
-            )
+        case .getTransactions(let params):
+            return .requestParameters(parameters: (try? params.asDictionary()) ?? [:], encoding: URLEncoding.default)
         }
     }
     
@@ -97,7 +88,7 @@ extension AlgorandProviderTarget {
         case getAccounts(address: String)
         case getTransactionParams
         case transaction(trx: Data)
-        case getTransactions(address: String, limit: Int?, next: String?)
+        case getTransactions(params: AlgorandTransactionHistory.Request)
         case getPendingTransaction(txId: String)
     }
 }

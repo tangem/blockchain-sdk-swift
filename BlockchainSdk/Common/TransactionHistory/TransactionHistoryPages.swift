@@ -1,5 +1,5 @@
 //
-//  Page.swift
+//  TransactionHistoryPages.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 26.07.2023.

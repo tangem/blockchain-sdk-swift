@@ -62,7 +62,7 @@ extension AlgorandTransactionHistoryProvider: TransactionHistoryProvider {
         
         return network.requestPublisher(target)
             .filterSuccessfulStatusAndRedirectCodes()
-            .map(AlgorandResponse.TransactionHistory.List.self, using: decoder)
+            .map(AlgorandTransactionHistory.Response.self, using: decoder)
             .withWeakCaptureOf(self)
             .tryMap { provider, response in
                 let records = provider.mapper.mapToTransactionRecords(

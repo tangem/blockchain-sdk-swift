@@ -19,7 +19,7 @@ struct AlgorandTransactionHistoryMapper {
 
 extension AlgorandTransactionHistoryMapper {
     func mapToTransactionRecords(
-        _ items: [AlgorandResponse.TransactionHistory.Item],
+        _ items: [AlgorandTransactionHistory.Response.Item],
         amountType: Amount.AmountType,
         currentWalletAddress: String
     ) -> [TransactionRecord] {
