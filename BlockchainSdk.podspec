@@ -32,6 +32,7 @@ Use BlockchainSdk for Tangem wallet integration
                     'BlockchainSdk/WalletManagers/Tron/protobuf/Contracts.proto',
                     'BlockchainSdk/WalletManagers/Tron/protobuf/Tron.proto'
 
+  # 'CryptoSwift' dependency must be added via SPM
   # 'SwiftProtobuf' dependency must be added via SPM
   # 'TangemWalletCore' dependency must be added via SPM
 
@@ -44,7 +45,6 @@ Use BlockchainSdk for Tangem wallet integration
   s.dependency 'stellar-ios-mac-sdk', '2.3.2'
   s.dependency 'AnyCodable-FlightSchool', '0.6.7'
   s.dependency 'ScaleCodec', '0.2.1'
-  s.dependency 'CryptoSwift', '1.8.0'
 
   s.dependency 'BinanceChain' # Fork https://github.com/tangem/swiftbinancechain.git
   s.dependency 'BitcoinCore.swift' # Fork https://github.com/tangem/bitcoincore.git
