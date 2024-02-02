@@ -8,11 +8,27 @@
 
 import Foundation
 
-final class HederaNetworkService: MultiNetworkProvider {
-    var currentProviderIndex = 0
+final class HederaNetworkService {
+    var currentProviderIndex: Int
 
-    var providers: [HederaNetworkProvider] {
-        // TODO: Andrey Fedorov - Add actual implementation (IOS-4556)
-        return []
+    private let blockchain: Blockchain
+    private let consensusProvider: HederaConsensusNetworkProvider
+    private let mirrorProviders: [HederaMirrorNetworkProvider]
+
+    init(
+        blockchain: Blockchain,
+        consensusProvider: HederaConsensusNetworkProvider,
+        mirrorProviders: [HederaMirrorNetworkProvider]
+    ) {
+        self.blockchain = blockchain
+        self.consensusProvider = consensusProvider
+        self.mirrorProviders = mirrorProviders
+        currentProviderIndex = 0
     }
+}
+
+// MARK: - MultiNetworkProvider protocol conformance
+
+extension HederaNetworkService: MultiNetworkProvider {
+    var providers: [HederaMirrorNetworkProvider] { mirrorProviders }
 }

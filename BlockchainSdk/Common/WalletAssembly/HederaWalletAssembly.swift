@@ -10,7 +10,22 @@ import Foundation
 
 struct HederaWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        let networkService = HederaNetworkService()
+        let blockchain = input.blockchain
+        let networkConfig = input.networkConfig
+
+        let baseURLProvider = HederaBaseURLProvider(isTestnet: blockchain.isTestnet)
+        let mirrorProviders = baseURLProvider
+            .baseURLs()
+            .map { HederaMirrorNetworkProvider(baseURL: $0, configuration: networkConfig) }
+
+        let consensusProvider = HederaConsensusNetworkProvider(configuration: networkConfig)
+
+        let networkService = HederaNetworkService(
+            blockchain: blockchain,
+            consensusProvider: consensusProvider,
+            mirrorProviders: mirrorProviders
+        )
+
         let transactionBuilder = HederaTransactionBuilder()
 
         return HederaWalletManager(
