@@ -59,7 +59,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case veChain(testnet: Bool)
     case xdc(testnet: Bool)
     case algorand(curve: EllipticCurve, testnet: Bool)
-    case shibarium(testnet: Bool, dummy: String)
+    case shibarium(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -137,7 +137,7 @@ public indirect enum Blockchain: Equatable, Hashable {
             return testnet
         case .algorand(_, let testnet):
             return testnet
-        case .shibarium(let testnet, _):
+        case .shibarium(let testnet):
             return testnet
         }
     }
@@ -692,7 +692,7 @@ extension Blockchain {
                     URL(string: "https://rpc1.xinfin.network")!,
                 ]
             }
-        case .shibarium(let isTestnet, _):
+        case .shibarium(let isTestnet):
             if isTestnet {
                 return [
                     URL(string: "https://puppynet.shibrpc.com/")!
@@ -887,7 +887,7 @@ extension Blockchain: Codable {
         case "vechain": self = .veChain(testnet: isTestnet)
         case "xdc": self = .xdc(testnet: isTestnet)
         case "algorand": self = .algorand(curve: curve, testnet: isTestnet)
-        case "shibarium": self = .shibarium(testnet: isTestnet, dummy: "")
+        case "shibarium": self = .shibarium(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -959,7 +959,7 @@ extension Blockchain {
         case "vechain": return .veChain(testnet: isTestnet)
         case "xdc": return .xdc(testnet: isTestnet)
         case "algorand": return .algorand(curve: curve, testnet: isTestnet)
-        case "shibarium": return .shibarium(testnet: isTestnet, dummy: "")
+        case "shibarium": return .shibarium(testnet: isTestnet)
         default: return nil
         }
     }
