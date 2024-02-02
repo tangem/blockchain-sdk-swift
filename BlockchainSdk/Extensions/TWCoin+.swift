@@ -79,6 +79,8 @@ extension CoinType {
         case .ethereumPoW, .ethereumFair, .rsk, .gnosis, .kaspa, .cronos, .azero, .telos, .ducatus, .octa, .chia, .decimal, .xdc:
             // Blockchains that are not in WalletCore yet
             return nil
+        case .algorand:
+            self = .algorand
         }
     }
     

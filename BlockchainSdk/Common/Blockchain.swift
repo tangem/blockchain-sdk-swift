@@ -13,7 +13,8 @@ import enum WalletCore.CoinType
 
 // MARK: - Base
 @available(iOS 13.0, *)
-public enum Blockchain: Equatable, Hashable {
+// This enum should be indirect because of memory issues on iOS15
+public indirect enum Blockchain: Equatable, Hashable {
     case bitcoin(testnet: Bool)
     case litecoin
     case stellar(curve: EllipticCurve, testnet: Bool)
@@ -57,6 +58,7 @@ public enum Blockchain: Equatable, Hashable {
     case decimal(testnet: Bool)
     case veChain(testnet: Bool)
     case xdc(testnet: Bool)
+    case algorand(curve: EllipticCurve, testnet: Bool)
     case hedera(curve: EllipticCurve, testnet: Bool)
 
     public var isTestnet: Bool {
@@ -108,6 +110,8 @@ public enum Blockchain: Equatable, Hashable {
                 .ton(_, let testnet),
                 .near(_, let testnet):
             return testnet
+        case .algorand(_, let testnet):
+            return testnet
         }
     }
 
@@ -124,6 +128,7 @@ public enum Blockchain: Equatable, Hashable {
                 .xrp(let curve),
                 .tezos(let curve),
                 .near(let curve, _),
+                .algorand(let curve, _),
                 .hedera(let curve, _):
             return curve
         case .chia:
@@ -186,6 +191,8 @@ public enum Blockchain: Equatable, Hashable {
             return 12
         case .near:
             return 24
+        case .algorand:
+            return 6
         }
     }
 
@@ -273,6 +280,8 @@ public enum Blockchain: Equatable, Hashable {
             return "VET"
         case .xdc:
             return "XDC"
+        case .algorand:
+            return "ALGO"
         case .hedera:
             return "HBAR"
         }
@@ -359,6 +368,7 @@ public enum Blockchain: Equatable, Hashable {
         case .binance,
                 .solana,
                 .tron,
+                .terraV1,
                 .veChain:
             return true
         default:
@@ -772,6 +782,7 @@ extension Blockchain: Codable {
         case .decimal: return "decimal"
         case .veChain: return "vechain"
         case .xdc: return "xdc"
+        case .algorand: return "algorand"
         case .hedera: return "hedera"
         }
     }
@@ -839,6 +850,7 @@ extension Blockchain: Codable {
         case "decimal": self = .decimal(testnet: isTestnet)
         case "vechain": self = .veChain(testnet: isTestnet)
         case "xdc": self = .xdc(testnet: isTestnet)
+        case "algorand": self = .algorand(curve: curve, testnet: isTestnet)
         case "hedera": self = .hedera(curve: curve, testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
@@ -910,6 +922,7 @@ extension Blockchain {
         case "decimal": return .decimal(testnet: isTestnet)
         case "vechain": return .veChain(testnet: isTestnet)
         case "xdc": return .xdc(testnet: isTestnet)
+        case "algorand": return .algorand(curve: curve, testnet: isTestnet)
         case "hedera": return .hedera(curve: curve, testnet: isTestnet)
         default: return nil
         }
@@ -987,6 +1000,8 @@ extension Blockchain {
             return VeChainWalletAssembly()
         case .xdc:
             return XDCWalletAssembly()
+        case .algorand:
+            return AlgorandWalletAssembly()
         case .hedera:
             return HederaWalletAssembly()
         }

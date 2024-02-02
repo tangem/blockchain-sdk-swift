@@ -45,7 +45,8 @@ extension PublicKeyType {
                 .solana,
                 .polkadot,
                 .kusama,
-                .near,
+                .near, 
+                .algorand,
                 .hedera:
             self = PublicKeyType.ed25519
         case .cardano(let extended):

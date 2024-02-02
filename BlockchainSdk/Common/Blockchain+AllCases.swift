@@ -56,6 +56,7 @@ public extension Blockchain {
         case .decimal: break
         case .veChain: break
         case .xdc: break
+        case .algorand: break
         case .hedera: break
             // READ BELOW:
             //
@@ -106,6 +107,7 @@ public extension Blockchain {
             .decimal(testnet: false),
             .veChain(testnet: false),
             .xdc(testnet: false),
+            .algorand(curve: .ed25519_slip0010, testnet: false),
             .hedera(curve: .ed25519_slip0010, testnet: false),
         ]
     }
