@@ -136,8 +136,7 @@ final class AptosTransactionBuilder {
     }
     
     private func createExpirationTimestampSecs() -> UInt64 {
-        let lifetime = (Constants.transactionLifetimeInMin * 5).seconds.timeInterval
-        return UInt64(Date().addingTimeInterval(lifetime).timeIntervalSinceNow)
+        UInt64(Date().addingTimeInterval(TimeInterval(Constants.transactionLifetimeInMin * 60)).timeIntervalSince1970)
     }
 }
 
