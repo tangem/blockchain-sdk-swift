@@ -36,6 +36,8 @@ struct AlgorandProviderTarget: TargetType {
             return "v2/transactions"
         case .getPendingTransaction(let txId):
             return "v2/transactions/pending/\(txId)"
+        case .getTransactions:
+            return "v2/transactions"
         }
     }
     
@@ -45,6 +47,8 @@ struct AlgorandProviderTarget: TargetType {
             return .get
         case .transaction:
             return .post
+        case .getTransactions:
+            return .get
         }
     }
     
@@ -54,6 +58,8 @@ struct AlgorandProviderTarget: TargetType {
             return .requestPlain
         case .transaction(let data):
             return .requestData(data)
+        case .getTransactions(let params):
+            return .requestParameters(parameters: (try? params.asDictionary()) ?? [:], encoding: URLEncoding.default)
         }
     }
     
@@ -82,6 +88,7 @@ extension AlgorandProviderTarget {
         case getAccounts(address: String)
         case getTransactionParams
         case transaction(trx: Data)
+        case getTransactions(params: AlgorandTransactionHistory.Request)
         case getPendingTransaction(txId: String)
     }
 }

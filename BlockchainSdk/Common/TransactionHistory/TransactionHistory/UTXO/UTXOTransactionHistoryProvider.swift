@@ -17,6 +17,10 @@ class UTXOTransactionHistoryProvider: MultiNetworkProvider {
 
     private let blockBookProviders: [BlockBookUtxoProvider]
     private let mapper: BlockBookTransactionHistoryMapper
+    
+    private var page: TransactionHistoryIndexPage?
+    private var totalPages: Int = 0
+    private var totalRecordsCount: Int = 0
 
     init(
         blockBookProviders: [BlockBookUtxoProvider],
@@ -28,15 +32,38 @@ class UTXOTransactionHistoryProvider: MultiNetworkProvider {
 }
 
 extension UTXOTransactionHistoryProvider: TransactionHistoryProvider {
+    var canFetchHistory: Bool {
+        page == nil || (page?.number ?? 0) < totalPages
+    }
+    
+    var description: String {
+        return "number: \(String(describing: page?.number)); \(totalPages); \(totalRecordsCount)"
+    }
+    
+    func reset() {
+        page = nil
+        totalPages = 0
+        totalRecordsCount = 0
+    }
+    
     func loadTransactionHistory(request: TransactionHistory.Request) -> AnyPublisher<TransactionHistory.Response, Error> {
         providerPublisher { [weak self] provider in
             guard let self else {
                 return .anyFail(error: WalletError.empty)
             }
             
+            let requestPage: Int
+            
+            // if indexing is created, load the next page
+            if let page {
+                requestPage = page.number + 1
+            } else {
+                requestPage = 0
+            }
+            
             let parameters = BlockBookTarget.AddressRequestParameters(
-                page: request.page.number,
-                pageSize: request.page.size,
+                page: requestPage,
+                pageSize: request.limit,
                 details: [.txslight]
             )
             
@@ -47,12 +74,12 @@ extension UTXOTransactionHistoryProvider: TransactionHistoryProvider {
                     }
                     
                     let records = self.mapper.mapToTransactionRecords(response, amountType: .coin)
-                    return TransactionHistory.Response(
-                        totalPages: response.totalPages ?? 0,
-                        totalRecordsCount: response.txs,
-                        page: Page(number: response.page ?? 0, size: response.itemsOnPage ?? 0),
-                        records: records
-                    )
+                    
+                    self.page = TransactionHistoryIndexPage(number: response.page ?? 0)
+                    self.totalPages = response.totalPages ?? 0
+                    self.totalRecordsCount = response.txs
+                    
+                    return TransactionHistory.Response(records: records)
                 }
                 .eraseToAnyPublisher()
         }
