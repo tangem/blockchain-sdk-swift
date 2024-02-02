@@ -86,13 +86,16 @@ extension AptosWalletManager: WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        Just(())
-            .tryMap { _ in
-                try transactionBuilder.buildForSign(transaction: transaction)
-            }
-            .flatMap { dataForSign -> AnyPublisher<Data, Error> in
-                signer.sign(hash: dataForSign, walletPublicKey: self.wallet.publicKey)
-            }
+        let dataForSign: Data
+        
+        do {
+            dataForSign = try transactionBuilder.buildForSign(transaction: transaction)
+        } catch {
+            return .anyFail(error: WalletError.failedToBuildTx)
+        }
+        
+        return signer
+            .sign(hash: dataForSign, walletPublicKey: self.wallet.publicKey)
             .withWeakCaptureOf(self)
             .flatMap { (walletManager, signature) -> AnyPublisher<String, Error> in
                 guard let buildForSend = try? self.transactionBuilder.buildForSend(transaction: transaction, signature: signature) else {
