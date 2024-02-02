@@ -43,8 +43,8 @@ final class ChiaWalletManager: BaseManager, WalletManager {
                         completion(.failure(error))
                     }
                 },
-                receiveValue: { [unowned self] response in
-                    self.update(with: response, completion: completion)
+                receiveValue: { [weak self] response in
+                    self?.update(with: response, completion: completion)
                 }
             )
     }
