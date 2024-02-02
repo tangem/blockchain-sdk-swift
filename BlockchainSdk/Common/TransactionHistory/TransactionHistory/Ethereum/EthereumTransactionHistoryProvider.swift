@@ -34,7 +34,7 @@ extension EthereumTransactionHistoryProvider: TransactionHistoryProvider {
     }
     
     var debugDescription: String {
-        return "number: \(page?.number); \(totalPages); \(totalRecordsCount)"
+        return "number: \(String(describing: page?.number)); \(totalPages); \(totalRecordsCount)"
     }
     
     func reset() {
@@ -49,10 +49,12 @@ extension EthereumTransactionHistoryProvider: TransactionHistoryProvider {
         // if indexing is created, load the next page
         if let page {
             requestPage = page.number + 1
+        } else {
+            requestPage = 0
         }
         
         let parameters = BlockBookTarget.AddressRequestParameters(
-            page: page?.number ?? 0,
+            page: requestPage,
             pageSize: request.limit,
             details: [.txslight],
             filterType: filterType(for: request.amountType)
