@@ -28,7 +28,7 @@ struct EstimationFeeAddressFactory {
             // Tezos has a fixed fee. See: `TezosFee.transaction`
             return ""
         case .kaspa,
-                .hedera:
+             .hedera:
             // Doesn't depend on destination
             return ""
         case .ducatus:
