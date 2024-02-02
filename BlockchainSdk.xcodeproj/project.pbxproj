@@ -15,13 +15,10 @@
 		2D24F5772B6A423500D502A0 /* AptosWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5752B6A423500D502A0 /* AptosWalletManager.swift */; };
 		2D24F5792B6A424800D502A0 /* AptosExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5782B6A424800D502A0 /* AptosExternalLinkProvider.swift */; };
 		2D24F57B2B6A425500D502A0 /* AptosWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F57A2B6A425500D502A0 /* AptosWalletAssembly.swift */; };
-		2D24F57E2B6A42C000D502A0 /* AptosBuildParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F57D2B6A42C000D502A0 /* AptosBuildParams.swift */; };
 		2D24F5822B6A434900D502A0 /* AptosAccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F57F2B6A434900D502A0 /* AptosAccountInfo.swift */; };
-		2D24F5832B6A434900D502A0 /* AptosEstimatedGasPrice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5802B6A434900D502A0 /* AptosEstimatedGasPrice.swift */; };
 		2D24F5842B6A434900D502A0 /* AptosTransactionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5812B6A434900D502A0 /* AptosTransactionInfo.swift */; };
 		2D24F5922B6A435700D502A0 /* AptosResponse+FeeParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5872B6A435700D502A0 /* AptosResponse+FeeParams.swift */; };
 		2D24F5932B6A435700D502A0 /* AptosResponse+Coin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5882B6A435700D502A0 /* AptosResponse+Coin.swift */; };
-		2D24F5942B6A435700D502A0 /* AptosRequest+TransactionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5892B6A435700D502A0 /* AptosRequest+TransactionInfo.swift */; };
 		2D24F5952B6A435700D502A0 /* AptosResponse+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F58A2B6A435700D502A0 /* AptosResponse+Account.swift */; };
 		2D24F5962B6A435700D502A0 /* AptosResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F58B2B6A435700D502A0 /* AptosResponse.swift */; };
 		2D24F5972B6A435700D502A0 /* AptosRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F58C2B6A435700D502A0 /* AptosRequest.swift */; };
@@ -29,6 +26,7 @@
 		2D24F5992B6A435700D502A0 /* AptosNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F58F2B6A435700D502A0 /* AptosNetworkProvider.swift */; };
 		2D24F59A2B6A435700D502A0 /* AptosProviderTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5902B6A435700D502A0 /* AptosProviderTarget.swift */; };
 		2D24F59B2B6A435700D502A0 /* AptosProviderUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5912B6A435700D502A0 /* AptosProviderUrl.swift */; };
+		2D24F5A12B6CD39A00D502A0 /* AptosRequest+TransactionBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5A02B6CD39A00D502A0 /* AptosRequest+TransactionBody.swift */; };
 		2D3328C52A779ACC00C4A84C /* ChiaPuzzleUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3328C22A779ACC00C4A84C /* ChiaPuzzleUtils.swift */; };
 		2D3829C929D34A93001D4785 /* TWCoin+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829C829D34A93001D4785 /* TWCoin+.swift */; };
 		2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */; };
@@ -697,13 +695,10 @@
 		2D24F5752B6A423500D502A0 /* AptosWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosWalletManager.swift; sourceTree = "<group>"; };
 		2D24F5782B6A424800D502A0 /* AptosExternalLinkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosExternalLinkProvider.swift; sourceTree = "<group>"; };
 		2D24F57A2B6A425500D502A0 /* AptosWalletAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosWalletAssembly.swift; sourceTree = "<group>"; };
-		2D24F57D2B6A42C000D502A0 /* AptosBuildParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosBuildParams.swift; sourceTree = "<group>"; };
 		2D24F57F2B6A434900D502A0 /* AptosAccountInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosAccountInfo.swift; sourceTree = "<group>"; };
-		2D24F5802B6A434900D502A0 /* AptosEstimatedGasPrice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosEstimatedGasPrice.swift; sourceTree = "<group>"; };
 		2D24F5812B6A434900D502A0 /* AptosTransactionInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosTransactionInfo.swift; sourceTree = "<group>"; };
 		2D24F5872B6A435700D502A0 /* AptosResponse+FeeParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AptosResponse+FeeParams.swift"; sourceTree = "<group>"; };
 		2D24F5882B6A435700D502A0 /* AptosResponse+Coin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AptosResponse+Coin.swift"; sourceTree = "<group>"; };
-		2D24F5892B6A435700D502A0 /* AptosRequest+TransactionInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AptosRequest+TransactionInfo.swift"; sourceTree = "<group>"; };
 		2D24F58A2B6A435700D502A0 /* AptosResponse+Account.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AptosResponse+Account.swift"; sourceTree = "<group>"; };
 		2D24F58B2B6A435700D502A0 /* AptosResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosResponse.swift; sourceTree = "<group>"; };
 		2D24F58C2B6A435700D502A0 /* AptosRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosRequest.swift; sourceTree = "<group>"; };
@@ -711,6 +706,7 @@
 		2D24F58F2B6A435700D502A0 /* AptosNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosNetworkProvider.swift; sourceTree = "<group>"; };
 		2D24F5902B6A435700D502A0 /* AptosProviderTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosProviderTarget.swift; sourceTree = "<group>"; };
 		2D24F5912B6A435700D502A0 /* AptosProviderUrl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosProviderUrl.swift; sourceTree = "<group>"; };
+		2D24F5A02B6CD39A00D502A0 /* AptosRequest+TransactionBody.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AptosRequest+TransactionBody.swift"; sourceTree = "<group>"; };
 		2D3328C22A779ACC00C4A84C /* ChiaPuzzleUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaPuzzleUtils.swift; sourceTree = "<group>"; };
 		2D3829C829D34A93001D4785 /* TWCoin+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWCoin+.swift"; sourceTree = "<group>"; };
 		2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressServiceManagerUtility.swift; sourceTree = "<group>"; };
@@ -1425,8 +1421,6 @@
 			isa = PBXGroup;
 			children = (
 				2D24F57F2B6A434900D502A0 /* AptosAccountInfo.swift */,
-				2D24F57D2B6A42C000D502A0 /* AptosBuildParams.swift */,
-				2D24F5802B6A434900D502A0 /* AptosEstimatedGasPrice.swift */,
 				2D24F5812B6A434900D502A0 /* AptosTransactionInfo.swift */,
 			);
 			path = Domain;
@@ -1445,12 +1439,12 @@
 		2D24F5862B6A435700D502A0 /* DTO */ = {
 			isa = PBXGroup;
 			children = (
-				2D24F5872B6A435700D502A0 /* AptosResponse+FeeParams.swift */,
-				2D24F5882B6A435700D502A0 /* AptosResponse+Coin.swift */,
-				2D24F5892B6A435700D502A0 /* AptosRequest+TransactionInfo.swift */,
-				2D24F58A2B6A435700D502A0 /* AptosResponse+Account.swift */,
-				2D24F58B2B6A435700D502A0 /* AptosResponse.swift */,
 				2D24F58C2B6A435700D502A0 /* AptosRequest.swift */,
+				2D24F5A02B6CD39A00D502A0 /* AptosRequest+TransactionBody.swift */,
+				2D24F58B2B6A435700D502A0 /* AptosResponse.swift */,
+				2D24F58A2B6A435700D502A0 /* AptosResponse+Account.swift */,
+				2D24F5882B6A435700D502A0 /* AptosResponse+Coin.swift */,
+				2D24F5872B6A435700D502A0 /* AptosResponse+FeeParams.swift */,
 			);
 			path = DTO;
 			sourceTree = "<group>";
@@ -3579,7 +3573,6 @@
 				DC5E64F82B1650F400E81AA5 /* OP_LESSTHANOREQUAL.swift in Sources */,
 				EF7257902A8F938400EA8CB2 /* KeyedDecodingContainer+.swift in Sources */,
 				EF3B19462AA85E620084AA1C /* TronExternalLinkProvider.swift in Sources */,
-				2D24F5942B6A435700D502A0 /* AptosRequest+TransactionInfo.swift in Sources */,
 				2DA13A062A8AD83B00E3C374 /* ChiaNetworkUrl.swift in Sources */,
 				DC5E64FD2B1650F400E81AA5 /* OP_NOT.swift in Sources */,
 				B0C34958267B83580027CC9D /* BitcoinModels.swift in Sources */,
@@ -3684,6 +3677,7 @@
 				EF3B19662AA86A620084AA1C /* ExternalLinkProviderFactory.swift in Sources */,
 				5D88C80B256BCDBB00020028 /* StellarTransactionParams.swift in Sources */,
 				5D88838927D3BB8B008744E1 /* WalletError.swift in Sources */,
+				2D24F5A12B6CD39A00D502A0 /* AptosRequest+TransactionBody.swift in Sources */,
 				EF72577E2A8D42A100EA8CB2 /* TransactionHistory.swift in Sources */,
 				2DA13A092A8AD84F00E3C374 /* ChiaTransactionBuilder.swift in Sources */,
 				DC3550F42B584C5E00A93DBA /* XDCAddressService.swift in Sources */,
@@ -3812,7 +3806,6 @@
 				DC5E64FC2B1650F400E81AA5 /* OP_GREATERTHANOREQUAL.swift in Sources */,
 				DC5E64F22B1650F400E81AA5 /* OP_RSHIFT.swift in Sources */,
 				DC5E65392B16566100E81AA5 /* OpCodeFactory.swift in Sources */,
-				2D24F57E2B6A42C000D502A0 /* AptosBuildParams.swift in Sources */,
 				B6BA936D2AEA0E4800F84E36 /* NEARNetworkParams.ProtocolConfig.swift in Sources */,
 				EF3B19322AA85CDD0084AA1C /* TezosExternalLinkProvider.swift in Sources */,
 				2D9A91A229BB8C1700476EA6 /* TONProviderResponse.swift in Sources */,
@@ -3975,7 +3968,6 @@
 				DC5E65082B1650F400E81AA5 /* OP_1SUB.swift in Sources */,
 				5D7D242E25136254001B9A4F /* XrpData.swift in Sources */,
 				B675E95F2B320D69004AF179 /* VeChainNetworkResult.swift in Sources */,
-				2D24F5832B6A434900D502A0 /* AptosEstimatedGasPrice.swift in Sources */,
 				5D4B33DC23FAAD8300C93A84 /* BitcoreProvider.swift in Sources */,
 				DC5E64EA2B1650F400E81AA5 /* OP_XOR.swift in Sources */,
 				2D9A919429BB8BFF00476EA6 /* TONError.swift in Sources */,
