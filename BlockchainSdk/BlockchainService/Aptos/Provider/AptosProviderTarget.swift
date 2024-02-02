@@ -47,7 +47,7 @@ struct AptosProviderTarget: TargetType {
         case .estimateGasPrice:
             return "v1/estimate_gas_price"
         case .simulateTransaction:
-            return "v1//transactions/simulate"
+            return "v1/transactions/simulate"
         case .submitTransaction:
             return "v1/transactions"
         }
@@ -67,10 +67,11 @@ struct AptosProviderTarget: TargetType {
         case .accounts, .accountsResources, .estimateGasPrice:
             return .requestPlain
         case .simulateTransaction(let data):
-            let parameters = try? data.asDictionary()
-            return .requestParameters(parameters: parameters ?? [:], encoding: JSONEncoding.default)
-        case .submitTransaction:
-            return .requestParameters(parameters: [:], encoding: JSONEncoding.default)
+            let encoder = JSONEncoder()
+            encoder.keyEncodingStrategy = .convertToSnakeCase
+            return .requestCustomJSONEncodable(data, encoder: encoder)
+        case .submitTransaction(let data):
+            return .requestData(data)
         }
     }
     
@@ -119,7 +120,7 @@ extension AptosProviderTarget {
          
          To use this endpoint with BCS, you must submit a SignedTransaction encoded as BCS. See SignedTransaction in types/src/transaction/mod.rs.
          */
-        case simulateTransaction(data: AptosRequest.TransactionInfo)
+        case simulateTransaction(data: AptosRequest.TransactionBody)
         
         /*
          This endpoint accepts transaction submissions in two formats.
@@ -131,6 +132,6 @@ extension AptosProviderTarget {
 
          To submit a transaction as BCS, you must submit a SignedTransaction encoded as BCS. See SignedTransaction in types/src/transaction/mod.rs. Make sure to use the application/x.aptos.signed_transaction+bcs Content-Type.
          */
-        case submitTransaction
+        case submitTransaction(data: Data)
     }
 }

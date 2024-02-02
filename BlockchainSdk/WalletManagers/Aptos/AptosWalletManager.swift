@@ -51,32 +51,57 @@ extension AptosWalletManager: WalletManager {
     }
     
     var allowsFeeSelection: Bool {
-        true
-    }
-    
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        // TODO: - Make implementation after created transaction builder
-        return .anyFail(error: WalletError.failedToSendTx)
+        false
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         networkService
             .getGasUnitPrice()
             .withWeakCaptureOf(self)
-            .tryMap { (walletManager, feeParams) -> AnyPublisher<AptosEstimatedGasPrice, Error> in
-                let transactionInfo = try walletManager.transactionBuilder.buildToCalculateFee(
+            .flatMap { (walletManager, gasUnitPrice) -> AnyPublisher<Decimal, Error> in
+                guard let transactionInfo = try? walletManager.transactionBuilder.buildToCalculateFee(
                     amount: amount,
                     destination: destination,
-                    gasUnitPrice: feeParams.gasEstimate.uint64Value
-                )
+                    gasUnitPrice: gasUnitPrice
+                ) else {
+                    return .anyFail(error: WalletError.failedToGetFee)
+                }
                 
                 return walletManager
                     .networkService
                     .calculateUsedGasPriceUnit(info: transactionInfo)
                     .eraseToAnyPublisher()
             }
-            .tryMap { feeValue in
-                throw WalletError.failedToGetFee
+            .withWeakCaptureOf(self)
+            .map { (walletManager, feeValue) -> [Fee] in
+                let feeAmount = Amount(with: walletManager.wallet.blockchain, value: feeValue)
+                return [Fee(feeAmount, parameters: nil)]
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+        Just(())
+            .tryMap { _ in
+                try transactionBuilder.buildForSign(transaction: transaction)
+            }
+            .flatMap { dataForSign -> AnyPublisher<Data, Error> in
+                signer.sign(hash: dataForSign, walletPublicKey: self.wallet.publicKey)
+            }
+            .withWeakCaptureOf(self)
+            .flatMap { (walletManager, signature) -> AnyPublisher<String, Error> in
+                guard let buildForSend = try? self.transactionBuilder.buildForSend(transaction: transaction, signature: signature) else {
+                    return .anyFail(error: WalletError.failedToSendTx)
+                }
+                
+                return walletManager.networkService.submitTransaction(data: buildForSend)
+            }
+            .withWeakCaptureOf(self)
+            .map { walletManager, transactionHash in
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: transactionHash)
+                walletManager.wallet.addPendingTransaction(record)
+                return TransactionSendResult(hash: transactionHash)
             }
             .eraseToAnyPublisher()
     }

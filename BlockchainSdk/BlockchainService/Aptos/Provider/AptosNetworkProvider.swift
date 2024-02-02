@@ -56,10 +56,19 @@ struct AptosNetworkProvider: HostProvider {
         return requestPublisher(for: target)
     }
     
-    func calculateUsedGasPriceUnit(transactionInfo: AptosRequest.TransactionInfo) -> AnyPublisher<JSON, Error> {
+    func calculateUsedGasPriceUnit(transactionBody: AptosRequest.TransactionBody) -> AnyPublisher<JSON, Error> {
         let target = AptosProviderTarget(
             node: node,
-            targetType: .simulateTransaction(data: transactionInfo)
+            targetType: .simulateTransaction(data: transactionBody)
+        )
+        
+        return requestPublisher(for: target)
+    }
+    
+    func submitTransaction(data: Data) -> AnyPublisher<JSON, Error> {
+        let target = AptosProviderTarget(
+            node: node,
+            targetType: .submitTransaction(data: data)
         )
         
         return requestPublisher(for: target)

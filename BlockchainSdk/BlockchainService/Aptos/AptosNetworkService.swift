@@ -51,44 +51,94 @@ class AptosNetworkService: MultiNetworkProvider {
         }
     }
     
-    func getGasUnitPrice() -> AnyPublisher<AptosEstimatedGasPrice, Error> {
+    func getGasUnitPrice() -> AnyPublisher<UInt64, Error> {
         providerPublisher { provider in
             provider
                 .getGasUnitPrice()
                 .withWeakCaptureOf(self)
                 .tryMap { service, response in
-                    let gasEstimate = Decimal(response[JSONParseKey.sequenceNumber].uInt64Value) / service.blockchain.decimalValue
-                    return AptosEstimatedGasPrice(gasEstimate: gasEstimate)
+                    return response[JSONParseKey.gasEstimate].uInt64Value
                 }
                 .eraseToAnyPublisher()
         }
     }
 
-    func calculateUsedGasPriceUnit(info: AptosTransactionInfo) -> AnyPublisher<AptosEstimatedGasPrice, Error> {
-        providerPublisher { provider in
-            provider
-                .calculateUsedGasPriceUnit(
-                    // Simple map domain model into dto model
-                    transactionInfo: .init(
-                        sequenceNumber: info.sequenceNumber,
-                        publicKey: info.publicKey,
-                        sourceAddress: info.sourceAddress,
-                        destinationAddress: info.destinationAddress,
-                        amount: info.amount,
-                        contractAddress: info.contractAddress,
-                        gasUnitPrice: info.gasUnitPrice,
-                        maxGasAmount: info.maxGasAmount,
-                        expirationTimestamp: info.expirationTimestamp,
-                        hash: info.hash
-                    )
-                )
+    func calculateUsedGasPriceUnit(info: AptosTransactionInfo) -> AnyPublisher<Decimal, Error> {
+        providerPublisher { [weak self] provider in
+            guard let self = self else {
+                return .anyFail(error: WalletError.failedToGetFee)
+            }
+            
+            let transactionBody = convertTransaction(info: info)
+            
+            return provider
+                .calculateUsedGasPriceUnit(transactionBody: transactionBody)
                 .withWeakCaptureOf(self)
                 .tryMap { service, response in
-                    let gasEstimate = Decimal(response[JSONParseKey.sequenceNumber].uInt64Value) / service.blockchain.decimalValue
-                    return AptosEstimatedGasPrice(gasEstimate: gasEstimate)
+                    guard let item = response.arrayValue.first, item[JSONParseKey.success].boolValue else {
+                        throw WalletError.failedToGetFee
+                    }
+                    
+                    let gasUsed = item[JSONParseKey.gasUsed].uInt64Value
+                    let estimatedFee = Decimal(Double(info.gasUnitPrice) * Double(gasUsed) * Constants.successTransactionSafeFactor) / service.blockchain.decimalValue
+                    return estimatedFee
+                }
+                .mapError { _ in
+                    return WalletError.failedToGetFee
                 }
                 .eraseToAnyPublisher()
         }
+    }
+    
+    func submitTransaction(data: Data) -> AnyPublisher<String, Error> {
+        providerPublisher { [weak self] provider in
+            guard let self = self else {
+                return .anyFail(error: WalletError.failedToGetFee)
+            }
+            
+            return provider
+                .submitTransaction(data: data)
+                .withWeakCaptureOf(self)
+                .tryMap { service, response in
+                    print(response)
+                    throw WalletError.failedToSendTx
+                }
+                .mapError { _ in
+                    return WalletError.failedToSendTx
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+    
+    // MARK: - Private Implementation
+    
+    private func convertTransaction(info: AptosTransactionInfo) -> AptosRequest.TransactionBody {
+        let transferPayload = AptosRequest.TransferPayload(
+            type: Constants.transferPayloadType,
+            function: Constants.transferPayloadFunction,
+            typeArguments: [info.contractAddress ?? Constants.aptosCoinContract],
+            arguments: [info.destinationAddress, String(info.amount)]
+        )
+        
+        var signature: AptosRequest.Signature?
+        
+        if let hash = info.hash {
+            signature = AptosRequest.Signature(
+                type: Constants.signatureType,
+                publicKey: info.publicKey,
+                signature: hash
+            )
+        }
+        
+        return .init(
+            sequenceNumber: String(info.sequenceNumber),
+            sender: info.sourceAddress,
+            gasUnitPrice: String(info.gasUnitPrice),
+            maxGasAmount: String(info.maxGasAmount),
+            expirationTimestampSecs: String(info.expirationTimestamp),
+            payload: transferPayload,
+            signature: signature
+        )
     }
 }
 
@@ -98,11 +148,16 @@ private extension AptosNetworkService {
     enum Constants {
         static let accountKeyPrefix = "0x1::account::Account"
         static let coinStoreKeyPrefix = "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>"
+        static let transferPayloadType = "entry_function_payload"
+        static let transferPayloadFunction = "0x1::aptos_account::transfer_coins"
+        static let aptosCoinContract = "0x1::aptos_coin::AptosCoin"
+        static let signatureType = "ed25519_signature"
+        static let successTransactionSafeFactor = 1.5
     }
 }
 
 private extension AptosNetworkService {
-    enum JSONParseKey: JSONSubscriptType {
+    enum JSONParseKey: String, JSONSubscriptType {
         case sequenceNumber
         case type
         case data
@@ -111,26 +166,12 @@ private extension AptosNetworkService {
         case deprioritizedGasEstimate
         case gasEstimate
         case prioritizedGasEstimate
+        case gasUsed
+        case success
         
         var jsonKey: SwiftyJSON.JSONKey {
-            switch self {
-            case .sequenceNumber:
-                return JSONKey.key("sequence_number")
-            case .type:
-                return JSONKey.key("type")
-            case .data:
-                return JSONKey.key("data")
-            case .value:
-                return JSONKey.key("value")
-            case .coin:
-                return JSONKey.key("coin")
-            case .deprioritizedGasEstimate:
-                return JSONKey.key("deprioritized_gas_estimate")
-            case .gasEstimate:
-                return JSONKey.key("gas_estimate")
-            case .prioritizedGasEstimate:
-                return JSONKey.key("prioritized_gas_estimate")
-            }
+            let value = self.rawValue.camelCaseToSnakeCase()
+            return JSONKey.key(value)
         }
     }
 }
