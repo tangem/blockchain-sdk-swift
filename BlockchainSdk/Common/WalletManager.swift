@@ -121,6 +121,10 @@ public protocol WithdrawalValidator {
     func validate(_ transaction: Transaction) -> WithdrawalWarning?
 }
 
+public protocol TransactionReserveAmountValidator {
+    func reserveAmount(for transaction: Transaction) -> AnyPublisher<Amount?, Error>
+}
+
 @available(iOS 13.0, *)
 public protocol AddressResolver {
     func resolve(_ address: String) async throws -> String

@@ -132,4 +132,29 @@ extension XRPWalletManager: TransactionSender {
     }
 }
 
+extension XRPWalletManager: TransactionReserveAmountValidator {
+    func reserveAmount(for transaction: Transaction) -> AnyPublisher<Amount?, Error> {
+        let account: String
+        if let decodedRAddress = (try? XRPAddress.decodeXAddress(xAddress: transaction.destinationAddress))?.rAddress {
+            account = decodedRAddress
+        } else {
+            account = transaction.destinationAddress
+        }
+        
+        return networkService
+            .checkAccountCreated(account: account)
+            .withWeakCaptureOf(self)
+            .tryMap { (self, isAccountCreated) -> Amount? in
+                if !isAccountCreated,
+                   let walletReserve = self.wallet.amounts[.reserve],
+                   transaction.amount.value < walletReserve.value {
+                    return walletReserve
+                } else {
+                    return nil
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+}
+
 extension XRPWalletManager: ThenProcessable { }
