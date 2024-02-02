@@ -351,7 +351,7 @@ public enum Blockchain: Equatable, Hashable {
         }
     }
 
-    // TODO: Andrey Fedorov - Are Hedera tokens supported?
+    // TODO: Andrey Fedorov - Are Hedera tokens supported? (IOS-4557)
     public var canHandleTokens: Bool {
         switch self {
         case _ where isEvm:
