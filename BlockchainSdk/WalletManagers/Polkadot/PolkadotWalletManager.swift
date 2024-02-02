@@ -33,8 +33,8 @@ class PolkadotWalletManager: BaseManager, WalletManager {
                 case .finished:
                     completion(.success(()))
                 }
-            } receiveValue: { [unowned self] in
-                self.updateInfo($0)
+            } receiveValue: { [weak self] info in
+                self?.updateInfo(info)
             }
     }
     
