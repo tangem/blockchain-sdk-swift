@@ -121,12 +121,14 @@ final class AptosTransactionBuilder {
         let expirationTimestamp = createExpirationTimestampSecs()
         let sequenceNumber = sequenceNumber
         let chainID = isTestnet ? Constants.testnetChainId : Constants.mainnetChainId
+        let gasUnitPrice = (transaction.fee.parameters as? AptosFeeParams)?.gasUnitPrice ?? 0
 
         let input = AptosSigningInput.with { input in
             input.chainID =  chainID
             input.sender = transaction.sourceAddress
             input.sequenceNumber = sequenceNumber
             input.expirationTimestampSecs = expirationTimestamp
+            input.gasUnitPrice = gasUnitPrice
             input.transfer = transfer
         }
         

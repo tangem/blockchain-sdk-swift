@@ -63,7 +63,7 @@ class AptosNetworkService: MultiNetworkProvider {
         }
     }
 
-    func calculateUsedGasPriceUnit(info: AptosTransactionInfo) -> AnyPublisher<Decimal, Error> {
+    func calculateUsedGasPriceUnit(info: AptosTransactionInfo) -> AnyPublisher<(estimatedFee: Decimal, gasUnitPrice: UInt64), Error> {
         providerPublisher { [weak self] provider in
             guard let self = self else {
                 return .anyFail(error: WalletError.failedToGetFee)
@@ -81,7 +81,8 @@ class AptosNetworkService: MultiNetworkProvider {
                     
                     let gasUsed = item[JSONParseKey.gasUsed].uInt64Value
                     let estimatedFee = Decimal(Double(info.gasUnitPrice) * Double(gasUsed) * Constants.successTransactionSafeFactor) / service.blockchain.decimalValue
-                    return estimatedFee
+                    
+                    return (estimatedFee, info.gasUnitPrice)
                 }
                 .mapError { _ in
                     return WalletError.failedToGetFee

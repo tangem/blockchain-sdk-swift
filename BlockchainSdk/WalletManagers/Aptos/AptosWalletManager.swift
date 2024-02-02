@@ -58,7 +58,7 @@ extension AptosWalletManager: WalletManager {
         networkService
             .getGasUnitPrice()
             .withWeakCaptureOf(self)
-            .flatMap { (walletManager, gasUnitPrice) -> AnyPublisher<Decimal, Error> in
+            .flatMap { (walletManager, gasUnitPrice) -> AnyPublisher<(estimatedFee: Decimal, gasUnitPrice: UInt64), Error> in
                 guard let transactionInfo = try? walletManager.transactionBuilder.buildToCalculateFee(
                     amount: amount,
                     destination: destination,
@@ -73,9 +73,14 @@ extension AptosWalletManager: WalletManager {
                     .eraseToAnyPublisher()
             }
             .withWeakCaptureOf(self)
-            .map { (walletManager, feeValue) -> [Fee] in
-                let feeAmount = Amount(with: walletManager.wallet.blockchain, value: feeValue)
-                return [Fee(feeAmount, parameters: nil)]
+            .map { (walletManager, result) -> [Fee] in
+                let (estimatedFee, gasUnitPrice) = result
+                
+                let feeAmount = Amount(with: walletManager.wallet.blockchain, value: estimatedFee)
+                
+                return [
+                    Fee(feeAmount, parameters: AptosFeeParams(gasUnitPrice: gasUnitPrice))
+                ]
             }
             .eraseToAnyPublisher()
     }
