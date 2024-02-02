@@ -36,7 +36,7 @@ extension UTXOTransactionHistoryProvider: TransactionHistoryProvider {
         page == nil || (page?.number ?? 0) < totalPages
     }
     
-    var debugDescription: String {
+    var description: String {
         return "number: \(String(describing: page?.number)); \(totalPages); \(totalRecordsCount)"
     }
     

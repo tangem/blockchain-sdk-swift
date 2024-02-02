@@ -43,7 +43,7 @@ extension AlgorandTransactionHistoryProvider: TransactionHistoryProvider {
         page == nil || (page?.next != nil)
     }
     
-    var debugDescription: String {
+    var description: String {
         return "nextToken: \(page?.next ?? "-")"
     }
     
