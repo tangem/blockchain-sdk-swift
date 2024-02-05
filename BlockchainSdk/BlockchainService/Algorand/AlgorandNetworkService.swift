@@ -148,10 +148,9 @@ class AlgorandNetworkService: MultiNetworkProvider {
 
 private extension AlgorandNetworkService {
     func calculateCoinValueWithReserveDeposit(from accountModel: AlgorandResponse.Account) -> (coinValue: Decimal, reserveValue: Decimal) {
-        let changeBalanceValue = max(accountModel.amount - accountModel.minBalance, 0)
+        let changeBalanceValue = max(Decimal(accountModel.amount) - Decimal(accountModel.minBalance), 0)
         
-        let decimalBalance = Decimal(changeBalanceValue)
-        let coinBalance = decimalBalance / blockchain.decimalValue
+        let coinBalance = changeBalanceValue / blockchain.decimalValue
         
         let decimalReserveBalance = Decimal(accountModel.minBalance)
         let reserveCoinBalance = decimalReserveBalance / blockchain.decimalValue

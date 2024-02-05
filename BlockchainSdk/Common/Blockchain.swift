@@ -394,6 +394,7 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .binance,
                 .solana,
                 .tron,
+                .terraV1,
                 .veChain:
             return true
         default:
