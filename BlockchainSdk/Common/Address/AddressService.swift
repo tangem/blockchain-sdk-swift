@@ -18,6 +18,10 @@ public protocol AddressProvider {
     func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address
 }
 
+public protocol AddressAdditionalFieldParser {
+    func hasAdditionalField(_ address: String) -> Bool
+}
+
 // A convenient extension for using a raw public key
 public extension AddressProvider {
     func makeAddress(from publicKey: Data, type: AddressType = .default) throws -> Address {

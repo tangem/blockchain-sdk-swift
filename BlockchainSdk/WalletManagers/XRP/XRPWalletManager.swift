@@ -132,20 +132,4 @@ extension XRPWalletManager: TransactionSender {
     }
 }
 
-extension XRPWalletManager: AddressParser {
-    func parse(address: String, additionalField: String?) -> (parsedAddress: String, parsedAdditionalField: String?) {
-        guard let xrpXAddress = try? XRPAddress(xAddress: address) else {
-            return (address, additionalField)
-        }
-
-        let tagString: String?
-        if let tag = xrpXAddress.tag {
-            tagString = "\(tag)"
-        } else {
-            tagString = nil
-        }
-        return (xrpXAddress.rAddress, tagString)
-    }
-}
-
 extension XRPWalletManager: ThenProcessable { }

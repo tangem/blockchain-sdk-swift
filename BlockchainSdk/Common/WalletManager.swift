@@ -126,11 +126,6 @@ public protocol AddressResolver {
     func resolve(_ address: String) async throws -> String
 }
 
-@available(iOS 13.0, *)
-public protocol AddressParser {
-    func parse(address: String, additionalField: String?) -> (parsedAddress: String, parsedAdditionalField: String?)
-}
-
 public struct WithdrawalWarning {
     public let warningMessage: String
     public let reduceMessage: String
