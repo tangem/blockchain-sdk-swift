@@ -101,8 +101,11 @@ class AptosNetworkService: MultiNetworkProvider {
                 .submitTransaction(data: data)
                 .withWeakCaptureOf(self)
                 .tryMap { service, response in
-                    print(response)
-                    throw WalletError.failedToSendTx
+                    guard let transactionHash = response[JSONParseKey.hash].string else {
+                        throw WalletError.failedToGetFee
+                    }
+                    
+                    return transactionHash
                 }
                 .mapError { _ in
                     return WalletError.failedToSendTx
@@ -169,6 +172,7 @@ private extension AptosNetworkService {
         case prioritizedGasEstimate
         case gasUsed
         case success
+        case hash
         
         var jsonKey: SwiftyJSON.JSONKey {
             let value = self.rawValue.camelCaseToSnakeCase()

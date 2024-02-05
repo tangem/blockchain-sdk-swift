@@ -14,13 +14,22 @@ struct AptosWalletAssembly: WalletManagerAssembly {
         var providers: [AptosNetworkProvider] = []
         
         providers.append(
-            AptosNetworkProvider(
-                node: .init(
-                    type: .nownodes,
-                    apiKeyValue: input.blockchainSdkConfig.nowNodesApiKey
+            contentsOf: [
+                makeNetworkMainnetProvider(
+                    for: .nownodes,
+                    with: input.blockchainSdkConfig.nowNodesApiKey,
+                    networkConfig: input.networkConfig
                 ),
-                networkConfig: input.networkConfig
-            )
+                makeNetworkMainnetProvider(
+                    for: .getblock,
+                    with: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .rest),
+                    networkConfig: input.networkConfig
+                ),
+                makeNetworkMainnetProvider(
+                    for: .aptoslabs,
+                    networkConfig: input.networkConfig
+                ),
+            ]
         )
         
         let txBuilder = AptosTransactionBuilder(
@@ -36,5 +45,21 @@ struct AptosWalletAssembly: WalletManagerAssembly {
         )
         
         return AptosWalletManager(wallet: input.wallet, transactionBuilder: txBuilder, networkService: networkService)
+    }
+    
+    // MARK: - Private Implementation
+    
+    private func makeNetworkMainnetProvider(
+        for node: AptosProviderType,
+        with apiKeyValue: String? = nil,
+        networkConfig: NetworkProviderConfiguration
+    ) -> AptosNetworkProvider {
+        AptosNetworkProvider(
+            node: .init(
+                type: .nownodes,
+                apiKeyValue: apiKeyValue
+            ),
+            networkConfig: networkConfig
+        )
     }
 }

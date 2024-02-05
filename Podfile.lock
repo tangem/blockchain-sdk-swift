@@ -36,7 +36,7 @@ PODS:
   - SwiftProtobuf (1.18.0)
   - SwiftyJSON (5.0.1)
   - TangemSdk (3.8.0)
-  - TangemWalletCore (3.2.4-tangem1):
+  - TangemWalletCore (4.0.21-tangem2):
     - SwiftProtobuf
   - TweetNacl (1.0.2)
 
@@ -56,7 +56,7 @@ DEPENDENCIES:
   - SwiftProtobuf
   - SwiftyJSON
   - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-264`)
-  - TangemWalletCore (from `https://github.com/tangem/wallet-core-binaries-ios.git`, tag `3.2.4-tangem1`)
+  - TangemWalletCore (from `https://github.com/tangem/wallet-core-binaries-ios.git`, branch `update-4.0.21-tangem2`)
 
 SPEC REPOS:
   trunk:
@@ -90,8 +90,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-264
   TangemWalletCore:
+    :branch: update-4.0.21-tangem2
     :git: https://github.com/tangem/wallet-core-binaries-ios.git
-    :tag: 3.2.4-tangem1
 
 CHECKOUT OPTIONS:
   BinanceChain:
@@ -107,8 +107,8 @@ CHECKOUT OPTIONS:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-264
   TangemWalletCore:
+    :commit: 3601edf1d8533bb667582adae476b0bb47d7f326
     :git: https://github.com/tangem/wallet-core-binaries-ios.git
-    :tag: 3.2.4-tangem1
 
 SPEC CHECKSUMS:
   Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
@@ -129,9 +129,9 @@ SPEC CHECKSUMS:
   SwiftProtobuf: c3c12645230d9b09c72267e0de89468c5543bd86
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
   TangemSdk: f3adf8d0c18bf7a76406462fa31c0efa9f2efa93
-  TangemWalletCore: 8495b203106e8246aaa2a51ff99dd19f29209942
+  TangemWalletCore: 4803bd43ce4e629b1b1979b0b4dd223201faa579
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
 
-PODFILE CHECKSUM: 85467e5d1e04f26ad2d999348f90ecb6ef4d9e8a
+PODFILE CHECKSUM: 01c556380b73a2a8e8dbf407989a89e90923ea57
 
 COCOAPODS: 1.14.3
