@@ -31,7 +31,7 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
         cancellable = networkService.getInfo(addresses: wallet.addresses.map { $0.value })
             .eraseToAnyPublisher()
             .subscribe(on: DispatchQueue.global())
-            .sink(receiveCompletion: {[weak self] completionSubscription in
+            .sink(receiveCompletion: { [weak self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
                     self?.wallet.amounts = [:]
                     completion(.failure(error))

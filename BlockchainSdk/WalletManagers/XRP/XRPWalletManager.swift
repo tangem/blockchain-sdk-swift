@@ -35,13 +35,13 @@ class XRPWalletManager: BaseManager, WalletManager {
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(account: wallet.address)
-            .sink(receiveCompletion: {[unowned self]  completionSubscription in
+            .sink(receiveCompletion: { [weak self]  completionSubscription in
                 if case let .failure(error) = completionSubscription {
-                    self.wallet.amounts = [:]
+                    self?.wallet.amounts = [:]
                     completion(.failure(error))
                 }
-            }, receiveValue: { [unowned self] response in
-                self.updateWallet(with: response)
+            }, receiveValue: { [weak self] response in
+                self?.updateWallet(with: response)
                 completion(.success(()))
             })
     }
