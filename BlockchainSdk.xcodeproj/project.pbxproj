@@ -11,6 +11,10 @@
 		2D01EC002B05223900DEF1CC /* DecimalExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EBFF2B05223900DEF1CC /* DecimalExternalLinkProvider.swift */; };
 		2D01EC042B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EC032B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift */; };
 		2D01EC062B052A0A00DEF1CC /* DecimalWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EC052B052A0A00DEF1CC /* DecimalWalletAssembly.swift */; };
+		2D24F5762B6A423500D502A0 /* AptosTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5742B6A423500D502A0 /* AptosTransactionBuilder.swift */; };
+		2D24F5772B6A423500D502A0 /* AptosWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5752B6A423500D502A0 /* AptosWalletManager.swift */; };
+		2D24F5792B6A424800D502A0 /* AptosExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5782B6A424800D502A0 /* AptosExternalLinkProvider.swift */; };
+		2D24F57B2B6A425500D502A0 /* AptosWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F57A2B6A425500D502A0 /* AptosWalletAssembly.swift */; };
 		2D3328C52A779ACC00C4A84C /* ChiaPuzzleUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3328C22A779ACC00C4A84C /* ChiaPuzzleUtils.swift */; };
 		2D3829C929D34A93001D4785 /* TWCoin+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829C829D34A93001D4785 /* TWCoin+.swift */; };
 		2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */; };
@@ -679,6 +683,10 @@
 		2D01EBFF2B05223900DEF1CC /* DecimalExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalExternalLinkProvider.swift; sourceTree = "<group>"; };
 		2D01EC032B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalBlockchainAddressConverter.swift; sourceTree = "<group>"; };
 		2D01EC052B052A0A00DEF1CC /* DecimalWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalWalletAssembly.swift; sourceTree = "<group>"; };
+		2D24F5742B6A423500D502A0 /* AptosTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosTransactionBuilder.swift; sourceTree = "<group>"; };
+		2D24F5752B6A423500D502A0 /* AptosWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosWalletManager.swift; sourceTree = "<group>"; };
+		2D24F5782B6A424800D502A0 /* AptosExternalLinkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosExternalLinkProvider.swift; sourceTree = "<group>"; };
+		2D24F57A2B6A425500D502A0 /* AptosWalletAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosWalletAssembly.swift; sourceTree = "<group>"; };
 		2D3328C22A779ACC00C4A84C /* ChiaPuzzleUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaPuzzleUtils.swift; sourceTree = "<group>"; };
 		2D3829C829D34A93001D4785 /* TWCoin+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWCoin+.swift"; sourceTree = "<group>"; };
 		2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressServiceManagerUtility.swift; sourceTree = "<group>"; };
@@ -1383,6 +1391,15 @@
 			path = Common;
 			sourceTree = "<group>";
 		};
+		2D24F5732B6A423500D502A0 /* Aptos */ = {
+			isa = PBXGroup;
+			children = (
+				2D24F5742B6A423500D502A0 /* AptosTransactionBuilder.swift */,
+				2D24F5752B6A423500D502A0 /* AptosWalletManager.swift */,
+			);
+			path = Aptos;
+			sourceTree = "<group>";
+		};
 		2D535E7A2A0CC5FA0081EB76 /* Vectors */ = {
 			isa = PBXGroup;
 			children = (
@@ -1539,6 +1556,7 @@
 				B63068C62B31050900E79053 /* VeChainWalletAssembly.swift */,
 				DC3550FB2B58543100A93DBA /* XDCWalletAssembly.swift */,
 				2DDEFBC62B59B37900885675 /* AlgorandWalletAssembly.swift */,
+				2D24F57A2B6A425500D502A0 /* AptosWalletAssembly.swift */,
 			);
 			path = WalletAssembly;
 			sourceTree = "<group>";
@@ -1717,6 +1735,7 @@
 				2D01EBFB2B04FC2F00DEF1CC /* Decimal */,
 				B63068BF2B3102D400E79053 /* VeChain */,
 				2DDEFBBC2B59B36A00885675 /* Algorand */,
+				2D24F5732B6A423500D502A0 /* Aptos */,
 			);
 			path = WalletManagers;
 			sourceTree = "<group>";
@@ -3011,6 +3030,7 @@
 				B63068BD2B3102A900E79053 /* VeChainExternalLinkProvider.swift */,
 				DC3550F02B57013F00A93DBA /* XDCExternalLinkProvider.swift */,
 				2DDEFBC82B59B39900885675 /* AlgorandExternalLinkProvider.swift */,
+				2D24F5782B6A424800D502A0 /* AptosExternalLinkProvider.swift */,
 			);
 			path = ExternalLinkProvider;
 			sourceTree = "<group>";
@@ -3451,6 +3471,7 @@
 				EFBA17FE2988623F00C23955 /* TransactionSendResult.swift in Sources */,
 				EFD717CE2A25ECB500E5430D /* SmartContractMethodParameterType.swift in Sources */,
 				EF3B19362AA85CFC0084AA1C /* BSCExternalLinkProvider.swift in Sources */,
+				2D24F57B2B6A425500D502A0 /* AptosWalletAssembly.swift in Sources */,
 				2DDE5BB029C4F8D200A5B708 /* WalletManagerAssembly.swift in Sources */,
 				5D304390239A58C90066B8D9 /* BitcoinWalletManager.swift in Sources */,
 				DC5E650F2B1650F400E81AA5 /* OP_NOPN.swift in Sources */,
@@ -3798,6 +3819,7 @@
 				DC3550FA2B5852F200A93DBA /* XDCNetworkService.swift in Sources */,
 				DC5E652C2B1650F400E81AA5 /* OP_RETURN.swift in Sources */,
 				EF3B19382AA85D090084AA1C /* PolygonExternalLinkProvider.swift in Sources */,
+				2D24F5762B6A423500D502A0 /* AptosTransactionBuilder.swift in Sources */,
 				B0AD566425AC8DD50084F924 /* PendingTransaction.swift in Sources */,
 				2DDEFBE22B59B44700885675 /* AlgorandResponse+TransactionResult.swift in Sources */,
 				DC5E650B2B1650F400E81AA5 /* OP_BIN2NUM.swift in Sources */,
@@ -3898,6 +3920,7 @@
 				2D9A919429BB8BFF00476EA6 /* TONError.swift in Sources */,
 				EFF56B3D29C20CCE002B6952 /* SmartContractTargetType.swift in Sources */,
 				DA198B5629E3F6D300DB6EEA /* CosmosModels.swift in Sources */,
+				2D24F5792B6A424800D502A0 /* AptosExternalLinkProvider.swift in Sources */,
 				2DDE5B9F29C4F8D200A5B708 /* NetworkProviderAssembly.swift in Sources */,
 				DC5E64DE2B1650F400E81AA5 /* OP_CHECKSIGVERIFY.swift in Sources */,
 				DC5E64F92B1650F400E81AA5 /* OP_MOD.swift in Sources */,
@@ -3966,6 +3989,7 @@
 				DC5E651B2B1650F400E81AA5 /* OP_ROT.swift in Sources */,
 				B004DAC026416B8A000863A4 /* EthereumResponse.swift in Sources */,
 				DC5E65282B1650F400E81AA5 /* OP_N.swift in Sources */,
+				2D24F5772B6A423500D502A0 /* AptosWalletManager.swift in Sources */,
 				B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */,
 				DAE30DFF279164500056C5A3 /* SolanaWalletManager.swift in Sources */,
 				DA67A69829E523C6001B6799 /* CosmosTransactionBuilder.swift in Sources */,
