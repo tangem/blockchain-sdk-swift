@@ -73,6 +73,7 @@
 		2DA8AB0D2A433A1000C75D85 /* ExceptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8AB0C2A433A1000C75D85 /* ExceptionHandler.swift */; };
 		2DB6C6D52AFCBEC9000D0C6A /* TelosWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB6C6D42AFCBEC9000D0C6A /* TelosWalletManager.swift */; };
 		2DB6C6D72AFCC013000D0C6A /* TelosWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB6C6D62AFCC013000D0C6A /* TelosWalletAssembly.swift */; };
+		2DB84D3D2B7212DF00C1CDD1 /* AptosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB84D3C2B7212DF00C1CDD1 /* AptosTests.swift */; };
 		2DBBE94D29C8686000971539 /* OptimismWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBBE94C29C8686000971539 /* OptimismWalletAssembly.swift */; };
 		2DBBE95029C8DBEA00971539 /* TONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBBE94F29C8DBEA00971539 /* TONTests.swift */; };
 		2DC5796129C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5796029C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift */; };
@@ -758,6 +759,7 @@
 		2DA8AB0C2A433A1000C75D85 /* ExceptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionHandler.swift; sourceTree = "<group>"; };
 		2DB6C6D42AFCBEC9000D0C6A /* TelosWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelosWalletManager.swift; sourceTree = "<group>"; };
 		2DB6C6D62AFCC013000D0C6A /* TelosWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelosWalletAssembly.swift; sourceTree = "<group>"; };
+		2DB84D3C2B7212DF00C1CDD1 /* AptosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AptosTests.swift; sourceTree = "<group>"; };
 		2DBBE94C29C8686000971539 /* OptimismWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismWalletAssembly.swift; sourceTree = "<group>"; };
 		2DBBE94F29C8DBEA00971539 /* TONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONTests.swift; sourceTree = "<group>"; };
 		2DC5796029C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreSignerTesterUtility.swift; sourceTree = "<group>"; };
@@ -1588,6 +1590,14 @@
 			path = Telos;
 			sourceTree = "<group>";
 		};
+		2DB84D3B2B7212D100C1CDD1 /* Aptos */ = {
+			isa = PBXGroup;
+			children = (
+				2DB84D3C2B7212DF00C1CDD1 /* AptosTests.swift */,
+			);
+			path = Aptos;
+			sourceTree = "<group>";
+		};
 		2DBBE94E29C8DBD900971539 /* TON */ = {
 			isa = PBXGroup;
 			children = (
@@ -1769,6 +1779,7 @@
 				B63E7DBA2AE9FD91000324CB /* NEAR */,
 				B62BCBAA2B3D973C007494CF /* VeChain */,
 				2D9E2A542B584E2E0094D811 /* Algorand */,
+				2DB84D3B2B7212D100C1CDD1 /* Aptos */,
 				5D14E47E2397B80F00C15FC8 /* Info.plist */,
 			);
 			path = BlockchainSdkTests;
@@ -4149,6 +4160,7 @@
 				EF0DA78628523FAC0081092A /* XCTestCase+.swift in Sources */,
 				2D535E772A0CC5E50081EB76 /* DecodableVectors.swift in Sources */,
 				2D9E2A562B584E2E0094D811 /* AlgorandTests.swift in Sources */,
+				2DB84D3D2B7212DF00C1CDD1 /* AptosTests.swift in Sources */,
 				2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */,
 				DC886FCD2AF5637D0098669C /* CommonTests.swift in Sources */,
 			);

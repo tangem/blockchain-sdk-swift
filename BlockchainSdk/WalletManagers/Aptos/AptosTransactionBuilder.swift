@@ -153,8 +153,8 @@ extension AptosTransactionBuilder {
      */
     enum Constants {
         static let mainnetChainId: UInt32 = 1
-        static let transactionLifetimeInMin: Double = 5
         static let testnetChainId: UInt32 = 2
+        static let transactionLifetimeInMin: Double = 5
         static let pseudoTransactionMaxGasAmount: UInt64 = 100_000
         static let pseudoTransactionHash = "0x000000000000000000000000000000000000000000000000000000000000000000000" +
                     "00000000000000000000000000000000000000000000000000000000000"
