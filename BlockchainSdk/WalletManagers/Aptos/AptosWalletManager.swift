@@ -90,6 +90,8 @@ extension AptosWalletManager: WalletManager {
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         let dataForSign: Data
+        
+        // This timestamp value must be synchronized between calls buildForSign / buildForSend
         let expirationTimestamp = createExpirationTimestampSecs()
         
         do {

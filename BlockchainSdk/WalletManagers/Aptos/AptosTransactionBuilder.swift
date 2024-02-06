@@ -98,7 +98,7 @@ final class AptosTransactionBuilder {
         gasUnitPrice: UInt64,
         expirationTimestamp: UInt64
     ) throws -> AptosTransactionInfo {
-        return AptosTransactionInfo(
+        AptosTransactionInfo(
             sequenceNumber: sequenceNumber,
             publicKey: publicKey.hexString,
             sourceAddress: walletAddress,
