@@ -25,6 +25,8 @@ class BaseManager: WalletProvider {
 
     var walletPublisher: AnyPublisher<Wallet, Never> { _wallet.eraseToAnyPublisher() }
     var statePublisher: AnyPublisher<WalletManagerState, Never> { state.eraseToAnyPublisher() }
+    
+    private lazy var queue = DispatchQueue(label: String(describing:self) + ".queue")
 
     private var latestUpdateTime: Date?
 
@@ -95,7 +97,7 @@ class BaseManager: WalletProvider {
     func updatePublisher() -> AnyPublisher<WalletManagerState, Never> {
         if !state.value.isLoading {
             // we should postpone an update call to prevent missing a cached value by PassthroughSubject
-            DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+            queue.asyncAfter(deadline: .now() + 0.3) {
                 self.update()
             }
         }
