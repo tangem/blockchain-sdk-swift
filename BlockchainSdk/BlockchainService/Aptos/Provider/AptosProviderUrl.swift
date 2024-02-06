@@ -11,6 +11,7 @@ import Foundation
 enum AptosProviderType {
     case nownodes
     case getblock
+    case aptoslabs
 }
 
 struct AptosProviderNode: HostProvider {
@@ -27,12 +28,14 @@ struct AptosProviderNode: HostProvider {
             return URL(string: "https://go.getblock.io/\(apiKeyValue)/")!
         case .nownodes:
             return URL(string: "https://apt.nownodes.io/")!
+        case .aptoslabs:
+            return URL(string: "https://fullnode.mainnet.aptoslabs.com/")!
         }
     }
     
     var apiKeyHeaderName: String? {
         switch type {
-        case .getblock:
+        case .getblock, .aptoslabs:
             return nil
         case .nownodes:
             return Constants.nowNodesApiKeyHeaderName

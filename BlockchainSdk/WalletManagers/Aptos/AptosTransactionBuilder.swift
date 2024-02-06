@@ -9,7 +9,7 @@
 import Foundation
 import WalletCore
 import TangemSdk
-import CryptoKit
+import SwiftyJSON
 
 final class AptosTransactionBuilder {
     private let publicKey: Data
@@ -17,7 +17,7 @@ final class AptosTransactionBuilder {
     private let isTestnet: Bool
     private let decimalValue: Decimal
     
-    private var coinType: CoinType { .algorand }
+    private var coinType: CoinType { .aptos }
     private var sequenceNumber: Int64 = 0
     
     var currentSequenceNumber: Int64 {
@@ -39,8 +39,8 @@ final class AptosTransactionBuilder {
         self.sequenceNumber = sequenceNumber
     }
 
-    func buildForSign(transaction: Transaction) throws -> Data {
-        let input = try buildInput(transaction: transaction)
+    func buildForSign(transaction: Transaction, expirationTimestamp: UInt64) throws -> Data {
+        let input = try buildInput(transaction: transaction, expirationTimestamp: expirationTimestamp)
         let txInputData = try input.serializedData()
 
         guard !txInputData.isEmpty else {
@@ -50,16 +50,16 @@ final class AptosTransactionBuilder {
         let preImageHashes = TransactionCompiler.preImageHashes(coinType: coinType, txInputData: txInputData)
         let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
 
-        guard preSigningOutput.error.rawValue == 0, !preSigningOutput.dataHash.isEmpty else {
+        guard preSigningOutput.error.rawValue == 0 else {
             Log.debug("AptosPreSigningOutput has a error: \(preSigningOutput.errorMessage)")
             throw WalletError.failedToBuildTx
         }
 
-        return preSigningOutput.dataHash
+        return preSigningOutput.data
     }
 
-    func buildForSend(transaction: Transaction, signature: Data) throws -> Data {
-        let input = try buildInput(transaction: transaction)
+    func buildForSend(transaction: Transaction, signature: Data, expirationTimestamp: UInt64) throws -> Data {
+        let input = try buildInput(transaction: transaction, expirationTimestamp: expirationTimestamp)
         let txInputData = try input.serializedData()
 
         guard !txInputData.isEmpty else {
@@ -75,17 +75,24 @@ final class AptosTransactionBuilder {
         
         let signingOutput = try AptosSigningOutput(serializedData: compiledTransaction)
 
-        guard !signingOutput.encoded.isEmpty else {
+        guard signingOutput.error.rawValue == 0, signingOutput.hasAuthenticator else {
             Log.debug("AptosSigningOutput has a error")
             throw WalletError.failedToBuildTx
         }
-
-        return signingOutput.encoded
+        
+        guard let convertJsonData = signingOutput.json.data(using: .utf8) else {
+            throw WalletError.failedToBuildTx
+        }
+        
+        return convertJsonData
     }
     
-    func buildToCalculateFee(amount: Amount, destination: String, gasUnitPrice: UInt64) throws -> AptosTransactionInfo {
-        let expirationTimestamp = createExpirationTimestampSecs()
-        
+    func buildToCalculateFee(
+        amount: Amount,
+        destination: String,
+        gasUnitPrice: UInt64,
+        expirationTimestamp: UInt64
+    ) throws -> AptosTransactionInfo {
         return AptosTransactionInfo(
             sequenceNumber: sequenceNumber,
             publicKey: publicKey.hexString,
@@ -106,7 +113,7 @@ final class AptosTransactionBuilder {
      This links describe basic structure transaction Aptos Blockchain
      - https://aptos.dev/concepts/txns-states
      */
-    private func buildInput(transaction: Transaction) throws -> AptosSigningInput {
+    private func buildInput(transaction: Transaction, expirationTimestamp: UInt64) throws -> AptosSigningInput {
         do {
             try publicKey.validateAsEdKey()
         } catch {
@@ -118,10 +125,10 @@ final class AptosTransactionBuilder {
             $0.amount = (transaction.amount.value * decimalValue).roundedDecimalNumber.uint64Value
         }
         
-        let expirationTimestamp = createExpirationTimestampSecs()
         let sequenceNumber = sequenceNumber
         let chainID = isTestnet ? Constants.testnetChainId : Constants.mainnetChainId
         let gasUnitPrice = (transaction.fee.parameters as? AptosFeeParams)?.gasUnitPrice ?? 0
+        let maxGasAmount = (transaction.fee.amount.value * decimalValue).roundedDecimalNumber.uint64Value
 
         let input = AptosSigningInput.with { input in
             input.chainID =  chainID
@@ -130,21 +137,24 @@ final class AptosTransactionBuilder {
             input.expirationTimestampSecs = expirationTimestamp
             input.gasUnitPrice = gasUnitPrice
             input.transfer = transfer
+            input.gasUnitPrice = gasUnitPrice
+            input.maxGasAmount = maxGasAmount
+            input.expirationTimestampSecs = expirationTimestamp
+            input.chainID = chainID
         }
         
         return input
     }
-    
-    private func createExpirationTimestampSecs() -> UInt64 {
-        UInt64(Date().addingTimeInterval(TimeInterval(Constants.transactionLifetimeInMin * 60)).timeIntervalSince1970)
-    }
 }
 
 extension AptosTransactionBuilder {
+    /*
+     - For chainId documentation link https://aptos.dev/nodes/networks/
+     */
     enum Constants {
         static let mainnetChainId: UInt32 = 1
-        static let testnetChainId: UInt32 = 33
-        static let transactionLifetimeInMin = 5
+        static let transactionLifetimeInMin: Double = 5
+        static let testnetChainId: UInt32 = 2
         static let pseudoTransactionMaxGasAmount: UInt64 = 100_000
         static let pseudoTransactionHash = "0x000000000000000000000000000000000000000000000000000000000000000000000" +
                     "00000000000000000000000000000000000000000000000000000000000"

@@ -59,10 +59,13 @@ extension AptosWalletManager: WalletManager {
             .getGasUnitPrice()
             .withWeakCaptureOf(self)
             .flatMap { (walletManager, gasUnitPrice) -> AnyPublisher<(estimatedFee: Decimal, gasUnitPrice: UInt64), Error> in
+                let expirationTimestamp = walletManager.createExpirationTimestampSecs()
+                
                 guard let transactionInfo = try? walletManager.transactionBuilder.buildToCalculateFee(
                     amount: amount,
                     destination: destination,
-                    gasUnitPrice: gasUnitPrice
+                    gasUnitPrice: gasUnitPrice, 
+                    expirationTimestamp: expirationTimestamp
                 ) else {
                     return .anyFail(error: WalletError.failedToGetFee)
                 }
@@ -87,9 +90,10 @@ extension AptosWalletManager: WalletManager {
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         let dataForSign: Data
+        let expirationTimestamp = createExpirationTimestampSecs()
         
         do {
-            dataForSign = try transactionBuilder.buildForSign(transaction: transaction)
+            dataForSign = try transactionBuilder.buildForSign(transaction: transaction, expirationTimestamp: expirationTimestamp)
         } catch {
             return .anyFail(error: WalletError.failedToBuildTx)
         }
@@ -98,7 +102,11 @@ extension AptosWalletManager: WalletManager {
             .sign(hash: dataForSign, walletPublicKey: self.wallet.publicKey)
             .withWeakCaptureOf(self)
             .flatMap { (walletManager, signature) -> AnyPublisher<String, Error> in
-                guard let buildForSend = try? self.transactionBuilder.buildForSend(transaction: transaction, signature: signature) else {
+                guard let buildForSend = try? self.transactionBuilder.buildForSend(
+                    transaction: transaction,
+                    signature: signature,
+                    expirationTimestamp: expirationTimestamp
+                ) else {
                     return .anyFail(error: WalletError.failedToSendTx)
                 }
                 
@@ -129,5 +137,15 @@ private extension AptosWalletManager {
         transactionBuilder.update(sequenceNumber: accountModel.sequenceNumber)
 
         completion(.success(()))
+    }
+    
+    private func createExpirationTimestampSecs() -> UInt64 {
+        UInt64(Date().addingTimeInterval(TimeInterval(Constants.transactionLifetimeInMin * 60)).timeIntervalSince1970)
+    }
+}
+
+extension AptosWalletManager {
+    enum Constants {
+        static let transactionLifetimeInMin: Double = 5
     }
 }
