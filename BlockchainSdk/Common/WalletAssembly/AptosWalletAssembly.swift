@@ -10,7 +10,8 @@ import Foundation
 
 struct AptosWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        
+        let chainId: AptosChainId = input.blockchain.isTestnet ? .testnet : .mainnet        
+
         var providers: [AptosNetworkProvider] = []
         
         providers.append(
@@ -34,9 +35,9 @@ struct AptosWalletAssembly: WalletManagerAssembly {
         
         let txBuilder = AptosTransactionBuilder(
             publicKey: input.wallet.publicKey.blockchainKey,
+            decimalValue: input.blockchain.decimalValue, 
             walletAddress: input.wallet.address,
-            isTestnet: input.blockchain.isTestnet,
-            decimalValue: input.blockchain.decimalValue
+            chainId: chainId
         )
         
         let networkService = AptosNetworkService(
