@@ -4506,8 +4506,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tangem/swift-protobuf-binaries.git";
 			requirement = {
-				branch = "feature/IOS-5792-SPM-dependencies-support";
-				kind = branch;
+				kind = exactVersion;
+				version = "1.25.2-tangem1";
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

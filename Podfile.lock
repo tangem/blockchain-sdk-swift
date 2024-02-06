@@ -37,12 +37,12 @@ DEPENDENCIES:
   - Alamofire
   - AnyCodable-FlightSchool
   - BigInt
-  - BinanceChain (from `https://github.com/tangem/swiftbinancechain.git`, branch `feature/IOS-5792-SPM-dependencies-support`)
+  - BinanceChain (from `https://github.com/tangem/swiftbinancechain.git`, tag `0.0.11`)
   - BitcoinCore.swift (from `https://github.com/tangem/bitcoincore.git`, tag `0.0.19`)
   - Moya
   - ScaleCodec
   - Sodium
-  - Solana.Swift (from `https://github.com/tangem/Solana.Swift`, branch `feature/IOS-5792-SPM-dependencies-support`)
+  - Solana.Swift (from `https://github.com/tangem/Solana.Swift`, tag `1.2.0-tangem1`)
   - stellar-ios-mac-sdk
   - SwiftCBOR
   - SwiftyJSON
@@ -65,28 +65,28 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   BinanceChain:
-    :branch: feature/IOS-5792-SPM-dependencies-support
     :git: https://github.com/tangem/swiftbinancechain.git
+    :tag: 0.0.11
   BitcoinCore.swift:
     :git: https://github.com/tangem/bitcoincore.git
     :tag: 0.0.19
   Solana.Swift:
-    :branch: feature/IOS-5792-SPM-dependencies-support
     :git: https://github.com/tangem/Solana.Swift
+    :tag: 1.2.0-tangem1
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-264
 
 CHECKOUT OPTIONS:
   BinanceChain:
-    :commit: 96afae306439b58e4f1cb1e28ceb6b897a16bc23
     :git: https://github.com/tangem/swiftbinancechain.git
+    :tag: 0.0.11
   BitcoinCore.swift:
     :git: https://github.com/tangem/bitcoincore.git
     :tag: 0.0.19
   Solana.Swift:
-    :commit: 5241296aa54241a0e94d57c5e292f2ccf8140ad4
     :git: https://github.com/tangem/Solana.Swift
+    :tag: 1.2.0-tangem1
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-264
@@ -109,6 +109,6 @@ SPEC CHECKSUMS:
   TangemSdk: f3adf8d0c18bf7a76406462fa31c0efa9f2efa93
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
 
-PODFILE CHECKSUM: 5450df541c9e61bcacdab50adfdc53e95f30a0a8
+PODFILE CHECKSUM: 784506987b015821d298108f2bb42ff3d82b23ed
 
 COCOAPODS: 1.15.0

@@ -24,14 +24,14 @@ target 'BlockchainSdk' do
   pod 'Moya'
   pod 'Sodium'
   pod 'SwiftCBOR'
-  pod 'BinanceChain', :git => 'https://github.com/tangem/swiftbinancechain.git', :branch => 'feature/IOS-5792-SPM-dependencies-support'
+  pod 'BinanceChain', :git => 'https://github.com/tangem/swiftbinancechain.git', :tag => '0.0.11'
   #pod 'BinanceChain', :path => '../SwiftBinanceChain'
   #pod 'HDWalletKit', :git => 'https://github.com/tangem/hdwallet.git', :tag => '0.3.12'
   #pod 'HDWalletKit', :path => '../HDWallet'
   pod 'AnyCodable-FlightSchool'
   pod 'stellar-ios-mac-sdk'
   
-  pod 'Solana.Swift', :git => 'https://github.com/tangem/Solana.Swift', :branch => 'feature/IOS-5792-SPM-dependencies-support'
+  pod 'Solana.Swift', :git => 'https://github.com/tangem/Solana.Swift', :tag => '1.2.0-tangem1'
   #pod 'Solana.Swift', :path => '../Solana.Swift'
 
   pod 'ScaleCodec'
@@ -81,7 +81,7 @@ post_install do |installer|
    "BinanceChain",
    "https://github.com/tangem/swift-protobuf-binaries.git",
    "SwiftProtobuf",
-   { :kind => "branch", :branch => "feature/IOS-5792-SPM-dependencies-support" }
+   { :kind => "exactVersion", :version => "1.25.2-tangem1" }
   )
 
   # `secp256k1.swift` SPM package for `Solana.Swift` pod
