@@ -9,7 +9,9 @@
 import Foundation
 
 struct AptosExternalLinkProvider: ExternalLinkProvider {
-    var testnetFaucetURL: URL?
+    var testnetFaucetURL: URL? {
+        URL(string: "https://www.aptosfaucet.com/")
+    }
 
     private let isTestnet: Bool
 
@@ -22,7 +24,7 @@ struct AptosExternalLinkProvider: ExternalLinkProvider {
     }
 
     func url(address: String, contractAddress: String?) -> URL? {
-        return URL(string: "\(baseExplorerUrl)/address/\(address)")
+        return URL(string: "\(baseExplorerUrl)/address/\(address)?network\(isTestnet ? "testnet" : "mainnet")")
     }
 
     func url(transaction hash: String) -> URL? {
