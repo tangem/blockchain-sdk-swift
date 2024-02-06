@@ -9,7 +9,6 @@
 import Foundation
 import WalletCore
 import TangemSdk
-import SwiftyJSON
 
 final class AptosTransactionBuilder {
     private let publicKey: Data
