@@ -43,12 +43,12 @@ final class AptosTransactionBuilder {
         let preImageHashes = TransactionCompiler.preImageHashes(coinType: coinType, txInputData: txInputData)
         let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
 
-        guard preSigningOutput.error.rawValue == 0, !preSigningOutput.dataHash.isEmpty else {
+        guard preSigningOutput.error == .ok, !preSigningOutput.data.isEmpty else {
             Log.debug("AptosPreSigningOutput has a error: \(preSigningOutput.errorMessage)")
             throw WalletError.failedToBuildTx
         }
 
-        return preSigningOutput.dataHash
+        return preSigningOutput.data
     }
 
     func buildForSend(transaction: Transaction, signature: Data) throws -> Data {
@@ -81,15 +81,13 @@ final class AptosTransactionBuilder {
      - https://aptos.dev/concepts/txns-states
      */
     private func buildInput(transaction: Transaction) throws -> AptosSigningInput {
-        do {
-            try publicKey.validateAsEdKey()
-        } catch {
-            throw WalletError.failedToBuildTx
-        }
+        try publicKey.validateAsEdKey()
+        
+        let amount = (transaction.amount.value * decimalValue).roundedDecimalNumber.uint64Value
         
         let transfer = AptosTransferMessage.with {
             $0.to = transaction.destinationAddress
-            $0.amount = (transaction.amount.value * decimalValue).roundedDecimalNumber.uint64Value
+            $0.amount = amount
         }
 
         let input = AptosSigningInput.with { input in
