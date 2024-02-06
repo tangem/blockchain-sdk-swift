@@ -14,8 +14,8 @@ import SwiftyJSON
 final class AptosTransactionBuilder {
     private let publicKey: Data
     private let walletAddress: String
-    private let isTestnet: Bool
     private let decimalValue: Decimal
+    private let chainId: AptosChainId
     
     private var coinType: CoinType { .aptos }
     private var sequenceNumber: Int64 = 0
@@ -26,11 +26,16 @@ final class AptosTransactionBuilder {
     
     // MARK: - Init
     
-    init(publicKey: Data, walletAddress: String, isTestnet: Bool, decimalValue: Decimal) {
+    init(
+        publicKey: Data,
+        decimalValue: Decimal,
+        walletAddress: String,
+        chainId: AptosChainId
+    ) {
         self.publicKey = publicKey
-        self.isTestnet = isTestnet
         self.decimalValue = decimalValue
         self.walletAddress = walletAddress
+        self.chainId = chainId
     }
     
     // MARK: - Implementation
@@ -126,7 +131,7 @@ final class AptosTransactionBuilder {
         }
         
         let sequenceNumber = sequenceNumber
-        let chainID = isTestnet ? Constants.testnetChainId : Constants.mainnetChainId
+        let chainID = chainId.rawValue
         let gasUnitPrice = (transaction.fee.parameters as? AptosFeeParams)?.gasUnitPrice ?? 0
         let maxGasAmount = (transaction.fee.amount.value * decimalValue).roundedDecimalNumber.uint64Value
 
@@ -140,7 +145,6 @@ final class AptosTransactionBuilder {
             input.gasUnitPrice = gasUnitPrice
             input.maxGasAmount = maxGasAmount
             input.expirationTimestampSecs = expirationTimestamp
-            input.chainID = chainID
         }
         
         return input
@@ -152,9 +156,6 @@ extension AptosTransactionBuilder {
      - For chainId documentation link https://aptos.dev/nodes/networks/
      */
     enum Constants {
-        static let mainnetChainId: UInt32 = 1
-        static let transactionLifetimeInMin: Double = 5
-        static let testnetChainId: UInt32 = 2
         static let pseudoTransactionMaxGasAmount: UInt64 = 100_000
         static let pseudoTransactionHash = "0x000000000000000000000000000000000000000000000000000000000000000000000" +
                     "00000000000000000000000000000000000000000000000000000000000"
