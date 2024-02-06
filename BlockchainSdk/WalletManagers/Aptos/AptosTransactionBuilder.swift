@@ -13,23 +13,27 @@ import CryptoKit
 
 final class AptosTransactionBuilder {
     private let publicKey: Data
-    private let isTestnet: Bool
     private let decimalValue: Decimal
+    private let chainId: AptosChainId
     
     private var coinType: CoinType { .algorand }
     
     // MARK: - Init
     
-    init(publicKey: Data, isTestnet: Bool, decimalValue: Decimal) {
+    init(
+        publicKey: Data,
+        decimalValue: Decimal,
+        chainId: AptosChainId
+    ) {
         self.publicKey = publicKey
-        self.isTestnet = isTestnet
         self.decimalValue = decimalValue
+        self.chainId = chainId
     }
     
     // MARK: - Implementation
 
-    func buildForSign(transaction: Transaction, with params: AptosBuildParams) throws -> Data {
-        let input = try buildInput(transaction: transaction, buildParams: params)
+    func buildForSign(transaction: Transaction) throws -> Data {
+        let input = try buildInput(transaction: transaction)
         let txInputData = try input.serializedData()
 
         guard !txInputData.isEmpty else {
@@ -47,8 +51,8 @@ final class AptosTransactionBuilder {
         return preSigningOutput.dataHash
     }
 
-    func buildForSend(transaction: Transaction, with params: AptosBuildParams, signature: Data) throws -> Data {
-        let input = try buildInput(transaction: transaction, buildParams: params)
+    func buildForSend(transaction: Transaction, signature: Data) throws -> Data {
+        let input = try buildInput(transaction: transaction)
         let txInputData = try input.serializedData()
 
         guard !txInputData.isEmpty else {
@@ -76,7 +80,7 @@ final class AptosTransactionBuilder {
      This links describe basic structure transaction Aptos Blockchain
      - https://aptos.dev/concepts/txns-states
      */
-    private func buildInput(transaction: Transaction, buildParams: AptosBuildParams) throws -> AptosSigningInput {
+    private func buildInput(transaction: Transaction) throws -> AptosSigningInput {
         do {
             try publicKey.validateAsEdKey()
         } catch {
@@ -89,18 +93,11 @@ final class AptosTransactionBuilder {
         }
 
         let input = AptosSigningInput.with { input in
-            input.chainID = buildParams.chainId
+            input.chainID = chainId.rawValue
             input.sender = transaction.sourceAddress
-            input.sequenceNumber = buildParams.sequenceNumber
-            input.expirationTimestampSecs = buildParams.expirationTimestampSecs
             input.transfer = transfer
         }
         
         return input
-    }
-    
-    // TODO: - Use for assembly asset algorand transaction write this
-    private func buildAssetInput(transaction: Transaction, buildParams: AptosBuildParams) throws -> AptosSigningInput {
-        throw WalletError.failedToBuildTx
     }
 }
