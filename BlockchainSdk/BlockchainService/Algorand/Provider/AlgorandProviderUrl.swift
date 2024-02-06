@@ -10,6 +10,7 @@ import Foundation
 
 enum AlgorandProviderType {
     case nownodes
+    case indexNownodes
     case getblock
     case algoIdx(isTestnet: Bool)
 }
@@ -34,6 +35,8 @@ struct AlgorandProviderNode: HostProvider {
             } else {
                 return URL(string: "https://mainnet-idx.algonode.cloud/")!
             }
+        case .indexNownodes:
+            return URL(string: "https://algo-index.nownodes.io/")!
         }
     }
     
@@ -41,7 +44,7 @@ struct AlgorandProviderNode: HostProvider {
         switch type {
         case .getblock:
             return nil
-        case .nownodes:
+        case .nownodes, .indexNownodes:
             return Constants.nowNodesApiKeyHeaderName
         case .algoIdx:
             return nil

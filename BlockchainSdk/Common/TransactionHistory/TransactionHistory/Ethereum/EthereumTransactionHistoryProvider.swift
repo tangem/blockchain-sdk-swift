@@ -12,6 +12,10 @@ import Combine
 class EthereumTransactionHistoryProvider {
     private let blockBookProvider: BlockBookUtxoProvider
     private let mapper: BlockBookTransactionHistoryMapper
+    
+    private var page: TransactionHistoryIndexPage?
+    private var totalPages: Int = 0
+    private var totalRecordsCount: Int = 0
 
     init(
         blockBookProvider: BlockBookUtxoProvider,
@@ -25,10 +29,33 @@ class EthereumTransactionHistoryProvider {
 // MARK: - TransactionHistoryProvider
 
 extension EthereumTransactionHistoryProvider: TransactionHistoryProvider {
+    var canFetchHistory: Bool {
+        page == nil || (page?.number ?? 0) < totalPages
+    }
+    
+    var description: String {
+        return "number: \(String(describing: page?.number)); \(totalPages); \(totalRecordsCount)"
+    }
+    
+    func reset() {
+        page = nil
+        totalPages = 0
+        totalRecordsCount = 0
+    }
+    
     func loadTransactionHistory(request: TransactionHistory.Request) -> AnyPublisher<TransactionHistory.Response, Error> {
+        let requestPage: Int
+        
+        // if indexing is created, load the next page
+        if let page {
+            requestPage = page.number + 1
+        } else {
+            requestPage = 0
+        }
+        
         let parameters = BlockBookTarget.AddressRequestParameters(
-            page: request.page.number,
-            pageSize: request.page.size,
+            page: requestPage,
+            pageSize: request.limit,
             details: [.txslight],
             filterType: filterType(for: request.amountType)
         )
@@ -40,12 +67,12 @@ extension EthereumTransactionHistoryProvider: TransactionHistoryProvider {
                 }
                 
                 let records = self.mapper.mapToTransactionRecords(response, amountType: request.amountType)
-                return TransactionHistory.Response(
-                    totalPages: response.totalPages ?? 0,
-                    totalRecordsCount: response.txs,
-                    page: Page(number: response.page ?? 0, size: response.itemsOnPage ?? 0),
-                    records: records
-                )
+                
+                self.page = TransactionHistoryIndexPage(number: response.page ?? 0)
+                self.totalPages = response.totalPages ?? 0
+                self.totalRecordsCount = response.txs
+                
+                return TransactionHistory.Response(records: records)
             }
             .eraseToAnyPublisher()
     }
