@@ -54,7 +54,7 @@ final class AptosTransactionBuilder {
         let preImageHashes = TransactionCompiler.preImageHashes(coinType: coinType, txInputData: txInputData)
         let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
 
-        guard preSigningOutput.error.rawValue == 0 else {
+        guard preSigningOutput.error == .ok, !preSigningOutput.data.isEmpty else {
             Log.debug("AptosPreSigningOutput has a error: \(preSigningOutput.errorMessage)")
             throw WalletError.failedToBuildTx
         }
@@ -118,21 +118,18 @@ final class AptosTransactionBuilder {
      - https://aptos.dev/concepts/txns-states
      */
     private func buildInput(transaction: Transaction, expirationTimestamp: UInt64) throws -> AptosSigningInput {
-        do {
-            try publicKey.validateAsEdKey()
-        } catch {
-            throw WalletError.failedToBuildTx
-        }
-        
-        let transfer = AptosTransferMessage.with {
-            $0.to = transaction.destinationAddress
-            $0.amount = (transaction.amount.value * decimalValue).roundedDecimalNumber.uint64Value
-        }
+        try publicKey.validateAsEdKey()
         
         let sequenceNumber = sequenceNumber
         let chainID = chainId.rawValue
+        let amount = (transaction.amount.value * decimalValue).roundedDecimalNumber.uint64Value
         let gasUnitPrice = (transaction.fee.parameters as? AptosFeeParams)?.gasUnitPrice ?? 0
         let maxGasAmount = (transaction.fee.amount.value * decimalValue).roundedDecimalNumber.uint64Value
+        
+        let transfer = AptosTransferMessage.with {
+            $0.to = transaction.destinationAddress
+            $0.amount = amount
+        }
 
         let input = AptosSigningInput.with { input in
             input.chainID =  chainID
