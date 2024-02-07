@@ -48,6 +48,9 @@ class ChiaNetworkService: MultiNetworkProvider {
                     
                     return ""
                 }
+                .mapError { error in
+                    return WalletError.failedToSendTx
+                }
                 .eraseToAnyPublisher()
         }
     }
@@ -58,17 +61,22 @@ class ChiaNetworkService: MultiNetworkProvider {
             return provider
                 .getFeeEstimate(body: .init(cost: cost, targetTimes: [60, 300]))
                 .map { response in
-                    var estimatedFees: [Decimal] = []
-                    
-                    let highEstimatedValue = Decimal(Double(cost) * response.feeRateLastBlock) / self.blockchain.decimalValue
-                    estimatedFees.append(highEstimatedValue)
-                    
-                    return estimatedFees.sorted().map {
-                        let amount = Amount(with: self.blockchain, value: $0)
-                        return Fee(amount)
-                    }
+                    let estimatedFee = Double(cost) * response.feeRateLastBlock * Constants.multiplicatorFeeRate
+                    let highEstimatedValue = Decimal(estimatedFee) / self.blockchain.decimalValue
+                    let amount = Amount(with: self.blockchain, value: highEstimatedValue)
+                    return [Fee(amount)]
+                }
+                .mapError { error in
+                    return WalletError.failedToGetFee
                 }
                 .eraseToAnyPublisher()
         }
+    }
+}
+
+extension ChiaNetworkService {
+    enum Constants {
+        /// Necessary to increase the value of the commission due to the fact that receiving a commission via API does not always work correctly
+        static let multiplicatorFeeRate: Double = 2
     }
 }
