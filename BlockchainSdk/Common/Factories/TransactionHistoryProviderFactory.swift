@@ -30,11 +30,17 @@ public struct TransactionHistoryProviderFactory {
         case .bitcoin,
                 .litecoin,
                 .dogecoin,
-                .dash,
-                .bitcoinCash:
+                .dash:
             return UTXOTransactionHistoryProvider(
                 blockBookProviders: [
                     networkAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock),
+                    networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes)
+                ],
+                mapper: UTXOTransactionHistoryMapper(blockchain: blockchain)
+            )
+        case .bitcoinCash:
+            return UTXOTransactionHistoryProvider(
+                blockBookProviders: [
                     networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes)
                 ],
                 mapper: UTXOTransactionHistoryMapper(blockchain: blockchain)

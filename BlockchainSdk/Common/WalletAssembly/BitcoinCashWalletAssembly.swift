@@ -26,8 +26,12 @@ struct BitcoinCashWalletAssembly: WalletManagerAssembly {
             //TODO: Add testnet support. Maybe https://developers.cryptoapis.io/technical-documentation/general-information/what-we-support
             var providers = [AnyBitcoinNetworkProvider]()
             
+//            providers.append(
+//                contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .bitcoinCash, with: input)
+//            )
+            
             providers.append(
-                contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .bitcoinCash, with: input)
+                networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider()
             )
             
             $0.networkService = BitcoinCashNetworkService(providers: providers)
