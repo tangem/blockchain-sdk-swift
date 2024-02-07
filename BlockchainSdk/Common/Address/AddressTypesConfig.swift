@@ -59,7 +59,8 @@ struct AddressTypesConfig {
              .chia,
              .near,
              .veChain,
-             .algorand:
+             .algorand,
+             .shibarium:
             return [.default]
         }
     }
