@@ -61,10 +61,23 @@ class ChiaNetworkService: MultiNetworkProvider {
             return provider
                 .getFeeEstimate(body: .init(cost: cost, targetTimes: [60, 300]))
                 .map { response in
-                    let estimatedFee = Double(cost) * response.feeRateLastBlock * Constants.multiplicatorFeeRate
-                    let highEstimatedValue = Decimal(estimatedFee) / self.blockchain.decimalValue
-                    let amount = Amount(with: self.blockchain, value: highEstimatedValue)
-                    return [Fee(amount)]
+                    let lowEstimatedFee = Double(cost) * response.feeRateLastBlock * MultiplicatorConstants.lowMultiplicatorFeeRate
+                    let mediumEstimatedFee = Double(cost) * response.feeRateLastBlock * MultiplicatorConstants.mediumMultiplicatorFeeRate
+                    let highEstimatedFee = Double(cost) * response.feeRateLastBlock * MultiplicatorConstants.highMultiplicatorFeeRate
+                    
+                    let feeValues = [
+                        lowEstimatedFee,
+                        mediumEstimatedFee,
+                        highEstimatedFee
+                    ]
+                    
+                    let estimatedFeeValues = feeValues.map {
+                        let decimalValue = Decimal($0) / self.blockchain.decimalValue
+                        let amountValue = Amount(with: self.blockchain, value: decimalValue)
+                        return Fee(amountValue)
+                    }
+                    
+                    return estimatedFeeValues
                 }
                 .mapError { error in
                     return WalletError.failedToGetFee
@@ -75,8 +88,10 @@ class ChiaNetworkService: MultiNetworkProvider {
 }
 
 extension ChiaNetworkService {
-    enum Constants {
-        /// Necessary to increase the value of the commission due to the fact that receiving a commission via API does not always work correctly
-        static let multiplicatorFeeRate: Double = 2
+    /// Necessary to increase the value of the commission due to the fact that receiving a commission via API does not always work correctly
+    enum MultiplicatorConstants {
+        static let lowMultiplicatorFeeRate: Double = 1.5
+        static let mediumMultiplicatorFeeRate: Double = 2
+        static let highMultiplicatorFeeRate: Double = 5
     }
 }
