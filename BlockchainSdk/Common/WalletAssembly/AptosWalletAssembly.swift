@@ -10,7 +10,14 @@ import Foundation
 
 struct AptosWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        let txBuilder = AptosTransactionBuilder()
+        let chainId: AptosChainId = input.blockchain.isTestnet ? .testnet : .mainnet
+        
+        let txBuilder = AptosTransactionBuilder(
+            publicKey: input.wallet.publicKey.blockchainKey,
+            decimalValue: input.blockchain.decimalValue,
+            chainId: chainId
+        )
+        
         return AptosWalletManager(wallet: input.wallet, transactionBuilder: txBuilder)
     }
 }
