@@ -30,7 +30,8 @@ public struct TransactionHistoryProviderFactory {
         case .bitcoin,
                 .litecoin,
                 .dogecoin,
-                .dash:
+                .dash,
+                .bitcoinCash:
             return UTXOTransactionHistoryProvider(
                 blockBookProviders: [
                     networkAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock),

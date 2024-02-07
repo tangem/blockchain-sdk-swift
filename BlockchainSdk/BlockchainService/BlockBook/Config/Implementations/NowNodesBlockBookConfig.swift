@@ -31,7 +31,8 @@ extension NowNodesBlockBookConfig {
         case .bitcoin,
                 .dash,
                 .dogecoin,
-                .litecoin:
+                .litecoin,
+                .bitcoinCash:
             let testnetSuffix = blockchain.isTestnet ? "-testnet" : ""
             return BlockBookNode(
                 rpcNode: "https://\(prefix).\(host)",
