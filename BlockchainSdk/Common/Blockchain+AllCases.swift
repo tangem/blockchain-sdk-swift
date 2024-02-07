@@ -108,7 +108,7 @@ public extension Blockchain {
             .veChain(testnet: false),
             .algorand(curve: .ed25519_slip0010, testnet: false),
             .xdc(testnet: false),
-            .shibarium(testnet: false)
+            .shibarium(testnet: false),
         ]
     }
 }
