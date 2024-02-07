@@ -198,7 +198,8 @@ private extension EthereumTransactionHistoryMapper {
         switch amountType {
         case .coin, .reserve:
             if let amount = Decimal(string: transaction.value) {
-                let isContainsData = transaction.ethereumSpecific?.data?.isEmpty == false
+                // We can receive a data only like "0x" and then we should delete this prefix
+                let isContainsData = transaction.ethereumSpecific?.data?.removeHexPrefix().isEmpty == false
                 let isContainsTokenTransfers = transaction.tokenTransfers?.isEmpty == false
                 let isContract = isContainsData || isContainsTokenTransfers
                 return TransactionRecord.Destination(

@@ -60,6 +60,7 @@ struct AddressTypesConfig {
              .near,
              .veChain,
              .algorand,
+             .shibarium,
              .aptos:
             return [.default]
         }
