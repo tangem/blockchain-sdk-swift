@@ -103,6 +103,8 @@ public struct ExternalLinkProviderFactory {
             return XDCExternalLinkProvider(isTestnet: isTestnet)
         case .algorand:
             return AlgorandExternalLinkProvider(isTestnet: isTestnet)
+        case .shibarium:
+            return ShibariumExternalLinkProvider(isTestnet: isTestnet)
         case .aptos(_, let isTestnet):
             return AptosExternalLinkProvider(isTestnet: isTestnet)
         }
