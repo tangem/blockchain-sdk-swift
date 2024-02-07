@@ -24,12 +24,11 @@ target 'BlockchainSdk' do
   pod 'Moya'
   pod 'Sodium'
   pod 'SwiftCBOR'
-  pod 'BinanceChain', :git => 'https://github.com/tangem/swiftbinancechain.git', :tag => '0.0.11'
-  #pod 'BinanceChain', :path => '../SwiftBinanceChain'
-  #pod 'HDWalletKit', :git => 'https://github.com/tangem/hdwallet.git', :tag => '0.3.12'
-  #pod 'HDWalletKit', :path => '../HDWallet'
   pod 'AnyCodable-FlightSchool'
   pod 'stellar-ios-mac-sdk'
+
+  pod 'BinanceChain', :git => 'https://github.com/tangem/swiftbinancechain.git', :tag => '0.0.11'
+  #pod 'BinanceChain', :path => '../SwiftBinanceChain'
   
   pod 'Solana.Swift', :git => 'https://github.com/tangem/Solana.Swift', :tag => '1.2.0-tangem1'
   #pod 'Solana.Swift', :path => '../Solana.Swift'
@@ -48,7 +47,6 @@ target 'BlockchainSdkExample' do
 end
 
 post_install do |installer|
-
   installer.pods_project.build_configurations.each do |config|
       if config.name.include?("Debug")
           config.build_settings['GCC_OPTIMIZATION_LEVEL'] = '0'
@@ -64,10 +62,8 @@ post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.5'
-    end
 
-    if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
-      target.build_configurations.each do |config|
+      if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
         config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
       end
     end
