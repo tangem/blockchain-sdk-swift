@@ -10,12 +10,22 @@ import Foundation
 
 enum AlgorandProviderType {
     // This type node for main flow blockchain api
+    
+    /// https://nownodes.io/nodes/aptos
     case nownodes
+    
+    /// https://getblock.io/nodes/apt/
     case getblock
+    
+    /// https://algonode.io/api/
     case fullNode(isTestnet: Bool)
     
     // This type node for transaction history api
+    
+    /// https://nownodes.io/nodes/aptos
     case idxNownodes
+    
+    /// https://algonode.io/api/
     case idxFullNode(isTestnet: Bool)
 }
 
@@ -35,7 +45,7 @@ struct AlgorandProviderNode: HostProvider {
             return URL(string: "https://algo.nownodes.io/")!
         case .fullNode(let isTestnet):
             if isTestnet {
-                return URL(string: "https://mainnet-api.algonode.cloud/")!
+                return URL(string: "https://testnet-api.algonode.cloud/")!
             } else {
                 return URL(string: "https://mainnet-api.algonode.cloud/")!
             }
