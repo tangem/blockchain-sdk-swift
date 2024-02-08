@@ -9,10 +9,24 @@
 import Foundation
 
 enum AlgorandProviderType {
+    // This type node for main flow blockchain api
+    
+    /// https://nownodes.io/nodes/aptos
     case nownodes
-    case indexNownodes
+    
+    /// https://getblock.io/nodes/apt/
     case getblock
-    case algoIdx(isTestnet: Bool)
+    
+    /// https://algonode.io/api/
+    case fullNode(isTestnet: Bool)
+    
+    // This type node for transaction history api
+    
+    /// https://nownodes.io/nodes/aptos
+    case idxNownodes
+    
+    /// https://algonode.io/api/
+    case idxFullNode(isTestnet: Bool)
 }
 
 struct AlgorandProviderNode: HostProvider {
@@ -29,25 +43,29 @@ struct AlgorandProviderNode: HostProvider {
             return URL(string: "https://go.getblock.io/\(apiKeyValue)/")!
         case .nownodes:
             return URL(string: "https://algo.nownodes.io/")!
-        case .algoIdx(let isTestnet):
+        case .fullNode(let isTestnet):
+            if isTestnet {
+                return URL(string: "https://testnet-api.algonode.cloud/")!
+            } else {
+                return URL(string: "https://mainnet-api.algonode.cloud/")!
+            }
+        case .idxFullNode(let isTestnet):
             if isTestnet {
                 return URL(string: "https://testnet-idx.algonode.cloud/")!
             } else {
                 return URL(string: "https://mainnet-idx.algonode.cloud/")!
             }
-        case .indexNownodes:
+        case .idxNownodes:
             return URL(string: "https://algo-index.nownodes.io/")!
         }
     }
     
     var apiKeyHeaderName: String? {
         switch type {
-        case .getblock:
+        case .getblock, .fullNode, .idxFullNode:
             return nil
-        case .nownodes, .indexNownodes:
+        case .nownodes, .idxNownodes:
             return Constants.nowNodesApiKeyHeaderName
-        case .algoIdx:
-            return nil
         }
     }
     
