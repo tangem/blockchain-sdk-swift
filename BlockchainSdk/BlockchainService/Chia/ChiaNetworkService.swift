@@ -48,9 +48,6 @@ class ChiaNetworkService: MultiNetworkProvider {
                     
                     return ""
                 }
-                .mapError { error in
-                    return WalletError.failedToSendTx
-                }
                 .eraseToAnyPublisher()
         }
     }
@@ -78,9 +75,6 @@ class ChiaNetworkService: MultiNetworkProvider {
                     }
                     
                     return estimatedFeeValues
-                }
-                .mapError { error in
-                    return WalletError.failedToGetFee
                 }
                 .eraseToAnyPublisher()
         }
