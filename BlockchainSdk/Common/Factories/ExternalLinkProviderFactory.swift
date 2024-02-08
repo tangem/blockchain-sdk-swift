@@ -105,6 +105,8 @@ public struct ExternalLinkProviderFactory {
             return AlgorandExternalLinkProvider(isTestnet: isTestnet)
         case .shibarium:
             return ShibariumExternalLinkProvider(isTestnet: isTestnet)
+        case .hedera:
+            return HederaExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }

@@ -12,7 +12,7 @@ import Foundation
 /// Types:
 /// - `Stellar`, `Solana`. According to `SEP0005`
 /// https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md
-/// - `Cardano`.  According to  `CIP1852`
+/// - `Cardano`. According to  `CIP1852`
 /// https://cips.cardano.org/cips/cip1852/
 /// - `EVM-like` with `Ethereum` coinType(60).
 /// - `All else`. According to `BIP44`
@@ -91,6 +91,8 @@ public struct DerivationConfigV2: DerivationConfig {
             return "m/44'/550'/0'/0/0"
         case .algorand:
             return "m/44'/283'/0'/0'/0'"
+        case .hedera:
+            return "m/44'/3030'/0'/0'/0"
         }
     }
 }

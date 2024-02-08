@@ -60,7 +60,8 @@ struct AddressTypesConfig {
              .near,
              .veChain,
              .algorand,
-             .shibarium:
+             .shibarium,
+             .hedera:
             return [.default]
         }
     }
