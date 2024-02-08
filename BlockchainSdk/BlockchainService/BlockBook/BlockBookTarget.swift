@@ -16,7 +16,7 @@ struct BlockBookTarget: TargetType {
     
     var baseURL: URL {
         switch request {
-        case .fees:
+        case .fees, .sendTransaction:
             return URL(string: config.node(for: blockchain).rpcNode)!
         default:
             return URL(string: config.node(for: blockchain).restNode)!
@@ -35,7 +35,7 @@ struct BlockBookTarget: TargetType {
             return basePath + "/tx/\(txHash)"
         case .utxo(let address):
             return basePath + "/utxo/\(address)"
-        case .fees:
+        case .fees, .sendTransaction:
             return basePath
         }
     }
@@ -44,7 +44,7 @@ struct BlockBookTarget: TargetType {
         switch request {
         case .address, .utxo:
             return .get
-        case .send, .txDetails, .fees:
+        case .send, .sendTransaction, .txDetails, .fees:
             return .post
         }
     }
@@ -55,8 +55,13 @@ struct BlockBookTarget: TargetType {
             return .requestPlain
         case .send(let tx):
             return .requestData(tx)
-        case .fees(let confirmationBlocks):
-            return .requestJSONEncodable(BitcoinNodeEstimateSmartFeeParameters(confirmationBlocks: confirmationBlocks))
+        case .sendTransaction(let transaction):
+            return .requestJSONEncodable(transaction)
+        case .fees(let method, let confirmationBlocks):
+            return .requestJSONEncodable(BitcoinNodeEstimateSmartFeeParameters(
+                method: method,
+                params: confirmationBlocks.flatMap { [$0] } ?? [])
+            )
         case .address(_ , let parameters):
             let parameters = try? parameters.asDictionary()
             return .requestParameters(parameters: parameters ?? [:], encoding: URLEncoding.default)
@@ -88,9 +93,10 @@ extension BlockBookTarget {
     enum Request {
         case address(address: String, parameters: AddressRequestParameters)
         case send(tx: Data)
+        case sendTransaction(_ transaction: SendTransactionRequest)
         case txDetails(txHash: String)
         case utxo(address: String)
-        case fees(confirmationBlocks: Int)
+        case fees(method: String = "estimatesmartfee", confirmationBlocks: Int? = nil)
     }
     
     struct AddressRequestParameters: Encodable {
@@ -170,10 +176,11 @@ extension BlockBookTarget {
 fileprivate struct BitcoinNodeEstimateSmartFeeParameters: Encodable {
     let jsonrpc = "2.0"
     let id = "id"
-    let method = "estimatesmartfee"
+    let method: String
     let params: [Int]
     
-    init(confirmationBlocks: Int) {
-        self.params = [confirmationBlocks]
+    init(method: String, params: [Int]) {
+        self.method = method
+        self.params = params
     }
 }

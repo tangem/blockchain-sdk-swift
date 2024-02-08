@@ -136,3 +136,8 @@ struct BlockBookFeeResponse: Decodable {
 struct BlockBookSendResponse: Decodable {
     let result: String
 }
+
+struct BitcoinCashGetFeeResponse: Decodable {
+    let result: Decimal
+    let id: String
+}

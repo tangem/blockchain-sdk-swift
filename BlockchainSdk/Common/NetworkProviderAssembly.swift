@@ -36,6 +36,19 @@ struct NetworkProviderAssembly {
         }
     }
     
+    func makeBitCoinCashNowNodesProvider(
+        input: NetworkProviderAssemblyInput
+    ) -> AnyBitcoinNetworkProvider {
+        BitcoinCashNowNodesNetworkProvider(
+            blockBookUtxoProvider: makeBlockBookUtxoProvider(with: input, for: .nowNodes),
+            config: NowNodesBlockBookConfig(
+                apiKeyHeaderName: Constants.nowNodesApiKeyHeaderName,
+                apiKeyHeaderValue: input.blockchainSdkConfig.nowNodesApiKey
+            ),
+            networkConfiguration: input.networkConfig
+        ).eraseToAnyBitcoinNetworkProvider()
+    }
+    
     func makeBlockcypherNetworkProvider(endpoint: BlockcypherEndpoint, with input: NetworkProviderAssemblyInput) -> BlockcypherNetworkProvider {
         return BlockcypherNetworkProvider(
             endpoint: endpoint,

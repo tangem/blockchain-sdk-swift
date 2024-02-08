@@ -31,7 +31,7 @@ struct BitcoinCashWalletAssembly: WalletManagerAssembly {
 //            )
             
             providers.append(
-                networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider()
+                networkProviderAssembly.makeBitCoinCashNowNodesProvider(input: input)
             )
             
             $0.networkService = BitcoinCashNetworkService(providers: providers)

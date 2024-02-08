@@ -57,17 +57,21 @@ class BlockBookUtxoProvider {
                     throw WalletError.empty
                 }
                 
-                if response.result.feerate <= 0 {
-                    throw BlockchainSdkError.failedToLoadFee
-                }
-                
-                // estimatesmartfee returns fee in currency per kilobyte
-                let bytesInKiloByte: Decimal = 1024
-                let feeRatePerByte = Decimal(response.result.feerate) * self.decimalValue / bytesInKiloByte
-                
-                return feeRatePerByte.rounded(roundingMode: .up)
+                return try mapFee(Decimal(response.result.feerate))
             }
             .eraseToAnyPublisher()
+    }
+    
+    func mapFee(_ fee: Decimal) throws -> Decimal {
+        if fee <= 0 {
+            throw BlockchainSdkError.failedToLoadFee
+        }
+        
+        // estimatesmartfee returns fee in currency per kilobyte
+        let bytesInKiloByte: Decimal = 1024
+        let feeRatePerByte = fee * decimalValue / bytesInKiloByte
+        
+        return feeRatePerByte.rounded(roundingMode: .up)
     }
     
     func sendTransaction(hex: String) -> AnyPublisher<String, Error> {
