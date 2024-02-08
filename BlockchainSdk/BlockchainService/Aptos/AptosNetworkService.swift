@@ -60,13 +60,6 @@ class AptosNetworkService: MultiNetworkProvider {
                 .tryMap { service, response in
                     return response[JSONParseKey.gasEstimate].uInt64Value
                 }
-                .mapError { error in
-                    if let error = error as? WalletError {
-                        return error
-                    }
-
-                    return WalletError.failedToGetFee
-                }
                 .eraseToAnyPublisher()
         }
     }
@@ -92,13 +85,6 @@ class AptosNetworkService: MultiNetworkProvider {
                     
                     return (estimatedFee, info.gasUnitPrice)
                 }
-                .mapError { error in
-                    if let error = error as? WalletError {
-                        return error
-                    }
-
-                    return WalletError.failedToGetFee
-                }
                 .eraseToAnyPublisher()
         }
     }
@@ -118,13 +104,6 @@ class AptosNetworkService: MultiNetworkProvider {
                     }
                     
                     return transactionHash
-                }
-                .mapError { error in
-                    if let error = error as? WalletError {
-                        return error
-                    }
-
-                    return WalletError.failedToSendTx
                 }
                 .eraseToAnyPublisher()
         }
