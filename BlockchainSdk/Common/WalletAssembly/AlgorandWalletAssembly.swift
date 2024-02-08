@@ -34,7 +34,7 @@ struct AlgorandWalletAssembly: WalletManagerAssembly {
         
         providers.append(
             AlgorandNetworkProvider(
-                node: .init(type: .algoIdx(isTestnet: input.blockchain.isTestnet), apiKeyValue: nil),
+                node: .init(type: .fullNode(isTestnet: input.blockchain.isTestnet), apiKeyValue: nil),
                 networkConfig: input.networkConfig
             )
         )
