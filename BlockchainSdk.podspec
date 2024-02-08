@@ -32,10 +32,10 @@ Use BlockchainSdk for Tangem wallet integration
                     'BlockchainSdk/WalletManagers/Tron/protobuf/Contracts.proto',
                     'BlockchainSdk/WalletManagers/Tron/protobuf/Tron.proto'
 
+  # 'Hedera SDK' dependency must be added via SPM
   # 'CryptoSwift' dependency must be added via SPM
   # 'SwiftProtobuf' dependency must be added via SPM
   # 'TangemWalletCore' dependency must be added via SPM
-  # 'Hedera SDK' dependency must be added via SPM
 
   s.dependency 'TangemSdk'
   s.dependency 'BigInt', '5.2.0'
