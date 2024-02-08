@@ -109,11 +109,9 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .polkadot(_, let testnet),
                 .azero(_, let testnet),
                 .ton(_, let testnet),
-                .near(_, let testnet):
-            return testnet
-        case .algorand(_, let testnet):
-            return testnet
-        case .shibarium(let testnet):
+                .near(_, let testnet),
+                .algorand(_, let testnet),
+                .shibarium(let testnet):
             return testnet
         }
     }
