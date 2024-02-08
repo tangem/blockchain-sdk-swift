@@ -91,4 +91,19 @@ struct AptosNetworkProvider: HostProvider {
             .eraseToAnyPublisher()
     }
     
+    private func requestPublisher<D: Decodable>(for target: AptosProviderTarget) -> AnyPublisher<D, Error> {
+        return network.requestPublisher(target)
+            .filterSuccessfulStatusAndRedirectCodes()
+            .map(D.self)
+            .mapError { moyaError -> Swift.Error in
+                switch moyaError {
+                case .statusCode(let response) where response.statusCode == 404 && target.isAccountsResourcesRequest:
+                    return WalletError.noAccount(message: "no_account_bnb".localized)
+                default:
+                    return moyaError.asWalletError ?? moyaError
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+    
 }

@@ -13,15 +13,16 @@ import SwiftyJSON
 class AptosNetworkService: MultiNetworkProvider {
     // MARK: - Protperties
     
-    let blockchain: Blockchain
     let providers: [AptosNetworkProvider]
+    let blockchainDecimalValue: Decimal
+    
     var currentProviderIndex: Int = 0
     
     // MARK: - Init
     
-    init(blockchain: Blockchain, providers: [AptosNetworkProvider]) {
-        self.blockchain = blockchain
+    init(providers: [AptosNetworkProvider], blockchainDecimalValue: Decimal) {
         self.providers = providers
+        self.blockchainDecimalValue = blockchainDecimalValue
     }
     
     // MARK: - Implementation
@@ -40,7 +41,7 @@ class AptosNetworkService: MultiNetworkProvider {
                     }
                     
                     let balanceValue = coinJson[JSONParseKey.data][JSONParseKey.coin][JSONParseKey.value].uInt64Value
-                    let decimalBalanceValue = Decimal(balanceValue) / service.blockchain.decimalValue
+                    let decimalBalanceValue = Decimal(balanceValue) / service.blockchainDecimalValue
                     
                     return AptosAccountInfo(
                         sequenceNumber: accountJson[JSONParseKey.data][JSONParseKey.sequenceNumber].int64Value,
@@ -58,6 +59,13 @@ class AptosNetworkService: MultiNetworkProvider {
                 .withWeakCaptureOf(self)
                 .tryMap { service, response in
                     return response[JSONParseKey.gasEstimate].uInt64Value
+                }
+                .mapError { error in
+                    if let error = error as? WalletError {
+                        return error
+                    }
+
+                    return WalletError.failedToGetFee
                 }
                 .eraseToAnyPublisher()
         }
@@ -80,11 +88,15 @@ class AptosNetworkService: MultiNetworkProvider {
                     }
                     
                     let gasUsed = item[JSONParseKey.gasUsed].uInt64Value
-                    let estimatedFee = Decimal(Double(info.gasUnitPrice) * Double(gasUsed) * Constants.successTransactionSafeFactor) / service.blockchain.decimalValue
+                    let estimatedFee = Decimal(Double(info.gasUnitPrice) * Double(gasUsed) * Constants.successTransactionSafeFactor) / service.blockchainDecimalValue
                     
                     return (estimatedFee, info.gasUnitPrice)
                 }
-                .mapError { _ in
+                .mapError { error in
+                    if let error = error as? WalletError {
+                        return error
+                    }
+
                     return WalletError.failedToGetFee
                 }
                 .eraseToAnyPublisher()
@@ -107,7 +119,11 @@ class AptosNetworkService: MultiNetworkProvider {
                     
                     return transactionHash
                 }
-                .mapError { _ in
+                .mapError { error in
+                    if let error = error as? WalletError {
+                        return error
+                    }
+
                     return WalletError.failedToSendTx
                 }
                 .eraseToAnyPublisher()

@@ -41,8 +41,8 @@ struct AptosWalletAssembly: WalletManagerAssembly {
         )
         
         let networkService = AptosNetworkService(
-            blockchain: input.blockchain,
-            providers: providers
+            providers: providers,
+            blockchainDecimalValue: input.blockchain.decimalValue
         )
         
         return AptosWalletManager(wallet: input.wallet, transactionBuilder: txBuilder, networkService: networkService)
