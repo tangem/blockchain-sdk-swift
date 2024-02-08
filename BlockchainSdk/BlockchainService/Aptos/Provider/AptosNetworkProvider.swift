@@ -56,7 +56,7 @@ struct AptosNetworkProvider: HostProvider {
         return requestPublisher(for: target)
     }
     
-    func calculateUsedGasPriceUnit(transactionBody: AptosRequest.TransactionBody) -> AnyPublisher<AptosResponse.SimulateTransactionBody, Error> {
+    func calculateUsedGasPriceUnit(transactionBody: AptosRequest.TransactionBody) -> AnyPublisher<[AptosResponse.SimulateTransactionBody], Error> {
         let target = AptosProviderTarget(
             node: node,
             targetType: .simulateTransaction(data: transactionBody)
@@ -65,7 +65,7 @@ struct AptosNetworkProvider: HostProvider {
         return requestPublisher(for: target)
     }
     
-    func submitTransaction(data: Data) -> AnyPublisher<JSON, Error> {
+    func submitTransaction(data: Data) -> AnyPublisher<AptosResponse.SubmitTransactionBody, Error> {
         let target = AptosProviderTarget(
             node: node,
             targetType: .submitTransaction(data: data)
@@ -75,21 +75,6 @@ struct AptosNetworkProvider: HostProvider {
     }
     
     // MARK: - Private Implementation
-    
-//    private func requestPublisher(for target: AptosProviderTarget) -> AnyPublisher<JSON, Error> {
-//        return network.requestPublisher(target)
-//            .filterSuccessfulStatusAndRedirectCodes()
-//            .mapSwiftyJSON()
-//            .mapError { moyaError -> Swift.Error in
-//                switch moyaError {
-//                case .statusCode(let response) where response.statusCode == 404 && target.isAccountsResourcesRequest:
-//                    return WalletError.noAccount(message: "no_account_bnb".localized)
-//                default:
-//                    return moyaError.asWalletError ?? moyaError
-//                }
-//            }
-//            .eraseToAnyPublisher()
-//    }
     
     private func requestPublisher<T: Decodable>(for target: AptosProviderTarget) -> AnyPublisher<T, Error> {
         let decoder = JSONDecoder()

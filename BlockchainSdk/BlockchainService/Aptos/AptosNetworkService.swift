@@ -56,12 +56,8 @@ class AptosNetworkService: MultiNetworkProvider {
             provider
                 .getGasUnitPrice()
                 .withWeakCaptureOf(self)
-                .tryMap { service, response in
-                    guard let gasEstimate = Decimal(response.gasEstimate) else {
-                        throw WalletError.failedToParseNetworkResponse
-                    }
-                    
-                    return gasEstimate.uint64Value
+                .map { service, response in
+                    return response.gasEstimate
                 }
                 .eraseToAnyPublisher()
         }
@@ -79,7 +75,7 @@ class AptosNetworkService: MultiNetworkProvider {
                 .calculateUsedGasPriceUnit(transactionBody: transactionBody)
                 .withWeakCaptureOf(self)
                 .tryMap { service, response in
-                    guard response.success, let gasUsed = Decimal(response.gasUsed) else {
+                    guard response.first?.success == true, let gasUsed = Decimal(response.first?.gasUsed) else {
                         throw WalletError.failedToGetFee
                     }
                     
@@ -101,8 +97,8 @@ class AptosNetworkService: MultiNetworkProvider {
                 .submitTransaction(data: data)
                 .withWeakCaptureOf(self)
                 .tryMap { service, response in
-                    guard let transactionHash = response[JSONParseKey.hash].string else {
-                        throw WalletError.failedToGetFee
+                    guard let transactionHash = response.hash else {
+                        throw WalletError.failedToParseNetworkResponse
                     }
                     
                     return transactionHash

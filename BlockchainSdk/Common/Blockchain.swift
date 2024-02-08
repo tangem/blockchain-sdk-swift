@@ -722,7 +722,7 @@ extension Blockchain {
             if let jsonRpcKey = getBlockApiKeys[self] {
                 return URL(string: "https://go.getblock.io/\(jsonRpcKey)")!
             } else {
-                assertionFailure("getJsonRpcEndpoints -> Not found GetBlock jsonRpc key for blockchain \(displayName)")
+//                assertionFailure("getJsonRpcEndpoint s -> Not found GetBlock jsonRpc key for blockchain \(displayName)")
                 Log.network("Not found jsonRpc key GetBlock API for blockchaib \(displayName)")
                 return URL(string: "https://go.getblock.io/")!
             }

@@ -31,9 +31,7 @@ extension AptosResponse {
 
 extension AptosResponse {
     struct Fee: Decodable {
-        let deprioritizedGasEstimate: String
-        let gasEstimate: String
-        let prioritizedGasEstimate: String
+        let gasEstimate: UInt64
     }
 }
 
@@ -41,5 +39,9 @@ extension AptosResponse {
     struct SimulateTransactionBody: Decodable {
         let gasUsed: String
         let success: Bool
+    }
+    
+    struct SubmitTransactionBody: Decodable {
+        let hash: String?
     }
 }
