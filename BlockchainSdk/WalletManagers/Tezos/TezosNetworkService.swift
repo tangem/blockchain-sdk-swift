@@ -20,8 +20,11 @@ class TezosNetworkService: MultiNetworkProvider {
     
     func getInfo(address: String) -> AnyPublisher<TezosAddress, Error> {
         providerPublisher {
-            $0.getInfo(address: address)
-                .tryMap { tezosAddress -> TezosAddress in
+            Publishers.Zip(
+                $0.getInfo(address: address),
+                $0.checkPublicKeyRevealed(address: address)
+            )
+                .tryMap { tezosAddress, isPublicKeyRevealed -> TezosAddress in
                     guard let balanceString = tezosAddress.balance,
                           let balance = Decimal(string: balanceString),
                           let counterString = tezosAddress.counter,
@@ -30,7 +33,7 @@ class TezosNetworkService: MultiNetworkProvider {
                           }
                     
                     let balanceConverted = balance / Blockchain.tezos(curve: .ed25519).decimalValue
-                    return TezosAddress(balance: balanceConverted, counter: counter)
+                    return TezosAddress(balance: balanceConverted, counter: counter, isPublicKeyRevealed: isPublicKeyRevealed)
                 }
                 .eraseToAnyPublisher()
         }

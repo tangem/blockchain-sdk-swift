@@ -33,6 +33,7 @@ class TezosWalletManager: BaseManager, WalletManager {
     
     private func updateWallet(with response: TezosAddress) {
         txBuilder.counter = response.counter
+        txBuilder.isPublicKeyRevealed = response.isPublicKeyRevealed
         
         if response.balance != wallet.amounts[.coin]?.value {
             wallet.clearPendingTransaction()
@@ -112,15 +113,12 @@ extension TezosWalletManager: TransactionSender {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        networkService
-            .checkPublicKeyRevealed(address: wallet.address)
-            .combineLatest(networkService.getInfo(address: destination))
-            .tryMap {[weak self] (isPublicKeyRevealed, destinationInfo) -> [Fee] in
+        networkService.getInfo(address: destination)
+            .tryMap {[weak self] destinationInfo -> [Fee] in
                 guard let self = self else { throw WalletError.empty }
-                
-                self.txBuilder.isPublicKeyRevealed = isPublicKeyRevealed
+
                 var fee = TezosFee.transaction.rawValue
-                if !isPublicKeyRevealed {
+                if self.txBuilder.isPublicKeyRevealed == false {
                     fee += TezosFee.reveal.rawValue
                 }
                 
