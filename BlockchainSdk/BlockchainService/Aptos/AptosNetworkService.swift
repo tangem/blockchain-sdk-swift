@@ -34,19 +34,18 @@ class AptosNetworkService: MultiNetworkProvider {
                 .withWeakCaptureOf(self)
                 .tryMap { service, response in
                     guard
-                        let accountJson = response.arrayValue.first(where: { $0[JSONParseKey.type].stringValue == Constants.accountKeyPrefix }),
-                        let coinJson = response.arrayValue.first(where: { $0[JSONParseKey.type].stringValue == Constants.coinStoreKeyPrefix })
+                        let accountJson = response.first(where: { $0.type == Constants.accountKeyPrefix }),
+                        let coinJson = response.first(where: { $0.type == Constants.coinStoreKeyPrefix })
                     else {
                         throw WalletError.failedToParseNetworkResponse
                     }
                     
-                    let balanceValue = coinJson[JSONParseKey.data][JSONParseKey.coin][JSONParseKey.value].uInt64Value
-                    let decimalBalanceValue = Decimal(balanceValue) / service.blockchainDecimalValue
-                    
-                    return AptosAccountInfo(
-                        sequenceNumber: accountJson[JSONParseKey.data][JSONParseKey.sequenceNumber].int64Value,
-                        balance: decimalBalanceValue
-                    )
+                    if let balanceValue = Decimal(coinJson.data.coin?.value), let sequenceNumber = Decimal(accountJson.data.sequenceNumber) {
+                        let decimalBalanceValue = balanceValue / service.blockchainDecimalValue
+                        return AptosAccountInfo(sequenceNumber: sequenceNumber.int64Value, balance: decimalBalanceValue)
+                    } else {
+                        throw WalletError.failedToParseNetworkResponse
+                    }
                 }
                 .eraseToAnyPublisher()
         }
@@ -58,7 +57,11 @@ class AptosNetworkService: MultiNetworkProvider {
                 .getGasUnitPrice()
                 .withWeakCaptureOf(self)
                 .tryMap { service, response in
-                    return response[JSONParseKey.gasEstimate].uInt64Value
+                    guard let gasEstimate = Decimal(response.gasEstimate) else {
+                        throw WalletError.failedToParseNetworkResponse
+                    }
+                    
+                    return gasEstimate.uint64Value
                 }
                 .eraseToAnyPublisher()
         }
@@ -76,12 +79,11 @@ class AptosNetworkService: MultiNetworkProvider {
                 .calculateUsedGasPriceUnit(transactionBody: transactionBody)
                 .withWeakCaptureOf(self)
                 .tryMap { service, response in
-                    guard let item = response.arrayValue.first, item[JSONParseKey.success].boolValue else {
+                    guard response.success, let gasUsed = Decimal(response.gasUsed) else {
                         throw WalletError.failedToGetFee
                     }
                     
-                    let gasUsed = item[JSONParseKey.gasUsed].uInt64Value
-                    let estimatedFee = Decimal(Double(info.gasUnitPrice) * Double(gasUsed) * Constants.successTransactionSafeFactor) / service.blockchainDecimalValue
+                    let estimatedFee = (Decimal(info.gasUnitPrice) * gasUsed * Constants.successTransactionSafeFactor) / service.blockchainDecimalValue
                     
                     return (estimatedFee, info.gasUnitPrice)
                 }
@@ -151,7 +153,7 @@ private extension AptosNetworkService {
         static let transferPayloadFunction = "0x1::aptos_account::transfer_coins"
         static let aptosCoinContract = "0x1::aptos_coin::AptosCoin"
         static let signatureType = "ed25519_signature"
-        static let successTransactionSafeFactor = 1.5
+        static let successTransactionSafeFactor: Decimal = 1.5
     }
 }
 

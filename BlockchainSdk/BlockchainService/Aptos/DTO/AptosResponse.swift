@@ -10,21 +10,36 @@ import Foundation
 
 enum AptosResponse {}
 
-/// https://aptos.dev/concepts/resources#resources-vs-instances
 extension AptosResponse {
-    struct CoinStore: Decodable {
-        let coin: Coin
+    struct AccountResource: Decodable {
+        let type: String
+        let data: Resource
     }
     
+    struct Resource: Decodable {
+        let sequenceNumber: String?
+        let coin: Coin?
+    }
+}
+
+/// https://aptos.dev/concepts/resources#resources-vs-instances
+extension AptosResponse {
     struct Coin: Decodable {
-        let value: UInt64
+        let value: String
     }
 }
 
 extension AptosResponse {
     struct Fee: Decodable {
-        let deprioritizedGasEstimate: UInt64
-        let gasEstimate: UInt64
-        let prioritizedGasEstimate: UInt64
+        let deprioritizedGasEstimate: String
+        let gasEstimate: String
+        let prioritizedGasEstimate: String
+    }
+}
+
+extension AptosResponse {
+    struct SimulateTransactionBody: Decodable {
+        let gasUsed: String
+        let success: Bool
     }
 }
