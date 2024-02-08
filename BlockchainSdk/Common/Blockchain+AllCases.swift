@@ -57,6 +57,7 @@ public extension Blockchain {
         case .veChain: break
         case .xdc: break
         case .algorand: break
+        case .shibarium: break
         case .hedera: break
             // READ BELOW:
             //
@@ -106,8 +107,9 @@ public extension Blockchain {
             .near(curve: .ed25519_slip0010, testnet: false),
             .decimal(testnet: false),
             .veChain(testnet: false),
-            .xdc(testnet: false),
             .algorand(curve: .ed25519_slip0010, testnet: false),
+            .xdc(testnet: false),
+            .shibarium(testnet: false),
             .hedera(curve: .ed25519_slip0010, testnet: false),
         ]
     }

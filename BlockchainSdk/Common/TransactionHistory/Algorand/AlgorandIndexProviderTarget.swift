@@ -61,7 +61,7 @@ struct AlgorandIndexProviderTarget: TargetType {
             "Accept": "application/json"
         ]
         
-        if case .indexNownodes = node.type, let headerName = node.apiKeyHeaderName {
+        if case .idxNownodes = node.type, let headerName = node.apiKeyHeaderName {
             headers[headerName] = node.apiKeyValue
         }
         
