@@ -1,5 +1,5 @@
 //
-//  HederaMirrorNetworkProvider.swift
+//  HederaRESTNetworkProvider.swift
 //  BlockchainSdk
 //
 //  Created by Andrey Fedorov on 25.01.2024.
@@ -10,7 +10,7 @@ import Foundation
 
 // TODO: Andrey Fedorov - Add actual implementation (IOS-4556)
 /// Provider for Hedera Mirror Nodes (REST) https://docs.hedera.com/hedera/sdks-and-apis/rest-api
-struct HederaMirrorNetworkProvider {
+struct HederaRESTNetworkProvider {
     private let baseURL: URL
     private let provider: NetworkProvider<HederaTarget>
 
@@ -25,7 +25,7 @@ struct HederaMirrorNetworkProvider {
 
 // MARK: - HostProvider protocol conformance
 
-extension HederaMirrorNetworkProvider: HostProvider {
+extension HederaRESTNetworkProvider: HostProvider {
     var host: String {
         return baseURL.hostOrUnknown
     }

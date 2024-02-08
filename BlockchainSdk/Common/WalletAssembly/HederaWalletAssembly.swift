@@ -14,16 +14,16 @@ struct HederaWalletAssembly: WalletManagerAssembly {
         let networkConfig = input.networkConfig
 
         let baseURLProvider = HederaBaseURLProvider(isTestnet: blockchain.isTestnet)
-        let mirrorProviders = baseURLProvider
+        let restProviders = baseURLProvider
             .baseURLs()
-            .map { HederaMirrorNetworkProvider(baseURL: $0, configuration: networkConfig) }
+            .map { HederaRESTNetworkProvider(baseURL: $0, configuration: networkConfig) }
 
         let consensusProvider = HederaConsensusNetworkProvider(configuration: networkConfig)
 
         let networkService = HederaNetworkService(
             blockchain: blockchain,
             consensusProvider: consensusProvider,
-            mirrorProviders: mirrorProviders
+            restProviders: restProviders
         )
 
         let transactionBuilder = HederaTransactionBuilder()

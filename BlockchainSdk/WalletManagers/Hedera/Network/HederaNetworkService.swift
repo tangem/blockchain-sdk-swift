@@ -13,16 +13,16 @@ final class HederaNetworkService {
 
     private let blockchain: Blockchain
     private let consensusProvider: HederaConsensusNetworkProvider
-    private let mirrorProviders: [HederaMirrorNetworkProvider]
+    private let restProviders: [HederaRESTNetworkProvider]
 
     init(
         blockchain: Blockchain,
         consensusProvider: HederaConsensusNetworkProvider,
-        mirrorProviders: [HederaMirrorNetworkProvider]
+        restProviders: [HederaRESTNetworkProvider]
     ) {
         self.blockchain = blockchain
         self.consensusProvider = consensusProvider
-        self.mirrorProviders = mirrorProviders
+        self.restProviders = restProviders
         currentProviderIndex = 0
     }
 }
@@ -30,5 +30,5 @@ final class HederaNetworkService {
 // MARK: - MultiNetworkProvider protocol conformance
 
 extension HederaNetworkService: MultiNetworkProvider {
-    var providers: [HederaMirrorNetworkProvider] { mirrorProviders }
+    var providers: [HederaRESTNetworkProvider] { restProviders }
 }
