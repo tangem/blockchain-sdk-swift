@@ -21,6 +21,7 @@ struct TezosHeaderResponse: Codable {
 struct TezosAddress {
     let balance: Decimal
     let counter: Int
+    let isPublicKeyRevealed: Bool
 }
 
 struct TezosHeader: Codable {
