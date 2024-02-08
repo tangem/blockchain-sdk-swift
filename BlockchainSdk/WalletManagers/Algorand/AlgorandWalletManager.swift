@@ -95,7 +95,7 @@ private extension AlgorandWalletManager {
 extension AlgorandWalletManager: WalletManager {
     var currentHost: String { networkService.host }
 
-    var allowsFeeSelection: Bool { true }
+    var allowsFeeSelection: Bool { false }
 
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         networkService
