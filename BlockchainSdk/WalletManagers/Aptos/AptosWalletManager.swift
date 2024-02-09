@@ -37,8 +37,8 @@ final class AptosWalletManager: BaseManager {
                         completion(.failure(error))
                     }
                 },
-                receiveValue: { [unowned self] accountInfo in
-                    self.update(with: accountInfo, completion: completion)
+                receiveValue: { [weak self] accountInfo in
+                    self?.update(with: accountInfo, completion: completion)
                 }
             )
     }
