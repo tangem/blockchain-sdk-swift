@@ -34,7 +34,7 @@ final class HederaNetworkService {
                     // Account ID is the only essential piece of information for a particular account,
                     // account alias and account EVM address may not exist at all
                     guard let accountId = account?.account else {
-                        throw WalletError.noAccount(message: "")    // TODO: Andrey Fedorov - Add an appropriate message or throw a different error?
+                        throw HederaError.accountDoesNotExist
                     }
                     
                     return HederaAccountInfo(accountId: accountId, alias: account?.alias, evmAddress: account?.evmAddress)

@@ -9,5 +9,6 @@
 import Foundation
 
 enum HederaError: Error {
+    case accountDoesNotExist
     case unsupportedCurve(curveName: String)
 }
