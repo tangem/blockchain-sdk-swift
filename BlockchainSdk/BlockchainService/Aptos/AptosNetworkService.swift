@@ -58,7 +58,7 @@ class AptosNetworkService: MultiNetworkProvider {
             provider
                 .getGasUnitPrice()
                 .map { response in
-                    return response.gasEstimate
+                    response.gasEstimate
                 }
                 .eraseToAnyPublisher()
         }
@@ -89,11 +89,7 @@ class AptosNetworkService: MultiNetworkProvider {
     }
     
     func submitTransaction(data: Data) -> AnyPublisher<String, Error> {
-        providerPublisher { [weak self] provider in
-            guard let self = self else {
-                return .anyFail(error: WalletError.failedToGetFee)
-            }
-            
+        providerPublisher { provider in
             return provider
                 .submitTransaction(data: data)
                 .tryMap { response in
