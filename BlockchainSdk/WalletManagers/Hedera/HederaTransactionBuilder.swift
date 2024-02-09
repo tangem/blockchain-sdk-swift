@@ -19,3 +19,19 @@ final class HederaTransactionBuilder {
         return Data()
     }
 }
+
+// MARK: - Auxiliary types
+
+extension HederaTransactionBuilder {
+    struct CompiledTransaction {
+        var hashesToSign: [Data] {
+            // TODO: Andrey Fedorov - Add actual implementation (IOS-4557)
+            return []
+        }
+
+        func sendAndGetHash() async throws -> String {
+            // TODO: Andrey Fedorov - Add actual implementation (IOS-4557)
+            return ""
+        }
+    }
+}
