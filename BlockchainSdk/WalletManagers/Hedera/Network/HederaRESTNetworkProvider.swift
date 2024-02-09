@@ -7,19 +7,63 @@
 //
 
 import Foundation
+import Combine
 
-// TODO: Andrey Fedorov - Add actual implementation (IOS-4556)
 /// Provider for Hedera Mirror Nodes (REST) https://docs.hedera.com/hedera/sdks-and-apis/rest-api
 struct HederaRESTNetworkProvider {
-    private let baseURL: URL
+    private let baseURLConfig: HederaBaseURLConfig
     private let provider: NetworkProvider<HederaTarget>
 
     init(
-        baseURL: URL,
+        baseURLConfig: HederaBaseURLConfig,
         configuration: NetworkProviderConfiguration
     ) {
-        self.baseURL = baseURL
+        self.baseURLConfig = baseURLConfig
         provider = NetworkProvider<HederaTarget>(configuration: configuration)
+    }
+
+    func getAccounts(publicKey: String) -> some Publisher<HederaNetworkResult.AccountsInfo, Error> {
+        return requestPublisher(for: .getAccounts(publicKey: publicKey))
+    }
+
+    func getExchangeRates() -> some Publisher<HederaNetworkResult.ExchangeRate, Error> {
+        return requestPublisher(for: .getExchangeRate)
+    }
+
+    func createAccount(
+        networkId: String,
+        publicKey: String,
+        cardId: String,
+        cardPublicKey: String
+    ) -> some Publisher<HederaNetworkResult.CreateAccount, Error> {
+        return requestPublisher(
+            for: .createAccount(networkId: networkId, publicKey: publicKey, cardId: cardId, cardPublicKey: cardPublicKey)
+        )
+    }
+
+    private func requestPublisher<T: Decodable>(
+        for target: HederaTarget.Target
+    ) -> some Publisher<T, Swift.Error> {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+
+        return provider
+            .requestPublisher(HederaTarget(config: baseURLConfig, target: target))
+            .filterSuccessfulStatusCodes()
+            .map(T.self, using: decoder)
+            .mapError { moyaError in
+                // Trying to convert a network response with 4xx and 5xx status codes to a Hedera API error
+                switch moyaError {
+                case .statusCode(let response) where response.statusCode >= 400 && response.statusCode < 600:
+                    do {
+                        return try decoder.decode(HederaNetworkResult.APIError.self, from: response.data)
+                    } catch {
+                        return WalletError.failedToParseNetworkResponse
+                    }
+                default:
+                    return moyaError.asWalletError ?? moyaError
+                }
+            }
     }
 }
 
@@ -27,6 +71,6 @@ struct HederaRESTNetworkProvider {
 
 extension HederaRESTNetworkProvider: HostProvider {
     var host: String {
-        return baseURL.hostOrUnknown
+        return baseURLConfig.mirrorNodeBaseURL.hostOrUnknown
     }
 }
