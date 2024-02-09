@@ -11,15 +11,15 @@ import Combine
 
 /// Provider for Hedera Mirror Nodes (REST) https://docs.hedera.com/hedera/sdks-and-apis/rest-api
 struct HederaRESTNetworkProvider {
-    private let baseURLConfig: HederaBaseURLConfig
+    private let targetConfiguration: HederaTargetConfiguration
     private let provider: NetworkProvider<HederaTarget>
 
     init(
-        baseURLConfig: HederaBaseURLConfig,
-        configuration: NetworkProviderConfiguration
+        targetConfiguration: HederaTargetConfiguration,
+        providerConfiguration: NetworkProviderConfiguration
     ) {
-        self.baseURLConfig = baseURLConfig
-        provider = NetworkProvider<HederaTarget>(configuration: configuration)
+        self.targetConfiguration = targetConfiguration
+        provider = NetworkProvider<HederaTarget>(configuration: providerConfiguration)
     }
 
     func getAccounts(publicKey: String) -> some Publisher<HederaNetworkResult.AccountsInfo, Error> {
@@ -48,7 +48,7 @@ struct HederaRESTNetworkProvider {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
 
         return provider
-            .requestPublisher(HederaTarget(config: baseURLConfig, target: target))
+            .requestPublisher(HederaTarget(configuration: targetConfiguration, target: target))
             .filterSuccessfulStatusCodes()
             .map(T.self, using: decoder)
             .mapError { moyaError in
@@ -71,6 +71,6 @@ struct HederaRESTNetworkProvider {
 
 extension HederaRESTNetworkProvider: HostProvider {
     var host: String {
-        return baseURLConfig.mirrorNodeBaseURL.hostOrUnknown
+        return targetConfiguration.mirrorNode.baseURL.hostOrUnknown
     }
 }

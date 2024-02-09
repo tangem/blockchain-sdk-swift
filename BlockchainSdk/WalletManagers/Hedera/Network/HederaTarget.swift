@@ -10,7 +10,7 @@ import Foundation
 import Moya
 
 struct HederaTarget {
-    let config: HederaBaseURLConfig
+    let configuration: HederaTargetConfiguration
     let target: Target
 }
 
@@ -30,9 +30,9 @@ extension HederaTarget: TargetType {
     var baseURL: URL {
         switch target {
         case .createAccount:
-            return config.helperNodeBaseURL
+            return configuration.helperNode.baseURL
         case .getAccounts, .getExchangeRate:
-            return config.mirrorNodeBaseURL
+            return configuration.mirrorNode.baseURL
         }
     }
 
@@ -87,8 +87,13 @@ extension HederaTarget: TargetType {
         case .createAccount(_, _, let cardId, let cardPublicKey):
             headers["card_id"] = cardId
             headers["card_public_key"] = cardPublicKey
+            if let apiKeyHeaderName = configuration.helperNode.apiKeyHeaderName {
+                headers[apiKeyHeaderName] = configuration.helperNode.apiKeyHeaderValue
+            }
         case .getAccounts, .getExchangeRate:
-            break
+            if let apiKeyHeaderName = configuration.mirrorNode.apiKeyHeaderName {
+                headers[apiKeyHeaderName] = configuration.mirrorNode.apiKeyHeaderValue
+            }
         }
 
         return headers

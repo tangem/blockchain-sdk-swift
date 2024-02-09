@@ -13,14 +13,15 @@ struct HederaWalletAssembly: WalletManagerAssembly {
         let isTestnet = input.blockchain.isTestnet
         let networkConfig = input.networkConfig
 
-        let baseURLProvider = HederaBaseURLProvider(
+        let targetConfigurationFactory = HederaTargetConfigurationFactory(
             isTestnet: isTestnet,
+            sdkConfig: input.blockchainSdkConfig,
             helperNodeAPIVersion: .v1,
             mirrorNodeAPIVersion: .v1
         )
-        let restProviders = baseURLProvider
-            .baseURLs()
-            .map { HederaRESTNetworkProvider(baseURLConfig: $0, configuration: networkConfig) }
+        let restProviders = targetConfigurationFactory
+            .makeTargetConfigurations()
+            .map { HederaRESTNetworkProvider(targetConfiguration: $0, providerConfiguration: networkConfig) }
 
         let consensusProvider = HederaConsensusNetworkProvider(isTestnet: isTestnet, configuration: networkConfig)
         let networkService = HederaNetworkService(consensusProvider: consensusProvider, restProviders: restProviders)
