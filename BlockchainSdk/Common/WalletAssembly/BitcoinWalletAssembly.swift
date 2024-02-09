@@ -23,25 +23,25 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
                 networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider()
             )
             
-            if !input.blockchain.isTestnet {
-                providers.append(
-                    networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider()
-                )
-            }
-            
-            providers.append(
-                contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(
-                    endpoint: .bitcoin(testnet: input.blockchain.isTestnet),
-                    with: input
-                )
-            )
-            
-            providers.append(
-                networkProviderAssembly.makeBlockcypherNetworkProvider(
-                    endpoint: .bitcoin(testnet: input.blockchain.isTestnet),
-                    with: input
-                ).eraseToAnyBitcoinNetworkProvider()
-            )
+//            if !input.blockchain.isTestnet {
+//                providers.append(
+//                    networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider()
+//                )
+//            }
+//            
+//            providers.append(
+//                contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(
+//                    endpoint: .bitcoin(testnet: input.blockchain.isTestnet),
+//                    with: input
+//                )
+//            )
+//            
+//            providers.append(
+//                networkProviderAssembly.makeBlockcypherNetworkProvider(
+//                    endpoint: .bitcoin(testnet: input.blockchain.isTestnet),
+//                    with: input
+//                ).eraseToAnyBitcoinNetworkProvider()
+//            )
             
             $0.networkService = BitcoinNetworkService(providers: providers)
         }

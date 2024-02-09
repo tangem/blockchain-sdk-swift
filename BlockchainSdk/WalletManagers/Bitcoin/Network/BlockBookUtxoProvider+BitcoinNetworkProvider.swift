@@ -43,24 +43,12 @@ extension BlockBookUtxoProvider: BitcoinNetworkProvider {
         // Number of blocks we want the transaction to be confirmed in.
         // The lower the number the bigger the fee returned by 'estimatesmartfee'.
         let confirmationBlocks = [8, 4, 1]
-        
-        return Publishers.MergeMany(confirmationBlocks.map {
-            getFeeRatePerByte(for: $0)
-        })
-        .collect()
-        .map { $0.sorted() }
-        .tryMap { fees -> BitcoinFee in
-            guard fees.count == confirmationBlocks.count else {
-                throw BlockchainSdkError.failedToLoadFee
+
+        return mapBitcoinFee(
+            confirmationBlocks.map {
+                getFeeRatePerByte(for: $0)
             }
-            
-            return BitcoinFee(
-                minimalSatoshiPerByte: fees[0],
-                normalSatoshiPerByte: fees[1],
-                prioritySatoshiPerByte: fees[2]
-            )
-        }
-        .eraseToAnyPublisher()
+        )
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {

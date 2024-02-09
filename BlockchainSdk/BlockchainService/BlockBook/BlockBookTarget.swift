@@ -55,13 +55,10 @@ struct BlockBookTarget: TargetType {
             return .requestPlain
         case .send(let tx):
             return .requestData(tx)
-        case .sendTransaction(let transaction):
-            return .requestJSONEncodable(transaction)
-        case .fees(let method, let confirmationBlocks):
-            return .requestJSONEncodable(BitcoinNodeEstimateSmartFeeParameters(
-                method: method,
-                params: confirmationBlocks.flatMap { [$0] } ?? [])
-            )
+        case .sendTransaction(let request):
+            return .requestJSONEncodable(request)
+        case .fees(let request):
+            return .requestJSONEncodable(request)
         case .address(_ , let parameters):
             let parameters = try? parameters.asDictionary()
             return .requestParameters(parameters: parameters ?? [:], encoding: URLEncoding.default)
@@ -93,10 +90,10 @@ extension BlockBookTarget {
     enum Request {
         case address(address: String, parameters: AddressRequestParameters)
         case send(tx: Data)
-        case sendTransaction(_ transaction: SendTransactionRequest)
+        case sendTransaction(_ request: NodeRequest<String>)
         case txDetails(txHash: String)
         case utxo(address: String)
-        case fees(method: String = "estimatesmartfee", confirmationBlocks: Int? = nil)
+        case fees(_ request: NodeRequest<Int>)
     }
     
     struct AddressRequestParameters: Encodable {
@@ -169,18 +166,5 @@ extension BlockBookTarget {
                 try container.encode(contract, forKey: .contract)
             }
         }
-    }
-}
-
-// Use node API directly, without BlockBook 
-fileprivate struct BitcoinNodeEstimateSmartFeeParameters: Encodable {
-    let jsonrpc = "2.0"
-    let id = "id"
-    let method: String
-    let params: [Int]
-    
-    init(method: String, params: [Int]) {
-        self.method = method
-        self.params = params
     }
 }

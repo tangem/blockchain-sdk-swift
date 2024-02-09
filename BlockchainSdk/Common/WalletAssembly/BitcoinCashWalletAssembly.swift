@@ -31,7 +31,7 @@ struct BitcoinCashWalletAssembly: WalletManagerAssembly {
 //            )
             
             providers.append(
-                networkProviderAssembly.makeBitCoinCashNowNodesProvider(input: input)
+                networkProviderAssembly.makeBitCoinCashNowNodesNetworkProvider(input: input)
             )
             
             $0.networkService = BitcoinCashNetworkService(providers: providers)

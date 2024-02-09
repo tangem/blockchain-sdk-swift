@@ -29,40 +29,64 @@ class BlockBookUtxoProvider {
         self.provider = NetworkProvider<BlockBookTarget>(configuration: networkConfiguration)
     }
     
-    func addressData(address: String, parameters: BlockBookTarget.AddressRequestParameters) -> AnyPublisher<BlockBookAddressResponse, Error> {
-        provider
-            .requestPublisher(target(for: .address(address: address, parameters: parameters)))
-            .filterSuccessfulStatusAndRedirectCodes()
-            .map(BlockBookAddressResponse.self)
-            .eraseError()
-            .eraseToAnyPublisher()
+    func addressData(
+        address: String,
+        parameters: BlockBookTarget.AddressRequestParameters
+    ) -> AnyPublisher<BlockBookAddressResponse, Error> {
+        executeRequest(.address(address: address, parameters: parameters))
     }
     
     func unspentTxData(address: String) -> AnyPublisher<[BlockBookUnspentTxResponse], Error> {
-        provider
-            .requestPublisher(target(for: .utxo(address: address)))
-            .filterSuccessfulStatusAndRedirectCodes()
-            .map([BlockBookUnspentTxResponse].self)
-            .eraseError()
-            .eraseToAnyPublisher()
+        executeRequest(.utxo(address: address))
     }
     
     func getFeeRatePerByte(for confirmationBlocks: Int) -> AnyPublisher<Decimal, Error> {
-        provider
-            .requestPublisher(target(for: .fees(confirmationBlocks: confirmationBlocks)))
-            .filterSuccessfulStatusAndRedirectCodes()
-            .map(BlockBookFeeResponse.self)
-            .tryMap { [weak self] response in
-                guard let self else {
-                    throw WalletError.empty
+        let result: AnyPublisher<BlockBookFeeResponse, Error> = executeRequest(
+            .fees(NodeRequest.estimateFeeRequest(confirmationBlocks: confirmationBlocks))
+        )
+        
+        return result.tryMap { [weak self] response in
+            guard let self else {
+                throw WalletError.empty
+            }
+            return try convertFee(Decimal(response.result.feerate))
+        }.eraseToAnyPublisher()
+    }
+    
+    func sendTransaction(hex: String) -> AnyPublisher<String, Error> {
+        guard let transactionData = hex.data(using: .utf8) else {
+            return .anyFail(error: WalletError.failedToSendTx)
+        }
+        
+        let result: AnyPublisher<NodeSendResponse, Error> = executeRequest(
+            .send(tx: transactionData)
+        )
+        return result
+            .map { $0.result }
+            .eraseToAnyPublisher()
+    }
+    
+    func mapBitcoinFee(
+        _ feeRatePublishers: [AnyPublisher<Decimal, Error>]
+    ) -> AnyPublisher<BitcoinFee, Error> {
+        Publishers.MergeMany(feeRatePublishers)
+            .collect()
+            .map { $0.sorted() }
+            .tryMap { fees -> BitcoinFee in
+                guard fees.count == feeRatePublishers.count else {
+                    throw BlockchainSdkError.failedToLoadFee
                 }
                 
-                return try mapFee(Decimal(response.result.feerate))
+                return BitcoinFee(
+                    minimalSatoshiPerByte: fees[0],
+                    normalSatoshiPerByte: fees[1],
+                    prioritySatoshiPerByte: fees[2]
+                )
             }
             .eraseToAnyPublisher()
     }
     
-    func mapFee(_ fee: Decimal) throws -> Decimal {
+    func convertFee(_ fee: Decimal) throws -> Decimal {
         if fee <= 0 {
             throw BlockchainSdkError.failedToLoadFee
         }
@@ -74,17 +98,12 @@ class BlockBookUtxoProvider {
         return feeRatePerByte.rounded(roundingMode: .up)
     }
     
-    func sendTransaction(hex: String) -> AnyPublisher<String, Error> {
-        guard let transactionData = hex.data(using: .utf8) else {
-            return .anyFail(error: WalletError.failedToSendTx)
-        }
-        
-        return provider
-            .requestPublisher(target(for: .send(tx: transactionData)))
+    func executeRequest<T: Decodable>(_ request: BlockBookTarget.Request) -> AnyPublisher<T, Error> {
+        provider
+            .requestPublisher(target(for: request))
             .filterSuccessfulStatusAndRedirectCodes()
-            .map(BlockBookSendResponse.self)
+            .map(T.self)
             .eraseError()
-            .map { $0.result }
             .eraseToAnyPublisher()
     }
     
