@@ -42,7 +42,10 @@ class ChiaNetworkService: MultiNetworkProvider {
             provider
                 .sendTransaction(body: ChiaTransactionBody(spendBundle: spendBundle))
                 .tryMap { response in
-                    guard response.status == ChiaSendTransactionResponse.Constants.successStatus else {
+                    guard 
+                        response.success,
+                        response.status == ChiaSendTransactionResponse.Constants.successStatus
+                    else {
                         throw WalletError.failedToSendTx
                     }
                     
@@ -58,9 +61,9 @@ class ChiaNetworkService: MultiNetworkProvider {
             return provider
                 .getFeeEstimate(body: .init(cost: cost, targetTimes: [60, 300]))
                 .map { response in
-                    let lowEstimatedFee = Double(cost) * response.feeRateLastBlock * MultiplicatorConstants.lowMultiplicatorFeeRate
-                    let mediumEstimatedFee = Double(cost) * response.feeRateLastBlock * MultiplicatorConstants.mediumMultiplicatorFeeRate
-                    let highEstimatedFee = Double(cost) * response.feeRateLastBlock * MultiplicatorConstants.highMultiplicatorFeeRate
+                    let lowEstimatedFee = Decimal(cost) * Decimal(response.feeRateLastBlock) * MultiplicatorConstants.lowMultiplicatorFeeRate
+                    let mediumEstimatedFee = Decimal(cost) * Decimal(response.feeRateLastBlock) * MultiplicatorConstants.mediumMultiplicatorFeeRate
+                    let highEstimatedFee = Decimal(cost) * Decimal(response.feeRateLastBlock) * MultiplicatorConstants.highMultiplicatorFeeRate
                     
                     let feeValues = [
                         lowEstimatedFee,
@@ -69,7 +72,7 @@ class ChiaNetworkService: MultiNetworkProvider {
                     ]
                     
                     let estimatedFeeValues = feeValues.map {
-                        let decimalValue = Decimal($0) / self.blockchain.decimalValue
+                        let decimalValue = $0 / self.blockchain.decimalValue
                         let amountValue = Amount(with: self.blockchain, value: decimalValue)
                         return Fee(amountValue)
                     }
@@ -84,8 +87,8 @@ class ChiaNetworkService: MultiNetworkProvider {
 extension ChiaNetworkService {
     /// Necessary to increase the value of the commission due to the fact that receiving a commission via API does not always work correctly
     enum MultiplicatorConstants {
-        static let lowMultiplicatorFeeRate: Double = 1.5
-        static let mediumMultiplicatorFeeRate: Double = 2
-        static let highMultiplicatorFeeRate: Double = 5
+        static let lowMultiplicatorFeeRate: Decimal = 1.5
+        static let mediumMultiplicatorFeeRate: Decimal = 2
+        static let highMultiplicatorFeeRate: Decimal = 5
     }
 }
