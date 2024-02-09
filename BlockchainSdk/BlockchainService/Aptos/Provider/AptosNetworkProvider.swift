@@ -8,7 +8,6 @@
 
 import Foundation
 import Combine
-import SwiftyJSON
 
 struct AptosNetworkProvider: HostProvider {
     // MARK: - HostProvider
@@ -38,7 +37,7 @@ struct AptosNetworkProvider: HostProvider {
     
     // MARK: - Implementation
     
-    func getAccountResources(address: String) -> AnyPublisher<JSON, Error> {
+    func getAccountResources(address: String) -> AnyPublisher<[AptosResponse.AccountResource], Error> {
         let target = AptosProviderTarget(
             node: node,
             targetType: .accountsResources(address: address)
@@ -47,7 +46,7 @@ struct AptosNetworkProvider: HostProvider {
         return requestPublisher(for: target)
     }
     
-    func getGasUnitPrice() -> AnyPublisher<JSON, Error> {
+    func getGasUnitPrice() -> AnyPublisher<AptosResponse.Fee, Error> {
         let target = AptosProviderTarget(
             node: node,
             targetType: .estimateGasPrice
@@ -56,7 +55,7 @@ struct AptosNetworkProvider: HostProvider {
         return requestPublisher(for: target)
     }
     
-    func calculateUsedGasPriceUnit(transactionBody: AptosRequest.TransactionBody) -> AnyPublisher<JSON, Error> {
+    func calculateUsedGasPriceUnit(transactionBody: AptosRequest.TransactionBody) -> AnyPublisher<[AptosResponse.SimulateTransactionBody], Error> {
         let target = AptosProviderTarget(
             node: node,
             targetType: .simulateTransaction(data: transactionBody)
@@ -65,7 +64,7 @@ struct AptosNetworkProvider: HostProvider {
         return requestPublisher(for: target)
     }
     
-    func submitTransaction(data: Data) -> AnyPublisher<JSON, Error> {
+    func submitTransaction(data: Data) -> AnyPublisher<AptosResponse.SubmitTransactionBody, Error> {
         let target = AptosProviderTarget(
             node: node,
             targetType: .submitTransaction(data: data)
@@ -76,10 +75,13 @@ struct AptosNetworkProvider: HostProvider {
     
     // MARK: - Private Implementation
     
-    private func requestPublisher(for target: AptosProviderTarget) -> AnyPublisher<JSON, Error> {
+    private func requestPublisher<T: Decodable>(for target: AptosProviderTarget) -> AnyPublisher<T, Error> {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        
         return network.requestPublisher(target)
             .filterSuccessfulStatusAndRedirectCodes()
-            .mapSwiftyJSON()
+            .map(T.self, using: decoder)
             .mapError { moyaError -> Swift.Error in
                 switch moyaError {
                 case .statusCode(let response) where response.statusCode == 404 && target.isAccountsResourcesRequest:

@@ -79,7 +79,7 @@ final class AptosTransactionBuilder {
         
         let signingOutput = try AptosSigningOutput(serializedData: compiledTransaction)
 
-        guard signingOutput.error.rawValue == 0, signingOutput.hasAuthenticator else {
+        guard signingOutput.error == .ok, signingOutput.hasAuthenticator else {
             Log.debug("AptosSigningOutput has a error")
             throw WalletError.failedToBuildTx
         }

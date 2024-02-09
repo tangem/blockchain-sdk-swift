@@ -8,20 +8,20 @@
 
 import Foundation
 import Combine
-import SwiftyJSON
 
 class AptosNetworkService: MultiNetworkProvider {
     // MARK: - Protperties
     
-    let blockchain: Blockchain
     let providers: [AptosNetworkProvider]
+    let blockchainDecimalValue: Decimal
+    
     var currentProviderIndex: Int = 0
     
     // MARK: - Init
     
-    init(blockchain: Blockchain, providers: [AptosNetworkProvider]) {
-        self.blockchain = blockchain
+    init(providers: [AptosNetworkProvider], blockchainDecimalValue: Decimal) {
         self.providers = providers
+        self.blockchainDecimalValue = blockchainDecimalValue
     }
     
     // MARK: - Implementation
@@ -33,19 +33,21 @@ class AptosNetworkService: MultiNetworkProvider {
                 .withWeakCaptureOf(self)
                 .tryMap { service, response in
                     guard
-                        let accountJson = response.arrayValue.first(where: { $0[JSONParseKey.type].stringValue == Constants.accountKeyPrefix }),
-                        let coinJson = response.arrayValue.first(where: { $0[JSONParseKey.type].stringValue == Constants.coinStoreKeyPrefix })
+                        let accountJson = response.first(where: { $0.type == Constants.accountKeyPrefix }),
+                        let coinJson = response.first(where: { $0.type == Constants.coinStoreKeyPrefix })
                     else {
                         throw WalletError.failedToParseNetworkResponse
                     }
                     
-                    let balanceValue = coinJson[JSONParseKey.data][JSONParseKey.coin][JSONParseKey.value].uInt64Value
-                    let decimalBalanceValue = Decimal(balanceValue) / service.blockchain.decimalValue
+                    guard 
+                        let balanceValue = Decimal(coinJson.data.coin?.value),
+                        let sequenceNumber = Decimal(accountJson.data.sequenceNumber) 
+                    else {
+                        throw WalletError.failedToParseNetworkResponse
+                    }
                     
-                    return AptosAccountInfo(
-                        sequenceNumber: accountJson[JSONParseKey.data][JSONParseKey.sequenceNumber].int64Value,
-                        balance: decimalBalanceValue
-                    )
+                    let decimalBalanceValue = balanceValue / service.blockchainDecimalValue
+                    return AptosAccountInfo(sequenceNumber: sequenceNumber.int64Value, balance: decimalBalanceValue)
                 }
                 .eraseToAnyPublisher()
         }
@@ -55,9 +57,8 @@ class AptosNetworkService: MultiNetworkProvider {
         providerPublisher { provider in
             provider
                 .getGasUnitPrice()
-                .withWeakCaptureOf(self)
-                .tryMap { service, response in
-                    return response[JSONParseKey.gasEstimate].uInt64Value
+                .map { response in
+                    response.gasEstimate
                 }
                 .eraseToAnyPublisher()
         }
@@ -75,40 +76,28 @@ class AptosNetworkService: MultiNetworkProvider {
                 .calculateUsedGasPriceUnit(transactionBody: transactionBody)
                 .withWeakCaptureOf(self)
                 .tryMap { service, response in
-                    guard let item = response.arrayValue.first, item[JSONParseKey.success].boolValue else {
+                    guard response.first?.success == true, let gasUsed = Decimal(response.first?.gasUsed) else {
                         throw WalletError.failedToGetFee
                     }
                     
-                    let gasUsed = item[JSONParseKey.gasUsed].uInt64Value
-                    let estimatedFee = Decimal(Double(info.gasUnitPrice) * Double(gasUsed) * Constants.successTransactionSafeFactor) / service.blockchain.decimalValue
+                    let estimatedFee = (Decimal(info.gasUnitPrice) * gasUsed * Constants.successTransactionSafeFactor) / service.blockchainDecimalValue
                     
                     return (estimatedFee, info.gasUnitPrice)
-                }
-                .mapError { _ in
-                    return WalletError.failedToGetFee
                 }
                 .eraseToAnyPublisher()
         }
     }
     
     func submitTransaction(data: Data) -> AnyPublisher<String, Error> {
-        providerPublisher { [weak self] provider in
-            guard let self = self else {
-                return .anyFail(error: WalletError.failedToGetFee)
-            }
-            
+        providerPublisher { provider in
             return provider
                 .submitTransaction(data: data)
-                .withWeakCaptureOf(self)
-                .tryMap { service, response in
-                    guard let transactionHash = response[JSONParseKey.hash].string else {
-                        throw WalletError.failedToGetFee
+                .tryMap { response in
+                    guard let transactionHash = response.hash else {
+                        throw WalletError.failedToParseNetworkResponse
                     }
                     
                     return transactionHash
-                }
-                .mapError { _ in
-                    return WalletError.failedToSendTx
                 }
                 .eraseToAnyPublisher()
         }
@@ -156,27 +145,6 @@ private extension AptosNetworkService {
         static let transferPayloadFunction = "0x1::aptos_account::transfer_coins"
         static let aptosCoinContract = "0x1::aptos_coin::AptosCoin"
         static let signatureType = "ed25519_signature"
-        static let successTransactionSafeFactor = 1.5
-    }
-}
-
-private extension AptosNetworkService {
-    enum JSONParseKey: String, JSONSubscriptType {
-        case sequenceNumber
-        case type
-        case data
-        case value
-        case coin
-        case deprioritizedGasEstimate
-        case gasEstimate
-        case prioritizedGasEstimate
-        case gasUsed
-        case success
-        case hash
-        
-        var jsonKey: SwiftyJSON.JSONKey {
-            let value = self.rawValue.camelCaseToSnakeCase()
-            return JSONKey.key(value)
-        }
+        static let successTransactionSafeFactor: Decimal = 1.5
     }
 }
