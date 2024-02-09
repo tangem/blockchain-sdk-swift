@@ -8,7 +8,6 @@
 
 import Foundation
 import Combine
-import SwiftyJSON
 
 struct AptosNetworkProvider: HostProvider {
     // MARK: - HostProvider

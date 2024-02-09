@@ -8,7 +8,6 @@
 
 import Foundation
 import Combine
-import SwiftyJSON
 
 class AptosNetworkService: MultiNetworkProvider {
     // MARK: - Protperties
@@ -40,12 +39,15 @@ class AptosNetworkService: MultiNetworkProvider {
                         throw WalletError.failedToParseNetworkResponse
                     }
                     
-                    if let balanceValue = Decimal(coinJson.data.coin?.value), let sequenceNumber = Decimal(accountJson.data.sequenceNumber) {
-                        let decimalBalanceValue = balanceValue / service.blockchainDecimalValue
-                        return AptosAccountInfo(sequenceNumber: sequenceNumber.int64Value, balance: decimalBalanceValue)
-                    } else {
+                    guard 
+                        let balanceValue = Decimal(coinJson.data.coin?.value),
+                        let sequenceNumber = Decimal(accountJson.data.sequenceNumber) 
+                    else {
                         throw WalletError.failedToParseNetworkResponse
                     }
+                    
+                    let decimalBalanceValue = balanceValue / service.blockchainDecimalValue
+                    return AptosAccountInfo(sequenceNumber: sequenceNumber.int64Value, balance: decimalBalanceValue)
                 }
                 .eraseToAnyPublisher()
         }
@@ -55,8 +57,7 @@ class AptosNetworkService: MultiNetworkProvider {
         providerPublisher { provider in
             provider
                 .getGasUnitPrice()
-                .withWeakCaptureOf(self)
-                .map { service, response in
+                .map { response in
                     return response.gasEstimate
                 }
                 .eraseToAnyPublisher()
@@ -95,8 +96,7 @@ class AptosNetworkService: MultiNetworkProvider {
             
             return provider
                 .submitTransaction(data: data)
-                .withWeakCaptureOf(self)
-                .tryMap { service, response in
+                .tryMap { response in
                     guard let transactionHash = response.hash else {
                         throw WalletError.failedToParseNetworkResponse
                     }
@@ -150,26 +150,5 @@ private extension AptosNetworkService {
         static let aptosCoinContract = "0x1::aptos_coin::AptosCoin"
         static let signatureType = "ed25519_signature"
         static let successTransactionSafeFactor: Decimal = 1.5
-    }
-}
-
-private extension AptosNetworkService {
-    enum JSONParseKey: String, JSONSubscriptType {
-        case sequenceNumber
-        case type
-        case data
-        case value
-        case coin
-        case deprioritizedGasEstimate
-        case gasEstimate
-        case prioritizedGasEstimate
-        case gasUsed
-        case success
-        case hash
-        
-        var jsonKey: SwiftyJSON.JSONKey {
-            let value = self.rawValue.camelCaseToSnakeCase()
-            return JSONKey.key(value)
-        }
     }
 }

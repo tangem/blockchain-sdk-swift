@@ -30,9 +30,10 @@ final class AptosWalletManager: BaseManager {
         cancellable = networkService
             .getAccount(address: wallet.address)
             .sink(
-                receiveCompletion: { [unowned self] completionSubscription in
+                receiveCompletion: { [weak self] completionSubscription in
                     if case let .failure(error) = completionSubscription {
-                        self.wallet.amounts = [:]
+                        self?.wallet.clearAmounts()
+                        self?.wallet.clearPendingTransaction()
                         completion(.failure(error))
                     }
                 },
