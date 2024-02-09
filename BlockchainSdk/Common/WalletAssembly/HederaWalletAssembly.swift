@@ -13,7 +13,11 @@ struct HederaWalletAssembly: WalletManagerAssembly {
         let isTestnet = input.blockchain.isTestnet
         let networkConfig = input.networkConfig
 
-        let baseURLProvider = HederaBaseURLProvider(isTestnet: isTestnet)
+        let baseURLProvider = HederaBaseURLProvider(
+            isTestnet: isTestnet,
+            helperNodeAPIVersion: .v1,
+            mirrorNodeAPIVersion: .v1
+        )
         let restProviders = baseURLProvider
             .baseURLs()
             .map { HederaRESTNetworkProvider(baseURLConfig: $0, configuration: networkConfig) }

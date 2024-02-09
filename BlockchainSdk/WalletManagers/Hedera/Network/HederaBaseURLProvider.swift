@@ -10,6 +10,8 @@ import Foundation
 
 struct HederaBaseURLProvider {
     let isTestnet: Bool
+    let helperNodeAPIVersion: APIVersion
+    let mirrorNodeAPIVersion: APIVersion
 
     func baseURLs() -> [HederaBaseURLConfig] {
         var baseURLs: [HederaBaseURLConfig] = []
@@ -19,7 +21,7 @@ struct HederaBaseURLProvider {
                 contentsOf: [
                     HederaBaseURLConfig(
                         helperNodeBaseURL: URL(string: "about:blank")!, // TODO: Andrey Fedorov - Add actual implementation (IOS-5888)
-                        mirrorNodeBaseURL: URL(string: "https://testnet.mirrornode.hedera.com")!
+                        mirrorNodeBaseURL: URL(string: "https://testnet.mirrornode.hedera.com/api/\(mirrorNodeAPIVersion.rawValue)")!
                     ),
                 ]
             )
@@ -28,12 +30,27 @@ struct HederaBaseURLProvider {
                 contentsOf: [
                     HederaBaseURLConfig(
                         helperNodeBaseURL: URL(string: "about:blank")!, // TODO: Andrey Fedorov - Add actual implementation (IOS-5888)
-                        mirrorNodeBaseURL: URL(string: "https://mainnet-public.mirrornode.hedera.com")!
+                        mirrorNodeBaseURL: URL(string: "https://mainnet-public.mirrornode.hedera.com/api/\(mirrorNodeAPIVersion.rawValue)")!
                     ),
                 ]
             )
         }
 
         return baseURLs
+    }
+}
+
+// MARK: - Auxiliary types
+
+extension HederaBaseURLProvider {
+    enum APIVersion {
+        fileprivate var rawValue: String {
+            switch self {
+            case .v1:
+                return "v1"
+            }
+        }
+
+        case v1
     }
 }
