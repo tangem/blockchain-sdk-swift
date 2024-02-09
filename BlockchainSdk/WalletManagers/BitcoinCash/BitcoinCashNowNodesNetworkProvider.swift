@@ -30,11 +30,21 @@ final class BitcoinCashNowNodesNetworkProvider: BitcoinNetworkProvider {
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
-        // Number of blocks we want the transaction to be confirmed in.
-        // The lower the number the bigger the fee returned by 'estimatesmartfee'.
-        let confirmationBlocks = [8, 4, 1]
+        let response: AnyPublisher<NodeEstimateFeeResponse, Error> = blockBookUtxoProvider.executeRequest(
+            .fees(NodeRequest.estimateFeeRequest(method: "estimatefee"))
+        )
         
-        return blockBookUtxoProvider.mapBitcoinFee(confirmationBlocks.map(getFeeRatePerByte(for:)))
+        return response
+            .tryMap { [weak self] response in
+                guard let self else {
+                    throw WalletError.empty
+                }
+                
+                return try blockBookUtxoProvider.convertFee(response.result)
+            }.map { fee in
+                BitcoinFee(minimalSatoshiPerByte: fee, normalSatoshiPerByte: fee, prioritySatoshiPerByte: fee)
+            }
+            .eraseToAnyPublisher()
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
@@ -52,19 +62,5 @@ final class BitcoinCashNowNodesNetworkProvider: BitcoinNetworkProvider {
     
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
         blockBookUtxoProvider.getSignatureCount(address: address)
-    }
-    
-    private func getFeeRatePerByte(for confirmationBlocks: Int) -> AnyPublisher<Decimal, Error> {
-        let response: AnyPublisher<NodeEstimateFeeResponse, Error> = blockBookUtxoProvider.executeRequest(
-            .fees(NodeRequest.estimateFeeRequest(method: "estimatefee"))
-        )
-        
-        return response.tryMap { [weak self] response in
-            guard let self else {
-                throw WalletError.empty
-            }
-            
-            return try blockBookUtxoProvider.convertFee(response.result)
-        }.eraseToAnyPublisher()
     }
 }

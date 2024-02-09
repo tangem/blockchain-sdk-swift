@@ -52,7 +52,7 @@ extension BlockBookUtxoProvider: BitcoinNetworkProvider {
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
-        return sendTransaction(hex: transaction)
+        sendTransaction(hex: transaction)
     }
     
     func push(transaction: String) -> AnyPublisher<String, Error> {
