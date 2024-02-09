@@ -9,7 +9,7 @@
 import Foundation
 
 extension HederaNetworkResult {
-    struct APIError: Decodable, Error {
+    struct APIError: Decodable {
         struct Status: Decodable {
             let messages: [Message]
         }
@@ -21,5 +21,16 @@ extension HederaNetworkResult {
         }
 
         let _status: Status
+    }
+}
+
+// MARK: - LocalizedError protocol conformance
+
+extension HederaNetworkResult.APIError: LocalizedError {
+    var errorDescription: String? {
+        return _status
+            .messages
+            .map(\.message)
+            .joined(separator: "; ")
     }
 }
