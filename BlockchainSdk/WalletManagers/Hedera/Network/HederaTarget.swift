@@ -39,7 +39,7 @@ extension HederaTarget: TargetType {
     var path: String {
         switch target {
         case .createAccount:
-            return "network-account"
+            return "user-network-account"
         case .getAccounts:
             return "accounts"
         case .getExchangeRate:
