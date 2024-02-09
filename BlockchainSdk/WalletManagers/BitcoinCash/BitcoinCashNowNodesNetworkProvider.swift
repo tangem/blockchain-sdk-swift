@@ -42,6 +42,7 @@ final class BitcoinCashNowNodesNetworkProvider: BitcoinNetworkProvider {
                 
                 return try blockBookUtxoProvider.convertFee(response.result)
             }.map { fee in
+                // fee for BCH is constant
                 BitcoinFee(minimalSatoshiPerByte: fee, normalSatoshiPerByte: fee, prioritySatoshiPerByte: fee)
             }
             .eraseToAnyPublisher()
