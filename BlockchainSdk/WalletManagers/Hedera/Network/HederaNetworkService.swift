@@ -53,20 +53,11 @@ final class HederaNetworkService {
     }
 
     func getExchangeRate() -> some Publisher<HederaExchangeRate, Error> {
+        // TODO: Andrey Fedorov - Add actual implementation (IOS-4561)
         return providerPublisher { provider in
             return provider
                 .getExchangeRates()
-                .map { exchangeRate in
-                    let current = Constants.centsPerDollar
-                    * Decimal(exchangeRate.current.hbarEquivalent)
-                    / Decimal(exchangeRate.current.centEquivalent)
-
-                    let next = Constants.centsPerDollar
-                    * Decimal(exchangeRate.next.hbarEquivalent)
-                    / Decimal(exchangeRate.next.centEquivalent)
-
-                    return HederaExchangeRate(currentHBARPerUSD: current, nextHBARPerUSD: next)
-                }
+                .tryMap { _ in throw WalletError.empty }
                 .eraseToAnyPublisher()
         }
     }
