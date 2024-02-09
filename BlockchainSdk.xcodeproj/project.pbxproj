@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A158C022B74E44D0004DC23 /* BlockBookResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A158C002B74E44D0004DC23 /* BlockBookResponses.swift */; };
-		0A158C032B74E44D0004DC23 /* BlockBookRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A158C012B74E44D0004DC23 /* BlockBookRequests.swift */; };
-		0A158C052B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A158C042B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift */; };
 		0A1399212B637DB900934D7D /* ShibariumExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1399202B637DB900934D7D /* ShibariumExternalLinkProvider.swift */; };
+		0A158C022B74E44D0004DC23 /* BlockBookResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A158C002B74E44D0004DC23 /* BlockBookResponses.swift */; };
+		0A158C052B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A158C042B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift */; };
+		0AEFB5392B7656EC007519F9 /* NodeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEFB5382B7656EC007519F9 /* NodeRequest.swift */; };
 		2D01EBFD2B04FC6700DEF1CC /* DecimalAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EBFC2B04FC6700DEF1CC /* DecimalAddressService.swift */; };
 		2D01EC002B05223900DEF1CC /* DecimalExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EBFF2B05223900DEF1CC /* DecimalExternalLinkProvider.swift */; };
 		2D01EC042B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01EC032B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift */; };
@@ -684,10 +684,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0A158C002B74E44D0004DC23 /* BlockBookResponses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockBookResponses.swift; sourceTree = "<group>"; };
-		0A158C012B74E44D0004DC23 /* BlockBookRequests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockBookRequests.swift; sourceTree = "<group>"; };
-		0A158C042B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoinCashNowNodesNetworkProvider.swift; sourceTree = "<group>"; };
 		0A1399202B637DB900934D7D /* ShibariumExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShibariumExternalLinkProvider.swift; sourceTree = "<group>"; };
+		0A158C002B74E44D0004DC23 /* BlockBookResponses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockBookResponses.swift; sourceTree = "<group>"; };
+		0A158C042B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoinCashNowNodesNetworkProvider.swift; sourceTree = "<group>"; };
+		0AEFB5382B7656EC007519F9 /* NodeRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NodeRequest.swift; sourceTree = "<group>"; };
 		0C79DB7FEDD8D4029AFA208D /* Pods-BlockchainSdk.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.release.xcconfig"; sourceTree = "<group>"; };
 		2D01EBFC2B04FC6700DEF1CC /* DecimalAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalAddressService.swift; sourceTree = "<group>"; };
 		2D01EBFF2B05223900DEF1CC /* DecimalExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalExternalLinkProvider.swift; sourceTree = "<group>"; };
@@ -1383,7 +1383,7 @@
 			isa = PBXGroup;
 			children = (
 				0A158C002B74E44D0004DC23 /* BlockBookResponses.swift */,
-				0A158C012B74E44D0004DC23 /* BlockBookRequests.swift */,
+				0AEFB5382B7656EC007519F9 /* NodeRequest.swift */,
 			);
 			path = DTO;
 			sourceTree = "<group>";
@@ -3510,7 +3510,6 @@
 				EF57BEE32A1E682D00C2A493 /* Blockchain+AllCases.swift in Sources */,
 				EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */,
 				EF3FFFFE2A27740400C6E7D9 /* AdaliteBalanceResponseDTO.swift in Sources */,
-				0A158C032B74E44D0004DC23 /* BlockBookRequests.swift in Sources */,
 				DA2E770029769BF6001FF957 /* TransactionCreator.swift in Sources */,
 				EF31EA1529DC31E000A59FBE /* RavencoinMainNetworkParams.swift in Sources */,
 				B0EBBEF2265D0E7700D37141 /* DogecoinNetworkParams.swift in Sources */,
@@ -3635,6 +3634,7 @@
 				2DDEFBC92B59B39900885675 /* AlgorandExternalLinkProvider.swift in Sources */,
 				DAB87CB1297ADCDC00FF30EB /* GetBlockBlockBookConfig.swift in Sources */,
 				EF0DA78D285246A90081092A /* DashWalletManager.swift in Sources */,
+				0AEFB5392B7656EC007519F9 /* NodeRequest.swift in Sources */,
 				EF3B19642AA85F280084AA1C /* ChiaExternalLinkProvider.swift in Sources */,
 				EF32FEBF2A306E51002ED43F /* AddressService.swift in Sources */,
 				EF34FCF72A41CA8700E18670 /* CardanoTransactionBuilder.swift in Sources */,

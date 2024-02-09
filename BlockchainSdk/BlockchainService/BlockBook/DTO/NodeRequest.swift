@@ -1,5 +1,5 @@
 //
-//  BlockBookRequests.swift
+//  NodeRequest.swift
 //  BlockchainSdk
 //
 //  Created by Dmitry Fedorov on 08.02.2024.
