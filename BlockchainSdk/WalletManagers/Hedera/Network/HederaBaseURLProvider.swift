@@ -11,24 +11,29 @@ import Foundation
 struct HederaBaseURLProvider {
     let isTestnet: Bool
 
-    func baseURLs() -> [URL] {
-        var baseURLStrings: [String] = []
+    func baseURLs() -> [HederaBaseURLConfig] {
+        var baseURLs: [HederaBaseURLConfig] = []
 
         if isTestnet {
-            baseURLStrings.append(
+            baseURLs.append(
                 contentsOf: [
-                    "https://testnet.mirrornode.hedera.com",
+                    HederaBaseURLConfig(
+                        helperNodeBaseURL: URL(string: "about:blank")!, // TODO: Andrey Fedorov - Add actual implementation (IOS-5888)
+                        mirrorNodeBaseURL: URL(string: "https://testnet.mirrornode.hedera.com")!
+                    ),
                 ]
             )
         } else {
-            baseURLStrings.append(
+            baseURLs.append(
                 contentsOf: [
-                    "https://mainnet-public.mirrornode.hedera.com",
+                    HederaBaseURLConfig(
+                        helperNodeBaseURL: URL(string: "about:blank")!, // TODO: Andrey Fedorov - Add actual implementation (IOS-5888)
+                        mirrorNodeBaseURL: URL(string: "https://mainnet-public.mirrornode.hedera.com")!
+                    ),
                 ]
             )
         }
 
-        return baseURLStrings
-            .map { URL(string: $0)! }
+        return baseURLs
     }
 }
