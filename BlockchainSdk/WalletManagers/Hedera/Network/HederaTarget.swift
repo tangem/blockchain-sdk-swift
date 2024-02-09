@@ -62,11 +62,16 @@ extension HederaTarget: TargetType {
             let params = HederaNetworkParams.CreateAccount(networkId: networkId, publicWalletKey: publicKey)
             return .requestJSONEncodable(params)
         case .getAccounts(let publicKey):
-            let urlParameters: [String: Any] = [
+            let parameters: [String: Any] = [
                 "balance": false,
                 "account.publickey": publicKey,
             ]
-            return .requestCompositeData(bodyData: Data(), urlParameters: urlParameters)
+            let encoding = URLEncoding(
+                destination: URLEncoding.queryString.destination,
+                arrayEncoding: URLEncoding.queryString.arrayEncoding,
+                boolEncoding: .literal
+            )
+            return .requestParameters(parameters: parameters, encoding: encoding)
         case .getExchangeRate:
             return .requestPlain
         }
