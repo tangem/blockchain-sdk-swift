@@ -65,7 +65,7 @@ extension NowNodesBlockBookConfig {
     
     func path(for request: BlockBookTarget.Request) -> String {
         switch request {
-        case .fees, .sendTransaction:
+        case .fees, .sendNode:
             return ""
         default:
             return "/api/v2"

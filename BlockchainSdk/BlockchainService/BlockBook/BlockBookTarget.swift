@@ -16,7 +16,7 @@ struct BlockBookTarget: TargetType {
     
     var baseURL: URL {
         switch request {
-        case .fees, .sendTransaction:
+        case .fees, .sendNode:
             return URL(string: config.node(for: blockchain).rpcNode)!
         default:
             return URL(string: config.node(for: blockchain).restNode)!
@@ -29,13 +29,13 @@ struct BlockBookTarget: TargetType {
         switch request {
         case .address(let address, _):
             return basePath + "/address/\(address)"
-        case .send:
+        case .sendBlockBook:
             return basePath + "/sendtx/"
         case .txDetails(let txHash):
             return basePath + "/tx/\(txHash)"
         case .utxo(let address):
             return basePath + "/utxo/\(address)"
-        case .fees, .sendTransaction:
+        case .fees, .sendNode:
             return basePath
         }
     }
@@ -44,7 +44,7 @@ struct BlockBookTarget: TargetType {
         switch request {
         case .address, .utxo:
             return .get
-        case .send, .sendTransaction, .txDetails, .fees:
+        case .sendBlockBook, .sendNode, .txDetails, .fees:
             return .post
         }
     }
@@ -53,9 +53,9 @@ struct BlockBookTarget: TargetType {
         switch request {
         case .txDetails, .utxo:
             return .requestPlain
-        case .send(let tx):
+        case .sendBlockBook(let tx):
             return .requestData(tx)
-        case .sendTransaction(let request):
+        case .sendNode(let request):
             return .requestJSONEncodable(request)
         case .fees(let request):
             return .requestJSONEncodable(request)
@@ -78,7 +78,7 @@ struct BlockBookTarget: TargetType {
     
     private var contentType: String {
         switch request {
-        case .send:
+        case .sendBlockBook:
             return "text/plain; charset=utf-8"
         default:
             return "application/json"
@@ -89,8 +89,8 @@ struct BlockBookTarget: TargetType {
 extension BlockBookTarget {
     enum Request {
         case address(address: String, parameters: AddressRequestParameters)
-        case send(tx: Data)
-        case sendTransaction(_ request: NodeRequest<String>)
+        case sendBlockBook(tx: Data)
+        case sendNode(_ request: NodeRequest<String>)
         case txDetails(txHash: String)
         case utxo(address: String)
         case fees(_ request: NodeRequest<Int>)

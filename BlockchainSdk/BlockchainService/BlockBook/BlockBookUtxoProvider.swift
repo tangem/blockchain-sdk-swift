@@ -59,7 +59,7 @@ class BlockBookUtxoProvider {
         }
         
         let result: AnyPublisher<NodeSendResponse, Error> = executeRequest(
-            .send(tx: transactionData)
+            .sendBlockBook(tx: transactionData)
         )
         return result
             .map { $0.result }

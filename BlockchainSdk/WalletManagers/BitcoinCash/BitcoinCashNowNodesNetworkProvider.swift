@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 
+/// Adapter for existing BlockBookUtxoProvider
 final class BitcoinCashNowNodesNetworkProvider: BitcoinNetworkProvider {
     private let blockBookUtxoProvider: BlockBookUtxoProvider
     
@@ -50,7 +51,7 @@ final class BitcoinCashNowNodesNetworkProvider: BitcoinNetworkProvider {
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
         let response: AnyPublisher<NodeSendResponse, Error> = blockBookUtxoProvider.executeRequest(
-            .sendTransaction(NodeRequest.sendRequest(signedTransaction: transaction))
+            .sendNode(NodeRequest.sendRequest(signedTransaction: transaction))
         )
         return response
             .map { $0.result }
