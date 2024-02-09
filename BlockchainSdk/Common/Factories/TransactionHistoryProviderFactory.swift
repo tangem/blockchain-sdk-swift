@@ -55,12 +55,20 @@ public struct TransactionHistoryProviderFactory {
                 blockBookProvider: networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes),
                 mapper: EthereumTransactionHistoryMapper(blockchain: blockchain)
             )
-        case .algorand:
-            return AlgorandTransactionHistoryProvider( 
-                blockchain: input.blockchain,
-                node: .init(type: .indexNownodes, apiKeyValue: config.nowNodesApiKey),
-                networkConfig: input.networkConfig
-            )
+        case .algorand(_, let isTestnet):
+            if isTestnet {
+                return AlgorandTransactionHistoryProvider(
+                    blockchain: input.blockchain,
+                    node: .init(type: .idxFullNode(isTestnet: isTestnet)),
+                    networkConfig: input.networkConfig
+                )
+            } else {
+                return AlgorandTransactionHistoryProvider(
+                    blockchain: input.blockchain,
+                    node: .init(type: .idxNownodes, apiKeyValue: config.nowNodesApiKey),
+                    networkConfig: input.networkConfig
+                )
+            }
         default:
             return nil
         }
