@@ -28,18 +28,20 @@ final class HederaNetworkService {
         return providerPublisher { provider in
             return provider
                 .getAccounts(publicKey: publicKey.blockchainKey.hexString)
-                .tryMap { accounts in
-                    let account = accounts.accounts.first
-
-                    // Account ID is the only essential piece of information for a particular account,
-                    // account alias and account EVM address may not exist at all
-                    guard let accountId = account?.account else {
-                        throw HederaError.accountDoesNotExist
-                    }
-                    
-                    return HederaAccountInfo(accountId: accountId, alias: account?.alias, evmAddress: account?.evmAddress)
-                }
                 .eraseToAnyPublisher()
+        }
+        .tryMap { accounts in
+            let account = accounts.accounts.first
+            // `MultiNetworkProvider` must not switch on `HederaError.accountDoesNotExist`,
+            // therefore we are performing DTO->Domain mapping outside the `providerPublisher`
+            //
+            // Account ID is the only essential piece of information for a particular account,
+            // account alias and account EVM address may not exist at all
+            guard let accountId = account?.account else {
+                throw HederaError.accountDoesNotExist
+            }
+
+            return HederaAccountInfo(accountId: accountId, alias: account?.alias, evmAddress: account?.evmAddress)
         }
     }
 
