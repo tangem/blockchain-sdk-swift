@@ -16,8 +16,8 @@ extension HederaNetworkResult {
             var expirationTime: Int
         }
 
-        let current: Rate
-        let next: Rate
+        let currentRate: Rate
+        let nextRate: Rate
         let timestamp: String
     }
 }

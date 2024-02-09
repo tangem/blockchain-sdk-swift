@@ -43,7 +43,7 @@ extension HederaTarget: TargetType {
         case .getAccounts:
             return "accounts"
         case .getExchangeRate:
-            return "exchangerate"
+            return "network/exchangerate"
         }
     }
 
