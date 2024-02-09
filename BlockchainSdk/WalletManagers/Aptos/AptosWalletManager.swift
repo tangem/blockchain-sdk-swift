@@ -14,18 +14,33 @@ final class AptosWalletManager: BaseManager {
     // MARK: - Private Properties
 
     private let transactionBuilder: AptosTransactionBuilder
+    private let networkService: AptosNetworkService
     
     // MARK: - Init
     
-    init(wallet: Wallet, transactionBuilder: AptosTransactionBuilder) {
+    init(wallet: Wallet, transactionBuilder: AptosTransactionBuilder, networkService: AptosNetworkService) {
         self.transactionBuilder = transactionBuilder
+        self.networkService = networkService
         super.init(wallet: wallet)
     }
     
     // MARK: - Implementation
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        completion(.success(()))
+        cancellable = networkService
+            .getAccount(address: wallet.address)
+            .sink(
+                receiveCompletion: { [weak self] completionSubscription in
+                    if case let .failure(error) = completionSubscription {
+                        self?.wallet.clearAmounts()
+                        self?.wallet.clearPendingTransaction()
+                        completion(.failure(error))
+                    }
+                },
+                receiveValue: { [weak self] accountInfo in
+                    self?.update(with: accountInfo, completion: completion)
+                }
+            )
     }
     
 }
@@ -33,21 +48,107 @@ final class AptosWalletManager: BaseManager {
 extension AptosWalletManager: WalletManager {
     
     var currentHost: String {
-        // TODO: - Make host after created network layer
-        ""
+        networkService.host
     }
     
     var allowsFeeSelection: Bool {
         false
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        // TODO: - Make implementation after created transaction builder
-        return .anyFail(error: WalletError.failedToSendTx)
-    }
-    
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        return .anyFail(error: WalletError.failedToGetFee)
+        networkService
+            .getGasUnitPrice()
+            .withWeakCaptureOf(self)
+            .flatMap { (walletManager, gasUnitPrice) -> AnyPublisher<(estimatedFee: Decimal, gasUnitPrice: UInt64), Error> in
+                let expirationTimestamp = walletManager.createExpirationTimestampSecs()
+                
+                guard let transactionInfo = try? walletManager.transactionBuilder.buildToCalculateFee(
+                    amount: amount,
+                    destination: destination,
+                    gasUnitPrice: gasUnitPrice, 
+                    expirationTimestamp: expirationTimestamp
+                ) else {
+                    return .anyFail(error: WalletError.failedToGetFee)
+                }
+                
+                return walletManager
+                    .networkService
+                    .calculateUsedGasPriceUnit(info: transactionInfo)
+                    .eraseToAnyPublisher()
+            }
+            .withWeakCaptureOf(self)
+            .map { (walletManager, result) -> [Fee] in
+                let (estimatedFee, gasUnitPrice) = result
+                
+                let feeAmount = Amount(with: walletManager.wallet.blockchain, value: estimatedFee)
+                
+                return [
+                    Fee(feeAmount, parameters: AptosFeeParams(gasUnitPrice: gasUnitPrice))
+                ]
+            }
+            .eraseToAnyPublisher()
     }
     
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+        let dataForSign: Data
+        
+        // This timestamp value must be synchronized between calls buildForSign / buildForSend
+        let expirationTimestamp = createExpirationTimestampSecs()
+        
+        do {
+            dataForSign = try transactionBuilder.buildForSign(transaction: transaction, expirationTimestamp: expirationTimestamp)
+        } catch {
+            return .anyFail(error: WalletError.failedToBuildTx)
+        }
+        
+        return signer
+            .sign(hash: dataForSign, walletPublicKey: self.wallet.publicKey)
+            .withWeakCaptureOf(self)
+            .flatMap { (walletManager, signature) -> AnyPublisher<String, Error> in
+                guard let buildForSend = try? self.transactionBuilder.buildForSend(
+                    transaction: transaction,
+                    signature: signature,
+                    expirationTimestamp: expirationTimestamp
+                ) else {
+                    return .anyFail(error: WalletError.failedToSendTx)
+                }
+                
+                return walletManager.networkService.submitTransaction(data: buildForSend)
+            }
+            .withWeakCaptureOf(self)
+            .map { walletManager, transactionHash in
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: transactionHash)
+                walletManager.wallet.addPendingTransaction(record)
+                return TransactionSendResult(hash: transactionHash)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+}
+
+// MARK: - Private Implementation
+
+private extension AptosWalletManager {
+    func update(with accountModel: AptosAccountInfo, completion: @escaping (Result<Void, Error>) -> Void) {
+        wallet.add(coinValue: accountModel.balance)
+
+        if accountModel.sequenceNumber != transactionBuilder.currentSequenceNumber {
+            wallet.clearPendingTransaction()
+        }
+        
+        transactionBuilder.update(sequenceNumber: accountModel.sequenceNumber)
+
+        completion(.success(()))
+    }
+    
+    private func createExpirationTimestampSecs() -> UInt64 {
+        UInt64(Date().addingTimeInterval(TimeInterval(Constants.transactionLifetimeInMin * 60)).timeIntervalSince1970)
+    }
+}
+
+extension AptosWalletManager {
+    enum Constants {
+        static let transactionLifetimeInMin: Double = 5
+    }
 }

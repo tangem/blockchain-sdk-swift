@@ -10,14 +10,50 @@ import Foundation
 
 struct AptosWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        let chainId: AptosChainId = input.blockchain.isTestnet ? .testnet : .mainnet
+        let chainId: AptosChainId = input.blockchain.isTestnet ? .testnet : .mainnet        
+
+        var providers: [AptosNetworkProvider] = [
+            makeNetworkMainnetProvider(
+                for: .nownodes,
+                with: input.blockchainSdkConfig.nowNodesApiKey,
+                networkConfig: input.networkConfig
+            ),
+            makeNetworkMainnetProvider(
+                for: .getblock,
+                with: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .rest),
+                networkConfig: input.networkConfig
+            ),
+            makeNetworkMainnetProvider(
+                for: .aptoslabs,
+                networkConfig: input.networkConfig
+            )
+        ]
         
         let txBuilder = AptosTransactionBuilder(
             publicKey: input.wallet.publicKey.blockchainKey,
-            decimalValue: input.blockchain.decimalValue,
+            decimalValue: input.blockchain.decimalValue, 
+            walletAddress: input.wallet.address,
             chainId: chainId
         )
         
-        return AptosWalletManager(wallet: input.wallet, transactionBuilder: txBuilder)
+        let networkService = AptosNetworkService(
+            providers: providers,
+            blockchainDecimalValue: input.blockchain.decimalValue
+        )
+        
+        return AptosWalletManager(wallet: input.wallet, transactionBuilder: txBuilder, networkService: networkService)
+    }
+    
+    // MARK: - Private Implementation
+    
+    private func makeNetworkMainnetProvider(
+        for node: AptosProviderType,
+        with apiKeyValue: String? = nil,
+        networkConfig: NetworkProviderConfiguration
+    ) -> AptosNetworkProvider {
+        AptosNetworkProvider(
+            node: .init(type: node, apiKeyValue: apiKeyValue),
+            networkConfig: networkConfig
+        )
     }
 }
