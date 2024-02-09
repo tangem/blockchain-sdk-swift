@@ -58,7 +58,7 @@ class BlockBookUtxoProvider {
             return .anyFail(error: WalletError.failedToSendTx)
         }
         
-        let result: AnyPublisher<NodeSendResponse, Error> = executeRequest(
+        let result: AnyPublisher<SendResponse, Error> = executeRequest(
             .sendBlockBook(tx: transactionData)
         )
         return result

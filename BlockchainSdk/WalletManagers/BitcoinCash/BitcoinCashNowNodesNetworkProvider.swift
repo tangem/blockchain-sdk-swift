@@ -50,7 +50,7 @@ final class BitcoinCashNowNodesNetworkProvider: BitcoinNetworkProvider {
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
-        let response: AnyPublisher<NodeSendResponse, Error> = blockBookUtxoProvider.executeRequest(
+        let response: AnyPublisher<SendResponse, Error> = blockBookUtxoProvider.executeRequest(
             .sendNode(NodeRequest.sendRequest(signedTransaction: transaction))
         )
         return response
