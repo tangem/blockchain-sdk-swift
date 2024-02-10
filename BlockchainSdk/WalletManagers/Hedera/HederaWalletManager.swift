@@ -93,7 +93,47 @@ extension HederaWalletManager: WalletManager {
     }
 
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        // TODO: Andrey Fedorov - Add actual implementation (IOS-4561)
-        return .anyFail(error: WalletError.failedToSendTx)
+        return Deferred { [weak self]  in
+            return Future { (promise: Future<HederaTransactionBuilder.CompiledTransaction, Error>.Promise) in
+                guard let self else {
+                    return promise(.failure(WalletError.empty))
+                }
+
+                let compiledTransaction = Result { try self.transactionBuilder.buildForSign(transaction: transaction) }
+                promise(compiledTransaction)
+            }
+        }
+        .tryMap { compiledTransaction in
+            let hashesToSign = try compiledTransaction.hashesToSign()
+            return (hashesToSign, compiledTransaction)
+        }
+        .withWeakCaptureOf(self)
+        .flatMap { walletManager, input in
+            let (hashesToSign, compiledTransaction) = input
+            return signer
+                .sign(hashes: hashesToSign, walletPublicKey: walletManager.wallet.publicKey)
+                .map { ($0, compiledTransaction) }
+        }
+        .withWeakCaptureOf(self)
+        .tryMap { walletManager, input in
+            let (signatures, compiledTransaction) = input
+            return try walletManager
+                .transactionBuilder
+                .buildForSend(transaction: compiledTransaction, signatures: signatures)
+        }
+        .withWeakCaptureOf(self)
+        .flatMap { walletManager, compiledTransaction in
+            return walletManager
+                .networkService
+                .send(transaction: compiledTransaction)
+        }
+        .withWeakCaptureOf(self)
+        .handleEvents(
+            receiveOutput: { walletManager, sendResult in
+                walletManager.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)
+            }
+        )
+        .map(\.1)
+        .eraseToAnyPublisher()
     }
 }
