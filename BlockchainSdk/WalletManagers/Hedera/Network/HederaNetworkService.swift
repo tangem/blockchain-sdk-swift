@@ -65,23 +65,27 @@ final class HederaNetworkService {
     }
 
     func send(transaction: HederaTransactionBuilder.CompiledTransaction) -> some Publisher<TransactionSendResult, Error> {
-        return consensusProvider.send(transaction: transaction)
+        return consensusProvider
+            .send(transaction: transaction)
+            .map(TransactionSendResult.init(hash:))
     }
 
     func getTransactionInfo(transactionHash: String) -> some Publisher<HederaTransactionInfo, Error> {
         return consensusProvider
             .getTransactionInfo(transactionHash: transactionHash)
             .map { transactionInfo in
-                let isSuccessful: Bool
+                let isPending: Bool
 
                 switch transactionInfo.status {
-                case .ok, .success:
-                    isSuccessful = true
+                case .ok:
+                    // Precheck validations (`Status.ok`) performed locally
+                    isPending = true
                 default:
-                    isSuccessful = false
+                    // All other transaction statuses mean either success of failure
+                    isPending = false
                 }
 
-                return HederaTransactionInfo(isSuccessful: isSuccessful, hash: transactionInfo.hash)
+                return HederaTransactionInfo(isPending: isPending, transactionHash: transactionInfo.hash)
             }
     }
 }

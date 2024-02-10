@@ -46,11 +46,10 @@ final class HederaConsensusNetworkProvider {
         .receive(on: callbackQueue)
     }
 
-    func send(transaction: HederaTransactionBuilder.CompiledTransaction) -> some Publisher<TransactionSendResult, Error> {
+    func send(transaction: HederaTransactionBuilder.CompiledTransaction) -> some Publisher<String, Error> {
         return Just(transaction)
             .setFailureType(to: Error.self)
             .asyncMap { try await $0.sendAndGetHash() }
-            .map(TransactionSendResult.init(hash:))
             .receive(on: callbackQueue)
     }
 
