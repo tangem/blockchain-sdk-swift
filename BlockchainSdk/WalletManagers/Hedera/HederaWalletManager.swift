@@ -85,7 +85,7 @@ final class HederaWalletManager: BaseManager {
 extension HederaWalletManager: WalletManager {
     var currentHost: String { networkService.host }
 
-    var allowsFeeSelection: Bool { false }  // TODO: Andrey Fedorov - Allow custom fees for Hedera? (IOS-4561)
+    var allowsFeeSelection: Bool { false }
 
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         return networkService
