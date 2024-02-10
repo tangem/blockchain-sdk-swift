@@ -12,13 +12,16 @@ import Combine
 final class HederaNetworkService {
     var currentProviderIndex: Int
 
+    private let blockchain: Blockchain
     private let consensusProvider: HederaConsensusNetworkProvider
     private let restProviders: [HederaRESTNetworkProvider]
 
     init(
+        blockchain: Blockchain,
         consensusProvider: HederaConsensusNetworkProvider,
         restProviders: [HederaRESTNetworkProvider]
     ) {
+        self.blockchain = blockchain
         self.consensusProvider = consensusProvider
         self.restProviders = restProviders
         currentProviderIndex = 0
@@ -50,8 +53,11 @@ final class HederaNetworkService {
         return Fail(error: WalletError.empty)
     }
 
-    func getBalance(accountId: String) -> some Publisher<Decimal, Error> {
-        return consensusProvider.getBalance(accountId: accountId)
+    func getBalance(accountId: String) -> some Publisher<Amount, Error> {
+        let blockchain = blockchain
+        return consensusProvider
+            .getBalance(accountId: accountId)
+            .map { Amount(with: blockchain, value: $0) }
     }
 
     func getExchangeRate() -> some Publisher<HederaExchangeRate, Error> {
@@ -65,23 +71,27 @@ final class HederaNetworkService {
     }
 
     func send(transaction: HederaTransactionBuilder.CompiledTransaction) -> some Publisher<TransactionSendResult, Error> {
-        return consensusProvider.send(transaction: transaction)
+        return consensusProvider
+            .send(transaction: transaction)
+            .map(TransactionSendResult.init(hash:))
     }
 
     func getTransactionInfo(transactionHash: String) -> some Publisher<HederaTransactionInfo, Error> {
         return consensusProvider
             .getTransactionInfo(transactionHash: transactionHash)
             .map { transactionInfo in
-                let isSuccessful: Bool
+                let isPending: Bool
 
                 switch transactionInfo.status {
-                case .ok, .success:
-                    isSuccessful = true
+                case .ok:
+                    // Precheck validations (`Status.ok`) performed locally
+                    isPending = true
                 default:
-                    isSuccessful = false
+                    // All other transaction statuses mean either success of failure
+                    isPending = false
                 }
 
-                return HederaTransactionInfo(isSuccessful: isSuccessful, hash: transactionInfo.hash)
+                return HederaTransactionInfo(isPending: isPending, transactionHash: transactionInfo.hash)
             }
     }
 }

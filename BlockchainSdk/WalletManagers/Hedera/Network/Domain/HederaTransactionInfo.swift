@@ -9,6 +9,6 @@
 import Foundation
 
 struct HederaTransactionInfo {
-    let isSuccessful: Bool
-    let hash: String
+    let isPending: Bool
+    let transactionHash: String
 }
