@@ -13,7 +13,6 @@ import Hedera
 /// Provider for Hedera Consensus Nodes (GRPC) https://docs.hedera.com/hedera/networks/mainnet/mainnet-nodes
 final class HederaConsensusNetworkProvider {
     private let isTestnet: Bool
-    private let configuration: NetworkProviderConfiguration
 
     private lazy var client: Client = {
         return isTestnet ? Client.forTestnet() : Client.forMainnet()
@@ -21,12 +20,8 @@ final class HederaConsensusNetworkProvider {
 
     private var callbackQueue: DispatchQueue { .main }
 
-    init(
-        isTestnet: Bool,
-        configuration: NetworkProviderConfiguration
-    ) {
+    init(isTestnet: Bool) {
         self.isTestnet = isTestnet
-        self.configuration = configuration
     }
 
     func getBalance(accountId: String) -> some Publisher<Decimal, Error> {
