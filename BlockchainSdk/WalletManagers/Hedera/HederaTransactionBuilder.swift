@@ -25,10 +25,14 @@ final class HederaTransactionBuilder {
     }
 
     func buildForSign(transaction: Transaction) throws -> CompiledTransaction {
-        let amount = transaction.amount
-        let decimalValue = amount.value * pow(Decimal(10), amount.decimals)
-        let roundedValue = decimalValue.rounded(roundingMode: .down)
-        let transactionAmount = try Hbar(roundedValue, .tinybar)
+        let transactionValue = transaction.amount.value * pow(Decimal(10), transaction.amount.decimals)
+        let transactionRoundedValue = transactionValue.rounded(roundingMode: .down)
+        let transactionAmount = try Hbar(transactionRoundedValue, .tinybar)
+
+        let feeValue = transaction.fee.amount.value * pow(Decimal(10), transaction.fee.amount.decimals)
+        let feeRoundedValue = feeValue.rounded(roundingMode: .up)
+        let feeAmount = try Hbar(feeRoundedValue, .tinybar)
+
         let sourceAccountId = try AccountId(parsing: transaction.sourceAddress)
         let destinationAccountId = try AccountId(parsing: transaction.destinationAddress)
         let transactionId = TransactionId.generateFrom(sourceAccountId)
@@ -38,7 +42,7 @@ final class HederaTransactionBuilder {
             .hbarTransfer(sourceAccountId, transactionAmount.negated())
             .hbarTransfer(destinationAccountId, transactionAmount)
             .transactionId(transactionId)
-            .maxTransactionFee(Hbar.from(transaction.fee.amount.value))
+            .maxTransactionFee(feeAmount)
             .transactionMemo(transactionParams?.memo ?? "")
             .freezeWith(client)
 

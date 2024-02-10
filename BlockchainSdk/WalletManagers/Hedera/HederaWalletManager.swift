@@ -88,8 +88,24 @@ extension HederaWalletManager: WalletManager {
     var allowsFeeSelection: Bool { false }  // TODO: Andrey Fedorov - Allow custom fees for Hedera? (IOS-4561)
 
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        // TODO: Andrey Fedorov - Add actual implementation (IOS-4561)
-        return .anyFail(error: WalletError.failedToGetFee)
+        return networkService
+            .getExchangeRate()
+            .withWeakCaptureOf(self)
+            .tryMap { walletManager, exchangeRate in
+                guard 
+                    let cryptoTransferServiceCostInUSD = Constants.cryptoTransferServiceCostInUSD,
+                    let maxFeeMultiplier = Constants.maxFeeMultiplier
+                else {
+                    throw WalletError.failedToGetFee
+                }
+
+                let feeValue = exchangeRate.nextHBARPerUSD * cryptoTransferServiceCostInUSD * maxFeeMultiplier
+                let feeAmount = Amount(with: walletManager.wallet.blockchain, value: feeValue)
+                let fee = Fee(feeAmount)
+
+                return [fee]
+            }
+            .eraseToAnyPublisher()
     }
 
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
@@ -135,5 +151,18 @@ extension HederaWalletManager: WalletManager {
         )
         .map(\.1)
         .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - Constants
+
+private extension HederaWalletManager {
+    private enum Constants {
+        /// https://docs.hedera.com/hedera/networks/mainnet/fees
+        static let cryptoTransferServiceCostInUSD = Decimal(string: "0.0001", locale: locale)
+        /// Hedera fees are low, allow 10% safety margin to allow usage of not precise fee estimate.
+        static let maxFeeMultiplier = Decimal(string: "1.1", locale: locale)
+        /// Locale for string literals parsing.
+        static let locale = Locale(identifier: "en_US")
     }
 }
