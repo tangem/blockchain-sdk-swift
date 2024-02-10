@@ -29,8 +29,54 @@ final class HederaWalletManager: BaseManager {
     }
 
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        // TODO: Andrey Fedorov - Add actual implementation (IOS-4561)
-        completion(.success(()))
+        let transactionsInfoPublisher = wallet
+            .pendingTransactions
+            .publisher
+            .setFailureType(to: Error.self)
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, pendingTransaction in
+                return walletManager.networkService.getTransactionInfo(transactionHash: pendingTransaction.hash)
+            }
+            .collect()
+
+        let balancePublisher = networkService
+            .getBalance(accountId: wallet.address)
+
+        cancellable = Publishers.CombineLatest(balancePublisher, transactionsInfoPublisher)
+            .sink(
+                receiveCompletion: { [weak self] result in
+                    switch result {
+                    case .failure(let error):
+                        self?.wallet.clearAmounts()
+                        completion(.failure(error))
+                    case .finished:
+                        completion(.success(()))
+                    }
+                },
+                receiveValue: { [weak self] input in
+                    let (accountBalance, transactionsInfo) = input
+                    self?.updateWallet(accountBalance: accountBalance, transactionsInfo: transactionsInfo)
+                }
+            )
+    }
+
+    private func updateWallet(
+        accountBalance: Amount,
+        transactionsInfo: [HederaTransactionInfo]
+    ) {
+        let completedTransactionHashes = transactionsInfo
+            .filter { !$0.isPending }
+            .map { $0.transactionHash }
+
+        wallet.removePendingTransaction(where: completedTransactionHashes.contains(_:))
+        wallet.add(amount: accountBalance)
+    }
+
+    private func updateWalletWithPendingTransaction(_ transaction: Transaction, sendResult: TransactionSendResult) {
+        let mapper = PendingTransactionRecordMapper()
+        let pendingTransaction = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: sendResult.hash)
+
+        wallet.addPendingTransaction(pendingTransaction)
     }
 }
 
