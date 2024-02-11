@@ -7,16 +7,13 @@
 //
 
 import Foundation
-
-import Foundation
+import TangemSdk
 import XCTest
 import WalletCore
-import SwiftyJSON
 
 @testable import BlockchainSdk
 
 final class AptosTests: XCTestCase {
-    private let blockchain: BlockchainSdk.Blockchain = .aptos(curve: .ed25519_slip0010, testnet: true)
     private let coinType: CoinType = .aptos
     
     /*
@@ -27,10 +24,19 @@ final class AptosTests: XCTestCase {
     
     // MARK: - Impementation
     
+    func testCorrectTransactionEd25519() throws {
+        try testTransactionBuilder(curve: .ed25519)
+    }
+    
+    func testCorrectTransactionEd25519Slip0010() throws {
+        try testTransactionBuilder(curve: .ed25519_slip0010)
+    }
+    
     /*
      - https://github.com/trustwallet/wallet-core/blob/master/tests/chains/Aptos/CompilerTests.cpp
      */
-    func testTransactionBuilder() throws {
+    func testTransactionBuilder(curve: EllipticCurve) throws {
+        let blockchain = Blockchain.ton(curve: curve, testnet: true)
         let privateKey = PrivateKey(data: privateKeyData)!
         let publicKey = privateKey.getPublicKeyByType(pubkeyType: .ed25519)
         
@@ -66,12 +72,17 @@ final class AptosTests: XCTestCase {
         XCTAssertEqual(buildForSign.hexString.lowercased(), expectedBuildForSign)
         
         let signature = privateKey.sign(digest: buildForSign, curve: .ed25519)
+        XCTAssertNotNil(signature)
+        
+        // Validate hash size
+        TransactionSizeTesterUtility().testTxSizes([signature ?? Data()])
         
         XCTAssertEqual(buildForSign.hexString.lowercased(), expectedBuildForSign)
         
         let buildForSend = try transactionBuilder.buildForSend(transaction: transaction, signature: signature ?? Data(), expirationTimestamp: 3664390082)
         
-        let buildForSendJson = JSON(buildForSend)
+        let decoder = JSONDecoder()
+        let buildForSendJson = try decoder.decode(AptosTests.TestSignature.self, from: buildForSend)
         
         let expectedOutputString = """
             {
@@ -94,12 +105,18 @@ final class AptosTests: XCTestCase {
             }
         """
         
-        let expectedOutputJson = JSON(expectedOutputString.data(using: .utf8) ?? Data())
+        let expectedOutputJson = try decoder.decode(AptosTests.TestSignature.self, from: expectedOutputString.data(using: .utf8) ?? Data())
         
-        let rawSignatureHex = try buildForSendJson["signature"].rawData().hexString
-        let expectedSignatureHex = try expectedOutputJson["signature"].rawData().hexString
+        let rawSignatureHex = buildForSendJson.signature["signature"]
+        let expectedSignatureHex = expectedOutputJson.signature["signature"]
         
         XCTAssertEqual(rawSignatureHex, expectedSignatureHex)
     }
     
+}
+
+extension AptosTests {
+    struct TestSignature: Decodable {
+        let signature: [String: String]
+    }
 }
