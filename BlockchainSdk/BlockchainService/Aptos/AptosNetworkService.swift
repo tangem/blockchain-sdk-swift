@@ -13,15 +13,15 @@ class AptosNetworkService: MultiNetworkProvider {
     // MARK: - Protperties
     
     let providers: [AptosNetworkProvider]
-    let blockchain: Blockchain
+    let blockchainDecimalValue: Decimal
     
     var currentProviderIndex: Int = 0
     
     // MARK: - Init
     
-    init(providers: [AptosNetworkProvider], blockchain: Blockchain) {
+    init(providers: [AptosNetworkProvider], blockchainDecimalValue: Decimal) {
         self.providers = providers
-        self.blockchain = blockchain
+        self.blockchainDecimalValue = blockchainDecimalValue
     }
     
     // MARK: - Implementation
@@ -46,7 +46,7 @@ class AptosNetworkService: MultiNetworkProvider {
                         throw WalletError.failedToParseNetworkResponse
                     }
                     
-                    let decimalBalanceValue = balanceValue / service.blockchain.decimalValue
+                    let decimalBalanceValue = balanceValue / service.blockchainDecimalValue
                     return AptosAccountInfo(sequenceNumber: sequenceNumber.int64Value, balance: decimalBalanceValue)
                 }
                 .eraseToAnyPublisher()
@@ -64,7 +64,7 @@ class AptosNetworkService: MultiNetworkProvider {
         }
     }
 
-    func calculateUsedGasPriceUnit(info: AptosTransactionInfo) -> AnyPublisher<Fee, Error> {
+    func calculateUsedGasPriceUnit(info: AptosTransactionInfo) -> AnyPublisher<AptosFeeInfo, Error> {
         providerPublisher { [weak self] provider in
             guard let self = self else {
                 return .anyFail(error: WalletError.failedToGetFee)
@@ -81,13 +81,11 @@ class AptosNetworkService: MultiNetworkProvider {
                     }
                     
                     let maxGasAmount = gasUsed * Constants.successTransactionSafeFactor
-                    let estimatedFeeDecimal = (Decimal(info.gasUnitPrice) * gasUsed * Constants.successTransactionSafeFactor) / service.blockchain.decimalValue
+                    let estimatedFeeDecimal = (Decimal(info.gasUnitPrice) * gasUsed * Constants.successTransactionSafeFactor) / service.blockchainDecimalValue
                     
-                    let estimatedFeeAmount = Amount(with: service.blockchain, value: estimatedFeeDecimal)
-                    
-                    return Fee(
-                        estimatedFeeAmount,
-                        parameters: AptosFeeParams(
+                    return AptosFeeInfo(
+                        value: estimatedFeeDecimal,
+                        params: AptosFeeParams(
                             gasUnitPrice: info.gasUnitPrice,
                             maxGasAmount: maxGasAmount.roundedDecimalNumber.uint64Value
                         )

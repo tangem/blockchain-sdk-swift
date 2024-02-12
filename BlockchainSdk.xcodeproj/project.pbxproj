@@ -122,6 +122,7 @@
 		2DDEFBF72B5E94F200885675 /* AlgorandTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBF42B5E94F200885675 /* AlgorandTransactionHistoryMapper.swift */; };
 		2DDEFBF82B5E94F200885675 /* AlgorandIndexProviderTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBF52B5E94F200885675 /* AlgorandIndexProviderTarget.swift */; };
 		2DDEFBFA2B5E951400885675 /* AlgorandResponse+TransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBF92B5E951400885675 /* AlgorandResponse+TransactionHistory.swift */; };
+		2DF7621D2B7AB92300666B74 /* AptosFeeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF7621C2B7AB92300666B74 /* AptosFeeInfo.swift */; };
 		47420109BD3DE47300C6F23F /* Pods_BlockchainSdkTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1A207847B605E0517D9A55F /* Pods_BlockchainSdkTests.framework */; };
 		592E206C6981F567C2FB1FDC /* Pods_BlockchainSdkExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B236300074DC3321FAA6A10D /* Pods_BlockchainSdkExample.framework */; };
 		5D006ACD239950F9008BA04D /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D006ACC239950F9008BA04D /* Wallet.swift */; };
@@ -813,6 +814,7 @@
 		2DDEFBF42B5E94F200885675 /* AlgorandTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandTransactionHistoryMapper.swift; sourceTree = "<group>"; };
 		2DDEFBF52B5E94F200885675 /* AlgorandIndexProviderTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandIndexProviderTarget.swift; sourceTree = "<group>"; };
 		2DDEFBF92B5E951400885675 /* AlgorandResponse+TransactionHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AlgorandResponse+TransactionHistory.swift"; sourceTree = "<group>"; };
+		2DF7621C2B7AB92300666B74 /* AptosFeeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AptosFeeInfo.swift; sourceTree = "<group>"; };
 		3452E77A600B278568F13FA9 /* Pods-BlockchainSdkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.release.xcconfig"; sourceTree = "<group>"; };
 		556382E16FB9B2894A77374E /* Pods-BlockchainSdkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.debug.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.debug.xcconfig"; sourceTree = "<group>"; };
 		5D006ACC239950F9008BA04D /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
@@ -1445,6 +1447,7 @@
 				2DB84D402B721BDE00C1CDD1 /* AptosChainId.swift */,
 				2D24F5AD2B6D2C6500D502A0 /* AptosAccountInfo.swift */,
 				2D24F5AE2B6D2C6500D502A0 /* AptosFeeParams.swift */,
+				2DF7621C2B7AB92300666B74 /* AptosFeeInfo.swift */,
 				2D24F5AF2B6D2C6500D502A0 /* AptosTransactionInfo.swift */,
 			);
 			path = Domain;
@@ -4079,6 +4082,7 @@
 				5D304399239A8C9C0066B8D9 /* BitcoinAddressService.swift in Sources */,
 				EF31EA1629DC31E000A59FBE /* RavencoinWalletManager.swift in Sources */,
 				B68507082AEF494E004A431B /* NEARProtocolConfigCache.swift in Sources */,
+				2DF7621D2B7AB92300666B74 /* AptosFeeInfo.swift in Sources */,
 				5D26CEE7243CA4E200994CC0 /* DucatusAddressService.swift in Sources */,
 				2D3328C52A779ACC00C4A84C /* ChiaPuzzleUtils.swift in Sources */,
 				DC5E64E72B1650F400E81AA5 /* OP_RESERVED2.swift in Sources */,

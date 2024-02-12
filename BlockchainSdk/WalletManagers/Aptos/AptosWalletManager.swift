@@ -74,10 +74,20 @@ extension AptosWalletManager: WalletManager {
                 return walletManager
                     .networkService
                     .calculateUsedGasPriceUnit(info: transactionInfo)
+                    .withWeakCaptureOf(self)
+                    .map { manager, info in
+                        let amount = Amount(with: manager.wallet.blockchain, value: info.value)
+                        return Fee(
+                            amount,
+                            parameters: AptosFeeParams(
+                                gasUnitPrice: info.params.gasUnitPrice,
+                                maxGasAmount: info.params.maxGasAmount
+                            )
+                        )
+                    }
                     .eraseToAnyPublisher()
             }
-            .withWeakCaptureOf(self)
-            .map { (walletManager, estimatedFee) -> [Fee] in
+            .map { estimatedFee -> [Fee] in
                 [estimatedFee]
             }
             .eraseToAnyPublisher()

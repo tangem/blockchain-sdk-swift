@@ -12,7 +12,7 @@ struct AptosWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         let chainId: AptosChainId = input.blockchain.isTestnet ? .testnet : .mainnet        
 
-        var providers: [AptosNetworkProvider] = [
+        let providers: [AptosNetworkProvider] = [
             makeNetworkMainnetProvider(
                 for: .nownodes,
                 with: input.blockchainSdkConfig.nowNodesApiKey,
@@ -38,7 +38,7 @@ struct AptosWalletAssembly: WalletManagerAssembly {
         
         let networkService = AptosNetworkService(
             providers: providers,
-            blockchain: input.blockchain
+            blockchainDecimalValue: input.blockchain.decimalValue
         )
         
         return AptosWalletManager(wallet: input.wallet, transactionBuilder: txBuilder, networkService: networkService)
