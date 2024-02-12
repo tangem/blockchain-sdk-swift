@@ -13,9 +13,9 @@ public struct Wallet {
     // MARK: - Properties
 
     public let blockchain: Blockchain
-    public let walletAddresses: [AddressType: Address]
-    
-    public internal(set) var amounts: [Amount.AmountType: Amount] = [:]
+    public private(set) var walletAddresses: [AddressType: Address]
+
+    public internal(set) var amounts: [Amount.AmountType: Amount] = [:] // TODO: Andrey Fedorov - Make setter private (IOS-4990)
     public private(set) var pendingTransactions: [PendingTransactionRecord] = []
     
     // MARK: - Calculations
@@ -116,6 +116,9 @@ public struct Wallet {
         amounts[.token(value: token)] = nil
     }
 
+    mutating func set(address: Address, for addressType: AddressType = .default) {
+        walletAddresses[addressType] = address
+    }
 }
 
 // MARK: - Pending Transaction
