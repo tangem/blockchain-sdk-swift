@@ -46,9 +46,6 @@ extension MoyaError {
              .requestMapping,
              .parameterEncoding:
             return nil
-        @unknown default:
-            assertionFailure("Unknown error kind received: \(self)")
-            return nil
         }
     }
 }
