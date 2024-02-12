@@ -15,6 +15,9 @@ struct HederaTargetConfiguration {
         var apiKeyHeaderValue: String?
     }
 
+    /// Handles manual account creation and other tasks; provided by Tangem.
     let helperNode: NetworkNode
+
+    /// Hedera mirror provided by Hedera itself or third-party providers.
     let mirrorNode: NetworkNode
 }
