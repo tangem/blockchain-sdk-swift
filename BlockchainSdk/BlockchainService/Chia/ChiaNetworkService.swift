@@ -59,21 +59,21 @@ class ChiaNetworkService: MultiNetworkProvider {
         providerPublisher { [weak self] provider in
             guard let self else { return .emptyFail }
             return provider
-                .getFeeEstimate(body: .init(cost: cost, targetTimes: [60, 300]))
+                .getFeeEstimate(body: .init(cost: cost, targetTimes: [60]))
                 .map { response in
-                    let lowEstimatedFee = Decimal(cost) * Decimal(response.feeRateLastBlock) * MultiplicatorConstants.lowMultiplicatorFeeRate
-                    let mediumEstimatedFee = Decimal(cost) * Decimal(response.feeRateLastBlock) * MultiplicatorConstants.mediumMultiplicatorFeeRate
-                    let highEstimatedFee = Decimal(cost) * Decimal(response.feeRateLastBlock) * MultiplicatorConstants.highMultiplicatorFeeRate
+                    let rateLastBlockFee = Decimal(cost) * Decimal(response.feeRateLastBlock) / self.blockchain.decimalValue
+                    let currentRateFee = Decimal(cost) * Decimal(response.currentFeeRate) / self.blockchain.decimalValue
+                    
+                    let baseEstimatedFee = max(rateLastBlockFee, currentRateFee)
                     
                     let feeValues = [
-                        lowEstimatedFee,
-                        mediumEstimatedFee,
-                        highEstimatedFee
+                        baseEstimatedFee * MultiplicatorConstants.lowMultiplicatorFeeRate,
+                        baseEstimatedFee * MultiplicatorConstants.mediumMultiplicatorFeeRate,
+                        baseEstimatedFee * MultiplicatorConstants.highMultiplicatorFeeRate
                     ]
                     
                     let estimatedFeeValues = feeValues.map {
-                        let decimalValue = $0 / self.blockchain.decimalValue
-                        let amountValue = Amount(with: self.blockchain, value: decimalValue)
+                        let amountValue = Amount(with: self.blockchain, value: $0)
                         return Fee(amountValue)
                     }
                     
