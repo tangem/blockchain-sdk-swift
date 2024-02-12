@@ -58,10 +58,11 @@ struct HederaRESTNetworkProvider {
                     do {
                         return try decoder.decode(HederaNetworkResult.APIError.self, from: response.data)
                     } catch {
-                        return WalletError.failedToParseNetworkResponse
+                        // Pass-through the original Moya error if conversion failed
+                        fallthrough
                     }
                 default:
-                    return moyaError.asWalletError ?? moyaError
+                    return moyaError
                 }
             }
     }
