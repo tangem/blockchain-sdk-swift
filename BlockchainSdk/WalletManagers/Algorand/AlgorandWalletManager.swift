@@ -82,7 +82,6 @@ private extension AlgorandWalletManager {
     
     func updatePendingTransactions(with transactionInfo: [AlgorandTransactionInfo]) {
         let completedTransactionHashes = transactionInfo
-            .compactMap({ $0 })
             .filter { $0.status == .committed || $0.status == .removed }
             .map { $0.transactionHash }
             .toSet()
