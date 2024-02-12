@@ -20,7 +20,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case stellar(curve: EllipticCurve, testnet: Bool)
     case ethereum(testnet: Bool)
     case ethereumPoW(testnet: Bool)
-    case ethereumFair
+    case disChain // ex-EthereumFair
     case ethereumClassic(testnet: Bool)
     case rsk
     case bitcoinCash
@@ -111,7 +111,7 @@ public indirect enum Blockchain: Equatable, Hashable {
             return testnet
         case .ethereumPoW(let testnet):
             return testnet
-        case .ethereumFair:
+        case .disChain:
             return false
         case .ton(_, let testnet):
             return testnet
@@ -179,7 +179,7 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .ethereum,
                 .ethereumClassic,
                 .ethereumPoW,
-                .ethereumFair,
+                .disChain,
                 .rsk,
                 .bsc,
                 .polygon,
@@ -272,8 +272,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "xDAI"
         case .ethereumPoW:
             return "ETHW"
-        case .ethereumFair:
-            return "ETF"
+        case .disChain:
+            return "DIS"
         case .ton:
             return "TON"
         case .kava:
@@ -321,8 +321,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Ethereum Classic" + testnetSuffix
         case .ethereumPoW:
             return "Ethereum PoW" + testnetSuffix
-        case .ethereumFair:
-            return "Ethereum Fair" + testnetSuffix
+        case .disChain:
+            return "DisChain (ETHF)" + testnetSuffix
         case .xrp:
             return "XRP Ledger"
         case .rsk:
@@ -451,7 +451,7 @@ extension Blockchain {
         case .ethereum: return isTestnet ? 5 : 1
         case .ethereumClassic: return isTestnet ? 6 : 61 // https://besu.hyperledger.org/en/stable/Concepts/NetworkID-And-ChainID/
         case .ethereumPoW: return isTestnet ? 10002 : 10001
-        case .ethereumFair: return 513100
+        case .disChain: return 513100
         case .rsk: return 30
         case .bsc: return isTestnet ? 97 : 56
         case .polygon: return isTestnet ? 80001 : 137
@@ -518,9 +518,9 @@ extension Blockchain {
                     URL(string: "https://mainnet.ethereumpow.org")!,
                 ]
             }
-        case .ethereumFair:
+        case .disChain:
             return [
-                URL(string: "https://rpc.etherfair.org")!,
+                URL(string: "https://rpc.dischain.xyz")!,
             ]
         case .rsk:
             return [
@@ -802,7 +802,7 @@ extension Blockchain: Codable {
         case .gnosis: return "xdai"
         case .optimism: return "optimism"
         case .ethereumPoW: return "ethereum-pow-iou"
-        case .ethereumFair: return "ethereumfair"
+        case .disChain: return "ethereumfair"
         case .ton: return "ton"
         case .kava: return "kava"
         case .kaspa: return "kaspa"
@@ -870,7 +870,7 @@ extension Blockchain: Codable {
         case "xdai": self = .gnosis
         case "optimism": self = .optimism(testnet: isTestnet)
         case "ethereum-pow-iou": self = .ethereumPoW(testnet: isTestnet)
-        case "ethereumfair": self = .ethereumFair
+        case "ethereumfair", "dischain": self = .disChain
         case "ton": self = .ton(curve: curve, testnet: isTestnet)
         case "kava": self = .kava(testnet: isTestnet)
         case "kaspa": self = .kaspa
@@ -947,7 +947,7 @@ extension Blockchain {
         case "dash": return .dash(testnet: isTestnet)
         case "xdai": return .gnosis
         case "ethereum-pow-iou": return .ethereumPoW(testnet: isTestnet)
-        case "ethereumfair": return .ethereumFair
+        case "ethereumfair", "dischain": return .disChain
         case "ton": return .ton(curve: curve, testnet: isTestnet)
         case "terra": return .terraV1
         case "terra-2": return .terraV2
@@ -991,7 +991,7 @@ extension Blockchain {
                 .arbitrum,
                 .gnosis,
                 .ethereumPoW,
-                .ethereumFair,
+                .disChain,
                 .kava,
                 .cronos,
                 .octa,

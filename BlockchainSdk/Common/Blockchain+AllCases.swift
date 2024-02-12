@@ -39,7 +39,7 @@ public extension Blockchain {
         case .dash: break
         case .gnosis: break
         case .optimism: break
-        case .ethereumFair: break
+        case .disChain: break
         case .ethereumPoW: break
         case .ton: break
         case .kava: break
@@ -90,7 +90,7 @@ public extension Blockchain {
             .dash(testnet: false),
             .gnosis,
             .optimism(testnet: false),
-            .ethereumFair,
+            .disChain,
             .ethereumPoW(testnet: false),
             .ton(curve: .ed25519_slip0010, testnet: false),
             .kava(testnet: false),

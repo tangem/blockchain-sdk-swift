@@ -32,7 +32,7 @@ public struct AddressServiceFactory {
         case .ethereum,
                 .ethereumClassic,
                 .ethereumPoW,
-                .ethereumFair,
+                .disChain,
                 .bsc,
                 .polygon,
                 .avalanche,
