@@ -46,6 +46,9 @@ final class HederaTransactionBuilder {
             .transactionMemo(transactionParams?.memo ?? "")
             .freezeWith(client)
 
+        /// Capturing an existing `Hedera.Client` instance here is not required but may come in handy
+        /// because the client may already have some useful internal state at this point
+        /// (like the list of ready-to-use GRCP nodes with health checks already performed)
         return CompiledTransaction(curve: curve, client: client, innerTransaction: transferTransaction)
     }
 
@@ -86,6 +89,7 @@ final class HederaTransactionBuilder {
 // MARK: - Auxiliary types
 
 extension HederaTransactionBuilder {
+    /// Auxiliary type that hides all implementation details (including dependency on `Hedera iOS SDK`).
     struct CompiledTransaction {
         private let curve: EllipticCurve
         private let client: Hedera.Client
