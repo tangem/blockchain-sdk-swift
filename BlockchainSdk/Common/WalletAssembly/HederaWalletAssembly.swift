@@ -33,7 +33,7 @@ struct HederaWalletAssembly: WalletManagerAssembly {
             restProviders: restProviders
         )
 
-        let transactionBuilder = HederaTransactionBuilder(wallet: input.wallet)
+        let transactionBuilder = HederaTransactionBuilder()
 
         return HederaWalletManager(
             wallet: input.wallet,

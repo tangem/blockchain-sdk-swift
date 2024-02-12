@@ -82,6 +82,7 @@ final class HederaTransactionBuilder {
 // MARK: - Auxiliary types
 
 extension HederaTransactionBuilder {
+    /// Auxiliary type that hides all implementation details (including dependency on `Hedera iOS SDK`).
     struct CompiledTransaction {
         private let curve: EllipticCurve
         private let client: Hedera.Client
