@@ -122,7 +122,7 @@ private extension ChiaWalletManager {
 // MARK: - WithdrawalValidator
 
 extension ChiaWalletManager: WithdrawalValidator {
-    func withdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
+    func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
         let availableAmount = txBuilder.availableAmount()
         let amountAvailableToSend = availableAmount - fee
         

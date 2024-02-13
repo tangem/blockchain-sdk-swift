@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum ValidationError: LocalizedError {
+public enum ValidationError: Hashable, LocalizedError {
     case balanceNotFound
     case invalidAmount
     case amountExceedsBalance

@@ -49,19 +49,3 @@ extension Transaction: Equatable {
 }
 
 extension Transaction: ThenProcessable {}
-
-//public struct TransactionErrors: Error, LocalizedError, Equatable {
-//    public let errors: [TransactionError]
-//    
-//    public var errorDescription: String? {
-//        return errors.first?.localizedDescription
-//    }
-//}
-
-//extension Array where Element == TransactionError {
-//    mutating func appendIfNotNil(_ value: TransactionError?) {
-//        if let value = value {
-//            append(value)
-//        }
-//    }
-//}

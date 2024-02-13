@@ -21,8 +21,7 @@ extension DustRestrictable where Self: WalletProvider {
         }
         
         // This check is first that exclude case below
-        // Try to send a small total (amount + fee)
-        // or token's balance will be too small after
+        // Checking if sending a small total (amount + fee)
         if amount.type == dustValue.type, fee.type == dustValue.type {
             let total = amount + fee
             if total < dustValue {
@@ -33,7 +32,7 @@ extension DustRestrictable where Self: WalletProvider {
             if change.value > 0, change < dustValue {
                 throw ValidationError.dustChange(minimumAmount: dustValue)
             }
-        // Try to send a small amount or token's balance will be too small after
+        // Checking if sending a small amount or token's balance will be small after sent
         } else if dustValue.type == amount.type {
             if amount < dustValue {
                 throw ValidationError.dustAmount(minimumAmount: dustValue)

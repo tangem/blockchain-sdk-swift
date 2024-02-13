@@ -9,10 +9,10 @@
 import Foundation
 
 public protocol WithdrawalValidator {
-    func withdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning?
+    func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning?
 }
 
-public struct WithdrawalWarning {
+public struct WithdrawalWarning: Hashable {
     public let warningMessage: String
     public let reduceMessage: String
     public var ignoreMessage: String? = nil

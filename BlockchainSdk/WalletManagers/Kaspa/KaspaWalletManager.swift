@@ -100,7 +100,7 @@ extension KaspaWalletManager: DustRestrictable {
 }
 
 extension KaspaWalletManager: WithdrawalValidator {
-    func withdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
+    func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
         let amountAvailableToSend = txBuilder.availableAmount() - fee
         if amount <= amountAvailableToSend {
             return nil
@@ -127,7 +127,7 @@ extension KaspaWalletManager: TransactionValidator {
         try validateAmounts(amount: amount, fee: fee.amount)
         try validateDustRestrictable(amount: amount, fee: fee.amount)
         
-        if let withdrawalWarning = withdrawalWarning(amount: amount, fee: fee.amount) {
+        if let withdrawalWarning = validateWithdrawalWarning(amount: amount, fee: fee.amount) {
             throw ValidationError.withdrawalWarning(withdrawalWarning)
         }
     }

@@ -45,6 +45,14 @@ public extension TransactionValidator {
             throw ValidationError.invalidFee
         }
         
+        guard let balance = wallet.amounts[amount.type] else {
+            throw ValidationError.balanceNotFound
+        }
+        
+        guard balance >= amount else {
+            throw ValidationError.amountExceedsBalance
+        }
+        
         guard let feeBalance = wallet.amounts[fee.type] else {
             throw ValidationError.balanceNotFound
         }
@@ -53,20 +61,19 @@ public extension TransactionValidator {
             throw ValidationError.feeExceedsBalance
         }
         
-        guard let balance = wallet.amounts[amount.type] else {
-            throw ValidationError.balanceNotFound
+        // If we try to spend all amount from coin
+        guard amount.type == fee.type else {
+            // Safely return because all the checks were above
+            return
         }
         
-        // If we try to spend all amount from coin
-        if amount.type == fee.type {
-            let total = amount + fee
-            
-            if balance < total {
-                throw ValidationError.totalExceedsBalance
-            }
-        } else if balance < amount {
-            throw ValidationError.amountExceedsBalance
+        let total = amount + fee
+        
+        guard balance >= total else {
+            throw ValidationError.totalExceedsBalance
         }
+        
+        // All checks completed
     }
 }
 
@@ -94,7 +101,7 @@ extension TransactionValidator where Self: WithdrawalValidator {
     func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
         try validateAmounts(amount: amount, fee: fee.amount)
 
-        if let withdrawalWarning = withdrawalWarning(amount: amount, fee: fee.amount) {
+        if let withdrawalWarning = validateWithdrawalWarning(amount: amount, fee: fee.amount) {
             throw ValidationError.withdrawalWarning(withdrawalWarning)
         }
     }

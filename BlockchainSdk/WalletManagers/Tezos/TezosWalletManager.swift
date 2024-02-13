@@ -146,7 +146,7 @@ extension TezosWalletManager: ThenProcessable { }
 
 
 extension TezosWalletManager: WithdrawalValidator {
-    func withdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
+    func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
         guard let walletAmount = wallet.amounts[.coin] else {
             return nil
         }
