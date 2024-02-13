@@ -124,7 +124,7 @@ final class AptosTransactionBuilder {
         let chainID = chainId.rawValue
         let amount = (transaction.amount.value * decimalValue).roundedDecimalNumber.uint64Value
         let gasUnitPrice = (transaction.fee.parameters as? AptosFeeParams)?.gasUnitPrice ?? 0
-        let maxGasAmount = (transaction.fee.amount.value * decimalValue).roundedDecimalNumber.uint64Value
+        let maxGasAmount = (transaction.fee.parameters as? AptosFeeParams)?.maxGasAmount ?? 0
         
         let transfer = AptosTransferMessage.with {
             $0.to = transaction.destinationAddress

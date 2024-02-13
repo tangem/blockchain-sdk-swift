@@ -13,15 +13,13 @@ class AptosNetworkService: MultiNetworkProvider {
     // MARK: - Protperties
     
     let providers: [AptosNetworkProvider]
-    let blockchainDecimalValue: Decimal
     
     var currentProviderIndex: Int = 0
     
     // MARK: - Init
     
-    init(providers: [AptosNetworkProvider], blockchainDecimalValue: Decimal) {
+    init(providers: [AptosNetworkProvider]) {
         self.providers = providers
-        self.blockchainDecimalValue = blockchainDecimalValue
     }
     
     // MARK: - Implementation
@@ -39,14 +37,14 @@ class AptosNetworkService: MultiNetworkProvider {
                         throw WalletError.failedToParseNetworkResponse
                     }
                     
-                    guard 
+                    guard
                         let balanceValue = Decimal(coinJson.data.coin?.value),
-                        let sequenceNumber = Decimal(accountJson.data.sequenceNumber) 
+                        let sequenceNumber = Decimal(accountJson.data.sequenceNumber)
                     else {
                         throw WalletError.failedToParseNetworkResponse
                     }
                     
-                    let decimalBalanceValue = balanceValue / service.blockchainDecimalValue
+                    let decimalBalanceValue = balanceValue
                     return AptosAccountInfo(sequenceNumber: sequenceNumber.int64Value, balance: decimalBalanceValue)
                 }
                 .eraseToAnyPublisher()
@@ -64,7 +62,7 @@ class AptosNetworkService: MultiNetworkProvider {
         }
     }
 
-    func calculateUsedGasPriceUnit(info: AptosTransactionInfo) -> AnyPublisher<(estimatedFee: Decimal, gasUnitPrice: UInt64), Error> {
+    func calculateUsedGasPriceUnit(info: AptosTransactionInfo) -> AnyPublisher<AptosFeeInfo, Error> {
         providerPublisher { [weak self] provider in
             guard let self = self else {
                 return .anyFail(error: WalletError.failedToGetFee)
@@ -80,9 +78,16 @@ class AptosNetworkService: MultiNetworkProvider {
                         throw WalletError.failedToGetFee
                     }
                     
-                    let estimatedFee = (Decimal(info.gasUnitPrice) * gasUsed * Constants.successTransactionSafeFactor) / service.blockchainDecimalValue
+                    let maxGasAmount = gasUsed * Constants.successTransactionSafeFactor
+                    let estimatedFeeDecimal = (Decimal(info.gasUnitPrice) * gasUsed * Constants.successTransactionSafeFactor)
                     
-                    return (estimatedFee, info.gasUnitPrice)
+                    return AptosFeeInfo(
+                        value: estimatedFeeDecimal,
+                        params: AptosFeeParams(
+                            gasUnitPrice: info.gasUnitPrice,
+                            maxGasAmount: maxGasAmount.roundedDecimalNumber.uint64Value
+                        )
+                    )
                 }
                 .eraseToAnyPublisher()
         }

@@ -59,13 +59,13 @@ extension AptosWalletManager: WalletManager {
         networkService
             .getGasUnitPrice()
             .withWeakCaptureOf(self)
-            .flatMap { (walletManager, gasUnitPrice) -> AnyPublisher<(estimatedFee: Decimal, gasUnitPrice: UInt64), Error> in
+            .flatMap { (walletManager, gasUnitPrice) -> AnyPublisher<Fee, Error> in
                 let expirationTimestamp = walletManager.createExpirationTimestampSecs()
                 
                 guard let transactionInfo = try? walletManager.transactionBuilder.buildToCalculateFee(
                     amount: amount,
                     destination: destination,
-                    gasUnitPrice: gasUnitPrice, 
+                    gasUnitPrice: gasUnitPrice,
                     expirationTimestamp: expirationTimestamp
                 ) else {
                     return .anyFail(error: WalletError.failedToGetFee)
@@ -74,17 +74,23 @@ extension AptosWalletManager: WalletManager {
                 return walletManager
                     .networkService
                     .calculateUsedGasPriceUnit(info: transactionInfo)
+                    .withWeakCaptureOf(self)
+                    .map { manager, info in
+                        let decimalValue = info.value / manager.wallet.blockchain.decimalValue
+                        let amount = Amount(with: manager.wallet.blockchain, value: decimalValue)
+                        
+                        return Fee(
+                            amount,
+                            parameters: AptosFeeParams(
+                                gasUnitPrice: info.params.gasUnitPrice,
+                                maxGasAmount: info.params.maxGasAmount
+                            )
+                        )
+                    }
                     .eraseToAnyPublisher()
             }
-            .withWeakCaptureOf(self)
-            .map { (walletManager, result) -> [Fee] in
-                let (estimatedFee, gasUnitPrice) = result
-                
-                let feeAmount = Amount(with: walletManager.wallet.blockchain, value: estimatedFee)
-                
-                return [
-                    Fee(feeAmount, parameters: AptosFeeParams(gasUnitPrice: gasUnitPrice))
-                ]
+            .map { estimatedFee -> [Fee] in
+                [estimatedFee]
             }
             .eraseToAnyPublisher()
     }
@@ -131,7 +137,7 @@ extension AptosWalletManager: WalletManager {
 
 private extension AptosWalletManager {
     func update(with accountModel: AptosAccountInfo, completion: @escaping (Result<Void, Error>) -> Void) {
-        wallet.add(coinValue: accountModel.balance)
+        wallet.add(coinValue: accountModel.balance / wallet.blockchain.decimalValue)
 
         if accountModel.sequenceNumber != transactionBuilder.currentSequenceNumber {
             wallet.clearPendingTransaction()
