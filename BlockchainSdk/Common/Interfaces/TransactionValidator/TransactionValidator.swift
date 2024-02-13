@@ -8,10 +8,10 @@
 
 import Foundation
 import Combine
+import TangemSdk
 
 public protocol TransactionValidator: WalletProvider {
     func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws
-//    func validate(amount: Amount, fee: Fee) throws
 }
 
 public enum DestinationType: Hashable {
@@ -23,12 +23,9 @@ public enum DestinationType: Hashable {
 
 public extension TransactionValidator {
     func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
+        Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
         try validateAmounts(amount: amount, fee: fee.amount)
     }
-
-//    func validate(amount: Amount, fee: Fee) throws {
-//        try validateAmounts(amount: amount, fee: fee.amount)
-//    }
 }
 
 // MARK: - Simple sending amount validation (Amount, Fee)
