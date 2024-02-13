@@ -174,18 +174,16 @@ final class HederaWalletManager: BaseManager {
             .getAccountInfo(publicKey: wallet.publicKey)
             .map(\.accountId)
             .handleEvents(
-                receiveCompletion: { completion in
-                    switch completion {
-                    case .finished:
-                        Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) obtained from the mirror node")
-                    case .failure(let error):
-                        Log.error(
-                            """
-                            \(#fileID): Failed to obtain Hedera account ID for public key \(maskedPublicKey) \
-                            from the mirror node due to error: \(error.localizedDescription)
-                            """
-                        )
-                    }
+                receiveOutput: { _ in
+                    Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) obtained from the mirror node")
+                },
+                receiveFailure: { error in
+                    Log.error(
+                        """
+                        \(#fileID): Failed to obtain Hedera account ID for public key \(maskedPublicKey) \
+                        from the mirror node due to error: \(error.localizedDescription)
+                        """
+                    )
                 }
             )
             .tryCatch { [weak self] error in
@@ -209,18 +207,16 @@ final class HederaWalletManager: BaseManager {
             .eraseToAnyPublisher()
             .map(\.accountId)
             .handleEvents(
-                receiveCompletion: { completion in
-                    switch completion {
-                    case .finished:
-                        Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) obtained by creating account")
-                    case .failure(let error):
-                        Log.error(
-                            """
-                            \(#fileID): Failed to obtain Hedera account ID for public key \(maskedPublicKey) \
-                            by creating account due to error: \(error.localizedDescription)
-                            """
-                        )
-                    }
+                receiveOutput: { _ in
+                    Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) obtained by creating account")
+                },
+                receiveFailure: { error in
+                    Log.error(
+                        """
+                        \(#fileID): Failed to obtain Hedera account ID for public key \(maskedPublicKey) \
+                        by creating account due to error: \(error.localizedDescription)
+                        """
+                    )
                 }
             )
             .mapError(WalletError.blockchainUnavailable(underlyingError:))
