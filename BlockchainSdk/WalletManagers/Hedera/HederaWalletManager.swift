@@ -202,7 +202,6 @@ final class HederaWalletManager: BaseManager {
             }
     }
 
-    // TODO: Andrey Fedorov - Should throw a terminal error if account creation failed for any reason
     private func createAccount() -> some Publisher<String, Error> {
         let maskedPublicKey = maskedPublicKey
         return accountCreator
@@ -224,6 +223,7 @@ final class HederaWalletManager: BaseManager {
                     }
                 }
             )
+            .mapError(WalletError.blockchainUnavailable(underlyingError:))
     }
 }
 
