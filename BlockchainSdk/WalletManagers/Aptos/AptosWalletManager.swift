@@ -76,7 +76,9 @@ extension AptosWalletManager: WalletManager {
                     .calculateUsedGasPriceUnit(info: transactionInfo)
                     .withWeakCaptureOf(self)
                     .map { manager, info in
-                        let amount = Amount(with: manager.wallet.blockchain, value: info.value)
+                        let decimalValue = info.value / manager.wallet.blockchain.decimalValue
+                        let amount = Amount(with: manager.wallet.blockchain, value: decimalValue)
+                        
                         return Fee(
                             amount,
                             parameters: AptosFeeParams(
@@ -135,7 +137,7 @@ extension AptosWalletManager: WalletManager {
 
 private extension AptosWalletManager {
     func update(with accountModel: AptosAccountInfo, completion: @escaping (Result<Void, Error>) -> Void) {
-        wallet.add(coinValue: accountModel.balance)
+        wallet.add(coinValue: accountModel.balance / wallet.blockchain.decimalValue)
 
         if accountModel.sequenceNumber != transactionBuilder.currentSequenceNumber {
             wallet.clearPendingTransaction()

@@ -13,15 +13,13 @@ class AptosNetworkService: MultiNetworkProvider {
     // MARK: - Protperties
     
     let providers: [AptosNetworkProvider]
-    let blockchainDecimalValue: Decimal
     
     var currentProviderIndex: Int = 0
     
     // MARK: - Init
     
-    init(providers: [AptosNetworkProvider], blockchainDecimalValue: Decimal) {
+    init(providers: [AptosNetworkProvider]) {
         self.providers = providers
-        self.blockchainDecimalValue = blockchainDecimalValue
     }
     
     // MARK: - Implementation
@@ -46,7 +44,7 @@ class AptosNetworkService: MultiNetworkProvider {
                         throw WalletError.failedToParseNetworkResponse
                     }
                     
-                    let decimalBalanceValue = balanceValue / service.blockchainDecimalValue
+                    let decimalBalanceValue = balanceValue
                     return AptosAccountInfo(sequenceNumber: sequenceNumber.int64Value, balance: decimalBalanceValue)
                 }
                 .eraseToAnyPublisher()
@@ -81,7 +79,7 @@ class AptosNetworkService: MultiNetworkProvider {
                     }
                     
                     let maxGasAmount = gasUsed * Constants.successTransactionSafeFactor
-                    let estimatedFeeDecimal = (Decimal(info.gasUnitPrice) * gasUsed * Constants.successTransactionSafeFactor) / service.blockchainDecimalValue
+                    let estimatedFeeDecimal = (Decimal(info.gasUnitPrice) * gasUsed * Constants.successTransactionSafeFactor)
                     
                     return AptosFeeInfo(
                         value: estimatedFeeDecimal,
