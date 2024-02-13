@@ -331,6 +331,8 @@
 		B6BA937F2AEA0F4800F84E36 /* NEARNetworkResult.TransactionSendAwait.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6BA937E2AEA0F4800F84E36 /* NEARNetworkResult.TransactionSendAwait.swift */; };
 		B6BE1BA52B7557D5005C937C /* HederaExchangeRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6BE1BA42B7557D5005C937C /* HederaExchangeRate.swift */; };
 		B6BE2BA12B361F1C0019D9E0 /* VeChainFeeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6BE2BA02B361F1C0019D9E0 /* VeChainFeeCalculator.swift */; };
+		B6CE41202B7C0275007A27D1 /* InMemoryBlockchainDataStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE411F2B7C0275007A27D1 /* InMemoryBlockchainDataStorage.swift */; };
+		B6CE41222B7C0308007A27D1 /* SimpleAccountCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE41212B7C0308007A27D1 /* SimpleAccountCreator.swift */; };
 		B6D345F62AD8B4A50009D1B2 /* NEARWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D345F52AD8B4A50009D1B2 /* NEARWalletManager.swift */; };
 		B6D345F82AD8B8040009D1B2 /* NEARNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D345F72AD8B8040009D1B2 /* NEARNetworkProvider.swift */; };
 		B6D346002AD9450D0009D1B2 /* NEARTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D345FF2AD9450D0009D1B2 /* NEARTransactionBuilder.swift */; };
@@ -1051,6 +1053,8 @@
 		B6BA937E2AEA0F4800F84E36 /* NEARNetworkResult.TransactionSendAwait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARNetworkResult.TransactionSendAwait.swift; sourceTree = "<group>"; };
 		B6BE1BA42B7557D5005C937C /* HederaExchangeRate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaExchangeRate.swift; sourceTree = "<group>"; };
 		B6BE2BA02B361F1C0019D9E0 /* VeChainFeeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainFeeCalculator.swift; sourceTree = "<group>"; };
+		B6CE411F2B7C0275007A27D1 /* InMemoryBlockchainDataStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryBlockchainDataStorage.swift; sourceTree = "<group>"; };
+		B6CE41212B7C0308007A27D1 /* SimpleAccountCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleAccountCreator.swift; sourceTree = "<group>"; };
 		B6D345F52AD8B4A50009D1B2 /* NEARWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARWalletManager.swift; sourceTree = "<group>"; };
 		B6D345F72AD8B8040009D1B2 /* NEARNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARNetworkProvider.swift; sourceTree = "<group>"; };
 		B6D345FF2AD9450D0009D1B2 /* NEARTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARTransactionBuilder.swift; sourceTree = "<group>"; };
@@ -2715,6 +2719,8 @@
 				DA59750A27D744A7009F0A1F /* BlockchainSdkExampleApp.swift */,
 				DA59750C27D744A7009F0A1F /* BlockchainSdkExampleView.swift */,
 				DA59751F27D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift */,
+				B6CE411F2B7C0275007A27D1 /* InMemoryBlockchainDataStorage.swift */,
+				B6CE41212B7C0308007A27D1 /* SimpleAccountCreator.swift */,
 				DA11507627DB217200CDC879 /* Launch Screen.storyboard */,
 				DA59750E27D744A9009F0A1F /* Assets.xcassets */,
 				DA59751027D744A9009F0A1F /* Preview Content */,
@@ -4271,8 +4277,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				DA59752027D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift in Sources */,
+				B6CE41222B7C0308007A27D1 /* SimpleAccountCreator.swift in Sources */,
 				DA59750D27D744A7009F0A1F /* BlockchainSdkExampleView.swift in Sources */,
 				DA59750B27D744A7009F0A1F /* BlockchainSdkExampleApp.swift in Sources */,
+				B6CE41202B7C0275007A27D1 /* InMemoryBlockchainDataStorage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
