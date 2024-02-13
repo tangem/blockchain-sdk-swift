@@ -18,7 +18,6 @@ struct HederaWalletAssembly: WalletManagerAssembly {
         let targetConfigurationFactory = HederaTargetConfigurationFactory(
             isTestnet: isTestnet,
             sdkConfig: input.blockchainSdkConfig,
-            helperNodeAPIVersion: .v1,
             mirrorNodeAPIVersion: .v1
         )
 

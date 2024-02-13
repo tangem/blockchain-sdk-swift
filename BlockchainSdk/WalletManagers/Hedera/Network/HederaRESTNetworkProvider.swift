@@ -30,17 +30,6 @@ struct HederaRESTNetworkProvider {
         return requestPublisher(for: .getExchangeRate)
     }
 
-    func createAccount(
-        networkId: String,
-        publicKey: String,
-        cardId: String,
-        cardPublicKey: String
-    ) -> some Publisher<HederaNetworkResult.CreateAccount, Error> {
-        return requestPublisher(
-            for: .createAccount(networkId: networkId, publicKey: publicKey, cardId: cardId, cardPublicKey: cardPublicKey)
-        )
-    }
-
     private func requestPublisher<T: Decodable>(
         for target: HederaTarget.Target
     ) -> some Publisher<T, Swift.Error> {
@@ -72,6 +61,6 @@ struct HederaRESTNetworkProvider {
 
 extension HederaRESTNetworkProvider: HostProvider {
     var host: String {
-        return targetConfiguration.mirrorNode.baseURL.hostOrUnknown
+        return targetConfiguration.baseURL.hostOrUnknown
     }
 }

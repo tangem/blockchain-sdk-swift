@@ -18,7 +18,6 @@ struct HederaTarget {
 
 extension HederaTarget {
     enum Target {
-        case createAccount(networkId: String, publicKey: String, cardId: String, cardPublicKey: String)
         case getAccounts(publicKey: String)
         case getExchangeRate
     }
@@ -29,17 +28,13 @@ extension HederaTarget {
 extension HederaTarget: TargetType {
     var baseURL: URL {
         switch target {
-        case .createAccount:
-            return configuration.helperNode.baseURL
         case .getAccounts, .getExchangeRate:
-            return configuration.mirrorNode.baseURL
+            return configuration.baseURL
         }
     }
 
     var path: String {
         switch target {
-        case .createAccount:
-            return "user-network-account"
         case .getAccounts:
             return "accounts"
         case .getExchangeRate:
@@ -49,8 +44,6 @@ extension HederaTarget: TargetType {
 
     var method: Moya.Method {
         switch target {
-        case .createAccount:
-            return .post
         case .getAccounts, .getExchangeRate:
             return .get
         }
@@ -58,9 +51,6 @@ extension HederaTarget: TargetType {
 
     var task: Moya.Task {
         switch target {
-        case .createAccount(let networkId, let publicKey, _, _):
-            let params = HederaNetworkParams.CreateAccount(networkId: networkId, publicWalletKey: publicKey)
-            return .requestJSONEncodable(params)
         case .getAccounts(let publicKey):
             let parameters: [String: Any] = [
                 "balance": false,
@@ -84,15 +74,9 @@ extension HederaTarget: TargetType {
         ]
 
         switch target {
-        case .createAccount(_, _, let cardId, let cardPublicKey):
-            headers["card_id"] = cardId
-            headers["card_public_key"] = cardPublicKey
-            if let apiKeyHeaderName = configuration.helperNode.apiKeyHeaderName {
-                headers[apiKeyHeaderName] = configuration.helperNode.apiKeyHeaderValue
-            }
         case .getAccounts, .getExchangeRate:
-            if let apiKeyHeaderName = configuration.mirrorNode.apiKeyHeaderName {
-                headers[apiKeyHeaderName] = configuration.mirrorNode.apiKeyHeaderValue
+            if let apiKeyHeaderName = configuration.apiKeyHeaderName {
+                headers[apiKeyHeaderName] = configuration.apiKeyHeaderValue
             }
         }
 
