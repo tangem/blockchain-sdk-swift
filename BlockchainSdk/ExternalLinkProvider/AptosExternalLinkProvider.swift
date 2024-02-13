@@ -24,10 +24,10 @@ struct AptosExternalLinkProvider: ExternalLinkProvider {
     }
 
     func url(address: String, contractAddress: String?) -> URL? {
-        return URL(string: "\(baseExplorerUrl)/address/\(address)?network\(isTestnet ? "testnet" : "mainnet")")
+        return URL(string: "\(baseExplorerUrl)/account/\(address)?network=\(isTestnet ? "testnet" : "mainnet")")
     }
 
     func url(transaction hash: String) -> URL? {
-        return URL(string: "\(baseExplorerUrl)/txn/\(hash)")
+        return URL(string: "\(baseExplorerUrl)/txn/\(hash)?network=\(isTestnet ? "testnet" : "mainnet")")
     }
 }
