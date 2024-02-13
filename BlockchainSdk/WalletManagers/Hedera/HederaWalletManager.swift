@@ -16,6 +16,17 @@ final class HederaWalletManager: BaseManager {
     private let dataStorage: BlockchainDataStorage
     private let accountCreator: AccountCreator
 
+    private lazy var maskedPublicKey: String = {
+        let length = 4
+        let publicKey = wallet.publicKey.blockchainKey.hexString
+
+        return publicKey
+            .dropLast(length)
+            .map { _ in "•" }
+            .joined()
+        + publicKey.suffix(length)
+    }()
+
     init(
         wallet: Wallet,
         networkService: HederaNetworkService,
@@ -109,6 +120,7 @@ final class HederaWalletManager: BaseManager {
     /// - Note: Has a side-effect: updates local model (`wallet.address`) if needed.
     private func getAccountId() -> AnyPublisher<String, Error> {
         if let accountId = wallet.address.nilIfEmpty {
+            Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) obtained from the Wallet")
             return .justWithError(output: accountId)
         }
 
@@ -123,6 +135,7 @@ final class HederaWalletManager: BaseManager {
 
     /// - Note: Has a side-effect: updates local cache (`dataStorage`) if needed.
     private func getCachedAccountId() -> AnyPublisher<String, Error> {
+        let maskedPublicKey = maskedPublicKey
         let storageKey = Constants.storageKeyPrefix + wallet
             .publicKey
             .blockchainKey
@@ -137,6 +150,7 @@ final class HederaWalletManager: BaseManager {
             .withWeakCaptureOf(self)
             .flatMap { walletManager, accountId -> AnyPublisher<String, Error> in
                 if let accountId = accountId?.nilIfEmpty {
+                    Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) obtained from the data storage")
                     return .justWithError(output: accountId)
                 }
 
@@ -155,9 +169,25 @@ final class HederaWalletManager: BaseManager {
 
     /// - Note: Has a side-effect: creates a new account on the Hedera network if needed.
     private func getRemoteAccountId() -> some Publisher<String, Error> {
+        let maskedPublicKey = maskedPublicKey
         return networkService
             .getAccountInfo(publicKey: wallet.publicKey)
             .map(\.accountId)
+            .handleEvents(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) obtained from the mirror node")
+                    case .failure(let error):
+                        Log.error(
+                            """
+                            \(#fileID): Failed to obtain Hedera account ID for public key \(maskedPublicKey) \
+                            from the mirror node due to error: \(error.localizedDescription)
+                            """
+                        )
+                    }
+                }
+            )
             .tryCatch { [weak self] error in
                 guard let self else {
                     throw error
@@ -174,10 +204,26 @@ final class HederaWalletManager: BaseManager {
 
     // TODO: Andrey Fedorov - Should throw a terminal error if account creation failed for any reason
     private func createAccount() -> some Publisher<String, Error> {
+        let maskedPublicKey = maskedPublicKey
         return accountCreator
             .createAccount(blockchain: wallet.blockchain, publicKey: wallet.publicKey)
             .eraseToAnyPublisher()
             .map(\.accountId)
+            .handleEvents(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) obtained by creating account")
+                    case .failure(let error):
+                        Log.error(
+                            """
+                            \(#fileID): Failed to obtain Hedera account ID for public key \(maskedPublicKey) \
+                            by creating account due to error: \(error.localizedDescription)
+                            """
+                        )
+                    }
+                }
+            )
     }
 }
 
