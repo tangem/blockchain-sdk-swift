@@ -31,6 +31,32 @@ extension Publisher where Failure == Swift.Error {
     }
 }
 
+extension Publisher {
+    func handleEvents(
+        receiveSubscription: ((Subscription) -> Void)? = nil,
+        receiveOutput: ((Self.Output) -> Void)? = nil,
+        receiveFailure: ((Self.Failure) -> Void)? = nil,
+        receiveFinish: (() -> Void)? = nil,
+        receiveCancel: (() -> Void)? = nil,
+        receiveRequest: ((Subscribers.Demand) -> Void)? = nil
+    ) -> Publishers.HandleEvents<Self> {
+        return handleEvents(
+            receiveSubscription: receiveSubscription,
+            receiveOutput: receiveOutput,
+            receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    receiveFinish?()
+                case .failure(let error):
+                    receiveFailure?(error)
+                }
+            },
+            receiveCancel: receiveCancel,
+            receiveRequest: receiveRequest
+        )
+    }
+}
+
 // MARK: - Private implementation
 
 private extension Publishers {
