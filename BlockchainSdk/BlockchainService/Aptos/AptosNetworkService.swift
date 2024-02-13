@@ -44,8 +44,7 @@ class AptosNetworkService: MultiNetworkProvider {
                         throw WalletError.failedToParseNetworkResponse
                     }
                     
-                    let decimalBalanceValue = balanceValue
-                    return AptosAccountInfo(sequenceNumber: sequenceNumber.int64Value, balance: decimalBalanceValue)
+                    return AptosAccountInfo(sequenceNumber: sequenceNumber.int64Value, balance: balanceValue)
                 }
                 .eraseToAnyPublisher()
         }

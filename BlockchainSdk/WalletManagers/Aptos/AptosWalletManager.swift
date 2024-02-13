@@ -31,14 +31,17 @@ final class AptosWalletManager: BaseManager {
             .getAccount(address: wallet.address)
             .sink(
                 receiveCompletion: { [weak self] completionSubscription in
-                    if case let .failure(error) = completionSubscription {
+                    switch completionSubscription {
+                    case .finished:
+                        completion(.success(()))
+                    case .failure(let error):
                         self?.wallet.clearAmounts()
                         self?.wallet.clearPendingTransaction()
                         completion(.failure(error))
                     }
                 },
                 receiveValue: { [weak self] accountInfo in
-                    self?.update(with: accountInfo, completion: completion)
+                    self?.update(with: accountInfo)
                 }
             )
     }
@@ -136,7 +139,7 @@ extension AptosWalletManager: WalletManager {
 // MARK: - Private Implementation
 
 private extension AptosWalletManager {
-    func update(with accountModel: AptosAccountInfo, completion: @escaping (Result<Void, Error>) -> Void) {
+    func update(with accountModel: AptosAccountInfo) {
         wallet.add(coinValue: accountModel.balance / wallet.blockchain.decimalValue)
 
         if accountModel.sequenceNumber != transactionBuilder.currentSequenceNumber {
@@ -144,8 +147,6 @@ private extension AptosWalletManager {
         }
         
         transactionBuilder.update(sequenceNumber: accountModel.sequenceNumber)
-
-        completion(.success(()))
     }
     
     private func createExpirationTimestampSecs() -> UInt64 {
