@@ -8,16 +8,9 @@
 
 import Foundation
 
+/// Hedera mirror provided by Hedera itself or third-party providers.
 struct HederaTargetConfiguration {
-    struct NetworkNode {
-        var baseURL: URL
-        var apiKeyHeaderName: String?
-        var apiKeyHeaderValue: String?
-    }
-
-    /// Handles manual account creation and other tasks; provided by Tangem.
-    let helperNode: NetworkNode
-
-    /// Hedera mirror provided by Hedera itself or third-party providers.
-    let mirrorNode: NetworkNode
+    var baseURL: URL
+    var apiKeyHeaderName: String?
+    var apiKeyHeaderValue: String?
 }

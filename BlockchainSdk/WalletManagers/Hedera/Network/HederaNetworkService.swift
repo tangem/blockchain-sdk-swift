@@ -48,11 +48,6 @@ final class HederaNetworkService {
         }
     }
 
-    func createAccount(request: HederaCreateAccountRequest) -> some Publisher<HederaAccountInfo, Error> {
-        // TODO: Andrey Fedorov - Add actual implementation (IOS-5888)
-        return Fail(error: WalletError.empty)
-    }
-
     func getBalance(accountId: String) -> some Publisher<Amount, Error> {
         let blockchain = blockchain
         return consensusProvider
