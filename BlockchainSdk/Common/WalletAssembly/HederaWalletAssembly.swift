@@ -13,6 +13,7 @@ struct HederaWalletAssembly: WalletManagerAssembly {
         let blockchain = input.blockchain
         let isTestnet = blockchain.isTestnet
         let networkConfig = input.networkConfig
+        let dependencies = input.blockchainSdkDependencies
 
         let targetConfigurationFactory = HederaTargetConfigurationFactory(
             isTestnet: isTestnet,
@@ -38,7 +39,9 @@ struct HederaWalletAssembly: WalletManagerAssembly {
         return HederaWalletManager(
             wallet: input.wallet,
             networkService: networkService,
-            transactionBuilder: transactionBuilder
+            transactionBuilder: transactionBuilder,
+            accountCreator: dependencies.accountCreator,
+            dataStorage: dependencies.dataStorage
         )
     }
 }

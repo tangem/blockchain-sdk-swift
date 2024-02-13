@@ -12,14 +12,20 @@ import Combine
 final class HederaWalletManager: BaseManager {
     private let networkService: HederaNetworkService
     private let transactionBuilder: HederaTransactionBuilder
+    private let dataStorage: BlockchainDataStorage
+    private let accountCreator: AccountCreator
 
     init(
         wallet: Wallet,
         networkService: HederaNetworkService,
-        transactionBuilder: HederaTransactionBuilder
+        transactionBuilder: HederaTransactionBuilder,
+        accountCreator: AccountCreator,
+        dataStorage: BlockchainDataStorage
     ) {
         self.networkService = networkService
         self.transactionBuilder = transactionBuilder
+        self.accountCreator = accountCreator
+        self.dataStorage = dataStorage
         super.init(wallet: wallet)
     }
 
