@@ -11,9 +11,11 @@ import Combine
 /// Adapter for existing BlockBookUtxoProvider
 final class BitcoinCashNowNodesNetworkProvider: BitcoinNetworkProvider {
     private let blockBookUtxoProvider: BlockBookUtxoProvider
+    private let addressService: AddressService
     
-    init(blockBookUtxoProvider: BlockBookUtxoProvider) {
+    init(blockBookUtxoProvider: BlockBookUtxoProvider, addressService: AddressService) {
         self.blockBookUtxoProvider = blockBookUtxoProvider
+        self.addressService = addressService
     }
     
     var host: String {
@@ -25,9 +27,12 @@ final class BitcoinCashNowNodesNetworkProvider: BitcoinNetworkProvider {
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        let prefix = "bitcoincash:"
-        let address = address.hasPrefix(prefix) ? address : prefix + address
-        return blockBookUtxoProvider.getInfo(address: address)
+        if let addressService = addressService as? BitcoinCashAddressService, addressService.isLegacy(address) {
+            return blockBookUtxoProvider.getInfo(address: address)
+        } else {
+            let prefix = "bitcoincash:"
+            return blockBookUtxoProvider.getInfo(address: address.hasPrefix(prefix) ? address : prefix + address)
+        }
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
@@ -53,6 +58,7 @@ final class BitcoinCashNowNodesNetworkProvider: BitcoinNetworkProvider {
         let response: AnyPublisher<SendResponse, Error> = blockBookUtxoProvider.executeRequest(
             .sendNode(NodeRequest.sendRequest(signedTransaction: transaction))
         )
+        
         return response
             .map { $0.result }
             .eraseToAnyPublisher()
