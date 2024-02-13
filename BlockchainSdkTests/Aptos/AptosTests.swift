@@ -54,7 +54,7 @@ final class AptosTests: XCTestCase {
             Amount(
                 with: blockchain, value: 3296766 / blockchain.decimalValue
             ),
-            parameters: AptosFeeParams(gasUnitPrice: 100)
+            parameters: AptosFeeParams(gasUnitPrice: 100, maxGasAmount: 3296766)
         )
         
         let transaction = Transaction(

@@ -12,22 +12,29 @@ struct AptosWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         let chainId: AptosChainId = input.blockchain.isTestnet ? .testnet : .mainnet        
 
-        let providers: [AptosNetworkProvider] = [
+        var providers: [AptosNetworkProvider] = []
+        
+        if !input.blockchain.isTestnet {
+            providers.append(contentsOf: [
+                makeNetworkMainnetProvider(
+                    for: .nownodes,
+                    with: input.blockchainSdkConfig.nowNodesApiKey,
+                    networkConfig: input.networkConfig
+                ),
+                makeNetworkMainnetProvider(
+                    for: .getblock,
+                    with: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .rest),
+                    networkConfig: input.networkConfig
+                ),
+            ])
+        }
+        
+        providers.append(
             makeNetworkMainnetProvider(
-                for: .nownodes,
-                with: input.blockchainSdkConfig.nowNodesApiKey,
-                networkConfig: input.networkConfig
-            ),
-            makeNetworkMainnetProvider(
-                for: .getblock,
-                with: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .rest),
-                networkConfig: input.networkConfig
-            ),
-            makeNetworkMainnetProvider(
-                for: .aptoslabs,
+                for: .aptoslabs(isTestnet: input.blockchain.isTestnet),
                 networkConfig: input.networkConfig
             )
-        ]
+        )
         
         let txBuilder = AptosTransactionBuilder(
             publicKey: input.wallet.publicKey.blockchainKey,

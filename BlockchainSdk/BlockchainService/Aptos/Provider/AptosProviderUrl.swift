@@ -11,7 +11,7 @@ import Foundation
 enum AptosProviderType {
     case nownodes
     case getblock
-    case aptoslabs
+    case aptoslabs(isTestnet: Bool)
 }
 
 struct AptosProviderNode: HostProvider {
@@ -28,8 +28,9 @@ struct AptosProviderNode: HostProvider {
             return URL(string: "https://go.getblock.io/\(apiKeyValue)/")!
         case .nownodes:
             return URL(string: "https://apt.nownodes.io/")!
-        case .aptoslabs:
-            return URL(string: "https://fullnode.mainnet.aptoslabs.com/")!
+        case .aptoslabs(let isTestnet):
+            let domain = isTestnet ? "testnet" : "mainnet"
+            return URL(string: "https://fullnode.\(domain).aptoslabs.com/")!
         }
     }
     
