@@ -27,7 +27,7 @@ struct BitcoinCashWalletAssembly: WalletManagerAssembly {
             var providers = [AnyBitcoinNetworkProvider]()
             
             providers.append(
-                networkProviderAssembly.makeBitCoinCashNowNodesNetworkProvider(input: input)
+                networkProviderAssembly.makeBitcoinCashNowNodesNetworkProvider(input: input)
             )
             
             providers.append(

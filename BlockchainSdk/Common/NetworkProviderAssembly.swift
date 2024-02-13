@@ -36,7 +36,7 @@ struct NetworkProviderAssembly {
         }
     }
     
-    func makeBitCoinCashNowNodesNetworkProvider(
+    func makeBitcoinCashNowNodesNetworkProvider(
         input: NetworkProviderAssemblyInput
     ) -> AnyBitcoinNetworkProvider {
         BitcoinCashNowNodesNetworkProvider(

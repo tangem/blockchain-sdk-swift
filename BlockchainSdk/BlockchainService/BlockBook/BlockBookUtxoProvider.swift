@@ -49,7 +49,7 @@ class BlockBookUtxoProvider {
             guard let self else {
                 throw WalletError.empty
             }
-            return try convertFee(Decimal(response.result.feerate))
+            return try convertFeeRate(Decimal(response.result.feerate))
         }.eraseToAnyPublisher()
     }
     
@@ -86,7 +86,7 @@ class BlockBookUtxoProvider {
             .eraseToAnyPublisher()
     }
     
-    func convertFee(_ fee: Decimal) throws -> Decimal {
+    func convertFeeRate(_ fee: Decimal) throws -> Decimal {
         if fee <= 0 {
             throw BlockchainSdkError.failedToLoadFee
         }
