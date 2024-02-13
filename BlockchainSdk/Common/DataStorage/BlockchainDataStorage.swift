@@ -8,9 +8,7 @@
 
 import Foundation
 
-protocol BlockchainDataStorage {
-    associatedtype BlockchainData
-
-    func get(key: String) async -> BlockchainData?
-    func store(key: String, value: BlockchainData?) async
+public protocol BlockchainDataStorage {
+    func get<BlockchainData>(key: String) async -> BlockchainData? where BlockchainData: Decodable
+    func store<BlockchainData>(key: String, value: BlockchainData?) async where BlockchainData: Encodable
 }
