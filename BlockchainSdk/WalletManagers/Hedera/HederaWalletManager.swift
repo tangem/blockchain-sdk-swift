@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import TangemSdk
 
 final class HederaWalletManager: BaseManager {
     private let networkService: HederaNetworkService
@@ -34,21 +35,17 @@ final class HederaWalletManager: BaseManager {
         fatalError("\(#function) has not been implemented")
     }
 
+    // MARK: - Wallet update
+
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        let transactionsInfoPublisher = wallet
-            .pendingTransactions
-            .publisher
-            .setFailureType(to: Error.self)
+        cancellable = getAccountId()
             .withWeakCaptureOf(self)
-            .flatMap { walletManager, pendingTransaction in
-                return walletManager.networkService.getTransactionInfo(transactionHash: pendingTransaction.hash)
+            .flatMap { walletManager, accountId in
+                return Publishers.CombineLatest(
+                    walletManager.makeBalancePublisher(accountId: accountId),
+                    walletManager.makeTransactionsInfoPublisher()
+                )
             }
-            .collect()
-
-        let balancePublisher = networkService
-            .getBalance(accountId: wallet.address)
-
-        cancellable = Publishers.CombineLatest(balancePublisher, transactionsInfoPublisher)
             .sink(
                 receiveCompletion: { [weak self] result in
                     switch result {
@@ -83,6 +80,104 @@ final class HederaWalletManager: BaseManager {
         let pendingTransaction = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: sendResult.hash)
 
         wallet.addPendingTransaction(pendingTransaction)
+    }
+
+    private func updateWalletAddress(accountId: String) {
+        let address = PlainAddress(value: accountId, publicKey: wallet.publicKey, type: .default)
+        wallet.set(address: address)
+    }
+
+    private func makeBalancePublisher(accountId: String) -> some Publisher<Amount, Error> {
+        return networkService
+            .getBalance(accountId: accountId)
+    }
+
+    private func makeTransactionsInfoPublisher() -> some Publisher<[HederaTransactionInfo], Error> {
+        return wallet
+            .pendingTransactions
+            .publisher
+            .setFailureType(to: Error.self)
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, pendingTransaction in
+                return walletManager.networkService.getTransactionInfo(transactionHash: pendingTransaction.hash)
+            }
+            .collect()
+    }
+
+    // MARK: - Account ID fetching, caching and creation
+
+    /// - Note: Has a side-effect: updates local model (`wallet.address`) if needed.
+    private func getAccountId() -> AnyPublisher<String, Error> {
+        if let accountId = wallet.address.nilIfEmpty {
+            return .justWithError(output: accountId)
+        }
+
+        return getCachedAccountId()
+            .withWeakCaptureOf(self)
+            .map { walletManager, accountId in
+                walletManager.updateWalletAddress(accountId: accountId)
+                return accountId
+            }
+            .eraseToAnyPublisher()
+    }
+
+    /// - Note: Has a side-effect: updates local cache (`dataStorage`) if needed.
+    private func getCachedAccountId() -> AnyPublisher<String, Error> {
+        let storageKey = Constants.storageKeyPrefix + wallet
+            .publicKey
+            .blockchainKey
+            .getSha256()
+            .hexString
+
+        return .justWithError(output: storageKey)
+            .withWeakCaptureOf(self)
+            .asyncMap { walletManager, storageKey -> String? in
+                await walletManager.dataStorage.get(key: storageKey)
+            }
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, accountId -> AnyPublisher<String, Error> in
+                if let accountId = accountId?.nilIfEmpty {
+                    return .justWithError(output: accountId)
+                }
+
+                return walletManager
+                    .getRemoteAccountId()
+                    .withWeakCaptureOf(walletManager)
+                    .asyncMap { walletManager, accountId in
+                        await walletManager.dataStorage.store(key: storageKey, value: accountId)
+                        return accountId
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+
+    /// - Note: Has a side-effect: creates a new account on the Hedera network if needed.
+    private func getRemoteAccountId() -> some Publisher<String, Error> {
+        return networkService
+            .getAccountInfo(publicKey: wallet.publicKey)
+            .map(\.accountId)
+            .tryCatch { [weak self] error in
+                guard let self else {
+                    throw error
+                }
+
+                switch error {
+                case HederaError.accountDoesNotExist:
+                    return createAccount()
+                default:
+                    throw error
+                }
+            }
+    }
+
+    // TODO: Andrey Fedorov - Should throw a terminal error if account creation failed for any reason
+    private func createAccount() -> some Publisher<String, Error> {
+        return accountCreator
+            .createAccount(blockchain: wallet.blockchain, publicKey: wallet.publicKey)
+            .eraseToAnyPublisher()
+            .map(\.accountId)
     }
 }
 
@@ -164,6 +259,7 @@ extension HederaWalletManager: WalletManager {
 
 private extension HederaWalletManager {
     private enum Constants {
+        static let storageKeyPrefix = "hedera_wallet_"
         /// https://docs.hedera.com/hedera/networks/mainnet/fees
         static let cryptoTransferServiceCostInUSD = Decimal(string: "0.0001", locale: locale)
         /// Hedera fees are low, allow 10% safety margin to allow usage of not precise fee estimate.
