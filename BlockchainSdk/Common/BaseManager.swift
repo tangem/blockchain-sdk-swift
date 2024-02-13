@@ -17,10 +17,6 @@ class BaseManager: WalletProvider {
     }
     
     var cardTokens: [Token] = []
-    
-    var defaultSourceAddress: String { wallet.address }
-    var defaultChangeAddress: String { wallet.address }
-
     var cancellable: Cancellable? = nil
 
     var walletPublisher: AnyPublisher<Wallet, Never> { _wallet.eraseToAnyPublisher() }
@@ -118,8 +114,8 @@ class BaseManager: WalletProvider {
 }
 
 // MARK: - TransactionCreator
-
-extension BaseManager: TransactionCreator {
+/*
+extension WalletManager {
     func createTransaction(
         amount: Amount,
         fee: Fee,
@@ -137,7 +133,8 @@ extension BaseManager: TransactionCreator {
             contractAddress: contractAddress ?? amount.type.token?.contractAddress
         )
         
-        try validateTransaction(amount: amount, fee: fee)
+        try validate(transaction: transaction)
+        
         return transaction
     }
     
@@ -161,9 +158,10 @@ extension BaseManager: TransactionCreator {
         }
     }
 }
+*/
 
 // MARK: - Validation
-
+/*
 private extension BaseManager {
     func validateTransaction(amount: Amount, fee: Fee?) throws {
         var errors = [TransactionError]()
@@ -224,7 +222,7 @@ private extension BaseManager {
             throw TransactionErrors(errors: errors)
         }
     }
-    
+
     func validateAmountValue(_ amount: Amount) -> Bool {
         return amount.value >= 0
     }
@@ -239,3 +237,131 @@ private extension BaseManager {
         return true
     }
 }
+*/
+
+/*
+public struct TransactionValidator<WalletManager: WalletProvider> {
+    private let walletManager: WalletManager
+    private var wallet: Wallet { walletManager.wallet }
+
+    public init(walletManager: WalletManager) {
+        self.walletManager = walletManager
+    }
+    
+    // 1. Не хватает баланса
+    // 2. Не хватает баланса для fee
+    // 3 Пыль отправки/останется
+    // 4 Варнинг для депозита
+    // 5 Ошибка по мин балансу
+    // 6 Ошибка для создания аккаунта
+    // 7 Ошибка по кол-во utxo
+    // 8. Ошибка по повышенной транзакции
+    //
+    
+    func validate(amount: Amount, fee: Amount) throws {
+        try validateNumbers(amount: amount, fee: fee)
+        try checkDustAmount(amount: amount, fee: fee)
+                
+        if let minimumBalanceRestrictable = self as? MinimumBalanceRestrictable, case .coin = amount.type {
+            guard let balance = wallet.amounts[amount.type] else {
+                throw WalletError.empty
+            }
+            
+            let total = amount + fee
+            let remainderBalance = balance - total
+            if remainderBalance < minimumBalanceRestrictable.minimumBalance && !remainderBalance.isZero {
+                ErrorType.error(.minimumBalance(minimumBalance: minimumBalanceRestrictable.minimumBalance))
+            }
+        }
+    }
+    
+    private func checkDustAmount(amount: Amount, fee: Amount) throws {
+        guard let dustAmount = (walletManager as? DustRestrictable)?.dustValue else {
+            return
+        }
+        
+        guard let balance = wallet.amounts[amount.type] else {
+            throw WalletError.empty
+        }
+        
+        // This check is first that exclude case below
+        // Try to send a small total (amount + fee)
+        // or token's balance will be too small after
+        if dustAmount.type == amount.type, dustAmount.type == fee.type {
+            let total = amount + fee
+            if total < dustAmount {
+                throw ErrorType.error(.dustAmount(minimumAmount: dustAmount))
+            }
+            
+            let change = balance - amount
+            if change.value > 0, change < dustAmount {
+                ErrorType.error(.dustChange(minimumAmount: dustAmount))
+            }
+        }
+        
+        // Try to send a small amount or token's balance will be too small after
+        if dustAmount.type == amount.type, amount < dustAmount {
+            throw ErrorType.error(.dustAmount(minimumAmount: dustAmount))
+            
+            let change = balance - amount
+            if change.value > 0, change < dustAmount {
+                ErrorType.error(.dustChange(minimumAmount: dustAmount))
+            }
+        }
+        
+        // Try to send a small fee or fee's balance will be too small after
+        if dustAmount.type == fee.type, fee < dustAmount {
+            throw ErrorType.error(.dustAmount(minimumAmount: dustAmount))
+            
+            guard let feeBalance = wallet.amounts[fee.type] else {
+                throw WalletError.empty
+            }
+            
+            let change = feeBalance - fee
+            if change.value > 0, change < dustAmount {
+                ErrorType.error(.dustChange(minimumAmount: dustAmount))
+            }
+        }
+    }
+
+    private func validateNumbers(amount: Amount, fee: Amount) throws {
+        guard amount.value >= 0 else {
+            throw ErrorType.error(.invalidAmount)
+        }
+        
+        guard fee.value >= 0 else {
+            throw ErrorType.error(.invalidFee)
+        }
+        
+        guard let feeBalance = wallet.amounts[fee.type] else {
+            throw WalletError.empty
+        }
+        
+        guard feeBalance >= fee else {
+            throw ErrorType.error(.feeExceedsBalance)
+        }
+        
+        guard let balance = wallet.amounts[amount.type] else {
+            throw WalletError.empty
+        }
+        
+        // If we try to spend all amount from coin
+        if amount.type == fee.type {
+            let total = amount + fee
+            
+            if balance < total {
+                throw ErrorType.error(.totalExceedsBalance)
+            }
+        } else if balance < amount {
+            throw ErrorType.error(.amountExceedsBalance)
+        }
+    }
+}
+
+extension TransactionValidator {
+    enum ErrorType: Error {
+        case warning(TransactionError)
+        case error(TransactionError)
+    }
+}
+*/

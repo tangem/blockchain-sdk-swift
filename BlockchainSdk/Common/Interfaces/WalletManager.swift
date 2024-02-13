@@ -11,7 +11,7 @@ import TangemSdk
 import Combine
 
 @available(iOS 13.0, *)
-public protocol WalletManager: WalletProvider, BlockchainDataProvider, TransactionSender, TransactionCreator, TransactionFeeProvider {
+public protocol WalletManager: WalletProvider, BlockchainDataProvider, TransactionSender, TransactionCreator, TransactionFeeProvider, TransactionValidator {
     var cardTokens: [Token] { get }
     func update()
     func updatePublisher() -> AnyPublisher<WalletManagerState, Never>
@@ -52,6 +52,11 @@ public protocol WalletProvider: AnyObject {
     var wallet: Wallet { get set }
     var walletPublisher: AnyPublisher<Wallet, Never> { get }
     var statePublisher: AnyPublisher<WalletManagerState, Never> { get }
+}
+
+public extension WalletProvider {
+    var defaultSourceAddress: String { wallet.address }
+    var defaultChangeAddress: String { wallet.address }
 }
 
 public protocol BlockchainDataProvider {
@@ -117,20 +122,9 @@ public protocol SignatureCountValidator {
     func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error>
 }
 
-public protocol WithdrawalValidator {
-    func validate(_ transaction: Transaction) -> WithdrawalWarning?
-}
-
 @available(iOS 13.0, *)
 public protocol AddressResolver {
     func resolve(_ address: String) async throws -> String
-}
-
-public struct WithdrawalWarning {
-    public let warningMessage: String
-    public let reduceMessage: String
-    public var ignoreMessage: String? = nil
-    public let suggestedReduceAmount: Amount
 }
 
 public protocol RentProvider {

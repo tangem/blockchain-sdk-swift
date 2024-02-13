@@ -100,13 +100,13 @@ extension KaspaWalletManager: DustRestrictable {
 }
 
 extension KaspaWalletManager: WithdrawalValidator {
-    func validate(_ transaction: Transaction) -> WithdrawalWarning? {
-        let amountAvailableToSend = txBuilder.availableAmount() - transaction.fee.amount
-        if transaction.amount <= amountAvailableToSend {
+    func withdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
+        let amountAvailableToSend = txBuilder.availableAmount() - fee
+        if amount <= amountAvailableToSend {
             return nil
         }
         
-        let amountToReduceBy = transaction.amount - amountAvailableToSend
+        let amountToReduceBy = amount - amountAvailableToSend
         
         return WithdrawalWarning(
             warningMessage: "common_utxo_validate_withdrawal_message_warning".localized(
@@ -115,5 +115,20 @@ extension KaspaWalletManager: WithdrawalValidator {
             reduceMessage: "common_ok".localized,
             suggestedReduceAmount: amountToReduceBy
         )
+    }
+}
+
+// MARK: - TransactionValidator
+
+// KaspaWalletManager can't use the default implementation of `TransactionValidator`
+// because it has both and `DustRestrictable` and `WithdrawalValidator`
+extension KaspaWalletManager: TransactionValidator {
+    func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
+        try validateAmounts(amount: amount, fee: fee.amount)
+        try validateDustRestrictable(amount: amount, fee: fee.amount)
+        
+        if let withdrawalWarning = withdrawalWarning(amount: amount, fee: fee.amount) {
+            throw ValidationError.withdrawalWarning(withdrawalWarning)
+        }
     }
 }

@@ -8,7 +8,6 @@
 
 import Foundation
 
-@available(iOS 13.0, *)
 public protocol TransactionCreator {
     func createTransaction(
         amount: Amount,
@@ -17,13 +16,9 @@ public protocol TransactionCreator {
         destinationAddress: String,
         changeAddress: String?,
         contractAddress: String?
-    ) throws -> Transaction
-    
-    func validate(fee: Fee) throws
-    func validate(amount: Amount) throws
+    ) -> Transaction
 }
 
-@available(iOS 13.0, *)
 public extension TransactionCreator {
     func createTransaction(
         amount: Amount,
@@ -32,8 +27,8 @@ public extension TransactionCreator {
         destinationAddress: String,
         changeAddress: String? = nil,
         contractAddress: String? = nil
-    ) throws -> Transaction {
-        try self.createTransaction(
+    ) -> Transaction {
+        createTransaction(
             amount: amount,
             fee: fee,
             sourceAddress: sourceAddress,
@@ -44,3 +39,24 @@ public extension TransactionCreator {
     }
 }
 
+// MARK: - WalletProvider
+
+public extension TransactionCreator where Self: WalletProvider {
+    func createTransaction(
+        amount: Amount,
+        fee: Fee,
+        sourceAddress: String? = nil,
+        destinationAddress: String,
+        changeAddress: String? = nil,
+        contractAddress: String? = nil
+    ) -> Transaction {
+        Transaction(
+            amount: amount,
+            fee: fee,
+            sourceAddress: sourceAddress ?? defaultSourceAddress,
+            destinationAddress: destinationAddress,
+            changeAddress: changeAddress ?? defaultChangeAddress,
+            contractAddress: contractAddress ?? amount.type.token?.contractAddress
+        )
+    }
+}

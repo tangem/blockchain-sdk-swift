@@ -146,14 +146,14 @@ extension TezosWalletManager: ThenProcessable { }
 
 
 extension TezosWalletManager: WithdrawalValidator {
-    func validate(_ transaction: Transaction) -> WithdrawalWarning? {
+    func withdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
         guard let walletAmount = wallet.amounts[.coin] else {
             return nil
         }
         
         let minimumAmount: Decimal = 0.000001
         
-        if transaction.amount + transaction.fee.amount == walletAmount {
+        if amount + fee == walletAmount {
             return WithdrawalWarning(warningMessage: String(format: "xtz_withdrawal_message_warning".localized, minimumAmount.description),
                                      reduceMessage: String(format: "xtz_withdrawal_message_reduce".localized, minimumAmount.description),
                                      ignoreMessage: "xtz_withdrawal_message_ignore".localized,
