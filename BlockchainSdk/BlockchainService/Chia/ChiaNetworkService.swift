@@ -42,7 +42,10 @@ class ChiaNetworkService: MultiNetworkProvider {
             provider
                 .sendTransaction(body: ChiaTransactionBody(spendBundle: spendBundle))
                 .tryMap { response in
-                    guard response.status == ChiaSendTransactionResponse.Constants.successStatus else {
+                    guard 
+                        response.success,
+                        response.status == ChiaSendTransactionResponse.Constants.successStatus
+                    else {
                         throw WalletError.failedToSendTx
                     }
                     
@@ -56,19 +59,36 @@ class ChiaNetworkService: MultiNetworkProvider {
         providerPublisher { [weak self] provider in
             guard let self else { return .emptyFail }
             return provider
-                .getFeeEstimate(body: .init(cost: cost, targetTimes: [60, 300]))
+                .getFeeEstimate(body: .init(cost: cost, targetTimes: [60]))
                 .map { response in
-                    var estimatedFees: [Decimal] = []
+                    let rateLastBlockFee = Decimal(cost) * Decimal(response.feeRateLastBlock) / self.blockchain.decimalValue
+                    let currentRateFee = Decimal(cost) * Decimal(response.currentFeeRate) / self.blockchain.decimalValue
                     
-                    let highEstimatedValue = Decimal(Double(cost) * response.feeRateLastBlock) / self.blockchain.decimalValue
-                    estimatedFees.append(highEstimatedValue)
+                    let baseEstimatedFee = max(rateLastBlockFee, currentRateFee)
                     
-                    return estimatedFees.sorted().map {
-                        let amount = Amount(with: self.blockchain, value: $0)
-                        return Fee(amount)
+                    let feeValues = [
+                        baseEstimatedFee * MultiplicatorConstants.lowMultiplicatorFeeRate,
+                        baseEstimatedFee * MultiplicatorConstants.mediumMultiplicatorFeeRate,
+                        baseEstimatedFee * MultiplicatorConstants.highMultiplicatorFeeRate
+                    ]
+                    
+                    let estimatedFeeValues = feeValues.map {
+                        let amountValue = Amount(with: self.blockchain, value: $0)
+                        return Fee(amountValue)
                     }
+                    
+                    return estimatedFeeValues
                 }
                 .eraseToAnyPublisher()
         }
+    }
+}
+
+extension ChiaNetworkService {
+    /// Necessary to increase the value of the commission due to the fact that receiving a commission via API does not always work correctly
+    enum MultiplicatorConstants {
+        static let lowMultiplicatorFeeRate: Decimal = 1.5
+        static let mediumMultiplicatorFeeRate: Decimal = 2
+        static let highMultiplicatorFeeRate: Decimal = 5
     }
 }
