@@ -48,12 +48,12 @@ enum AlgorandTransactionHistory {
             
             init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
-                confirmedRound = try container.decode(UInt64?.self, forKey: .confirmedRound)
+                confirmedRound = try container.decodeIfPresent(UInt64.self, forKey: .confirmedRound)
                 fee = try container.decode(UInt64.self, forKey: .fee)
-                genesisHash = try container.decode(String?.self, forKey: .genesisHash)
-                id = try container.decode(String?.self, forKey: .id)
+                genesisHash = try container.decodeIfPresent(String.self, forKey: .genesisHash)
+                id = try container.decodeIfPresent(String.self, forKey: .id)
                 paymentTransaction = try container.decode(PaymentTransaction?.self, forKey: .paymentTransaction)
-                roundTime = try container.decode(Date?.self, forKey: .roundTime)
+                roundTime = try container.decodeIfPresent(Date.self, forKey: .roundTime)
                 sender = try container.decode(String.self, forKey: .sender)
                 txType = try container.decode(String.self, forKey: .txType)
             }
