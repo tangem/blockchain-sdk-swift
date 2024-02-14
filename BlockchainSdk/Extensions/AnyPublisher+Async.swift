@@ -8,19 +8,6 @@
 
 import Combine
 
-extension AnyPublisher where Failure == Never {
-    func async() async -> Output {
-        await withCheckedContinuation { continuation in
-            var cancellable: AnyCancellable?
-            cancellable = first()
-                .sink(receiveValue: { output in
-                    continuation.resume(returning: output)
-                    withExtendedLifetime(cancellable) {}
-                })
-        }
-    }
-}
-
 extension AnyPublisher where Failure == Error {
     func async() async throws -> Output {
         try await withCheckedThrowingContinuation { continuation in
