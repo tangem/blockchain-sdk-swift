@@ -82,6 +82,11 @@ public extension TransactionValidator {
 // MARK: - DustRestrictable
 
 extension TransactionValidator where Self: DustRestrictable {
+    func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
+        Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
+        try validate(amount: amount, fee: fee)
+    }
+    
     func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
         try validateDustRestrictable(amount: amount, fee: fee.amount)
@@ -91,6 +96,11 @@ extension TransactionValidator where Self: DustRestrictable {
 // MARK: - MinimumBalanceRestrictable
 
 extension TransactionValidator where Self: MinimumBalanceRestrictable {
+    func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
+        Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
+        try validate(amount: amount, fee: fee)
+    }
+    
     func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
         try validateMinimumBalanceRestrictable(amount: amount, fee: fee.amount)
@@ -100,9 +110,32 @@ extension TransactionValidator where Self: MinimumBalanceRestrictable {
 // MARK: - WithdrawalValidator
 
 extension TransactionValidator where Self: WithdrawalValidator {
+    func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
+        Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
+        try validate(amount: amount, fee: fee)
+    }
+    
     func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
 
+        if let withdrawalWarning = validateWithdrawalWarning(amount: amount, fee: fee.amount) {
+            throw ValidationError.withdrawalWarning(withdrawalWarning)
+        }
+    }
+}
+
+// MARK: - DustRestrictable, WithdrawalValidator e.g. KaspaWalletManager
+
+extension TransactionValidator where Self: WithdrawalValidator, Self: DustRestrictable {
+    func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
+        Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
+        try validate(amount: amount, fee: fee)
+    }
+
+    func validate(amount: Amount, fee: Fee) throws {
+        try validateAmounts(amount: amount, fee: fee.amount)
+        try validateDustRestrictable(amount: amount, fee: fee.amount)
+        
         if let withdrawalWarning = validateWithdrawalWarning(amount: amount, fee: fee.amount) {
             throw ValidationError.withdrawalWarning(withdrawalWarning)
         }

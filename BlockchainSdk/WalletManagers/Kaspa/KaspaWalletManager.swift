@@ -117,18 +117,3 @@ extension KaspaWalletManager: WithdrawalValidator {
         )
     }
 }
-
-// MARK: - TransactionValidator
-
-// KaspaWalletManager can't use the default implementation of `TransactionValidator`
-// because it has both and `DustRestrictable` and `WithdrawalValidator`
-extension KaspaWalletManager: TransactionValidator {
-    func validate(amount: Amount, fee: Fee) throws {
-        try validateAmounts(amount: amount, fee: fee.amount)
-        try validateDustRestrictable(amount: amount, fee: fee.amount)
-        
-        if let withdrawalWarning = validateWithdrawalWarning(amount: amount, fee: fee.amount) {
-            throw ValidationError.withdrawalWarning(withdrawalWarning)
-        }
-    }
-}
