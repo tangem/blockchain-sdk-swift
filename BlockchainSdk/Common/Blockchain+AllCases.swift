@@ -58,6 +58,7 @@ public extension Blockchain {
         case .xdc: break
         case .algorand: break
         case .shibarium: break
+        case .aptos: break
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -109,6 +110,7 @@ public extension Blockchain {
             .algorand(curve: .ed25519_slip0010, testnet: false),
             .xdc(testnet: false),
             .shibarium(testnet: false),
+            .aptos(curve: .ed25519_slip0010, testnet: false),
         ]
     }
 }
