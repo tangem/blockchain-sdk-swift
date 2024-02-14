@@ -7,13 +7,13 @@
 //
 
 import Foundation
+import TangemSdk
 import XCTest
 import WalletCore
 
 @testable import BlockchainSdk
 
 final class AlgorandTests: XCTestCase {
-    private let blockchain: BlockchainSdk.Blockchain = .algorand(curve: .ed25519_slip0010, testnet: false)
     private let coinType: CoinType = .algorand
     
     /*
@@ -25,10 +25,20 @@ final class AlgorandTests: XCTestCase {
     
     // MARK: - Impementation
     
+    func testCorrectTransactionEd25519() throws {
+        try testTransactionBuilder(curve: .ed25519)
+    }
+    
+    func testCorrectTransactionEd25519Slip0010() throws {
+        try testTransactionBuilder(curve: .ed25519_slip0010)
+    }
+    
     /*
      https://algoexplorer.io/tx/GMS3DRWDCL3SC57BCKCTOBV2SBIZZMTHNYEUZEV6A6WWH4DOS6TQ
      */
-    func testTransactionBuilder() throws {
+    func testTransactionBuilder(curve: EllipticCurve) throws {
+        let blockchain: BlockchainSdk.Blockchain = .algorand(curve: curve, testnet: false)
+        
         let privateKey = PrivateKey(data: privateKeyData)!
         let publicKey = privateKey.getPublicKeyByType(pubkeyType: .ed25519)
         
@@ -68,6 +78,10 @@ final class AlgorandTests: XCTestCase {
         XCTAssertEqual(buildForSign.hexString, expectedBuildForSign)
         
         let signature = privateKey.sign(digest: buildForSign, curve: .ed25519)
+        XCTAssertNotNil(signature)
+        
+        // Validate hash size
+        TransactionSizeTesterUtility().testTxSizes([signature ?? Data()])
         
         let buildForSend = try transactionBuilder.buildForSend(
             transaction: transaction,

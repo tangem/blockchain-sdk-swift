@@ -60,7 +60,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case xdc(testnet: Bool)
     case algorand(curve: EllipticCurve, testnet: Bool)
     case shibarium(testnet: Bool)
-
+    case aptos(curve: EllipticCurve, testnet: Bool)
     public var isTestnet: Bool {
         switch self {
         case .bitcoin(let testnet):
@@ -136,6 +136,8 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .xdc(let testnet):
             return testnet
         case .algorand(_, let testnet):
+			return testnet
+        case .aptos(_, let testnet):
             return testnet
         case .shibarium(let testnet):
             return testnet
@@ -155,7 +157,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .xrp(let curve),
                 .tezos(let curve),
                 .near(let curve, _),
-                .algorand(let curve, _):
+                .algorand(let curve, _),
+                .aptos(let curve, _):
             return curve
         case .chia:
             return .bls12381_G2_AUG
@@ -217,6 +220,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return 24
         case .algorand:
             return 6
+        case .aptos:
+            return 8
         }
     }
 
@@ -308,6 +313,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "ALGO"
         case .shibarium:
             return "BONE"
+        case .aptos:
+            return "APT"
         }
     }
 
@@ -363,6 +370,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "XDC Network"
         case .shibarium:
             return "Shibarium" + testnetSuffix
+        case .aptos:
+            return "Aptos"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -418,7 +427,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .stellar,
                 .optimism,
                 .ton,
-                .near:
+                .near,
+                .aptos:
             return true
         case .fantom,
                 .tron,
@@ -819,6 +829,7 @@ extension Blockchain: Codable {
         case .xdc: return "xdc"
         case .algorand: return "algorand"
         case .shibarium: return "shibarium"
+        case .aptos: return "aptos"
         }
     }
 
@@ -887,6 +898,7 @@ extension Blockchain: Codable {
         case "xdc": self = .xdc(testnet: isTestnet)
         case "algorand": self = .algorand(curve: curve, testnet: isTestnet)
         case "shibarium": self = .shibarium(testnet: isTestnet)
+        case "aptos": self = .aptos(curve: curve, testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -959,6 +971,7 @@ extension Blockchain {
         case "xdc": return .xdc(testnet: isTestnet)
         case "algorand": return .algorand(curve: curve, testnet: isTestnet)
         case "shibarium": return .shibarium(testnet: isTestnet)
+        case "aptos": return .aptos(curve: curve, testnet: isTestnet)
         default: return nil
         }
     }
@@ -1038,6 +1051,8 @@ extension Blockchain {
             return XDCWalletAssembly()
         case .algorand:
             return AlgorandWalletAssembly()
+        case .aptos:
+            return AptosWalletAssembly()
         }
     }
 }
