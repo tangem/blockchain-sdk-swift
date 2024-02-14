@@ -12,6 +12,7 @@ import TangemSdk
 
 public protocol TransactionValidator: WalletProvider {
     func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws
+    func validate(amount: Amount, fee: Fee) throws
 }
 
 public enum DestinationType: Hashable {
@@ -24,6 +25,10 @@ public enum DestinationType: Hashable {
 public extension TransactionValidator {
     func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
         Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
+        try validateAmounts(amount: amount, fee: fee.amount)
+    }
+    
+    func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
     }
 }
@@ -77,7 +82,7 @@ public extension TransactionValidator {
 // MARK: - DustRestrictable
 
 extension TransactionValidator where Self: DustRestrictable {
-    func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
+    func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
         try validateDustRestrictable(amount: amount, fee: fee.amount)
     }
@@ -86,7 +91,7 @@ extension TransactionValidator where Self: DustRestrictable {
 // MARK: - MinimumBalanceRestrictable
 
 extension TransactionValidator where Self: MinimumBalanceRestrictable {
-    func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
+    func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
         try validateMinimumBalanceRestrictable(amount: amount, fee: fee.amount)
     }
@@ -95,7 +100,7 @@ extension TransactionValidator where Self: MinimumBalanceRestrictable {
 // MARK: - WithdrawalValidator
 
 extension TransactionValidator where Self: WithdrawalValidator {
-    func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
+    func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
 
         if let withdrawalWarning = validateWithdrawalWarning(amount: amount, fee: fee.amount) {

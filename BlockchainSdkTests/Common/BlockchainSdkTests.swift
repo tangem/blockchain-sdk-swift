@@ -92,7 +92,7 @@ class BlockchainSdkTests: XCTestCase {
         XCTAssertTrue(rskAddressService.validate(correctAddressWithChecksum))
     }
     
-    func testTxValidation() throws {
+    func testTxValidation() async throws {
         let wallet = Wallet(
             blockchain: .bitcoin(testnet: false),
             addresses: [.default: PlainAddress(
