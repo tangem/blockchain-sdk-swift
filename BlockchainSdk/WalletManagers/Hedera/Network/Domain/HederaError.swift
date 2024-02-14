@@ -8,9 +8,16 @@
 
 import Foundation
 
-enum HederaError: Error {
-    /// Account with a given public key does not exist on the Hedera network and must be created manually.
+enum HederaError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .accountDoesNotExist:
+            return "Account with a given public key does not exist on the Hedera network and must be created manually."
+        case .unsupportedCurve(let curveName):
+            return "Hedera supports either ED25519 or ECDSA (secp256k1) curves. Curve '\(curveName)' is not supported"
+        }
+    }
+
     case accountDoesNotExist
-    /// Hedera supports either ED25519 or ECDSA (secp256k1) curves.
     case unsupportedCurve(curveName: String)
 }
