@@ -37,25 +37,23 @@ enum AlgorandTransactionHistory {
         // MARK: - Item Decodable
         
         struct Item: Decodable {
-            let confirmedRound: UInt64
+            let confirmedRound: UInt64?
             let fee: UInt64
-            let genesisHash: String
-            let id: String
-            let intraRoundOffset: UInt64
+            let genesisHash: String?
+            let id: String?
             let paymentTransaction: PaymentTransaction?
-            let roundTime: Date
+            let roundTime: Date?
             let sender: String
             let txType: String
             
             init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
-                confirmedRound = try container.decode(UInt64.self, forKey: .confirmedRound)
+                confirmedRound = try container.decode(UInt64?.self, forKey: .confirmedRound)
                 fee = try container.decode(UInt64.self, forKey: .fee)
-                genesisHash = try container.decode(String.self, forKey: .genesisHash)
-                id = try container.decode(String.self, forKey: .id)
-                intraRoundOffset = try container.decode(UInt64.self, forKey: .intraRoundOffset)
+                genesisHash = try container.decode(String?.self, forKey: .genesisHash)
+                id = try container.decode(String?.self, forKey: .id)
                 paymentTransaction = try container.decode(PaymentTransaction?.self, forKey: .paymentTransaction)
-                roundTime = try container.decode(Date.self, forKey: .roundTime)
+                roundTime = try container.decode(Date?.self, forKey: .roundTime)
                 sender = try container.decode(String.self, forKey: .sender)
                 txType = try container.decode(String.self, forKey: .txType)
             }

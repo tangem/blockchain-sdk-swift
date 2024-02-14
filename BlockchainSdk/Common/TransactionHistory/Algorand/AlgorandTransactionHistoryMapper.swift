@@ -24,13 +24,16 @@ extension AlgorandTransactionHistoryMapper {
         currentWalletAddress: String
     ) -> [TransactionRecord] {
         items.compactMap {
-            guard let paymentTransaction = $0.paymentTransaction else { return nil }
+            guard 
+                let id = $0.id,
+                let paymentTransaction = $0.paymentTransaction
+            else { return nil }
             
             let decimalFeeValue = Decimal($0.fee) / blockchain.decimalValue
             let decimalAmountValue = Decimal(paymentTransaction.amount) / blockchain.decimalValue
             
             return TransactionRecord(
-                hash: $0.id,
+                hash: id,
                 source: .single(
                     .init(address: $0.sender, amount: decimalAmountValue)
                 ),
