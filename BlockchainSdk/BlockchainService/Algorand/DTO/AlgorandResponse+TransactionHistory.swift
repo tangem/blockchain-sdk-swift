@@ -42,7 +42,7 @@ enum AlgorandTransactionHistory {
             let genesisHash: String
             let id: String
             let intraRoundOffset: UInt64
-            let paymentTransaction: PaymentTransaction
+            let paymentTransaction: PaymentTransaction?
             let roundTime: Date
             let sender: String
             let txType: String
@@ -54,7 +54,7 @@ enum AlgorandTransactionHistory {
                 genesisHash = try container.decode(String.self, forKey: .genesisHash)
                 id = try container.decode(String.self, forKey: .id)
                 intraRoundOffset = try container.decode(UInt64.self, forKey: .intraRoundOffset)
-                paymentTransaction = try container.decode(PaymentTransaction.self, forKey: .paymentTransaction)
+                paymentTransaction = try container.decode(PaymentTransaction?.self, forKey: .paymentTransaction)
                 roundTime = try container.decode(Date.self, forKey: .roundTime)
                 sender = try container.decode(String.self, forKey: .sender)
                 txType = try container.decode(String.self, forKey: .txType)
