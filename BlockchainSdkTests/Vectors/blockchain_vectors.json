@@ -233,5 +233,11 @@
         "curve": "ed25519_slip0010",
         "shelley": false
     },
+    {
+        "key": "aptos",
+        "testnet": false,
+        "curve": "ed25519_slip0010",
+        "shelley": false
+    },
 ]
 
