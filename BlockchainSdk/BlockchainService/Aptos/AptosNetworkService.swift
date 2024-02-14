@@ -73,7 +73,7 @@ class AptosNetworkService: MultiNetworkProvider {
                 .calculateUsedGasPriceUnit(transactionBody: transactionBody)
                 .withWeakCaptureOf(self)
                 .tryMap { service, response in
-                    guard response.first?.success == true, let gasUsed = Decimal(response.first?.gasUsed) else {
+                    guard let gasUsed = Decimal(response.first?.gasUsed) else {
                         throw WalletError.failedToGetFee
                     }
                     

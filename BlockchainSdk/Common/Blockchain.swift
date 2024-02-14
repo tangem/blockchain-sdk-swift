@@ -427,7 +427,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .stellar,
                 .optimism,
                 .ton,
-                .near:
+                .near,
+                .aptos:
             return true
         case .fantom,
                 .tron,

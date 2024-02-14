@@ -38,7 +38,6 @@ extension AptosResponse {
 extension AptosResponse {
     struct SimulateTransactionBody: Decodable {
         let gasUsed: String
-        let success: Bool
     }
     
     struct SubmitTransactionBody: Decodable {
