@@ -12,16 +12,18 @@ import CryptoSwift
 import TangemSdk
 
 final class HederaTransactionBuilder {
-    private let wallet: Wallet
+    private let publicKey: Data
+    private let curve: EllipticCurve
+    private let isTestnet: Bool
 
     private lazy var client: Client = {
-        return wallet.blockchain.isTestnet ? Client.forTestnet() : Client.forMainnet()
+        return isTestnet ? Client.forTestnet() : Client.forMainnet()
     }()
 
-    private var curve: EllipticCurve { wallet.blockchain.curve }
-
-    init(wallet: Wallet) {
-        self.wallet = wallet
+    init(publicKey: Data, curve: EllipticCurve, isTestnet: Bool) {
+        self.publicKey = publicKey
+        self.curve = curve
+        self.isTestnet = isTestnet
     }
 
     func buildForSign(transaction: Transaction) throws -> CompiledTransaction {
@@ -58,9 +60,9 @@ final class HederaTransactionBuilder {
     private func getPublicKey() throws -> Hedera.PublicKey {
         switch curve {
         case .ed25519, .ed25519_slip0010:
-            return try .fromBytesEd25519(wallet.publicKey.blockchainKey)
+            return try .fromBytesEd25519(publicKey)
         case .secp256k1:
-            let ecdsaKey = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
+            let ecdsaKey = try Secp256k1Key(with: publicKey).compress()
             return try .fromBytesEcdsa(ecdsaKey)
         default:
             throw HederaError.unsupportedCurve(curveName: curve.rawValue)
