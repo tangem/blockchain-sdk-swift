@@ -160,6 +160,7 @@ final class VeChainNetworkService: MultiNetworkProvider {
                 .sendTransaction(rawTransaction)
                 .map { TransactionSendResult(hash: $0.id) }
                 .mapError { error in
+                    // TODO: - Remove replace error for this service
                     if let error = error as? WalletError {
                         return error
                     }
