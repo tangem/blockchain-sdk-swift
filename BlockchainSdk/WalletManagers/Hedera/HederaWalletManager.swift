@@ -96,6 +96,7 @@ final class HederaWalletManager: BaseManager {
     private func updateWalletAddress(accountId: String) {
         let addressType: AddressType = .default
         let address = PlainAddress(value: accountId, publicKey: wallet.publicKey, type: addressType)
+
         wallet.set(address: address, for: addressType)
     }
 
@@ -175,6 +176,7 @@ final class HederaWalletManager: BaseManager {
     /// - Note: Has a side-effect: creates a new account on the Hedera network if needed.
     private func getRemoteAccountId() -> some Publisher<String, Error> {
         let maskedPublicKey = maskedPublicKey
+
         return networkService
             .getAccountInfo(publicKey: wallet.publicKey)
             .map(\.accountId)
@@ -207,6 +209,7 @@ final class HederaWalletManager: BaseManager {
 
     private func createAccount() -> some Publisher<String, Error> {
         let maskedPublicKey = maskedPublicKey
+
         return accountCreator
             .createAccount(blockchain: wallet.blockchain, publicKey: wallet.publicKey)
             .eraseToAnyPublisher()
