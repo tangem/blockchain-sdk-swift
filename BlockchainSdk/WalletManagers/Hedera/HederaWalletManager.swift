@@ -94,8 +94,9 @@ final class HederaWalletManager: BaseManager {
     }
 
     private func updateWalletAddress(accountId: String) {
-        let address = PlainAddress(value: accountId, publicKey: wallet.publicKey, type: .default)
-        wallet.set(address: address)
+        let addressType: AddressType = .default
+        let address = PlainAddress(value: accountId, publicKey: wallet.publicKey, type: addressType)
+        wallet.set(address: address, for: addressType)
     }
 
     private func makeBalancePublisher(accountId: String) -> some Publisher<Amount, Error> {
