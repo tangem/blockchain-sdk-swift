@@ -74,7 +74,9 @@ extension CoinType {
             self = .near
         case .veChain:
             self = .veChain
-        case .ethereumPoW, .disChain, .rsk, .gnosis, .kaspa, .cronos, .azero, .telos, .ducatus, .octa, .chia, .decimal, .xdc, .shibarium:
+        case .aptos:
+            self = .aptos
+        case .ethereumPoW, . disChain, .rsk, .gnosis, .kaspa, .cronos, .azero, .telos, .ducatus, .octa, .chia, .decimal, .xdc, .shibarium:
             // Blockchains that are not in WalletCore yet
             return nil
         case .algorand:
