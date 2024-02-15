@@ -12,16 +12,13 @@ import Combine
 final class HederaNetworkService {
     var currentProviderIndex: Int
 
-    private let blockchain: Blockchain
     private let consensusProvider: HederaConsensusNetworkProvider
     private let restProviders: [HederaRESTNetworkProvider]
 
     init(
-        blockchain: Blockchain,
         consensusProvider: HederaConsensusNetworkProvider,
         restProviders: [HederaRESTNetworkProvider]
     ) {
-        self.blockchain = blockchain
         self.consensusProvider = consensusProvider
         self.restProviders = restProviders
         currentProviderIndex = 0
@@ -48,11 +45,9 @@ final class HederaNetworkService {
         }
     }
 
-    func getBalance(accountId: String) -> some Publisher<Amount, Error> {
-        let blockchain = blockchain
+    func getBalance(accountId: String) -> some Publisher<Decimal, Error> {
         return consensusProvider
             .getBalance(accountId: accountId)
-            .map { Amount(with: blockchain, value: $0) }
     }
 
     func getExchangeRate() -> some Publisher<HederaExchangeRate, Error> {
