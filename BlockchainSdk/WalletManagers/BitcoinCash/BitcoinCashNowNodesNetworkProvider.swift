@@ -11,11 +11,11 @@ import Combine
 /// Adapter for existing BlockBookUtxoProvider
 final class BitcoinCashNowNodesNetworkProvider: BitcoinNetworkProvider {
     private let blockBookUtxoProvider: BlockBookUtxoProvider
-    private let addressService: AddressService
+    private let bitcoinCashAddressService: BitcoinCashAddressService
     
-    init(blockBookUtxoProvider: BlockBookUtxoProvider, addressService: AddressService) {
+    init(blockBookUtxoProvider: BlockBookUtxoProvider, bitcoinCashAddressService: BitcoinCashAddressService) {
         self.blockBookUtxoProvider = blockBookUtxoProvider
-        self.addressService = addressService
+        self.bitcoinCashAddressService = bitcoinCashAddressService
     }
     
     var host: String {
@@ -27,41 +27,34 @@ final class BitcoinCashNowNodesNetworkProvider: BitcoinNetworkProvider {
     }
     
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        if let addressService = addressService as? BitcoinCashAddressService, addressService.isLegacy(address) {
-            return blockBookUtxoProvider.getInfo(address: address)
-        } else {
-            let prefix = "bitcoincash:"
-            return blockBookUtxoProvider.getInfo(address: address.hasPrefix(prefix) ? address : prefix + address)
-        }
+        blockBookUtxoProvider.getInfo(address: addAddressPrefixIfNeeded(address))
     }
     
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
-        let response: AnyPublisher<NodeEstimateFeeResponse, Error> = blockBookUtxoProvider.executeRequest(
-            .fees(NodeRequest.estimateFeeRequest(method: "estimatefee"))
+        blockBookUtxoProvider.executeRequest(
+            .fees(NodeRequest.estimateFeeRequest(method: "estimatefee")),
+            responseType: NodeEstimateFeeResponse.self
         )
-        
-        return response
-            .tryMap { [weak self] response in
-                guard let self else {
-                    throw WalletError.empty
-                }
-                
-                return try blockBookUtxoProvider.convertFeeRate(response.result)
-            }.map { fee in
-                // fee for BCH is constant
-                BitcoinFee(minimalSatoshiPerByte: fee, normalSatoshiPerByte: fee, prioritySatoshiPerByte: fee)
+        .tryMap { [weak self] response in
+            guard let self else {
+                throw WalletError.empty
             }
-            .eraseToAnyPublisher()
+            
+            return try blockBookUtxoProvider.convertFeeRate(response.result)
+        }.map { fee in
+            // fee for BCH is constant
+            BitcoinFee(minimalSatoshiPerByte: fee, normalSatoshiPerByte: fee, prioritySatoshiPerByte: fee)
+        }
+        .eraseToAnyPublisher()
     }
     
     func send(transaction: String) -> AnyPublisher<String, Error> {
-        let response: AnyPublisher<SendResponse, Error> = blockBookUtxoProvider.executeRequest(
-            .sendNode(NodeRequest.sendRequest(signedTransaction: transaction))
+        blockBookUtxoProvider.executeRequest(
+            .sendNode(NodeRequest.sendRequest(signedTransaction: transaction)),
+            responseType: SendResponse.self
         )
-        
-        return response
-            .map { $0.result }
-            .eraseToAnyPublisher()
+        .map { $0.result }
+        .eraseToAnyPublisher()
     }
     
     func push(transaction: String) -> AnyPublisher<String, Error> {
@@ -70,5 +63,14 @@ final class BitcoinCashNowNodesNetworkProvider: BitcoinNetworkProvider {
     
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
         blockBookUtxoProvider.getSignatureCount(address: address)
+    }
+    
+    private func addAddressPrefixIfNeeded(_ address: String) -> String {
+        if bitcoinCashAddressService.isLegacy(address) {
+            return address
+        } else {
+            let prefix = "bitcoincash:"
+            return address.hasPrefix(prefix) ? address : prefix + address
+        }
     }
 }

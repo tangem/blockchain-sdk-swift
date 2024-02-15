@@ -38,11 +38,11 @@ struct NetworkProviderAssembly {
     
     func makeBitcoinCashNowNodesNetworkProvider(
         input: NetworkProviderAssemblyInput,
-        addressService: AddressService
+        bitcoinCashAddressService: BitcoinCashAddressService
     ) -> AnyBitcoinNetworkProvider {
         return BitcoinCashNowNodesNetworkProvider(
             blockBookUtxoProvider: makeBlockBookUtxoProvider(with: input, for: .nowNodes),
-            addressService: addressService
+            bitcoinCashAddressService: bitcoinCashAddressService
         ).eraseToAnyBitcoinNetworkProvider()
     }
     

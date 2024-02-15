@@ -41,11 +41,11 @@ class BlockBookUtxoProvider {
     }
     
     func getFeeRatePerByte(for confirmationBlocks: Int) -> AnyPublisher<Decimal, Error> {
-        let result: AnyPublisher<BlockBookFeeResponse, Error> = executeRequest(
-            .fees(NodeRequest.estimateFeeRequest(confirmationBlocks: confirmationBlocks))
+        executeRequest(
+            .fees(NodeRequest.estimateFeeRequest(confirmationBlocks: confirmationBlocks)),
+            responseType: BlockBookFeeResponse.self
         )
-        
-        return result.tryMap { [weak self] response in
+        .tryMap { [weak self] response in
             guard let self else {
                 throw WalletError.empty
             }
@@ -58,12 +58,12 @@ class BlockBookUtxoProvider {
             return .anyFail(error: WalletError.failedToSendTx)
         }
         
-        let result: AnyPublisher<SendResponse, Error> = executeRequest(
-            .sendBlockBook(tx: transactionData)
+        return executeRequest(
+            .sendBlockBook(tx: transactionData),
+            responseType: SendResponse.self
         )
-        return result
-            .map { $0.result }
-            .eraseToAnyPublisher()
+        .map { $0.result }
+        .eraseToAnyPublisher()
     }
     
     func mapBitcoinFee(
@@ -105,6 +105,13 @@ class BlockBookUtxoProvider {
             .map(T.self)
             .eraseError()
             .eraseToAnyPublisher()
+    }
+    
+    func executeRequest<T: Decodable>(
+        _ request: BlockBookTarget.Request,
+        responseType: T.Type
+    ) -> AnyPublisher<T, Error> {
+        executeRequest(request)
     }
     
     private func target(for request: BlockBookTarget.Request) -> BlockBookTarget {
