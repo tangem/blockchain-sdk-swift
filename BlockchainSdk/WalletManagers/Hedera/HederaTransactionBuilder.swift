@@ -44,6 +44,8 @@ final class HederaTransactionBuilder {
             .transactionMemo(transactionParams?.memo ?? "")
             .freezeWith(client)
 
+        logTransferTransaction(transferTransaction)
+
         /// Capturing an existing `Hedera.Client` instance here is not required but may come in handy
         /// because the client may already have some useful internal state at this point
         /// (like the list of ready-to-use GRCP nodes with health checks already performed)
@@ -67,6 +69,13 @@ final class HederaTransactionBuilder {
         default:
             throw HederaError.unsupportedCurve(curveName: curve.rawValue)
         }
+    }
+
+    private func logTransferTransaction(_ transaction: TransferTransaction) {
+        let nodeAccountIds = transaction.nodeAccountIds?.toSet() ?? []
+        let transactionId = transaction.transactionId?.toString() ?? "unknown"
+        let networkNodes = client.network.filter { nodeAccountIds.contains($0.value) }
+        Log.debug("\(#fileID): Constructed tx '\(transactionId)' with the following network nodes: \(networkNodes)")
     }
 }
 
