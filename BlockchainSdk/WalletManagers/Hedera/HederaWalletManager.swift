@@ -41,6 +41,10 @@ final class HederaWalletManager: BaseManager {
 
         let balancePublisher = networkService
             .getBalance(accountId: wallet.address)
+            .withWeakCaptureOf(self)
+            .map { walletManager, balance in
+                return Amount(with: walletManager.wallet.blockchain, value: balance)
+            }
 
         cancellable = Publishers.CombineLatest(balancePublisher, transactionsInfoPublisher)
             .sink(
