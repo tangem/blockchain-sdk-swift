@@ -101,6 +101,10 @@ final class HederaWalletManager: BaseManager {
     private func makeBalancePublisher(accountId: String) -> some Publisher<Amount, Error> {
         return networkService
             .getBalance(accountId: accountId)
+            .withWeakCaptureOf(self)
+            .map { walletManager, balance in
+                return Amount(with: walletManager.wallet.blockchain, value: balance)
+            }
     }
 
     private func makeTransactionsInfoPublisher() -> some Publisher<[HederaTransactionInfo], Error> {
