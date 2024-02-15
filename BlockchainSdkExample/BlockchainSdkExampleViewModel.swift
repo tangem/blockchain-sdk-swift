@@ -103,6 +103,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     
     private var bag: Set<AnyCancellable> = []
     private var walletManagerBag: Set<AnyCancellable> = []
+    private var walletManagerUpdateSubscription: AnyCancellable?
 
     
     init() {
@@ -177,7 +178,13 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     
     func updateBalance() {
         balance = "--"
-        walletManager?.update()
+        walletManagerUpdateSubscription = walletManager?
+            .updatePublisher()
+            .sink { [weak self] _ in
+                // Some blockchains (like `Hedera`) updates wallet addresses asynchronously,
+                // so we have to update the UI too
+                self?.sourceAddresses = self?.walletManager?.wallet.addresses ?? []
+            }
     }
     
     func copySourceAddressToClipboard(_ sourceAddress: Address) {
