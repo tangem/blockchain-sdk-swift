@@ -31,6 +31,11 @@ public extension TransactionValidator {
     func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
     }
+    
+    /// Validation will be doing with a zero `fee`
+    func validate(amount: Amount) throws {
+        try validateAmounts(amount: amount, fee: Amount(with: amount, value: 0))
+    }
 }
 
 // MARK: - Simple sending amount validation (Amount, Fee)
