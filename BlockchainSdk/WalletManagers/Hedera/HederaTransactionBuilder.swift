@@ -50,7 +50,6 @@ final class HederaTransactionBuilder {
 
     func buildForSend(transaction: CompiledTransaction, signatures: [Data]) throws -> CompiledTransaction {
         let publicKey = try getPublicKey()
-        let signatures = try normalizeSignatures(signatures)
         transaction.addSignatures(publicKey, signatures)
 
         return transaction
@@ -63,19 +62,6 @@ final class HederaTransactionBuilder {
         case .secp256k1:
             let ecdsaKey = try Secp256k1Key(with: wallet.publicKey.blockchainKey).compress()
             return try .fromBytesEcdsa(ecdsaKey)
-        default:
-            throw HederaError.unsupportedCurve(curveName: curve.rawValue)
-        }
-    }
-
-    private func normalizeSignatures(_ signatures: [Data]) throws -> [Data] {
-        switch curve {
-        case .ed25519, .ed25519_slip0010:
-            return signatures
-        case .secp256k1:
-            return try signatures
-                .map { try Secp256k1Signature(with: $0) }
-                .map { try $0.normalize() }
         default:
             throw HederaError.unsupportedCurve(curveName: curve.rawValue)
         }
@@ -102,12 +88,13 @@ extension HederaTransactionBuilder {
         }
 
         func hashesToSign() throws -> [Data] {
-            let hashes = try innerTransaction.signedTransactionsData()
+            let dataToSign = try innerTransaction.signedTransactionsData()
             switch curve {
             case .ed25519, .ed25519_slip0010:
-                return hashes
+                // When using EdDSA, the original transaction is signed, not its hashes or something else
+                return dataToSign
             case .secp256k1:
-                return hashes.map { $0.sha3(.keccak256) }
+                return dataToSign.map { $0.sha3(.keccak256) }
             default:
                 throw HederaError.unsupportedCurve(curveName: curve.rawValue)
             }
