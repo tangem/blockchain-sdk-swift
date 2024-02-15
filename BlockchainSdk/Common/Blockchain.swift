@@ -812,7 +812,7 @@ extension Blockchain: Codable {
         case .gnosis: return "xdai"
         case .optimism: return "optimism"
         case .ethereumPoW: return "ethereum-pow-iou"
-        case .disChain: return "ethereumfair"
+        case .disChain: return "ethereumfair" // keep existing key for compatibility
         case .ton: return "ton"
         case .kava: return "kava"
         case .kaspa: return "kaspa"
