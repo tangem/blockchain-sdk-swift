@@ -60,11 +60,17 @@ final class SimpleAccountCreator: AccountCreator {
                 .shared
                 .dataTaskPublisher(for: request)
                 .tryMap { data, response in
+                    guard let response = response as? HTTPURLResponse else {
+                        throw WalletError.failedToParseNetworkResponse
+                    }
+
+                    Log.debug("\(#fileID): got network response with code \(response.statusCode): \(data.utf8String ?? "")")
+
                     return try JSONDecoder().decode(CreateAccountResult.self, from: data)
                 }
                 .tryMap { createAccount in
                     guard let accountId = createAccount.data?.accountId else {
-                        throw WalletError.failedToParseNetworkResponse
+                        throw createAccount.error ?? WalletError.failedToParseNetworkResponse
                     }
 
                     return CreatedAccount.forHedera(accountId: accountId)
@@ -88,9 +94,10 @@ private extension SimpleAccountCreator {
             let publicWalletKey: String
         }
 
-        struct Error: Decodable {
+        struct Error: Decodable, LocalizedError {
             let code: Int
             let message: String?
+            var errorDescription: String? { message }
         }
 
         let status: Bool
