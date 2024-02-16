@@ -58,6 +58,7 @@ class AlgorandNetworkService: MultiNetworkProvider {
                     )
                 }
                 .mapError { error in
+                    // TODO: - Remove replace error for this service
                     if let error = error as? WalletError {
                         return error
                     }
@@ -88,6 +89,7 @@ class AlgorandNetworkService: MultiNetworkProvider {
                     return transactionParams
                 }
                 .mapError { error in
+                    // TODO: - Remove replace error for this service
                     if let error = error as? WalletError {
                         return error
                     }
@@ -106,6 +108,7 @@ class AlgorandNetworkService: MultiNetworkProvider {
                     return response.txId
                 }
                 .mapError { error in
+                    // TODO: - Remove replace error for this service
                     if let error = error as? WalletError {
                         return error
                     }
