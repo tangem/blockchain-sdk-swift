@@ -55,7 +55,7 @@ final class HederaWalletManager: BaseManager {
             .flatMap { walletManager, accountId in
                 return Publishers.CombineLatest(
                     walletManager.makeBalancePublisher(accountId: accountId),
-                    walletManager.makeTransactionsInfoPublisher()
+                    walletManager.makePendingTransactionsInfoPublisher()
                 )
             }
             .sink(
@@ -107,7 +107,7 @@ final class HederaWalletManager: BaseManager {
             }
     }
 
-    private func makeTransactionsInfoPublisher() -> some Publisher<[HederaTransactionInfo], Error> {
+    private func makePendingTransactionsInfoPublisher() -> some Publisher<[HederaTransactionInfo], Error> {
         return wallet
             .pendingTransactions
             .publisher
