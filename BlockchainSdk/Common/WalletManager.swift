@@ -137,8 +137,8 @@ public struct WithdrawalWarning {
 }
 
 public enum WithdrawalSuggestion {
-    case changeAmountOrKeepCurrent(newAmount: Amount)
-    case changeAmount(newAmount: Amount, maxUtxo: Int)
+    case optionalAmountChange(newAmount: Amount)
+    case mandatoryAmountChange(newAmount: Amount, maxUtxo: Int)
 }
 
 public protocol RentProvider {

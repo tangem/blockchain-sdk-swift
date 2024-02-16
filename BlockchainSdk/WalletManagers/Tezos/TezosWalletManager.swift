@@ -175,6 +175,6 @@ extension TezosWalletManager: WithdrawalValidator {
             return nil
         }
     
-        return .changeAmountOrKeepCurrent(newAmount: Amount(with: walletAmount, value: withdrawalMinimumAmount))
+        return .optionalAmountChange(newAmount: Amount(with: walletAmount, value: withdrawalMinimumAmount))
     }
 }

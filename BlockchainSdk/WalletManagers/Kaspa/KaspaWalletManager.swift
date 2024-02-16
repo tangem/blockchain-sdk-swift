@@ -124,6 +124,6 @@ extension KaspaWalletManager: WithdrawalValidator {
             return nil
         }
 
-        return .changeAmount(newAmount: amountAvailableToSend, maxUtxo: txBuilder.maxInputCount)
+        return .mandatoryAmountChange(newAmount: amountAvailableToSend, maxUtxo: txBuilder.maxInputCount)
     }
 }
