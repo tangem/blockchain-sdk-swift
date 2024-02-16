@@ -122,6 +122,7 @@ private extension ChiaWalletManager {
 // MARK: - WithdrawalValidator
 
 extension ChiaWalletManager: WithdrawalValidator {
+    // Chia, kaspa have the same logic
     @available(*, deprecated, message: "Use WithdrawalValidator.withdrawalSuggestion")
     func validate(_ transaction: Transaction) -> WithdrawalWarning? {
         let availableAmount = txBuilder.availableAmount()
@@ -142,6 +143,7 @@ extension ChiaWalletManager: WithdrawalValidator {
         )
     }
 
+    // Chia, kaspa have the same logic
     func withdrawalSuggestion(for transaction: Transaction) -> WithdrawalSuggestion? {
         let amountAvailableToSend = txBuilder.availableAmount() - transaction.fee.amount
         if transaction.amount <= amountAvailableToSend {
