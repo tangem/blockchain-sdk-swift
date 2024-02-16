@@ -48,11 +48,19 @@ extension PublicKeyType {
                 .kusama,
                 .near, 
                 .algorand,
-                .aptos,
-                .hedera:
+                .aptos:
             self = PublicKeyType.ed25519
         case .cardano(let extended):
             self = extended ? PublicKeyType.ed25519Cardano : .ed25519
+        case .hedera(let curve, _):
+            switch curve {
+            case .secp256k1:
+                self = PublicKeyType.secp256k1
+            case .ed25519, .ed25519_slip0010:
+                self = PublicKeyType.ed25519
+            default:
+                throw NSError.makeUnsupportedCurveError(for: blockchain)
+            }
         case .xrp(let curve):
             switch curve {
             case .secp256k1:
@@ -60,26 +68,14 @@ extension PublicKeyType {
             case .ed25519, .ed25519_slip0010:
                 self = PublicKeyType.ed25519
             default:
-                throw NSError(
-                    domain: "BlockchainSDKTests",
-                    code: -1,
-                    userInfo: [
-                        NSLocalizedDescriptionKey: "Unsupported curve \"\(blockchain.curve)\" for blockchain \"\(blockchain)\"",
-                    ]
-                )
+                throw NSError.makeUnsupportedCurveError(for: blockchain)
             }
         case .tezos(let curve):
             switch curve {
             case .ed25519, .ed25519_slip0010:
                 self = .ed25519
             default:
-                throw NSError(
-                    domain: "BlockchainSDKTests",
-                    code: -1,
-                    userInfo: [
-                        NSLocalizedDescriptionKey: "Unsupported curve \"\(blockchain.curve)\" for blockchain \"\(blockchain)\"",
-                    ]
-                )
+                throw NSError.makeUnsupportedCurveError(for: blockchain)
             }
         case .ethereumPoW,
                 .ethereumFair,
@@ -92,13 +88,29 @@ extension PublicKeyType {
                 .telos,
                 .octa,
                 .chia:
-            throw NSError(
-                domain: "BlockchainSDKTests",
-                code: -1,
-                userInfo: [
-                    NSLocalizedDescriptionKey: "Unsupported blockchain \"\(blockchain)\"",
-                ]
-            )
+            throw NSError.makeUnsupportedBlockchainError(for: blockchain)
         }
+    }
+}
+
+private extension NSError {
+    static func makeUnsupportedCurveError(for blockchain: BlockchainSdk.Blockchain) -> Error {
+        return NSError(
+            domain: "com.tangem.BlockchainSDKTests",
+            code: -1,
+            userInfo: [
+                NSLocalizedDescriptionKey: "Unsupported curve \"\(blockchain.curve)\" for blockchain \"\(blockchain)\"",
+            ]
+        )
+    }
+
+    static func makeUnsupportedBlockchainError(for blockchain: BlockchainSdk.Blockchain) -> Error {
+        return NSError(
+            domain: "com.tangem.BlockchainSDKTests",
+            code: -2,
+            userInfo: [
+                NSLocalizedDescriptionKey: "Unsupported blockchain \"\(blockchain)\"",
+            ]
+        )
     }
 }
