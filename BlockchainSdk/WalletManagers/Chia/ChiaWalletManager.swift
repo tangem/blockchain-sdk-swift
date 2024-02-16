@@ -15,7 +15,7 @@ final class ChiaWalletManager: BaseManager, WalletManager {
     // MARK: - Properties
     
     var currentHost: String { networkService.host }
-    var allowsFeeSelection: Bool { false }
+    var allowsFeeSelection: Bool { true }
     
     // MARK: - Private Properties
     
