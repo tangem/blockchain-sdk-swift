@@ -118,7 +118,10 @@ public protocol SignatureCountValidator {
 }
 
 public protocol WithdrawalValidator {
+    @available(*, deprecated, message: "Use WithdrawalValidator.withdrawalSuggestion")
     func validate(_ transaction: Transaction) -> WithdrawalWarning?
+    
+    func withdrawalSuggestion(for transaction: Transaction) -> WithdrawalSuggestion?
 }
 
 @available(iOS 13.0, *)
@@ -131,6 +134,11 @@ public struct WithdrawalWarning {
     public let reduceMessage: String
     public var ignoreMessage: String? = nil
     public let suggestedReduceAmount: Amount
+}
+
+public enum WithdrawalSuggestion {
+    case changeAmountOrKeepCurrent(newAmount: Amount)
+    case changeAmount(newAmount: Amount, maxUtxo: Int)
 }
 
 public protocol RentProvider {

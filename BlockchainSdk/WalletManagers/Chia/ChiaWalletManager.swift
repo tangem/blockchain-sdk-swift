@@ -122,6 +122,7 @@ private extension ChiaWalletManager {
 // MARK: - WithdrawalValidator
 
 extension ChiaWalletManager: WithdrawalValidator {
+    @available(*, deprecated, message: "Use WithdrawalValidator.withdrawalSuggestion")
     func validate(_ transaction: Transaction) -> WithdrawalWarning? {
         let availableAmount = txBuilder.availableAmount()
         let amountAvailableToSend = availableAmount - transaction.fee.amount
@@ -139,5 +140,14 @@ extension ChiaWalletManager: WithdrawalValidator {
             reduceMessage: "common_ok".localized,
             suggestedReduceAmount: amountToReduceBy
         )
+    }
+
+    func withdrawalSuggestion(for transaction: Transaction) -> WithdrawalSuggestion? {
+        let amountAvailableToSend = txBuilder.availableAmount() - transaction.fee.amount
+        if transaction.amount <= amountAvailableToSend {
+            return nil
+        }
+
+        return .changeAmount(newAmount: amountAvailableToSend, maxUtxo: txBuilder.maxInputCount)
     }
 }
