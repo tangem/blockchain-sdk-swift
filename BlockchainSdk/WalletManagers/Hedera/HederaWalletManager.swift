@@ -89,15 +89,12 @@ final class HederaWalletManager: BaseManager {
     private func updateWalletWithPendingTransaction(_ transaction: Transaction, sendResult: TransactionSendResult) {
         let mapper = PendingTransactionRecordMapper()
         let pendingTransaction = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: sendResult.hash)
-
         wallet.addPendingTransaction(pendingTransaction)
     }
 
     private func updateWalletAddress(accountId: String) {
-        let addressType: AddressType = .default
-        let address = PlainAddress(value: accountId, publicKey: wallet.publicKey, type: addressType)
-
-        wallet.set(address: address, for: addressType)
+        let address = PlainAddress(value: accountId, publicKey: wallet.publicKey, type: .default)
+        wallet.set(address: address)
     }
 
     private func makeBalancePublisher(accountId: String) -> some Publisher<Amount, Error> {
@@ -132,10 +129,12 @@ final class HederaWalletManager: BaseManager {
 
         return getCachedAccountId()
             .withWeakCaptureOf(self)
-            .map { walletManager, accountId in
-                walletManager.updateWalletAddress(accountId: accountId)
-                return accountId
-            }
+            .handleEvents(
+                receiveOutput: { walletManager, accountId in
+                    walletManager.updateWalletAddress(accountId: accountId)
+                }
+            )
+            .map(\.1)
             .eraseToAnyPublisher()
     }
 

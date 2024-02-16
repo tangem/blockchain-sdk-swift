@@ -116,8 +116,8 @@ public struct Wallet {
         amounts[.token(value: token)] = nil
     }
 
-    mutating func set(address: Address, for addressType: AddressType) {
-        walletAddresses[addressType] = address
+    mutating func set(address: Address) {
+        walletAddresses[address.type] = address
     }
 }
 
