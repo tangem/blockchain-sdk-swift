@@ -123,6 +123,8 @@ final class HederaWalletManager: BaseManager {
 
     /// - Note: Has a side-effect: updates local model (`wallet.address`) if needed.
     private func getAccountId() -> AnyPublisher<String, Error> {
+        let maskedPublicKey = maskedPublicKey
+
         if let accountId = wallet.address.nilIfEmpty {
             Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) obtained from the Wallet")
             return .justWithError(output: accountId)
@@ -132,6 +134,7 @@ final class HederaWalletManager: BaseManager {
             .withWeakCaptureOf(self)
             .handleEvents(
                 receiveOutput: { walletManager, accountId in
+                    Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) saved to the Wallet")
                     walletManager.updateWalletAddress(accountId: accountId)
                 }
             )
@@ -164,6 +167,7 @@ final class HederaWalletManager: BaseManager {
                     .getRemoteAccountId()
                     .withWeakCaptureOf(walletManager)
                     .asyncMap { walletManager, accountId in
+                        Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) saved to the data storage")
                         await walletManager.dataStorage.store(key: storageKey, value: accountId)
                         return accountId
                     }
