@@ -165,5 +165,10 @@
             "derivation": "m/44'/283'/0'/0'/0'",
             "walletPublicKey": "21FA8DA84314C3C0398BD9396E8506831E0F9A7D86DF462B6045DA5C40ECBF54"
         },
+        {
+            "blockchain": "aptos",
+            "derivation": "m/44'/637'/0'/0'/0'",
+            "walletPublicKey": "0f2ba03f0c60f123869a471b9bec3ae152aedb7344bfc36473b0c9e4fe8965f6"
+        },
     ]
 }

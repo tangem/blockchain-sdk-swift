@@ -74,10 +74,12 @@ extension CoinType {
             self = .near
         case .veChain:
             self = .veChain
-        case .hedera:
-            self = .hedera
         case .algorand:
             self = .algorand
+        case .aptos:
+            self = .aptos
+        case .hedera:
+            self = .hedera
         case .ethereumPoW,
              .ethereumFair,
              .rsk,
