@@ -60,6 +60,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case xdc(testnet: Bool)
     case algorand(curve: EllipticCurve, testnet: Bool)
     case shibarium(testnet: Bool)
+    case aptos(curve: EllipticCurve, testnet: Bool)
     case hedera(curve: EllipticCurve, testnet: Bool)
 
     public var isTestnet: Bool {
@@ -111,6 +112,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .ton(_, let testnet),
                 .near(_, let testnet),
                 .algorand(_, let testnet),
+                .aptos(_, let testnet),
                 .shibarium(let testnet):
             return testnet
         }
@@ -130,6 +132,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .tezos(let curve),
                 .near(let curve, _),
                 .algorand(let curve, _),
+                .aptos(let curve, _),
                 .hedera(let curve, _):
             return curve
         case .chia:
@@ -195,6 +198,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return 24
         case .algorand:
             return 6
+        case .aptos:
+            return 8
         }
     }
 
@@ -286,6 +291,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "ALGO"
         case .shibarium:
             return "BONE"
+        case .aptos:
+            return "APT"
         case .hedera:
             return "HBAR"
         }
@@ -343,6 +350,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "XDC Network"
         case .shibarium:
             return "Shibarium" + testnetSuffix
+        case .aptos:
+            return "Aptos"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -399,6 +408,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .optimism,
                 .ton,
                 .near,
+                .aptos,
                 .hedera:
             return true
         case .fantom,
@@ -481,7 +491,6 @@ extension Blockchain {
             } else {
                 return [
                     makeGetBlockJsonRpcProvider(),
-                    URL(string: "https://etc.rivet.link/etc")!,
                     URL(string: "https://etc.etcdesktop.com")!,
                     URL(string: "https://etc.mytokenpocket.vip")!,
                     URL(string: "https://besu-de.etc-network.info")!,
@@ -801,6 +810,7 @@ extension Blockchain: Codable {
         case .xdc: return "xdc"
         case .algorand: return "algorand"
         case .shibarium: return "shibarium"
+        case .aptos: return "aptos"
         case .hedera: return "hedera"
         }
     }
@@ -870,6 +880,7 @@ extension Blockchain: Codable {
         case "xdc": self = .xdc(testnet: isTestnet)
         case "algorand": self = .algorand(curve: curve, testnet: isTestnet)
         case "shibarium": self = .shibarium(testnet: isTestnet)
+        case "aptos": self = .aptos(curve: curve, testnet: isTestnet)
         case "hedera": self = .hedera(curve: curve, testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
@@ -943,6 +954,7 @@ extension Blockchain {
         case "xdc": return .xdc(testnet: isTestnet)
         case "algorand": return .algorand(curve: curve, testnet: isTestnet)
         case "shibarium": return .shibarium(testnet: isTestnet)
+        case "aptos": return .aptos(curve: curve, testnet: isTestnet)
         case "hedera": return .hedera(curve: curve, testnet: isTestnet)
         default: return nil
         }
@@ -1023,6 +1035,8 @@ extension Blockchain {
             return XDCWalletAssembly()
         case .algorand:
             return AlgorandWalletAssembly()
+        case .aptos:
+            return AptosWalletAssembly()
         case .hedera:
             return HederaWalletAssembly()
         }

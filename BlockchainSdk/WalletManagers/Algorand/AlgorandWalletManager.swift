@@ -43,23 +43,24 @@ final class AlgorandWalletManager: BaseManager {
         
         cancellable = Publishers.CombineLatest(accountInfoPublisher, transactionStatusesPublisher)
             .withWeakCaptureOf(self)
-            .sink(
-                receiveCompletion: { [weak self] result in
-                    switch result {
-                    case .failure(let error):
-                        self?.wallet.clearAmounts()
-                        completion(.failure(error))
-                    case .finished:
-                        completion(.success(()))
-                    }
-                },
-                receiveValue: { walletManager, input in
-                    let (accountInfo, transactionsInfos) = input
-                    
-                    walletManager.updatePendingTransactions(with: transactionsInfos)
-                    walletManager.update(with: accountInfo, completion: completion)
+            .tryMap { walletManager, input in
+                let (accountInfo, _) = input
+                try walletManager.validateExistentialDeposit(with: accountInfo)
+                return input
+                
+            }
+            .sink(receiveCompletion: { [weak self] result in
+                switch result {
+                case .failure(let error):
+                    self?.wallet.clearAmounts()
+                    completion(.failure(error))
+                case .finished:
+                    completion(.success(()))
                 }
-            )
+            }, receiveValue: { [weak self] (accountInfo, transactionsInfo) in
+                self?.update(with: accountInfo)
+                self?.updatePendingTransactions(with: transactionsInfo)
+            })
     }
     
 }
@@ -67,17 +68,16 @@ final class AlgorandWalletManager: BaseManager {
 // MARK: - Private Implementation
 
 private extension AlgorandWalletManager {
-    func update(with accountModel: AlgorandAccountModel, completion: @escaping (Result<Void, Error>) -> Void) {
+    func validateExistentialDeposit(with accountModel: AlgorandAccountModel) throws {
+        if let coinValue = wallet.amounts[.coin]?.value, coinValue < accountModel.existentialDeposit {
+            let error = makeNoAccountError(using: accountModel)
+            throw error
+        }
+    }
+    
+    func update(with accountModel: AlgorandAccountModel) {
         wallet.add(coinValue: accountModel.coinValue)
         wallet.add(reserveValue: accountModel.reserveValue)
-        
-        guard let coinValue = wallet.amounts[.coin]?.value, coinValue >= accountModel.existentialDeposit else {
-            let error = makeNoAccountError(using: accountModel)
-            completion(.failure(error))
-            return
-        }
-        
-        completion(.success(()))
     }
     
     func updatePendingTransactions(with transactionInfo: [AlgorandTransactionInfo]) {

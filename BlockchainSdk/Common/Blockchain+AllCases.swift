@@ -58,6 +58,7 @@ public extension Blockchain {
         case .xdc: break
         case .algorand: break
         case .shibarium: break
+        case .aptos: break
         case .hedera: break
             // READ BELOW:
             //
@@ -110,6 +111,7 @@ public extension Blockchain {
             .algorand(curve: .ed25519_slip0010, testnet: false),
             .xdc(testnet: false),
             .shibarium(testnet: false),
+            .aptos(curve: .ed25519_slip0010, testnet: false),
             .hedera(curve: .ed25519_slip0010, testnet: false),
         ]
     }
