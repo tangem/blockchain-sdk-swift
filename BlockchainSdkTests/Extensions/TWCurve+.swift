@@ -36,14 +36,6 @@ extension Curve {
                         NSLocalizedDescriptionKey: "Unsupported curve \"\(blockchain.curve)\" for blockchain \"\(blockchain)\"",
                     ]
                 )
-            @unknown default:
-                throw NSError(
-                    domain: "BlockchainSDKTests",
-                    code: -1,
-                    userInfo: [
-                        NSLocalizedDescriptionKey: "Unknown curve \"\(blockchain.curve)\" for blockchain \"\(blockchain)\"",
-                    ]
-                )
             }
         }
     }
