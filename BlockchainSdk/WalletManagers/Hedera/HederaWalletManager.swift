@@ -134,8 +134,8 @@ final class HederaWalletManager: BaseManager {
             .withWeakCaptureOf(self)
             .handleEvents(
                 receiveOutput: { walletManager, accountId in
-                    Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) saved to the Wallet")
                     walletManager.updateWalletAddress(accountId: accountId)
+                    Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) saved to the Wallet")
                 }
             )
             .map(\.1)
@@ -167,8 +167,8 @@ final class HederaWalletManager: BaseManager {
                     .getRemoteAccountId()
                     .withWeakCaptureOf(walletManager)
                     .asyncMap { walletManager, accountId in
-                        Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) saved to the data storage")
                         await walletManager.dataStorage.store(key: storageKey, value: accountId)
+                        Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) saved to the data storage")
                         return accountId
                     }
                     .eraseToAnyPublisher()
