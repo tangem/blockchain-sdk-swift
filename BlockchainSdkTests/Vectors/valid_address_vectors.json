@@ -185,13 +185,6 @@
         "negative": []
     },
     {
-        "blockchain": "duc",
-        "positive": [
-            "LokyqymHydUE3ZC1hnZeZo6nuART3VcsSU"
-        ],
-        "negative": []
-    },
-    {
         "blockchain": "near-protocol",
         "positive": [
             "f69cd39f654845e2059899a888681187f2cda95f29256329aea1700f50f8ae86",
