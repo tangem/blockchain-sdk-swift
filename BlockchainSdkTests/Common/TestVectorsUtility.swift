@@ -17,7 +17,10 @@ final class TestVectorsUtility {
 
         let data = try Data(contentsOf: url)
 
-        return try JSONDecoder().decode(T?.self, from: data)
+        let decoder = JSONDecoder()
+        decoder.allowsJSON5 = true
+
+        return try decoder.decode(T?.self, from: data)
     }
     
 }
