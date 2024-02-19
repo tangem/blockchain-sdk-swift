@@ -8,18 +8,37 @@
 
 import Foundation
 import Combine
+import TangemSdk
 
 final class HederaWalletManager: BaseManager {
     private let networkService: HederaNetworkService
     private let transactionBuilder: HederaTransactionBuilder
+    private let dataStorage: BlockchainDataStorage
+    private let accountCreator: AccountCreator
+
+    // Public key as a masked string (only the last four characters are revealed), suitable for use in logs
+    private lazy var maskedPublicKey: String = {
+        let length = 4
+        let publicKey = wallet.publicKey.blockchainKey.hexString
+
+        return publicKey
+            .dropLast(length)
+            .map { _ in "•" }
+            .joined()
+        + publicKey.suffix(length)
+    }()
 
     init(
         wallet: Wallet,
         networkService: HederaNetworkService,
-        transactionBuilder: HederaTransactionBuilder
+        transactionBuilder: HederaTransactionBuilder,
+        accountCreator: AccountCreator,
+        dataStorage: BlockchainDataStorage
     ) {
         self.networkService = networkService
         self.transactionBuilder = transactionBuilder
+        self.accountCreator = accountCreator
+        self.dataStorage = dataStorage
         super.init(wallet: wallet)
     }
 
@@ -28,25 +47,17 @@ final class HederaWalletManager: BaseManager {
         fatalError("\(#function) has not been implemented")
     }
 
+    // MARK: - Wallet update
+
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        let transactionsInfoPublisher = wallet
-            .pendingTransactions
-            .publisher
-            .setFailureType(to: Error.self)
+        cancellable = getAccountId()
             .withWeakCaptureOf(self)
-            .flatMap { walletManager, pendingTransaction in
-                return walletManager.networkService.getTransactionInfo(transactionHash: pendingTransaction.hash)
+            .flatMap { walletManager, accountId in
+                return Publishers.CombineLatest(
+                    walletManager.makeBalancePublisher(accountId: accountId),
+                    walletManager.makePendingTransactionsInfoPublisher()
+                )
             }
-            .collect()
-
-        let balancePublisher = networkService
-            .getBalance(accountId: wallet.address)
-            .withWeakCaptureOf(self)
-            .map { walletManager, balance in
-                return Amount(with: walletManager.wallet.blockchain, value: balance)
-            }
-
-        cancellable = Publishers.CombineLatest(balancePublisher, transactionsInfoPublisher)
             .sink(
                 receiveCompletion: { [weak self] result in
                     switch result {
@@ -79,8 +90,155 @@ final class HederaWalletManager: BaseManager {
     private func updateWalletWithPendingTransaction(_ transaction: Transaction, sendResult: TransactionSendResult) {
         let mapper = PendingTransactionRecordMapper()
         let pendingTransaction = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: sendResult.hash)
-
         wallet.addPendingTransaction(pendingTransaction)
+    }
+
+    private func updateWalletAddress(accountId: String) {
+        let address = PlainAddress(value: accountId, publicKey: wallet.publicKey, type: .default)
+        wallet.set(address: address)
+    }
+
+    private func makeBalancePublisher(accountId: String) -> some Publisher<Amount, Error> {
+        return networkService
+            .getBalance(accountId: accountId)
+            .withWeakCaptureOf(self)
+            .map { walletManager, balance in
+                return Amount(with: walletManager.wallet.blockchain, value: balance)
+            }
+    }
+
+    private func makePendingTransactionsInfoPublisher() -> some Publisher<[HederaTransactionInfo], Error> {
+        return wallet
+            .pendingTransactions
+            .publisher
+            .setFailureType(to: Error.self)
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, pendingTransaction in
+                return walletManager.networkService.getTransactionInfo(transactionHash: pendingTransaction.hash)
+            }
+            .collect()
+    }
+
+    // MARK: - Account ID fetching, caching and creation
+
+    /// - Note: Has a side-effect: updates local model (`wallet.address`) if needed.
+    private func getAccountId() -> AnyPublisher<String, Error> {
+        let maskedPublicKey = maskedPublicKey
+
+        if let accountId = wallet.address.nilIfEmpty {
+            Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) obtained from the Wallet")
+            return .justWithError(output: accountId)
+        }
+
+        return getCachedAccountId()
+            .withWeakCaptureOf(self)
+            .handleEvents(
+                receiveOutput: { walletManager, accountId in
+                    walletManager.updateWalletAddress(accountId: accountId)
+                    Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) saved to the Wallet")
+                }
+            )
+            .map(\.1)
+            .eraseToAnyPublisher()
+    }
+
+    /// - Note: Has a side-effect: updates local cache (`dataStorage`) if needed.
+    private func getCachedAccountId() -> AnyPublisher<String, Error> {
+        let maskedPublicKey = maskedPublicKey
+        let storageKey = Constants.storageKeyPrefix + wallet
+            .publicKey
+            .blockchainKey
+            .getSha256()
+            .hexString
+
+        return .justWithError(output: storageKey)
+            .withWeakCaptureOf(self)
+            .asyncMap { walletManager, storageKey -> String? in
+                await walletManager.dataStorage.get(key: storageKey)
+            }
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, accountId -> AnyPublisher<String, Error> in
+                if let accountId = accountId?.nilIfEmpty {
+                    Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) obtained from the data storage")
+                    return .justWithError(output: accountId)
+                }
+
+                return walletManager
+                    .getRemoteAccountId()
+                    .withWeakCaptureOf(walletManager)
+                    .asyncMap { walletManager, accountId in
+                        await walletManager.dataStorage.store(key: storageKey, value: accountId)
+                        Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) saved to the data storage")
+                        return accountId
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+
+    /// - Note: Has a side-effect: creates a new account on the Hedera network if needed.
+    private func getRemoteAccountId() -> some Publisher<String, Error> {
+        let maskedPublicKey = maskedPublicKey
+
+        return networkService
+            .getAccountInfo(publicKey: wallet.publicKey)
+            .map(\.accountId)
+            .handleEvents(
+                receiveOutput: { _ in
+                    Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) obtained from the mirror node")
+                },
+                receiveFailure: { error in
+                    Log.error(
+                        """
+                        \(#fileID): Failed to obtain Hedera account ID for public key \(maskedPublicKey) \
+                        from the mirror node due to error: \(error.localizedDescription)
+                        """
+                    )
+                }
+            )
+            .tryCatch { [weak self] error in
+                guard let self else {
+                    throw error
+                }
+
+                switch error {
+                case HederaError.accountDoesNotExist:
+                    return createAccount()
+                default:
+                    throw error
+                }
+            }
+    }
+
+    private func createAccount() -> some Publisher<String, Error> {
+        let maskedPublicKey = maskedPublicKey
+
+        return accountCreator
+            .createAccount(blockchain: wallet.blockchain, publicKey: wallet.publicKey)
+            .eraseToAnyPublisher()
+            .tryMap { createdAccount in
+                guard let hederaCreatedAccount = createdAccount as? HederaCreatedAccount else {
+                    assertionFailure("Expected entity of type '\(HederaCreatedAccount.self)', got '\(type(of: createdAccount))' instead")
+                    throw HederaError.failedToCreateAccount
+                }
+
+                return hederaCreatedAccount.accountId
+            }
+            .handleEvents(
+                receiveOutput: { _ in
+                    Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) obtained by creating account")
+                },
+                receiveFailure: { error in
+                    Log.error(
+                        """
+                        \(#fileID): Failed to obtain Hedera account ID for public key \(maskedPublicKey) \
+                        by creating account due to error: \(error.localizedDescription)
+                        """
+                    )
+                }
+            )
+            .mapError(WalletError.blockchainUnavailable(underlyingError:))
     }
 }
 
@@ -162,6 +320,7 @@ extension HederaWalletManager: WalletManager {
 
 private extension HederaWalletManager {
     private enum Constants {
+        static let storageKeyPrefix = "hedera_wallet_"
         /// https://docs.hedera.com/hedera/networks/mainnet/fees
         static let cryptoTransferServiceCostInUSD = Decimal(string: "0.0001", locale: locale)
         /// Hedera fees are low, allow 10% safety margin to allow usage of not precise fee estimate.

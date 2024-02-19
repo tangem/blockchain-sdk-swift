@@ -7,16 +7,38 @@
 //
 
 import Foundation
+import Hedera
+import class TangemSdk.Log
 
-struct HederaAddressService: AddressService {
-    private let walletCoreAddressService = WalletCoreAddressService(coin: .hedera)
+final class HederaAddressService: AddressService {
+    private let isTestnet: Bool
+
+    private lazy var client: Client = {
+        return isTestnet ? Client.forTestnet() : Client.forMainnet()
+    }()
+
+    init(isTestnet: Bool) {
+        self.isTestnet = isTestnet
+    }
 
     func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
-        // TODO: Andrey Fedorov - Fetch account ID from a local storage or fetch it asynchronously from the network (IOS-4567)
-        return try walletCoreAddressService.makeAddress(for: publicKey, with: addressType)
+        Log.warning(
+            """
+            Address for the Hedera blockchain (Testnet: \(isTestnet)) is requested but can't be provided. \
+            Obtain actual address using `Wallet.address`
+            """
+        )
+        return PlainAddress(value: "", publicKey: publicKey, type: addressType)
     }
     
     func validate(_ address: String) -> Bool {
-        return walletCoreAddressService.validate(address)
+        do {
+            try AccountId
+                .fromString(address)
+                .validateChecksum(client)
+            return true
+        } catch {
+            return false
+        }
     }
 }
