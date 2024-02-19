@@ -82,7 +82,7 @@ struct AlgorandNetworkProvider: HostProvider {
             .mapError { moyaError -> Swift.Error in
                 if
                     let statusCode = moyaError.response?.statusCode,
-                    statusCode == 400, statusCode == 500, statusCode == 503,
+                    statusCode == 400 || statusCode == 500 || statusCode == 503,
                     let decodeData = moyaError.response?.data
                 {
                     do {

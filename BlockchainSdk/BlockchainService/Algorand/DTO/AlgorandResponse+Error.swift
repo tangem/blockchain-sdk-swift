@@ -9,7 +9,15 @@
 import Foundation
 
 extension AlgorandResponse {
-    struct Error: Swift.Error, Decodable {
+    struct Error: Swift.Error, Decodable, LocalizedError, CustomStringConvertible {
         let message: String
+        
+        var errorDescription: String? {
+            message
+        }
+        
+        var description: String {
+            message
+        }
     }
 }
