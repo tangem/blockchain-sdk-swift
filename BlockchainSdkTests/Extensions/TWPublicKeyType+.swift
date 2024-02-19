@@ -82,7 +82,7 @@ extension PublicKeyType {
                 )
             }
         case .ethereumPoW,
-                .ethereumFair,
+                .disChain,
                 .rsk,
                 .ducatus,
                 .azero,

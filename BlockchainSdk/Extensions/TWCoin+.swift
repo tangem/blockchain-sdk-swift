@@ -81,7 +81,7 @@ extension CoinType {
         case .hedera:
             self = .hedera
         case .ethereumPoW,
-             .ethereumFair,
+             .disChain,
              .rsk,
              .gnosis,
              .kaspa,
