@@ -73,7 +73,7 @@ final class SimpleAccountCreator: AccountCreator {
                         throw createAccount.error ?? WalletError.failedToParseNetworkResponse
                     }
 
-                    return CreatedAccount.forHedera(accountId: accountId)
+                    return HederaCreatedAccount(accountId: accountId)
                 }
         }
         .switchToLatest()
