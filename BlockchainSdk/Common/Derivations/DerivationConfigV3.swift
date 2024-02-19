@@ -38,7 +38,7 @@ public struct DerivationConfigV3: DerivationConfig {
             return "m/44'/145'/0'/0/0"
         case .ethereum,
                 .ethereumPoW,
-                .ethereumFair,
+                .disChain,
                 .rsk,
                 .bsc,
                 .polygon,

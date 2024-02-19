@@ -1,5 +1,5 @@
 //
-//  EthereumFairExternalLinkProvider.swift
+//  DisChainExternalLinkProvider.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 06.09.2023.
@@ -8,14 +8,14 @@
 
 import Foundation
 
-struct EthereumFairExternalLinkProvider: ExternalLinkProvider {
+struct DisChainExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? { nil }
     
     func url(transaction hash: String) -> URL? {
-        return URL(string: "https://www.oklink.com/ethf/tx/\(hash)")
+        return URL(string: "https://explorer.dischain.xyz/ethf/tx/\(hash)")
     }
     
     func url(address: String, contractAddress: String?) -> URL? {
-        return URL(string: "https://www.oklink.com/ethf/address/\(address)")
+        return URL(string: "https://explorer.dischain.xyz/ethf/address/\(address)")
     }
 }
