@@ -16,6 +16,7 @@ public struct BlockchainSdkConfig {
     let getBlockCredentials: GetBlockCredentials
     let kaspaSecondaryApiUrl: String?
     let tronGridApiKey: String
+    let hederaArkhiaApiKey: String
     let tonCenterApiKeys: TonCenterApiKeys
     let fireAcademyApiKeys: FireAcademyApiKeys
     let chiaTangemApiKeys: ChiaTangemApiKeys
@@ -32,6 +33,7 @@ public struct BlockchainSdkConfig {
         getBlockCredentials: GetBlockCredentials,
         kaspaSecondaryApiUrl: String?,
         tronGridApiKey: String,
+        hederaArkhiaApiKey: String,
         tonCenterApiKeys: TonCenterApiKeys,
         fireAcademyApiKeys: FireAcademyApiKeys,
         chiaTangemApiKeys: ChiaTangemApiKeys,
@@ -47,6 +49,7 @@ public struct BlockchainSdkConfig {
         self.getBlockCredentials = getBlockCredentials
         self.kaspaSecondaryApiUrl = kaspaSecondaryApiUrl
         self.tronGridApiKey = tronGridApiKey
+        self.hederaArkhiaApiKey = hederaArkhiaApiKey
         self.tonCenterApiKeys = tonCenterApiKeys
         self.fireAcademyApiKeys = fireAcademyApiKeys
         self.chiaTangemApiKeys = chiaTangemApiKeys

@@ -16,7 +16,7 @@ public struct NetworkProviderConfiguration {
 
     public init(
         logger: LoggerType = .default,
-        urlSessionConfiguration: URLSessionConfiguration = .standart,
+        urlSessionConfiguration: URLSessionConfiguration = .standard,
         credentials: Credentials? = nil
     ) {
         self.logger = logger
@@ -62,7 +62,7 @@ public extension NetworkProviderConfiguration {
 }
 
 public extension URLSessionConfiguration {
-    static let standart: URLSessionConfiguration = {
+    static let standard: URLSessionConfiguration = {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 10
         configuration.timeoutIntervalForResource = 30

@@ -70,6 +70,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                                                                           getBlockCredentials: .init(credentials: []),
                                                                           kaspaSecondaryApiUrl: nil,
                                                                           tronGridApiKey: "",
+                                                                          hederaArkhiaApiKey: "",
                                                                           tonCenterApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
                                                                           fireAcademyApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
                                                                           chiaTangemApiKeys: .init(mainnetApiKey: ""),
