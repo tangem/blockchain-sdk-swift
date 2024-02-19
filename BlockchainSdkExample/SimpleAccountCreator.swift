@@ -35,7 +35,7 @@ final class SimpleAccountCreator: AccountCreator {
                     Result {
                         let body = CreateAccountParam(
                             networkId: "hedera",
-                            publicWalletKey: publicKey.blockchainKey.hexString
+                            walletPublicKey: publicKey.blockchainKey.hexString
                         )
 
                         var request = try URLRequest(
@@ -85,13 +85,13 @@ final class SimpleAccountCreator: AccountCreator {
 private extension SimpleAccountCreator {
     struct CreateAccountParam: Encodable {
         let networkId: String
-        let publicWalletKey: String
+        let walletPublicKey: String
     }
 
     struct CreateAccountResult: Decodable {
         struct AccountData: Decodable {
             let accountId: String
-            let publicWalletKey: String
+            let walletPublicKey: String
         }
 
         struct Error: Decodable, LocalizedError {
