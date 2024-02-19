@@ -582,7 +582,7 @@
 		EF3B19222AA85C320084AA1C /* EthereumExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B19212AA85C320084AA1C /* EthereumExternalLinkProvider.swift */; };
 		EF3B19242AA85C410084AA1C /* EthereumClassicExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B19232AA85C410084AA1C /* EthereumClassicExternalLinkProvider.swift */; };
 		EF3B19262AA85C670084AA1C /* EthereumPoWExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B19252AA85C670084AA1C /* EthereumPoWExternalLinkProvider.swift */; };
-		EF3B19282AA85C740084AA1C /* EthereumFairExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B19272AA85C740084AA1C /* EthereumFairExternalLinkProvider.swift */; };
+		EF3B19282AA85C740084AA1C /* DisChainExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B19272AA85C740084AA1C /* DisChainExternalLinkProvider.swift */; };
 		EF3B192A2AA85C810084AA1C /* LitecoinExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B19292AA85C810084AA1C /* LitecoinExternalLinkProvider.swift */; };
 		EF3B192C2AA85C930084AA1C /* RSKExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B192B2AA85C930084AA1C /* RSKExternalLinkProvider.swift */; };
 		EF3B192E2AA85CA70084AA1C /* StellarExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B192D2AA85CA70084AA1C /* StellarExternalLinkProvider.swift */; };
@@ -1284,7 +1284,7 @@
 		EF3B19212AA85C320084AA1C /* EthereumExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumExternalLinkProvider.swift; sourceTree = "<group>"; };
 		EF3B19232AA85C410084AA1C /* EthereumClassicExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumClassicExternalLinkProvider.swift; sourceTree = "<group>"; };
 		EF3B19252AA85C670084AA1C /* EthereumPoWExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumPoWExternalLinkProvider.swift; sourceTree = "<group>"; };
-		EF3B19272AA85C740084AA1C /* EthereumFairExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumFairExternalLinkProvider.swift; sourceTree = "<group>"; };
+		EF3B19272AA85C740084AA1C /* DisChainExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisChainExternalLinkProvider.swift; sourceTree = "<group>"; };
 		EF3B19292AA85C810084AA1C /* LitecoinExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LitecoinExternalLinkProvider.swift; sourceTree = "<group>"; };
 		EF3B192B2AA85C930084AA1C /* RSKExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSKExternalLinkProvider.swift; sourceTree = "<group>"; };
 		EF3B192D2AA85CA70084AA1C /* StellarExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarExternalLinkProvider.swift; sourceTree = "<group>"; };
@@ -3086,7 +3086,7 @@
 				EF3B19212AA85C320084AA1C /* EthereumExternalLinkProvider.swift */,
 				EF3B19232AA85C410084AA1C /* EthereumClassicExternalLinkProvider.swift */,
 				EF3B19252AA85C670084AA1C /* EthereumPoWExternalLinkProvider.swift */,
-				EF3B19272AA85C740084AA1C /* EthereumFairExternalLinkProvider.swift */,
+				EF3B19272AA85C740084AA1C /* DisChainExternalLinkProvider.swift */,
 				EF3B19292AA85C810084AA1C /* LitecoinExternalLinkProvider.swift */,
 				EF3B192B2AA85C930084AA1C /* RSKExternalLinkProvider.swift */,
 				EF3B192D2AA85CA70084AA1C /* StellarExternalLinkProvider.swift */,
@@ -3757,7 +3757,7 @@
 				B6D345F62AD8B4A50009D1B2 /* NEARWalletManager.swift in Sources */,
 				5D7D243525136254001B9A4F /* XRPAmount.swift in Sources */,
 				2D9A91A129BB8C1700476EA6 /* TONProviderModels.swift in Sources */,
-				EF3B19282AA85C740084AA1C /* EthereumFairExternalLinkProvider.swift in Sources */,
+				EF3B19282AA85C740084AA1C /* DisChainExternalLinkProvider.swift in Sources */,
 				DA9EA73F29EE958500CAE6F2 /* CosmosTransactionParams.swift in Sources */,
 				2DDEFBCC2B59B42E00885675 /* AlgorandTransactionBuildParams.swift in Sources */,
 				EF3FFFFF2A27740400C6E7D9 /* AdaliteBaseResponseDTO.swift in Sources */,
