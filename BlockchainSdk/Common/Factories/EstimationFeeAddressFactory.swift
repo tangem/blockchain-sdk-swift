@@ -46,7 +46,7 @@ struct EstimationFeeAddressFactory {
                 // EVM-like
                 .ethereum,
                 .ethereumPoW,
-                .ethereumFair,
+                .disChain,
                 .ethereumClassic,
                 .rsk,
                 .bsc,

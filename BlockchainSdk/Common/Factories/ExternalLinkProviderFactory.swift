@@ -25,8 +25,8 @@ public struct ExternalLinkProviderFactory {
             return EthereumExternalLinkProvider(isTestnet: isTestnet)
         case .ethereumPoW:
             return EthereumPoWExternalLinkProvider(isTestnet: isTestnet)
-        case .ethereumFair:
-            return EthereumFairExternalLinkProvider()
+        case .disChain:
+            return DisChainExternalLinkProvider()
         case .ethereumClassic:
             return EthereumClassicExternalLinkProvider(isTestnet: isTestnet)
         case .rsk:
