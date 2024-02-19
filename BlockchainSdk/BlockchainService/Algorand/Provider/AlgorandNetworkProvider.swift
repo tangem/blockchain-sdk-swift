@@ -82,20 +82,21 @@ struct AlgorandNetworkProvider: HostProvider {
             .mapError { moyaError -> Swift.Error in
                 if
                     let statusCode = moyaError.response?.statusCode,
-                    statusCode == 400 || statusCode == 500 || statusCode == 503,
+                    Constants.knownAPIErrorCodes.contains(statusCode),
                     let decodeData = moyaError.response?.data
                 {
-                    do {
-                        // Parse message description for response algorand
-                        let jsonDecodeError = try JSONDecoder().decode(AlgorandResponse.Error.self, from: decodeData)
-                        return jsonDecodeError
-                    } catch {
-                        return moyaError.asWalletError ?? moyaError
-                    }
+                    let jsonDecodeError = try? JSONDecoder().decode(AlgorandResponse.Error.self, from: decodeData)
+                    return jsonDecodeError ?? moyaError
                 }
                 
-                return moyaError.asWalletError ?? moyaError
+                return moyaError
             }
             .eraseToAnyPublisher()
     }   
+}
+
+extension AlgorandNetworkProvider {
+    enum Constants {
+        static let knownAPIErrorCodes: [Int] = [400, 500, 503]
+    }
 }
