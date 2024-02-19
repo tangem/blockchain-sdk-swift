@@ -27,7 +27,7 @@ struct AddressTypesConfig {
              .solana,
              .ethereum,
              .ethereumPoW,
-             .ethereumFair,
+             .disChain,
              .ethereumClassic,
              .rsk,
              .binance,

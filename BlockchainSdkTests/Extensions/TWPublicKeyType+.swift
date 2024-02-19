@@ -78,7 +78,7 @@ extension PublicKeyType {
                 throw NSError.makeUnsupportedCurveError(for: blockchain)
             }
         case .ethereumPoW,
-                .ethereumFair,
+                .disChain,
                 .rsk,
                 .ducatus,
                 .azero,

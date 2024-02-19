@@ -217,7 +217,14 @@ final class HederaWalletManager: BaseManager {
         return accountCreator
             .createAccount(blockchain: wallet.blockchain, publicKey: wallet.publicKey)
             .eraseToAnyPublisher()
-            .map(\.accountId)
+            .tryMap { createdAccount in
+                guard let hederaCreatedAccount = createdAccount as? HederaCreatedAccount else {
+                    assertionFailure("Expected entity of type '\(HederaCreatedAccount.self)', got '\(type(of: createdAccount))' instead")
+                    throw HederaError.failedToCreateAccount
+                }
+
+                return hederaCreatedAccount.accountId
+            }
             .handleEvents(
                 receiveOutput: { _ in
                     Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) obtained by creating account")
