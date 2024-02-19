@@ -57,6 +57,14 @@ class AlgorandNetworkService: MultiNetworkProvider {
                         fee: Amount(with: service.blockchain, value: sourceFee)
                     )
                 }
+                .mapError { error in
+                    // TODO: - Remove replace error for this service
+                    if let error = error as? WalletError {
+                        return error
+                    }
+
+                    return WalletError.failedToGetFee
+                }
                 .eraseToAnyPublisher()
         }
     }
@@ -80,6 +88,14 @@ class AlgorandNetworkService: MultiNetworkProvider {
                     
                     return transactionParams
                 }
+                .mapError { error in
+                    // TODO: - Remove replace error for this service
+                    if let error = error as? WalletError {
+                        return error
+                    }
+
+                    return WalletError.failedToGetFee
+                }
                 .eraseToAnyPublisher()
         }
     }
@@ -90,6 +106,14 @@ class AlgorandNetworkService: MultiNetworkProvider {
                 .sendTransaction(data: data)
                 .map { response in
                     return response.txId
+                }
+                .mapError { error in
+                    // TODO: - Remove replace error for this service
+                    if let error = error as? WalletError {
+                        return error
+                    }
+
+                    return WalletError.failedToSendTx
                 }
                 .eraseToAnyPublisher()
         }
