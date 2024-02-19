@@ -11,7 +11,7 @@ import Combine
 import TangemSdk
 
 public protocol TransactionValidator: WalletProvider {
-    func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws
+    func validate(amount: Amount, fee: Fee, destination: DestinationType) async throws
     func validate(amount: Amount, fee: Fee) throws
 }
 
@@ -25,7 +25,7 @@ public enum DestinationType: Hashable {
 // MARK: - Default implementation
 
 public extension TransactionValidator {
-    func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
+    func validate(amount: Amount, fee: Fee, destination: DestinationType) async throws {
         Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
         try validateAmounts(amount: amount, fee: fee.amount)
     }
@@ -89,7 +89,7 @@ public extension TransactionValidator {
 // MARK: - DustRestrictable
 
 extension TransactionValidator where Self: DustRestrictable {
-    func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
+    func validate(amount: Amount, fee: Fee, destination: DestinationType) async throws {
         Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
         try validate(amount: amount, fee: fee)
     }
@@ -103,7 +103,7 @@ extension TransactionValidator where Self: DustRestrictable {
 // MARK: - MinimumBalanceRestrictable
 
 extension TransactionValidator where Self: MinimumBalanceRestrictable {
-    func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
+    func validate(amount: Amount, fee: Fee, destination: DestinationType) async throws {
         Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
         try validate(amount: amount, fee: fee)
     }
@@ -117,7 +117,7 @@ extension TransactionValidator where Self: MinimumBalanceRestrictable {
 // MARK: - WithdrawalValidator
 
 extension TransactionValidator where Self: WithdrawalValidator {
-    func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
+    func validate(amount: Amount, fee: Fee, destination: DestinationType) async throws {
         Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
         try validate(amount: amount, fee: fee)
     }
@@ -134,7 +134,7 @@ extension TransactionValidator where Self: WithdrawalValidator {
 // MARK: - DustRestrictable, WithdrawalValidator e.g. KaspaWalletManager
 
 extension TransactionValidator where Self: WithdrawalValidator, Self: DustRestrictable {
-    func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
+    func validate(amount: Amount, fee: Fee, destination: DestinationType) async throws {
         Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
         try validate(amount: amount, fee: fee)
     }
@@ -152,14 +152,12 @@ extension TransactionValidator where Self: WithdrawalValidator, Self: DustRestri
 // MARK: - ReserveAmountRestrictable
 
 extension TransactionValidator where Self: ReserveAmountRestrictable {
-    func validate(amount: Amount, fee: Fee, destination: DestinationType?) async throws {
+    func validate(amount: Amount, fee: Fee, destination: DestinationType) async throws {
         try validateAmounts(amount: amount, fee: fee.amount)
 
         switch destination {
-        case .none:
-            try validateAmounts(amount: amount, fee: fee.amount)
         case .generate:
-            try await validateReserveAmountRestrictable(amount: amount, addressType: .new)
+            try await validateReserveAmountRestrictable(amount: amount, addressType: .notCreated)
         case .address(let string):
             try await validateReserveAmountRestrictable(amount: amount, addressType: .address(string))
         }

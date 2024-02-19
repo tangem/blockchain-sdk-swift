@@ -151,8 +151,7 @@ extension XRPWalletManager: ReserveAmountRestrictable {
         
         let isAccountCreated: Bool = try await {
             switch addressType {
-            case .new:
-                // Any new address doesn't created
+            case .notCreated:
                 return false
             case .address(let address):
                 let addressDecoded = decodeAddress(address: address)

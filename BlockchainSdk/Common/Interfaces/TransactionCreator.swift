@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol TransactionCreator {
+public protocol TransactionCreator: TransactionValidator {
     func createTransaction(
         amount: Amount,
         fee: Fee,
@@ -16,54 +16,21 @@ public protocol TransactionCreator {
         destinationAddress: String,
         changeAddress: String?,
         contractAddress: String?
-    ) -> Transaction
+    ) throws -> Transaction
+    
+    func createTransaction(
+        amount: Amount,
+        fee: Fee,
+        sourceAddress: String?,
+        destinationAddress: String,
+        changeAddress: String?,
+        contractAddress: String?
+    ) async throws -> Transaction
 }
+
+// MARK: - Default
 
 public extension TransactionCreator {
-    func createTransaction(
-        amount: Amount,
-        fee: Fee,
-        sourceAddress: String? = nil,
-        destinationAddress: String,
-        changeAddress: String? = nil,
-        contractAddress: String? = nil
-    ) -> Transaction {
-        createTransaction(
-            amount: amount,
-            fee: fee,
-            sourceAddress: sourceAddress,
-            destinationAddress: destinationAddress,
-            changeAddress: changeAddress,
-            contractAddress: contractAddress
-        )
-    }
-}
-
-// MARK: - WalletProvider
-
-public extension TransactionCreator where Self: WalletProvider {
-    func createTransaction(
-        amount: Amount,
-        fee: Fee,
-        sourceAddress: String? = nil,
-        destinationAddress: String,
-        changeAddress: String? = nil,
-        contractAddress: String? = nil
-    ) -> Transaction {
-        Transaction(
-            amount: amount,
-            fee: fee,
-            sourceAddress: sourceAddress ?? defaultSourceAddress,
-            destinationAddress: destinationAddress,
-            changeAddress: changeAddress ?? defaultChangeAddress,
-            contractAddress: contractAddress ?? amount.type.token?.contractAddress
-        )
-    }
-}
-
-// MARK: - TransactionValidator
-
-public extension TransactionCreator where Self: TransactionValidator {
     func createTransaction(
         amount: Amount,
         fee: Fee,
@@ -97,7 +64,7 @@ public extension TransactionCreator where Self: TransactionValidator {
         return Transaction(
             amount: amount,
             fee: fee,
-            sourceAddress: sourceAddress ?? defaultSourceAddress,
+            sourceAddress: defaultSourceAddress,
             destinationAddress: destinationAddress,
             changeAddress: changeAddress ?? defaultChangeAddress,
             contractAddress: contractAddress ?? amount.type.token?.contractAddress

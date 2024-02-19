@@ -159,8 +159,7 @@ extension StellarWalletManager: ReserveAmountRestrictable {
     func validateReserveAmountRestrictable(amount: Amount, addressType: ReserveAmountRestrictableAddressType) async throws {
         let isAccountCreated: Bool = try await {
             switch addressType {
-            case .new:
-                // Any new address doesn't created
+            case .notCreated:
                 return false
             case .address(let address):
                 let account = try await networkService.checkTargetAccount(address: address, token: amount.type.token).async()

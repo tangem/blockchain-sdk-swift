@@ -44,5 +44,4 @@ extension DustRestrictable where Self: WalletProvider {
             }
         }
     }
-    
 }
