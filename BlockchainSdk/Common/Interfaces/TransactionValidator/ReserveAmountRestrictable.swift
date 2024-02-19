@@ -14,6 +14,8 @@ protocol ReserveAmountRestrictable {
 }
 
 enum ReserveAmountRestrictableAddressType {
+    /// The specified address will be used for verification
     case address(String)
+    /// It will be considered as an absolute brand new address for verification
     case new
 }

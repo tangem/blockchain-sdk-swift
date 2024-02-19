@@ -16,7 +16,9 @@ public protocol TransactionValidator: WalletProvider {
 }
 
 public enum DestinationType: Hashable {
+    /// Will generate a dummy destination address for verification
     case generate
+    /// The specified address will be used for verification
     case address(String)
 }
 
