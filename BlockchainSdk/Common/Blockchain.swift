@@ -101,7 +101,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .octa,
                 .bitcoinCash,
                 .gnosis,
-                .ethereumFair,
+                .disChain,
                 .kaspa:
             return false
         case .stellar(_, let testnet),
