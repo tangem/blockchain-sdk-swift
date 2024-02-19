@@ -239,5 +239,11 @@
         "curve": "ed25519_slip0010",
         "shelley": false
     },
+    {
+        "key": "hedera",
+        "testnet": false,
+        "curve": "ed25519_slip0010",
+        "shelley": false
+    },
 ]
 

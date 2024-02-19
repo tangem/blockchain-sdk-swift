@@ -291,5 +291,46 @@
             "x7d7e436f0askdjaksldb2aafde60774efb26cccll432cf881b677aca7faaf2a01879bd19fb8",
             ""
         ]
-    }
+    },
+    {
+        "blockchain": "hedera",
+        "positive": [
+            "0.0.123",
+            "0.0.123-vfmkw",
+            "0.0.1234567890-zbhlt",
+            "0.0.18446744073709551615",
+            /*
+            The addresses below are perfectly valid 'valid' Hedera addresses (from https://hips.hedera.com/hip/hip-15),
+            but Wallet Core triggers a false negative on them
+            */
+            /*
+            "0xf3DbcEeedDC4BBd1B66492B66EC0B8eC317b511B",
+            "0.0.302d300706052b8104000a03220002d588ec1000770949ab77516c77ee729774de1c8fe058cab6d64f1b12ffc8ff07",
+            */
+        ],
+        "negative": [
+            "0.0.123-VFMKW",
+            "0.0.123-vFmKw",
+            "0.0.123#vfmkw",
+            "0.0.123vfmkw",
+            "0.0.123 - vfmkw",
+            "0.123",
+            "0.0.123.",
+            "0.0.123-vf",
+            "0.0.123-vfm-kw",
+            "0.0.123-vfmkwxxxx",
+            "0xf64a1db2f124aaa4cd7b58d3d7f66774f9770c6",
+            "0xf64a1db2f124aaa4cd7b58d3d7f66774f9770c6ee",
+            "0.0.402d300706052b8104000a03220002d588ec1000770949ab77516c77ee729774de1c8fe058cab6d64f1b12ffc8ff07",
+            "",
+            /*
+            The addresses below are perfectly valid 'invalid' Hedera addresses (from https://hips.hedera.com/hip/hip-15),
+            but Wallet Core triggers a false negative on them
+            */
+            /*
+            "0.0.123-abcde",
+            "0.0.18446744073709551616",
+            */
+        ]
+    },
 ]
