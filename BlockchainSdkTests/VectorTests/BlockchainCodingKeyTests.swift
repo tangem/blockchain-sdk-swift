@@ -18,20 +18,15 @@ class BlockchainCodingKeyTests: XCTestCase {
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
     
-    func testCodingKeys() {
-        do {
-            guard let blockchains: [BlockchainSdk.Blockchain] = try testVectorsUtility.getTestVectors(from: "blockchain_vectors") else {
-                XCTFail("__INVALID_VECTOR__ BLOCKCHAIN DATA IS NIL")
-                return
-            }
-            
-            for blockchain in blockchains {
-                let recoveredFromCodable = try? decoder.decode(Blockchain.self, from: try encoder.encode(blockchain))
-                XCTAssertTrue(recoveredFromCodable == blockchain, "\(blockchain.displayName) codingKey test failed")
-            }
-        } catch let error {
-            XCTFail("__INVALID_VECTOR__ \(error)")
+    func testCodingKeys() throws {
+        guard let blockchains: [BlockchainSdk.Blockchain] = try testVectorsUtility.getTestVectors(from: "blockchain_vectors") else {
+            XCTFail("__INVALID_VECTOR__ BLOCKCHAIN DATA IS NIL")
             return
+        }
+
+        for blockchain in blockchains {
+            let recoveredFromCodable = try? decoder.decode(Blockchain.self, from: try encoder.encode(blockchain))
+            XCTAssertTrue(recoveredFromCodable == blockchain, "\(blockchain.displayName) codingKey test failed")
         }
     }
 }

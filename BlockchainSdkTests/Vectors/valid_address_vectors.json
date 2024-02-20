@@ -1,3 +1,8 @@
+/*
+This file uses JSON5 format, enable JSON5 support in the decoder in order to decode this file
+https://developer.apple.com/documentation/foundation/jsondecoder/3766916-allowsjson5
+*/
+
 [
     {
         "blockchain": "ethereum",
@@ -185,20 +190,18 @@
         "negative": []
     },
     {
-        "blockchain": "duc",
-        "positive": [
-            "LokyqymHydUE3ZC1hnZeZo6nuART3VcsSU"
-        ],
-        "negative": []
-    },
-    {
-        "blockchain": "near-protocol",
+        "blockchain": "near",
         "positive": [
             "f69cd39f654845e2059899a888681187f2cda95f29256329aea1700f50f8ae86",
             "75149e81ac9ea0bcb6f00faee922f71a11271f6cbc55bac97753603504d7bf27",
             "64acf5e86c840024032d7e75ec569a4d304443e250b197d5a0246d2d49afc8e1",
             "84a3fe2fc0e585d802cfa160807d1bf8ca5f949cf8d04d128bf984c50aabab7b",
             "d85d322043d87cc475d3523d6fb0c3df903d3830e5d4d5027ffe565e7b8652bb",
+            /*
+            The addresses below are perfectly valid NEAR addresses (from https://nomicon.io/DataStructures/Account#examples),
+            but Wallet Core triggers a false negative on them
+            */
+            /*
             "f69cd39f654845e2059899a88868.1187f2cda95f29256329aea1700f50f8ae8",
             "something.near",
             "6f8a1e9b0c2d3f4a5b7e8d9a1c32ed5f67b8cd0e1f23b4c5d6e7f88023a",
@@ -218,6 +221,7 @@
             "over.9000",
             "a.bro",
             "bro.a"
+            */
         ],
         "negative": [
             "",

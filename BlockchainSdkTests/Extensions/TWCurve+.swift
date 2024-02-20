@@ -24,18 +24,12 @@ extension Curve {
             case .ed25519_slip0010:
                 self = .ed25519
             case .ed25519,
-                    .secp256r1,
-                    .bls12381_G2,
-                    .bls12381_G2_AUG,
-                    .bls12381_G2_POP,
-                    .bip0340:
-                throw NSError(
-                    domain: "BlockchainSDKTests",
-                    code: -1,
-                    userInfo: [
-                        NSLocalizedDescriptionKey: "Unsupported curve \"\(blockchain.curve)\" for blockchain \"\(blockchain)\"",
-                    ]
-                )
+                 .secp256r1,
+                 .bls12381_G2,
+                 .bls12381_G2_AUG,
+                 .bls12381_G2_POP,
+                 .bip0340:
+                throw NSError.makeUnsupportedCurveError(for: blockchain)
             }
         }
     }

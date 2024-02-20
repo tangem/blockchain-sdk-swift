@@ -276,7 +276,6 @@ class AddressesTests: XCTestCase {
     }
     
     func testBinanceTestnet() throws {
-        let blockchain = Blockchain.binance(testnet: true)
         let service = BinanceAddressService(testnet: true)
 
         let addr_dec = try service.makeAddress(from: secpDecompressedKey)
@@ -540,25 +539,25 @@ class AddressesTests: XCTestCase {
         // From trust wallet `KusamaTests.swift`
         let privateKey = Data(hexString: "0x85fca134b3fe3fd523d8b528608d803890e26c93c86dc3d97b8d59c7b3540c97")
         let publicKey = try Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
-        try testSubstrateNetwork(
+        testSubstrateNetwork(
             .kusama(curve: .ed25519),
             publicKey: publicKey,
             expectedAddress: "HewiDTQv92L2bVtkziZC8ASxrFUxr6ajQ62RXAnwQ8FDVmg"
         )
         
-        try testSubstrateNetwork(
+        testSubstrateNetwork(
             .kusama(curve: .ed25519_slip0010),
             publicKey: publicKey,
             expectedAddress: "HewiDTQv92L2bVtkziZC8ASxrFUxr6ajQ62RXAnwQ8FDVmg"
         )
         
-        try testSubstrateNetwork(
+        testSubstrateNetwork(
             .kusama(curve: .ed25519),
             publicKey: edKey,
             expectedAddress: "GByNkeXAhoB1t6FZEffRyytAp11cHt7EpwSWD8xiX88tLdQ"
         )
         
-        try testSubstrateNetwork(
+        testSubstrateNetwork(
             .kusama(curve: .ed25519_slip0010),
             publicKey: edKey,
             expectedAddress: "GByNkeXAhoB1t6FZEffRyytAp11cHt7EpwSWD8xiX88tLdQ"
