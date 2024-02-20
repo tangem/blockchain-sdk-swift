@@ -47,7 +47,6 @@ extension BitcoinCashAddressService: AddressProvider {
     }
 }
 
-@available(iOS 13.0, *)
 extension BitcoinCashAddressService {
     public func isLegacy(_ address: String) -> Bool {
         legacyService.validate(address)

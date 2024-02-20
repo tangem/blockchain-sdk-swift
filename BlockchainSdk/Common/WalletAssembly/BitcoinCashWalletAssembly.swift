@@ -27,7 +27,7 @@ struct BitcoinCashWalletAssembly: WalletManagerAssembly {
             var providers = [AnyBitcoinNetworkProvider]()
 
             if let bitcoinCashAddressService = AddressServiceFactory(
-                blockchain: .bitcoinCash
+                blockchain: input.blockchain
             ).makeAddressService() as? BitcoinCashAddressService {
                 providers.append(
                     networkProviderAssembly.makeBitcoinCashNowNodesNetworkProvider(
