@@ -63,19 +63,28 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     let blockchainsWithCurveSelection: [String]
 
     private let sdk: TangemSdk
-    private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKeys: [],
-                                                                          blockcypherTokens: [],
-                                                                          infuraProjectId: "",
-                                                                          nowNodesApiKey: "", 
-                                                                          getBlockCredentials: .init(credentials: []),
-                                                                          kaspaSecondaryApiUrl: nil,
-                                                                          tronGridApiKey: "",
-                                                                          tonCenterApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
-                                                                          fireAcademyApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
-                                                                          chiaTangemApiKeys: .init(mainnetApiKey: ""),
-                                                                          quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
-                                                                          quickNodeBscCredentials: .init(apiKey: "", subdomain: ""),
-                                                                          defaultNetworkProviderConfiguration: .init(logger: .verbose)))
+    private lazy var walletManagerFactory = WalletManagerFactory(
+        config: .init(
+            blockchairApiKeys: [],
+            blockcypherTokens: [],
+            infuraProjectId: "",
+            nowNodesApiKey: "",
+            getBlockCredentials: .init(credentials: []),
+            kaspaSecondaryApiUrl: nil,
+            tronGridApiKey: "",
+            hederaArkhiaApiKey: "",
+            tonCenterApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
+            fireAcademyApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
+            chiaTangemApiKeys: .init(mainnetApiKey: ""),
+            quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
+            quickNodeBscCredentials: .init(apiKey: "", subdomain: ""),
+            defaultNetworkProviderConfiguration: .init(logger: .verbose)
+        ), 
+        dependencies: .init(
+            accountCreator: SimpleAccountCreator { [weak self] in self?.card },
+            dataStorage: InMemoryBlockchainDataStorage { return nil }
+        )
+    )
     @Published private(set) var card: Card?
     @Published private(set) var walletManager: WalletManager?
     private var blockchain: Blockchain?
@@ -94,6 +103,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     
     private var bag: Set<AnyCancellable> = []
     private var walletManagerBag: Set<AnyCancellable> = []
+    private var walletManagerUpdateSubscription: AnyCancellable?
 
     
     init() {
@@ -168,7 +178,13 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     
     func updateBalance() {
         balance = "--"
-        walletManager?.update()
+        walletManagerUpdateSubscription = walletManager?
+            .updatePublisher()
+            .sink { [weak self] _ in
+                // Some blockchains (like `Hedera`) updates wallet addresses asynchronously,
+                // so we have to update the UI too
+                self?.sourceAddresses = self?.walletManager?.wallet.addresses ?? []
+            }
     }
     
     func copySourceAddressToClipboard(_ sourceAddress: Address) {
