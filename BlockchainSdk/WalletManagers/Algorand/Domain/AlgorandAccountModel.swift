@@ -11,5 +11,5 @@ import Foundation
 struct AlgorandAccountModel {
     let reserveValue: Decimal
     let coinValue: Decimal
-    let existentialDeposit: Decimal
+    let coinValueWithReserveValue: Decimal
 }

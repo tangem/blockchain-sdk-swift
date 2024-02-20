@@ -25,7 +25,7 @@ public protocol WalletManager: WalletProvider, BlockchainDataProvider, Transacti
 public enum WalletManagerState {
     case initial
     case loading
-    case loaded(Wallet)
+    case loaded
     case failed(Error)
 
     public var isInitialState: Bool {

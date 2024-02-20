@@ -14,27 +14,27 @@ struct AptosWalletAssembly: WalletManagerAssembly {
 
         var providers: [AptosNetworkProvider] = []
         
-        if !input.blockchain.isTestnet {
-            providers.append(contentsOf: [
-                makeNetworkMainnetProvider(
-                    for: .nownodes,
-                    with: input.blockchainSdkConfig.nowNodesApiKey,
-                    networkConfig: input.networkConfig
-                ),
-                makeNetworkMainnetProvider(
-                    for: .getblock,
-                    with: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .rest),
-                    networkConfig: input.networkConfig
-                ),
-            ])
-        }
-        
         providers.append(
-            makeNetworkMainnetProvider(
+            makeNetworkProvider(
                 for: .aptoslabs(isTestnet: input.blockchain.isTestnet),
                 networkConfig: input.networkConfig
             )
         )
+        
+        if !input.blockchain.isTestnet {
+            providers.append(contentsOf: [
+                makeNetworkProvider(
+                    for: .getblock,
+                    with: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .rest),
+                    networkConfig: input.networkConfig
+                ),
+                makeNetworkProvider(
+                    for: .nownodes,
+                    with: input.blockchainSdkConfig.nowNodesApiKey,
+                    networkConfig: input.networkConfig
+                ),
+            ])
+        }
         
         let txBuilder = AptosTransactionBuilder(
             publicKey: input.wallet.publicKey.blockchainKey,
@@ -50,7 +50,7 @@ struct AptosWalletAssembly: WalletManagerAssembly {
     
     // MARK: - Private Implementation
     
-    private func makeNetworkMainnetProvider(
+    private func makeNetworkProvider(
         for node: AptosProviderType,
         with apiKeyValue: String? = nil,
         networkConfig: NetworkProviderConfiguration
