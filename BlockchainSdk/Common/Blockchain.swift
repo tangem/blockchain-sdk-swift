@@ -61,9 +61,31 @@ public indirect enum Blockchain: Equatable, Hashable {
     case algorand(curve: EllipticCurve, testnet: Bool)
     case shibarium(testnet: Bool)
     case aptos(curve: EllipticCurve, testnet: Bool)
+    case hedera(curve: EllipticCurve, testnet: Bool)
+
     public var isTestnet: Bool {
         switch self {
-        case .bitcoin(let testnet):
+        case .bitcoin(let testnet),
+                .ethereum(let testnet),
+                .bsc(let testnet),
+                .ethereumClassic(let testnet),
+                .binance(let testnet),
+                .polygon(let testnet),
+                .avalanche(let testnet),
+                .fantom(let testnet),
+                .tron(let testnet),
+                .arbitrum(let testnet),
+                .dash(let testnet),
+                .optimism(let testnet),
+                .ethereumPoW(let testnet),
+                .kava(let testnet),
+                .ravencoin(let testnet),
+                .cosmos(let testnet),
+                .telos(let testnet),
+                .chia(let testnet),
+                .decimal(let testnet),
+                .veChain(let testnet),
+                .xdc(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -77,69 +99,21 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .terraV2,
                 .cronos,
                 .octa,
-                .bitcoinCash:
+                .bitcoinCash,
+                .gnosis,
+                .disChain,
+                .kaspa:
             return false
-        case .stellar(_, let testnet):
-            return testnet
-        case .ethereum(let testnet), .bsc(let testnet):
-            return testnet
-        case .ethereumClassic(let testnet):
-            return testnet
-        case .binance(let testnet):
-            return testnet
-        case .polygon(let testnet):
-            return testnet
-        case .avalanche(let testnet):
-            return testnet
-        case .solana(_, let testnet):
-            return testnet
-        case .fantom(let testnet):
-            return testnet
-        case .polkadot(_, let testnet):
-            return testnet
-        case .azero(_, let testnet):
-            return testnet
-        case .tron(let testnet):
-            return testnet
-        case .arbitrum(let testnet):
-            return testnet
-        case .dash(let testnet):
-            return testnet
-        case .gnosis:
-            return false
-        case .optimism(let testnet):
-            return testnet
-        case .ethereumPoW(let testnet):
-            return testnet
-        case .disChain:
-            return false
-        case .ton(_, let testnet):
-            return testnet
-        case .kava(let testnet):
-            return testnet
-        case .kaspa:
-            return false
-        case .ravencoin(let testnet):
-            return testnet
-        case .cosmos(let testnet):
-            return testnet
-        case .telos(let testnet):
-            return testnet
-        case .chia(let testnet):
-            return testnet
-        case .near(_, let testnet):
-            return testnet
-        case .decimal(let testnet):
-            return testnet
-        case .veChain(let testnet):
-            return testnet
-        case .xdc(let testnet):
-            return testnet
-        case .algorand(_, let testnet):
-			return testnet
-        case .aptos(_, let testnet):
-            return testnet
-        case .shibarium(let testnet):
+        case .stellar(_, let testnet),
+                .hedera(_, let testnet),
+                .solana(_, let testnet),
+                .polkadot(_, let testnet),
+                .azero(_, let testnet),
+                .ton(_, let testnet),
+                .near(_, let testnet),
+                .algorand(_, let testnet),
+                .aptos(_, let testnet),
+                .shibarium(let testnet):
             return testnet
         }
     }
@@ -158,7 +132,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .tezos(let curve),
                 .near(let curve, _),
                 .algorand(let curve, _),
-                .aptos(let curve, _):
+                .aptos(let curve, _),
+                .hedera(let curve, _):
             return curve
         case .chia:
             return .bls12381_G2_AUG
@@ -177,7 +152,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .dogecoin,
                 .dash,
                 .kaspa,
-                .ravencoin:
+                .ravencoin,
+                .hedera:
             return 8
         case .ethereum,
                 .ethereumClassic,
@@ -200,7 +176,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .xdc,
                 .shibarium:
             return 18
-        case  .cardano,
+        case .cardano,
                 .xrp,
                 .tezos,
                 .tron,
@@ -214,7 +190,9 @@ public indirect enum Blockchain: Equatable, Hashable {
             return 9
         case .polkadot(_, let testnet):
             return testnet ? 12 : 10
-        case .kusama, .azero, .chia:
+        case .kusama,
+                .azero,
+                .chia:
             return 12
         case .near:
             return 24
@@ -315,6 +293,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "BONE"
         case .aptos:
             return "APT"
+        case .hedera:
+            return "HBAR"
         }
     }
 
@@ -428,7 +408,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .optimism,
                 .ton,
                 .near,
-                .aptos:
+                .aptos,
+                .hedera:
             return true
         case .fantom,
                 .tron,
@@ -454,7 +435,7 @@ public indirect enum Blockchain: Equatable, Hashable {
 extension Blockchain {
     public var isEvm: Bool { chainId != nil }
 
-    // Only fot Ethereum compatible blockchains
+    // Only for Ethereum compatible blockchains
     // https://chainlist.org
     public var chainId: Int? {
         switch self {
@@ -830,6 +811,7 @@ extension Blockchain: Codable {
         case .algorand: return "algorand"
         case .shibarium: return "shibarium"
         case .aptos: return "aptos"
+        case .hedera: return "hedera"
         }
     }
 
@@ -899,6 +881,7 @@ extension Blockchain: Codable {
         case "algorand": self = .algorand(curve: curve, testnet: isTestnet)
         case "shibarium": self = .shibarium(testnet: isTestnet)
         case "aptos": self = .aptos(curve: curve, testnet: isTestnet)
+        case "hedera": self = .hedera(curve: curve, testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -972,6 +955,7 @@ extension Blockchain {
         case "algorand": return .algorand(curve: curve, testnet: isTestnet)
         case "shibarium": return .shibarium(testnet: isTestnet)
         case "aptos": return .aptos(curve: curve, testnet: isTestnet)
+        case "hedera": return .hedera(curve: curve, testnet: isTestnet)
         default: return nil
         }
     }
@@ -1053,6 +1037,8 @@ extension Blockchain {
             return AlgorandWalletAssembly()
         case .aptos:
             return AptosWalletAssembly()
+        case .hedera:
+            return HederaWalletAssembly()
         }
     }
 }

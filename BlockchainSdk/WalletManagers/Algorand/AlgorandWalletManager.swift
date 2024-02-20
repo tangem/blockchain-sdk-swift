@@ -69,7 +69,7 @@ final class AlgorandWalletManager: BaseManager {
 
 private extension AlgorandWalletManager {
     func validateExistentialDeposit(with accountModel: AlgorandAccountModel) throws {
-        if let coinValue = wallet.amounts[.coin]?.value, coinValue < accountModel.existentialDeposit {
+        if accountModel.coinValue < accountModel.existentialDeposit {
             let error = makeNoAccountError(using: accountModel)
             throw error
         }
