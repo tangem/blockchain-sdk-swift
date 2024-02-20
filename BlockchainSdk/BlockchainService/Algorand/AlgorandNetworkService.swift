@@ -31,13 +31,8 @@ class AlgorandNetworkService: MultiNetworkProvider {
                 .getAccount(address: address)
                 .withWeakCaptureOf(self)
                 .map { service, response in
-                    let accountBlanaceValues = service.calculateCoinValueWithReserveDeposit(from: response)
-                    
-                    return AlgorandAccountModel(
-                        reserveValue: accountBlanaceValues.reserveValue,
-                        coinValue: accountBlanaceValues.coinValue,
-                        existentialDeposit: Decimal(response.minBalance) / service.blockchain.decimalValue
-                    )
+                    let accountModel = service.calculateCoinValueWithReserveDeposit(from: response)
+                    return accountModel
                 }
                 .eraseToAnyPublisher()
         }
@@ -150,15 +145,18 @@ class AlgorandNetworkService: MultiNetworkProvider {
 // MARK: - Private Implementation
 
 private extension AlgorandNetworkService {
-    func calculateCoinValueWithReserveDeposit(from accountModel: AlgorandResponse.Account) -> (coinValue: Decimal, reserveValue: Decimal) {
+    func calculateCoinValueWithReserveDeposit(from accountModel: AlgorandResponse.Account) -> AlgorandAccountModel {
         let changeBalanceValue = max(Decimal(accountModel.amount) - Decimal(accountModel.minBalance), 0)
         
-        let coinBalance = changeBalanceValue / blockchain.decimalValue
+        let decimalCoinValue = Decimal(accountModel.amount) / blockchain.decimalValue
+        let decimalReserveValue = Decimal(accountModel.minBalance) / blockchain.decimalValue
+        let decimalCoinWithReserveValue = changeBalanceValue / blockchain.decimalValue
         
-        let decimalReserveBalance = Decimal(accountModel.minBalance)
-        let reserveCoinBalance = decimalReserveBalance / blockchain.decimalValue
-        
-        return (coinBalance, reserveCoinBalance)
+        return AlgorandAccountModel(
+            reserveValue: decimalReserveValue,
+            coinValue: decimalCoinValue,
+            coinValueWithReserveValue: decimalCoinWithReserveValue
+        )
     }
 }
 
