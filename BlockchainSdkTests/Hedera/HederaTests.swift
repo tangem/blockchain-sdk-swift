@@ -88,6 +88,8 @@ final class HederaTests: XCTestCase {
         let curve = try Curve(blockchain: blockchain)
         let hashesToSign = try compiledTransaction.hashesToSign()
 
+        hashesToSign.forEach { sizeTester.testTxSize($0) }
+
         let signatures = try hashesToSign.map { digest in
             let signature = try XCTUnwrap(privateKey.sign(digest: digest, curve: curve))
             return try Secp256k1Signature(with: signature).normalize()
@@ -176,6 +178,8 @@ final class HederaTests: XCTestCase {
 
         let curve = try Curve(blockchain: blockchain)
         let hashesToSign = try compiledTransaction.hashesToSign()
+
+        hashesToSign.forEach { sizeTester.testTxSize($0) }
 
         let signatures = try hashesToSign.map { digest in
             return try XCTUnwrap(privateKey.sign(digest: digest, curve: curve))
