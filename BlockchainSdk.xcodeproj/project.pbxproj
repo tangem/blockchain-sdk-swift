@@ -309,6 +309,7 @@
 		B675E9692B321131004AF179 /* VeChainNetworkResult.Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B675E9682B321131004AF179 /* VeChainNetworkResult.Transaction.swift */; };
 		B676D9C22B33AFFE009A0D06 /* VeChainNetworkParams.TransactionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B676D9C12B33AFFE009A0D06 /* VeChainNetworkParams.TransactionStatus.swift */; };
 		B676D9C42B33B028009A0D06 /* VeChainNetworkParams.BlockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B676D9C32B33B028009A0D06 /* VeChainNetworkParams.BlockInfo.swift */; };
+		B67C5A1B2B82509800A33A68 /* NSError+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5A1A2B82509700A33A68 /* NSError+.swift */; };
 		B68507082AEF494E004A431B /* NEARProtocolConfigCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B68507072AEF494E004A431B /* NEARProtocolConfigCache.swift */; };
 		B68A7D472B35D39700822BAF /* VeChainTransactionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B68A7D462B35D39700822BAF /* VeChainTransactionInfo.swift */; };
 		B69293752AEC6A2300D6A85A /* NEARTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69293742AEC6A2300D6A85A /* NEARTests.swift */; };
@@ -1047,6 +1048,7 @@
 		B675E9682B321131004AF179 /* VeChainNetworkResult.Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkResult.Transaction.swift; sourceTree = "<group>"; };
 		B676D9C12B33AFFE009A0D06 /* VeChainNetworkParams.TransactionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkParams.TransactionStatus.swift; sourceTree = "<group>"; };
 		B676D9C32B33B028009A0D06 /* VeChainNetworkParams.BlockInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkParams.BlockInfo.swift; sourceTree = "<group>"; };
+		B67C5A1A2B82509700A33A68 /* NSError+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSError+.swift"; sourceTree = "<group>"; };
 		B68507072AEF494E004A431B /* NEARProtocolConfigCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NEARProtocolConfigCache.swift; sourceTree = "<group>"; };
 		B68A7D462B35D39700822BAF /* VeChainTransactionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainTransactionInfo.swift; sourceTree = "<group>"; };
 		B69293742AEC6A2300D6A85A /* NEARTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARTests.swift; sourceTree = "<group>"; };
@@ -2410,6 +2412,7 @@
 				B6AF184C2AF00F8600113BC2 /* TWCurve+.swift */,
 				B626D11E2AF02C40003A8929 /* TWPublicKeyType+.swift */,
 				DA1D3B7A2B57B8FB00247393 /* BigUInt+.swift */,
+				B67C5A1A2B82509700A33A68 /* NSError+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -4361,6 +4364,7 @@
 				2DB84D442B721CB000C1CDD1 /* AptosTests.swift in Sources */,
 				2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */,
 				DC886FCD2AF5637D0098669C /* CommonTests.swift in Sources */,
+				B67C5A1B2B82509800A33A68 /* NSError+.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4606,7 +4610,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4897UJ6D8C;
 				INFOPLIST_FILE = BlockchainSdkTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4627,7 +4631,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4897UJ6D8C;
 				INFOPLIST_FILE = BlockchainSdkTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
