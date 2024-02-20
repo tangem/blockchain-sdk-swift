@@ -45,7 +45,7 @@ final class AlgorandWalletManager: BaseManager {
             .withWeakCaptureOf(self)
             .tryMap { walletManager, input in
                 let (accountInfo, _) = input
-                try walletManager.validateExistentialDeposit(with: accountInfo)
+                try walletManager.validateMinimalBalanceAccount(with: accountInfo)
                 return input
                 
             }
@@ -68,7 +68,7 @@ final class AlgorandWalletManager: BaseManager {
 // MARK: - Private Implementation
 
 private extension AlgorandWalletManager {
-    func validateExistentialDeposit(with accountModel: AlgorandAccountModel) throws {
+    func validateMinimalBalanceAccount(with accountModel: AlgorandAccountModel) throws {
         /*
          Every account on Algorand must have a minimum balance of 100,000 microAlgos. If ever a transaction is sent that would result in a balance lower than the minimum, the transaction will fail. The minimum balance increases with each asset holding the account has (whether the asset was created or owned by the account) and with each application the account created or opted in. Destroying a created asset, opting out/closing out an owned asset, destroying a created app, or opting out an opted in app decreases accordingly the minimum balance.
          */
