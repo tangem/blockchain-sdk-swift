@@ -155,9 +155,15 @@ class CosmosWalletManager: BaseManager, WalletManager {
             .setFailureType(to: Error.self)
             .tryMap { [weak self] Void -> Data in
                 guard let self else { throw WalletError.empty }
+                
+                let dummyFee = Fee(
+                    Amount(with: amount, value: 0),
+                    parameters: CosmosFeeParameters(gas: 0)
+                )
+
                 let transaction = Transaction(
                     amount: amount,
-                    fee: Fee(.zeroCoin(for: self.wallet.blockchain)),
+                    fee: dummyFee,
                     sourceAddress: self.wallet.address,
                     destinationAddress: destination,
                     changeAddress: self.wallet.address
