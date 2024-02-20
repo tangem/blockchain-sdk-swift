@@ -12,7 +12,7 @@ extension AlgorandResponse {
     struct Error: Decodable, LocalizedError {
         let message: String
         
-        var errorDescription: String {
+        var errorDescription: String? {
             message
         }
     }
