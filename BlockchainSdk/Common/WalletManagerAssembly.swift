@@ -14,6 +14,7 @@ struct WalletManagerAssemblyInput {
     let wallet: Wallet
     let pairPublicKey: Data?
     let blockchainSdkConfig: BlockchainSdkConfig
+    let blockchainSdkDependencies: BlockchainSdkDependencies
 }
 
 extension WalletManagerAssemblyInput: NetworkProviderAssemblyInput {
