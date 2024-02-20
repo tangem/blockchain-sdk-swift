@@ -80,9 +80,23 @@ struct AlgorandNetworkProvider: HostProvider {
             .filterSuccessfulStatusAndRedirectCodes()
             .map(T.self)
             .mapError { moyaError -> Swift.Error in
-                return moyaError.asWalletError ?? moyaError
+                if
+                    let statusCode = moyaError.response?.statusCode,
+                    Constants.knownAPIErrorCodes.contains(statusCode),
+                    let decodeData = moyaError.response?.data
+                {
+                    let jsonDecodeError = try? JSONDecoder().decode(AlgorandResponse.Error.self, from: decodeData)
+                    return jsonDecodeError ?? moyaError
+                }
+                
+                return moyaError
             }
             .eraseToAnyPublisher()
+    }   
+}
+
+extension AlgorandNetworkProvider {
+    enum Constants {
+        static let knownAPIErrorCodes: [Int] = [400, 500, 503]
     }
-    
 }
