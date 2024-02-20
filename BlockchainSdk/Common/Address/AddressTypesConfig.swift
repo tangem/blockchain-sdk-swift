@@ -61,7 +61,8 @@ struct AddressTypesConfig {
              .veChain,
              .algorand,
              .shibarium,
-             .aptos:
+             .aptos,
+             .hedera:
             return [.default]
         }
     }
