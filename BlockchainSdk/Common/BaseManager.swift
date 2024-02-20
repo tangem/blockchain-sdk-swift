@@ -109,7 +109,7 @@ class BaseManager: WalletProvider {
         if let error {
             newState = .failed(error)
         } else {
-            newState = .loaded(wallet)
+            newState = .loaded
         }
 
         state.send(newState)
