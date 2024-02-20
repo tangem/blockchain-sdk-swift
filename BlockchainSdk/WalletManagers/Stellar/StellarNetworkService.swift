@@ -24,9 +24,9 @@ class StellarNetworkService: MultiNetworkProvider {
         }
     }
     
-    public func checkTargetAccount(transaction: Transaction) -> AnyPublisher<StellarTargetAccountResponse, Error> {
+    public func checkTargetAccount(address: String, token: Token?) -> AnyPublisher<StellarTargetAccountResponse, Error> {
         providerPublisher {
-            $0.checkTargetAccount(transaction: transaction)
+            $0.checkTargetAccount(address: address, token: token)
         }
     }
     
