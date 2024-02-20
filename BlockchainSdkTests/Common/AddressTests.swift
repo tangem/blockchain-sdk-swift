@@ -1116,7 +1116,7 @@ class AddressesTests: XCTestCase {
         let hederaDerPrefixPrivate = Data(hexString: "0x302e020100300506032b657004220420")
 
         // Stripping out Hedera DER prefix from the given private key
-        let privateKeyRaw = hederaPrivateKeyRaw[hederaDerPrefixPrivate.count...]
+        let privateKeyRaw = Data(hederaPrivateKeyRaw[hederaDerPrefixPrivate.count...])
         let privateKey = try XCTUnwrap(WalletCore.PrivateKey(data: privateKeyRaw))
 
         let blockchain: Blockchain = .hedera(curve: .ed25519, testnet: false)
@@ -1135,7 +1135,7 @@ class AddressesTests: XCTestCase {
         let hederaDerPrefixPrivate = Data(hexString: "0x302e020100300506032b657004220420")
 
         // Stripping out Hedera DER prefix from the given private key
-        let privateKeyRaw = hederaPrivateKeyRaw[hederaDerPrefixPrivate.count...]
+        let privateKeyRaw = Data(hederaPrivateKeyRaw[hederaDerPrefixPrivate.count...])
         let privateKey = try XCTUnwrap(WalletCore.PrivateKey(data: privateKeyRaw))
 
         let blockchain: Blockchain = .hedera(curve: .ed25519, testnet: false)
@@ -1154,7 +1154,7 @@ class AddressesTests: XCTestCase {
         let hederaDerPrefixPrivate = Data(hexString: "0x3030020100300706052b8104000a04220420")
 
         // Stripping out Hedera DER prefix from the given private key
-        let privateKeyRaw = hederaPrivateKeyRaw[hederaDerPrefixPrivate.count...]
+        let privateKeyRaw = Data(hederaPrivateKeyRaw[hederaDerPrefixPrivate.count...])
         let privateKey = try XCTUnwrap(WalletCore.PrivateKey(data: privateKeyRaw))
 
         let blockchain: Blockchain = .hedera(curve: .secp256k1, testnet: false)
