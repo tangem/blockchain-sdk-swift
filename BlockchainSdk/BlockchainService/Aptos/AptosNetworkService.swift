@@ -113,7 +113,7 @@ class AptosNetworkService: MultiNetworkProvider {
         let transferPayload = AptosRequest.TransferPayload(
             type: Constants.transferPayloadType,
             function: Constants.transferPayloadFunction,
-            typeArguments: [info.contractAddress ?? Constants.aptosCoinContract],
+            typeArguments: [],
             arguments: [info.destinationAddress, String(info.amount)]
         )
         
@@ -146,7 +146,7 @@ private extension AptosNetworkService {
         static let accountKeyPrefix = "0x1::account::Account"
         static let coinStoreKeyPrefix = "0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>"
         static let transferPayloadType = "entry_function_payload"
-        static let transferPayloadFunction = "0x1::aptos_account::transfer_coins"
+        static let transferPayloadFunction = "0x1::aptos_account::transfer"
         static let aptosCoinContract = "0x1::aptos_coin::AptosCoin"
         static let signatureType = "ed25519_signature"
         static let successTransactionSafeFactor: Decimal = 1.5

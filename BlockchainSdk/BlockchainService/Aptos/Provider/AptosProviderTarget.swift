@@ -67,9 +67,14 @@ struct AptosProviderTarget: TargetType {
         case .accounts, .accountsResources, .estimateGasPrice:
             return .requestPlain
         case .simulateTransaction(let data):
-            let encoder = JSONEncoder()
-            encoder.keyEncodingStrategy = .convertToSnakeCase
-            return .requestCustomJSONEncodable(data, encoder: encoder)
+            return .requestCompositeData(
+                bodyData: data,
+                urlParameters: [
+                    "estimate_gas_unit_price": "false",
+                    "estimate_max_gas_amount": "true",
+                    "estimate_prioritized_gas_unit_price": "false"
+                ]
+            )
         case .submitTransaction(let data):
             return .requestData(data)
         }
@@ -120,7 +125,7 @@ extension AptosProviderTarget {
          
          To use this endpoint with BCS, you must submit a SignedTransaction encoded as BCS. See SignedTransaction in types/src/transaction/mod.rs.
          */
-        case simulateTransaction(data: AptosRequest.TransactionBody)
+        case simulateTransaction(data: Data)
         
         /*
          This endpoint accepts transaction submissions in two formats.
