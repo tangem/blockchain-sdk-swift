@@ -56,9 +56,16 @@ struct AptosNetworkProvider: HostProvider {
     }
     
     func calculateUsedGasPriceUnit(transactionBody: AptosRequest.TransactionBody) -> AnyPublisher<[AptosResponse.SimulateTransactionBody], Error> {
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        
+        guard let data = try? encoder.encode(transactionBody) else {
+            return .emptyFail
+        }
+        
         let target = AptosProviderTarget(
             node: node,
-            targetType: .simulateTransaction(data: transactionBody)
+            targetType: .simulateTransaction(data: data)
         )
         
         return requestPublisher(for: target)
