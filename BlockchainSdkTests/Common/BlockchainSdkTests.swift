@@ -102,40 +102,56 @@ class BlockchainSdkTests: XCTestCase {
             )]
         )
 
-        let vm: WalletManager = BitcoinWalletManager(wallet: wallet)
+        let walletManager: WalletManager = BitcoinWalletManager(wallet: wallet)
         
-        vm.wallet.add(coinValue: 10)
-        XCTAssertNoThrow(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 3),
-                                                  fee: Fee(Amount(with: vm.wallet.amounts[.coin]!, value: 3)),
-                                                  destinationAddress: ""))
+        walletManager.wallet.add(coinValue: 10)
         
-        assert(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: -1),
-                                        fee: Fee(Amount(with: vm.wallet.amounts[.coin]!, value: 3)),
-                                        destinationAddress: ""),
-               throws: TransactionErrors(errors: [.invalidAmount, .dustAmount(minimumAmount: Amount(with: wallet.blockchain, value: 0.00001))]))
+        XCTAssertNoThrow(
+            try walletManager.validate(
+                amount: Amount(with: walletManager.wallet.amounts[.coin]!, value: 3),
+                fee: Fee(Amount(with: walletManager.wallet.amounts[.coin]!, value: 3))
+            )
+        )
         
+        assert(
+            try walletManager.validate(
+                amount: Amount(with: walletManager.wallet.amounts[.coin]!, value: -1),
+                fee: Fee(Amount(with: walletManager.wallet.amounts[.coin]!, value: 3))
+            ),
+            throws: ValidationError.invalidAmount
+        )
         
+        assert(
+            try walletManager.validate(
+                amount: Amount(with: walletManager.wallet.amounts[.coin]!, value: 1),
+                fee: Fee(Amount(with: walletManager.wallet.amounts[.coin]!, value: -1))
+            ),
+            throws: ValidationError.invalidFee
+        )
         
-        assert(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 1),
-                                        fee: Fee(Amount(with: vm.wallet.amounts[.coin]!, value: -1)),
-                                        destinationAddress: ""),
-               throws: TransactionErrors(errors: [.invalidFee]))
+        assert(
+            try walletManager.validate(
+                amount: Amount(with: walletManager.wallet.amounts[.coin]!, value: 11),
+                fee: Fee(Amount(with: walletManager.wallet.amounts[.coin]!, value: 1))
+            ),
+            throws: ValidationError.amountExceedsBalance
+        )
         
-        assert(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 11),
-                                        fee: Fee(Amount(with: vm.wallet.amounts[.coin]!, value: 1)),
-                                        destinationAddress: ""),
-               throws: TransactionErrors(errors: [.amountExceedsBalance, .totalExceedsBalance, .dustChange(minimumAmount: Amount(with: wallet.blockchain, value: 0.00001))]))
+        assert(
+            try walletManager.validate(
+                amount: Amount(with: walletManager.wallet.amounts[.coin]!, value: 1),
+                fee: Fee(Amount(with: walletManager.wallet.amounts[.coin]!, value: 11))
+            ),
+            throws: ValidationError.feeExceedsBalance
+        )
         
-        
-        assert(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 1),
-                                        fee: Fee(Amount(with: vm.wallet.amounts[.coin]!, value: 11)),
-                                        destinationAddress: ""),
-               throws: TransactionErrors(errors: [.feeExceedsBalance, .totalExceedsBalance,  .dustChange(minimumAmount: Amount(with: wallet.blockchain, value: 0.00001))]))
-        
-        assert(try vm.createTransaction(amount: Amount(with: vm.wallet.amounts[.coin]!, value: 3),
-                                        fee: Fee(Amount(with: vm.wallet.amounts[.coin]!, value: 8)),
-                                        destinationAddress: ""),
-               throws: TransactionErrors(errors: [.totalExceedsBalance, .dustChange(minimumAmount: Amount(with: wallet.blockchain, value: 0.00001))]))
+        assert(
+            try walletManager.validate(
+                amount: Amount(with: walletManager.wallet.amounts[.coin]!, value: 3),
+                fee: Fee(Amount(with: walletManager.wallet.amounts[.coin]!, value: 8))
+            ),
+            throws: ValidationError.totalExceedsBalance
+        )
     }
     
     func testDerivationStyle() {
