@@ -668,6 +668,13 @@
 		EF72579B2A93B8B900EA8CB2 /* UTXOTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7257962A93B8B900EA8CB2 /* UTXOTransactionHistoryMapper.swift */; };
 		EF72579C2A93B8B900EA8CB2 /* EthereumTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7257982A93B8B900EA8CB2 /* EthereumTransactionHistoryProvider.swift */; };
 		EF72579D2A93B8B900EA8CB2 /* EthereumTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7257992A93B8B900EA8CB2 /* EthereumTransactionHistoryMapper.swift */; };
+		EF9E380D2B7A38E3004B694C /* TransactionValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9E380C2B7A38E3004B694C /* TransactionValidator.swift */; };
+		EF9E38102B7A3E82004B694C /* WithdrawalValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9E380F2B7A3E82004B694C /* WithdrawalValidator.swift */; };
+		EF9E381D2B7A43A5004B694C /* DustRestrictable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9E381C2B7A43A5004B694C /* DustRestrictable.swift */; };
+		EF9E381F2B7A43B3004B694C /* MinimumBalanceRestrictable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9E381E2B7A43B3004B694C /* MinimumBalanceRestrictable.swift */; };
+		EF9E382D2B7A47C7004B694C /* AnyPublisher+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9E382C2B7A47C7004B694C /* AnyPublisher+Async.swift */; };
+		EF9E38302B7A4CFD004B694C /* ValidationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9E382F2B7A4CFD004B694C /* ValidationError.swift */; };
+		EF9E384F2B7A740D004B694C /* ReserveAmountRestrictable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9E384E2B7A740D004B694C /* ReserveAmountRestrictable.swift */; };
 		EF9F9086299F88D1006F638F /* EthereumWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9F9085299F88D1006F638F /* EthereumWalletManager.swift */; };
 		EF9F9088299F8B70006F638F /* ETHError.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9F9087299F8B70006F638F /* ETHError.swift */; };
 		EFAD40A52A965BA800364D65 /* BlockBookNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFAD40A42A965BA800364D65 /* BlockBookNode.swift */; };
@@ -1401,6 +1408,13 @@
 		EF7257962A93B8B900EA8CB2 /* UTXOTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTXOTransactionHistoryMapper.swift; sourceTree = "<group>"; };
 		EF7257982A93B8B900EA8CB2 /* EthereumTransactionHistoryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumTransactionHistoryProvider.swift; sourceTree = "<group>"; };
 		EF7257992A93B8B900EA8CB2 /* EthereumTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumTransactionHistoryMapper.swift; sourceTree = "<group>"; };
+		EF9E380C2B7A38E3004B694C /* TransactionValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionValidator.swift; sourceTree = "<group>"; };
+		EF9E380F2B7A3E82004B694C /* WithdrawalValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithdrawalValidator.swift; sourceTree = "<group>"; };
+		EF9E381C2B7A43A5004B694C /* DustRestrictable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DustRestrictable.swift; sourceTree = "<group>"; };
+		EF9E381E2B7A43B3004B694C /* MinimumBalanceRestrictable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimumBalanceRestrictable.swift; sourceTree = "<group>"; };
+		EF9E382C2B7A47C7004B694C /* AnyPublisher+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyPublisher+Async.swift"; sourceTree = "<group>"; };
+		EF9E382F2B7A4CFD004B694C /* ValidationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationError.swift; sourceTree = "<group>"; };
+		EF9E384E2B7A740D004B694C /* ReserveAmountRestrictable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReserveAmountRestrictable.swift; sourceTree = "<group>"; };
 		EF9F9085299F88D1006F638F /* EthereumWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumWalletManager.swift; sourceTree = "<group>"; };
 		EF9F9087299F8B70006F638F /* ETHError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ETHError.swift; sourceTree = "<group>"; };
 		EFAD40A42A965BA800364D65 /* BlockBookNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookNode.swift; sourceTree = "<group>"; };
@@ -1896,6 +1910,7 @@
 		5D14E48B2397B87000C15FC8 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				EF9E380E2B7A3A41004B694C /* Interfaces */,
 				DC5E646E2B160F4D00E81AA5 /* BitcoinScript */,
 				EFD717D32A2632FB00E5430D /* Factories */,
 				EFD717C82A25EA7D00E5430D /* ABI */,
@@ -1921,7 +1936,6 @@
 				B056729A2570F9DC00A8CB59 /* BlockchainSdkError.swift */,
 				5DEC90C02587A35800826C95 /* BlockchainSdkConfig.swift */,
 				B0AD566325AC8DD50084F924 /* PendingTransaction.swift */,
-				5D14E48F2397B87000C15FC8 /* WalletManager.swift */,
 				5D88838827D3BB8B008744E1 /* WalletError.swift */,
 				5D31EA2E27DA1C910031DBEB /* DetailedError.swift */,
 				5D88838A27D3BBDA008744E1 /* BaseManager.swift */,
@@ -1932,7 +1946,6 @@
 				DC63F265293F243200F953EF /* Credentials.swift */,
 				DA656FC9295454C10092CC61 /* Constants.swift */,
 				DAD65BAF2955F201003B3E8D /* EthereumApiKeys.swift */,
-				DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */,
 				EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */,
 				2D9A91A629BB8C2E00476EA6 /* WalletCoreAddressService.swift */,
 				EF5F1B9629C9C0500093307B /* Fee.swift */,
@@ -1992,6 +2005,7 @@
 				B6DC3F392AF2CA8700377BB3 /* Sequence+.swift */,
 				B62011032B7AAC2100155235 /* Collection+.swift */,
 				DC5E646C2B16098C00E81AA5 /* RIPEMD160+.swift */,
+				EF9E382C2B7A47C7004B694C /* AnyPublisher+Async.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -3327,6 +3341,29 @@
 			path = TransactionHistory/Ethereum;
 			sourceTree = "<group>";
 		};
+		EF9E380E2B7A3A41004B694C /* Interfaces */ = {
+			isa = PBXGroup;
+			children = (
+				5D14E48F2397B87000C15FC8 /* WalletManager.swift */,
+				DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */,
+				EF9E382E2B7A4CF3004B694C /* TransactionValidator */,
+			);
+			path = Interfaces;
+			sourceTree = "<group>";
+		};
+		EF9E382E2B7A4CF3004B694C /* TransactionValidator */ = {
+			isa = PBXGroup;
+			children = (
+				EF9E380C2B7A38E3004B694C /* TransactionValidator.swift */,
+				EF9E382F2B7A4CFD004B694C /* ValidationError.swift */,
+				EF9E380F2B7A3E82004B694C /* WithdrawalValidator.swift */,
+				EF9E381C2B7A43A5004B694C /* DustRestrictable.swift */,
+				EF9E381E2B7A43B3004B694C /* MinimumBalanceRestrictable.swift */,
+				EF9E384E2B7A740D004B694C /* ReserveAmountRestrictable.swift */,
+			);
+			path = TransactionValidator;
+			sourceTree = "<group>";
+		};
 		EFB9523E2A6FEF0200996D16 /* TransactionHistory */ = {
 			isa = PBXGroup;
 			children = (
@@ -3757,6 +3794,7 @@
 				DC5E64EF2B1650F400E81AA5 /* OP_BOOLAND.swift in Sources */,
 				2DA139F92A8AD82E00E3C374 /* ChiaCondition.swift in Sources */,
 				2DDE5BAE29C4F8D200A5B708 /* TronWalletAssembly.swift in Sources */,
+				EF9E381D2B7A43A5004B694C /* DustRestrictable.swift in Sources */,
 				B05145012B57F18D00EDAD1E /* EVMSmartContractInteractorFactory.swift in Sources */,
 				EF609FC72A20D4E9004E6D4E /* OptimismWalletManager.swift in Sources */,
 				DA63B09B29CB3FC700AC6E49 /* KaspaNetworkProvider.swift in Sources */,
@@ -3860,6 +3898,7 @@
 				DC5E65022B1650F400E81AA5 /* OP_NUMEQUALVERIFY.swift in Sources */,
 				DC5E65252B1650F400E81AA5 /* OP_RESERVED.swift in Sources */,
 				5D908C5726A6D39C00270FA3 /* BinanceTransactionParams.swift in Sources */,
+				EF9E382D2B7A47C7004B694C /* AnyPublisher+Async.swift in Sources */,
 				5D7D243825136254001B9A4F /* Entropy.swift in Sources */,
 				5DE3BFA4239FB4E500E8815D /* BitcoinNetworkService.swift in Sources */,
 				2D9A919F29BB8C1700476EA6 /* TONNetworkService.swift in Sources */,
@@ -4092,8 +4131,10 @@
 				DC5E64E12B1650F400E81AA5 /* OP_CHECKSIG.swift in Sources */,
 				DA9F76F127EC9C8300F0665C /* TronJsonRpcProvider.swift in Sources */,
 				5D4B33BC23F6EA0500C93A84 /* BlockchairTarget.swift in Sources */,
+				EF9E384F2B7A740D004B694C /* ReserveAmountRestrictable.swift in Sources */,
 				2D01EBFD2B04FC6700DEF1CC /* DecimalAddressService.swift in Sources */,
 				5D94E56723A3946C009C7482 /* Data+.swift in Sources */,
+				EF9E381F2B7A43B3004B694C /* MinimumBalanceRestrictable.swift in Sources */,
 				2DCAEE4F2B147E2800C87E09 /* DecimalPlainAddress.swift in Sources */,
 				DC3550FA2B5852F200A93DBA /* XDCNetworkService.swift in Sources */,
 				DC5E652C2B1650F400E81AA5 /* OP_RETURN.swift in Sources */,
@@ -4177,6 +4218,7 @@
 				B64B728C2AEC9C7B005C8C7C /* Lock.swift in Sources */,
 				5DC7DD62244077D7008F83F2 /* XRPNetworkService.swift in Sources */,
 				2DBBE94D29C8686000971539 /* OptimismWalletAssembly.swift in Sources */,
+				EF9E380D2B7A38E3004B694C /* TransactionValidator.swift in Sources */,
 				B69824812B71A8F800E1333D /* HederaNetworkResult.ExchangeRate.swift in Sources */,
 				B6D346002AD9450D0009D1B2 /* NEARTransactionBuilder.swift in Sources */,
 				EF5F1B9729C9C0500093307B /* Fee.swift in Sources */,
@@ -4189,6 +4231,7 @@
 				2D24F5B22B6D2C6500D502A0 /* AptosTransactionInfo.swift in Sources */,
 				EF72579C2A93B8B900EA8CB2 /* EthereumTransactionHistoryProvider.swift in Sources */,
 				DC5E65102B1650F400E81AA5 /* OP_2SWAP.swift in Sources */,
+				EF9E38102B7A3E82004B694C /* WithdrawalValidator.swift in Sources */,
 				B65835C82B768C49002AE7A8 /* HederaTargetConfiguration.swift in Sources */,
 				B04E8D5025F8F67F00821CBE /* RosettaNetworkProvider.swift in Sources */,
 				5D845516243DEAC80072155E /* AdaliteTarget.swift in Sources */,
@@ -4285,6 +4328,7 @@
 				B0FF8817264AEA60003E000A /* LitecoinNetworkService.swift in Sources */,
 				DAE30DFF279164500056C5A3 /* SolanaWalletManager.swift in Sources */,
 				DA67A69829E523C6001B6799 /* CosmosTransactionBuilder.swift in Sources */,
+				EF9E38302B7A4CFD004B694C /* ValidationError.swift in Sources */,
 				2DDEFBC22B59B36A00885675 /* AlgorandWalletManager.swift in Sources */,
 				DC5E651E2B1650F400E81AA5 /* OP_NIP.swift in Sources */,
 				EF32FEC22A3072B9002ED43F /* CashAddrService.swift in Sources */,
