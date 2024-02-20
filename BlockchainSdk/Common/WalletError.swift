@@ -16,6 +16,7 @@ public enum WalletError: Error, LocalizedError {
     case failedToSendTx
     case failedToCalculateTxSize
     case empty
+    case blockchainUnavailable(underlyingError: Error)
     
     public var errorDescription: String? {
         switch self {
@@ -29,7 +30,9 @@ public enum WalletError: Error, LocalizedError {
             return "common_send_tx_error".localized
         case .empty:
             return "Empty"
-        case .failedToCalculateTxSize, .failedToParseNetworkResponse:
+        case .failedToCalculateTxSize, 
+             .failedToParseNetworkResponse,
+             .blockchainUnavailable:
             return "generic_error_code".localized(errorCodeDescription)
         }
     }
@@ -54,6 +57,8 @@ public enum WalletError: Error, LocalizedError {
             return 6
         case .empty:
             return 7
+        case .blockchainUnavailable:
+            return 8
         }
     }
 }
