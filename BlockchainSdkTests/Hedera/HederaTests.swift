@@ -101,7 +101,7 @@ final class HederaTests: XCTestCase {
 
         let encodedTransaction = try signedTransaction.toBytes().hexString
 
-        // Hedera coin transfer transaction:
+        // Hedera coin transfer transaction (testnet):
         // https://hashscan.io/testnet/transaction/1708443042.503872003
         //
         // Made using Hedera™ Swift SDK 0.26.0, https://github.com/hashgraph/hedera-sdk-swift
@@ -191,7 +191,7 @@ final class HederaTests: XCTestCase {
 
         let encodedTransaction = try signedTransaction.toBytes().hexString
 
-        // Hedera coin transfer transaction:
+        // Hedera coin transfer transaction (testnet):
         // https://hashscan.io/testnet/transaction/1708438449.753341411
         //
         // Made using Hedera™ Swift SDK 0.26.0, https://github.com/hashgraph/hedera-sdk-swift

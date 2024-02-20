@@ -198,7 +198,7 @@ https://developer.apple.com/documentation/foundation/jsondecoder/3766916-allowsj
             "84a3fe2fc0e585d802cfa160807d1bf8ca5f949cf8d04d128bf984c50aabab7b",
             "d85d322043d87cc475d3523d6fb0c3df903d3830e5d4d5027ffe565e7b8652bb",
             /*
-            The addresses below are perfectly valid NEAR addresses (from https://nomicon.io/DataStructures/Account#examples),
+            The addresses below are perfectly valid 'valid' NEAR addresses (from https://nomicon.io/DataStructures/Account#examples),
             but Wallet Core triggers a false negative on them
             */
             /*
