@@ -36,7 +36,8 @@ extension UnixTimestamp {
 
     /// - Warning: `NSDate`/`Swift.Date` provides only milliseconds precision https://stackoverflow.com/questions/46161848
     init?(date: Date) {
-        let dateComponents = date.dateComponents
+        let referenceDate = Date(timeIntervalSince1970: 0.0)
+        let dateComponents = Calendar.current.dateComponents([.second, .nanosecond], from: referenceDate, to: date)
 
         self.init(
             signedSeconds: dateComponents.second ?? 0,
