@@ -54,7 +54,7 @@ final class HederaTests: XCTestCase {
         let feeAmount = Amount(with: blockchain, value: feeValue)
         let fee = Fee(feeAmount)
 
-        let validStartDate = UnixTimestamp(integerPart: 1708443033, fractionalPart: 758181256)
+        let validStartDate = UnixTimestamp(seconds: 1708443033, nanoseconds: 758181256)
         let params = HederaTransactionParams(memo: "reference ECDSA tx")
 
         let transaction = Transaction(
@@ -140,7 +140,7 @@ final class HederaTests: XCTestCase {
         let feeAmount = Amount(with: blockchain, value: feeValue)
         let fee = Fee(feeAmount)
 
-        let validStartDate = UnixTimestamp(integerPart: 1708438431, fractionalPart: 140337611)
+        let validStartDate = UnixTimestamp(seconds: 1708438431, nanoseconds: 140337611)
         let params = HederaTransactionParams(memo: "reference EdDSA tx")
 
         let transaction = Transaction(

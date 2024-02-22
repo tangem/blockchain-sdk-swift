@@ -41,13 +41,13 @@ final class HederaTransactionBuilder {
         let sourceAccountId = try AccountId(parsing: transaction.sourceAddress)
         let destinationAccountId = try AccountId(parsing: transaction.destinationAddress)
 
-        let (validStartDateNSec, multiplicationOverflow) = UInt64(validStartDate.integerPart).multipliedReportingOverflow(by: NSEC_PER_SEC)
+        let (validStartDateNSec, multiplicationOverflow) = UInt64(validStartDate.seconds).multipliedReportingOverflow(by: NSEC_PER_SEC)
         if multiplicationOverflow {
             Log.debug("\(#fileID): Unable to create tx id due to multiplication overflow of '\(validStartDate)'")
             throw WalletError.failedToBuildTx
         }
 
-        let (unixTimestampNSec, addingOverflow) = validStartDateNSec.addingReportingOverflow(UInt64(validStartDate.fractionalPart))
+        let (unixTimestampNSec, addingOverflow) = validStartDateNSec.addingReportingOverflow(UInt64(validStartDate.nanoseconds))
         if addingOverflow {
             Log.debug("\(#fileID): Unable to create tx id due to adding overflow of '\(validStartDate)'")
             throw WalletError.failedToBuildTx

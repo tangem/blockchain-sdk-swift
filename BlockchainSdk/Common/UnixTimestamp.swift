@@ -8,22 +8,22 @@
 
 import Foundation
 
-/// UNIX timestamp, with optional fractional part.
+/// UNIX timestamp, with an optional fractional part (nanoseconds).
 struct UnixTimestamp {
-    let integerPart: UInt
-    let fractionalPart: UInt
+    let seconds: UInt
+    let nanoseconds: UInt
 }
 
 // MARK: - Private implementation
 
 private extension UnixTimestamp {
-    init?(signedIntegerPart: Int, signedFractionalPart: Int) {
+    init?(signedSeconds: Int, signedNanoseconds: Int) {
         // UNIX timestamps can't be negative
-        guard signedIntegerPart >= 0, signedFractionalPart >= 0 else {
+        guard signedSeconds >= 0, signedNanoseconds >= 0 else {
             return nil
         }
 
-        self.init(integerPart: UInt(signedIntegerPart), fractionalPart: UInt(signedFractionalPart))
+        self.init(seconds: UInt(signedSeconds), nanoseconds: UInt(signedNanoseconds))
     }
 }
 
@@ -31,7 +31,7 @@ private extension UnixTimestamp {
 
 extension UnixTimestamp {
     init?<T>(timestamp: T) where T: BinaryInteger {
-        self.init(signedIntegerPart: Int(timestamp), signedFractionalPart: 0)
+        self.init(signedSeconds: Int(timestamp), signedNanoseconds: 0)
     }
 
     /// - Warning: `NSDate`/`Swift.Date` provides only milliseconds precision https://stackoverflow.com/questions/46161848
@@ -39,8 +39,8 @@ extension UnixTimestamp {
         let dateComponents = date.dateComponents
 
         self.init(
-            signedIntegerPart: dateComponents.second ?? 0,
-            signedFractionalPart: dateComponents.nanosecond ?? 0
+            signedSeconds: dateComponents.second ?? 0,
+            signedNanoseconds: dateComponents.nanosecond ?? 0
         )
     }
 }
@@ -51,6 +51,6 @@ extension UnixTimestamp: ExpressibleByIntegerLiteral {
     typealias IntegerLiteralType = UInt
 
     init(integerLiteral value: IntegerLiteralType) {
-        self.init(integerPart: value, fractionalPart: 0)
+        self.init(seconds: value, nanoseconds: 0)
     }
 }
