@@ -99,7 +99,7 @@ extension StellarWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        return networkService.checkTargetAccount(transaction: transaction)
+        return networkService.checkTargetAccount(address: transaction.destinationAddress, token: transaction.amount.type.token)
             .flatMap { [weak self] response -> AnyPublisher<(hash: Data, transaction: stellarsdk.TransactionXDR), Error> in
                 guard let self else { return .emptyFail }
                 
@@ -154,3 +154,34 @@ extension StellarWalletManager: SignatureCountValidator {
 }
 
 extension StellarWalletManager: ThenProcessable { }
+
+extension StellarWalletManager: ReserveAmountRestrictable {
+    func validateReserveAmountRestrictable(amount: Amount, addressType: ReserveAmountRestrictableAddressType) async throws {
+        let isAccountCreated: Bool = try await {
+            switch addressType {
+            case .notCreated:
+                return false
+            case .address(let address):
+                let account = try await networkService.checkTargetAccount(address: address, token: amount.type.token).async()
+                return account.accountCreated
+            }
+        }()
+        
+        guard !isAccountCreated else {
+            return
+        }
+        
+        let reserveAmount = Amount(with: wallet.blockchain, value: 1)
+        switch amount.type {
+        case .coin:
+            if amount < reserveAmount {
+                throw ValidationError.reserve(amount: reserveAmount)
+            }
+        case .token:
+            // From TxBuilder
+            throw StellarError.assetNoAccountOnDestination
+        case .reserve:
+            break
+        }
+    }
+}
