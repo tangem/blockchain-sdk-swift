@@ -119,6 +119,15 @@ final class HederaWalletManager: BaseManager {
             .collect()
     }
 
+    private func makeTransactionValidStartDate() -> UnixTimestamp? {
+        // Subtracting `validStartDateDiff` from the `Date.now` to make sure that the tx valid start date has already passed
+        // The logic is the same as in the `Hedera.TransactionId.generateFrom(_:)` factory method
+        let validStartDateDiff = Int.random(in: 5_000_000_000..<8_000_000_000)
+        let validStartDate = Calendar.current.date(byAdding: .nanosecond, value: -validStartDateDiff, to: Date())
+
+        return validStartDate.flatMap(UnixTimestamp.init(date:))
+    }
+
     // MARK: - Account ID fetching, caching and creation
 
     /// - Note: Has a side-effect: updates local model (`wallet.address`) if needed.
@@ -277,7 +286,17 @@ extension HederaWalletManager: WalletManager {
                     return promise(.failure(WalletError.empty))
                 }
 
-                let compiledTransaction = Result { try self.transactionBuilder.buildForSign(transaction: transaction) }
+                guard let validStartDate = self.makeTransactionValidStartDate() else {
+                    return promise(.failure(WalletError.failedToBuildTx))
+                }
+
+                let compiledTransaction = Result {
+                    try self.transactionBuilder.buildForSign(
+                        transaction: transaction,
+                        validStartDate: validStartDate,
+                        nodeAccountIds: nil
+                    )
+                }
                 promise(compiledTransaction)
             }
         }

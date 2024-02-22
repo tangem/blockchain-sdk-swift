@@ -1,3 +1,8 @@
+/*
+This file uses JSON5 format, enable JSON5 support in the decoder in order to decode this file
+https://developer.apple.com/documentation/foundation/jsondecoder/3766916-allowsjson5
+*/
+
 {
     "mnemonic": {
         "words": "tiny escape drive pupil flavor endless love walk gadget match filter luxury",
@@ -169,6 +174,20 @@
             "blockchain": "aptos",
             "derivation": "m/44'/637'/0'/0'/0'",
             "walletPublicKey": "0f2ba03f0c60f123869a471b9bec3ae152aedb7344bfc36473b0c9e4fe8965f6"
+        },
+        {
+            "blockchain": "hedera",
+            "derivation": "m/44'/3030'/0'/0'/0",
+            /*
+            For Hedera we can't obtain a true address (`Account ID`) offline, and therefore `HederaAddressService`
+            always returns an empty string as an address.
+            Meanwhile, the WalletCore-based address service always returns `Account alias` instead of `Account ID`.
+            By omitting the `walletPublicKey` field below, we effectively skip comparison between
+            `HederaAddressService` and WalletCore-based address service because it makes no sense
+            */
+            /*
+            "walletPublicKey": "236b71bed98b98eacdea958b312750e91dccbe1290ce005f2a245243e3d6182c"
+            */
         },
     ]
 }
