@@ -917,7 +917,7 @@ extension Blockchain: Codable {
         case "hedera": self = .hedera(curve: curve, testnet: isTestnet)
         case "areon": self = .areon(testnet: isTestnet)
         case "playa3ull": self = .playa3ullGames(testnet: isTestnet)
-        case "pulsechain": self = .pulsechain(testnet: isTestnet)
+        case "pls": self = .pulsechain(testnet: isTestnet)
         case "aurora": self = .aurora(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
