@@ -54,6 +54,9 @@ final class HederaTests: XCTestCase {
         let feeAmount = Amount(with: blockchain, value: feeValue)
         let fee = Fee(feeAmount)
 
+        let validStartDate = UnixTimestamp(integerPart: 1708443033, fractionalPart: 758181256)
+        let params = HederaTransactionParams(memo: "reference ECDSA tx")
+
         let transaction = Transaction(
             amount: amount,
             fee: fee,
@@ -69,7 +72,11 @@ final class HederaTests: XCTestCase {
             isTestnet: blockchain.isTestnet
         )
 
-        let compiledTransaction = try transactionBuilder.buildForSign(transaction: transaction)
+        let compiledTransaction = try transactionBuilder.buildForSign(
+            transaction: transaction,
+            validStartDate: validStartDate,
+            nodeAccountIds: [6]
+        )
 
         // MARK: - Signing transaction
 
@@ -133,6 +140,9 @@ final class HederaTests: XCTestCase {
         let feeAmount = Amount(with: blockchain, value: feeValue)
         let fee = Fee(feeAmount)
 
+        let validStartDate = UnixTimestamp(integerPart: 1708438431, fractionalPart: 140337611)
+        let params = HederaTransactionParams(memo: "reference EdDSA tx")
+
         let transaction = Transaction(
             amount: amount,
             fee: fee,
@@ -148,7 +158,11 @@ final class HederaTests: XCTestCase {
             isTestnet: blockchain.isTestnet
         )
 
-        let compiledTransaction = try transactionBuilder.buildForSign(transaction: transaction)
+        let compiledTransaction = try transactionBuilder.buildForSign(
+            transaction: transaction,
+            validStartDate: validStartDate,
+            nodeAccountIds: [6]
+        )
 
         // MARK: - Signing transaction
 
