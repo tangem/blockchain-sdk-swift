@@ -576,7 +576,6 @@ extension Blockchain {
                     URL(string: "https://rpc.ftm.tools/")!,
                     URL(string: "https://rpcapi.fantom.network/")!,
                     URL(string: "https://fantom-mainnet.public.blastapi.io")!,
-                    URL(string: "https://fantom-pokt.nodies.app")!,
                     URL(string: "https://rpc.ankr.com/fantom")!,
                 ]
             }
