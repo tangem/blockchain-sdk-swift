@@ -26,7 +26,10 @@ final class HederaTransactionBuilder {
         self.isTestnet = isTestnet
     }
 
-    func buildForSign(transaction: Transaction) throws -> CompiledTransaction {
+    /// Build transaction for signing.
+    /// - parameter nodeAccountIds: A list of consensus network nodes for sending this transaction; 
+    /// Pass `nil` to let the Hedera SDK network layer select valid and alive consensus network nodes on its own.
+    func buildForSign(transaction: Transaction, validStartDate: UnixTimestamp, nodeAccountIds: [Int]?) throws -> CompiledTransaction {
         let transactionValue = transaction.amount.value * pow(Decimal(10), transaction.amount.decimals)
         let transactionRoundedValue = transactionValue.rounded(roundingMode: .down)
         let transactionAmount = try Hbar(transactionRoundedValue, .tinybar)
@@ -37,8 +40,26 @@ final class HederaTransactionBuilder {
 
         let sourceAccountId = try AccountId(parsing: transaction.sourceAddress)
         let destinationAccountId = try AccountId(parsing: transaction.destinationAddress)
-        let transactionId = TransactionId.generateFrom(sourceAccountId)
+
+        let (validStartDateNSec, multiplicationOverflow) = UInt64(validStartDate.integerPart).multipliedReportingOverflow(by: NSEC_PER_SEC)
+        if multiplicationOverflow {
+            Log.debug("\(#fileID): Unable to create tx id due to multiplication overflow of '\(validStartDate)'")
+            throw WalletError.failedToBuildTx
+        }
+
+        let (unixTimestampNSec, addingOverflow) = validStartDateNSec.addingReportingOverflow(UInt64(validStartDate.fractionalPart))
+        if addingOverflow {
+            Log.debug("\(#fileID): Unable to create tx id due to adding overflow of '\(validStartDate)'")
+            throw WalletError.failedToBuildTx
+        }
+
+        let validStart = Timestamp(fromUnixTimestampNanos: unixTimestampNSec)
+        let transactionId = TransactionId.withValidStart(sourceAccountId, validStart)
         let transactionParams = transaction.params as? HederaTransactionParams
+
+        let nodeAccountIds = nodeAccountIds?
+            .map(UInt64.init)
+            .map(AccountId.init(num:))
 
         let transferTransaction = try TransferTransaction()
             .hbarTransfer(sourceAccountId, transactionAmount.negated())
@@ -46,6 +67,7 @@ final class HederaTransactionBuilder {
             .transactionId(transactionId)
             .maxTransactionFee(feeAmount)
             .transactionMemo(transactionParams?.memo ?? "")
+            .nodeAccountIdsIfNotEmpty(nodeAccountIds)
             .freezeWith(client)
 
         logTransferTransaction(transferTransaction)
@@ -125,6 +147,20 @@ extension HederaTransactionBuilder {
                 .transactionId
                 .toString()
         }
+    }
+}
+
+// MARK: - Convenience extensions
+
+private extension Hedera.Transaction {
+    /// Same as `Hedera.Transaction.nodeAccountIds(_:)`, but with empty list checking.
+    @discardableResult
+    func nodeAccountIdsIfNotEmpty(_ nodeAccountIds: [AccountId]?) -> Self {
+        if let nodeAccountIds = nodeAccountIds?.nilIfEmpty {
+            return self.nodeAccountIds(nodeAccountIds)
+        }
+
+        return self
     }
 }
 
