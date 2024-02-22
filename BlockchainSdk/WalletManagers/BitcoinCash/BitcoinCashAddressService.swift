@@ -46,3 +46,9 @@ extension BitcoinCashAddressService: AddressProvider {
         }
     }
 }
+
+extension BitcoinCashAddressService {
+    public func isLegacy(_ address: String) -> Bool {
+        legacyService.validate(address)
+    }
+}

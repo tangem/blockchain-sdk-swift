@@ -31,7 +31,8 @@ extension NowNodesBlockBookConfig {
         case .bitcoin,
                 .dash,
                 .dogecoin,
-                .litecoin:
+                .litecoin,
+                .bitcoinCash:
             let testnetSuffix = blockchain.isTestnet ? "-testnet" : ""
             return BlockBookNode(
                 rpcNode: "https://\(prefix).\(host)",
@@ -64,7 +65,7 @@ extension NowNodesBlockBookConfig {
     
     func path(for request: BlockBookTarget.Request) -> String {
         switch request {
-        case .fees:
+        case .fees, .sendNode:
             return ""
         default:
             return "/api/v2"
