@@ -60,7 +60,7 @@ public struct ExternalLinkProviderFactory {
         case .kusama:
             return KusamaExternalLinkProvider()
         case .azero:
-            return AZeroExternalLinkProvider()
+            return AzeroExternalLinkProvider()
         case .tron:
             return TronExternalLinkProvider(isTestnet: isTestnet)
         case .arbitrum:
