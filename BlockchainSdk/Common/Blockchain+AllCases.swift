@@ -60,6 +60,10 @@ public extension Blockchain {
         case .shibarium: break
         case .aptos: break
         case .hedera: break
+        case .areon: break
+        case .playa3ullGames: break
+        case .pulsechain: break
+        case .aurora: break
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -113,6 +117,10 @@ public extension Blockchain {
             .shibarium(testnet: false),
             .aptos(curve: .ed25519_slip0010, testnet: false),
             .hedera(curve: .ed25519_slip0010, testnet: false),
+            .areon(testnet: false),
+            .playa3ullGames(testnet: false),
+            .pulsechain(testnet: false),
+            .aurora(testnet: false),
         ]
     }
 }

@@ -62,6 +62,11 @@ public indirect enum Blockchain: Equatable, Hashable {
     case shibarium(testnet: Bool)
     case aptos(curve: EllipticCurve, testnet: Bool)
     case hedera(curve: EllipticCurve, testnet: Bool)
+    case areon(testnet: Bool)
+    case playa3ullGames(testnet: Bool)
+    case pulsechain(testnet: Bool)
+    case aurora(testnet: Bool)
+
 
     public var isTestnet: Bool {
         switch self {
@@ -85,7 +90,11 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .chia(let testnet),
                 .decimal(let testnet),
                 .veChain(let testnet),
-                .xdc(let testnet):
+                .xdc(let testnet),
+                .areon(let testnet),
+                .playa3ullGames(let testnet),
+                .pulsechain(let testnet),
+                .aurora(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -174,7 +183,11 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .decimal,
                 .veChain,
                 .xdc,
-                .shibarium:
+                .shibarium,
+                .areon,
+                .playa3ullGames,
+                .pulsechain,
+                .aurora:
             return 18
         case .cardano,
                 .xrp,
@@ -295,6 +308,14 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "APT"
         case .hedera:
             return "HBAR"
+        case .areon:
+            return "AREA"
+        case .playa3ullGames:
+            return "3ULL"
+        case .pulsechain:
+            return "PLS"
+        case .aurora:
+            return "ETH"
         }
     }
 
@@ -352,6 +373,14 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Shibarium" + testnetSuffix
         case .aptos:
             return "Aptos"
+        case .areon:
+            return "Areon Network"
+        case .playa3ullGames:
+            return "PLAYA3ULL GAMES"
+        case .pulsechain:
+            return "Pulsechain"
+        case .aurora:
+            return "Aurora"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -812,6 +841,10 @@ extension Blockchain: Codable {
         case .shibarium: return "shibarium"
         case .aptos: return "aptos"
         case .hedera: return "hedera"
+        case .areon: return "areon"
+        case .playa3ullGames: return "playa3ull"
+        case .pulsechain: return "pls"
+        case .aurora: return "aurora"
         }
     }
 
@@ -882,6 +915,10 @@ extension Blockchain: Codable {
         case "shibarium": self = .shibarium(testnet: isTestnet)
         case "aptos": self = .aptos(curve: curve, testnet: isTestnet)
         case "hedera": self = .hedera(curve: curve, testnet: isTestnet)
+        case "areon": self = .areon(testnet: isTestnet)
+        case "playa3ull": self = .playa3ullGames(testnet: isTestnet)
+        case "pulsechain": self = .pulsechain(testnet: isTestnet)
+        case "aurora": self = .aurora(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -991,7 +1028,11 @@ extension Blockchain {
                 .kava,
                 .cronos,
                 .octa,
-                .shibarium:
+                .shibarium,
+                .areon,
+                .playa3ullGames,
+                .pulsechain,
+                .aurora:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
