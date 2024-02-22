@@ -42,18 +42,6 @@ final class HederaTests: XCTestCase {
         let privateKey = try XCTUnwrap(WalletCore.PrivateKey(data: privateKeyRaw))
         let publicKeyRaw = try privateKey.getPublicKeyByType(pubkeyType: .init(blockchain)).data
 
-        // MARK: - Building transaction params
-
-        let memo = "reference ECDSA tx"
-        let txValidStartTimeUnixTimestampNanos = try XCTUnwrap(Decimal(string: "1708443033.758181256")) * Decimal(NSEC_PER_SEC)
-        let nodeAccountId = AccountId(shard: 0, realm: 0, num: 6)
-
-        let params = HederaUnitTestsTransactionParams(
-            memo: memo,
-            txValidStart: .init(fromUnixTimestampNanos: txValidStartTimeUnixTimestampNanos.uint64Value),
-            nodeAccountIds: [nodeAccountId]
-        )
-
         // MARK: - Building & compiling transaction
 
         let sourceAddress = "0.0.3573746"
@@ -132,18 +120,6 @@ final class HederaTests: XCTestCase {
         let privateKeyRaw = Data(hederaPrivateKeyRaw[hederaDerPrefixPrivate.count...])
         let privateKey = try XCTUnwrap(WalletCore.PrivateKey(data: privateKeyRaw))
         let publicKeyRaw = try privateKey.getPublicKeyByType(pubkeyType: .init(blockchain)).data
-
-        // MARK: - Building transaction params
-
-        let memo = "reference EdDSA tx"
-        let txValidStartTimeUnixTimestampNanos = try XCTUnwrap(Decimal(string: "1708438431.140337611")) * Decimal(NSEC_PER_SEC)
-        let nodeAccountId = AccountId(shard: 0, realm: 0, num: 6)
-
-        let params = HederaUnitTestsTransactionParams(
-            memo: memo,
-            txValidStart: .init(fromUnixTimestampNanos: txValidStartTimeUnixTimestampNanos.uint64Value),
-            nodeAccountIds: [nodeAccountId]
-        )
 
         // MARK: - Building & compiling transaction
 

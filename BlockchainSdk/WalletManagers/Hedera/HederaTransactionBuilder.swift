@@ -46,7 +46,6 @@ final class HederaTransactionBuilder {
             .transactionId(transactionId)
             .maxTransactionFee(feeAmount)
             .transactionMemo(transactionParams?.memo ?? "")
-            .prepareForUnitTestsIfNeeded(transactionParams: transaction.params, sourceAccountId: sourceAccountId)
             .freezeWith(client)
 
         logTransferTransaction(transferTransaction)
@@ -135,20 +134,5 @@ extension HederaTransactionBuilder.CompiledTransaction {
     /// - Note: For use in unit tests only.
     func toBytes() throws -> Data {
         return try innerTransaction.toBytes()
-    }
-}
-
-private extension Hedera.Transaction {
-    /// - Note: For use in unit tests only.
-    @discardableResult
-    func prepareForUnitTestsIfNeeded(transactionParams: TransactionParams?, sourceAccountId: AccountId) -> Self {
-        guard let transactionParams = transactionParams as? HederaUnitTestsTransactionParams else {
-            return self
-        }
-
-        return self
-            .transactionMemo(transactionParams.memo)
-            .nodeAccountIds(transactionParams.nodeAccountIds)
-            .transactionId(.withValidStart(sourceAccountId, transactionParams.txValidStart))
     }
 }
