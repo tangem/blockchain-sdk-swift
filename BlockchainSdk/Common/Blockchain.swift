@@ -487,6 +487,10 @@ extension Blockchain {
         case .decimal: return isTestnet ? 202020 : 75
         case .xdc: return isTestnet ? 51 : 50
         case .shibarium: return isTestnet ? 157 : 109
+        case .areon: return isTestnet ? 463 : 462
+        case .playa3ullGames: return 3011
+        case .pulsechain: return isTestnet ? 943 : 369
+        case .aurora: return isTestnet ? 1313161555 : 1313161554
         default: return nil
         }
     }
@@ -720,6 +724,54 @@ extension Blockchain {
                 return [
                     URL(string: "https://www.shibrpc.com/")!,
                     URL(string: "https://shib.nownodes.io/\(nowNodesApiKey)")!
+                ]
+            }
+        case .areon:
+            if isTestnet {
+                return [
+                    URL(string: "https://testnet-rpc.areon.network/")!,
+                    URL(string: "https://testnet-rpc2.areon.network/")!,
+                    URL(string: "https://testnet-rpc3.areon.network/")!,
+                    URL(string: "https://testnet-rpc4.areon.network/")!,
+                    URL(string: "https://testnet-rpc5.areon.network/")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://mainnet-rpc.areon.network/")!,
+                    URL(string: "https://mainnet-rpc2.areon.network/")!,
+                    URL(string: "https://mainnet-rpc3.areon.network/")!,
+                    URL(string: "https://mainnet-rpc4.areon.network/")!,
+                    URL(string: "https://mainnet-rpc5.areon.network/")!,
+                ]
+            }
+        case .playa3ullGames:
+            return [
+                URL(string: "https://api.mainnet.playa3ull.games/")!,
+            ]
+        case .pulsechain:
+            if isTestnet {
+                return [
+                    URL(string: "https://rpc.v4.testnet.pulsechain.com/")!,
+                    URL(string: "https://pulsechain-testnet.publicnode.com/")!,
+                    URL(string: "https://rpc-testnet-pulsechain.g4mm4.io/")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://rpc.pulsechain.com/")!,
+                    URL(string: "https://pulsechain.publicnode.com/")!,
+                    URL(string: "https://rpc-pulsechain.g4mm4.io/")!,
+                ]
+            }
+        case .aurora:
+            if isTestnet {
+                return [
+                    URL(string: "https://testnet.aurora.dev/")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://mainnet.aurora.dev/")!,
+                    URL(string: "https://aurora.drpc.org/")!,
+                    URL(string: "https://1rpc.io/aurora/")!,
                 ]
             }
         default:
