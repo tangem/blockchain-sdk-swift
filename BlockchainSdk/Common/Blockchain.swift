@@ -224,7 +224,7 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "LTC"
         case .stellar:
             return "XLM"
-        case .ethereum, .arbitrum, .optimism:
+        case .ethereum, .arbitrum, .optimism, .aurora:
             return "ETH"
         case .ethereumClassic:
             return "ETC"
@@ -309,13 +309,11 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .hedera:
             return "HBAR"
         case .areon:
-            return "AREA"
+            return isTestnet ? "TAREA" : "AREA"
         case .playa3ullGames:
             return "3ULL"
         case .pulsechain:
-            return "PLS"
-        case .aurora:
-            return "ETH"
+            return isTestnet ? "tPLS" : "PLS"
         }
     }
 
@@ -374,13 +372,13 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .aptos:
             return "Aptos"
         case .areon:
-            return "Areon Network"
+            return "Areon Network" + testnetSuffix
         case .playa3ullGames:
             return "PLAYA3ULL GAMES"
         case .pulsechain:
-            return "Pulsechain"
+            return "Pulsechain" + testnetSuffix + (isTestnet ? " v4" : "")
         case .aurora:
-            return "Aurora"
+            return "Aurora" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
