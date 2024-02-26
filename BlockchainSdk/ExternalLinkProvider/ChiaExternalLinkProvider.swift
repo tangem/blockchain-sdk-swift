@@ -21,19 +21,19 @@ extension ChiaExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://xchdev.com/#!faucet.md")
     }
     
-    func url(transaction hash: String) -> URL? {
-        if isTestnet {
-            return URL(string: "https://testnet10.spacescan.io/txns/\(hash)")
-        }
-        
-        return URL(string: "https://xchscan.com/txns/\(hash)")
-    }
-    
     func url(address: String, contractAddress: String?) -> URL? {
         if isTestnet {
             return URL(string: "https://testnet10.spacescan.io/address/\(address)")
         }
         
         return URL(string: "https://xchscan.com/address/\(address)")
+    }
+    
+    func url(transaction hash: String) -> URL? {
+        /*
+         - Now it’s nil because chia scanner explorer can’t supported the transaction until it is deploy to the blockchain.
+         
+         */
+        return nil
     }
 }
