@@ -146,7 +146,7 @@ extension TezosWalletManager: ThenProcessable { }
 
 
 extension TezosWalletManager: WithdrawalValidator {
-    var withdrawalMinimumAmount: Decimal {
+    private var withdrawalMinimumAmount: Decimal {
         0.000001
     }
     
