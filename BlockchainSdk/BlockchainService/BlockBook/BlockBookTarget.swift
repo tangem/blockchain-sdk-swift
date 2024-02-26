@@ -16,7 +16,7 @@ struct BlockBookTarget: TargetType {
     
     var baseURL: URL {
         switch request {
-        case .fees:
+        case .fees, .sendNode:
             return URL(string: config.node(for: blockchain).rpcNode)!
         default:
             return URL(string: config.node(for: blockchain).restNode)!
@@ -29,13 +29,13 @@ struct BlockBookTarget: TargetType {
         switch request {
         case .address(let address, _):
             return basePath + "/address/\(address)"
-        case .send:
+        case .sendBlockBook:
             return basePath + "/sendtx/"
         case .txDetails(let txHash):
             return basePath + "/tx/\(txHash)"
         case .utxo(let address):
             return basePath + "/utxo/\(address)"
-        case .fees:
+        case .fees, .sendNode:
             return basePath
         }
     }
@@ -44,7 +44,7 @@ struct BlockBookTarget: TargetType {
         switch request {
         case .address, .utxo:
             return .get
-        case .send, .txDetails, .fees:
+        case .sendBlockBook, .sendNode, .txDetails, .fees:
             return .post
         }
     }
@@ -53,10 +53,12 @@ struct BlockBookTarget: TargetType {
         switch request {
         case .txDetails, .utxo:
             return .requestPlain
-        case .send(let tx):
+        case .sendBlockBook(let tx):
             return .requestData(tx)
-        case .fees(let confirmationBlocks):
-            return .requestJSONEncodable(BitcoinNodeEstimateSmartFeeParameters(confirmationBlocks: confirmationBlocks))
+        case .sendNode(let request):
+            return .requestJSONEncodable(request)
+        case .fees(let request):
+            return .requestJSONEncodable(request)
         case .address(_ , let parameters):
             let parameters = try? parameters.asDictionary()
             return .requestParameters(parameters: parameters ?? [:], encoding: URLEncoding.default)
@@ -64,15 +66,19 @@ struct BlockBookTarget: TargetType {
     }
     
     var headers: [String : String]? {
-        [
-            "Content-Type": contentType,
-            config.apiKeyName: config.apiKeyValue,
-        ]
+        var headers = ["Content-Type": contentType]
+        
+        // TODO: - if / let
+        if let name = config.apiKeyHeaderName, let value = config.apiKeyHeaderValue {
+            headers[name] = value
+        }
+        
+        return headers
     }
     
     private var contentType: String {
         switch request {
-        case .send:
+        case .sendBlockBook:
             return "text/plain; charset=utf-8"
         default:
             return "application/json"
@@ -83,10 +89,11 @@ struct BlockBookTarget: TargetType {
 extension BlockBookTarget {
     enum Request {
         case address(address: String, parameters: AddressRequestParameters)
-        case send(tx: Data)
+        case sendBlockBook(tx: Data)
+        case sendNode(_ request: NodeRequest<String>)
         case txDetails(txHash: String)
         case utxo(address: String)
-        case fees(confirmationBlocks: Int)
+        case fees(_ request: NodeRequest<Int>)
     }
     
     struct AddressRequestParameters: Encodable {
@@ -159,17 +166,5 @@ extension BlockBookTarget {
                 try container.encode(contract, forKey: .contract)
             }
         }
-    }
-}
-
-// Use node API directly, without BlockBook 
-fileprivate struct BitcoinNodeEstimateSmartFeeParameters: Encodable {
-    let jsonrpc = "2.0"
-    let id = "id"
-    let method = "estimatesmartfee"
-    let params: [Int]
-    
-    init(confirmationBlocks: Int) {
-        self.params = [confirmationBlocks]
     }
 }

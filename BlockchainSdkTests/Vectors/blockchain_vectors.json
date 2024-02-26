@@ -220,6 +220,30 @@
         "testnet": false,
         "curve": "ed25519_slip0010",
         "shelley": false
-    }
+    },
+    {
+        "key": "vechain",
+        "testnet": false,
+        "curve": "secp256k1",
+        "shelley": false
+    },
+    {
+        "key": "algorand",
+        "testnet": false,
+        "curve": "ed25519_slip0010",
+        "shelley": false
+    },
+    {
+        "key": "aptos",
+        "testnet": false,
+        "curve": "ed25519_slip0010",
+        "shelley": false
+    },
+    {
+        "key": "hedera",
+        "testnet": false,
+        "curve": "ed25519_slip0010",
+        "shelley": false
+    },
 ]
 

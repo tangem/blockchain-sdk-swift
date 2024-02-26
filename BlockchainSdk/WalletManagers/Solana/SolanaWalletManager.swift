@@ -20,16 +20,16 @@ class SolanaWalletManager: BaseManager, WalletManager {
         let transactionIDs = wallet.pendingTransactions.map { $0.hash }
         
         cancellable = networkService.getInfo(accountId: wallet.address, tokens: cardTokens, transactionIDs: transactionIDs)
-            .sink { [unowned self] in
+            .sink { [weak self] in
                 switch $0 {
                 case .failure(let error):
-                    self.wallet.clearAmounts()
+                    self?.wallet.clearAmounts()
                     completion(.failure(error))
                 case .finished:
                     completion(.success(()))
                 }
-            } receiveValue: { [unowned self] info in
-                self.updateWallet(info: info)
+            } receiveValue: { [weak self] info in
+                self?.updateWallet(info: info)
             }
     }
     
@@ -72,6 +72,21 @@ extension SolanaWalletManager: TransactionSender {
                 let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
                 self.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: hash)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func estimatedFee(amount: Amount) -> AnyPublisher<[Fee], Error> {
+        networkService
+            .transactionFee(numberOfSignatures: 1)
+            .tryMap { [weak self] transactionFee in
+                guard let self = self else {
+                    throw WalletError.empty
+                }
+                                
+                let blockchain = self.wallet.blockchain
+                let amount = Amount(with: blockchain, type: .coin, value: transactionFee)
+                return [Fee(amount)]
             }
             .eraseToAnyPublisher()
     }
@@ -120,23 +135,32 @@ extension SolanaWalletManager: TransactionSender {
     }
     
     private func sendSplToken(_ transaction: Transaction, token: Token, signer: TransactionSigner) -> AnyPublisher<TransactionID, Error> {
-        guard
-            let associatedSourceTokenAccountAddress = associatedTokenAddress(accountAddress: transaction.sourceAddress, mintAddress: token.contractAddress)
-        else {
-            return .anyFail(error: BlockchainSdkError.failedToConvertPublicKey)
-        }
-        
         let decimalAmount = transaction.amount.value * token.decimalValue
         let intAmount = (decimalAmount.rounded() as NSDecimalNumber).uint64Value
         let signer = SolanaTransactionSigner(transactionSigner: signer, walletPublicKey: wallet.publicKey)
-
-        return networkService.sendSplToken(
-            amount: intAmount,
-            sourceTokenAddress: associatedSourceTokenAccountAddress,
-            destinationAddress: transaction.destinationAddress,
-            token: token,
-            signer: signer
-        )
+        
+        return networkService.tokenProgramId(contractAddress: token.contractAddress)
+            .flatMap { [weak self] tokenProgramId  -> AnyPublisher<TransactionID, Error> in
+                guard let self else {
+                    return .anyFail(error: WalletError.empty)
+                }
+                
+                guard
+                    let associatedSourceTokenAccountAddress = self.associatedTokenAddress(accountAddress: transaction.sourceAddress, mintAddress: token.contractAddress, tokenProgramId: tokenProgramId)
+                else {
+                    return .anyFail(error: BlockchainSdkError.failedToConvertPublicKey)
+                }
+                
+                return self.networkService.sendSplToken(
+                    amount: intAmount,
+                    sourceTokenAddress: associatedSourceTokenAccountAddress,
+                    destinationAddress: transaction.destinationAddress,
+                    token: token,
+                    tokenProgramId: tokenProgramId,
+                    signer: signer
+                )
+            }
+            .eraseToAnyPublisher()
     }
     
     private func accountCreationFee(destination: String, amount: Amount) -> AnyPublisher<Decimal, Error> {
@@ -194,11 +218,11 @@ extension SolanaWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
-    private func associatedTokenAddress(accountAddress: String, mintAddress: String) -> String? {
+    private func associatedTokenAddress(accountAddress: String, mintAddress: String, tokenProgramId: PublicKey) -> String? {
         guard
             let accountPublicKey = PublicKey(string: accountAddress),
             let tokenMintPublicKey = PublicKey(string: mintAddress),
-            case let .success(associatedSourceTokenAddress) = PublicKey.associatedTokenAddress(walletAddress: accountPublicKey, tokenMintAddress: tokenMintPublicKey)
+            case let .success(associatedSourceTokenAddress) = PublicKey.associatedTokenAddress(walletAddress: accountPublicKey, tokenMintAddress: tokenMintPublicKey, tokenProgramId: tokenProgramId)
         else {
             return nil
         }

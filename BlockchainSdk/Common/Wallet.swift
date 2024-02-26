@@ -13,9 +13,9 @@ public struct Wallet {
     // MARK: - Properties
 
     public let blockchain: Blockchain
-    public let walletAddresses: [AddressType: Address]
-    
-    public internal(set) var amounts: [Amount.AmountType: Amount] = [:]
+    public private(set) var walletAddresses: [AddressType: Address]
+
+    public internal(set) var amounts: [Amount.AmountType: Amount] = [:] // TODO: Andrey Fedorov - Make setter private (IOS-4990)
     public private(set) var pendingTransactions: [PendingTransactionRecord] = []
     
     // MARK: - Calculations
@@ -59,14 +59,14 @@ public struct Wallet {
     /// Explore URL for a specific address
     /// - Parameter address: If nil, default address will be used
     /// - Returns: URL
-    public func getExploreURL(for address: String? = nil, token: Token? = nil) -> URL {
+    public func getExploreURL(for address: String? = nil, token: Token? = nil) -> URL? {
         let address = address ?? self.address
         let provider = ExternalLinkProviderFactory().makeProvider(for: blockchain)
         return provider.url(address: address, contractAddress: token?.contractAddress)
     }
     
     /// Explore URL for a specific transaction by hash
-    public func getExploreURL(for transaction: String) -> URL {
+    public func getExploreURL(for transaction: String) -> URL? {
         let provider = ExternalLinkProviderFactory().makeProvider(for: blockchain)
         return provider.url(transaction: transaction)
     }
@@ -116,6 +116,9 @@ public struct Wallet {
         amounts[.token(value: token)] = nil
     }
 
+    mutating func set(address: Address) {
+        walletAddresses[address.type] = address
+    }
 }
 
 // MARK: - Pending Transaction

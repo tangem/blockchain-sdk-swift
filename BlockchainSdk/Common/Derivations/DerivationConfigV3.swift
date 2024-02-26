@@ -38,8 +38,7 @@ public struct DerivationConfigV3: DerivationConfig {
             return "m/44'/145'/0'/0/0"
         case .ethereum,
                 .ethereumPoW,
-                .ethereumFair,
-                .saltPay,
+                .disChain,
                 .rsk,
                 .bsc,
                 .polygon,
@@ -51,7 +50,9 @@ public struct DerivationConfigV3: DerivationConfig {
                 .kava,
                 .cronos,
                 .telos,
-                .octa:
+                .octa,
+                .decimal,
+                .shibarium:
             return "m/44'/60'/0'/0/0"
         case .ethereumClassic:
             return "m/44'/61'/0'/0/0"
@@ -89,6 +90,16 @@ public struct DerivationConfigV3: DerivationConfig {
             return ""
         case .near:
             return "m/44'/397'/0'"
+        case .veChain:
+            return "m/44'/818'/0'/0/0"
+        case .xdc:
+            return "m/44'/550'/0'/0/0"
+        case .algorand:
+            return "m/44'/283'/0'/0'/0'"
+        case .aptos:
+            return "m/44'/637'/0'/0'/0'"
+        case .hedera:
+            return "m/44'/3030'/0'/0'/0"
         }
     }
 }

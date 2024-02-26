@@ -98,21 +98,21 @@ final class ChiaTransactionBuilder {
     /// - Parameter amount: Amount of send transaction
     /// - Returns: Sum value for transaction
     func getTransactionCost(amount: Amount) -> Int64 {
-        let decimalAmount = amount.value * blockchain.decimalValue
-        let decimalBalance = unspentCoins.map { Decimal($0.amount) }.reduce(0, +)
+        let decimalAmount = (amount.value * blockchain.decimalValue).roundedDecimalNumber.int64Value
+        let decimalBalance = unspentCoins.map { $0.amount }.reduce(0, +)
         let change = decimalBalance - decimalAmount
         let numberOfCoinsCreated: Int = change > 0 ? 2 : 1
 
-        return Int64((coinSpends.count * Constants.coinSpendCost) + (numberOfCoinsCreated * Constants.createCoinCost))
+        return Int64((unspentCoins.count * Constants.coinSpendCost) + (numberOfCoinsCreated * Constants.createCoinCost))
     }
     
     // MARK: - Private Implementation
     
     private func calculateChange(transaction: Transaction, unspentCoins: [ChiaCoin]) throws -> Int64 {
         let fullAmount = unspentCoins.map { $0.amount }.reduce(0, +)
-        let transactionAmount = transaction.amount.value * blockchain.decimalValue
-        let transactionFeeAmount = transaction.fee.amount.value * blockchain.decimalValue
-        let changeAmount = fullAmount - (transactionAmount.int64Value + transactionFeeAmount.int64Value)
+        let transactionAmount = (transaction.amount.value * blockchain.decimalValue).roundedDecimalNumber.int64Value
+        let transactionFeeAmount = (transaction.fee.amount.value * blockchain.decimalValue).roundedDecimalNumber.int64Value
+        let changeAmount = fullAmount - (transactionAmount + transactionFeeAmount)
         
         return changeAmount
     }
@@ -121,19 +121,20 @@ final class ChiaTransactionBuilder {
         let coinSpends = unspentCoins.map {
             ChiaCoinSpend(
                 coin: $0,
-                puzzleReveal: ChiaPuzzleUtils().getPuzzleHash(from: walletPublicKey).hex,
+                puzzleReveal: ChiaPuzzleUtils().getPuzzleHash(from: walletPublicKey).hexString.lowercased(),
                 solution: ""
             )
         }
         
-        let sendCondition = try createCoinCondition(for: destination, with: (amount.value * blockchain.decimalValue).int64Value)
+        let sendAmount = (amount.value * blockchain.decimalValue).roundedDecimalNumber.int64Value
+        let sendCondition = try createCoinCondition(for: destination, with: sendAmount)
         let changeCondition = try change != 0 ? createCoinCondition(for: source, with: change) : nil
         
         let solution: [ChiaCondition] = [sendCondition, changeCondition].compactMap { $0 }
-        coinSpends[0].solution = try solution.toSolution().hex
-        
+        coinSpends[0].solution = try solution.toSolution().hexString.lowercased()
+
         for coinSpend in coinSpends.dropFirst(1) {
-            coinSpend.solution = try [RemarkCondition()].toSolution().hex
+            coinSpend.solution = try [RemarkCondition()].toSolution().hexString.lowercased()
         }
 
         return coinSpends
@@ -180,6 +181,6 @@ fileprivate extension Array where Element == ChiaCondition {
 
 fileprivate extension Data {
     func hashAugScheme(with publicKey: Data) throws -> Data {
-        try Data(hex: BLSUtils().augSchemeMplG2Map(publicKey: publicKey.hex, message: self.hex))
+        try Data(hex: BLSUtils().augSchemeMplG2Map(publicKey: publicKey.hexString.lowercased(), message: self.hexString.lowercased()))
     }
 }

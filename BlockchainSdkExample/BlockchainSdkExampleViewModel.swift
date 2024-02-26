@@ -14,6 +14,7 @@ import BlockchainSdk
 import TangemSdk
 
 class BlockchainSdkExampleViewModel: ObservableObject {
+    @Published var cardWallets: [Card.Wallet] = []
     @Published var destination: String = ""
     @Published var amountToSend: String = ""
     @Published var feeDescriptions: [String] = []
@@ -62,23 +63,32 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     let blockchainsWithCurveSelection: [String]
 
     private let sdk: TangemSdk
-    private let walletManagerFactory = WalletManagerFactory(config: .init(blockchairApiKeys: [],
-                                                                          blockcypherTokens: [],
-                                                                          infuraProjectId: "",
-                                                                          nowNodesApiKey: "",
-                                                                          getBlockApiKey: "",
-                                                                          kaspaSecondaryApiUrl: nil,
-                                                                          tronGridApiKey: "",
-                                                                          tonCenterApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
-                                                                          fireAcademyApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
-                                                                          chiaTangemApiKeys: .init(mainnetApiKey: ""),
-                                                                          quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
-                                                                          quickNodeBscCredentials: .init(apiKey: "", subdomain: ""),
-                                                                          blockscoutCredentials: .init(login: "", password: ""),
-                                                                          defaultNetworkProviderConfiguration: .init(logger: .verbose)))
+    private lazy var walletManagerFactory = WalletManagerFactory(
+        config: .init(
+            blockchairApiKeys: [],
+            blockcypherTokens: [],
+            infuraProjectId: "",
+            nowNodesApiKey: "",
+            getBlockCredentials: .init(credentials: []),
+            kaspaSecondaryApiUrl: nil,
+            tronGridApiKey: "",
+            hederaArkhiaApiKey: "",
+            tonCenterApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
+            fireAcademyApiKeys: .init(mainnetApiKey: "", testnetApiKey: ""),
+            chiaTangemApiKeys: .init(mainnetApiKey: ""),
+            quickNodeSolanaCredentials: .init(apiKey: "", subdomain: ""),
+            quickNodeBscCredentials: .init(apiKey: "", subdomain: ""),
+            defaultNetworkProviderConfiguration: .init(logger: .verbose)
+        ), 
+        dependencies: .init(
+            accountCreator: SimpleAccountCreator { [weak self] in self?.card },
+            dataStorage: InMemoryBlockchainDataStorage { return nil }
+        )
+    )
     @Published private(set) var card: Card?
     @Published private(set) var walletManager: WalletManager?
     private var blockchain: Blockchain?
+    
     private let destinationKey = "destination"
     private let amountKey = "amount"
     private let blockchainNameKey = "blockchainName"
@@ -89,9 +99,11 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     private let tokenSymbolKey = "tokenSymbol"
     private let tokenContractAddressKey = "tokenContractAddress"
     private let tokenDecimalPlacesKey = "tokenDecimalPlaces"
+    private let walletsKey = "wallets"
     
     private var bag: Set<AnyCancellable> = []
     private var walletManagerBag: Set<AnyCancellable> = []
+    private var walletManagerUpdateSubscription: AnyCancellable?
 
     
     init() {
@@ -115,6 +127,16 @@ class BlockchainSdkExampleViewModel: ObservableObject {
             Blockchain.xrp(curve: .ed25519),
             Blockchain.tezos(curve: .ed25519),
         ].map { $0.codingKey }
+        
+        if let walletsData = UserDefaults.standard.data(forKey: walletsKey) {
+            do {
+                cardWallets = try JSONDecoder().decode([Card.Wallet].self, from: walletsData)
+            } catch {
+                Log.error(error)
+            }
+        }
+        
+        bind()
 
         self.destination = UserDefaults.standard.string(forKey: destinationKey) ?? ""
         self.amountToSend = UserDefaults.standard.string(forKey: amountKey) ?? ""
@@ -125,81 +147,6 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         self.tokenSymbol = UserDefaults.standard.string(forKey: tokenSymbolKey) ?? ""
         self.tokenContractAddress = UserDefaults.standard.string(forKey: tokenContractAddressKey) ?? ""
         self.tokenDecimalPlaces = UserDefaults.standard.integer(forKey: tokenDecimalPlacesKey)
-        
-        $destination
-            .sink {
-                UserDefaults.standard.set($0, forKey: self.destinationKey)
-            }
-            .store(in: &bag)
-        
-        $amountToSend
-            .sink {
-                UserDefaults.standard.set($0, forKey: self.amountKey)
-            }
-            .store(in: &bag)
-        
-        $blockchainName
-            .dropFirst()
-            .sink { [unowned self] in
-                UserDefaults.standard.set($0, forKey: self.blockchainNameKey)
-                self.updateBlockchain(from: $0, isTestnet: isTestnet, curve: curve)
-                self.updateWalletManager()
-            }
-            .store(in: &bag)
-        
-        $isTestnet
-            .dropFirst()
-            .sink { [unowned self] in
-                UserDefaults.standard.set($0, forKey: isTestnetKey)
-                self.updateBlockchain(from: blockchainName, isTestnet: $0, curve: curve)
-                self.updateWalletManager()
-            }
-            .store(in: &bag)
-        
-        $curve
-            .dropFirst()
-            .sink { [unowned self] in
-                UserDefaults.standard.set($0.rawValue, forKey: curveKey)
-                self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: $0)
-                self.updateWalletManager()
-            }
-            .store(in: &bag)
-        
-        $tokenEnabled
-            .dropFirst()
-            .debounce(for: 1, scheduler: RunLoop.main)
-            .sink { [unowned self] in
-                UserDefaults.standard.set($0, forKey: tokenEnabledKey)
-                self.updateWalletManager()
-            }
-            .store(in: &bag)
-        
-        $tokenSymbol
-            .dropFirst()
-            .debounce(for: 1, scheduler: RunLoop.main)
-            .sink { [unowned self] in
-                UserDefaults.standard.set($0, forKey: tokenSymbolKey)
-                self.updateWalletManager()
-            }
-            .store(in: &bag)
-        
-        $tokenContractAddress
-            .dropFirst()
-            .debounce(for: 1, scheduler: RunLoop.main)
-            .sink { [unowned self] in
-                UserDefaults.standard.set($0, forKey: tokenContractAddressKey)
-                self.updateWalletManager()
-            }
-            .store(in: &bag)
-        
-        $tokenDecimalPlaces
-            .dropFirst()
-            .debounce(for: 1, scheduler: RunLoop.main)
-            .sink { [unowned self] in
-                UserDefaults.standard.set($0, forKey: tokenDecimalPlacesKey)
-                self.updateWalletManager()
-            }
-            .store(in: &bag)
 
         if ProcessInfo.processInfo.environment["SCAN_ON_START"] == "1" {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -209,14 +156,12 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     }
     
     func scanCardAndGetInfo() {
-        sdk.scanCard { [unowned self] result in
+        sdk.scanCard { [weak self] result in
             switch result {
             case .failure(let error):
                 Log.error(error)
             case .success(let card):
-                self.card = card
-                self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: curve)
-                self.updateWalletManager()
+                self?.card = card
             }
         }
     }
@@ -233,7 +178,13 @@ class BlockchainSdkExampleViewModel: ObservableObject {
     
     func updateBalance() {
         balance = "--"
-        walletManager?.update()
+        walletManagerUpdateSubscription = walletManager?
+            .updatePublisher()
+            .sink { [weak self] _ in
+                // Some blockchains (like `Hedera`) updates wallet addresses asynchronously,
+                // so we have to update the UI too
+                self?.sourceAddresses = self?.walletManager?.wallet.addresses ?? []
+            }
     }
     
     func copySourceAddressToClipboard(_ sourceAddress: Address) {
@@ -254,7 +205,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         walletManager
             .getFee(amount: amount, destination: destination)
             .receive(on: RunLoop.main)
-            .sink { [unowned self] in
+            .sink { [weak self] in
+                guard let self else { return }
                 switch $0 {
                 case .failure(let error):
                     Log.error(error)
@@ -262,8 +214,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                 case .finished:
                     break
                 }
-            } receiveValue: { [unowned self] in
-                self.feeDescriptions = $0.map { $0.amount.description }
+            } receiveValue: { [weak self] in
+                self?.feeDescriptions = $0.map { $0.amount.description }
             }
             .store(in: &bag)
     }
@@ -281,8 +233,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         
         walletManager
             .getFee(amount: amount, destination: destination)
-            .flatMap { [unowned self] fees -> AnyPublisher<TransactionSendResult, Error> in
-                guard let fee = fees.first else {
+            .flatMap { [weak self] fees -> AnyPublisher<TransactionSendResult, Error> in
+                guard let self, let fee = fees.first else {
                     return .anyFail(error: WalletError.failedToGetFee)
                 }
                 
@@ -299,16 +251,121 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                 }
             }
             .receive(on: RunLoop.main)
-            .sink { [unowned self] in
+            .sink { [weak self] in
                 switch $0 {
                 case .failure(let error):
                     Log.error(error)
-                    self.transactionResult = error.localizedDescription
+                    self?.transactionResult = error.localizedDescription
                 case .finished:
-                    self.transactionResult = "OK"
+                    self?.transactionResult = "OK"
                 }
             } receiveValue: { _ in
                 
+            }
+            .store(in: &bag)
+    }
+    
+    // MARK: - Private Implementation
+    
+    private func bind() {
+        $destination
+            .sink { [destinationKey] in
+                UserDefaults.standard.set($0, forKey: destinationKey)
+            }
+            .store(in: &bag)
+        
+        $amountToSend
+            .sink { [amountKey] in
+                UserDefaults.standard.set($0, forKey: amountKey)
+            }
+            .store(in: &bag)
+        
+        $blockchainName
+            .dropFirst()
+            .sink { [weak self] in
+                guard let self else { return }
+                UserDefaults.standard.set($0, forKey: self.blockchainNameKey)
+                self.updateBlockchain(from: $0, isTestnet: isTestnet, curve: curve)
+                self.updateWalletManager()
+            }
+            .store(in: &bag)
+        
+        $isTestnet
+            .dropFirst()
+            .sink { [weak self] in
+                guard let self else { return }
+                UserDefaults.standard.set($0, forKey: isTestnetKey)
+                self.updateBlockchain(from: blockchainName, isTestnet: $0, curve: curve)
+                self.updateWalletManager()
+            }
+            .store(in: &bag)
+        
+        $curve
+            .dropFirst()
+            .sink { [weak self] in
+                guard let self else { return }
+                UserDefaults.standard.set($0.rawValue, forKey: curveKey)
+                self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: $0)
+                self.updateWalletManager()
+            }
+            .store(in: &bag)
+        
+        $tokenEnabled
+            .dropFirst()
+            .debounce(for: 1, scheduler: RunLoop.main)
+            .sink { [weak self] in
+                guard let self else { return }
+                UserDefaults.standard.set($0, forKey: tokenEnabledKey)
+                self.updateWalletManager()
+            }
+            .store(in: &bag)
+        
+        $tokenSymbol
+            .dropFirst()
+            .debounce(for: 1, scheduler: RunLoop.main)
+            .sink { [weak self] in
+                guard let self else { return }
+                UserDefaults.standard.set($0, forKey: tokenSymbolKey)
+                self.updateWalletManager()
+            }
+            .store(in: &bag)
+        
+        $tokenContractAddress
+            .dropFirst()
+            .debounce(for: 1, scheduler: RunLoop.main)
+            .sink { [weak self] in
+                guard let self else { return }
+                UserDefaults.standard.set($0, forKey: tokenContractAddressKey)
+                self.updateWalletManager()
+            }
+            .store(in: &bag)
+        
+        $tokenDecimalPlaces
+            .dropFirst()
+            .debounce(for: 1, scheduler: RunLoop.main)
+            .sink { [weak self] in
+                guard let self else { return }
+                UserDefaults.standard.set($0, forKey: tokenDecimalPlacesKey)
+                self.updateWalletManager()
+            }
+            .store(in: &bag)
+        
+        $card
+            .sink { [weak self] in
+                guard let self, let card = $0 else {
+                    return
+                }
+                
+                do {
+                    let encodeCardWalletData = try JSONEncoder().encode(card.wallets)
+                    UserDefaults.standard.set(encodeCardWalletData, forKey: walletsKey)
+                } catch {
+                    Log.error(error)
+                }
+                
+                self.cardWallets = card.wallets
+                self.updateBlockchain(from: blockchainName, isTestnet: isTestnet, curve: curve)
+                self.updateWalletManager()
             }
             .store(in: &bag)
     }
@@ -349,9 +406,9 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         self.walletManagerBag.removeAll()
 
         guard
-            let card = card,
+            !cardWallets.isEmpty,
             let blockchain = blockchain,
-            let wallet = card.wallets.first(where: { $0.curve == blockchain.curve })
+            let wallet = cardWallets.first(where: { $0.curve == blockchain.curve })
         else {
             return
         }

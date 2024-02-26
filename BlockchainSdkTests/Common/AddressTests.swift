@@ -10,8 +10,8 @@ import Foundation
 import XCTest
 import TangemSdk
 import CryptoKit
-import HDWalletKit
 import BitcoinCore
+import class WalletCore.PrivateKey
 
 @testable import BlockchainSdk
 
@@ -205,7 +205,7 @@ class AddressesTests: XCTestCase {
     }
     
     func testBch() throws {
-        let blockchain = Blockchain.bitcoinCash(testnet: false)
+        let blockchain = Blockchain.bitcoinCash
         let service = BitcoinCashAddressService(networkParams: BitcoinCashNetworkParams())
 
         let addr_dec_default = try service.makeAddress(from: secpDecompressedKey, type: .default)
@@ -276,7 +276,6 @@ class AddressesTests: XCTestCase {
     }
     
     func testBinanceTestnet() throws {
-        let blockchain = Blockchain.binance(testnet: true)
         let service = BinanceAddressService(testnet: true)
 
         let addr_dec = try service.makeAddress(from: secpDecompressedKey)
@@ -540,25 +539,25 @@ class AddressesTests: XCTestCase {
         // From trust wallet `KusamaTests.swift`
         let privateKey = Data(hexString: "0x85fca134b3fe3fd523d8b528608d803890e26c93c86dc3d97b8d59c7b3540c97")
         let publicKey = try Curve25519.Signing.PrivateKey(rawRepresentation: privateKey).publicKey.rawRepresentation
-        try testSubstrateNetwork(
+        testSubstrateNetwork(
             .kusama(curve: .ed25519),
             publicKey: publicKey,
             expectedAddress: "HewiDTQv92L2bVtkziZC8ASxrFUxr6ajQ62RXAnwQ8FDVmg"
         )
         
-        try testSubstrateNetwork(
+        testSubstrateNetwork(
             .kusama(curve: .ed25519_slip0010),
             publicKey: publicKey,
             expectedAddress: "HewiDTQv92L2bVtkziZC8ASxrFUxr6ajQ62RXAnwQ8FDVmg"
         )
         
-        try testSubstrateNetwork(
+        testSubstrateNetwork(
             .kusama(curve: .ed25519),
             publicKey: edKey,
             expectedAddress: "GByNkeXAhoB1t6FZEffRyytAp11cHt7EpwSWD8xiX88tLdQ"
         )
         
-        try testSubstrateNetwork(
+        testSubstrateNetwork(
             .kusama(curve: .ed25519_slip0010),
             publicKey: edKey,
             expectedAddress: "GByNkeXAhoB1t6FZEffRyytAp11cHt7EpwSWD8xiX88tLdQ"
@@ -940,5 +939,279 @@ class AddressesTests: XCTestCase {
         XCTAssertFalse(addressService.validate("abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz"))
         XCTAssertFalse(addressService.validate(""))
         XCTAssertFalse(addressService.validate("9a4b6c1e2d8f3a5b7e8d9a1c3b2e4d5f6a7b8c9d0e1f2a3b4c5d6e7f8a4b6c1e2d8f3"))
+    }
+    
+    func testDecimalAddressService() throws {
+        let walletPublicKey = Data(hexString: "04BAEC8CD3BA50FDFE1E8CF2B04B58E17041245341CD1F1C6B3A496B48956DB4C896A6848BCF8FCFC33B88341507DD25E5F4609386C68086C74CF472B86E5C3820"
+        )
+        
+        let addressService = DecimalAddressService()
+        let plainAddress = try addressService.makeAddress(from: walletPublicKey)
+        
+        let expectedAddress = "d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9"
+        
+        XCTAssertEqual(plainAddress.value, expectedAddress)
+    }
+    
+    func testDecimalValidateCorrectAddressWithChecksum() throws {
+        XCTAssertTrue(DecimalAddressService().validate("0xc63763572D45171e4C25cA0818b44E5Dd7F5c15B"))
+        XCTAssertTrue(DecimalAddressService().validate("d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9"))
+
+        XCTAssertFalse(DecimalAddressService().validate("0xc63763572D45171e4C25cA0818b4"))
+        XCTAssertFalse(DecimalAddressService().validate("d01ccmkx4edg5t3unp9egyp3dzwtht"))
+        XCTAssertFalse(DecimalAddressService().validate(""))
+    }
+    
+    func testDecimalValidateConverterAddressUtils() throws {
+        let converter = DecimalBlockchainAddressConverter()
+        
+        let ercAddress = try converter.convertDscAddressToDecimalBlockchainAddress(addressHex: "0xc63763572d45171e4c25ca0818b44e5dd7f5c15b")
+        XCTAssertEqual(ercAddress, "d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9")
+        
+        let dscAddress = try converter.convertDecimalBlockchainAddressToDscAddress(addressHex: "d01ccmkx4edg5t3unp9egyp3dzwthtlts2m320gh9")
+        XCTAssertEqual(dscAddress, "0xc63763572d45171e4c25ca0818b44e5dd7f5c15b")
+    }
+
+    func testVeChainAddressGeneration() throws {
+        let addressServiceFactory = AddressServiceFactory(blockchain: .veChain(testnet: false))
+        let addressService = addressServiceFactory.makeAddressService()
+
+        // Private key for the "tiny escape drive pupil flavor endless love walk gadget match filter luxury" mnemonic
+        let privateKeyRaw = Data(hexString: "0x11573efc409f42822eb39ca248d5e39edcf3377f0d4049b633d4dac3a54d5e71")
+        let privateKey = try XCTUnwrap(WalletCore.PrivateKey(data: privateKeyRaw))
+
+        let publicKeyRaw = privateKey.getPublicKeySecp256k1(compressed: false).data
+        let publicKey = Wallet.PublicKey(seedKey: publicKeyRaw, derivationType: nil)
+
+        XCTAssertNoThrow(try addressService.makeAddress(for: publicKey, with: .default))
+        XCTAssertNoThrow(try addressService.makeAddress(from: secpCompressedKey))
+        XCTAssertNoThrow(try addressService.makeAddress(from: secpDecompressedKey))
+        XCTAssertThrowsError(try addressService.makeAddress(from: edKey))
+
+        // Generated by Trust Wallet / official VeChain wallet (https://www.veworld.net/) / Wallet 2.0
+        // for the "tiny escape drive pupil flavor endless love walk gadget match filter luxury" mnemonic
+        let expectedAddress = "0xce270ba263dbB31FEb49Ec769A2C50FeCE7a6130"
+        let address = try addressService.makeAddress(for: publicKey, with: .default)
+
+        XCTAssertEqual(AddressType.default.defaultLocalizedName, address.localizedName)
+        XCTAssertEqual(expectedAddress, address.value)
+    }
+
+    func testVeChainAddressValidation() throws {
+        let addressServiceFactory = AddressServiceFactory(blockchain: .veChain(testnet: false))
+        let addressService = addressServiceFactory.makeAddressService()
+
+        XCTAssertTrue(addressService.validate("0x154D3D331CAAd4c8A14a3CbFd36Fd0640ADB76ad"))
+        XCTAssertTrue(addressService.validate("0xFF5ba88a17b2E16D23FF6647E9052E937AcB1406"))
+        XCTAssertTrue(addressService.validate("0x8E2b322FB0d0b7dC83783678c4d10ED64Af92dB4"))
+        XCTAssertTrue(addressService.validate("0xe01f4CeC65D6F0BA0eC92e96012339eDbAc634bb"))
+        XCTAssertTrue(addressService.validate("0xFF5ba88a17b2E16D23FF6647E9052E937AcB1406"))
+
+        XCTAssertFalse(addressService.validate("0x11e1B586dd370471D0B52046EE3D4309a6c29C6"))
+        XCTAssertFalse(addressService.validate("0xddde7ddd4111A54eFF5679CDE026913692e0B71cC"))
+        XCTAssertFalse(addressService.validate("c8177346deb2bab5390f472c338351e15e05063a"))
+        XCTAssertFalse(addressService.validate("me@google.com"))
+        XCTAssertFalse(addressService.validate(""))
+    }
+
+    func testXDCAddressConversion() throws {
+        let ethAddr = "0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d"
+        let xdcAddr = "xdc6ECa00c52AFC728CDbF42E817d712e175bb23C7d"
+        let converter = XDCAddressConverter()
+        XCTAssertEqual(converter.convertToETHAddress(ethAddr), ethAddr)
+        XCTAssertEqual(converter.convertToETHAddress(xdcAddr), ethAddr)
+        XCTAssertEqual(converter.convertToXDCAddress(ethAddr), xdcAddr)
+        XCTAssertEqual(converter.convertToXDCAddress(xdcAddr), xdcAddr)
+    }
+
+    func testXDCAddressValidation() throws {
+        let ethAddr = "0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d"
+        let xdcAddr = "xdc6ECa00c52AFC728CDbF42E817d712e175bb23C7d"
+        let validator = XDCAddressService()
+        XCTAssertTrue(validator.validate(ethAddr))
+        XCTAssertTrue(validator.validate(xdcAddr))
+    }
+    
+    func testAlgorandAddressGeneration() throws {
+        let addressServiceFactory = AddressServiceFactory(blockchain: .algorand(curve: .ed25519_slip0010, testnet: false))
+        let addressService = addressServiceFactory.makeAddressService()
+        
+        let privateKey = Data(hexString: "a6c4394041e64fe93d889386d7922af1b9a87f12e433762759608e61434d6cf7")
+        
+        let publicKey = try Curve25519.Signing.PrivateKey(rawRepresentation: privateKey)
+            .publicKey
+            .rawRepresentation
+
+        let address = try addressService.makeAddress(from: publicKey).value
+        let expectedAddress = "ADIYK65L3XR5ODNNCUIQVEET455L56MRKJHRBX5GU4TZI2752QIWK4UL5A"
+        
+        XCTAssertNoThrow(try addressService.makeAddress(from: publicKey))
+        XCTAssertThrowsError(try addressService.makeAddress(from: secpCompressedKey))
+        XCTAssertThrowsError(try addressService.makeAddress(from: secpDecompressedKey))
+        
+        XCTAssertEqual(address, expectedAddress)
+    }
+    
+    func testAlgorandAddressValidation() throws {
+        let addressServiceFactory = AddressServiceFactory(blockchain: .algorand(curve: .ed25519_slip0010, testnet: false))
+        let addressService = addressServiceFactory.makeAddressService()
+
+        XCTAssertTrue(addressService.validate("ZW3ISEHZUHPO7OZGMKLKIIMKVICOUDRCERI454I3DB2BH52HGLSO67W754"))
+        XCTAssertTrue(addressService.validate("Q7AUUQCAO3O6CLPHMPTWN3VTCWLLWZJSI6QDO5XEC4ZZR5JZWXWZL5YWOM"))
+        XCTAssertTrue(addressService.validate("ZMORINNT75RZ67ZWV2EGZYW6MKZ2LOSSB5VTKJON6NSPO5MW6TVCMXMVTU"))
+        XCTAssertTrue(addressService.validate("ZW3ISEHZUHPO7OZGMKLKIIMKVICOUDRCERI454I3DB2BH52HGLSO67W754"))
+
+        XCTAssertFalse(addressService.validate("ZW3ISEHZUHPO7OZGMKLKIIMKVICOUDRCERI454I3DB2BH52HGL"))
+        XCTAssertFalse(addressService.validate("EEQKMHD64P5FN25Y6W63ZHEPVCQZKM4PCMF6ZIIJW4IPFX4WJALA"))
+        XCTAssertFalse(addressService.validate("44bc93A8d3cEfA5a6721723a2f8d2e4F7d480BA0"))
+        XCTAssertFalse(addressService.validate("0xf3d468DBb386aaD46E92FF222adDdf872C8CC06"))
+        XCTAssertFalse(addressService.validate("0x6ECa00c52AFC728CDbF42E817d712e175bb23C7d1"))
+        XCTAssertFalse(addressService.validate("me@google.com"))
+        XCTAssertFalse(addressService.validate(""))
+    }
+    
+    func testAptosAddressGeneration() throws {
+        let addressServiceFactory = AddressServiceFactory(blockchain: .aptos(curve: .ed25519_slip0010, testnet: false))
+        let addressService = addressServiceFactory.makeAddressService()
+        
+        let privateKey = Data(hexString: "a6c4394041e64fe93d889386d7922af1b9a87f12e433762759608e61434d6cf7")
+        
+        let publicKey = try Curve25519.Signing.PrivateKey(rawRepresentation: privateKey)
+            .publicKey
+            .rawRepresentation
+
+        let address = try addressService.makeAddress(from: publicKey).value
+        let expectedAddress = "0x31f64c99e5a0e954271404bf5841e9cb8dbba0b1c25d79f6751e46762c446cc3"
+        
+        XCTAssertNoThrow(try addressService.makeAddress(from: publicKey))
+        XCTAssertThrowsError(try addressService.makeAddress(from: secpCompressedKey))
+        XCTAssertThrowsError(try addressService.makeAddress(from: secpDecompressedKey))
+        
+        XCTAssertEqual(address, expectedAddress)
+    }
+    
+    func testAptosAddressValidation() throws {
+        let addressServiceFactory = AddressServiceFactory(blockchain: .aptos(curve: .ed25519_slip0010, testnet: false))
+        let addressService = addressServiceFactory.makeAddressService()
+
+        XCTAssertTrue(addressService.validate("0x77b6ecc77530f2b7cad89abcdd8dfece24a9cba20acc608cee424f30d3721ea1"))
+        XCTAssertTrue(addressService.validate("0x7d7e436f0b2aafde60774efb26ccc432cf881b677aca7faaf2a01879bd19fb8"))
+        XCTAssertTrue(addressService.validate("0x68c709c6614e29f401b6bfdd0b89578381ef0fb719515c03b73cf13e45550e06"))
+        XCTAssertTrue(addressService.validate("0x8d2d7bcde13b2513617df3f98cdd5d0e4b9f714c6308b9204fe18ad900d92609"))
+
+        XCTAssertFalse(addressService.validate("0x7d7e436f0askdjaksldb2aafde60774efb26cccll432cf881b677aca7faaf2a01879bd19fb8"))
+        XCTAssertFalse(addressService.validate("me@0x1.com"))
+        XCTAssertFalse(addressService.validate("me@google.com"))
+        XCTAssertFalse(addressService.validate("x7d7e436f0askdjaksldb2aafde60774efb26cccll432cf881b677aca7faaf2a01879bd19fb8"))
+        XCTAssertFalse(addressService.validate(""))
+    }
+
+    func testHederaEd25519() throws {
+        // EdDSA private key for the "tiny escape drive pupil flavor endless love walk gadget match filter luxury"
+        // mnemonic generated using Hedera JavaScript SDK
+        let hederaPrivateKeyRaw = Data(hexString: "0x302e020100300506032b657004220420ed05eaccdb9b54387e986166eae8f7032684943d28b2894db1ee0ff047c52451")
+
+        // Hedera EdDSA DER prefix:
+        // https://github.com/hashgraph/hedera-sdk-js/blob/e0cd39c84ab189d59a6bcedcf16e4102d7bb8beb/packages/cryptography/src/Ed25519PrivateKey.js#L8
+        let hederaDerPrefixPrivate = Data(hexString: "0x302e020100300506032b657004220420")
+
+        // Stripping out Hedera DER prefix from the given private key
+        let privateKeyRaw = Data(hederaPrivateKeyRaw[hederaDerPrefixPrivate.count...])
+        let privateKey = try XCTUnwrap(WalletCore.PrivateKey(data: privateKeyRaw))
+
+        let blockchain: Blockchain = .hedera(curve: .ed25519, testnet: false)
+
+        try testHederaAddressGeneration(blockchain: blockchain, privateKey: privateKey)
+        try testHederaAddressValidation(blockchain: blockchain)
+    }
+
+    func testHederaEd25519Slip0010() throws {
+        // EdDSA private key for the "tiny escape drive pupil flavor endless love walk gadget match filter luxury"
+        // mnemonic generated using Hedera JavaScript SDK
+        let hederaPrivateKeyRaw = Data(hexString: "0x302e020100300506032b657004220420ed05eaccdb9b54387e986166eae8f7032684943d28b2894db1ee0ff047c52451")
+
+        // Hedera EdDSA DER prefix:
+        // https://github.com/hashgraph/hedera-sdk-js/blob/e0cd39c84ab189d59a6bcedcf16e4102d7bb8beb/packages/cryptography/src/Ed25519PrivateKey.js#L8
+        let hederaDerPrefixPrivate = Data(hexString: "0x302e020100300506032b657004220420")
+
+        // Stripping out Hedera DER prefix from the given private key
+        let privateKeyRaw = Data(hederaPrivateKeyRaw[hederaDerPrefixPrivate.count...])
+        let privateKey = try XCTUnwrap(WalletCore.PrivateKey(data: privateKeyRaw))
+
+        let blockchain: Blockchain = .hedera(curve: .ed25519, testnet: false)
+
+        try testHederaAddressGeneration(blockchain: blockchain, privateKey: privateKey)
+        try testHederaAddressValidation(blockchain: blockchain)
+    }
+
+    func testHederaSecp256k1() throws {
+        // ECDSA private key for the "tiny escape drive pupil flavor endless love walk gadget match filter luxury"
+        // mnemonic generated using Hedera JavaScript SDK
+        let hederaPrivateKeyRaw = Data(hexString: "0x3030020100300706052b8104000a04220420e507077d8d5bab32debcbbc651fc4ca74660523976502beabee15a1662d77ed1")
+
+        // Hedera ECDSA DER prefix:
+        // https://github.com/hashgraph/hedera-sdk-js/blob/f65ab2a4cf5bb026fc47fcf8955e81c2b82a6ff3/packages/cryptography/src/EcdsaPrivateKey.js#L7
+        let hederaDerPrefixPrivate = Data(hexString: "0x3030020100300706052b8104000a04220420")
+
+        // Stripping out Hedera DER prefix from the given private key
+        let privateKeyRaw = Data(hederaPrivateKeyRaw[hederaDerPrefixPrivate.count...])
+        let privateKey = try XCTUnwrap(WalletCore.PrivateKey(data: privateKeyRaw))
+
+        let blockchain: Blockchain = .hedera(curve: .secp256k1, testnet: false)
+
+        try testHederaAddressGeneration(blockchain: blockchain, privateKey: privateKey)
+        try testHederaAddressValidation(blockchain: blockchain)
+    }
+
+    private func testHederaAddressGeneration(blockchain: Blockchain, privateKey: WalletCore.PrivateKey) throws {
+        let publicKeyRaw = privateKey.getPublicKeyByType(pubkeyType: try .init(blockchain)).data
+        let publicKey = Wallet.PublicKey(seedKey: publicKeyRaw, derivationType: nil)
+
+        let addressServiceFactory = AddressServiceFactory(blockchain: blockchain)
+        let addressService = addressServiceFactory.makeAddressService()
+
+        // Both ECDSA and EdDSA are supported
+        XCTAssertNoThrow(try addressService.makeAddress(for: publicKey, with: .default))
+        XCTAssertNoThrow(try addressService.makeAddress(from: secpCompressedKey))
+        XCTAssertNoThrow(try addressService.makeAddress(from: secpDecompressedKey))
+        XCTAssertNoThrow(try addressService.makeAddress(from: edKey))
+
+        // Actual address (i.e. Account ID) for Hedera is requested asynchronously from the network/local storage,
+        // therefore the address service returns an empty string, this is perfectly fine
+        let expectedAddress = ""
+        let address = try addressService.makeAddress(for: publicKey, with: .default)
+
+        XCTAssertEqual(AddressType.default.defaultLocalizedName, address.localizedName)
+        XCTAssertEqual(expectedAddress, address.value)
+    }
+
+    // Includes account IDs with checksums from https://hips.hedera.com/hip/hip-15
+    private func testHederaAddressValidation(blockchain: Blockchain) throws {
+        let addressServiceFactory = AddressServiceFactory(blockchain: blockchain)
+        let addressService = addressServiceFactory.makeAddressService()
+
+        XCTAssertTrue(addressService.validate("0.0.123"))
+        XCTAssertTrue(addressService.validate("0.0.123-vfmkw"))
+        XCTAssertTrue(addressService.validate("0.0.1234567890-zbhlt"))
+        XCTAssertTrue(addressService.validate("0.0.18446744073709551615")) // Max length of the account number part is 8 bytes (2^64 - 1)
+        XCTAssertTrue(addressService.validate("0xf3DbcEeedDC4BBd1B66492B66EC0B8eC317b511B"))    // Hedera supports EVM addresses
+        XCTAssertTrue(addressService.validate("0.0.302d300706052b8104000a03220002d588ec1000770949ab77516c77ee729774de1c8fe058cab6d64f1b12ffc8ff07"))    // Account Alias
+
+        XCTAssertFalse(addressService.validate("0.0.123-abcde"))
+        XCTAssertFalse(addressService.validate("0.0.123-VFMKW"))
+        XCTAssertFalse(addressService.validate("0.0.123-vFmKw"))
+        XCTAssertFalse(addressService.validate("0.0.123#vfmkw"))
+        XCTAssertFalse(addressService.validate("0.0.123vfmkw"))
+        XCTAssertFalse(addressService.validate("0.0.123 - vfmkw"))
+        XCTAssertFalse(addressService.validate("0.123"))
+        XCTAssertFalse(addressService.validate("0.0.123."))
+        XCTAssertFalse(addressService.validate("0.0.123-vf"))
+        XCTAssertFalse(addressService.validate("0.0.123-vfm-kw"))
+        XCTAssertFalse(addressService.validate("0.0.123-vfmkwxxxx"))
+        XCTAssertFalse(addressService.validate("0.0.18446744073709551616")) // Max length of the account number part is 8 bytes (2^64 - 1)
+        XCTAssertFalse(addressService.validate("0xf64a1db2f124aaa4cd7b58d3d7f66774f9770c6"))    // Hedera supports EVM addresses
+        XCTAssertFalse(addressService.validate("0xf64a1db2f124aaa4cd7b58d3d7f66774f9770c6ee"))    // Hedera supports EVM addresses
+        XCTAssertFalse(addressService.validate("0.0.402d300706052b8104000a03220002d588ec1000770949ab77516c77ee729774de1c8fe058cab6d64f1b12ffc8ff07"))    // Account Alias
+        XCTAssertFalse(addressService.validate(""))
     }
 }

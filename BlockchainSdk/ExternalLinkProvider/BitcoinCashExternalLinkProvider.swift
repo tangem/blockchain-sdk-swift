@@ -23,19 +23,19 @@ extension BitcoinCashExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://coinfaucet.eu/en/bch-testnet/")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
-            return URL(string: "https://blockexplorer.one/bitcoin-cash/testnet/tx/\(hash)")!
+            return URL(string: "https://blockexplorer.one/bitcoin-cash/testnet/tx/\(hash)")
         }
 
-        return URL(string: "https://blockchair.com/bitcoin-cash/transaction/\(hash)")!
+        return URL(string: "https://blockchair.com/bitcoin-cash/transaction/\(hash)")
     }
     
-    func url(address: String, contractAddress: String?) -> URL {
+    func url(address: String, contractAddress: String?) -> URL? {
         if isTestnet {
-            return URL(string: "https://blockexplorer.one/bitcoin-cash/testnet/address/\(address)")!
+            return URL(string: "https://blockexplorer.one/bitcoin-cash/testnet/address/\(address)")
         }
     
-        return URL(string: "https://blockchair.com/bitcoin-cash/address/\(address)")!
+        return URL(string: "https://blockchair.com/bitcoin-cash/address/\(address)")
     }
 }

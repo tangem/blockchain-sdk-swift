@@ -7,16 +7,15 @@
 //
 
 import Foundation
-import HDWalletKit
 
 public struct BitcoinScriptAddress: Address {
-	public let script: HDWalletScript
+	public let script: BitcoinScript
 	public let value: String
     public let publicKey: Wallet.PublicKey
 	public let type: AddressType
     public var localizedName: String { type.defaultLocalizedName }
     
-    public init(script: HDWalletScript, value: String, publicKey: Wallet.PublicKey, type: AddressType) {
+    public init(script: BitcoinScript, value: String, publicKey: Wallet.PublicKey, type: AddressType) {
         self.script = script
         self.value = value
         self.publicKey = publicKey

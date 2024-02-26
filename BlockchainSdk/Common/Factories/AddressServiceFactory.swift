@@ -32,7 +32,7 @@ public struct AddressServiceFactory {
         case .ethereum,
                 .ethereumClassic,
                 .ethereumPoW,
-                .ethereumFair,
+                .disChain,
                 .bsc,
                 .polygon,
                 .avalanche,
@@ -40,11 +40,11 @@ public struct AddressServiceFactory {
                 .arbitrum,
                 .gnosis,
                 .optimism,
-                .saltPay,
                 .kava,
                 .cronos,
                 .telos,
-                .octa:
+                .octa,
+                .shibarium:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -86,7 +86,10 @@ public struct AddressServiceFactory {
         case .ton,
                 .cosmos,
                 .terraV1,
-                .terraV2:
+                .terraV2,
+                .veChain,
+                .algorand,
+                .aptos:
             return WalletCoreAddressService(blockchain: blockchain)
         case .ducatus:
             return BitcoinLegacyAddressService(networkParams: DucatusNetworkParams())
@@ -94,6 +97,12 @@ public struct AddressServiceFactory {
             return ChiaAddressService(isTestnet: isTestnet)
         case .near:
             return NEARAddressService()
+        case .decimal:
+            return DecimalAddressService()
+        case .xdc:
+            return XDCAddressService()
+        case .hedera:
+            return HederaAddressService(isTestnet: isTestnet)
         }
     }
 }

@@ -28,7 +28,7 @@ final class ChiaWalletManager: BaseManager, WalletManager {
     init(wallet: Wallet, networkService: ChiaNetworkService, txBuilder: ChiaTransactionBuilder) throws {
         self.networkService = networkService
         self.txBuilder = txBuilder
-        self.puzzleHash = try ChiaPuzzleUtils().getPuzzleHash(from: wallet.address).hex
+        self.puzzleHash = try ChiaPuzzleUtils().getPuzzleHash(from: wallet.address).hexString.lowercased()
         super.init(wallet: wallet)
     }
     
@@ -43,8 +43,8 @@ final class ChiaWalletManager: BaseManager, WalletManager {
                         completion(.failure(error))
                     }
                 },
-                receiveValue: { [unowned self] response in
-                    self.update(with: response, completion: completion)
+                receiveValue: { [weak self] response in
+                    self?.update(with: response, completion: completion)
                 }
             )
     }
@@ -122,15 +122,15 @@ private extension ChiaWalletManager {
 // MARK: - WithdrawalValidator
 
 extension ChiaWalletManager: WithdrawalValidator {
-    func validate(_ transaction: Transaction) -> WithdrawalWarning? {
+    func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
         let availableAmount = txBuilder.availableAmount()
-        let amountAvailableToSend = availableAmount - transaction.fee.amount
+        let amountAvailableToSend = availableAmount - fee
         
-        if transaction.amount <= amountAvailableToSend {
+        if amount <= amountAvailableToSend {
             return nil
         }
         
-        let amountToReduceBy = transaction.amount - amountAvailableToSend
+        let amountToReduceBy = amount - amountAvailableToSend
         
         return WithdrawalWarning(
             warningMessage: "common_utxo_validate_withdrawal_message_warning".localized(

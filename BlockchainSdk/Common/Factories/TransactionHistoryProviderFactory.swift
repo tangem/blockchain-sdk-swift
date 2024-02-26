@@ -38,8 +38,16 @@ public struct TransactionHistoryProviderFactory {
                 ],
                 mapper: UTXOTransactionHistoryMapper(blockchain: blockchain)
             )
+        case .bitcoinCash:
+            return UTXOTransactionHistoryProvider(
+                blockBookProviders: [
+                    networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes)
+                ],
+                mapper: UTXOTransactionHistoryMapper(blockchain: blockchain)
+            )
         case .ethereum,
                 .ethereumPoW,
+                .ethereumClassic,
                 .bsc,
                 .avalanche,
                 .arbitrum:
@@ -52,6 +60,20 @@ public struct TransactionHistoryProviderFactory {
                 blockBookProvider: networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes),
                 mapper: TronTransactionHistoryMapper(blockchain: blockchain)
             )
+        case .algorand(_, let isTestnet):
+            if isTestnet {
+                return AlgorandTransactionHistoryProvider(
+                    blockchain: input.blockchain,
+                    node: .init(type: .idxFullNode(isTestnet: isTestnet)),
+                    networkConfig: input.networkConfig
+                )
+            } else {
+                return AlgorandTransactionHistoryProvider(
+                    blockchain: input.blockchain,
+                    node: .init(type: .idxNownodes, apiKeyValue: config.nowNodesApiKey),
+                    networkConfig: input.networkConfig
+                )
+            }
         default:
             return nil
         }

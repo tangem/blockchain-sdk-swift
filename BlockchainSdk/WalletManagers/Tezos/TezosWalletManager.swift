@@ -20,19 +20,20 @@ class TezosWalletManager: BaseManager, WalletManager {
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(address: wallet.address)
-            .sink(receiveCompletion: {[unowned self]  completionSubscription in
+            .sink(receiveCompletion: { [weak self]  completionSubscription in
                 if case let .failure(error) = completionSubscription {
-                    self.wallet.amounts = [:]
+                    self?.wallet.amounts = [:]
                     completion(.failure(error))
                 }
-            }, receiveValue: { [unowned self] response in
-                self.updateWallet(with: response)
+            }, receiveValue: { [weak self] response in
+                self?.updateWallet(with: response)
                 completion(.success(()))
             })
     }
     
     private func updateWallet(with response: TezosAddress) {
         txBuilder.counter = response.counter
+        txBuilder.isPublicKeyRevealed = response.isPublicKeyRevealed
         
         if response.balance != wallet.amounts[.coin]?.value {
             wallet.clearPendingTransaction()
@@ -104,16 +105,20 @@ extension TezosWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
+    func estimatedFee(amount: Amount) -> AnyPublisher<[Fee], Error> {
+        let fixedFee = TezosFee.transaction.rawValue
+        let amountFee = Amount(with: wallet.blockchain, value: fixedFee)
+        
+        return .justWithError(output: [Fee(amountFee)])
+    }
+    
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        networkService
-            .checkPublicKeyRevealed(address: wallet.address)
-            .combineLatest(networkService.getInfo(address: destination))
-            .tryMap {[weak self] (isPublicKeyRevealed, destinationInfo) -> [Fee] in
+        networkService.getInfo(address: destination)
+            .tryMap {[weak self] destinationInfo -> [Fee] in
                 guard let self = self else { throw WalletError.empty }
-                
-                self.txBuilder.isPublicKeyRevealed = isPublicKeyRevealed
+
                 var fee = TezosFee.transaction.rawValue
-                if !isPublicKeyRevealed {
+                if self.txBuilder.isPublicKeyRevealed == false {
                     fee += TezosFee.reveal.rawValue
                 }
                 
@@ -130,7 +135,7 @@ extension TezosWalletManager: TransactionSender {
     private func encodeSignature(_ signature: Data) -> String {
         let edsigPrefix = TezosPrefix.signaturePrefix(for: wallet.blockchain.curve)
         let prefixedSignature = edsigPrefix + signature
-        let checksum = prefixedSignature.sha256().sha256().prefix(4)
+        let checksum = prefixedSignature.getDoubleSha256().prefix(4)
         let prefixedSignatureWithChecksum = prefixedSignature + checksum
         return Base58.encode(prefixedSignatureWithChecksum)
     }
@@ -141,14 +146,14 @@ extension TezosWalletManager: ThenProcessable { }
 
 
 extension TezosWalletManager: WithdrawalValidator {
-    func validate(_ transaction: Transaction) -> WithdrawalWarning? {
+    func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
         guard let walletAmount = wallet.amounts[.coin] else {
             return nil
         }
         
         let minimumAmount: Decimal = 0.000001
         
-        if transaction.amount + transaction.fee.amount == walletAmount {
+        if amount + fee == walletAmount {
             return WithdrawalWarning(warningMessage: String(format: "xtz_withdrawal_message_warning".localized, minimumAmount.description),
                                      reduceMessage: String(format: "xtz_withdrawal_message_reduce".localized, minimumAmount.description),
                                      ignoreMessage: "xtz_withdrawal_message_ignore".localized,

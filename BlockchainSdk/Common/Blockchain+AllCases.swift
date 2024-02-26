@@ -39,9 +39,8 @@ public extension Blockchain {
         case .dash: break
         case .gnosis: break
         case .optimism: break
-        case .ethereumFair: break
+        case .disChain: break
         case .ethereumPoW: break
-        case .saltPay: break
         case .ton: break
         case .kava: break
         case .kaspa: break
@@ -54,6 +53,13 @@ public extension Blockchain {
         case .octa: break
         case .chia: break
         case .near: break
+        case .decimal: break
+        case .veChain: break
+        case .xdc: break
+        case .algorand: break
+        case .shibarium: break
+        case .aptos: break
+        case .hedera: break
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -64,7 +70,7 @@ public extension Blockchain {
             .ethereumClassic(testnet: false),
             .litecoin,
             .bitcoin(testnet: false),
-            .bitcoinCash(testnet: false),
+            .bitcoinCash,
             .xrp(curve: .secp256k1),
             .rsk,
             .binance(testnet: false),
@@ -86,9 +92,8 @@ public extension Blockchain {
             .dash(testnet: false),
             .gnosis,
             .optimism(testnet: false),
-            .ethereumFair,
+            .disChain,
             .ethereumPoW(testnet: false),
-            .saltPay,
             .ton(curve: .ed25519_slip0010, testnet: false),
             .kava(testnet: false),
             .kaspa,
@@ -101,6 +106,13 @@ public extension Blockchain {
             .octa,
             .chia(testnet: false),
             .near(curve: .ed25519_slip0010, testnet: false),
+            .decimal(testnet: false),
+            .veChain(testnet: false),
+            .algorand(curve: .ed25519_slip0010, testnet: false),
+            .xdc(testnet: false),
+            .shibarium(testnet: false),
+            .aptos(curve: .ed25519_slip0010, testnet: false),
+            .hedera(curve: .ed25519_slip0010, testnet: false),
         ]
     }
 }

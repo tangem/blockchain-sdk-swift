@@ -16,11 +16,16 @@ import Solana_Swift
 public class WalletManagerFactory {
     
     private let config: BlockchainSdkConfig
-    
+    private let dependencies: BlockchainSdkDependencies
+
     // MARK: - Init
-    
-    public init(config: BlockchainSdkConfig) {
+
+    public init(
+        config: BlockchainSdkConfig,
+        dependencies: BlockchainSdkDependencies
+    ) {
         self.config = config
+        self.dependencies = dependencies
     }
     
     public func makeWalletManager(blockchain: Blockchain, publicKey: Wallet.PublicKey) throws -> WalletManager {
@@ -53,7 +58,8 @@ private extension WalletManagerFactory {
         let input = WalletManagerAssemblyInput(
             wallet: wallet,
             pairPublicKey: pairPublicKey,
-            blockchainSdkConfig: config
+            blockchainSdkConfig: config,
+            blockchainSdkDependencies: dependencies
         )
         return try blockchain.assembly.make(with: input)
     }
@@ -75,7 +81,7 @@ extension WalletManagerFactory {
         dummyAddress: String
     ) throws -> WalletManager {
         let publicKey = Wallet.PublicKey(seedKey: dummyPublicKey, derivationType: .none)
-        let address: PlainAddress
+        let address: Address
 
         if dummyAddress.isEmpty {
             let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
@@ -88,7 +94,8 @@ extension WalletManagerFactory {
         let input = WalletManagerAssemblyInput(
             wallet: wallet,
             pairPublicKey: nil,
-            blockchainSdkConfig: config
+            blockchainSdkConfig: config, 
+            blockchainSdkDependencies: dependencies
         )
         return try blockchain.assembly.make(with: input)
     }

@@ -23,7 +23,7 @@ public struct WalletFactory {
     func makeWallet(publicKey: Wallet.PublicKey) throws -> Wallet {
         let addressTypes: [AddressType] = AddressTypesConfig().types(for: blockchain)
 
-        let addresses: [AddressType: PlainAddress] = try addressTypes.reduce(into: [:]) { result, addressType in
+        let addresses: [AddressType: Address] = try addressTypes.reduce(into: [:]) { result, addressType in
             result[addressType] = try addressProvider.makeAddress(for: publicKey, with: addressType)
         }
 

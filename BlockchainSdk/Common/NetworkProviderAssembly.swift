@@ -21,20 +21,29 @@ struct NetworkProviderAssembly {
         case .nowNodes:
             return BlockBookUtxoProvider(
                 blockchain: input.blockchain,
-                blockBookConfig: NowNodesBlockBookConfig(apiKey: input.blockchainSdkConfig.nowNodesApiKey),
+                blockBookConfig: NowNodesBlockBookConfig(
+                    apiKeyHeaderName: Constants.nowNodesApiKeyHeaderName,
+                    apiKeyHeaderValue: input.blockchainSdkConfig.nowNodesApiKey
+                ),
                 networkConfiguration: input.networkConfig
             )
         case .getBlock:
             return BlockBookUtxoProvider(
                 blockchain: input.blockchain,
-                blockBookConfig: GetBlockBlockBookConfig(apiKey: input.blockchainSdkConfig.getBlockApiKey),
+                blockBookConfig: GetBlockBlockBookConfig(input.blockchainSdkConfig.getBlockCredentials),
                 networkConfiguration: input.networkConfig
             )
         }
     }
     
-    func makeBlockchainInfoNetworkProvider(with input: NetworkProviderAssemblyInput) -> BlockchainInfoNetworkProvider {
-        return BlockchainInfoNetworkProvider(configuration: input.networkConfig)
+    func makeBitcoinCashNowNodesNetworkProvider(
+        input: NetworkProviderAssemblyInput,
+        bitcoinCashAddressService: BitcoinCashAddressService
+    ) -> AnyBitcoinNetworkProvider {
+        return BitcoinCashNowNodesNetworkProvider(
+            blockBookUtxoProvider: makeBlockBookUtxoProvider(with: input, for: .nowNodes),
+            bitcoinCashAddressService: bitcoinCashAddressService
+        ).eraseToAnyBitcoinNetworkProvider()
     }
     
     func makeBlockcypherNetworkProvider(endpoint: BlockcypherEndpoint, with input: NetworkProviderAssemblyInput) -> BlockcypherNetworkProvider {
@@ -54,16 +63,12 @@ struct NetworkProviderAssembly {
         }
     }
     
-    func makeBlockscoutNetworkProvider(with input: NetworkProviderAssemblyInput) -> BlockscoutNetworkProvider {
-        BlockscoutNetworkProvider(configuration: .init(credentials: input.blockchainSdkConfig.blockscoutCredentials))
-    }
-    
     func makeEthereumJsonRpcProviders(with input: NetworkProviderAssemblyInput) -> [EthereumJsonRpcProvider] {
         let endpoints = input.blockchain.getJsonRpcEndpoints(
             keys: EthereumApiKeys(
                 infuraProjectId: input.blockchainSdkConfig.infuraProjectId,
                 nowNodesApiKey: input.blockchainSdkConfig.nowNodesApiKey,
-                getBlockApiKey: input.blockchainSdkConfig.getBlockApiKey,
+                getBlockApiKeys: input.blockchainSdkConfig.getBlockCredentials.credentials(type: .jsonRpc),
                 quickNodeBscCredentials: input.blockchainSdkConfig.quickNodeBscCredentials
             )
         )!

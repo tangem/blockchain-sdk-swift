@@ -55,7 +55,6 @@ class LitecoinTests: XCTestCase {
         
         let bitcoinCoreManager = BitcoinManager(networkParams: networkParams, walletPublicKey: walletPubkey, compressedWalletPublicKey: compressedPubkey, bip: .bip44)
         let txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinCoreManager, addresses: addresses)
-        txBuilder.feeRates[feeValue] = feeRate
         txBuilder.unspentOutputs =
         [
             BitcoinUnspentOutput(transactionHash: "bcacfe1bc1323e8e421486e4b334b91163925d7edd87133673c3efbd4e3fedae", outputIndex: 0, amount: 10000, outputScript: "76a914ccd4649cdb4c9f8fdb54869cff112a4e75fda2bb88ac"),
@@ -64,7 +63,7 @@ class LitecoinTests: XCTestCase {
         
         let amountToSend = Amount(with: blockchain, type: .coin, value: sendValue)
         let feeAmount = Amount(with: blockchain, type: .coin, value: feeValue)
-        let fee = Fee(feeAmount)
+        let fee = Fee(feeAmount, parameters: BitcoinFeeParameters(rate: feeRate))
         let tx = Transaction(amount: amountToSend, fee: fee, sourceAddress: address, destinationAddress: destinationAddress, changeAddress: address)
         
         let expectedHashToSign1 = Data(hex: "4E17896956F9B8AFCCD0B2BBF5AC50462508C0AC1485EB6580AF7CC9300E837E")
@@ -97,7 +96,7 @@ class LitecoinTests: XCTestCase {
         let buildToSignResult = txBuilder.buildForSign(transaction: transaction, sequence: 4294967290, sortType: sortType)!
         sizeTester.testTxSizes(buildToSignResult)
         let signedTx = txBuilder.buildForSend(transaction: transaction, signatures: signatures, sequence: 4294967290, sortType: sortType)
-        XCTAssertEqual(buildToSignResult.map { $0.hex }, expectedHashes.map { $0.hex })
+        XCTAssertEqual(buildToSignResult.map { $0.hexString }, expectedHashes.map { $0.hexString })
         XCTAssertEqual(signedTx?.hexString, expectedSignedTransaction.hexString)
     }
 }

@@ -30,3 +30,22 @@ extension Moya.Task {
         return .requestJSONEncodable(jsonRPCParams)
     }
 }
+
+extension MoyaError {
+    @available(*, deprecated, message: "Do not use, will be removed in IOS-5899")
+    var asWalletError: WalletError? {
+        switch self {
+        case .jsonMapping,
+             .objectMapping,
+             .imageMapping,
+             .stringMapping:
+            return WalletError.failedToParseNetworkResponse
+        case .statusCode,
+             .underlying,
+             .encodableMapping,
+             .requestMapping,
+             .parameterEncoding:
+            return nil
+        }
+    }
+}

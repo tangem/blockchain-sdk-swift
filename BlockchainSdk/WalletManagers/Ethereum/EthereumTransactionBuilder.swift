@@ -8,14 +8,11 @@
 
 import Foundation
 import BigInt
-import web3swift
 import TangemSdk
 
 class EthereumTransactionBuilder {
     private let walletPublicKey: Data
     private let chainId: BigUInt
-    
-    private var web3Network: Networks { Networks.fromInt(Int(chainId)) }
     
     init(walletPublicKey: Data, chainId: Int) throws {
         self.walletPublicKey = try Secp256k1Key(with: walletPublicKey).decompress()
@@ -45,19 +42,12 @@ class EthereumTransactionBuilder {
         guard let targetAddress = transaction.amount.type == .coin ? transaction.destinationAddress: transaction.contractAddress else {
             return nil
         }
-        
-        guard let ethereumAddress = EthereumAddress(targetAddress,
-                                                    type: .normal,
-                                                    ignoreChecksum: transaction.amount.type != .coin,
-                                                    network: web3Network) else {
-            return nil
-        }
-        
+
         let transaction = EthereumTransaction(
             nonce: nonceValue,
             gasPrice: feeParameters.gasPrice,
             gasLimit: feeParameters.gasLimit,
-            to: ethereumAddress,
+            to: targetAddress,
             value: transaction.amount.type == .coin ? amountValue : .zero,
             data: data,
             v: 0,
@@ -82,7 +72,7 @@ class EthereumTransactionBuilder {
         transaction.r = BigUInt(unmarshalledSignature.r)
         transaction.s = BigUInt(unmarshalledSignature.s)
         
-        let encodedBytesToSend = transaction.encodeForSend(chainID: chainId)
+        let encodedBytesToSend = transaction.encode(forSignature: false, chainID: chainId)
         return encodedBytesToSend
     }
     
@@ -97,15 +87,5 @@ class EthereumTransactionBuilder {
         
         let method = TransferERC20TokenMethod(destination: targetAddress, amount: amount)
         return method.data
-    }
-}
-
-extension EthereumTransaction {
-    func encodeForSend(chainID: BigUInt? = nil) -> Data? {
-        let encodeV = chainID == nil ? self.v :
-            self.v - 27 + chainID! * 2 + 35
-        
-        let fields = [self.nonce, self.gasPrice, self.gasLimit, self.to.addressData, self.value, self.data, encodeV, self.r, self.s] as [AnyObject]
-        return RLP.encode(fields)
     }
 }

@@ -13,15 +13,15 @@ public struct BlockchainSdkConfig {
     let blockcypherTokens: [String]
     let infuraProjectId: String
     let nowNodesApiKey: String
-    let getBlockApiKey: String
+    let getBlockCredentials: GetBlockCredentials
     let kaspaSecondaryApiUrl: String?
     let tronGridApiKey: String
+    let hederaArkhiaApiKey: String
     let tonCenterApiKeys: TonCenterApiKeys
     let fireAcademyApiKeys: FireAcademyApiKeys
     let chiaTangemApiKeys: ChiaTangemApiKeys
     let quickNodeSolanaCredentials: QuickNodeCredentials
     let quickNodeBscCredentials: QuickNodeCredentials
-    let blockscoutCredentials: NetworkProviderConfiguration.Credentials
     let defaultNetworkProviderConfiguration: NetworkProviderConfiguration
     let networkProviderConfigurations: [Blockchain: NetworkProviderConfiguration]
 
@@ -30,15 +30,15 @@ public struct BlockchainSdkConfig {
         blockcypherTokens: [String],
         infuraProjectId: String,
         nowNodesApiKey: String,
-        getBlockApiKey: String,
+        getBlockCredentials: GetBlockCredentials,
         kaspaSecondaryApiUrl: String?,
         tronGridApiKey: String,
+        hederaArkhiaApiKey: String,
         tonCenterApiKeys: TonCenterApiKeys,
         fireAcademyApiKeys: FireAcademyApiKeys,
         chiaTangemApiKeys: ChiaTangemApiKeys,
         quickNodeSolanaCredentials: QuickNodeCredentials,
         quickNodeBscCredentials: QuickNodeCredentials,
-        blockscoutCredentials: NetworkProviderConfiguration.Credentials,
         defaultNetworkProviderConfiguration: NetworkProviderConfiguration = .init(),
         networkProviderConfigurations: [Blockchain: NetworkProviderConfiguration] = [:]
     ) {
@@ -46,15 +46,15 @@ public struct BlockchainSdkConfig {
         self.blockcypherTokens = blockcypherTokens
         self.infuraProjectId = infuraProjectId
         self.nowNodesApiKey = nowNodesApiKey
-        self.getBlockApiKey = getBlockApiKey
+        self.getBlockCredentials = getBlockCredentials
         self.kaspaSecondaryApiUrl = kaspaSecondaryApiUrl
         self.tronGridApiKey = tronGridApiKey
+        self.hederaArkhiaApiKey = hederaArkhiaApiKey
         self.tonCenterApiKeys = tonCenterApiKeys
         self.fireAcademyApiKeys = fireAcademyApiKeys
         self.chiaTangemApiKeys = chiaTangemApiKeys
         self.quickNodeSolanaCredentials = quickNodeSolanaCredentials
         self.quickNodeBscCredentials = quickNodeBscCredentials
-        self.blockscoutCredentials = blockscoutCredentials
         self.defaultNetworkProviderConfiguration = defaultNetworkProviderConfiguration
         self.networkProviderConfigurations = networkProviderConfigurations
     }
@@ -109,5 +109,47 @@ public extension BlockchainSdkConfig {
         public init(mainnetApiKey: String) {
             self.mainnetApiKey = mainnetApiKey
         }
+    }
+    
+    struct GetBlockCredentials {
+        let credentials: [Credential]
+        
+        public init(credentials: [Credential]) {
+            self.credentials = credentials
+        }
+    }
+}
+
+public extension BlockchainSdkConfig.GetBlockCredentials {
+    struct Credential {
+        let blockchain: Blockchain
+        let type: TypeValue
+        let value: String
+        
+        public init(blockchain: Blockchain, type: TypeValue, key: String) {
+            self.blockchain = blockchain
+            self.type = type
+            self.value = key
+        }
+    }
+    
+    enum TypeValue: String, CaseIterable {
+        case blockBookRest
+        case rest
+        case jsonRpc
+        case rosetta
+    }
+}
+
+extension BlockchainSdkConfig.GetBlockCredentials {
+    func credential(for blockchain: Blockchain, type: TypeValue) -> String {
+        let credential = credentials.first { $0.blockchain.codingKey == blockchain.codingKey && $0.type == type }
+        return credential?.value ?? ""
+    }
+    
+    func credentials(type: TypeValue) -> [Blockchain: String] {
+        credentials
+            .filter { $0.type == type }
+            .reduce(into: [:]) { $0[$1.blockchain] = $1.value }
     }
 }

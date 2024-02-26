@@ -8,7 +8,6 @@
 
 import Foundation
 import TangemSdk
-import HDWalletKit
 import BitcoinCore
 
 class BitcoinTransactionBuilder {
@@ -22,7 +21,7 @@ class BitcoinTransactionBuilder {
 			}
 			if let utxos = utxoDTOs {
 				let spendingScripts: [Script] = walletScripts.compactMap { script in
-					let chunks = script.scriptChunks.enumerated().map { (index, chunk) in
+					let chunks = script.chunks.enumerated().map { (index, chunk) in
 						Chunk(scriptData: script.data, index: index, payloadRange: chunk.range)
 					}
 					return Script(with: script.data, chunks: chunks)
@@ -32,11 +31,10 @@ class BitcoinTransactionBuilder {
 		}
 	}
 	
-	var feeRates: [Decimal: Int] = [:]
     var bitcoinManager: BitcoinManager
     
     private(set) var changeScript: Data?
-	private let walletScripts: [HDWalletScript]
+	private let walletScripts: [BitcoinScript]
 
 	init(bitcoinManager: BitcoinManager, addresses: [Address]) {
         self.bitcoinManager = bitcoinManager
@@ -53,11 +51,11 @@ class BitcoinTransactionBuilder {
 	
     public func buildForSign(transaction: Transaction, sequence: Int?, sortType: TransactionDataSortType = .bip69) -> [Data]? {
 		do {
-            guard let feeRate = feeRates[transaction.fee.amount.value] else { return nil }
+            guard let parameters = transaction.fee.parameters as? BitcoinFeeParameters else { return nil }
             
 			let hashes = try bitcoinManager.buildForSign(target: transaction.destinationAddress,
 														 amount: transaction.amount.value,
-                                                         feeRate: feeRate,
+                                                         feeRate: parameters.rate,
                                                          sortType: sortType,
                                                          changeScript: changeScript,
                                                          sequence: sequence)
@@ -70,14 +68,14 @@ class BitcoinTransactionBuilder {
 	
     public func buildForSend(transaction: Transaction, signatures: [Data], sequence: Int?, sortType: TransactionDataSortType = .bip69) -> Data? {
         guard let signatures = convertToDER(signatures),
-              let feeRate = feeRates[transaction.fee.amount.value] else {
+              let parameters = transaction.fee.parameters as? BitcoinFeeParameters else {
 			return nil
 		}
 		
 		do {
 			return try bitcoinManager.buildForSend(target: transaction.destinationAddress,
 												   amount: transaction.amount.value,
-												   feeRate: feeRate,
+                                                   feeRate: parameters.rate,
                                                    sortType: sortType,
                                                    derSignatures: signatures,
                                                    changeScript: changeScript,

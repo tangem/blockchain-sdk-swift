@@ -252,3 +252,14 @@ struct BlockcypherEthereumTransaction: Codable, BlockcypherPendingTxConvertible 
         case hash, total, fees, size, received, confirmations, inputs, outputs
     }
 }
+
+
+struct BlockcypherSendResponse: Decodable {
+    let tx: BlockcypherBitcoinSendTx
+}
+
+extension BlockcypherSendResponse {
+    struct BlockcypherBitcoinSendTx: Decodable {
+        let hash: String
+    }
+}

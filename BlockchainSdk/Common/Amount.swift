@@ -8,7 +8,6 @@
 
 import Foundation
 import BigInt
-import web3swift
 
 public struct Amount: CustomStringConvertible, Hashable, Comparable {
     public enum AmountType {
@@ -42,7 +41,7 @@ public struct Amount: CustomStringConvertible, Hashable, Comparable {
             return BigUInt(2).power(256) - 1
         }
 
-        return Web3.Utils.parseToBigUInt("\(value)", decimals: decimals)
+        return EthereumUtils.parseToBigUInt("\(value)", decimals: decimals)
     }
     
     public var encoded: Data? {
@@ -162,22 +161,16 @@ extension Amount.AmountType: Hashable {
         case .reserve:
             hasher.combine("reserve")
         case .token(let value):
-            hasher.combine(value.hashValue)
+            hasher.combine(value)
         }
     }
     
     public static func == (lhs: Amount.AmountType, rhs: Amount.AmountType) -> Bool {
         switch (lhs, rhs) {
-        case (.coin, .coin):
-            return true
-        case (.reserve, .reserve):
+        case (.coin, .coin), (.reserve, .reserve):
             return true
         case (.token(let lv), .token(let rv)):
-            if lv.symbol == rv.symbol,
-                lv.contractAddress == rv.contractAddress {
-                return true
-            }
-            return false
+            return lv == rv
         default:
             return false
         }
@@ -185,11 +178,6 @@ extension Amount.AmountType: Hashable {
 }
 
 extension Amount {
-    static func dummyCoin(for blockchain: Blockchain) -> Amount {
-        // TODO: Andrey Fedorov - Implementation is the same as `zeroCoin(for:)` (IOS-4990)
-        Amount(with: blockchain, type: .coin, value: 0)
-    }
-    
     public static func zeroCoin(for blockchain: Blockchain) -> Amount {
         .init(with: blockchain, type: .coin, value: 0)
     }

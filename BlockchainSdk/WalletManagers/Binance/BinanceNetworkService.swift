@@ -106,7 +106,7 @@ class BinanceNetworkService {
 extension BinanceChain.Response {
     func getError() -> Error? {
         if self.error?.localizedDescription.lowercased().contains("account not found") ?? false {
-            return WalletError.noAccount(message: "no_account_bnb".localized)
+            return WalletError.noAccount(message: "no_account_send_to_create".localized)
         } else {
             return error
         }

@@ -19,12 +19,15 @@ struct AddressTypesConfig {
             return [.default, .legacy]
         case .cardano:
             return [.default, .legacy]
+        case .decimal:
+            return [.default, .legacy]
+        case .xdc:
+            return [.default, .legacy]
         case .stellar,
              .solana,
              .ethereum,
              .ethereumPoW,
-             .ethereumFair,
-             .saltPay,
+             .disChain,
              .ethereumClassic,
              .rsk,
              .binance,
@@ -54,7 +57,12 @@ struct AddressTypesConfig {
              .telos,
              .octa,
              .chia,
-             .near:
+             .near,
+             .veChain,
+             .algorand,
+             .shibarium,
+             .aptos,
+             .hedera:
             return [.default]
         }
     }

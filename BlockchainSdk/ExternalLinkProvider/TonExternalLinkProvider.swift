@@ -19,13 +19,13 @@ struct TonExternalLinkProvider {
 extension TonExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? { nil }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         let prefix = isTestnet ? "testnet." : ""
-        return URL(string: "https://\(prefix)tonscan.org/tx/\(hash)")!
+        return URL(string: "https://\(prefix)tonscan.org/tx/\(hash)")
     }
     
-    func url(address: String, contractAddress: String?) -> URL {
+    func url(address: String, contractAddress: String?) -> URL? {
         let prefix = isTestnet ? "testnet." : ""
-        return URL(string: "https://\(prefix)tonscan.org/address/\(address)")!
+        return URL(string: "https://\(prefix)tonscan.org/address/\(address)")
     }
 }

@@ -29,45 +29,28 @@ class BlockBookUtxoProvider {
         self.provider = NetworkProvider<BlockBookTarget>(configuration: networkConfiguration)
     }
     
-    func addressData(address: String, parameters: BlockBookTarget.AddressRequestParameters) -> AnyPublisher<BlockBookAddressResponse, Error> {
-        provider
-            .requestPublisher(target(for: .address(address: address, parameters: parameters)))
-            .filterSuccessfulStatusAndRedirectCodes()
-            .map(BlockBookAddressResponse.self)
-            .eraseError()
-            .eraseToAnyPublisher()
+    func addressData(
+        address: String,
+        parameters: BlockBookTarget.AddressRequestParameters
+    ) -> AnyPublisher<BlockBookAddressResponse, Error> {
+        executeRequest(.address(address: address, parameters: parameters))
     }
     
     func unspentTxData(address: String) -> AnyPublisher<[BlockBookUnspentTxResponse], Error> {
-        provider
-            .requestPublisher(target(for: .utxo(address: address)))
-            .filterSuccessfulStatusAndRedirectCodes()
-            .map([BlockBookUnspentTxResponse].self)
-            .eraseError()
-            .eraseToAnyPublisher()
+        executeRequest(.utxo(address: address))
     }
     
     func getFeeRatePerByte(for confirmationBlocks: Int) -> AnyPublisher<Decimal, Error> {
-        provider
-            .requestPublisher(target(for: .fees(confirmationBlocks: confirmationBlocks)))
-            .filterSuccessfulStatusAndRedirectCodes()
-            .map(BlockBookFeeResponse.self)
-            .tryMap { [weak self] response in
-                guard let self else {
-                    throw WalletError.empty
-                }
-                
-                if response.result.feerate <= 0 {
-                    throw BlockchainSdkError.failedToLoadFee
-                }
-                
-                // estimatesmartfee returns fee in currency per kilobyte
-                let bytesInKiloByte: Decimal = 1024
-                let feeRatePerByte = Decimal(response.result.feerate) * self.decimalValue / bytesInKiloByte
-                
-                return feeRatePerByte.rounded(roundingMode: .up)
+        executeRequest(
+            .fees(NodeRequest.estimateFeeRequest(confirmationBlocks: confirmationBlocks)),
+            responseType: BlockBookFeeResponse.self
+        )
+        .tryMap { [weak self] response in
+            guard let self else {
+                throw WalletError.empty
             }
-            .eraseToAnyPublisher()
+            return try convertFeeRate(Decimal(response.result.feerate))
+        }.eraseToAnyPublisher()
     }
     
     func sendTransaction(hex: String) -> AnyPublisher<String, Error> {
@@ -75,12 +58,60 @@ class BlockBookUtxoProvider {
             return .anyFail(error: WalletError.failedToSendTx)
         }
         
-        return provider
-            .requestPublisher(target(for: .send(tx: transactionData)))
+        return executeRequest(
+            .sendBlockBook(tx: transactionData),
+            responseType: SendResponse.self
+        )
+        .map { $0.result }
+        .eraseToAnyPublisher()
+    }
+    
+    func mapBitcoinFee(
+        _ feeRatePublishers: [AnyPublisher<Decimal, Error>]
+    ) -> AnyPublisher<BitcoinFee, Error> {
+        Publishers.MergeMany(feeRatePublishers)
+            .collect()
+            .map { $0.sorted() }
+            .tryMap { fees -> BitcoinFee in
+                guard fees.count == feeRatePublishers.count else {
+                    throw BlockchainSdkError.failedToLoadFee
+                }
+                
+                return BitcoinFee(
+                    minimalSatoshiPerByte: fees[0],
+                    normalSatoshiPerByte: fees[1],
+                    prioritySatoshiPerByte: fees[2]
+                )
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func convertFeeRate(_ fee: Decimal) throws -> Decimal {
+        if fee <= 0 {
+            throw BlockchainSdkError.failedToLoadFee
+        }
+        
+        // estimatesmartfee returns fee in currency per kilobyte
+        let bytesInKiloByte: Decimal = 1024
+        let feeRatePerByte = fee * decimalValue / bytesInKiloByte
+        
+        return feeRatePerByte.rounded(roundingMode: .up)
+    }
+    
+    func executeRequest<T: Decodable>(_ request: BlockBookTarget.Request) -> AnyPublisher<T, Error> {
+        provider
+            .requestPublisher(target(for: request))
             .filterSuccessfulStatusAndRedirectCodes()
-            .mapNotEmptyString()
+            .map(T.self)
             .eraseError()
             .eraseToAnyPublisher()
+    }
+    
+    func executeRequest<T: Decodable>(
+        _ request: BlockBookTarget.Request,
+        responseType: T.Type
+    ) -> AnyPublisher<T, Error> {
+        executeRequest(request)
     }
     
     private func target(for request: BlockBookTarget.Request) -> BlockBookTarget {

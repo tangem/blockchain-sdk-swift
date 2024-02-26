@@ -9,179 +9,106 @@ PODS:
     - BinanceChain/Libraries
     - BinanceChain/Protobuf
     - BinanceChain/Util
-    - HDWalletKit
-    - secp256k1.swift
-    - Starscream
     - SwiftDate
-    - SwiftProtobuf
     - SwiftyJSON
-    - XCGLogger
   - BinanceChain/Libraries (1.0.1-beta)
   - BinanceChain/Protobuf (1.0.1-beta)
   - BinanceChain/Util (1.0.1-beta)
   - BitcoinCore.swift (0.15.4)
-  - CryptoSwift (1.5.1)
-  - HDWalletKit (0.3.6):
-    - CryptoSwift
-    - secp256k1.swift
   - Moya (15.0.0):
     - Moya/Core (= 15.0.0)
   - Moya/Core (15.0.0):
     - Alamofire (~> 5.0)
-  - ObjcExceptionBridging (1.0.1):
-    - ObjcExceptionBridging/ObjcExceptionBridging (= 1.0.1)
-  - ObjcExceptionBridging/ObjcExceptionBridging (1.0.1)
-  - PromiseKit (6.18.1):
-    - PromiseKit/CorePromise (= 6.18.1)
-    - PromiseKit/Foundation (= 6.18.1)
-    - PromiseKit/UIKit (= 6.18.1)
-  - PromiseKit/CorePromise (6.18.1)
-  - PromiseKit/Foundation (6.18.1):
-    - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.18.1):
-    - PromiseKit/CorePromise
   - ScaleCodec (0.2.1):
     - BigInt (~> 5.2)
-  - secp256k1.swift (0.1.4)
   - Sodium (0.9.1)
   - Solana.Swift (1.1):
-    - secp256k1.swift
-    - Starscream (~> 4.0.0)
+    - Starscream (= 4.0.4)
     - TweetNacl (~> 1.0.2)
   - Starscream (4.0.4)
   - stellar-ios-mac-sdk (2.3.2)
   - SwiftCBOR (0.4.5)
-  - SwiftDate (6.3.1)
-  - SwiftProtobuf (1.18.0)
+  - SwiftDate (7.0.0)
   - SwiftyJSON (5.0.1)
   - TangemSdk (3.8.0)
-  - TangemWalletCore (3.2.4-tangem1):
-    - SwiftProtobuf
   - TweetNacl (1.0.2)
-  - web3swift (2.2.1):
-    - BigInt
-    - CryptoSwift
-    - PromiseKit
-    - secp256k1.swift
-    - Starscream
-  - XCGLogger (7.0.1):
-    - XCGLogger/Core (= 7.0.1)
-  - XCGLogger/Core (7.0.1):
-    - ObjcExceptionBridging
 
 DEPENDENCIES:
   - Alamofire
   - AnyCodable-FlightSchool
   - BigInt
-  - BinanceChain (from `https://github.com/tangem/swiftbinancechain.git`, tag `0.0.9`)
+  - BinanceChain (from `https://github.com/tangem/swiftbinancechain.git`, tag `0.0.11`)
   - BitcoinCore.swift (from `https://github.com/tangem/bitcoincore.git`, tag `0.0.19`)
-  - HDWalletKit (from `https://github.com/tangem/hdwallet.git`, tag `0.3.12`)
   - Moya
   - ScaleCodec
   - Sodium
-  - Solana.Swift (from `https://github.com/tangem/Solana.Swift`, tag `add-external-signer-8`)
+  - Solana.Swift (from `https://github.com/tangem/Solana.Swift`, tag `1.2.0-tangem1`)
   - stellar-ios-mac-sdk
   - SwiftCBOR
-  - SwiftProtobuf
   - SwiftyJSON
   - TangemSdk (from `https://github.com/Tangem/tangem-sdk-ios.git`, tag `develop-264`)
-  - TangemWalletCore (from `https://github.com/tangem/wallet-core-binaries-ios.git`, tag `3.2.4-tangem1`)
-  - web3swift (from `https://github.com/tangem/web3swift.git`, tag `2.2.12`)
 
 SPEC REPOS:
   trunk:
     - Alamofire
     - AnyCodable-FlightSchool
     - BigInt
-    - CryptoSwift
     - Moya
-    - ObjcExceptionBridging
-    - PromiseKit
     - ScaleCodec
-    - secp256k1.swift
     - Sodium
     - Starscream
     - stellar-ios-mac-sdk
     - SwiftCBOR
     - SwiftDate
-    - SwiftProtobuf
     - SwiftyJSON
     - TweetNacl
-    - XCGLogger
 
 EXTERNAL SOURCES:
   BinanceChain:
     :git: https://github.com/tangem/swiftbinancechain.git
-    :tag: 0.0.9
+    :tag: 0.0.11
   BitcoinCore.swift:
     :git: https://github.com/tangem/bitcoincore.git
     :tag: 0.0.19
-  HDWalletKit:
-    :git: https://github.com/tangem/hdwallet.git
-    :tag: 0.3.12
   Solana.Swift:
     :git: https://github.com/tangem/Solana.Swift
-    :tag: add-external-signer-8
+    :tag: 1.2.0-tangem1
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-264
-  TangemWalletCore:
-    :git: https://github.com/tangem/wallet-core-binaries-ios.git
-    :tag: 3.2.4-tangem1
-  web3swift:
-    :git: https://github.com/tangem/web3swift.git
-    :tag: 2.2.12
 
 CHECKOUT OPTIONS:
   BinanceChain:
     :git: https://github.com/tangem/swiftbinancechain.git
-    :tag: 0.0.9
+    :tag: 0.0.11
   BitcoinCore.swift:
     :git: https://github.com/tangem/bitcoincore.git
     :tag: 0.0.19
-  HDWalletKit:
-    :git: https://github.com/tangem/hdwallet.git
-    :tag: 0.3.12
   Solana.Swift:
     :git: https://github.com/tangem/Solana.Swift
-    :tag: add-external-signer-8
+    :tag: 1.2.0-tangem1
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-264
-  TangemWalletCore:
-    :git: https://github.com/tangem/wallet-core-binaries-ios.git
-    :tag: 3.2.4-tangem1
-  web3swift:
-    :git: https://github.com/tangem/web3swift.git
-    :tag: 2.2.12
 
 SPEC CHECKSUMS:
   Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
   AnyCodable-FlightSchool: ac75ed9bae659e16a41ebfa6c71a663d6f2c111c
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
-  BinanceChain: b77d4c0e496efbf13bdb1f428621480fd52f4ba1
+  BinanceChain: f727abc7a20ba71f4497e46b7400124027b25692
   BitcoinCore.swift: 64ac4e69d9a6ef917bcbb0c23f1324cf57a822fb
-  CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
-  HDWalletKit: 602ec664633cc6bae1c697e4e17af42efb69bfad
   Moya: 138f0573e53411fb3dc17016add0b748dfbd78ee
-  ObjcExceptionBridging: c30e00eb3700467e695faeea30e26e18bd445001
-  PromiseKit: 49d70c53d5d20e346beaea4b276b5dd2ab446bb4
   ScaleCodec: 5d7d0439940c600f49babad6ea265a09377c404b
-  secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
   Sodium: 23d11554ecd556196d313cf6130d406dfe7ac6da
-  Solana.Swift: 81d52fee263fded11b0d4e7859863ae489fe753e
+  Solana.Swift: 0baed6d4f0d9a4b8438f066022c31542dc2f93d9
   Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
   stellar-ios-mac-sdk: d8ab1ff49ac48e25ac3097da4deebcef77af6047
   SwiftCBOR: ac340b74d3b2cf1f8884bb748bd09875848e3873
-  SwiftDate: 72d28954e8e1c6c1c0f917ccc8005e4f83c7d4b2
-  SwiftProtobuf: c3c12645230d9b09c72267e0de89468c5543bd86
+  SwiftDate: bbc26e26fc8c0c33fbee8c140c5e8a68293a148a
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
   TangemSdk: f3adf8d0c18bf7a76406462fa31c0efa9f2efa93
-  TangemWalletCore: 8495b203106e8246aaa2a51ff99dd19f29209942
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
-  web3swift: 93f68f5430c11a78bba2351c139d2d22f2c04b5e
-  XCGLogger: 1943831ef907df55108b0b18657953f868de973b
 
-PODFILE CHECKSUM: 7d76443177ba127c1e68719dcd805a3d6c7d9b1a
+PODFILE CHECKSUM: a1ff6ed8a19753ef37e11b12560e9582922543f3
 
-COCOAPODS: 1.13.0
+COCOAPODS: 1.15.2

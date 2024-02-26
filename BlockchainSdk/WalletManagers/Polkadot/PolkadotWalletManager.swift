@@ -11,7 +11,6 @@ import Combine
 import CryptoKit
 import TangemSdk
 import BigInt
-import web3swift
 
 class PolkadotWalletManager: BaseManager, WalletManager {
     private let network: PolkadotNetwork
@@ -34,15 +33,15 @@ class PolkadotWalletManager: BaseManager, WalletManager {
                 case .finished:
                     completion(.success(()))
                 }
-            } receiveValue: { [unowned self] in
-                self.updateInfo($0)
+            } receiveValue: { [weak self] info in
+                self?.updateInfo(info)
             }
     }
     
     private func updateInfo(_ balance: BigUInt) {
         let decimals = wallet.blockchain.decimalCount
         guard
-            let formatted = Web3.Utils.formatToPrecision(balance, numberDecimals: decimals, formattingDecimals: decimals, decimalSeparator: ".", fallbackToScientific: false),
+            let formatted = EthereumUtils.formatToPrecision(balance, numberDecimals: decimals, formattingDecimals: decimals, decimalSeparator: ".", fallbackToScientific: false),
             let value = Decimal(formatted)
         else {
             return

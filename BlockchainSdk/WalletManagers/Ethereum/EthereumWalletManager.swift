@@ -11,7 +11,6 @@ import BigInt
 import Combine
 import TangemSdk
 import Moya
-import web3swift
 
 class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, TransactionFeeProvider {
     var txBuilder: EthereumTransactionBuilder!
@@ -34,13 +33,13 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Transa
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(address: wallet.address, tokens: cardTokens)
-            .sink(receiveCompletion: {[unowned self] completionSubscription in
+            .sink(receiveCompletion: { [weak self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
-                    self.wallet.amounts = [:]
+                    self?.wallet.amounts = [:]
                     completion(.failure(error))
                 }
-            }, receiveValue: { [unowned self] response in
-                self.updateWallet(with: response)
+            }, receiveValue: { [weak self] response in
+                self?.updateWallet(with: response)
                 completion(.success(()))
             })
     }
@@ -134,7 +133,8 @@ private extension EthereumWalletManager {
 
                     // TODO: Fix integer overflow. Think about BigInt
                     // https://tangem.atlassian.net/browse/IOS-4268
-                    let fee = Decimal(Int(feeValue)) / decimalValue
+                    // https://tangem.atlassian.net/browse/IOS-5119
+                    let fee = Decimal(UInt64(feeValue)) / decimalValue
 
                     let amount = Amount(with: blockchain, value: fee)
                     let parameters = EthereumFeeParameters(gasLimit: gasLimit, gasPrice: gasPrice)

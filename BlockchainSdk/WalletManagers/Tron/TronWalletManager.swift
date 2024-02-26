@@ -28,16 +28,16 @@ class TronWalletManager: BaseManager, WalletManager {
         let transactionIDs = wallet.pendingTransactions.map { $0.hash }
         
         cancellable = networkService.accountInfo(for: wallet.address, tokens: cardTokens, transactionIDs: transactionIDs)
-            .sink { [unowned self] in
+            .sink { [weak self] in
                 switch $0 {
                 case .failure(let error):
-                    self.wallet.clearAmounts()
+                    self?.wallet.clearAmounts()
                     completion(.failure(error))
                 case .finished:
                     completion(.success(()))
                 }
-            } receiveValue: { [unowned self] in
-                self.updateWallet($0)
+            } receiveValue: { [weak self] accountInfo in
+                self?.updateWallet(accountInfo)
             }
     }
     
@@ -63,7 +63,7 @@ class TronWalletManager: BaseManager, WalletManager {
             }
             .eraseToAnyPublisher()
     }
-    
+
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         let energyFeePublisher = energyFee(amount: amount, destination: destination)
         
@@ -122,7 +122,7 @@ class TronWalletManager: BaseManager, WalletManager {
             return .anyFail(error: WalletError.failedToGetFee)
         }
         
-        let parameter = (addressData + amountData).hex
+        let parameter = (addressData + amountData).hexString.lowercased()
         
         let energyUsePublisher = networkService.contractEnergyUsage(
             sourceAddress: wallet.address,

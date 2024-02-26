@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import HDWalletKit
 import TangemSdk
 import BitcoinCore
 
@@ -35,7 +34,7 @@ extension BitcoinCashAddressService: AddressValidator {
 
 @available(iOS 13.0, *)
 extension BitcoinCashAddressService: AddressProvider {
-    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> PlainAddress {
+    public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
         switch addressType {
         case .default:
             let address = try cashAddrService.makeAddress(from: publicKey.blockchainKey)
@@ -45,5 +44,11 @@ extension BitcoinCashAddressService: AddressProvider {
             let address = try legacyService.makeAddress(from: compressedKey).value
             return PlainAddress(value: address, publicKey: publicKey, type: addressType)
         }
+    }
+}
+
+extension BitcoinCashAddressService {
+    public func isLegacy(_ address: String) -> Bool {
+        legacyService.validate(address)
     }
 }

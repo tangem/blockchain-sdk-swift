@@ -32,7 +32,7 @@ extension CosmosChain {
             } else {
                 return [
                     "https://atom.nownodes.io/\(config.nowNodesApiKey)",
-                    "https://atom.getblock.io/\(config.getBlockApiKey)",
+                    "https://go.getblock.io/\(config.getBlockCredentials.credential(for: .cosmos(testnet: false), type: .rest))",
                     
                     // This is a REST proxy combining the servers below (and others)
                     "https://rest.cosmos.directory/cosmoshub",
@@ -50,7 +50,6 @@ extension CosmosChain {
         case .terraV2:
             return [
                 "https://luna.nownodes.io/\(config.nowNodesApiKey)",
-                "https://luna.getblock.io/\(config.getBlockApiKey)/mainnet",
                 "https://phoenix-lcd.terra.dev", // Sometimes not responsive
             ]
         case .gaia:
@@ -180,14 +179,45 @@ extension CosmosChain {
         }
     }
     
-    var tokenDenominationByContractAddress: [String: String] {
+    var allowCW20Tokens: Bool {
+        switch self {
+        case .terraV2:
+            return true
+        case .cosmos, .terraV1, .gaia:
+            return false
+        }
+    }
+    
+    func tokenDenomination(contractAddress: String, tokenCurrencySymbol: String) -> String? {
         switch self {
         case .terraV1:
-            return [
-                "uusd": "uusd",
-            ]
-        case .cosmos, .gaia, .terraV2:
-            return [:]
+            switch contractAddress {
+            case "uusd":
+                return "uusd"
+            default:
+                return nil
+            }
+        case .terraV2:
+            return tokenCurrencySymbol
+        case .cosmos, .gaia:
+            return nil
+        }
+    }
+    
+    
+    func tokenFeeDenomination(contractAddress: String, tokenCurrencySymbol: String) -> String? {
+        switch self {
+        case .terraV1:
+            switch contractAddress {
+            case "uusd":
+                return "uusd"
+            default:
+                return nil
+            }
+        case .terraV2:
+            return smallestDenomination
+        case .cosmos, .gaia:
+            return nil
         }
     }
     

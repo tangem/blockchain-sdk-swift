@@ -13,16 +13,17 @@ import enum WalletCore.CoinType
 
 // MARK: - Base
 @available(iOS 13.0, *)
-public enum Blockchain: Equatable, Hashable {
+// This enum should be indirect because of memory issues on iOS15
+public indirect enum Blockchain: Equatable, Hashable {
     case bitcoin(testnet: Bool)
     case litecoin
     case stellar(curve: EllipticCurve, testnet: Bool)
     case ethereum(testnet: Bool)
     case ethereumPoW(testnet: Bool)
-    case ethereumFair
+    case disChain // ex-EthereumFair
     case ethereumClassic(testnet: Bool)
     case rsk
-    case bitcoinCash(testnet: Bool)
+    case bitcoinCash
     case binance(testnet: Bool)
     case cardano(extended: Bool)
     case xrp(curve: EllipticCurve)
@@ -42,7 +43,6 @@ public enum Blockchain: Equatable, Hashable {
     case dash(testnet: Bool)
     case gnosis
     case optimism(testnet: Bool)
-    case saltPay
     case ton(curve: EllipticCurve, testnet: Bool)
     case kava(testnet: Bool)
     case kaspa
@@ -55,10 +55,37 @@ public enum Blockchain: Equatable, Hashable {
     case octa
     case chia(testnet: Bool)
     case near(curve: EllipticCurve, testnet: Bool)
-    
+    case decimal(testnet: Bool)
+    case veChain(testnet: Bool)
+    case xdc(testnet: Bool)
+    case algorand(curve: EllipticCurve, testnet: Bool)
+    case shibarium(testnet: Bool)
+    case aptos(curve: EllipticCurve, testnet: Bool)
+    case hedera(curve: EllipticCurve, testnet: Bool)
+
     public var isTestnet: Bool {
         switch self {
-        case .bitcoin(let testnet):
+        case .bitcoin(let testnet),
+                .ethereum(let testnet),
+                .bsc(let testnet),
+                .ethereumClassic(let testnet),
+                .binance(let testnet),
+                .polygon(let testnet),
+                .avalanche(let testnet),
+                .fantom(let testnet),
+                .tron(let testnet),
+                .arbitrum(let testnet),
+                .dash(let testnet),
+                .optimism(let testnet),
+                .ethereumPoW(let testnet),
+                .kava(let testnet),
+                .ravencoin(let testnet),
+                .cosmos(let testnet),
+                .telos(let testnet),
+                .chia(let testnet),
+                .decimal(let testnet),
+                .veChain(let testnet),
+                .xdc(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -71,65 +98,26 @@ public enum Blockchain: Equatable, Hashable {
                 .terraV1,
                 .terraV2,
                 .cronos,
-                .octa:
+                .octa,
+                .bitcoinCash,
+                .gnosis,
+                .disChain,
+                .kaspa:
             return false
-        case .stellar(_, let testnet):
-            return testnet
-        case .ethereum(let testnet), .bsc(let testnet):
-            return testnet
-        case .ethereumClassic(let testnet):
-            return testnet
-        case .bitcoinCash(let testnet):
-            return testnet
-        case .binance(let testnet):
-            return testnet
-        case .polygon(let testnet):
-            return testnet
-        case .avalanche(let testnet):
-            return testnet
-        case .solana(_, let testnet):
-            return testnet
-        case .fantom(let testnet):
-            return testnet
-        case .polkadot(_, let testnet):
-            return testnet
-        case .azero(_, let testnet):
-            return testnet
-        case .tron(let testnet):
-            return testnet
-        case .arbitrum(let testnet):
-            return testnet
-        case .dash(let testnet):
-            return testnet
-        case .gnosis:
-            return false
-        case .optimism(let testnet):
-            return testnet
-        case .ethereumPoW(let testnet):
-            return testnet
-        case .ethereumFair:
-            return false
-        case .saltPay:
-            return false
-        case .ton(_, let testnet):
-            return testnet
-        case .kava(let testnet):
-            return testnet
-        case .kaspa:
-            return false
-        case .ravencoin(let testnet):
-            return testnet
-        case .cosmos(let testnet):
-            return testnet
-        case .telos(let testnet):
-            return testnet
-        case .chia(let testnet):
-            return testnet
-        case .near(_, let testnet):
+        case .stellar(_, let testnet),
+                .hedera(_, let testnet),
+                .solana(_, let testnet),
+                .polkadot(_, let testnet),
+                .azero(_, let testnet),
+                .ton(_, let testnet),
+                .near(_, let testnet),
+                .algorand(_, let testnet),
+                .aptos(_, let testnet),
+                .shibarium(let testnet):
             return testnet
         }
     }
-    
+
     public var curve: EllipticCurve {
         switch self {
         case .cardano:
@@ -142,7 +130,10 @@ public enum Blockchain: Equatable, Hashable {
                 .ton(let curve, _),
                 .xrp(let curve),
                 .tezos(let curve),
-                .near(let curve, _):
+                .near(let curve, _),
+                .algorand(let curve, _),
+                .aptos(let curve, _),
+                .hedera(let curve, _):
             return curve
         case .chia:
             return .bls12381_G2_AUG
@@ -150,7 +141,7 @@ public enum Blockchain: Equatable, Hashable {
             return .secp256k1
         }
     }
-    
+
     public var decimalCount: Int {
         switch self {
         case .bitcoin,
@@ -161,12 +152,13 @@ public enum Blockchain: Equatable, Hashable {
                 .dogecoin,
                 .dash,
                 .kaspa,
-                .ravencoin:
+                .ravencoin,
+                .hedera:
             return 8
         case .ethereum,
                 .ethereumClassic,
                 .ethereumPoW,
-                .ethereumFair,
+                .disChain,
                 .rsk,
                 .bsc,
                 .polygon,
@@ -175,13 +167,16 @@ public enum Blockchain: Equatable, Hashable {
                 .arbitrum,
                 .gnosis,
                 .optimism,
-                .saltPay,
                 .kava,
                 .cronos,
                 .telos,
-                .octa:
+                .octa,
+                .decimal,
+                .veChain,
+                .xdc,
+                .shibarium:
             return 18
-        case  .cardano,
+        case .cardano,
                 .xrp,
                 .tezos,
                 .tron,
@@ -195,13 +190,19 @@ public enum Blockchain: Equatable, Hashable {
             return 9
         case .polkadot(_, let testnet):
             return testnet ? 12 : 10
-        case .kusama, .azero, .chia:
+        case .kusama,
+                .azero,
+                .chia:
             return 12
         case .near:
             return 24
+        case .algorand:
+            return 6
+        case .aptos:
+            return 8
         }
     }
-    
+
     public var currencySymbol: String {
         switch self {
         case .bitcoin:
@@ -250,12 +251,12 @@ public enum Blockchain: Equatable, Hashable {
             return "TRX"
         case .dash(let testnet):
             return testnet ? "tDASH" : "DASH"
-        case .gnosis, .saltPay:
+        case .gnosis:
             return "xDAI"
         case .ethereumPoW:
             return "ETHW"
-        case .ethereumFair:
-            return "ETF"
+        case .disChain:
+            return "DIS"
         case .ton:
             return "TON"
         case .kava:
@@ -280,12 +281,26 @@ public enum Blockchain: Equatable, Hashable {
             return testnet ? "TXCH" : "XCH"
         case .near:
             return "NEAR"
+        case .decimal:
+            return "DEL"
+        case .veChain:
+            return "VET"
+        case .xdc:
+            return "XDC"
+        case .algorand:
+            return "ALGO"
+        case .shibarium:
+            return "BONE"
+        case .aptos:
+            return "APT"
+        case .hedera:
+            return "HBAR"
         }
     }
-    
+
     public var displayName: String {
         let testnetSuffix = isTestnet ? " Testnet" : ""
-        
+
         switch self {
         case .bitcoinCash:
             return "Bitcoin Cash" + testnetSuffix
@@ -293,8 +308,8 @@ public enum Blockchain: Equatable, Hashable {
             return "Ethereum Classic" + testnetSuffix
         case .ethereumPoW:
             return "Ethereum PoW" + testnetSuffix
-        case .ethereumFair:
-            return "Ethereum Fair" + testnetSuffix
+        case .disChain:
+            return "DisChain (ETHF)" + testnetSuffix
         case .xrp:
             return "XRP Ledger"
         case .rsk:
@@ -315,8 +330,6 @@ public enum Blockchain: Equatable, Hashable {
             return "Gnosis Chain" + testnetSuffix
         case .optimism:
             return "Optimistic Ethereum" + testnetSuffix
-        case .saltPay:
-            return "Salt Pay"
         case .kava:
             return "Kava EVM"
         case .terraV1:
@@ -329,6 +342,16 @@ public enum Blockchain: Equatable, Hashable {
             return "Chia Network"
         case .near:
             return "NEAR Protocol" + testnetSuffix
+        case .decimal:
+            return "Decimal Smart Chain" + testnetSuffix
+        case .veChain:
+            return "VeChain" + testnetSuffix
+        case .xdc:
+            return "XDC Network"
+        case .shibarium:
+            return "Shibarium" + testnetSuffix
+        case .aptos:
+            return "Aptos"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -337,7 +360,7 @@ public enum Blockchain: Equatable, Hashable {
             return name + testnetSuffix
         }
     }
-    
+
     public var tokenTypeName: String? {
         switch self {
         case .ethereum: return "ERC20"
@@ -345,45 +368,64 @@ public enum Blockchain: Equatable, Hashable {
         case .bsc: return "BEP20"
         case .tron: return "TRC20"
         case .ton: return "TON"
+        case .veChain: return "VIP180"
+        case .xdc: return "XRC20"
         default:
             return nil
         }
     }
-    
+
     public var canHandleTokens: Bool {
-        if isEvm {
-            return true
-        }
-        
         switch self {
-        case .binance, .solana, .tron:
+        case _ where isEvm:
+            return true
+        case .binance,
+                .solana,
+                .tron,
+                .terraV1,
+                .veChain:
             return true
         default:
             return false
         }
     }
     
+    public var feePaidCurrency: FeePaidCurrency {
+        switch self {
+        case .terraV1:
+            return .sameCurrency
+        case .veChain:
+            return .token(value: VeChainWalletManager.Constants.energyToken)
+        default:
+            return .coin
+        }
+    }
+
     public func isFeeApproximate(for amountType: Amount.AmountType) -> Bool {
         switch self {
         case .arbitrum,
                 .stellar,
                 .optimism,
                 .ton,
-                .near:
+                .near,
+                .aptos,
+                .hedera:
             return true
         case .fantom,
                 .tron,
                 .gnosis,
                 .avalanche,
                 .ethereumPoW,
-                .cronos:
+                .cronos,
+                .veChain,
+                .xdc:
             if case .token = amountType {
                 return true
             }
         default:
             break
         }
-        
+
         return false
     }
 }
@@ -392,15 +434,15 @@ public enum Blockchain: Equatable, Hashable {
 @available(iOS 13.0, *)
 extension Blockchain {
     public var isEvm: Bool { chainId != nil }
-    
-    // Only fot Ethereum compatible blockchains
+
+    // Only for Ethereum compatible blockchains
     // https://chainlist.org
     public var chainId: Int? {
         switch self {
         case .ethereum: return isTestnet ? 5 : 1
         case .ethereumClassic: return isTestnet ? 6 : 61 // https://besu.hyperledger.org/en/stable/Concepts/NetworkID-And-ChainID/
         case .ethereumPoW: return isTestnet ? 10002 : 10001
-        case .ethereumFair: return 513100
+        case .disChain: return 513100
         case .rsk: return 30
         case .bsc: return isTestnet ? 97 : 56
         case .polygon: return isTestnet ? 80001 : 137
@@ -409,22 +451,24 @@ extension Blockchain {
         case .arbitrum: return isTestnet ? 421613 : 42161
         case .gnosis: return 100
         case .optimism: return isTestnet ? 420 : 10
-        case .saltPay: return 29313331
         case .kava: return isTestnet ? 2221 : 2222
         case .cronos: return 25
         case .telos: return isTestnet ? 41 : 40
         case .octa: return isTestnet ? 800002 : 800001
+        case .decimal: return isTestnet ? 202020 : 75
+        case .xdc: return isTestnet ? 51 : 50
+        case .shibarium: return isTestnet ? 157 : 109
         default: return nil
         }
     }
-    
+
     //Only for Ethereum compatible blockchains
     public func getJsonRpcEndpoints(keys: EthereumApiKeys) -> [URL]? {
         let infuraProjectId = keys.infuraProjectId
         let nowNodesApiKey = keys.nowNodesApiKey
-        let getBlockApiKey = keys.getBlockApiKey
+        let getBlockApiKeys = keys.getBlockApiKeys
         let quickNodeBscCredentials = keys.quickNodeBscCredentials
-        
+
         switch self {
         case .ethereum:
             if isTestnet {
@@ -435,21 +479,19 @@ extension Blockchain {
             } else {
                 return [
                     URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://eth.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                    makeGetBlockJsonRpcProvider(),
                     URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
                 ]
             }
         case .ethereumClassic:
             if isTestnet {
                 return [
-                    URL(string: "https://etc.rivet.link/kotti")!,
+                    URL(string: "https://rpc.mordor.etccooperative.org")!,
                 ]
             } else {
                 return [
-                    URL(string: "https://etc.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
-                    URL(string: "https://etc.rivet.link/etc")!,
+                    makeGetBlockJsonRpcProvider(),
                     URL(string: "https://etc.etcdesktop.com")!,
-                    URL(string: "https://blockscout.com/etc/mainnet/api/eth-rpc")!,
                     URL(string: "https://etc.mytokenpocket.vip")!,
                     URL(string: "https://besu-de.etc-network.info")!,
                     URL(string: "https://geth-at.etc-network.info")!,
@@ -466,15 +508,15 @@ extension Blockchain {
                     URL(string: "https://mainnet.ethereumpow.org")!,
                 ]
             }
-        case .ethereumFair:
+        case .disChain:
             return [
-                URL(string: "https://rpc.etherfair.org")!,
+                URL(string: "https://rpc.dischain.xyz")!,
             ]
         case .rsk:
             return [
                 URL(string: "https://public-node.rsk.co/")!,
                 URL(string: "https://rsk.nownodes.io/\(nowNodesApiKey)")!,
-                URL(string: "https://rsk.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                makeGetBlockJsonRpcProvider(),
             ]
         case .bsc:
             if isTestnet {
@@ -486,7 +528,7 @@ extension Blockchain {
                 return [
                     URL(string: "https://bsc-dataseed.binance.org/")!,
                     URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://bsc.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                    makeGetBlockJsonRpcProvider(),
                     URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)/")!,
                 ]
             }
@@ -500,7 +542,7 @@ extension Blockchain {
                 return [
                     URL(string: "https://polygon-rpc.com")!,
                     URL(string: "https://matic.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://matic.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                    makeGetBlockJsonRpcProvider(),
                     URL(string: "https://rpc-mainnet.maticvigil.com")!,
                     URL(string: "https://rpc-mainnet.matic.quiknode.pro")!,
                 ]
@@ -511,11 +553,16 @@ extension Blockchain {
                     URL(string: "https://api.avax-test.network/ext/bc/C/rpc")!,
                 ]
             } else {
-                return [
+                var rpcEndpoits: [URL] = [
                     URL(string: "https://api.avax.network/ext/bc/C/rpc")!,
                     URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)/ext/bc/C/rpc")!,
-                    URL(string: "https://avax.getblock.io/mainnet/ext/bc/C/rpc?api_key=\(getBlockApiKey)")!,
                 ]
+
+                if let jsonRpcKey = getBlockApiKeys[self] {
+                    rpcEndpoits.append(URL(string: "https://go.getblock.io/\(jsonRpcKey)/ext/bc/C/rpc")!)
+                }
+
+                return rpcEndpoits
             }
         case .fantom:
             if isTestnet {
@@ -525,11 +572,10 @@ extension Blockchain {
             } else {
                 return [
                     URL(string: "https://ftm.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://ftm.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
+                    makeGetBlockJsonRpcProvider(),
                     URL(string: "https://rpc.ftm.tools/")!,
                     URL(string: "https://rpcapi.fantom.network/")!,
                     URL(string: "https://fantom-mainnet.public.blastapi.io")!,
-                    URL(string: "https://fantom-rpc.gateway.pokt.network")!,
                     URL(string: "https://rpc.ankr.com/fantom")!,
                 ]
             }
@@ -548,11 +594,11 @@ extension Blockchain {
             }
         case .gnosis:
             return [
-                URL(string: "https://gno.getblock.io/mainnet?api_key=\(getBlockApiKey)")!,
-                
+                makeGetBlockJsonRpcProvider(),
+
                 // from registry.json
                 URL(string: "https://rpc.gnosischain.com")!,
-                
+
                 // from chainlist.org
                 URL(string: "https://gnosischain-rpc.gateway.pokt.network")!,
                 URL(string: "https://gnosis-mainnet.public.blastapi.io")!,
@@ -572,22 +618,18 @@ extension Blockchain {
                     URL(string: "https://rpc.ankr.com/optimism")!,
                 ]
             }
-        case .saltPay:
-            return [
-                URL(string: "https://rpc.bicoccachain.net")!,
-            ]
         case .kava:
             if isTestnet {
                 return [URL(string: "https://evm.testnet.kava.io")!]
             }
-            
+
             return [URL(string: "https://evm.kava.io")!,
                     URL(string: "https://evm2.kava.io")!]
         case .cronos:
             return [
                 URL(string: "https://evm.cronos.org")!,
                 URL(string: "https://evm-cronos.crypto.org")!,
-                URL(string: "https://cro.getblock.io/mainnet/\(getBlockApiKey)")!,
+                makeGetBlockJsonRpcProvider(),
                 URL(string: "https://cronos.blockpi.network/v1/rpc/public")!,
                 URL(string: "https://cronos-evm.publicnode.com")!,
             ]
@@ -608,8 +650,62 @@ extension Blockchain {
                 URL(string: "https://rpc.octa.space")!,
                 URL(string: "https://octaspace.rpc.thirdweb.com")!,
             ]
+        case .decimal(let isTestnet):
+            if isTestnet {
+                return [
+                    URL(string: "https://testnet-val.decimalchain.com/web3/")!
+                ]
+            } else {
+                return [
+                    URL(string: "https://node.decimalchain.com/web3/")!,
+                    URL(string: "https://node1-mainnet.decimalchain.com/web3/")!,
+                    URL(string: "https://node2-mainnet.decimalchain.com/web3/")!,
+                    URL(string: "https://node3-mainnet.decimalchain.com/web3/")!,
+                    URL(string: "https://node4-mainnet.decimalchain.com/web3/")!,
+                ]
+            }
+        case .xdc(let isTestnet):
+            if isTestnet {
+                return [
+                    URL(string: "https://rpc.apothem.network/")!
+                ]
+            } else {
+                return [
+                    URL(string: "https://xdc.nownodes.io/\(nowNodesApiKey)")!,
+                    URL(string: "https://rpc.xdcrpc.com")!,
+                    URL(string: "https://erpc.xdcrpc.com")!,
+                    URL(string: "https://rpc.xinfin.network")!,
+                    URL(string: "https://erpc.xinfin.network")!,
+                    URL(string: "https://rpc.xdc.org")!,
+                    URL(string: "https://rpc.ankr.com/xdc")!,
+                    URL(string: "https://rpc1.xinfin.network")!,
+                ]
+            }
+        case .shibarium(let isTestnet):
+            if isTestnet {
+                return [
+                    URL(string: "https://puppynet.shibrpc.com/")!
+                ]
+            } else {
+                return [
+                    URL(string: "https://www.shibrpc.com/")!,
+                    URL(string: "https://shib.nownodes.io/\(nowNodesApiKey)")!
+                ]
+            }
         default:
             return nil
+        }
+
+        // MARK: - Private Implementation
+
+        func makeGetBlockJsonRpcProvider() -> URL {
+            if let jsonRpcKey = getBlockApiKeys[self] {
+                return URL(string: "https://go.getblock.io/\(jsonRpcKey)")!
+            } else {
+                assertionFailure("getJsonRpcEndpoints -> Not found GetBlock jsonRpc key for blockchain \(displayName)")
+                Log.network("Not found jsonRpc key GetBlock API for blockchaib \(displayName)")
+                return URL(string: "https://go.getblock.io/")!
+            }
         }
     }
 }
@@ -622,7 +718,7 @@ extension Blockchain {
             Log.debug("Wrong attempt to get a `DerivationPath` for a unsupported derivation curve")
             return nil
         }
-        
+
         if isTestnet {
             return BIP44(coinType: 1).buildPath()
         }
@@ -652,7 +748,7 @@ extension Blockchain {
             return [""]
         }
     }
-    
+
     public func getShareString(from address: String) -> String {
         switch self {
         case .bitcoin, .ethereum, .litecoin, .binance:
@@ -695,8 +791,7 @@ extension Blockchain: Codable {
         case .gnosis: return "xdai"
         case .optimism: return "optimism"
         case .ethereumPoW: return "ethereum-pow-iou"
-        case .ethereumFair: return "ethereumfair"
-        case .saltPay: return "sxdai"
+        case .disChain: return "ethereumfair" // keep existing key for compatibility
         case .ton: return "ton"
         case .kava: return "kava"
         case .kaspa: return "kaspa"
@@ -709,27 +804,33 @@ extension Blockchain: Codable {
         case .octa: return "octaspace"
         case .chia: return "chia"
         case .near: return "near"
+        case .decimal: return "decimal"
+        case .veChain: return "vechain"
+        case .xdc: return "xdc"
+        case .algorand: return "algorand"
+        case .shibarium: return "shibarium"
+        case .aptos: return "aptos"
+        case .hedera: return "hedera"
         }
     }
-    
+
     enum Keys: CodingKey {
         case key
         case testnet
         case curve
-        case shelley
         case extended
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: Keys.self)
         let key = try container.decode(String.self, forKey: Keys.key)
         let curveString = try container.decode(String.self, forKey: Keys.curve)
         let isTestnet = try container.decode(Bool.self, forKey: Keys.testnet)
-        
+
         guard let curve = EllipticCurve(rawValue: curveString) else {
             throw BlockchainSdkError.decodingFailed
         }
-        
+
         switch key {
         case "bitcoin": self = .bitcoin(testnet: isTestnet)
         case "stellar": self = .stellar(curve: curve, testnet: isTestnet)
@@ -737,7 +838,7 @@ extension Blockchain: Codable {
         case "ethereumClassic": self = .ethereumClassic(testnet: isTestnet)
         case "litecoin": self = .litecoin
         case "rsk": self = .rsk
-        case "bitcoinCash": self = .bitcoinCash(testnet: isTestnet)
+        case "bitcoinCash": self = .bitcoinCash
         case "binance": self = .binance(testnet: isTestnet)
         case "cardano":
             let extended = try container.decodeIfPresent(Bool.self, forKey: Keys.extended)
@@ -760,8 +861,7 @@ extension Blockchain: Codable {
         case "xdai": self = .gnosis
         case "optimism": self = .optimism(testnet: isTestnet)
         case "ethereum-pow-iou": self = .ethereumPoW(testnet: isTestnet)
-        case "ethereumfair": self = .ethereumFair
-        case "sxdai": self = .saltPay
+        case "ethereumfair", "dischain": self = .disChain
         case "ton": self = .ton(curve: curve, testnet: isTestnet)
         case "kava": self = .kava(testnet: isTestnet)
         case "kaspa": self = .kaspa
@@ -774,11 +874,18 @@ extension Blockchain: Codable {
         case "octaspace": self = .octa
         case "chia": self = .chia(testnet: isTestnet)
         case "near": self = .near(curve: curve, testnet: isTestnet)
+        case "decimal": self = .decimal(testnet: isTestnet)
+        case "vechain": self = .veChain(testnet: isTestnet)
+        case "xdc": self = .xdc(testnet: isTestnet)
+        case "algorand": self = .algorand(curve: curve, testnet: isTestnet)
+        case "shibarium": self = .shibarium(testnet: isTestnet)
+        case "aptos": self = .aptos(curve: curve, testnet: isTestnet)
+        case "hedera": self = .hedera(curve: curve, testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: Keys.self)
         try container.encode(codingKey, forKey: Keys.key)
@@ -812,9 +919,9 @@ extension Blockchain {
         case "eth", "token", "nfttoken": return .ethereum(testnet: isTestnet)
         case "ltc": return .litecoin
         case "rsk", "rsktoken": return .rsk
-        case "bch": return .bitcoinCash(testnet: isTestnet)
+        case "bch": return .bitcoinCash
         case "binance", "binanceasset": return .binance(testnet: isTestnet)
-        // For old cards cardano will work like ed25519_slip0010
+            // For old cards cardano will work like ed25519_slip0010
         case "cardano", "cardano-s": return .cardano(extended: false)
         case "xrp": return .xrp(curve: curve)
         case "duc": return .ducatus
@@ -833,8 +940,7 @@ extension Blockchain {
         case "dash": return .dash(testnet: isTestnet)
         case "xdai": return .gnosis
         case "ethereum-pow-iou": return .ethereumPoW(testnet: isTestnet)
-        case "ethereumfair": return .ethereumFair
-        case "sxdai": return .saltPay
+        case "ethereumfair", "dischain": return .disChain
         case "ton": return .ton(curve: curve, testnet: isTestnet)
         case "terra": return .terraV1
         case "terra-2": return .terraV2
@@ -842,21 +948,14 @@ extension Blockchain {
         case "octaspace": return .octa
         case "chia": return .chia(testnet: isTestnet)
         case "near": return .near(curve: curve, testnet: isTestnet)
+        case "decimal": return .decimal(testnet: isTestnet)
+        case "vechain": return .veChain(testnet: isTestnet)
+        case "xdc": return .xdc(testnet: isTestnet)
+        case "algorand": return .algorand(curve: curve, testnet: isTestnet)
+        case "shibarium": return .shibarium(testnet: isTestnet)
+        case "aptos": return .aptos(curve: curve, testnet: isTestnet)
+        case "hedera": return .hedera(curve: curve, testnet: isTestnet)
         default: return nil
-        }
-    }
-}
-
-// MARK: - Token transaction fee currency
-
-extension Blockchain {
-    // Some networks (Terra specifically) allow the fees to be paid in tokens themselves when transacting tokens
-    public var tokenTransactionFeePaidInNetworkCurrency: Bool {
-        switch self {
-        case .terraV1:
-            return false
-        default:
-            return true
         }
     }
 }
@@ -865,7 +964,6 @@ extension Blockchain {
 
 @available(iOS 13.0, *)
 extension Blockchain {
-    
     var assembly: WalletManagerAssembly {
         switch self {
         case .bitcoin:
@@ -888,11 +986,11 @@ extension Blockchain {
                 .arbitrum,
                 .gnosis,
                 .ethereumPoW,
-                .ethereumFair,
-                .saltPay,
+                .disChain,
                 .kava,
                 .cronos,
-                .octa:
+                .octa,
+                .shibarium:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
@@ -928,7 +1026,18 @@ extension Blockchain {
             return NEARWalletAssembly()
         case .telos:
             return TelosWalletAssembly()
+        case .decimal:
+            return DecimalWalletAssembly()
+        case .veChain:
+            return VeChainWalletAssembly()
+        case .xdc:
+            return XDCWalletAssembly()
+        case .algorand:
+            return AlgorandWalletAssembly()
+        case .aptos:
+            return AptosWalletAssembly()
+        case .hedera:
+            return HederaWalletAssembly()
         }
     }
-    
 }

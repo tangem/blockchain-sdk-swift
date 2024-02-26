@@ -43,12 +43,6 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
                 ).eraseToAnyBitcoinNetworkProvider()
             )
             
-            if !input.blockchain.isTestnet {
-                providers.append(
-                    networkProviderAssembly.makeBlockchainInfoNetworkProvider(with: input).eraseToAnyBitcoinNetworkProvider()
-                )
-            }
-            
             $0.networkService = BitcoinNetworkService(providers: providers)
         }
     }

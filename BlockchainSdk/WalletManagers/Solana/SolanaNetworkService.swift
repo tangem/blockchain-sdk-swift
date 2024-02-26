@@ -27,16 +27,18 @@ class SolanaNetworkService {
     }
     
     func getInfo(accountId: String, tokens: [Token], transactionIDs: [String]) -> AnyPublisher<SolanaAccountInfoResponse, Error> {
-        Publishers.Zip3(
+        Publishers.Zip4(
             mainAccountInfo(accountId: accountId),
-            tokenAccountsInfo(accountId: accountId),
+            tokenAccountsInfo(accountId: accountId, programId: .tokenProgramId),
+            tokenAccountsInfo(accountId: accountId, programId: .token2022ProgramId),
             confirmedTransactions(among: transactionIDs)
         )
-            .tryMap { [weak self] mainAccount, tokenAccounts, confirmedTransactionIDs in
+            .tryMap { [weak self] mainAccount, splTokenAccounts, token2022Accounts, confirmedTransactionIDs in
                 guard let self = self else {
                     throw WalletError.empty
                 }
                 
+                let tokenAccounts = splTokenAccounts + token2022Accounts
                 return self.mapInfo(mainAccountInfo: mainAccount, tokenAccountsInfo: tokenAccounts, tokens: tokens, confirmedTransactionIDs: confirmedTransactionIDs)
             }
             .eraseToAnyPublisher()
@@ -53,9 +55,10 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func sendSplToken(amount: UInt64, sourceTokenAddress: String, destinationAddress: String, token: Token, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
+    func sendSplToken(amount: UInt64, sourceTokenAddress: String, destinationAddress: String, token: Token, tokenProgramId: PublicKey, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
         solanaSdk.action.sendSPLTokens(
             mintAddress: token.contractAddress,
+            tokenProgramId: tokenProgramId,
             decimals: Decimals(token.decimalCount),
             from: sourceTokenAddress,
             to: destinationAddress,
@@ -137,6 +140,24 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
+    func tokenProgramId(contractAddress: String) -> AnyPublisher<PublicKey, Error> {
+        solanaSdk.api.getAccountInfo(account: contractAddress, decodedTo: AccountInfo.self)
+            .tryMap { accountInfo in
+                let tokenProgramIds: [PublicKey] = [
+                    .tokenProgramId,
+                    .token2022ProgramId
+                ]
+                
+                for tokenProgramId in tokenProgramIds {
+                    if tokenProgramId.base58EncodedString == accountInfo.owner {
+                        return tokenProgramId
+                    }
+                }
+                throw BlockchainSdkError.failedToConvertPublicKey
+            }
+            .eraseToAnyPublisher()
+    }
+    
     private func mainAccountInfo(accountId: String) -> AnyPublisher<SolanaMainAccountInfoResponse, Error> {
         solanaSdk.api.getAccountInfo(account: accountId, decodedTo: AccountInfo.self)
             .retry(1)
@@ -162,11 +183,10 @@ class SolanaNetworkService {
             }.eraseToAnyPublisher()
     }
     
-    private func tokenAccountsInfo(accountId: String) -> AnyPublisher<[TokenAccount<AccountInfoData>], Error> {
-        let programId = PublicKey.tokenProgramId.base58EncodedString
+    private func tokenAccountsInfo(accountId: String, programId: PublicKey) -> AnyPublisher<[TokenAccount<AccountInfoData>], Error> {
         let configs = RequestConfiguration(commitment: "recent", encoding: "jsonParsed")
         
-        return solanaSdk.api.getTokenAccountsByOwner(pubkey: accountId, programId: programId, configs: configs)
+        return solanaSdk.api.getTokenAccountsByOwner(pubkey: accountId, programId: programId.base58EncodedString, configs: configs)
             .retry(1)
             .eraseToAnyPublisher()
     }

@@ -35,13 +35,13 @@ class XRPWalletManager: BaseManager, WalletManager {
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
             .getInfo(account: wallet.address)
-            .sink(receiveCompletion: {[unowned self]  completionSubscription in
+            .sink(receiveCompletion: { [weak self]  completionSubscription in
                 if case let .failure(error) = completionSubscription {
-                    self.wallet.amounts = [:]
+                    self?.wallet.amounts = [:]
                     completion(.failure(error))
                 }
-            }, receiveValue: { [unowned self] response in
-                self.updateWallet(with: response)
+            }, receiveValue: { [weak self] response in
+                self?.updateWallet(with: response)
                 completion(.success(()))
             })
     }
@@ -60,13 +60,22 @@ class XRPWalletManager: BaseManager, WalletManager {
             wallet.clearPendingTransaction()
         }
     }
+    
+    private func decodeAddress(address: String) -> String {
+        do {
+            return try XRPAddress.decodeXAddress(xAddress: address).rAddress
+        } catch {
+            return address
+        }
+    }
 }
 
 extension XRPWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        let addressDecoded = (try? XRPAddress.decodeXAddress(xAddress: transaction.destinationAddress))?.rAddress ?? transaction.destinationAddress
+        let addressDecoded = decodeAddress(address: transaction.destinationAddress)
+
         return networkService
             .checkAccountCreated(account: addressDecoded)
             .tryMap{[weak self] isAccountCreated -> (XRPTransaction, Data) in
@@ -133,3 +142,25 @@ extension XRPWalletManager: TransactionSender {
 }
 
 extension XRPWalletManager: ThenProcessable { }
+
+extension XRPWalletManager: ReserveAmountRestrictable {
+    func validateReserveAmountRestrictable(amount: Amount, addressType: ReserveAmountRestrictableAddressType) async throws {
+        guard let walletReserve = wallet.amounts[.reserve] else {
+            throw XRPError.missingReserve
+        }
+        
+        let isAccountCreated: Bool = try await {
+            switch addressType {
+            case .notCreated:
+                return false
+            case .address(let address):
+                let addressDecoded = decodeAddress(address: address)
+                return try await networkService.checkAccountCreated(account: addressDecoded).async()
+            }
+        }()
+                
+        if !isAccountCreated && amount.value < walletReserve.value {
+            throw ValidationError.reserve(amount: walletReserve)
+        }
+    }
+}

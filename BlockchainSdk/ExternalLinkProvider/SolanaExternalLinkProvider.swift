@@ -21,15 +21,15 @@ extension SolanaExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://solfaucet.com")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
-            return URL(string: "https://explorer.solana.com/tx/\(hash)?cluster=devnet")!
+            return URL(string: "https://explorer.solana.com/tx/\(hash)?cluster=devnet")
         }
 
-        return URL(string: "https://explorer.solana.com/tx/\(hash)")!
+        return URL(string: "https://explorer.solana.com/tx/\(hash)")
     }
     
-    func url(address: String, contractAddress: String?) -> URL {
+    func url(address: String, contractAddress: String?) -> URL? {
         let baseUrl = "https://explorer.solana.com/address/"
         let cluster = isTestnet ? "?cluster=devnet" : ""
         
@@ -39,6 +39,6 @@ extension SolanaExternalLinkProvider: ExternalLinkProvider {
             exploreLink += "/tokens"
         }
         
-        return URL(string: exploreLink)!
+        return URL(string: exploreLink)
     }
 }

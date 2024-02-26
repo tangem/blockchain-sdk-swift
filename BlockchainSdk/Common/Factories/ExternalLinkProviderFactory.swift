@@ -25,8 +25,8 @@ public struct ExternalLinkProviderFactory {
             return EthereumExternalLinkProvider(isTestnet: isTestnet)
         case .ethereumPoW:
             return EthereumPoWExternalLinkProvider(isTestnet: isTestnet)
-        case .ethereumFair:
-            return EthereumFairExternalLinkProvider()
+        case .disChain:
+            return DisChainExternalLinkProvider()
         case .ethereumClassic:
             return EthereumClassicExternalLinkProvider(isTestnet: isTestnet)
         case .rsk:
@@ -71,8 +71,6 @@ public struct ExternalLinkProviderFactory {
             return GnosisExternalLinkProvider()
         case .optimism:
             return OptimismExternalLinkProvider(isTestnet: isTestnet)
-        case .saltPay:
-            return SaltPayExternalLinkProvider()
         case .ton:
             return TonExternalLinkProvider(isTestnet: isTestnet)
         case .kava:
@@ -97,6 +95,20 @@ public struct ExternalLinkProviderFactory {
             return ChiaExternalLinkProvider(isTestnet: isTestnet)
         case .near:
             return NEARExternalLinkProvider(isTestnet: isTestnet)
+        case .decimal:
+            return DecimalExternalLinkProvider(isTestnet: isTestnet)
+        case .veChain:
+            return VeChainExternalLinkProvider(isTestnet: isTestnet)
+        case .xdc:
+            return XDCExternalLinkProvider(isTestnet: isTestnet)
+        case .algorand:
+            return AlgorandExternalLinkProvider(isTestnet: isTestnet)
+        case .shibarium:
+            return ShibariumExternalLinkProvider(isTestnet: isTestnet)
+        case .aptos:
+            return AptosExternalLinkProvider(isTestnet: isTestnet)
+        case .hedera:
+            return HederaExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }

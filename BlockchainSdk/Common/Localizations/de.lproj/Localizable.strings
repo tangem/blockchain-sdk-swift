@@ -8,9 +8,9 @@
 "common_utxo_validate_withdrawal_message_warning" = "Due to %1$@ limitations only %2$li UTXOs can fit in a single transaction. This means you can only send %3$@ or less. You need to reduce the amount.";
 "eth_gas_required_exceeds_allowance" = "Not enough funds for the transaction. Please top up your account.";
 "generic_error_code" = "An error occurred. Code: %@.";
-"no_account_bnb" = "Senden Sie Geld an diese Andresse um ein Konto zu erstellen";
 "no_account_generic" = "To use the %1$@ network, you must pay the account reserve (%2$@ %3$@), which locks up and hides that amount indefinitely";
 "no_account_polkadot" = "Destination account is not active. Send %@ or more to activate the account.";
+"no_account_send_to_create" = "Senden Sie Geld an diese Andresse um ein Konto zu erstellen";
 "no_trustline_xlm_asset" = "The destination account does not have a trustline for the asset being sent.";
 "send_error_dust_amount_format" = "Minimaler Betrag ist %@";
 "send_error_dust_change_format" = "Minimaler Wechselgeld ist %@";

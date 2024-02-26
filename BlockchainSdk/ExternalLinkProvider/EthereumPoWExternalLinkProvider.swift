@@ -21,19 +21,19 @@ extension EthereumPoWExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://faucet.ethwscan.com")
     }
     
-    func url(transaction hash: String) -> URL {
+    func url(transaction hash: String) -> URL? {
         if isTestnet {
-            return URL(string: "http://iceberg.ethwscan.com/tx/\(hash)")!
+            return URL(string: "http://iceberg.ethwscan.com/tx/\(hash)")
         }
         
-        return URL(string: "https://www.oklink.com/ethw/tx/\(hash)")!
+        return URL(string: "https://www.oklink.com/ethw/tx/\(hash)")
     }
     
-    func url(address: String, contractAddress: String?) -> URL {
+    func url(address: String, contractAddress: String?) -> URL? {
         if isTestnet {
-            return URL(string: "http://iceberg.ethwscan.com/address/\(address)")!
+            return URL(string: "http://iceberg.ethwscan.com/address/\(address)")
         }
         
-        return URL(string: "https://www.oklink.com/ethw/address/\(address)")!
+        return URL(string: "https://www.oklink.com/ethw/address/\(address)")
     }
 }

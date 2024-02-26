@@ -72,7 +72,28 @@ extension CoinType {
             self = .terraV2
         case .near:
             self = .near
-        case .ethereumPoW, .ethereumFair, .rsk, .gnosis, .saltPay, .kaspa, .cronos, .azero, .telos, .ducatus, .octa, .chia:
+        case .veChain:
+            self = .veChain
+        case .algorand:
+            self = .algorand
+        case .aptos:
+            self = .aptos
+        case .hedera:
+            self = .hedera
+        case .ethereumPoW,
+             .disChain,
+             .rsk,
+             .gnosis,
+             .kaspa,
+             .cronos,
+             .azero,
+             .telos,
+             .ducatus,
+             .octa,
+             .chia,
+             .decimal,
+             .xdc,
+             .shibarium:
             // Blockchains that are not in WalletCore yet
             return nil
         }
