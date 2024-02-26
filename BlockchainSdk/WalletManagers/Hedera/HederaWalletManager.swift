@@ -191,7 +191,7 @@ final class HederaWalletManager: BaseManager {
         let maskedPublicKey = maskedPublicKey
 
         return networkService
-            .getAccountInfo(publicKey: wallet.publicKey)
+            .getAccountInfo(publicKey: wallet.publicKey.blockchainKey)
             .map(\.accountId)
             .handleEvents(
                 receiveOutput: { _ in
