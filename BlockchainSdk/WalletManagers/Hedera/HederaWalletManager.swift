@@ -131,6 +131,40 @@ final class HederaWalletManager: BaseManager {
 
     // MARK: - Account ID fetching, caching and creation
 
+    /// Used to query the status of the `receiving` (`destination`) account.
+    private func isAccountExist(destination: String) -> some Publisher<Bool, Error> {
+        return Deferred {
+            return Future { promise in
+                let result = Result { try Hedera.AccountId(parsing: destination) }
+                promise(result)
+            }
+        }
+        .withWeakCaptureOf(self)
+        .flatMap { walletManager, accountId in
+            // Accounts with an account ID and/or EVM address are considered existing accounts
+            let accountHasValidAccountIdOrEVMAddress = accountId.num != 0 || accountId.evmAddress != nil
+
+            if accountHasValidAccountIdOrEVMAddress {
+                return Just(true)
+                    .eraseToAnyPublisher()
+            }
+
+            guard let alias = accountId.alias else {
+                // Perhaps an unreachable case: account doesn't have an account ID, EVM address, or account alias
+                return Just(false)
+                    .eraseToAnyPublisher()
+            }
+
+            // Any error returned from the API is treated as a non-existing account, just in case
+            return walletManager
+                .networkService
+                .getAccountInfo(publicKey: alias.toBytesRaw())  // ECDSA key must be in a compressed form
+                .map { _ in true }
+                .replaceError(with: false)
+                .eraseToAnyPublisher()
+        }
+    }
+
     /// - Note: Has a side-effect: updates local model (`wallet.address`) if needed.
     private func getAccountId() -> AnyPublisher<String, Error> {
         let maskedPublicKey = maskedPublicKey
@@ -283,39 +317,6 @@ extension HederaWalletManager: WalletManager {
             return [fee]
         }
         .eraseToAnyPublisher()
-    }
-
-    private func isAccountExist(destination: String) -> some Publisher<Bool, Error> {
-        return Deferred {
-            return Future { promise in
-                let result = Result { try Hedera.AccountId(parsing: destination) }
-                promise(result)
-            }
-        }
-        .withWeakCaptureOf(self)
-        .flatMap { walletManager, accountId in
-            // Accounts with an account ID and/or EVM address are considered existing accounts
-            let accountHasValidAccountIdOrEVMAddress = accountId.num != 0 || accountId.evmAddress != nil
-
-            if accountHasValidAccountIdOrEVMAddress {
-                return Just(true)
-                    .eraseToAnyPublisher()
-            }
-
-            guard let alias = accountId.alias else {
-                // Perhaps an unreachable case: account doesn't have an account ID, EVM address, or account alias
-                return Just(false)
-                    .eraseToAnyPublisher()
-            }
-
-            // Any error returned from the API is treated as a non-existing account, just in case
-            return walletManager
-                .networkService
-                .getAccountInfo(publicKey: alias.toBytesRaw())  // ECDSA key must be in a compressed form
-                .map { _ in true }
-                .replaceError(with: false)
-                .eraseToAnyPublisher()
-        }
     }
 
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
