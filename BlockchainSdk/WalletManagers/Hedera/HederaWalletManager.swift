@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 import TangemSdk
+import struct Hedera.AccountId
 
 final class HederaWalletManager: BaseManager {
     private let networkService: HederaNetworkService
@@ -130,6 +131,40 @@ final class HederaWalletManager: BaseManager {
 
     // MARK: - Account ID fetching, caching and creation
 
+    /// Used to query the status of the `receiving` (`destination`) account.
+    private func isAccountExist(destination: String) -> some Publisher<Bool, Error> {
+        return Deferred {
+            return Future { promise in
+                let result = Result { try Hedera.AccountId(parsing: destination) }
+                promise(result)
+            }
+        }
+        .withWeakCaptureOf(self)
+        .flatMap { walletManager, accountId in
+            // Accounts with an account ID and/or EVM address are considered existing accounts
+            let accountHasValidAccountIdOrEVMAddress = accountId.num != 0 || accountId.evmAddress != nil
+
+            if accountHasValidAccountIdOrEVMAddress {
+                return Just(true)
+                    .eraseToAnyPublisher()
+            }
+
+            guard let alias = accountId.alias else {
+                // Perhaps an unreachable case: account doesn't have an account ID, EVM address, or account alias
+                return Just(false)
+                    .eraseToAnyPublisher()
+            }
+
+            // Any error returned from the API is treated as a non-existing account, just in case
+            return walletManager
+                .networkService
+                .getAccountInfo(publicKey: alias.toBytesRaw())  // ECDSA key must be in a compressed form
+                .map { _ in true }
+                .replaceError(with: false)
+                .eraseToAnyPublisher()
+        }
+    }
+
     /// - Note: Has a side-effect: updates local model (`wallet.address`) if needed.
     private func getAccountId() -> AnyPublisher<String, Error> {
         let maskedPublicKey = maskedPublicKey
@@ -191,7 +226,7 @@ final class HederaWalletManager: BaseManager {
         let maskedPublicKey = maskedPublicKey
 
         return networkService
-            .getAccountInfo(publicKey: wallet.publicKey)
+            .getAccountInfo(publicKey: wallet.publicKey.blockchainKey)
             .map(\.accountId)
             .handleEvents(
                 receiveOutput: { _ in
@@ -259,28 +294,33 @@ extension HederaWalletManager: WalletManager {
     var allowsFeeSelection: Bool { false }
 
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        return networkService
-            .getExchangeRate()
-            .withWeakCaptureOf(self)
-            .tryMap { walletManager, exchangeRate in
-                guard 
-                    let cryptoTransferServiceCostInUSD = Constants.cryptoTransferServiceCostInUSD,
-                    let maxFeeMultiplier = Constants.maxFeeMultiplier
-                else {
-                    throw WalletError.failedToGetFee
-                }
-
-                let feeValue = exchangeRate.nextHBARPerUSD * cryptoTransferServiceCostInUSD * maxFeeMultiplier
-                let feeAmount = Amount(with: walletManager.wallet.blockchain, value: feeValue)
-                let fee = Fee(feeAmount)
-
-                return [fee]
+        return Publishers.CombineLatest(
+            networkService.getExchangeRate(),
+            isAccountExist(destination: destination)
+        )
+        .withWeakCaptureOf(self)
+        .tryMap { walletManager, input in
+            guard
+                let cryptoTransferServiceCostInUSD = Constants.cryptoTransferServiceCostInUSD,
+                let cryptoCreateServiceCostInUSD = Constants.cryptoCreateServiceCostInUSD,
+                let maxFeeMultiplier = Constants.maxFeeMultiplier
+            else {
+                throw WalletError.failedToGetFee
             }
-            .eraseToAnyPublisher()
+
+            let (exchangeRate, isAccountExist) = input
+            let feeBase = isAccountExist ? cryptoTransferServiceCostInUSD : cryptoCreateServiceCostInUSD
+            let feeValue = exchangeRate.nextHBARPerUSD * feeBase * maxFeeMultiplier
+            let feeAmount = Amount(with: walletManager.wallet.blockchain, value: feeValue)
+            let fee = Fee(feeAmount)
+
+            return [fee]
+        }
+        .eraseToAnyPublisher()
     }
 
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        return Deferred { [weak self]  in
+        return Deferred { [weak self] in
             return Future { (promise: Future<HederaTransactionBuilder.CompiledTransaction, Error>.Promise) in
                 guard let self else {
                     return promise(.failure(WalletError.empty))
@@ -342,6 +382,7 @@ private extension HederaWalletManager {
         static let storageKeyPrefix = "hedera_wallet_"
         /// https://docs.hedera.com/hedera/networks/mainnet/fees
         static let cryptoTransferServiceCostInUSD = Decimal(string: "0.0001", locale: locale)
+        static let cryptoCreateServiceCostInUSD = Decimal(string: "0.05", locale: locale)
         /// Hedera fees are low, allow 10% safety margin to allow usage of not precise fee estimate.
         static let maxFeeMultiplier = Decimal(string: "1.1", locale: locale)
         /// Locale for string literals parsing.
