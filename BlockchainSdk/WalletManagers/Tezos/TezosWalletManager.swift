@@ -167,10 +167,10 @@ extension TezosWalletManager: WithdrawalValidator {
         return nil
     }
     
-    func withdrawalSuggestion(for transaction: Transaction) -> WithdrawalSuggestion? {
+    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion? {
         guard
             let walletAmount = wallet.amounts[.coin],
-            transaction.amount + transaction.fee.amount == walletAmount 
+            amount + fee == walletAmount 
         else {
             return nil
         }

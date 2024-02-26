@@ -12,7 +12,7 @@ public protocol WithdrawalValidator {
     @available(*, deprecated, message: "Use WithdrawalValidator.withdrawalSuggestion")
     func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning?
     
-    func withdrawalSuggestion(for transaction: Transaction) -> WithdrawalSuggestion?
+    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion?
 }
 
 public struct WithdrawalWarning: Hashable {

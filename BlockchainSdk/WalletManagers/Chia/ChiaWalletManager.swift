@@ -144,9 +144,9 @@ extension ChiaWalletManager: WithdrawalValidator {
     }
 
     // Chia, kaspa have the same logic
-    func withdrawalSuggestion(for transaction: Transaction) -> WithdrawalSuggestion? {
-        let amountAvailableToSend = txBuilder.availableAmount() - transaction.fee.amount
-        if transaction.amount <= amountAvailableToSend {
+    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion? {
+        let amountAvailableToSend = txBuilder.availableAmount() - fee
+        if amount <= amountAvailableToSend {
             return nil
         }
 
