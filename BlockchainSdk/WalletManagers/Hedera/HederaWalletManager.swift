@@ -319,7 +319,7 @@ extension HederaWalletManager: WalletManager {
     }
 
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        return Deferred { [weak self]  in
+        return Deferred { [weak self] in
             return Future { (promise: Future<HederaTransactionBuilder.CompiledTransaction, Error>.Promise) in
                 guard let self else {
                     return promise(.failure(WalletError.empty))
