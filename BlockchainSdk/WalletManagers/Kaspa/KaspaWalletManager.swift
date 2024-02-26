@@ -102,13 +102,13 @@ extension KaspaWalletManager: DustRestrictable {
 extension KaspaWalletManager: WithdrawalValidator {
     // Chia, kaspa have the same logic
     @available(*, deprecated, message: "Use WithdrawalValidator.withdrawalSuggestion")
-    func validate(_ transaction: Transaction) -> WithdrawalWarning? {
-        let amountAvailableToSend = txBuilder.availableAmount() - transaction.fee.amount
-        if transaction.amount <= amountAvailableToSend {
+    func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
+        let amountAvailableToSend = txBuilder.availableAmount() - fee
+        if amount <= amountAvailableToSend {
             return nil
         }
         
-        let amountToReduceBy = transaction.amount - amountAvailableToSend
+        let amountToReduceBy = amount - amountAvailableToSend
         
         return WithdrawalWarning(
             warningMessage: "common_utxo_validate_withdrawal_message_warning".localized(

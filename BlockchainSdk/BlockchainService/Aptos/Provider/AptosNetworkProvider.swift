@@ -56,9 +56,16 @@ struct AptosNetworkProvider: HostProvider {
     }
     
     func calculateUsedGasPriceUnit(transactionBody: AptosRequest.TransactionBody) -> AnyPublisher<[AptosResponse.SimulateTransactionBody], Error> {
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        
+        guard let data = try? encoder.encode(transactionBody) else {
+            return .emptyFail
+        }
+        
         let target = AptosProviderTarget(
             node: node,
-            targetType: .simulateTransaction(data: transactionBody)
+            targetType: .simulateTransaction(data: data)
         )
         
         return requestPublisher(for: target)
@@ -85,7 +92,7 @@ struct AptosNetworkProvider: HostProvider {
             .mapError { moyaError -> Swift.Error in
                 switch moyaError {
                 case .statusCode(let response) where response.statusCode == 404 && target.isAccountsResourcesRequest:
-                    return WalletError.noAccount(message: "no_account_bnb".localized)
+                    return WalletError.noAccount(message: "no_account_send_to_create".localized)
                 default:
                     return moyaError.asWalletError ?? moyaError
                 }

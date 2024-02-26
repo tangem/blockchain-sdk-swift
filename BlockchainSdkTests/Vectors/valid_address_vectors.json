@@ -1,3 +1,8 @@
+/*
+This file uses JSON5 format, enable JSON5 support in the decoder in order to decode this file
+https://developer.apple.com/documentation/foundation/jsondecoder/3766916-allowsjson5
+*/
+
 [
     {
         "blockchain": "ethereum",
@@ -185,20 +190,18 @@
         "negative": []
     },
     {
-        "blockchain": "duc",
-        "positive": [
-            "LokyqymHydUE3ZC1hnZeZo6nuART3VcsSU"
-        ],
-        "negative": []
-    },
-    {
-        "blockchain": "near-protocol",
+        "blockchain": "near",
         "positive": [
             "f69cd39f654845e2059899a888681187f2cda95f29256329aea1700f50f8ae86",
             "75149e81ac9ea0bcb6f00faee922f71a11271f6cbc55bac97753603504d7bf27",
             "64acf5e86c840024032d7e75ec569a4d304443e250b197d5a0246d2d49afc8e1",
             "84a3fe2fc0e585d802cfa160807d1bf8ca5f949cf8d04d128bf984c50aabab7b",
             "d85d322043d87cc475d3523d6fb0c3df903d3830e5d4d5027ffe565e7b8652bb",
+            /*
+            The addresses below are perfectly valid 'valid' NEAR addresses (from https://nomicon.io/DataStructures/Account#examples),
+            but Wallet Core triggers a false negative on them
+            */
+            /*
             "f69cd39f654845e2059899a88868.1187f2cda95f29256329aea1700f50f8ae8",
             "something.near",
             "6f8a1e9b0c2d3f4a5b7e8d9a1c32ed5f67b8cd0e1f23b4c5d6e7f88023a",
@@ -218,6 +221,7 @@
             "over.9000",
             "a.bro",
             "bro.a"
+            */
         ],
         "negative": [
             "",
@@ -291,5 +295,46 @@
             "x7d7e436f0askdjaksldb2aafde60774efb26cccll432cf881b677aca7faaf2a01879bd19fb8",
             ""
         ]
-    }
+    },
+    {
+        "blockchain": "hedera",
+        "positive": [
+            "0.0.123",
+            "0.0.123-vfmkw",
+            "0.0.1234567890-zbhlt",
+            "0.0.18446744073709551615",
+            /*
+            The addresses below are perfectly valid 'valid' Hedera addresses (from https://hips.hedera.com/hip/hip-15),
+            but Wallet Core triggers a false negative on them
+            */
+            /*
+            "0xf3DbcEeedDC4BBd1B66492B66EC0B8eC317b511B",
+            "0.0.302d300706052b8104000a03220002d588ec1000770949ab77516c77ee729774de1c8fe058cab6d64f1b12ffc8ff07",
+            */
+        ],
+        "negative": [
+            "0.0.123-VFMKW",
+            "0.0.123-vFmKw",
+            "0.0.123#vfmkw",
+            "0.0.123vfmkw",
+            "0.0.123 - vfmkw",
+            "0.123",
+            "0.0.123.",
+            "0.0.123-vf",
+            "0.0.123-vfm-kw",
+            "0.0.123-vfmkwxxxx",
+            "0xf64a1db2f124aaa4cd7b58d3d7f66774f9770c6",
+            "0xf64a1db2f124aaa4cd7b58d3d7f66774f9770c6ee",
+            "0.0.402d300706052b8104000a03220002d588ec1000770949ab77516c77ee729774de1c8fe058cab6d64f1b12ffc8ff07",
+            "",
+            /*
+            The addresses below are perfectly valid 'invalid' Hedera addresses (from https://hips.hedera.com/hip/hip-15),
+            but Wallet Core triggers a false negative on them
+            */
+            /*
+            "0.0.123-abcde",
+            "0.0.18446744073709551616",
+            */
+        ]
+    },
 ]

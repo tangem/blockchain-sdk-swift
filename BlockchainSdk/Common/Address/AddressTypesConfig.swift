@@ -27,7 +27,7 @@ struct AddressTypesConfig {
              .solana,
              .ethereum,
              .ethereumPoW,
-             .ethereumFair,
+             .disChain,
              .ethereumClassic,
              .rsk,
              .binance,
@@ -61,7 +61,8 @@ struct AddressTypesConfig {
              .veChain,
              .algorand,
              .shibarium,
-             .aptos:
+             .aptos,
+             .hedera:
             return [.default]
         }
     }

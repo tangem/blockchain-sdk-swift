@@ -39,7 +39,7 @@ public extension Blockchain {
         case .dash: break
         case .gnosis: break
         case .optimism: break
-        case .ethereumFair: break
+        case .disChain: break
         case .ethereumPoW: break
         case .ton: break
         case .kava: break
@@ -59,6 +59,7 @@ public extension Blockchain {
         case .algorand: break
         case .shibarium: break
         case .aptos: break
+        case .hedera: break
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -91,7 +92,7 @@ public extension Blockchain {
             .dash(testnet: false),
             .gnosis,
             .optimism(testnet: false),
-            .ethereumFair,
+            .disChain,
             .ethereumPoW(testnet: false),
             .ton(curve: .ed25519_slip0010, testnet: false),
             .kava(testnet: false),
@@ -111,6 +112,7 @@ public extension Blockchain {
             .xdc(testnet: false),
             .shibarium(testnet: false),
             .aptos(curve: .ed25519_slip0010, testnet: false),
+            .hedera(curve: .ed25519_slip0010, testnet: false),
         ]
     }
 }

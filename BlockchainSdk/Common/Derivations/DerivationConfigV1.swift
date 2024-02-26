@@ -31,7 +31,7 @@ public struct DerivationConfigV1: DerivationConfig {
             return "m/1852'/1815'/0'/0/0"
         case .bitcoinCash:
             return "m/44'/145'/0'/0/0"
-        case .ethereum, .ethereumPoW, .ethereumFair, .octa, .decimal, .shibarium:
+        case .ethereum, .ethereumPoW, .disChain, .octa, .decimal, .shibarium:
             return "m/44'/60'/0'/0/0"
         case .ethereumClassic:
             return "m/44'/61'/0'/0/0"
@@ -99,6 +99,8 @@ public struct DerivationConfigV1: DerivationConfig {
             return "m/44'/283'/0'/0'/0'"
         case .aptos:
             return "m/44'/637'/0'/0'/0'"
+        case .hedera:
+            return "m/44'/3030'/0'/0'/0"
         }
     }
 }

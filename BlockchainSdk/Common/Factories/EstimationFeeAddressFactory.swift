@@ -27,7 +27,8 @@ struct EstimationFeeAddressFactory {
         case .tezos:
             // Tezos has a fixed fee. See: `TezosFee.transaction`
             return ""
-        case .kaspa:
+        case .kaspa,
+             .hedera:
             // Doesn't depend on destination
             return ""
         case .ducatus:
@@ -46,7 +47,7 @@ struct EstimationFeeAddressFactory {
                 // EVM-like
                 .ethereum,
                 .ethereumPoW,
-                .ethereumFair,
+                .disChain,
                 .ethereumClassic,
                 .rsk,
                 .bsc,

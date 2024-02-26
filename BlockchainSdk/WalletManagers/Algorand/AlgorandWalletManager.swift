@@ -45,7 +45,7 @@ final class AlgorandWalletManager: BaseManager {
             .withWeakCaptureOf(self)
             .tryMap { walletManager, input in
                 let (accountInfo, _) = input
-                try walletManager.validateExistentialDeposit(with: accountInfo)
+                try walletManager.validateMinimalBalanceAccount(with: accountInfo)
                 return input
                 
             }
@@ -68,15 +68,19 @@ final class AlgorandWalletManager: BaseManager {
 // MARK: - Private Implementation
 
 private extension AlgorandWalletManager {
-    func validateExistentialDeposit(with accountModel: AlgorandAccountModel) throws {
-        if let coinValue = wallet.amounts[.coin]?.value, coinValue < accountModel.existentialDeposit {
+    func validateMinimalBalanceAccount(with accountModel: AlgorandAccountModel) throws {
+        /*
+         Every account on Algorand must have a minimum balance of 100,000 microAlgos. If ever a transaction is sent that would result in a balance lower than the minimum, the transaction will fail. The minimum balance increases with each asset holding the account has (whether the asset was created or owned by the account) and with each application the account created or opted in. Destroying a created asset, opting out/closing out an owned asset, destroying a created app, or opting out an opted in app decreases accordingly the minimum balance.
+         */
+        
+        if accountModel.coinValue < accountModel.reserveValue {
             let error = makeNoAccountError(using: accountModel)
             throw error
         }
     }
     
     func update(with accountModel: AlgorandAccountModel) {
-        wallet.add(coinValue: accountModel.coinValue)
+        wallet.add(coinValue: accountModel.coinValueWithReserveValue)
         wallet.add(reserveValue: accountModel.reserveValue)
     }
     
@@ -170,15 +174,5 @@ extension AlgorandWalletManager {
         let errorMessage = "no_account_generic".localized([networkName, reserveValueString, currencySymbol])
 
         return WalletError.noAccount(message: errorMessage)
-    }
-}
-
-/*
- Every account on Algorand must have a minimum balance of 100,000 microAlgos. If ever a transaction is sent that would result in a balance lower than the minimum, the transaction will fail. The minimum balance increases with each asset holding the account has (whether the asset was created or owned by the account) and with each application the account created or opted in. Destroying a created asset, opting out/closing out an owned asset, destroying a created app, or opting out an opted in app decreases accordingly the minimum balance.
- */
-extension AlgorandWalletManager: MinimumBalanceRestrictable {
-    var minimumBalance: Amount {
-        let minimumBalanceAmountValue = (wallet.amounts[.reserve] ?? Amount(with: wallet.blockchain, value: 0)).value
-        return Amount(with: wallet.blockchain, value: minimumBalanceAmountValue)
     }
 }

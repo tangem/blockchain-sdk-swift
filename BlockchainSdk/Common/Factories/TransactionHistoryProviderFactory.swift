@@ -38,6 +38,13 @@ public struct TransactionHistoryProviderFactory {
                 ],
                 mapper: UTXOTransactionHistoryMapper(blockchain: blockchain)
             )
+        case .bitcoinCash:
+            return UTXOTransactionHistoryProvider(
+                blockBookProviders: [
+                    networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes)
+                ],
+                mapper: UTXOTransactionHistoryMapper(blockchain: blockchain)
+            )
         case .ethereum,
                 .ethereumPoW,
                 .ethereumClassic,

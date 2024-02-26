@@ -32,7 +32,7 @@ public struct AddressServiceFactory {
         case .ethereum,
                 .ethereumClassic,
                 .ethereumPoW,
-                .ethereumFair,
+                .disChain,
                 .bsc,
                 .polygon,
                 .avalanche,
@@ -101,6 +101,8 @@ public struct AddressServiceFactory {
             return DecimalAddressService()
         case .xdc:
             return XDCAddressService()
+        case .hedera:
+            return HederaAddressService(isTestnet: isTestnet)
         }
     }
 }

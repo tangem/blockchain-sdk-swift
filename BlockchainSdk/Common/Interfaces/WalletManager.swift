@@ -11,7 +11,7 @@ import TangemSdk
 import Combine
 
 @available(iOS 13.0, *)
-public protocol WalletManager: WalletProvider, BlockchainDataProvider, TransactionSender, TransactionCreator, TransactionFeeProvider {
+public protocol WalletManager: WalletProvider, BlockchainDataProvider, TransactionSender, TransactionCreator, TransactionFeeProvider, TransactionValidator {
     var cardTokens: [Token] { get }
     func update()
     func updatePublisher() -> AnyPublisher<WalletManagerState, Never>
@@ -25,7 +25,7 @@ public protocol WalletManager: WalletProvider, BlockchainDataProvider, Transacti
 public enum WalletManagerState {
     case initial
     case loading
-    case loaded(Wallet)
+    case loaded
     case failed(Error)
 
     public var isInitialState: Bool {
@@ -52,6 +52,11 @@ public protocol WalletProvider: AnyObject {
     var wallet: Wallet { get set }
     var walletPublisher: AnyPublisher<Wallet, Never> { get }
     var statePublisher: AnyPublisher<WalletManagerState, Never> { get }
+}
+
+public extension WalletProvider {
+    var defaultSourceAddress: String { wallet.address }
+    var defaultChangeAddress: String { wallet.address }
 }
 
 public protocol BlockchainDataProvider {
@@ -117,28 +122,9 @@ public protocol SignatureCountValidator {
     func validateSignatureCount(signedHashes: Int) -> AnyPublisher<Void, Error>
 }
 
-public protocol WithdrawalValidator {
-    @available(*, deprecated, message: "Use WithdrawalValidator.withdrawalSuggestion")
-    func validate(_ transaction: Transaction) -> WithdrawalWarning?
-    
-    func withdrawalSuggestion(for transaction: Transaction) -> WithdrawalSuggestion?
-}
-
 @available(iOS 13.0, *)
 public protocol AddressResolver {
     func resolve(_ address: String) async throws -> String
-}
-
-public struct WithdrawalWarning {
-    public let warningMessage: String
-    public let reduceMessage: String
-    public var ignoreMessage: String? = nil
-    public let suggestedReduceAmount: Amount
-}
-
-public enum WithdrawalSuggestion {
-    case optionalAmountChange(newAmount: Amount)
-    case mandatoryAmountChange(newAmount: Amount, maxUtxo: Int)
 }
 
 public protocol RentProvider {

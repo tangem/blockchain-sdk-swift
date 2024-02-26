@@ -47,7 +47,7 @@ extension MultiNetworkProvider {
                 if let nextHost = self.switchProviderIfNeeded(for: currentHost) {
                     // Send event if api did switched by host value
                     if nextHost != beforeSwitchIfNeededHost {
-                        Log.network("Switching to next publisher on host")
+                        Log.network("Switching to next publisher on host: \(nextHost)")
                         
                         ExceptionHandler.shared.handleAPISwitch(
                             currentHost: currentHost,

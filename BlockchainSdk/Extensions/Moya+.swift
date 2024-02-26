@@ -32,6 +32,7 @@ extension Moya.Task {
 }
 
 extension MoyaError {
+    @available(*, deprecated, message: "Do not use, will be removed in IOS-5899")
     var asWalletError: WalletError? {
         switch self {
         case .jsonMapping,
@@ -44,9 +45,6 @@ extension MoyaError {
              .encodableMapping,
              .requestMapping,
              .parameterEncoding:
-            return nil
-        @unknown default:
-            assertionFailure("Unknown error kind received: \(self)")
             return nil
         }
     }

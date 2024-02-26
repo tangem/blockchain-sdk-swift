@@ -124,15 +124,15 @@ private extension ChiaWalletManager {
 extension ChiaWalletManager: WithdrawalValidator {
     // Chia, kaspa have the same logic
     @available(*, deprecated, message: "Use WithdrawalValidator.withdrawalSuggestion")
-    func validate(_ transaction: Transaction) -> WithdrawalWarning? {
+    func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
         let availableAmount = txBuilder.availableAmount()
-        let amountAvailableToSend = availableAmount - transaction.fee.amount
+        let amountAvailableToSend = availableAmount - fee
         
-        if transaction.amount <= amountAvailableToSend {
+        if amount <= amountAvailableToSend {
             return nil
         }
         
-        let amountToReduceBy = transaction.amount - amountAvailableToSend
+        let amountToReduceBy = amount - amountAvailableToSend
         
         return WithdrawalWarning(
             warningMessage: "common_utxo_validate_withdrawal_message_warning".localized(
