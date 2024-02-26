@@ -303,7 +303,7 @@ extension HederaWalletManager: WalletManager {
             }
 
             guard let alias = accountId.alias else {
-                /// Perhaps an unreachable case: account doesn't have an account ID, EVM address, or account alias
+                // Perhaps an unreachable case: account doesn't have an account ID, EVM address, or account alias
                 return Just(false)
                     .eraseToAnyPublisher()
             }
