@@ -133,6 +133,11 @@ struct BlockBookFeeResponse: Decodable {
 }
 
 
-struct BlockBookSendResponse: Decodable {
+struct SendResponse: Decodable {
     let result: String
+}
+
+struct NodeEstimateFeeResponse: Decodable {
+    let result: Decimal
+    let id: String
 }

@@ -344,14 +344,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "NEAR Protocol" + testnetSuffix
         case .decimal:
             return "Decimal Smart Chain" + testnetSuffix
-        case .veChain:
-            return "VeChain" + testnetSuffix
         case .xdc:
             return "XDC Network"
-        case .shibarium:
-            return "Shibarium" + testnetSuffix
-        case .aptos:
-            return "Aptos"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -576,7 +570,6 @@ extension Blockchain {
                     URL(string: "https://rpc.ftm.tools/")!,
                     URL(string: "https://rpcapi.fantom.network/")!,
                     URL(string: "https://fantom-mainnet.public.blastapi.io")!,
-                    URL(string: "https://fantom-pokt.nodies.app")!,
                     URL(string: "https://rpc.ankr.com/fantom")!,
                 ]
             }

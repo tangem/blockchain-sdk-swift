@@ -24,10 +24,10 @@ final class HederaNetworkService {
         currentProviderIndex = 0
     }
 
-    func getAccountInfo(publicKey: Wallet.PublicKey) -> some Publisher<HederaAccountInfo, Error> {
+    func getAccountInfo(publicKey: Data) -> some Publisher<HederaAccountInfo, Error> {
         return providerPublisher { provider in
             return provider
-                .getAccounts(publicKey: publicKey.blockchainKey.hexString)
+                .getAccounts(publicKey: publicKey.hexString)
                 .eraseToAnyPublisher()
         }
         .tryMap { accounts in
