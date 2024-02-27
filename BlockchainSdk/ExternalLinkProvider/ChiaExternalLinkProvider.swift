@@ -21,19 +21,23 @@ extension ChiaExternalLinkProvider: ExternalLinkProvider {
         return URL(string: "https://xchdev.com/#!faucet.md")
     }
     
-    func url(transaction hash: String) -> URL? {
-        if isTestnet {
-            return URL(string: "https://testnet10.spacescan.io/txns/\(hash)")
-        }
-        
-        return URL(string: "https://xchscan.com/txns/\(hash)")
-    }
-    
     func url(address: String, contractAddress: String?) -> URL? {
         if isTestnet {
             return URL(string: "https://testnet10.spacescan.io/address/\(address)")
         }
         
         return URL(string: "https://xchscan.com/address/\(address)")
+    }
+    
+    func url(transaction hash: String) -> URL? {
+        /*
+         - Now it’s nil because chia can’t supported the PENDING transaction.
+         - Explorer does not display transactions that have not been deployed into blockchain.
+         - Currently, the blockchain does not support transaction history. Therefore, after adding the transaction history, it will be necessary to refactor and add a transition for the example:
+         
+         etc: https://xchscan.com/ru/txns/{hash}
+         
+         */
+        return nil
     }
 }
