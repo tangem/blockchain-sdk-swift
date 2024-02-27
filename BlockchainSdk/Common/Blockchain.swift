@@ -352,6 +352,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Shibarium" + testnetSuffix
         case .aptos:
             return "Aptos"
+        case .arbitrum:
+            return "Arbitrum One" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
