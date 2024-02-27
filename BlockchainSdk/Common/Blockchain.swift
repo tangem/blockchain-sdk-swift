@@ -888,9 +888,9 @@ extension Blockchain: Codable {
         case .shibarium: return "shibarium"
         case .aptos: return "aptos"
         case .hedera: return "hedera"
-        case .areon: return "areon"
+        case .areon: return "areon-network"
         case .playa3ullGames: return "playa3ull"
-        case .pulsechain: return "pls"
+        case .pulsechain: return "pulsechain"
         case .aurora: return "aurora"
         }
     }
@@ -962,9 +962,9 @@ extension Blockchain: Codable {
         case "shibarium": self = .shibarium(testnet: isTestnet)
         case "aptos": self = .aptos(curve: curve, testnet: isTestnet)
         case "hedera": self = .hedera(curve: curve, testnet: isTestnet)
-        case "areon": self = .areon(testnet: isTestnet)
+        case "areon-network": self = .areon(testnet: isTestnet)
         case "playa3ull": self = .playa3ullGames(testnet: isTestnet)
-        case "pls": self = .pulsechain(testnet: isTestnet)
+        case "pulsechain": self = .pulsechain(testnet: isTestnet)
         case "aurora": self = .aurora(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
