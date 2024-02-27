@@ -35,7 +35,7 @@ extension ChiaExternalLinkProvider: ExternalLinkProvider {
          - Explorer does not display transactions that have not been deployed into blockchain.
          - Currently, the blockchain does not support transaction history. Therefore, after adding the transaction history, it will be necessary to refactor and add a transition for the example:
          
-         etc: https://xchscan.com/ru/txns/0x77d4f527478fdc52f0e09a18fa607e37117d75f5ca7725573f449a9ad4d19269
+         etc: https://xchscan.com/ru/txns/{hash}
          
          */
         return nil
