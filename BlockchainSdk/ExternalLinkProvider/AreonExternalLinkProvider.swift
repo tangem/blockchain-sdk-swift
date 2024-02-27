@@ -9,7 +9,7 @@
 import Foundation
 
 struct AreonExternalLinkProvider: ExternalLinkProvider {
-    var testnetFaucetURL: URL? = nil
+    var testnetFaucetURL = URL(string: "https://faucet.areon.network/")
 
     private var baseExplorerUrl: String { "https://areonscan.com" }
 
