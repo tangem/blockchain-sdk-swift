@@ -433,7 +433,11 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .ton,
                 .near,
                 .aptos,
-                .hedera:
+                .hedera,
+                .areon,
+                .playa3ullGames,
+                .pulsechain,
+                .aurora:
             return true
         case .fantom,
                 .tron,
