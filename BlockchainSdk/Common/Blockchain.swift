@@ -63,7 +63,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case aptos(curve: EllipticCurve, testnet: Bool)
     case hedera(curve: EllipticCurve, testnet: Bool)
     case areon(testnet: Bool)
-    case playa3ullGames(testnet: Bool)
+    case playa3ullGames
     case pulsechain(testnet: Bool)
     case aurora(testnet: Bool)
 
@@ -92,7 +92,6 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .veChain(let testnet),
                 .xdc(let testnet),
                 .areon(let testnet),
-                .playa3ullGames(let testnet),
                 .pulsechain(let testnet),
                 .aurora(let testnet):
             return testnet
@@ -111,6 +110,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .bitcoinCash,
                 .gnosis,
                 .disChain,
+                .playa3ullGames,
                 .kaspa:
             return false
         case .stellar(_, let testnet),
@@ -961,7 +961,7 @@ extension Blockchain: Codable {
         case "aptos": self = .aptos(curve: curve, testnet: isTestnet)
         case "hedera": self = .hedera(curve: curve, testnet: isTestnet)
         case "areon-network": self = .areon(testnet: isTestnet)
-        case "playa3ull-games": self = .playa3ullGames(testnet: isTestnet)
+        case "playa3ull-games": self = .playa3ullGames
         case "pulsechain": self = .pulsechain(testnet: isTestnet)
         case "aurora": self = .aurora(testnet: isTestnet)
         default:
@@ -1039,7 +1039,7 @@ extension Blockchain {
         case "aptos": return .aptos(curve: curve, testnet: isTestnet)
         case "hedera": return .hedera(curve: curve, testnet: isTestnet)
         case "areon-network": return .areon(testnet: isTestnet)
-        case "playa3ull-games": return .playa3ullGames(testnet: isTestnet)
+        case "playa3ull-games": return .playa3ullGames
         case "pulsechain": return .pulsechain(testnet: isTestnet)
         case "aurora": return .aurora(testnet: isTestnet)
         default: return nil
