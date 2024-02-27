@@ -371,8 +371,6 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Shibarium" + testnetSuffix
         case .aptos:
             return "Aptos"
-        case .areon:
-            return "Areon Network" + testnetSuffix
         case .playa3ullGames:
             return "PLAYA3ULL GAMES"
         case .pulsechain:
@@ -889,7 +887,7 @@ extension Blockchain: Codable {
         case .aptos: return "aptos"
         case .hedera: return "hedera"
         case .areon: return "areon-network"
-        case .playa3ullGames: return "playa3ull"
+        case .playa3ullGames: return "playa3ull-games"
         case .pulsechain: return "pulsechain"
         case .aurora: return "aurora"
         }
@@ -963,7 +961,7 @@ extension Blockchain: Codable {
         case "aptos": self = .aptos(curve: curve, testnet: isTestnet)
         case "hedera": self = .hedera(curve: curve, testnet: isTestnet)
         case "areon-network": self = .areon(testnet: isTestnet)
-        case "playa3ull": self = .playa3ullGames(testnet: isTestnet)
+        case "playa3ull-games": self = .playa3ullGames(testnet: isTestnet)
         case "pulsechain": self = .pulsechain(testnet: isTestnet)
         case "aurora": self = .aurora(testnet: isTestnet)
         default:
@@ -1040,6 +1038,10 @@ extension Blockchain {
         case "shibarium": return .shibarium(testnet: isTestnet)
         case "aptos": return .aptos(curve: curve, testnet: isTestnet)
         case "hedera": return .hedera(curve: curve, testnet: isTestnet)
+        case "areon-network": return .areon(testnet: isTestnet)
+        case "playa3ull-games": return .playa3ullGames(testnet: isTestnet)
+        case "pulsechain": return .pulsechain(testnet: isTestnet)
+        case "aurora": return .aurora(testnet: isTestnet)
         default: return nil
         }
     }
