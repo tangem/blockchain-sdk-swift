@@ -40,14 +40,14 @@ extension MultiNetworkProvider {
                     return .anyFail(error: error)
                 }
                 
-                Log.network("Switchable publisher catched error: \(error)")
+                Log.network("Try switchable publisher catched error: \(error) for host: \(currentHost)")
                 
                 let beforeSwitchIfNeededHost = self.host
                 
                 if let nextHost = self.switchProviderIfNeeded(for: currentHost) {
                     // Send event if api did switched by host value
                     if nextHost != beforeSwitchIfNeededHost {
-                        Log.network("Switching to next publisher on host: \(nextHost)")
+                        Log.network("Has been switched to next publisher from current host: \(currentHost) on next host: \(nextHost)")
                         
                         ExceptionHandler.shared.handleAPISwitch(
                             currentHost: currentHost,
