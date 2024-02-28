@@ -346,6 +346,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Decimal Smart Chain" + testnetSuffix
         case .xdc:
             return "XDC Network"
+        case .arbitrum:
+            return "Arbitrum One" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
