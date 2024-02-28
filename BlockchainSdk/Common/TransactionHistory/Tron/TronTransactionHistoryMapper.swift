@@ -42,8 +42,12 @@ struct TronTransactionHistoryMapper {
             amount: transactionAmount
         )
 
+        let destinationAddress: TransactionRecord.Destination.Address = transaction.isContractInteraction
+        ? .contract(destinationAddress)
+        : .user(destinationAddress)
+
         let destination = TransactionRecord.Destination(
-            address: .user(destinationAddress),
+            address: destinationAddress,
             amount: transactionAmount
         )
 
@@ -114,6 +118,7 @@ struct TronTransactionHistoryMapper {
     private func mapToTransactionRecords(
         transaction: BlockBookAddressResponse.Transaction,
         transactionInfos: [TransactionInfo],
+        amountType: Amount.AmountType,
         fees: Decimal
     ) -> [TransactionRecord] {
         // Nownodes appends `0x` prefixes to TRON txids, so we have to strip these prefixes
@@ -121,7 +126,7 @@ struct TronTransactionHistoryMapper {
         let fee = Fee(Amount(with: blockchain, value: fees / blockchain.decimalValue))
         let date = Date(timeIntervalSince1970: TimeInterval(transaction.blockTime))
         let status = status(transaction)
-        let type = transactionType(transaction)
+        let type = transactionType(transaction, amountType: amountType)
         let tokenTransfers = tokenTransfers(transaction)
 
         return transactionInfos.map { transactionInfo in
@@ -152,9 +157,17 @@ struct TronTransactionHistoryMapper {
         }
     }
 
-    private func transactionType(_ transaction: BlockBookAddressResponse.Transaction) -> TransactionRecord.TransactionType {
-        // TODO: Andrey Fedorov - Tron methods decoding (IOS-5258)
-        return .transfer
+    private func transactionType(
+        _ transaction: BlockBookAddressResponse.Transaction,
+        amountType: Amount.AmountType
+    ) -> TransactionRecord.TransactionType {
+        switch amountType {
+        case .coin, .reserve where transaction.isContractInteraction:
+            return .contractMethod(id: transaction.contractName?.nilIfEmpty ?? .unknown)
+        case .coin, .reserve, .token:
+            // All TRC10 and TRC20 token transactions are considered simple & plain transfers
+            return .transfer
+        }
     }
 
     private func tokenTransfers(_ transaction: BlockBookAddressResponse.Transaction) -> [TransactionRecord.TokenTransfer]? {
@@ -212,6 +225,7 @@ extension TronTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
                         partialResult += mapToTransactionRecords(
                             transaction: transaction,
                             transactionInfos: [transactionInfo],
+                            amountType: amountType,
                             fees: fees
                         )
                     }
@@ -232,6 +246,7 @@ extension TronTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
                         partialResult += mapToTransactionRecords(
                             transaction: transaction,
                             transactionInfos: outgoingTransactionInfos + incomingTransactionInfos,
+                            amountType: amountType,
                             fees: fees
                         )
                     }
@@ -277,6 +292,14 @@ private extension TronTransactionHistoryMapper {
     enum TotalPagesCountExtractionError: Error {
         case unableToParseNetworkResponse(contractAddress: String)
     }
+
+    /// See https://github.com/tronprotocol/documentation/blob/master/English_Documentation/TRON_Virtual_Machine/TRC10_TRX_TRANSFER_INTRODUCTION_FOR_EXCHANGES.md
+    /// and https://github.com/tronprotocol/protocol/blob/master/English%20version%20of%20TRON%20Protocol%20document.md for reference
+    /// - Note: Only a small subset of existing contact types are represented in this enum.
+    enum TronContractType: Int {
+        case transferContractType = 1
+        case transferAssetContractType = 2
+    }
 }
 
 // MARK: - Convenience extensions
@@ -294,5 +317,12 @@ private extension BlockBookAddressResponse.Token {
         return props
             .compactMap { $0?.caseInsensitiveEquals(to: contractAddress) }
             .contains(true)
+    }
+}
+
+private extension BlockBookAddressResponse.Transaction {
+    var isContractInteraction: Bool {
+        return contractType != TronTransactionHistoryMapper.TronContractType.transferContractType.rawValue 
+        && contractType != TronTransactionHistoryMapper.TronContractType.transferAssetContractType.rawValue
     }
 }
