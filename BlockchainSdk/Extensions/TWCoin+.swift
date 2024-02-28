@@ -97,7 +97,8 @@ extension CoinType {
              .areon,
              .playa3ullGames,
              .pulsechain,
-             .aurora:
+             .aurora,
+             .radiant:
             // Blockchains that are not in WalletCore yet
             return nil
         }

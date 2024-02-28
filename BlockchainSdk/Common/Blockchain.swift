@@ -66,7 +66,8 @@ public indirect enum Blockchain: Equatable, Hashable {
     case playa3ullGames
     case pulsechain(testnet: Bool)
     case aurora(testnet: Bool)
-
+    case radiant(testnet: Bool)
+    
 
     public var isTestnet: Bool {
         switch self {
@@ -93,7 +94,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .xdc(let testnet),
                 .areon(let testnet),
                 .pulsechain(let testnet),
-                .aurora(let testnet):
+                .aurora(let testnet),
+                .radiant(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -162,7 +164,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .dash,
                 .kaspa,
                 .ravencoin,
-                .hedera:
+                .hedera,
+                .radiant:
             return 8
         case .ethereum,
                 .ethereumClassic,
@@ -314,6 +317,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "3ULL"
         case .pulsechain:
             return isTestnet ? "tPLS" : "PLS"
+        case .radiant:
+            return "RXD"
         }
     }
 
@@ -891,6 +896,7 @@ extension Blockchain: Codable {
         case .playa3ullGames: return "playa3ull-games"
         case .pulsechain: return "pulsechain"
         case .aurora: return "aurora"
+        case .radiant: return "radiant"
         }
     }
 
@@ -965,6 +971,7 @@ extension Blockchain: Codable {
         case "playa3ull-games": self = .playa3ullGames
         case "pulsechain": self = .pulsechain(testnet: isTestnet)
         case "aurora": self = .aurora(testnet: isTestnet)
+        case "radiant": self = .radiant(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1086,7 +1093,7 @@ extension Blockchain {
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
-        case .bitcoinCash:
+        case .bitcoinCash, .radiant:
             return BitcoinCashWalletAssembly()
         case .binance:
             return BinanceWalletAssembly()

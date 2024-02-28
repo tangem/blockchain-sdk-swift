@@ -31,6 +31,7 @@
 		2D24F5C72B6D2C7100D502A0 /* AptosNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5BD2B6D2C7100D502A0 /* AptosNetworkProvider.swift */; };
 		2D24F5C82B6D2C7100D502A0 /* AptosProviderTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5BE2B6D2C7100D502A0 /* AptosProviderTarget.swift */; };
 		2D24F5C92B6D2C7100D502A0 /* AptosProviderUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D24F5BF2B6D2C7100D502A0 /* AptosProviderUrl.swift */; };
+		2D2B8F1D2B8F6F2C00638B5F /* RadiantNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2B8F1C2B8F6F2C00638B5F /* RadiantNetworkParams.swift */; };
 		2D3328C52A779ACC00C4A84C /* ChiaPuzzleUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3328C22A779ACC00C4A84C /* ChiaPuzzleUtils.swift */; };
 		2D3829C929D34A93001D4785 /* TWCoin+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829C829D34A93001D4785 /* TWCoin+.swift */; };
 		2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */; };
@@ -768,6 +769,7 @@
 		2D24F5BD2B6D2C7100D502A0 /* AptosNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosNetworkProvider.swift; sourceTree = "<group>"; };
 		2D24F5BE2B6D2C7100D502A0 /* AptosProviderTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosProviderTarget.swift; sourceTree = "<group>"; };
 		2D24F5BF2B6D2C7100D502A0 /* AptosProviderUrl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosProviderUrl.swift; sourceTree = "<group>"; };
+		2D2B8F1C2B8F6F2C00638B5F /* RadiantNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadiantNetworkParams.swift; sourceTree = "<group>"; };
 		2D3328C22A779ACC00C4A84C /* ChiaPuzzleUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaPuzzleUtils.swift; sourceTree = "<group>"; };
 		2D3829C829D34A93001D4785 /* TWCoin+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWCoin+.swift"; sourceTree = "<group>"; };
 		2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressServiceManagerUtility.swift; sourceTree = "<group>"; };
@@ -1601,6 +1603,14 @@
 			path = VectorTests;
 			sourceTree = "<group>";
 		};
+		2D765FD22B8F63960062BDD4 /* Radiant */ = {
+			isa = PBXGroup;
+			children = (
+				2D2B8F1C2B8F6F2C00638B5F /* RadiantNetworkParams.swift */,
+			);
+			path = Radiant;
+			sourceTree = "<group>";
+		};
 		2D78F4082A5C3CA400962CCA /* Chia */ = {
 			isa = PBXGroup;
 			children = (
@@ -1929,6 +1939,7 @@
 				2DDEFBBC2B59B36A00885675 /* Algorand */,
 				2D24F5732B6A423500D502A0 /* Aptos */,
 				B6FC9DC62B62A44000448D8A /* Hedera */,
+				2D765FD22B8F63960062BDD4 /* Radiant */,
 			);
 			path = WalletManagers;
 			sourceTree = "<group>";
@@ -4305,6 +4316,7 @@
 				EF3B19522AA85EAE0084AA1C /* TonExternalLinkProvider.swift in Sources */,
 				DAB6548A27967D860002A5E8 /* SolanaResponse.swift in Sources */,
 				5D304397239A6B960066B8D9 /* String+.swift in Sources */,
+				2D2B8F1D2B8F6F2C00638B5F /* RadiantNetworkParams.swift in Sources */,
 				5DC7DD6824408266008F83F2 /* XrpResponse.swift in Sources */,
 				2D24F5C42B6D2C7100D502A0 /* AptosResponse.swift in Sources */,
 				DC5E65052B1650F400E81AA5 /* OP_MIN.swift in Sources */,

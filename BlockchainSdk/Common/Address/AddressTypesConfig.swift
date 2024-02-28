@@ -66,7 +66,8 @@ struct AddressTypesConfig {
              .areon, 
              .playa3ullGames,
              .pulsechain,
-             .aurora:
+             .aurora, 
+             .radiant:
             return [.default]
         }
     }

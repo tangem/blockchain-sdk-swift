@@ -64,6 +64,7 @@ public extension Blockchain {
         case .playa3ullGames: break
         case .pulsechain: break
         case .aurora: break
+        case .radiant: break
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -121,6 +122,7 @@ public extension Blockchain {
             .playa3ullGames,
             .pulsechain(testnet: false),
             .aurora(testnet: false),
+            .radiant(testnet: false),
         ]
     }
 }
