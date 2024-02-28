@@ -365,6 +365,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Decimal Smart Chain" + testnetSuffix
         case .xdc:
             return "XDC Network"
+        case .arbitrum:
+            return "Arbitrum One" + testnetSuffix
         case .playa3ullGames:
             return "PLAYA3ULL GAMES"
         case .pulsechain:
