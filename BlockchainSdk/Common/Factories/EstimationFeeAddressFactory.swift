@@ -64,6 +64,10 @@ struct EstimationFeeAddressFactory {
                 .decimal,
                 .xdc,
                 .shibarium,
+                .areon,
+                .playa3ullGames,
+                .pulsechain,
+                .aurora,
                 // Polkadot-like
                 .polkadot, .kusama, .azero,
                 // Cosmos-like

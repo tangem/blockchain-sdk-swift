@@ -62,7 +62,11 @@ struct AddressTypesConfig {
              .algorand,
              .shibarium,
              .aptos,
-             .hedera:
+             .hedera,
+             .areon, 
+             .playa3ullGames,
+             .pulsechain,
+             .aurora:
             return [.default]
         }
     }
