@@ -63,7 +63,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case aptos(curve: EllipticCurve, testnet: Bool)
     case hedera(curve: EllipticCurve, testnet: Bool)
     case areon(testnet: Bool)
-    case playa3ullGames(testnet: Bool)
+    case playa3ullGames
     case pulsechain(testnet: Bool)
     case aurora(testnet: Bool)
 
@@ -92,7 +92,6 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .veChain(let testnet),
                 .xdc(let testnet),
                 .areon(let testnet),
-                .playa3ullGames(let testnet),
                 .pulsechain(let testnet),
                 .aurora(let testnet):
             return testnet
@@ -111,6 +110,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .bitcoinCash,
                 .gnosis,
                 .disChain,
+                .playa3ullGames,
                 .kaspa:
             return false
         case .stellar(_, let testnet),
@@ -224,7 +224,7 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "LTC"
         case .stellar:
             return "XLM"
-        case .ethereum, .arbitrum, .optimism:
+        case .ethereum, .arbitrum, .optimism, .aurora:
             return "ETH"
         case .ethereumClassic:
             return "ETC"
@@ -309,13 +309,11 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .hedera:
             return "HBAR"
         case .areon:
-            return "AREA"
+            return isTestnet ? "TAREA" : "AREA"
         case .playa3ullGames:
             return "3ULL"
         case .pulsechain:
-            return "PLS"
-        case .aurora:
-            return "ETH"
+            return isTestnet ? "tPLS" : "PLS"
         }
     }
 
@@ -365,22 +363,15 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "NEAR Protocol" + testnetSuffix
         case .decimal:
             return "Decimal Smart Chain" + testnetSuffix
-        case .veChain:
-            return "VeChain" + testnetSuffix
         case .xdc:
             return "XDC Network"
-        case .shibarium:
-            return "Shibarium" + testnetSuffix
-        case .aptos:
-            return "Aptos"
-        case .areon:
-            return "Areon Network"
+        case .arbitrum:
+            return "Arbitrum One" + testnetSuffix
         case .playa3ullGames:
             return "PLAYA3ULL GAMES"
         case .pulsechain:
-            return "Pulsechain"
-        case .aurora:
-            return "Aurora"
+            let testnetSuffix = testnetSuffix + (isTestnet ? " v4" : "")
+            return "Pulsechain" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -438,7 +429,11 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .ton,
                 .near,
                 .aptos,
-                .hedera:
+                .hedera,
+                .areon,
+                .playa3ullGames,
+                .pulsechain,
+                .aurora:
             return true
         case .fantom,
                 .tron,
@@ -487,6 +482,10 @@ extension Blockchain {
         case .decimal: return isTestnet ? 202020 : 75
         case .xdc: return isTestnet ? 51 : 50
         case .shibarium: return isTestnet ? 157 : 109
+        case .areon: return isTestnet ? 463 : 462
+        case .playa3ullGames: return 3011
+        case .pulsechain: return isTestnet ? 943 : 369
+        case .aurora: return isTestnet ? 1313161555 : 1313161554
         default: return nil
         }
     }
@@ -605,7 +604,6 @@ extension Blockchain {
                     URL(string: "https://rpc.ftm.tools/")!,
                     URL(string: "https://rpcapi.fantom.network/")!,
                     URL(string: "https://fantom-mainnet.public.blastapi.io")!,
-                    URL(string: "https://fantom-pokt.nodies.app")!,
                     URL(string: "https://rpc.ankr.com/fantom")!,
                 ]
             }
@@ -720,6 +718,54 @@ extension Blockchain {
                 return [
                     URL(string: "https://www.shibrpc.com/")!,
                     URL(string: "https://shib.nownodes.io/\(nowNodesApiKey)")!
+                ]
+            }
+        case .areon:
+            if isTestnet {
+                return [
+                    URL(string: "https://testnet-rpc.areon.network/")!,
+                    URL(string: "https://testnet-rpc2.areon.network/")!,
+                    URL(string: "https://testnet-rpc3.areon.network/")!,
+                    URL(string: "https://testnet-rpc4.areon.network/")!,
+                    URL(string: "https://testnet-rpc5.areon.network/")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://mainnet-rpc.areon.network/")!,
+                    URL(string: "https://mainnet-rpc2.areon.network/")!,
+                    URL(string: "https://mainnet-rpc3.areon.network/")!,
+                    URL(string: "https://mainnet-rpc4.areon.network/")!,
+                    URL(string: "https://mainnet-rpc5.areon.network/")!,
+                ]
+            }
+        case .playa3ullGames:
+            return [
+                URL(string: "https://api.mainnet.playa3ull.games/")!,
+            ]
+        case .pulsechain:
+            if isTestnet {
+                return [
+                    URL(string: "https://rpc.v4.testnet.pulsechain.com/")!,
+                    URL(string: "https://pulsechain-testnet.publicnode.com/")!,
+                    URL(string: "https://rpc-testnet-pulsechain.g4mm4.io/")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://rpc.pulsechain.com/")!,
+                    URL(string: "https://pulsechain.publicnode.com/")!,
+                    URL(string: "https://rpc-pulsechain.g4mm4.io/")!,
+                ]
+            }
+        case .aurora:
+            if isTestnet {
+                return [
+                    URL(string: "https://testnet.aurora.dev/")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://mainnet.aurora.dev/")!,
+                    URL(string: "https://aurora.drpc.org/")!,
+                    URL(string: "https://1rpc.io/aurora/")!,
                 ]
             }
         default:
@@ -841,9 +887,9 @@ extension Blockchain: Codable {
         case .shibarium: return "shibarium"
         case .aptos: return "aptos"
         case .hedera: return "hedera"
-        case .areon: return "areon"
-        case .playa3ullGames: return "playa3ull"
-        case .pulsechain: return "pls"
+        case .areon: return "areon-network"
+        case .playa3ullGames: return "playa3ull-games"
+        case .pulsechain: return "pulsechain"
         case .aurora: return "aurora"
         }
     }
@@ -915,9 +961,9 @@ extension Blockchain: Codable {
         case "shibarium": self = .shibarium(testnet: isTestnet)
         case "aptos": self = .aptos(curve: curve, testnet: isTestnet)
         case "hedera": self = .hedera(curve: curve, testnet: isTestnet)
-        case "areon": self = .areon(testnet: isTestnet)
-        case "playa3ull": self = .playa3ullGames(testnet: isTestnet)
-        case "pls": self = .pulsechain(testnet: isTestnet)
+        case "areon-network": self = .areon(testnet: isTestnet)
+        case "playa3ull-games": self = .playa3ullGames
+        case "pulsechain": self = .pulsechain(testnet: isTestnet)
         case "aurora": self = .aurora(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
@@ -993,6 +1039,10 @@ extension Blockchain {
         case "shibarium": return .shibarium(testnet: isTestnet)
         case "aptos": return .aptos(curve: curve, testnet: isTestnet)
         case "hedera": return .hedera(curve: curve, testnet: isTestnet)
+        case "areon-network": return .areon(testnet: isTestnet)
+        case "playa3ull-games": return .playa3ullGames
+        case "pulsechain": return .pulsechain(testnet: isTestnet)
+        case "aurora": return .aurora(testnet: isTestnet)
         default: return nil
         }
     }

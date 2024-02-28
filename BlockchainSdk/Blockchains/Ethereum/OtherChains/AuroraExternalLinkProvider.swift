@@ -9,7 +9,7 @@
 import Foundation
 
 struct AuroraExternalLinkProvider: ExternalLinkProvider {
-    var testnetFaucetURL: URL? = nil
+    var testnetFaucetURL = URL(string: "https://aurora.dev/faucet/")
 
     private let isTestnet: Bool
 

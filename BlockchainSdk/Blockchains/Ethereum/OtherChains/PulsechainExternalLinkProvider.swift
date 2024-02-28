@@ -9,7 +9,7 @@
 import Foundation
 
 struct PulsechainExternalLinkProvider: ExternalLinkProvider {
-    var testnetFaucetURL: URL? = nil
+    var testnetFaucetURL = URL(string: "https://faucet.v4.testnet.pulsechain.com/")
 
     private let isTestnet: Bool
 

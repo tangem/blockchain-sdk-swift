@@ -118,7 +118,7 @@ public extension Blockchain {
             .aptos(curve: .ed25519_slip0010, testnet: false),
             .hedera(curve: .ed25519_slip0010, testnet: false),
             .areon(testnet: false),
-            .playa3ullGames(testnet: false),
+            .playa3ullGames,
             .pulsechain(testnet: false),
             .aurora(testnet: false),
         ]
