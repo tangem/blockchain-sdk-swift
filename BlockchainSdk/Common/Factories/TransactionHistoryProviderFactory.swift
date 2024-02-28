@@ -56,7 +56,7 @@ public struct TransactionHistoryProviderFactory {
                 mapper: EthereumTransactionHistoryMapper(blockchain: blockchain)
             )
         case .tron:
-            return EthereumTransactionHistoryProvider(
+            return TronTransactionHistoryProvider(
                 blockBookProvider: networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes),
                 mapper: TronTransactionHistoryMapper(blockchain: blockchain)
             )

@@ -298,6 +298,7 @@
 		B633EA1F2B8FC5D900F11BFF /* EthereumTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA1D2B8FC5D900F11BFF /* EthereumTransactionHistoryMapper.swift */; };
 		B633EA222B8FC5DD00F11BFF /* UTXOTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA202B8FC5DD00F11BFF /* UTXOTransactionHistoryProvider.swift */; };
 		B633EA232B8FC5DD00F11BFF /* UTXOTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA212B8FC5DD00F11BFF /* UTXOTransactionHistoryMapper.swift */; };
+		B633EA252B8FC79000F11BFF /* TronTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA242B8FC79000F11BFF /* TronTransactionHistoryProvider.swift */; };
 		B633EA272B8FC9E300F11BFF /* BlockBookTarget.AddressRequestParameters.FilterType+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA262B8FC9E300F11BFF /* BlockBookTarget.AddressRequestParameters.FilterType+.swift */; };
 		B633EA292B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPagesCountExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA282B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPagesCountExtractor.swift */; };
 		B63B32AD2B8374B40089DF4B /* HederaCreatedAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B32AC2B8374B40089DF4B /* HederaCreatedAccount.swift */; };
@@ -1059,6 +1060,7 @@
 		B633EA1D2B8FC5D900F11BFF /* EthereumTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumTransactionHistoryMapper.swift; sourceTree = "<group>"; };
 		B633EA202B8FC5DD00F11BFF /* UTXOTransactionHistoryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTXOTransactionHistoryProvider.swift; sourceTree = "<group>"; };
 		B633EA212B8FC5DD00F11BFF /* UTXOTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTXOTransactionHistoryMapper.swift; sourceTree = "<group>"; };
+		B633EA242B8FC79000F11BFF /* TronTransactionHistoryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TronTransactionHistoryProvider.swift; sourceTree = "<group>"; };
 		B633EA262B8FC9E300F11BFF /* BlockBookTarget.AddressRequestParameters.FilterType+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlockBookTarget.AddressRequestParameters.FilterType+.swift"; sourceTree = "<group>"; };
 		B633EA282B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPagesCountExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookTransactionHistoryTotalPagesCountExtractor.swift; sourceTree = "<group>"; };
 		B63B32AC2B8374B40089DF4B /* HederaCreatedAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaCreatedAccount.swift; sourceTree = "<group>"; };
@@ -2535,6 +2537,7 @@
 			isa = PBXGroup;
 			children = (
 				B633EA182B8FC5D400F11BFF /* TronTransactionHistoryMapper.swift */,
+				B633EA242B8FC79000F11BFF /* TronTransactionHistoryProvider.swift */,
 			);
 			path = Tron;
 			sourceTree = "<group>";
@@ -4216,6 +4219,7 @@
 				EFAD40A52A965BA800364D65 /* BlockBookNode.swift in Sources */,
 				DC5E65012B1650F400E81AA5 /* OP_NEGATE.swift in Sources */,
 				EF3B191E2AA85C150084AA1C /* CardanoExternalLinkProvider.swift in Sources */,
+				B633EA252B8FC79000F11BFF /* TronTransactionHistoryProvider.swift in Sources */,
 				DA9F76FB27ECA49F00F0665C /* TronNetwork.swift in Sources */,
 				B05144FF2B57F15000EDAD1E /* SmartContractRequest.swift in Sources */,
 				EF2BC62029DACE33003D3F18 /* RavencoinTarget.swift in Sources */,
