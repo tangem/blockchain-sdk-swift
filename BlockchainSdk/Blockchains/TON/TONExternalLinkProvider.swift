@@ -1,5 +1,5 @@
 //
-//  TonExternalLinkProvider.swift
+//  TONExternalLinkProvider.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 06.09.2023.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct TonExternalLinkProvider {
+struct TONExternalLinkProvider {
     private let isTestnet: Bool
     
     init(isTestnet: Bool) {
@@ -16,7 +16,7 @@ struct TonExternalLinkProvider {
     }
 }
 
-extension TonExternalLinkProvider: ExternalLinkProvider {
+extension TONExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? { nil }
     
     func url(transaction hash: String) -> URL? {

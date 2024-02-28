@@ -633,7 +633,7 @@
 		EF3B194A2AA85E7B0084AA1C /* DashExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B19492AA85E7B0084AA1C /* DashExternalLinkProvider.swift */; };
 		EF3B194C2AA85E880084AA1C /* GnosisExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B194B2AA85E880084AA1C /* GnosisExternalLinkProvider.swift */; };
 		EF3B194E2AA85E950084AA1C /* OptimismExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B194D2AA85E950084AA1C /* OptimismExternalLinkProvider.swift */; };
-		EF3B19522AA85EAE0084AA1C /* TonExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B19512AA85EAE0084AA1C /* TonExternalLinkProvider.swift */; };
+		EF3B19522AA85EAE0084AA1C /* TONExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B19512AA85EAE0084AA1C /* TONExternalLinkProvider.swift */; };
 		EF3B19542AA85EB90084AA1C /* KavaExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B19532AA85EB90084AA1C /* KavaExternalLinkProvider.swift */; };
 		EF3B19562AA85EC70084AA1C /* KaspaExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B19552AA85EC70084AA1C /* KaspaExternalLinkProvider.swift */; };
 		EF3B19582AA85ED50084AA1C /* RavencoinExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B19572AA85ED50084AA1C /* RavencoinExternalLinkProvider.swift */; };
@@ -1373,7 +1373,7 @@
 		EF3B19492AA85E7B0084AA1C /* DashExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashExternalLinkProvider.swift; sourceTree = "<group>"; };
 		EF3B194B2AA85E880084AA1C /* GnosisExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GnosisExternalLinkProvider.swift; sourceTree = "<group>"; };
 		EF3B194D2AA85E950084AA1C /* OptimismExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismExternalLinkProvider.swift; sourceTree = "<group>"; };
-		EF3B19512AA85EAE0084AA1C /* TonExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TonExternalLinkProvider.swift; sourceTree = "<group>"; };
+		EF3B19512AA85EAE0084AA1C /* TONExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONExternalLinkProvider.swift; sourceTree = "<group>"; };
 		EF3B19532AA85EB90084AA1C /* KavaExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KavaExternalLinkProvider.swift; sourceTree = "<group>"; };
 		EF3B19552AA85EC70084AA1C /* KaspaExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaspaExternalLinkProvider.swift; sourceTree = "<group>"; };
 		EF3B19572AA85ED50084AA1C /* RavencoinExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RavencoinExternalLinkProvider.swift; sourceTree = "<group>"; };
@@ -1613,6 +1613,7 @@
 			children = (
 				2D9A919029BB8BFF00476EA6 /* TONError.swift */,
 				2D9A919729BB8C1700476EA6 /* TONNetworkService.swift */,
+				EF3B19512AA85EAE0084AA1C /* TONExternalLinkProvider.swift */,
 				2D9A919829BB8C1700476EA6 /* TONNetworkUrl.swift */,
 				2D9A918E29BB8BFF00476EA6 /* TONTransactionBuilder.swift */,
 				2D8501F629DEC20A00F4A11B /* TONTransactionParams.swift */,
@@ -1710,6 +1711,7 @@
 			isa = PBXGroup;
 			children = (
 				2DDEFBD42B59B44700885675 /* AlgorandRequest.swift */,
+				2DDEFBD72B59B44700885675 /* AlgorandResponse.swift */,
 				2DDEFBD12B59B44700885675 /* AlgorandRequest+Transaction.swift */,
 				2DDEFBD02B59B44700885675 /* AlgorandResponse+Account.swift */,
 				2DDEFBD22B59B44700885675 /* AlgorandResponse+Error.swift */,
@@ -1718,7 +1720,6 @@
 				2DDEFBD52B59B44700885675 /* AlgorandResponse+TransactionResult.swift */,
 				2DC823342B5FBDA500274237 /* AlgorandResponse+PendingTransaction.swift */,
 				2DDEFBD62B59B44700885675 /* AlgorandAccountStatus.swift */,
-				2DDEFBD72B59B44700885675 /* AlgorandResponse.swift */,
 			);
 			path = DTO;
 			sourceTree = "<group>";
@@ -2824,7 +2825,6 @@
 		DA9F76E727EC8AD900F0665C /* Tron */ = {
 			isa = PBXGroup;
 			children = (
-				EF3B19512AA85EAE0084AA1C /* TonExternalLinkProvider.swift */,
 				DA9F76E827EC8AEB00F0665C /* TronAddressService.swift */,
 				EF3B19452AA85E620084AA1C /* TronExternalLinkProvider.swift */,
 				DA9F76F027EC9C8300F0665C /* TronJsonRpcProvider.swift */,
@@ -4195,7 +4195,7 @@
 				DC5E64F92B1650F400E81AA5 /* OP_MOD.swift in Sources */,
 				2D78F40A2A5C3CBE00962CCA /* ChiaAddressService.swift in Sources */,
 				DC5E65242B1650F400E81AA5 /* OP_CHECKSEQUENCEVERIFY.swift in Sources */,
-				EF3B19522AA85EAE0084AA1C /* TonExternalLinkProvider.swift in Sources */,
+				EF3B19522AA85EAE0084AA1C /* TONExternalLinkProvider.swift in Sources */,
 				DAB6548A27967D860002A5E8 /* SolanaResponse.swift in Sources */,
 				5D304397239A6B960066B8D9 /* String+.swift in Sources */,
 				5DC7DD6824408266008F83F2 /* XrpResponse.swift in Sources */,
