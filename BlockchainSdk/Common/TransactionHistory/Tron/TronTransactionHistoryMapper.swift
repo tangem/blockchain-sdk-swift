@@ -269,6 +269,7 @@ extension TronTransactionHistoryMapper: BlockBookTransactionHistoryTotalPagesCou
                 let token = response.tokens?.first(where: { $0.matching(contractAddress: contractAddress) }),
                 let transfersCount = token.transfers
             else {
+                Log.log("Transaction response \(response) doesn't contain a required information")
                 throw TotalPagesCountExtractionError.unableToParseNetworkResponse(contractAddress: contractAddress)
             }
 
