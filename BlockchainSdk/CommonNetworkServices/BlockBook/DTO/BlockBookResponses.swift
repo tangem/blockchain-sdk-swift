@@ -27,6 +27,12 @@ struct BlockBookAddressResponse: Decodable {
 extension BlockBookAddressResponse {
     struct Transaction: Decodable {
         let txid: String
+        /// This field uses `snake_case` encoding, while all other fields use `camelCase` encoding,
+        /// so `keyDecodingStrategy` is not an option. Again, Tron Blockbook just has a terrible API contract.
+        let contractType: Int?
+        /// This field uses `snake_case` encoding, while all other fields use `camelCase` encoding,
+        /// so `keyDecodingStrategy` is not an option. Again, Tron Blockbook just has a terrible API contract.
+        let contractName: String?
         let version: Int?
         let vin: [Vin]?
         let vout: [Vout]?
@@ -43,6 +49,54 @@ extension BlockBookAddressResponse {
         let tronTXReceipt: TronTXReceipt?
         let fromAddress: String?
         let toAddress: String?
+        
+        /// - Note: Generated using `Explicit `Codable` implementation` refactor menu option.
+        private enum CodingKeys: String, CodingKey {
+            case txid
+            case contractType = "contract_type"
+            case contractName = "contract_name"
+            case version
+            case vin
+            case vout
+            case blockHash
+            case blockHeight
+            case confirmations
+            case blockTime
+            case value
+            case valueIn
+            case fees
+            case hex
+            case tokenTransfers
+            case ethereumSpecific
+            case tronTXReceipt
+            case fromAddress
+            case toAddress
+        }
+        
+        /// - Note: Generated using `Explicit `Codable` implementation` refactor menu option.
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            
+            self.txid = try container.decode(String.self, forKey: CodingKeys.txid)
+            self.contractType = try container.decodeIfPresent(Int.self, forKey: CodingKeys.contractType)
+            self.contractName = try container.decodeIfPresent(String.self, forKey: CodingKeys.contractName)
+            self.version = try container.decodeIfPresent(Int.self, forKey: CodingKeys.version)
+            self.vin = try container.decodeIfPresent([Vin].self, forKey: CodingKeys.vin)
+            self.vout = try container.decodeIfPresent([Vout].self, forKey: CodingKeys.vout)
+            self.blockHash = try container.decodeIfPresent(String.self, forKey: CodingKeys.blockHash)
+            self.blockHeight = try container.decode(Int.self, forKey: CodingKeys.blockHeight)
+            self.confirmations = try container.decode(Int.self, forKey: CodingKeys.confirmations)
+            self.blockTime = try container.decode(Int.self, forKey: CodingKeys.blockTime)
+            self.value = try container.decode(String.self, forKey: CodingKeys.value)
+            self.valueIn = try container.decodeIfPresent(String.self, forKey: CodingKeys.valueIn)
+            self.fees = try container.decode(String.self, forKey: CodingKeys.fees)
+            self.hex = try container.decodeIfPresent(String.self, forKey: CodingKeys.hex)
+            self.tokenTransfers = try container.decodeIfPresent([TokenTransfer].self, forKey: CodingKeys.tokenTransfers)
+            self.ethereumSpecific = try container.decodeIfPresent(EthereumSpecific.self, forKey: CodingKeys.ethereumSpecific)
+            self.tronTXReceipt = try container.decodeIfPresent(TronTXReceipt.self, forKey: CodingKeys.tronTXReceipt)
+            self.fromAddress = try container.decodeIfPresent(String.self, forKey: CodingKeys.fromAddress)
+            self.toAddress = try container.decodeIfPresent(String.self, forKey: CodingKeys.toAddress)
+        }
     }
     
     struct Vin: Decodable {
