@@ -113,6 +113,7 @@ extension BlockBookAddressResponse {
     
     struct Token: Decodable {
         let type: String?
+        let id: String?
         let name: String?
         let contract: String?
         let transfers: Int?

@@ -177,17 +177,6 @@ struct TronTransactionHistoryMapper {
     }
 }
 
-// MARK: - Convenience types
-
-private extension TronTransactionHistoryMapper {
-    /// Intermediate model for simpler mapping.
-    struct TransactionInfo {
-        let source: TransactionRecord.Source
-        let destination: TransactionRecord.Destination
-        let isOutgoing: Bool
-    }
-}
-
 // MARK: - BlockBookTransactionHistoryMapper protocol conformance
 
 extension TronTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
@@ -248,5 +237,62 @@ extension TronTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
                     }
                 }
             }
+    }
+}
+
+// MARK: - BlockBookTransactionHistoryTotalPagesCountExtractor protocol conformance
+
+extension TronTransactionHistoryMapper: BlockBookTransactionHistoryTotalPagesCountExtractor {
+    func extractTotalPagesCount(from response: BlockBookAddressResponse, contractAddress: String?) throws -> Int {
+        // If transaction history is requested for a TRC20 token - `totalPagesCount` must be calculated manually
+        // using `$.tokens[*].transfers` and `$.itemsOnPage` DTO fields because `$.totalPages` DTO field contains
+        // the number of pages for the ENTIRE transaction history (including TRX, TRC10 and TRC20 token transfers)
+        // for a given address
+        if let contractAddress {
+            guard
+                let itemsOnPage = response.itemsOnPage,
+                let token = response.tokens?.first(where: { $0.matching(contractAddress: contractAddress) }),
+                let transfersCount = token.transfers
+            else {
+                throw TotalPagesCountExtractionError.unableToParseNetworkResponse(contractAddress: contractAddress)
+            }
+
+            return Int(ceil((Double(transfersCount) / Double(itemsOnPage))))
+        }
+
+        return response.totalPages ?? 0
+    }
+}
+
+// MARK: - Convenience types
+
+private extension TronTransactionHistoryMapper {
+    /// Intermediate model for simpler mapping.
+    struct TransactionInfo {
+        let source: TransactionRecord.Source
+        let destination: TransactionRecord.Destination
+        let isOutgoing: Bool
+    }
+
+    enum TotalPagesCountExtractionError: Error {
+        case unableToParseNetworkResponse(contractAddress: String)
+    }
+}
+
+// MARK: - Convenience extensions
+
+private extension BlockBookAddressResponse.Token {
+    func matching(contractAddress: String) -> Bool {
+        // Tron Blockbook has a really terrible API contract: a token's contract address may be stored in various DTO fields,
+        // not just in the `$.tokens[*].contract` field
+        let props = [
+            id,
+            name,
+            contract,
+        ]
+
+        return props
+            .compactMap { $0?.caseInsensitiveEquals(to: contractAddress) }
+            .contains(true)
     }
 }
