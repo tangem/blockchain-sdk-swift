@@ -344,14 +344,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "NEAR Protocol" + testnetSuffix
         case .decimal:
             return "Decimal Smart Chain" + testnetSuffix
-        case .veChain:
-            return "VeChain" + testnetSuffix
         case .xdc:
             return "XDC Network"
-        case .shibarium:
-            return "Shibarium" + testnetSuffix
-        case .aptos:
-            return "Aptos"
         case .arbitrum:
             return "Arbitrum One" + testnetSuffix
         default:
