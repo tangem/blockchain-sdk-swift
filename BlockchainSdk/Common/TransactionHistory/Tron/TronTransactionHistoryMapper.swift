@@ -162,7 +162,7 @@ struct TronTransactionHistoryMapper {
         amountType: Amount.AmountType
     ) -> TransactionRecord.TransactionType {
         switch amountType {
-        case .coin, .reserve where transaction.isContractInteraction:
+        case .coin where transaction.isContractInteraction:
             return .contractMethod(id: transaction.contractName?.nilIfEmpty ?? .unknown)
         case .coin, .reserve, .token:
             // All TRC10 and TRC20 token transactions are considered simple & plain transfers
@@ -323,7 +323,8 @@ private extension BlockBookAddressResponse.Token {
 
 private extension BlockBookAddressResponse.Transaction {
     var isContractInteraction: Bool {
-        return contractType != TronTransactionHistoryMapper.TronContractType.transferContractType.rawValue 
+        return contractType != nil
+        && contractType != TronTransactionHistoryMapper.TronContractType.transferContractType.rawValue
         && contractType != TronTransactionHistoryMapper.TronContractType.transferAssetContractType.rawValue
     }
 }
