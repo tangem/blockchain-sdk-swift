@@ -72,7 +72,7 @@ public struct ExternalLinkProviderFactory {
         case .optimism:
             return OptimismExternalLinkProvider(isTestnet: isTestnet)
         case .ton:
-            return TonExternalLinkProvider(isTestnet: isTestnet)
+            return TONExternalLinkProvider(isTestnet: isTestnet)
         case .kava:
             return KavaExternalLinkProvider(isTestnet: isTestnet)
         case .kaspa:
