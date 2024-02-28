@@ -109,6 +109,14 @@ public struct ExternalLinkProviderFactory {
             return AptosExternalLinkProvider(isTestnet: isTestnet)
         case .hedera:
             return HederaExternalLinkProvider(isTestnet: isTestnet)
+        case .areon:
+            return AreonExternalLinkProvider()
+        case .playa3ullGames:
+            return Playa3ullGamesExternalLinkProvider()
+        case .pulsechain:
+            return PulsechainExternalLinkProvider(isTestnet: isTestnet)
+        case .aurora:
+            return AuroraExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }
