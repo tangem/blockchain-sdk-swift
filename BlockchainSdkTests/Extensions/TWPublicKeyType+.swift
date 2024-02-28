@@ -39,7 +39,11 @@ extension PublicKeyType {
                 .decimal,
                 .veChain,
                 .xdc,
-                .shibarium:
+                .shibarium,
+                .areon,
+                .playa3ullGames,
+                .pulsechain,
+                .aurora:
             self = PublicKeyType.secp256k1Extended
         case .stellar,
                 .ton,

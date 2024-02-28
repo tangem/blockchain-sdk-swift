@@ -93,7 +93,11 @@ extension CoinType {
              .chia,
              .decimal,
              .xdc,
-             .shibarium:
+             .shibarium,
+             .areon,
+             .playa3ullGames,
+             .pulsechain,
+             .aurora:
             // Blockchains that are not in WalletCore yet
             return nil
         }
