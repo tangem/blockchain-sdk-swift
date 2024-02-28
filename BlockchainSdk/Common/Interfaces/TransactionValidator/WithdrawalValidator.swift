@@ -9,7 +9,10 @@
 import Foundation
 
 public protocol WithdrawalValidator {
+    @available(*, deprecated, message: "Use WithdrawalValidator.withdrawalSuggestion")
     func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning?
+    
+    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion?
 }
 
 public struct WithdrawalWarning: Hashable {
@@ -19,3 +22,7 @@ public struct WithdrawalWarning: Hashable {
     public let suggestedReduceAmount: Amount
 }
 
+public enum WithdrawalSuggestion {
+    case optionalAmountChange(newAmount: Amount)
+    case mandatoryAmountChange(newAmount: Amount, maxUtxo: Int)
+}

@@ -146,12 +146,17 @@ extension TezosWalletManager: ThenProcessable { }
 
 
 extension TezosWalletManager: WithdrawalValidator {
+    private var withdrawalMinimumAmount: Decimal {
+        Decimal(string: "0.000001")!
+    }
+    
+    @available(*, deprecated, message: "Use WithdrawalValidator.withdrawalSuggestion")
     func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
         guard let walletAmount = wallet.amounts[.coin] else {
             return nil
         }
         
-        let minimumAmount: Decimal = 0.000001
+        let minimumAmount = withdrawalMinimumAmount
         
         if amount + fee == walletAmount {
             return WithdrawalWarning(warningMessage: String(format: "xtz_withdrawal_message_warning".localized, minimumAmount.description),
@@ -160,5 +165,16 @@ extension TezosWalletManager: WithdrawalValidator {
                                      suggestedReduceAmount: Amount(with: walletAmount, value: minimumAmount))
         }
         return nil
+    }
+    
+    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion? {
+        guard
+            let walletAmount = wallet.amounts[.coin],
+            amount + fee == walletAmount 
+        else {
+            return nil
+        }
+    
+        return .optionalAmountChange(newAmount: Amount(with: walletAmount, value: withdrawalMinimumAmount))
     }
 }
