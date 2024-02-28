@@ -100,6 +100,8 @@ extension KaspaWalletManager: DustRestrictable {
 }
 
 extension KaspaWalletManager: WithdrawalValidator {
+    // Chia, kaspa have the same logic
+    @available(*, deprecated, message: "Use WithdrawalValidator.withdrawalSuggestion")
     func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
         let amountAvailableToSend = txBuilder.availableAmount() - fee
         if amount <= amountAvailableToSend {
@@ -115,5 +117,15 @@ extension KaspaWalletManager: WithdrawalValidator {
             reduceMessage: "common_ok".localized,
             suggestedReduceAmount: amountToReduceBy
         )
+    }
+    
+    // Chia, kaspa have the same logic
+    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion? {
+        let amountAvailableToSend = txBuilder.availableAmount() - fee
+        if amount <= amountAvailableToSend {
+            return nil
+        }
+
+        return .mandatoryAmountChange(newAmount: amountAvailableToSend, maxUtxo: txBuilder.maxInputCount)
     }
 }

@@ -122,6 +122,8 @@ private extension ChiaWalletManager {
 // MARK: - WithdrawalValidator
 
 extension ChiaWalletManager: WithdrawalValidator {
+    // Chia, kaspa have the same logic
+    @available(*, deprecated, message: "Use WithdrawalValidator.withdrawalSuggestion")
     func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
         let availableAmount = txBuilder.availableAmount()
         let amountAvailableToSend = availableAmount - fee
@@ -139,5 +141,15 @@ extension ChiaWalletManager: WithdrawalValidator {
             reduceMessage: "common_ok".localized,
             suggestedReduceAmount: amountToReduceBy
         )
+    }
+
+    // Chia, kaspa have the same logic
+    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion? {
+        let amountAvailableToSend = txBuilder.availableAmount() - fee
+        if amount <= amountAvailableToSend {
+            return nil
+        }
+
+        return .mandatoryAmountChange(newAmount: amountAvailableToSend, maxUtxo: txBuilder.maxInputCount)
     }
 }
