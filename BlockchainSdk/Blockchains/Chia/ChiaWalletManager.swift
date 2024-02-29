@@ -119,11 +119,11 @@ private extension ChiaWalletManager {
     }
 }
 
-// MARK: - WithdrawalValidator
+// MARK: - WithdrawalSuggestionProvider
 
-extension ChiaWalletManager: WithdrawalValidator {
+extension ChiaWalletManager: WithdrawalSuggestionProvider {
     // Chia, kaspa have the same logic
-    @available(*, deprecated, message: "Use WithdrawalValidator.withdrawalSuggestion")
+    @available(*, deprecated, message: "Use MaximumAmountRestrictable")
     func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
         let availableAmount = txBuilder.availableAmount()
         let amountAvailableToSend = availableAmount - fee
@@ -145,11 +145,22 @@ extension ChiaWalletManager: WithdrawalValidator {
 
     // Chia, kaspa have the same logic
     func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion? {
+        // mandatoryAmountChange below in the `MaximumAmountRestrictable`
+        return nil
+    }
+}
+
+extension ChiaWalletManager: MaximumAmountRestrictable {
+    func validateMaximumAmountRestrictable(amount: Amount, fee: Amount) throws {
         let amountAvailableToSend = txBuilder.availableAmount() - fee
         if amount <= amountAvailableToSend {
-            return nil
+            return
         }
 
-        return .mandatoryAmountChange(newAmount: amountAvailableToSend, maxUtxo: txBuilder.maxInputCount)
+        throw ValidationError.maximumAmount(
+            blockchainName: wallet.blockchain.displayName,
+            newAmount: amountAvailableToSend,
+            maxUtxo: txBuilder.maxInputCount
+        )
     }
 }
