@@ -44,7 +44,11 @@ public struct AddressServiceFactory {
                 .cronos,
                 .telos,
                 .octa,
-                .shibarium:
+                .shibarium,
+                .areon, 
+                .playa3ullGames,
+                .pulsechain, 
+                .aurora:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
