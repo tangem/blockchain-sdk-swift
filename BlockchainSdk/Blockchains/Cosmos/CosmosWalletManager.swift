@@ -45,7 +45,7 @@ class CosmosWalletManager: BaseManager, WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        guard let feeParameters = transaction.fee.parameters as? CosmosFeeParameters else {
+        guard transaction.fee.parameters is CosmosFeeParameters else {
             return .anyFail(error: WalletError.failedToBuildTx)
         }
         
