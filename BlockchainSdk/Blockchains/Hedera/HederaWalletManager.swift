@@ -129,10 +129,37 @@ final class HederaWalletManager: BaseManager {
         return validStartDate.flatMap(UnixTimestamp.init(date:))
     }
 
+    private func getFee(amount: Amount, doesAccountExistPublisher: some Publisher<Bool, Error>) -> AnyPublisher<[Fee], Error> {
+        return Publishers.CombineLatest(
+            networkService.getExchangeRate(),
+            doesAccountExistPublisher
+        )
+        .withWeakCaptureOf(self)
+        .tryMap { walletManager, input in
+            guard
+                let cryptoTransferServiceCostInUSD = Constants.cryptoTransferServiceCostInUSD,
+                let cryptoCreateServiceCostInUSD = Constants.cryptoCreateServiceCostInUSD,
+                let maxFeeMultiplier = Constants.maxFeeMultiplier
+            else {
+                throw WalletError.failedToGetFee
+            }
+
+            let (exchangeRate, doesAccountExist) = input
+            let feeBase = doesAccountExist ? cryptoTransferServiceCostInUSD : cryptoCreateServiceCostInUSD
+            let feeValue = exchangeRate.nextHBARPerUSD * feeBase * maxFeeMultiplier
+            let feeAmount = Amount(with: walletManager.wallet.blockchain, value: feeValue)
+            let fee = Fee(feeAmount)
+
+            return [fee]
+        }
+        .eraseToAnyPublisher()
+    }
+
+
     // MARK: - Account ID fetching, caching and creation
 
     /// Used to query the status of the `receiving` (`destination`) account.
-    private func isAccountExist(destination: String) -> some Publisher<Bool, Error> {
+    private func doesAccountExist(destination: String) -> some Publisher<Bool, Error> {
         return Deferred {
             return Future { promise in
                 let result = Result { try Hedera.AccountId(parsing: destination) }
@@ -294,29 +321,16 @@ extension HederaWalletManager: WalletManager {
     var allowsFeeSelection: Bool { false }
 
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        return Publishers.CombineLatest(
-            networkService.getExchangeRate(),
-            isAccountExist(destination: destination)
-        )
-        .withWeakCaptureOf(self)
-        .tryMap { walletManager, input in
-            guard
-                let cryptoTransferServiceCostInUSD = Constants.cryptoTransferServiceCostInUSD,
-                let cryptoCreateServiceCostInUSD = Constants.cryptoCreateServiceCostInUSD,
-                let maxFeeMultiplier = Constants.maxFeeMultiplier
-            else {
-                throw WalletError.failedToGetFee
-            }
+        let doesAccountExistPublisher = doesAccountExist(destination: destination)
 
-            let (exchangeRate, isAccountExist) = input
-            let feeBase = isAccountExist ? cryptoTransferServiceCostInUSD : cryptoCreateServiceCostInUSD
-            let feeValue = exchangeRate.nextHBARPerUSD * feeBase * maxFeeMultiplier
-            let feeAmount = Amount(with: walletManager.wallet.blockchain, value: feeValue)
-            let fee = Fee(feeAmount)
+        return getFee(amount: amount, doesAccountExistPublisher: doesAccountExistPublisher)
+    }
 
-            return [fee]
-        }
-        .eraseToAnyPublisher()
+    func estimatedFee(amount: Amount) -> AnyPublisher<[Fee], Error> {
+        // For a rough fee estimation (calculated in this method), all destinations are considered non-existent just in case
+        let doesAccountExistPublisher = Just(false).setFailureType(to: Error.self)
+
+        return getFee(amount: amount, doesAccountExistPublisher: doesAccountExistPublisher)
     }
 
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
