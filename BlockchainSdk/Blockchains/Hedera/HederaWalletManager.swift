@@ -144,8 +144,8 @@ final class HederaWalletManager: BaseManager {
                 throw WalletError.failedToGetFee
             }
 
-            let (exchangeRate, isAccountExist) = input
-            let feeBase = isAccountExist ? cryptoTransferServiceCostInUSD : cryptoCreateServiceCostInUSD
+            let (exchangeRate, doesAccountExist) = input
+            let feeBase = doesAccountExist ? cryptoTransferServiceCostInUSD : cryptoCreateServiceCostInUSD
             let feeValue = exchangeRate.nextHBARPerUSD * feeBase * maxFeeMultiplier
             let feeAmount = Amount(with: walletManager.wallet.blockchain, value: feeValue)
             let fee = Fee(feeAmount)
