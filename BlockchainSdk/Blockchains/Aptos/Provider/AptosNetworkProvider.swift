@@ -94,7 +94,7 @@ struct AptosNetworkProvider: HostProvider {
                 case .statusCode(let response) where response.statusCode == 404 && target.isAccountsResourcesRequest:
                     return WalletError.noAccount(message: "no_account_send_to_create".localized)
                 default:
-                    return moyaError.asWalletError ?? moyaError
+                    return moyaError
                 }
             }
             .eraseToAnyPublisher()
