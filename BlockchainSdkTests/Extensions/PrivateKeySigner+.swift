@@ -8,7 +8,7 @@
 
 import Combine
 import WalletCore
-import BlockchainSdk
+@testable import BlockchainSdk
 
 extension PrivateKeySigner: TransactionSigner {
     public func sign(hashes: [Data], walletPublicKey: BlockchainSdk.Wallet.PublicKey) -> AnyPublisher<[Data], Error> {
