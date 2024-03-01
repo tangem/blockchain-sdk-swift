@@ -24,6 +24,20 @@ extension BitcoinLegacyAddressService: BitcoinScriptAddressProvider {
     public func makeScriptAddress(from scriptHash: Data) throws -> String {
         return try converter.convert(keyHash: scriptHash, type: .p2sh).stringValue
     }
+    
+    public func makeP2ScriptAddress(for publicKeyData: Data) throws -> String {
+        let publicKey = Wallet.PublicKey(seedKey: publicKeyData, derivationType: .none)
+        
+        try publicKey.blockchainKey.validateAsSecp256k1Key()
+
+        let bitcoinCorePublicKey = PublicKey(withAccount: 0,
+                                  index: 0,
+                                  external: true,
+                                  hdPublicKeyData: publicKey.blockchainKey)
+
+        let address = try converter.convert(publicKey: bitcoinCorePublicKey, type: .p2sh).stringValue
+        return address
+    }
 }
 
 // MARK: - AddressValidator

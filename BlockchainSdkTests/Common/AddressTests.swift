@@ -1226,9 +1226,9 @@ class AddressesTests: XCTestCase {
         let addressService = BitcoinLegacyAddressService(networkParams: networkParams)
 
 //        let addr_dec_legacy = try addressService.makeAddress(from: secpDecompressedKey)
-//        let addr_comp_legacy = try addressService.makeAddress(from: secpCompressedKey)
+        let addr_comp_legacy = try addressService.makeAddress(from: secpCompressedKey)
         
-        let addr = try addressService.makeScriptAddress(from: secpCompressedKey)
+//        let addr = try addressService.makeScriptAddress(from: secpCompressedKey)
         
 //        XCTAssertEqual("19gH5uhqY6DKrtkU66PsZPUZdzTd11Y7ke", addr_comp_legacy.value)
 //        XCTAssertEqual("16JXnhxjJUhxfyx4y6H4sFcxrgt8kQ8ewX", addr_dec_legacy.value)
