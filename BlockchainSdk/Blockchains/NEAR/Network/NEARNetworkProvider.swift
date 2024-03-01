@@ -68,9 +68,6 @@ struct NEARNetworkProvider {
         return provider.requestPublisher(NEARTarget(baseURL: baseURL, target: target))
             .filterSuccessfulStatusCodes()
             .map(JSONRPCResult<T, NEARNetworkResult.APIError>.self, using: decoder)
-            .mapError { moyaError -> Swift.Error in
-                return moyaError.asWalletError ?? moyaError
-            }
             .tryMap { try $0.result.get() }
             .eraseToAnyPublisher()
     }
