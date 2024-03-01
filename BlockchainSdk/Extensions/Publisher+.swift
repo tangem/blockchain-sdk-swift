@@ -57,6 +57,34 @@ extension Publisher {
     }
 }
 
+extension Publisher {
+    static var emptyFail: AnyPublisher<Output, Error> {
+        return Fail(error: WalletError.empty)
+            .eraseToAnyPublisher()
+    }
+
+    static func anyFail(error: Failure) -> AnyPublisher<Output, Failure> {
+        return Fail(error: error)
+            .eraseToAnyPublisher()
+    }
+
+    static func justWithError(output: Output) -> AnyPublisher<Output, Error> {
+        return Just(output)
+            .setFailureType(to: Error.self)
+            .eraseToAnyPublisher()
+    }
+
+    static func multiAddressPublisher<T>(
+        addresses: [String],
+        requestFactory: (String) -> AnyPublisher<T, Error>
+    ) -> AnyPublisher<[T], Error> {
+        return Publishers
+            .MergeMany(addresses.map { requestFactory($0) })
+            .collect()
+            .eraseToAnyPublisher()
+    }
+}
+
 // MARK: - Private implementation
 
 private extension Publishers {
