@@ -27,8 +27,8 @@ extension ApproveERC20TokenMethod: SmartContractMethod {
 
     public var data: Data {
         let prefixData = Data(hexString: prefix)
-        let spenderData = Data(hexString: spender).aligned(to: 32)
-        let amountData = amount.serialize().aligned(to: 32)
+        let spenderData = Data(hexString: spender).leadingZeroPadding(toLength: 32)
+        let amountData = amount.serialize().leadingZeroPadding(toLength: 32)
         return prefixData + spenderData + amountData
     }
 }
