@@ -159,14 +159,6 @@ final class VeChainNetworkService: MultiNetworkProvider {
             return provider
                 .sendTransaction(rawTransaction)
                 .map { TransactionSendResult(hash: $0.id) }
-                .mapError { error in
-                    // TODO: - Remove replace error for this service
-                    if let error = error as? WalletError {
-                        return error
-                    }
-
-                    return WalletError.failedToSendTx
-                }
                 .eraseToAnyPublisher()
         }
     }
