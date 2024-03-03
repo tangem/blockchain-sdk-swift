@@ -16,6 +16,7 @@ struct TronTransactionHistoryMapper {
         self.blockchain = blockchain
     }
 
+    /// Extracts the transaction info for a `coin` transfer.
     private func extractTransactionInfo(
         from transaction: BlockBookAddressResponse.Transaction,
         sourceAddress: String,
@@ -58,6 +59,7 @@ struct TronTransactionHistoryMapper {
         )
     }
 
+    /// Extracts the transaction info for a `token` transfer.
     private func extractTransactionInfos(
         from tokenTransfers: [BlockBookAddressResponse.TokenTransfer],
         token: Token,
