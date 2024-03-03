@@ -80,38 +80,36 @@ struct TronTransactionHistoryMapper {
         ? filteredTokenTransfers.grouped(by: \.to)
         : filteredTokenTransfers.grouped(by: \.from)
 
-        return otherAddresses.map { otherAddress in
-            let transfers = groupedFilteredTokenTransfers[otherAddress] ?? []
-            // Multiple transactions between the same pair of src-dst addresses are aggregated into single `TransactionInfo`
-            let value = transfers.reduce(into: Decimal.zero) { partialResult, transfer in
+        return otherAddresses.reduce(into: []) { partialResult, otherAddress in
+            let transfers = groupedFilteredTokenTransfers[otherAddress, default: []]
+
+            partialResult += transfers.compactMap { transfer in
                 guard
                     let rawValue = transfer.value,
                     let value = Decimal(string: rawValue)
                 else {
                     Log.log("Token transfer \(transfer) with invalid value received")
-                    return
+                    return nil
                 }
 
-                partialResult += value
+                let transactionAmount = value / token.decimalValue
+
+                let source = TransactionRecord.Source(
+                    address: isOutgoing ? walletAddress : otherAddress,
+                    amount: transactionAmount
+                )
+
+                let destination = TransactionRecord.Destination(
+                    address: .user(isOutgoing ? otherAddress : walletAddress),
+                    amount: transactionAmount
+                )
+
+                return TransactionInfo(
+                    source: source,
+                    destination: destination,
+                    isOutgoing: isOutgoing
+                )
             }
-
-            let transactionAmount = value / token.decimalValue
-
-            let source = TransactionRecord.Source(
-                address: isOutgoing ? walletAddress : otherAddress,
-                amount: transactionAmount
-            )
-
-            let destination = TransactionRecord.Destination(
-                address: .user(isOutgoing ? otherAddress : walletAddress),
-                amount: transactionAmount
-            )
-
-            return TransactionInfo(
-                source: source,
-                destination: destination,
-                isOutgoing: isOutgoing
-            )
         }
     }
 
