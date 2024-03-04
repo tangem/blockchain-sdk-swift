@@ -8,5 +8,5 @@
 import Foundation
 
 protocol MaximumAmountRestrictable {
-    func validateMaximumAmountRestrictable(amount: Amount, fee: Amount) throws
+    func validateMaximumAmount(amount: Amount, fee: Amount) throws
 }

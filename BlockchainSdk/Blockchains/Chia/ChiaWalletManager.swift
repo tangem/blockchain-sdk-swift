@@ -145,13 +145,13 @@ extension ChiaWalletManager: WithdrawalSuggestionProvider {
 
     func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion? {
         // The 'Mandatory amount change' withdrawal suggestion has been superseded by a validation performed in
-        // the 'MaximumAmountRestrictable.validateMaximumAmountRestrictable(amount:fee:)' method below
+        // the 'MaximumAmountRestrictable.validateMaximumAmount(amount:fee:)' method below
         return nil
     }
 }
 
 extension ChiaWalletManager: MaximumAmountRestrictable {
-    func validateMaximumAmountRestrictable(amount: Amount, fee: Amount) throws {
+    func validateMaximumAmount(amount: Amount, fee: Amount) throws {
         let amountAvailableToSend = txBuilder.availableAmount() - fee
         if amount <= amountAvailableToSend {
             return

@@ -103,7 +103,7 @@ extension TransactionValidator where Self: DustRestrictable {
     
     func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
-        try validateDustRestrictable(amount: amount, fee: fee.amount)
+        try validateDust(amount: amount, fee: fee.amount)
     }
 }
 
@@ -117,7 +117,7 @@ extension TransactionValidator where Self: MinimumBalanceRestrictable {
     
     func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
-        try validateMinimumBalanceRestrictable(amount: amount, fee: fee.amount)
+        try validateMinimumBalance(amount: amount, fee: fee.amount)
     }
 }
 
@@ -131,7 +131,7 @@ extension TransactionValidator where Self: MaximumAmountRestrictable {
     
     func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
-        try validateMaximumAmountRestrictable(amount: amount, fee: fee.amount)
+        try validateMaximumAmount(amount: amount, fee: fee.amount)
     }
 }
 
@@ -145,8 +145,8 @@ extension TransactionValidator where Self: MaximumAmountRestrictable, Self: Dust
 
     func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
-        try validateDustRestrictable(amount: amount, fee: fee.amount)
-        try validateMaximumAmountRestrictable(amount: amount, fee: fee.amount)
+        try validateDust(amount: amount, fee: fee.amount)
+        try validateMaximumAmount(amount: amount, fee: fee.amount)
     }
 }
 
@@ -158,9 +158,9 @@ extension TransactionValidator where Self: ReserveAmountRestrictable {
 
         switch destination {
         case .generate:
-            try await validateReserveAmountRestrictable(amount: amount, addressType: .notCreated)
+            try await validateReserveAmount(amount: amount, addressType: .notCreated)
         case .address(let string):
-            try await validateReserveAmountRestrictable(amount: amount, addressType: .address(string))
+            try await validateReserveAmount(amount: amount, addressType: .address(string))
         }
     }
 }
