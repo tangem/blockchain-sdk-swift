@@ -143,9 +143,9 @@ extension ChiaWalletManager: WithdrawalSuggestionProvider {
         )
     }
 
-    // Chia, kaspa have the same logic
     func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion? {
-        // mandatoryAmountChange below in the `MaximumAmountRestrictable`
+        // The 'Mandatory amount change' withdrawal suggestion has been superseded by a validation performed in
+        // the 'MaximumAmountRestrictable.validateMaximumAmountRestrictable(amount:fee:)' method below
         return nil
     }
 }
