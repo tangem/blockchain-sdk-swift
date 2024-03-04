@@ -15,6 +15,10 @@ extension String {
         return self.range(of: string, options: ignoreCase ? .caseInsensitive : []) != nil
     }
 
+    func caseInsensitiveEquals(to other: some StringProtocol) -> Bool {
+        return caseInsensitiveCompare(other) == .orderedSame
+    }
+
     public func hasHexPrefix() -> Bool {
         return self.lowercased().hasPrefix(hexPrefix)
     }

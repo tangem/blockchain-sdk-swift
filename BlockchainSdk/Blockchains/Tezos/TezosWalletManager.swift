@@ -141,16 +141,14 @@ extension TezosWalletManager: TransactionSender {
     }
 }
 
-
 extension TezosWalletManager: ThenProcessable { }
 
-
-extension TezosWalletManager: WithdrawalValidator {
+extension TezosWalletManager: WithdrawalSuggestionProvider {
     private var withdrawalMinimumAmount: Decimal {
         Decimal(string: "0.000001")!
     }
     
-    @available(*, deprecated, message: "Use WithdrawalValidator.withdrawalSuggestion")
+    @available(*, deprecated, message: "Use WithdrawalSuggestionProvider.withdrawalSuggestion")
     func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
         guard let walletAmount = wallet.amounts[.coin] else {
             return nil
@@ -175,6 +173,6 @@ extension TezosWalletManager: WithdrawalValidator {
             return nil
         }
     
-        return .optionalAmountChange(newAmount: Amount(with: walletAmount, value: withdrawalMinimumAmount))
+        return .feeIsTooHigh(reduceAmountBy: Amount(with: walletAmount, value: withdrawalMinimumAmount))
     }
 }

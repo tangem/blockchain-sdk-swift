@@ -34,9 +34,16 @@ public extension TransactionValidator {
         try validateAmounts(amount: amount, fee: fee.amount)
     }
     
+    // Helping functions
+    
     /// Validation will be doing with a zero `fee`
     func validate(amount: Amount) throws {
         try validateAmounts(amount: amount, fee: Amount(with: amount, value: 0))
+    }
+    
+    /// Validation will be doing with `amount`, `fee` and `destinationAddress`  from the `Transaction`
+    func validate(transaction: Transaction) async throws {
+        try await validate(amount: transaction.amount, fee: transaction.fee, destination: .address(transaction.destinationAddress))
     }
 }
 
@@ -96,7 +103,7 @@ extension TransactionValidator where Self: DustRestrictable {
     
     func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
-        try validateDustRestrictable(amount: amount, fee: fee.amount)
+        try validateDust(amount: amount, fee: fee.amount)
     }
 }
 
@@ -110,13 +117,13 @@ extension TransactionValidator where Self: MinimumBalanceRestrictable {
     
     func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
-        try validateMinimumBalanceRestrictable(amount: amount, fee: fee.amount)
+        try validateMinimumBalance(amount: amount, fee: fee.amount)
     }
 }
 
-// MARK: - WithdrawalValidator
+// MARK: - MaximumAmountRestrictable
 
-extension TransactionValidator where Self: WithdrawalValidator {
+extension TransactionValidator where Self: MaximumAmountRestrictable {
     func validate(amount: Amount, fee: Fee, destination: DestinationType) async throws {
         Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
         try validate(amount: amount, fee: fee)
@@ -124,16 +131,13 @@ extension TransactionValidator where Self: WithdrawalValidator {
     
     func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
-
-        if let withdrawalWarning = validateWithdrawalWarning(amount: amount, fee: fee.amount) {
-            throw ValidationError.withdrawalWarning(withdrawalWarning)
-        }
+        try validateMaximumAmount(amount: amount, fee: fee.amount)
     }
 }
 
-// MARK: - DustRestrictable, WithdrawalValidator e.g. KaspaWalletManager
+// MARK: - DustRestrictable, MaximumAmountRestrictable e.g. KaspaWalletManager
 
-extension TransactionValidator where Self: WithdrawalValidator, Self: DustRestrictable {
+extension TransactionValidator where Self: MaximumAmountRestrictable, Self: DustRestrictable {
     func validate(amount: Amount, fee: Fee, destination: DestinationType) async throws {
         Log.debug("TransactionValidator \(self) doesn't checking destination. If you want it, make our own implementation")
         try validate(amount: amount, fee: fee)
@@ -141,11 +145,8 @@ extension TransactionValidator where Self: WithdrawalValidator, Self: DustRestri
 
     func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
-        try validateDustRestrictable(amount: amount, fee: fee.amount)
-        
-        if let withdrawalWarning = validateWithdrawalWarning(amount: amount, fee: fee.amount) {
-            throw ValidationError.withdrawalWarning(withdrawalWarning)
-        }
+        try validateDust(amount: amount, fee: fee.amount)
+        try validateMaximumAmount(amount: amount, fee: fee.amount)
     }
 }
 
@@ -157,9 +158,9 @@ extension TransactionValidator where Self: ReserveAmountRestrictable {
 
         switch destination {
         case .generate:
-            try await validateReserveAmountRestrictable(amount: amount, addressType: .notCreated)
+            try await validateReserveAmount(amount: amount, addressType: .notCreated)
         case .address(let string):
-            try await validateReserveAmountRestrictable(amount: amount, addressType: .address(string))
+            try await validateReserveAmount(amount: amount, addressType: .address(string))
         }
     }
 }
