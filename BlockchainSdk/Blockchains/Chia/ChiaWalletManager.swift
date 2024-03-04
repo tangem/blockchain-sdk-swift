@@ -157,7 +157,7 @@ extension ChiaWalletManager: MaximumAmountRestrictable {
             return
         }
 
-        throw ValidationError.maximumAmount(
+        throw ValidationError.maximumUTXO(
             blockchainName: wallet.blockchain.displayName,
             newAmount: amountAvailableToSend,
             maxUtxo: txBuilder.maxInputCount
