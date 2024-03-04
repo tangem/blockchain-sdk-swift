@@ -16,25 +16,32 @@ import BitcoinCore
 @testable import BlockchainSdk
 
 final class RadiantTests: XCTestCase {
+    private let blockchain = Blockchain.radiant(testnet: false)
+    
     // MARK: - Impementation
     
     /// https://github.com/trustwallet/wallet-core/blob/master/tests/chains/Bitcoin/BitcoinAddressTests.cpp
     func testP2PKH_PrefixAddress() throws {
-        let publicKey = PublicKey(data: Data(hexString: "039d645d2ce630c2a9a6dbe0cbd0a8fcb7b70241cb8a48424f25593290af2494b9"), type: .secp256k1)!
+        let publicKey = Wallet.PublicKey(seedKey: Data(hexString: "039d645d2ce630c2a9a6dbe0cbd0a8fcb7b70241cb8a48424f25593290af2494b9"), derivationType: .none)
+        let addressAdapter = BitcoinWalletCoreAddressAdapter(coin: .bitcoinCash)
+        let adapterAddress = try addressAdapter.makeAddress(for: publicKey, by: .p2pkh)
         
-        let walletCoreAddress = BitcoinAddress(publicKey: publicKey, prefix: CoinType.bitcoin.p2pkhPrefix)!
-        
-        let legacyService = BitcoinLegacyAddressService(networkParams: BitcoinCashNetworkParams())
-        let legacyAddress = try legacyService.makeAddress(from: publicKey.data)
-        
-        XCTAssertEqual(legacyAddress.value, walletCoreAddress.description)
-        XCTAssertEqual(walletCoreAddress.description, "12dNaXQtN5Asn2YFwT1cvciCrJa525fAe4")
+        let legacyAddressService = BitcoinLegacyAddressService(networkParams: BitcoinCashNetworkParams())
+        let legacyAddress = try legacyAddressService.makeAddress(from: publicKey.blockchainKey)
+
+        XCTAssertEqual(adapterAddress.description, "12dNaXQtN5Asn2YFwT1cvciCrJa525fAe4")
+        XCTAssertEqual(adapterAddress.description, legacyAddress.value)
     }
     
-    /// https://github.com/trustwallet/wallet-core/blob/master/tests/chains/Bitcoin/BitcoinAddressTests.cpp
     func testP2SH_PrefixAddress() throws {
-        let publicKey = PublicKey(data: Data(hexString: "039d645d2ce630c2a9a6dbe0cbd0a8fcb7b70241cb8a48424f25593290af2494b9"), type: .secp256k1)!
-        let walletCoreAddress = BitcoinAddress.compatibleAddress(publicKey: publicKey, prefix: CoinType.bitcoin.p2shPrefix)
-        XCTAssertEqual(walletCoreAddress.description, "3PQ5BD39rDikf7YW6pJ9a9tbS3QhvwvzTG")
+        let publicKey = Wallet.PublicKey(seedKey: Data(hexString: "039d645d2ce630c2a9a6dbe0cbd0a8fcb7b70241cb8a48424f25593290af2494b9"), derivationType: .none)
+        let addressAdapter = BitcoinWalletCoreAddressAdapter(coin: .bitcoinCash)
+        let adapterAddress = try addressAdapter.makeAddress(for: publicKey, by: .p2sh)
+        
+        let legacyAddressService = BitcoinLegacyAddressService(networkParams: BitcoinCashNetworkParams())
+        let legacyAddress = try legacyAddressService.makeP2ScriptAddress(for: publicKey.blockchainKey)
+
+        XCTAssertEqual(adapterAddress.description, "33KPW4uKuyVFsCEh4YgDMF58zprnb817jZ")
+        XCTAssertEqual(adapterAddress.description, legacyAddress)
     }
 }

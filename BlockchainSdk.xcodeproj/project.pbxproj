@@ -64,6 +64,7 @@
 		2D9A91A429BB8C1700476EA6 /* TONProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A919D29BB8C1700476EA6 /* TONProvider.swift */; };
 		2D9A91A529BB8C1700476EA6 /* TONProviderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A919E29BB8C1700476EA6 /* TONProviderRequest.swift */; };
 		2D9A91A729BB8C2E00476EA6 /* WalletCoreAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A91A629BB8C2E00476EA6 /* WalletCoreAddressService.swift */; };
+		2D9E28042B95E66200DDE63D /* BitcoinWalletCoreAddressAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9E28032B95E66200DDE63D /* BitcoinWalletCoreAddressAdapter.swift */; };
 		2D9E2A562B584E2E0094D811 /* AlgorandTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9E2A552B584E2E0094D811 /* AlgorandTests.swift */; };
 		2DA139F72A8AD82E00E3C374 /* ChiaModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA139F42A8AD82E00E3C374 /* ChiaModels.swift */; };
 		2DA139F82A8AD82E00E3C374 /* Chia+Int64.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA139F52A8AD82E00E3C374 /* Chia+Int64.swift */; };
@@ -800,6 +801,7 @@
 		2D9A919D29BB8C1700476EA6 /* TONProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProvider.swift; sourceTree = "<group>"; };
 		2D9A919E29BB8C1700476EA6 /* TONProviderRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProviderRequest.swift; sourceTree = "<group>"; };
 		2D9A91A629BB8C2E00476EA6 /* WalletCoreAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletCoreAddressService.swift; sourceTree = "<group>"; };
+		2D9E28032B95E66200DDE63D /* BitcoinWalletCoreAddressAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinWalletCoreAddressAdapter.swift; sourceTree = "<group>"; };
 		2D9E2A552B584E2E0094D811 /* AlgorandTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandTests.swift; sourceTree = "<group>"; };
 		2DA139F42A8AD82E00E3C374 /* ChiaModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaModels.swift; sourceTree = "<group>"; };
 		2DA139F52A8AD82E00E3C374 /* Chia+Int64.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Chia+Int64.swift"; sourceTree = "<group>"; };
@@ -2426,11 +2428,12 @@
 			isa = PBXGroup;
 			children = (
 				5D304398239A8C9C0066B8D9 /* BitcoinAddressService.swift */,
-				EF666C2D2A2F3EE90044986F /* BitcoinLegacyAddressService.swift */,
 				EF666C2F2A2F3F200044986F /* BitcoinBech32AddressService.swift */,
+				EF666C2D2A2F3EE90044986F /* BitcoinLegacyAddressService.swift */,
+				B05BF633256F953500B50FD7 /* BitcoinScriptAddress.swift */,
 				EF32FEDD2A38D015002ED43F /* BitcoinScriptAddressesProvider.swift */,
 				EF32FEDA2A38C288002ED43F /* BitcoinScriptAddressProvider.swift */,
-				B05BF633256F953500B50FD7 /* BitcoinScriptAddress.swift */,
+				2D9E28032B95E66200DDE63D /* BitcoinWalletCoreAddressAdapter.swift */,
 			);
 			path = Address;
 			sourceTree = "<group>";
@@ -4184,6 +4187,7 @@
 				EFF56B4129C30265002B6952 /* EthereumFeeParameters.swift in Sources */,
 				2DDEFBDD2B59B44700885675 /* AlgorandResponse+Account.swift in Sources */,
 				EFB9523D2A6FDB2A00996D16 /* TransactionHistoryProvider.swift in Sources */,
+				2D9E28042B95E66200DDE63D /* BitcoinWalletCoreAddressAdapter.swift in Sources */,
 				EF3B19162AA5C9530084AA1C /* ExternalLinkProvider.swift in Sources */,
 				0AF90CDD2B87658600772F04 /* AuroraExternalLinkProvider.swift in Sources */,
 				B6F3AA722ADD925D0059C99A /* NEARTarget.swift in Sources */,

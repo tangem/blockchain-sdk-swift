@@ -1217,34 +1217,5 @@ class AddressesTests: XCTestCase {
     
     // MARK: - Radiant
     
-    func testRadiantLegacyAddress() throws {
-        let secpDecompressedKey = Data(hexString: "0485e9737a74c30a873f74df05124f2aa6f53042c2fc0a130d6cbd7d16b944b004833fef26c8be4c4823754869ff4e46755b85d851077771c220e2610496a29d98")
-        let secpCompressedKey = Data(hexString: "0285e9737a74c30a873f74df05124f2aa6f53042c2fc0a130d6cbd7d16b944b004")
-                                                
-        let blockchain = Blockchain.radiant
-        let networkParams = RadiantNetworkParams()
-        let addressService = BitcoinLegacyAddressService(networkParams: networkParams)
-
-//        let addr_dec_legacy = try addressService.makeAddress(from: secpDecompressedKey)
-        let addr_comp_legacy = try addressService.makeAddress(from: secpCompressedKey)
-        
-//        let addr = try addressService.makeScriptAddress(from: secpCompressedKey)
-        
-//        XCTAssertEqual("19gH5uhqY6DKrtkU66PsZPUZdzTd11Y7ke", addr_comp_legacy.value)
-//        XCTAssertEqual("16JXnhxjJUhxfyx4y6H4sFcxrgt8kQ8ewX", addr_dec_legacy.value)
-    }
-    
-    func testRadiantDefaultAddress() throws {
-        let secpDecompressedKey = Data(hexString: "0485e9737a74c30a873f74df05124f2aa6f53042c2fc0a130d6cbd7d16b944b004833fef26c8be4c4823754869ff4e46755b85d851077771c220e2610496a29d98")
-        let secpCompressedKey = Data(hexString: "0285e9737a74c30a873f74df05124f2aa6f53042c2fc0a130d6cbd7d16b944b004")
-                                                
-        let blockchain = Blockchain.radiant
-        let networkParams = RadiantNetworkParams()
-        let addressService = BitcoinLegacyAddressService(networkParams: networkParams)
-
-        let addr_dec_legacy = try addressService.makeAddress(from: secpDecompressedKey, type: .default)
-        let addr_comp_legacy = try addressService.makeAddress(from: secpCompressedKey, type: .default)
-        
-        print(addr_comp_legacy)
-    }
+    // TODO: - Insert Radiant basic address tests
 }
