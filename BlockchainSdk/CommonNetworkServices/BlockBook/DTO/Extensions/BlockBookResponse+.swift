@@ -34,6 +34,7 @@ extension BlockBookAddressResponse.Compat where T == BlockBookAddressResponse.To
 // MARK: - Auxiliary types
 
 extension BlockBookAddressResponse {
+    /// Helper DTO type to provide better compatibility for slightly different Blockbook responses for different blockchains.
     struct Compat<T> {
         let wrapped: T
     }

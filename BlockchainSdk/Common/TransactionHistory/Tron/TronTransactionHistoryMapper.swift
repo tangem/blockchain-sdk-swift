@@ -260,9 +260,8 @@ extension TronTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
 extension TronTransactionHistoryMapper: BlockBookTransactionHistoryTotalPageCountExtractor {
     func extractTotalPageCount(from response: BlockBookAddressResponse, contractAddress: String?) throws -> Int {
         // If transaction history is requested for a TRC20 token - `totalPageCount` must be calculated manually
-        // using `$.tokens[*].transfers` and `$.itemsOnPage` DTO fields because `$.totalPages` DTO field contains
-        // the number of pages for the ENTIRE transaction history (including TRX, TRC10 and TRC20 token transfers)
-        // for a given address
+        // using `$.tokens[*].transfers` and `$.itemsOnPage` DTO fields because `$.totalPages` DTO field always
+        // contains the number of pages for the TRX (Tron coin) transaction history for a given address
         if let contractAddress {
             guard
                 let itemsOnPage = response.itemsOnPage,
