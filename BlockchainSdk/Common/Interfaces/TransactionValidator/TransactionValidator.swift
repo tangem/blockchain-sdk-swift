@@ -41,11 +41,6 @@ public extension TransactionValidator {
         try validateAmounts(amount: amount, fee: Amount(with: amount, value: 0))
     }
     
-    /// Validation will be doing with the `amount` and the `fee` from the `Transaction`. Without the `destinationAddress`
-    func validate(transaction: Transaction) throws {
-        try validate(amount: transaction.amount, fee: transaction.fee)
-    }
-    
     /// Validation will be doing with `amount`, `fee` and `destinationAddress`  from the `Transaction`
     func validate(transaction: Transaction) async throws {
         try await validate(amount: transaction.amount, fee: transaction.fee, destination: .address(transaction.destinationAddress))

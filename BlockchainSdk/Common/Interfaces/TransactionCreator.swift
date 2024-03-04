@@ -59,9 +59,7 @@ public extension TransactionCreator {
         changeAddress: String? = nil,
         contractAddress: String? = nil
     ) async throws -> Transaction {
-        try await validate(amount: amount, fee: fee, destination: .address(destinationAddress))
-        
-        return Transaction(
+        let transaction = Transaction(
             amount: amount,
             fee: fee,
             sourceAddress: defaultSourceAddress,
@@ -69,5 +67,9 @@ public extension TransactionCreator {
             changeAddress: changeAddress ?? defaultChangeAddress,
             contractAddress: contractAddress ?? amount.type.token?.contractAddress
         )
+        
+        try await validate(transaction: transaction)
+        
+        return transaction
     }
 }

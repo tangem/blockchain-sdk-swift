@@ -173,6 +173,6 @@ extension TezosWalletManager: WithdrawalSuggestionProvider {
             return nil
         }
     
-        return .feeTooHigh(reduceAmountBy: Amount(with: walletAmount, value: withdrawalMinimumAmount))
+        return .feeIsTooHigh(reduceAmountBy: Amount(with: walletAmount, value: withdrawalMinimumAmount))
     }
 }

@@ -24,5 +24,5 @@ public struct WithdrawalWarning: Hashable {
 }
 
 public enum WithdrawalSuggestion: Hashable {
-    case feeTooHigh(reduceAmountBy: Amount)
+    case feeIsTooHigh(reduceAmountBy: Amount)
 }
