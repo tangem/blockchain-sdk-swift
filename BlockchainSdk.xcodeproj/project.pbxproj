@@ -679,8 +679,6 @@
 		EF666C322A2F43370044986F /* PolkadotAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF666C312A2F43370044986F /* PolkadotAddress.swift */; };
 		EF72577E2A8D42A100EA8CB2 /* TransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF72577D2A8D42A100EA8CB2 /* TransactionHistory.swift */; };
 		EF7257902A8F938400EA8CB2 /* KeyedDecodingContainer+.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF72578F2A8F938400EA8CB2 /* KeyedDecodingContainer+.swift */; };
-		EF72579A2A93B8B900EA8CB2 /* UTXOTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7257952A93B8B900EA8CB2 /* UTXOTransactionHistoryProvider.swift */; };
-		EF72579B2A93B8B900EA8CB2 /* UTXOTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7257962A93B8B900EA8CB2 /* UTXOTransactionHistoryMapper.swift */; };
 		EF937BDD2B90EED0009B8374 /* WithdrawalSuggestionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF937BDA2B90EED0009B8374 /* WithdrawalSuggestionProvider.swift */; };
 		EF937BDE2B90EED0009B8374 /* ExistentialDepositProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF937BDB2B90EED0009B8374 /* ExistentialDepositProvider.swift */; };
 		EF937BDF2B90EED0009B8374 /* RentProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF937BDC2B90EED0009B8374 /* RentProvider.swift */; };
@@ -1435,8 +1433,6 @@
 		EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashMainNetworkParams.swift; sourceTree = "<group>"; };
 		EF72577D2A8D42A100EA8CB2 /* TransactionHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionHistory.swift; sourceTree = "<group>"; };
 		EF72578F2A8F938400EA8CB2 /* KeyedDecodingContainer+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyedDecodingContainer+.swift"; sourceTree = "<group>"; };
-		EF7257952A93B8B900EA8CB2 /* UTXOTransactionHistoryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTXOTransactionHistoryProvider.swift; sourceTree = "<group>"; };
-		EF7257962A93B8B900EA8CB2 /* UTXOTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTXOTransactionHistoryMapper.swift; sourceTree = "<group>"; };
 		EF937BDA2B90EED0009B8374 /* WithdrawalSuggestionProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WithdrawalSuggestionProvider.swift; sourceTree = "<group>"; };
 		EF937BDB2B90EED0009B8374 /* ExistentialDepositProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExistentialDepositProvider.swift; sourceTree = "<group>"; };
 		EF937BDC2B90EED0009B8374 /* RentProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RentProvider.swift; sourceTree = "<group>"; };
