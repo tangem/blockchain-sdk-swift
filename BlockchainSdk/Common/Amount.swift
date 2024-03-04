@@ -61,11 +61,6 @@ public struct Amount: CustomStringConvertible, Hashable, Comparable {
         return encoded?.hexString.stripLeadingZeroes().addHexPrefix()
     }
     
-    /// For transaction data.
-    public var encodedAligned: Data? {
-        encoded?.aligned()
-    }
-    
     public var isZero: Bool {
         return value == 0
     }

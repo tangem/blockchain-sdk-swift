@@ -22,7 +22,7 @@ class TezosWalletManager: BaseManager, WalletManager {
             .getInfo(address: wallet.address)
             .sink(receiveCompletion: { [weak self]  completionSubscription in
                 if case let .failure(error) = completionSubscription {
-                    self?.wallet.amounts = [:]
+                    self?.wallet.clearAmounts()
                     completion(.failure(error))
                 }
             }, receiveValue: { [weak self] response in

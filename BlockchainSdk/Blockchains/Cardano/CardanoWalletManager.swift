@@ -20,7 +20,7 @@ class CardanoWalletManager: BaseManager, WalletManager {
             .getInfo(addresses: wallet.addresses.map { $0.value }, tokens: cardTokens)
             .sink(receiveCompletion: { [weak self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
-                    self?.wallet.amounts = [:]
+                    self?.wallet.clearAmounts()
                     completion(.failure(error))
                 }
             }, receiveValue: { [weak self] response in

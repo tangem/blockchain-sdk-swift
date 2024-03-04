@@ -39,7 +39,7 @@ final class TONWalletManager: BaseManager, WalletManager {
             .sink(
                 receiveCompletion: { [weak self] completionSubscription in
                     if case let .failure(error) = completionSubscription {
-                        self?.wallet.amounts = [:]
+                        self?.wallet.clearAmounts()
                         self?.isAvailable = false
                         completion(.failure(error))
                     }

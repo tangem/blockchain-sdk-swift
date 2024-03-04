@@ -157,7 +157,7 @@ struct RLP {
                 guard let slice = try? slice(data: bytesToParse, offset: offset, length: dataLength) else {return nil}
                 guard let inside = decode(Data(slice)) else {return nil}
                 switch inside.content {
-                case .data(_):
+                case .data:
                     return nil
                 default:
                     outputArray.append(inside)
@@ -189,9 +189,9 @@ struct RLP {
             switch self.content {
             case .noItem:
                 return false
-            case .data(_):
+            case .data:
                 return true
-            case .list(_):
+            case .list:
                 return false
             }
         }
@@ -200,9 +200,9 @@ struct RLP {
             switch self.content {
             case .noItem:
                 return false
-            case .data(_):
+            case .data:
                 return false
-            case .list(_):
+            case .list:
                 return true
             }
         }
@@ -210,7 +210,7 @@ struct RLP {
             switch self.content {
             case .noItem:
                 return nil
-            case .data(_):
+            case .data:
                 return nil
             case .list(let list, _, _):
                 return list.count

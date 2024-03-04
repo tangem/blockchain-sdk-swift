@@ -27,8 +27,8 @@ extension TransferERC20TokenMethod: SmartContractMethod {
 
     public var data: Data {
         let prefixData = Data(hexString: prefix)
-        let addressData = Data(hexString: destination).aligned(to: 32)
-        let amountData = amount.serialize().aligned(to: 32)
+        let addressData = Data(hexString: destination).leadingZeroPadding(toLength: 32)
+        let amountData = amount.serialize().leadingZeroPadding(toLength: 32)
         return prefixData + addressData + amountData
     }
 }

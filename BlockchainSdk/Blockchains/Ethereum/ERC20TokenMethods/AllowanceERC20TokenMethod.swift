@@ -26,8 +26,8 @@ extension AllowanceERC20TokenMethod: SmartContractMethod {
 
     public var data: Data {
         let prefixData = Data(hexString: prefix)
-        let ownerData = Data(hexString: owner).aligned(to: 32)
-        let spenderData = Data(hexString: spender).aligned(to: 32)
+        let ownerData = Data(hexString: owner).leadingZeroPadding(toLength: 32)
+        let spenderData = Data(hexString: spender).leadingZeroPadding(toLength: 32)
         
         return prefixData + ownerData + spenderData
     }
