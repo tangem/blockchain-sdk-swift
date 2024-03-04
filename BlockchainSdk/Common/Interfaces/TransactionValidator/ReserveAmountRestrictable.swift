@@ -10,7 +10,7 @@ import Foundation
 import Combine
 
 protocol ReserveAmountRestrictable {
-    func validateReserveAmountRestrictable(amount: Amount, addressType: ReserveAmountRestrictableAddressType) async throws
+    func validateReserveAmount(amount: Amount, addressType: ReserveAmountRestrictableAddressType) async throws
 }
 
 enum ReserveAmountRestrictableAddressType {

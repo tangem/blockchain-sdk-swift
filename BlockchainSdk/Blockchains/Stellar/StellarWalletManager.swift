@@ -156,7 +156,7 @@ extension StellarWalletManager: SignatureCountValidator {
 extension StellarWalletManager: ThenProcessable { }
 
 extension StellarWalletManager: ReserveAmountRestrictable {
-    func validateReserveAmountRestrictable(amount: Amount, addressType: ReserveAmountRestrictableAddressType) async throws {
+    func validateReserveAmount(amount: Amount, addressType: ReserveAmountRestrictableAddressType) async throws {
         let isAccountCreated: Bool = try await {
             switch addressType {
             case .notCreated:

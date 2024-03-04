@@ -144,7 +144,7 @@ extension XRPWalletManager: TransactionSender {
 extension XRPWalletManager: ThenProcessable { }
 
 extension XRPWalletManager: ReserveAmountRestrictable {
-    func validateReserveAmountRestrictable(amount: Amount, addressType: ReserveAmountRestrictableAddressType) async throws {
+    func validateReserveAmount(amount: Amount, addressType: ReserveAmountRestrictableAddressType) async throws {
         guard let walletReserve = wallet.amounts[.reserve] else {
             throw XRPError.missingReserve
         }
