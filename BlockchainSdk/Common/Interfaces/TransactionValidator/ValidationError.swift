@@ -19,8 +19,7 @@ public enum ValidationError: Hashable, LocalizedError {
     case dustAmount(minimumAmount: Amount)
     case dustChange(minimumAmount: Amount)
     case minimumBalance(minimumBalance: Amount)
-    
-    case withdrawalWarning(WithdrawalWarning)
+    case maximumUTXO(blockchainName: String, newAmount: Amount, maxUtxo: Int)
     case reserve(amount: Amount)
     
     public var errorDescription: String? {
@@ -43,8 +42,10 @@ public enum ValidationError: Hashable, LocalizedError {
             return "send_error_invalid_fee_value".localized
         case .totalExceedsBalance:
             return "send_validation_invalid_total".localized
-        case .withdrawalWarning(let error):
-            return error.warningMessage
+        case .maximumUTXO(let blockchainName, let newAmount, let maxUtxo):
+            return "common_utxo_validate_withdrawal_message_warning".localized(
+                [blockchainName, maxUtxo, newAmount.description]
+            )
         case .reserve(let amount):
             return String(format: "send_error_no_target_account".localized, amount.description)
         }

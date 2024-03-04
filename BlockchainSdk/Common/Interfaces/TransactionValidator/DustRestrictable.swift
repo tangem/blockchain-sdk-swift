@@ -11,11 +11,11 @@ import Foundation
 protocol DustRestrictable {
     var dustValue: Amount { get }
 
-    func validateDustRestrictable(amount: Amount, fee: Amount) throws
+    func validateDust(amount: Amount, fee: Amount) throws
 }
 
 extension DustRestrictable where Self: WalletProvider {
-    func validateDustRestrictable(amount: Amount, fee: Amount) throws {
+    func validateDust(amount: Amount, fee: Amount) throws {
         guard let balance = wallet.amounts[amount.type] else {
             throw ValidationError.balanceNotFound
         }

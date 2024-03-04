@@ -126,12 +126,3 @@ public protocol SignatureCountValidator {
 public protocol AddressResolver {
     func resolve(_ address: String) async throws -> String
 }
-
-public protocol RentProvider {
-    func minimalBalanceForRentExemption() -> AnyPublisher<Amount, Error>
-    func rentAmount() -> AnyPublisher<Amount, Error>
-}
-
-public protocol ExistentialDepositProvider {
-    var existentialDeposit: Amount { get }
-}

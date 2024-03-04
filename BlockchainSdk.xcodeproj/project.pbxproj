@@ -125,9 +125,6 @@
 		2DDEFBE62B59B44700885675 /* AlgorandNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBDA2B59B44700885675 /* AlgorandNetworkProvider.swift */; };
 		2DDEFBE72B59B44700885675 /* AlgorandProviderUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBDB2B59B44700885675 /* AlgorandProviderUrl.swift */; };
 		2DDEFBE82B59B44700885675 /* AlgorandProviderTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBDC2B59B44700885675 /* AlgorandProviderTarget.swift */; };
-		2DDEFBF62B5E94F200885675 /* AlgorandTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBF32B5E94F200885675 /* AlgorandTransactionHistoryProvider.swift */; };
-		2DDEFBF72B5E94F200885675 /* AlgorandTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBF42B5E94F200885675 /* AlgorandTransactionHistoryMapper.swift */; };
-		2DDEFBF82B5E94F200885675 /* AlgorandIndexProviderTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBF52B5E94F200885675 /* AlgorandIndexProviderTarget.swift */; };
 		2DDEFBFA2B5E951400885675 /* AlgorandResponse+TransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBF92B5E951400885675 /* AlgorandResponse+TransactionHistory.swift */; };
 		2DF7621D2B7AB92300666B74 /* AptosFeeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF7621C2B7AB92300666B74 /* AptosFeeInfo.swift */; };
 		47420109BD3DE47300C6F23F /* Pods_BlockchainSdkTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1A207847B605E0517D9A55F /* Pods_BlockchainSdkTests.framework */; };
@@ -284,12 +281,25 @@
 		B626D11F2AF02C40003A8929 /* TWPublicKeyType+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B626D11E2AF02C40003A8929 /* TWPublicKeyType+.swift */; };
 		B62A12062AE308DA0080BAEC /* NEARTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62A12052AE308DA0080BAEC /* NEARTransactionParams.swift */; };
 		B62BCBAC2B3D978F007494CF /* VeChainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62BCBAB2B3D978F007494CF /* VeChainTests.swift */; };
+		B62EC6832B0E88A10018F51C /* Log+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62EC6822B0E88A10018F51C /* Log+.swift */; };
 		B63068BE2B3102A900E79053 /* VeChainExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068BD2B3102A900E79053 /* VeChainExternalLinkProvider.swift */; };
 		B63068C22B3102FA00E79053 /* VeChainTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068C02B3102FA00E79053 /* VeChainTransactionBuilder.swift */; };
 		B63068C72B31050900E79053 /* VeChainWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068C62B31050900E79053 /* VeChainWalletAssembly.swift */; };
 		B63068C92B3115FD00E79053 /* VeChainWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068C82B3115FD00E79053 /* VeChainWalletManager.swift */; };
 		B63068CC2B31163700E79053 /* VeChainNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068CB2B31163700E79053 /* VeChainNetworkProvider.swift */; };
 		B63068CE2B31164600E79053 /* VeChainNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068CD2B31164600E79053 /* VeChainNetworkService.swift */; };
+		B633EA032B8FC31600F11BFF /* BlockBookResponse+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA022B8FC31600F11BFF /* BlockBookResponse+.swift */; };
+		B633EA122B8FC58900F11BFF /* AlgorandTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA0F2B8FC58900F11BFF /* AlgorandTransactionHistoryProvider.swift */; };
+		B633EA132B8FC58900F11BFF /* AlgorandIndexProviderTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA102B8FC58900F11BFF /* AlgorandIndexProviderTarget.swift */; };
+		B633EA142B8FC58900F11BFF /* AlgorandTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA112B8FC58900F11BFF /* AlgorandTransactionHistoryMapper.swift */; };
+		B633EA1A2B8FC5D500F11BFF /* TronTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA182B8FC5D400F11BFF /* TronTransactionHistoryMapper.swift */; };
+		B633EA1E2B8FC5D900F11BFF /* EthereumTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA1C2B8FC5D900F11BFF /* EthereumTransactionHistoryProvider.swift */; };
+		B633EA1F2B8FC5D900F11BFF /* EthereumTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA1D2B8FC5D900F11BFF /* EthereumTransactionHistoryMapper.swift */; };
+		B633EA222B8FC5DD00F11BFF /* UTXOTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA202B8FC5DD00F11BFF /* UTXOTransactionHistoryProvider.swift */; };
+		B633EA232B8FC5DD00F11BFF /* UTXOTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA212B8FC5DD00F11BFF /* UTXOTransactionHistoryMapper.swift */; };
+		B633EA252B8FC79000F11BFF /* TronTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA242B8FC79000F11BFF /* TronTransactionHistoryProvider.swift */; };
+		B633EA272B8FC9E300F11BFF /* BlockBookTarget.AddressRequestParameters.FilterType+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA262B8FC9E300F11BFF /* BlockBookTarget.AddressRequestParameters.FilterType+.swift */; };
+		B633EA292B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPageCountExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA282B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPageCountExtractor.swift */; };
 		B63B32AD2B8374B40089DF4B /* HederaCreatedAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B32AC2B8374B40089DF4B /* HederaCreatedAccount.swift */; };
 		B63B792D2AD850DF0055BD06 /* NEARWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B792C2AD850DF0055BD06 /* NEARWalletAssembly.swift */; };
 		B63B792F2AD852E80055BD06 /* NEARExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */; };
@@ -669,12 +679,11 @@
 		EF666C322A2F43370044986F /* PolkadotAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF666C312A2F43370044986F /* PolkadotAddress.swift */; };
 		EF72577E2A8D42A100EA8CB2 /* TransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF72577D2A8D42A100EA8CB2 /* TransactionHistory.swift */; };
 		EF7257902A8F938400EA8CB2 /* KeyedDecodingContainer+.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF72578F2A8F938400EA8CB2 /* KeyedDecodingContainer+.swift */; };
-		EF72579A2A93B8B900EA8CB2 /* UTXOTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7257952A93B8B900EA8CB2 /* UTXOTransactionHistoryProvider.swift */; };
-		EF72579B2A93B8B900EA8CB2 /* UTXOTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7257962A93B8B900EA8CB2 /* UTXOTransactionHistoryMapper.swift */; };
-		EF72579C2A93B8B900EA8CB2 /* EthereumTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7257982A93B8B900EA8CB2 /* EthereumTransactionHistoryProvider.swift */; };
-		EF72579D2A93B8B900EA8CB2 /* EthereumTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7257992A93B8B900EA8CB2 /* EthereumTransactionHistoryMapper.swift */; };
+		EF937BDD2B90EED0009B8374 /* WithdrawalSuggestionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF937BDA2B90EED0009B8374 /* WithdrawalSuggestionProvider.swift */; };
+		EF937BDE2B90EED0009B8374 /* ExistentialDepositProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF937BDB2B90EED0009B8374 /* ExistentialDepositProvider.swift */; };
+		EF937BDF2B90EED0009B8374 /* RentProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF937BDC2B90EED0009B8374 /* RentProvider.swift */; };
+		EF937BE12B90EF0C009B8374 /* MaximumAmountRestrictable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF937BE02B90EF0C009B8374 /* MaximumAmountRestrictable.swift */; };
 		EF9E380D2B7A38E3004B694C /* TransactionValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9E380C2B7A38E3004B694C /* TransactionValidator.swift */; };
-		EF9E38102B7A3E82004B694C /* WithdrawalValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9E380F2B7A3E82004B694C /* WithdrawalValidator.swift */; };
 		EF9E381D2B7A43A5004B694C /* DustRestrictable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9E381C2B7A43A5004B694C /* DustRestrictable.swift */; };
 		EF9E381F2B7A43B3004B694C /* MinimumBalanceRestrictable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9E381E2B7A43B3004B694C /* MinimumBalanceRestrictable.swift */; };
 		EF9E382D2B7A47C7004B694C /* AnyPublisher+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9E382C2B7A47C7004B694C /* AnyPublisher+Async.swift */; };
@@ -859,9 +868,6 @@
 		2DDEFBDA2B59B44700885675 /* AlgorandNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandNetworkProvider.swift; sourceTree = "<group>"; };
 		2DDEFBDB2B59B44700885675 /* AlgorandProviderUrl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandProviderUrl.swift; sourceTree = "<group>"; };
 		2DDEFBDC2B59B44700885675 /* AlgorandProviderTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandProviderTarget.swift; sourceTree = "<group>"; };
-		2DDEFBF32B5E94F200885675 /* AlgorandTransactionHistoryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandTransactionHistoryProvider.swift; sourceTree = "<group>"; };
-		2DDEFBF42B5E94F200885675 /* AlgorandTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandTransactionHistoryMapper.swift; sourceTree = "<group>"; };
-		2DDEFBF52B5E94F200885675 /* AlgorandIndexProviderTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandIndexProviderTarget.swift; sourceTree = "<group>"; };
 		2DDEFBF92B5E951400885675 /* AlgorandResponse+TransactionHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AlgorandResponse+TransactionHistory.swift"; sourceTree = "<group>"; };
 		2DF7621C2B7AB92300666B74 /* AptosFeeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AptosFeeInfo.swift; sourceTree = "<group>"; };
 		3452E77A600B278568F13FA9 /* Pods-BlockchainSdkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.release.xcconfig"; sourceTree = "<group>"; };
@@ -1039,12 +1045,25 @@
 		B626D11E2AF02C40003A8929 /* TWPublicKeyType+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TWPublicKeyType+.swift"; sourceTree = "<group>"; };
 		B62A12052AE308DA0080BAEC /* NEARTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARTransactionParams.swift; sourceTree = "<group>"; };
 		B62BCBAB2B3D978F007494CF /* VeChainTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainTests.swift; sourceTree = "<group>"; };
+		B62EC6822B0E88A10018F51C /* Log+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Log+.swift"; sourceTree = "<group>"; };
 		B63068BD2B3102A900E79053 /* VeChainExternalLinkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VeChainExternalLinkProvider.swift; sourceTree = "<group>"; };
 		B63068C02B3102FA00E79053 /* VeChainTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VeChainTransactionBuilder.swift; sourceTree = "<group>"; };
 		B63068C62B31050900E79053 /* VeChainWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainWalletAssembly.swift; sourceTree = "<group>"; };
 		B63068C82B3115FD00E79053 /* VeChainWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainWalletManager.swift; sourceTree = "<group>"; };
 		B63068CB2B31163700E79053 /* VeChainNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkProvider.swift; sourceTree = "<group>"; };
 		B63068CD2B31164600E79053 /* VeChainNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkService.swift; sourceTree = "<group>"; };
+		B633EA022B8FC31600F11BFF /* BlockBookResponse+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "BlockBookResponse+.swift"; sourceTree = "<group>"; };
+		B633EA0F2B8FC58900F11BFF /* AlgorandTransactionHistoryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandTransactionHistoryProvider.swift; sourceTree = "<group>"; };
+		B633EA102B8FC58900F11BFF /* AlgorandIndexProviderTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandIndexProviderTarget.swift; sourceTree = "<group>"; };
+		B633EA112B8FC58900F11BFF /* AlgorandTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandTransactionHistoryMapper.swift; sourceTree = "<group>"; };
+		B633EA182B8FC5D400F11BFF /* TronTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TronTransactionHistoryMapper.swift; sourceTree = "<group>"; };
+		B633EA1C2B8FC5D900F11BFF /* EthereumTransactionHistoryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumTransactionHistoryProvider.swift; sourceTree = "<group>"; };
+		B633EA1D2B8FC5D900F11BFF /* EthereumTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumTransactionHistoryMapper.swift; sourceTree = "<group>"; };
+		B633EA202B8FC5DD00F11BFF /* UTXOTransactionHistoryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTXOTransactionHistoryProvider.swift; sourceTree = "<group>"; };
+		B633EA212B8FC5DD00F11BFF /* UTXOTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTXOTransactionHistoryMapper.swift; sourceTree = "<group>"; };
+		B633EA242B8FC79000F11BFF /* TronTransactionHistoryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TronTransactionHistoryProvider.swift; sourceTree = "<group>"; };
+		B633EA262B8FC9E300F11BFF /* BlockBookTarget.AddressRequestParameters.FilterType+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlockBookTarget.AddressRequestParameters.FilterType+.swift"; sourceTree = "<group>"; };
+		B633EA282B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPageCountExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookTransactionHistoryTotalPageCountExtractor.swift; sourceTree = "<group>"; };
 		B63B32AC2B8374B40089DF4B /* HederaCreatedAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaCreatedAccount.swift; sourceTree = "<group>"; };
 		B63B792C2AD850DF0055BD06 /* NEARWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARWalletAssembly.swift; sourceTree = "<group>"; };
 		B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARExternalLinkProvider.swift; sourceTree = "<group>"; };
@@ -1414,12 +1433,11 @@
 		EF680A74284F556A00F6B1BD /* DashMainNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashMainNetworkParams.swift; sourceTree = "<group>"; };
 		EF72577D2A8D42A100EA8CB2 /* TransactionHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionHistory.swift; sourceTree = "<group>"; };
 		EF72578F2A8F938400EA8CB2 /* KeyedDecodingContainer+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyedDecodingContainer+.swift"; sourceTree = "<group>"; };
-		EF7257952A93B8B900EA8CB2 /* UTXOTransactionHistoryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTXOTransactionHistoryProvider.swift; sourceTree = "<group>"; };
-		EF7257962A93B8B900EA8CB2 /* UTXOTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTXOTransactionHistoryMapper.swift; sourceTree = "<group>"; };
-		EF7257982A93B8B900EA8CB2 /* EthereumTransactionHistoryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumTransactionHistoryProvider.swift; sourceTree = "<group>"; };
-		EF7257992A93B8B900EA8CB2 /* EthereumTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumTransactionHistoryMapper.swift; sourceTree = "<group>"; };
+		EF937BDA2B90EED0009B8374 /* WithdrawalSuggestionProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WithdrawalSuggestionProvider.swift; sourceTree = "<group>"; };
+		EF937BDB2B90EED0009B8374 /* ExistentialDepositProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExistentialDepositProvider.swift; sourceTree = "<group>"; };
+		EF937BDC2B90EED0009B8374 /* RentProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RentProvider.swift; sourceTree = "<group>"; };
+		EF937BE02B90EF0C009B8374 /* MaximumAmountRestrictable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MaximumAmountRestrictable.swift; sourceTree = "<group>"; };
 		EF9E380C2B7A38E3004B694C /* TransactionValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionValidator.swift; sourceTree = "<group>"; };
-		EF9E380F2B7A3E82004B694C /* WithdrawalValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithdrawalValidator.swift; sourceTree = "<group>"; };
 		EF9E381C2B7A43A5004B694C /* DustRestrictable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DustRestrictable.swift; sourceTree = "<group>"; };
 		EF9E381E2B7A43B3004B694C /* MinimumBalanceRestrictable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimumBalanceRestrictable.swift; sourceTree = "<group>"; };
 		EF9E382C2B7A47C7004B694C /* AnyPublisher+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyPublisher+Async.swift"; sourceTree = "<group>"; };
@@ -1494,6 +1512,7 @@
 		0A158BFF2B74E44D0004DC23 /* DTO */ = {
 			isa = PBXGroup;
 			children = (
+				B633EA012B8FC2A500F11BFF /* Extensions */,
 				0A158C002B74E44D0004DC23 /* BlockBookResponses.swift */,
 				0AEFB5382B7656EC007519F9 /* NodeRequest.swift */,
 			);
@@ -1742,16 +1761,6 @@
 			path = Provider;
 			sourceTree = "<group>";
 		};
-		2DDEFBF22B5E94F200885675 /* Algorand */ = {
-			isa = PBXGroup;
-			children = (
-				2DDEFBF32B5E94F200885675 /* AlgorandTransactionHistoryProvider.swift */,
-				2DDEFBF42B5E94F200885675 /* AlgorandTransactionHistoryMapper.swift */,
-				2DDEFBF52B5E94F200885675 /* AlgorandIndexProviderTarget.swift */,
-			);
-			path = Algorand;
-			sourceTree = "<group>";
-		};
 		5D14E4642397B80F00C15FC8 = {
 			isa = PBXGroup;
 			children = (
@@ -1882,6 +1891,7 @@
 				5DEAFA932444C5300032E316 /* Token.swift */,
 				5DEAFA8F244473460032E316 /* Transaction.swift */,
 				EFBA17FD2988623F00C23955 /* TransactionSendResult.swift */,
+				B69F21E52B86CD4A00A1177B /* UnixTimestamp.swift */,
 				5D006ACC239950F9008BA04D /* Wallet.swift */,
 				EFD717CF2A2619C400E5430D /* Wallet+PublicKey.swift */,
 				2D9A91A629BB8C2E00476EA6 /* WalletCoreAddressService.swift */,
@@ -1899,7 +1909,6 @@
 				5D5E058A24FE736E00F04DE1 /* Localizations */,
 				EFB9523E2A6FEF0200996D16 /* TransactionHistory */,
 				B0A1D39B2625A10B0013F0BF /* Utils */,
-				B69F21E52B86CD4A00A1177B /* UnixTimestamp.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -1951,6 +1960,7 @@
 				B62011032B7AAC2100155235 /* Collection+.swift */,
 				DC5E646C2B16098C00E81AA5 /* RIPEMD160+.swift */,
 				EF9E382C2B7A47C7004B694C /* AnyPublisher+Async.swift */,
+				B62EC6822B0E88A10018F51C /* Log+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2496,6 +2506,52 @@
 				B63068CD2B31164600E79053 /* VeChainNetworkService.swift */,
 			);
 			path = Network;
+			sourceTree = "<group>";
+		};
+		B633EA012B8FC2A500F11BFF /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B633EA022B8FC31600F11BFF /* BlockBookResponse+.swift */,
+				B633EA262B8FC9E300F11BFF /* BlockBookTarget.AddressRequestParameters.FilterType+.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		B633EA0E2B8FC57800F11BFF /* Algorand */ = {
+			isa = PBXGroup;
+			children = (
+				B633EA102B8FC58900F11BFF /* AlgorandIndexProviderTarget.swift */,
+				B633EA112B8FC58900F11BFF /* AlgorandTransactionHistoryMapper.swift */,
+				B633EA0F2B8FC58900F11BFF /* AlgorandTransactionHistoryProvider.swift */,
+			);
+			path = Algorand;
+			sourceTree = "<group>";
+		};
+		B633EA152B8FC59B00F11BFF /* Ethereum */ = {
+			isa = PBXGroup;
+			children = (
+				B633EA1D2B8FC5D900F11BFF /* EthereumTransactionHistoryMapper.swift */,
+				B633EA1C2B8FC5D900F11BFF /* EthereumTransactionHistoryProvider.swift */,
+			);
+			path = Ethereum;
+			sourceTree = "<group>";
+		};
+		B633EA162B8FC5A200F11BFF /* Tron */ = {
+			isa = PBXGroup;
+			children = (
+				B633EA182B8FC5D400F11BFF /* TronTransactionHistoryMapper.swift */,
+				B633EA242B8FC79000F11BFF /* TronTransactionHistoryProvider.swift */,
+			);
+			path = Tron;
+			sourceTree = "<group>";
+		};
+		B633EA172B8FC5A900F11BFF /* UTXO */ = {
+			isa = PBXGroup;
+			children = (
+				B633EA212B8FC5DD00F11BFF /* UTXOTransactionHistoryMapper.swift */,
+				B633EA202B8FC5DD00F11BFF /* UTXOTransactionHistoryProvider.swift */,
+			);
+			path = UTXO;
 			sourceTree = "<group>";
 		};
 		B63B79302AD854010055BD06 /* NEAR */ = {
@@ -3288,24 +3344,14 @@
 			path = Dash;
 			sourceTree = "<group>";
 		};
-		EF7257942A93B8B900EA8CB2 /* UTXO */ = {
+		EF937BD92B90EED0009B8374 /* BlockchainNotifications */ = {
 			isa = PBXGroup;
 			children = (
-				EF7257952A93B8B900EA8CB2 /* UTXOTransactionHistoryProvider.swift */,
-				EF7257962A93B8B900EA8CB2 /* UTXOTransactionHistoryMapper.swift */,
+				EF937BDA2B90EED0009B8374 /* WithdrawalSuggestionProvider.swift */,
+				EF937BDB2B90EED0009B8374 /* ExistentialDepositProvider.swift */,
+				EF937BDC2B90EED0009B8374 /* RentProvider.swift */,
 			);
-			name = UTXO;
-			path = TransactionHistory/UTXO;
-			sourceTree = "<group>";
-		};
-		EF7257972A93B8B900EA8CB2 /* Ethereum */ = {
-			isa = PBXGroup;
-			children = (
-				EF7257982A93B8B900EA8CB2 /* EthereumTransactionHistoryProvider.swift */,
-				EF7257992A93B8B900EA8CB2 /* EthereumTransactionHistoryMapper.swift */,
-			);
-			name = Ethereum;
-			path = TransactionHistory/Ethereum;
+			path = BlockchainNotifications;
 			sourceTree = "<group>";
 		};
 		EF9E380E2B7A3A41004B694C /* Interfaces */ = {
@@ -3313,6 +3359,7 @@
 			children = (
 				5D14E48F2397B87000C15FC8 /* WalletManager.swift */,
 				DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */,
+				EF937BD92B90EED0009B8374 /* BlockchainNotifications */,
 				EF9E382E2B7A4CF3004B694C /* TransactionValidator */,
 			);
 			path = Interfaces;
@@ -3323,10 +3370,10 @@
 			children = (
 				EF9E380C2B7A38E3004B694C /* TransactionValidator.swift */,
 				EF9E382F2B7A4CFD004B694C /* ValidationError.swift */,
-				EF9E380F2B7A3E82004B694C /* WithdrawalValidator.swift */,
 				EF9E381C2B7A43A5004B694C /* DustRestrictable.swift */,
 				EF9E381E2B7A43B3004B694C /* MinimumBalanceRestrictable.swift */,
 				EF9E384E2B7A740D004B694C /* ReserveAmountRestrictable.swift */,
+				EF937BE02B90EF0C009B8374 /* MaximumAmountRestrictable.swift */,
 			);
 			path = TransactionValidator;
 			sourceTree = "<group>";
@@ -3334,14 +3381,16 @@
 		EFB9523E2A6FEF0200996D16 /* TransactionHistory */ = {
 			isa = PBXGroup;
 			children = (
+				B633EA172B8FC5A900F11BFF /* UTXO */,
+				B633EA152B8FC59B00F11BFF /* Ethereum */,
+				B633EA162B8FC5A200F11BFF /* Tron */,
+				B633EA0E2B8FC57800F11BFF /* Algorand */,
 				EF72577D2A8D42A100EA8CB2 /* TransactionHistory.swift */,
 				EFB9523C2A6FDB2A00996D16 /* TransactionHistoryProvider.swift */,
 				EFB9523F2A6FEF1700996D16 /* TransactionRecord.swift */,
 				EF193BFD2A77ED9E0048C0C3 /* TransactionHistoryPages.swift */,
 				EF2EB7A72A963E250036DA24 /* BlockBookTransactionHistoryMapper.swift */,
-				EF7257942A93B8B900EA8CB2 /* UTXO */,
-				EF7257972A93B8B900EA8CB2 /* Ethereum */,
-				2DDEFBF22B5E94F200885675 /* Algorand */,
+				B633EA282B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPageCountExtractor.swift */,
 			);
 			path = TransactionHistory;
 			sourceTree = "<group>";
@@ -3719,9 +3768,9 @@
 				5D0EEE67253EF2E800758FDC /* TezosTransactionBuilder.swift in Sources */,
 				5D4B33C023F6EA6C00C93A84 /* BlockchairNetworkProvider.swift in Sources */,
 				5DC7DD64244077E4008F83F2 /* XRPTransactionBuilder.swift in Sources */,
-				EF72579B2A93B8B900EA8CB2 /* UTXOTransactionHistoryMapper.swift in Sources */,
 				EF666C202A288AEF0044986F /* AdaliteTokenDTO.swift in Sources */,
 				DA63B09D29CB3FC700AC6E49 /* KaspaNetworkService.swift in Sources */,
+				B633EA292B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPageCountExtractor.swift in Sources */,
 				EF57BED62A1E19E800C2A493 /* DerivationStyle.swift in Sources */,
 				EF3B194C2AA85E880084AA1C /* GnosisExternalLinkProvider.swift in Sources */,
 				B6E5C1C02B58637300AAC80D /* VeChainNetworkResult.ContractCall+.swift in Sources */,
@@ -3751,6 +3800,7 @@
 				2D9A91A329BB8C1700476EA6 /* TONProviderTarget.swift in Sources */,
 				B61920892AE6ABD3001D6DDF /* NEARNetworkResult.swift in Sources */,
 				EF3B195A2AA85EE70084AA1C /* TerraV1ExternalLinkProvider.swift in Sources */,
+				EF937BDD2B90EED0009B8374 /* WithdrawalSuggestionProvider.swift in Sources */,
 				2D9A919329BB8BFF00476EA6 /* TONTransactionBuilder.swift in Sources */,
 				DC5E64F12B1650F400E81AA5 /* OP_BOOLOR.swift in Sources */,
 				B0F9DCA125FB4C9B00C0AF18 /* MultiNetworkProvider.swift in Sources */,
@@ -3801,6 +3851,7 @@
 				B63068C72B31050900E79053 /* VeChainWalletAssembly.swift in Sources */,
 				2DDEFBE82B59B44700885675 /* AlgorandProviderTarget.swift in Sources */,
 				B6D7131F2AEBEF750095FE6A /* NEARNetworkResult.APIError.swift in Sources */,
+				B633EA222B8FC5DD00F11BFF /* UTXOTransactionHistoryProvider.swift in Sources */,
 				5D4B33C823F72F2700C93A84 /* BitcoinCashWalletManager.swift in Sources */,
 				DC5E65272B1650F400E81AA5 /* OP_0.swift in Sources */,
 				B6BA93732AEA0E9B00F84E36 /* NEARNetworkParams.Transaction.swift in Sources */,
@@ -3822,6 +3873,7 @@
 				B6B0835C2AE6BED40099D6F8 /* NullValue.swift in Sources */,
 				DC5E64DC2B1650F400E81AA5 /* OP_CHECKMULTISIGVERIFY.swift in Sources */,
 				DC5E652E2B1650F400E81AA5 /* OP_IF.swift in Sources */,
+				EF937BDF2B90EED0009B8374 /* RentProvider.swift in Sources */,
 				B6F3AA6E2ADD92230059C99A /* Moya+.swift in Sources */,
 				B044B3A126047F5500D9864F /* RosettaResponse.swift in Sources */,
 				5DACA35B255E97FE0096BC48 /* Address.swift in Sources */,
@@ -3832,10 +3884,10 @@
 				2D78F4142A5D955700962CCA /* ClvmProgram.swift in Sources */,
 				B0BAEE9825FF1E0400F318A6 /* RosettaBody.swift in Sources */,
 				DA198B6129E4090C00DB6EEA /* CosmosRestProvider.swift in Sources */,
+				EF937BE12B90EF0C009B8374 /* MaximumAmountRestrictable.swift in Sources */,
 				2D3829C929D34A93001D4785 /* TWCoin+.swift in Sources */,
 				5D26CEEE243CB95000994CC0 /* BlockcypherTarget.swift in Sources */,
 				DA63B09A29CB3FC700AC6E49 /* KaspaNetworkModels.swift in Sources */,
-				EF72579A2A93B8B900EA8CB2 /* UTXOTransactionHistoryProvider.swift in Sources */,
 				EF3B195E2AA85F010084AA1C /* CronosExternalLinkProvider.swift in Sources */,
 				B676D9C22B33AFFE009A0D06 /* VeChainNetworkParams.TransactionStatus.swift in Sources */,
 				DA198B6329E41AD800DB6EEA /* CosmosNetworkService.swift in Sources */,
@@ -3881,6 +3933,7 @@
 				EF34FCF72A41CA8700E18670 /* CardanoTransactionBuilder.swift in Sources */,
 				5D7D243625136254001B9A4F /* XRPAccount.swift in Sources */,
 				B6BA93712AEA0E8000F84E36 /* NEARNetworkParams.ViewAccessKey.swift in Sources */,
+				B633EA1A2B8FC5D500F11BFF /* TronTransactionHistoryMapper.swift in Sources */,
 				B675E9632B320E7F004AF179 /* VeChainNetworkResult.TransactionInfo.swift in Sources */,
 				2D3FF8842B1754BC004416A2 /* DecimalNetworkService.swift in Sources */,
 				2DDE5BAF29C4F8D200A5B708 /* DashWalletAssembly.swift in Sources */,
@@ -3905,6 +3958,7 @@
 				0AF90CDB2B87657F00772F04 /* PulsechainExternalLinkProvider.swift in Sources */,
 				DC3550F42B584C5E00A93DBA /* XDCAddressService.swift in Sources */,
 				DC5E65192B1650F400E81AA5 /* OP_2DUP.swift in Sources */,
+				B633EA142B8FC58900F11BFF /* AlgorandTransactionHistoryMapper.swift in Sources */,
 				DC5E65112B1650F400E81AA5 /* OP_TUCK.swift in Sources */,
 				EF3B192E2AA85CA70084AA1C /* StellarExternalLinkProvider.swift in Sources */,
 				5D6DEAB6243CC09A00510EC8 /* EthereumTransactionBuilder.swift in Sources */,
@@ -4006,6 +4060,7 @@
 				B0C8222A25F8DA860027E3BF /* CardanoNetworkService.swift in Sources */,
 				DC5E650C2B1650F400E81AA5 /* OP_CAT.swift in Sources */,
 				B05BF634256F953500B50FD7 /* BitcoinScriptAddress.swift in Sources */,
+				B633EA032B8FC31600F11BFF /* BlockBookResponse+.swift in Sources */,
 				5D7D242A25136254001B9A4F /* WebSocket+Convenience.swift in Sources */,
 				EF3B19262AA85C670084AA1C /* EthereumPoWExternalLinkProvider.swift in Sources */,
 				B6FC9DC82B62A45600448D8A /* HederaAddressService.swift in Sources */,
@@ -4018,7 +4073,6 @@
 				DC5E64E32B1650F400E81AA5 /* OP_EXAMPLE.swift in Sources */,
 				B6B083582AE6B11C0099D6F8 /* NEARProtocolConfig.swift in Sources */,
 				5DC7DD60243F83E6008F83F2 /* XRPAddressService.swift in Sources */,
-				2DDEFBF72B5E94F200885675 /* AlgorandTransactionHistoryMapper.swift in Sources */,
 				2DB6C6D52AFCBEC9000D0C6A /* TelosWalletManager.swift in Sources */,
 				B6DC28422B62AFD00070F1D2 /* HederaExternalLinkProvider.swift in Sources */,
 				DC87B9F02B8F4D9700C61C5A /* BitcoreResponse.swift in Sources */,
@@ -4033,6 +4087,7 @@
 				B63B32AD2B8374B40089DF4B /* HederaCreatedAccount.swift in Sources */,
 				2DDEFBDF2B59B44700885675 /* AlgorandResponse+Error.swift in Sources */,
 				B6BA936F2AEA0E7700F84E36 /* NEARNetworkParams.ViewAccount.swift in Sources */,
+				B62EC6832B0E88A10018F51C /* Log+.swift in Sources */,
 				B0A63E0D26259D01001FDB7A /* EthereumTransactionParams.swift in Sources */,
 				B6181AEB2B7594D40046A976 /* HederaNetworkResult.TransactionInfo.swift in Sources */,
 				5D7D243125136254001B9A4F /* XRPHistoricalTransaction.swift in Sources */,
@@ -4041,6 +4096,7 @@
 				DC5E65392B16566100E81AA5 /* OpCodeFactory.swift in Sources */,
 				B6BA936D2AEA0E4800F84E36 /* NEARNetworkParams.ProtocolConfig.swift in Sources */,
 				EF3B19322AA85CDD0084AA1C /* TezosExternalLinkProvider.swift in Sources */,
+				B633EA232B8FC5DD00F11BFF /* UTXOTransactionHistoryMapper.swift in Sources */,
 				0AF90CD72B87624800772F04 /* AreonExternalLinkProvider.swift in Sources */,
 				2D9A91A229BB8C1700476EA6 /* TONProviderResponse.swift in Sources */,
 				B056729B2570F9DC00A8CB59 /* BlockchainSdkError.swift in Sources */,
@@ -4048,7 +4104,6 @@
 				B641EC492AEF5CC100B44CF8 /* NEARAddressUtil.swift in Sources */,
 				EF32FEE02A38D43A002ED43F /* BitcoinScriptAddressesProvider.swift in Sources */,
 				B6BA937B2AEA0F1D00F84E36 /* NEARNetworkResult.ProtocolConfig.swift in Sources */,
-				2DDEFBF82B5E94F200885675 /* AlgorandIndexProviderTarget.swift in Sources */,
 				DADF5F932A1B7C6B00D58DC3 /* TWPublicKey+.swift in Sources */,
 				5DEAFA942444C5300032E316 /* Token.swift in Sources */,
 				EFB7F1952B56DB7E00745A2C /* BitcoinFeeParameters.swift in Sources */,
@@ -4068,6 +4123,7 @@
 				DC5E651D2B1650F400E81AA5 /* OP_2OVER.swift in Sources */,
 				B675E9692B321131004AF179 /* VeChainNetworkResult.Transaction.swift in Sources */,
 				EFF466EF2ACECF8000ACC3EA /* PendingTransactionRecordMapper.swift in Sources */,
+				B633EA1E2B8FC5D900F11BFF /* EthereumTransactionHistoryProvider.swift in Sources */,
 				B6931AD32B32495C00B31319 /* VeChainAccountInfo.swift in Sources */,
 				5D8653FA23A8C481000DE52D /* StellarNetworkService.swift in Sources */,
 				DC5E64DA2B1650F400E81AA5 /* OP_HASH160.swift in Sources */,
@@ -4086,6 +4142,7 @@
 				DC5E65292B1650F400E81AA5 /* OP_PUSHDATA.swift in Sources */,
 				5DC7DD66244077F2008F83F2 /* XRPWalletManager.swift in Sources */,
 				DA3081322817EC1A00DE41F1 /* TronTransactionBuilder.swift in Sources */,
+				EF937BDE2B90EED0009B8374 /* ExistentialDepositProvider.swift in Sources */,
 				DA71441E2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */,
 				5D7D243E25136254001B9A4F /* SigningAlgorithm.swift in Sources */,
 				2DDE5BA729C4F8D200A5B708 /* XRPWalletAssembly.swift in Sources */,
@@ -4179,6 +4236,7 @@
 				EFAD40A52A965BA800364D65 /* BlockBookNode.swift in Sources */,
 				DC5E65012B1650F400E81AA5 /* OP_NEGATE.swift in Sources */,
 				EF3B191E2AA85C150084AA1C /* CardanoExternalLinkProvider.swift in Sources */,
+				B633EA252B8FC79000F11BFF /* TronTransactionHistoryProvider.swift in Sources */,
 				DA9F76FB27ECA49F00F0665C /* TronNetwork.swift in Sources */,
 				B05144FF2B57F15000EDAD1E /* SmartContractRequest.swift in Sources */,
 				EF2BC62029DACE33003D3F18 /* RavencoinTarget.swift in Sources */,
@@ -4198,16 +4256,14 @@
 				DA82433F27A2B07800CFC2C0 /* PolkadotNetwork.swift in Sources */,
 				5D7D243025136254001B9A4F /* XRPKeypair.swift in Sources */,
 				2DDEFBC52B59B36A00885675 /* AlgorandTransactionParams.swift in Sources */,
-				2DDEFBF62B5E94F200885675 /* AlgorandTransactionHistoryProvider.swift in Sources */,
 				2D24F5B22B6D2C6500D502A0 /* AptosTransactionInfo.swift in Sources */,
-				EF72579C2A93B8B900EA8CB2 /* EthereumTransactionHistoryProvider.swift in Sources */,
 				DC5E65102B1650F400E81AA5 /* OP_2SWAP.swift in Sources */,
-				EF9E38102B7A3E82004B694C /* WithdrawalValidator.swift in Sources */,
 				B65835C82B768C49002AE7A8 /* HederaTargetConfiguration.swift in Sources */,
 				B04E8D5025F8F67F00821CBE /* RosettaNetworkProvider.swift in Sources */,
 				5D845516243DEAC80072155E /* AdaliteTarget.swift in Sources */,
 				DC5E650E2B1650F400E81AA5 /* OP_SPLIT.swift in Sources */,
 				EFD39C9F2A6E6C700055D215 /* AddressTypesConfig.swift in Sources */,
+				B633EA272B8FC9E300F11BFF /* BlockBookTarget.AddressRequestParameters.FilterType+.swift in Sources */,
 				2DA139F82A8AD82E00E3C374 /* Chia+Int64.swift in Sources */,
 				5DCC817823FAE6F700DFC460 /* MoyaPublisher.swift in Sources */,
 				5D7D242B25136254001B9A4F /* HTTP.swift in Sources */,
@@ -4244,9 +4300,11 @@
 				DC5E64FA2B1650F400E81AA5 /* OP_MUL.swift in Sources */,
 				5D0906C227DBB7A10053B2CD /* BitcoinCashNetworkParams.swift in Sources */,
 				B6E9F3F32AEF5A8E00209FCA /* NEARAddressService.swift in Sources */,
+				B633EA122B8FC58900F11BFF /* AlgorandTransactionHistoryProvider.swift in Sources */,
 				B07EE8B225AC1504009DB163 /* DateFormatter+.swift in Sources */,
 				5D557CB523ACCAD2009B32AF /* BlockcypherNetworkProvider.swift in Sources */,
 				5D7D243725136254001B9A4F /* XRPCurrentLedgerInfo.swift in Sources */,
+				B633EA132B8FC58900F11BFF /* AlgorandIndexProviderTarget.swift in Sources */,
 				2DA13A032A8AD83B00E3C374 /* ChiaProviderTarget.swift in Sources */,
 				EF666C2A2A2DFB120044986F /* WalletManagerFactory.swift in Sources */,
 				EF3B195C2AA85EF40084AA1C /* TerraV2ExternalLinkProvider.swift in Sources */,
@@ -4271,7 +4329,6 @@
 				DC5E64E22B1650F400E81AA5 /* OP_HASH256.swift in Sources */,
 				EF3B192C2AA85C930084AA1C /* RSKExternalLinkProvider.swift in Sources */,
 				DC5E65372B1655CD00E81AA5 /* BitcoinScriptChunk.swift in Sources */,
-				EF72579D2A93B8B900EA8CB2 /* EthereumTransactionHistoryMapper.swift in Sources */,
 				B04E556B265FB89400679EAF /* URL+.swift in Sources */,
 				EFEADBDE2A4D737F00744407 /* SignatureInfo.swift in Sources */,
 				EF3B19202AA85C230084AA1C /* DucatusExternalLinkProvider.swift in Sources */,
@@ -4281,6 +4338,7 @@
 				B0EBBEF4265D0EE600D37141 /* DogecoinWalletManager.swift in Sources */,
 				B0A1D39D2625A1150013F0BF /* EthereumUtils.swift in Sources */,
 				EF32FED92A38A04E002ED43F /* AddressServiceFactory.swift in Sources */,
+				B633EA1F2B8FC5D900F11BFF /* EthereumTransactionHistoryMapper.swift in Sources */,
 				DAC7C04127A3BB17002F7252 /* PolkadotTransactionBuilder.swift in Sources */,
 				B62A12062AE308DA0080BAEC /* NEARTransactionParams.swift in Sources */,
 				5D88838B27D3BBDA008744E1 /* BaseManager.swift in Sources */,

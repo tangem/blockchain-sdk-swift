@@ -57,7 +57,7 @@ extension EthereumTransactionHistoryProvider: TransactionHistoryProvider {
             page: requestPage,
             pageSize: request.limit,
             details: [.txslight],
-            filterType: filterType(for: request.amountType)
+            filterType: .init(amountType: request.amountType)
         )
         
         return blockBookProvider.addressData(address: request.address, parameters: parameters)
@@ -75,18 +75,5 @@ extension EthereumTransactionHistoryProvider: TransactionHistoryProvider {
                 return TransactionHistory.Response(records: records)
             }
             .eraseToAnyPublisher()
-    }
-}
-
-// MARK: - Private
-
-private extension EthereumTransactionHistoryProvider {
-    func filterType(for amountType: Amount.AmountType) -> BlockBookTarget.AddressRequestParameters.FilterType {
-        switch amountType {
-        case .coin, .reserve:
-            return .coin
-        case .token(let token):
-            return .contract(token.contractAddress)
-        }
     }
 }

@@ -55,6 +55,11 @@ public struct TransactionHistoryProviderFactory {
                 blockBookProvider: networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes),
                 mapper: EthereumTransactionHistoryMapper(blockchain: blockchain)
             )
+        case .tron:
+            return TronTransactionHistoryProvider(
+                blockBookProvider: networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes),
+                mapper: TronTransactionHistoryMapper(blockchain: blockchain)
+            )
         case .algorand(_, let isTestnet):
             if isTestnet {
                 return AlgorandTransactionHistoryProvider(

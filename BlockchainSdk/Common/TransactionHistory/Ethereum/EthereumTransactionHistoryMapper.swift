@@ -35,7 +35,7 @@ extension EthereumTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
                 let destination = destination(transaction, walletAddress: response.address, amountType: amountType),
                 let feeWei = Decimal(transaction.fees)
             else {
-                log("BlockBookAddressResponse.Transaction \(transaction) doesn't contain a required information")
+                Log.log("BlockBookAddressResponse.Transaction \(transaction) doesn't contain a required information")
                 return nil
             }
             
@@ -87,10 +87,10 @@ private extension EthereumTransactionHistoryMapper {
     ) -> Bool {
         switch amountType {
         case .coin, .reserve:
-            return transaction.vin.first?.addresses.first == walletAddress
+            return transaction.compat.vin.first?.addresses.first == walletAddress
         case .token(let token):
             if transaction.tokenTransfers == nil {
-                log("""
+                Log.log("""
                 Unable to determine the direction of a tokens transfer in transaction \(transaction) \
                 due to missing tokens transfers field
                 """)
@@ -98,15 +98,15 @@ private extension EthereumTransactionHistoryMapper {
 
             let allTokenTransfers = transaction.tokenTransfers ?? []
             let filteredTokenTransfers = allTokenTransfers.filter { transfer in
-                guard let contract = transfer._contract else {
+                guard let contract = transfer.compat.contract else {
                     return false
                 }
 
-                return isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: contract)
+                return token.contractAddress.caseInsensitiveEquals(to: contract)
             }
 
             if filteredTokenTransfers.isEmpty {
-                log("""
+                Log.log("""
                 Unable to determine the direction of a tokens transfer in transaction \(transaction) \
                 due to empty tokens transfers array
                 """)
@@ -127,7 +127,7 @@ private extension EthereumTransactionHistoryMapper {
         amountType: Amount.AmountType
     ) -> (transfer: BlockBookAddressResponse.TokenTransfer, isOutgoing: Bool)? {
         guard let token = amountType.token else {
-            log("Incorrect amount type \(amountType) for transaction \(transaction)")
+            Log.log("Incorrect amount type \(amountType) for transaction \(transaction)")
             return nil
         }
 
@@ -135,11 +135,11 @@ private extension EthereumTransactionHistoryMapper {
         let allTokenTransfers = transaction.tokenTransfers ?? []
 
         let filteredTokenTransfers = allTokenTransfers.filter { transfer in
-            guard let contract = transfer._contract else {
+            guard let contract = transfer.compat.contract else {
                 return false
             }
 
-            return isCaseInsensitiveMatch(lhs: token.contractAddress, rhs: contract)
+            return token.contractAddress.caseInsensitiveEquals(to: contract)
         }
 
         if filteredTokenTransfers.count == 1 {
@@ -151,7 +151,7 @@ private extension EthereumTransactionHistoryMapper {
         return filteredTokenTransfers
             .first { transfer in
                 let otherAddress = isOutgoing ? transfer.from : transfer.to
-                return isCaseInsensitiveMatch(lhs: walletAddress, rhs: otherAddress)
+                return walletAddress.caseInsensitiveEquals(to: otherAddress)
             }
             .map { ($0, isOutgoing) }
     }
@@ -161,8 +161,8 @@ private extension EthereumTransactionHistoryMapper {
         walletAddress: String,
         amountType: Amount.AmountType
     ) -> TransactionRecord.Source? {
-        guard let vin = transaction.vin.first, let address = vin.addresses.first else {
-            log("Source information in transaction \(transaction) not found")
+        guard let vin = transaction.compat.vin.first, let address = vin.addresses.first else {
+            Log.log("Source information in transaction \(transaction) not found")
             return nil
         }
         
@@ -190,8 +190,8 @@ private extension EthereumTransactionHistoryMapper {
         walletAddress: String,
         amountType: Amount.AmountType
     ) -> TransactionRecord.Destination? {
-        guard let vout = transaction.vout.first, let address = vout.addresses.first else {
-            log("Destination information in transaction \(transaction) not found")
+        guard let vout = transaction.compat.vout.first, let address = vout.addresses.first else {
+            Log.log("Destination information in transaction \(transaction) not found")
             return nil
         }
 
@@ -265,25 +265,8 @@ private extension EthereumTransactionHistoryMapper {
                 name: transfer.name,
                 symbol: transfer.symbol,
                 decimals: transfer.decimals,
-                contract: transfer._contract
+                contract: transfer.compat.contract
             )
         }
     }
-    
-    func isCaseInsensitiveMatch(lhs: String, rhs: String) -> Bool {
-        return lhs.caseInsensitiveCompare(rhs) == .orderedSame
-    }
-}
-
-// MARK: - Convenience extensions
-
-private extension BlockBookAddressResponse.TokenTransfer {
-    /// For some blockchains (e.g. Ethereum POW) the contract address is stored
-    /// in the `token` field instead of the `contract` field of the response.
-    var _contract: String? { contract ?? token }
-}
-
-@inline(__always)
-fileprivate func log(file: StaticString = #fileID, line: UInt = #line, _ message: @autoclosure () -> String) {
-    Log.debug("\(file):\(line): \(message())")
 }
