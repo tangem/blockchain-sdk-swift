@@ -43,12 +43,8 @@ struct TronTransactionHistoryMapper {
             amount: transactionAmount
         )
 
-        let destinationAddress: TransactionRecord.Destination.Address = transaction.isContractInteraction
-        ? .contract(destinationAddress)
-        : .user(destinationAddress)
-
         let destination = TransactionRecord.Destination(
-            address: destinationAddress,
+            address: transaction.isContractInteraction ? .contract(destinationAddress) : .user(destinationAddress),
             amount: transactionAmount
         )
 
@@ -69,18 +65,22 @@ struct TronTransactionHistoryMapper {
         // Double check to exclude token transfers sent to self.
         // Actually, this is a feasible case, but we don't support such transfers at the moment
         let filteredTokenTransfers = tokenTransfers.filter { transfer in
-            return isOutgoing
-            ? transfer.from.caseInsensitiveEquals(to: walletAddress) && !transfer.to.caseInsensitiveEquals(to: walletAddress)
-            : transfer.to.caseInsensitiveEquals(to: walletAddress) && !transfer.from.caseInsensitiveEquals(to: walletAddress)
+            if isOutgoing {
+                return transfer.from.caseInsensitiveEquals(to: walletAddress) && !transfer.to.caseInsensitiveEquals(to: walletAddress)
+            }
+            return transfer.to.caseInsensitiveEquals(to: walletAddress) && !transfer.from.caseInsensitiveEquals(to: walletAddress)
         }
 
-        let otherAddresses = isOutgoing
-        ? filteredTokenTransfers.uniqueProperties(\.to)
-        : filteredTokenTransfers.uniqueProperties(\.from)
+        let otherAddresses: [String]
+        let groupedFilteredTokenTransfers: [String: [BlockBookAddressResponse.TokenTransfer]]
 
-        let groupedFilteredTokenTransfers = isOutgoing
-        ? filteredTokenTransfers.grouped(by: \.to)
-        : filteredTokenTransfers.grouped(by: \.from)
+        if isOutgoing {
+            otherAddresses = filteredTokenTransfers.uniqueProperties(\.to)
+            groupedFilteredTokenTransfers = filteredTokenTransfers.grouped(by: \.to)
+        } else {
+            otherAddresses = filteredTokenTransfers.uniqueProperties(\.from)
+            groupedFilteredTokenTransfers = filteredTokenTransfers.grouped(by: \.from)
+        }
 
         return otherAddresses.reduce(into: []) { partialResult, otherAddress in
             let transfers = groupedFilteredTokenTransfers[otherAddress, default: []]
