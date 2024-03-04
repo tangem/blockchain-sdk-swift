@@ -8,7 +8,7 @@
 
 import Foundation
 import Hedera
-import class TangemSdk.Log
+import TangemSdk
 
 final class HederaAddressService: AddressService {
     private let isTestnet: Bool
