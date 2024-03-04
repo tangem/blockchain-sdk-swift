@@ -10,11 +10,11 @@ import Foundation
 
 protocol MinimumBalanceRestrictable {
     var minimumBalance: Amount { get }
-    func validateMinimumBalanceRestrictable(amount: Amount, fee: Amount) throws
+    func validateMinimumBalance(amount: Amount, fee: Amount) throws
 }
 
 extension MinimumBalanceRestrictable where Self: WalletProvider {
-    func validateMinimumBalanceRestrictable(amount: Amount, fee: Amount) throws {
+    func validateMinimumBalance(amount: Amount, fee: Amount) throws {
         guard let balance = wallet.amounts[amount.type] else {
             throw ValidationError.balanceNotFound
         }
