@@ -16,10 +16,6 @@ import BitcoinCore
 @testable import BlockchainSdk
 
 final class RadiantTests: XCTestCase {
-    private let coinType: CoinType = .bitcoinCash
-    
-    private let privateKeyData = Data(hexString: "5d996aa76b3212142792d9130796cd2e11e3c445a93118c08414df4f66bc60ec")
-    
     // MARK: - Impementation
     
     /// https://github.com/trustwallet/wallet-core/blob/master/tests/chains/Bitcoin/BitcoinAddressTests.cpp
@@ -41,5 +37,4 @@ final class RadiantTests: XCTestCase {
         let walletCoreAddress = BitcoinAddress.compatibleAddress(publicKey: publicKey, prefix: CoinType.bitcoin.p2shPrefix)
         XCTAssertEqual(walletCoreAddress.description, "3PQ5BD39rDikf7YW6pJ9a9tbS3QhvwvzTG")
     }
-    
 }
