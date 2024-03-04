@@ -299,7 +299,7 @@
 		B633EA232B8FC5DD00F11BFF /* UTXOTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA212B8FC5DD00F11BFF /* UTXOTransactionHistoryMapper.swift */; };
 		B633EA252B8FC79000F11BFF /* TronTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA242B8FC79000F11BFF /* TronTransactionHistoryProvider.swift */; };
 		B633EA272B8FC9E300F11BFF /* BlockBookTarget.AddressRequestParameters.FilterType+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA262B8FC9E300F11BFF /* BlockBookTarget.AddressRequestParameters.FilterType+.swift */; };
-		B633EA292B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPagesCountExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA282B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPagesCountExtractor.swift */; };
+		B633EA292B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPageCountExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633EA282B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPageCountExtractor.swift */; };
 		B63B32AD2B8374B40089DF4B /* HederaCreatedAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B32AC2B8374B40089DF4B /* HederaCreatedAccount.swift */; };
 		B63B792D2AD850DF0055BD06 /* NEARWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B792C2AD850DF0055BD06 /* NEARWalletAssembly.swift */; };
 		B63B792F2AD852E80055BD06 /* NEARExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */; };
@@ -1060,7 +1060,7 @@
 		B633EA212B8FC5DD00F11BFF /* UTXOTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UTXOTransactionHistoryMapper.swift; sourceTree = "<group>"; };
 		B633EA242B8FC79000F11BFF /* TronTransactionHistoryProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TronTransactionHistoryProvider.swift; sourceTree = "<group>"; };
 		B633EA262B8FC9E300F11BFF /* BlockBookTarget.AddressRequestParameters.FilterType+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlockBookTarget.AddressRequestParameters.FilterType+.swift"; sourceTree = "<group>"; };
-		B633EA282B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPagesCountExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookTransactionHistoryTotalPagesCountExtractor.swift; sourceTree = "<group>"; };
+		B633EA282B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPageCountExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookTransactionHistoryTotalPageCountExtractor.swift; sourceTree = "<group>"; };
 		B63B32AC2B8374B40089DF4B /* HederaCreatedAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaCreatedAccount.swift; sourceTree = "<group>"; };
 		B63B792C2AD850DF0055BD06 /* NEARWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARWalletAssembly.swift; sourceTree = "<group>"; };
 		B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARExternalLinkProvider.swift; sourceTree = "<group>"; };
@@ -3373,7 +3373,7 @@
 				EFB9523F2A6FEF1700996D16 /* TransactionRecord.swift */,
 				EF193BFD2A77ED9E0048C0C3 /* TransactionHistoryPages.swift */,
 				EF2EB7A72A963E250036DA24 /* BlockBookTransactionHistoryMapper.swift */,
-				B633EA282B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPagesCountExtractor.swift */,
+				B633EA282B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPageCountExtractor.swift */,
 			);
 			path = TransactionHistory;
 			sourceTree = "<group>";
@@ -3753,7 +3753,7 @@
 				5DC7DD64244077E4008F83F2 /* XRPTransactionBuilder.swift in Sources */,
 				EF666C202A288AEF0044986F /* AdaliteTokenDTO.swift in Sources */,
 				DA63B09D29CB3FC700AC6E49 /* KaspaNetworkService.swift in Sources */,
-				B633EA292B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPagesCountExtractor.swift in Sources */,
+				B633EA292B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPageCountExtractor.swift in Sources */,
 				EF57BED62A1E19E800C2A493 /* DerivationStyle.swift in Sources */,
 				EF3B194C2AA85E880084AA1C /* GnosisExternalLinkProvider.swift in Sources */,
 				B6E5C1C02B58637300AAC80D /* VeChainNetworkResult.ContractCall+.swift in Sources */,

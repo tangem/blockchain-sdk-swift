@@ -11,13 +11,13 @@ import Combine
 
 final class TronTransactionHistoryProvider<Mapper> where
     Mapper: BlockBookTransactionHistoryMapper,
-    Mapper: BlockBookTransactionHistoryTotalPagesCountExtractor
+    Mapper: BlockBookTransactionHistoryTotalPageCountExtractor
 {
     private let blockBookProvider: BlockBookUtxoProvider
     private let mapper: Mapper
 
     private var page: TransactionHistoryIndexPage?
-    private var totalPagesCount: Int = 0
+    private var totalPageCount: Int = 0
 
     init(
         blockBookProvider: BlockBookUtxoProvider,
@@ -32,7 +32,7 @@ final class TronTransactionHistoryProvider<Mapper> where
 
 extension TronTransactionHistoryProvider: TransactionHistoryProvider {
     var canFetchHistory: Bool {
-        page == nil || (page?.number ?? Constants.initialPageNumber) < totalPagesCount
+        page == nil || (page?.number ?? Constants.initialPageNumber) < totalPageCount
     }
 
     func loadTransactionHistory(request: TransactionHistory.Request) -> AnyPublisher<TransactionHistory.Response, Error> {
@@ -62,18 +62,18 @@ extension TronTransactionHistoryProvider: TransactionHistoryProvider {
         .withWeakCaptureOf(self)
         .tryMap { historyProvider, response in
             let contractAddress = request.amountType.token?.contractAddress
-            let totalPagesCount = try historyProvider.mapper.extractTotalPagesCount(
+            let totalPageCount = try historyProvider.mapper.extractTotalPageCount(
                 from: response,
                 contractAddress: contractAddress
             )
 
-            return (response, totalPagesCount)
+            return (response, totalPageCount)
         }
         .withWeakCaptureOf(self)
         .handleEvents(receiveOutput: { historyProvider, input in
-            let (response, totalPagesCount) = input
+            let (response, totalPageCount) = input
             historyProvider.page = TransactionHistoryIndexPage(number: response.page ?? Constants.initialPageNumber)
-            historyProvider.totalPagesCount = totalPagesCount
+            historyProvider.totalPageCount = totalPageCount
         })
         .tryMap { historyProvider, input in
             let (response, _) = input
@@ -86,7 +86,7 @@ extension TronTransactionHistoryProvider: TransactionHistoryProvider {
 
     func reset() {
         page = nil
-        totalPagesCount = 0
+        totalPageCount = 0
     }
 }
 

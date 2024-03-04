@@ -255,11 +255,11 @@ extension TronTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
     }
 }
 
-// MARK: - BlockBookTransactionHistoryTotalPagesCountExtractor protocol conformance
+// MARK: - BlockBookTransactionHistoryTotalPageCountExtractor protocol conformance
 
-extension TronTransactionHistoryMapper: BlockBookTransactionHistoryTotalPagesCountExtractor {
-    func extractTotalPagesCount(from response: BlockBookAddressResponse, contractAddress: String?) throws -> Int {
-        // If transaction history is requested for a TRC20 token - `totalPagesCount` must be calculated manually
+extension TronTransactionHistoryMapper: BlockBookTransactionHistoryTotalPageCountExtractor {
+    func extractTotalPageCount(from response: BlockBookAddressResponse, contractAddress: String?) throws -> Int {
+        // If transaction history is requested for a TRC20 token - `totalPageCount` must be calculated manually
         // using `$.tokens[*].transfers` and `$.itemsOnPage` DTO fields because `$.totalPages` DTO field contains
         // the number of pages for the ENTIRE transaction history (including TRX, TRC10 and TRC20 token transfers)
         // for a given address
@@ -270,7 +270,7 @@ extension TronTransactionHistoryMapper: BlockBookTransactionHistoryTotalPagesCou
                 let transfersCount = token.transfers
             else {
                 Log.log("Transaction response \(response) doesn't contain a required information")
-                throw TotalPagesCountExtractionError.unableToParseNetworkResponse(contractAddress: contractAddress)
+                throw TotalPageCountExtractionError.unableToParseNetworkResponse(contractAddress: contractAddress)
             }
 
             return Int(ceil((Double(transfersCount) / Double(itemsOnPage))))
@@ -290,7 +290,7 @@ private extension TronTransactionHistoryMapper {
         let isOutgoing: Bool
     }
 
-    enum TotalPagesCountExtractionError: Error {
+    enum TotalPageCountExtractionError: Error {
         case unableToParseNetworkResponse(contractAddress: String)
     }
 
