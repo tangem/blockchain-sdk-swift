@@ -171,7 +171,7 @@ private extension EthereumTransactionHistoryMapper {
             if let amount = Decimal(string: transaction.value) {
                 return TransactionRecord.Source(address: address, amount: amount / decimalValue)
             }
-        case .token(let token):
+        case .token:
             let info = tokensTransferInfo(from: transaction, walletAddress: walletAddress, amountType: amountType)
             if let transfer = info?.transfer, let amount = Decimal(transfer.value) {
                 let decimalValue = pow(10, transfer.decimals)
@@ -207,7 +207,7 @@ private extension EthereumTransactionHistoryMapper {
                     amount: amount / decimalValue
                 )
             }
-        case .token(let token):
+        case .token:
             let info = tokensTransferInfo(from: transaction, walletAddress: walletAddress, amountType: amountType)
             if let (transfer, isOutgoing) = info, let amount = Decimal(transfer.value) {
                 let decimalValue = pow(10, transfer.decimals)

@@ -113,7 +113,7 @@ extension Data {
 extension Numeric {
     var data: Data {
         var source = self
-        return Data(bytes: &source, count: MemoryLayout<Self>.size)
+        return withUnsafeBytes(of: &source) { Data($0) }
     }
 }
 

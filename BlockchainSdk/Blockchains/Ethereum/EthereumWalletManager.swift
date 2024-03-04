@@ -35,7 +35,7 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Transa
             .getInfo(address: wallet.address, tokens: cardTokens)
             .sink(receiveCompletion: { [weak self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
-                    self?.wallet.amounts = [:]
+                    self?.wallet.clearAmounts()
                     completion(.failure(error))
                 }
             }, receiveValue: { [weak self] response in
