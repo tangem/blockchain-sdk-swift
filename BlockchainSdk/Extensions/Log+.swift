@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import class TangemSdk.Log
+import TangemSdk
 
 extension Log {
     @inline(__always)

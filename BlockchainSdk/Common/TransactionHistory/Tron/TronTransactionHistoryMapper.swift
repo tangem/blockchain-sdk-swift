@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import class TangemSdk.Log
+import TangemSdk
 
 struct TronTransactionHistoryMapper {
     private let blockchain: Blockchain
