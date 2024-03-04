@@ -104,7 +104,7 @@ public struct DerivationConfigV1: DerivationConfig {
         case .hedera:
             return "m/44'/3030'/0'/0'/0"
         case .radiant:
-            return ""
+            return "m/44'/512'/0'/0/0"
         }
     }
 }
