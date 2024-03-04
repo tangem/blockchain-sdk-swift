@@ -57,9 +57,7 @@ struct VeChainNetworkProvider {
         return provider.requestPublisher(VeChainTarget(baseURL: baseURL, target: target))
             .filterSuccessfulStatusCodes()
             .map(T.self)
-            .mapError { moyaError -> Swift.Error in
-                return moyaError.asWalletError ?? moyaError
-            }
+            .eraseError()
             .eraseToAnyPublisher()
     }
 }
