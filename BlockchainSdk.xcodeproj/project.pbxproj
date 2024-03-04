@@ -3317,14 +3317,14 @@
 			path = TransactionHistory/Ethereum;
 			sourceTree = "<group>";
 		};
-		EF937BD92B90EED0009B8374 /* BlockchainSpecificityNotification */ = {
+		EF937BD92B90EED0009B8374 /* BlockchainNotifications */ = {
 			isa = PBXGroup;
 			children = (
 				EF937BDA2B90EED0009B8374 /* WithdrawalSuggestionProvider.swift */,
 				EF937BDB2B90EED0009B8374 /* ExistentialDepositProvider.swift */,
 				EF937BDC2B90EED0009B8374 /* RentProvider.swift */,
 			);
-			path = BlockchainSpecificityNotification;
+			path = BlockchainNotifications;
 			sourceTree = "<group>";
 		};
 		EF9E380E2B7A3A41004B694C /* Interfaces */ = {
@@ -3332,7 +3332,7 @@
 			children = (
 				5D14E48F2397B87000C15FC8 /* WalletManager.swift */,
 				DA2E76FF29769BF5001FF957 /* TransactionCreator.swift */,
-				EF937BD92B90EED0009B8374 /* BlockchainSpecificityNotification */,
+				EF937BD92B90EED0009B8374 /* BlockchainNotifications */,
 				EF9E382E2B7A4CF3004B694C /* TransactionValidator */,
 			);
 			path = Interfaces;
