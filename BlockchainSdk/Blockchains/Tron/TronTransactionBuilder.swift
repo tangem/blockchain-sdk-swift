@@ -81,7 +81,7 @@ class TronTransactionBuilder {
             let functionSelector = "transfer(address,uint256)"
             let functionSelectorHash = Data(functionSelector.bytes).sha3(.keccak256).prefix(4)
             
-            let addressData = TronAddressService.toByteForm(destination)?.aligned(to: 32) ?? Data()
+            let addressData = TronAddressService.toByteForm(destination)?.leadingZeroPadding(toLength: 32) ?? Data()
             
             guard
                 let bigIntValue = EthereumUtils.parseToBigUInt("\(amount.value)", decimals: token.decimalCount)
@@ -89,7 +89,7 @@ class TronTransactionBuilder {
                 throw WalletError.failedToBuildTx
             }
             
-            let amountData = bigIntValue.serialize().aligned(to: 32)
+            let amountData = bigIntValue.serialize().leadingZeroPadding(toLength: 32)
             let contractData = functionSelectorHash + addressData + amountData
             
             let parameter = Protocol_TriggerSmartContract.with {

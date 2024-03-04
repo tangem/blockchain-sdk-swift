@@ -117,8 +117,8 @@ class TronWalletManager: BaseManager, WalletManager {
             token = amountToken
         }
         
-        let addressData = TronAddressService.toByteForm(destination)?.aligned(to: 32) ?? Data()
-        guard let amountData = amount.encodedAligned else {
+        let addressData = TronAddressService.toByteForm(destination)?.leadingZeroPadding(toLength: 32) ?? Data()
+        guard let amountData = amount.encoded?.leadingZeroPadding(toLength: 32) else {
             return .anyFail(error: WalletError.failedToGetFee)
         }
         

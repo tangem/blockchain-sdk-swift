@@ -69,10 +69,6 @@ extension String {
     func capitalizingFirstLetter() -> String {
         return prefix(1).capitalized + dropFirst()
     }
-
-    func serialize() -> String {
-        Data(hexString: self).aligned().hexString
-    }
     
     mutating func capitalizeFirstLetter() {
         self = self.capitalizingFirstLetter()

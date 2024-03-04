@@ -115,7 +115,7 @@ extension TransactionsService {
                     promise(.success(submitResponse))
                 case .failure(let error):
                     promise(.failure(error))
-                case .destinationRequiresMemo(_):
+                case .destinationRequiresMemo:
                     promise(.failure(StellarError.requiresMemo))
                 }
             })

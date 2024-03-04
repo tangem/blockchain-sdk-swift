@@ -33,7 +33,7 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
             .subscribe(on: DispatchQueue.global())
             .sink(receiveCompletion: { [weak self] completionSubscription in
                 if case let .failure(error) = completionSubscription {
-                    self?.wallet.amounts = [:]
+                    self?.wallet.clearAmounts()
                     completion(.failure(error))
                 }
             }, receiveValue: { [weak self] response in
