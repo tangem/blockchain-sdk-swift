@@ -127,7 +127,7 @@ struct BlockchairTarget: TargetType {
             if let limit = limit {
                 parameters["limit"] = "\(limit)"
             }
-        case .fee(_):
+        case .fee:
             break
         case .send(let txHex, _):
             parameters["data"] = txHex

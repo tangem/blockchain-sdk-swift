@@ -82,7 +82,7 @@ class CosmosTransactionBuilder {
         switch transaction.amount.type {
         case .coin:
             decimalValue = cosmosChain.blockchain.decimalValue
-        case .token(let token):
+        case .token:
             switch cosmosChain.blockchain.feePaidCurrency {
             case .coin:
                 decimalValue = cosmosChain.blockchain.decimalValue

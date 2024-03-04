@@ -24,7 +24,7 @@ extension TokenBalanceERC20TokenMethod: SmartContractMethod {
 
     public var data: Data {
         let prefixData = Data(hexString: prefix)
-        let ownerData = Data(hexString: owner).aligned(to: 32)
+        let ownerData = Data(hexString: owner).leadingZeroPadding(toLength: 32)
         return prefixData + ownerData
     }
 }

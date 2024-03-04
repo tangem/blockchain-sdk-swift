@@ -260,7 +260,6 @@
 		B0AD566425AC8DD50084F924 /* PendingTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0AD566325AC8DD50084F924 /* PendingTransaction.swift */; };
 		B0BAEE9825FF1E0400F318A6 /* RosettaBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0BAEE9725FF1E0400F318A6 /* RosettaBody.swift */; };
 		B0BAEE9C25FF1E4200F318A6 /* RosettaData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0BAEE9B25FF1E4200F318A6 /* RosettaData.swift */; };
-		B0C2C86725FBA10E00A61622 /* AnyPublisher+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C2C86625FBA10E00A61622 /* AnyPublisher+.swift */; };
 		B0C2C89D25FBCF0200A61622 /* RosettaTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C2C89C25FBCF0200A61622 /* RosettaTarget.swift */; };
 		B0C34958267B83580027CC9D /* BitcoinModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C34957267B83580027CC9D /* BitcoinModels.swift */; };
 		B0C8222A25F8DA860027E3BF /* CardanoNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C8222925F8DA860027E3BF /* CardanoNetworkService.swift */; };
@@ -1015,7 +1014,6 @@
 		B0AD566325AC8DD50084F924 /* PendingTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTransaction.swift; sourceTree = "<group>"; };
 		B0BAEE9725FF1E0400F318A6 /* RosettaBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosettaBody.swift; sourceTree = "<group>"; };
 		B0BAEE9B25FF1E4200F318A6 /* RosettaData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosettaData.swift; sourceTree = "<group>"; };
-		B0C2C86625FBA10E00A61622 /* AnyPublisher+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyPublisher+.swift"; sourceTree = "<group>"; };
 		B0C2C89C25FBCF0200A61622 /* RosettaTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosettaTarget.swift; sourceTree = "<group>"; };
 		B0C34957267B83580027CC9D /* BitcoinModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinModels.swift; sourceTree = "<group>"; };
 		B0C8222925F8DA860027E3BF /* CardanoNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoNetworkService.swift; sourceTree = "<group>"; };
@@ -1942,7 +1940,6 @@
 				5D5E058B24FE749D00F04DE1 /* Bundle+.swift */,
 				B07EE8B125AC1504009DB163 /* DateFormatter+.swift */,
 				B04DC62625AC1C50009AA7B3 /* JSONDecoder+.swift */,
-				B0C2C86625FBA10E00A61622 /* AnyPublisher+.swift */,
 				B04E556A265FB89400679EAF /* URL+.swift */,
 				2D3829C829D34A93001D4785 /* TWCoin+.swift */,
 				DADF5F922A1B7C6B00D58DC3 /* TWPublicKey+.swift */,
@@ -4162,7 +4159,6 @@
 				5DF91519253DB7B300B927DD /* TezosAddress.swift in Sources */,
 				5DF91521253DB89800B927DD /* TezosTarget.swift in Sources */,
 				EFF56B4129C30265002B6952 /* EthereumFeeParameters.swift in Sources */,
-				B0C2C86725FBA10E00A61622 /* AnyPublisher+.swift in Sources */,
 				2DDEFBDD2B59B44700885675 /* AlgorandResponse+Account.swift in Sources */,
 				EFB9523D2A6FDB2A00996D16 /* TransactionHistoryProvider.swift in Sources */,
 				EF3B19162AA5C9530084AA1C /* ExternalLinkProvider.swift in Sources */,
