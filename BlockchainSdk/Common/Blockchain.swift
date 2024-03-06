@@ -1093,7 +1093,7 @@ extension Blockchain {
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
-        case .bitcoinCash, .radiant:
+        case .bitcoinCash:
             return BitcoinCashWalletAssembly()
         case .binance:
             return BinanceWalletAssembly()
@@ -1137,6 +1137,8 @@ extension Blockchain {
             return AptosWalletAssembly()
         case .hedera:
             return HederaWalletAssembly()
+        case .radiant:
+            return RadiantWalletAssembly()
         }
     }
 }

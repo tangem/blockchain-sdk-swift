@@ -13,7 +13,7 @@ struct RadiantWalletAssembly: WalletManagerAssembly {
         var providers = [AnyBitcoinNetworkProvider]()
 
         if let bitcoinCashAddressService = AddressServiceFactory(
-            blockchain: input.blockchain
+            blockchain: .bitcoinCash
         ).makeAddressService() as? BitcoinCashAddressService {
             providers.append(
                 networkProviderAssembly.makeBitcoinCashNowNodesNetworkProvider(

@@ -81,7 +81,13 @@ extension RadiantWalletManager: WalletManager {
     }
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        return .anyFail(error: "")
+        guard let buildForSignHash = try? transactionBuilder.buildForSign(transaction: transaction) else {
+            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+        }
+        
+        print(buildForSignHash)
+        
+        return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
     }
     
     var allowsFeeSelection: Bool {
@@ -89,8 +95,13 @@ extension RadiantWalletManager: WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        return .anyFail(error: "")
+        return networkService.getFee()
+            .tryMap { [weak self] response throws -> [Fee] in
+                guard let self = self else { throw WalletError.empty }
+                return [.init(Amount(with: .bitcoinCash, value: 1.0))]
+            }
+            .eraseToAnyPublisher()
     }
-    
-    
 }
+
+extension RadiantWalletManager {}

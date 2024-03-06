@@ -20,7 +20,7 @@ struct NetworkProviderAssembly {
         switch type {
         case .nowNodes:
             return BlockBookUtxoProvider(
-                blockchain: input.blockchain,
+                blockchain: .bitcoinCash,
                 blockBookConfig: NowNodesBlockBookConfig(
                     apiKeyHeaderName: Constants.nowNodesApiKeyHeaderName,
                     apiKeyHeaderValue: input.blockchainSdkConfig.nowNodesApiKey
@@ -29,7 +29,7 @@ struct NetworkProviderAssembly {
             )
         case .getBlock:
             return BlockBookUtxoProvider(
-                blockchain: input.blockchain,
+                blockchain: .bitcoinCash,
                 blockBookConfig: GetBlockBlockBookConfig(input.blockchainSdkConfig.getBlockCredentials),
                 networkConfiguration: input.networkConfig
             )

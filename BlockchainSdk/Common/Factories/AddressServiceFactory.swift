@@ -108,7 +108,7 @@ public struct AddressServiceFactory {
         case .hedera:
             return HederaAddressService(isTestnet: isTestnet)
         case .radiant:
-            let networkParams: INetwork = isTestnet ? RadiantTestNetworkParams() : RadiantNetworkParams()
+            let networkParams: INetwork = isTestnet ? BitcoinCashNetworkParams() : BitcoinCashNetworkParams()
             return BitcoinLegacyAddressService(networkParams: networkParams)
         }
     }

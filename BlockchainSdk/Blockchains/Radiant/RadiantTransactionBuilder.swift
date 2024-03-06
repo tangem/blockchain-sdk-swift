@@ -38,7 +38,7 @@ final class RadiantTransactionBuilder {
         self.unspents = unspents
     }
 
-    func buildForSign(transaction: Transaction, expirationTimestamp: UInt64) throws -> Data {
+    func buildForSign(transaction: Transaction) throws -> Data {
         let input = try buildInput(transaction: transaction)
         let txInputData = try input.serializedData()
 
@@ -57,22 +57,58 @@ final class RadiantTransactionBuilder {
         return preSigningOutput.data
     }
 
-    func buildForSend(transaction: Transaction, signature: Data, expirationTimestamp: UInt64) throws -> Data {
-        throw ""
+    func buildForSend(transaction: Transaction, signature: Data) throws -> Data {
+        let input = try buildInput(transaction: transaction)
+        let txInputData = try input.serializedData()
+
+        guard !txInputData.isEmpty else {
+            throw WalletError.failedToBuildTx
+        }
+
+        let compiledTransaction = TransactionCompiler.compileWithSignatures(
+            coinType: coinType,
+            txInputData: txInputData,
+            signatures: signature.asDataVector(),
+            publicKeys: publicKey.asDataVector()
+        )
+        
+        let signingOutput = try AlgorandSigningOutput(serializedData: compiledTransaction)
+
+        guard signingOutput.error == .ok, !signingOutput.encoded.isEmpty else {
+            Log.debug("RadiantPreSigningOutput has a error: \(signingOutput.errorMessage)")
+            throw WalletError.failedToBuildTx
+        }
+
+        return signingOutput.encoded
     }
     
     // MARK: - Private Implementation
 
     private func buildInput(transaction: Transaction) throws -> BitcoinSigningInput {
-        throw ""
+        let unspentTransactions = try unspents.map {
+            try buildUnspent(transaction: $0)
+        }
+        
+        let amount = transaction.amount.value.int64Value
+        
+        let input = BitcoinSigningInput.with {
+            $0.hashType = WalletCore.BitcoinScript.hashTypeForCoin(coinType: coinType)
+            $0.amount = amount
+            $0.byteFee = 1
+            $0.toAddress = transaction.destinationAddress
+            $0.changeAddress = transaction.changeAddress
+            $0.utxo = unspentTransactions
+        }
+        
+        return input
     }
     
-    private func buildUnspentTransaction(unspent: BitcoinUnspentOutput) throws -> BitcoinUnspentTransaction {
+    private func buildUnspent(transaction: BitcoinUnspentOutput) throws -> BitcoinUnspentTransaction {
         BitcoinUnspentTransaction.with {
-            $0.amount = Decimal(unspent.amount).int64Value
-            $0.outPoint.index = UInt32(unspent.outputIndex)
-            $0.outPoint.hash = Data.reverse(hexString: unspent.transactionHash)
-//            $0.outPoint.sequence = ?
+            $0.amount = Decimal(transaction.amount).int64Value
+            $0.outPoint.index = UInt32(transaction.outputIndex)
+            $0.outPoint.hash = Data.reverse(hexString: transaction.transactionHash)
+            $0.outPoint.sequence = UInt32.max
             $0.script = WalletCore.BitcoinScript.lockScriptForAddress(address: "", coin: coinType).data
         }
     }
