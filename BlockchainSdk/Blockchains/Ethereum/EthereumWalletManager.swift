@@ -134,7 +134,7 @@ private extension EthereumWalletManager {
                     // TODO: Fix integer overflow. Think about BigInt
                     // https://tangem.atlassian.net/browse/IOS-4268
                     // https://tangem.atlassian.net/browse/IOS-5119
-                    let fee = Decimal(UInt64(feeValue)) / decimalValue
+                    let fee = (feeValue.decimal ?? Decimal(UInt64(feeValue))) / decimalValue
 
                     let amount = Amount(with: blockchain, value: fee)
                     let parameters = EthereumFeeParameters(gasLimit: gasLimit, gasPrice: gasPrice)
