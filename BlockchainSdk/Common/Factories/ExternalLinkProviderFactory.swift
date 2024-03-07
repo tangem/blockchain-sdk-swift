@@ -117,6 +117,8 @@ public struct ExternalLinkProviderFactory {
             return PulsechainExternalLinkProvider(isTestnet: isTestnet)
         case .aurora:
             return AuroraExternalLinkProvider(isTestnet: isTestnet)
+        case .manta:
+            return MantaExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }

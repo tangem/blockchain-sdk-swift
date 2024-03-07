@@ -48,7 +48,8 @@ public struct AddressServiceFactory {
                 .areon, 
                 .playa3ullGames,
                 .pulsechain, 
-                .aurora:
+                .aurora,
+                .manta:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
