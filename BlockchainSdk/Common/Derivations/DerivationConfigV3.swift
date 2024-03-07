@@ -56,7 +56,8 @@ public struct DerivationConfigV3: DerivationConfig {
                 .areon,
                 .playa3ullGames,
                 .pulsechain,
-                .aurora:
+                .aurora,
+                .manta:
             return "m/44'/60'/0'/0/0"
         case .ethereumClassic:
             return "m/44'/61'/0'/0/0"

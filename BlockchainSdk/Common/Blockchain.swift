@@ -66,6 +66,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case playa3ullGames
     case pulsechain(testnet: Bool)
     case aurora(testnet: Bool)
+    case manta(testnet: Bool)
 
 
     public var isTestnet: Bool {
@@ -93,7 +94,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .xdc(let testnet),
                 .areon(let testnet),
                 .pulsechain(let testnet),
-                .aurora(let testnet):
+                .aurora(let testnet),
+                .manta(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -187,7 +189,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .areon,
                 .playa3ullGames,
                 .pulsechain,
-                .aurora:
+                .aurora,
+                .manta:
             return 18
         case .cardano,
                 .xrp,
@@ -224,7 +227,7 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "LTC"
         case .stellar:
             return "XLM"
-        case .ethereum, .arbitrum, .optimism, .aurora:
+        case .ethereum, .arbitrum, .optimism, .aurora, .manta:
             return "ETH"
         case .ethereumClassic:
             return "ETC"
@@ -433,7 +436,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .areon,
                 .playa3ullGames,
                 .pulsechain,
-                .aurora:
+                .aurora,
+                .manta:
             return true
         case .fantom,
                 .tron,
@@ -486,6 +490,7 @@ extension Blockchain {
         case .playa3ullGames: return 3011
         case .pulsechain: return isTestnet ? 943 : 369
         case .aurora: return isTestnet ? 1313161555 : 1313161554
+        case .manta: return isTestnet ? 3441005 : 169
         default: return nil
         }
     }
@@ -768,6 +773,16 @@ extension Blockchain {
                     URL(string: "https://1rpc.io/aurora/")!,
                 ]
             }
+        case .manta:
+            if isTestnet {
+                return [
+                    URL(string: "https://pacific-rpc.testnet.manta.network/http/")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://manta-pacific.drpc.org/")!,
+                ]
+            }
         default:
             return nil
         }
@@ -891,6 +906,7 @@ extension Blockchain: Codable {
         case .playa3ullGames: return "playa3ull-games"
         case .pulsechain: return "pulsechain"
         case .aurora: return "aurora"
+        case .manta: return "manta"
         }
     }
 
@@ -965,6 +981,7 @@ extension Blockchain: Codable {
         case "playa3ull-games": self = .playa3ullGames
         case "pulsechain": self = .pulsechain(testnet: isTestnet)
         case "aurora": self = .aurora(testnet: isTestnet)
+        case "manta": self = .manta(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1043,6 +1060,7 @@ extension Blockchain {
         case "playa3ull-games": return .playa3ullGames
         case "pulsechain": return .pulsechain(testnet: isTestnet)
         case "aurora": return .aurora(testnet: isTestnet)
+        case "manta": return .manta(testnet: isTestnet)
         default: return nil
         }
     }
@@ -1082,7 +1100,8 @@ extension Blockchain {
                 .areon,
                 .playa3ullGames,
                 .pulsechain,
-                .aurora:
+                .aurora,
+                .manta:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
