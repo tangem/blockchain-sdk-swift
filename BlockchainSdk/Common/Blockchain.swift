@@ -811,7 +811,7 @@ extension Blockchain {
         case .bitcoin:
             return ["bitcoin:"]
         case .ethereum:
-            return [isTestnet ? "" : "ethereum:"]
+            return [isTestnet ? "" : "ethereum:", "ethereum:pay-"]  // "pay-" defined in ERC-681
         case .litecoin:
             return ["litecoin:"]
         case .xrp:
@@ -821,7 +821,7 @@ extension Blockchain {
         case .dogecoin:
             return ["doge:", "dogecoin:"]
         default:
-            return [""]
+            return []
         }
     }
 
