@@ -46,7 +46,8 @@ extension PublicKeyType {
                 .aurora,
                 .manta,
                 .zkSync,
-                .moonbeam:
+                .moonbeam,
+                .polygonZkEVM:
             self = PublicKeyType.secp256k1Extended
         case .stellar,
                 .ton,

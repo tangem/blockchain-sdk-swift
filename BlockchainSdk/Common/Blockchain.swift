@@ -69,6 +69,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case manta(testnet: Bool)
     case zkSync(testnet: Bool)
     case moonbeam(testnet: Bool)
+    case polygonZkEVM(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -98,7 +99,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .aurora(let testnet),
                 .manta(let testnet),
                 .zkSync(let testnet),
-                .moonbeam(let testnet):
+                .moonbeam(let testnet),
+                .polygonZkEVM(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -195,7 +197,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .aurora,
                 .manta,
                 .zkSync,
-                .moonbeam:
+                .moonbeam,
+                .polygonZkEVM:
             return 18
         case .cardano,
                 .xrp,
@@ -233,7 +236,7 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .stellar:
             return "XLM"
         case .ethereum, .arbitrum, .optimism, .aurora,
-                .manta, .zkSync:
+                .manta, .zkSync, .polygonZkEVM:
             return "ETH"
         case .ethereumClassic:
             return "ETC"
@@ -447,7 +450,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .aurora,
                 .manta,
                 .zkSync,
-                .moonbeam:
+                .moonbeam,
+                .polygonZkEVM:
             return true
         case .fantom,
                 .tron,
@@ -503,6 +507,7 @@ extension Blockchain {
         case .manta: return isTestnet ? 3441005 : 169
         case .zkSync: return isTestnet ? 300 : 324 // FIXME: check testnet chain id
         case .moonbeam: return isTestnet ? 1287 : 1284
+        case .polygonZkEVM: return isTestnet ? 2442 : 1101
         default: return nil
         }
     }
@@ -832,6 +837,22 @@ extension Blockchain {
                     URL(string: "https://rpc.ankr.com/moonbeam/")!,
                 ]
             }
+        case .polygonZkEVM:
+            if isTestnet {
+                return [
+                    URL(string: "https://rpc.cardona.zkevm-rpc.com/")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://zkevm-rpc.com/")!,
+                    URL(string: "https://polygon-zkevm.blockpi.network/v1/rpc/public/")!,
+                    URL(string: "https://polygon-zkevm-mainnet.public.blastapi.io/")!,
+                    URL(string: "https://polygon-zkevm.drpc.org/")!,
+                    URL(string: "https://rpc.polygon-zkevm.gateway.fm/")!,
+                    URL(string: "https://1rpc.io/polygon/zkevm/")!,
+                    URL(string: "https://api.zan.top/node/v1/polygonzkevm/mainnet/public/")!,
+                ]
+            }
         default:
             return nil
         }
@@ -958,6 +979,7 @@ extension Blockchain: Codable {
         case .manta: return "manta"
         case .zkSync: return "zksync"
         case .moonbeam: return "moonbeam"
+        case .polygonZkEVM: return "polygon-zk-evm" // FIXME: update
         }
     }
 
@@ -1035,6 +1057,7 @@ extension Blockchain: Codable {
         case "manta": self = .manta(testnet: isTestnet)
         case "zksync": self = .zkSync(testnet: isTestnet)
         case "moonbeam": self = .moonbeam(testnet: isTestnet)
+        case "polygon-zk-evm": self = .polygonZkEVM(testnet: isTestnet) // FIXME: update
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1116,6 +1139,7 @@ extension Blockchain {
         case "manta": return .manta(testnet: isTestnet)
         case "zksync": return .zkSync(testnet: isTestnet)
         case "moonbeam": return .moonbeam(testnet: isTestnet)
+        case "polygon-zk-evm": return.polygonZkEVM(testnet: isTestnet) // FIXME: update
         default: return nil
         }
     }
@@ -1158,7 +1182,8 @@ extension Blockchain {
                 .aurora,
                 .manta,
                 .zkSync,
-                .moonbeam:
+                .moonbeam,
+                .polygonZkEVM:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
