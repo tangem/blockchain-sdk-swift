@@ -123,6 +123,8 @@ public struct ExternalLinkProviderFactory {
             return ZkSyncExternalLinkProvider(isTestnet: isTestnet)
         case .moonbeam:
             return MoonbeamExternalLinkProvider(isTestnet: isTestnet)
+        case .polygonZkEVM:
+            return PolygonZkEvmExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }

@@ -67,6 +67,8 @@ public extension Blockchain {
         case .manta: break
         case .zkSync: break
         case .moonbeam: break
+        case .polygonZkEVM: break
+        
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -127,6 +129,7 @@ public extension Blockchain {
             .manta(testnet: false),
             .zkSync(testnet: false),
             .moonbeam(testnet: false),
+            .polygonZkEVM(testnet: false),
         ]
     }
 }

@@ -69,7 +69,8 @@ struct AddressTypesConfig {
              .aurora,
              .manta,
              .zkSync,
-             .moonbeam:
+             .moonbeam,
+             .polygonZkEVM:
             return [.default]
         }
     }
