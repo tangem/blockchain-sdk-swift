@@ -68,7 +68,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case aurora(testnet: Bool)
     case manta(testnet: Bool)
     case zkSync(testnet: Bool)
-
+    case moonbeam(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -97,7 +97,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .pulsechain(let testnet),
                 .aurora(let testnet),
                 .manta(let testnet),
-                .zkSync(let testnet):
+                .zkSync(let testnet),
+                .moonbeam(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -193,7 +194,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .pulsechain,
                 .aurora,
                 .manta,
-                .zkSync:
+                .zkSync,
+                .moonbeam:
             return 18
         case .cardano,
                 .xrp,
@@ -321,6 +323,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "3ULL"
         case .pulsechain:
             return isTestnet ? "tPLS" : "PLS"
+        case .moonbeam:
+            return isTestnet ? "DEV" : "GLMR"
         }
     }
 
@@ -442,7 +446,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .pulsechain,
                 .aurora,
                 .manta,
-                .zkSync:
+                .zkSync,
+                .moonbeam:
             return true
         case .fantom,
                 .tron,
@@ -497,6 +502,7 @@ extension Blockchain {
         case .aurora: return isTestnet ? 1313161555 : 1313161554
         case .manta: return isTestnet ? 3441005 : 169
         case .zkSync: return isTestnet ? 300 : 324 // FIXME: check testnet chain id
+        case .moonbeam: return isTestnet ? 1287 : 1284
         default: return nil
         }
     }
@@ -805,6 +811,27 @@ extension Blockchain {
                     URL(string: "https://zksync.drpc.org/")!,
                 ]
             }
+        case .moonbeam:
+            if isTestnet {
+                return [
+                    URL(string: "https://moonbase-alpha.public.blastapi.io/")!,
+                    URL(string: "https://moonbase-rpc.dwellir.com/")!,
+                    URL(string: "https://rpc.api.moonbase.moonbeam.network/")!,
+                    URL(string: "https://moonbase.unitedbloc.com/")!,
+                    URL(string: "https://moonbeam-alpha.api.onfinality.io/public/")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://rpc.api.moonbeam.network/")!,
+                    URL(string: "https://1rpc.io/glmr/")!,
+                    URL(string: "https://moonbeam.public.blastapi.io/")!,
+                    URL(string: "https://moonbeam-rpc.dwellir.com/")!,
+                    URL(string: "https://moonbeam-mainnet.gateway.pokt.network/v1/lb/629a2b5650ec8c0039bb30f0/")!,
+                    URL(string: "https://moonbeam.unitedbloc.com/")!,
+                    URL(string: "https://moonbeam-rpc.publicnode.com/")!,
+                    URL(string: "https://rpc.ankr.com/moonbeam/")!,
+                ]
+            }
         default:
             return nil
         }
@@ -930,6 +957,7 @@ extension Blockchain: Codable {
         case .aurora: return "aurora"
         case .manta: return "manta"
         case .zkSync: return "zksync"
+        case .moonbeam: return "moonbeam"
         }
     }
 
@@ -1006,6 +1034,7 @@ extension Blockchain: Codable {
         case "aurora": self = .aurora(testnet: isTestnet)
         case "manta": self = .manta(testnet: isTestnet)
         case "zksync": self = .zkSync(testnet: isTestnet)
+        case "moonbeam": self = .moonbeam(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1085,6 +1114,8 @@ extension Blockchain {
         case "pulsechain": return .pulsechain(testnet: isTestnet)
         case "aurora": return .aurora(testnet: isTestnet)
         case "manta": return .manta(testnet: isTestnet)
+        case "zksync": return .zkSync(testnet: isTestnet)
+        case "moonbeam": return .moonbeam(testnet: isTestnet)
         default: return nil
         }
     }
@@ -1126,7 +1157,8 @@ extension Blockchain {
                 .pulsechain,
                 .aurora,
                 .manta,
-                .zkSync:
+                .zkSync,
+                .moonbeam:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()

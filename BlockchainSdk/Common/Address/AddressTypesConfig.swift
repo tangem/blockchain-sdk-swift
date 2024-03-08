@@ -68,7 +68,8 @@ struct AddressTypesConfig {
              .pulsechain,
              .aurora,
              .manta,
-             .zkSync:
+             .zkSync,
+             .moonbeam:
             return [.default]
         }
     }

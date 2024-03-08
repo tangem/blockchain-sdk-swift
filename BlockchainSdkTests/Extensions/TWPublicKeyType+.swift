@@ -45,7 +45,8 @@ extension PublicKeyType {
                 .pulsechain,
                 .aurora,
                 .manta,
-                .zkSync:
+                .zkSync,
+                .moonbeam:
             self = PublicKeyType.secp256k1Extended
         case .stellar,
                 .ton,
