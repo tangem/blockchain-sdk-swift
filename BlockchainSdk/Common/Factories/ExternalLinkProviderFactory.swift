@@ -121,6 +121,8 @@ public struct ExternalLinkProviderFactory {
             return MantaExternalLinkProvider(isTestnet: isTestnet)
         case .zkSync:
             return ZkSyncExternalLinkProvider(isTestnet: isTestnet)
+        case .moonbeam:
+            return MoonbeamExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }

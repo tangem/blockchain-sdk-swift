@@ -99,7 +99,8 @@ extension CoinType {
              .pulsechain,
              .aurora,
              .manta,
-             .zkSync:
+             .zkSync,
+             .moonbeam:
             // Blockchains that are not in WalletCore yet
             return nil
         }

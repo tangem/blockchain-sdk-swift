@@ -50,7 +50,8 @@ public struct AddressServiceFactory {
                 .pulsechain, 
                 .aurora,
                 .manta,
-                .zkSync:
+                .zkSync,
+                .moonbeam:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
