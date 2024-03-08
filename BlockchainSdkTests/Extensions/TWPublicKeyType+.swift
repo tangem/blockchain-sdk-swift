@@ -44,7 +44,8 @@ extension PublicKeyType {
                 .playa3ullGames,
                 .pulsechain,
                 .aurora,
-                .manta:
+                .manta,
+                .zkSync:
             self = PublicKeyType.secp256k1Extended
         case .stellar,
                 .ton,

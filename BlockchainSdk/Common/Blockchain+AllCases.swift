@@ -65,6 +65,7 @@ public extension Blockchain {
         case .pulsechain: break
         case .aurora: break
         case .manta: break
+        case .zkSync: break
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -123,6 +124,7 @@ public extension Blockchain {
             .pulsechain(testnet: false),
             .aurora(testnet: false),
             .manta(testnet: false),
+            .zkSync(testnet: false)
         ]
     }
 }

@@ -49,7 +49,8 @@ public struct AddressServiceFactory {
                 .playa3ullGames,
                 .pulsechain, 
                 .aurora,
-                .manta:
+                .manta,
+                .zkSync:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()

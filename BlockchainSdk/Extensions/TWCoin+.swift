@@ -98,7 +98,8 @@ extension CoinType {
              .playa3ullGames,
              .pulsechain,
              .aurora,
-             .manta:
+             .manta,
+             .zkSync:
             // Blockchains that are not in WalletCore yet
             return nil
         }

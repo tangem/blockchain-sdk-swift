@@ -67,6 +67,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case pulsechain(testnet: Bool)
     case aurora(testnet: Bool)
     case manta(testnet: Bool)
+    case zkSync(testnet: Bool)
 
 
     public var isTestnet: Bool {
@@ -95,7 +96,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .areon(let testnet),
                 .pulsechain(let testnet),
                 .aurora(let testnet),
-                .manta(let testnet):
+                .manta(let testnet),
+                .zkSync(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -190,7 +192,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .playa3ullGames,
                 .pulsechain,
                 .aurora,
-                .manta:
+                .manta,
+                .zkSync:
             return 18
         case .cardano,
                 .xrp,
@@ -227,7 +230,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "LTC"
         case .stellar:
             return "XLM"
-        case .ethereum, .arbitrum, .optimism, .aurora, .manta:
+        case .ethereum, .arbitrum, .optimism, .aurora,
+                .manta, .zkSync:
             return "ETH"
         case .ethereumClassic:
             return "ETC"
@@ -437,7 +441,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .playa3ullGames,
                 .pulsechain,
                 .aurora,
-                .manta:
+                .manta,
+                .zkSync:
             return true
         case .fantom,
                 .tron,
@@ -491,6 +496,7 @@ extension Blockchain {
         case .pulsechain: return isTestnet ? 943 : 369
         case .aurora: return isTestnet ? 1313161555 : 1313161554
         case .manta: return isTestnet ? 3441005 : 169
+        case .zkSync: return isTestnet ? 300 : 324
         default: return nil
         }
     }
@@ -781,6 +787,22 @@ extension Blockchain {
             } else {
                 return [
                     URL(string: "https://manta-pacific.drpc.org/")!,
+                    URL(string: "https://pacific-rpc.manta.network/http/")!,
+                    URL(string: "https://1rpc.io/manta/")!,
+                ]
+            }
+        case .zkSync:
+            if isTestnet {
+                return [
+                    URL(string: "https://sepolia.era.zksync.dev/")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://mainnet.era.zksync.io/")!,
+                    URL(string: "https://zksync-era.blockpi.network/v1/rpc/public/")!,
+                    URL(string: "https://1rpc.io/zksync2-era/")!,
+                    URL(string: "https://zksync.meowrpc.com/")!,
+                    URL(string: "https://zksync.drpc.org/")!,
                 ]
             }
         default:
@@ -907,6 +929,7 @@ extension Blockchain: Codable {
         case .pulsechain: return "pulsechain"
         case .aurora: return "aurora"
         case .manta: return "manta"
+        case .zkSync: return "zksync"
         }
     }
 
@@ -982,6 +1005,7 @@ extension Blockchain: Codable {
         case "pulsechain": self = .pulsechain(testnet: isTestnet)
         case "aurora": self = .aurora(testnet: isTestnet)
         case "manta": self = .manta(testnet: isTestnet)
+        case "zksync": self = .zkSync(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1101,7 +1125,8 @@ extension Blockchain {
                 .playa3ullGames,
                 .pulsechain,
                 .aurora,
-                .manta:
+                .manta,
+                .zkSync:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()

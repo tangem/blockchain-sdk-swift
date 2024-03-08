@@ -67,7 +67,8 @@ struct AddressTypesConfig {
              .playa3ullGames,
              .pulsechain,
              .aurora,
-             .manta:
+             .manta,
+             .zkSync:
             return [.default]
         }
     }
