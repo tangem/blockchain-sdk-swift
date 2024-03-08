@@ -69,6 +69,7 @@ struct EstimationFeeAddressFactory {
                 .pulsechain,
                 .aurora,
                 .manta,
+                .zkSync,
                 // Polkadot-like
                 .polkadot, .kusama, .azero,
                 // Cosmos-like

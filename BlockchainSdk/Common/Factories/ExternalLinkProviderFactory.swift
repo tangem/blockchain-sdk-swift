@@ -119,6 +119,8 @@ public struct ExternalLinkProviderFactory {
             return AuroraExternalLinkProvider(isTestnet: isTestnet)
         case .manta:
             return MantaExternalLinkProvider(isTestnet: isTestnet)
+        case .zkSync:
+            return ZkSyncExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }
