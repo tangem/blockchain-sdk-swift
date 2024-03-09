@@ -215,7 +215,7 @@ private extension BaseManager {
            case .coin = amount.type
         {
             let remainderBalance = walletAmount - total
-            if remainderBalance < minimumBalanceRestrictable.minimumBalance && !remainderBalance.isZero {
+            if remainderBalance < minimumBalanceRestrictable.minimumBalance {
                 errors.append(.minimumBalance(minimumBalance: minimumBalanceRestrictable.minimumBalance))
             }
         }
