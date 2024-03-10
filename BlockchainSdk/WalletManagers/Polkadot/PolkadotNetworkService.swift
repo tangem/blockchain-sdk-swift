@@ -70,7 +70,7 @@ class PolkadotNetworkService: MultiNetworkProvider {
                     let latestBlockNumberPublisher = self.provider
                         .header(latestBlockHash)
                         .map(\.number)
-                        .tryMap { UInt64($0.removeHexPrefix(), radix: 16) ?? 0 }
+                        .tryMap { UInt64($0.removeHexPrefix(), radix: 16) ?? 0 } // TODO: BigInt
 
                     return Publishers.Zip(latestBlockHashPublisher, latestBlockNumberPublisher).eraseToAnyPublisher()
                 }
