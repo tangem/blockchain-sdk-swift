@@ -9,7 +9,7 @@
 import Foundation
 
 struct ZkSyncExternalLinkProvider: ExternalLinkProvider {
-    var testnetFaucetURL = URL(string: "https://faucet.quicknode.com/ethereum/sepolia/")
+    var testnetFaucetURL = URL(string: "https://learnweb3.io/faucets/zksync_sepolia/")
 
     private let isTestnet: Bool
 
