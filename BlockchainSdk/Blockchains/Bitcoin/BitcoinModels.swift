@@ -55,6 +55,13 @@ struct BitcoinUnspentOutput {
     let outputIndex: Int
     let amount: UInt64
     let outputScript: String
+    
+    init(transactionHash: String, outputIndex: Int, amount: UInt64, outputScript: String) {
+        self.transactionHash = transactionHash
+        self.outputIndex = outputIndex
+        self.amount = amount
+        self.outputScript = outputScript
+    }
 }
 
 extension Array where Element == BitcoinUnspentOutput {

@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import WalletCore
 
 final class RadiantWalletManager: BaseManager {
     
@@ -51,7 +52,7 @@ final class RadiantWalletManager: BaseManager {
 
 // MARK: - Private Implementation
 
-extension RadiantWalletManager {
+private extension RadiantWalletManager {
     func updateWallet(with response: [BitcoinResponse]) {
         let balance = response.reduce(into: 0) { $0 += $1.balance }
         let hasUnconfirmed = response.contains(where: { $0.hasUnconfirmed })
@@ -71,6 +72,41 @@ extension RadiantWalletManager {
                 }
         }
     }
+    
+    func sendViaCompileTransaction(
+        _ transaction: Transaction,
+        signer: TransactionSigner
+    ) -> AnyPublisher<TransactionSendResult, Error> {
+        let hashPublicKeysForSign: [WalletCore.TW_Bitcoin_Proto_HashPublicKey]
+        
+        do {
+            hashPublicKeysForSign = try transactionBuilder.buildForSign(transaction: transaction)
+        } catch {
+            return .anyFail(error: error)
+        }
+    
+        return signer
+            .sign(hashes: hashPublicKeysForSign.map { $0.dataHash }, walletPublicKey: self.wallet.publicKey)
+            .withWeakCaptureOf(self)
+            .tryMap { walletManager, signatures in
+                let signatureInfos = signatures.enumerated().map {
+                    SignatureInfo(signature: $1, publicKey: hashPublicKeysForSign[$0].publicKeyHash)
+                }
+                
+                return try walletManager.transactionBuilder.buildForSend(
+                    transaction: transaction,
+                    signatures: signatureInfos
+                )
+            }
+            .withWeakCaptureOf(self)
+            .tryMap { walletManager, transactionData -> TransactionSendResult in
+                print(transactionData.hexString)
+                
+                // TODO: - Need to send network service
+                throw WalletError.failedToSendTx
+            }
+            .eraseToAnyPublisher()
+    }
 }
 
 // MARK: - WalletManager
@@ -80,25 +116,21 @@ extension RadiantWalletManager: WalletManager {
         networkService.host
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        guard let buildForSignHash = try? transactionBuilder.buildForSign(transaction: transaction) else {
-            return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
-        }
-        
-        print(buildForSignHash)
-        
-        return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+    var allowsFeeSelection: Bool {
+        true
     }
     
-    var allowsFeeSelection: Bool {
-        false
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+        sendViaCompileTransaction(transaction, signer: signer)
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         return networkService.getFee()
             .tryMap { [weak self] response throws -> [Fee] in
                 guard let self = self else { throw WalletError.empty }
-                return [.init(Amount(with: .bitcoinCash, value: 1.0))]
+                return [
+                    .init(Amount(with: wallet.blockchain, value: 0.000000001))
+                ]
             }
             .eraseToAnyPublisher()
     }

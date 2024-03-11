@@ -185,7 +185,6 @@ struct BlockBookUnspentTxResponse: Decodable {
     let lockTime: Int?
     let height: Int?
     let coinbase: Bool?
-    let scriptPubKey: String?
 }
 
 struct BlockBookFeeResponse: Decodable {

@@ -44,4 +44,46 @@ final class RadiantTests: XCTestCase {
         XCTAssertEqual(adapterAddress.description, "33KPW4uKuyVFsCEh4YgDMF58zprnb817jZ")
         XCTAssertEqual(adapterAddress.description, legacyAddress)
     }
+    
+    func testSign() throws {
+        let blockchain: BlockchainSdk.Blockchain = .radiant(testnet: false)
+        
+        let privateKey = PrivateKey(data: Data(hexString: "7fdafb9db5bc501f2096e7d13d331dc7a75d9594af3d251313ba8b6200f4e384"))!
+        let address = CoinType.bitcoinCash.deriveAddress(privateKey: privateKey)
+        
+        let utxoTxId = "050d00e2e18ef13969606f1ceee290d3f49bd940684ce39898159352952b8ce2"
+        
+        let transactionBuilder = RadiantTransactionBuilder(
+            coinType: .bitcoinCash,
+            publicKey: privateKey.getPublicKeyByType(pubkeyType: .secp256k1).compressed.data,
+            decimalValue: blockchain.decimalValue,
+            walletAddress: address
+        )
+        
+        let unspentAmount = Amount(with: blockchain, value: 5151 / blockchain.decimalValue)
+        
+        transactionBuilder.update(unspents: [
+            .init(
+                transactionHash: utxoTxId,
+                outputIndex: 2,
+                amount: unspentAmount,
+                outputScript: WalletCore.BitcoinScript.lockScriptForAddress(address: address, coin: .bitcoinCash).data.hexString // Build lock script from address or public key hash
+            )
+        ])
+        
+        let amount = Amount(with: blockchain, value: 600 / blockchain.decimalValue)
+        let fee = Fee(Amount(with: blockchain, value: 1000 / blockchain.decimalValue))
+        
+        let transaction = Transaction(
+            amount: amount,
+            fee: fee,
+            sourceAddress: address,
+            destinationAddress: "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx",
+            changeAddress: "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU"
+        )
+        
+        // TODO: - Need insert signed transaction
+    
+        
+    }
 }
