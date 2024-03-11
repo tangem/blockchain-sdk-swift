@@ -17,7 +17,7 @@ struct PulsechainExternalLinkProvider: ExternalLinkProvider {
         if isTestnet {
             "https://scan.v4.testnet.pulsechain.com/#"
         } else {
-            "https://beacon.pulsechain.com"
+            "https://otter.pulsechain.com"
         }
     }
 
