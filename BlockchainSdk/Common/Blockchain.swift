@@ -505,7 +505,7 @@ extension Blockchain {
         case .pulsechain: return isTestnet ? 943 : 369
         case .aurora: return isTestnet ? 1313161555 : 1313161554
         case .manta: return isTestnet ? 3441005 : 169
-        case .zkSync: return isTestnet ? 300 : 324
+        case .zkSync: return isTestnet ? 300 : 324 
         case .moonbeam: return isTestnet ? 1287 : 1284
         case .polygonZkEVM: return isTestnet ? 2442 : 1101
         default: return nil
@@ -979,7 +979,7 @@ extension Blockchain: Codable {
         case .manta: return "manta"
         case .zkSync: return "zksync"
         case .moonbeam: return "moonbeam"
-        case .polygonZkEVM: return "polygon-zk-evm" // FIXME: update
+        case .polygonZkEVM: return "polygon-zkevm"
         }
     }
 
@@ -1057,7 +1057,7 @@ extension Blockchain: Codable {
         case "manta": self = .manta(testnet: isTestnet)
         case "zksync": self = .zkSync(testnet: isTestnet)
         case "moonbeam": self = .moonbeam(testnet: isTestnet)
-        case "polygon-zk-evm": self = .polygonZkEVM(testnet: isTestnet) // FIXME: update
+        case "polygon-zkevm": self = .polygonZkEVM(testnet: isTestnet) // FIXME: update
         default:
             throw BlockchainSdkError.decodingFailed
         }
