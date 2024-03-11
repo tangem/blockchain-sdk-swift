@@ -482,7 +482,7 @@ extension Blockchain {
         case .decimal: return isTestnet ? 202020 : 75
         case .xdc: return isTestnet ? 51 : 50
         case .shibarium: return isTestnet ? 157 : 109
-        case .areon: return isTestnet ? 463 : 462
+        case .areon: return isTestnet ? 462 : 463
         case .playa3ullGames: return 3011
         case .pulsechain: return isTestnet ? 943 : 369
         case .aurora: return isTestnet ? 1313161555 : 1313161554
