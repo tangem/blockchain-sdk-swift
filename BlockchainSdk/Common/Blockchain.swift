@@ -505,7 +505,7 @@ extension Blockchain {
         case .pulsechain: return isTestnet ? 943 : 369
         case .aurora: return isTestnet ? 1313161555 : 1313161554
         case .manta: return isTestnet ? 3441005 : 169
-        case .zkSync: return isTestnet ? 300 : 324 // FIXME: check testnet chain id
+        case .zkSync: return isTestnet ? 300 : 324
         case .moonbeam: return isTestnet ? 1287 : 1284
         case .polygonZkEVM: return isTestnet ? 2442 : 1101
         default: return nil
