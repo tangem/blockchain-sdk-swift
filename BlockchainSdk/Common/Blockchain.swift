@@ -386,6 +386,8 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .pulsechain:
             let testnetSuffix = testnetSuffix + (isTestnet ? " v4" : "")
             return "Pulsechain" + testnetSuffix
+        case .polygonZkEVM:
+            return "Polygon zkEVM" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
