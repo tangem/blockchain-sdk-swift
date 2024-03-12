@@ -63,7 +63,7 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func sendSplToken(amount: UInt64, sourceTokenAddress: String, destinationAddress: String, token: Token, tokenProgramId: PublicKey, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
+    func sendSplToken(amount: UInt64, computeUnitLimit: UInt32, computeUnitPrice: UInt64, sourceTokenAddress: String, destinationAddress: String, token: Token, tokenProgramId: PublicKey, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
         solanaSdk.action.sendSPLTokens(
             mintAddress: token.contractAddress,
             tokenProgramId: tokenProgramId,
@@ -71,6 +71,8 @@ class SolanaNetworkService {
             from: sourceTokenAddress,
             to: destinationAddress,
             amount: amount,
+            computeUnitLimit: computeUnitLimit,
+            computeUnitPrice: computeUnitPrice,
             allowUnfundedRecipient: true,
             signer: signer
         )
@@ -134,7 +136,7 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func averagePrioritizationFee(accounts: [String]) -> AnyPublisher<Int64, Error> {
+    func averagePrioritizationFee(accounts: [String]) -> AnyPublisher<UInt64, Error> {
         solanaSdk.api.getRecentPrioritizationFees(accounts: accounts)
             .retry(1)
             .tryMap { fees in
@@ -147,18 +149,18 @@ class SolanaNetworkService {
                     throw WalletError.failedToGetFee
                 }
                 
-                let minimumComputationUnitPrice: Int64 = 1
+                let minimumComputationUnitPrice: UInt64 = 1
                 let computationUnitMultiplier = 0.8
                 
                 let minFeeValue = max(_minFeeValue, minimumComputationUnitPrice)
                 let maxFeeValue = max(_maxFeeValue, minimumComputationUnitPrice)
                 
                 let averagePrioritizationFee = Double(minFeeValue + maxFeeValue) * computationUnitMultiplier
-                guard averagePrioritizationFee <= Double(Int64.max) else {
+                guard averagePrioritizationFee <= Double(UInt64.max) else {
                     throw WalletError.failedToGetFee
                 }
                 
-                return Int64(averagePrioritizationFee)
+                return UInt64(averagePrioritizationFee)
             }
             .eraseToAnyPublisher()
     }
