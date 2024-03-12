@@ -126,7 +126,7 @@ extension SolanaWalletManager: TransactionSender {
          */
         let signer = SolanaTransactionSigner(transactionSigner: signer, walletPublicKey: wallet.publicKey)
         
-        let accountCreationInfoPublisher = destinationAccountInfo(
+        let destinationAccountInfoPublisher = destinationAccountInfo(
             destination: transaction.destinationAddress, 
             amount: transaction.amount
         )
@@ -134,18 +134,18 @@ extension SolanaWalletManager: TransactionSender {
             accounts: [transaction.sourceAddress, transaction.destinationAddress]
         )
         
-        return Publishers.CombineLatest(accountCreationInfoPublisher, averagePrioritizationFeePublisher)
-            .flatMap { [weak self] accountCreationInfo, averagePrioritizationFee -> AnyPublisher<TransactionID, Error> in
+        return Publishers.CombineLatest(destinationAccountInfoPublisher, averagePrioritizationFeePublisher)
+            .flatMap { [weak self] destinationAccountInfo, averagePrioritizationFee -> AnyPublisher<TransactionID, Error> in
                 guard let self = self else {
                     return .anyFail(error: WalletError.empty)
                 }
                 
-                let decimalAmount = (transaction.amount.value + accountCreationInfo.accountCreationFee) * self.wallet.blockchain.decimalValue
+                let decimalAmount = (transaction.amount.value + destinationAccountInfo.accountCreationFee) * self.wallet.blockchain.decimalValue
                 let intAmount = (decimalAmount.rounded() as NSDecimalNumber).uint64Value
                 
                 return self.networkService.sendSol(
                     amount: intAmount,
-                    computeUnitLimit: self.computeUnitLimit(accountExists: accountCreationInfo.accountExists),
+                    computeUnitLimit: self.computeUnitLimit(accountExists: destinationAccountInfo.accountExists),
                     computeUnitPrice: averagePrioritizationFee,
                     destinationAddress: transaction.destinationAddress,
                     signer: signer
