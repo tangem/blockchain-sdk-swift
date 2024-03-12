@@ -30,7 +30,7 @@ target 'BlockchainSdk' do
   pod 'BinanceChain', :git => 'https://github.com/tangem/swiftbinancechain.git', :tag => '0.0.11'
   #pod 'BinanceChain', :path => '../SwiftBinanceChain'
   
-  pod 'Solana.Swift', :git => 'https://github.com/tangem/Solana.Swift', :tag => '1.2.0-tangem3'
+  pod 'Solana.Swift', :git => 'https://github.com/tangem/Solana.Swift', :tag => '1.2.0-tangem4'
 #  pod 'Solana.Swift', :path => '../Solana.Swift'
 
   pod 'ScaleCodec'
