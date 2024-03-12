@@ -115,6 +115,7 @@ extension SolanaWalletManager: TransactionSender {
     }
     
     private func computeUnitLimit(accountExists: Bool) -> UInt32 {
+        // https://www.helius.dev/blog/priority-fees-understanding-solanas-transaction-fee-mechanics#helius-priority-fee-api
         accountExists ? 200_000 : 400_000
     }
     
