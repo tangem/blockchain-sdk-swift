@@ -1,70 +1,36 @@
 //
-//  RadiantNentworkProvider.swift
+//  RadiantNetworkProvider.swift
 //  BlockchainSdk
 //
-//  Created by skibinalexander on 05.03.2024.
+//  Created by skibinalexander on 12.03.2024.
 //  Copyright © 2024 Tangem AG. All rights reserved.
 //
 
 import Foundation
 import Combine
 
-/// Adapter for existing BlockBookUtxoProvider
-final class RadiantNetworkProvider: BitcoinNetworkProvider {
-    private let blockBookUtxoProvider: BlockBookUtxoProvider
+class RadiantNetworkProvider: MultiNetworkProvider {
+    let providers: [RadiantElectrumWebSocketProvider]
+    var currentProviderIndex: Int = 0
     
-    init(blockBookUtxoProvider: BlockBookUtxoProvider) {
-        self.blockBookUtxoProvider = blockBookUtxoProvider
+    private let decimalValue: Decimal
+    
+    init(providers: [RadiantElectrumWebSocketProvider], decimalValue: Decimal) {
+        self.providers = providers
+        self.decimalValue = decimalValue
     }
     
-    var host: String {
-        blockBookUtxoProvider.host
-    }
-    
-    var supportsTransactionPush: Bool {
-        blockBookUtxoProvider.supportsTransactionPush
-    }
-    
-    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        blockBookUtxoProvider.getInfo(address: addAddressPrefixIfNeeded(address))
-    }
-    
-    func getFee() -> AnyPublisher<BitcoinFee, Error> {
-        blockBookUtxoProvider.executeRequest(
-            .fees(NodeRequest.estimateFeeRequest(method: "estimatefee")),
-            responseType: NodeEstimateFeeResponse.self
-        )
-        .tryMap { [weak self] response in
-            guard let self else {
-                throw WalletError.empty
-            }
-            
-            return try blockBookUtxoProvider.convertFeeRate(response.result)
-        }.map { fee in
-            // fee for BCH is constant
-            BitcoinFee(minimalSatoshiPerByte: fee, normalSatoshiPerByte: fee, prioritySatoshiPerByte: fee)
+    func getBalance(address: String) -> AnyPublisher<Decimal, Error> {
+        providerPublisher { provider in
+                .init {
+                    do {
+                        let balance = try await provider.getBalance(address: address)
+                        return Decimal(balance.confirmed) / self.decimalValue
+                    } catch {
+                        print(error)
+                        throw error
+                    }
+                }
         }
-        .eraseToAnyPublisher()
-    }
-    
-    func send(transaction: String) -> AnyPublisher<String, Error> {
-        blockBookUtxoProvider.executeRequest(
-            .sendNode(NodeRequest.sendRequest(signedTransaction: transaction)),
-            responseType: SendResponse.self
-        )
-        .map { $0.result }
-        .eraseToAnyPublisher()
-    }
-    
-    func push(transaction: String) -> AnyPublisher<String, Error> {
-        blockBookUtxoProvider.push(transaction: transaction)
-    }
-    
-    func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-        blockBookUtxoProvider.getSignatureCount(address: address)
-    }
-    
-    private func addAddressPrefixIfNeeded(_ address: String) -> String {
-        return address
     }
 }

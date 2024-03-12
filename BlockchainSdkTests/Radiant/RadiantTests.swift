@@ -60,13 +60,11 @@ final class RadiantTests: XCTestCase {
             walletAddress: address
         )
         
-        let unspentAmount = Amount(with: blockchain, value: 5151 / blockchain.decimalValue)
-        
         transactionBuilder.update(unspents: [
             .init(
                 transactionHash: utxoTxId,
                 outputIndex: 2,
-                amount: unspentAmount,
+                amount: 5151,
                 outputScript: WalletCore.BitcoinScript.lockScriptForAddress(address: address, coin: .bitcoinCash).data.hexString // Build lock script from address or public key hash
             )
         ])
@@ -84,6 +82,6 @@ final class RadiantTests: XCTestCase {
         
         // TODO: - Need insert signed transaction
     
-        
     }
+    
 }

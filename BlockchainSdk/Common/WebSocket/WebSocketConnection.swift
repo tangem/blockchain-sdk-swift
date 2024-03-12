@@ -16,6 +16,8 @@ public class WebSocketConnection: NSObject {
     private var webSocket: URLSessionWebSocketTask?
     private var pingTask: Task<Void, Never>?
     
+    
+    
     public init(url: URL, ping: Ping) {
         self.url = url
         self.ping = ping

@@ -9,17 +9,23 @@
 import Foundation
 import Combine
 
-class RadiantNetworkService: BitcoinNetworkService {
-    override func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
-        super.getInfo(address: addresses[0].removeBchPrefix())
-            .map { [$0] }
-            .eraseToAnyPublisher()
-    }
-    override func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        super.getInfo(address: address.removeBchPrefix())
-    }
+class RadiantNetworkService {
+    let electrumProvider: RadiantNetworkProvider
     
-    override func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
-        super.getSignatureCount(address: address.removeBchPrefix()) //TODO: check it!
+    init(electrumProvider: RadiantNetworkProvider) {
+        self.electrumProvider = electrumProvider
+    }
+}
+
+extension RadiantNetworkService: HostProvider {
+    var host: String {
+        electrumProvider.host
+    }
+}
+
+extension RadiantNetworkService {
+    func getInfo(address: String) -> AnyPublisher<Decimal, Error> {
+        electrumProvider
+            .getBalance(address: address)
     }
 }

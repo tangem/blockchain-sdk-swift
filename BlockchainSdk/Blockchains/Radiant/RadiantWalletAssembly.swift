@@ -10,17 +10,8 @@ import Foundation
 
 struct RadiantWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        var providers = [AnyBitcoinNetworkProvider]()
-
-        if let bitcoinCashAddressService = AddressServiceFactory(
-            blockchain: .bitcoinCash
-        ).makeAddressService() as? BitcoinCashAddressService {
-            providers.append(
-                networkProviderAssembly.makeBitcoinCashNowNodesNetworkProvider(
-                    input: input,
-                    bitcoinCashAddressService: bitcoinCashAddressService
-                )
-            )
+        var socketManagers: [RadiantElectrumWebSocketProvider] = RadiantNetworkEndpoint.allCases.map {
+            .init(url: URL(string: $0.urlString)!)
         }
 
         let transactionBuilder = RadiantTransactionBuilder(
@@ -33,7 +24,12 @@ struct RadiantWalletAssembly: WalletManagerAssembly {
         return try RadiantWalletManager(
             wallet: input.wallet,
             transactionBuilder: transactionBuilder,
-            networkService: RadiantNetworkService(providers: providers)
+            networkService: RadiantNetworkService(
+                electrumProvider: .init(
+                    providers: socketManagers,
+                    decimalValue: input.blockchain.decimalValue
+                )
+            )
         )
     }
 }

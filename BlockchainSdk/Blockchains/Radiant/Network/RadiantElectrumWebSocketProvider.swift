@@ -1,18 +1,14 @@
 //
-//  ElectrumWebSocketRequestFactory.swift
+//  RadiantElectrumWebSocketProvider.swift
 //  BlockchainSdk
 //
-//  Created by Sergey Balashov on 11.03.2024.
+//  Created by skibinalexander on 12.03.2024.
+//  Copyright © 2024 Tangem AG. All rights reserved.
 //
 
 import Foundation
 
-let nexaURLs: [String] = [
-    "wss://onekey-electrum.bitcoinunlimited.info:20004",
-    "wss://electrum.nexa.org:20004"
-]
-
-public class ElectrumWebSocketManager: HostProvider {
+struct RadiantElectrumWebSocketProvider: HostProvider {
     var host: String { url.absoluteString }
     
     private let url: URL
@@ -26,7 +22,7 @@ public class ElectrumWebSocketManager: HostProvider {
     public init(url: URL) {
         self.url = url
 
-        let request = JSONRPCWebSocketProvider.JSONRPCRequest(id: 0, method: "server.version", params: [ "1.9.5", "0.6" ])
+        let request = JSONRPCWebSocketProvider.JSONRPCRequest(id: 0, method: "server.version", params: ["1.19", "1.4"])
         let data = try! JSONEncoder().encode(request)
 
         connection = .init(url: url, keepAliveMessage: data)

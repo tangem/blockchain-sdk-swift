@@ -28,10 +28,17 @@ final class RadiantWalletManager: BaseManager {
     // MARK: - Implementation
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        let addresses = wallet.addresses.map { $0.value }
+        let preparedAddress: String
+        
+        do {
+            preparedAddress = try RadiantUtils().prepareWallet(address: wallet.address)
+        } catch {
+            completion(.failure(error))
+            return
+        }
         
         let accountInfoPublisher = networkService
-            .getInfo(addresses: addresses)
+            .getInfo(address: preparedAddress)
         
         cancellable = accountInfoPublisher
             .withWeakCaptureOf(self)
@@ -44,7 +51,8 @@ final class RadiantWalletManager: BaseManager {
                     completion(.success(()))
                 }
             }, receiveValue: { (manager, response) in
-                manager.updateWallet(with: response)
+                print(response)
+//                manager.updateWallet(with: response)
             })
     }
     
@@ -125,14 +133,15 @@ extension RadiantWalletManager: WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        return networkService.getFee()
-            .tryMap { [weak self] response throws -> [Fee] in
-                guard let self = self else { throw WalletError.empty }
-                return [
-                    .init(Amount(with: wallet.blockchain, value: 0.000000001))
-                ]
-            }
-            .eraseToAnyPublisher()
+        return .anyFail(error: WalletError.failedToGetFee)
+//        return networkService.getFee()
+//            .tryMap { [weak self] response throws -> [Fee] in
+//                guard let self = self else { throw WalletError.empty }
+//                return [
+//                    .init(Amount(with: wallet.blockchain, value: 0.000000001))
+//                ]
+//            }
+//            .eraseToAnyPublisher()
     }
 }
 

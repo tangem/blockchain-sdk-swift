@@ -108,7 +108,7 @@ public struct AddressServiceFactory {
         case .hedera:
             return HederaAddressService(isTestnet: isTestnet)
         case .radiant:
-            return WalletCoreAddressService(blockchain: .bitcoinCash)
+            return RadiantAddressService()
         }
     }
 }
