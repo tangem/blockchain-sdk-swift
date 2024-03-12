@@ -76,6 +76,7 @@ final class SolanaEd25519Tests: XCTestCase {
 
         manager = .init(wallet: wallet)
         manager.solanaSdk = solanaSdk
+        manager.usePriorityFees = false
         manager.networkService = SolanaNetworkService(solanaSdk: solanaSdk, blockchain: blockchain, hostProvider: networkingRouter)
     }
     
