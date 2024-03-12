@@ -129,7 +129,13 @@ extension SolanaWalletManager: TransactionSender {
                 
                 let decimalAmount = (transaction.amount.value + additionalAmount) * self.wallet.blockchain.decimalValue
                 let intAmount = (decimalAmount.rounded() as NSDecimalNumber).uint64Value
-                return self.networkService.sendSol(amount: intAmount, destinationAddress: transaction.destinationAddress, signer: signer)
+                return self.networkService.sendSol(
+                    amount: intAmount,
+                    computeUnitLimit: 2,
+                    computeUnitPrice: 20_000,
+                    destinationAddress: transaction.destinationAddress,
+                    signer: signer
+                )
             }
             .eraseToAnyPublisher()
     }

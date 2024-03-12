@@ -44,10 +44,18 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func sendSol(amount: UInt64, destinationAddress: String, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
+    func sendSol(
+        amount: UInt64,
+        computeUnitLimit: UInt32,
+        computeUnitPrice: UInt64,
+        destinationAddress: String,
+        signer: SolanaTransactionSigner
+    ) -> AnyPublisher<TransactionID, Error> {
         solanaSdk.action.sendSOL(
             to: destinationAddress,
             amount: amount,
+            computeUnitLimit: computeUnitLimit,
+            computeUnitPrice: computeUnitPrice,
             allowUnfundedRecipient: true,
             signer: signer
         )

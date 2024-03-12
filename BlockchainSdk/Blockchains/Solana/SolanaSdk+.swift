@@ -184,6 +184,8 @@ extension Action {
     func sendSOL(
         to destination: String,
         amount: UInt64,
+        computeUnitLimit: UInt32,
+        computeUnitPrice: UInt64,
         allowUnfundedRecipient: Bool = false,
         signer: Signer
     ) -> AnyPublisher<TransactionID, Error> {
@@ -197,6 +199,8 @@ extension Action {
                 self.sendSOL(
                     to: destination,
                     amount: amount,
+                    computeUnitLimit: computeUnitLimit,
+                    computeUnitPrice: computeUnitPrice,
                     allowUnfundedRecipient: allowUnfundedRecipient,
                     signer: signer
                 ) {
