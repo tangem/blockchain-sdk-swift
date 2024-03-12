@@ -130,8 +130,10 @@ extension SolanaWalletManager: TransactionSender {
             destination: transaction.destinationAddress, 
             amount: transaction.amount
         )
+        
+        let computeUnitPriceAccounts = [transaction.sourceAddress, transaction.destinationAddress]
         let computeUnitPricePublisher = networkService.computeUnitPrice(
-            accounts: [transaction.sourceAddress, transaction.destinationAddress]
+            accounts: computeUnitPriceAccounts
         )
         
         return Publishers.CombineLatest(destinationAccountInfoPublisher, computeUnitPricePublisher)
@@ -168,7 +170,7 @@ extension SolanaWalletManager: TransactionSender {
                     return .anyFail(error: WalletError.empty)
                 }
                 
-                guard let associatedDestinationTokenAddress = associatedTokenAddress(
+                guard let associatedDestinationTokenAccountAddress = associatedTokenAddress(
                     accountAddress: transaction.destinationAddress,
                     mintAddress: token.contractAddress,
                     tokenProgramId: tokenProgramId
@@ -176,12 +178,12 @@ extension SolanaWalletManager: TransactionSender {
                     return .anyFail(error: BlockchainSdkError.failedToConvertPublicKey)
                 }
                 
+                let computeUnitPriceAccounts = [transaction.sourceAddress, associatedDestinationTokenAccountAddress]
                 let computeUnitLimit = self.computeUnitLimit(accountExists: accountExists)
-                
                 return Publishers.CombineLatest3(
                     Just(tokenProgramId).setFailureType(to: Error.self).eraseToAnyPublisher(),
                     Just(computeUnitLimit).setFailureType(to: Error.self).eraseToAnyPublisher(),
-                    self.networkService.computeUnitPrice(accounts: [transaction.sourceAddress, associatedDestinationTokenAddress])
+                    self.networkService.computeUnitPrice(accounts: computeUnitPriceAccounts)
                 ) .eraseToAnyPublisher()
             }
             .flatMap { [weak self] tokenProgramId, computeUnitLimit, computeUnitPrice -> AnyPublisher<TransactionID, Error> in
