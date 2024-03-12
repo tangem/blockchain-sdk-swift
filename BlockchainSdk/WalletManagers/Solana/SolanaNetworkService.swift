@@ -44,10 +44,18 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func sendSol(amount: UInt64, destinationAddress: String, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
+    func sendSol(
+        amount: UInt64,
+        computeUnitLimit: UInt32?,
+        computeUnitPrice: UInt64?,
+        destinationAddress: String,
+        signer: SolanaTransactionSigner
+    ) -> AnyPublisher<TransactionID, Error> {
         solanaSdk.action.sendSOL(
             to: destinationAddress,
             amount: amount,
+            computeUnitLimit: computeUnitLimit,
+            computeUnitPrice: computeUnitPrice,
             allowUnfundedRecipient: true,
             signer: signer
         )
@@ -55,7 +63,7 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func sendSplToken(amount: UInt64, sourceTokenAddress: String, destinationAddress: String, token: Token, tokenProgramId: PublicKey, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
+    func sendSplToken(amount: UInt64, computeUnitLimit: UInt32?, computeUnitPrice: UInt64?, sourceTokenAddress: String, destinationAddress: String, token: Token, tokenProgramId: PublicKey, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
         solanaSdk.action.sendSPLTokens(
             mintAddress: token.contractAddress,
             tokenProgramId: tokenProgramId,
@@ -63,6 +71,8 @@ class SolanaNetworkService {
             from: sourceTokenAddress,
             to: destinationAddress,
             amount: amount,
+            computeUnitLimit: computeUnitLimit,
+            computeUnitPrice: computeUnitPrice,
             allowUnfundedRecipient: true,
             signer: signer
         )
@@ -122,6 +132,35 @@ class SolanaNetworkService {
                 }
                 
                 return Decimal(feeInLamports) / self.blockchain.decimalValue
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func computeUnitPrice(accounts: [String]) -> AnyPublisher<UInt64, Error> {
+        solanaSdk.api.getRecentPrioritizationFees(accounts: accounts)
+            .retry(1)
+            .tryMap { fees in
+                let feeValues = fees.map(\.prioritizationFee)
+                
+                guard
+                    let _maxFeeValue = feeValues.max(),
+                    let _minFeeValue = feeValues.min()
+                else {
+                    throw WalletError.failedToGetFee
+                }
+                
+                let minimumComputationUnitPrice: UInt64 = 1
+                let computationUnitMultiplier = 0.8
+                
+                let minFeeValue = max(_minFeeValue, minimumComputationUnitPrice)
+                let maxFeeValue = max(_maxFeeValue, minimumComputationUnitPrice)
+                
+                let computeUnitPrice = Double(minFeeValue + maxFeeValue) * computationUnitMultiplier
+                guard computeUnitPrice <= Double(UInt64.max) else {
+                    throw WalletError.failedToGetFee
+                }
+                
+                return UInt64(computeUnitPrice)
             }
             .eraseToAnyPublisher()
     }
