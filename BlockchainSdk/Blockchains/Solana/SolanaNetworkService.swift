@@ -134,6 +134,35 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
+    func averagePrioritizationFee(accounts: [String]) -> AnyPublisher<Int64, Error> {
+        solanaSdk.api.getRecentPrioritizationFees(accounts: accounts)
+            .retry(1)
+            .tryMap { fees in
+                let feeValues = fees.map(\.prioritizationFee)
+                
+                guard
+                    let _maxFeeValue = feeValues.max(),
+                    let _minFeeValue = feeValues.min()
+                else {
+                    throw WalletError.failedToGetFee
+                }
+                
+                let minimumComputationUnitPrice: Int64 = 1
+                let computationUnitMultiplier = 0.8
+                
+                let minFeeValue = max(_minFeeValue, minimumComputationUnitPrice)
+                let maxFeeValue = max(_maxFeeValue, minimumComputationUnitPrice)
+                
+                let averagePrioritizationFee = Double(minFeeValue + maxFeeValue) * computationUnitMultiplier
+                guard averagePrioritizationFee <= Double(Int64.max) else {
+                    throw WalletError.failedToGetFee
+                }
+                
+                return Int64(averagePrioritizationFee)
+            }
+            .eraseToAnyPublisher()
+    }
+    
     func minimalBalanceForRentExemption() -> AnyPublisher<Decimal, Error> {
         // The accounts metadata size (128) is already factored in
         solanaSdk.api.getMinimumBalanceForRentExemption(dataLength: 0)

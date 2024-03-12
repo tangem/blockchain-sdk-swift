@@ -55,6 +55,29 @@ extension Api {
         .eraseToAnyPublisher()
     }
     
+    func getRecentPrioritizationFees(
+        accounts: [String]
+    ) -> AnyPublisher<[RecentPrioritizationFee], Error> {
+        Deferred {
+            Future { [weak self] promise in
+                guard let self = self else {
+                    promise(.failure(WalletError.empty))
+                    return
+                }
+                
+                self.getRecentPrioritizationFees(accounts: accounts) {
+                    switch $0 {
+                    case .failure(let error):
+                        promise(.failure(error))
+                    case .success(let recentPrioritizationFees):
+                        promise(.success(recentPrioritizationFees))
+                    }
+                }
+            }
+        }
+        .share()
+        .eraseToAnyPublisher()
+    }
     
     func getMinimumBalanceForRentExemption(
         dataLength: UInt64,
