@@ -61,11 +61,7 @@ class PolkadotTransactionBuilder {
         message.append(try codec.encode(meta.specVersion))
         message.append(try codec.encode(meta.transactionVersion))
         message.append(Data(hexString: meta.genesisHash))
-        if meta.era == nil {
-            message.append(Data(hex: meta.genesisHash))
-        } else {
-            message.append(Data(hexString: meta.blockHash))
-        }
+        message.append(Data(hexString: meta.blockHash))
         return message
     }
     
@@ -126,8 +122,8 @@ class PolkadotTransactionBuilder {
         var data = Data()
         
         if let era = era {
-            let era = encodeEra(era)
-            data.append(era)
+            let encodedEra = encodeEra(era)
+            data.append(encodedEra)
         } else {
             // TODO: This is taken from WalletCore code but it doesn't work.
             // TODO: RPC error is returned: "Transaction has a bad signature".

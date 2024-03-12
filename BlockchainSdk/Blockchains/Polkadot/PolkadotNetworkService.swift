@@ -70,10 +70,8 @@ class PolkadotNetworkService: MultiNetworkProvider {
                     let latestBlockNumberPublisher = self.provider
                         .header(latestBlockHash)
                         .map(\.number)
-                        .tryMap { encodedBlockNumber -> UInt64 in
-                            Self.decodeBigEndian(data: Data(hexString: encodedBlockNumber)) ?? 0
-                        }
-                    
+                        .tryMap { UInt64($0.removeHexPrefix(), radix: 16) ?? 0 } // TODO: BigInt
+
                     return Publishers.Zip(latestBlockHashPublisher, latestBlockNumberPublisher).eraseToAnyPublisher()
                 }
                 .eraseToAnyPublisher()
@@ -90,7 +88,7 @@ class PolkadotNetworkService: MultiNetworkProvider {
                     genesisHash: genesisHash,
                     blockHash: latestBlockInfo.0,
                     nonce: nextIndex,
-                    era: nil
+                    era: .init(blockNumber: latestBlockInfo.1, period: 128) // Should be power of two
                 )
             }
             .eraseToAnyPublisher()
@@ -113,20 +111,6 @@ class PolkadotNetworkService: MultiNetworkProvider {
     func submitExtrinsic(data: Data) -> AnyPublisher<String, Error> {
         providerPublisher { provider in
             provider.submitExtrinsic(data.hexString.addHexPrefix())
-        }
-    }
-    
-    static private func decodeBigEndian<T: FixedWidthInteger>(data: Data) -> T? {
-        let paddingSize = MemoryLayout<T>.size - data.count
-        guard paddingSize >= 0 else {
-            return nil
-        }
-
-        let padding = Data(repeating: UInt8(0), count: paddingSize)
-        let paddedData = padding + data
-
-        return paddedData.withUnsafeBytes {
-            $0.load(as: T.self).bigEndian
         }
     }
     
