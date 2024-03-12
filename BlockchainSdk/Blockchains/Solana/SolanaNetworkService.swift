@@ -136,7 +136,7 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func averagePrioritizationFee(accounts: [String]) -> AnyPublisher<UInt64, Error> {
+    func computeUnitPrice(accounts: [String]) -> AnyPublisher<UInt64, Error> {
         solanaSdk.api.getRecentPrioritizationFees(accounts: accounts)
             .retry(1)
             .tryMap { fees in
@@ -155,12 +155,12 @@ class SolanaNetworkService {
                 let minFeeValue = max(_minFeeValue, minimumComputationUnitPrice)
                 let maxFeeValue = max(_maxFeeValue, minimumComputationUnitPrice)
                 
-                let averagePrioritizationFee = Double(minFeeValue + maxFeeValue) * computationUnitMultiplier
-                guard averagePrioritizationFee <= Double(UInt64.max) else {
+                let computeUnitPrice = Double(minFeeValue + maxFeeValue) * computationUnitMultiplier
+                guard computeUnitPrice <= Double(UInt64.max) else {
                     throw WalletError.failedToGetFee
                 }
                 
-                return UInt64(averagePrioritizationFee)
+                return UInt64(computeUnitPrice)
             }
             .eraseToAnyPublisher()
     }

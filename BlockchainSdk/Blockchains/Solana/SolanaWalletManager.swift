@@ -130,12 +130,12 @@ extension SolanaWalletManager: TransactionSender {
             destination: transaction.destinationAddress, 
             amount: transaction.amount
         )
-        let averagePrioritizationFeePublisher = networkService.averagePrioritizationFee(
+        let computeUnitPricePublisher = networkService.computeUnitPrice(
             accounts: [transaction.sourceAddress, transaction.destinationAddress]
         )
         
-        return Publishers.CombineLatest(destinationAccountInfoPublisher, averagePrioritizationFeePublisher)
-            .flatMap { [weak self] destinationAccountInfo, averagePrioritizationFee -> AnyPublisher<TransactionID, Error> in
+        return Publishers.CombineLatest(destinationAccountInfoPublisher, computeUnitPricePublisher)
+            .flatMap { [weak self] destinationAccountInfo, computeUnitPrice -> AnyPublisher<TransactionID, Error> in
                 guard let self = self else {
                     return .anyFail(error: WalletError.empty)
                 }
@@ -146,7 +146,7 @@ extension SolanaWalletManager: TransactionSender {
                 return self.networkService.sendSol(
                     amount: intAmount,
                     computeUnitLimit: self.computeUnitLimit(accountExists: destinationAccountInfo.accountExists),
-                    computeUnitPrice: averagePrioritizationFee,
+                    computeUnitPrice: computeUnitPrice,
                     destinationAddress: transaction.destinationAddress,
                     signer: signer
                 )
@@ -181,7 +181,7 @@ extension SolanaWalletManager: TransactionSender {
                 return Publishers.CombineLatest3(
                     Just(tokenProgramId).setFailureType(to: Error.self).eraseToAnyPublisher(),
                     Just(computeUnitLimit).setFailureType(to: Error.self).eraseToAnyPublisher(),
-                    self.networkService.averagePrioritizationFee(accounts: [transaction.sourceAddress, associatedDestinationTokenAddress])
+                    self.networkService.computeUnitPrice(accounts: [transaction.sourceAddress, associatedDestinationTokenAddress])
                 ) .eraseToAnyPublisher()
             }
             .flatMap { [weak self] tokenProgramId, computeUnitLimit, computeUnitPrice -> AnyPublisher<TransactionID, Error> in
