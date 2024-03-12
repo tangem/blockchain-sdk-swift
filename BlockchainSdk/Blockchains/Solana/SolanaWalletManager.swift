@@ -133,13 +133,13 @@ extension SolanaWalletManager: TransactionSender {
         let averagePrioritizationFeePublisher = networkService.averagePrioritizationFee(
             accounts: [transaction.sourceAddress, transaction.destinationAddress]
         )
-
+        
         return Publishers.CombineLatest(accountCreationInfoPublisher, averagePrioritizationFeePublisher)
             .flatMap { [weak self] accountCreationInfo, averagePrioritizationFee -> AnyPublisher<TransactionID, Error> in
                 guard let self = self else {
                     return .anyFail(error: WalletError.empty)
                 }
-
+                
                 let decimalAmount = (transaction.amount.value + accountCreationInfo.accountCreationFee) * self.wallet.blockchain.decimalValue
                 let intAmount = (decimalAmount.rounded() as NSDecimalNumber).uint64Value
                 
@@ -284,7 +284,7 @@ extension SolanaWalletManager: TransactionSender {
                 } else {
                     accountCreationFeeValue = _accountCreationFee
                 }
-
+                
                 return DestinationAccountInfo(accountExists: accountExists, accountCreationFee: accountCreationFeeValue)
             }
             .eraseToAnyPublisher()
