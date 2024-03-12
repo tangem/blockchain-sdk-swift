@@ -17,7 +17,7 @@ class SolanaWalletManager: BaseManager, WalletManager {
     
     var currentHost: String { networkService.host }
     
-    private let usePriorityFees = !NFCUtils.isPoorNfcQualityDevice
+    var usePriorityFees = !NFCUtils.isPoorNfcQualityDevice
     
     override func update(completion: @escaping (Result<(), Error>) -> Void) {
         let transactionIDs = wallet.pendingTransactions.map { $0.hash }
