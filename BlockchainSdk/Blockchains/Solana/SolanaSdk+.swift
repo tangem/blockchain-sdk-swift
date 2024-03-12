@@ -55,6 +55,29 @@ extension Api {
         .eraseToAnyPublisher()
     }
     
+    func getRecentPrioritizationFees(
+        accounts: [String]
+    ) -> AnyPublisher<[RecentPrioritizationFee], Error> {
+        Deferred {
+            Future { [weak self] promise in
+                guard let self = self else {
+                    promise(.failure(WalletError.empty))
+                    return
+                }
+                
+                self.getRecentPrioritizationFees(accounts: accounts) {
+                    switch $0 {
+                    case .failure(let error):
+                        promise(.failure(error))
+                    case .success(let recentPrioritizationFees):
+                        promise(.success(recentPrioritizationFees))
+                    }
+                }
+            }
+        }
+        .share()
+        .eraseToAnyPublisher()
+    }
     
     func getMinimumBalanceForRentExemption(
         dataLength: UInt64,
@@ -184,6 +207,8 @@ extension Action {
     func sendSOL(
         to destination: String,
         amount: UInt64,
+        computeUnitLimit: UInt32?,
+        computeUnitPrice: UInt64?,
         allowUnfundedRecipient: Bool = false,
         signer: Signer
     ) -> AnyPublisher<TransactionID, Error> {
@@ -197,6 +222,8 @@ extension Action {
                 self.sendSOL(
                     to: destination,
                     amount: amount,
+                    computeUnitLimit: computeUnitLimit,
+                    computeUnitPrice: computeUnitPrice,
                     allowUnfundedRecipient: allowUnfundedRecipient,
                     signer: signer
                 ) {
@@ -220,6 +247,8 @@ extension Action {
         from fromPublicKey: String,
         to destinationAddress: String,
         amount: UInt64,
+        computeUnitLimit: UInt32?,
+        computeUnitPrice: UInt64?,
         allowUnfundedRecipient: Bool = false,
         signer: Signer
     ) -> AnyPublisher<TransactionID, Error> {
@@ -237,6 +266,8 @@ extension Action {
                     from: fromPublicKey,
                     to: destinationAddress,
                     amount: amount,
+                    computeUnitLimit: computeUnitLimit,
+                    computeUnitPrice: computeUnitPrice,
                     allowUnfundedRecipient: allowUnfundedRecipient,
                     signer: signer
                 ) {
