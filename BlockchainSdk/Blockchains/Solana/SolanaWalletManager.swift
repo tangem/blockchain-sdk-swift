@@ -278,16 +278,16 @@ extension SolanaWalletManager: TransactionSender {
         
         return Publishers.Zip3(accountCreationFeePublisher, accountExistsPublisher, rentExemptionBalancePublisher)
             .tryMap { _accountCreationFee, accountExists, rentExemption in
-                let accountCreationFeeValue: Decimal
+                let accountCreationFee: Decimal
                 if accountExists {
-                    accountCreationFeeValue = 0
+                    accountCreationFee = 0
                 } else if amount.type == .coin && amount >= rentExemption {
-                    accountCreationFeeValue = 0
+                    accountCreationFee = 0
                 } else {
-                    accountCreationFeeValue = _accountCreationFee
+                    accountCreationFee = _accountCreationFee
                 }
                 
-                return DestinationAccountInfo(accountExists: accountExists, accountCreationFee: accountCreationFeeValue)
+                return DestinationAccountInfo(accountExists: accountExists, accountCreationFee: accountCreationFee)
             }
             .eraseToAnyPublisher()
     }
