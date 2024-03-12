@@ -720,6 +720,7 @@
 		EFF82D4C2B9F62A5004DF1A0 /* ElectrumDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF82D4B2B9F62A5004DF1A0 /* ElectrumDTO.swift */; };
 		EFF82D4E2B9F75C2004DF1A0 /* JSONRPCWebSocketProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF82D4D2B9F75C2004DF1A0 /* JSONRPCWebSocketProvider.swift */; };
 		EFF82D502B9F7AA6004DF1A0 /* ElectrumNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF82D4F2B9F7AA6004DF1A0 /* ElectrumNetworkProvider.swift */; };
+		EFF82D522BA084CE004DF1A0 /* WebSocketTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF82D512BA084CE004DF1A0 /* WebSocketTask.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1478,6 +1479,7 @@
 		EFF82D4B2B9F62A5004DF1A0 /* ElectrumDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElectrumDTO.swift; sourceTree = "<group>"; };
 		EFF82D4D2B9F75C2004DF1A0 /* JSONRPCWebSocketProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONRPCWebSocketProvider.swift; sourceTree = "<group>"; };
 		EFF82D4F2B9F7AA6004DF1A0 /* ElectrumNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElectrumNetworkProvider.swift; sourceTree = "<group>"; };
+		EFF82D512BA084CE004DF1A0 /* WebSocketTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketTask.swift; sourceTree = "<group>"; };
 		EFFB30742851ECD90040A67D /* DashTestNetworkParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashTestNetworkParams.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -3456,8 +3458,9 @@
 		EFF82D462B9F3201004DF1A0 /* WebSocket */ = {
 			isa = PBXGroup;
 			children = (
-				EFF82D472B9F3212004DF1A0 /* WebSocketConnection.swift */,
 				EFF82D4D2B9F75C2004DF1A0 /* JSONRPCWebSocketProvider.swift */,
+				EFF82D472B9F3212004DF1A0 /* WebSocketConnection.swift */,
+				EFF82D512BA084CE004DF1A0 /* WebSocketTask.swift */,
 			);
 			path = WebSocket;
 			sourceTree = "<group>";
@@ -3842,6 +3845,7 @@
 				2DA139F92A8AD82E00E3C374 /* ChiaCondition.swift in Sources */,
 				2DDE5BAE29C4F8D200A5B708 /* TronWalletAssembly.swift in Sources */,
 				EF9E381D2B7A43A5004B694C /* DustRestrictable.swift in Sources */,
+				EFF82D522BA084CE004DF1A0 /* WebSocketTask.swift in Sources */,
 				B05145012B57F18D00EDAD1E /* EVMSmartContractInteractorFactory.swift in Sources */,
 				EF609FC72A20D4E9004E6D4E /* OptimismWalletManager.swift in Sources */,
 				DA63B09B29CB3FC700AC6E49 /* KaspaNetworkProvider.swift in Sources */,

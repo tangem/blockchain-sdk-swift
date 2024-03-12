@@ -7,16 +7,15 @@
 
 import Foundation
 
-let nexaURLs: [String] = [
-    "wss://onekey-electrum.bitcoinunlimited.info:20004",
-    "wss://electrum.nexa.org:20004"
-]
-
 public class ElectrumWebSocketManager: HostProvider {
     var host: String { url.absoluteString }
     
     private let url: URL
-    private let connection: JSONRPCWebSocketProvider
+    
+    private lazy var connection: JSONRPCWebSocketProvider = {
+        .init(url: url, versions: ["1.4.3"])
+    }()
+    
     private let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -25,11 +24,6 @@ public class ElectrumWebSocketManager: HostProvider {
     
     public init(url: URL) {
         self.url = url
-
-        let request = JSONRPCWebSocketProvider.JSONRPCRequest(id: 0, method: "server.version", params: [ "1.9.5", "0.6" ])
-        let data = try! JSONEncoder().encode(request)
-
-        connection = .init(url: url, keepAliveMessage: data)
     }
     
     func getBalance(address: String) async throws -> ElectrumDTO.Response.Balance {
@@ -48,7 +42,7 @@ public class ElectrumWebSocketManager: HostProvider {
         )
     }
     
-    func getUnspents(address: String) async throws -> ElectrumDTO.Response.ListUnspent {
+    func getUnspents(address: String) async throws -> [ElectrumDTO.Response.ListUnspent] {
         try await connection.send(
             method: "blockchain.address.listunspent",
             parameter: [address],

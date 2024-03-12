@@ -8,111 +8,128 @@
 
 import Foundation
 
-public class WebSocketConnection: NSObject {
+class WebSocketConnection {
     private let url: URL
-    private let delegateQueue: OperationQueue
     private let ping: Ping
+    private let timeout: TimeInterval
     
-    private var webSocket: URLSessionWebSocketTask?
-    private var pingTask: Task<Void, Never>?
+    private var _webSocketTask: WebSocketTask?
+    private var pingTask: Task<Void, Error>?
+    private var timeoutTask: Task<Void, Error>?
     
-    public init(url: URL, ping: Ping) {
+    /// - Parameters:
+    ///   - url: A `wss` URL
+    ///   - ping: The value that will be sent after a certain interval in seconds
+    ///   - timeout: The value in seconds through which the connection will be terminated, if there are no new `send` calls
+    init(url: URL, ping: Ping, timeout: TimeInterval) {
         self.url = url
         self.ping = ping
-        self.delegateQueue = .init()
-        
-        super.init()
-
-        makeWebSocketTask()
-        connect()
+        self.timeout = timeout
     }
     
     deinit {
         disconnect()
     }
     
-    public func send<Message: Encodable>(_ message: Message, encoder: JSONEncoder = .init()) async throws -> Data {
-        guard let webSocket else {
-            throw WebSocketConnectionError.webSocketNotFound
-        }
-        
-        let messageData = try encoder.encode(message)
+    public func send(_ message: URLSessionWebSocketTask.Message) async throws -> Data {
+        let webSocketTask = await webSocketTask()
+        log("Send: \(message)")
 
-        guard let string = String(bytes: messageData, encoding: .utf8) else {
-            throw WebSocketConnectionError.invalidRequest
-        }
-
-        log("Send a message: \(message)")
-
+        async let latestMessage = try webSocketTask.receive()
         // Send a message
-        try await webSocket.send(.string(string))
-        try Task.checkCancellation()
+        try await webSocketTask.send(message: message)
 
         // Get a message from the last response
-        let latestMessage = try await webSocket.receive()
-        let response = try mapToData(from: latestMessage)
-        try Task.checkCancellation()
+        
+        let response = try await latestMessage
+        log("Receive: \(response)")
+        let responseData = try mapToData(from: response)
+            
+        // Restart the disconnect timer
+        startTimeoutTask()
+        startPingTask()
 
-        return response
+        return responseData
     }
     
     public func disconnect() {
-        webSocket?.cancel(with: .goingAway, reason: nil)
-        webSocket = nil
+        pingTask?.cancel()
+
+        _webSocketTask?.disconnect { [weak self] _, closeCode in
+            self?.log("Connection did close with: \(closeCode)")
+            self?._webSocketTask = nil
+        }
     }
 }
 
 // MARK: - Private
 
 private extension WebSocketConnection {
-    func makeWebSocketTask() {
-        let session = URLSession(configuration: .default, delegate: self, delegateQueue: delegateQueue)
-        webSocket = session.webSocketTask(with: url)
-    }
-    
-    func connect() {
-        webSocket?.resume()
-    }
-    
     func startPingTask() {
-        pingTask = Task {
-            do {
-                try await ping()
-            } catch {
-                log("Ping task error: \(error)")
-            }
+        pingTask?.cancel()
+        pingTask = Task { [weak self] in
+            guard let self else { return }
+
+            try await Task.sleep(nanoseconds: UInt64(ping.interval) * NSEC_PER_SEC)
+            
+            try Task.checkCancellation()
+            
+            try await ping()
+        }
+    }
+    
+    func startTimeoutTask() {
+        timeoutTask?.cancel()
+        timeoutTask = Task { [weak self] in
+            guard let self else { return }
+
+            try await Task.sleep(nanoseconds: UInt64(timeout) * NSEC_PER_SEC)
+            
+            try Task.checkCancellation()
+            
+            disconnect()
         }
     }
     
     func ping() async throws {
-        guard webSocket?.state == .running else {
-            log("Will not send ping. State: \(String(describing: webSocket?.state))")
-            return
-        }
-        
-        log("Send ping")
+        switch ping {
+        case .message(_, let message):
+            log("Send ping: \(message)")
+            
+            try await _webSocketTask?.send(message: message)
+            let response = try await _webSocketTask?.receive()
+            log("Ping response \(String(describing: response))")
 
-        if let message = ping.message {
-            try await webSocket?.send(.data(message))
-        }
-
-        webSocket?.sendPing { [weak self] error in
-            self?.log("Receive pong. Error: \(String(describing: error))")
+        case .plain:
+            log("Send plain ping")
+            
+            try await _webSocketTask?.sendPing()
         }
         
-        try await Task.sleep(nanoseconds: ping.interval * 1_000_000_000)
+        startPingTask()
+    }
+    
+    func webSocketTask() async -> WebSocketTask {
+        if let webSocketTask = _webSocketTask {
+            return webSocketTask
+        }
         
-        try await ping()
+        _webSocketTask = WebSocketTask(url: url)
+        
+        return await withCheckedContinuation { [weak self] continuation in
+            self?._webSocketTask?.connect(webSocketTaskDidOpen: { webSocketTask in
+                self?.log("WebSocketTask did open")
+                continuation.resume(returning: webSocketTask)
+            })
+        }
     }
     
     func mapToData(from message: URLSessionWebSocketTask.Message) throws -> Data {
         switch message {
         case .data(let data):
-            log("Receive a data: \(data)")
             return data
             
         case .string(let string):
-            log("Receive a string: \(string)")
             guard let data = string.data(using: .utf8) else {
                 throw WebSocketConnectionError.invalidResponse
             }
@@ -129,32 +146,27 @@ private extension WebSocketConnection {
    }
 }
 
-// MARK: - URLSessionWebSocketDelegate
-
-extension WebSocketConnection: URLSessionWebSocketDelegate {
-    public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
-        log("Connection did open")
-        startPingTask()
-    }
-    
-    public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
-        log("Connection did close with code: \(closeCode)")
-    }
-}
-
 // MARK: - Model
 
 extension WebSocketConnection {
-    public struct Ping {
-        let interval: UInt64
-        let message: Data?
+    enum Ping {
+        case plain(interval: TimeInterval)
+        case message(interval: TimeInterval, message: URLSessionWebSocketTask.Message)
+        
+        var interval: TimeInterval {
+            switch self {
+            case .plain(let interval):
+                return interval
+            case .message(let interval, _):
+                return interval
+            }
+        }
     }
 }
 
 // MARK: - Error
 
 enum WebSocketConnectionError: Error {
-    case webSocketNotFound
     case responseNotFound
     case invalidResponse
     case invalidRequest
@@ -166,15 +178,63 @@ extension URLSessionTask.State: CustomStringConvertible {
     public var description: String {
         switch self {
         case .running:
-            return "Running"
+            return "URLSessionTask.State.running"
         case .suspended:
-            return "Suspended"
+            return "URLSessionTask.State.suspended"
         case .canceling:
-            return "Canceling"
+            return "URLSessionTask.State.canceling"
         case .completed:
-            return "Completed"
+            return "URLSessionTask.State.completed"
         @unknown default:
-            fatalError()
+            return "URLSessionTask.State.@unknowndefault"
+        }
+    }
+}
+
+extension URLSessionWebSocketTask.Message: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .data(let data):
+            return "URLSessionWebSocketTask.Message.data: \(data)"
+        case .string(let string):
+            return "URLSessionWebSocketTask.Message.string: \(string)"
+        @unknown default:
+            return "URLSessionWebSocketTask.Message.@unknowndefault"
+        }
+    }
+}
+
+extension URLSessionWebSocketTask.CloseCode: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .invalid:
+            return "URLSessionWebSocketTask.CloseCode.invalid"
+        case .normalClosure:
+            return "URLSessionWebSocketTask.CloseCode.normalClosure"
+        case .goingAway:
+            return "URLSessionWebSocketTask.CloseCode.goingAway"
+        case .protocolError:
+            return "URLSessionWebSocketTask.CloseCode.protocolError"
+        case .unsupportedData:
+            return "URLSessionWebSocketTask.CloseCode.unsupportedData"
+        case .noStatusReceived:
+            return "URLSessionWebSocketTask.CloseCode.noStatusReceived"
+        case .abnormalClosure:
+            return "URLSessionWebSocketTask.CloseCode.abnormalClosure"
+        case .invalidFramePayloadData:
+            return "URLSessionWebSocketTask.CloseCode.invalidFramePayloadData"
+        case .policyViolation:
+            return "URLSessionWebSocketTask.CloseCode.policyViolation"
+        case .messageTooBig:
+            return "URLSessionWebSocketTask.CloseCode.messageTooBig"
+        case .mandatoryExtensionMissing:
+            return "URLSessionWebSocketTask.CloseCode.mandatoryExtensionMissing"
+        case .internalServerError:
+            return "URLSessionWebSocketTask.CloseCode.internalServerError"
+        case .tlsHandshakeFailure:
+            return "URLSessionWebSocketTask.CloseCode.tlsHandshakeFailure"
+        @unknown default:
+            return "URLSessionWebSocketTask.CloseCode.@unknowndefault"
         }
     }
 }
