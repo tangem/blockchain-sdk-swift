@@ -846,12 +846,12 @@ extension Blockchain {
                 ]
             } else {
                 return [
+                    URL(string: "https://1rpc.io/polygon/zkevm/")!,
+                    URL(string: "https://polygon-zkevm.drpc.org/")!,
+                    URL(string: "https://polygon-zkevm-mainnet.public.blastapi.io/")!,
                     URL(string: "https://zkevm-rpc.com/")!,
                     URL(string: "https://polygon-zkevm.blockpi.network/v1/rpc/public/")!,
-                    URL(string: "https://polygon-zkevm-mainnet.public.blastapi.io/")!,
-                    URL(string: "https://polygon-zkevm.drpc.org/")!,
                     URL(string: "https://rpc.polygon-zkevm.gateway.fm/")!,
-                    URL(string: "https://1rpc.io/polygon/zkevm/")!,
                     URL(string: "https://api.zan.top/node/v1/polygonzkevm/mainnet/public/")!,
                 ]
             }
@@ -978,7 +978,7 @@ extension Blockchain: Codable {
         case .playa3ullGames: return "playa3ull-games"
         case .pulsechain: return "pulsechain"
         case .aurora: return "aurora"
-        case .manta: return "manta"
+        case .manta: return "manta-network"
         case .zkSync: return "zksync"
         case .moonbeam: return "moonbeam"
         case .polygonZkEVM: return "polygon-zkevm"
@@ -1056,10 +1056,10 @@ extension Blockchain: Codable {
         case "playa3ull-games": self = .playa3ullGames
         case "pulsechain": self = .pulsechain(testnet: isTestnet)
         case "aurora": self = .aurora(testnet: isTestnet)
-        case "manta": self = .manta(testnet: isTestnet)
+        case "manta-network": self = .manta(testnet: isTestnet)
         case "zksync": self = .zkSync(testnet: isTestnet)
         case "moonbeam": self = .moonbeam(testnet: isTestnet)
-        case "polygon-zkevm": self = .polygonZkEVM(testnet: isTestnet) // FIXME: update
+        case "polygon-zkevm": self = .polygonZkEVM(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1138,10 +1138,10 @@ extension Blockchain {
         case "playa3ull-games": return .playa3ullGames
         case "pulsechain": return .pulsechain(testnet: isTestnet)
         case "aurora": return .aurora(testnet: isTestnet)
-        case "manta": return .manta(testnet: isTestnet)
+        case "manta-network": return .manta(testnet: isTestnet)
         case "zksync": return .zkSync(testnet: isTestnet)
         case "moonbeam": return .moonbeam(testnet: isTestnet)
-        case "polygon-zk-evm": return.polygonZkEVM(testnet: isTestnet) // FIXME: update
+        case "polygon-zkevm": return.polygonZkEVM(testnet: isTestnet)
         default: return nil
         }
     }
