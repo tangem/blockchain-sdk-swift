@@ -46,8 +46,8 @@ class SolanaNetworkService {
     
     func sendSol(
         amount: UInt64,
-        computeUnitLimit: UInt32,
-        computeUnitPrice: UInt64,
+        computeUnitLimit: UInt32?,
+        computeUnitPrice: UInt64?,
         destinationAddress: String,
         signer: SolanaTransactionSigner
     ) -> AnyPublisher<TransactionID, Error> {
@@ -63,7 +63,7 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func sendSplToken(amount: UInt64, computeUnitLimit: UInt32, computeUnitPrice: UInt64, sourceTokenAddress: String, destinationAddress: String, token: Token, tokenProgramId: PublicKey, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
+    func sendSplToken(amount: UInt64, computeUnitLimit: UInt32?, computeUnitPrice: UInt64?, sourceTokenAddress: String, destinationAddress: String, token: Token, tokenProgramId: PublicKey, signer: SolanaTransactionSigner) -> AnyPublisher<TransactionID, Error> {
         solanaSdk.action.sendSPLTokens(
             mintAddress: token.contractAddress,
             tokenProgramId: tokenProgramId,

@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import TangemSdk
 import Solana_Swift
 
 class SolanaWalletManager: BaseManager, WalletManager {
@@ -15,6 +16,8 @@ class SolanaWalletManager: BaseManager, WalletManager {
     var networkService: SolanaNetworkService!
     
     var currentHost: String { networkService.host }
+    
+    private let usePriorityFees = !NFCUtils.isPoorNfcQualityDevice
     
     override func update(completion: @escaping (Result<(), Error>) -> Void) {
         let transactionIDs = wallet.pendingTransactions.map { $0.hash }
@@ -147,8 +150,8 @@ extension SolanaWalletManager: TransactionSender {
                 
                 return self.networkService.sendSol(
                     amount: intAmount,
-                    computeUnitLimit: self.computeUnitLimit(accountExists: destinationAccountInfo.accountExists),
-                    computeUnitPrice: computeUnitPrice,
+                    computeUnitLimit: usePriorityFees ? self.computeUnitLimit(accountExists: destinationAccountInfo.accountExists) : nil,
+                    computeUnitPrice: usePriorityFees ? computeUnitPrice : nil,
                     destinationAddress: transaction.destinationAddress,
                     signer: signer
                 )
@@ -199,8 +202,8 @@ extension SolanaWalletManager: TransactionSender {
                 
                 return self.networkService.sendSplToken(
                     amount: intAmount,
-                    computeUnitLimit: computeUnitLimit,
-                    computeUnitPrice: computeUnitPrice,
+                    computeUnitLimit: usePriorityFees ? computeUnitLimit : nil,
+                    computeUnitPrice: usePriorityFees ? computeUnitPrice : nil,
                     sourceTokenAddress: associatedSourceTokenAccountAddress,
                     destinationAddress: transaction.destinationAddress,
                     token: token,

@@ -207,8 +207,8 @@ extension Action {
     func sendSOL(
         to destination: String,
         amount: UInt64,
-        computeUnitLimit: UInt32,
-        computeUnitPrice: UInt64,
+        computeUnitLimit: UInt32?,
+        computeUnitPrice: UInt64?,
         allowUnfundedRecipient: Bool = false,
         signer: Signer
     ) -> AnyPublisher<TransactionID, Error> {
@@ -247,8 +247,8 @@ extension Action {
         from fromPublicKey: String,
         to destinationAddress: String,
         amount: UInt64,
-        computeUnitLimit: UInt32,
-        computeUnitPrice: UInt64,
+        computeUnitLimit: UInt32?,
+        computeUnitPrice: UInt64?,
         allowUnfundedRecipient: Bool = false,
         signer: Signer
     ) -> AnyPublisher<TransactionID, Error> {
