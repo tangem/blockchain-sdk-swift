@@ -50,6 +50,15 @@ public class ElectrumNetworkProvider: MultiNetworkProvider {
                 }
         }
     }
+    
+    public func estimateFee() -> AnyPublisher<Decimal, Error> {
+        providerPublisher { provider in
+                .init {
+                    let fee = try await provider.estimateFee(block: 10)
+                    return Decimal(fee)
+                }
+        }
+    }
 }
 
 extension AnyPublisher where Failure: Error {
