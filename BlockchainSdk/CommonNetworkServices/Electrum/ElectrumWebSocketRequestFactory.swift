@@ -11,10 +11,7 @@ public class ElectrumWebSocketManager: HostProvider {
     var host: String { url.absoluteString }
     
     private let url: URL
-    
-    private lazy var connection: JSONRPCWebSocketProvider = {
-        .init(url: url, versions: ["1.4.3"])
-    }()
+    private let connection: JSONRPCWebSocketProvider
     
     private let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
@@ -24,6 +21,7 @@ public class ElectrumWebSocketManager: HostProvider {
     
     public init(url: URL) {
         self.url = url
+        self.connection = .init(url: url, versions: ["1.4.3"])
     }
     
     func getBalance(address: String) async throws -> ElectrumDTO.Response.Balance {

@@ -8,7 +8,7 @@
 
 import Foundation
 
-actor WebSocketConnection {
+class WebSocketConnection {
     private let url: URL
     private let ping: Ping
     private let timeout: TimeInterval
@@ -16,9 +16,7 @@ actor WebSocketConnection {
     private var _webSocketTask: WebSocketTask?
     private var pingTask: Task<Void, Error>?
     private var timeoutTask: Task<Void, Error>?
-    
-    private var dispatchSemaphore = DispatchSemaphore(value: 1)
-    
+
     /// - Parameters:
     ///   - url: A `wss` URL
     ///   - ping: The value that will be sent after a certain interval in seconds
@@ -30,36 +28,39 @@ actor WebSocketConnection {
     }
     
     deinit {
-        disconnect()
+        Task { await disconnect() }
     }
     
-    public func send(_ message: URLSessionWebSocketTask.Message) async throws -> Data {
+    public func send(_ message: URLSessionWebSocketTask.Message) async throws {
         let webSocketTask = await webSocketTask()
         log("Send: \(message)")
 
         // Send a message
         try await webSocketTask.send(message: message)
 
+        // Restart the disconnect timer
+//        startTimeoutTask()
+//        startPingTask()
+    }
+    
+    public func receive() async throws -> Data {
         // Get a message from the last response
-        let response = try await webSocketTask.receive()
+        let response = try await _webSocketTask!.receive()
 
         log("Receive: \(response)")
+        
         let responseData = try mapToData(from: response)
-
-        // Restart the disconnect timer
-        startTimeoutTask()
-        startPingTask()
-
         return responseData
     }
     
-    public func disconnect() {
+    public func disconnect() async {
         pingTask?.cancel()
+        timeoutTask?.cancel()
 
-        _webSocketTask?.disconnect { _, closeCode in
-            self.log("Connection did close with: \(closeCode)")
-            self._webSocketTask = nil
-        }
+        let disconnectResult = await _webSocketTask?.disconnect()
+        self.log("Connection did close with: \(String(describing: disconnectResult))")
+
+        _webSocketTask = nil
     }
 }
 
@@ -115,14 +116,14 @@ private extension WebSocketConnection {
             return webSocketTask
         }
         
-        _webSocketTask = WebSocketTask(url: url)
-        let task = await withCheckedContinuation { continuation in
-            _webSocketTask?.connect(webSocketTaskDidOpen: { webSocketTask in
-                continuation.resume(returning: webSocketTask)
-            })
-        }
+        let webSocketTask = WebSocketTask(url: url)
+        log("WebSocketTask start connect")
+
+        // Await connected
+        _webSocketTask = await webSocketTask.connect()
         log("WebSocketTask did open")
-        return task
+
+        return webSocketTask
     }
     
     func mapToData(from message: URLSessionWebSocketTask.Message) throws -> Data {
@@ -143,8 +144,14 @@ private extension WebSocketConnection {
     }
     
     func log(_ args: Any) {
-        print("\(Date()) \(Thread.current) [\(self)]", args)
+        print("<<\n[\(self)]\n\(Date())\n\(Thread.current)\n", args, "\n>>")
    }
+}
+
+extension WebSocketConnection: CustomStringConvertible {
+    nonisolated var description: String {
+        objectDescription(self)
+    }
 }
 
 // MARK: - Model

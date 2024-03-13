@@ -15,6 +15,11 @@ public struct ElectrumUTXO {
     let height: String
 }
 
+public struct ElectrumResponse {
+    let balance: Decimal
+    let outputs: [ElectrumUTXO]
+}
+
 public class ElectrumNetworkProvider: MultiNetworkProvider {
     let providers: [ElectrumWebSocketManager]
     var currentProviderIndex: Int = 0
@@ -26,27 +31,24 @@ public class ElectrumNetworkProvider: MultiNetworkProvider {
         self.decimalValue = decimalValue
     }
     
-    public func getBalance(address: String) -> AnyPublisher<Decimal, Error> {
+    public func getAddressInfo(address: String) -> AnyPublisher<ElectrumResponse, Error> {
         providerPublisher { provider in
                 .init {
                     let balance = try await provider.getBalance(address: address)
-                    return Decimal(balance.confirmed) / self.decimalValue
-                }
-        }
-    }
-    
-    public func getUnspents(address: String) -> AnyPublisher<[ElectrumUTXO], Error> {
-        providerPublisher { provider in
-                .init {
                     let unspents = try await provider.getUnspents(address: address)
-                    return unspents.map { unspent in
-                        ElectrumUTXO(
-                            position: unspent.txPos,
-                            hash: unspent.txHash,
-                            value: unspent.value,
-                            height: unspent.height
-                        )
-                    }
+                    
+                    return ElectrumResponse(
+                        balance: Decimal(balance.confirmed),
+                        outputs: unspents.map {
+                            unspent in
+                            ElectrumUTXO(
+                                position: unspent.txPos,
+                                hash: unspent.txHash,
+                                value: unspent.value,
+                                height: unspent.height
+                            )
+                        }
+                    )
                 }
         }
     }

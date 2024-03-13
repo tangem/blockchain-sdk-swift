@@ -8,14 +8,63 @@
 
 import Foundation
 
+class URLSessionWebSocketDelegateWrapper: NSObject, URLSessionWebSocketDelegate {
+    private var webSocketTaskDidOpen: (URLSessionWebSocketTask) -> Void?
+    private var webSocketTaskDidClose: (URLSessionWebSocketTask, URLSessionWebSocketTask.CloseCode) -> Void
+    
+    init(
+        webSocketTaskDidOpen: @escaping (URLSessionWebSocketTask) -> Void?,
+        webSocketTaskDidClose: @escaping (URLSessionWebSocketTask, URLSessionWebSocketTask.CloseCode) -> Void
+    ) {
+        self.webSocketTaskDidOpen = webSocketTaskDidOpen
+        self.webSocketTaskDidClose = webSocketTaskDidClose
+    }
+    
+    func urlSession(
+        _ session: URLSession,
+        webSocketTask: URLSessionWebSocketTask,
+        didOpenWithProtocol protocol: String?
+    ) {
+        webSocketTaskDidOpen(webSocketTask)
+    }
+    
+    func urlSession(
+        _ session: URLSession,
+        webSocketTask: URLSessionWebSocketTask,
+        didCloseWith closeCode: URLSessionWebSocketTask.CloseCode,
+        reason: Data?
+    ) {
+        webSocketTaskDidClose(webSocketTask, closeCode)
+    }
+}
+
 /// A wrapper to work with `URLSessionWebSocketTask` through async/await method
-class WebSocketTask: NSObject, URLSessionWebSocketDelegate {
+class WebSocketTask: CustomStringConvertible {
     private let url: URL
     private let delegateQueue: OperationQueue
+    private lazy var delegate: URLSessionWebSocketDelegateWrapper = {
+        .init(
+            webSocketTaskDidOpen: { [weak self] task in
+                guard let self else { return }
 
-    private var webSocketTaskDidOpen: ((WebSocketTask) -> Void)?
-    private var webSocketTaskDidClose: ((WebSocketTask, URLSessionWebSocketTask.CloseCode) -> Void)?
+                self.webSocketTaskDidOpen?.resume(returning: self)
+            },
+            webSocketTaskDidClose: { [weak self] task, closeCode in
+                guard let self else { return }
+
+                self.webSocketTaskDidClose?.resume(returning: (self, closeCode))
+            }
+        )
+    }()
+    
+    private var webSocketTaskDidOpen: UnsafeContinuation<WebSocketTask, Never>?
+    private var webSocketTaskDidClose: UnsafeContinuation<(WebSocketTask, URLSessionWebSocketTask.CloseCode), Never>?
+
     private var sessionWebSocketTask: URLSessionWebSocketTask?
+    
+    var description: String {
+        objectDescription(self)
+    }
     
     init(
         url: URL,
@@ -23,10 +72,13 @@ class WebSocketTask: NSObject, URLSessionWebSocketDelegate {
     ) {
         self.url = url
         self.delegateQueue = delegateQueue
+        
+        print("init \(self)")
     }
     
     deinit {
-        disconnect()
+        print("deinit \(self)")
+        Task { await disconnect() }
     }
     
     func sendPing() async throws {
@@ -62,6 +114,25 @@ class WebSocketTask: NSObject, URLSessionWebSocketDelegate {
         return try await sessionWebSocketTask.receive()
     }
     
+    func connect() async -> WebSocketTask {
+        let session = URLSession(configuration: .default, delegate: delegate, delegateQueue: delegateQueue)
+        sessionWebSocketTask = session.webSocketTask(with: url)
+        sessionWebSocketTask?.resume()
+        
+        return await withUnsafeContinuation { [weak self] continuation in
+            self?.webSocketTaskDidOpen = continuation
+        }
+    }
+    
+    func disconnect() async -> (WebSocketTask, URLSessionWebSocketTask.CloseCode) {
+        sessionWebSocketTask?.cancel(with: .goingAway, reason: nil)
+        
+        return await withUnsafeContinuation { [weak self] continuation in
+            self?.webSocketTaskDidClose = continuation
+        }
+    }
+
+    /*
     func connect(webSocketTaskDidOpen: ((WebSocketTask) -> Void)? = nil) {
         self.webSocketTaskDidOpen = webSocketTaskDidOpen
 
@@ -74,15 +145,9 @@ class WebSocketTask: NSObject, URLSessionWebSocketDelegate {
         self.webSocketTaskDidClose = webSocketTaskDidClose
         sessionWebSocketTask?.cancel(with: .goingAway, reason: nil)
     }
-    
-    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
-        webSocketTaskDidOpen?(self)
-    }
-    
-    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
-        webSocketTaskDidClose?(self, closeCode)
-    }
+     */
 }
+
 // MARK: - Error
 
 enum WebSocketTaskError: Error {
