@@ -16,6 +16,8 @@ extension Decimal {
         return Array(bytes8)
     }
     
+    // TODO: Andrey Fedorov - Remove (IOS-6237)
+    @available(*, deprecated, message: "May produce unexpected results due to non-fixed locale, use `init?(stringValue:)` instead")
     init?(_ string: String?) {
         guard let string = string else {
             return nil
