@@ -8,7 +8,7 @@
 
 import Foundation
 
-class WebSocketConnection {
+actor WebSocketConnection {
     private let url: URL
     private let ping: Ping
     private let timeout: TimeInterval
@@ -16,6 +16,8 @@ class WebSocketConnection {
     private var _webSocketTask: WebSocketTask?
     private var pingTask: Task<Void, Error>?
     private var timeoutTask: Task<Void, Error>?
+    
+    private var dispatchSemaphore = DispatchSemaphore(value: 1)
     
     /// - Parameters:
     ///   - url: A `wss` URL
@@ -35,16 +37,15 @@ class WebSocketConnection {
         let webSocketTask = await webSocketTask()
         log("Send: \(message)")
 
-        async let latestMessage = try webSocketTask.receive()
         // Send a message
         try await webSocketTask.send(message: message)
 
         // Get a message from the last response
-        
-        let response = try await latestMessage
+        let response = try await webSocketTask.receive()
+
         log("Receive: \(response)")
         let responseData = try mapToData(from: response)
-            
+
         // Restart the disconnect timer
         startTimeoutTask()
         startPingTask()
@@ -55,9 +56,9 @@ class WebSocketConnection {
     public func disconnect() {
         pingTask?.cancel()
 
-        _webSocketTask?.disconnect { [weak self] _, closeCode in
-            self?.log("Connection did close with: \(closeCode)")
-            self?._webSocketTask = nil
+        _webSocketTask?.disconnect { _, closeCode in
+            self.log("Connection did close with: \(closeCode)")
+            self._webSocketTask = nil
         }
     }
 }
@@ -87,7 +88,7 @@ private extension WebSocketConnection {
             
             try Task.checkCancellation()
             
-            disconnect()
+            await disconnect()
         }
     }
     
@@ -115,13 +116,13 @@ private extension WebSocketConnection {
         }
         
         _webSocketTask = WebSocketTask(url: url)
-        
-        return await withCheckedContinuation { [weak self] continuation in
-            self?._webSocketTask?.connect(webSocketTaskDidOpen: { webSocketTask in
-                self?.log("WebSocketTask did open")
+        let task = await withCheckedContinuation { continuation in
+            _webSocketTask?.connect(webSocketTaskDidOpen: { webSocketTask in
                 continuation.resume(returning: webSocketTask)
             })
         }
+        log("WebSocketTask did open")
+        return task
     }
     
     func mapToData(from message: URLSessionWebSocketTask.Message) throws -> Data {
@@ -142,7 +143,7 @@ private extension WebSocketConnection {
     }
     
     func log(_ args: Any) {
-       print("\(Date()) [\(self)]", args)
+        print("\(Date()) \(Thread.current) [\(self)]", args)
    }
 }
 

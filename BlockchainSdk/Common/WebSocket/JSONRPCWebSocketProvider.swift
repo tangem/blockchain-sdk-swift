@@ -15,7 +15,7 @@ class JSONRPCWebSocketProvider {
         return WebSocketConnection(
             url: url,
             ping: .message(interval: 10, message: .string(message)),
-            timeout: 10
+            timeout: 30
         )
     }()
 

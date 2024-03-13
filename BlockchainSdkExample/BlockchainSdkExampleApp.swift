@@ -35,11 +35,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             decimalValue: 1 //pow(10,8)
         )
         
+//        self.bag = provider.getBalance(address: "nexa:nqtsq5g5rxlm4e6lc8aszkx7gfaftfxxs7mrex7367kj6ny6")
+//        .sink { _ in } receiveValue: { _ in }
+        
         self.bag = Publishers.Zip(
             provider.getBalance(address: "nexa:nqtsq5g5rxlm4e6lc8aszkx7gfaftfxxs7mrex7367kj6ny6"),
             provider.getUnspents(address: "nexa:nqtsq5g5rxlm4e6lc8aszkx7gfaftfxxs7mrex7367kj6ny6")
         )
-        .print()
         .sink { _ in } receiveValue: { _ in }
         
         return true
