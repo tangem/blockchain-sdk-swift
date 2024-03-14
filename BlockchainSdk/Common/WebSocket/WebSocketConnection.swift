@@ -13,7 +13,7 @@ actor WebSocketConnection {
     private let ping: Ping
     private let timeout: TimeInterval
     
-    private var _webSocketTask: Task<WebSocketTask, Never>?
+    private var _sessionWebSocketTask: Task<URLSessionWebSocketTaskWrapper, Never>?
     private var pingTask: Task<Void, Error>?
     private var timeoutTask: Task<Void, Error>?
 
@@ -25,9 +25,12 @@ actor WebSocketConnection {
         self.url = url
         self.ping = ping
         self.timeout = timeout
+        
+        log("init")
     }
     
     deinit {
+        log("deinit")
         Task { await disconnect() }
     }
     
@@ -37,14 +40,14 @@ actor WebSocketConnection {
 
         // Send a message
         try await webSocketTask.send(message: message)
-//        startPingTask()
+        startPingTask()
 
         // Restart the disconnect timer
-//        startTimeoutTask()
+        startTimeoutTask()
     }
-    
+
     public func receive() async throws -> Data {
-        guard let webSocket = await _webSocketTask?.value else {
+        guard let webSocket = await _sessionWebSocketTask?.value else {
             throw WebSocketConnectionError.webSocketNotFound
         }
         
@@ -60,10 +63,10 @@ actor WebSocketConnection {
         pingTask?.cancel()
         timeoutTask?.cancel()
 
-        let closeCode = await _webSocketTask?.value.disconnect()
+        let closeCode = await _sessionWebSocketTask?.value.disconnect()
         self.log("Connection did close with: \(String(describing: closeCode))")
 
-        _webSocketTask = nil
+        _sessionWebSocketTask = nil
     }
 }
 
@@ -97,7 +100,7 @@ private extension WebSocketConnection {
     }
     
     func ping() async throws {
-        guard let webSocket = await _webSocketTask?.value else {
+        guard let webSocket = await _sessionWebSocketTask?.value else {
             throw WebSocketConnectionError.webSocketNotFound
         }
         
@@ -114,24 +117,25 @@ private extension WebSocketConnection {
         startPingTask()
     }
     
-    func setupWebSocketTask() async -> WebSocketTask {
-        if let _webSocketTask {
-            let socket = await _webSocketTask.value
-            log("Return existed WebSocketTask \(socket)")
+    func setupWebSocketTask() async -> URLSessionWebSocketTaskWrapper {
+        if let _sessionWebSocketTask {
+            let socket = await _sessionWebSocketTask.value
+            log("Return existed URLSessionWebSocketTaskWrapper \(socket)")
             return socket
         }
 
-        let connectedTask = Task {
-            log("WebSocketTask start connect")
-            let newWebSocket = WebSocketTask(url: url)
-            await newWebSocket.connect()
-            log("WebSocketTask did open")
+        let connectingTask = Task {
+            let socket = URLSessionWebSocketTaskWrapper(url: url)
+            
+            log("\(socket) start connect")
+            await socket.connect()
+            log("\(socket) did open")
 
-            return newWebSocket
+            return socket
         }
         
-        _webSocketTask = connectedTask
-        return await connectedTask.value
+        _sessionWebSocketTask = connectingTask
+        return await connectingTask.value
     }
     
     func mapToData(from message: URLSessionWebSocketTask.Message) throws -> Data {
@@ -151,8 +155,8 @@ private extension WebSocketConnection {
         }
     }
     
-    func log(_ args: Any) {
-        print(">>\n[\(self)]\n\(Date())\n\(Thread.current)\n", args, "\n<<")
+    nonisolated func log(_ args: Any) {
+        print("\(self) [\(args)]")
    }
 }
 
@@ -184,9 +188,9 @@ extension WebSocketConnection {
 
 enum WebSocketConnectionError: Error {
     case webSocketNotFound
-    case responseNotFound
+//    case responseNotFound
     case invalidResponse
-    case invalidRequest
+//    case invalidRequest
 }
 
 // MARK: - URLSessionTask.State + CustomStringConvertible

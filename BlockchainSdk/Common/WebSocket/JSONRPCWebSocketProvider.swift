@@ -9,14 +9,19 @@
 import Foundation
 
 actor JSONRPCWebSocketProvider {
+    private enum Constants {
+        static let ping: TimeInterval = 10
+        static let timeout: TimeInterval = 30
+    }
+    
     private let url: URL
     private let versions: [String]
     private let connection: WebSocketConnection
     
     private var requests: [Int: CheckedContinuation<Data, Never>] = [:]
-    private var receiveTask: Task<Void, Never>?
+    private var receiveTask: Task<Void, Error>?
     private var counter: Int = 0
-    
+
     init(url: URL, versions: [String]) {
         self.url = url
         self.versions = versions
@@ -25,34 +30,38 @@ actor JSONRPCWebSocketProvider {
         
         connection = WebSocketConnection(
             url: url,
-            ping: .message(interval: 10, message: .string(message)),
-            timeout: 30
+            ping: .message(interval: Constants.ping, message: .string(message)),
+            timeout: Constants.timeout
         )
+    }
+    
+    deinit {
+        log("deinit \(self)")
+        Task { await connection.disconnect() }
     }
     
     func receive() {
         receiveTask = Task { [weak self] in
-            do {
-                guard let data = try await self?.connection.receive(),
-                      let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                      let id = json["id"] as? Int else {
-                    return
-                }
-                
-                if let continuation = await self?.requests[id] {
-                    continuation.resume(returning: data)
-                } else {
-                    print("Received json: \(json) is not handled")
-                }
-
-                // Handle next message
-                await self?.receive()
-            } catch {
-                print("ReceiveTask catch error: \(error)")
+            guard let self else {
+                return
             }
+            
+            let data = try await self.connection.receive()
+            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+            
+            guard let id = json?["id"] as? Int,
+                  let continuation = await self.requests[id] else {
+                self.log("Received json: \(String(describing: json)) is not handled")
+                return
+            }
+            
+            continuation.resume(returning: data)
+
+            // Handle next message
+            await self.receive()
         }
     }
-    
+     
     func send<Parameter: Encodable, Result: Decodable>(
         method: String,
         parameter: Parameter,
@@ -61,7 +70,6 @@ actor JSONRPCWebSocketProvider {
     ) async throws -> Result {
         counter += 1
         let request = JSONRPCRequest(id: counter, method: method, params: parameter)
-                
         try await connection.send(.string(request.string(encoder: encoder)))
         
         // setup handler for message
@@ -81,6 +89,9 @@ actor JSONRPCWebSocketProvider {
 // MARK: - Private
 
 private extension JSONRPCWebSocketProvider {
+    nonisolated func log(_ args: Any) {
+        print("\(self) [\(args)]")
+   }
 }
 
 // MARK: - Models
@@ -91,17 +102,10 @@ extension JSONRPCWebSocketProvider: CustomStringConvertible {
     }
 }
 
-func objectDescription(
-    _ object: AnyObject,
-    userInfo: KeyValuePairs<AnyHashable, Any> = [:]
-) -> String {
-    let typeName = String(describing: type(of: object))
-    let memoryAddress = String(describing: Unmanaged.passUnretained(object).toOpaque())
-    let description = userInfo.reduce(into: [typeName + ": " + memoryAddress]) { partialResult, pair in
-        partialResult.append(String(describing: pair.key) + " = " + String(describing: pair.value))
-    }
+// MARK: - Error
 
-    return "<" + description.joined(separator: "; ") + ">"
+enum JSONRPCWebSocketProviderError: Error {
+    case invalidRequest
 }
 
 // MARK: - Models
@@ -116,7 +120,7 @@ extension JSONRPCWebSocketProvider {
             let messageData = try encoder.encode(self)
 
             guard let string = String(bytes: messageData, encoding: .utf8) else {
-                throw WebSocketConnectionError.invalidRequest
+                throw JSONRPCWebSocketProviderError.invalidRequest
             }
             
             return string

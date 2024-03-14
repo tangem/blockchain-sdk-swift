@@ -17,6 +17,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let model = BlockchainSdkExampleViewModel()
     var bag: AnyCancellable?
     
+    let provider = ElectrumNetworkProvider(
+        providers: [
+            "wss://onekey-electrum.bitcoinunlimited.info:20004",
+//            "wss://electrum.nexa.org:20004"
+        ].map { .init(url: URL(string: $0)!) },
+        decimalValue: 1 //pow(10,8)
+    )
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         let contentView = BlockchainSdkExampleView()
             .environmentObject(model)
@@ -25,28 +33,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window = window
         window.makeKeyAndVisible()
         
-        let nexaURLs: [String] = [
-            "wss://onekey-electrum.bitcoinunlimited.info:20004",
-//            "wss://electrum.nexa.org:20004"
-        ]
-        
-        let provider = ElectrumNetworkProvider(
-            providers: nexaURLs.map { .init(url: URL(string: $0)!) },
-            decimalValue: 1 //pow(10,8)
-        )
         
 //        self.bag = provider.getAddressInfo(address: "nexa:nqtsq5g5rxlm4e6lc8aszkx7gfaftfxxs7mrex7367kj6ny6")
 //            .sink { _ in } receiveValue: { value in
 //                print("getAddressInfo", value)
 //            }
         
-        self.bag = provider.getAddressInfo(address: "nexa:nqtsq5g5rxlm4e6lc8aszkx7gfaftfxxs7mrex7367kj6ny6")
+        self.bag = provider
+            .getAddressInfo(address: "nexa:nqtsq5g5rxlm4e6lc8aszkx7gfaftfxxs7mrex7367kj6ny6")
             .delay(for: 40, scheduler: DispatchQueue.global())
             .flatMap({ _ in
-                provider.estimateFee()
+                self.provider.estimateFee()
             })
             .sink { _ in } receiveValue: { value in
-                print("Zip receiveValue")
+                print("Success")
             }
         
         return true
