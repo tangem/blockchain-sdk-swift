@@ -95,25 +95,44 @@ extension SolanaWalletManager: TransactionSender {
     }
     
     public func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        let transactionFeePublisher = networkService
-            .transactionFee(numberOfSignatures: 1)
-            
-        let accountCreationFeePublisher = destinationAccountInfo(destination: destination, amount: amount)
-            .map(\.accountCreationFee)
+        let decimalValue: Decimal
+        switch amount.type {
+        case .coin:
+            decimalValue = wallet.blockchain.decimalValue
+        case .token(let token):
+            decimalValue = token.decimalValue
+        case .reserve:
+            fatalError()
+        }
         
-        return Publishers.Zip(transactionFeePublisher, accountCreationFeePublisher)
-            .tryMap { [weak self] transactionFee, accountCreationFee in
-                guard let self = self else {
-                    throw WalletError.empty
+        let intAmount = ((amount.value * decimalValue) .rounded() as NSDecimalNumber).uint64Value
+        let computeUnitLimit: UInt32? = 200_001
+        let computeUnitPrice: UInt64? = 10_003
+        let publicKey = PublicKey(data: wallet.publicKey.blockchainKey)!
+        
+        return networkService
+            .getFee(
+                amount: intAmount,
+                computeUnitLimit: computeUnitLimit,
+                computeUnitPrice: computeUnitPrice,
+                destinationAddress: destination,
+                fromPublicKey: publicKey
+            )
+            .map { [wallet] feeValue -> [Fee] in
+                let blockchain = wallet.blockchain
+                let amount = Amount(with: blockchain, type: .coin, value: feeValue)
+                
+                let parameters: SolanaFeeParameters?
+                if let computeUnitLimit, let computeUnitPrice {
+                    parameters = SolanaFeeParameters(computeUnitLimit: computeUnitLimit, computeUnitPrice: computeUnitPrice)
+                } else {
+                    parameters = nil
                 }
-                                
-                let blockchain = self.wallet.blockchain
-                let amount = Amount(with: blockchain, type: .coin, value: transactionFee + accountCreationFee)
-                return [Fee(amount)]
+                return [Fee(amount, parameters: parameters)]
             }
             .eraseToAnyPublisher()
     }
-    
+                                
     private func computeUnitLimit(accountExists: Bool) -> UInt32 {
         // https://www.helius.dev/blog/priority-fees-understanding-solanas-transaction-fee-mechanics#helius-priority-fee-api
         accountExists ? 200_000 : 400_000
@@ -146,13 +165,17 @@ extension SolanaWalletManager: TransactionSender {
                     return .anyFail(error: WalletError.empty)
                 }
                 
+                guard let solanaFeeParameters = transaction.fee.parameters as? SolanaFeeParameters else {
+                    return .anyFail(error: WalletError.failedToSendTx)
+                }
+                
                 let decimalAmount = (transaction.amount.value + destinationAccountInfo.accountCreationFee) * self.wallet.blockchain.decimalValue
                 let intAmount = (decimalAmount.rounded() as NSDecimalNumber).uint64Value
                 
                 return self.networkService.sendSol(
                     amount: intAmount,
-                    computeUnitLimit: usePriorityFees ? self.computeUnitLimit(accountExists: destinationAccountInfo.accountExists) : nil,
-                    computeUnitPrice: usePriorityFees ? computeUnitPrice : nil,
+                    computeUnitLimit: solanaFeeParameters.computeUnitLimit,
+                    computeUnitPrice: solanaFeeParameters.computeUnitPrice,
                     destinationAddress: transaction.destinationAddress,
                     signer: signer
                 )
@@ -195,6 +218,10 @@ extension SolanaWalletManager: TransactionSender {
                     return .anyFail(error: WalletError.empty)
                 }
                 
+                guard let solanaFeeParameters = transaction.fee.parameters as? SolanaFeeParameters else {
+                    return .anyFail(error: WalletError.failedToSendTx)
+                }
+                
                 guard
                     let associatedSourceTokenAccountAddress = self.associatedTokenAddress(accountAddress: transaction.sourceAddress, mintAddress: token.contractAddress, tokenProgramId: tokenProgramId)
                 else {
@@ -203,8 +230,8 @@ extension SolanaWalletManager: TransactionSender {
                 
                 return self.networkService.sendSplToken(
                     amount: intAmount,
-                    computeUnitLimit: usePriorityFees ? computeUnitLimit : nil,
-                    computeUnitPrice: usePriorityFees ? computeUnitPrice : nil,
+                    computeUnitLimit: solanaFeeParameters.computeUnitLimit,
+                    computeUnitPrice: solanaFeeParameters.computeUnitPrice,
                     sourceTokenAddress: associatedSourceTokenAccountAddress,
                     destinationAddress: transaction.destinationAddress,
                     token: token,

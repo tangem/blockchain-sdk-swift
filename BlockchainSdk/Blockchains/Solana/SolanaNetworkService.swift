@@ -80,6 +80,31 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
+    func getFee(
+        amount: UInt64,
+        computeUnitLimit: UInt32?,
+        computeUnitPrice: UInt64?,
+        destinationAddress: String,
+        fromPublicKey: PublicKey
+    ) -> AnyPublisher<Decimal, Error> {
+        solanaSdk.action.serializeMessage(
+            to: destinationAddress,
+            amount: amount, 
+            computeUnitLimit: computeUnitLimit,
+            computeUnitPrice: computeUnitPrice,
+            allowUnfundedRecipient: true,
+            fromPublicKey: fromPublicKey
+        )
+        .flatMap { [solanaSdk] message -> AnyPublisher<FeeForMessageResult, Error> in
+            solanaSdk.api.getFeeForMessage(message)
+        }
+        .map { [blockchain] in
+            Decimal($0.value) / blockchain.decimalValue
+        }
+        .retry(1)
+        .eraseToAnyPublisher()
+    }
+    
     func transactionFee(numberOfSignatures: Int) -> AnyPublisher<Decimal, Error> {
         solanaSdk.api.getFees(commitment: nil)
             .retry(1)
