@@ -765,7 +765,7 @@ extension Blockchain {
                 return [
                     URL(string: "https://mainnet.aurora.dev/")!,
                     URL(string: "https://aurora.drpc.org/")!,
-                    URL(string: "https://1rpc.io/aurora/")!,
+                    URL(string: "https://1rpc.io/aurora")!, // please don't add final slash for consistency, it will break the endpoint
                 ]
             }
         default:
