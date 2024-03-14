@@ -163,32 +163,7 @@ class SolanaNetworkService {
     }
     
     func computeUnitPrice(accounts: [String]) -> AnyPublisher<UInt64, Error> {
-        solanaSdk.api.getRecentPrioritizationFees(accounts: accounts)
-            .retry(1)
-            .tryMap { fees in
-                let feeValues = fees.map(\.prioritizationFee)
-                
-                guard
-                    let _maxFeeValue = feeValues.max(),
-                    let _minFeeValue = feeValues.min()
-                else {
-                    throw WalletError.failedToGetFee
-                }
-                
-                let minimumComputationUnitPrice: UInt64 = 1
-                let computationUnitMultiplier = 0.8
-                
-                let minFeeValue = max(_minFeeValue, minimumComputationUnitPrice)
-                let maxFeeValue = max(_maxFeeValue, minimumComputationUnitPrice)
-                
-                let computeUnitPrice = Double(minFeeValue + maxFeeValue) * computationUnitMultiplier
-                guard computeUnitPrice <= Double(UInt64.max) else {
-                    throw WalletError.failedToGetFee
-                }
-                
-                return UInt64(computeUnitPrice)
-            }
-            .eraseToAnyPublisher()
+        .justWithError(output: 1_000_000)
     }
     
     func minimalBalanceForRentExemption(dataLength: UInt64 = 0) -> AnyPublisher<Decimal, Error> {
