@@ -110,17 +110,17 @@ extension SolanaWalletManager: TransactionSender {
         
         return destinationAccountInfo(destination: destination, amount: amount)
             .withWeakCaptureOf(self)
-            .flatMap { thisSolanaWalletManager, accountExists -> AnyPublisher<(SolanaFeeParameters, DestinationAccountInfo), Error> in
-                thisSolanaWalletManager.feeParameters(amount: amount, destination: destination, destinationAccountExists: accountExists.accountExists)
-                    .map {
-                        ($0, accountExists)
-                    }
-                    .eraseToAnyPublisher()
+            .flatMap { thisSolanaWalletManager, accountExists -> AnyPublisher<SolanaFeeParameters, Error> in
+                thisSolanaWalletManager.feeParameters(
+                    amount: amount,
+                    destination: destination, 
+                    destinationAccountExists: accountExists.accountExists
+                )
+                .eraseToAnyPublisher()
             }
             .withWeakCaptureOf(self)
-            .flatMap { parameters  -> AnyPublisher<(Decimal, DestinationAccountInfo, SolanaFeeParameters), Error> in
-                let (thisSolanaWalletManager, (feeParameters, accountExists)) = parameters
-                return thisSolanaWalletManager.networkService
+            .flatMap { thisSolanaWalletManager, feeParameters  -> AnyPublisher<(Decimal, SolanaFeeParameters), Error> in
+                thisSolanaWalletManager.networkService
                     .getFeeForMessage(
                         amount: intAmount,
                         computeUnitLimit: feeParameters.computeUnitLimit,
@@ -129,11 +129,11 @@ extension SolanaWalletManager: TransactionSender {
                         fromPublicKey: publicKey
                     )
                     .map {
-                        ($0, accountExists, feeParameters)
+                        ($0, feeParameters)
                     }
                     .eraseToAnyPublisher()
             }
-            .map { [wallet] (feeForMessage, accountExists, feeParameters) -> [Fee] in
+            .map { [wallet] (feeForMessage, feeParameters) -> [Fee] in
                 let totalFee = feeForMessage + feeParameters.accountCreationFee
                 
                 let blockchain = wallet.blockchain
