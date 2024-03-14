@@ -34,10 +34,10 @@ public class ElectrumNetworkProvider: MultiNetworkProvider {
     public func getAddressInfo(address: String) -> AnyPublisher<ElectrumResponse, Error> {
         providerPublisher { provider in
                 .init {
-                    let balance = try await provider.getBalance(address: address)
-                    let unspents = try await provider.getUnspents(address: address)
+                    async let balance =  provider.getBalance(address: address)
+                    async let unspents = provider.getUnspents(address: address)
                     
-                    return ElectrumResponse(
+                    return try await ElectrumResponse(
                         balance: Decimal(balance.confirmed),
                         outputs: unspents.map {
                             unspent in

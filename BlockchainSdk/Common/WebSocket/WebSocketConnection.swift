@@ -8,11 +8,12 @@
 
 import Foundation
 
-class WebSocketConnection {
+actor WebSocketConnection {
     private let url: URL
     private let ping: Ping
     private let timeout: TimeInterval
-    
+        
+    private var didConnectBlock: (() -> Void)?
     private var _webSocketTask: WebSocketTask?
     private var pingTask: Task<Void, Error>?
     private var timeoutTask: Task<Void, Error>?
@@ -37,7 +38,7 @@ class WebSocketConnection {
 
         // Send a message
         try await webSocketTask.send(message: message)
-
+        
         // Restart the disconnect timer
 //        startTimeoutTask()
 //        startPingTask()
@@ -113,17 +114,23 @@ private extension WebSocketConnection {
     
     func webSocketTask() async -> WebSocketTask {
         if let webSocketTask = _webSocketTask {
+            log("WebSocketTask already connected")
             return webSocketTask
         }
         
         let webSocketTask = WebSocketTask(url: url)
         log("WebSocketTask start connect")
 
-        // Await connected
-        _webSocketTask = await webSocketTask.connect()
-        log("WebSocketTask did open")
+        _webSocketTask?.connect(completion: { [weak self] _ in
+            self?.didConnectBlock?()
+            log("WebSocketTask did open")
+        })
 
-        return webSocketTask
+        return await withCheckedContinuation { [webSocketTask] continuation in
+            didConnectBlock = {
+                continuation.resume(returning: webSocketTask)
+            }
+        }
     }
     
     func mapToData(from message: URLSessionWebSocketTask.Message) throws -> Data {
