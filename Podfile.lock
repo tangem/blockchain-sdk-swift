@@ -42,7 +42,7 @@ DEPENDENCIES:
   - Moya
   - ScaleCodec
   - Sodium
-  - Solana.Swift (from `../Solana.Swift`)
+  - Solana.Swift (from `https://github.com/tangem/Solana.Swift`, tag `1.2.0-tangem5`)
   - stellar-ios-mac-sdk
   - SwiftCBOR
   - SwiftyJSON
@@ -71,7 +71,8 @@ EXTERNAL SOURCES:
     :git: https://github.com/tangem/bitcoincore.git
     :tag: 0.0.19
   Solana.Swift:
-    :path: "../Solana.Swift"
+    :git: https://github.com/tangem/Solana.Swift
+    :tag: 1.2.0-tangem5
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-264
@@ -83,6 +84,9 @@ CHECKOUT OPTIONS:
   BitcoinCore.swift:
     :git: https://github.com/tangem/bitcoincore.git
     :tag: 0.0.19
+  Solana.Swift:
+    :git: https://github.com/tangem/Solana.Swift
+    :tag: 1.2.0-tangem5
   TangemSdk:
     :git: https://github.com/Tangem/tangem-sdk-ios.git
     :tag: develop-264
@@ -105,6 +109,6 @@ SPEC CHECKSUMS:
   TangemSdk: f3adf8d0c18bf7a76406462fa31c0efa9f2efa93
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
 
-PODFILE CHECKSUM: 298ae48280b323ecd1aca19cd1c491a05d58ee5f
+PODFILE CHECKSUM: 56ea6115adab12d9187bfc3fb784d27c76062c17
 
 COCOAPODS: 1.15.2
