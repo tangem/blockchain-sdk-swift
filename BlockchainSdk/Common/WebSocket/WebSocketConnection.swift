@@ -25,8 +25,6 @@ actor WebSocketConnection {
         self.url = url
         self.ping = ping
         self.timeout = timeout
-        
-        log("init")
     }
     
     public func send(_ message: URLSessionWebSocketTask.Message) async throws {
@@ -105,7 +103,7 @@ private extension WebSocketConnection {
     func setupWebSocketTask() async -> URLSessionWebSocketTaskWrapper {
         if let _sessionWebSocketTask {
             let socket = await _sessionWebSocketTask.value
-            log("Return existed URLSessionWebSocketTaskWrapper \(socket)")
+            log("Return existed \(socket)")
             return socket
         }
 
@@ -152,6 +150,8 @@ private extension WebSocketConnection {
    }
 }
 
+// MARK: - CustomStringConvertible
+
 extension WebSocketConnection: CustomStringConvertible {
     nonisolated var description: String {
         objectDescription(self)
@@ -181,71 +181,4 @@ extension WebSocketConnection {
 enum WebSocketConnectionError: Error {
     case webSocketNotFound
     case invalidResponse
-}
-
-// MARK: - URLSessionTask.State + CustomStringConvertible
-
-extension URLSessionTask.State: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .running:
-            return "URLSessionTask.State.running"
-        case .suspended:
-            return "URLSessionTask.State.suspended"
-        case .canceling:
-            return "URLSessionTask.State.canceling"
-        case .completed:
-            return "URLSessionTask.State.completed"
-        @unknown default:
-            return "URLSessionTask.State.@unknowndefault"
-        }
-    }
-}
-
-extension URLSessionWebSocketTask.Message: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .data(let data):
-            return "URLSessionWebSocketTask.Message.data: \(data)"
-        case .string(let string):
-            return "URLSessionWebSocketTask.Message.string: \(string)"
-        @unknown default:
-            return "URLSessionWebSocketTask.Message.@unknowndefault"
-        }
-    }
-}
-
-extension URLSessionWebSocketTask.CloseCode: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .invalid:
-            return "URLSessionWebSocketTask.CloseCode.invalid"
-        case .normalClosure:
-            return "URLSessionWebSocketTask.CloseCode.normalClosure"
-        case .goingAway:
-            return "URLSessionWebSocketTask.CloseCode.goingAway"
-        case .protocolError:
-            return "URLSessionWebSocketTask.CloseCode.protocolError"
-        case .unsupportedData:
-            return "URLSessionWebSocketTask.CloseCode.unsupportedData"
-        case .noStatusReceived:
-            return "URLSessionWebSocketTask.CloseCode.noStatusReceived"
-        case .abnormalClosure:
-            return "URLSessionWebSocketTask.CloseCode.abnormalClosure"
-        case .invalidFramePayloadData:
-            return "URLSessionWebSocketTask.CloseCode.invalidFramePayloadData"
-        case .policyViolation:
-            return "URLSessionWebSocketTask.CloseCode.policyViolation"
-        case .messageTooBig:
-            return "URLSessionWebSocketTask.CloseCode.messageTooBig"
-        case .mandatoryExtensionMissing:
-            return "URLSessionWebSocketTask.CloseCode.mandatoryExtensionMissing"
-        case .internalServerError:
-            return "URLSessionWebSocketTask.CloseCode.internalServerError"
-        case .tlsHandshakeFailure:
-            return "URLSessionWebSocketTask.CloseCode.tlsHandshakeFailure"
-        @unknown default:
-            return "URLSessionWebSocketTask.CloseCode.@unknowndefault"
-        }
-    }
 }
