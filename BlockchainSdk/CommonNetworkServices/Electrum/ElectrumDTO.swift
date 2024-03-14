@@ -21,10 +21,12 @@ enum ElectrumDTO {
         }
         
         struct ListUnspent: Decodable {
-            let txPos: Int
+            let hasToken: Bool
+            let height: Decimal
+            let outpointHash: String
             let txHash: String
-            let value: Int
-            let height: String
+            let txPos: Int
+            let value: Decimal
         }
         
         struct Broadcast: Decodable {

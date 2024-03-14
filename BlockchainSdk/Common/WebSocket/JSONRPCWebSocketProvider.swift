@@ -8,7 +8,7 @@
 
 import Foundation
 
-class JSONRPCWebSocketProvider {
+actor JSONRPCWebSocketProvider {
     private let url: URL
     private let versions: [String]
     private let connection: WebSocketConnection
@@ -31,21 +31,24 @@ class JSONRPCWebSocketProvider {
     }
     
     func receive() {
-        receiveTask = Task {
+        receiveTask = Task { [weak self] in
             do {
-                let data = try await connection.receive()
-                
-                guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                guard let data = try await self?.connection.receive(),
+                      let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                       let id = json["id"] as? Int else {
                     return
                 }
-
-                requests[id]!.resume(returning: data)
                 
+                if let continuation = await self?.requests[id] {
+                    continuation.resume(returning: data)
+                } else {
+                    print("Received json: \(json) is not handled")
+                }
+
                 // Handle next message
-                receive()
+                await self?.receive()
             } catch {
-                await self.connection.disconnect()
+                print("ReceiveTask catch error: \(error)")
             }
         }
     }

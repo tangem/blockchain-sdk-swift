@@ -35,18 +35,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             decimalValue: 1 //pow(10,8)
         )
         
-        self.bag = provider.getAddressInfo(address: "nexa:nqtsq5g5rxlm4e6lc8aszkx7gfaftfxxs7mrex7367kj6ny6")
-        .sink { _ in } receiveValue: { value in
-            print("getAddressInfo", value)
-        }
+//        self.bag = provider.getAddressInfo(address: "nexa:nqtsq5g5rxlm4e6lc8aszkx7gfaftfxxs7mrex7367kj6ny6")
+//            .sink { _ in } receiveValue: { value in
+//                print("getAddressInfo", value)
+//            }
         
-//        self.bag = Publishers.Zip(
-//            provider.getAddressInfo(address: "nexa:nqtsq5g5rxlm4e6lc8aszkx7gfaftfxxs7mrex7367kj6ny6"),
-//            provider.estimateFee()
-//        )
-//        .sink { _ in } receiveValue: { value in
-//            print("Zip", value)
-//        }
+        self.bag = provider.getAddressInfo(address: "nexa:nqtsq5g5rxlm4e6lc8aszkx7gfaftfxxs7mrex7367kj6ny6")
+            .delay(for: 40, scheduler: DispatchQueue.global())
+            .flatMap({ _ in
+                provider.estimateFee()
+            })
+            .sink { _ in } receiveValue: { value in
+                print("Zip receiveValue")
+            }
         
         return true
     }

@@ -8,12 +8,12 @@
 
 import Foundation
 
-class WebSocketConnection {
+actor WebSocketConnection {
     private let url: URL
     private let ping: Ping
     private let timeout: TimeInterval
     
-    private var _webSocketTask: WebSocketTask?
+    private var _webSocketTask: Task<WebSocketTask, Never>?
     private var pingTask: Task<Void, Error>?
     private var timeoutTask: Task<Void, Error>?
 
@@ -32,33 +32,36 @@ class WebSocketConnection {
     }
     
     public func send(_ message: URLSessionWebSocketTask.Message) async throws {
-        let webSocketTask = await webSocketTask()
+        let webSocketTask = await setupWebSocketTask()
         log("Send: \(message)")
 
         // Send a message
         try await webSocketTask.send(message: message)
+//        startPingTask()
 
         // Restart the disconnect timer
 //        startTimeoutTask()
-//        startPingTask()
     }
     
     public func receive() async throws -> Data {
+        guard let webSocket = await _webSocketTask?.value else {
+            throw WebSocketConnectionError.webSocketNotFound
+        }
+        
         // Get a message from the last response
-        let response = try await _webSocketTask!.receive()
-
+        let response = try await webSocket.receive()
         log("Receive: \(response)")
         
-        let responseData = try mapToData(from: response)
-        return responseData
+        let data = try mapToData(from: response)
+        return data
     }
     
     public func disconnect() async {
         pingTask?.cancel()
         timeoutTask?.cancel()
 
-        let disconnectResult = await _webSocketTask?.disconnect()
-        self.log("Connection did close with: \(String(describing: disconnectResult))")
+        let closeCode = await _webSocketTask?.value.disconnect()
+        self.log("Connection did close with: \(String(describing: closeCode))")
 
         _webSocketTask = nil
     }
@@ -94,36 +97,41 @@ private extension WebSocketConnection {
     }
     
     func ping() async throws {
+        guard let webSocket = await _webSocketTask?.value else {
+            throw WebSocketConnectionError.webSocketNotFound
+        }
+        
         switch ping {
         case .message(_, let message):
             log("Send ping: \(message)")
-            
-            try await _webSocketTask?.send(message: message)
-            let response = try await _webSocketTask?.receive()
-            log("Ping response \(String(describing: response))")
+            try await webSocket.send(message: message)
 
         case .plain:
             log("Send plain ping")
-            
-            try await _webSocketTask?.sendPing()
+            try await webSocket.sendPing()
         }
         
         startPingTask()
     }
     
-    func webSocketTask() async -> WebSocketTask {
-        if let webSocketTask = _webSocketTask {
-            return webSocketTask
+    func setupWebSocketTask() async -> WebSocketTask {
+        if let _webSocketTask {
+            let socket = await _webSocketTask.value
+            log("Return existed WebSocketTask \(socket)")
+            return socket
+        }
+
+        let connectedTask = Task {
+            log("WebSocketTask start connect")
+            let newWebSocket = WebSocketTask(url: url)
+            await newWebSocket.connect()
+            log("WebSocketTask did open")
+
+            return newWebSocket
         }
         
-        let webSocketTask = WebSocketTask(url: url)
-        log("WebSocketTask start connect")
-
-        // Await connected
-        _webSocketTask = await webSocketTask.connect()
-        log("WebSocketTask did open")
-
-        return webSocketTask
+        _webSocketTask = connectedTask
+        return await connectedTask.value
     }
     
     func mapToData(from message: URLSessionWebSocketTask.Message) throws -> Data {
@@ -144,7 +152,7 @@ private extension WebSocketConnection {
     }
     
     func log(_ args: Any) {
-        print("<<\n[\(self)]\n\(Date())\n\(Thread.current)\n", args, "\n>>")
+        print(">>\n[\(self)]\n\(Date())\n\(Thread.current)\n", args, "\n<<")
    }
 }
 
@@ -175,6 +183,7 @@ extension WebSocketConnection {
 // MARK: - Error
 
 enum WebSocketConnectionError: Error {
+    case webSocketNotFound
     case responseNotFound
     case invalidResponse
     case invalidRequest
