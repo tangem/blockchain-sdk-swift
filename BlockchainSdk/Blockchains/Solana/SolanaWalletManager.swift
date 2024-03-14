@@ -186,6 +186,7 @@ extension SolanaWalletManager: TransactionSender {
                 let computeUnitLimit: UInt32?
                 let computeUnitPrice: UInt64?
                 if thisSolanaWalletManager.usePriorityFees {
+                    // https://www.helius.dev/blog/priority-fees-understanding-solanas-transaction-fee-mechanics
                     computeUnitLimit = (destinationAccountInfo.accountExists ? 200_000 : 400_000)
                     computeUnitPrice = calculatedComputeUnitPrice
                 } else {
@@ -193,7 +194,6 @@ extension SolanaWalletManager: TransactionSender {
                     computeUnitPrice = nil
                 }
                 
-                // https://www.helius.dev/blog/priority-fees-understanding-solanas-transaction-fee-mechanics
                 return SolanaFeeParameters(
                     computeUnitLimit: computeUnitLimit,
                     computeUnitPrice: computeUnitPrice,
