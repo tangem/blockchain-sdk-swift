@@ -80,7 +80,7 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func getFee(
+    func getFeeForMessage(
         amount: UInt64,
         computeUnitLimit: UInt32?,
         computeUnitPrice: UInt64?,

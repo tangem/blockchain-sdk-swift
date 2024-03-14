@@ -109,9 +109,10 @@ extension SolanaWalletManager: TransactionSender {
         let publicKey = PublicKey(data: wallet.publicKey.blockchainKey)!
         
         return feeParameters(amount: amount, destination: destination)
-            .flatMap { [networkService, wallet] feeParameters  -> AnyPublisher<[Fee], Error> in
-                return networkService!
-                    .getFee(
+            .withWeakCaptureOf(self)
+            .flatMap { [wallet] thisSolanaWalletManager, feeParameters  -> AnyPublisher<[Fee], Error> in
+                return thisSolanaWalletManager.networkService
+                    .getFeeForMessage(
                         amount: intAmount,
                         computeUnitLimit: feeParameters?.computeUnitLimit,
                         computeUnitPrice: feeParameters?.computeUnitPrice,
