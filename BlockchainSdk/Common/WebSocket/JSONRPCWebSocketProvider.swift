@@ -33,13 +33,6 @@ class JSONRPCWebSocketProvider {
             ping: .message(interval: Constants.ping, message: .string(message)),
             timeout: Constants.timeout
         )
-        
-        log("init")
-    }
-    
-    deinit {
-        log("deinit")
-        cancel()
     }
      
     func send<Parameter: Encodable, Result: Decodable>(
@@ -79,13 +72,6 @@ class JSONRPCWebSocketProvider {
         log("Return result \(response.result)")
 
         return response.result
-    }
-    
-    func cancel() {
-        // We have to cancel all that release objects
-        receiveTask?.cancel()
-        receiveTask = nil
-        requests.values.forEach { $0(.failure(CancellationError())) }
     }
 }
 
@@ -134,7 +120,7 @@ private extension JSONRPCWebSocketProvider {
 // MARK: - Models
 
 extension JSONRPCWebSocketProvider: CustomStringConvertible {
-    nonisolated var description: String {
+    var description: String {
         objectDescription(self)
     }
 }

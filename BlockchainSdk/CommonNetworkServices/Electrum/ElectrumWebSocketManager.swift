@@ -22,13 +22,6 @@ public class ElectrumWebSocketManager: HostProvider {
     public init(url: URL) {
         self.url = url
         self.webSocketProvider = .init(url: url, versions: ["1.4.3"])
-        
-        print("init ElectrumWebSocketManager")
-    }
-    
-    deinit {
-        print("deinit ElectrumWebSocketManager")
-        webSocketProvider.cancel()
     }
     
     func getBalance(address: String) async throws -> ElectrumDTO.Response.Balance {

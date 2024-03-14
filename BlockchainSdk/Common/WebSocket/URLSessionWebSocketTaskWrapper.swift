@@ -24,12 +24,9 @@ class URLSessionWebSocketTaskWrapper {
     ) {
         self.url = url
         self.delegateQueue = delegateQueue
-        
-        print("init \(self)")
     }
     
     deinit {
-        print("deinit \(self)")
         // We have to disconnect here that release all objects
         disconnect()
     }
@@ -63,7 +60,7 @@ class URLSessionWebSocketTaskWrapper {
         guard let sessionWebSocketTask else {
             throw WebSocketTaskError.webSocketNotFound
         }
-        
+
         return try await sessionWebSocketTask.receive()
     }
     

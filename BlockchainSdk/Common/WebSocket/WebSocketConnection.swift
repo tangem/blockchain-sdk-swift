@@ -29,20 +29,13 @@ actor WebSocketConnection {
         log("init")
     }
     
-    deinit {
-//        Task { 
-//            await disconnect()
-            log("deinit")
-//        }
-    }
-    
     public func send(_ message: URLSessionWebSocketTask.Message) async throws {
         let webSocketTask = await setupWebSocketTask()
         log("Send: \(message)")
 
         // Send a message
         try await webSocketTask.send(message: message)
-//        startPingTask()
+        startPingTask()
 
         // Restart the disconnect timer
         startTimeoutTask()
@@ -59,16 +52,6 @@ actor WebSocketConnection {
         
         let data = try mapToData(from: response)
         return data
-    }
-    
-    public func disconnect() async {
-        pingTask?.cancel()
-        timeoutTask?.cancel()
-
-        let closeCode = await _sessionWebSocketTask?.value.disconnect()
-        self.log("Connection did close with: \(String(describing: closeCode))")
-
-        _sessionWebSocketTask = nil
     }
 }
 
@@ -157,6 +140,13 @@ private extension WebSocketConnection {
         }
     }
     
+    func disconnect() {
+        pingTask?.cancel()
+        timeoutTask?.cancel()
+        _sessionWebSocketTask?.cancel()
+        _sessionWebSocketTask = nil
+    }
+    
     nonisolated func log(_ args: Any) {
         print("\(self) [\(args)]")
    }
@@ -190,9 +180,7 @@ extension WebSocketConnection {
 
 enum WebSocketConnectionError: Error {
     case webSocketNotFound
-//    case responseNotFound
     case invalidResponse
-//    case invalidRequest
 }
 
 // MARK: - URLSessionTask.State + CustomStringConvertible

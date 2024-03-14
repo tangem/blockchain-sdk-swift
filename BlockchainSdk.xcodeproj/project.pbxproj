@@ -681,6 +681,9 @@
 		EF7257902A8F938400EA8CB2 /* KeyedDecodingContainer+.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF72578F2A8F938400EA8CB2 /* KeyedDecodingContainer+.swift */; };
 		EF74D63E2BA35099000550F3 /* URLSessionWebSocketDelegateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF74D63D2BA35099000550F3 /* URLSessionWebSocketDelegateWrapper.swift */; };
 		EF74D6402BA3526D000550F3 /* ObjectDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF74D63F2BA3526D000550F3 /* ObjectDescription.swift */; };
+		EF74D6422BA38124000550F3 /* Future+.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF74D6412BA38124000550F3 /* Future+.swift */; };
+		EF74D6442BA38220000550F3 /* ElectrumAddressInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF74D6432BA38220000550F3 /* ElectrumAddressInfo.swift */; };
+		EF74D6462BA3822D000550F3 /* ElectrumUTXO.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF74D6452BA3822D000550F3 /* ElectrumUTXO.swift */; };
 		EF937BDD2B90EED0009B8374 /* WithdrawalSuggestionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF937BDA2B90EED0009B8374 /* WithdrawalSuggestionProvider.swift */; };
 		EF937BDE2B90EED0009B8374 /* ExistentialDepositProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF937BDB2B90EED0009B8374 /* ExistentialDepositProvider.swift */; };
 		EF937BDF2B90EED0009B8374 /* RentProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF937BDC2B90EED0009B8374 /* RentProvider.swift */; };
@@ -1443,6 +1446,9 @@
 		EF72578F2A8F938400EA8CB2 /* KeyedDecodingContainer+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyedDecodingContainer+.swift"; sourceTree = "<group>"; };
 		EF74D63D2BA35099000550F3 /* URLSessionWebSocketDelegateWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionWebSocketDelegateWrapper.swift; sourceTree = "<group>"; };
 		EF74D63F2BA3526D000550F3 /* ObjectDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectDescription.swift; sourceTree = "<group>"; };
+		EF74D6412BA38124000550F3 /* Future+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Future+.swift"; sourceTree = "<group>"; };
+		EF74D6432BA38220000550F3 /* ElectrumAddressInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElectrumAddressInfo.swift; sourceTree = "<group>"; };
+		EF74D6452BA3822D000550F3 /* ElectrumUTXO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElectrumUTXO.swift; sourceTree = "<group>"; };
 		EF937BDA2B90EED0009B8374 /* WithdrawalSuggestionProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WithdrawalSuggestionProvider.swift; sourceTree = "<group>"; };
 		EF937BDB2B90EED0009B8374 /* ExistentialDepositProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExistentialDepositProvider.swift; sourceTree = "<group>"; };
 		EF937BDC2B90EED0009B8374 /* RentProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RentProvider.swift; sourceTree = "<group>"; };
@@ -1978,6 +1984,7 @@
 				DC5E646C2B16098C00E81AA5 /* RIPEMD160+.swift */,
 				EF9E382C2B7A47C7004B694C /* AnyPublisher+Async.swift */,
 				B62EC6822B0E88A10018F51C /* Log+.swift */,
+				EF74D6412BA38124000550F3 /* Future+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -3456,6 +3463,8 @@
 				EFF82D4F2B9F7AA6004DF1A0 /* ElectrumNetworkProvider.swift */,
 				EFF82D402B9F0B50004DF1A0 /* ElectrumWebSocketManager.swift */,
 				EFF82D4B2B9F62A5004DF1A0 /* ElectrumDTO.swift */,
+				EF74D6432BA38220000550F3 /* ElectrumAddressInfo.swift */,
+				EF74D6452BA3822D000550F3 /* ElectrumUTXO.swift */,
 			);
 			path = Electrum;
 			sourceTree = "<group>";
@@ -4120,6 +4129,7 @@
 				2DB6C6D52AFCBEC9000D0C6A /* TelosWalletManager.swift in Sources */,
 				B6DC28422B62AFD00070F1D2 /* HederaExternalLinkProvider.swift in Sources */,
 				DC87B9F02B8F4D9700C61C5A /* BitcoreResponse.swift in Sources */,
+				EF74D6422BA38124000550F3 /* Future+.swift in Sources */,
 				DC5E64EC2B1650F400E81AA5 /* OP_PUBKEYHASH.swift in Sources */,
 				B0CDFF252641488900B9BA9D /* EthereumJsonRpcProvider.swift in Sources */,
 				DC8180802B15159D00D7D53F /* RLP.swift in Sources */,
@@ -4248,6 +4258,7 @@
 				DA656FC62952091A0092CC61 /* BlockBookConfig.swift in Sources */,
 				DC5E64FE2B1650F400E81AA5 /* OP_GREATERTHAN.swift in Sources */,
 				DC5E64E82B1650F400E81AA5 /* OP_EQUALVERIFY.swift in Sources */,
+				EF74D6462BA3822D000550F3 /* ElectrumUTXO.swift in Sources */,
 				DC5E64DF2B1650F400E81AA5 /* OP_RIPEMD160.swift in Sources */,
 				5DEC90C12587A35800826C95 /* BlockchainSdkConfig.swift in Sources */,
 				B6E7699A2AF2CFBC00B32745 /* NEARTransactionsInfo.swift in Sources */,
@@ -4359,6 +4370,7 @@
 				DA656FCA295454C10092CC61 /* Constants.swift in Sources */,
 				2D01EC062B052A0A00DEF1CC /* DecimalWalletAssembly.swift in Sources */,
 				DAF3AD4629E916D300E057FA /* CosmosFeeParameters.swift in Sources */,
+				EF74D6442BA38220000550F3 /* ElectrumAddressInfo.swift in Sources */,
 				B6BA93792AEA0F0C00F84E36 /* NEARNetworkResult.GasPrice.swift in Sources */,
 				B6B2EB6D2B56AAB9005FBE8E /* VeChainNetworkResult.ContractCall.swift in Sources */,
 				EF57BEC82A1E13BE00C2A493 /* DerivationConfig.swift in Sources */,
