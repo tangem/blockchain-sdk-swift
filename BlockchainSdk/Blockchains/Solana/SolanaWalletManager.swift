@@ -223,6 +223,10 @@ extension SolanaWalletManager: TransactionSender {
     }
     
     private func sendSplToken(_ transaction: Transaction, token: Token, signer: TransactionSigner) -> AnyPublisher<TransactionID, Error> {
+        guard let solanaFeeParameters = transaction.fee.parameters as? SolanaFeeParameters else {
+            return .anyFail(error: WalletError.failedToSendTx)
+        }
+        
         let decimalAmount = transaction.amount.value * token.decimalValue
         let intAmount = (decimalAmount.rounded() as NSDecimalNumber).uint64Value
         let signer = SolanaTransactionSigner(transactionSigner: signer, walletPublicKey: wallet.publicKey)
@@ -234,10 +238,6 @@ extension SolanaWalletManager: TransactionSender {
             .flatMap { [weak self] tokenProgramId -> AnyPublisher<TransactionID, Error> in
                 guard let self else {
                     return .anyFail(error: WalletError.empty)
-                }
-                
-                guard let solanaFeeParameters = transaction.fee.parameters as? SolanaFeeParameters else {
-                    return .anyFail(error: WalletError.failedToSendTx)
                 }
                 
                 guard
