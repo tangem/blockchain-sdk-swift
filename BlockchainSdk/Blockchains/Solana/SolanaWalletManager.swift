@@ -172,7 +172,8 @@ extension SolanaWalletManager: TransactionSender {
             .withWeakCaptureOf(self)
             .flatMap { thisSolanaWalletManager, computeUnitPriceAccounts -> AnyPublisher<UInt64, Error> in
                 thisSolanaWalletManager.networkService.computeUnitPrice(
-                    accounts: computeUnitPriceAccounts
+                    accounts: computeUnitPriceAccounts,
+                    destinationAccountExists: destinationAccountExists
                 )
             }
         
