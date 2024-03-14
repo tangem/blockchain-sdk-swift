@@ -106,36 +106,75 @@ extension SolanaWalletManager: TransactionSender {
         }
         
         let intAmount = ((amount.value * decimalValue) .rounded() as NSDecimalNumber).uint64Value
-        let computeUnitLimit: UInt32? = 200_001
-        let computeUnitPrice: UInt64? = 10_003
         let publicKey = PublicKey(data: wallet.publicKey.blockchainKey)!
         
-        return networkService
-            .getFee(
-                amount: intAmount,
-                computeUnitLimit: computeUnitLimit,
-                computeUnitPrice: computeUnitPrice,
-                destinationAddress: destination,
-                fromPublicKey: publicKey
-            )
-            .map { [wallet] feeValue -> [Fee] in
-                let blockchain = wallet.blockchain
-                let amount = Amount(with: blockchain, type: .coin, value: feeValue)
-                
-                let parameters: SolanaFeeParameters?
-                if let computeUnitLimit, let computeUnitPrice {
-                    parameters = SolanaFeeParameters(computeUnitLimit: computeUnitLimit, computeUnitPrice: computeUnitPrice)
-                } else {
-                    parameters = nil
-                }
-                return [Fee(amount, parameters: parameters)]
+        return feeParameters(amount: amount, destination: destination)
+            .flatMap { [networkService, wallet] feeParameters  -> AnyPublisher<[Fee], Error> in
+                return networkService!
+                    .getFee(
+                        amount: intAmount,
+                        computeUnitLimit: feeParameters?.computeUnitLimit,
+                        computeUnitPrice: feeParameters?.computeUnitPrice,
+                        destinationAddress: destination,
+                        fromPublicKey: publicKey
+                    )
+                    .map { feeValue -> [Fee] in
+                        let blockchain = wallet.blockchain
+                        let amount = Amount(with: blockchain, type: .coin, value: feeValue)
+                        return [Fee(amount, parameters: feeParameters)]
+                    }
+                    .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
-                                
-    private func computeUnitLimit(accountExists: Bool) -> UInt32 {
-        // https://www.helius.dev/blog/priority-fees-understanding-solanas-transaction-fee-mechanics#helius-priority-fee-api
-        accountExists ? 200_000 : 400_000
+    
+    private func feeParameters(amount: Amount, destination: String) -> AnyPublisher<SolanaFeeParameters?, Error> {
+        guard usePriorityFees else { return .justWithError(output: nil) }
+        
+        let computeUnitPriceAccountsPublisher: AnyPublisher<[String], Error>
+        switch amount.type {
+        case .coin:
+            computeUnitPriceAccountsPublisher = .justWithError(output: [wallet.address, destination])
+        case .token(let token):
+            computeUnitPriceAccountsPublisher = networkService
+                .tokenProgramId(contractAddress: token.contractAddress)
+                .withWeakCaptureOf(self)
+                .tryMap { [wallet] thisSolanaWalletManager, tokenProgramId -> [String] in
+                    guard let associatedDestinationTokenAccountAddress = thisSolanaWalletManager.associatedTokenAddress(
+                        accountAddress: destination,
+                        mintAddress: token.contractAddress,
+                        tokenProgramId: tokenProgramId
+                    ) else {
+                        throw BlockchainSdkError.failedToConvertPublicKey
+                    }
+                    
+                    return [wallet.address, associatedDestinationTokenAccountAddress]
+                }
+                .eraseToAnyPublisher()
+        case .reserve:
+            fatalError()
+        }
+        
+        let computeUnitPriceAccounts = [wallet.address, destination]
+        let computeUnitPricePublisher = computeUnitPriceAccountsPublisher
+            .withWeakCaptureOf(self)
+            .flatMap { thisSolanaWalletManager, computeUnitPriceAccounts -> AnyPublisher<UInt64, Error> in
+                thisSolanaWalletManager.networkService.computeUnitPrice(
+                    accounts: computeUnitPriceAccounts
+                )
+            }
+        
+        let destinationAccountExistsPublisher = accountExists(destination: destination, amountType: amount.type)
+        
+        return Publishers.CombineLatest(computeUnitPricePublisher, destinationAccountExistsPublisher)
+            .map { computeUnitPrice, destinationAccountExists -> SolanaFeeParameters in
+                // https://www.helius.dev/blog/priority-fees-understanding-solanas-transaction-fee-mechanics
+                SolanaFeeParameters(
+                    computeUnitLimit: destinationAccountExists ? 200_000 : 400_000,
+                    computeUnitPrice: computeUnitPrice
+                )
+            }
+            .eraseToAnyPublisher()
     }
     
     private func sendSol(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionID, Error> {
@@ -192,7 +231,7 @@ extension SolanaWalletManager: TransactionSender {
         let accountExistsPublisher = accountExists(destination: transaction.destinationAddress, amountType: transaction.amount.type)
         
         return Publishers.CombineLatest(tokenProgramIdPublisher, accountExistsPublisher)
-            .flatMap { [weak self] tokenProgramId, accountExists -> AnyPublisher<(PublicKey, UInt32, UInt64), Error> in
+            .flatMap { [weak self] tokenProgramId, accountExists -> AnyPublisher<PublicKey, Error> in
                 guard let self else {
                     return .anyFail(error: WalletError.empty)
                 }
@@ -205,15 +244,9 @@ extension SolanaWalletManager: TransactionSender {
                     return .anyFail(error: BlockchainSdkError.failedToConvertPublicKey)
                 }
                 
-                let computeUnitPriceAccounts = [transaction.sourceAddress, associatedDestinationTokenAccountAddress]
-                let computeUnitLimit = self.computeUnitLimit(accountExists: accountExists)
-                return Publishers.CombineLatest3(
-                    Just(tokenProgramId).setFailureType(to: Error.self).eraseToAnyPublisher(),
-                    Just(computeUnitLimit).setFailureType(to: Error.self).eraseToAnyPublisher(),
-                    self.networkService.computeUnitPrice(accounts: computeUnitPriceAccounts)
-                ) .eraseToAnyPublisher()
+                return Just(tokenProgramId).setFailureType(to: Error.self).eraseToAnyPublisher()
             }
-            .flatMap { [weak self] tokenProgramId, computeUnitLimit, computeUnitPrice -> AnyPublisher<TransactionID, Error> in
+            .flatMap { [weak self] tokenProgramId -> AnyPublisher<TransactionID, Error> in
                 guard let self else {
                     return .anyFail(error: WalletError.empty)
                 }
