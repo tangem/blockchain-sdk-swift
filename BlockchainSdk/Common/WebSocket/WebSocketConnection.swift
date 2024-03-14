@@ -30,8 +30,10 @@ actor WebSocketConnection {
     }
     
     deinit {
-        log("deinit")
-        Task { await disconnect() }
+//        Task { 
+//            await disconnect()
+            log("deinit")
+//        }
     }
     
     public func send(_ message: URLSessionWebSocketTask.Message) async throws {
@@ -40,7 +42,7 @@ actor WebSocketConnection {
 
         // Send a message
         try await webSocketTask.send(message: message)
-        startPingTask()
+//        startPingTask()
 
         // Restart the disconnect timer
         startTimeoutTask()

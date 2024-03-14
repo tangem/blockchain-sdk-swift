@@ -16,7 +16,7 @@ enum ElectrumDTO {
         }
         
         struct History: Decodable {
-            let height: Int
+            let height: Decimal
             let txHash: String
         }
         

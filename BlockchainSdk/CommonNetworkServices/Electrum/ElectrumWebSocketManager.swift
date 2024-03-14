@@ -1,5 +1,5 @@
 //
-//  ElectrumWebSocketRequestFactory.swift
+//  ElectrumWebSocketManager.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 11.03.2024.
@@ -11,7 +11,7 @@ public class ElectrumWebSocketManager: HostProvider {
     var host: String { url.absoluteString }
     
     private let url: URL
-    private let connection: JSONRPCWebSocketProvider
+    private let webSocketProvider: JSONRPCWebSocketProvider
     
     private let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
@@ -21,19 +21,26 @@ public class ElectrumWebSocketManager: HostProvider {
     
     public init(url: URL) {
         self.url = url
-        self.connection = .init(url: url, versions: ["1.4.3"])
+        self.webSocketProvider = .init(url: url, versions: ["1.4.3"])
+        
+        print("init ElectrumWebSocketManager")
+    }
+    
+    deinit {
+        print("deinit ElectrumWebSocketManager")
+        webSocketProvider.cancel()
     }
     
     func getBalance(address: String) async throws -> ElectrumDTO.Response.Balance {
-        try await connection.send(
+        try await webSocketProvider.send(
             method: "blockchain.address.get_balance",
             parameter: [address],
             decoder: decoder
         )
     }
 
-    func getTxHistory(address: String) async throws -> ElectrumDTO.Response.History {
-        try await connection.send(
+    func getTxHistory(address: String) async throws -> [ElectrumDTO.Response.History] {
+        try await webSocketProvider.send(
             method: "blockchain.address.get_history",
             parameter: [address],
             decoder: decoder
@@ -41,7 +48,7 @@ public class ElectrumWebSocketManager: HostProvider {
     }
     
     func getUnspents(address: String) async throws -> [ElectrumDTO.Response.ListUnspent] {
-        try await connection.send(
+        try await webSocketProvider.send(
             method: "blockchain.address.listunspent",
             parameter: [address],
             decoder: decoder
@@ -49,7 +56,7 @@ public class ElectrumWebSocketManager: HostProvider {
     }
     
     func send(transactionHex: String) async throws -> ElectrumDTO.Response.Broadcast {
-        try await connection.send(
+        try await webSocketProvider.send(
             method: "blockchain.transaction.broadcast",
             parameter: transactionHex,
             decoder: decoder
@@ -57,7 +64,7 @@ public class ElectrumWebSocketManager: HostProvider {
     }
 
     func estimateFee(block: Int) async throws -> Int {
-        try await connection.send(
+        try await webSocketProvider.send(
             method: "blockchain.estimatefee",
             parameter: [block],
             decoder: decoder

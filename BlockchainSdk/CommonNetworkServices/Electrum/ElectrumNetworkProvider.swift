@@ -29,24 +29,31 @@ public class ElectrumNetworkProvider: MultiNetworkProvider {
     public init(providers: [ElectrumWebSocketManager], decimalValue: Decimal) {
         self.providers = providers
         self.decimalValue = decimalValue
+        
+        print("init ElectrumNetworkProvider")
+    }
+    
+    deinit {
+        print("deinit ElectrumNetworkProvider")
     }
     
     public func getAddressInfo(address: String) -> AnyPublisher<ElectrumResponse, Error> {
         providerPublisher { provider in
                 .init {
                     async let balance = provider.getBalance(address: address)
-                    async let unspents = provider.getUnspents(address: address)
+//                    async let unspents = provider.getTxHistory(address: address)
                     
                     return try await ElectrumResponse(
                         balance: Decimal(balance.confirmed),
-                        outputs: unspents.map { unspent in
-                            ElectrumUTXO(
-                                position: unspent.txPos,
-                                hash: unspent.txHash,
-                                value: unspent.value,
-                                height: unspent.height
-                            )
-                        }
+                        outputs: []
+//                        unspents.map { unspent in
+//                            ElectrumUTXO(
+//                                position: unspent.txPos,
+//                                hash: unspent.txHash,
+//                                value: unspent.value,
+//                                height: unspent.height
+//                            )
+//                        }
                     )
                 }
         }
@@ -64,11 +71,19 @@ public class ElectrumNetworkProvider: MultiNetworkProvider {
 
 extension AnyPublisher where Failure: Error {
     struct Subscriber {
-        fileprivate let send: (Output) -> Void
-        fileprivate let complete: (Subscribers.Completion<Failure>) -> Void
+        private let send: (Output) -> Void
+        private let complete: (Subscribers.Completion<Failure>) -> Void
+        
+        init(
+            send: @escaping (Output) -> Void,
+            complete: @escaping (Subscribers.Completion<Failure>) -> Void
+        ) {
+            self.send = send
+            self.complete = complete
+        }
 
-        func send(_ value: Output) { self.send(value) }
-        func send(completion: Subscribers.Completion<Failure>) { self.complete(completion) }
+        func send(_ value: Output) { send(value) }
+        func send(completion: Subscribers.Completion<Failure>) { complete(completion) }
     }
 
     init(_ closure: (Subscriber) -> AnyCancellable) {
