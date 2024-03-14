@@ -147,21 +147,6 @@ class SolanaNetworkService {
         return Just(rent).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
     
-    // This fee is deducted from the main SOL account
-    func tokenAccountCreationFee(contractAddress: String) -> AnyPublisher<Decimal, Error> {
-        solanaSdk.api
-            .getAccountInfo(account: contractAddress, decodedTo: AccountInfo.self)
-            .withWeakCaptureOf(self)
-            .flatMap { thisSolanaNetworkService, accountInfo -> AnyPublisher<Decimal, Error> in
-                guard let size = accountInfo.space else {
-                    return .anyFail(error: WalletError.failedToGetFee)
-                }
-                
-                return thisSolanaNetworkService.minimalBalanceForRentExemption(dataLength: size)
-            }
-            .eraseToAnyPublisher()
-    }
-    
     func computeUnitPrice(accounts: [String]) -> AnyPublisher<UInt64, Error> {
         .justWithError(output: 1_000_000)
     }

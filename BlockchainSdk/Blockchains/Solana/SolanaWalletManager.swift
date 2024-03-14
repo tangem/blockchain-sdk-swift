@@ -302,7 +302,7 @@ extension SolanaWalletManager: TransactionSender {
             
             tokens = []
         case .token(let token):
-            accountCreationFeePublisher = networkService.tokenAccountCreationFee(contractAddress: token.contractAddress)
+            accountCreationFeePublisher = .justWithError(output: 0)
             tokens = [token]
         case .reserve:
             return .anyFail(error: BlockchainSdkError.failedToLoadFee)
