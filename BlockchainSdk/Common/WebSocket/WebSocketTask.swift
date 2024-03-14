@@ -45,20 +45,24 @@ class WebSocketTask: CustomStringConvertible {
     private lazy var delegate: URLSessionWebSocketDelegateWrapper = {
         .init(
             webSocketTaskDidOpen: { [weak self] task in
-                self?.webSocketTaskDidOpen?(task)
+                guard let self else { return }
+
+                self.webSocketTaskDidOpen?.resume(returning: self)
             },
-            webSocketTaskDidClose: { [weak self] task, code in
-                self?.webSocketTaskDidClose?(task, code)
+            webSocketTaskDidClose: { [weak self] task, closeCode in
+                guard let self else { return }
+
+                self.webSocketTaskDidClose?.resume(returning: (self, closeCode))
             }
         )
     }()
     
-    private var webSocketTaskDidOpen: ((URLSessionWebSocketTask) -> Void)? = nil
-    private var webSocketTaskDidClose: ((URLSessionWebSocketTask, URLSessionWebSocketTask.CloseCode) -> Void)? = nil
+    private var webSocketTaskDidOpen: UnsafeContinuation<WebSocketTask, Never>?
+    private var webSocketTaskDidClose: UnsafeContinuation<(WebSocketTask, URLSessionWebSocketTask.CloseCode), Never>?
 
     private var sessionWebSocketTask: URLSessionWebSocketTask?
     
-    nonisolated var description: String {
+    var description: String {
         objectDescription(self)
     }
     
@@ -74,9 +78,7 @@ class WebSocketTask: CustomStringConvertible {
     
     deinit {
         print("deinit \(self)")
-        Task { [weak self] in
-            await self?.disconnect()
-        }
+        Task { await disconnect() }
     }
     
     func sendPing() async throws {
@@ -84,8 +86,8 @@ class WebSocketTask: CustomStringConvertible {
             throw WebSocketTaskError.webSocketNotFound
         }
 
-        return try await withCheckedThrowingContinuation { [weak self] continuation in
-            self?.sessionWebSocketTask?.sendPing { error in
+        return try await withCheckedThrowingContinuation { continuation in
+            sessionWebSocketTask.sendPing { error in
                 switch error {
                 case .none:
                     continuation.resume()
@@ -101,7 +103,6 @@ class WebSocketTask: CustomStringConvertible {
             throw WebSocketTaskError.webSocketNotFound
         }
 
-        print("\(self) Send: \(message) state: \(sessionWebSocketTask.state)")
         try await sessionWebSocketTask.send(message)
     }
     
@@ -113,18 +114,22 @@ class WebSocketTask: CustomStringConvertible {
         return try await sessionWebSocketTask.receive()
     }
     
-    func connect(completion: ((URLSessionWebSocketTask) -> Void)?) {
-        self.webSocketTaskDidOpen = completion
-        
+    func connect() async -> WebSocketTask {
         let session = URLSession(configuration: .default, delegate: delegate, delegateQueue: delegateQueue)
         sessionWebSocketTask = session.webSocketTask(with: url)
         sessionWebSocketTask?.resume()
+        
+        return await withUnsafeContinuation { [weak self] continuation in
+            self?.webSocketTaskDidOpen = continuation
+        }
     }
     
-    func disconnect(completion: ((URLSessionWebSocketTask, URLSessionWebSocketTask.CloseCode) -> Void)?) {
-        self.webSocketTaskDidClose = completion
-        
+    func disconnect() async -> (WebSocketTask, URLSessionWebSocketTask.CloseCode) {
         sessionWebSocketTask?.cancel(with: .goingAway, reason: nil)
+        
+        return await withUnsafeContinuation { [weak self] continuation in
+            self?.webSocketTaskDidClose = continuation
+        }
     }
 
     /*
