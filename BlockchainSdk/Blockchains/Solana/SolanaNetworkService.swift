@@ -124,7 +124,7 @@ class SolanaNetworkService {
     
     // This fee is deducted from the transaction amount itself (!)
     func mainAccountCreationFee() -> AnyPublisher<Decimal, Error> {
-        accountRentFeePerEpoch()
+        minimalBalanceForRentExemption(dataLength: 0)
     }
     
     func accountRentFeePerEpoch() -> AnyPublisher<Decimal, Error> {
@@ -148,15 +148,16 @@ class SolanaNetworkService {
     }
     
     // This fee is deducted from the main SOL account
-    func tokenAccountCreationFee() -> AnyPublisher<Decimal, Error> {
-        solanaSdk.action.getCreatingTokenAccountFee()
-            .retry(1)
-            .tryMap { [weak self] feeInLamports in
-                guard let self = self else {
-                    throw WalletError.empty
+    func tokenAccountCreationFee(contractAddress: String) -> AnyPublisher<Decimal, Error> {
+        solanaSdk.api
+            .getAccountInfo(account: contractAddress, decodedTo: AccountInfo.self)
+            .withWeakCaptureOf(self)
+            .flatMap { thisSolanaNetworkService, accountInfo -> AnyPublisher<Decimal, Error> in
+                guard let size = accountInfo.space else {
+                    return .anyFail(error: WalletError.failedToGetFee)
                 }
                 
-                return Decimal(feeInLamports) / self.blockchain.decimalValue
+                return thisSolanaNetworkService.minimalBalanceForRentExemption(dataLength: size)
             }
             .eraseToAnyPublisher()
     }
@@ -190,9 +191,9 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func minimalBalanceForRentExemption() -> AnyPublisher<Decimal, Error> {
+    func minimalBalanceForRentExemption(dataLength: UInt64 = 0) -> AnyPublisher<Decimal, Error> {
         // The accounts metadata size (128) is already factored in
-        solanaSdk.api.getMinimumBalanceForRentExemption(dataLength: 0)
+        solanaSdk.api.getMinimumBalanceForRentExemption(dataLength: dataLength)
             .retry(1)
             .tryMap { [weak self] balanceInLamports in
                 guard let self = self else {

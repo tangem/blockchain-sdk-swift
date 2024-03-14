@@ -204,48 +204,22 @@ extension SolanaWalletManager: TransactionSender {
     }
     
     private func sendSol(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionID, Error> {
-        /*  HACK:
-            The account opening "fee" is not a fee at all, meaning it is not deducted from
-            user's account automatically. Instead, it is an extra amount we HAVE TO provide for the rent
-            during the account's first epoch. If we don't include this amount the node will not open
-            the account and the money will be lost.
-         
-            The account opening fee we returned in getFee is used for display purposes only.
-         */
+        guard let solanaFeeParameters = transaction.fee.parameters as? SolanaFeeParameters else {
+            return .anyFail(error: WalletError.failedToSendTx)
+        }
+        
         let signer = SolanaTransactionSigner(transactionSigner: signer, walletPublicKey: wallet.publicKey)
         
-        let destinationAccountInfoPublisher = destinationAccountInfo(
-            destination: transaction.destinationAddress, 
-            amount: transaction.amount
-        )
+        let decimalAmount = transaction.amount.value * self.wallet.blockchain.decimalValue
+        let intAmount = (decimalAmount.rounded() as NSDecimalNumber).uint64Value
         
-        let computeUnitPriceAccounts = [transaction.sourceAddress, transaction.destinationAddress]
-        let computeUnitPricePublisher = networkService.computeUnitPrice(
-            accounts: computeUnitPriceAccounts
+        return self.networkService.sendSol(
+            amount: intAmount,
+            computeUnitLimit: solanaFeeParameters.computeUnitLimit,
+            computeUnitPrice: solanaFeeParameters.computeUnitPrice,
+            destinationAddress: transaction.destinationAddress,
+            signer: signer
         )
-        
-        return computeUnitPricePublisher
-            .flatMap { [weak self] computeUnitPrice -> AnyPublisher<TransactionID, Error> in
-                guard let self = self else {
-                    return .anyFail(error: WalletError.empty)
-                }
-                
-                guard let solanaFeeParameters = transaction.fee.parameters as? SolanaFeeParameters else {
-                    return .anyFail(error: WalletError.failedToSendTx)
-                }
-                
-                let decimalAmount = transaction.amount.value * self.wallet.blockchain.decimalValue
-                let intAmount = (decimalAmount.rounded() as NSDecimalNumber).uint64Value
-                
-                return self.networkService.sendSol(
-                    amount: intAmount,
-                    computeUnitLimit: solanaFeeParameters.computeUnitLimit,
-                    computeUnitPrice: solanaFeeParameters.computeUnitPrice,
-                    destinationAddress: transaction.destinationAddress,
-                    signer: signer
-                )
-            }
-            .eraseToAnyPublisher()
     }
     
     private func sendSplToken(_ transaction: Transaction, token: Token, signer: TransactionSigner) -> AnyPublisher<TransactionID, Error> {
@@ -256,22 +230,7 @@ extension SolanaWalletManager: TransactionSender {
         let tokenProgramIdPublisher = networkService.tokenProgramId(contractAddress: token.contractAddress)
         let accountExistsPublisher = accountExists(destination: transaction.destinationAddress, amountType: transaction.amount.type)
         
-        return Publishers.CombineLatest(tokenProgramIdPublisher, accountExistsPublisher)
-            .flatMap { [weak self] tokenProgramId, accountExists -> AnyPublisher<PublicKey, Error> in
-                guard let self else {
-                    return .anyFail(error: WalletError.empty)
-                }
-                
-                guard let associatedDestinationTokenAccountAddress = associatedTokenAddress(
-                    accountAddress: transaction.destinationAddress,
-                    mintAddress: token.contractAddress,
-                    tokenProgramId: tokenProgramId
-                ) else {
-                    return .anyFail(error: BlockchainSdkError.failedToConvertPublicKey)
-                }
-                
-                return Just(tokenProgramId).setFailureType(to: Error.self).eraseToAnyPublisher()
-            }
+        return tokenProgramIdPublisher
             .flatMap { [weak self] tokenProgramId -> AnyPublisher<TransactionID, Error> in
                 guard let self else {
                     return .anyFail(error: WalletError.empty)
@@ -325,16 +284,25 @@ extension SolanaWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
-    
     private func destinationAccountInfo(destination: String, amount: Amount) -> AnyPublisher<DestinationAccountInfo, Error> {
         let accountCreationFeePublisher: AnyPublisher<Decimal, Error>
         let tokens: [Token]
         switch amount.type {
         case .coin:
+            // Include the fee if the amount is less than it
             accountCreationFeePublisher = networkService.mainAccountCreationFee()
+                .map { accountCreationFee in
+                    if amount.value < accountCreationFee {
+                        return accountCreationFee
+                    } else {
+                        return .zero
+                    }
+                }
+                .eraseToAnyPublisher()
+            
             tokens = []
         case .token(let token):
-            accountCreationFeePublisher = networkService.tokenAccountCreationFee()
+            accountCreationFeePublisher = networkService.tokenAccountCreationFee(contractAddress: token.contractAddress)
             tokens = [token]
         case .reserve:
             return .anyFail(error: BlockchainSdkError.failedToLoadFee)
