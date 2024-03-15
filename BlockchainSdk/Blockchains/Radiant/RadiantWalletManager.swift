@@ -37,10 +37,13 @@ final class RadiantWalletManager: BaseManager {
             return
         }
         
-        let accountInfoPublisher = networkService
-            .getInfo(address: preparedAddress)
+//        let accountInfoPublisher = networkService
+//            .getInfo(address: preparedAddress)
         
-        cancellable = accountInfoPublisher
+        let unspentsPublisher = networkService
+            .getUnspents(address: preparedAddress)
+        
+        cancellable = unspentsPublisher
             .withWeakCaptureOf(self)
             .sink(receiveCompletion: { [weak self] result in
                 switch result {
@@ -50,8 +53,8 @@ final class RadiantWalletManager: BaseManager {
                 case .finished:
                     completion(.success(()))
                 }
-            }, receiveValue: { (manager, response) in
-                print(response)
+            }, receiveValue: { (manager, responses) in
+                print(responses)
 //                manager.updateWallet(with: response)
             })
     }

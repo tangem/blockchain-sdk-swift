@@ -28,4 +28,13 @@ extension RadiantNetworkService {
         electrumProvider
             .getBalance(address: address)
     }
+    
+    func getUnspents(address: String) -> AnyPublisher<[BitcoinUnspentOutput], Error> {
+        electrumProvider
+            .getUnspents(address: address)
+            .map { utxos in
+                return []
+            }
+            .eraseToAnyPublisher()
+    }
 }

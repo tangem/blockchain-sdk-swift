@@ -8,22 +8,45 @@
 
 import Combine
 
-class ElectrumNetworkProvider: MultiNetworkProvider {
+public struct ElectrumUTXO {
+    let position: Int
+    let hash: String
+    let value: Int
+    let height: String
+}
+
+public class ElectrumNetworkProvider: MultiNetworkProvider {
     let providers: [ElectrumWebSocketManager]
     var currentProviderIndex: Int = 0
     
     private let decimalValue: Decimal
     
-    init(providers: [ElectrumWebSocketManager], decimalValue: Decimal) {
+    public init(providers: [ElectrumWebSocketManager], decimalValue: Decimal) {
         self.providers = providers
         self.decimalValue = decimalValue
     }
     
-    func getBalance(address: String) -> AnyPublisher<Decimal, Error> {
+    public func getBalance(address: String) -> AnyPublisher<Decimal, Error> {
         providerPublisher { provider in
                 .init {
                     let balance = try await provider.getBalance(address: address)
                     return Decimal(balance.confirmed) / self.decimalValue
+                }
+        }
+    }
+    
+    public func getUnspents(address: String) -> AnyPublisher<[ElectrumUTXO], Error> {
+        providerPublisher { provider in
+                .init {
+                    let unspents = try await provider.getUnspents(address: address)
+                    return unspents.map { unspent in
+                        ElectrumUTXO(
+                            position: unspent.txPos,
+                            hash: unspent.txHash,
+                            value: unspent.value,
+                            height: unspent.height
+                        )
+                    }
                 }
         }
     }

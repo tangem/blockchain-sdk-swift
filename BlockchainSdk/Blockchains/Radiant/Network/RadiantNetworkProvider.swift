@@ -33,4 +33,20 @@ class RadiantNetworkProvider: MultiNetworkProvider {
                 }
         }
     }
+    
+    func getUnspents(address: String) -> AnyPublisher<[ElectrumUTXO], Error> {
+        providerPublisher { provider in
+                .init {
+                    let unspents = try await provider.getUnspents(address: address)
+                    return unspents.map { unspent in
+                        ElectrumUTXO(
+                            position: unspent.txPos,
+                            hash: unspent.txHash,
+                            value: unspent.value,
+                            height: unspent.height
+                        )
+                    }
+                }
+        }
+    }
 }

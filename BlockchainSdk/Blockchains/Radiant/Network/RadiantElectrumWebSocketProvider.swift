@@ -25,7 +25,7 @@ struct RadiantElectrumWebSocketProvider: HostProvider {
         let request = JSONRPCWebSocketProvider.JSONRPCRequest(id: 0, method: "server.version", params: ["1.19", "1.4"])
         let data = try! JSONEncoder().encode(request)
 
-        connection = .init(url: url, keepAliveMessage: data)
+        connection = JSONRPCWebSocketProvider(url: url, versions: ["1.19", "1.4"])
     }
     
     func getBalance(address: String) async throws -> ElectrumDTO.Response.Balance {
@@ -44,9 +44,9 @@ struct RadiantElectrumWebSocketProvider: HostProvider {
         )
     }
     
-    func getUnspents(address: String) async throws -> ElectrumDTO.Response.ListUnspent {
+    func getUnspents(address: String) async throws -> [ElectrumDTO.Response.ListUnspent] {
         try await connection.send(
-            method: "blockchain.address.listunspent",
+            method: "blockchain.scripthash.listunspent",
             parameter: [address],
             decoder: decoder
         )
