@@ -16,6 +16,8 @@ extension Decimal {
         return Array(bytes8)
     }
     
+    // TODO: Andrey Fedorov - Remove (IOS-6237)
+    @available(*, deprecated, message: "May produce unexpected results due to non-fixed locale, use `init?(stringValue:)` instead")
     init?(_ string: String?) {
         guard let string = string else {
             return nil
@@ -24,6 +26,16 @@ extension Decimal {
         self.init(string: string)
     }
     
+    /// Parses given string using a fixed `en_US_POSIX` locale.
+    /// - Note: Prefer this initializer to the `init?(string:locale:)` or `init?(_:)`.
+    public init?(stringValue: String?) {
+        guard let stringValue = stringValue else {
+            return nil
+        }
+
+        self.init(string: stringValue, locale: .posixEnUS)
+    }
+
     init?(_ int: Int?) {
         guard let int = int else {
             return nil
@@ -71,4 +83,11 @@ extension Decimal {
     var roundedDecimalNumber: NSDecimalNumber {
         rounded(roundingMode: .up) as NSDecimalNumber
     }
+}
+
+// MARK: - Private implementation
+
+private extension Locale {
+    /// Locale for string literals parsing.
+    static let posixEnUS = Locale(identifier: "en_US_POSIX")
 }

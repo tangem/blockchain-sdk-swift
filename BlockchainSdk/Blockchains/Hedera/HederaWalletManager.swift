@@ -395,11 +395,9 @@ private extension HederaWalletManager {
     private enum Constants {
         static let storageKeyPrefix = "hedera_wallet_"
         /// https://docs.hedera.com/hedera/networks/mainnet/fees
-        static let cryptoTransferServiceCostInUSD = Decimal(string: "0.0001", locale: locale)
-        static let cryptoCreateServiceCostInUSD = Decimal(string: "0.05", locale: locale)
+        static let cryptoTransferServiceCostInUSD = Decimal(stringValue: "0.0001")
+        static let cryptoCreateServiceCostInUSD = Decimal(stringValue: "0.05")
         /// Hedera fees are low, allow 10% safety margin to allow usage of not precise fee estimate.
-        static let maxFeeMultiplier = Decimal(string: "1.1", locale: locale)
-        /// Locale for string literals parsing.
-        static let locale = Locale(identifier: "en_US")
+        static let maxFeeMultiplier = Decimal(stringValue: "1.1")
     }
 }
