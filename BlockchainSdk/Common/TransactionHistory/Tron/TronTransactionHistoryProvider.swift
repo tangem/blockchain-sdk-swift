@@ -77,8 +77,8 @@ extension TronTransactionHistoryProvider: TransactionHistoryProvider {
             // Again, Tron Blockbook is a really terrible API
             if let receivedPageNumber = response.page, receivedPageNumber < requestedPageNumber {
                 let fixedResponse = BlockBookAddressResponse(
-                    page: receivedPageNumber,
-                    totalPages: receivedPageNumber,
+                    page: requestedPageNumber,
+                    totalPages: response.totalPages,
                     itemsOnPage: response.itemsOnPage,
                     address: response.address,
                     balance: response.balance,
