@@ -8,23 +8,21 @@
 
 import Foundation
 
-class JSONRPCWebSocketProvider {
+actor JSONRPCWebSocketProvider {
     private enum Constants {
         static let ping: TimeInterval = 10
         static let timeout: TimeInterval = 30
     }
     
     private let url: URL
-    private let versions: [String]
     private let connection: WebSocketConnection
     
     private var requests: [Int: ((Result<Data, Error>) -> Void)] = [:]
     private var receiveTask: Task<Void, Error>?
     private var counter: Int = 0
 
-    init(url: URL, versions: [String]) {
+    init(url: URL) {
         self.url = url
-        self.versions = versions
         
         let message = try! JSONRPCRequest(id: -1, method: "server.ping", params: [String]()).string()
         
@@ -73,6 +71,11 @@ class JSONRPCWebSocketProvider {
 
         return response.result
     }
+    
+    func cancel() {
+        receiveTask?.cancel()
+        requests.values.forEach { $0(.failure(CancellationError())) }
+    }
 }
 
 // MARK: - Private
@@ -87,7 +90,7 @@ private extension JSONRPCWebSocketProvider {
                 await proceedReceive(data: data)
                 
                 // Handle next message
-                setupReceiveTask()
+                await setupReceiveTask()
             } catch {
                 log("ReceiveTask catch error: \(error)")
             }
@@ -112,7 +115,7 @@ private extension JSONRPCWebSocketProvider {
         }
     }
     
-    func log(_ args: Any) {
+    nonisolated func log(_ args: Any) {
         print("\(self) [\(args)]")
    }
 }
@@ -120,7 +123,7 @@ private extension JSONRPCWebSocketProvider {
 // MARK: - Models
 
 extension JSONRPCWebSocketProvider: CustomStringConvertible {
-    var description: String {
+    nonisolated var description: String {
         objectDescription(self)
     }
 }

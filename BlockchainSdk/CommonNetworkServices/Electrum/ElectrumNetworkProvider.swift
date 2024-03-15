@@ -14,16 +14,16 @@ public class ElectrumNetworkProvider: MultiNetworkProvider {
     
     private let decimalValue: Decimal
     
-    public init(providers: [ElectrumWebSocketManager], decimalValue: Decimal) {
+    init(providers: [ElectrumWebSocketManager], decimalValue: Decimal) {
         self.providers = providers
         self.decimalValue = decimalValue
     }
 
-    public func getAddressInfo(address: String) -> AnyPublisher<ElectrumAddressInfo, Error> {
+    func getAddressInfo(address: String) -> AnyPublisher<ElectrumAddressInfo, Error> {
         providerPublisher { provider in
             Future.async {
-                async let balance = provider.getBalance(address: address)
-                async let unspents = provider.getUnspents(address: address)
+                async let balance = provider.getBalance(identifier: .address(address))
+                async let unspents = provider.getUnspents(identifier: .address(address))
                 
                 return try await ElectrumAddressInfo(
                     balance: Decimal(balance.confirmed),
@@ -41,7 +41,7 @@ public class ElectrumNetworkProvider: MultiNetworkProvider {
         }
     }
     
-    public func estimateFee() -> AnyPublisher<Decimal, Error> {
+    func estimateFee() -> AnyPublisher<Decimal, Error> {
         providerPublisher { provider in
             Future.async {
                 let fee = try await provider.estimateFee(block: 10)

@@ -7,60 +7,78 @@
 
 import Foundation
 
-public class ElectrumWebSocketManager: HostProvider {
+class ElectrumWebSocketManager: HostProvider {
     var host: String { url.absoluteString }
     
     private let url: URL
     private let webSocketProvider: JSONRPCWebSocketProvider
     
+    private let encoder: JSONEncoder = .init()
     private let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         return decoder
     }()
     
-    public init(url: URL) {
+    init(url: URL) {
         self.url = url
-        self.webSocketProvider = .init(url: url, versions: ["1.4.3"])
+        self.webSocketProvider = JSONRPCWebSocketProvider(url: url)
     }
     
-    func getBalance(address: String) async throws -> ElectrumDTO.Response.Balance {
-        try await webSocketProvider.send(
-            method: "blockchain.address.get_balance",
-            parameter: [address],
-            decoder: decoder
-        )
-    }
-
-    func getTxHistory(address: String) async throws -> [ElectrumDTO.Response.History] {
-        try await webSocketProvider.send(
-            method: "blockchain.address.get_history",
-            parameter: [address],
-            decoder: decoder
-        )
+    func getBalance(identifier: IdentifierType) async throws -> ElectrumDTO.Response.Balance {
+        switch identifier {
+        case .address(let address):
+            return try await send(method: "blockchain.address.get_balance", parameter: [address])
+        case .scripthash(let scripthash):
+            return try await send(method: "blockchain.scripthash.get_balance", parameter: [scripthash])
+        }
     }
     
-    func getUnspents(address: String) async throws -> [ElectrumDTO.Response.ListUnspent] {
-        try await webSocketProvider.send(
-            method: "blockchain.address.listunspent",
-            parameter: [address],
-            decoder: decoder
-        )
+    func getTxHistory(identifier: IdentifierType) async throws -> [ElectrumDTO.Response.History] {
+        switch identifier {
+        case .address(let address):
+            return try await send(method: "blockchain.address.get_history", parameter: [address])
+        case .scripthash(let scripthash):
+            return try await send(method: "blockchain.scripthash.get_history", parameter: [scripthash])
+        }
+    }
+    
+    func getUnspents(identifier: IdentifierType) async throws -> [ElectrumDTO.Response.ListUnspent] {
+        switch identifier {
+        case .address(let address):
+            return try await send(method: "blockchain.address.listunspent", parameter: [address])
+        case .scripthash(let scripthash):
+            return try await send(method: "blockchain.scripthash.listunspent", parameter: [scripthash])
+        }
     }
     
     func send(transactionHex: String) async throws -> ElectrumDTO.Response.Broadcast {
+        try await send(method: "blockchain.transaction.broadcast", parameter: transactionHex)
+    }
+    
+    func estimateFee(block: Int) async throws -> Int {
+        try await send(method: "blockchain.estimatefee", parameter: [block])
+    }
+}
+
+// MARK: - Private
+
+private extension ElectrumWebSocketManager {
+    func send<Parameter: Encodable, Result: Decodable>(method: String, parameter: Parameter) async throws -> Result {
         try await webSocketProvider.send(
-            method: "blockchain.transaction.broadcast",
-            parameter: transactionHex,
+            method: method,
+            parameter: parameter,
+            encoder: encoder,
             decoder: decoder
         )
     }
+}
 
-    func estimateFee(block: Int) async throws -> Int {
-        try await webSocketProvider.send(
-            method: "blockchain.estimatefee",
-            parameter: [block],
-            decoder: decoder
-        )
+// MARK: - IdentifierType
+
+extension ElectrumWebSocketManager {
+    enum IdentifierType {
+        case address(_ address: String)
+        case scripthash(_ hash: String)
     }
 }
