@@ -36,23 +36,21 @@ extension TronTransactionHistoryProvider: TransactionHistoryProvider {
     }
 
     func loadTransactionHistory(request: TransactionHistory.Request) -> AnyPublisher<TransactionHistory.Response, Error> {
-        return Deferred { [weak self] in
-            Future { promise in
-                if let page = self?.page {
-                    promise(.success(page.number + 1))
-                } else {
-                    promise(.success(Constants.initialPageNumber))
-                }
-            }
+        let requestedPageNumber: Int
+        if let page = page {
+            requestedPageNumber = page.number + 1
+        } else {
+            requestedPageNumber = Constants.initialPageNumber
         }
-        .map { requestPage in
-            return BlockBookTarget.AddressRequestParameters(
-                page: requestPage,
+
+        return Just(
+            BlockBookTarget.AddressRequestParameters(
+                page: requestedPageNumber,
                 pageSize: request.limit,
                 details: [.txslight],
                 filterType: .init(amountType: request.amountType)
             )
-        }
+        )
         .withWeakCaptureOf(self)
         .flatMap { historyProvider, parameters in
             return historyProvider
@@ -66,6 +64,34 @@ extension TronTransactionHistoryProvider: TransactionHistoryProvider {
                 from: response,
                 contractAddress: contractAddress
             )
+
+            return (response, totalPageCount)
+        }
+        .map { response, totalPageCount in
+            // In some rare cases for some really old addresses (like Binance cold wallet `TMuA6YqfCeX8EhbfYEg5y7S4DqzSJireY9` for example),
+            // the returned number of total pages count (`BlockBookAddressResponse.totalPages` property) is greater than
+            // the actual number of pages.
+            // In such cases we have to manually fix the last received chunk of tx history (actually, a duplicated chunk)
+            // and treat it as an empty page.
+            //
+            // Again, Tron Blockbook is a really terrible API
+            if let receivedPageNumber = response.page, receivedPageNumber < requestedPageNumber {
+                let fixedResponse = BlockBookAddressResponse(
+                    page: receivedPageNumber,
+                    totalPages: receivedPageNumber,
+                    itemsOnPage: response.itemsOnPage,
+                    address: response.address,
+                    balance: response.balance,
+                    unconfirmedBalance: response.unconfirmedBalance,
+                    unconfirmedTxs: response.unconfirmedTxs,
+                    txs: response.txs,
+                    nonTokenTxs: response.nonTokenTxs,
+                    transactions: [],
+                    tokens: response.tokens
+                )
+
+                return (fixedResponse, receivedPageNumber)
+            }
 
             return (response, totalPageCount)
         }
