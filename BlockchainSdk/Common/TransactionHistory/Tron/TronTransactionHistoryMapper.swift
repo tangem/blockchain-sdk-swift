@@ -262,12 +262,13 @@ extension TronTransactionHistoryMapper: BlockBookTransactionHistoryTotalPageCoun
         // If transaction history is requested for a TRC20 token - `totalPageCount` must be calculated manually
         // using `$.tokens[*].transfers` and `$.itemsOnPage` DTO fields because `$.totalPages` DTO field always
         // contains the number of pages for the TRX (Tron coin) transaction history for a given address
-        if let contractAddress {
-            guard
-                let itemsOnPage = response.itemsOnPage,
-                let token = response.tokens?.first(where: { $0.matching(contractAddress: contractAddress) }),
-                let transfersCount = token.transfers
-            else {
+        //
+        // If there is no transaction history for a particular TRC20 token - the `response.tokens` field does not exist or is empty
+        if let contractAddress,
+           let itemsOnPage = response.itemsOnPage,
+           let token = response.tokens?.first(where: { $0.matching(contractAddress: contractAddress) })
+        {
+            guard let transfersCount = token.transfers else {
                 Log.log("Transaction response \(response) doesn't contain a required information")
                 throw TotalPageCountExtractionError.unableToParseNetworkResponse(contractAddress: contractAddress)
             }
