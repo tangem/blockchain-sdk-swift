@@ -80,6 +80,31 @@ class SolanaNetworkService {
             .eraseToAnyPublisher()
     }
     
+    func getFeeForMessage(
+        amount: UInt64,
+        computeUnitLimit: UInt32?,
+        computeUnitPrice: UInt64?,
+        destinationAddress: String,
+        fromPublicKey: PublicKey
+    ) -> AnyPublisher<Decimal, Error> {
+        solanaSdk.action.serializeMessage(
+            to: destinationAddress,
+            amount: amount, 
+            computeUnitLimit: computeUnitLimit,
+            computeUnitPrice: computeUnitPrice,
+            allowUnfundedRecipient: true,
+            fromPublicKey: fromPublicKey
+        )
+        .flatMap { [solanaSdk] message -> AnyPublisher<FeeForMessageResult, Error> in
+            solanaSdk.api.getFeeForMessage(message)
+        }
+        .map { [blockchain] in
+            Decimal($0.value) / blockchain.decimalValue
+        }
+        .retry(1)
+        .eraseToAnyPublisher()
+    }
+    
     func transactionFee(numberOfSignatures: Int) -> AnyPublisher<Decimal, Error> {
         solanaSdk.api.getFees(commitment: nil)
             .retry(1)
@@ -99,7 +124,7 @@ class SolanaNetworkService {
     
     // This fee is deducted from the transaction amount itself (!)
     func mainAccountCreationFee() -> AnyPublisher<Decimal, Error> {
-        accountRentFeePerEpoch()
+        minimalBalanceForRentExemption(dataLength: 0)
     }
     
     func accountRentFeePerEpoch() -> AnyPublisher<Decimal, Error> {
@@ -122,52 +147,13 @@ class SolanaNetworkService {
         return Just(rent).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
     
-    // This fee is deducted from the main SOL account
-    func tokenAccountCreationFee() -> AnyPublisher<Decimal, Error> {
-        solanaSdk.action.getCreatingTokenAccountFee()
-            .retry(1)
-            .tryMap { [weak self] feeInLamports in
-                guard let self = self else {
-                    throw WalletError.empty
-                }
-                
-                return Decimal(feeInLamports) / self.blockchain.decimalValue
-            }
-            .eraseToAnyPublisher()
+    func computeUnitPrice(accounts: [String], destinationAccountExists: Bool) -> AnyPublisher<UInt64, Error> {
+        .justWithError(output: destinationAccountExists ? 1_000_000 : 500_000)
     }
     
-    func computeUnitPrice(accounts: [String]) -> AnyPublisher<UInt64, Error> {
-        solanaSdk.api.getRecentPrioritizationFees(accounts: accounts)
-            .retry(1)
-            .tryMap { fees in
-                let feeValues = fees.map(\.prioritizationFee)
-                
-                guard
-                    let _maxFeeValue = feeValues.max(),
-                    let _minFeeValue = feeValues.min()
-                else {
-                    throw WalletError.failedToGetFee
-                }
-                
-                let minimumComputationUnitPrice: UInt64 = 1
-                let computationUnitMultiplier = 0.8
-                
-                let minFeeValue = max(_minFeeValue, minimumComputationUnitPrice)
-                let maxFeeValue = max(_maxFeeValue, minimumComputationUnitPrice)
-                
-                let computeUnitPrice = Double(minFeeValue + maxFeeValue) * computationUnitMultiplier
-                guard computeUnitPrice <= Double(UInt64.max) else {
-                    throw WalletError.failedToGetFee
-                }
-                
-                return UInt64(computeUnitPrice)
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    func minimalBalanceForRentExemption() -> AnyPublisher<Decimal, Error> {
+    func minimalBalanceForRentExemption(dataLength: UInt64 = 0) -> AnyPublisher<Decimal, Error> {
         // The accounts metadata size (128) is already factored in
-        solanaSdk.api.getMinimumBalanceForRentExemption(dataLength: 0)
+        solanaSdk.api.getMinimumBalanceForRentExemption(dataLength: dataLength)
             .retry(1)
             .tryMap { [weak self] balanceInLamports in
                 guard let self = self else {

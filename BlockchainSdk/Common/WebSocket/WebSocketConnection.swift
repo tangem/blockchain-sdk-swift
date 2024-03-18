@@ -8,15 +8,15 @@
 
 import Foundation
 
-class WebSocketConnection {
+actor WebSocketConnection {
     private let url: URL
     private let ping: Ping
     private let timeout: TimeInterval
     
-    private var _webSocketTask: WebSocketTask?
+    private var _sessionWebSocketTask: Task<URLSessionWebSocketTaskWrapper, Never>?
     private var pingTask: Task<Void, Error>?
     private var timeoutTask: Task<Void, Error>?
-    
+
     /// - Parameters:
     ///   - url: A `wss` URL
     ///   - ping: The value that will be sent after a certain interval in seconds
@@ -27,38 +27,29 @@ class WebSocketConnection {
         self.timeout = timeout
     }
     
-    deinit {
-        disconnect()
-    }
-    
-    public func send(_ message: URLSessionWebSocketTask.Message) async throws -> Data {
-        let webSocketTask = await webSocketTask()
+    public func send(_ message: URLSessionWebSocketTask.Message) async throws {
+        let webSocketTask = await setupWebSocketTask()
         log("Send: \(message)")
 
-        async let latestMessage = try webSocketTask.receive()
         // Send a message
         try await webSocketTask.send(message: message)
-
-        // Get a message from the last response
-        
-        let response = try await latestMessage
-        log("Receive: \(response)")
-        let responseData = try mapToData(from: response)
-            
-        // Restart the disconnect timer
-        startTimeoutTask()
         startPingTask()
 
-        return responseData
+        // Restart the disconnect timer
+        startTimeoutTask()
     }
-    
-    public func disconnect() {
-        pingTask?.cancel()
 
-        _webSocketTask?.disconnect { [weak self] _, closeCode in
-            self?.log("Connection did close with: \(closeCode)")
-            self?._webSocketTask = nil
+    public func receive() async throws -> Data {
+        guard let webSocket = await _sessionWebSocketTask?.value else {
+            throw WebSocketConnectionError.webSocketNotFound
         }
+        
+        // Get a message from the last response
+        let response = try await webSocket.receive()
+        log("Receive: \(response)")
+        
+        let data = try mapToData(from: response)
+        return data
     }
 }
 
@@ -87,41 +78,47 @@ private extension WebSocketConnection {
             
             try Task.checkCancellation()
             
-            disconnect()
+            await disconnect()
         }
     }
     
     func ping() async throws {
+        guard let webSocket = await _sessionWebSocketTask?.value else {
+            throw WebSocketConnectionError.webSocketNotFound
+        }
+        
         switch ping {
         case .message(_, let message):
             log("Send ping: \(message)")
-            
-            try await _webSocketTask?.send(message: message)
-            let response = try await _webSocketTask?.receive()
-            log("Ping response \(String(describing: response))")
+            try await webSocket.send(message: message)
 
         case .plain:
             log("Send plain ping")
-            
-            try await _webSocketTask?.sendPing()
+            try await webSocket.sendPing()
         }
         
         startPingTask()
     }
     
-    func webSocketTask() async -> WebSocketTask {
-        if let webSocketTask = _webSocketTask {
-            return webSocketTask
+    func setupWebSocketTask() async -> URLSessionWebSocketTaskWrapper {
+        if let _sessionWebSocketTask {
+            let socket = await _sessionWebSocketTask.value
+            log("Return existed \(socket)")
+            return socket
+        }
+
+        let connectingTask = Task {
+            let socket = URLSessionWebSocketTaskWrapper(url: url)
+            
+            log("\(socket) start connect")
+            await socket.connect()
+            log("\(socket) did open")
+
+            return socket
         }
         
-        _webSocketTask = WebSocketTask(url: url)
-        
-        return await withCheckedContinuation { [weak self] continuation in
-            self?._webSocketTask?.connect(webSocketTaskDidOpen: { webSocketTask in
-                self?.log("WebSocketTask did open")
-                continuation.resume(returning: webSocketTask)
-            })
-        }
+        _sessionWebSocketTask = connectingTask
+        return await connectingTask.value
     }
     
     func mapToData(from message: URLSessionWebSocketTask.Message) throws -> Data {
@@ -141,9 +138,24 @@ private extension WebSocketConnection {
         }
     }
     
-    func log(_ args: Any) {
-       print("\(Date()) [\(self)]", args)
+    func disconnect() {
+        pingTask?.cancel()
+        timeoutTask?.cancel()
+        _sessionWebSocketTask?.cancel()
+        _sessionWebSocketTask = nil
+    }
+    
+    nonisolated func log(_ args: Any) {
+        print("\(self) [\(args)]")
    }
+}
+
+// MARK: - CustomStringConvertible
+
+extension WebSocketConnection: CustomStringConvertible {
+    nonisolated var description: String {
+        objectDescription(self)
+    }
 }
 
 // MARK: - Model
@@ -167,74 +179,6 @@ extension WebSocketConnection {
 // MARK: - Error
 
 enum WebSocketConnectionError: Error {
-    case responseNotFound
+    case webSocketNotFound
     case invalidResponse
-    case invalidRequest
-}
-
-// MARK: - URLSessionTask.State + CustomStringConvertible
-
-extension URLSessionTask.State: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .running:
-            return "URLSessionTask.State.running"
-        case .suspended:
-            return "URLSessionTask.State.suspended"
-        case .canceling:
-            return "URLSessionTask.State.canceling"
-        case .completed:
-            return "URLSessionTask.State.completed"
-        @unknown default:
-            return "URLSessionTask.State.@unknowndefault"
-        }
-    }
-}
-
-extension URLSessionWebSocketTask.Message: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .data(let data):
-            return "URLSessionWebSocketTask.Message.data: \(data)"
-        case .string(let string):
-            return "URLSessionWebSocketTask.Message.string: \(string)"
-        @unknown default:
-            return "URLSessionWebSocketTask.Message.@unknowndefault"
-        }
-    }
-}
-
-extension URLSessionWebSocketTask.CloseCode: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .invalid:
-            return "URLSessionWebSocketTask.CloseCode.invalid"
-        case .normalClosure:
-            return "URLSessionWebSocketTask.CloseCode.normalClosure"
-        case .goingAway:
-            return "URLSessionWebSocketTask.CloseCode.goingAway"
-        case .protocolError:
-            return "URLSessionWebSocketTask.CloseCode.protocolError"
-        case .unsupportedData:
-            return "URLSessionWebSocketTask.CloseCode.unsupportedData"
-        case .noStatusReceived:
-            return "URLSessionWebSocketTask.CloseCode.noStatusReceived"
-        case .abnormalClosure:
-            return "URLSessionWebSocketTask.CloseCode.abnormalClosure"
-        case .invalidFramePayloadData:
-            return "URLSessionWebSocketTask.CloseCode.invalidFramePayloadData"
-        case .policyViolation:
-            return "URLSessionWebSocketTask.CloseCode.policyViolation"
-        case .messageTooBig:
-            return "URLSessionWebSocketTask.CloseCode.messageTooBig"
-        case .mandatoryExtensionMissing:
-            return "URLSessionWebSocketTask.CloseCode.mandatoryExtensionMissing"
-        case .internalServerError:
-            return "URLSessionWebSocketTask.CloseCode.internalServerError"
-        case .tlsHandshakeFailure:
-            return "URLSessionWebSocketTask.CloseCode.tlsHandshakeFailure"
-        @unknown default:
-            return "URLSessionWebSocketTask.CloseCode.@unknowndefault"
-        }
-    }
 }

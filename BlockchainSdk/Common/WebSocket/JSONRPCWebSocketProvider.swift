@@ -8,54 +8,130 @@
 
 import Foundation
 
-class JSONRPCWebSocketProvider {
-    private lazy var connection: WebSocketConnection = {
-        let message = try! JSONRPCRequest(id: counter, method: "server.ping", params: [String]()).string()
-        
-        return WebSocketConnection(
-            url: url,
-            ping: .message(interval: 10, message: .string(message)),
-            timeout: 10
-        )
-    }()
-
-    private let url: URL
-    private let versions: [String]
-    
-    private var counter: Int = 0
-    
-    init(url: URL, versions: [String]) {
-        self.url = url
-        self.versions = versions
+actor JSONRPCWebSocketProvider {
+    private enum Constants {
+        static let ping: TimeInterval = 10
+        static let timeout: TimeInterval = 30
     }
     
+    private let url: URL
+    private let connection: WebSocketConnection
+    
+    private var requests: [Int: ((Result<Data, Error>) -> Void)] = [:]
+    private var receiveTask: Task<Void, Error>?
+    private var counter: Int = 0
+
+    init(url: URL) {
+        self.url = url
+        
+        let message = try! JSONRPCRequest(id: -1, method: "server.ping", params: [String]()).string()
+        
+        connection = WebSocketConnection(
+            url: url,
+            ping: .message(interval: Constants.ping, message: .string(message)),
+            timeout: Constants.timeout
+        )
+    }
+     
     func send<Parameter: Encodable, Result: Decodable>(
         method: String,
         parameter: Parameter,
         encoder: JSONEncoder = .init(),
         decoder: JSONDecoder = .init()
     ) async throws -> Result {
-        let request = makeJSONRPCRequest(method: method, parameter: parameter)
-        let string = try request.string(encoder: encoder)
-        let data = try await connection.send(.string(string))
+        counter += 1
+        let request = JSONRPCRequest(id: counter, method: method, params: parameter)
+        try await connection.send(.string(request.string(encoder: encoder)))
         
-        try Task.checkCancellation()
+        // setup handler for message
+        setupReceiveTask()
+         
+        let response: JSONRPCResponse<Result> = try await withCheckedThrowingContinuation { continuation in
+            let handler: ((Swift.Result<Data, Error>) -> Void) = { result in
+                switch result {
+                case .success(let data):
+                    do {
+                        let response = try decoder.decode(JSONRPCResponse<Result>.self, from: data)
+                        continuation.resume(returning: response)
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
 
-        let response = try decoder.decode(JSONRPCResponse<Result>.self, from: data)
-        assert(request.id == response.id, "The response contains wrong id")
+            requests.updateValue(handler, forKey: request.id)
+        }
+
+        requests.removeValue(forKey: request.id)
         
+        assert(request.id == response.id, "The response contains wrong id")
+        log("Return result \(response.result)")
+
         return response.result
+    }
+    
+    func cancel() {
+        receiveTask?.cancel()
+        requests.values.forEach { $0(.failure(CancellationError())) }
     }
 }
 
 // MARK: - Private
 
 private extension JSONRPCWebSocketProvider {
-    func makeJSONRPCRequest<Parameter: Encodable>(method: String, parameter: Parameter) -> JSONRPCRequest<Parameter> {
-       let request = JSONRPCRequest<Parameter>(id: counter, method: method, params: parameter)
-       counter += 1
-       return request
+    func setupReceiveTask() {
+        receiveTask = Task { [weak self] in
+            guard let self else { return }
+            
+            do {
+                let data = try await connection.receive()
+                await proceedReceive(data: data)
+                
+                // Handle next message
+                await setupReceiveTask()
+            } catch {
+                log("ReceiveTask catch error: \(error)")
+            }
+        }
+    }
+    
+    func proceedReceive(data: Data) async {
+        do {
+            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+            guard let id = json?["id"] as? Int else {
+                return
+            }
+
+            if let handler = requests[id] {
+                handler(.success(data))
+            } else {
+                log("Received json: \(String(describing: json)) is not handled")
+            }
+
+        } catch {
+            log("Receive catch parse error: \(error)")
+        }
+    }
+    
+    nonisolated func log(_ args: Any) {
+        print("\(self) [\(args)]")
    }
+}
+
+// MARK: - Models
+
+extension JSONRPCWebSocketProvider: CustomStringConvertible {
+    nonisolated var description: String {
+        objectDescription(self)
+    }
+}
+
+// MARK: - Error
+
+enum JSONRPCWebSocketProviderError: Error {
+    case invalidRequest
 }
 
 // MARK: - Models
@@ -70,7 +146,7 @@ extension JSONRPCWebSocketProvider {
             let messageData = try encoder.encode(self)
 
             guard let string = String(bytes: messageData, encoding: .utf8) else {
-                throw WebSocketConnectionError.invalidRequest
+                throw JSONRPCWebSocketProviderError.invalidRequest
             }
             
             return string
