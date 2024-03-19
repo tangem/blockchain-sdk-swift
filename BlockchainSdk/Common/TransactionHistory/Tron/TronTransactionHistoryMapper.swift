@@ -16,6 +16,33 @@ struct TronTransactionHistoryMapper {
         self.blockchain = blockchain
     }
 
+    private func extractTransactions(
+        from response: BlockBookAddressResponse,
+        amountType: Amount.AmountType
+    ) -> [BlockBookAddressResponse.Transaction] {
+        guard let transactions = response.transactions else {
+            return []
+        }
+
+        switch amountType {
+        case .coin, .reserve:
+            return transactions
+        case .token(let value):
+            // Another fix for a horrible Tron Blockbook API: sometimes API returns transaction history 
+            // from another token for a particular token if this token doesn't have transaction history yet
+            //
+            // Here we're filtering out unrelated transaction history completely if needed
+            guard
+                let tokens = response.tokens,
+                tokens.contains(where: { $0.matching(contractAddress: value.contractAddress) })
+            else {
+                return []
+            }
+
+            return transactions
+        }
+    }
+
     /// Extracts the transaction info for a `coin` transfer.
     private func extractTransactionInfo(
         from transaction: BlockBookAddressResponse.Transaction,
@@ -197,10 +224,7 @@ extension TronTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
         _ response: BlockBookAddressResponse,
         amountType: Amount.AmountType
     ) -> [TransactionRecord] {
-        guard let transactions = response.transactions else {
-            return []
-        }
-
+        let transactions = extractTransactions(from: response, amountType: amountType)
         let walletAddress = response.address
 
         return transactions
