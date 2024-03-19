@@ -55,6 +55,28 @@ extension Api {
         .eraseToAnyPublisher()
     }
     
+    func getFeeForMessage(_ message: String) -> AnyPublisher<FeeForMessageResult, Error> {
+        Deferred {
+            Future { [weak self] promise in
+                guard let self else {
+                    promise(.failure(WalletError.empty))
+                    return
+                }
+                
+                self.getFeeForMessage(message: message) {
+                    switch $0 {
+                    case .failure(let error):
+                        promise(.failure(error))
+                    case .success(let feeForMessage):
+                        promise(.success(feeForMessage))
+                    }
+                }
+            }
+        }
+        .share()
+        .eraseToAnyPublisher()
+    }
+    
     func getRecentPrioritizationFees(
         accounts: [String]
     ) -> AnyPublisher<[RecentPrioritizationFee], Error> {
@@ -182,6 +204,42 @@ extension Api {
 }
 
 extension Action {
+    func serializeMessage(
+        to destination: String,
+        amount: UInt64,
+        computeUnitLimit: UInt32?,
+        computeUnitPrice: UInt64?,
+        allowUnfundedRecipient: Bool = false,
+        fromPublicKey: PublicKey
+    ) -> AnyPublisher<String, Error> {
+        Deferred {
+            Future { [weak self] promise in
+                guard let self else {
+                    promise(.failure(WalletError.empty))
+                    return
+                }
+                
+                self.serializeMessage(
+                    to: destination,
+                    amount: amount, 
+                    computeUnitLimit: computeUnitLimit,
+                    computeUnitPrice: computeUnitPrice,
+                    allowUnfundedRecipient: allowUnfundedRecipient,
+                    fromPublicKey: fromPublicKey
+                ) {
+                    switch $0 {
+                    case .failure(let error):
+                        promise(.failure(error))
+                    case .success(let message):
+                        promise(.success(message))
+                    }
+                }
+            }
+        }
+        .share()
+        .eraseToAnyPublisher()
+    }
+    
     func getCreatingTokenAccountFee() -> AnyPublisher<UInt64, Error> {
         Deferred {
             Future { [weak self] promise in
