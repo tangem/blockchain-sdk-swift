@@ -10,9 +10,9 @@ import Foundation
 import Combine
 
 class RadiantNetworkService {
-    let electrumProvider: RadiantNetworkProvider
+    let electrumProvider: ElectrumNetworkProvider
     
-    init(electrumProvider: RadiantNetworkProvider) {
+    init(electrumProvider: ElectrumNetworkProvider) {
         self.electrumProvider = electrumProvider
     }
 }
@@ -24,17 +24,13 @@ extension RadiantNetworkService: HostProvider {
 }
 
 extension RadiantNetworkService {
-    func getInfo(address: String) -> AnyPublisher<Decimal, Error> {
+    func getInfo(scripthash: String) -> AnyPublisher<ElectrumAddressInfo, Error> {
         electrumProvider
-            .getBalance(address: address)
+            .getAddressInfo(identifier: .scripthash(scripthash))
     }
     
-    func getUnspents(address: String) -> AnyPublisher<[BitcoinUnspentOutput], Error> {
+    func estimatedFee() -> AnyPublisher<Decimal, Error> {
         electrumProvider
-            .getUnspents(address: address)
-            .map { utxos in
-                return []
-            }
-            .eraseToAnyPublisher()
+            .estimateFee()
     }
 }

@@ -19,11 +19,11 @@ public class ElectrumNetworkProvider: MultiNetworkProvider {
         self.decimalValue = decimalValue
     }
 
-    func getAddressInfo(address: String) -> AnyPublisher<ElectrumAddressInfo, Error> {
+    func getAddressInfo(identifier: ElectrumWebSocketManager.IdentifierType) -> AnyPublisher<ElectrumAddressInfo, Error> {
         providerPublisher { provider in
             Future.async {
-                async let balance = provider.getBalance(identifier: .address(address))
-                async let unspents = provider.getUnspents(identifier: .address(address))
+                async let balance = provider.getBalance(identifier: identifier)
+                async let unspents = provider.getUnspents(identifier: identifier)
                 
                 return try await ElectrumAddressInfo(
                     balance: Decimal(balance.confirmed),

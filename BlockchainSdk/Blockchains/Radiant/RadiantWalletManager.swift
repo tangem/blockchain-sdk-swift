@@ -37,13 +37,10 @@ final class RadiantWalletManager: BaseManager {
             return
         }
         
-//        let accountInfoPublisher = networkService
-//            .getInfo(address: preparedAddress)
+        let accountInfoPublisher = networkService
+            .getInfo(scripthash: preparedAddress)
         
-        let unspentsPublisher = networkService
-            .getUnspents(address: preparedAddress)
-        
-        cancellable = unspentsPublisher
+        cancellable = accountInfoPublisher
             .withWeakCaptureOf(self)
             .sink(receiveCompletion: { [weak self] result in
                 switch result {
@@ -53,9 +50,8 @@ final class RadiantWalletManager: BaseManager {
                 case .finished:
                     completion(.success(()))
                 }
-            }, receiveValue: { (manager, responses) in
-                print(responses)
-//                manager.updateWallet(with: response)
+            }, receiveValue: { (manager, response) in
+                manager.updateWallet(with: response)
             })
     }
     
@@ -64,24 +60,9 @@ final class RadiantWalletManager: BaseManager {
 // MARK: - Private Implementation
 
 private extension RadiantWalletManager {
-    func updateWallet(with response: [BitcoinResponse]) {
-        let balance = response.reduce(into: 0) { $0 += $1.balance }
-        let hasUnconfirmed = response.contains(where: { $0.hasUnconfirmed })
-        let unspents = response.flatMap { $0.unspentOutputs }
-        
-        wallet.add(coinValue: balance)
-        transactionBuilder.update(unspents: unspents)
-        
-        wallet.clearPendingTransaction()
-        if hasUnconfirmed {
-            response
-                .flatMap { $0.pendingTxRefs }
-                .forEach {
-                    let mapper = PendingTransactionRecordMapper()
-                    let transaction = mapper.mapToPendingTransactionRecord($0, blockchain: wallet.blockchain)
-                    wallet.addPendingTransaction(transaction)
-                }
-        }
+    func updateWallet(with addressInfo: ElectrumAddressInfo) {
+        let coinBalanceValue = addressInfo.balance / wallet.blockchain.decimalValue
+        wallet.add(coinValue: coinBalanceValue)
     }
     
     func sendViaCompileTransaction(
@@ -136,16 +117,23 @@ extension RadiantWalletManager: WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        return .anyFail(error: WalletError.failedToGetFee)
-//        return networkService.getFee()
-//            .tryMap { [weak self] response throws -> [Fee] in
-//                guard let self = self else { throw WalletError.empty }
-//                return [
-//                    .init(Amount(with: wallet.blockchain, value: 0.000000001))
-//                ]
-//            }
-//            .eraseToAnyPublisher()
+        networkService.estimatedFee()
+            .tryMap { [weak self] response throws -> [Fee] in
+                guard let self = self else { throw WalletError.empty }
+                
+                return [
+                    .init(Amount(with: wallet.blockchain, value: 0.000000001))
+                ]
+            }
+            .eraseToAnyPublisher()
     }
 }
 
-extension RadiantWalletManager {}
+extension RadiantWalletManager {
+    enum Constants {
+        static let testTransactionSize = 256
+        static let defaultFeeInCoinsPer1000Bytes = 1000
+        static let normalFeeRate = 0.03
+        static let requiredNumberOfConfirmationBlocks = 332
+    }
+}
