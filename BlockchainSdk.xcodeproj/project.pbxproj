@@ -719,6 +719,7 @@
 		EFD4F4DB2BA9EAAC00E6A55C /* NexaTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4DA2BA9EAAC00E6A55C /* NexaTransactionBuilder.swift */; };
 		EFD4F4DD2BA9EE5300E6A55C /* NexaWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4DC2BA9EE5300E6A55C /* NexaWalletAssembly.swift */; };
 		EFD4F4DF2BA9FD9300E6A55C /* NexaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4DE2BA9FD9300E6A55C /* NexaAddressService.swift */; };
+		EFD4F4E12BAA002300E6A55C /* NexaExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4E02BAA002300E6A55C /* NexaExternalLinkProvider.swift */; };
 		EFD717B82A24B20700E5430D /* OptimismContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF5BA8329B881440070694A /* OptimismContract.swift */; };
 		EFD717CA2A25EA8500E5430D /* WalletCoreABIEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717C92A25EA8500E5430D /* WalletCoreABIEncoder.swift */; };
 		EFD717CC2A25EB0B00E5430D /* ABIEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717CB2A25EB0B00E5430D /* ABIEncoder.swift */; };
@@ -1491,6 +1492,7 @@
 		EFD4F4DA2BA9EAAC00E6A55C /* NexaTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaTransactionBuilder.swift; sourceTree = "<group>"; };
 		EFD4F4DC2BA9EE5300E6A55C /* NexaWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaWalletAssembly.swift; sourceTree = "<group>"; };
 		EFD4F4DE2BA9FD9300E6A55C /* NexaAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaAddressService.swift; sourceTree = "<group>"; };
+		EFD4F4E02BAA002300E6A55C /* NexaExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaExternalLinkProvider.swift; sourceTree = "<group>"; };
 		EFD717C92A25EA8500E5430D /* WalletCoreABIEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreABIEncoder.swift; sourceTree = "<group>"; };
 		EFD717CB2A25EB0B00E5430D /* ABIEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ABIEncoder.swift; sourceTree = "<group>"; };
 		EFD717CD2A25ECB500E5430D /* SmartContractMethodParameterType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContractMethodParameterType.swift; sourceTree = "<group>"; };
@@ -3451,6 +3453,7 @@
 				EFD4F4DA2BA9EAAC00E6A55C /* NexaTransactionBuilder.swift */,
 				EFD4F4DC2BA9EE5300E6A55C /* NexaWalletAssembly.swift */,
 				EFD4F4DE2BA9FD9300E6A55C /* NexaAddressService.swift */,
+				EFD4F4E02BAA002300E6A55C /* NexaExternalLinkProvider.swift */,
 			);
 			path = Nexa;
 			sourceTree = "<group>";
@@ -4152,6 +4155,7 @@
 				B6E7699C2AF2CFDA00B32745 /* NEARNetworkResult.TransactionStatus.swift in Sources */,
 				DC5E64E32B1650F400E81AA5 /* OP_EXAMPLE.swift in Sources */,
 				B6B083582AE6B11C0099D6F8 /* NEARProtocolConfig.swift in Sources */,
+				EFD4F4E12BAA002300E6A55C /* NexaExternalLinkProvider.swift in Sources */,
 				5DC7DD60243F83E6008F83F2 /* XRPAddressService.swift in Sources */,
 				2DB6C6D52AFCBEC9000D0C6A /* TelosWalletManager.swift in Sources */,
 				B6DC28422B62AFD00070F1D2 /* HederaExternalLinkProvider.swift in Sources */,
