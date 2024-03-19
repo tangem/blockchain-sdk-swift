@@ -37,11 +37,7 @@ public enum WalletError: Error, LocalizedError {
         }
     }
     
-    private var errorCodeDescription: String {
-        return "wallet_error \(errorCode)"
-    }
-    
-    private var errorCode: Int {
+    public var errorCode: Int {
         switch self {
         case .noAccount:
             return 1
@@ -61,4 +57,10 @@ public enum WalletError: Error, LocalizedError {
             return 8
         }
     }
+    
+    private var errorCodeDescription: String {
+        return "wallet_error \(errorCode)"
+    }
 }
+
+extension WalletError: ErrorCodeProviding { }
