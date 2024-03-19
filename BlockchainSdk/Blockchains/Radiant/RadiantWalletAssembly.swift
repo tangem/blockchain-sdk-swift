@@ -10,7 +10,7 @@ import Foundation
 
 struct RadiantWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        var socketManagers: [ElectrumWebSocketManager] = RadiantNetworkEndpoint.allCases.map {
+        let socketManagers: [ElectrumWebSocketManager] = RadiantNetworkEndpoint.allCases.map {
             .init(url: URL(string: $0.urlString)!)
         }
 

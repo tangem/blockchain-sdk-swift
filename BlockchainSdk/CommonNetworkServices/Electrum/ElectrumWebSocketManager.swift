@@ -59,6 +59,11 @@ class ElectrumWebSocketManager: HostProvider {
     func estimateFee(block: Int) async throws -> Int {
         try await send(method: "blockchain.estimatefee", parameter: [block])
     }
+    
+    func getTransaction(transactionHash: String) async throws -> ElectrumDTO.Response.Transaction {
+        let params: [AnyEncodable] = [AnyEncodable(transactionHash), AnyEncodable(true)]
+        return try await send(method: "blockchain.transaction.get", parameter: params)
+    }
 }
 
 // MARK: - Private
@@ -72,6 +77,15 @@ private extension ElectrumWebSocketManager {
             decoder: decoder
         )
     }
+    
+    func send<Parameter: Encodable, Result: Decodable>(method: String, parameters: [Parameter]) async throws -> Result {
+        try await webSocketProvider.send(
+            method: method,
+            parameter: parameters,
+            encoder: encoder,
+            decoder: decoder
+        )
+    }
 }
 
 // MARK: - IdentifierType
@@ -80,5 +94,17 @@ extension ElectrumWebSocketManager {
     enum IdentifierType {
         case address(_ address: String)
         case scripthash(_ hash: String)
+    }
+}
+
+struct AnyEncodable: Encodable {
+    private let _encode: (Encoder) throws -> Void
+    
+    public init<T: Encodable>(_ wrapped: T) {
+        _encode = wrapped.encode
+    }
+
+    func encode(to encoder: Encoder) throws {
+        try _encode(encoder)
     }
 }

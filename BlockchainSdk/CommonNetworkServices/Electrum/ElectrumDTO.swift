@@ -35,5 +35,46 @@ enum ElectrumDTO {
             let value: Int
             let height: String
         }
+        
+        struct Transaction: Decodable {
+            let blockhash: String
+            let blocktime: UInt64
+            let confirmations: Int
+            let hash: String
+            let hex: String
+            let locktime: Int
+            let size: Int
+            let time: Int
+            let txid: String
+            let version: Int
+            let vin: [Vin]
+            let vout: [Vout]
+        }
+        
+        struct Vin: Decodable {
+            let scriptSig: ScriptSig
+            let sequence: UInt64
+            let txid: String
+            let vout: Int
+        }
+        
+        struct Vout: Decodable {
+            let n: Int
+            let scriptPubKey: ScriptPubKey
+            let value: Decimal
+        }
+        
+        struct ScriptSig: Decodable {
+            let asm: String
+            let hex: String
+        }
+        
+        struct ScriptPubKey: Decodable {
+            let addresses: [String]
+            let asm: String
+            let hex: String
+            let reqSigs: Int
+            let type: String
+        }
     }
 }
