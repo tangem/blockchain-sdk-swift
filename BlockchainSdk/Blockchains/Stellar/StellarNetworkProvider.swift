@@ -120,8 +120,19 @@ class StellarNetworkProvider: HostProvider {
     private func mapError(_ error: Error, isAsset: Bool? = nil) -> Error {
         if let horizonError = error as? HorizonRequestError {
             if case .notFound = horizonError, let isAsset = isAsset {
-                let error: StellarError = isAsset ? .assetCreateAccount : .xlmCreateAccount
-                return WalletError.noAccount(message: error.localizedDescription)
+                if isAsset {
+                    let amount: Decimal = 1.5
+                    return WalletError.noAccount(
+                        message: StellarError.assetCreateAccount(amount: amount).localizedDescription,
+                        amountToCreate: amount
+                    )
+                } else {
+                    let amount: Decimal = 1
+                    return WalletError.noAccount(
+                        message: StellarError.xlmCreateAccount(amount: amount).localizedDescription,
+                        amountToCreate: amount
+                    )
+                }
             } else {
                 return horizonError.parseError()
             }

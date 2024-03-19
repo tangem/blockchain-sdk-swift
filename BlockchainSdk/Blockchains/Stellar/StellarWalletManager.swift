@@ -12,15 +12,15 @@ import SwiftyJSON
 import Combine
 import TangemSdk
 
-public enum StellarError: Int, Error, LocalizedError {
+public enum StellarError: Error, LocalizedError {
     // WARNING: Make sure to preserve the error codes when removing or inserting errors
     
     case emptyResponse
     case requiresMemo
     case failedToFindLatestLedger
-    case xlmCreateAccount
-    case assetCreateAccount
-    case assetNoAccountOnDestination
+    case xlmCreateAccount(amount: Decimal)
+    case assetCreateAccount(amount: Decimal)
+    case assetNoAccountOnDestination(amount: Decimal)
     case assetNoTrustline
     
     // WARNING: Make sure to preserve the error codes when removing or inserting errors
@@ -30,21 +30,38 @@ public enum StellarError: Int, Error, LocalizedError {
         switch self {
         case .requiresMemo:
             return "xlm_requires_memo_error".localized
-        case .xlmCreateAccount:
-            return "no_account_generic".localized([networkName, "1", "XLM"])
-        case .assetCreateAccount:
-            return "no_account_generic".localized([networkName, "1.5", "XLM"])
-        case .assetNoAccountOnDestination:
-            return "send_error_no_target_account".localized(["1 XLM"])
+        case .xlmCreateAccount(let amount):
+            return "no_account_generic".localized([networkName, "\(amount)", "XLM"])
+        case .assetCreateAccount(let amount):
+            return "no_account_generic".localized([networkName, "\(amount)", "XLM"])
+        case .assetNoAccountOnDestination(let amount):
+            return "send_error_no_target_account".localized(["\(amount) XLM"])
         case .assetNoTrustline:
             return "no_trustline_xlm_asset".localized
         default:
+            let errorCodeDescription = "stellar_error \(errorCode)"
             return "generic_error_code".localized(errorCodeDescription)
         }
     }
     
-    private var errorCodeDescription: String {
-        "stellar_error \(rawValue)"
+    private var errorCode: Int {
+        switch self {
+        case .emptyResponse:
+            return 0
+        case .requiresMemo:
+            return 1
+        case .failedToFindLatestLedger:
+            return 2
+        case .xlmCreateAccount(let amount):
+            return 3
+        case .assetCreateAccount(let amount):
+            return 4
+        case .assetNoAccountOnDestination(let amount):
+            return 5
+        case .assetNoTrustline:
+            return 6
+        }
+        
     }
 }
 
@@ -179,7 +196,7 @@ extension StellarWalletManager: ReserveAmountRestrictable {
             }
         case .token:
             // From TxBuilder
-            throw StellarError.assetNoAccountOnDestination
+            throw StellarError.assetNoAccountOnDestination(amount: reserveAmount.value)
         case .reserve:
             break
         }

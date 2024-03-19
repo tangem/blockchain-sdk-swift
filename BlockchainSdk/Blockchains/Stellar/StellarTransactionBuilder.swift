@@ -37,10 +37,11 @@ class StellarTransactionBuilder {
         let result: (Data, stellarsdk.TransactionXDR)
         do {
             let isAccountCreated = targetAccountResponse.accountCreated
-            
+            let amountToCreateAccount: Decimal = 1
+
             if transaction.amount.type == .coin {
-                if !isAccountCreated && transaction.amount.value < 1 {
-                    throw StellarError.xlmCreateAccount
+                if !isAccountCreated && transaction.amount.value < amountToCreateAccount {
+                    throw StellarError.xlmCreateAccount(amount: amountToCreateAccount)
                 }
                 
                 let operation = isAccountCreated ? try PaymentOperation(sourceAccountId: transaction.sourceAddress,
@@ -58,7 +59,7 @@ class StellarTransactionBuilder {
                 }
                 
                 guard isAccountCreated else {
-                    throw StellarError.assetNoAccountOnDestination
+                    throw StellarError.assetNoAccountOnDestination(amount: amountToCreateAccount)
                 }
                 
                 guard targetAccountResponse.trustlineCreated  else {
