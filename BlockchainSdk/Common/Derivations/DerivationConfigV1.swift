@@ -106,6 +106,8 @@ public struct DerivationConfigV1: DerivationConfig {
             return "m/44'/3030'/0'/0'/0'"
         case .moonbeam:
             return "m/44'/1284'/0'/0/0"
+        case .nexa:
+            return "m/44'/29223'/0'/0/0"
         }
     }
 }

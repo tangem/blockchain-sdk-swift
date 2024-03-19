@@ -71,6 +71,7 @@ struct AddressTypesConfig {
              .zkSync,
              .moonbeam,
              .polygonZkEVM:
+             .nexa:
             return [.default]
         }
     }

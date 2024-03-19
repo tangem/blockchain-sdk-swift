@@ -70,6 +70,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case zkSync(testnet: Bool)
     case moonbeam(testnet: Bool)
     case polygonZkEVM(testnet: Bool)
+    case nexa
 
     public var isTestnet: Bool {
         switch self {
@@ -118,7 +119,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .gnosis,
                 .disChain,
                 .playa3ullGames,
-                .kaspa:
+                .kaspa,
+                .nexa:
             return false
         case .stellar(_, let testnet),
                 .hedera(_, let testnet),
@@ -169,7 +171,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .dash,
                 .kaspa,
                 .ravencoin,
-                .hedera:
+                .hedera,
+                .nexa:
             return 8
         case .ethereum,
                 .ethereumClassic,
@@ -328,6 +331,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return isTestnet ? "tPLS" : "PLS"
         case .moonbeam:
             return isTestnet ? "DEV" : "GLMR"
+        case .nexa:
+            return "NEXA"
         }
     }
 
@@ -993,6 +998,7 @@ extension Blockchain: Codable {
         case .zkSync: return "zksync"
         case .moonbeam: return "moonbeam"
         case .polygonZkEVM: return "polygon-zkevm"
+        case .nexa: return "nexa"
         }
     }
 
@@ -1244,6 +1250,8 @@ extension Blockchain {
             return AptosWalletAssembly()
         case .hedera:
             return HederaWalletAssembly()
+        case .nexa:
+            return NexaWalletAssembly()
         }
     }
 }
