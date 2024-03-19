@@ -66,7 +66,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case playa3ullGames
     case pulsechain(testnet: Bool)
     case aurora(testnet: Bool)
-
+    case nexa
 
     public var isTestnet: Bool {
         switch self {
@@ -111,7 +111,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .gnosis,
                 .disChain,
                 .playa3ullGames,
-                .kaspa:
+                .kaspa,
+                .nexa:
             return false
         case .stellar(_, let testnet),
                 .hedera(_, let testnet),
@@ -162,7 +163,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .dash,
                 .kaspa,
                 .ravencoin,
-                .hedera:
+                .hedera,
+                .nexa:
             return 8
         case .ethereum,
                 .ethereumClassic,
@@ -314,6 +316,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "3ULL"
         case .pulsechain:
             return isTestnet ? "tPLS" : "PLS"
+        case .nexa:
+            return "NEXA"
         }
     }
 
@@ -891,6 +895,7 @@ extension Blockchain: Codable {
         case .playa3ullGames: return "playa3ull-games"
         case .pulsechain: return "pulsechain"
         case .aurora: return "aurora"
+        case .nexa: return "nexa"
         }
     }
 
@@ -1130,6 +1135,8 @@ extension Blockchain {
             return AptosWalletAssembly()
         case .hedera:
             return HederaWalletAssembly()
+        case .nexa:
+            return NexaWalletAssembly()
         }
     }
 }

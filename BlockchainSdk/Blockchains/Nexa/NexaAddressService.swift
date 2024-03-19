@@ -8,6 +8,14 @@
 
 import Foundation
 
-class NexaAddressService {
+// TODO: Will change on the real
+class NexaAddressService: AddressService {
     
+    func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
+        return PlainAddress(value: "", publicKey: publicKey, type: addressType)
+    }
+    
+    func validate(_ address: String) -> Bool {
+        return false
+    }
 }
