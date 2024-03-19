@@ -770,7 +770,7 @@ extension Blockchain {
                 return [
                     URL(string: "https://mainnet.aurora.dev/")!,
                     URL(string: "https://aurora.drpc.org/")!,
-                    URL(string: "https://1rpc.io/aurora/")!,
+                    URL(string: "https://1rpc.io/aurora")!, // please don't add final slash for consistency, it will break the endpoint
                 ]
             }
         default:
@@ -816,7 +816,7 @@ extension Blockchain {
         case .bitcoin:
             return ["bitcoin:"]
         case .ethereum:
-            return [isTestnet ? "" : "ethereum:"]
+            return isTestnet ? [] : ["ethereum:", "ethereum:pay-"]  // "pay-" defined in ERC-681
         case .litecoin:
             return ["litecoin:"]
         case .xrp:
@@ -826,7 +826,7 @@ extension Blockchain {
         case .dogecoin:
             return ["doge:", "dogecoin:"]
         default:
-            return [""]
+            return []
         }
     }
 

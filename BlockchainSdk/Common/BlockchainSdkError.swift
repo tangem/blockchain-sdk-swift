@@ -31,6 +31,19 @@ public enum BlockchainSdkError: Int, LocalizedError {
             return "common_fee_error".localized
         case .signatureCountNotMatched, .notImplemented:
             // TODO: Replace with proper error message. Android sending instead of message just code, and client app decide what message to show to user
+            return "generic_error".localized
+        default:
+            return "generic_error".localized
+        }
+    }
+    
+    @available(*, deprecated, message: "Use errorDescription and errorCode instead")
+    public var errorDescriptionWithCode: String {
+        switch self {
+        case .failedToLoadFee:
+            return "common_fee_error".localized
+        case .signatureCountNotMatched, .notImplemented:
+            // TODO: Replace with proper error message. Android sending instead of message just code, and client app decide what message to show to user
             return "generic_error_code".localized(errorCodeDescription)
 		default:
 			return "generic_error_code".localized(errorCodeDescription)
@@ -39,6 +52,12 @@ public enum BlockchainSdkError: Int, LocalizedError {
     
     private var errorCodeDescription: String {
         "blockchain_sdk_error \(rawValue)"
+    }
+}
+
+extension BlockchainSdkError: ErrorCodeProviding {
+    public var errorCode: Int {
+        rawValue
     }
 }
 
