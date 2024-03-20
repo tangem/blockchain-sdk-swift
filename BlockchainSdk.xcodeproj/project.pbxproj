@@ -307,6 +307,8 @@
 		B63B792F2AD852E80055BD06 /* NEARExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */; };
 		B63BAA602B740C8800DA26C9 /* TangemWalletCoreBinariesWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = B63BAA5F2B740C8800DA26C9 /* TangemWalletCoreBinariesWrapper */; };
 		B63BAA622B740C9200DA26C9 /* TangemWalletCoreBinariesWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = B63BAA612B740C9200DA26C9 /* TangemWalletCoreBinariesWrapper */; };
+		B6417DDC2BA2354D00B9B61D /* PolygonTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6417DDB2BA2354D00B9B61D /* PolygonTransactionHistoryProvider.swift */; };
+		B6417DDE2BA2355F00B9B61D /* PolygonTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6417DDD2BA2355F00B9B61D /* PolygonTransactionHistoryMapper.swift */; };
 		B641EC492AEF5CC100B44CF8 /* NEARAddressUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = B641EC482AEF5CC100B44CF8 /* NEARAddressUtil.swift */; };
 		B64B728C2AEC9C7B005C8C7C /* Lock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64B728B2AEC9C7B005C8C7C /* Lock.swift */; };
 		B6582CD92B3CA9BA00711283 /* VeChainFeeParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6582CD82B3CA9BA00711283 /* VeChainFeeParams.swift */; };
@@ -1075,6 +1077,8 @@
 		B63B32AC2B8374B40089DF4B /* HederaCreatedAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaCreatedAccount.swift; sourceTree = "<group>"; };
 		B63B792C2AD850DF0055BD06 /* NEARWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARWalletAssembly.swift; sourceTree = "<group>"; };
 		B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARExternalLinkProvider.swift; sourceTree = "<group>"; };
+		B6417DDB2BA2354D00B9B61D /* PolygonTransactionHistoryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolygonTransactionHistoryProvider.swift; sourceTree = "<group>"; };
+		B6417DDD2BA2355F00B9B61D /* PolygonTransactionHistoryMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolygonTransactionHistoryMapper.swift; sourceTree = "<group>"; };
 		B641EC482AEF5CC100B44CF8 /* NEARAddressUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARAddressUtil.swift; sourceTree = "<group>"; };
 		B64B728B2AEC9C7B005C8C7C /* Lock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lock.swift; sourceTree = "<group>"; };
 		B6582CD82B3CA9BA00711283 /* VeChainFeeParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainFeeParams.swift; sourceTree = "<group>"; };
@@ -2612,9 +2616,11 @@
 		B6417DDA2BA2353000B9B61D /* Polygon */ = {
 			isa = PBXGroup;
 			children = (
-				B67C32A32BAAD83B00D55B81 /* Domain */,
-				B62D27122BA8B6220096473B /* DTO */,
 				B62D27112BA8B61E0096473B /* Network */,
+				B62D27122BA8B6220096473B /* DTO */,
+				B67C32A32BAAD83B00D55B81 /* Domain */,
+				B6417DDB2BA2354D00B9B61D /* PolygonTransactionHistoryProvider.swift */,
+				B6417DDD2BA2355F00B9B61D /* PolygonTransactionHistoryMapper.swift */,
 			);
 			path = Polygon;
 			sourceTree = "<group>";
@@ -4191,6 +4197,7 @@
 				2D9A919229BB8BFF00476EA6 /* TONWalletInfo.swift in Sources */,
 				EF1339B82AB4B2C300B78BA3 /* SmartContractMethod.swift in Sources */,
 				5D006ACD239950F9008BA04D /* Wallet.swift in Sources */,
+				B6417DDE2BA2355F00B9B61D /* PolygonTransactionHistoryMapper.swift in Sources */,
 				2D24F5C62B6D2C7100D502A0 /* AptosNetworkService.swift in Sources */,
 				DC5E65292B1650F400E81AA5 /* OP_PUSHDATA.swift in Sources */,
 				5DC7DD66244077F2008F83F2 /* XRPWalletManager.swift in Sources */,
@@ -4368,6 +4375,7 @@
 				DA656FCA295454C10092CC61 /* Constants.swift in Sources */,
 				2D01EC062B052A0A00DEF1CC /* DecimalWalletAssembly.swift in Sources */,
 				DAF3AD4629E916D300E057FA /* CosmosFeeParameters.swift in Sources */,
+				B6417DDC2BA2354D00B9B61D /* PolygonTransactionHistoryProvider.swift in Sources */,
 				B6BA93792AEA0F0C00F84E36 /* NEARNetworkResult.GasPrice.swift in Sources */,
 				B6B2EB6D2B56AAB9005FBE8E /* VeChainNetworkResult.ContractCall.swift in Sources */,
 				EF57BEC82A1E13BE00C2A493 /* DerivationConfig.swift in Sources */,
