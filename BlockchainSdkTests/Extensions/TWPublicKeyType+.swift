@@ -92,7 +92,8 @@ extension PublicKeyType {
                 .cronos,
                 .telos,
                 .octa,
-                .chia:
+                .chia,
+                .nexa:
             throw NSError.makeUnsupportedBlockchainError(for: blockchain)
         }
     }

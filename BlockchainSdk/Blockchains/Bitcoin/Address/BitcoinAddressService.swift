@@ -56,7 +56,7 @@ extension BitcoinAddressService: BitcoinScriptAddressesProvider {
             return try key.compress()
         }
 
-        let script = try BitcoinScriptBuilder().makeMultisig(publicKeys: compressedKeys, signaturesRequired: 1)
+        let script = try BitcoinMultisigScriptBuilder().makeMultisig(publicKeys: compressedKeys, signaturesRequired: 1)
         let legacyAddressString = try legacy.makeScriptAddress(from: script.data.sha256Ripemd160)
         let scriptAddress = BitcoinScriptAddress(script: script, value: legacyAddressString, publicKey: publicKey, type: .legacy)
 

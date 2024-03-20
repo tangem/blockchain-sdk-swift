@@ -971,6 +971,7 @@ extension Blockchain: Codable {
         case "playa3ull-games": self = .playa3ullGames
         case "pulsechain": self = .pulsechain(testnet: isTestnet)
         case "aurora": self = .aurora(testnet: isTestnet)
+        case "nexa": self = .nexa
         default:
             throw BlockchainSdkError.decodingFailed
         }
