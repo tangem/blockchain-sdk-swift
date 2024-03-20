@@ -9,8 +9,9 @@
 import Foundation
 import TangemSdk
 
-struct PolygonTransactionHistoryMapper {
+final class PolygonTransactionHistoryMapper {
     private let blockchain: Blockchain
+    private var transactionIndicesCounter: [String: Int] = [:]
 
     init(blockchain: Blockchain) {
         self.blockchain = blockchain
@@ -134,9 +135,12 @@ extension PolygonTransactionHistoryMapper: TransactionHistoryMapper {
                 return nil
             }
 
+            let index = transactionIndicesCounter[transaction.hash, default: 0]
+            transactionIndicesCounter[transaction.hash] = index + 1
+
             return TransactionRecord(
                 hash: transaction.hash,
-                index: 0,
+                index: index,
                 source: .single(source),
                 destination: .single(destination),
                 fee: mapFee(transaction),
@@ -149,6 +153,14 @@ extension PolygonTransactionHistoryMapper: TransactionHistoryMapper {
         }
 
         return TransactionHistory.Response(records: transactionRecords)
+    }
+}
+
+// MARK: - Resettable protocol conformance
+
+extension PolygonTransactionHistoryMapper: Resettable {
+    func reset() {
+        transactionIndicesCounter.removeAll()
     }
 }
 

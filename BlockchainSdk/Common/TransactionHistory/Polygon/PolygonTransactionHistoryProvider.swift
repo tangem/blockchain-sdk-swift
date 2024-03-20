@@ -9,7 +9,8 @@
 import Foundation
 import Combine
 
-final class PolygonTransactionHistoryProvider<Mapper> where 
+final class PolygonTransactionHistoryProvider<Mapper> where
+    Mapper: Resettable,
     Mapper: TransactionHistoryMapper,
     Mapper.Response == PolygonTransactionHistoryResult
 {
@@ -109,6 +110,7 @@ extension PolygonTransactionHistoryProvider: TransactionHistoryProvider {
     }
     
     func reset() {
+        mapper.reset()
         page = nil
         hasReachedEnd = false
     }
