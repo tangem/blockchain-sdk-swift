@@ -2487,6 +2487,14 @@
 			path = VeChain;
 			sourceTree = "<group>";
 		};
+		B62D27112BA8B61E0096473B /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				B62BD9982BA4CAD500E894A6 /* PolygonTransactionHistoryTarget.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		B63068BF2B3102D400E79053 /* VeChain */ = {
 			isa = PBXGroup;
 			children = (
@@ -2590,7 +2598,7 @@
 		B6417DDA2BA2353000B9B61D /* Polygon */ = {
 			isa = PBXGroup;
 			children = (
-				B62BD9982BA4CAD500E894A6 /* PolygonTransactionHistoryTarget.swift */,
+				B62D27112BA8B61E0096473B /* Network */,
 			);
 			path = Polygon;
 			sourceTree = "<group>";
