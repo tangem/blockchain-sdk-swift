@@ -136,6 +136,7 @@ extension PolygonTransactionHistoryMapper: TransactionHistoryMapper {
 
             return TransactionRecord(
                 hash: transaction.hash,
+                index: 0,
                 source: .single(source),
                 destination: .single(destination),
                 fee: mapFee(transaction),

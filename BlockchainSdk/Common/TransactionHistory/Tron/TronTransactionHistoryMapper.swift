@@ -132,6 +132,7 @@ struct TronTransactionHistoryMapper {
         return transactionInfos.map { transactionInfo in
             return TransactionRecord(
                 hash: hash,
+                index: 0,   // TODO: Andrey Fedorov - Add support for indexed transactions (IOS-6340)
                 source: .single(transactionInfo.source),
                 destination: .single(transactionInfo.destination),
                 fee: fee,
