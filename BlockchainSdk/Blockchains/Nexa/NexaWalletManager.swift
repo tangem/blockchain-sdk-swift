@@ -13,17 +13,49 @@ class NexaWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkProvider.host }
 
     private let transactionBuilder: NexaTransactionBuilder
-    private let networkProvider: NexaNetworkProvider
+    private let networkProvider: ElectrumNetworkProvider
     
     init(
         wallet: Wallet,
         transactionBuilder: NexaTransactionBuilder,
-        networkProvider: NexaNetworkProvider
+        networkProvider: ElectrumNetworkProvider
     ) {
         self.transactionBuilder = transactionBuilder
         self.networkProvider = networkProvider
         
         super.init(wallet: wallet)
+    }
+    
+    override func update(completion: @escaping (Result<Void, any Error>) -> Void) {
+        cancellable = networkProvider
+            .getAddressInfo(address: wallet.address)
+            .receive(on: DispatchQueue.global())
+            .sink(receiveCompletion: { [weak self] completionSubscription in
+                if case let .failure(error) = completionSubscription {
+                    self?.wallet.clearAmounts()
+                    completion(.failure(error))
+                }
+            }, receiveValue: { [weak self] info in
+                self?.updateWallet(info: info)
+                completion(.success(()))
+            })
+    }
+}
+
+// MARK: - Private
+
+private extension NexaWalletManager {
+    func updateWallet(info: ElectrumAddressInfo) {
+        let balance = info.outputs.reduce(0) { result, output in
+            if output.isConfirmed {
+                return result + output.value
+            }
+            
+            return result
+        }
+
+        wallet.add(coinValue: balance)
+        wallet.clearPendingTransaction()
     }
 }
 

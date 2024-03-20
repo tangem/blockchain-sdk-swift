@@ -679,6 +679,10 @@
 		EF5C753C2BAC4D4200811198 /* URLSessionWebSocketTask.Message+CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C753B2BAC4D4200811198 /* URLSessionWebSocketTask.Message+CustomStringConvertible.swift */; };
 		EF5C753E2BAC4D6B00811198 /* URLSessionTask.State+CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C753D2BAC4D6B00811198 /* URLSessionTask.State+CustomStringConvertible.swift */; };
 		EF5C75402BAC4DB500811198 /* URLSessionWebSocketTask.CloseCode+CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C753F2BAC4DB500811198 /* URLSessionWebSocketTask.CloseCode+CustomStringConvertible.swift */; };
+		EF5C758A2BADE8A400811198 /* NexaScriptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C75892BADE8A400811198 /* NexaScriptBuilder.swift */; };
+		EF5C758A2BADE8A400811198 /* NexaScriptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C75892BADE8A400811198 /* NexaScriptBuilder.swift */; };
+		EF5C75972BADF02D00811198 /* NexaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C75962BADF02D00811198 /* NexaTests.swift */; };
+		EF5C75992BADF1AC00811198 /* BitcoinMultisigScriptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C75982BADF1AC00811198 /* BitcoinMultisigScriptBuilder.swift */; };
 		EF5F1B9729C9C0500093307B /* Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5F1B9629C9C0500093307B /* Fee.swift */; };
 		EF609FC72A20D4E9004E6D4E /* OptimismWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EECB5228E9F50600899D6C /* OptimismWalletManager.swift */; };
 		EF666C202A288AEF0044986F /* AdaliteTokenDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF666C1F2A288AEF0044986F /* AdaliteTokenDTO.swift */; };
@@ -716,7 +720,6 @@
 		EFD32AE429E9B7800026353E /* RavencoinTransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD32AE329E9B7800026353E /* RavencoinTransactionHistory.swift */; };
 		EFD39C9F2A6E6C700055D215 /* AddressTypesConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD39C9E2A6E6C700055D215 /* AddressTypesConfig.swift */; };
 		EFD4F4D72BA9E92400E6A55C /* NexaWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4D62BA9E92400E6A55C /* NexaWalletManager.swift */; };
-		EFD4F4D92BA9E9CC00E6A55C /* NexaNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4D82BA9E9CC00E6A55C /* NexaNetworkProvider.swift */; };
 		EFD4F4DB2BA9EAAC00E6A55C /* NexaTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4DA2BA9EAAC00E6A55C /* NexaTransactionBuilder.swift */; };
 		EFD4F4DD2BA9EE5300E6A55C /* NexaWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4DC2BA9EE5300E6A55C /* NexaWalletAssembly.swift */; };
 		EFD4F4DF2BA9FD9300E6A55C /* NexaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4DE2BA9FD9300E6A55C /* NexaAddressService.swift */; };
@@ -1462,6 +1465,10 @@
 		EF5C753B2BAC4D4200811198 /* URLSessionWebSocketTask.Message+CustomStringConvertible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSessionWebSocketTask.Message+CustomStringConvertible.swift"; sourceTree = "<group>"; };
 		EF5C753D2BAC4D6B00811198 /* URLSessionTask.State+CustomStringConvertible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSessionTask.State+CustomStringConvertible.swift"; sourceTree = "<group>"; };
 		EF5C753F2BAC4DB500811198 /* URLSessionWebSocketTask.CloseCode+CustomStringConvertible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSessionWebSocketTask.CloseCode+CustomStringConvertible.swift"; sourceTree = "<group>"; };
+		EF5C75892BADE8A400811198 /* NexaScriptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaScriptBuilder.swift; sourceTree = "<group>"; };
+		EF5C75892BADE8A400811198 /* NexaScriptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaScriptBuilder.swift; sourceTree = "<group>"; };
+		EF5C75962BADF02D00811198 /* NexaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaTests.swift; sourceTree = "<group>"; };
+		EF5C75982BADF1AC00811198 /* BitcoinMultisigScriptBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoinMultisigScriptBuilder.swift; sourceTree = "<group>"; };
 		EF5F1B9629C9C0500093307B /* Fee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fee.swift; sourceTree = "<group>"; };
 		EF666C1F2A288AEF0044986F /* AdaliteTokenDTO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdaliteTokenDTO.swift; sourceTree = "<group>"; };
 		EF666C292A2DFB120044986F /* WalletManagerFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletManagerFactory.swift; sourceTree = "<group>"; };
@@ -1499,7 +1506,6 @@
 		EFD32AE329E9B7800026353E /* RavencoinTransactionHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RavencoinTransactionHistory.swift; sourceTree = "<group>"; };
 		EFD39C9E2A6E6C700055D215 /* AddressTypesConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddressTypesConfig.swift; sourceTree = "<group>"; };
 		EFD4F4D62BA9E92400E6A55C /* NexaWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaWalletManager.swift; sourceTree = "<group>"; };
-		EFD4F4D82BA9E9CC00E6A55C /* NexaNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaNetworkProvider.swift; sourceTree = "<group>"; };
 		EFD4F4DA2BA9EAAC00E6A55C /* NexaTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaTransactionBuilder.swift; sourceTree = "<group>"; };
 		EFD4F4DC2BA9EE5300E6A55C /* NexaWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaWalletAssembly.swift; sourceTree = "<group>"; };
 		EFD4F4DE2BA9FD9300E6A55C /* NexaAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaAddressService.swift; sourceTree = "<group>"; };
@@ -1882,6 +1888,7 @@
 				2D9E2A542B584E2E0094D811 /* Algorand */,
 				2DB84D422B721CB000C1CDD1 /* Aptos */,
 				B67C5A262B8288F600A33A68 /* Hedera */,
+				EF5C75952BADF01C00811198 /* Nexa */,
 				5D14E47E2397B80F00C15FC8 /* Info.plist */,
 			);
 			path = BlockchainSdkTests;
@@ -1890,7 +1897,6 @@
 		5D14E4892397B87000C15FC8 /* Blockchains */ = {
 			isa = PBXGroup;
 			children = (
-				EFD4F4D52BA9E90F00E6A55C /* Nexa */,
 				2DDEFBBC2B59B36A00885675 /* Algorand */,
 				2D24F5732B6A423500D502A0 /* Aptos */,
 				5D4B33CB23F7DBF100C93A84 /* Binance */,
@@ -1908,6 +1914,7 @@
 				DA63B08E29CB3FC700AC6E49 /* Kaspa */,
 				5D54FE1623E41CAE009FAC2F /* Litecoin */,
 				B63B79302AD854010055BD06 /* NEAR */,
+				EFD4F4D52BA9E90F00E6A55C /* Nexa */,
 				E9EECB5128E9F4F700899D6C /* Optimism */,
 				DAED921D27A14F1B00F188D7 /* Polkadot */,
 				EF31EA1029DC31E000A59FBE /* Ravencoin */,
@@ -3098,6 +3105,7 @@
 				DC5E65382B16566100E81AA5 /* OpCodeFactory.swift */,
 				DC5E653A2B1663C800E81AA5 /* ScriptChunkHelper.swift */,
 				DC5E653C2B16641300E81AA5 /* BitcoinScriptBuilder.swift */,
+				EF5C75982BADF1AC00811198 /* BitcoinMultisigScriptBuilder.swift */,
 			);
 			path = BitcoinScript;
 			sourceTree = "<group>";
@@ -3403,6 +3411,14 @@
 			path = BlockchainSdk/Common/Derivations;
 			sourceTree = SOURCE_ROOT;
 		};
+		EF5C75952BADF01C00811198 /* Nexa */ = {
+			isa = PBXGroup;
+			children = (
+				EF5C75962BADF02D00811198 /* NexaTests.swift */,
+			);
+			path = Nexa;
+			sourceTree = "<group>";
+		};
 		EF680A71284F523100F6B1BD /* Dash */ = {
 			isa = PBXGroup;
 			children = (
@@ -3470,11 +3486,11 @@
 			isa = PBXGroup;
 			children = (
 				EFD4F4D62BA9E92400E6A55C /* NexaWalletManager.swift */,
-				EFD4F4D82BA9E9CC00E6A55C /* NexaNetworkProvider.swift */,
 				EFD4F4DA2BA9EAAC00E6A55C /* NexaTransactionBuilder.swift */,
 				EFD4F4DC2BA9EE5300E6A55C /* NexaWalletAssembly.swift */,
 				EFD4F4DE2BA9FD9300E6A55C /* NexaAddressService.swift */,
 				EFD4F4E02BAA002300E6A55C /* NexaExternalLinkProvider.swift */,
+				EF5C75892BADE8A400811198 /* NexaScriptBuilder.swift */,
 			);
 			path = Nexa;
 			sourceTree = "<group>";
@@ -3899,6 +3915,7 @@
 				DC5E650F2B1650F400E81AA5 /* OP_NOPN.swift in Sources */,
 				B63B792D2AD850DF0055BD06 /* NEARWalletAssembly.swift in Sources */,
 				DC5E65232B1650F400E81AA5 /* OP_CHECKLOCKTIMEVERIFY.swift in Sources */,
+				EF5C758A2BADE8A400811198 /* NexaScriptBuilder.swift in Sources */,
 				2D78F4072A5C319300962CCA /* ChiaWalletAssembly.swift in Sources */,
 				EF57BEE32A1E682D00C2A493 /* Blockchain+AllCases.swift in Sources */,
 				EF332D1B288EB3D900AE3C85 /* NetworkProviderConfiguration.swift in Sources */,
@@ -4255,6 +4272,7 @@
 				2DDE5BA429C4F8D200A5B708 /* BitcoinCashWalletAssembly.swift in Sources */,
 				DC5E65152B1650F400E81AA5 /* OP_TOTALSTACK.swift in Sources */,
 				B62011062B7AEA8B00155235 /* CreatedAccount.swift in Sources */,
+				EF5C75992BADF1AC00811198 /* BitcoinMultisigScriptBuilder.swift in Sources */,
 				DA82434327A2B0C100CFC2C0 /* PolkadotResponse.swift in Sources */,
 				2D9A919229BB8BFF00476EA6 /* TONWalletInfo.swift in Sources */,
 				EF1339B82AB4B2C300B78BA3 /* SmartContractMethod.swift in Sources */,
@@ -4559,6 +4577,7 @@
 				B67C5A282B82898400A33A68 /* HederaTests.swift in Sources */,
 				2D535E792A0CC5E50081EB76 /* TestVectorsUtility.swift in Sources */,
 				EF0DA78528523FAC0081092A /* BlockchainSdkTests.swift in Sources */,
+				EF5C75972BADF02D00811198 /* NexaTests.swift in Sources */,
 				DA198B5929E3F6E400DB6EEA /* CosmosTests.swift in Sources */,
 				EF1339BF2AB8EF8C00B78BA3 /* SmartContractMethodTests.swift in Sources */,
 				DA3738F229EFDF9600439F6B /* XCTAssert+.swift in Sources */,

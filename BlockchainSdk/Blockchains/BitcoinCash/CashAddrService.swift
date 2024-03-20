@@ -17,6 +17,10 @@ public class CashAddrService {
     public init(networkParams: INetwork) {
         addressPrefix = networkParams.bech32PrefixPattern
     }
+    
+    public init(bech32PrefixPattern: String) {
+        addressPrefix = bech32PrefixPattern
+    }
 
     public func makeAddress(from walletPublicKey: Data) throws -> String {
         let compressedKey = try Secp256k1Key(with: walletPublicKey).compress()
