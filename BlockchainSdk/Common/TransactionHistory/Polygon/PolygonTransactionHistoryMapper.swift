@@ -63,12 +63,17 @@ struct PolygonTransactionHistoryMapper {
         return .unconfirmed
     }
 
-    private func mapType(_ transaction: PolygonTransactionHistoryResult.Transaction) -> TransactionRecord.TransactionType {
-        if transaction.isContractInteraction {
-            return .contractMethod(id: transaction.functionName ?? "")
+    private func mapType(
+        _ transaction: PolygonTransactionHistoryResult.Transaction,
+        amountType: Amount.AmountType
+    ) -> TransactionRecord.TransactionType {
+        switch amountType {
+        case .coin where transaction.isContractInteraction:
+            return .contractMethod(id: transaction.functionName?.nilIfEmpty ?? .unknown)
+        case .coin, .reserve, .token:
+            // All token transactions are considered simple & plain transfers
+            return .transfer
         }
-
-        return .transfer
     }
 
     private func mapToAPIError(_ result: PolygonTransactionHistoryResult) -> PolygonScanAPIError {
@@ -136,7 +141,7 @@ extension PolygonTransactionHistoryMapper: TransactionHistoryMapper {
                 fee: mapFee(transaction),
                 status: mapStatus(transaction),
                 isOutgoing: isOutgoing,
-                type: mapType(transaction),
+                type: mapType(transaction, amountType: amountType),
                 date: Date(timeIntervalSince1970: timeStamp),
                 tokenTransfers: []
             )
