@@ -52,7 +52,11 @@ struct PolygonTransactionHistoryMapper {
             return .failed
         }
 
-        if transaction.txreceiptStatus?.isBooleanTrue == true {
+        if transaction.txReceiptStatus?.isBooleanTrue == true {
+            return .confirmed
+        }
+
+        if let confirmations = Int(transaction.confirmations), confirmations > 0 {
             return .confirmed
         }
 

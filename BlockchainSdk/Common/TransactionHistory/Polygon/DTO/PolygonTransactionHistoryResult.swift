@@ -15,7 +15,7 @@ struct PolygonTransactionHistoryResult {
     }
 
     /// - Note: There are many more fields in this response, but we map only the required ones.
-    struct Transaction: Decodable {
+    struct Transaction {
         let confirmations: String
         let contractAddress: String?
         let from: String
@@ -26,7 +26,9 @@ struct PolygonTransactionHistoryResult {
         let isError: String?
         let timeStamp: String
         let to: String
-        let txreceiptStatus: String?
+        /// This field uses `snake_case` encoding, while all other fields use `camelCase` encoding,
+        /// so `keyDecodingStrategy` is not an option and we must use custom coding keys.
+        let txReceiptStatus: String?
         let value: String
     }
 
@@ -56,5 +58,39 @@ extension PolygonTransactionHistoryResult: Decodable {
             let transactions = try container.decode([Transaction].self, forKey: .result)
             self.result = .transactions(transactions)
         }
+    }
+}
+
+extension PolygonTransactionHistoryResult.Transaction: Decodable {
+    private enum CodingKeys: String, CodingKey {
+        case confirmations
+        case contractAddress
+        case from
+        case functionName
+        case gasPrice
+        case gasUsed
+        case hash
+        case isError
+        case timeStamp
+        case to
+        case txReceiptStatus = "txreceipt_status"
+        case value
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        self.confirmations = try container.decode(String.self, forKey: CodingKeys.confirmations)
+        self.contractAddress = try container.decodeIfPresent(String.self, forKey: CodingKeys.contractAddress)
+        self.from = try container.decode(String.self, forKey: CodingKeys.from)
+        self.functionName = try container.decodeIfPresent(String.self, forKey: CodingKeys.functionName)
+        self.gasPrice = try container.decode(String.self, forKey: CodingKeys.gasPrice)
+        self.gasUsed = try container.decode(String.self, forKey: CodingKeys.gasUsed)
+        self.hash = try container.decode(String.self, forKey: CodingKeys.hash)
+        self.isError = try container.decodeIfPresent(String.self, forKey: CodingKeys.isError)
+        self.timeStamp = try container.decode(String.self, forKey: CodingKeys.timeStamp)
+        self.to = try container.decode(String.self, forKey: CodingKeys.to)
+        self.txReceiptStatus = try container.decodeIfPresent(String.self, forKey: CodingKeys.txReceiptStatus)
+        self.value = try container.decode(String.self, forKey: CodingKeys.value)
     }
 }
