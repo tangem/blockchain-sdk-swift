@@ -10,9 +10,8 @@ import Foundation
 import Combine
 
 @available(iOS 13.0, *)
-public protocol TransactionHistoryProvider: CustomStringConvertible {
+public protocol TransactionHistoryProvider: Resettable, CustomStringConvertible {
     var canFetchHistory: Bool { get }
-    
+
     func loadTransactionHistory(request: TransactionHistory.Request) -> AnyPublisher<TransactionHistory.Response, Error>
-    func reset()
 }
