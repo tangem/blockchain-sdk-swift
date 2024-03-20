@@ -12,10 +12,10 @@ import TangemSdk
 import class BitcoinCore.CashAddrBech32
 
 public class NexaAddressService {
-    private let prefix = "nexa"
-
-    private let version: NexaAddressComponents.NexaAddressType = .TEMPLATE
     private let cashAddrService: CashAddrService
+    
+    private let prefix = "nexa"
+    private let version: NexaAddressComponents.NexaAddressType = .TEMPLATE
     private let scriptChunkHelper = ScriptChunkHelper()
     
     init(cashAddrService: CashAddrService) {

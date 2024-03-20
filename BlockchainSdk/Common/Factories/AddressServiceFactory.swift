@@ -108,7 +108,8 @@ public struct AddressServiceFactory {
         case .hedera:
             return HederaAddressService(isTestnet: isTestnet)
         case .nexa:
-            return NexaAddressService()
+            let cashAddrService = CashAddrService(networkParams: BitcoinCashNetworkParams())
+            return NexaAddressService(cashAddrService: cashAddrService)
         }
     }
 }
