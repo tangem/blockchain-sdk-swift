@@ -14,28 +14,18 @@ struct PolygonTransactionHistoryResult {
         case transactions(_ transactions: [Transaction])
     }
 
+    /// - Note: There are many more fields in this response, but we map only the required ones.
     struct Transaction: Decodable {
-        let blockHash: String
-        let blockNumber: String
         let confirmations: String
         let contractAddress: String?
-        let cumulativeGasUsed: String
         let from: String
         let functionName: String?
-        let gas: String
         let gasPrice: String
         let gasUsed: String
         let hash: String
-        let input: String
         let isError: String?
-        let methodId: String?
-        let nonce: String
         let timeStamp: String
         let to: String
-        let tokenDecimal: String?
-        let tokenName: String?
-        let tokenSymbol: String?
-        let transactionIndex: String
         let txreceiptStatus: String?
         let value: String
     }
