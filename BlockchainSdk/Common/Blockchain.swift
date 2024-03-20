@@ -814,6 +814,8 @@ extension Blockchain {
             } else {
                 return [
                     URL(string: "https://mainnet.era.zksync.io/")!,
+                    URL(string: "https://zksync.nownodes.io/\(nowNodesApiKey)")!,
+                    makeGetBlockJsonRpcProvider(),
                     URL(string: "https://zksync-era.blockpi.network/v1/rpc/public/")!,
                     URL(string: "https://1rpc.io/zksync2-era/")!,
                     URL(string: "https://zksync.meowrpc.com/")!,
@@ -832,6 +834,8 @@ extension Blockchain {
             } else {
                 return [
                     URL(string: "https://rpc.api.moonbeam.network/")!,
+                    URL(string: "https://moonbeam.nownodes.io/\(nowNodesApiKey)")!,
+                    makeGetBlockJsonRpcProvider(),
                     URL(string: "https://1rpc.io/glmr/")!,
                     URL(string: "https://moonbeam.public.blastapi.io/")!,
                     URL(string: "https://moonbeam-rpc.dwellir.com/")!,
@@ -848,10 +852,11 @@ extension Blockchain {
                 ]
             } else {
                 return [
+                    URL(string: "https://zkevm-rpc.com/")!,
+                    makeGetBlockJsonRpcProvider(),
                     URL(string: "https://1rpc.io/polygon/zkevm/")!,
                     URL(string: "https://polygon-zkevm.drpc.org/")!,
                     URL(string: "https://polygon-zkevm-mainnet.public.blastapi.io/")!,
-                    URL(string: "https://zkevm-rpc.com/")!,
                     URL(string: "https://polygon-zkevm.blockpi.network/v1/rpc/public/")!,
                     URL(string: "https://rpc.polygon-zkevm.gateway.fm/")!,
                     URL(string: "https://api.zan.top/node/v1/polygonzkevm/mainnet/public/")!,
