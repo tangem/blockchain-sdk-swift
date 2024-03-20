@@ -68,9 +68,6 @@ final class RadiantTransactionBuilder {
         let preImageHashes = TransactionCompiler.preImageHashes(coinType: coinType, txInputData: txInputData)
         let preSigningOutput = try BitcoinPreSigningOutput(serializedData: preImageHashes)
         
-        print(preSigningOutput.hashPublicKeys.first!.publicKeyHash.hexString)
-        print(publicKey.hexString)
-        
         let signaturesVector = DataVector()
         let publicKeysVector = DataVector()
         
@@ -119,7 +116,7 @@ final class RadiantTransactionBuilder {
         let input = BitcoinSigningInput.with {
             $0.hashType = WalletCore.BitcoinScript.hashTypeForCoin(coinType: coinType)
             $0.amount = amount
-            $0.byteFee = byteFee
+            $0.byteFee = 10000
             $0.useMaxAmount = false
             $0.coinType = coinType.rawValue
             $0.toAddress = transaction.destinationAddress

@@ -20,7 +20,7 @@ struct RadiantWalletAssembly: WalletManagerAssembly {
         let transactionBuilder = RadiantTransactionBuilder(
             coinType: .bitcoinCash,
             publicKey: publicKey,
-            decimalValue: Decimal(input.wallet.blockchain.decimalCount),
+            decimalValue: input.blockchain.decimalValue,
             walletAddress: input.wallet.address
         )
         
