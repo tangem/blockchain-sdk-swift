@@ -28,17 +28,8 @@ final class RadiantWalletManager: BaseManager {
     // MARK: - Implementation
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        let preparedAddress: String
-        
-        do {
-            preparedAddress = try RadiantUtils().prepareWallet(address: wallet.address)
-        } catch {
-            completion(.failure(error))
-            return
-        }
-        
         let accountInfoPublisher = networkService
-            .getInfo(scripthash: preparedAddress)
+            .getInfo(address: wallet.address)
         
         cancellable = accountInfoPublisher
             .withWeakCaptureOf(self)
@@ -60,35 +51,29 @@ final class RadiantWalletManager: BaseManager {
 // MARK: - Private Implementation
 
 private extension RadiantWalletManager {
-    func updateWallet(with addressInfo: ElectrumAddressInfo) {
+    func updateWallet(with addressInfo: RadiantAddressInfo) {
         let coinBalanceValue = addressInfo.balance / wallet.blockchain.decimalValue
         wallet.add(coinValue: coinBalanceValue)
+        transactionBuilder.update(unspents: addressInfo.outputs)
     }
     
     func sendViaCompileTransaction(
         _ transaction: Transaction,
         signer: TransactionSigner
     ) -> AnyPublisher<TransactionSendResult, Error> {
-        let hashPublicKeysForSign: [WalletCore.TW_Bitcoin_Proto_HashPublicKey]
+        let hashesForSign: [Data]
         
         do {
-            hashPublicKeysForSign = try transactionBuilder.buildForSign(transaction: transaction)
+            hashesForSign = try transactionBuilder.buildForSign(transaction: transaction)
         } catch {
             return .anyFail(error: error)
         }
     
         return signer
-            .sign(hashes: hashPublicKeysForSign.map { $0.dataHash }, walletPublicKey: self.wallet.publicKey)
+            .sign(hashes: hashesForSign, walletPublicKey: self.wallet.publicKey)
             .withWeakCaptureOf(self)
             .tryMap { walletManager, signatures in
-                let signatureInfos = signatures.enumerated().map {
-                    SignatureInfo(signature: $1, publicKey: hashPublicKeysForSign[$0].publicKeyHash)
-                }
-                
-                return try walletManager.transactionBuilder.buildForSend(
-                    transaction: transaction,
-                    signatures: signatureInfos
-                )
+                try walletManager.transactionBuilder.buildForSend(transaction: transaction, signatures: signatures)
             }
             .withWeakCaptureOf(self)
             .tryMap { walletManager, transactionData -> TransactionSendResult in
@@ -117,15 +102,19 @@ extension RadiantWalletManager: WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        networkService.estimatedFee()
-            .tryMap { [weak self] response throws -> [Fee] in
-                guard let self = self else { throw WalletError.empty }
-                
-                return [
-                    .init(Amount(with: wallet.blockchain, value: 0.000000001))
-                ]
-            }
-            .eraseToAnyPublisher()
+        return .justWithError(output: [
+            .init(Amount(with: wallet.blockchain, value: 0.000000001))
+        ])
+        
+//        networkService.estimatedFee()
+//            .tryMap { [weak self] response throws -> [Fee] in
+//                guard let self = self else { throw WalletError.empty }
+//                
+//                return [
+//                    .init(Amount(with: wallet.blockchain, value: 0.000000001))
+//                ]
+//            }
+//            .eraseToAnyPublisher()
     }
 }
 

@@ -94,6 +94,15 @@ extension ElectrumWebSocketManager {
     enum IdentifierType {
         case address(_ address: String)
         case scripthash(_ hash: String)
+        
+        var raw: String {
+            switch self {
+            case .address(let address):
+                return address
+            case .scripthash(let hash):
+                return hash
+            }
+        }
     }
 }
 

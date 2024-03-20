@@ -38,7 +38,7 @@ final class RadiantTransactionBuilder {
         self.unspents = unspents
     }
 
-    func buildForSign(transaction: Transaction) throws -> [WalletCore.TW_Bitcoin_Proto_HashPublicKey] {
+    func buildForSign(transaction: Transaction) throws -> [Data] {
         let input = try buildInput(transaction: transaction)
         let txInputData = try input.serializedData()
 
@@ -54,10 +54,10 @@ final class RadiantTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
         
-        return preSigningOutput.hashPublicKeys
+        return preSigningOutput.hashPublicKeys.map { $0.dataHash }
     }
 
-    func buildForSend(transaction: Transaction, signatures: [SignatureInfo]) throws -> Data {
+    func buildForSend(transaction: Transaction, signatures: [Data]) throws -> Data {
         let input = try buildInput(transaction: transaction)
         let txInputData = try input.serializedData()
 
@@ -66,17 +66,19 @@ final class RadiantTransactionBuilder {
         }
         
         let preImageHashes = TransactionCompiler.preImageHashes(coinType: coinType, txInputData: txInputData)
+        let preSigningOutput = try BitcoinPreSigningOutput(serializedData: preImageHashes)
+        
+        print(preSigningOutput.hashPublicKeys.first!.publicKeyHash.hexString)
+        print(publicKey.hexString)
         
         let signaturesVector = DataVector()
         let publicKeysVector = DataVector()
         
-        try signatures.forEach { info in
-            guard PublicKey(data: info.publicKey, type: .secp256k1)?.verify(signature: info.signature, message: preImageHashes) ?? false else {
-                throw WalletError.failedToBuildTx
-            }
-            
-            signaturesVector.add(data: info.signature)
-            publicKeysVector.add(data: info.publicKey)
+        let derSignatures = try convertToDER(signatures)
+        
+        derSignatures.forEach { signature in
+            signaturesVector.add(data: signature)
+            publicKeysVector.add(data: publicKey)
         }
 
         let compiledTransaction = TransactionCompiler.compileWithSignatures(
@@ -92,6 +94,8 @@ final class RadiantTransactionBuilder {
             Log.debug("RadiantPreSigningOutput has a error: \(signingOutput.errorMessage)")
             throw WalletError.failedToBuildTx
         }
+        
+        print("HEX: \(signingOutput.encoded.hexadecimal)")
 
         return signingOutput.encoded
     }
@@ -106,7 +110,7 @@ final class RadiantTransactionBuilder {
         }
         
         let unspentTransactions = try unspents.map {
-            try buildUnspent(transaction: $0)
+            try buildUnspent(output: $0)
         }
         
         let amount = (transaction.amount.value * decimalValue).roundedDecimalNumber.int64Value
@@ -126,14 +130,27 @@ final class RadiantTransactionBuilder {
         return input
     }
     
-    private func buildUnspent(transaction: BitcoinUnspentOutput) throws -> BitcoinUnspentTransaction {
+    private func buildUnspent(output: BitcoinUnspentOutput) throws -> BitcoinUnspentTransaction {
         BitcoinUnspentTransaction.with {
-            $0.amount = Decimal(transaction.amount).int64Value
-            $0.outPoint.index = UInt32(transaction.outputIndex)
-            $0.outPoint.hash = Data.reverse(hexString: transaction.transactionHash)
+            $0.amount = Decimal(output.amount).int64Value
+            $0.outPoint.index = UInt32(output.outputIndex)
+            $0.outPoint.hash = Data.reverse(hexString: output.transactionHash)
             $0.outPoint.sequence = UInt32.max
-            $0.script = Data(hexString: transaction.outputScript)
+            $0.script = Data(hexString: output.outputScript)
         }
+    }
+    
+    private func convertToDER(_ signatures: [Data]) throws -> [Data] {
+        var derSigs = [Data]()
+        
+        let utils = Secp256k1Utils()
+        
+        for signature in signatures {
+            let signDer = try utils.serializeDer(signature)
+            derSigs.append(signDer)
+        }
+    
+        return derSigs
     }
 }
 

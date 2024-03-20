@@ -23,8 +23,7 @@ public class ElectrumNetworkProvider: MultiNetworkProvider {
         providerPublisher { provider in
             Future.async {
                 async let balance = provider.getBalance(identifier: identifier)
-                let unspents = try await provider.getUnspents(identifier: identifier)
-                let transactions = try await self.getTransactions(by: unspents.map { $0.txHash }, on: provider)
+                async let unspents = provider.getUnspents(identifier: identifier)
                 
                 return try await ElectrumAddressInfo(
                     balance: Decimal(balance.confirmed),
@@ -35,7 +34,32 @@ public class ElectrumNetworkProvider: MultiNetworkProvider {
                             value: unspent.value,
                             height: unspent.height
                         )
-                    }
+                    },
+                    scripts: []
+                )
+            }
+            .eraseToAnyPublisher()
+        }
+    }
+    
+    func getAddressInfoWithScripts(identifier: ElectrumWebSocketManager.IdentifierType) -> AnyPublisher<ElectrumAddressInfo, Error> {
+        providerPublisher { provider in
+            Future.async {
+                async let balance = provider.getBalance(identifier: identifier)
+                let unspents = try await provider.getUnspents(identifier: identifier)
+                let scripts = try await self.getTransactions(by: unspents.map { $0.txHash }, on: provider)
+                
+                return try await ElectrumAddressInfo(
+                    balance: Decimal(balance.confirmed),
+                    outputs: unspents.map { unspent in
+                        ElectrumUTXO(
+                            position: unspent.txPos,
+                            hash: unspent.txHash,
+                            value: unspent.value,
+                            height: unspent.height
+                        )
+                    },
+                    scripts: scripts
                 )
             }
             .eraseToAnyPublisher()
@@ -52,7 +76,7 @@ public class ElectrumNetworkProvider: MultiNetworkProvider {
         }
     }
     
-    private func getTransactions(by hashes: [String], on provider: Provider) async throws -> [ElectrumDTO.Response.Transaction] {
+    private func getTransactions(by hashes: [String], on provider: Provider) async throws -> [ElectrumScriptUTXO] {
         try await withThrowingTaskGroup(of: ElectrumDTO.Response.Transaction.self) { [weak self] group in
             guard let self else { return [] }
             
@@ -69,7 +93,14 @@ public class ElectrumNetworkProvider: MultiNetworkProvider {
                 transactions.append(transaction)
             }
 
-            return transactions
+            return transactions.map { trx in
+                    .init(
+                        transactionHash: trx.hash,
+                        outputs: trx.vout.map {
+                            .init(n: $0.n, scriptPubKey: .init(addresses: $0.scriptPubKey.addresses, hex: $0.scriptPubKey.hex))
+                        }
+                    )
+            }
         }
     }
 }

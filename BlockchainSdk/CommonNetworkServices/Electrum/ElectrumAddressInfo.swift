@@ -11,6 +11,7 @@ import Foundation
 public struct ElectrumAddressInfo {
     let balance: Decimal
     let outputs: [ElectrumUTXO]
+    let scripts: [ElectrumScriptUTXO]
 }
 
 public struct ElectrumUTXO {
@@ -18,4 +19,19 @@ public struct ElectrumUTXO {
     let hash: String
     let value: Decimal
     let height: Decimal
+}
+
+public struct ElectrumScriptUTXO {
+    let transactionHash: String
+    let outputs: [Vout]
+    
+    struct Vout {
+        let n: Int
+        let scriptPubKey: ScriptPubKey
+    }
+    
+    struct ScriptPubKey {
+        let addresses: [String]
+        let hex: String
+    }
 }

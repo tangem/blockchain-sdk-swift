@@ -24,9 +24,39 @@ extension RadiantNetworkService: HostProvider {
 }
 
 extension RadiantNetworkService {
-    func getInfo(scripthash: String) -> AnyPublisher<ElectrumAddressInfo, Error> {
-        electrumProvider
-            .getAddressInfo(identifier: .scripthash(scripthash))
+    func getInfo(address: String) -> AnyPublisher<RadiantAddressInfo, Error> {
+        let scripthash: String
+        
+        do {
+            scripthash = try RadiantUtils().prepareWallet(address: address)
+        } catch {
+            return .anyFail(error: WalletError.empty)
+        }
+        
+        return electrumProvider
+            .getAddressInfoWithScripts(identifier: .scripthash(scripthash))
+            .map { info in
+                let balance = info.balance
+                
+                let outputs: [BitcoinUnspentOutput] = info.outputs.compactMap { output -> BitcoinUnspentOutput? in
+                    guard
+                        let script = info.scripts.first(where: { $0.transactionHash == output.hash }),
+                        let vout = script.outputs.first(where: { $0.scriptPubKey.addresses.contains(address) })
+                    else {
+                        return nil
+                    }
+                    
+                    return .init(
+                        transactionHash: output.hash,
+                        outputIndex: output.position,
+                        amount: output.value.uint64Value,
+                        outputScript: vout.scriptPubKey.hex
+                    )
+                }
+                
+                return RadiantAddressInfo(balance: balance, outputs: outputs)
+            }
+            .eraseToAnyPublisher()
     }
     
     func estimatedFee() -> AnyPublisher<Decimal, Error> {
