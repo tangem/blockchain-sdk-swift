@@ -282,6 +282,7 @@
 		B62A12062AE308DA0080BAEC /* NEARTransactionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62A12052AE308DA0080BAEC /* NEARTransactionParams.swift */; };
 		B62BCBAC2B3D978F007494CF /* VeChainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62BCBAB2B3D978F007494CF /* VeChainTests.swift */; };
 		B62BD9992BA4CAD500E894A6 /* PolygonTransactionHistoryTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62BD9982BA4CAD500E894A6 /* PolygonTransactionHistoryTarget.swift */; };
+		B62D27162BA8B65A0096473B /* PolygonTransactionHistoryResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62D27152BA8B65A0096473B /* PolygonTransactionHistoryResult.swift */; };
 		B62EC6832B0E88A10018F51C /* Log+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62EC6822B0E88A10018F51C /* Log+.swift */; };
 		B63068BE2B3102A900E79053 /* VeChainExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068BD2B3102A900E79053 /* VeChainExternalLinkProvider.swift */; };
 		B63068C22B3102FA00E79053 /* VeChainTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63068C02B3102FA00E79053 /* VeChainTransactionBuilder.swift */; };
@@ -321,6 +322,7 @@
 		B675E9692B321131004AF179 /* VeChainNetworkResult.Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B675E9682B321131004AF179 /* VeChainNetworkResult.Transaction.swift */; };
 		B676D9C22B33AFFE009A0D06 /* VeChainNetworkParams.TransactionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B676D9C12B33AFFE009A0D06 /* VeChainNetworkParams.TransactionStatus.swift */; };
 		B676D9C42B33B028009A0D06 /* VeChainNetworkParams.BlockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B676D9C32B33B028009A0D06 /* VeChainNetworkParams.BlockInfo.swift */; };
+		B67C329A2BAAD50400D55B81 /* PolygonScanAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C32992BAAD50400D55B81 /* PolygonScanAPIError.swift */; };
 		B67C5A1B2B82509800A33A68 /* NSError+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5A1A2B82509700A33A68 /* NSError+.swift */; };
 		B67C5A282B82898400A33A68 /* HederaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67C5A272B82898400A33A68 /* HederaTests.swift */; };
 		B67CB2772BAAD30D00371AF1 /* TransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67CB2762BAAD30D00371AF1 /* TransactionHistoryMapper.swift */; };
@@ -1050,6 +1052,7 @@
 		B62A12052AE308DA0080BAEC /* NEARTransactionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARTransactionParams.swift; sourceTree = "<group>"; };
 		B62BCBAB2B3D978F007494CF /* VeChainTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainTests.swift; sourceTree = "<group>"; };
 		B62BD9982BA4CAD500E894A6 /* PolygonTransactionHistoryTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolygonTransactionHistoryTarget.swift; sourceTree = "<group>"; };
+		B62D27152BA8B65A0096473B /* PolygonTransactionHistoryResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolygonTransactionHistoryResult.swift; sourceTree = "<group>"; };
 		B62EC6822B0E88A10018F51C /* Log+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Log+.swift"; sourceTree = "<group>"; };
 		B63068BD2B3102A900E79053 /* VeChainExternalLinkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VeChainExternalLinkProvider.swift; sourceTree = "<group>"; };
 		B63068C02B3102FA00E79053 /* VeChainTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VeChainTransactionBuilder.swift; sourceTree = "<group>"; };
@@ -1085,6 +1088,7 @@
 		B675E9682B321131004AF179 /* VeChainNetworkResult.Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkResult.Transaction.swift; sourceTree = "<group>"; };
 		B676D9C12B33AFFE009A0D06 /* VeChainNetworkParams.TransactionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkParams.TransactionStatus.swift; sourceTree = "<group>"; };
 		B676D9C32B33B028009A0D06 /* VeChainNetworkParams.BlockInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainNetworkParams.BlockInfo.swift; sourceTree = "<group>"; };
+		B67C32992BAAD50400D55B81 /* PolygonScanAPIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolygonScanAPIError.swift; sourceTree = "<group>"; };
 		B67C5A1A2B82509700A33A68 /* NSError+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSError+.swift"; sourceTree = "<group>"; };
 		B67C5A272B82898400A33A68 /* HederaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaTests.swift; sourceTree = "<group>"; };
 		B67CB2762BAAD30D00371AF1 /* TransactionHistoryMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryMapper.swift; sourceTree = "<group>"; };
@@ -2497,6 +2501,14 @@
 			path = Network;
 			sourceTree = "<group>";
 		};
+		B62D27122BA8B6220096473B /* DTO */ = {
+			isa = PBXGroup;
+			children = (
+				B62D27152BA8B65A0096473B /* PolygonTransactionHistoryResult.swift */,
+			);
+			path = DTO;
+			sourceTree = "<group>";
+		};
 		B63068BF2B3102D400E79053 /* VeChain */ = {
 			isa = PBXGroup;
 			children = (
@@ -2600,6 +2612,8 @@
 		B6417DDA2BA2353000B9B61D /* Polygon */ = {
 			isa = PBXGroup;
 			children = (
+				B67C32A32BAAD83B00D55B81 /* Domain */,
+				B62D27122BA8B6220096473B /* DTO */,
 				B62D27112BA8B61E0096473B /* Network */,
 			);
 			path = Polygon;
@@ -2656,6 +2670,14 @@
 				B6931AD22B32495C00B31319 /* VeChainAccountInfo.swift */,
 				B6FC8F3A2B333A4B00CD55ED /* VeChainBlockInfo.swift */,
 				B68A7D462B35D39700822BAF /* VeChainTransactionInfo.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		B67C32A32BAAD83B00D55B81 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				B67C32992BAAD50400D55B81 /* PolygonScanAPIError.swift */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -3846,6 +3868,7 @@
 				2DDEFBC72B59B37900885675 /* AlgorandWalletAssembly.swift in Sources */,
 				DA346451279A802E00E77B1D /* SolanaSdk+.swift in Sources */,
 				DC5E65122B1650F400E81AA5 /* OP_ROLL.swift in Sources */,
+				B67C329A2BAAD50400D55B81 /* PolygonScanAPIError.swift in Sources */,
 				2DDE5BAC29C4F8D200A5B708 /* SubstrateWalletAssembly.swift in Sources */,
 				B6DC28462B62BB110070F1D2 /* HederaNetworkService.swift in Sources */,
 				5D88C809256BCD6C00020028 /* XRPTransactionParams.swift in Sources */,
@@ -4217,6 +4240,7 @@
 				B63068BE2B3102A900E79053 /* VeChainExternalLinkProvider.swift in Sources */,
 				DC5E65032B1650F400E81AA5 /* OP_2MUL.swift in Sources */,
 				5DA6F7BC243F3C0B0040AB4B /* CBOR+.swift in Sources */,
+				B62D27162BA8B65A0096473B /* PolygonTransactionHistoryResult.swift in Sources */,
 				2DDE5BA529C4F8D200A5B708 /* DogecoinWalletAssembly.swift in Sources */,
 				B6DC28442B62BA000070F1D2 /* HederaWalletManager.swift in Sources */,
 				DC5E650D2B1650F400E81AA5 /* OP_NUM2BIN.swift in Sources */,
