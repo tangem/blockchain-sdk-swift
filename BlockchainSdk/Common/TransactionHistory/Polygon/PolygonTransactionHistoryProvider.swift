@@ -124,4 +124,3 @@ private extension PolygonTransactionHistoryProvider {
         static var initialPageNumber: Int { 1 }
     }
 }
-

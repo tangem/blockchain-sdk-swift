@@ -17,7 +17,10 @@ final class PolygonTransactionHistoryMapper {
         self.blockchain = blockchain
     }
 
-    private func mapAmount(from transaction: PolygonTransactionHistoryResult.Transaction, amountType: Amount.AmountType) -> Decimal? {
+    private func mapAmount(
+        from transaction: PolygonTransactionHistoryResult.Transaction,
+        amountType: Amount.AmountType
+    ) -> Decimal? {
         guard let transactionValue = Decimal(stringValue: transaction.value) else {
             return nil
         }
@@ -48,7 +51,9 @@ final class PolygonTransactionHistoryMapper {
         return Fee(feeAmount)
     }
 
-    private func mapStatus(_ transaction: PolygonTransactionHistoryResult.Transaction) -> TransactionRecord.TransactionStatus {
+    private func mapStatus(
+        _ transaction: PolygonTransactionHistoryResult.Transaction
+    ) -> TransactionRecord.TransactionStatus {
         if transaction.isError?.isBooleanTrue == true {
             return .failed
         }
@@ -147,8 +152,7 @@ extension PolygonTransactionHistoryMapper: TransactionHistoryMapper {
                 status: mapStatus(transaction),
                 isOutgoing: isOutgoing,
                 type: mapType(transaction, amountType: amountType),
-                date: Date(timeIntervalSince1970: timeStamp),
-                tokenTransfers: []
+                date: Date(timeIntervalSince1970: timeStamp)
             )
         }
 
