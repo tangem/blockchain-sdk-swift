@@ -15,6 +15,14 @@ public protocol TransactionValidator: WalletProvider {
     func validate(amount: Amount, fee: Fee) throws
 }
 
+public struct TransactrionValidatorOptions {
+    public let validateTotalAgainstBalance: Bool
+    
+    public init(validateTotalAgainstBalance: Bool = true) {
+        self.validateTotalAgainstBalance = validateTotalAgainstBalance
+    }
+}
+
 public enum DestinationType: Hashable {
     /// Will generate a dummy destination address for verification
     case generate
@@ -52,7 +60,7 @@ public extension TransactionValidator {
 public extension TransactionValidator {
     /// Method for the sending amount and fee validation
     /// Has default implementation just for checking balance and numbers
-    func validateAmounts(amount: Amount, fee: Amount) throws {
+    func validateAmounts(amount: Amount, fee: Amount, options: TransactrionValidatorOptions = .init()) throws {
         guard amount.value >= 0 else {
             throw ValidationError.invalidAmount
         }
@@ -83,10 +91,12 @@ public extension TransactionValidator {
             return
         }
         
-        let total = amount + fee
-        
-        guard balance >= total else {
-            throw ValidationError.totalExceedsBalance
+        if options.validateTotalAgainstBalance {
+            let total = amount + fee
+            
+            guard balance >= total else {
+                throw ValidationError.totalExceedsBalance
+            }
         }
         
         // All checks completed
