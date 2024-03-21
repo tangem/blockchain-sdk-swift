@@ -53,19 +53,26 @@ final class PolygonTransactionHistoryProvider<Mapper> where
 
         return PolygonTransactionHistoryTarget(configuration: targetConfiguration, target: target)
     }
-}
 
-// MARK: - TransactionHistoryProvider protocol conformance
+    /// Provides exponential backoff with random jitter using standard formula `base * pow(2, retryAttempt) ± jitter`.
+    private func makeRetryInterval(retryAttempt: Int) -> DispatchQueue.SchedulerTimeType.Stride {
+        let retryJitter: TimeInterval = .random(in: Constants.retryJitterMinValue...Constants.retryJitterMaxValue)
+        let retryIntervalSeconds = Constants.retryBaseValue * pow(2.0, TimeInterval(retryAttempt)) + retryJitter
+        let retryIntervalNanoseconds = Int(retryIntervalSeconds * TimeInterval(NSEC_PER_SEC))
 
-extension PolygonTransactionHistoryProvider: TransactionHistoryProvider {
-    var canFetchHistory: Bool {
-        page == nil || !hasReachedEnd
+        return .init(DispatchTimeInterval.nanoseconds(retryIntervalNanoseconds))
     }
-    
-    func loadTransactionHistory(request: TransactionHistory.Request) -> AnyPublisher<TransactionHistory.Response, Error> {
+
+    private func loadTransactionHistory(
+        request: TransactionHistory.Request,
+        requestedPageNumber: Int?,
+        retryAttempt: Int
+    ) -> AnyPublisher<TransactionHistory.Response, Error> {
         return Deferred { [weak self] in
             Future { promise in
-                if let currentPageNumber = self?.page?.number {
+                if let requestedPageNumber {
+                    promise(.success(requestedPageNumber))
+                } else if let currentPageNumber = self?.page?.number {
                     promise(.success(currentPageNumber + 1))
                 } else {
                     promise(.success(Constants.initialPageNumber))
@@ -99,16 +106,67 @@ extension PolygonTransactionHistoryProvider: TransactionHistoryProvider {
                         .mapToTransactionRecords(result, walletAddress: request.address, amountType: request.amountType)
                 }
                 .tryCatch { [weak historyProvider] error in
-                    if let error = error as? PolygonScanAPIError, error == .endOfTransactionHistoryReached {
-                        historyProvider?.hasReachedEnd = true
-                        return Just(TransactionHistory.Response(records: []))
-                    }
-                    throw error
+                    return historyProvider
+                        .publisher
+                        .flatMap { historyProvider in
+                            return historyProvider.handleLoadTransactionHistoryError(
+                                error,
+                                request: request,
+                                requestedPageNumber: requestedPageNumber,
+                                retryAttempt: retryAttempt
+                            )
+                        }
                 }
         }
         .eraseToAnyPublisher()
     }
-    
+
+    private func handleLoadTransactionHistoryError(
+        _ error: Error,
+        request: TransactionHistory.Request,
+        requestedPageNumber: Int,
+        retryAttempt: Int
+    ) -> AnyPublisher<TransactionHistory.Response, Error> {
+        guard let error = error as? PolygonScanAPIError else {
+            return .anyFail(error: error)
+        }
+
+        switch error {
+        case .maxRateLimitReached where retryAttempt < Constants.maxRetryCount:
+            let nextRetryAttempt = retryAttempt + 1
+            let retryInterval = makeRetryInterval(retryAttempt: nextRetryAttempt)
+
+            return Just(())
+                .delay(for: retryInterval, scheduler: DispatchQueue.main)
+                .withWeakCaptureOf(self)
+                .flatMap { historyProvider, _ in
+                    return historyProvider.loadTransactionHistory(
+                        request: request,
+                        requestedPageNumber: requestedPageNumber,
+                        retryAttempt: nextRetryAttempt
+                    )
+                }
+                .eraseToAnyPublisher()
+        case .endOfTransactionHistoryReached:
+            hasReachedEnd = true
+            return .justWithError(output: TransactionHistory.Response(records: []))
+        case .unknown, .maxRateLimitReached:
+            return .anyFail(error: error)
+        }
+    }
+}
+
+// MARK: - TransactionHistoryProvider protocol conformance
+
+extension PolygonTransactionHistoryProvider: TransactionHistoryProvider {
+    var canFetchHistory: Bool {
+        page == nil || !hasReachedEnd
+    }
+
+    func loadTransactionHistory(request: TransactionHistory.Request) -> AnyPublisher<TransactionHistory.Response, Error> {
+        return loadTransactionHistory(request: request, requestedPageNumber: nil, retryAttempt: 0)
+    }
+
     func reset() {
         mapper.reset()
         page = nil
@@ -122,5 +180,9 @@ private extension PolygonTransactionHistoryProvider {
     enum Constants {
         // - Note: Tx history API has 1-based indexing (not 0-based indexing)
         static var initialPageNumber: Int { 1 }
+        static var maxRetryCount: Int { 3 }
+        static var retryBaseValue: TimeInterval { 1.0 }
+        static var retryJitterMinValue: TimeInterval { -0.5 }
+        static var retryJitterMaxValue: TimeInterval { 0.5 }
     }
 }
