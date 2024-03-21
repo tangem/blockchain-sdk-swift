@@ -41,4 +41,8 @@ extension Data {
     func asDataVector() -> DataVector {
         return DataVector(data: self)
     }
+    
+    func compressed(using algorithm: NSData.CompressionAlgorithm) throws -> Data {
+        try (self as NSData).compressed(using: algorithm) as Data
+    }
 }
