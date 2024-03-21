@@ -9,7 +9,7 @@
 import Foundation
 
 public enum WalletError: Error, LocalizedError {
-    case noAccount(message: String)
+    case noAccount(message: String, amountToCreate: Decimal)
     case failedToGetFee
     case failedToBuildTx
     case failedToParseNetworkResponse
@@ -20,7 +20,7 @@ public enum WalletError: Error, LocalizedError {
     
     public var errorDescription: String? {
         switch self {
-        case .noAccount(let message):
+        case .noAccount(let message, _):
             return message
         case .failedToGetFee:
             return "common_fee_error".localized
