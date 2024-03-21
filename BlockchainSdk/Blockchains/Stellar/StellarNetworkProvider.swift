@@ -121,7 +121,7 @@ class StellarNetworkProvider: HostProvider {
         if let horizonError = error as? HorizonRequestError {
             if case .notFound = horizonError, let isAsset = isAsset {
                 if isAsset {
-                    let amount: Decimal = 1.5
+                    let amount = Decimal(stringValue: "1.5")!
                     return WalletError.noAccount(
                         message: StellarError.assetCreateAccount(amount: amount).localizedDescription,
                         amountToCreate: amount

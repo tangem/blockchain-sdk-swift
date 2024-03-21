@@ -13,8 +13,6 @@ import Combine
 import TangemSdk
 
 public enum StellarError: Error, LocalizedError {
-    // WARNING: Make sure to preserve the error codes when removing or inserting errors
-    
     case emptyResponse
     case requiresMemo
     case failedToFindLatestLedger
@@ -22,8 +20,6 @@ public enum StellarError: Error, LocalizedError {
     case assetCreateAccount(amount: Decimal)
     case assetNoAccountOnDestination(amount: Decimal)
     case assetNoTrustline
-    
-    // WARNING: Make sure to preserve the error codes when removing or inserting errors
     
     public var errorDescription: String? {
         let networkName = Blockchain.stellar(curve: .ed25519, testnet: false).displayName
@@ -46,22 +42,14 @@ public enum StellarError: Error, LocalizedError {
     
     private var errorCode: Int {
         switch self {
-        case .emptyResponse:
-            return 0
-        case .requiresMemo:
-            return 1
-        case .failedToFindLatestLedger:
-            return 2
-        case .xlmCreateAccount(let amount):
-            return 3
-        case .assetCreateAccount(let amount):
-            return 4
-        case .assetNoAccountOnDestination(let amount):
-            return 5
-        case .assetNoTrustline:
-            return 6
+        case .emptyResponse: return 0
+        case .requiresMemo: return 1
+        case .failedToFindLatestLedger: return 2
+        case .xlmCreateAccount: return 3
+        case .assetCreateAccount: return 4
+        case .assetNoAccountOnDestination: return 5
+        case .assetNoTrustline: return 6
         }
-        
     }
 }
 
