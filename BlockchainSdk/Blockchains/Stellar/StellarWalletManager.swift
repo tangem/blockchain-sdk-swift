@@ -12,44 +12,48 @@ import SwiftyJSON
 import Combine
 import TangemSdk
 
-public enum StellarError: Error, LocalizedError {
+public enum StellarError: Int, Error, LocalizedError {
+    // WARNING: Make sure to preserve the error codes when removing or inserting errors
+    
     case emptyResponse
     case requiresMemo
     case failedToFindLatestLedger
-    case xlmCreateAccount(amount: Decimal)
-    case assetCreateAccount(amount: Decimal)
-    case assetNoAccountOnDestination(amount: Decimal)
+    case xlmCreateAccount
+    case assetCreateAccount
+    case assetNoAccountOnDestination
     case assetNoTrustline
+    
+    // WARNING: Make sure to preserve the error codes when removing or inserting errors
     
     public var errorDescription: String? {
         let networkName = Blockchain.stellar(curve: .ed25519, testnet: false).displayName
         switch self {
         case .requiresMemo:
             return "xlm_requires_memo_error".localized
-        case .xlmCreateAccount(let amount):
-            return "no_account_generic".localized([networkName, "\(amount)", "XLM"])
-        case .assetCreateAccount(let amount):
-            return "no_account_generic".localized([networkName, "\(amount)", "XLM"])
-        case .assetNoAccountOnDestination(let amount):
-            return "send_error_no_target_account".localized(["\(amount) XLM"])
+        case .xlmCreateAccount:
+            return "no_account_generic".localized([networkName, "\(StellarWalletManager.Constants.minAmountToCreateCoinAccount)", "XLM"])
+        case .assetCreateAccount:
+            return "no_account_generic".localized([networkName, "\(StellarWalletManager.Constants.minAmountToCreateAssetAccount)", "XLM"])
+        case .assetNoAccountOnDestination:
+            return "send_error_no_target_account".localized(["\(StellarWalletManager.Constants.minAmountToCreateCoinAccount) XLM"])
         case .assetNoTrustline:
             return "no_trustline_xlm_asset".localized
         default:
-            let errorCodeDescription = "stellar_error \(errorCode)"
             return "generic_error_code".localized(errorCodeDescription)
         }
     }
     
-    private var errorCode: Int {
-        switch self {
-        case .emptyResponse: return 0
-        case .requiresMemo: return 1
-        case .failedToFindLatestLedger: return 2
-        case .xlmCreateAccount: return 3
-        case .assetCreateAccount: return 4
-        case .assetNoAccountOnDestination: return 5
-        case .assetNoTrustline: return 6
-        }
+    private var errorCodeDescription: String {
+        "stellar_error \(rawValue)"
+    }
+}
+
+extension StellarWalletManager {
+    enum Constants {
+        /// 1 XLM
+        static let minAmountToCreateCoinAccount: Decimal = 1
+        /// 1.5 XLM
+        static let minAmountToCreateAssetAccount: Decimal = Decimal(stringValue: "1.5")!
     }
 }
 
@@ -176,7 +180,7 @@ extension StellarWalletManager: ReserveAmountRestrictable {
             return
         }
         
-        let reserveAmount = Amount(with: wallet.blockchain, value: 1)
+        let reserveAmount = Amount(with: wallet.blockchain, value: Constants.minAmountToCreateCoinAccount)
         switch amount.type {
         case .coin:
             if amount < reserveAmount {
@@ -184,7 +188,7 @@ extension StellarWalletManager: ReserveAmountRestrictable {
             }
         case .token:
             // From TxBuilder
-            throw StellarError.assetNoAccountOnDestination(amount: reserveAmount.value)
+            throw StellarError.assetNoAccountOnDestination
         case .reserve:
             break
         }

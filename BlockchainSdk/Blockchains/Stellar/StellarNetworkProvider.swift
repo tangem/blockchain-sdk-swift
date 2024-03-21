@@ -121,18 +121,16 @@ class StellarNetworkProvider: HostProvider {
         if let horizonError = error as? HorizonRequestError {
             if case .notFound = horizonError, let isAsset = isAsset {
                 if isAsset {
-                    let amount = Decimal(stringValue: "1.5")!
                     return WalletError.noAccount(
-                        message: StellarError.assetCreateAccount(amount: amount).localizedDescription,
-                        amountToCreate: amount
-                    )
-                } else {
-                    let amount: Decimal = 1
-                    return WalletError.noAccount(
-                        message: StellarError.xlmCreateAccount(amount: amount).localizedDescription,
-                        amountToCreate: amount
+                        message: StellarError.assetCreateAccount.localizedDescription,
+                        amountToCreate: StellarWalletManager.Constants.minAmountToCreateAssetAccount
                     )
                 }
+                
+                return WalletError.noAccount(
+                    message: StellarError.xlmCreateAccount.localizedDescription,
+                    amountToCreate: StellarWalletManager.Constants.minAmountToCreateCoinAccount
+                )
             } else {
                 return horizonError.parseError()
             }
