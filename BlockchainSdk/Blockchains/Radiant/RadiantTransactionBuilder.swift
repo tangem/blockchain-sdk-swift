@@ -65,9 +65,6 @@ final class RadiantTransactionBuilder {
             throw WalletError.failedToBuildTx
         }
         
-        let preImageHashes = TransactionCompiler.preImageHashes(coinType: coinType, txInputData: txInputData)
-        let preSigningOutput = try BitcoinPreSigningOutput(serializedData: preImageHashes)
-        
         let signaturesVector = DataVector()
         let publicKeysVector = DataVector()
         
@@ -114,11 +111,11 @@ final class RadiantTransactionBuilder {
         let byteFee = (transaction.fee.amount.value * decimalValue).roundedDecimalNumber.int64Value
         
         let input = BitcoinSigningInput.with {
-            $0.hashType = WalletCore.BitcoinScript.hashTypeForCoin(coinType: coinType)
+            $0.coinType = coinType.rawValue
+            $0.hashType = 65
             $0.amount = amount
             $0.byteFee = 10000
             $0.useMaxAmount = false
-            $0.coinType = coinType.rawValue
             $0.toAddress = transaction.destinationAddress
             $0.changeAddress = transaction.changeAddress
             $0.utxo = unspentTransactions

@@ -20,6 +20,12 @@ final class RadiantTests: XCTestCase {
     
     // MARK: - Impementation
     
+    func test() {
+        let script = WalletCore.BitcoinScript.buildPayToPublicKeyHash(hash: Data(hexString: "02AB010392F0C638AC572C61AA72D37460D4B4AA722DFA258863ADE24998C72CFA"))
+        print(script.data.hexString)
+        print("---")
+    }
+    
     /// https://github.com/trustwallet/wallet-core/blob/master/tests/chains/Bitcoin/BitcoinAddressTests.cpp
     func testP2PKH_PrefixAddress() throws {
         let publicKey = Wallet.PublicKey(seedKey: Data(hexString: "039d645d2ce630c2a9a6dbe0cbd0a8fcb7b70241cb8a48424f25593290af2494b9"), derivationType: .none)

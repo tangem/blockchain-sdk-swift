@@ -77,8 +77,6 @@ private extension RadiantWalletManager {
             }
             .withWeakCaptureOf(self)
             .tryMap { walletManager, transactionData -> TransactionSendResult in
-                print(transactionData.hexString)
-                
                 // TODO: - Need to send network service
                 throw WalletError.failedToSendTx
             }
