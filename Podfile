@@ -13,7 +13,6 @@ def common_pods
 end
 
 target 'BlockchainSdk' do
-  # 'Hedera SDK' dependency must be added via SPM
   # 'CryptoSwift' dependency must be added via SPM
   # 'SwiftProtobuf' dependency must be added via SPM
   # 'secp256k1.swift' dependency must be added via SPM
