@@ -15,7 +15,7 @@ public protocol TransactionValidator: WalletProvider {
     func validate(amount: Amount, fee: Fee) throws
 }
 
-public struct TransactrionValidatorOptions {
+public struct TransactionValidatorOptions {
     public let validateTotalAgainstBalance: Bool
     
     public init(validateTotalAgainstBalance: Bool = true) {
@@ -60,7 +60,7 @@ public extension TransactionValidator {
 public extension TransactionValidator {
     /// Method for the sending amount and fee validation
     /// Has default implementation just for checking balance and numbers
-    func validateAmounts(amount: Amount, fee: Amount, options: TransactrionValidatorOptions = .init()) throws {
+    func validateAmounts(amount: Amount, fee: Amount, options: TransactionValidatorOptions = .init()) throws {
         guard amount.value >= 0 else {
             throw ValidationError.invalidAmount
         }
