@@ -28,7 +28,7 @@ struct ScriptChunkHelper {
     // If encoding is -1, then the most compact will be chosen.
     // Valid values: -1, 0, 1, 2, 4.
     // Returns nil if preferredLengthEncoding can't be used for data, or data is nil or too big.
-    func scriptData(for data: Data, preferredLengthEncoding: Int) -> Data? {
+    func scriptData(for data: Data, preferredLengthEncoding: Int) throws -> Data {
         var scriptData: Data = Data()
 
         if data.count < OpCode.OP_PUSHDATA1 && preferredLengthEncoding <= 0 {
@@ -44,8 +44,7 @@ struct ScriptChunkHelper {
             scriptData += Data(OpCode.OP_PUSHDATA4.value)
             scriptData += UInt64(data.count).bytes
         } else {
-            // Invalid preferredLength encoding or data size is too big.
-            return nil
+            throw ScriptChunkError.error("Invalid preferredLength encoding or data size is too big.")
         }
         scriptData += data
         return scriptData

@@ -11,6 +11,10 @@ import Foundation
 class BitcoinScriptBuilder {
     private var data = Data()
     private let scriptChunkHelper = ScriptChunkHelper()
+    
+    func getData() -> Data {
+        return data
+    }
 
     func makeMultisig(publicKeys: [Data], signaturesRequired: Int) throws -> BitcoinScript {
         let publicKeys = publicKeys.sorted(by: { $0.lexicographicallyPrecedes($1) })
@@ -50,24 +54,26 @@ class BitcoinScriptBuilder {
         return BitcoinScript(chunks: chunks, data: data)
     }
 
-    private func append(_ opcode: OpCode) throws {
+    @discardableResult
+    func append(_ opcode: OpCode) throws -> Self {
         guard !BitcoinScriptBuilder.invalidOpCodes.contains(where: { $0 == opcode }) else {
             throw BlockchainSdkError.failedToCreateMultisigScript
         }
 
         data += Data(opcode.value)
+        return self
     }
 
-    private func appendData(_ newData: Data) throws  {
+    @discardableResult
+    func appendData(_ newData: Data) throws -> Self {
         guard !newData.isEmpty else {
             throw BlockchainSdkError.failedToCreateMultisigScript
         }
 
-        guard let addedScriptData = scriptChunkHelper.scriptData(for: newData, preferredLengthEncoding: -1) else {
-            throw BlockchainSdkError.failedToCreateMultisigScript
-        }
+        let addedScriptData = try scriptChunkHelper.scriptData(for: newData, preferredLengthEncoding: -1)
 
-        data += addedScriptData
+        data += newData
+        return self
     }
 
     private func parseData(_ data: Data) throws -> [BitcoinScriptChunk] {
