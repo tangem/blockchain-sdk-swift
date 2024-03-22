@@ -618,6 +618,10 @@ extension Blockchain {
                     URL(string: "https://arb1.arbitrum.io/rpc")!,
                     URL(string: "https://arbitrum.nownodes.io/\(nowNodesApiKey)")!,
                     URL(string: "https://arbitrum-mainnet.infura.io/v3/\(infuraProjectId)")!,
+                    URL(string: "https://1rpc.io/arb")!,
+                    URL(string: "https://arbitrum-one-rpc.publicnode.com")!,
+                    URL(string: "https://rpc.ankr.com/arbitrum")!,
+                    URL(string: "https://arbitrum-one.public.blastapi.io")!,
                 ]
             }
         case .gnosis:
