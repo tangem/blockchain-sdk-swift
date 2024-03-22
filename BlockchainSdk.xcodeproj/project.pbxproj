@@ -85,6 +85,7 @@
 		2DA13A072A8AD83B00E3C374 /* ChiaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA13A012A8AD83B00E3C374 /* ChiaNetworkService.swift */; };
 		2DA13A092A8AD84F00E3C374 /* ChiaTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA13A082A8AD84F00E3C374 /* ChiaTransactionBuilder.swift */; };
 		2DA8AB0D2A433A1000C75D85 /* ExceptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8AB0C2A433A1000C75D85 /* ExceptionHandler.swift */; };
+		2DB21D262BAC307E00AAC583 /* RadiantCashTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB21D252BAC307E00AAC583 /* RadiantCashTransactionBuilder.swift */; };
 		2DB613D02B912D05007CFA9B /* RadiantTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB613CF2B912D05007CFA9B /* RadiantTests.swift */; };
 		2DB6C6D52AFCBEC9000D0C6A /* TelosWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB6C6D42AFCBEC9000D0C6A /* TelosWalletManager.swift */; };
 		2DB6C6D72AFCC013000D0C6A /* TelosWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB6C6D62AFCC013000D0C6A /* TelosWalletAssembly.swift */; };
@@ -851,6 +852,7 @@
 		2DA13A012A8AD83B00E3C374 /* ChiaNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaNetworkService.swift; sourceTree = "<group>"; };
 		2DA13A082A8AD84F00E3C374 /* ChiaTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaTransactionBuilder.swift; sourceTree = "<group>"; };
 		2DA8AB0C2A433A1000C75D85 /* ExceptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionHandler.swift; sourceTree = "<group>"; };
+		2DB21D252BAC307E00AAC583 /* RadiantCashTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadiantCashTransactionBuilder.swift; sourceTree = "<group>"; };
 		2DB613CF2B912D05007CFA9B /* RadiantTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadiantTests.swift; sourceTree = "<group>"; };
 		2DB6C6D42AFCBEC9000D0C6A /* TelosWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelosWalletManager.swift; sourceTree = "<group>"; };
 		2DB6C6D62AFCC013000D0C6A /* TelosWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelosWalletAssembly.swift; sourceTree = "<group>"; };
@@ -1640,13 +1642,14 @@
 		2D3130B72B985D70009E529C /* Radiant */ = {
 			isa = PBXGroup;
 			children = (
+				2D547E3D2BA9D12D00E99A5C /* RadiantAddressInfo.swift */,
 				2D3130B92B985D70009E529C /* RadiantAddressService.swift */,
+				2DB21D252BAC307E00AAC583 /* RadiantCashTransactionBuilder.swift */,
 				2D3130BF2B985D70009E529C /* RadiantNetworkParams.swift */,
 				2D3130BA2B985D70009E529C /* RadiantTransactionBuilder.swift */,
+				2D4C55652BA0E25B00AC4E63 /* RadiantUtils.swift */,
 				2D3130B82B985D70009E529C /* RadiantWalletAssembly.swift */,
 				2D3130BE2B985D70009E529C /* RadiantWalletManager.swift */,
-				2D4C55652BA0E25B00AC4E63 /* RadiantUtils.swift */,
-				2D547E3D2BA9D12D00E99A5C /* RadiantAddressInfo.swift */,
 				2D3130BB2B985D70009E529C /* Network */,
 			);
 			path = Radiant;
@@ -4061,6 +4064,7 @@
 				EF3B19302AA85CBF0084AA1C /* XRPExternalLinkProvider.swift in Sources */,
 				B605AC582B7A867300878B64 /* AccountCreator.swift in Sources */,
 				EFD717CA2A25EA8500E5430D /* WalletCoreABIEncoder.swift in Sources */,
+				2DB21D262BAC307E00AAC583 /* RadiantCashTransactionBuilder.swift in Sources */,
 				2DA13A042A8AD83B00E3C374 /* ChiaProviderRequests.swift in Sources */,
 				B6BA937F2AEA0F4800F84E36 /* NEARNetworkResult.TransactionSendAwait.swift in Sources */,
 				5D4B33BE23F6EA3700C93A84 /* BlockchairResponses.swift in Sources */,

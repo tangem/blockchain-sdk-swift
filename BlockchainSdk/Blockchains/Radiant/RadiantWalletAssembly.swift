@@ -17,11 +17,16 @@ struct RadiantWalletAssembly: WalletManagerAssembly {
         
         let publicKey = try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress()
 
-        let transactionBuilder = RadiantTransactionBuilder(
-            coinType: .bitcoinCash,
-            publicKey: publicKey,
-            decimalValue: input.blockchain.decimalValue,
-            walletAddress: input.wallet.address
+//        let transactionBuilder = RadiantTransactionBuilder(
+//            coinType: .bitcoinCash,
+//            publicKey: publicKey,
+//            decimalValue: input.blockchain.decimalValue,
+//            walletAddress: input.wallet.address
+//        )
+        
+        let transactionBuilder = try RadiantCashTransactionBuilder(
+            walletPublicKey: publicKey,
+            decimalValue: input.blockchain.decimalValue
         )
         
         return try RadiantWalletManager(
