@@ -11,7 +11,7 @@ import Foundation
 actor JSONRPCWebSocketProvider {
     private enum Constants {
         static let ping: TimeInterval = 10
-        static let timeout: TimeInterval = 30
+        static let timeout: TimeInterval = 60
     }
     
     private let url: URL

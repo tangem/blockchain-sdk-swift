@@ -10,7 +10,15 @@ import Foundation
 
 struct NexaWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        let provider = NexaNetworkProvider(providers: [])
+        let urls = [
+            URL(string: "wss://electrum.nexa.org:20004")!,
+            URL(string: "wss://onekey-electrum.bitcoinunlimited.info:20004")!,
+        ]
+
+        let provider = ElectrumNetworkProvider(
+            providers: urls.map { ElectrumWebSocketManager(url: $0) },
+            decimalValue: input.blockchain.decimalValue
+        )
         let transactionBuilder = NexaTransactionBuilder()
         
         return NexaWalletManager(

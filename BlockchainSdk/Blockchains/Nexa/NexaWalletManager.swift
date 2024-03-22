@@ -15,6 +15,10 @@ class NexaWalletManager: BaseManager, WalletManager {
     private let transactionBuilder: NexaTransactionBuilder
     private let networkProvider: ElectrumNetworkProvider
     
+    private var decimalValue: Decimal {
+        Blockchain.nexa.decimalValue
+    }
+    
     init(
         wallet: Wallet,
         transactionBuilder: NexaTransactionBuilder,
@@ -46,7 +50,7 @@ class NexaWalletManager: BaseManager, WalletManager {
 
 private extension NexaWalletManager {
     func updateWallet(info: ElectrumAddressInfo) {
-        let balance = info.outputs.reduce(0) { result, output in
+        let balanceSatoshi: Decimal = info.outputs.reduce(0) { result, output in
             if output.isConfirmed {
                 return result + output.value
             }
@@ -54,6 +58,7 @@ private extension NexaWalletManager {
             return result
         }
 
+        let balance = balanceSatoshi / decimalValue
         wallet.add(coinValue: balance)
         wallet.clearPendingTransaction()
     }
