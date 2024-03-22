@@ -19,11 +19,9 @@ class ElectrumNetworkProvider: MultiNetworkProvider {
     public func getAddressInfo(address: String) -> AnyPublisher<ElectrumAddressInfo, Error> {
         providerPublisher { provider in
             Future.async {
-                async let balance = provider.getBalance(identifier: .address(address))
-                async let unspents = provider.getUnspents(identifier: .address(address))
+                let unspents = try await provider.getUnspents(identifier: .address(address))
                 
-                return try await ElectrumAddressInfo(
-                    balance: Decimal(balance.confirmed),
+                return ElectrumAddressInfo(
                     outputs: unspents.map { unspent in
                         ElectrumUTXO(
                             position: unspent.txPos,
