@@ -557,7 +557,7 @@ extension Blockchain {
                     URL(string: "https://bsc-dataseed.binance.org")!,
                     URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")!,
                     makeGetBlockJsonRpcProvider(),
-                    URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)/")!,
+                    URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)")!,
                 ]
             }
         case .polygon:
