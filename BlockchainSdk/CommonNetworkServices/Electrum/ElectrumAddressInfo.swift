@@ -16,6 +16,7 @@ public struct ElectrumUTXO {
     let position: Int
     let hash: String
     let value: Decimal
+    let outpoint: String
     let height: Decimal
     
     var isConfirmed: Bool {

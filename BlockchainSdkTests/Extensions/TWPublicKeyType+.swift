@@ -24,7 +24,8 @@ extension PublicKeyType {
                 .ravencoin,
                 .cosmos,
                 .terraV1,
-                .terraV2:
+                .terraV2,
+                .nexa:
             self = PublicKeyType.secp256k1
         case .ethereum,
                 .bsc,

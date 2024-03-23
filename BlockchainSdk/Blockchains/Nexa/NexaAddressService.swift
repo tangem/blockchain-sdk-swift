@@ -37,7 +37,7 @@ extension NexaAddressService: AddressValidator {
     public func validate(_ address: String) -> Bool {
         let address = address.contains(":") ? address: "\(prefix):\(address)"
         
-        let validStartLetters = ["q", "p", "n"]
+        let validStartLetters = ["q", "n"]
         
         guard let first = address.first,
               validStartLetters.contains(where: { $0 == String(first) }) else {
@@ -47,8 +47,7 @@ extension NexaAddressService: AddressValidator {
         guard CashAddrBech32.decode(address) != nil else {
             return false
         }
-        
-        // TODO: When we can build the tx add validation
+
         return true
     }
 }

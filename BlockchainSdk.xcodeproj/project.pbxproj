@@ -680,7 +680,6 @@
 		EF5C753E2BAC4D6B00811198 /* URLSessionTask.State+CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C753D2BAC4D6B00811198 /* URLSessionTask.State+CustomStringConvertible.swift */; };
 		EF5C75402BAC4DB500811198 /* URLSessionWebSocketTask.CloseCode+CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C753F2BAC4DB500811198 /* URLSessionWebSocketTask.CloseCode+CustomStringConvertible.swift */; };
 		EF5C758A2BADE8A400811198 /* NexaScriptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C75892BADE8A400811198 /* NexaScriptBuilder.swift */; };
-		EF5C758A2BADE8A400811198 /* NexaScriptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C75892BADE8A400811198 /* NexaScriptBuilder.swift */; };
 		EF5C75972BADF02D00811198 /* NexaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C75962BADF02D00811198 /* NexaTests.swift */; };
 		EF5C75992BADF1AC00811198 /* BitcoinMultisigScriptBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C75982BADF1AC00811198 /* BitcoinMultisigScriptBuilder.swift */; };
 		EF5F1B9729C9C0500093307B /* Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5F1B9629C9C0500093307B /* Fee.swift */; };
@@ -720,11 +719,6 @@
 		EFD32AE429E9B7800026353E /* RavencoinTransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD32AE329E9B7800026353E /* RavencoinTransactionHistory.swift */; };
 		EFD39C9F2A6E6C700055D215 /* AddressTypesConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD39C9E2A6E6C700055D215 /* AddressTypesConfig.swift */; };
 		EFD4F4D72BA9E92400E6A55C /* NexaWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4D62BA9E92400E6A55C /* NexaWalletManager.swift */; };
-		EFD4F4DB2BA9EAAC00E6A55C /* NexaTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4DA2BA9EAAC00E6A55C /* NexaTransactionBuilder.swift */; };
-		EFD4F4DD2BA9EE5300E6A55C /* NexaWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4DC2BA9EE5300E6A55C /* NexaWalletAssembly.swift */; };
-		EFD4F4DF2BA9FD9300E6A55C /* NexaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4DE2BA9FD9300E6A55C /* NexaAddressService.swift */; };
-		EFD4F4E12BAA002300E6A55C /* NexaExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4E02BAA002300E6A55C /* NexaExternalLinkProvider.swift */; };
-		EFD4F4D92BA9E9CC00E6A55C /* NexaNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4D82BA9E9CC00E6A55C /* NexaNetworkProvider.swift */; };
 		EFD4F4DB2BA9EAAC00E6A55C /* NexaTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4DA2BA9EAAC00E6A55C /* NexaTransactionBuilder.swift */; };
 		EFD4F4DD2BA9EE5300E6A55C /* NexaWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4DC2BA9EE5300E6A55C /* NexaWalletAssembly.swift */; };
 		EFD4F4DF2BA9FD9300E6A55C /* NexaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD4F4DE2BA9FD9300E6A55C /* NexaAddressService.swift */; };
@@ -1466,7 +1460,6 @@
 		EF5C753D2BAC4D6B00811198 /* URLSessionTask.State+CustomStringConvertible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSessionTask.State+CustomStringConvertible.swift"; sourceTree = "<group>"; };
 		EF5C753F2BAC4DB500811198 /* URLSessionWebSocketTask.CloseCode+CustomStringConvertible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSessionWebSocketTask.CloseCode+CustomStringConvertible.swift"; sourceTree = "<group>"; };
 		EF5C75892BADE8A400811198 /* NexaScriptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaScriptBuilder.swift; sourceTree = "<group>"; };
-		EF5C75892BADE8A400811198 /* NexaScriptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaScriptBuilder.swift; sourceTree = "<group>"; };
 		EF5C75962BADF02D00811198 /* NexaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaTests.swift; sourceTree = "<group>"; };
 		EF5C75982BADF1AC00811198 /* BitcoinMultisigScriptBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoinMultisigScriptBuilder.swift; sourceTree = "<group>"; };
 		EF5F1B9629C9C0500093307B /* Fee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fee.swift; sourceTree = "<group>"; };
@@ -1506,11 +1499,6 @@
 		EFD32AE329E9B7800026353E /* RavencoinTransactionHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RavencoinTransactionHistory.swift; sourceTree = "<group>"; };
 		EFD39C9E2A6E6C700055D215 /* AddressTypesConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddressTypesConfig.swift; sourceTree = "<group>"; };
 		EFD4F4D62BA9E92400E6A55C /* NexaWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaWalletManager.swift; sourceTree = "<group>"; };
-		EFD4F4DA2BA9EAAC00E6A55C /* NexaTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaTransactionBuilder.swift; sourceTree = "<group>"; };
-		EFD4F4DC2BA9EE5300E6A55C /* NexaWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaWalletAssembly.swift; sourceTree = "<group>"; };
-		EFD4F4DE2BA9FD9300E6A55C /* NexaAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaAddressService.swift; sourceTree = "<group>"; };
-		EFD4F4E02BAA002300E6A55C /* NexaExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaExternalLinkProvider.swift; sourceTree = "<group>"; };
-		EFD4F4D82BA9E9CC00E6A55C /* NexaNetworkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaNetworkProvider.swift; sourceTree = "<group>"; };
 		EFD4F4DA2BA9EAAC00E6A55C /* NexaTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaTransactionBuilder.swift; sourceTree = "<group>"; };
 		EFD4F4DC2BA9EE5300E6A55C /* NexaWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaWalletAssembly.swift; sourceTree = "<group>"; };
 		EFD4F4DE2BA9FD9300E6A55C /* NexaAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NexaAddressService.swift; sourceTree = "<group>"; };

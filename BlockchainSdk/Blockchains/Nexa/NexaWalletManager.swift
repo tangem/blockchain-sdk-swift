@@ -57,6 +57,8 @@ private extension NexaWalletManager {
             
             return result
         }
+        
+        transactionBuilder.update(outputs: info.outputs)
 
         let balance = balanceSatoshi / decimalValue
         wallet.add(coinValue: balance)
@@ -66,7 +68,7 @@ private extension NexaWalletManager {
 
 // MARK: - TransactionSender
 
-extension NexaWalletManager {
+extension NexaWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         fatalError("TODO")
     }
@@ -74,10 +76,38 @@ extension NexaWalletManager {
 
 // MARK: - TransactionFeeProvider
 
-extension NexaWalletManager {
+extension NexaWalletManager: TransactionFeeProvider {
     var allowsFeeSelection: Bool { false }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         fatalError("TODO")
+    }
+}
+
+// MARK: - DustRestrictable
+
+extension NexaWalletManager: DustRestrictable {
+    var dustValue: Amount {
+        let value = Decimal(546) / wallet.blockchain.decimalValue
+        return Amount(with: wallet.blockchain, type: .coin, value: value)
+    }
+}
+
+// MARK: - MaximumAmountRestrictable
+
+extension NexaWalletManager: MaximumAmountRestrictable {
+    func validateMaximumAmount(amount: Amount, fee: Amount) throws {
+        let fullAmount = (amount + fee).value
+        let amountAvailableToSend = transactionBuilder.availableToSpendAmount(amount: fullAmount)
+        
+        guard fullAmount < amountAvailableToSend else {
+            return
+        }
+        
+        throw ValidationError.maximumUTXO(
+            blockchainName: wallet.blockchain.displayName,
+            newAmount: .init(with: amount, value: amountAvailableToSend),
+            maxUtxo: NexaTransactionBuilder.maxUTXO
+        )
     }
 }

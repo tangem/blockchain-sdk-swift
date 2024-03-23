@@ -19,7 +19,8 @@ struct NexaWalletAssembly: WalletManagerAssembly {
             providers: urls.map { ElectrumWebSocketManager(url: $0) },
             decimalValue: input.blockchain.decimalValue
         )
-        let transactionBuilder = NexaTransactionBuilder()
+
+        let transactionBuilder = NexaTransactionBuilder(publicKey: input.wallet.publicKey.blockchainKey)
         
         return NexaWalletManager(
             wallet: input.wallet,

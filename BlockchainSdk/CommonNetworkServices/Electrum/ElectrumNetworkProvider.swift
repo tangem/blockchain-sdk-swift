@@ -27,6 +27,7 @@ class ElectrumNetworkProvider: MultiNetworkProvider {
                             position: unspent.txPos,
                             hash: unspent.txHash,
                             value: unspent.value,
+                            outpoint: unspent.outpointHash,
                             height: unspent.height
                         )
                     }
@@ -39,10 +40,17 @@ class ElectrumNetworkProvider: MultiNetworkProvider {
     public func estimateFee() -> AnyPublisher<Decimal, Error> {
         providerPublisher { provider in
             Future.async {
-                let fee = try await provider.estimateFee(block: 10)
+                let fee = try await provider.estimateFee(block: Constants.estimateFeeBlocks)
                 return Decimal(fee)
             }
             .eraseToAnyPublisher()
         }
+    }
+}
+
+extension ElectrumNetworkProvider {
+    private enum Constants {
+        // From documentation
+        static let estimateFeeBlocks: Int = 6
     }
 }

@@ -153,6 +153,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .aptos(let curve, _),
                 .hedera(let curve, _):
             return curve
+        case .nexa:
+            return .bip0340
         case .chia:
             return .bls12381_G2_AUG
         default:
