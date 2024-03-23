@@ -163,8 +163,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .dash,
                 .kaspa,
                 .ravencoin,
-                .hedera,
-                .nexa:
+                .hedera:
             return 8
         case .ethereum,
                 .ethereumClassic,
@@ -215,6 +214,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return 6
         case .aptos:
             return 8
+        case .nexa:
+            return 2
         }
     }
 
