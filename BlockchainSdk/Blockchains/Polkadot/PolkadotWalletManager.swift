@@ -14,13 +14,19 @@ import BigInt
 
 class PolkadotWalletManager: BaseManager, WalletManager {
     private let network: PolkadotNetwork
+    private let accountHealthChecker: PolkaDotAccountHealthChecker?
     var txBuilder: PolkadotTransactionBuilder!
     var networkService: PolkadotNetworkService!
     
     var currentHost: String { networkService.host }
 
-    init(network: PolkadotNetwork, wallet: Wallet) {
+    init(
+        network: PolkadotNetwork,
+        wallet: Wallet,
+        accountHealthChecker: PolkaDotAccountHealthChecker?
+    ) {
         self.network = network
+        self.accountHealthChecker = accountHealthChecker
         super.init(wallet: wallet)
     }
     

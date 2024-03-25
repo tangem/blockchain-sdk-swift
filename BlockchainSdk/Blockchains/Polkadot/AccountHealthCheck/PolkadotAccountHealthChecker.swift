@@ -31,18 +31,14 @@ final class PolkaDotAccountHealthChecker {
     private var backgroundHealthCheckTask: Task<Void, Never>?
 
     private let networkService: PolkadotAccountHealthNetworkService
+    private let analytics: BlockchainAnalytics
 
-    private var backgroundTaskIdentifier: String {
-        let infoDictionary = Bundle.main.infoDictionary ?? [:]
-
-        guard let bundleIdentifier = infoDictionary["CFBundleIdentifier"] as? String else {
-            preconditionFailure("Unable to get app bundle identifier")
-        }
-        return bundleIdentifier + "." + Constants.backgroundTaskName
-    }
-
-    init(networkService: PolkadotAccountHealthNetworkService) {
+    init(
+        networkService: PolkadotAccountHealthNetworkService,
+        analytics: BlockchainAnalytics
+    ) {
         self.networkService = networkService
+        self.analytics = analytics
 
         setup() // TODO: Andrey Fedorov - Perform setup lazily instead
     }
@@ -95,14 +91,7 @@ final class PolkaDotAccountHealthChecker {
     }
 
     private func registerBackgroundTask() {
-        let result = BGTaskScheduler.shared.register(forTaskWithIdentifier: backgroundTaskIdentifier, using: nil) { [weak self] task in
-            if let task = task as? BGProcessingTask {
-                self?.handleBackgroundProcessingTask(task)
-            } else {
-                preconditionFailure("Unsupported type of background task '\(type(of: task))' received") // TODO: Andrey Fedorov - Add proper logging
-            }
-        }
-        print(#function, result) // TODO: Andrey Fedorov - Add proper logging
+        // TODO: Andrey Fedorov - Add actual implementation
     }
 
     // MARK: - Foreground health check
@@ -122,19 +111,19 @@ final class PolkaDotAccountHealthChecker {
     // MARK: - Background health check
 
     private func scheduleBackgroundHealthCheck() {
-        let request = BGProcessingTaskRequest(identifier: backgroundTaskIdentifier)
-        request.earliestBeginDate = Date(timeIntervalSinceNow: Constants.backgroundTaskDelay) // Allows already running foreground checks to finish
-        request.requiresNetworkConnectivity = true
-
-        do {
-            try BGTaskScheduler.shared.submit(request)
-        } catch {
-            print(error) // TODO: Andrey Fedorov - Catch & log error properly
-        }
+//        let request = BGProcessingTaskRequest(identifier: backgroundTaskIdentifier)
+//        request.earliestBeginDate = Date(timeIntervalSinceNow: Constants.backgroundTaskDelay) // Allows already running foreground checks to finish
+//        request.requiresNetworkConnectivity = true
+//
+//        do {
+//            try BGTaskScheduler.shared.submit(request)
+//        } catch {
+//            print(error) // TODO: Andrey Fedorov - Catch & log error properly
+//        }
     }
 
     private func cancelBackgroundHealthCheck() {
-        BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: backgroundTaskIdentifier)
+//        BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: backgroundTaskIdentifier)
     }
 
     private func handleBackgroundProcessingTask(_ task: BGProcessingTask) {
@@ -187,8 +176,8 @@ final class PolkaDotAccountHealthChecker {
 
             // `accountInfo.nonce` can be equal to or greater than the count of extrinsics,
             // but can't it be less (unless the account has been reset)
-            let metric: AccountHealthMetric = .hasBeenReset(value: healthInfo.nonceCount < healthInfo.extrinsicCount)
-            await sendAccountHealthMetric(metric)
+            let accountHasBeenReset = healthInfo.nonceCount < healthInfo.extrinsicCount
+            await MainActor.run { analytics.logPolkadotAccountHasBeenResetEvent(value: accountHasBeenReset) }
             analyzedForResetAccounts.append(account)
         } catch {
             print(error) // TODO: Andrey Fedorov - Catch & log error properly
@@ -226,8 +215,8 @@ final class PolkaDotAccountHealthChecker {
                 return
             }
 
-            let metric: AccountHealthMetric = .hasImmortalTransaction(value: foundImmortalTransaction)
-            await sendAccountHealthMetric(metric)
+            let hasImmortalTransactions = foundImmortalTransaction
+            await MainActor.run { analytics.logPolkadotAccountHasImmortalTransactions(value: hasImmortalTransactions) }
             analyzedForImmortalTransactionsAccounts.append(account)
         } catch {
             print(error) // TODO: Andrey Fedorov - Catch & log error properly
@@ -241,20 +230,6 @@ final class PolkaDotAccountHealthChecker {
         let details = try await networkService.getTransactionDetails(hash: transaction.hash)
 
         return details.birth == nil || details.death == nil
-    }
-
-    @MainActor
-    private func sendAccountHealthMetric(_ metric: AccountHealthMetric) {
-        switch metric {
-        case .hasBeenReset(let value):
-            break
-//            let value: Analytics.ParameterValue = .affirmativeOrNegative(for: value)
-//            Analytics.log(event: .healthCheckPolkadotAccountReset, params: [.state: value.rawValue])
-        case .hasImmortalTransaction(let value):
-            break
-//            let value: Analytics.ParameterValue = .affirmativeOrNegative(for: value)
-//            Analytics.log(event: .healthCheckPolkadotImmortalTransactions, params: [.state: value.rawValue])
-        }
     }
 }
 

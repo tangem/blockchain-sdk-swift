@@ -11,12 +11,15 @@ import Foundation
 public struct BlockchainSdkDependencies {
     let accountCreator: any AccountCreator
     let dataStorage: any BlockchainDataStorage
+    let blockchainAnalytics: any BlockchainAnalytics
 
     public init(
         accountCreator: any AccountCreator,
-        dataStorage: any BlockchainDataStorage
+        dataStorage: any BlockchainDataStorage,
+        blockchainAnalytics: any BlockchainAnalytics
     ) {
         self.accountCreator = accountCreator
         self.dataStorage = dataStorage
+        self.blockchainAnalytics = blockchainAnalytics
     }
 }

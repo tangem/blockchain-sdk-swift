@@ -359,6 +359,7 @@
 		B6BE1BA52B7557D5005C937C /* HederaExchangeRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6BE1BA42B7557D5005C937C /* HederaExchangeRate.swift */; };
 		B6BE2BA12B361F1C0019D9E0 /* VeChainFeeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6BE2BA02B361F1C0019D9E0 /* VeChainFeeCalculator.swift */; };
 		B6C1D2622BB22CB600B837F5 /* BackgroundTasksManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C1D2612BB22CB600B837F5 /* BackgroundTasksManager.swift */; };
+		B6C1D26D2BB233EE00B837F5 /* BlockchainAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C1D26C2BB233EE00B837F5 /* BlockchainAnalytics.swift */; };
 		B6CE41202B7C0275007A27D1 /* InMemoryBlockchainDataStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE411F2B7C0275007A27D1 /* InMemoryBlockchainDataStorage.swift */; };
 		B6CE41222B7C0308007A27D1 /* SimpleAccountCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE41212B7C0308007A27D1 /* SimpleAccountCreator.swift */; };
 		B6D345F62AD8B4A50009D1B2 /* NEARWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D345F52AD8B4A50009D1B2 /* NEARWalletManager.swift */; };
@@ -1144,6 +1145,7 @@
 		B6BE1BA42B7557D5005C937C /* HederaExchangeRate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaExchangeRate.swift; sourceTree = "<group>"; };
 		B6BE2BA02B361F1C0019D9E0 /* VeChainFeeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainFeeCalculator.swift; sourceTree = "<group>"; };
 		B6C1D2612BB22CB600B837F5 /* BackgroundTasksManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTasksManager.swift; sourceTree = "<group>"; };
+		B6C1D26C2BB233EE00B837F5 /* BlockchainAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainAnalytics.swift; sourceTree = "<group>"; };
 		B6CE411F2B7C0275007A27D1 /* InMemoryBlockchainDataStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryBlockchainDataStorage.swift; sourceTree = "<group>"; };
 		B6CE41212B7C0308007A27D1 /* SimpleAccountCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleAccountCreator.swift; sourceTree = "<group>"; };
 		B6D345F52AD8B4A50009D1B2 /* NEARWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARWalletManager.swift; sourceTree = "<group>"; };
@@ -1960,6 +1962,7 @@
 				B605AC562B7A864F00878B64 /* Account */,
 				5DACA35C255E98220096BC48 /* Address */,
 				EF332D15288EAC9000AE3C85 /* API */,
+				B6C1D26B2BB233D300B837F5 /* Analytics */,
 				B605AC552B7A436400878B64 /* DataStorage */,
 				EF57BEC22A1CE40800C2A493 /* Derivations */,
 				B619208A2AE6AC79001D6DDF /* DTO */,
@@ -2773,6 +2776,14 @@
 				B6E7699B2AF2CFDA00B32745 /* NEARNetworkResult.TransactionStatus.swift */,
 			);
 			path = Result;
+			sourceTree = "<group>";
+		};
+		B6C1D26B2BB233D300B837F5 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				B6C1D26C2BB233EE00B837F5 /* BlockchainAnalytics.swift */,
+			);
+			path = Analytics;
 			sourceTree = "<group>";
 		};
 		B6DC284B2B6319B30070F1D2 /* Network */ = {
@@ -4513,6 +4524,7 @@
 				EF5C753E2BAC4D6B00811198 /* URLSessionTask.State+CustomStringConvertible.swift in Sources */,
 				B0ED2011267C9E4500D5C3E5 /* BitcoinTransactionParams.swift in Sources */,
 				2D24F5C72B6D2C7100D502A0 /* AptosNetworkProvider.swift in Sources */,
+				B6C1D26D2BB233EE00B837F5 /* BlockchainAnalytics.swift in Sources */,
 				DC87B9F12B8F4D9700C61C5A /* BitcoreTarget.swift in Sources */,
 				5D4B33C623F72F1100C93A84 /* BitcoinCashAddressService.swift in Sources */,
 				5D14E4982397B87000C15FC8 /* Blockchain.swift in Sources */,
