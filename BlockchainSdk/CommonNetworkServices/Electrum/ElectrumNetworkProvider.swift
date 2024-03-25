@@ -16,7 +16,7 @@ class ElectrumNetworkProvider: MultiNetworkProvider {
         self.providers = providers
     }
 
-    func getAddressInfo(address: String) -> AnyPublisher<ElectrumAddressInfo, Error> {
+    public func getAddressInfo(address: String) -> AnyPublisher<ElectrumAddressInfo, Error> {
         providerPublisher { provider in
             Future.async {
                 async let balance = provider.getBalance(identifier: .address(address))
@@ -38,7 +38,7 @@ class ElectrumNetworkProvider: MultiNetworkProvider {
         }
     }
     
-    func estimateFee() -> AnyPublisher<Decimal, Error> {
+    public func estimateFee() -> AnyPublisher<Decimal, Error> {
         providerPublisher { provider in
             Future.async {
                 let fee = try await provider.estimateFee(block: 10)

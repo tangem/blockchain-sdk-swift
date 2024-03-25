@@ -30,7 +30,8 @@ actor JSONRPCWebSocketProvider {
     ) async throws -> Result {
         counter += 1
         let request = JSONRPCRequest(id: counter, method: method, params: parameter)
-        try await connection.send(.string(request.string(encoder: encoder)))
+        let message = try request.string(encoder: encoder)
+        try await connection.send(.string(message))
         
         // setup handler for message
         setupReceiveTask()
@@ -64,12 +65,13 @@ private extension JSONRPCWebSocketProvider {
             
             do {
                 let data = try await connection.receive()
-                await proceedReceive(data: data)
+                async let _ = proceedReceive(data: data)
                 
                 // Handle next message
                 await setupReceiveTask()
             } catch {
                 log("ReceiveTask catch error: \(error)")
+                await cancel()
             }
         }
     }
@@ -77,11 +79,8 @@ private extension JSONRPCWebSocketProvider {
     func proceedReceive(data: Data) async {
         do {
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-            guard let id = json?["id"] as? Int else {
-                return
-            }
 
-            if let continuation = requests[id] {
+            if let id = json?["id"] as? Int, let continuation = requests[id] {
                 continuation.resume(returning: data)
             } else {
                 log("Received json: \(String(describing: json)) is not handled")

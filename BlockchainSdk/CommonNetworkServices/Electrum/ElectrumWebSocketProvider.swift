@@ -1,5 +1,5 @@
 //
-//  ElectrumWebSocketManager.swift
+//  ElectrumWebSocketProvider.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 11.03.2024.
@@ -18,7 +18,7 @@ class ElectrumWebSocketProvider: HostProvider {
         return decoder
     }()
     
-    init(url: URL) {
+    public init(url: URL) {
         let ping: WebSocketConnection.Ping = {
             do {
                 let request = JSONRPCWebSocketProvider.JSONRPCRequest(id: -1, method: "server.ping", params: [String]())
@@ -70,7 +70,7 @@ class ElectrumWebSocketProvider: HostProvider {
 
 // MARK: - Private
 
-private extension ElectrumWebSocketManager {
+private extension ElectrumWebSocketProvider {
     func send<Parameter: Encodable, Result: Decodable>(method: String, parameter: Parameter) async throws -> Result {
         try await webSocketProvider.send(
             method: method,
@@ -83,10 +83,10 @@ private extension ElectrumWebSocketManager {
 
 // MARK: - IdentifierType
 
-extension ElectrumWebSocketManager {
+extension ElectrumWebSocketProvider {
     private enum Constants {
-        static let pingInterval: TimeInterval = 10
-        static let timeoutInterval: TimeInterval = 60
+        static let pingInterval: TimeInterval = 5
+        static let timeoutInterval: TimeInterval = 30
     }
     
     enum IdentifierType {
