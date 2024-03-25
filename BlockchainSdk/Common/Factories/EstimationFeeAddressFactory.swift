@@ -68,6 +68,10 @@ struct EstimationFeeAddressFactory {
                 .playa3ullGames,
                 .pulsechain,
                 .aurora,
+                .manta,
+                .zkSync,
+                .moonbeam,
+                .polygonZkEVM,
                 // Polkadot-like
                 .polkadot, .kusama, .azero,
                 // Cosmos-like

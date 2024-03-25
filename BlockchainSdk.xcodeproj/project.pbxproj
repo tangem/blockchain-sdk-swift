@@ -7,9 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A0E22552B9B2E1B00075FF1 /* ZkSyncExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0E22542B9B2E1B00075FF1 /* ZkSyncExternalLinkProvider.swift */; };
+		0A0E225D2B9B366400075FF1 /* MoonbeamExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0E225C2B9B366400075FF1 /* MoonbeamExternalLinkProvider.swift */; };
+		0A0E226B2B9B3D1700075FF1 /* PolygonZkEvmExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0E226A2B9B3D1700075FF1 /* PolygonZkEvmExternalLinkProvider.swift */; };
 		0A1399212B637DB900934D7D /* ShibariumExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1399202B637DB900934D7D /* ShibariumExternalLinkProvider.swift */; };
 		0A158C022B74E44D0004DC23 /* BlockBookResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A158C002B74E44D0004DC23 /* BlockBookResponses.swift */; };
 		0A158C052B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A158C042B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift */; };
+		0AA9E3792B9A03450084E8A7 /* MantaExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */; };
 		0AEFB5392B7656EC007519F9 /* NodeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEFB5382B7656EC007519F9 /* NodeRequest.swift */; };
 		0AF90CD72B87624800772F04 /* AreonExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF90CD62B87624800772F04 /* AreonExternalLinkProvider.swift */; };
 		0AF90CD92B87655A00772F04 /* Playa3ullGamesExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF90CD82B87655A00772F04 /* Playa3ullGamesExternalLinkProvider.swift */; };
@@ -759,9 +763,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0A0E22542B9B2E1B00075FF1 /* ZkSyncExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkSyncExternalLinkProvider.swift; sourceTree = "<group>"; };
+		0A0E225C2B9B366400075FF1 /* MoonbeamExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamExternalLinkProvider.swift; sourceTree = "<group>"; };
+		0A0E226A2B9B3D1700075FF1 /* PolygonZkEvmExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolygonZkEvmExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0A1399202B637DB900934D7D /* ShibariumExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShibariumExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0A158C002B74E44D0004DC23 /* BlockBookResponses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockBookResponses.swift; sourceTree = "<group>"; };
 		0A158C042B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoinCashNowNodesNetworkProvider.swift; sourceTree = "<group>"; };
+		0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantaExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AEFB5382B7656EC007519F9 /* NodeRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NodeRequest.swift; sourceTree = "<group>"; };
 		0AF90CD62B87624800772F04 /* AreonExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreonExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AF90CD82B87655A00772F04 /* Playa3ullGamesExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playa3ullGamesExternalLinkProvider.swift; sourceTree = "<group>"; };
@@ -3010,12 +3018,16 @@
 				EF3B194B2AA85E880084AA1C /* GnosisExternalLinkProvider.swift */,
 				EF3B19532AA85EB90084AA1C /* KavaExternalLinkProvider.swift */,
 				EF3B19292AA85C810084AA1C /* LitecoinExternalLinkProvider.swift */,
+				0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */,
+				0A0E225C2B9B366400075FF1 /* MoonbeamExternalLinkProvider.swift */,
 				EF3B19612AA85F1C0084AA1C /* OctaExternalLinkProvider.swift */,
 				0AF90CD82B87655A00772F04 /* Playa3ullGamesExternalLinkProvider.swift */,
 				EF3B19372AA85D090084AA1C /* PolygonExternalLinkProvider.swift */,
+				0A0E226A2B9B3D1700075FF1 /* PolygonZkEvmExternalLinkProvider.swift */,
 				0AF90CDA2B87657F00772F04 /* PulsechainExternalLinkProvider.swift */,
 				0A1399202B637DB900934D7D /* ShibariumExternalLinkProvider.swift */,
 				EF3B195F2AA85F0E0084AA1C /* TelosExternalLinkProvider.swift */,
+				0A0E22542B9B2E1B00075FF1 /* ZkSyncExternalLinkProvider.swift */,
 			);
 			path = OtherChains;
 			sourceTree = "<group>";
@@ -4025,6 +4037,7 @@
 				DC5E64702B160FCD00E81AA5 /* Opcode.swift in Sources */,
 				2DDEFBCD2B59B42E00885675 /* AlgorandAccountModel.swift in Sources */,
 				5D03D2D0253DE61B009A8A9F /* TezosAddressService.swift in Sources */,
+				0A0E22552B9B2E1B00075FF1 /* ZkSyncExternalLinkProvider.swift in Sources */,
 				5D5CE0D52625C8EC009023EC /* XrpNetworkProvider.swift in Sources */,
 				DC5E65172B1650F400E81AA5 /* OP_DEPTH.swift in Sources */,
 				EF3B19602AA85F0E0084AA1C /* TelosExternalLinkProvider.swift in Sources */,
@@ -4185,6 +4198,7 @@
 				2D24F5C62B6D2C7100D502A0 /* AptosNetworkService.swift in Sources */,
 				DC5E65292B1650F400E81AA5 /* OP_PUSHDATA.swift in Sources */,
 				5DC7DD66244077F2008F83F2 /* XRPWalletManager.swift in Sources */,
+				0A0E226B2B9B3D1700075FF1 /* PolygonZkEvmExternalLinkProvider.swift in Sources */,
 				DA3081322817EC1A00DE41F1 /* TronTransactionBuilder.swift in Sources */,
 				EF937BDE2B90EED0009B8374 /* ExistentialDepositProvider.swift in Sources */,
 				DA71441E2795C2EA0052AFB4 /* SolanaNetworkService.swift in Sources */,
@@ -4244,6 +4258,7 @@
 				B675E95D2B320D52004AF179 /* VeChainNetworkParams.swift in Sources */,
 				B06C6793264286390037E7AD /* BlockchairAddressBlockMapper.swift in Sources */,
 				EF666C322A2F43370044986F /* PolkadotAddress.swift in Sources */,
+				0AA9E3792B9A03450084E8A7 /* MantaExternalLinkProvider.swift in Sources */,
 				2DDE5BB229C4F8F700A5B708 /* TONWalletAssembly.swift in Sources */,
 				DA656FC62952091A0092CC61 /* BlockBookConfig.swift in Sources */,
 				DC5E64FE2B1650F400E81AA5 /* OP_GREATERTHAN.swift in Sources */,
@@ -4266,6 +4281,7 @@
 				EFB9523D2A6FDB2A00996D16 /* TransactionHistoryProvider.swift in Sources */,
 				EF3B19162AA5C9530084AA1C /* ExternalLinkProvider.swift in Sources */,
 				0AF90CDD2B87658600772F04 /* AuroraExternalLinkProvider.swift in Sources */,
+				0A0E225D2B9B366400075FF1 /* MoonbeamExternalLinkProvider.swift in Sources */,
 				B6F3AA722ADD925D0059C99A /* NEARTarget.swift in Sources */,
 				EFD717D02A2619C400E5430D /* Wallet+PublicKey.swift in Sources */,
 				B698247F2B71A8D300E1333D /* HederaNetworkResult.swift in Sources */,
