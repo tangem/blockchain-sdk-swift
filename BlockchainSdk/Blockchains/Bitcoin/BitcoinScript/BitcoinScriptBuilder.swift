@@ -12,52 +12,15 @@ class BitcoinScriptBuilder {
     private var data = Data()
     private let scriptChunkHelper = ScriptChunkHelper()
     
-    func getData() -> Data {
-        return data
-    }
-
-    func makeMultisig(publicKeys: [Data], signaturesRequired: Int) throws -> BitcoinScript {
-        let publicKeys = publicKeys.sorted(by: { $0.lexicographicallyPrecedes($1) })
-
-        // First make sure the arguments make sense.
-        // We need at least one signature
-        guard signaturesRequired > 0 else {
-            throw BlockchainSdkError.failedToCreateMultisigScript
-        }
-
-        // And we cannot have more signatures than available pubkeys.
-        guard publicKeys.count >= signaturesRequired else {
-            throw BlockchainSdkError.failedToCreateMultisigScript
-        }
-
-        // Both M and N should map to OP_<1..16>
-        let mOpcode: OpCode = OpCodeFactory.opcode(for: signaturesRequired)
-        let nOpcode: OpCode = OpCodeFactory.opcode(for: publicKeys.count)
-
-        guard mOpcode != .OP_INVALIDOPCODE else {
-            throw BlockchainSdkError.failedToCreateMultisigScript
-        }
-
-        guard nOpcode != .OP_INVALIDOPCODE else {
-            throw BlockchainSdkError.failedToCreateMultisigScript
-        }
-
-        try append(mOpcode)
-        for pubkey in publicKeys {
-            try appendData(pubkey)
-        }
-        try append(nOpcode)
-        try append(.OP_CHECKMULTISIG)
-
+    func build() throws -> BitcoinScript {
         let chunks = try parseData(data)
-
         return BitcoinScript(chunks: chunks, data: data)
     }
 
     @discardableResult
     func append(_ opcode: OpCode) throws -> Self {
         guard !BitcoinScriptBuilder.invalidOpCodes.contains(where: { $0 == opcode }) else {
-            throw BlockchainSdkError.failedToCreateMultisigScript
+            throw BitcoinScriptBuilderError.invalidOpCode
         }
 
         data += Data(opcode.value)
@@ -65,20 +28,19 @@ class BitcoinScriptBuilder {
     }
 
     @discardableResult
-    func appendData(_ newData: Data) throws -> Self {
+    func append(_ newData: Data) throws -> Self {
         guard !newData.isEmpty else {
-            throw BlockchainSdkError.failedToCreateMultisigScript
+            throw BitcoinScriptBuilderError.invalidData
         }
 
-        let addedScriptData = try scriptChunkHelper.scriptData(for: newData, preferredLengthEncoding: -1)
-
-        data += newData
+        let scriptData = try scriptChunkHelper.scriptData(for: newData, preferredLengthEncoding: -1)
+        data += scriptData
         return self
     }
 
-    private func parseData(_ data: Data) throws -> [BitcoinScriptChunk] {
+    func parseData(_ data: Data) throws -> [BitcoinScriptChunk] {
         guard !data.isEmpty else {
-            return [BitcoinScriptChunk]()
+            return []
         }
 
         var chunks = [BitcoinScriptChunk]()
@@ -94,6 +56,11 @@ class BitcoinScriptBuilder {
         }
         return chunks
     }
+}
+
+enum BitcoinScriptBuilderError: Error {
+    case invalidOpCode
+    case invalidData
 }
 
 private extension BitcoinScriptBuilder {

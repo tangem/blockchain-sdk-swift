@@ -36,6 +36,6 @@ extension BitcoinCashExternalLinkProvider: ExternalLinkProvider {
             return URL(string: "https://blockexplorer.one/bitcoin-cash/testnet/address/\(address)")
         }
     
-        return URL(string: "https://blockchair.com/bitcoin-cash/address/\(address)")
+        return URL(string: "https://blockchair.com/bitcoin-cash/address/\(address.removeBchPrefix())")
     }
 }

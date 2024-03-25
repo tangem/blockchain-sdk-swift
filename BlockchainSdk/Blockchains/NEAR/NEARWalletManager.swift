@@ -105,7 +105,7 @@ final class NEARWalletManager: BaseManager {
         let currencySymbol = wallet.blockchain.currencySymbol
         let errorMessage = "no_account_generic".localized([networkName, reserveValueString, currencySymbol])
 
-        return WalletError.noAccount(message: errorMessage)
+        return WalletError.noAccount(message: errorMessage, amountToCreate: reserveValue)
     }
 
     /// - Note: Never fails; if a network request fails, the local fallback value will be used.

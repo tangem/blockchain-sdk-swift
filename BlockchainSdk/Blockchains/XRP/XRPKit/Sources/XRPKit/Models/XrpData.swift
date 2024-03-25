@@ -14,7 +14,11 @@ struct XrpResponse: Codable {
     func assertAccountCreated() throws {
         if let code = result?.error_code, code == 19 {
             let networkName = Blockchain.xrp(curve: .secp256k1).displayName
-            throw WalletError.noAccount(message: "no_account_generic".localized([networkName, "10", "XRP"]))
+            let amountToCreate: Decimal = 10
+            throw WalletError.noAccount(
+                message: "no_account_generic".localized([networkName, "\(amountToCreate)", "XRP"]),
+                amountToCreate: amountToCreate
+            )
         }
     }
 }

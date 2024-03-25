@@ -25,7 +25,7 @@ public class NexaAddressService {
 extension NexaAddressService: AddressProvider {
     public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
         let outputScript = try NexaScriptBuilder().outputScript(publicKey: publicKey.blockchainKey)
-        let walletAddress = CashAddrBech32.encode(Data([p2khPrefixByte]) + outputScript, prefix: "nexa")
+        let walletAddress = CashAddrBech32.encode(Data([p2khPrefixByte]) + outputScript, prefix: prefix)
         return PlainAddress(value: walletAddress, publicKey: publicKey, type: addressType)
     }
 }
@@ -35,6 +35,20 @@ extension NexaAddressService: AddressProvider {
 @available(iOS 13.0, *)
 extension NexaAddressService: AddressValidator {
     public func validate(_ address: String) -> Bool {
-        CashAddrService(bech32PrefixPattern: prefix).validate(address)
+        let address = address.contains(":") ? address: "\(prefix):\(address)"
+        
+        let validStartLetters = ["q", "p", "n"]
+        
+        guard let first = address.first,
+              validStartLetters.contains(where: { $0 == String(first) }) else {
+            return false
+        }
+        
+        guard CashAddrBech32.decode(address) != nil else {
+            return false
+        }
+        
+        // TODO: When we can build the tx add validation
+        return true
     }
 }

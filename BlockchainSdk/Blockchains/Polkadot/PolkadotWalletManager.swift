@@ -72,7 +72,7 @@ extension PolkadotWalletManager: TransactionSender {
             let existentialDeposit = self.network.existentialDeposit
             if transaction.amount < existentialDeposit && destinationBalance == BigUInt(0) {
                 let message = String(format: "no_account_polkadot".localized, existentialDeposit.string(roundingMode: .plain))
-                return Fail(error: WalletError.noAccount(message: message)).eraseToAnyPublisher()
+                return Fail(error: WalletError.noAccount(message: message, amountToCreate: existentialDeposit.value)).eraseToAnyPublisher()
             }
             
             return self.sign(amount: transaction.amount, destination: transaction.destinationAddress, meta: meta, signer: signer)
