@@ -7,12 +7,10 @@
 
 import Foundation
 
-class ElectrumWebSocketManager: HostProvider {
-    var host: String { url.absoluteString }
+class ElectrumWebSocketProvider: HostProvider {
+    var host: String { webSocketProvider.host }
     
-    private let url: URL
     private let webSocketProvider: JSONRPCWebSocketProvider
-    
     private let encoder: JSONEncoder = .init()
     private let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
@@ -21,8 +19,17 @@ class ElectrumWebSocketManager: HostProvider {
     }()
     
     init(url: URL) {
-        self.url = url
-        self.webSocketProvider = JSONRPCWebSocketProvider(url: url)
+        let ping: WebSocketConnection.Ping = {
+            do {
+                let request = JSONRPCWebSocketProvider.JSONRPCRequest(id: -1, method: "server.ping", params: [String]())
+                let message = try request.string(encoder: .init())
+                return .message(interval: Constants.pingInterval, message: .string(message))
+            } catch {
+                return .plain(interval: Constants.pingInterval)
+            }
+        }()
+        
+        webSocketProvider = JSONRPCWebSocketProvider(url: url, ping: ping, timeoutInterval: Constants.timeoutInterval)
     }
     
     func getBalance(identifier: IdentifierType) async throws -> ElectrumDTO.Response.Balance {
@@ -77,6 +84,11 @@ private extension ElectrumWebSocketManager {
 // MARK: - IdentifierType
 
 extension ElectrumWebSocketManager {
+    private enum Constants {
+        static let pingInterval: TimeInterval = 10
+        static let timeoutInterval: TimeInterval = 60
+    }
+    
     enum IdentifierType {
         case address(_ address: String)
         case scripthash(_ hash: String)
