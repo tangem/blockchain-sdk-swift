@@ -31,11 +31,11 @@ public enum StellarError: Int, Error, LocalizedError {
         case .requiresMemo:
             return "xlm_requires_memo_error".localized
         case .xlmCreateAccount:
-            return "no_account_generic".localized([networkName, "1", "XLM"])
+            return "no_account_generic".localized([networkName, "\(StellarWalletManager.Constants.minAmountToCreateCoinAccount)", "XLM"])
         case .assetCreateAccount:
-            return "no_account_generic".localized([networkName, "1.5", "XLM"])
+            return "no_account_generic".localized([networkName, "\(StellarWalletManager.Constants.minAmountToCreateAssetAccount)", "XLM"])
         case .assetNoAccountOnDestination:
-            return "send_error_no_target_account".localized(["1 XLM"])
+            return "send_error_no_target_account".localized(["\(StellarWalletManager.Constants.minAmountToCreateCoinAccount) XLM"])
         case .assetNoTrustline:
             return "no_trustline_xlm_asset".localized
         default:
@@ -45,6 +45,15 @@ public enum StellarError: Int, Error, LocalizedError {
     
     private var errorCodeDescription: String {
         "stellar_error \(rawValue)"
+    }
+}
+
+extension StellarWalletManager {
+    enum Constants {
+        /// 1 XLM
+        static let minAmountToCreateCoinAccount: Decimal = 1
+        /// 1.5 XLM
+        static let minAmountToCreateAssetAccount: Decimal = Decimal(stringValue: "1.5")!
     }
 }
 
@@ -171,7 +180,7 @@ extension StellarWalletManager: ReserveAmountRestrictable {
             return
         }
         
-        let reserveAmount = Amount(with: wallet.blockchain, value: 1)
+        let reserveAmount = Amount(with: wallet.blockchain, value: Constants.minAmountToCreateCoinAccount)
         switch amount.type {
         case .coin:
             if amount < reserveAmount {
