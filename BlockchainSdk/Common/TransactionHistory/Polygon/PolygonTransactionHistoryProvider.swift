@@ -10,7 +10,6 @@ import Foundation
 import Combine
 
 final class PolygonTransactionHistoryProvider<Mapper> where
-    Mapper: Resettable,
     Mapper: TransactionHistoryMapper,
     Mapper.Response == PolygonTransactionHistoryResult
 {

@@ -16,4 +16,12 @@ protocol TransactionHistoryMapper {
         walletAddress: String,
         amountType: Amount.AmountType
     ) throws -> TransactionHistory.Response
+
+    func reset()
+}
+
+// MARK: - Default implementation
+
+extension TransactionHistoryMapper {
+    func reset() {}
 }

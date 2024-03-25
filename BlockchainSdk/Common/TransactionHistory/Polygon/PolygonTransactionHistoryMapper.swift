@@ -158,11 +158,7 @@ extension PolygonTransactionHistoryMapper: TransactionHistoryMapper {
 
         return TransactionHistory.Response(records: transactionRecords)
     }
-}
 
-// MARK: - Resettable protocol conformance
-
-extension PolygonTransactionHistoryMapper: Resettable {
     func reset() {
         transactionIndicesCounter.removeAll()
     }
