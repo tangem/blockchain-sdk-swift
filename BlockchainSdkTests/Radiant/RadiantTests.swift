@@ -30,6 +30,36 @@ final class RadiantTests: XCTestCase {
         XCTAssertEqual(lockScript.data.hexString.lowercased(), legacyOutputScript.lowercased())
     }
     
+    func testHDKey() throws {
+        let hdWallet = WalletCore.HDWallet(
+            mnemonic: "tiny escape drive pupil flavor endless love walk gadget match filter luxury",
+            passphrase: ""
+        )
+        
+        let privateKey = hdWallet!.getKeyForCoin(coin: .bitcoinCash)
+        
+        print(privateKey.data.hexString)
+        
+        let hexPublicKey = privateKey.getPublicKeySecp256k1(compressed: true).data.hexString
+        
+        print(hexPublicKey)
+        
+        let publicKey = Wallet.PublicKey(seedKey: Data(hexString: hexPublicKey), derivationType: .none)
+        
+        let addressAdapter = BitcoinWalletCoreAddressAdapter(coin: .bitcoinCash)
+        let adapterAddress = try addressAdapter.makeAddress(for: publicKey, by: .p2pkh)
+        
+        print(adapterAddress.description)
+        
+//        let publicKey = Data(hexString: "02AB010392F0C638AC572C61AA72D37460D4B4AA722DFA258863ADE24998C72CFA")
+//        let p2pkhScript = WalletCore.BitcoinScript.buildPayToPublicKeyHash(hash: publicKey)
+//        let lockScript = BitcoinScript.lockScriptForAddress(address: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf", coin: .bitcoinCash)
+//        let legacyOutputScript = buildOutputScript(address: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf")!.hexString
+//        
+//        XCTAssertEqual(lockScript.data.hexString.lowercased(), "76a9140a2f12f228cbc244c745f33a23f7e924cbf3b6ad88ac".lowercased())
+//        XCTAssertEqual(lockScript.data.hexString.lowercased(), legacyOutputScript.lowercased())
+    }
+    
     /// https://github.com/trustwallet/wallet-core/blob/master/tests/chains/Bitcoin/BitcoinAddressTests.cpp
     func testP2PKH_PrefixAddress() throws {
         let publicKey = Wallet.PublicKey(seedKey: Data(hexString: "039d645d2ce630c2a9a6dbe0cbd0a8fcb7b70241cb8a48424f25593290af2494b9"), derivationType: .none)
