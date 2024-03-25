@@ -1074,6 +1074,7 @@ extension Blockchain: Codable {
         case "zksync": self = .zkSync(testnet: isTestnet)
         case "moonbeam": self = .moonbeam(testnet: isTestnet)
         case "polygon-zkevm": self = .polygonZkEVM(testnet: isTestnet)
+        case "nexa": self = .nexa
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1156,6 +1157,7 @@ extension Blockchain {
         case "zksync": return .zkSync(testnet: isTestnet)
         case "moonbeam": return .moonbeam(testnet: isTestnet)
         case "polygon-zkevm": return.polygonZkEVM(testnet: isTestnet)
+        case "nexa": return .nexa
         default: return nil
         }
     }
