@@ -101,7 +101,10 @@ extension CoinType {
              .manta,
              .zkSync,
              .moonbeam,
-             .polygonZkEVM:
+             .polygonZkEVM,
+             .moonriver,
+             .mantle,
+             .flare:
             // Blockchains that are not in WalletCore yet
             return nil
         }

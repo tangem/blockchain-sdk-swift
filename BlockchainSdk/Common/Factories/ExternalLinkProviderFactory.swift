@@ -125,6 +125,12 @@ public struct ExternalLinkProviderFactory {
             return MoonbeamExternalLinkProvider(isTestnet: isTestnet)
         case .polygonZkEVM:
             return PolygonZkEvmExternalLinkProvider(isTestnet: isTestnet)
+        case .moonriver:
+            return MoonriverExternalLinkProvider(isTestnet: isTestnet)
+        case .mantle:
+            return MantleExternalLinkProvider(isTestnet: isTestnet)
+        case .flare:
+            return FlareExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }

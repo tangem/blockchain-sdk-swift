@@ -72,6 +72,9 @@ struct EstimationFeeAddressFactory {
                 .zkSync,
                 .moonbeam,
                 .polygonZkEVM,
+                .moonriver,
+                .mantle,
+                .flare,
                 // Polkadot-like
                 .polkadot, .kusama, .azero,
                 // Cosmos-like
