@@ -15,14 +15,6 @@ public protocol TransactionValidator: WalletProvider {
     func validate(amount: Amount, fee: Fee) throws
 }
 
-public struct TransactionValidatorOptions {
-    public let validateTotalAgainstBalance: Bool
-    
-    public init(validateTotalAgainstBalance: Bool = true) {
-        self.validateTotalAgainstBalance = validateTotalAgainstBalance
-    }
-}
-
 public enum DestinationType: Hashable {
     /// Will generate a dummy destination address for verification
     case generate
@@ -41,8 +33,6 @@ public extension TransactionValidator {
     func validate(amount: Amount, fee: Fee) throws {
         try validateAmounts(amount: amount, fee: fee.amount)
     }
-    
-    // Helping functions
     
     /// Validation will be doing with `amount`, `fee` and `destinationAddress`  from the `Transaction`
     func validate(transaction: Transaction) async throws {
