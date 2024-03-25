@@ -9,7 +9,7 @@
 import Foundation
 
 struct PolygonZkEvmExternalLinkProvider: ExternalLinkProvider {
-    var testnetFaucetURL = URL(string: "https://faucet.quicknode.com/ethereum/sepolia/")
+    var testnetFaucetURL = URL(string: "https://faucet.quicknode.com/polygon/zkevm-goerli/")
 
     private let isTestnet: Bool
 
