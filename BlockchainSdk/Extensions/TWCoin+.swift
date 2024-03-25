@@ -97,7 +97,11 @@ extension CoinType {
              .areon,
              .playa3ullGames,
              .pulsechain,
-             .aurora:
+             .aurora,
+             .manta,
+             .zkSync,
+             .moonbeam,
+             .polygonZkEVM:
             // Blockchains that are not in WalletCore yet
             return nil
         }

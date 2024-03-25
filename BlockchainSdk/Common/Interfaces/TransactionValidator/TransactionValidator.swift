@@ -34,13 +34,6 @@ public extension TransactionValidator {
         try validateAmounts(amount: amount, fee: fee.amount)
     }
     
-    // Helping functions
-    
-    /// Validation will be doing with a zero `fee`
-    func validate(amount: Amount) throws {
-        try validateAmounts(amount: amount, fee: Amount(with: amount, value: 0))
-    }
-    
     /// Validation will be doing with `amount`, `fee` and `destinationAddress`  from the `Transaction`
     func validate(transaction: Transaction) async throws {
         try await validate(amount: transaction.amount, fee: transaction.fee, destination: .address(transaction.destinationAddress))
@@ -53,12 +46,15 @@ public extension TransactionValidator {
     /// Method for the sending amount and fee validation
     /// Has default implementation just for checking balance and numbers
     func validateAmounts(amount: Amount, fee: Amount) throws {
+        try validate(amount: amount)
+        try validate(fee: fee)
+        try validateTotal(amount: amount, fee: fee)
+        // All checks completed
+    }
+    
+    func validate(amount: Amount) throws {
         guard amount.value >= 0 else {
             throw ValidationError.invalidAmount
-        }
-        
-        guard fee.value >= 0 else {
-            throw ValidationError.invalidFee
         }
         
         guard let balance = wallet.amounts[amount.type] else {
@@ -68,6 +64,12 @@ public extension TransactionValidator {
         guard balance >= amount else {
             throw ValidationError.amountExceedsBalance
         }
+    }
+    
+    func validate(fee: Amount) throws {
+        guard fee.value >= 0 else {
+            throw ValidationError.invalidFee
+        }
         
         guard let feeBalance = wallet.amounts[fee.type] else {
             throw ValidationError.balanceNotFound
@@ -76,11 +78,17 @@ public extension TransactionValidator {
         guard feeBalance >= fee else {
             throw ValidationError.feeExceedsBalance
         }
-        
+    }
+    
+    func validateTotal(amount: Amount, fee: Amount) throws {
         // If we try to spend all amount from coin
         guard amount.type == fee.type else {
             // Safely return because all the checks were above
             return
+        }
+        
+        guard let balance = wallet.amounts[amount.type] else {
+            throw ValidationError.balanceNotFound
         }
         
         let total = amount + fee
@@ -88,8 +96,6 @@ public extension TransactionValidator {
         guard balance >= total else {
             throw ValidationError.totalExceedsBalance
         }
-        
-        // All checks completed
     }
 }
 
