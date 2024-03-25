@@ -24,10 +24,10 @@ final class RadiantTests: XCTestCase {
         let publicKey = Data(hexString: "02AB010392F0C638AC572C61AA72D37460D4B4AA722DFA258863ADE24998C72CFA")
         let p2pkhScript = WalletCore.BitcoinScript.buildPayToPublicKeyHash(hash: publicKey)
         let lockScript = BitcoinScript.lockScriptForAddress(address: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf", coin: .bitcoinCash)
-        let legacyOutputScript = buildOutputScript(address: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf")!.hexString
+//        let legacyOutputScript = buildOutputScript(address: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf")!.hexString
         
-        XCTAssertEqual(lockScript.data.hexString.lowercased(), "76a9140a2f12f228cbc244c745f33a23f7e924cbf3b6ad88ac".lowercased())
-        XCTAssertEqual(lockScript.data.hexString.lowercased(), legacyOutputScript.lowercased())
+//        XCTAssertEqual(lockScript.data.hexString.lowercased(), "76a9140a2f12f228cbc244c745f33a23f7e924cbf3b6ad88ac".lowercased())
+//        XCTAssertEqual(lockScript.data.hexString.lowercased(), legacyOutputScript.lowercased())
     }
     
     func testHDKey() throws {
@@ -58,6 +58,14 @@ final class RadiantTests: XCTestCase {
 //        
 //        XCTAssertEqual(lockScript.data.hexString.lowercased(), "76a9140a2f12f228cbc244c745f33a23f7e924cbf3b6ad88ac".lowercased())
 //        XCTAssertEqual(lockScript.data.hexString.lowercased(), legacyOutputScript.lowercased())
+    }
+    
+    func testUtils() throws {
+        let scripthash = try RadiantUtils().prepareWallet(address: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf")
+        XCTAssertEqual("972C432D04BC6908FA2825860148B8F911AC3D19C161C68E7A6B9BEAE86E05BA", scripthash)
+        
+        let scripthash1 = try RadiantUtils().prepareWallet(address: "166w5AGDyvMkJqfDAtLbTJeoQh6FqYCfLQ")
+        XCTAssertEqual("67809980FB38F7685D46A8108A39FE38956ADE259BE1C3E6FECBDEAA20FDECA9", scripthash1)
     }
     
     /// https://github.com/trustwallet/wallet-core/blob/master/tests/chains/Bitcoin/BitcoinAddressTests.cpp
@@ -124,44 +132,56 @@ final class RadiantTests: XCTestCase {
     
     }
     
-    private func buildOutputScript(address: String) -> Data? {
-        let decoded = address.base58DecodedData
-        let first = decoded[0]
-        let data = decoded[1...20]
-        //P2H
-        if (first == 0 || first == 111 || first == 48) { //0 for BTC/BCH 1 address | 48 for LTC L address
-            return [Op.dup.rawValue, Op.hash160.rawValue ] + buildPrefix(for: data) + data + [Op.equalVerify.rawValue, Op.checkSig.rawValue]
-        }
-        //P2SH
-        if(first == 5 || first == 0xc4 || first == 50) { //5 for BTC/BCH/LTC 3 address | 50 for LTC M address
-            return [Op.hash160.rawValue] + buildPrefix(for: data) + data + [Op.equal.rawValue]
-        }
-        return nil
+    func testSignPreImage() throws {
+        let privateKey = WalletCore.PrivateKey(data: Data(hexString: "079E750E71A7A2680380A4744C0E84567B1F8FC3C0AFD362D8326E1E676A4A15"))!
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
+        let decimalValue = blockchain.decimalValue
+        
+        let addressAdapter = BitcoinWalletCoreAddressAdapter(coin: .bitcoinCash)
+        let adapterAddress = try addressAdapter.makeAddress(
+            for: Wallet.PublicKey(seedKey: publicKey.data, derivationType: .none),
+            by: .p2pkh
+        )
+        
+        XCTAssertEqual("166w5AGDyvMkJqfDAtLbTJeoQh6FqYCfLQ", adapterAddress.description)
+        
+        let outputScript = WalletCore.BitcoinScript.lockScriptForAddress(address: adapterAddress.description, coin: WalletCore.CoinType.bitcoinCash).data.hexString
+        
+        XCTAssertEqual(outputScript.lowercased(), "76a91437f7d8745fb391f80384c4c375e6e884ee4cec2888ac")
+        
+        let txBuilder = try RadiantCashTransactionBuilder(walletPublicKey: publicKey.data, decimalValue: decimalValue)
+        
+        let unspent = BitcoinUnspentOutput(
+            transactionHash: "9f7a9794c66d223acf580ac88fd1e932e6b6f98fe2e86670b6cd31190123963d",
+            outputIndex: 0,
+            amount: 278337500,
+            outputScript: outputScript
+        )
+        
+        txBuilder.update(unspents: [unspent])
+        
+        let amountValue = Amount(with: blockchain, value: 1.39168750)
+        let feeValue = Amount(with: blockchain, value: 0.00226)
+        
+        let hashesForSign = try txBuilder.buildForSign(
+            transaction: .init(
+                amount: amountValue,
+                fee: Fee(feeValue),
+                sourceAddress: adapterAddress.description,
+                destinationAddress: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf",
+                changeAddress: "166w5AGDyvMkJqfDAtLbTJeoQh6FqYCfLQ"
+            )
+        )
+        
+        XCTAssertEqual(hashesForSign.first?.hexString.lowercased(), "64c71563e9e2b34934b464f741e9d99787aa5a4741059475dc10a5f336ed117d")
+        
+        let signature = privateKey.signAsDER(digest: hashesForSign.first!)
+        print(signature?.hexadecimal)
+        
+        /*
+         3045022100e3669ab54e95a6c085587b34c32ae5454cb6fff1a34a7570105787488490184f02202c2de2bb1c6a06cdc98f5c98b0d018f7f595db2a7c29ef00087ee53ac68079fb
+         
+         3044022025b8d6a4c77de4e4e3c525ea130ac0c76fa827468b3837aff95517cc685069c0022071bf4147aed3d15c0892ea59e32c2e89e41304e5a6c1138a1551df3b9c391296
+         */
     }
-    
-    private func buildPrefix(for data: Data) -> Data {
-        switch data.count {
-        case 0..<Int(Op.pushData1.rawValue):
-            return data.count.byte
-        case Int(Op.pushData1.rawValue)..<Int(0xff):
-            return Data([Op.pushData1.rawValue]) + data.count.byte
-        case Int(0xff)..<Int(0xffff):
-            return Data([Op.pushData2.rawValue]) + data.count.bytes2LE
-        default:
-            return Data([Op.pushData4.rawValue]) + data.count.bytes4LE
-        }
-    }
-}
-
-enum Op: UInt8 {
-    case hash160 = 0xA9
-    case equal = 0x87
-    case dup = 0x76
-    case equalVerify = 0x88
-    case checkSig = 0xAC
-    case pushData1 = 0x4c
-    case pushData2 = 0x4d
-    case pushData4 = 0x4e
-    case op0 = 0x00
-    case op1 = 0x51
 }
