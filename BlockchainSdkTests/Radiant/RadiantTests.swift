@@ -163,25 +163,28 @@ final class RadiantTests: XCTestCase {
         let amountValue = Amount(with: blockchain, value: 1.39168750)
         let feeValue = Amount(with: blockchain, value: 0.00226)
         
-        let hashesForSign = try txBuilder.buildForSign(
-            transaction: .init(
-                amount: amountValue,
-                fee: Fee(feeValue),
-                sourceAddress: adapterAddress.description,
-                destinationAddress: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf",
-                changeAddress: "166w5AGDyvMkJqfDAtLbTJeoQh6FqYCfLQ"
-            )
+        let transaction = Transaction(
+            amount: amountValue,
+            fee: Fee(feeValue),
+            sourceAddress: adapterAddress.description,
+            destinationAddress: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf",
+            changeAddress: "166w5AGDyvMkJqfDAtLbTJeoQh6FqYCfLQ"
         )
+        
+        let hashesForSign = try txBuilder.buildForSign(transaction: transaction)
         
         XCTAssertEqual(hashesForSign.first?.hexString.lowercased(), "64c71563e9e2b34934b464f741e9d99787aa5a4741059475dc10a5f336ed117d")
         
-        let signature = privateKey.signAsDER(digest: hashesForSign.first!)
-        print(signature?.hexadecimal)
+        let signatures = hashesForSign.compactMap {
+            privateKey.signAsDER(digest: $0)
+        }
         
-        /*
-         3045022100e3669ab54e95a6c085587b34c32ae5454cb6fff1a34a7570105787488490184f02202c2de2bb1c6a06cdc98f5c98b0d018f7f595db2a7c29ef00087ee53ac68079fb
-         
-         3044022025b8d6a4c77de4e4e3c525ea130ac0c76fa827468b3837aff95517cc685069c0022071bf4147aed3d15c0892ea59e32c2e89e41304e5a6c1138a1551df3b9c391296
-         */
+        XCTAssertEqual(signatures.count, hashesForSign.count)
+        
+        let transactionHash = try txBuilder.buildForSend(
+            transaction: transaction,
+            signatures: signatures
+        )
+        
     }
 }

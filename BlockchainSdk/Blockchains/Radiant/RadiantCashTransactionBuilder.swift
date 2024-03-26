@@ -159,61 +159,64 @@ class RadiantCashTransactionBuilder {
         changeAddress: String,
         index: Int?
     ) throws -> Data {
-        var txToSign = Data()
+        var txBody = Data()
+        
         // version
-        txToSign.append(contentsOf: [UInt8(0x01),UInt8(0x00),UInt8(0x00),UInt8(0x00)])
+        txBody.append(contentsOf: [UInt8(0x01),UInt8(0x00),UInt8(0x00),UInt8(0x00)])
                                                                                             
         //01
-        txToSign.append(unspents.count.byte)
+        txBody.append(unspents.count.byte)
         
         //hex str hash prev btc
         
         for (inputIndex, input) in unspents.enumerated() {
             let hashKey: [UInt8] = input.hash.reversed()
-            txToSign.append(contentsOf: hashKey)
-            txToSign.append(contentsOf: input.outputIndex.bytes4LE)
+            txBody.append(contentsOf: hashKey)
+            txBody.append(contentsOf: input.outputIndex.bytes4LE)
+            
             if (index == nil) || (inputIndex == index) {
-                txToSign.append(input.outputScript.count.byte)
-                txToSign.append(contentsOf: input.outputScript)
+                txBody.append(input.outputScript.count.byte)
+                txBody.append(contentsOf: input.outputScript)
             } else {
-                txToSign.append(UInt8(0x00))
+                txBody.append(UInt8(0x00))
             }
+            
             //ffffffff
-            txToSign.append(contentsOf: [UInt8(0xff),UInt8(0xff),UInt8(0xff),UInt8(0xff)]) // sequence
+            txBody.append(contentsOf: [UInt8(0xff),UInt8(0xff),UInt8(0xff),UInt8(0xff)]) // sequence
         }
         
         //02
         let outputCount = change == 0 ? 1 : 2
-        txToSign.append(outputCount.byte)
+        txBody.append(outputCount.byte)
         
         //8 bytes
-        txToSign.append(contentsOf: amount.bytes8LE)
+        txBody.append(contentsOf: amount.bytes8LE)
         
         guard let outputScriptBytes = buildOutputScript(address: targetAddress) else {
             throw WalletError.failedToBuildTx
         }
         
         //hex str 1976a914....88ac
-        txToSign.append(outputScriptBytes.count.byte)
-        txToSign.append(contentsOf: outputScriptBytes)
+        txBody.append(outputScriptBytes.count.byte)
+        txBody.append(contentsOf: outputScriptBytes)
         
         if change != 0 {
             //8 bytes
-            txToSign.append(contentsOf: change.bytes8LE)
+            txBody.append(contentsOf: change.bytes8LE)
             
             //hex str 1976a914....88ac
             guard let outputScriptChangeBytes = buildOutputScript(address: changeAddress) else {
                 throw WalletError.failedToBuildTx
             }
             
-            txToSign.append(outputScriptChangeBytes.count.byte)
-            txToSign.append(contentsOf: outputScriptChangeBytes)
+            txBody.append(outputScriptChangeBytes.count.byte)
+            txBody.append(contentsOf: outputScriptChangeBytes)
         }
         
         //00000000
-        txToSign.append(contentsOf: [UInt8(0x00),UInt8(0x00),UInt8(0x00),UInt8(0x00)])
+        txBody.append(contentsOf: [UInt8(0x00),UInt8(0x00),UInt8(0x00),UInt8(0x00)])
         
-        return txToSign
+        return txBody
     }
     
     private func calculateChange(
