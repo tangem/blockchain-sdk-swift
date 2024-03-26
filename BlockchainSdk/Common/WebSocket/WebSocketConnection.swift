@@ -62,9 +62,7 @@ private extension WebSocketConnection {
             guard let self else { return }
 
             try await Task.sleep(nanoseconds: UInt64(ping.interval) * NSEC_PER_SEC)
-            
-            try Task.checkCancellation()
-            
+
             try await ping()
         }
     }
@@ -75,9 +73,7 @@ private extension WebSocketConnection {
             guard let self else { return }
 
             try await Task.sleep(nanoseconds: UInt64(timeout) * NSEC_PER_SEC)
-            
-            try Task.checkCancellation()
-            
+
             await disconnect()
         }
     }
