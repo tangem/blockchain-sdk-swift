@@ -37,9 +37,10 @@ class StellarTransactionBuilder {
         let result: (Data, stellarsdk.TransactionXDR)
         do {
             let isAccountCreated = targetAccountResponse.accountCreated
-            
+            let amountToCreateAccount: Decimal = StellarWalletManager.Constants.minAmountToCreateCoinAccount
+
             if transaction.amount.type == .coin {
-                if !isAccountCreated && transaction.amount.value < 1 {
+                if !isAccountCreated && transaction.amount.value < amountToCreateAccount {
                     throw StellarError.xlmCreateAccount
                 }
                 
