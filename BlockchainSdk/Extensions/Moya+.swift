@@ -30,3 +30,21 @@ extension Moya.Task {
         return .requestJSONEncodable(jsonRPCParams)
     }
 }
+
+extension MoyaProvider {
+    // TODO: Andrey Fedorov - Temporary solution, add support for retries and cancellation
+    func asyncRequest(for target: Target) async throws -> Response {
+        try await withCheckedThrowingContinuation { [weak self] continuation in
+            guard let self = self else { return }
+
+            request(target) { result in
+                switch result {
+                case .success(let responseValue):
+                    continuation.resume(returning: responseValue)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+}
