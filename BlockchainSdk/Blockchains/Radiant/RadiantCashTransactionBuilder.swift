@@ -30,9 +30,7 @@ class RadiantCashTransactionBuilder {
     }
     
     func buildForSign(transaction: Transaction) throws -> [Data] {
-        guard let outputScript = buildOutputScript(address: transaction.sourceAddress) else {
-            throw "RadiantCashTransactionBuilder outputScript error"
-        }
+        let outputScript = buildOutputScript(address: transaction.sourceAddress)
         
         let unspents = buildUnspents(with: [outputScript])
         
@@ -54,24 +52,25 @@ class RadiantCashTransactionBuilder {
             }
             
             let hash = tx.sha256().sha256()
-            let reversedHash = Data(hash.reversed())
-            hashes.append(reversedHash)
+            hashes.append(hash)
         }
         
         return hashes
     }
     
-    func buildForSend(transaction: Transaction, signatures: [Data]) throws -> Data {
-        guard let outputScripts = buildSignedScripts(signatures: signatures, publicKey: walletPublicKey) else {
-            throw WalletError.failedToBuildTx
-        }
+    func buildForSend(transaction: Transaction, signatures: [Data], isDer: Bool) throws -> Data {
+        let outputScripts = try buildSignedScripts(
+            signatures: signatures,
+            publicKey: walletPublicKey,
+            isDer: false
+        )
         
         let unspents = buildUnspents(with: outputScripts)
         
         let amountSatoshi = transaction.amount.value * decimalValue
         let changeSatoshi = calculateChange(unspents: unspents, amountSatoshi: amountSatoshi, fee: transaction.fee.amount.value)
         
-        let tx = try buildTxBody(
+        let rawTransaction = try buildRawTransaction(
             unspents: unspents,
             amount: amountSatoshi,
             change: changeSatoshi,
@@ -80,7 +79,9 @@ class RadiantCashTransactionBuilder {
             index: nil
         )
         
-        return tx
+        print(rawTransaction.hexString)
+        
+        return rawTransaction
     }
     
     // MARK: - Build Transaction Data
@@ -111,9 +112,7 @@ class RadiantCashTransactionBuilder {
         txToSign.append(contentsOf: currentOutput.outputIndex.bytes4LE)
         
         //scriptCode of the input (serialized as scripts inside CTxOuts)
-        guard let scriptCode = buildOutputScript(address: sourceAddress) else { //build change out
-            throw WalletError.failedToBuildTx
-        }
+        let scriptCode = buildOutputScript(address: sourceAddress)
         
         txToSign.append(scriptCode.count.byte)
         txToSign.append(contentsOf: scriptCode)
@@ -151,7 +150,7 @@ class RadiantCashTransactionBuilder {
         return txToSign
     }
     
-    private func buildTxBody(
+    private func buildRawTransaction(
         unspents: [RadiantUnspentTransaction],
         amount: Decimal,
         change: Decimal,
@@ -168,7 +167,6 @@ class RadiantCashTransactionBuilder {
         txBody.append(unspents.count.byte)
         
         //hex str hash prev btc
-        
         for (inputIndex, input) in unspents.enumerated() {
             let hashKey: [UInt8] = input.hash.reversed()
             txBody.append(contentsOf: hashKey)
@@ -192,9 +190,7 @@ class RadiantCashTransactionBuilder {
         //8 bytes
         txBody.append(contentsOf: amount.bytes8LE)
         
-        guard let outputScriptBytes = buildOutputScript(address: targetAddress) else {
-            throw WalletError.failedToBuildTx
-        }
+        let outputScriptBytes = buildOutputScript(address: targetAddress)
         
         //hex str 1976a914....88ac
         txBody.append(outputScriptBytes.count.byte)
@@ -204,10 +200,7 @@ class RadiantCashTransactionBuilder {
             //8 bytes
             txBody.append(contentsOf: change.bytes8LE)
             
-            //hex str 1976a914....88ac
-            guard let outputScriptChangeBytes = buildOutputScript(address: changeAddress) else {
-                throw WalletError.failedToBuildTx
-            }
+            let outputScriptChangeBytes = buildOutputScript(address: changeAddress)
             
             txBody.append(outputScriptChangeBytes.count.byte)
             txBody.append(contentsOf: outputScriptChangeBytes)
@@ -244,12 +237,14 @@ class RadiantCashTransactionBuilder {
             }
     }
     
-    private func buildSignedScripts(signatures: [Data], publicKey: Data) -> [Data]? {
+    func buildSignedScripts(signatures: [Data], publicKey: Data, isDer: Bool = false) throws -> [Data] {
         var scripts: [Data] = .init()
         scripts.reserveCapacity(signatures.count)
         for signature in signatures {
-            guard let signDer = try? Secp256k1Signature(with: signature).serializeDer() else {
-                return nil
+            var signDer: Data = signature
+            
+            if !isDer {
+                signDer = try Secp256k1Signature(with: signature).serializeDer()
             }
             
             var script = Data()
@@ -260,11 +255,11 @@ class RadiantCashTransactionBuilder {
             script.append(contentsOf: publicKey)
             scripts.append(script)
         }
-
+        
         return scripts
     }
     
-    private func buildOutputScript(address: String) -> Data? {
+    private func buildOutputScript(address: String) -> Data {
         WalletCore.BitcoinScript.lockScriptForAddress(address: address, coin: WalletCore.CoinType.bitcoinCash).data
     }
     
@@ -294,9 +289,7 @@ class RadiantCashTransactionBuilder {
         var outputs = Data()
         outputs.append(contentsOf: amount.bytes8LE)
         
-        guard let sendScript = buildOutputScript(address: targetAddress) else {
-            throw WalletError.failedToBuildTx
-        }
+        let sendScript = buildOutputScript(address: targetAddress)
         
         outputs.append(sendScript.count.byte)
         outputs.append(contentsOf: sendScript)
@@ -305,9 +298,7 @@ class RadiantCashTransactionBuilder {
         if change != 0 {
             outputs.append(contentsOf: change.bytes8LE)
             
-            guard let changeOutputScriptBytes = buildOutputScript(address: sourceAddress) else {
-                throw WalletError.failedToBuildTx
-            }
+            let changeOutputScriptBytes = buildOutputScript(address: sourceAddress)
             
             outputs.append(changeOutputScriptBytes.count.byte)
             outputs.append(contentsOf: changeOutputScriptBytes)
@@ -333,9 +324,7 @@ class RadiantCashTransactionBuilder {
         
         outputs.append(contentsOf: amount.bytes8LE)
         
-        guard let sendScript = buildOutputScript(address: targetAddress) else {
-            throw WalletError.failedToBuildTx
-        }
+        let sendScript = buildOutputScript(address: targetAddress)
         
         // Hash of the locking script
         let scriptHash = sendScript.sha256().sha256()
@@ -350,9 +339,7 @@ class RadiantCashTransactionBuilder {
         if change != 0 {
             outputs.append(contentsOf: change.bytes8LE)
             
-            guard let changeOutputScriptBytes = buildOutputScript(address: sourceAddress) else {
-                throw WalletError.failedToBuildTx
-            }
+            let changeOutputScriptBytes = buildOutputScript(address: sourceAddress)
             
             // Hash of the locking script
             let changeScriptHash = changeOutputScriptBytes.sha256().sha256()

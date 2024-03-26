@@ -18,47 +18,20 @@ import BitcoinCore
 final class RadiantTests: XCTestCase {
     private let blockchain = Blockchain.radiant(testnet: false)
     
+    let privateKey = WalletCore.PrivateKey(data: Data(hexString: "079E750E71A7A2680380A4744C0E84567B1F8FC3C0AFD362D8326E1E676A4A15"))!
+    lazy var publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
+    
     // MARK: - Impementation
     
-    func testScript() throws {
-        let publicKey = Data(hexString: "02AB010392F0C638AC572C61AA72D37460D4B4AA722DFA258863ADE24998C72CFA")
-        let p2pkhScript = WalletCore.BitcoinScript.buildPayToPublicKeyHash(hash: publicKey)
-        let lockScript = BitcoinScript.lockScriptForAddress(address: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf", coin: .bitcoinCash)
-//        let legacyOutputScript = buildOutputScript(address: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf")!.hexString
-        
-//        XCTAssertEqual(lockScript.data.hexString.lowercased(), "76a9140a2f12f228cbc244c745f33a23f7e924cbf3b6ad88ac".lowercased())
-//        XCTAssertEqual(lockScript.data.hexString.lowercased(), legacyOutputScript.lowercased())
-    }
-    
-    func testHDKey() throws {
-        let hdWallet = WalletCore.HDWallet(
-            mnemonic: "tiny escape drive pupil flavor endless love walk gadget match filter luxury",
-            passphrase: ""
-        )
-        
-        let privateKey = hdWallet!.getKeyForCoin(coin: .bitcoinCash)
-        
-        print(privateKey.data.hexString)
-        
-        let hexPublicKey = privateKey.getPublicKeySecp256k1(compressed: true).data.hexString
-        
-        print(hexPublicKey)
-        
-        let publicKey = Wallet.PublicKey(seedKey: Data(hexString: hexPublicKey), derivationType: .none)
-        
-        let addressAdapter = BitcoinWalletCoreAddressAdapter(coin: .bitcoinCash)
-        let adapterAddress = try addressAdapter.makeAddress(for: publicKey, by: .p2pkh)
-        
-        print(adapterAddress.description)
-        
+//    func testScript() throws {
 //        let publicKey = Data(hexString: "02AB010392F0C638AC572C61AA72D37460D4B4AA722DFA258863ADE24998C72CFA")
 //        let p2pkhScript = WalletCore.BitcoinScript.buildPayToPublicKeyHash(hash: publicKey)
 //        let lockScript = BitcoinScript.lockScriptForAddress(address: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf", coin: .bitcoinCash)
 //        let legacyOutputScript = buildOutputScript(address: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf")!.hexString
-//        
+        
 //        XCTAssertEqual(lockScript.data.hexString.lowercased(), "76a9140a2f12f228cbc244c745f33a23f7e924cbf3b6ad88ac".lowercased())
 //        XCTAssertEqual(lockScript.data.hexString.lowercased(), legacyOutputScript.lowercased())
-    }
+//    }
     
     func testUtils() throws {
         let scripthash = try RadiantUtils().prepareWallet(address: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf")
@@ -132,24 +105,22 @@ final class RadiantTests: XCTestCase {
     
     }
     
-    func testSignPreImage() throws {
-        let privateKey = WalletCore.PrivateKey(data: Data(hexString: "079E750E71A7A2680380A4744C0E84567B1F8FC3C0AFD362D8326E1E676A4A15"))!
-        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
-        let decimalValue = blockchain.decimalValue
+    func testSignTransaction() throws {
+        XCTAssertEqual(publicKey.compressed.data.hexString.lowercased(), "03d6fde463a4d0f4decc6ab11be24e83c55a15f68fd5db561eebca021976215ff5")
         
         let addressAdapter = BitcoinWalletCoreAddressAdapter(coin: .bitcoinCash)
-        let adapterAddress = try addressAdapter.makeAddress(
+        let address = try addressAdapter.makeAddress(
             for: Wallet.PublicKey(seedKey: publicKey.data, derivationType: .none),
             by: .p2pkh
         )
         
-        XCTAssertEqual("166w5AGDyvMkJqfDAtLbTJeoQh6FqYCfLQ", adapterAddress.description)
+        XCTAssertEqual("166w5AGDyvMkJqfDAtLbTJeoQh6FqYCfLQ", address.description)
         
-        let outputScript = WalletCore.BitcoinScript.lockScriptForAddress(address: adapterAddress.description, coin: WalletCore.CoinType.bitcoinCash).data.hexString
+        let outputScript = WalletCore.BitcoinScript.lockScriptForAddress(address: address.description, coin: WalletCore.CoinType.bitcoinCash).data.hexString
         
         XCTAssertEqual(outputScript.lowercased(), "76a91437f7d8745fb391f80384c4c375e6e884ee4cec2888ac")
         
-        let txBuilder = try RadiantCashTransactionBuilder(walletPublicKey: publicKey.data, decimalValue: decimalValue)
+        let txBuilder = try RadiantCashTransactionBuilder(walletPublicKey: publicKey.data, decimalValue: blockchain.decimalValue)
         
         let unspent = BitcoinUnspentOutput(
             transactionHash: "9f7a9794c66d223acf580ac88fd1e932e6b6f98fe2e86670b6cd31190123963d",
@@ -160,31 +131,118 @@ final class RadiantTests: XCTestCase {
         
         txBuilder.update(unspents: [unspent])
         
-        let amountValue = Amount(with: blockchain, value: 1.39168750)
+        let amounValueDecimal = (Decimal(unspent.amount / 2)) / blockchain.decimalValue
+        
+        let amountValue = Amount(with: blockchain, value: amounValueDecimal)
         let feeValue = Amount(with: blockchain, value: 0.00226)
         
         let transaction = Transaction(
             amount: amountValue,
             fee: Fee(feeValue),
-            sourceAddress: adapterAddress.description,
+            sourceAddress: address.description,
             destinationAddress: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf",
             changeAddress: "166w5AGDyvMkJqfDAtLbTJeoQh6FqYCfLQ"
         )
         
         let hashesForSign = try txBuilder.buildForSign(transaction: transaction)
         
+        // Need hashesForSign reversed for verify
         XCTAssertEqual(hashesForSign.first?.hexString.lowercased(), "64c71563e9e2b34934b464f741e9d99787aa5a4741059475dc10a5f336ed117d")
         
-        let signatures = hashesForSign.compactMap {
-            privateKey.signAsDER(digest: $0)
-        }
+        let signatures = [
+            Data(hexString: "3044022025b8d6a4c77de4e4e3c525ea130ac0c76fa827468b3837aff95517cc685069c0022071bf4147aed3d15c0892ea59e32c2e89e41304e5a6c1138a1551df3b9c391296")
+        ]
         
         XCTAssertEqual(signatures.count, hashesForSign.count)
         
         let transactionHash = try txBuilder.buildForSend(
             transaction: transaction,
-            signatures: signatures
+            signatures: signatures,
+            isDer: true
         )
         
+        let expectedTransactionHash = "01000000013d9623011931cdb67066e8e28ff9b6e632e9d18fc80a58cf3a226dc694977a9f000000006a473044022025b8d6a4c77de4e4e3c525ea130ac0c76fa827468b3837aff95517cc685069c0022071bf4147aed3d15c0892ea59e32c2e89e41304e5a6c1138a1551df3b9c391296412103d6fde463a4d0f4decc6ab11be24e83c55a15f68fd5db561eebca021976215ff5ffffffff02ee8b4b08000000001976a9140a2f12f228cbc244c745f33a23f7e924cbf3b6ad88ac1e194808000000001976a91437f7d8745fb391f80384c4c375e6e884ee4cec2888ac00000000"
+        
+        XCTAssertEqual(transactionHash.hexString.lowercased(), expectedTransactionHash)
+        
+    }
+    
+    func testSignedScripts() throws {
+        let txBuilder = try RadiantCashTransactionBuilder(walletPublicKey: publicKey.data, decimalValue: blockchain.decimalValue)
+        let scripts = try txBuilder.buildSignedScripts(
+            signatures: [
+                Data(hexString: "3044022025b8d6a4c77de4e4e3c525ea130ac0c76fa827468b3837aff95517cc685069c0022071bf4147aed3d15c0892ea59e32c2e89e41304e5a6c1138a1551df3b9c391296")
+            ],
+            publicKey: publicKey.data,
+            isDer: true
+        )
+        
+        let expectedHexScript = "473044022025b8d6a4c77de4e4e3c525ea130ac0c76fa827468b3837aff95517cc685069c0022071bf4147aed3d15c0892ea59e32c2e89e41304e5a6c1138a1551df3b9c391296412103d6fde463a4d0f4decc6ab11be24e83c55a15f68fd5db561eebca021976215ff5"
+        
+        XCTAssertEqual(scripts.first!.hexString.lowercased(), expectedHexScript)
+    }
+    
+    func testSignPreImage2() throws {
+        XCTAssertEqual(publicKey.compressed.data.hexString.lowercased(), "03d6fde463a4d0f4decc6ab11be24e83c55a15f68fd5db561eebca021976215ff5")
+        
+        let addressAdapter = BitcoinWalletCoreAddressAdapter(coin: .bitcoinCash)
+        let address = try addressAdapter.makeAddress(
+            for: Wallet.PublicKey(seedKey: publicKey.data, derivationType: .none),
+            by: .p2pkh
+        )
+        
+        XCTAssertEqual("166w5AGDyvMkJqfDAtLbTJeoQh6FqYCfLQ", address.description)
+        
+        let outputScript = WalletCore.BitcoinScript.lockScriptForAddress(address: address.description, coin: WalletCore.CoinType.bitcoinCash).data.hexString
+        
+        XCTAssertEqual(outputScript.lowercased(), "76a91437f7d8745fb391f80384c4c375e6e884ee4cec2888ac")
+        
+        let txBuilder = try RadiantCashTransactionBuilder(walletPublicKey: publicKey.data, decimalValue: blockchain.decimalValue)
+        
+        let unspent = BitcoinUnspentOutput(
+            transactionHash: "0988f51f5a959cec02b57255b2def9a86153bf536821759a2aebb6d64ea1cca1",
+            outputIndex: 1,
+            amount: 69018375,
+            outputScript: outputScript
+        )
+        
+        txBuilder.update(unspents: [unspent])
+        
+        let amounValueDecimal = (Decimal(1000)) / blockchain.decimalValue
+        
+        let amountValue = Amount(with: blockchain, value: amounValueDecimal)
+        let feeValue = Amount(with: blockchain, value: 0.00226)
+        
+        let transaction = Transaction(
+            amount: amountValue,
+            fee: Fee(feeValue),
+            sourceAddress: address.description,
+            destinationAddress: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf",
+            changeAddress: "166w5AGDyvMkJqfDAtLbTJeoQh6FqYCfLQ"
+        )
+        
+        let hashesForSign = try txBuilder.buildForSign(transaction: transaction)
+        
+        XCTAssertEqual(hashesForSign.first?.hexString.lowercased(), "cefbda0b8377e4b7f21f4196570ad7e7e3e65d063e546f6e9b6cdaca2df9cc4d")
+        
+        let signatures = hashesForSign.map { _ in
+            Data(hexString: "044022002e2542c7b659e9372f4c2755131cf951f4718894f13776e842315a56a66b08502200a3df046aaf53b65335232c93b6e789af2b7324fb4cfab4f92cd8f78c050d668")
+        }
+        
+        let validation = publicKey.verifyAsDER(signature: signatures.first!, message: Data(hashesForSign.first!))
+        
+        XCTAssertTrue(validation)
+        
+        XCTAssertEqual(signatures.count, hashesForSign.count)
+        
+        let rawTransaction = try txBuilder.buildForSend(
+            transaction: transaction,
+            signatures: signatures,
+            isDer: true
+        )
+        
+        let expectedRawTransaction = "0100000001a1cca14ed6b6eb2a9a75216853bf5361a8f9deb25572b502ec9c955a1ff58809010000006a473044022002e2542c7b659e9372f4c2755131cf951f4718894f13776e842315a56a66b08502200a3df046aaf53b65335232c93b6e789af2b7324fb4cfab4f92cd8f78c050d668412103d6fde463a4d0f4decc6ab11be24e83c55a15f68fd5db561eebca021976215ff5ffffffff02e8030000000000001976a9140a2f12f228cbc244c745f33a23f7e924cbf3b6ad88ac4fac1904000000001976a91437f7d8745fb391f80384c4c375e6e884ee4cec2888ac00000000"
+        
+        XCTAssertEqual(rawTransaction.hexString, expectedRawTransaction)
     }
 }

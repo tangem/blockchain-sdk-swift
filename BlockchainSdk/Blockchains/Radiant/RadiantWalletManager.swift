@@ -73,7 +73,11 @@ private extension RadiantWalletManager {
             .sign(hashes: hashesForSign, walletPublicKey: self.wallet.publicKey)
             .withWeakCaptureOf(self)
             .tryMap { walletManager, signatures in
-                try walletManager.transactionBuilder.buildForSend(transaction: transaction, signatures: signatures)
+                try walletManager.transactionBuilder.buildForSend(
+                    transaction: transaction,
+                    signatures: signatures,
+                    isDer: true
+                )
             }
             .withWeakCaptureOf(self)
             .tryMap { walletManager, transactionData -> TransactionSendResult in
