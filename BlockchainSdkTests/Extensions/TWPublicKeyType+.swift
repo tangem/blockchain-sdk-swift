@@ -43,7 +43,11 @@ extension PublicKeyType {
                 .areon,
                 .playa3ullGames,
                 .pulsechain,
-                .aurora:
+                .aurora,
+                .manta,
+                .zkSync,
+                .moonbeam,
+                .polygonZkEVM:
             self = PublicKeyType.secp256k1Extended
         case .stellar,
                 .ton,
