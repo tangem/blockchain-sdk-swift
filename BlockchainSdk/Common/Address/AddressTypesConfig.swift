@@ -66,7 +66,11 @@ struct AddressTypesConfig {
              .areon, 
              .playa3ullGames,
              .pulsechain,
-             .aurora, 
+             .aurora,
+             .manta,
+             .zkSync,
+             .moonbeam,
+             .polygonZkEVM,
              .radiant:
             return [.default]
         }
