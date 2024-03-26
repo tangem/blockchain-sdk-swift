@@ -9,8 +9,8 @@
 import Foundation
 
 class URLSessionWebSocketDelegateWrapper: NSObject, URLSessionWebSocketDelegate {
-    private var webSocketTaskDidOpen: (URLSessionWebSocketTask) -> Void?
-    private var webSocketTaskDidClose: (URLSessionWebSocketTask, URLSessionWebSocketTask.CloseCode) -> Void
+    private let webSocketTaskDidOpen: (URLSessionWebSocketTask) -> Void?
+    private let webSocketTaskDidClose: (URLSessionWebSocketTask, URLSessionWebSocketTask.CloseCode) -> Void
     
     init(
         webSocketTaskDidOpen: @escaping (URLSessionWebSocketTask) -> Void?,

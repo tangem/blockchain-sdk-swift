@@ -14,12 +14,12 @@ final class RadiantWalletManager: BaseManager {
     
     // MARK: - Private Properties
     
-    private let transactionBuilder: RadiantTransactionBuilder
+    private let transactionBuilder: RadiantCashTransactionBuilder
     private let networkService: RadiantNetworkService
     
     // MARK: - Init
     
-    init(wallet: Wallet, transactionBuilder: RadiantTransactionBuilder, networkService: RadiantNetworkService) throws {
+    init(wallet: Wallet, transactionBuilder: RadiantCashTransactionBuilder, networkService: RadiantNetworkService) throws {
         self.transactionBuilder = transactionBuilder
         self.networkService = networkService
         super.init(wallet: wallet)
@@ -101,7 +101,7 @@ extension RadiantWalletManager: WalletManager {
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         return .justWithError(output: [
-            .init(Amount(with: wallet.blockchain, value: 0.000000001))
+            .init(Amount(with: wallet.blockchain, value: 0.1))
         ])
         
 //        networkService.estimatedFee()
