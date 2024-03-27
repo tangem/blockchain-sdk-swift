@@ -465,6 +465,9 @@
 		DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */; };
 		DAF0867027A9438C0024312E /* PolkadotNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */; };
 		DAF3AD4629E916D300E057FA /* CosmosFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF3AD4529E916D300E057FA /* CosmosFeeParameters.swift */; };
+		DAFE0D082BB168D8005CBD9C /* MoonriverExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAFE0D072BB168D8005CBD9C /* MoonriverExternalLinkProvider.swift */; };
+		DAFE0D0A2BB1840E005CBD9C /* MantleExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAFE0D092BB1840E005CBD9C /* MantleExternalLinkProvider.swift */; };
+		DAFE0D0C2BB1841B005CBD9C /* FlareExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAFE0D0B2BB1841B005CBD9C /* FlareExternalLinkProvider.swift */; };
 		DC136B432B1A6249008A7D41 /* Bech32Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC136B412B1A5B3C008A7D41 /* Bech32Tests.swift */; };
 		DC173AEC2A5D42EE0088F79E /* XRPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC173AEB2A5D42EE0088F79E /* XRPTests.swift */; };
 		DC3550F12B57013F00A93DBA /* XDCExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3550F02B57013F00A93DBA /* XDCExternalLinkProvider.swift */; };
@@ -1242,6 +1245,9 @@
 		DAF0866D27A942D60024312E /* PolkadotWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolkadotWalletManager.swift; sourceTree = "<group>"; };
 		DAF0866F27A9438C0024312E /* PolkadotNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotNetworkService.swift; sourceTree = "<group>"; };
 		DAF3AD4529E916D300E057FA /* CosmosFeeParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosFeeParameters.swift; sourceTree = "<group>"; };
+		DAFE0D072BB168D8005CBD9C /* MoonriverExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonriverExternalLinkProvider.swift; sourceTree = "<group>"; };
+		DAFE0D092BB1840E005CBD9C /* MantleExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantleExternalLinkProvider.swift; sourceTree = "<group>"; };
+		DAFE0D0B2BB1841B005CBD9C /* FlareExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlareExternalLinkProvider.swift; sourceTree = "<group>"; };
 		DC136B412B1A5B3C008A7D41 /* Bech32Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bech32Tests.swift; sourceTree = "<group>"; };
 		DC173AEB2A5D42EE0088F79E /* XRPTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPTests.swift; sourceTree = "<group>"; };
 		DC3550F02B57013F00A93DBA /* XDCExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCExternalLinkProvider.swift; sourceTree = "<group>"; };
@@ -3028,6 +3034,9 @@
 				0A1399202B637DB900934D7D /* ShibariumExternalLinkProvider.swift */,
 				EF3B195F2AA85F0E0084AA1C /* TelosExternalLinkProvider.swift */,
 				0A0E22542B9B2E1B00075FF1 /* ZkSyncExternalLinkProvider.swift */,
+				DAFE0D072BB168D8005CBD9C /* MoonriverExternalLinkProvider.swift */,
+				DAFE0D092BB1840E005CBD9C /* MantleExternalLinkProvider.swift */,
+				DAFE0D0B2BB1841B005CBD9C /* FlareExternalLinkProvider.swift */,
 			);
 			path = OtherChains;
 			sourceTree = "<group>";
@@ -3832,6 +3841,7 @@
 				EFBA17FE2988623F00C23955 /* TransactionSendResult.swift in Sources */,
 				EFD717CE2A25ECB500E5430D /* SmartContractMethodParameterType.swift in Sources */,
 				B6181AE92B75945E0046A976 /* HederaTransactionInfo.swift in Sources */,
+				DAFE0D082BB168D8005CBD9C /* MoonriverExternalLinkProvider.swift in Sources */,
 				EF3B19362AA85CFC0084AA1C /* BSCExternalLinkProvider.swift in Sources */,
 				2D24F57B2B6A425500D502A0 /* AptosWalletAssembly.swift in Sources */,
 				2DDE5BB029C4F8D200A5B708 /* WalletManagerAssembly.swift in Sources */,
@@ -3896,6 +3906,7 @@
 				DC5E64FD2B1650F400E81AA5 /* OP_NOT.swift in Sources */,
 				B0C34958267B83580027CC9D /* BitcoinModels.swift in Sources */,
 				DA63B0A029CB3FC700AC6E49 /* KaspaAddressComponents.swift in Sources */,
+				DAFE0D0C2BB1841B005CBD9C /* FlareExternalLinkProvider.swift in Sources */,
 				DA30812B2817BF3C00DE41F1 /* Tron.pb.swift in Sources */,
 				DC5E64DD2B1650F400E81AA5 /* OP_CHECKMULTISIG.swift in Sources */,
 				EF57BED82A1E624100C2A493 /* DerivationConfigV1.swift in Sources */,
@@ -4206,6 +4217,7 @@
 				2DDE5BA729C4F8D200A5B708 /* XRPWalletAssembly.swift in Sources */,
 				EF3B193C2AA85D230084AA1C /* SolanaExternalLinkProvider.swift in Sources */,
 				EF3B19482AA85E6F0084AA1C /* ArbitrumExternalLinkProvider.swift in Sources */,
+				DAFE0D0A2BB1840E005CBD9C /* MantleExternalLinkProvider.swift in Sources */,
 				B63068C22B3102FA00E79053 /* VeChainTransactionBuilder.swift in Sources */,
 				B68A7D472B35D39700822BAF /* VeChainTransactionInfo.swift in Sources */,
 				EF193BFE2A77ED9E0048C0C3 /* TransactionHistoryPages.swift in Sources */,
