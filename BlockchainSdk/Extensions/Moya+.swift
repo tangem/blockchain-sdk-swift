@@ -47,19 +47,53 @@ extension Moya.Response {
 }
 
 extension MoyaProvider {
-    // TODO: Andrey Fedorov - Temporary solution, add support for retries and cancellation
     func asyncRequest(for target: Target) async throws -> Response {
-        try await withCheckedThrowingContinuation { [weak self] continuation in
-            guard let self = self else { return }
+        let cancellableWrapper = CancellableWrapper()
 
-            request(target) { result in
-                switch result {
-                case .success(let responseValue):
-                    continuation.resume(returning: responseValue)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
+        return try await withTaskCancellationHandler(
+            operation: { [weak self] in
+                return try await withCheckedThrowingContinuation { continuation in
+                    // This check is required since `operation` closure is called regardless of whether the task is cancelled or not
+                    guard !_Concurrency.Task.isCancelled else {
+                        continuation.resume(throwing: CancellationError())
+                        return
+                    }
+
+                    guard let self else {
+                        return
+                    }
+
+                    cancellableWrapper.value = request(target) { result in
+                        switch result {
+                        case .success(let responseValue):
+                            continuation.resume(returning: responseValue)
+                        case .failure(let error):
+                            continuation.resume(throwing: error)
+                        }
+                    }
                 }
+            },
+            onCancel: {
+                cancellableWrapper.cancel()
             }
-        }
+        )
+    }
+}
+
+// MARK: - Auxiliary types
+
+/// Closures in `withTaskCancellationHandler(handler:operation:)` may be called on different threads,
+/// this wrapper provides required synchronization.
+private final class CancellableWrapper {
+    var value: Cancellable? {
+        get { criticalSection { innerCancellable } }
+        set { criticalSection { innerCancellable = newValue } }
+    }
+
+    private var innerCancellable: Cancellable?
+    private let criticalSection = Lock(isRecursive: false)
+
+    func cancel() {
+        criticalSection { innerCancellable?.cancel() }
     }
 }
