@@ -70,6 +70,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case zkSync(testnet: Bool)
     case moonbeam(testnet: Bool)
     case polygonZkEVM(testnet: Bool)
+    case nexa
 
     public var isTestnet: Bool {
         switch self {
@@ -118,7 +119,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .gnosis,
                 .disChain,
                 .playa3ullGames,
-                .kaspa:
+                .kaspa,
+                .nexa:
             return false
         case .stellar(_, let testnet),
                 .hedera(_, let testnet),
@@ -224,6 +226,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return 6
         case .aptos:
             return 8
+        case .nexa:
+            return 2
         }
     }
 
@@ -328,6 +332,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return isTestnet ? "tPLS" : "PLS"
         case .moonbeam:
             return isTestnet ? "DEV" : "GLMR"
+        case .nexa:
+            return "NEXA"
         }
     }
 
@@ -993,6 +999,7 @@ extension Blockchain: Codable {
         case .zkSync: return "zksync"
         case .moonbeam: return "moonbeam"
         case .polygonZkEVM: return "polygon-zkevm"
+        case .nexa: return "nexa"
         }
     }
 
@@ -1071,6 +1078,7 @@ extension Blockchain: Codable {
         case "zksync": self = .zkSync(testnet: isTestnet)
         case "moonbeam": self = .moonbeam(testnet: isTestnet)
         case "polygon-zkevm": self = .polygonZkEVM(testnet: isTestnet)
+        case "nexa": self = .nexa
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1153,6 +1161,7 @@ extension Blockchain {
         case "zksync": return .zkSync(testnet: isTestnet)
         case "moonbeam": return .moonbeam(testnet: isTestnet)
         case "polygon-zkevm": return.polygonZkEVM(testnet: isTestnet)
+        case "nexa": return .nexa
         default: return nil
         }
     }
@@ -1244,6 +1253,8 @@ extension Blockchain {
             return AptosWalletAssembly()
         case .hedera:
             return HederaWalletAssembly()
+        case .nexa:
+            return NexaWalletAssembly()
         }
     }
 }
