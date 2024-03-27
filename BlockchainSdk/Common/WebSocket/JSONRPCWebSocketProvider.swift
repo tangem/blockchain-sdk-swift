@@ -40,6 +40,8 @@ actor JSONRPCWebSocketProvider {
             requests.updateValue(continuation, forKey: request.id)
         }
 
+        try Task.checkCancellation()
+        
         // Remove the fulfilled `continuation` from cache
         requests.removeValue(forKey: request.id)
         let response = try decoder.decode(JSONRPCResponse<Result>.self, from: data)
