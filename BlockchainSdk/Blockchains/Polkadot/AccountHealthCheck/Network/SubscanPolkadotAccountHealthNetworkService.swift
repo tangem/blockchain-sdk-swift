@@ -13,9 +13,14 @@ public final class SubscanPolkadotAccountHealthNetworkService {
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder
     private let isTestnet: Bool
+    private let pageSize: Int
 
-    public init(isTestnet: Bool) {
+    public init(
+        isTestnet: Bool,
+        pageSize: Int
+    ) {
         self.isTestnet = isTestnet
+        self.pageSize = pageSize
 
         encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
@@ -51,7 +56,7 @@ public final class SubscanPolkadotAccountHealthNetworkService {
                         address: account,
                         afterId: afterId,
                         page: Constants.startPage,
-                        limit: Constants.pageSize
+                        limit: pageSize
                     )
                 )
             )
@@ -85,7 +90,7 @@ public final class SubscanPolkadotAccountHealthNetworkService {
 
 private extension SubscanPolkadotAccountHealthNetworkService {
     enum Constants {
+        // - Note: Subscan API has zero-based indexing
         static let startPage = 0
-        static let pageSize = 100
     }
 }
