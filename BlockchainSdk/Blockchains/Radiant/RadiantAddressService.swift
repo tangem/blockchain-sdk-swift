@@ -24,7 +24,6 @@ extension RadiantAddressService: AddressValidator {
 
 // MARK: - AddressProvider
 
-@available(iOS 13.0, *)
 extension RadiantAddressService: AddressProvider {
     public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
         let address = try addressAdapter.makeAddress(for: publicKey, by: .p2pkh)
