@@ -10,6 +10,8 @@ import Foundation
 import enum Moya.MoyaError
 
 public final class SubscanPolkadotAccountHealthNetworkService {
+    private typealias SkipRetryIf = (_ error: Error) -> Bool
+
     private let provider = NetworkProvider<SubscanAPITarget>()
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder
@@ -40,7 +42,13 @@ public final class SubscanPolkadotAccountHealthNetworkService {
             output: SubscanAPIResult.AccountInfo.self,
             failure: SubscanAPIResult.Error.self,
             retryAttempt: 0
-        )
+        ) { error in
+            // Do not retry account info requests for new and non-activated accounts 
+            if let error = error as? SubscanAPIResult.Error, error.code == Constants.nonExistingAccountErrorCode {
+                return true
+            }
+            return false
+        }
         .data
         .account
 
@@ -90,7 +98,8 @@ public final class SubscanPolkadotAccountHealthNetworkService {
         request: SubscanAPITarget,
         output: Output.Type,
         failure: Failure.Type,
-        retryAttempt: Int
+        retryAttempt: Int,
+        skipRetryIf: SkipRetryIf? = nil
     ) async throws -> Output where Output: Decodable, Failure: Decodable, Failure: Error {
         do {
             return try await provider
@@ -100,7 +109,7 @@ public final class SubscanPolkadotAccountHealthNetworkService {
         } catch {
             guard
                 retryAttempt < Constants.maxRetryCount,
-                shouldRetry(error)
+                shouldRetry(error: error, skipRetryIf: skipRetryIf)
             else {
                 throw error
             }
@@ -108,12 +117,21 @@ public final class SubscanPolkadotAccountHealthNetworkService {
             let nextRetryAttempt = retryAttempt + 1
             try await Task.sleep(nanoseconds: makeRetryInterval(retryAttempt: nextRetryAttempt))
 
-            return await try perform(request: request, output: output, failure: failure, retryAttempt: nextRetryAttempt)
+            return await try perform(
+                request: request,
+                output: output, failure: failure,
+                retryAttempt: nextRetryAttempt,
+                skipRetryIf: skipRetryIf
+            )
         }
     }
 
     /// - Warning: allows retries for ANY errors except mapping and cancellation errors, use with caution.
-    private func shouldRetry(_ error: Error) -> Bool {
+    private func shouldRetry(error: Error, skipRetryIf: SkipRetryIf?) -> Bool {
+        if skipRetryIf?(error) == true {
+            return false
+        }
+
         if error is DecodingError {
             return false
         }
@@ -158,6 +176,7 @@ private extension SubscanPolkadotAccountHealthNetworkService {
         static var retryBaseValue: TimeInterval { 1.0 }
         static var retryJitterMinValue: TimeInterval { -0.5 }
         static var retryJitterMaxValue: TimeInterval { 0.5 }
+        static let nonExistingAccountErrorCode = 10004
     }
 }
 
