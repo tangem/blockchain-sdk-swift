@@ -1251,6 +1251,8 @@ extension Blockchain {
             return AptosWalletAssembly()
         case .hedera:
             return HederaWalletAssembly()
+        case .radiant:
+            return RadiantWalletAssembly()
         }
     }
 }

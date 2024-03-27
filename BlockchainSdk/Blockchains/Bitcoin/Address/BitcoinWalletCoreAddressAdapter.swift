@@ -57,6 +57,14 @@ extension BitcoinWalletCoreAddressAdapter: AddressValidator {
     public func validate(_ address: String) -> Bool {
         BitcoinAddress.isValidString(string: address)
     }
+    
+    func validateSpecify(_ address: String, onlyUse prefix: BitcoinPrefix) -> Bool {
+        guard let address = BitcoinAddress(string: address), address.prefix == prefix.value(for: coin) else {
+            return false
+        }
+        
+        return true
+    }
 }
 
 extension BitcoinWalletCoreAddressAdapter {
