@@ -65,8 +65,9 @@ extension TangemNetworkLoggerPlugin {
                 output.append("body stream: \(bodyStream.description)")
             }
             
-            if let body = httpRequest.httpBody {
-                output.append("body: \(prettyPrint(data: body))")
+            if let body = httpRequest.httpBody,
+               let bodyString = prettyPrint(data: body) {
+                output.append("body: \(bodyString)")
             }
         }
         
@@ -108,7 +109,7 @@ extension TangemNetworkLoggerPlugin {
            let json = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers),
            JSONSerialization.isValidJSONObject(json),
            let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted) {
-                return String(data: jsonData, encoding: .utf8)
+            return String(data: jsonData, encoding: .utf8)
         } else {
             return String(data: data, encoding: .utf8)
         }
@@ -133,7 +134,7 @@ public extension TangemNetworkLoggerPlugin {
         /// - Parameters:
         ///   - formatter: An object holding all formatter closures available for customization.
         ///   - output: A closure responsible for writing the given log entries into your log system.
-        ///                    The default value writes entries to the debug console.
+        ///     The default value writes entries to the debug console.
         ///   - logOptions: A set of options you can use to customize which request component is logged.
         public init(output: @escaping OutputType = defaultOutput,
                     logOptions: LogOptions = .default) {
