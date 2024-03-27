@@ -9,7 +9,7 @@
 import Foundation
 import WalletCore
 
-struct RadiantUtils {
+struct RadiantAddressUtils {
     func prepareWallet(address: String) throws -> String {
         guard let addressKeyHash = WalletCore.BitcoinAddress(string: address)?.keyhash else {
             throw WalletError.empty

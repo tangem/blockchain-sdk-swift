@@ -28,13 +28,13 @@ extension RadiantNetworkService {
         let scripthash: String
         
         do {
-            scripthash = try RadiantUtils().prepareWallet(address: address)
+            scripthash = try RadiantAddressUtils().prepareWallet(address: address)
         } catch {
             return .anyFail(error: WalletError.empty)
         }
         
         return electrumProvider
-            .getAddressInfoWithScripts(identifier: .scripthash(scripthash))
+            .getAddressInfo(identifier: .scripthash(scripthash))
             .map { info in
                 RadiantAddressInfo(balance: info.balance, outputs: info.outputs)
             }

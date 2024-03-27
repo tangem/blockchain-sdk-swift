@@ -16,6 +16,8 @@ class RadiantCashTransactionBuilder {
     
     var utxo: [ElectrumUTXO] = []
     
+    private let scriptUtils = RadiantScriptUtils()
+    
     // MARK: - Init
     
     init(walletPublicKey: Data, decimalValue: Decimal) throws {
@@ -30,7 +32,7 @@ class RadiantCashTransactionBuilder {
     }
     
     func buildForSign(transaction: Transaction) throws -> [Data] {
-        let outputScript = buildOutputScript(address: transaction.sourceAddress)
+        let outputScript = scriptUtils.buildOutputScript(address: transaction.sourceAddress)
         let unspents = buildUnspents(with: [outputScript])
         
         let txForPreimage = RadiantAmountUnspentTransaction(
@@ -55,7 +57,7 @@ class RadiantCashTransactionBuilder {
     }
     
     func buildForSend(transaction: Transaction, signatures: [Data], isDer: Bool) throws -> Data {
-        let outputScripts = try buildSignedScripts(
+        let outputScripts = try scriptUtils.buildSignedScripts(
             signatures: signatures,
             publicKey: walletPublicKey,
             isDer: false
@@ -102,10 +104,10 @@ class RadiantCashTransactionBuilder {
         txToSign.append(contentsOf: [UInt8(0x01),UInt8(0x00),UInt8(0x00),UInt8(0x00)])
 
         //hashPrevouts (32-byte hash)
-        writePrevoutHash(tx.unspents, into: &txToSign)
+        scriptUtils.writePrevoutHash(tx.unspents, into: &txToSign)
         
         //hashSequence (32-byte hash), ffffffff only
-        writeSequenceHash(tx.unspents, into: &txToSign)
+        scriptUtils.writeSequenceHash(tx.unspents, into: &txToSign)
         
         //outpoint (32-byte hash + 4-byte little endian)
         let currentOutput = tx.unspents[index]
@@ -113,7 +115,7 @@ class RadiantCashTransactionBuilder {
         txToSign.append(contentsOf: currentOutput.outputIndex.bytes4LE)
         
         //scriptCode of the input (serialized as scripts inside CTxOuts)
-        let scriptCode = buildOutputScript(address: sourceAddress)
+        let scriptCode = scriptUtils.buildOutputScript(address: sourceAddress)
         
         txToSign.append(scriptCode.count.byte)
         txToSign.append(contentsOf: scriptCode)
@@ -125,7 +127,7 @@ class RadiantCashTransactionBuilder {
         txToSign.append(contentsOf: [UInt8(0xff),UInt8(0xff),UInt8(0xff),UInt8(0xff)])
         
         //hashOutputHashes (32-byte hash)
-        try writeHashOutputHashes(
+        try scriptUtils.writeHashOutputHashes(
             amount: tx.amountSatoshiDecimalValue,
             sourceAddress: sourceAddress,
             targetAddress: targetAddress,
@@ -134,7 +136,7 @@ class RadiantCashTransactionBuilder {
         )
         
         //hashOutputs (32-byte hash)
-        try writeHashOutput(
+        try scriptUtils.writeHashOutput(
             amount: tx.amountSatoshiDecimalValue,
             sourceAddress: sourceAddress,
             targetAddress: targetAddress,
@@ -196,7 +198,7 @@ class RadiantCashTransactionBuilder {
         //8 bytes
         txBody.append(contentsOf: tx.amountSatoshiDecimalValue.bytes8LE)
         
-        let outputScriptBytes = buildOutputScript(address: targetAddress)
+        let outputScriptBytes = scriptUtils.buildOutputScript(address: targetAddress)
         
         //hex str 1976a914....88ac
         txBody.append(outputScriptBytes.count.byte)
@@ -206,7 +208,7 @@ class RadiantCashTransactionBuilder {
             //8 bytes of change satoshi value
             txBody.append(contentsOf: tx.changeSatoshiDecimalValue.bytes8LE)
             
-            let outputScriptChangeBytes = buildOutputScript(address: changeAddress)
+            let outputScriptChangeBytes = scriptUtils.buildOutputScript(address: changeAddress)
             
             txBody.append(outputScriptChangeBytes.count.byte)
             txBody.append(contentsOf: outputScriptChangeBytes)
@@ -231,131 +233,5 @@ class RadiantCashTransactionBuilder {
                     outputScript: outputScript
                 )
             }
-    }
-    
-    /// Default implementation BitcoinCash signed scripts
-    func buildSignedScripts(signatures: [Data], publicKey: Data, isDer: Bool = false) throws -> [Data] {
-        var scripts: [Data] = .init()
-        scripts.reserveCapacity(signatures.count)
-        for signature in signatures {
-            var signDer: Data = signature
-            
-            if !isDer {
-                signDer = try Secp256k1Signature(with: signature).serializeDer()
-            }
-            
-            var script = Data()
-            script.append((signDer.count+1).byte)
-            script.append(contentsOf: signDer)
-            script.append(UInt8(0x41))
-            script.append(UInt8(0x21))
-            script.append(contentsOf: publicKey)
-            scripts.append(script)
-        }
-        
-        return scripts
-    }
-    
-    /// Lock script for output transaction for address
-    private func buildOutputScript(address: String) -> Data {
-        WalletCore.BitcoinScript.lockScriptForAddress(address: address, coin: WalletCore.CoinType.bitcoinCash).data
-    }
-    
-    private func writePrevoutHash(_ unspents: [RadiantUnspentTransaction], into txToSign: inout Data) {
-        let prevouts = Data(unspents.map {
-            Data($0.hash.reversed()) + $0.outputIndex.bytes4LE
-        }.joined())
-        
-        let hashPrevouts = prevouts.sha256().sha256()
-        txToSign.append(contentsOf: hashPrevouts)
-    }
-    
-    private func writeSequenceHash(_ unspents: [RadiantUnspentTransaction], into txToSign: inout Data) {
-        let sequence = Data(repeating: UInt8(0xFF), count: 4 * unspents.count)
-        let hashSequence = sequence.sha256().sha256()
-        txToSign.append(contentsOf: hashSequence)
-    }
-    
-    /// Default BitcoinCash implementation for set hash output values transaction data
-    private func writeHashOutput(
-        amount: Decimal,
-        sourceAddress: String,
-        targetAddress: String,
-        change: Decimal,
-        into txToSign: inout Data
-    ) throws {
-        //hashOutputs (32-byte hash)
-        var outputs = Data()
-        outputs.append(contentsOf: amount.bytes8LE)
-        
-        let sendScript = buildOutputScript(address: targetAddress)
-        
-        outputs.append(sendScript.count.byte)
-        outputs.append(contentsOf: sendScript)
-        
-        //output for change (if any)
-        if change != 0 {
-            outputs.append(contentsOf: change.bytes8LE)
-            
-            let changeOutputScriptBytes = buildOutputScript(address: sourceAddress)
-            
-            outputs.append(changeOutputScriptBytes.count.byte)
-            outputs.append(contentsOf: changeOutputScriptBytes)
-        }
-        
-        let hashOutput = outputs.sha256().sha256()
-        
-        // Write bytes
-        txToSign.append(contentsOf: hashOutput)
-    }
-    
-    /// Specify for radiant blockchain
-    /// See comment here for how it works https://github.com/RadiantBlockchain/radiant-node/blob/master/src/primitives/transaction.h#L493
-    /// Since your transactions won't contain pushrefs, it will be very simple, like the commit I sent above
-    private func writeHashOutputHashes(
-        amount: Decimal,
-        sourceAddress: String,
-        targetAddress: String,
-        change: Decimal,
-        into txToSign: inout Data
-    ) throws {
-        let zeroRef = [Byte](repeating: 0, count: 32)
-        
-        //hashOutputs (32-byte hash)
-        var outputs = Data()
-        
-        outputs.append(contentsOf: amount.bytes8LE)
-        
-        let sendScript = buildOutputScript(address: targetAddress)
-        
-        // Hash of the locking script
-        let scriptHash = sendScript.sha256().sha256()
-        outputs.append(contentsOf: scriptHash)
-        
-        outputs.append(0.bytes4LE)
-        
-        // Add zeroRef 32 bytes
-        outputs.append(contentsOf: zeroRef)
-        
-        //output for change (if any)
-        if change != 0 {
-            outputs.append(contentsOf: change.bytes8LE)
-            
-            let changeOutputScriptBytes = buildOutputScript(address: sourceAddress)
-            
-            // Hash of the locking script
-            let changeScriptHash = changeOutputScriptBytes.sha256().sha256()
-            outputs.append(contentsOf: changeScriptHash)
-            
-            outputs.append(0.bytes4LE)
-            
-            // Add zeroRef 32 bytes
-            outputs.append(contentsOf: zeroRef)
-        }
-        
-        let hashOutputHash = outputs.sha256().sha256()
-        
-        // Write bytes
-        txToSign.append(contentsOf: hashOutputHash)
     }
 }
