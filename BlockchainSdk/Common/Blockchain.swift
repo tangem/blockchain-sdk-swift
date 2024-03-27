@@ -1207,7 +1207,7 @@ extension Blockchain {
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
-        case .bitcoinCash, .radiant:
+        case .bitcoinCash:
             return BitcoinCashWalletAssembly()
         case .binance:
             return BinanceWalletAssembly()
