@@ -18,7 +18,7 @@ public class RadiantAddressService {
 
 extension RadiantAddressService: AddressValidator {
     public func validate(_ address: String) -> Bool {
-        addressAdapter.validate(address)
+        addressAdapter.validateSpecify(address, onlyUse: .p2pkh)
     }
 }
 

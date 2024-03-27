@@ -7,33 +7,17 @@
 //
 
 import Foundation
+import TangemSdk
 
 struct RadiantWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        var providers = [AnyBitcoinNetworkProvider]()
-
-        if let bitcoinCashAddressService = AddressServiceFactory(
-            blockchain: .bitcoinCash
-        ).makeAddressService() as? BitcoinCashAddressService {
-            providers.append(
-                networkProviderAssembly.makeBitcoinCashNowNodesNetworkProvider(
-                    input: input,
-                    bitcoinCashAddressService: bitcoinCashAddressService
-                )
-            )
-        }
-
-        let transactionBuilder = RadiantTransactionBuilder(
-            coinType: .bitcoinCash,
-            publicKey: input.wallet.publicKey.blockchainKey,
-            decimalValue: Decimal(input.wallet.blockchain.decimalCount),
-            walletAddress: input.wallet.address
+        let publicKey = try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress()
+        
+        let transactionBuilder = try RadiantTransactionBuilder(
+            walletPublicKey: publicKey,
+            decimalValue: input.blockchain.decimalValue
         )
         
-        return try RadiantWalletManager(
-            wallet: input.wallet,
-            transactionBuilder: transactionBuilder,
-            networkService: RadiantNetworkService(providers: providers)
-        )
+        return try RadiantWalletManager(wallet: input.wallet, transactionBuilder: transactionBuilder)
     }
 }
