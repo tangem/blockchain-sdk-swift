@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Moya
 
 public final class SubscanPolkadotAccountHealthNetworkService {
     private let provider = NetworkProvider<SubscanAPITarget>()
@@ -39,7 +40,7 @@ public final class SubscanPolkadotAccountHealthNetworkService {
                 )
             )
             .filterSuccessfulStatusAndRedirectCodes()
-            .map(SubscanAPIResult.AccountInfo.self, using: decoder)
+            .tryMap(output: SubscanAPIResult.AccountInfo.self, failure: SubscanAPIResult.Error.self, using: decoder)
             .data
             .account
 
@@ -61,7 +62,7 @@ public final class SubscanPolkadotAccountHealthNetworkService {
                 )
             )
             .filterSuccessfulStatusAndRedirectCodes()
-            .map(SubscanAPIResult.ExtrinsicsList.self, using: decoder)
+            .tryMap(output: SubscanAPIResult.ExtrinsicsList.self, failure: SubscanAPIResult.Error.self, using: decoder)
             .data
             .extrinsics
 
@@ -78,7 +79,7 @@ public final class SubscanPolkadotAccountHealthNetworkService {
                 )
             )
             .filterSuccessfulStatusAndRedirectCodes()
-            .map(SubscanAPIResult.ExtrinsicInfo.self, using: decoder)
+            .tryMap(output: SubscanAPIResult.ExtrinsicInfo.self, failure: SubscanAPIResult.Error.self, using: decoder)
             .data
             .lifetime
 

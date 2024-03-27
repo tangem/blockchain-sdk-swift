@@ -31,6 +31,21 @@ extension Moya.Task {
     }
 }
 
+extension Moya.Response {
+    func tryMap<Output, Failure>(
+        output: Output.Type,
+        failure: Failure.Type,
+        using decoder: JSONDecoder = JSONDecoder(),
+        failsOnEmptyData: Bool = true
+    ) throws -> Output where Output: Decodable, Failure: Decodable, Failure: Error {
+        if let apiError = try? map(failure, using: decoder, failsOnEmptyData: failsOnEmptyData) {
+            throw apiError
+        }
+
+        return try map(output, using: decoder, failsOnEmptyData: failsOnEmptyData)
+    }
+}
+
 extension MoyaProvider {
     // TODO: Andrey Fedorov - Temporary solution, add support for retries and cancellation
     func asyncRequest(for target: Target) async throws -> Response {
