@@ -103,10 +103,12 @@ extension TangemNetworkLoggerPlugin {
     }
     
     private func prettyPrint(data: Data) -> String? {
-        if configuration.logOptions.contains(.prettyPrintJSON) {
-            let json = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers)
-            let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
-            return jsonData.flatMap { String(data: $0, encoding: .utf8) }
+        guard !data.isEmpty else { return nil }
+        if configuration.logOptions.contains(.prettyPrintJSON),
+           let json = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers),
+           JSONSerialization.isValidJSONObject(json),
+           let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted) {
+                return String(data: jsonData, encoding: .utf8)
         } else {
             return String(data: data, encoding: .utf8)
         }
