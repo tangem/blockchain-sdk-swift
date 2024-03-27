@@ -573,28 +573,28 @@ extension Blockchain {
             ]
         case .rsk:
             return [
-                URL(string: "https://public-node.rsk.co/")!,
+                URL(string: "https://public-node.rsk.co")!,
                 URL(string: "https://rsk.nownodes.io/\(nowNodesApiKey)")!,
                 makeGetBlockJsonRpcProvider(),
             ]
         case .bsc:
             if isTestnet {
                 return [
-                    URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!,
+                    URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545")!,
                 ]
             } else {
                 // https://docs.fantom.foundation/api/public-api-endpoints
                 return [
-                    URL(string: "https://bsc-dataseed.binance.org/")!,
+                    URL(string: "https://bsc-dataseed.binance.org")!,
                     URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")!,
                     makeGetBlockJsonRpcProvider(),
-                    URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)/")!,
+                    URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)")!,
                 ]
             }
         case .polygon:
             if isTestnet {
                 return [
-                    URL(string: "https://rpc-mumbai.maticvigil.com/")!,
+                    URL(string: "https://rpc-amoy.polygon.technology")!,
                 ]
             } else {
                 // https://wiki.polygon.technology/docs/operate/network-rpc-endpoints
@@ -626,14 +626,14 @@ extension Blockchain {
         case .fantom:
             if isTestnet {
                 return [
-                    URL(string: "https://rpc.testnet.fantom.network/")!,
+                    URL(string: "https://rpc.testnet.fantom.network")!,
                 ]
             } else {
                 return [
                     URL(string: "https://ftm.nownodes.io/\(nowNodesApiKey)")!,
                     makeGetBlockJsonRpcProvider(),
-                    URL(string: "https://rpc.ftm.tools/")!,
-                    URL(string: "https://rpcapi.fantom.network/")!,
+                    URL(string: "https://rpc.ftm.tools")!,
+                    URL(string: "https://rpcapi.fantom.network")!,
                     URL(string: "https://fantom-mainnet.public.blastapi.io")!,
                     URL(string: "https://rpc.ankr.com/fantom")!,
                 ]
@@ -649,6 +649,10 @@ extension Blockchain {
                     URL(string: "https://arb1.arbitrum.io/rpc")!,
                     URL(string: "https://arbitrum.nownodes.io/\(nowNodesApiKey)")!,
                     URL(string: "https://arbitrum-mainnet.infura.io/v3/\(infuraProjectId)")!,
+                    URL(string: "https://1rpc.io/arb")!,
+                    URL(string: "https://arbitrum-one-rpc.publicnode.com")!,
+                    URL(string: "https://rpc.ankr.com/arbitrum")!,
+                    URL(string: "https://arbitrum-one.public.blastapi.io")!,
                 ]
             }
         case .gnosis:
@@ -712,21 +716,21 @@ extension Blockchain {
         case .decimal(let isTestnet):
             if isTestnet {
                 return [
-                    URL(string: "https://testnet-val.decimalchain.com/web3/")!
+                    URL(string: "https://testnet-val.decimalchain.com/web3")!
                 ]
             } else {
                 return [
-                    URL(string: "https://node.decimalchain.com/web3/")!,
-                    URL(string: "https://node1-mainnet.decimalchain.com/web3/")!,
-                    URL(string: "https://node2-mainnet.decimalchain.com/web3/")!,
-                    URL(string: "https://node3-mainnet.decimalchain.com/web3/")!,
-                    URL(string: "https://node4-mainnet.decimalchain.com/web3/")!,
+                    URL(string: "https://node.decimalchain.com/web3")!,
+                    URL(string: "https://node1-mainnet.decimalchain.com/web3")!,
+                    URL(string: "https://node2-mainnet.decimalchain.com/web3")!,
+                    URL(string: "https://node3-mainnet.decimalchain.com/web3")!,
+                    URL(string: "https://node4-mainnet.decimalchain.com/web3")!,
                 ]
             }
         case .xdc(let isTestnet):
             if isTestnet {
                 return [
-                    URL(string: "https://rpc.apothem.network/")!
+                    URL(string: "https://rpc.apothem.network")!
                 ]
             } else {
                 return [
@@ -743,60 +747,60 @@ extension Blockchain {
         case .shibarium(let isTestnet):
             if isTestnet {
                 return [
-                    URL(string: "https://puppynet.shibrpc.com/")!
+                    URL(string: "https://puppynet.shibrpc.com")!
                 ]
             } else {
                 return [
-                    URL(string: "https://www.shibrpc.com/")!,
+                    URL(string: "https://www.shibrpc.com")!,
                     URL(string: "https://shib.nownodes.io/\(nowNodesApiKey)")!
                 ]
             }
         case .areon:
             if isTestnet {
                 return [
-                    URL(string: "https://testnet-rpc.areon.network/")!,
-                    URL(string: "https://testnet-rpc2.areon.network/")!,
-                    URL(string: "https://testnet-rpc3.areon.network/")!,
-                    URL(string: "https://testnet-rpc4.areon.network/")!,
-                    URL(string: "https://testnet-rpc5.areon.network/")!,
+                    URL(string: "https://testnet-rpc.areon.network")!,
+                    URL(string: "https://testnet-rpc2.areon.network")!,
+                    URL(string: "https://testnet-rpc3.areon.network")!,
+                    URL(string: "https://testnet-rpc4.areon.network")!,
+                    URL(string: "https://testnet-rpc5.areon.network")!,
                 ]
             } else {
                 return [
-                    URL(string: "https://mainnet-rpc.areon.network/")!,
-                    URL(string: "https://mainnet-rpc2.areon.network/")!,
-                    URL(string: "https://mainnet-rpc3.areon.network/")!,
-                    URL(string: "https://mainnet-rpc4.areon.network/")!,
-                    URL(string: "https://mainnet-rpc5.areon.network/")!,
+                    URL(string: "https://mainnet-rpc.areon.network")!,
+                    URL(string: "https://mainnet-rpc2.areon.network")!,
+                    URL(string: "https://mainnet-rpc3.areon.network")!,
+                    URL(string: "https://mainnet-rpc4.areon.network")!,
+                    URL(string: "https://mainnet-rpc5.areon.network")!,
                 ]
             }
         case .playa3ullGames:
             return [
-                URL(string: "https://api.mainnet.playa3ull.games/")!,
+                URL(string: "https://api.mainnet.playa3ull.games")!,
             ]
         case .pulsechain:
             if isTestnet {
                 return [
-                    URL(string: "https://rpc.v4.testnet.pulsechain.com/")!,
-                    URL(string: "https://pulsechain-testnet.publicnode.com/")!,
-                    URL(string: "https://rpc-testnet-pulsechain.g4mm4.io/")!,
+                    URL(string: "https://rpc.v4.testnet.pulsechain.com")!,
+                    URL(string: "https://pulsechain-testnet.publicnode.com")!,
+                    URL(string: "https://rpc-testnet-pulsechain.g4mm4.io")!,
                 ]
             } else {
                 return [
-                    URL(string: "https://rpc.pulsechain.com/")!,
-                    URL(string: "https://pulsechain.publicnode.com/")!,
-                    URL(string: "https://rpc-pulsechain.g4mm4.io/")!,
+                    URL(string: "https://rpc.pulsechain.com")!,
+                    URL(string: "https://pulsechain.publicnode.com")!,
+                    URL(string: "https://rpc-pulsechain.g4mm4.io")!,
                 ]
             }
         case .aurora:
             if isTestnet {
                 return [
-                    URL(string: "https://testnet.aurora.dev/")!,
+                    URL(string: "https://testnet.aurora.dev")!,
                 ]
             } else {
                 return [
-                    URL(string: "https://mainnet.aurora.dev/")!,
-                    URL(string: "https://aurora.drpc.org/")!,
-                    URL(string: "https://1rpc.io/aurora")!, // please don't add final slash for consistency, it will break the endpoint
+                    URL(string: "https://mainnet.aurora.dev")!,
+                    URL(string: "https://aurora.drpc.org")!,
+                    URL(string: "https://1rpc.io/aurora")!,
                 ]
             }
         case .manta:

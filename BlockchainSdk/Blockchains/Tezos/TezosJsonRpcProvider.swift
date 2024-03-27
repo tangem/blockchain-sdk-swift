@@ -93,6 +93,7 @@ enum TezosApi: String, CaseIterable {
     case tezosBlockscale = "https://rpc.tzbeta.net"
     case tezosSmartpy = "https://mainnet.smartpy.io"
     case tezosEcad = "https://api.tez.ie/rpc/mainnet"
+    case tezosMarigold = "https://mainnet.tezos.marigold.dev"
     
     func makeProvider(configuration: NetworkProviderConfiguration) -> TezosJsonRpcProvider {
         TezosJsonRpcProvider(api: self, configuration: configuration)
