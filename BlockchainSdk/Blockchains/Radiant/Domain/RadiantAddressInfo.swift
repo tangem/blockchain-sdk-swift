@@ -10,5 +10,5 @@ import Foundation
 
 struct RadiantAddressInfo {
     let balance: Decimal
-    let outputs: [BitcoinUnspentOutput]
+    let outputs: [ElectrumUTXO]
 }

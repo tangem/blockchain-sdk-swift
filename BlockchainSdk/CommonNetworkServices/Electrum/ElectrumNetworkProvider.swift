@@ -76,6 +76,17 @@ public class ElectrumNetworkProvider: MultiNetworkProvider {
         }
     }
     
+    func send(transactionHex: String) -> AnyPublisher<String, Error> {
+        providerPublisher { provider in
+            Future.async {
+                return try await provider.sendTransaction(hex: transactionHex)
+            }
+            .eraseToAnyPublisher()
+        }
+    }
+    
+    // MARK: - Private Implementation
+    
     private func getTransactions(by hashes: [String], on provider: Provider) async throws -> [ElectrumScriptUTXO] {
         try await withThrowingTaskGroup(of: ElectrumDTO.Response.Transaction.self) { [weak self] group in
             guard let self else { return [] }

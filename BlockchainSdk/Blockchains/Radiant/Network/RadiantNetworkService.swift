@@ -36,25 +36,7 @@ extension RadiantNetworkService {
         return electrumProvider
             .getAddressInfoWithScripts(identifier: .scripthash(scripthash))
             .map { info in
-                let balance = info.balance
-                
-                let outputs: [BitcoinUnspentOutput] = info.outputs.compactMap { output -> BitcoinUnspentOutput? in
-                    guard
-                        let script = info.scripts.first(where: { $0.transactionHash == output.hash }),
-                        let vout = script.outputs.first(where: { $0.scriptPubKey.addresses.contains(address) })
-                    else {
-                        return nil
-                    }
-                    
-                    return .init(
-                        transactionHash: output.hash,
-                        outputIndex: output.position,
-                        amount: output.value.uint64Value,
-                        outputScript: vout.scriptPubKey.hex
-                    )
-                }
-                
-                return RadiantAddressInfo(balance: balance, outputs: outputs)
+                RadiantAddressInfo(balance: info.balance, outputs: info.outputs)
             }
             .eraseToAnyPublisher()
     }
@@ -62,5 +44,10 @@ extension RadiantNetworkService {
     func estimatedFee() -> AnyPublisher<Decimal, Error> {
         electrumProvider
             .estimateFee()
+    }
+    
+    func sendTransaction(data: Data) -> AnyPublisher<String, Error> {
+        electrumProvider
+            .send(transactionHex: data.hexString)
     }
 }

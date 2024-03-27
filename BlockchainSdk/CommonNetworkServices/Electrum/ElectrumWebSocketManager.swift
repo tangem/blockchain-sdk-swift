@@ -52,8 +52,8 @@ class ElectrumWebSocketManager: HostProvider {
         }
     }
     
-    func send(transactionHex: String) async throws -> ElectrumDTO.Response.Broadcast {
-        try await send(method: "blockchain.transaction.broadcast", parameter: transactionHex)
+    func sendTransaction(hex: String) async throws -> String {
+        try await send(method: "blockchain.transaction.broadcast", parameter: [hex])
     }
     
     func estimateFee(block: Int) async throws -> Int {

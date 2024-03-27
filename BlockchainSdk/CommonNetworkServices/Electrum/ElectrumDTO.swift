@@ -29,13 +29,6 @@ enum ElectrumDTO {
             let value: Decimal
         }
         
-        struct Broadcast: Decodable {
-            let txPos: Int
-            let txHash: String
-            let value: Int
-            let height: String
-        }
-        
         struct Transaction: Decodable {
             let blockhash: String
             let blocktime: UInt64

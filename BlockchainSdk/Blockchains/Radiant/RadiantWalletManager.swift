@@ -54,7 +54,7 @@ private extension RadiantWalletManager {
     func updateWallet(with addressInfo: RadiantAddressInfo) {
         let coinBalanceValue = addressInfo.balance / wallet.blockchain.decimalValue
         wallet.add(coinValue: coinBalanceValue)
-        transactionBuilder.update(unspents: addressInfo.outputs)
+        transactionBuilder.update(utxo: addressInfo.outputs)
     }
     
     func sendViaCompileTransaction(
@@ -73,16 +73,41 @@ private extension RadiantWalletManager {
             .sign(hashes: hashesForSign, walletPublicKey: self.wallet.publicKey)
             .withWeakCaptureOf(self)
             .tryMap { walletManager, signatures in
-                try walletManager.transactionBuilder.buildForSend(
+                guard 
+                    let walletCorePublicKey = PublicKey(data: self.wallet.publicKey.blockchainKey, type: .secp256k1),
+                    signatures.count == hashesForSign.count
+                else {
+                    throw WalletError.failedToBuildTx
+                }
+                
+                // Verify signature by public key
+                guard 
+                    signatures
+                        .enumerated()
+                        .filter({ (index, sig) in
+                            walletCorePublicKey.verifyAsDER(signature: sig, message: Data(hashesForSign[index].reversed()))
+                        })
+                        .isEmpty 
+                else {
+                    throw WalletError.failedToBuildTx
+                }
+                
+                return try walletManager.transactionBuilder.buildForSend(
                     transaction: transaction,
                     signatures: signatures,
                     isDer: true
                 )
             }
             .withWeakCaptureOf(self)
-            .tryMap { walletManager, transactionData -> TransactionSendResult in
-                // TODO: - Need to send network service
-                throw WalletError.failedToSendTx
+            .flatMap { walletManager, transactionData -> AnyPublisher<String, Error> in
+                return walletManager.networkService.sendTransaction(data: transactionData)
+            }
+            .withWeakCaptureOf(self)
+            .map { walletManager, txId -> TransactionSendResult in
+                let mapper = PendingTransactionRecordMapper()
+                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: txId)
+                walletManager.wallet.addPendingTransaction(record)
+                return TransactionSendResult(hash: txId)
             }
             .eraseToAnyPublisher()
     }

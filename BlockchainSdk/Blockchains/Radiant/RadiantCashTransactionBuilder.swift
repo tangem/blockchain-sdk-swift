@@ -14,7 +14,7 @@ class RadiantCashTransactionBuilder {
     let walletPublicKey: Data
     let decimalValue: Decimal
     
-    var unspentOutputs: [BitcoinUnspentOutput] = []
+    var utxo: [ElectrumUTXO] = []
     
     // MARK: - Init
     
@@ -25,34 +25,30 @@ class RadiantCashTransactionBuilder {
     
     // MARK: - Implementation
     
-    func update(unspents: [BitcoinUnspentOutput]) {
-        self.unspentOutputs = unspents
+    func update(utxo: [ElectrumUTXO]) {
+        self.utxo = utxo
     }
     
     func buildForSign(transaction: Transaction) throws -> [Data] {
         let outputScript = buildOutputScript(address: transaction.sourceAddress)
-        
         let unspents = buildUnspents(with: [outputScript])
         
-        let amountSatoshi = transaction.amount.value * decimalValue
-        let changeSatoshi = calculateChange(unspents: unspents, amountSatoshi: amountSatoshi, fee: transaction.fee.amount.value)
+        let txForPreimage = RadiantAmountUnspentTransaction(
+            decimalValue: decimalValue,
+            amount: transaction.amount,
+            fee: transaction.fee,
+            unspents: unspents
+        )
         
-        var hashes = [Data]()
-        
-        for index in 0..<unspents.count {
-            guard let tx = try? buildPreImageHashes(
-                unspents: unspents,
-                amount: amountSatoshi,
-                change: changeSatoshi,
+        let hashes = try unspents.enumerated().map { (index, _) in
+            let preImageHash = try buildPreImageHashe(
+                with: txForPreimage,
                 targetAddress: transaction.destinationAddress,
                 sourceAddress: transaction.sourceAddress,
                 index: index
-            ) else {
-                throw WalletError.failedToBuildTx
-            }
+            )
             
-            let hash = tx.sha256().sha256()
-            hashes.append(hash)
+            return preImageHash.sha256().sha256()
         }
         
         return hashes
@@ -67,29 +63,34 @@ class RadiantCashTransactionBuilder {
         
         let unspents = buildUnspents(with: outputScripts)
         
-        let amountSatoshi = transaction.amount.value * decimalValue
-        let changeSatoshi = calculateChange(unspents: unspents, amountSatoshi: amountSatoshi, fee: transaction.fee.amount.value)
+        let txForSigned = RadiantAmountUnspentTransaction(
+            decimalValue: decimalValue,
+            amount: transaction.amount,
+            fee: transaction.fee,
+            unspents: unspents
+        )
         
         let rawTransaction = try buildRawTransaction(
-            unspents: unspents,
-            amount: amountSatoshi,
-            change: changeSatoshi,
+            with: txForSigned,
             targetAddress: transaction.destinationAddress,
             changeAddress: transaction.changeAddress,
             index: nil
         )
-        
-        print(rawTransaction.hexString)
         
         return rawTransaction
     }
     
     // MARK: - Build Transaction Data
     
-    private func buildPreImageHashes(
-        unspents: [RadiantUnspentTransaction],
-        amount: Decimal,
-        change: Decimal,
+    /// Build preimage hashes for sign transaction with specify Radiant blockchain (etc. HashOutputHashes)
+    /// - Parameters:
+    ///   - tx: Union of unspents amount & change transaction
+    ///   - targetAddress
+    ///   - sourceAddress
+    ///   - index: position image for output
+    /// - Returns: Hash of one preimage
+    private func buildPreImageHashe(
+        with tx: RadiantAmountUnspentTransaction,
         targetAddress: String,
         sourceAddress: String,
         index: Int
@@ -101,13 +102,13 @@ class RadiantCashTransactionBuilder {
         txToSign.append(contentsOf: [UInt8(0x01),UInt8(0x00),UInt8(0x00),UInt8(0x00)])
 
         //hashPrevouts (32-byte hash)
-        writePrevoutHash(unspents, into: &txToSign)
+        writePrevoutHash(tx.unspents, into: &txToSign)
         
         //hashSequence (32-byte hash), ffffffff only
-        writeSequenceHash(unspents, into: &txToSign)
+        writeSequenceHash(tx.unspents, into: &txToSign)
         
         //outpoint (32-byte hash + 4-byte little endian)
-        let currentOutput = unspents[index]
+        let currentOutput = tx.unspents[index]
         txToSign.append(contentsOf: currentOutput.hash.reversed())
         txToSign.append(contentsOf: currentOutput.outputIndex.bytes4LE)
         
@@ -125,19 +126,19 @@ class RadiantCashTransactionBuilder {
         
         //hashOutputHashes (32-byte hash)
         try writeHashOutputHashes(
-            amount: amount,
+            amount: tx.amountSatoshiDecimalValue,
             sourceAddress: sourceAddress,
             targetAddress: targetAddress,
-            change: change,
+            change: tx.changeSatoshiDecimalValue,
             into: &txToSign
         )
         
         //hashOutputs (32-byte hash)
         try writeHashOutput(
-            amount: amount,
+            amount: tx.amountSatoshiDecimalValue,
             sourceAddress: sourceAddress,
             targetAddress: targetAddress,
-            change: change,
+            change: tx.changeSatoshiDecimalValue,
             into: &txToSign
         )
         
@@ -150,10 +151,15 @@ class RadiantCashTransactionBuilder {
         return txToSign
     }
     
+    /// Build raw transaction data without specify Radiant blockchain (etc. BitcoinCash)
+    /// - Parameters:
+    ///   - tx: Union of unspents amount & change transaction
+    ///   - targetAddress
+    ///   - changeAddress
+    ///   - index: index of input transaction (specify nil value)
+    /// - Returns: Raw transaction data
     private func buildRawTransaction(
-        unspents: [RadiantUnspentTransaction],
-        amount: Decimal,
-        change: Decimal,
+        with tx: RadiantAmountUnspentTransaction,
         targetAddress: String,
         changeAddress: String,
         index: Int?
@@ -164,10 +170,10 @@ class RadiantCashTransactionBuilder {
         txBody.append(contentsOf: [UInt8(0x01),UInt8(0x00),UInt8(0x00),UInt8(0x00)])
                                                                                             
         //01
-        txBody.append(unspents.count.byte)
+        txBody.append(tx.unspents.count.byte)
         
         //hex str hash prev btc
-        for (inputIndex, input) in unspents.enumerated() {
+        for (inputIndex, input) in tx.unspents.enumerated() {
             let hashKey: [UInt8] = input.hash.reversed()
             txBody.append(contentsOf: hashKey)
             txBody.append(contentsOf: input.outputIndex.bytes4LE)
@@ -184,11 +190,11 @@ class RadiantCashTransactionBuilder {
         }
         
         //02
-        let outputCount = change == 0 ? 1 : 2
+        let outputCount = tx.changeSatoshiDecimalValue == 0 ? 1 : 2
         txBody.append(outputCount.byte)
         
         //8 bytes
-        txBody.append(contentsOf: amount.bytes8LE)
+        txBody.append(contentsOf: tx.amountSatoshiDecimalValue.bytes8LE)
         
         let outputScriptBytes = buildOutputScript(address: targetAddress)
         
@@ -196,9 +202,9 @@ class RadiantCashTransactionBuilder {
         txBody.append(outputScriptBytes.count.byte)
         txBody.append(contentsOf: outputScriptBytes)
         
-        if change != 0 {
-            //8 bytes
-            txBody.append(contentsOf: change.bytes8LE)
+        if tx.changeSatoshiDecimalValue != 0 {
+            //8 bytes of change satoshi value
+            txBody.append(contentsOf: tx.changeSatoshiDecimalValue.bytes8LE)
             
             let outputScriptChangeBytes = buildOutputScript(address: changeAddress)
             
@@ -212,31 +218,22 @@ class RadiantCashTransactionBuilder {
         return txBody
     }
     
-    private func calculateChange(
-        unspents: [RadiantUnspentTransaction],
-        amountSatoshi: Decimal,
-        fee: Decimal
-    ) -> Decimal {
-        let fullAmountSatoshi = Decimal(unspents.reduce(0, {$0 + $1.amount}))
-        let feeSatoshi = fee * decimalValue
-        return fullAmountSatoshi - amountSatoshi - feeSatoshi
-    }
-    
     private func buildUnspents(with outputScripts: [Data]) -> [RadiantUnspentTransaction] {
-        unspentOutputs
+        utxo
             .enumerated()
             .compactMap { index, txRef  in
-                let hash = Data(hex: txRef.transactionHash)
+                let hash = Data(hex: txRef.hash)
                 let outputScript = outputScripts.count == 1 ? outputScripts.first! : outputScripts[index]
                 return RadiantUnspentTransaction(
-                    amount: txRef.amount,
-                    outputIndex: txRef.outputIndex,
+                    amount: txRef.value.uint64Value,
+                    outputIndex: txRef.position,
                     hash: hash,
                     outputScript: outputScript
                 )
             }
     }
     
+    /// Default implementation BitcoinCash signed scripts
     func buildSignedScripts(signatures: [Data], publicKey: Data, isDer: Bool = false) throws -> [Data] {
         var scripts: [Data] = .init()
         scripts.reserveCapacity(signatures.count)
@@ -259,6 +256,7 @@ class RadiantCashTransactionBuilder {
         return scripts
     }
     
+    /// Lock script for output transaction for address
     private func buildOutputScript(address: String) -> Data {
         WalletCore.BitcoinScript.lockScriptForAddress(address: address, coin: WalletCore.CoinType.bitcoinCash).data
     }
@@ -278,6 +276,7 @@ class RadiantCashTransactionBuilder {
         txToSign.append(contentsOf: hashSequence)
     }
     
+    /// Default BitcoinCash implementation for set hash output values transaction data
     private func writeHashOutput(
         amount: Decimal,
         sourceAddress: String,
@@ -310,6 +309,9 @@ class RadiantCashTransactionBuilder {
         txToSign.append(contentsOf: hashOutput)
     }
     
+    /// Specify for radiant blockchain
+    /// See comment here for how it works https://github.com/RadiantBlockchain/radiant-node/blob/master/src/primitives/transaction.h#L493
+    /// Since your transactions won't contain pushrefs, it will be very simple, like the commit I sent above
     private func writeHashOutputHashes(
         amount: Decimal,
         sourceAddress: String,
@@ -356,11 +358,4 @@ class RadiantCashTransactionBuilder {
         // Write bytes
         txToSign.append(contentsOf: hashOutputHash)
     }
-}
-
-fileprivate struct RadiantUnspentTransaction {
-    let amount: UInt64
-    let outputIndex: Int
-    let hash: Data
-    let outputScript: Data
 }
