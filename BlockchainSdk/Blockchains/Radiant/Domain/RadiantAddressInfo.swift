@@ -13,6 +13,7 @@ struct RadiantAddressInfo {
     let outputs: [RadiantUTXO]
 }
 
+// TODO: - Need remove after merge https://github.com/tangem/blockchain-sdk-swift/pull/603
 struct RadiantUTXO {
     let position: Int
     let hash: String
