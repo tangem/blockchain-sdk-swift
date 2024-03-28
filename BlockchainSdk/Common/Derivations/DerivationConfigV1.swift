@@ -106,6 +106,8 @@ public struct DerivationConfigV1: DerivationConfig {
             return "m/44'/3030'/0'/0'/0'"
         case .moonbeam:
             return "m/44'/1284'/0'/0/0"
+        case .radiant:
+            return "m/44'/512'/0'/0/0"
         }
     }
 }

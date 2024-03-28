@@ -1214,4 +1214,8 @@ class AddressesTests: XCTestCase {
         XCTAssertFalse(addressService.validate("0.0.402d300706052b8104000a03220002d588ec1000770949ab77516c77ee729774de1c8fe058cab6d64f1b12ffc8ff07"))    // Account Alias
         XCTAssertFalse(addressService.validate(""))
     }
+    
+    // MARK: - Radiant
+    
+    // TODO: - Insert Radiant basic address tests
 }
