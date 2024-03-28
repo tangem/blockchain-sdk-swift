@@ -174,7 +174,7 @@ private extension SubscanPolkadotAccountHealthNetworkService {
         static let startPage = 0
         static let maxRetryCount = 3
         static var retryBaseValue: TimeInterval { 1.0 }
-        static var retryJitterMinValue: TimeInterval { -0.5 }
+        static var retryJitterMinValue: TimeInterval { -retryJitterMaxValue }
         static var retryJitterMaxValue: TimeInterval { 0.5 }
         static let nonExistingAccountErrorCode = 10004
     }
