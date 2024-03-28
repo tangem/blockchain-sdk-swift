@@ -18,13 +18,12 @@ public class RadiantAddressService {
 
 extension RadiantAddressService: AddressValidator {
     public func validate(_ address: String) -> Bool {
-        addressAdapter.validate(address)
+        addressAdapter.validateSpecify(address, onlyUse: .p2pkh)
     }
 }
 
 // MARK: - AddressProvider
 
-@available(iOS 13.0, *)
 extension RadiantAddressService: AddressProvider {
     public func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
         let address = try addressAdapter.makeAddress(for: publicKey, by: .p2pkh)
