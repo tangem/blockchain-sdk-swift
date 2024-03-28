@@ -70,7 +70,8 @@ struct AddressTypesConfig {
              .manta,
              .zkSync,
              .moonbeam,
-             .polygonZkEVM:
+             .polygonZkEVM,
+             .radiant:
             return [.default]
         }
     }
