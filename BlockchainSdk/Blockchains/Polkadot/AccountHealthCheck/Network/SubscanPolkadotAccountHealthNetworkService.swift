@@ -117,7 +117,7 @@ public final class SubscanPolkadotAccountHealthNetworkService {
             let nextRetryAttempt = retryAttempt + 1
             try await Task.sleep(nanoseconds: makeRetryInterval(retryAttempt: nextRetryAttempt))
 
-            return await try perform(
+            return try await perform(
                 request: request,
                 output: output, failure: failure,
                 retryAttempt: nextRetryAttempt,

@@ -63,7 +63,7 @@ extension MoyaProvider {
                         return
                     }
 
-                    cancellableWrapper.value = request(target) { result in
+                    cancellableWrapper.value = self.request(target) { result in
                         switch result {
                         case .success(let responseValue):
                             continuation.resume(returning: responseValue)
