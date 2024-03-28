@@ -126,7 +126,7 @@ public struct ExternalLinkProviderFactory {
         case .polygonZkEVM:
             return PolygonZkEvmExternalLinkProvider(isTestnet: isTestnet)
         case .radiant:
-            fatalError()
+            return RadiantExternalLinkProvider()
         }
     }
 }
