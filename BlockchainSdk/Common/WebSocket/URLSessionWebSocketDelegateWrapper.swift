@@ -11,13 +11,16 @@ import Foundation
 class URLSessionWebSocketDelegateWrapper: NSObject, URLSessionWebSocketDelegate {
     private let webSocketTaskDidOpen: (URLSessionWebSocketTask) -> Void?
     private let webSocketTaskDidClose: (URLSessionWebSocketTask, URLSessionWebSocketTask.CloseCode) -> Void
+    private let webSocketTaskDidCompleteWithError: (URLSessionTask, Error?) -> Void
     
     init(
         webSocketTaskDidOpen: @escaping (URLSessionWebSocketTask) -> Void?,
-        webSocketTaskDidClose: @escaping (URLSessionWebSocketTask, URLSessionWebSocketTask.CloseCode) -> Void
+        webSocketTaskDidClose: @escaping (URLSessionWebSocketTask, URLSessionWebSocketTask.CloseCode) -> Void,
+        webSocketTaskDidCompleteWithError: @escaping (URLSessionTask, Error?) -> Void
     ) {
         self.webSocketTaskDidOpen = webSocketTaskDidOpen
         self.webSocketTaskDidClose = webSocketTaskDidClose
+        self.webSocketTaskDidCompleteWithError = webSocketTaskDidCompleteWithError
     }
     
     func urlSession(
@@ -35,5 +38,9 @@ class URLSessionWebSocketDelegateWrapper: NSObject, URLSessionWebSocketDelegate 
         reason: Data?
     ) {
         webSocketTaskDidClose(webSocketTask, closeCode)
+    }
+    
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        webSocketTaskDidCompleteWithError(task, error)
     }
 }
