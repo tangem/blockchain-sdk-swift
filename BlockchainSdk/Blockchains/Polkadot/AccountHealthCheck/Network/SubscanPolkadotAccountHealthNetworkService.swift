@@ -13,8 +13,19 @@ public final class SubscanPolkadotAccountHealthNetworkService {
     private typealias SkipRetryIf = (_ error: Error) -> Bool
 
     private let provider = NetworkProvider<SubscanAPITarget>()
-    private let encoder: JSONEncoder
-    private let decoder: JSONDecoder
+
+    private let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        return encoder
+    }()
+
+    private let decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        return decoder
+    }()
+
     private let isTestnet: Bool
     private let pageSize: Int
 
@@ -24,12 +35,6 @@ public final class SubscanPolkadotAccountHealthNetworkService {
     ) {
         self.isTestnet = isTestnet
         self.pageSize = pageSize
-
-        encoder = JSONEncoder()
-        encoder.keyEncodingStrategy = .convertToSnakeCase
-
-        decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
     }
 
     public func getAccountHealthInfo(account: String) async throws -> PolkadotAccountHealthInfo {
