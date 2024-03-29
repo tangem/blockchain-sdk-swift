@@ -44,7 +44,7 @@ extension BitcoinWalletCoreAddressAdapter {
             let walletCorePublicKey = PublicKey(tangemPublicKey: publicKey.blockchainKey, publicKeyType: publicKeyType),
             let address = BitcoinAddress(publicKey: walletCorePublicKey, prefix: coinPrefix)
         else {
-            throw TWError.makeAddressFailed
+            throw Error.makeAddressFailed
         }
         
         return address
@@ -82,7 +82,7 @@ extension BitcoinWalletCoreAddressAdapter {
         }
     }
     
-    enum TWError: Error {
+    enum Error: Swift.Error {
         case makeAddressFailed
     }
 }
