@@ -79,21 +79,6 @@ extension SolanaWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
-    func estimatedFee(amount: Amount) -> AnyPublisher<[Fee], Error> {
-        networkService
-            .transactionFee(numberOfSignatures: 1)
-            .tryMap { [weak self] transactionFee in
-                guard let self = self else {
-                    throw WalletError.empty
-                }
-                                
-                let blockchain = self.wallet.blockchain
-                let amount = Amount(with: blockchain, type: .coin, value: transactionFee)
-                return [Fee(amount)]
-            }
-            .eraseToAnyPublisher()
-    }
-    
     public func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         let decimalValue: Decimal
         switch amount.type {
@@ -144,45 +129,12 @@ extension SolanaWalletManager: TransactionSender {
     }
     
     private func feeParameters(amount: Amount, destination: String, destinationAccountExists: Bool) -> AnyPublisher<SolanaFeeParameters, Error> {
-        let computeUnitPriceAccountsPublisher: AnyPublisher<[String], Error>
-        switch amount.type {
-        case .coin:
-            computeUnitPriceAccountsPublisher = .justWithError(output: [wallet.address, destination])
-        case .token(let token):
-            computeUnitPriceAccountsPublisher = networkService
-                .tokenProgramId(contractAddress: token.contractAddress)
-                .withWeakCaptureOf(self)
-                .tryMap { [wallet] thisSolanaWalletManager, tokenProgramId -> [String] in
-                    guard let associatedDestinationTokenAccountAddress = thisSolanaWalletManager.associatedTokenAddress(
-                        accountAddress: destination,
-                        mintAddress: token.contractAddress,
-                        tokenProgramId: tokenProgramId
-                    ) else {
-                        throw BlockchainSdkError.failedToConvertPublicKey
-                    }
-                    
-                    return [wallet.address, associatedDestinationTokenAccountAddress]
-                }
-                .eraseToAnyPublisher()
-        case .reserve:
-            fatalError()
-        }
-        
-        let computeUnitPricePublisher = computeUnitPriceAccountsPublisher
+        return destinationAccountInfo(destination: destination, amount: amount)
             .withWeakCaptureOf(self)
-            .flatMap { thisSolanaWalletManager, computeUnitPriceAccounts -> AnyPublisher<UInt64, Error> in
-                thisSolanaWalletManager.networkService.computeUnitPrice(
-                    accounts: computeUnitPriceAccounts,
+            .map { thisSolanaWalletManager, destinationAccountInfo -> SolanaFeeParameters in
+                let calculatedComputeUnitPrice = thisSolanaWalletManager.networkService.computeUnitPrice(
                     destinationAccountExists: destinationAccountExists
                 )
-            }
-        
-        let destinationAccountInfoPublisher = destinationAccountInfo(destination: destination, amount: amount)
-        
-        return Publishers.CombineLatest(destinationAccountInfoPublisher, computeUnitPricePublisher)
-            .withWeakCaptureOf(self)
-            .map { parameters -> SolanaFeeParameters in
-                let (thisSolanaWalletManager, (destinationAccountInfo, calculatedComputeUnitPrice)) = parameters
                 
                 let computeUnitLimit: UInt32?
                 let computeUnitPrice: UInt64?
