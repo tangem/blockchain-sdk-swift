@@ -51,6 +51,7 @@
 		2D535E872A0CC5FA0081EB76 /* AddressesValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E812A0CC5FA0081EB76 /* AddressesValidationTests.swift */; };
 		2D6305B42BBA930C005BF839 /* RadiantNetworkEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6305B22BBA930C005BF839 /* RadiantNetworkEndpoint.swift */; };
 		2D6305B52BBA930C005BF839 /* RadiantUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6305B32BBA930C005BF839 /* RadiantUtils.swift */; };
+		2D6305BB2BBAA40E005BF839 /* RadiantNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6305BA2BBAA40E005BF839 /* RadiantNetworkService.swift */; };
 		2D78F4072A5C319300962CCA /* ChiaWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D78F4062A5C319300962CCA /* ChiaWalletAssembly.swift */; };
 		2D78F40A2A5C3CBE00962CCA /* ChiaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D78F4092A5C3CBE00962CCA /* ChiaAddressService.swift */; };
 		2D78F40C2A5C3CCF00962CCA /* ChiaWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D78F40B2A5C3CCF00962CCA /* ChiaWalletManager.swift */; };
@@ -827,6 +828,7 @@
 		2D535E812A0CC5FA0081EB76 /* AddressesValidationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddressesValidationTests.swift; sourceTree = "<group>"; };
 		2D6305B22BBA930C005BF839 /* RadiantNetworkEndpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantNetworkEndpoint.swift; sourceTree = "<group>"; };
 		2D6305B32BBA930C005BF839 /* RadiantUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantUtils.swift; sourceTree = "<group>"; };
+		2D6305BA2BBAA40E005BF839 /* RadiantNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadiantNetworkService.swift; sourceTree = "<group>"; };
 		2D78F4062A5C319300962CCA /* ChiaWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaWalletAssembly.swift; sourceTree = "<group>"; };
 		2D78F4092A5C3CBE00962CCA /* ChiaAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaAddressService.swift; sourceTree = "<group>"; };
 		2D78F40B2A5C3CCF00962CCA /* ChiaWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaWalletManager.swift; sourceTree = "<group>"; };
@@ -1681,6 +1683,7 @@
 			isa = PBXGroup;
 			children = (
 				2D6305B22BBA930C005BF839 /* RadiantNetworkEndpoint.swift */,
+				2D6305BA2BBAA40E005BF839 /* RadiantNetworkService.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -4236,6 +4239,7 @@
 				B6DC28422B62AFD00070F1D2 /* HederaExternalLinkProvider.swift in Sources */,
 				DC87B9F02B8F4D9700C61C5A /* BitcoreResponse.swift in Sources */,
 				EF74D6422BA38124000550F3 /* Future+.swift in Sources */,
+				2D6305BB2BBAA40E005BF839 /* RadiantNetworkService.swift in Sources */,
 				DC5E64EC2B1650F400E81AA5 /* OP_PUBKEYHASH.swift in Sources */,
 				B0CDFF252641488900B9BA9D /* EthereumJsonRpcProvider.swift in Sources */,
 				DC8180802B15159D00D7D53F /* RLP.swift in Sources */,

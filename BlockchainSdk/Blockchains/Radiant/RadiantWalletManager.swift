@@ -15,6 +15,7 @@ final class RadiantWalletManager: BaseManager {
     // MARK: - Private Properties
     
     private let transactionBuilder: RadiantTransactionBuilder
+    private let networkService: RadiantNetworkService
     
     /*
      TODO: - Will be implement in feature/IOS-6004-make-network-layer-radiant
@@ -23,8 +24,9 @@ final class RadiantWalletManager: BaseManager {
     
     // MARK: - Init
     
-    init(wallet: Wallet, transactionBuilder: RadiantTransactionBuilder) throws {
+    init(wallet: Wallet, transactionBuilder: RadiantTransactionBuilder, networkService: RadiantNetworkService) throws {
         self.transactionBuilder = transactionBuilder
+        self.networkService = networkService
         super.init(wallet: wallet)
     }
     
@@ -90,12 +92,7 @@ private extension RadiantWalletManager {
             }
             .withWeakCaptureOf(self)
             .flatMap { walletManager, transactionData -> AnyPublisher<String, Error> in
-                /*
-                 TODO: - Will be implement in feature/IOS-6004-make-network-layer-radiant
-                 return walletManager.networkService.sendTransaction(data: transactionData)
-                 */
-                
-                return .anyFail(error: WalletError.failedToSendTx)
+                return walletManager.networkService.sendTransaction(data: transactionData)
             }
             .withWeakCaptureOf(self)
             .map { walletManager, txId -> TransactionSendResult in
@@ -112,12 +109,7 @@ private extension RadiantWalletManager {
 
 extension RadiantWalletManager: WalletManager {
     var currentHost: String {
-        /*
-         TODO: - Will be implement in feature/IOS-6004-make-network-layer-radiant
-         networkService.host
-         */
-        
-        return ""
+        networkService.host
     }
     
     var allowsFeeSelection: Bool {
