@@ -54,7 +54,7 @@ extension MoyaProvider {
             operation: { [weak self] in
                 return try await withCheckedThrowingContinuation { continuation in
                     // This check is required since `operation` closure is called regardless of whether the task is cancelled or not
-                    guard !_Concurrency.Task.isCancelled else {
+                    if _Concurrency.Task.isCancelled {
                         continuation.resume(throwing: CancellationError())
                         return
                     }
