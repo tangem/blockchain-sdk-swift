@@ -138,12 +138,3 @@ extension RadiantWalletManager: WalletManager {
         ])
     }
 }
-
-extension RadiantWalletManager {
-    enum Constants {
-        static let testTransactionSize = 256
-        static let defaultFeeInCoinsPer1000Bytes = 1000
-        static let normalFeeRate = 0.03
-        static let requiredNumberOfConfirmationBlocks = 332
-    }
-}
