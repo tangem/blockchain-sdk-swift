@@ -67,6 +67,8 @@ class URLSessionWebSocketTaskWrapper {
             },
             webSocketTaskDidClose: { [weak self] task, closeCode in
                 self?.webSocketTaskDidClose?.resume(returning: closeCode)
+            }, webSocketTaskDidCompleteWithError: { [weak self] _, _ in
+                self?.cancel()
             }
         )
         

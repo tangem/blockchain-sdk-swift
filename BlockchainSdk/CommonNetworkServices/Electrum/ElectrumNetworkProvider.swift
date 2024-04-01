@@ -8,15 +8,12 @@
 
 import Combine
 
-public class ElectrumNetworkProvider: MultiNetworkProvider {
-    let providers: [ElectrumWebSocketManager]
+class ElectrumNetworkProvider: MultiNetworkProvider {
+    let providers: [ElectrumWebSocketProvider]
     var currentProviderIndex: Int = 0
-    
-    private let decimalValue: Decimal
-    
-    init(providers: [ElectrumWebSocketManager], decimalValue: Decimal) {
+
+    init(providers: [ElectrumWebSocketProvider]) {
         self.providers = providers
-        self.decimalValue = decimalValue
     }
 
     func getAddressInfo(identifier: ElectrumWebSocketManager.IdentifierType) -> AnyPublisher<ElectrumAddressInfo, Error> {
@@ -66,7 +63,7 @@ public class ElectrumNetworkProvider: MultiNetworkProvider {
         }
     }
     
-    func estimateFee() -> AnyPublisher<Decimal, Error> {
+    public func estimateFee() -> AnyPublisher<Decimal, Error> {
         providerPublisher { provider in
             Future.async {
                 let fee = try await provider.estimateFee(block: 10)

@@ -9,28 +9,17 @@
 import Foundation
 
 actor JSONRPCWebSocketProvider {
-    private enum Constants {
-        static let ping: TimeInterval = 10
-        static let timeout: TimeInterval = 30
-    }
-    
     private let url: URL
     private let connection: WebSocketConnection
     
-    private var requests: [Int: ((Result<Data, Error>) -> Void)] = [:]
-    private var receiveTask: Task<Void, Error>?
+    // Internal
+    private var requests: [Int: CheckedContinuation<Data, Error>] = [:]
+    private var receiveTask: Task<Void, Never>?
     private var counter: Int = 0
 
-    init(url: URL) {
+    init(url: URL, ping: WebSocketConnection.Ping, timeoutInterval: TimeInterval) {
         self.url = url
-        
-        let message = try! JSONRPCRequest(id: -1, method: "server.ping", params: [String]()).string()
-        
-        connection = WebSocketConnection(
-            url: url,
-            ping: .message(interval: Constants.ping, message: .string(message)),
-            timeout: Constants.timeout
-        )
+        connection = WebSocketConnection(url: url, ping: ping, timeout: timeoutInterval)
     }
      
     func send<Parameter: Encodable, Result: Decodable>(
@@ -41,30 +30,21 @@ actor JSONRPCWebSocketProvider {
     ) async throws -> Result {
         counter += 1
         let request = JSONRPCRequest(id: counter, method: method, params: parameter)
-        try await connection.send(.string(request.string(encoder: encoder)))
+        let message = try request.string(encoder: encoder)
+        try await connection.send(.string(message))
         
         // setup handler for message
         setupReceiveTask()
          
-        let response: JSONRPCResponse<Result> = try await withCheckedThrowingContinuation { continuation in
-            let handler: ((Swift.Result<Data, Error>) -> Void) = { result in
-                switch result {
-                case .success(let data):
-                    do {
-                        let response = try decoder.decode(JSONRPCResponse<Result>.self, from: data)
-                        continuation.resume(returning: response)
-                    } catch {
-                        continuation.resume(throwing: error)
-                    }
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
-
-            requests.updateValue(handler, forKey: request.id)
+        let data: Data = try await withCheckedThrowingContinuation { continuation in
+            requests.updateValue(continuation, forKey: request.id)
         }
 
+        try Task.checkCancellation()
+        
+        // Remove the fulfilled `continuation` from cache
         requests.removeValue(forKey: request.id)
+        let response = try decoder.decode(JSONRPCResponse<Result>.self, from: data)
         
         assert(request.id == response.id, "The response contains wrong id")
         log("Return result \(response.result)")
@@ -74,7 +54,7 @@ actor JSONRPCWebSocketProvider {
     
     func cancel() {
         receiveTask?.cancel()
-        requests.values.forEach { $0(.failure(CancellationError())) }
+        requests.values.forEach { $0.resume(throwing: CancellationError()) }
     }
 }
 
@@ -87,12 +67,13 @@ private extension JSONRPCWebSocketProvider {
             
             do {
                 let data = try await connection.receive()
-                await proceedReceive(data: data)
+                async let _ = proceedReceive(data: data)
                 
                 // Handle next message
                 await setupReceiveTask()
             } catch {
                 log("ReceiveTask catch error: \(error)")
+                await cancel()
             }
         }
     }
@@ -100,12 +81,9 @@ private extension JSONRPCWebSocketProvider {
     func proceedReceive(data: Data) async {
         do {
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-            guard let id = json?["id"] as? Int else {
-                return
-            }
 
-            if let handler = requests[id] {
-                handler(.success(data))
+            if let id = json?["id"] as? Int, let continuation = requests[id] {
+                continuation.resume(returning: data)
             } else {
                 log("Received json: \(String(describing: json)) is not handled")
             }
@@ -120,7 +98,13 @@ private extension JSONRPCWebSocketProvider {
    }
 }
 
-// MARK: - Models
+// MARK: - HostProvider
+
+extension JSONRPCWebSocketProvider: HostProvider {
+    nonisolated var host: String { url.absoluteString }
+}
+
+// MARK: - CustomStringConvertible
 
 extension JSONRPCWebSocketProvider: CustomStringConvertible {
     nonisolated var description: String {

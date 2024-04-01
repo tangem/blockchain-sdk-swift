@@ -10,13 +10,5 @@ import Foundation
 
 struct RadiantAddressInfo {
     let balance: Decimal
-    let outputs: [RadiantUTXO]
-}
-
-// TODO: - Need remove after merge https://github.com/tangem/blockchain-sdk-swift/pull/603
-struct RadiantUTXO {
-    let position: Int
-    let hash: String
-    let value: Decimal
-    let height: Decimal
+    let outputs: [ElectrumUTXO]
 }

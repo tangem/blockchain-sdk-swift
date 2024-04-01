@@ -8,14 +8,11 @@
 
 import UIKit
 import SwiftUI
-import BlockchainSdk
-import Combine
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     let model = BlockchainSdkExampleViewModel()
-    var bag: AnyCancellable?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         let contentView = BlockchainSdkExampleView()
@@ -24,7 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window.rootViewController = UIHostingController(rootView: contentView)
         self.window = window
         window.makeKeyAndVisible()
-        
         return true
     }
 }

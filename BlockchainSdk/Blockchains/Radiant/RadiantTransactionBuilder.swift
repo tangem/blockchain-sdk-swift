@@ -14,7 +14,7 @@ class RadiantTransactionBuilder {
     let walletPublicKey: Data
     let decimalValue: Decimal
     
-    var utxo: [RadiantUTXO] = []
+    var utxo: [ElectrumUTXO] = []
     
     private let scriptUtils = RadiantScriptUtils()
     
@@ -27,7 +27,7 @@ class RadiantTransactionBuilder {
     
     // MARK: - Implementation
     
-    func update(utxo: [RadiantUTXO]) {
+    func update(utxo: [ElectrumUTXO]) {
         self.utxo = utxo
     }
     

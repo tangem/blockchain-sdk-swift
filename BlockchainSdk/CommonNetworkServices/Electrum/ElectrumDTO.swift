@@ -30,10 +30,7 @@ enum ElectrumDTO {
         }
         
         struct Broadcast: Decodable {
-            let txPos: Int
             let txHash: String
-            let value: Int
-            let height: String
         }
         
         struct Transaction: Decodable {
