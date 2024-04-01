@@ -70,6 +70,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case zkSync(testnet: Bool)
     case moonbeam(testnet: Bool)
     case polygonZkEVM(testnet: Bool)
+    case radiant(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -100,7 +101,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .manta(let testnet),
                 .zkSync(let testnet),
                 .moonbeam(let testnet),
-                .polygonZkEVM(let testnet):
+                .polygonZkEVM(let testnet),
+                .radiant(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -169,7 +171,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .dash,
                 .kaspa,
                 .ravencoin,
-                .hedera:
+                .hedera,
+                .radiant:
             return 8
         case .ethereum,
                 .ethereumClassic,
@@ -328,6 +331,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return isTestnet ? "tPLS" : "PLS"
         case .moonbeam:
             return isTestnet ? "DEV" : "GLMR"
+        case .radiant:
+            return "RXD"
         }
     }
 
@@ -993,6 +998,7 @@ extension Blockchain: Codable {
         case .zkSync: return "zksync"
         case .moonbeam: return "moonbeam"
         case .polygonZkEVM: return "polygon-zkevm"
+        case .radiant: return "radiant"
         }
     }
 
@@ -1071,6 +1077,7 @@ extension Blockchain: Codable {
         case "zksync": self = .zkSync(testnet: isTestnet)
         case "moonbeam": self = .moonbeam(testnet: isTestnet)
         case "polygon-zkevm": self = .polygonZkEVM(testnet: isTestnet)
+        case "radiant": self = .radiant(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1244,6 +1251,8 @@ extension Blockchain {
             return AptosWalletAssembly()
         case .hedera:
             return HederaWalletAssembly()
+        case .radiant:
+            return RadiantWalletAssembly()
         }
     }
 }
