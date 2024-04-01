@@ -78,7 +78,7 @@ private extension RadiantWalletManager {
             .sign(hashes: hashesForSign, walletPublicKey: self.wallet.publicKey)
             .withWeakCaptureOf(self)
             .tryMap { walletManager, signatures in
-                guard 
+                guard
                     let walletCorePublicKey = PublicKey(data: self.wallet.publicKey.blockchainKey, type: .secp256k1),
                     signatures.count == hashesForSign.count
                 else {
@@ -86,13 +86,13 @@ private extension RadiantWalletManager {
                 }
                 
                 // Verify signature by public key
-                guard 
+                guard
                     signatures
                         .enumerated()
                         .filter({ (index, sig) in
                             walletCorePublicKey.verifyAsDER(signature: sig, message: Data(hashesForSign[index].reversed()))
                         })
-                        .isEmpty 
+                        .isEmpty
                 else {
                     throw WalletError.failedToBuildTx
                 }
