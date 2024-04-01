@@ -43,7 +43,7 @@ class ElectrumNetworkProvider: MultiNetworkProvider {
         providerPublisher { provider in
             Future.async {
                 let fee = try await provider.estimateFee(block: 10)
-                return Decimal(fee)
+                return fee
             }
             .eraseToAnyPublisher()
         }

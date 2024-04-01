@@ -75,7 +75,7 @@ class ElectrumWebSocketProvider: HostProvider {
         try await send(method: Method.Blockchain.Transaction.broadcast, parameter: [transactionHex])
     }
     
-    func estimateFee(block: Int) async throws -> Int {
+    func estimateFee(block: Int) async throws -> Decimal {
         try await send(method: Method.Blockchain.estimatefee, parameter: [block])
     }
 }

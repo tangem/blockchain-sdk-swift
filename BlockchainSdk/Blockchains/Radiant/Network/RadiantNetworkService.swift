@@ -41,13 +41,35 @@ extension RadiantNetworkService {
             .eraseToAnyPublisher()
     }
     
-    func estimatedFee() -> AnyPublisher<Decimal, Error> {
+    func estimatedFee() -> AnyPublisher<BitcoinFee, Error> {
         electrumProvider
             .estimateFee()
+            .map { sourceFee in
+                let targetFee = sourceFee > 0 ? sourceFee : Constants.defaultFeePer1000Bytes
+                
+                let minimal = targetFee
+                let normal = targetFee * Constants.normalFeeMultiplier
+                let priority = targetFee * Constants.priorityFeeMultiplier
+                
+                return BitcoinFee(
+                    minimalSatoshiPerByte: minimal,
+                    normalSatoshiPerByte: normal,
+                    prioritySatoshiPerByte: priority
+                )
+            }
+            .eraseToAnyPublisher()
     }
     
     func sendTransaction(data: Data) -> AnyPublisher<String, Error> {
         electrumProvider
             .send(transactionHex: data.hexString)
+    }
+}
+
+extension RadiantNetworkService {
+    enum Constants {
+        static let defaultFeePer1000Bytes: Decimal = 0.00001
+        static let normalFeeMultiplier: Decimal = 1.5
+        static let priorityFeeMultiplier: Decimal = 2
     }
 }

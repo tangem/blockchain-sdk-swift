@@ -116,6 +116,16 @@ private extension RadiantWalletManager {
             }
             .eraseToAnyPublisher()
     }
+    
+    func calculateFee(for perKbValue: Decimal, for estimateSize: Int) -> Fee {
+        let decimalValue = wallet.blockchain.decimalValue
+        let perKbDecimalValue = (perKbValue * decimalValue).rounded(blockchain: wallet.blockchain)
+        let satoshisPerKilobyte = perKbDecimalValue * Constants.perKbRate
+        let decimalFeeValue = Decimal(estimateSize) / satoshisPerKilobyte
+        let feeAmount = Amount(with: wallet.blockchain, value: decimalFeeValue)
+        
+        return Fee(feeAmount)
+    }
 }
 
 // MARK: - WalletManager
@@ -134,21 +144,49 @@ extension RadiantWalletManager: WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        /*
-         TODO: - Will be implement in feature/IOS-6004-make-network-layer-radiant
-         */
+        let dummyTransactionFee: Fee = Fee(.init(with: wallet.blockchain, value: 0))
         
-        return .justWithError(output: [
-            .init(Amount(with: wallet.blockchain, value: 0.1))
-        ])
+        let dummyTransaction = Transaction(
+            amount: amount,
+            fee: dummyTransactionFee,
+            sourceAddress: wallet.address,
+            destinationAddress: destination,
+            changeAddress: wallet.address
+        )
+        
+        let rawTransaction: Data
+        
+        do {
+            let hashesForSign = try transactionBuilder.buildForSign(transaction: dummyTransaction)
+            let signaturesForSend = hashesForSign.map { _ in Data([Byte](repeating: 0, count: 32)) }
+            
+            rawTransaction = try transactionBuilder.buildForSend(transaction: dummyTransaction, signatures: signaturesForSend, isDer: false)
+        } catch {
+            return .anyFail(error: error)
+        }
+        
+        return networkService
+            .estimatedFee()
+            .withWeakCaptureOf(self)
+            .map { (walletManager, estimatedFeeDecimalValue) -> [Fee] in
+                let estimatedSize = rawTransaction.count
+                
+                let minimalFee = walletManager.calculateFee(for: estimatedFeeDecimalValue.minimalSatoshiPerByte, for: estimatedSize)
+                let normalFee = walletManager.calculateFee(for: estimatedFeeDecimalValue.normalSatoshiPerByte, for: estimatedSize)
+                let priorityFee = walletManager.calculateFee(for: estimatedFeeDecimalValue.prioritySatoshiPerByte, for: estimatedSize)
+                
+                return [
+                    minimalFee,
+                    normalFee,
+                    priorityFee
+                ]
+            }
+            .eraseToAnyPublisher()
     }
 }
 
 extension RadiantWalletManager {
     enum Constants {
-        static let testTransactionSize = 256
-        static let defaultFeeInCoinsPer1000Bytes = 1000
-        static let normalFeeRate = 0.03
-        static let requiredNumberOfConfirmationBlocks = 332
+        static let perKbRate: Decimal = 1000
     }
 }
