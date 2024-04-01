@@ -16,7 +16,7 @@ class ElectrumNetworkProvider: MultiNetworkProvider {
         self.providers = providers
     }
 
-    func getAddressInfo(identifier: ElectrumWebSocketManager.IdentifierType) -> AnyPublisher<ElectrumAddressInfo, Error> {
+    func getAddressInfo(identifier: ElectrumWebSocketProvider.Identifier) -> AnyPublisher<ElectrumAddressInfo, Error> {
         providerPublisher { provider in
             Future.async {
                 async let balance = provider.getBalance(identifier: identifier)
@@ -39,7 +39,7 @@ class ElectrumNetworkProvider: MultiNetworkProvider {
         }
     }
     
-    func getAddressInfoWithScripts(identifier: ElectrumWebSocketManager.IdentifierType) -> AnyPublisher<ElectrumAddressInfo, Error> {
+    func getAddressInfoWithScripts(identifier: ElectrumWebSocketProvider.Identifier) -> AnyPublisher<ElectrumAddressInfo, Error> {
         providerPublisher { provider in
             Future.async {
                 async let balance = provider.getBalance(identifier: identifier)
@@ -82,7 +82,7 @@ class ElectrumNetworkProvider: MultiNetworkProvider {
 
             for hash in hashes {
                 group.addTask {
-                    return try await self.provider.getTransaction(transactionHash: hash)
+                    return try await self.provider.getTxHistory(identifier: .scriptHash(""))
                 }
             }
 
