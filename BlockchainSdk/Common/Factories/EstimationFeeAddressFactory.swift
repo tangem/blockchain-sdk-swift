@@ -20,7 +20,6 @@ struct EstimationFeeAddressFactory {
         case .xrp, 
              .stellar,
              .binance,
-             .solana,
              .veChain:
             // Doesn't depend on amount and destination
             return ""
@@ -81,7 +80,8 @@ struct EstimationFeeAddressFactory {
                 .ton,
                 .near,
                 .algorand,
-                .aptos:
+                .aptos,
+                .solana:
             // For old blockchain with the ed25519 curve except `Cardano`
             // We have to use the new `ed25519_slip0010` curve that the `AnyMasterKeyFactory` works correctly
             let curve = blockchain.curve == .ed25519 ? .ed25519_slip0010 : blockchain.curve

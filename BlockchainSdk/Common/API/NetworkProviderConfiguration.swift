@@ -28,9 +28,11 @@ public struct NetworkProviderConfiguration {
         var plugins: [PluginType] = []
 
         if let logOptions = logger.logOptions {
-            let configuration = NetworkLoggerPlugin.Configuration(output: NetworkLoggerPlugin.tangemSdkLoggerOutput,
-                                                                  logOptions: logOptions)
-            plugins.append(NetworkLoggerPlugin(configuration: configuration))
+            let configuration = TangemNetworkLoggerPlugin.Configuration(
+                output: TangemNetworkLoggerPlugin.tangemSdkLoggerOutput,
+                logOptions: logOptions
+            )
+            plugins.append(TangemNetworkLoggerPlugin(configuration: configuration))
         }
 
         if let credentials {
@@ -51,7 +53,7 @@ public extension NetworkProviderConfiguration {
         case `default`
         case verbose
         
-        var logOptions: NetworkLoggerPlugin.Configuration.LogOptions? {
+        var logOptions: TangemNetworkLoggerPlugin.Configuration.LogOptions? {
             switch self {
             case .none: return nil
             case .default: return .default
@@ -72,7 +74,7 @@ public extension URLSessionConfiguration {
 
 // MARK: - Moya + TangemSdk
 
-public extension NetworkLoggerPlugin {
+public extension TangemNetworkLoggerPlugin {
     static func tangemSdkLoggerOutput(target: TargetType, items: [String]) {
         for item in items {
             Log.network(item)
