@@ -214,13 +214,8 @@ extension SolanaWalletManager: TransactionSender {
     }
     
     private func accountExists(destination: String, amountType: Amount.AmountType) -> AnyPublisher<Bool, Error> {
-        let tokens: [Token]
-        if case .token(let token) = amountType {
-            tokens = [token]
-        } else {
-            tokens = []
-        }
-        
+        let tokens: [Token] = amountType.token.map { [$0] } ?? []
+
         return networkService
             .getInfo(accountId: destination, tokens: tokens, transactionIDs: [])
             .map { info in
@@ -239,7 +234,6 @@ extension SolanaWalletManager: TransactionSender {
     
     private func destinationAccountInfo(destination: String, amount: Amount) -> AnyPublisher<DestinationAccountInfo, Error> {
         let accountCreationFeePublisher: AnyPublisher<Decimal, Error>
-        let tokens: [Token]
         switch amount.type {
         case .coin:
             // Include the fee if the amount is less than it
@@ -252,30 +246,13 @@ extension SolanaWalletManager: TransactionSender {
                     }
                 }
                 .eraseToAnyPublisher()
-            
-            tokens = []
         case .token(let token):
             accountCreationFeePublisher = .justWithError(output: 0)
-            tokens = [token]
         case .reserve:
             return .anyFail(error: BlockchainSdkError.failedToLoadFee)
         }
         
-        let accountExistsPublisher: AnyPublisher<Bool, Error> = networkService
-            .getInfo(accountId: destination, tokens: tokens, transactionIDs: [])
-            .map { info in
-                switch amount.type {
-                case .coin:
-                    return info.accountExists
-                case .token(let token):
-                    let existingTokenAccount = info.tokensByMint[token.contractAddress]
-                    return existingTokenAccount != nil
-                case .reserve:
-                    return false
-                }
-            }
-            .eraseToAnyPublisher()
-        
+        let accountExistsPublisher = accountExists(destination: destination, amountType: amount.type)
         let rentExemptionBalancePublisher = networkService
             .minimalBalanceForRentExemption()
             .tryMap { [weak self] balance -> Amount in
