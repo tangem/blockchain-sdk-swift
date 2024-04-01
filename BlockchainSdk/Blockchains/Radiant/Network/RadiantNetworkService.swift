@@ -47,7 +47,8 @@ extension RadiantNetworkService {
     }
     
     func sendTransaction(data: Data) -> AnyPublisher<String, Error> {
-        electrumProvider
-            .send(transactionHex: data.hexString)
+        PassthroughSubject().eraseToAnyPublisher()
+//        electrumProvider
+//            .send(transactionHex: data.hexString)
     }
 }

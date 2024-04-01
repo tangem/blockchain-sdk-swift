@@ -17,11 +17,6 @@ final class RadiantWalletManager: BaseManager {
     private let transactionBuilder: RadiantTransactionBuilder
     private let networkService: RadiantNetworkService
     
-    /*
-     TODO: - Will be implement in feature/IOS-6004-make-network-layer-radiant
-     private let networkService: RadiantNetworkService
-     */
-    
     // MARK: - Init
     
     init(wallet: Wallet, transactionBuilder: RadiantTransactionBuilder, networkService: RadiantNetworkService) throws {
@@ -33,10 +28,23 @@ final class RadiantWalletManager: BaseManager {
     // MARK: - Implementation
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        /*
-         TODO: - Will be implement in feature/IOS-6004-make-network-layer-radiant
-         */
-    }
+            let accountInfoPublisher = networkService
+                .getInfo(address: wallet.address)
+            
+            cancellable = accountInfoPublisher
+                .withWeakCaptureOf(self)
+                .sink(receiveCompletion: { [weak self] result in
+                    switch result {
+                    case .failure(let error):
+                        self?.wallet.clearAmounts()
+                        completion(.failure(error))
+                    case .finished:
+                        completion(.success(()))
+                    }
+                }, receiveValue: { (manager, response) in
+                    manager.updateWallet(with: response)
+                })
+        }
     
 }
 
