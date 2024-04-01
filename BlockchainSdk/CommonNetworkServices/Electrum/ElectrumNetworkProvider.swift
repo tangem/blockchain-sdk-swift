@@ -48,4 +48,14 @@ class ElectrumNetworkProvider: MultiNetworkProvider {
             .eraseToAnyPublisher()
         }
     }
+    
+    func send(transactionHex: String) -> AnyPublisher<String, Error> {
+        providerPublisher { provider in
+            Future.async {
+                async let broadcast = provider.send(transactionHex: transactionHex)
+                return try await broadcast.txHash
+            }
+            .eraseToAnyPublisher()
+        }
+    }
 }

@@ -55,6 +55,11 @@ private extension RadiantWalletManager {
         let coinBalanceValue = addressInfo.balance / wallet.blockchain.decimalValue
         wallet.add(coinValue: coinBalanceValue)
         transactionBuilder.update(utxo: addressInfo.outputs)
+        
+        //
+        if coinBalanceValue != wallet.amounts[.coin]?.value {
+            wallet.clearPendingTransaction()
+        }
     }
     
     func sendViaCompileTransaction(
