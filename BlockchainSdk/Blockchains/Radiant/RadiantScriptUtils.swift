@@ -18,9 +18,7 @@ struct RadiantScriptUtils {
         for signature in signatures {
             var signDer: Data = signature
             
-            if !isDer {
-                signDer = try Secp256k1Signature(with: signature).serializeDer()
-            }
+            signDer = try Secp256k1Signature(with: signature).serializeDer()
             
             var script = Data()
             script.append((signDer.count+1).byte)

@@ -56,7 +56,7 @@ class RadiantTransactionBuilder {
         return hashes
     }
     
-    func buildForSend(transaction: Transaction, signatures: [Data], isDer: Bool) throws -> Data {
+    func buildForSend(transaction: Transaction, signatures: [Data]) throws -> Data {
         let outputScripts = try scriptUtils.buildSignedScripts(
             signatures: signatures,
             publicKey: walletPublicKey,

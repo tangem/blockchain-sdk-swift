@@ -82,11 +82,7 @@ private extension RadiantWalletManager {
                     throw WalletError.failedToBuildTx
                 }
                 
-                return try walletManager.transactionBuilder.buildForSend(
-                    transaction: transaction,
-                    signatures: signatures,
-                    isDer: true
-                )
+                return try walletManager.transactionBuilder.buildForSend(transaction: transaction, signatures: signatures)
             }
             .withWeakCaptureOf(self)
             .flatMap { walletManager, transactionData -> AnyPublisher<String, Error> in
