@@ -11,10 +11,10 @@ import TangemSdk
 import WalletCore
 
 class RadiantTransactionBuilder {
-    let walletPublicKey: Data
-    let decimalValue: Decimal
+    private let walletPublicKey: Data
+    private let decimalValue: Decimal
     
-    var utxo: [ElectrumUTXO] = []
+    private var utxo: [ElectrumUTXO] = []
     
     private let scriptUtils = RadiantScriptUtils()
     
@@ -50,13 +50,13 @@ class RadiantTransactionBuilder {
                 index: index
             )
             
-            return preImageHash.sha256().sha256()
+            return preImageHash.getDoubleSha256()
         }
         
         return hashes
     }
     
-    func buildForSend(transaction: Transaction, signatures: [Data], isDer: Bool) throws -> Data {
+    func buildForSend(transaction: Transaction, signatures: [Data]) throws -> Data {
         let outputScripts = try scriptUtils.buildSignedScripts(
             signatures: signatures,
             publicKey: walletPublicKey,
@@ -101,15 +101,15 @@ class RadiantTransactionBuilder {
         var txToSign = Data()
         
         // version
-        txToSign.append(contentsOf: [UInt8(0x01),UInt8(0x00),UInt8(0x00),UInt8(0x00)])
+        txToSign.append(contentsOf: [UInt8(0x01), UInt8(0x00), UInt8(0x00), UInt8(0x00)])
 
-        //hashPrevouts (32-byte hash)
+        // hashPrevouts
         scriptUtils.writePrevoutHash(tx.unspents, into: &txToSign)
         
-        //hashSequence (32-byte hash), ffffffff only
+        // hashSequence
         scriptUtils.writeSequenceHash(tx.unspents, into: &txToSign)
         
-        //outpoint (32-byte hash + 4-byte little endian)
+        // outpoint
         let currentOutput = tx.unspents[index]
         txToSign.append(contentsOf: currentOutput.hash.reversed())
         txToSign.append(contentsOf: currentOutput.outputIndex.bytes4LE)
@@ -220,13 +220,13 @@ class RadiantTransactionBuilder {
         return txBody
     }
     
-    private func buildUnspents(with outputScripts: [Data]) -> [RadiantUnspentTransaction] {
+    private func buildUnspents(with outputScripts: [Data]) -> [RadiantUnspentOutput] {
         utxo
             .enumerated()
             .compactMap { index, txRef  in
                 let hash = Data(hex: txRef.hash)
                 let outputScript = outputScripts.count == 1 ? outputScripts.first! : outputScripts[index]
-                return RadiantUnspentTransaction(
+                return RadiantUnspentOutput(
                     amount: txRef.value.uint64Value,
                     outputIndex: txRef.position,
                     hash: hash,

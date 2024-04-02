@@ -9,17 +9,19 @@
 import Foundation
 
 struct RadiantAmountUnspentTransaction {
-    private(set) var decimalValue: Decimal
-    private(set) var amount: Amount
-    private(set) var fee: Fee
-    private(set) var unspents: [RadiantUnspentTransaction]
+    let decimalValue: Decimal
+    let amount: Amount
+    let fee: Fee
+    let unspents: [RadiantUnspentOutput]
     
     var amountSatoshiDecimalValue: Decimal {
-        (amount.value * decimalValue).roundedDecimalNumber.decimalValue
+        let decimalValue = amount.value * decimalValue
+        return decimalValue.rounded(roundingMode: .down)
     }
     
     var feeSatoshiDecimalValue: Decimal {
-        (fee.amount.value * decimalValue).roundedDecimalNumber.decimalValue
+        let decimalValue = fee.amount.value * decimalValue
+        return decimalValue.rounded(roundingMode: .down)
     }
     
     var changeSatoshiDecimalValue: Decimal {
@@ -27,7 +29,7 @@ struct RadiantAmountUnspentTransaction {
     }
     
     private func calculateChange(
-        unspents: [RadiantUnspentTransaction],
+        unspents: [RadiantUnspentOutput],
         amountSatoshi: Decimal,
         feeSatoshi: Decimal
     ) -> Decimal {

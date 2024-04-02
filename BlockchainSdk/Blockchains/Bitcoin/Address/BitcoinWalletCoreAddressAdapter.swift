@@ -58,7 +58,10 @@ extension BitcoinWalletCoreAddressAdapter: AddressValidator {
         BitcoinAddress.isValidString(string: address)
     }
     
-    func validateSpecify(_ address: String, onlyUse prefix: BitcoinPrefix) -> Bool {
+    /// Use specify method use a method specifically for the prefix
+    /// - Parameters:
+    ///   - prefix: Bitcon TW prefix
+    func validateSpecify(prefix: BitcoinPrefix, for address: String) -> Bool {
         guard let address = BitcoinAddress(string: address), address.prefix == prefix.value(for: coin) else {
             return false
         }
