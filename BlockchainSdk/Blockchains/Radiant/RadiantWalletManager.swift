@@ -120,9 +120,9 @@ private extension RadiantWalletManager {
     func calculateFee(for estimatedFeePerKb: Decimal, for estimateSize: Int) -> Fee {
         let decimalValue = wallet.blockchain.decimalValue
         let perKbDecimalValue = (estimatedFeePerKb * decimalValue).rounded(blockchain: wallet.blockchain)
-        let satoshisPerKilobyte = perKbDecimalValue * Constants.perKbRate
-        let decimalFeeValue = Decimal(estimateSize) / satoshisPerKilobyte
-        let feeAmount = Amount(with: wallet.blockchain, value: decimalFeeValue)
+        let decimalFeeValue = Decimal(estimateSize) * perKbDecimalValue
+        let feeAmountValue = (decimalFeeValue / decimalValue).rounded(blockchain: wallet.blockchain)
+        let feeAmount = Amount(with: wallet.blockchain, value: feeAmountValue)
         
         return Fee(feeAmount)
     }
