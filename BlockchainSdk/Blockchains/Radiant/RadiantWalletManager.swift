@@ -78,7 +78,7 @@ private extension RadiantWalletManager {
             .sign(hashes: hashesForSign, walletPublicKey: self.wallet.publicKey)
             .withWeakCaptureOf(self)
             .tryMap { walletManager, signatures in
-                guard 
+                guard
                     let walletCorePublicKey = PublicKey(data: walletManager.wallet.publicKey.blockchainKey, type: .secp256k1),
                     signatures.count == hashesForSign.count
                 else {
@@ -109,9 +109,11 @@ private extension RadiantWalletManager {
     }
     
     func calculateFee(for estimatedFeePerKb: Decimal, for estimateSize: Int) -> Fee {
+        let estimateSize = 226
+        
         let decimalValue = wallet.blockchain.decimalValue
         let perKbDecimalValue = (estimatedFeePerKb * decimalValue).rounded(blockchain: wallet.blockchain)
-        let decimalFeeValue = Decimal(estimateSize) * perKbDecimalValue
+        let decimalFeeValue = Decimal(estimateSize) / Constants.perKbRate * perKbDecimalValue
         let feeAmountValue = (decimalFeeValue / decimalValue).rounded(blockchain: wallet.blockchain)
         let feeAmount = Amount(with: wallet.blockchain, value: feeAmountValue)
         
@@ -168,8 +170,8 @@ extension RadiantWalletManager: WalletManager {
                 
                 return [
                     minimalFee,
-                    normalFee,
-                    priorityFee
+//                    normalFee,
+//                    priorityFee
                 ]
             }
             .eraseToAnyPublisher()
