@@ -1,5 +1,5 @@
 //
-//  RadiantUnspentTransaction.swift
+//  RadiantUnspentOutput.swift
 //  BlockchainSdk
 //
 //  Created by skibinalexander on 27.03.2024.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct RadiantUnspentTransaction {
+struct RadiantUnspentOutput {
     let amount: UInt64
     let outputIndex: Int
     let hash: Data

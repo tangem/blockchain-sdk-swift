@@ -88,7 +88,7 @@
 		2DA4A4442BB5431700E55526 /* RadiantWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A43C2BB5431500E55526 /* RadiantWalletManager.swift */; };
 		2DA4A4452BB5431700E55526 /* RadiantAmountUnspentTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A43D2BB5431500E55526 /* RadiantAmountUnspentTransaction.swift */; };
 		2DA4A4462BB5431700E55526 /* RadiantAddressInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A43F2BB5431500E55526 /* RadiantAddressInfo.swift */; };
-		2DA4A4472BB5431700E55526 /* RadiantUnspentTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A4402BB5431500E55526 /* RadiantUnspentTransaction.swift */; };
+		2DA4A4472BB5431700E55526 /* RadiantUnspentOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A4402BB5431500E55526 /* RadiantUnspentOutput.swift */; };
 		2DA4A4482BB5431700E55526 /* RadiantScriptUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A4412BB5431500E55526 /* RadiantScriptUtils.swift */; };
 		2DA8AB0D2A433A1000C75D85 /* ExceptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8AB0C2A433A1000C75D85 /* ExceptionHandler.swift */; };
 		2DB613D02B912D05007CFA9B /* RadiantTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB613CF2B912D05007CFA9B /* RadiantTests.swift */; };
@@ -864,7 +864,7 @@
 		2DA4A43C2BB5431500E55526 /* RadiantWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantWalletManager.swift; sourceTree = "<group>"; };
 		2DA4A43D2BB5431500E55526 /* RadiantAmountUnspentTransaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantAmountUnspentTransaction.swift; sourceTree = "<group>"; };
 		2DA4A43F2BB5431500E55526 /* RadiantAddressInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantAddressInfo.swift; sourceTree = "<group>"; };
-		2DA4A4402BB5431500E55526 /* RadiantUnspentTransaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantUnspentTransaction.swift; sourceTree = "<group>"; };
+		2DA4A4402BB5431500E55526 /* RadiantUnspentOutput.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantUnspentOutput.swift; sourceTree = "<group>"; };
 		2DA4A4412BB5431500E55526 /* RadiantScriptUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantScriptUtils.swift; sourceTree = "<group>"; };
 		2DA8AB0C2A433A1000C75D85 /* ExceptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionHandler.swift; sourceTree = "<group>"; };
 		2DB613CF2B912D05007CFA9B /* RadiantTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadiantTests.swift; sourceTree = "<group>"; };
@@ -1768,7 +1768,7 @@
 			isa = PBXGroup;
 			children = (
 				2DA4A43F2BB5431500E55526 /* RadiantAddressInfo.swift */,
-				2DA4A4402BB5431500E55526 /* RadiantUnspentTransaction.swift */,
+				2DA4A4402BB5431500E55526 /* RadiantUnspentOutput.swift */,
 				2DA4A43D2BB5431500E55526 /* RadiantAmountUnspentTransaction.swift */,
 			);
 			path = Domain;
@@ -4281,7 +4281,7 @@
 				5D8653FA23A8C481000DE52D /* StellarNetworkService.swift in Sources */,
 				2DA4A4452BB5431700E55526 /* RadiantAmountUnspentTransaction.swift in Sources */,
 				DC5E64DA2B1650F400E81AA5 /* OP_HASH160.swift in Sources */,
-				2DA4A4472BB5431700E55526 /* RadiantUnspentTransaction.swift in Sources */,
+				2DA4A4472BB5431700E55526 /* RadiantUnspentOutput.swift in Sources */,
 				DC63F266293F243200F953EF /* Credentials.swift in Sources */,
 				DC87B9EF2B8F4D9700C61C5A /* BitcoreProvider.swift in Sources */,
 				DA4820FA2BA1A0250007E0E1 /* ErrorCodeProviding.swift in Sources */,

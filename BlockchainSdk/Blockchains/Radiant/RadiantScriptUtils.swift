@@ -37,7 +37,7 @@ struct RadiantScriptUtils {
         WalletCore.BitcoinScript.lockScriptForAddress(address: address, coin: .bitcoinCash).data
     }
     
-    func writePrevoutHash(_ unspents: [RadiantUnspentTransaction], into txToSign: inout Data) {
+    func writePrevoutHash(_ unspents: [RadiantUnspentOutput], into txToSign: inout Data) {
         let prevouts = Data(unspents.map {
             Data($0.hash.reversed()) + $0.outputIndex.bytes4LE
         }.joined())
@@ -46,7 +46,7 @@ struct RadiantScriptUtils {
         txToSign.append(contentsOf: hashPrevouts)
     }
     
-    func writeSequenceHash(_ unspents: [RadiantUnspentTransaction], into txToSign: inout Data) {
+    func writeSequenceHash(_ unspents: [RadiantUnspentOutput], into txToSign: inout Data) {
         let sequence = Data(repeating: UInt8(0xFF), count: 4 * unspents.count)
         let hashSequence = sequence.getDoubleSha256()
         txToSign.append(contentsOf: hashSequence)
@@ -70,7 +70,7 @@ struct RadiantScriptUtils {
         outputs.append(contentsOf: sendScript)
         
         //output for change (if any)
-        if change != 0 {
+        if change > 0 {
             outputs.append(contentsOf: change.bytes8LE)
             
             let changeOutputScriptBytes = buildOutputScript(address: sourceAddress)
@@ -114,7 +114,7 @@ struct RadiantScriptUtils {
         outputs.append(contentsOf: zeroRef)
         
         //output for change (if any)
-        if change != 0 {
+        if change > 0 {
             outputs.append(contentsOf: change.bytes8LE)
             
             let changeOutputScriptBytes = buildOutputScript(address: sourceAddress)
