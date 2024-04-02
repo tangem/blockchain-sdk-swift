@@ -145,16 +145,3 @@ final class RadiantTests: XCTestCase {
         XCTAssertEqual(rawTransaction.hexString.lowercased(), expectedRawTransaction)
     }
 }
-
-enum Op: UInt8 {
-    case hash160 = 0xA9
-    case equal = 0x87
-    case dup = 0x76
-    case equalVerify = 0x88
-    case checkSig = 0xAC
-    case pushData1 = 0x4c
-    case pushData2 = 0x4d
-    case pushData4 = 0x4e
-    case op0 = 0x00
-    case op1 = 0x51
-}
