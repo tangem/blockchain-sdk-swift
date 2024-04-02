@@ -15,11 +15,13 @@ struct RadiantAmountUnspentTransaction {
     private(set) var unspents: [RadiantUnspentTransaction]
     
     var amountSatoshiDecimalValue: Decimal {
-        (amount.value * decimalValue).roundedDecimalNumber.decimalValue
+        let decimalValue = amount.value * decimalValue
+        return decimalValue.rounded(roundingMode: .down)
     }
     
     var feeSatoshiDecimalValue: Decimal {
-        (fee.amount.value * decimalValue).roundedDecimalNumber.decimalValue
+        let decimalValue = fee.amount.value * decimalValue
+        return decimalValue.rounded(roundingMode: .down)
     }
     
     var changeSatoshiDecimalValue: Decimal {

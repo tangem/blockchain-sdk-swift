@@ -44,13 +44,13 @@ struct RadiantScriptUtils {
             Data($0.hash.reversed()) + $0.outputIndex.bytes4LE
         }.joined())
         
-        let hashPrevouts = prevouts.sha256().sha256()
+        let hashPrevouts = prevouts.getDoubleSha256()
         txToSign.append(contentsOf: hashPrevouts)
     }
     
     func writeSequenceHash(_ unspents: [RadiantUnspentTransaction], into txToSign: inout Data) {
         let sequence = Data(repeating: UInt8(0xFF), count: 4 * unspents.count)
-        let hashSequence = sequence.sha256().sha256()
+        let hashSequence = sequence.getDoubleSha256()
         txToSign.append(contentsOf: hashSequence)
     }
     
@@ -81,7 +81,7 @@ struct RadiantScriptUtils {
             outputs.append(contentsOf: changeOutputScriptBytes)
         }
         
-        let hashOutput = outputs.sha256().sha256()
+        let hashOutput = outputs.getDoubleSha256()
         
         // Write bytes
         txToSign.append(contentsOf: hashOutput)
@@ -107,7 +107,7 @@ struct RadiantScriptUtils {
         let sendScript = buildOutputScript(address: targetAddress)
         
         // Hash of the locking script
-        let scriptHash = sendScript.sha256().sha256()
+        let scriptHash = sendScript.getDoubleSha256()
         outputs.append(contentsOf: scriptHash)
         
         outputs.append(0.bytes4LE)
@@ -122,7 +122,7 @@ struct RadiantScriptUtils {
             let changeOutputScriptBytes = buildOutputScript(address: sourceAddress)
             
             // Hash of the locking script
-            let changeScriptHash = changeOutputScriptBytes.sha256().sha256()
+            let changeScriptHash = changeOutputScriptBytes.getDoubleSha256()
             outputs.append(contentsOf: changeScriptHash)
             
             outputs.append(0.bytes4LE)
@@ -131,7 +131,7 @@ struct RadiantScriptUtils {
             outputs.append(contentsOf: zeroRef)
         }
         
-        let hashOutputHash = outputs.sha256().sha256()
+        let hashOutputHash = outputs.getDoubleSha256()
         
         // Write bytes
         txToSign.append(contentsOf: hashOutputHash)
