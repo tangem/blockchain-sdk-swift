@@ -1217,5 +1217,47 @@ class AddressesTests: XCTestCase {
     
     // MARK: - Radiant
     
-    // TODO: - Insert Radiant basic address tests
+    // Validate by https://github.com/RadiantBlockchain/radiantjs
+    func testRadiantAddressGeneration() throws {
+        let addressServiceFactory = AddressServiceFactory(blockchain: .radiant(testnet: false))
+        let addressService = addressServiceFactory.makeAddressService()
+        
+        let addr1 = try addressService.makeAddress(from: secpCompressedKey)
+        XCTAssertEqual(addr1.value, "1JjXGY5KEcbT35uAo6P9A7DebBn4DXnjdQ")
+        
+        let addr2 = try addressService.makeAddress(from: secpDecompressedKey)
+        XCTAssertEqual(addr2.value, "1JjXGY5KEcbT35uAo6P9A7DebBn4DXnjdQ")
+        
+        let anyOnePublicKey = Data(hexString: "039d645d2ce630c2a9a6dbe0cbd0a8fcb7b70241cb8a48424f25593290af2494b9")
+        let addr3 = try addressService.makeAddress(from: anyOnePublicKey)
+        
+        XCTAssertEqual(addr3.value, "12dNaXQtN5Asn2YFwT1cvciCrJa525fAe4")
+        
+        let anyTwoPublicKey = Data(hexString: "03d6fde463a4d0f4decc6ab11be24e83c55a15f68fd5db561eebca021976215ff5")
+        let addr4 = try addressService.makeAddress(from: anyTwoPublicKey)
+        
+        XCTAssertEqual(addr4.value, "166w5AGDyvMkJqfDAtLbTJeoQh6FqYCfLQ")
+    }
+    
+    // https://github.com/RadiantBlockchain/radiantjs/blob/master/test/address.js
+    func testRadiantAddressValidation() throws {
+        let addressServiceFactory = AddressServiceFactory(blockchain: .radiant(testnet: false))
+        let addressService = addressServiceFactory.makeAddressService()
+
+        XCTAssertTrue(addressService.validate("15vkcKf7gB23wLAnZLmbVuMiiVDc1Nm4a2"))
+        XCTAssertTrue(addressService.validate("1A6ut1tWnUq1SEQLMr4ttDh24wcbJ5o9TT"))
+        XCTAssertTrue(addressService.validate("1BpbpfLdY7oBS9gK7aDXgvMgr1DPvNhEB2"))
+        XCTAssertTrue(addressService.validate("1Jz2yCRd5ST1p2gUqFB5wsSQfdm3jaFfg7"))
+        XCTAssertTrue(addressService.validate("166w5AGDyvMkJqfDAtLbTJeoQh6FqYCfLQ"))
+        XCTAssertTrue(addressService.validate("12dNaXQtN5Asn2YFwT1cvciCrJa525fAe4"))
+        XCTAssertTrue(addressService.validate("1JjXGY5KEcbT35uAo6P9A7DebBn4DXnjdQ"))
+        
+        XCTAssertFalse(addressService.validate("342ftSRCvFHfCeFFBuz4xwbeqnDw6BGUey"))
+        XCTAssertFalse(addressService.validate("3QjYXhTkvuj8qPaXHTTWb5wjXhdsLAAWVy"))
+        XCTAssertFalse(addressService.validate("15vkcKf7gB23wLAnZLmbVuMiiVDc3nq4a2"))
+        XCTAssertFalse(addressService.validate("1A6ut1tWnUq1SEQLMr4ttDh24wcbj4w2TT"))
+        XCTAssertFalse(addressService.validate("1Jz2yCRd5ST1p2gUqFB5wsSQfdmEJaffg7"))
+        XCTAssertFalse(addressService.validate("1BpbpfLdY7oBS9gK7aDXgvMgr1DpvNH3B2"))
+    }
+    
 }

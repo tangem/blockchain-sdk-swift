@@ -151,7 +151,7 @@ extension RadiantWalletManager: WalletManager {
             let hashesForSign = try transactionBuilder.buildForSign(transaction: dummyTransaction)
             let signaturesForSend = hashesForSign.map { _ in Data([Byte](repeating: 0, count: 32)) }
             
-            rawTransaction = try transactionBuilder.buildForSend(transaction: dummyTransaction, signatures: signaturesForSend, isDer: false)
+            rawTransaction = try transactionBuilder.buildForSend(transaction: dummyTransaction, signatures: signaturesForSend)
         } catch {
             return .anyFail(error: error)
         }
