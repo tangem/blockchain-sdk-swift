@@ -10,11 +10,13 @@ import Foundation
 
 public struct TransactionHistoryProviderFactory {
     private let config: BlockchainSdkConfig
-    
+    private let apiOrder: APIOrder
+
     // MARK: - Init
     
-    public init(config: BlockchainSdkConfig) {
+    public init(config: BlockchainSdkConfig, apiOrder: APIOrder) {
         self.config = config
+        self.apiOrder = apiOrder
     }
     
     public func makeProvider(for blockchain: Blockchain) -> TransactionHistoryProvider? {
@@ -24,8 +26,12 @@ public struct TransactionHistoryProviderFactory {
         }
 
         let networkAssembly = NetworkProviderAssembly()
-        let input = NetworkProviderAssembly.Input(blockchainSdkConfig: config, blockchain: blockchain)
-        
+        let input = NetworkProviderAssembly.Input(
+            blockchainSdkConfig: config,
+            blockchain: blockchain,
+            apiOrder: apiOrder
+        )
+
         switch blockchain {
         case .bitcoin,
                 .litecoin,
@@ -62,15 +68,23 @@ public struct TransactionHistoryProviderFactory {
             )
         case .algorand(_, let isTestnet):
             if isTestnet {
+                guard let url = TransactionHistoryAPILinkProvider(config: config).link(for: blockchain, api: nil) else {
+                    return nil
+                }
                 return AlgorandTransactionHistoryProvider(
                     blockchain: input.blockchain,
-                    node: .init(type: .idxFullNode(isTestnet: isTestnet)),
+                    node: .init(url: url, apiKeyInfo: nil),
                     networkConfig: input.networkConfig
                 )
             } else {
+                guard let url = TransactionHistoryAPILinkProvider(config: config).link(for: blockchain, api: .nownodes) else {
+                    return nil
+                }
+                let apiKeyInfo = NownodesAPIKeysInfoProvider(apiKey: config.nowNodesApiKey).apiKeys(for: blockchain)
+
                 return AlgorandTransactionHistoryProvider(
                     blockchain: input.blockchain,
-                    node: .init(type: .idxNownodes, apiKeyValue: config.nowNodesApiKey),
+                    node: .init(url: url, apiKeyInfo: apiKeyInfo),
                     networkConfig: input.networkConfig
                 )
             }

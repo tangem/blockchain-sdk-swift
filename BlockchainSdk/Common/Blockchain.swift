@@ -527,12 +527,12 @@ extension Blockchain {
         case .ethereum:
             if isTestnet {
                 return [
-                    URL(string: "https://eth-goerli.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://goerli.infura.io/v3/\(infuraProjectId)")!,
+//                    URL(string: "https://eth-goerli.nownodes.io/\(nowNodesApiKey)")!,
+//                    URL(string: "https://goerli.infura.io/v3/\(infuraProjectId)")!,
                 ]
             } else {
                 return [
-                    URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")!,
+//                    URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")!,
                     makeGetBlockJsonRpcProvider(),
                     URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
                 ]

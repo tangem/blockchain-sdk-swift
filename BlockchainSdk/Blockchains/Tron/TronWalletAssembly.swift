@@ -13,29 +13,27 @@ struct TronWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return TronWalletManager(wallet: input.wallet).then {
-            let networks: [TronNetwork]
-            
-            if !input.blockchain.isTestnet {
-                networks = [
-                    .tronGrid(apiKey: nil),
-                    .tronGrid(apiKey: input.blockchainSdkConfig.tronGridApiKey),
-                    .nowNodes(apiKey: input.blockchainSdkConfig.nowNodesApiKey),
-                    .getBlock(
-                        apiKey: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .rest)
-                    ),
-                ]
-            } else {
-                networks = [
-                    .nile,
-                ]
-            }
-            
-            let providers: [TronJsonRpcProvider] = networks.map {
-                TronJsonRpcProvider(
-                    network: $0,
+            let providers: [TronJsonRpcProvider]
+            let config = input.blockchainSdkConfig
+            let blockchain = input.blockchain
+            let linkResolver = APILinkResolver(blockchain: blockchain, config: config)
+            let apiKeysInfoProvider = APIKeysInfoProvider(blockchain: blockchain, config: config)
+
+            providers = input.apiInfo.compactMap {
+                guard
+                    let link = linkResolver.resolve(for: $0),
+                    let url = URL(string: link)
+                else {
+                    return nil
+                }
+
+                let apiKeyInfo: APIKeyInfo? = apiKeysInfoProvider.apiKeys(for: $0.api)
+                return TronJsonRpcProvider(
+                    node: .init(url: url, apiKeyInfo: apiKeyInfo),
                     configuration: input.networkConfig
                 )
             }
+            
             $0.networkService = TronNetworkService(isTestnet: input.blockchain.isTestnet, providers: providers)
             $0.txBuilder = TronTransactionBuilder(blockchain: input.blockchain)
         }

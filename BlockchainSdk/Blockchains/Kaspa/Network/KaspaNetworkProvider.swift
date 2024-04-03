@@ -15,12 +15,10 @@ class KaspaNetworkProvider: HostProvider {
     }
     
     private let url: URL
-    private let blockchain: Blockchain
     private let provider: NetworkProvider<KaspaTarget>
     
-    init(url: URL, blockchain: Blockchain, networkConfiguration: NetworkProviderConfiguration) {
+    init(url: URL, networkConfiguration: NetworkProviderConfiguration) {
         self.url = url
-        self.blockchain = blockchain
         self.provider = NetworkProvider<KaspaTarget>(configuration: networkConfiguration)
     }
     

@@ -14,6 +14,7 @@ struct SolanaWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return SolanaWalletManager(wallet: input.wallet).then {
+            // Need to decide how to store or send websocket link or to parse and add wss prefix
             let endpoints: [RPCEndpoint]
             if input.blockchain.isTestnet {
                 endpoints = [

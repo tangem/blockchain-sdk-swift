@@ -23,23 +23,32 @@ struct BitcoinCashWalletAssembly: WalletManagerAssembly {
             
             $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
             
-            //TODO: Add testnet support. Maybe https://developers.cryptoapis.io/technical-documentation/general-information/what-we-support
+            // TODO: Add testnet support.
+            // Maybe https://developers.cryptoapis.io/technical-documentation/general-information/what-we-support
             var providers = [AnyBitcoinNetworkProvider]()
+            input.apiInfo.forEach {
+                guard let api = $0.api else {
+                    return
+                }
 
-            if let bitcoinCashAddressService = AddressServiceFactory(
-                blockchain: input.blockchain
-            ).makeAddressService() as? BitcoinCashAddressService {
-                providers.append(
-                    networkProviderAssembly.makeBitcoinCashNowNodesNetworkProvider(
-                        input: input,
-                        bitcoinCashAddressService: bitcoinCashAddressService
+                switch api {
+                case .nownodes:
+                    if let bitcoinCashAddressService = AddressServiceFactory(blockchain: input.blockchain).makeAddressService() as? BitcoinCashAddressService {
+                        providers.append(
+                            networkProviderAssembly.makeBitcoinCashNowNodesNetworkProvider(
+                                input: input,
+                                bitcoinCashAddressService: bitcoinCashAddressService
+                            )
+                        )
+                    }
+                case .blockchair:
+                    providers.append(
+                        contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .bitcoinCash, with: input)
                     )
-                )
+                default:
+                    return
+                }
             }
-            
-            providers.append(
-                contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .bitcoinCash, with: input)
-            )
             
             $0.networkService = BitcoinCashNetworkService(providers: providers)
         }

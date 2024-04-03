@@ -12,28 +12,43 @@ struct AptosWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         let chainId: AptosChainId = input.blockchain.isTestnet ? .testnet : .mainnet        
 
-        var providers: [AptosNetworkProvider] = []
-        
-        providers.append(
-            makeNetworkProvider(
-                for: .aptoslabs(isTestnet: input.blockchain.isTestnet),
-                networkConfig: input.networkConfig
-            )
-        )
-        
-        if !input.blockchain.isTestnet {
-            providers.append(contentsOf: [
-                makeNetworkProvider(
+        // ?
+        let apiInfo = input.apiInfo
+        let providers: [AptosNetworkProvider] = apiInfo.compactMap {
+            if $0.type == .public {
+                return makeNetworkProvider(
+                    for: .aptoslabs(isTestnet: input.blockchain.isTestnet),
+                    networkConfig: input.networkConfig
+                )
+            }
+
+            if input.blockchain.isTestnet {
+                return nil
+            }
+
+            guard
+                let provider = $0.provider,
+                let api = API(rawValue: provider)
+            else {
+                return nil
+            }
+
+            switch api {
+            case .getblock:
+                return makeNetworkProvider(
                     for: .getblock,
                     with: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .rest),
                     networkConfig: input.networkConfig
-                ),
-                makeNetworkProvider(
+                )
+            case .nownodes:
+                return makeNetworkProvider(
                     for: .nownodes,
                     with: input.blockchainSdkConfig.nowNodesApiKey,
                     networkConfig: input.networkConfig
-                ),
-            ])
+                )
+            default:
+                return nil
+            }
         }
         
         let txBuilder = AptosTransactionBuilder(

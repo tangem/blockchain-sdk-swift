@@ -23,6 +23,7 @@ struct ChiaWalletAssembly: WalletManagerAssembly {
                 )
             )
         } else {
+            // ?
             providers.append(contentsOf: [
                 ChiaNetworkProvider(
                     node: .init(apiKeyValue: input.blockchainSdkConfig.chiaTangemApiKeys.mainnetApiKey, endpointType: .tangem),

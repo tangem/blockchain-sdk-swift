@@ -22,6 +22,7 @@ struct HederaWalletAssembly: WalletManagerAssembly {
             mirrorNodeAPIVersion: .v1
         )
 
+        // ?
         let restProviders = targetConfigurationFactory
             .makeTargetConfigurations()
             .map { HederaRESTNetworkProvider(targetConfiguration: $0, providerConfiguration: networkConfig) }

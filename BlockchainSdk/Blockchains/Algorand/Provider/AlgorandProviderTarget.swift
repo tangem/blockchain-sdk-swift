@@ -75,8 +75,8 @@ struct AlgorandProviderTarget: TargetType {
             headers["Content-Type"] = "application/json"
         }
         
-        if case .nownodes = node.type, let headerName = node.apiKeyHeaderName {
-            headers[headerName] = node.apiKeyValue
+        if let apiKeyInfo = node.apiKeyInfo {
+            headers[apiKeyInfo.headerName] = apiKeyInfo.headerValue
         }
         
         return headers

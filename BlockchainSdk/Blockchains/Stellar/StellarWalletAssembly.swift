@@ -14,22 +14,22 @@ struct StellarWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return StellarWalletManager(wallet: input.wallet).then {
-            let urls: [String]
-            if !input.blockchain.isTestnet {
-                urls = [
-                    "https://horizon.stellar.org",
-                    "https://xlm.nownodes.io/\(input.blockchainSdkConfig.nowNodesApiKey)",
-                ]
+            let blockchain = input.blockchain
+            let links: [String]
+            if blockchain.isTestnet {
+                links = TestnetAPIURLProvider(blockchain: blockchain).urls()?.map(\.link) ?? []
             } else {
-                urls = [
-                    "https://horizon-testnet.stellar.org",
-                ]
+                let linkResolver = APILinkResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
+
+                links = input.apiInfo.compactMap(linkResolver.resolve(for:))
             }
-            
-            let providers = urls.map {
-                StellarNetworkProvider(isTestnet: input.blockchain.isTestnet, stellarSdk: StellarSDK(withHorizonUrl: $0))
+            let providers: [StellarNetworkProvider] = links.map {
+                StellarNetworkProvider(
+                    isTestnet: blockchain.isTestnet,
+                    stellarSdk: .init(withHorizonUrl: $0)
+                )
             }
-            
+
             $0.txBuilder = StellarTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, isTestnet: input.blockchain.isTestnet)
             $0.networkService = StellarNetworkService(providers: providers)
         }

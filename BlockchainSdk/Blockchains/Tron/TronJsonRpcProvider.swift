@@ -12,51 +12,51 @@ import Moya
 
 class TronJsonRpcProvider: HostProvider {
     var host: String {
-        network.url.hostOrUnknown + (network.apiKeyHeaderValue == nil ? "" : " (API KEY)")
+        node.url.absoluteString + (node.apiKeyInfo?.headerValue == nil ? "" : " (API KEY)")
     }
 
-    private let network: TronNetwork
+    private let node: TronNode
     private let provider: NetworkProvider<TronTarget>
     
-    init(network: TronNetwork, configuration: NetworkProviderConfiguration) {
-        self.network = network
+    init(node: TronNode, configuration: NetworkProviderConfiguration) {
+        self.node = node
         provider = NetworkProvider<TronTarget>(configuration: configuration)
     }
     
     func getChainParameters() -> AnyPublisher<TronGetChainParametersResponse, Error> {
-        requestPublisher(for: .getChainParameters(network: network))
+        requestPublisher(for: .getChainParameters)
     }
 
     func getAccount(for address: String) -> AnyPublisher<TronGetAccountResponse, Error> {
-        requestPublisher(for: .getAccount(address: address, network: network))
+        requestPublisher(for: .getAccount(address: address))
     }
     
     func getAccountResource(for address: String) -> AnyPublisher<TronGetAccountResourceResponse, Error> {
-        requestPublisher(for: .getAccountResource(address: address, network: network))
+        requestPublisher(for: .getAccountResource(address: address))
     }
     
     func getNowBlock() -> AnyPublisher<TronBlock, Error> {
-        requestPublisher(for: .getNowBlock(network: network))
+        requestPublisher(for: .getNowBlock)
     }
     
     func broadcastHex(_ data: Data) -> AnyPublisher<TronBroadcastResponse, Error> {
-        requestPublisher(for: .broadcastHex(data: data, network: network))
+        requestPublisher(for: .broadcastHex(data: data))
     }
     
     func tokenBalance(address: String, contractAddress: String) -> AnyPublisher<TronTriggerSmartContractResponse, Error> {
-        requestPublisher(for: .tokenBalance(address: address, contractAddress: contractAddress, network: network))
+        requestPublisher(for: .tokenBalance(address: address, contractAddress: contractAddress))
     }
     
     func contractEnergyUsage(sourceAddress: String, contractAddress: String, parameter: String) -> AnyPublisher<TronContractEnergyUsageResponse, Error> {
-        requestPublisher(for: .contractEnergyUsage(sourceAddress: sourceAddress, contractAddress: contractAddress, parameter: parameter, network: network))
+        requestPublisher(for: .contractEnergyUsage(sourceAddress: sourceAddress, contractAddress: contractAddress, parameter: parameter))
     }
     
     func transactionInfo(id: String) -> AnyPublisher<TronTransactionInfoResponse, Error> {
-        requestPublisher(for: .getTransactionInfoById(transactionID: id, network: network))
+        requestPublisher(for: .getTransactionInfoById(transactionID: id))
     }
     
     private func requestPublisher<T: Codable>(for target: TronTarget.TronTargetType) -> AnyPublisher<T, Error> {
-        return provider.requestPublisher(TronTarget(target))
+        return provider.requestPublisher(TronTarget(node: node, target))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(T.self)
             .mapError { moyaError in

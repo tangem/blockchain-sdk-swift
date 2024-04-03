@@ -26,7 +26,7 @@ struct TONProviderTarget: TargetType {
     // MARK: - TargetType
     
     var baseURL: URL {
-        return node.endpoint.url
+        return node.url
     }
     
     var path: String {
@@ -82,8 +82,8 @@ struct TONProviderTarget: TargetType {
             "Content-Type": "application/json"
         ]
         
-        if let apiKeyHeaderValue = node.endpoint.apiKeyHeaderValue, let apiKeyHeaderName = node.endpoint.apiKeyHeaderName {
-            headers[apiKeyHeaderName] = apiKeyHeaderValue
+        if let keyInfo = node.apiKeyInfo {
+            headers[keyInfo.headerName] = keyInfo.headerValue
         }
         
         return headers

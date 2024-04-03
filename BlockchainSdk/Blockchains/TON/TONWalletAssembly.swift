@@ -13,36 +13,23 @@ import BitcoinCore
 struct TONWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        var providers: [TONProvider] = []
-        
-        providers.append(
-            TONProvider(
-                node: .init(
-                    apiKeyValue: input.blockchainSdkConfig.tonCenterApiKeys.getApiKey(for: input.blockchain.isTestnet),
-                    endpointType: .toncenter(input.blockchain.isTestnet)
-                ),
+        let blockchain = input.blockchain
+        let config = input.blockchainSdkConfig
+
+        let linkResolver = APILinkResolver(blockchain: blockchain, config: config)
+        let apiKeyInfoProvider = APIKeysInfoProvider(blockchain: blockchain, config: config)
+        let providers: [TONProvider] = input.apiInfo.compactMap {
+            guard
+                let link = linkResolver.resolve(for: $0),
+                let url = URL(string: link)
+            else {
+                return nil
+            }
+
+            let apiKeyInfo = apiKeyInfoProvider.apiKeys(for: $0.api)
+            return TONProvider(
+                node: .init(url: url, apiKeyInfo: apiKeyInfo),
                 networkConfig: input.networkConfig
-            )
-        )
-        
-        if !input.blockchain.isTestnet {
-            providers.append(
-                contentsOf: [
-                    TONProvider(
-                        node: .init(
-                            apiKeyValue: input.blockchainSdkConfig.nowNodesApiKey,
-                            endpointType: .nownodes
-                        ),
-                        networkConfig: input.networkConfig
-                    ),
-                    TONProvider(
-                        node: .init(
-                            apiKeyValue: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .jsonRpc),
-                            endpointType: .getblock
-                        ),
-                        networkConfig: input.networkConfig
-                    )
-                ]
             )
         }
         

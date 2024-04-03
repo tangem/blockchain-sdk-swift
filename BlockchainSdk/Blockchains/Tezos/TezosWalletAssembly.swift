@@ -15,8 +15,18 @@ struct TezosWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return try TezosWalletManager(wallet: input.wallet).then {
             $0.txBuilder = try TezosTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, curve: input.blockchain.curve)
+
+            let linkResolver = APILinkResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
+            let providers: [TezosJsonRpcProvider] = input.apiInfo.compactMap {
+                guard let link = linkResolver.resolve(for: $0) else {
+                    return nil
+                }
+
+                return TezosJsonRpcProvider(host: link, configuration: input.networkConfig)
+            }
+            
             $0.networkService = TezosNetworkService(
-                providers: TezosApi.makeAllProviders(configuration: input.networkConfig)
+                providers: providers
             )
         }
     }

@@ -12,32 +12,36 @@ import TangemSdk
 struct AlgorandWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         var providers: [AlgorandNetworkProvider] = []
-        
-        if !input.blockchain.isTestnet {
-            providers.append(contentsOf: [
+
+        let blockchain = input.blockchain
+        let networkConfig = input.networkConfig
+
+        if blockchain.isTestnet {
+            providers = TestnetAPIURLProvider(blockchain: blockchain).urls()?.compactMap {
                 AlgorandNetworkProvider(
-                    node: .init(
-                        type: .nownodes,
-                        apiKeyValue: input.blockchainSdkConfig.nowNodesApiKey
-                    ),
-                    networkConfig: input.networkConfig
-                ),
-                AlgorandNetworkProvider(
-                    node: .init(
-                        type: .getblock,
-                        apiKeyValue: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .rest)
-                    ),
-                    networkConfig: input.networkConfig
-                ),
-            ])
+                    node: .init(url: $0.url, apiKeyInfo: nil),
+                    networkConfig: networkConfig
+                )
+            } ?? []
+        } else {
+            let config = input.blockchainSdkConfig
+            let linkResolver = APILinkResolver(blockchain: blockchain, config: config)
+            let apiKeyInfoProvider = APIKeysInfoProvider(blockchain: blockchain, config: config)
+
+            providers = input.apiInfo.compactMap {
+                guard
+                    let link = linkResolver.resolve(for: $0),
+                    let url = URL(string: link)
+                else {
+                    return nil
+                }
+
+                let apiKeyInfo = apiKeyInfoProvider.apiKeys(for: $0.api)
+                return AlgorandNetworkProvider(
+                    node: .init(url: url, apiKeyInfo: apiKeyInfo),
+                    networkConfig: networkConfig)
+            }
         }
-        
-        providers.append(
-            AlgorandNetworkProvider(
-                node: .init(type: .fullNode(isTestnet: input.blockchain.isTestnet), apiKeyValue: nil),
-                networkConfig: input.networkConfig
-            )
-        )
 
         let transactionBuilder = AlgorandTransactionBuilder(
             publicKey: input.wallet.publicKey.blockchainKey, 

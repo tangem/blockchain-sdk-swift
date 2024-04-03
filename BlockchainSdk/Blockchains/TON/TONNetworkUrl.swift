@@ -1,5 +1,5 @@
 //
-//  TONNetwork.swift
+//  TONNetworkNode.swift
 //  BlockchainSdk
 //
 //  Created by skibinalexander on 12.01.2023.
@@ -8,50 +8,17 @@
 
 import Foundation
 
-enum TONEndpointType {
-    case toncenter(_ testnet: Bool)
-    case getblock
-    case nownodes
-}
-
-struct TONEndpoint {
-    public let url: URL
-    
-    public let apiKeyHeaderName: String?
-    public let apiKeyHeaderValue: String?
-    
-    public init(url: URL, apiKeyHeaderName: String? = nil, apiKeyHeaderValue: String? = nil) {
-        self.url = url
-        
-        self.apiKeyHeaderName = apiKeyHeaderName
-        self.apiKeyHeaderValue = apiKeyHeaderValue
-    }
+struct APIKeyInfo {
+    let headerName: String
+    let headerValue: String
 }
 
 struct TONNetworkNode {
-    let apiKeyValue: String
-    let endpointType: TONEndpointType
+    let url: URL
+    let apiKeyInfo: APIKeyInfo?
     
-    var endpoint: TONEndpoint {
-        switch endpointType {
-        case .toncenter(let testnet):
-            let url = testnet ? URL(string: "https://testnet.toncenter.com/api/v2/")! : URL(string: "https://toncenter.com/api/v2/")!
-            
-            return TONEndpoint(
-                url: url,
-                apiKeyHeaderName: Constants.xApiKeyHeaderName,
-                apiKeyHeaderValue: apiKeyValue
-            )
-        case .getblock:
-            return TONEndpoint(url: URL(string: "https://go.getblock.io/\(apiKeyValue)/")!)
-        case .nownodes:
-            return TONEndpoint(url: URL(string: "https://ton.nownodes.io/\(apiKeyValue)/")!)
-        }
+    init(url: URL, apiKeyInfo: APIKeyInfo? = nil) {
+        self.url = url
+        self.apiKeyInfo = apiKeyInfo
     }
-    
-    init(apiKeyValue: String? = nil, endpointType: TONEndpointType) {
-        self.apiKeyValue = apiKeyValue ?? ""
-        self.endpointType = endpointType
-    }
-    
 }

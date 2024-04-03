@@ -26,25 +26,26 @@ struct RavencoinWalletAssembly: WalletManagerAssembly {
                 bitcoinManager: bitcoinManager,
                 addresses: input.wallet.addresses
             )
-            
-            let hosts: [String]
-            
-            if input.blockchain.isTestnet {
-                hosts = [
-                    "https://testnet.ravencoin.network/api/"
-                ]
+
+            let blockchain = input.blockchain
+            let providers: [AnyBitcoinNetworkProvider]
+            if blockchain.isTestnet {
+                providers = TestnetAPIURLProvider(blockchain: blockchain).urls()?.map {
+                    RavencoinNetworkProvider(host: $0.link, provider: .init(configuration: input.networkConfig))
+                        .eraseToAnyBitcoinNetworkProvider()
+                } ?? []
             } else {
-                hosts = [
-                    "https://api.ravencoin.org/api/",
-                    "https://explorer.rvn.zelcore.io/api/"
-                ]
+                let linkResolver = APILinkResolver(blockchain: blockchain, config: input.blockchainSdkConfig)
+                providers = input.apiInfo.compactMap {
+                    guard let link = linkResolver.resolve(for: $0) else {
+                        return nil
+                    }
+
+                    return RavencoinNetworkProvider(host: link, provider: .init(configuration: input.networkConfig))
+                        .eraseToAnyBitcoinNetworkProvider()
+                }
             }
 
-            let providers: [AnyBitcoinNetworkProvider] = hosts.map {
-                RavencoinNetworkProvider(host: $0, provider: .init(configuration: input.networkConfig))
-                    .eraseToAnyBitcoinNetworkProvider()
-            }
-            
             $0.networkService = BitcoinNetworkService(providers: providers)
         }
     }

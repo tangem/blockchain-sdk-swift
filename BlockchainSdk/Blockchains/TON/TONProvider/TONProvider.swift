@@ -12,7 +12,7 @@ import Combine
 struct TONProvider: HostProvider {
     /// Blockchain API host
     var host: String {
-        node.endpoint.url.hostOrUnknown
+        node.url.hostOrUnknown
     }
     
     /// Configuration connection node for provider

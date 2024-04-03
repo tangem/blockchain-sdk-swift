@@ -27,10 +27,27 @@ struct DashWalletAssembly: WalletManagerAssembly {
             
             var providers: [AnyBitcoinNetworkProvider] = []
             
-            providers.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
-            providers.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider())
-            providers.append(contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .dash, with: input))
-            providers.append(networkProviderAssembly.makeBlockcypherNetworkProvider(endpoint: .dash, with: input).eraseToAnyBitcoinNetworkProvider())
+            input.apiInfo.forEach {
+                guard
+                    $0.type == .private,
+                    let api = $0.api
+                else {
+                    return
+                }
+
+                switch api {
+                case .nownodes:
+                    providers.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
+                case .getblock:
+                    providers.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider())
+                case .blockchair:
+                    providers.append(contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .dash, with: input))
+                case .blockcypher:
+                    providers.append(networkProviderAssembly.makeBlockcypherNetworkProvider(endpoint: .dash, with: input).eraseToAnyBitcoinNetworkProvider())
+                default:
+                    return
+                }
+            }
             
             $0.networkService = BitcoinNetworkService(providers: providers)
         }

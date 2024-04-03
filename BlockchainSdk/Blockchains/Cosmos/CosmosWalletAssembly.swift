@@ -11,8 +11,9 @@ import TangemSdk
 
 struct CosmosWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
+        let blockchain = input.blockchain
         let cosmosChain: CosmosChain
-        switch input.blockchain {
+        switch blockchain {
         case .cosmos(let testnet):
             cosmosChain = .cosmos(testnet: testnet)
         case .terraV1:
@@ -22,10 +23,23 @@ struct CosmosWalletAssembly: WalletManagerAssembly {
         default:
             throw WalletError.empty
         }
-        
-        let urls = cosmosChain.urls(for: input.blockchainSdkConfig)
-        let providers = urls.map {
-            CosmosRestProvider(url: $0, configuration: input.networkConfig)
+
+        let config = input.blockchainSdkConfig
+        let linkResolver = APILinkResolver(blockchain: blockchain, config: config)
+
+        let providers: [CosmosRestProvider]
+        if blockchain.isTestnet {
+            providers = TestnetAPIURLProvider(blockchain: blockchain).urls()?.map {
+                CosmosRestProvider(url: $0.url.absoluteString, configuration: input.networkConfig)
+            } ?? []
+        } else {
+            providers = input.apiInfo.compactMap {
+                guard let link = linkResolver.resolve(for: $0) else {
+                    return nil
+                }
+
+                return CosmosRestProvider(url: link, configuration: input.networkConfig)
+            }
         }
         let networkService = CosmosNetworkService(cosmosChain: cosmosChain, providers: providers)
         let publicKey = try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress()

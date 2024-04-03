@@ -17,33 +17,46 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
             
             $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
             
-            var providers = [AnyBitcoinNetworkProvider]()
-            
-            providers.append(
-                networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider()
-            )
-            
-            if !input.blockchain.isTestnet {
-                providers.append(
-                    networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider()
-                )
+            let apiInfo = input.apiInfo
+            var newProviders = [AnyBitcoinNetworkProvider]()
+            apiInfo.forEach {
+                guard
+                    $0.type == .private,
+                    let provider = $0.provider,
+                    let api = API(rawValue: provider)
+                else {
+                    return
+                }
+
+                switch api {
+                case .nownodes:
+                    newProviders.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
+                case .getblock:
+                    if input.blockchain.isTestnet {
+                        break
+                    }
+
+                    newProviders.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider())
+                case .blockchair:
+                    newProviders.append(
+                        contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(
+                            endpoint: .bitcoin(testnet: input.blockchain.isTestnet),
+                            with: input
+                        )
+                    )
+                case .blockcypher:
+                    newProviders.append(
+                        networkProviderAssembly.makeBlockcypherNetworkProvider(
+                            endpoint: .bitcoin(testnet: input.blockchain.isTestnet),
+                            with: input
+                        ).eraseToAnyBitcoinNetworkProvider()
+                    )
+                default:
+                    break
+                }
             }
             
-            providers.append(
-                contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(
-                    endpoint: .bitcoin(testnet: input.blockchain.isTestnet),
-                    with: input
-                )
-            )
-            
-            providers.append(
-                networkProviderAssembly.makeBlockcypherNetworkProvider(
-                    endpoint: .bitcoin(testnet: input.blockchain.isTestnet),
-                    with: input
-                ).eraseToAnyBitcoinNetworkProvider()
-            )
-            
-            $0.networkService = BitcoinNetworkService(providers: providers)
+            $0.networkService = BitcoinNetworkService(providers: newProviders)
         }
     }
     

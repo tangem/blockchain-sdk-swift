@@ -9,34 +9,18 @@
 import Foundation
 import Moya
 
-enum RosettaUrl {
-    case getBlockRosetta(apiKey: String)
-    case tangemRosetta
-    
-    var url: String {
-        switch self {
-        case .getBlockRosetta(let apiKey):
-            return "https://go.getblock.io/\(apiKey)"
-        case .tangemRosetta:
-            return "https://ada.tangem.com"
-        }
+struct RosettaTarget: TargetType {
+    enum RosettaTargetType {
+        case address(addressBody: RosettaAddressBody)
+        case submitTransaction(submitBody: RosettaSubmitBody)
+        case coins(addressBody: RosettaAddressBody)
     }
-}
-
-enum RosettaTarget: TargetType {
-    case address(baseUrl: RosettaUrl, addressBody: RosettaAddressBody)
-    case submitTransaction(baseUrl: RosettaUrl, submitBody: RosettaSubmitBody)
-    case coins(baseUrl: RosettaUrl, addressBody: RosettaAddressBody)
     
-    var baseURL: URL {
-        switch self {
-        case .address(let url, _), .submitTransaction(let url, _), .coins(let url, _):
-            return URL(string: url.url)!
-        }
-    }
+    let baseURL: URL
+    let target: RosettaTargetType
     
     var path: String {
-        switch self {
+        switch target {
         case .address:
             return "/account/balance"
         case .submitTransaction:
@@ -47,7 +31,7 @@ enum RosettaTarget: TargetType {
     }
     
     var method: Moya.Method {
-        switch self {
+        switch target {
         case .address, .submitTransaction, .coins:
             return .post
         }
@@ -60,10 +44,10 @@ enum RosettaTarget: TargetType {
     var task: Task {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
-        switch self {
-        case .address(_, let body), .coins(_, let body):
+        switch target {
+        case .address(let body), .coins(let body):
             return .requestCustomJSONEncodable(body, encoder: encoder)
-        case .submitTransaction(_, let body):
+        case .submitTransaction(let body):
             return .requestCustomJSONEncodable(body, encoder: encoder)
         }
     }

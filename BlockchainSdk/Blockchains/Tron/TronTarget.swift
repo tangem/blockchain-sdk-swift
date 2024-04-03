@@ -11,26 +11,28 @@ import Moya
 
 struct TronTarget: TargetType {
     enum TronTargetType {
-        case getChainParameters(network: TronNetwork)
-        case getAccount(address: String, network: TronNetwork)
-        case getAccountResource(address: String, network: TronNetwork)
-        case getNowBlock(network: TronNetwork)
-        case broadcastHex(data: Data, network: TronNetwork)
-        case tokenBalance(address: String, contractAddress: String, network: TronNetwork)
-        case contractEnergyUsage(sourceAddress: String, contractAddress: String, parameter: String, network: TronNetwork)
-        case getTransactionInfoById(transactionID: String, network: TronNetwork)
+        case getChainParameters
+        case getAccount(address: String)
+        case getAccountResource(address: String)
+        case getNowBlock
+        case broadcastHex(data: Data)
+        case tokenBalance(address: String, contractAddress: String)
+        case contractEnergyUsage(sourceAddress: String, contractAddress: String, parameter: String)
+        case getTransactionInfoById(transactionID: String)
     }
     
+    let node: TronNode
     let type: TronTargetType
     
-    init(_ type: TronTargetType) {
+    init(node: TronNode, _ type: TronTargetType) {
+        self.node = node
         self.type = type
     }
-    
+
     var baseURL: URL {
-        type.network.url
+        node.url
     }
-    
+
     var path: String {
         switch type {
         case .getChainParameters:
@@ -58,15 +60,15 @@ struct TronTarget: TargetType {
         switch type {
         case .getChainParameters:
             return .requestPlain
-        case .getAccount(let address, _), .getAccountResource(let address, _):
+        case .getAccount(let address), .getAccountResource(let address):
             let request = TronGetAccountRequest(address: address, visible: true)
             return .requestJSONEncodable(request)
         case .getNowBlock:
             return .requestPlain
-        case .broadcastHex(let data, _):
+        case .broadcastHex(let data):
             let request = TronBroadcastRequest(transaction: data.hexString.lowercased())
             return .requestJSONEncodable(request)
-        case .tokenBalance(let address, let contractAddress, _):
+        case .tokenBalance(let address, let contractAddress):
             let hexAddress = TronAddressService.toHexForm(address, length: 64) ?? ""
             
             let request = TronTriggerSmartContractRequest(
@@ -77,7 +79,7 @@ struct TronTarget: TargetType {
                 visible: true
             )
             return .requestJSONEncodable(request)
-        case .contractEnergyUsage(let sourceAddress, let contractAddress, let parameter, _):
+        case .contractEnergyUsage(let sourceAddress, let contractAddress, let parameter):
             let request = TronTriggerSmartContractRequest(
                 owner_address: sourceAddress,
                 contract_address: contractAddress,
@@ -86,7 +88,7 @@ struct TronTarget: TargetType {
                 visible: true
             )
             return .requestJSONEncodable(request)
-        case .getTransactionInfoById(let transactionID, _):
+        case .getTransactionInfoById(let transactionID):
             let request = TronTransactionInfoRequest(value: transactionID)
             return .requestJSONEncodable(request)
         }
@@ -98,33 +100,10 @@ struct TronTarget: TargetType {
             "Content-Type": "application/json",
         ]
         
-        if let apiKeyHeaderName = type.network.apiKeyHeaderName, let apiKeyHeaderValue = type.network.apiKeyHeaderValue {
-            headers[apiKeyHeaderName] = apiKeyHeaderValue
+        if let apiKeyInfo = node.apiKeyInfo {
+            headers[apiKeyInfo.headerName] = apiKeyInfo.headerValue
         }
         
         return headers
-    }
-}
-
-fileprivate extension TronTarget.TronTargetType {
-    var network: TronNetwork {
-        switch self {
-        case .getChainParameters(let network):
-            return network
-        case .getAccount(_, let network):
-            return network
-        case .getAccountResource(_, let network):
-            return network
-        case .getNowBlock(let network):
-            return network
-        case .broadcastHex(_, let network):
-            return network
-        case .tokenBalance(_, _, let network):
-            return network
-        case .contractEnergyUsage(_, _, _, let network):
-            return network
-        case .getTransactionInfoById(_, let network):
-            return network
-        }
     }
 }

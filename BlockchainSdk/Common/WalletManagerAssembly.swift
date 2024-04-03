@@ -15,6 +15,7 @@ struct WalletManagerAssemblyInput {
     let pairPublicKey: Data?
     let blockchainSdkConfig: BlockchainSdkConfig
     let blockchainSdkDependencies: BlockchainSdkDependencies
+    let apiOrder: APIOrder
 }
 
 extension WalletManagerAssemblyInput: NetworkProviderAssemblyInput {
@@ -24,6 +25,10 @@ extension WalletManagerAssemblyInput: NetworkProviderAssemblyInput {
 
     var networkConfig: NetworkProviderConfiguration {
         blockchainSdkConfig.networkProviderConfiguration(for: blockchain)
+    }
+
+    var apiInfo: [APIInfo] {
+        apiOrder.items[blockchain.codingKey] ?? []
     }
 }
 
