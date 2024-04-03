@@ -614,7 +614,6 @@
 		EF2BC62729DAD65F003D3F18 /* RavencoinTransactionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2BC62629DAD65F003D3F18 /* RavencoinTransactionInfo.swift */; };
 		EF2BC62929DAD93A003D3F18 /* RavencoinWalletUTXO.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2BC62829DAD93A003D3F18 /* RavencoinWalletUTXO.swift */; };
 		EF2BC63229DC111E003D3F18 /* RavencoinWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2BC63129DC111D003D3F18 /* RavencoinWalletAssembly.swift */; };
-		EF2EB7A82A963E250036DA24 /* BlockBookTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2EB7A72A963E250036DA24 /* BlockBookTransactionHistoryMapper.swift */; };
 		EF31EA1429DC31E000A59FBE /* RavencoinTestNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF31EA1129DC31E000A59FBE /* RavencoinTestNetworkParams.swift */; };
 		EF31EA1529DC31E000A59FBE /* RavencoinMainNetworkParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF31EA1229DC31E000A59FBE /* RavencoinMainNetworkParams.swift */; };
 		EF31EA1629DC31E000A59FBE /* RavencoinWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF31EA1329DC31E000A59FBE /* RavencoinWalletManager.swift */; };
@@ -1392,7 +1391,6 @@
 		EF2BC62629DAD65F003D3F18 /* RavencoinTransactionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RavencoinTransactionInfo.swift; sourceTree = "<group>"; };
 		EF2BC62829DAD93A003D3F18 /* RavencoinWalletUTXO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RavencoinWalletUTXO.swift; sourceTree = "<group>"; };
 		EF2BC63129DC111D003D3F18 /* RavencoinWalletAssembly.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RavencoinWalletAssembly.swift; sourceTree = "<group>"; };
-		EF2EB7A72A963E250036DA24 /* BlockBookTransactionHistoryMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockBookTransactionHistoryMapper.swift; sourceTree = "<group>"; };
 		EF31EA1129DC31E000A59FBE /* RavencoinTestNetworkParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RavencoinTestNetworkParams.swift; sourceTree = "<group>"; };
 		EF31EA1229DC31E000A59FBE /* RavencoinMainNetworkParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RavencoinMainNetworkParams.swift; sourceTree = "<group>"; };
 		EF31EA1329DC31E000A59FBE /* RavencoinWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RavencoinWalletManager.swift; sourceTree = "<group>"; };
@@ -3486,7 +3484,6 @@
 				EFB9523C2A6FDB2A00996D16 /* TransactionHistoryProvider.swift */,
 				EFB9523F2A6FEF1700996D16 /* TransactionRecord.swift */,
 				EF193BFD2A77ED9E0048C0C3 /* TransactionHistoryPages.swift */,
-				EF2EB7A72A963E250036DA24 /* BlockBookTransactionHistoryMapper.swift */,
 				B633EA282B8FD7B200F11BFF /* BlockBookTransactionHistoryTotalPageCountExtractor.swift */,
 				B67CB2762BAAD30D00371AF1 /* TransactionHistoryMapper.swift */,
 			);
@@ -4430,7 +4427,6 @@
 				5DC7DD6824408266008F83F2 /* XrpResponse.swift in Sources */,
 				2D24F5C42B6D2C7100D502A0 /* AptosResponse.swift in Sources */,
 				DC5E65052B1650F400E81AA5 /* OP_MIN.swift in Sources */,
-				EF2EB7A82A963E250036DA24 /* BlockBookTransactionHistoryMapper.swift in Sources */,
 				5D7D243D25136254001B9A4F /* Serializer.swift in Sources */,
 				B6181AE32B757AA50046A976 /* HederaError.swift in Sources */,
 				EF5C753C2BAC4D4200811198 /* URLSessionWebSocketTask.Message+CustomStringConvertible.swift in Sources */,
