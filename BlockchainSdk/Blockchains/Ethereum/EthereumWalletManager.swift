@@ -12,6 +12,21 @@ import Combine
 import TangemSdk
 import Moya
 
+class WalletCoreEthereumTransactionBuilder {
+    enum Destination {
+        case user(String)
+        case contract(String)
+    }
+    
+    func buildForSign(transaction: Transaction, destination: Destination) throws -> Data {
+        Data()
+    }
+    
+    func buildForSend(transaction: EthereumTransaction, hash: Data, signature: Data) throws -> Data {
+        Data()
+    }
+}
+
 class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, TransactionFeeProvider {
     var txBuilder: EthereumTransactionBuilder!
     var networkService: EthereumNetworkService!

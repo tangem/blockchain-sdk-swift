@@ -12,26 +12,43 @@ import Combine
 import TangemSdk
 import Moya
 
-@available(iOS 13.0, *)
+// ETH Network
+// gas price
+// gas limit
+
+// Builder
+// build and sign for WC
+// 
+
+struct ETHTransaction {
+    enum Types {
+        case sendCoin // send to another user
+        case sendToken
+        
+        case sendData // WC, express, approve
+    }
+}
+
+//@available(iOS 13.0, *)
 public protocol EthereumGasLoader: AnyObject {
     func getGasPrice() -> AnyPublisher<BigUInt, Error>
     func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error>
 }
 
-@available(iOS 13.0, *)
+//@available(iOS 13.0, *)
 public protocol EthereumTransactionSigner: AnyObject {
     func sign(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<String, Error>
 }
 
-@available(iOS 13.0, *)
+//@available(iOS 13.0, *)
 public protocol EthereumTransactionProcessor {
-    var initialNonce: Int { get }
-    func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompiledEthereumTransaction, Error>
-    func buildForSend(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
+//    var initialNonce: Int { get }
+//    func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompiledEthereumTransaction, Error>
+//    func buildForSend(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error>
     func buildForApprove(spender: String, amount: Decimal) -> Data
 }
 
-@available(iOS 13.0, *)
+//@available(iOS 13.0, *)
 public protocol EthereumNetworkProvider {
     /// - Parameters:
     ///   - destination: Destination address. For token it'll be a contract address. For coin it'll be a receiver(user) address
