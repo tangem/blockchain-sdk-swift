@@ -94,6 +94,20 @@ final class PolygonTransactionHistoryMapper {
             return .unknown
         }
     }
+
+    /// Zero token transfers are most likely spam transactions, see
+    /// https://polygonscan.com/tx/0x227a8dc404acb8659d87c75a2ac2427a1f86f802f2f9a8376dcfa2537a9abdf0 for example.
+    private func isLikelySpamTransaction(
+        amount: Decimal,
+        amountType: Amount.AmountType
+    ) -> Bool {
+        switch amountType {
+        case .token where amount.isZero:
+            return true
+        case .coin, .reserve, .token:
+            return false
+        }
+    }
 }
 
 // MARK: - TransactionHistoryMapper protocol conformance
@@ -120,6 +134,10 @@ extension PolygonTransactionHistoryMapper: TransactionHistoryMapper {
 
             guard let transactionAmount = mapAmount(from: transaction, amountType: amountType) else {
                 Log.log("Transaction with invalid value \(transaction) received")
+                return nil
+            }
+
+            if isLikelySpamTransaction(amount: transactionAmount, amountType: amountType) {
                 return nil
             }
 
