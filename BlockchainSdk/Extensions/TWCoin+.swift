@@ -104,7 +104,8 @@ extension CoinType {
              .polygonZkEVM,
              .moonriver,
              .mantle,
-             .flare:
+             .flare,
+             .taraxa:
             // Blockchains that are not in WalletCore yet
             return nil
         }

@@ -131,6 +131,8 @@ public struct ExternalLinkProviderFactory {
             return MantleExternalLinkProvider(isTestnet: isTestnet)
         case .flare:
             return FlareExternalLinkProvider(isTestnet: isTestnet)
+        case .taraxa:
+            return TaraxaExternalLinkProvider(isTestnet: isTestnet)
         }
     }
 }

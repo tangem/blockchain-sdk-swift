@@ -55,7 +55,8 @@ public struct AddressServiceFactory {
                 .polygonZkEVM,
                 .moonriver,
                 .mantle,
-                .flare:
+                .flare,
+                .taraxa:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()

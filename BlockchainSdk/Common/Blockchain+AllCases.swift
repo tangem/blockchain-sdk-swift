@@ -71,6 +71,7 @@ public extension Blockchain {
         case .moonriver: break
         case .mantle: break
         case .flare: break
+        case .taraxa: break
             // READ BELOW:
             //
             // Did you get a compilation error here? If so, add your new blockchain to the array below
@@ -135,6 +136,7 @@ public extension Blockchain {
             .moonriver(testnet: false),
             .mantle(testnet: false),
             .flare(testnet: false),
+            .taraxa(testnet: false),
         ]
     }
 }

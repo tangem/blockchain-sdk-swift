@@ -74,6 +74,7 @@ struct EstimationFeeAddressFactory {
                 .moonriver,
                 .mantle,
                 .flare,
+                .taraxa,
                 // Polkadot-like
                 .polkadot, .kusama, .azero,
                 // Cosmos-like

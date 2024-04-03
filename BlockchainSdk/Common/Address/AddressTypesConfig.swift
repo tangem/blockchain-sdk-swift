@@ -73,7 +73,8 @@ struct AddressTypesConfig {
              .polygonZkEVM,
              .moonriver,
              .mantle,
-             .flare:
+             .flare,
+             .taraxa:
             return [.default]
         }
     }

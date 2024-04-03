@@ -34,7 +34,7 @@ public struct DerivationConfigV1: DerivationConfig {
         case .ethereum, .ethereumPoW, .disChain, .octa,
                 .decimal, .shibarium, .areon, .playa3ullGames,
                 .pulsechain, .aurora, .manta, .zkSync,
-                .polygonZkEVM, .mantle, .flare:
+                .polygonZkEVM, .mantle, .flare, .taraxa:
             return "m/44'/60'/0'/0/0"
         case .ethereumClassic:
             return "m/44'/61'/0'/0/0"

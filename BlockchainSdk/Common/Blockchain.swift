@@ -73,6 +73,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case moonriver(testnet: Bool)
     case mantle(testnet: Bool)
     case flare(testnet: Bool)
+    case taraxa(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -106,7 +107,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .polygonZkEVM(let testnet),
                 .moonriver(let testnet),
                 .mantle(let testnet),
-                .flare(let testnet):
+                .flare(let testnet),
+                .taraxa(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -207,7 +209,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .polygonZkEVM,
                 .moonriver,
                 .mantle,
-                .flare:
+                .flare,
+                .taraxa:
             return 18
         case .cardano,
                 .xrp,
@@ -343,6 +346,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "MNT"
         case .flare:
             return isTestnet ? "C2FLR" : "FLR"
+        case .taraxa:
+            return "TARA"
         }
     }
 
@@ -473,7 +478,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .polygonZkEVM,
                 .moonriver,
                 .mantle,
-                .flare:
+                .flare,
+                .taraxa:
             return true
         case .fantom,
                 .tron,
@@ -533,6 +539,7 @@ extension Blockchain {
         case .moonriver: return isTestnet ? 1287 : 1285
         case .mantle: return isTestnet ? 5001 : 5000
         case .flare: return isTestnet ? 114 : 14
+        case .taraxa: return isTestnet ? 842 : 841
         default: return nil
         }
     }
@@ -929,6 +936,16 @@ extension Blockchain {
                     URL(string: "https://flare.solidifi.app/ext/C/rpc")!,
                 ]
             }
+        case .taraxa:
+            if isTestnet {
+                return [
+                    URL(string: "https://rpc.testnet.taraxa.io")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://rpc.mainnet.taraxa.io")!,
+                ]
+            }
         default:
             return nil
         }
@@ -1059,6 +1076,7 @@ extension Blockchain: Codable {
         case .moonriver: return "moonriver"
         case .mantle: return "mantle"
         case .flare: return "flare"
+        case .taraxa: return "taraxa"
         }
     }
 
@@ -1140,6 +1158,7 @@ extension Blockchain: Codable {
         case "moonriver": self = .moonriver(testnet: isTestnet)
         case "mantle": self = .mantle(testnet: isTestnet)
         case "flare": self = .flare(testnet: isTestnet)
+        case "taraxa": self = .taraxa(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1225,6 +1244,7 @@ extension Blockchain {
         case "moonriver": return .moonriver(testnet: isTestnet)
         case "mantle": return .mantle(testnet: isTestnet)
         case "flare": return .flare(testnet: isTestnet)
+        case "taraxa": return .taraxa(testnet: isTestnet)
         default: return nil
         }
     }
@@ -1271,7 +1291,8 @@ extension Blockchain {
                 .polygonZkEVM,
                 .moonriver,
                 .mantle,
-                .flare:
+                .flare,
+                .taraxa:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
