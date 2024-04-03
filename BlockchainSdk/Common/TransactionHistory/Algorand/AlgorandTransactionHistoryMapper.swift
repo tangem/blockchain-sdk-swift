@@ -34,6 +34,7 @@ extension AlgorandTransactionHistoryMapper {
             
             return TransactionRecord(
                 hash: id,
+                index: 0,
                 source: .single(
                     .init(address: $0.sender, amount: decimalAmountValue)
                 ),
