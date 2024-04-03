@@ -9,8 +9,9 @@
 import Foundation
 import TangemSdk
 
-struct TronTransactionHistoryMapper {
+final class TronTransactionHistoryMapper {
     private let blockchain: Blockchain
+    private var transactionIndicesCounter: [String: Int] = [:]
 
     init(blockchain: Blockchain) {
         self.blockchain = blockchain
@@ -156,10 +157,13 @@ struct TronTransactionHistoryMapper {
         let type = transactionType(transaction, amountType: amountType)
         let tokenTransfers = tokenTransfers(transaction)
 
+        let index = transactionIndicesCounter[hash, default: 0]
+        transactionIndicesCounter[hash] = index + 1
+
         return transactionInfos.map { transactionInfo in
             return TransactionRecord(
                 hash: hash,
-                index: 0,   // TODO: Andrey Fedorov - Add support for indexed transactions (IOS-6340)
+                index: index,
                 source: .single(transactionInfo.source),
                 destination: .single(transactionInfo.destination),
                 fee: fee,
@@ -278,6 +282,10 @@ extension TronTransactionHistoryMapper: TransactionHistoryMapper {
                     }
                 }
             }
+    }
+
+    func reset() {
+        transactionIndicesCounter.removeAll()
     }
 }
 
