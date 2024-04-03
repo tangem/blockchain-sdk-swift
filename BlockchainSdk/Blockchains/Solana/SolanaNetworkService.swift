@@ -147,8 +147,8 @@ class SolanaNetworkService {
         return Just(rent).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
     
-    func computeUnitPrice(accounts: [String], destinationAccountExists: Bool) -> AnyPublisher<UInt64, Error> {
-        .justWithError(output: destinationAccountExists ? 1_000_000 : 500_000)
+    func computeUnitPrice(destinationAccountExists: Bool) -> UInt64 {
+        destinationAccountExists ? 1_000_000 : 500_000
     }
     
     func minimalBalanceForRentExemption(dataLength: UInt64 = 0) -> AnyPublisher<Decimal, Error> {
