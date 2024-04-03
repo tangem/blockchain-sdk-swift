@@ -70,6 +70,8 @@ extension RadiantNetworkService {
     enum Constants {
         /*
          This minimal rate fee for successful transaction from constant
+         -  Relying on answers from blockchain developers and costs from the official application (Electron-Radiant).
+         -  10000 satoshi per byte.
          in https://github.com/RadiantBlockchain/radiantjs/blob/master/lib/transaction/transaction.js#L78
         */
         
