@@ -9,8 +9,11 @@
 import Foundation
 import Combine
 
-final class AlgorandTransactionHistoryProvider {
-    
+final class AlgorandTransactionHistoryProvider<Mapper> where
+    Mapper: TransactionHistoryMapper,
+    Mapper.Response == [AlgorandTransactionHistory.Response.Item]
+{
+
     /// Configuration connection node for provider
     private let node: AlgorandProviderNode
     
@@ -18,20 +21,20 @@ final class AlgorandTransactionHistoryProvider {
     
     /// Network provider of blockchain
     private let network: NetworkProvider<AlgorandIndexProviderTarget>
-    private let mapper: AlgorandTransactionHistoryMapper
-    
+    private let mapper: Mapper
+
     private var page: TransactionHistoryLinkedPage? = nil
 
     // MARK: - Init
     
     init(
-        blockchain: Blockchain,
         node: AlgorandProviderNode,
-        networkConfig: NetworkProviderConfiguration
+        networkConfig: NetworkProviderConfiguration,
+        mapper: Mapper
     ) {
         self.node = node
         self.network = .init(configuration: networkConfig)
-        self.mapper = .init(blockchain: blockchain)
+        self.mapper = mapper
     }
 }
 
@@ -65,10 +68,10 @@ extension AlgorandTransactionHistoryProvider: TransactionHistoryProvider {
             .map(AlgorandTransactionHistory.Response.self, using: decoder)
             .withWeakCaptureOf(self)
             .tryMap { provider, response in
-                let records = provider.mapper.mapToTransactionRecords(
+                let records = try provider.mapper.mapToTransactionRecords(
                     response.transactions,
-                    amountType: .coin,
-                    currentWalletAddress: request.address
+                    walletAddress: request.address,
+                    amountType: .coin
                 )
                 
                 provider.page = .init(next: response.nextToken)

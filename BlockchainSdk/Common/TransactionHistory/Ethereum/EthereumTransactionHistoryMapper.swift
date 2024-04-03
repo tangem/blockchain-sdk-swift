@@ -21,10 +21,14 @@ struct EthereumTransactionHistoryMapper {
     }
 }
 
-// MARK: - BlockBookTransactionHistoryMapper
+// MARK: - TransactionHistoryMapper protocol conformance
 
-extension EthereumTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
-    func mapToTransactionRecords(_ response: BlockBookAddressResponse, amountType: Amount.AmountType) -> [TransactionRecord] {
+extension EthereumTransactionHistoryMapper: TransactionHistoryMapper {
+    func mapToTransactionRecords(
+        _ response: BlockBookAddressResponse,
+        walletAddress: String,
+        amountType: Amount.AmountType
+    ) throws -> [TransactionRecord] {
         guard let transactions = response.transactions else {
             return []
         }
