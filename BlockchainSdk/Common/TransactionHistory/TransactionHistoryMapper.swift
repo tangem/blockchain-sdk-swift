@@ -15,7 +15,7 @@ protocol TransactionHistoryMapper {
         _ response: Response,
         walletAddress: String,
         amountType: Amount.AmountType
-    ) throws -> TransactionHistory.Response
+    ) throws -> [TransactionRecord]
 
     func reset()
 }
