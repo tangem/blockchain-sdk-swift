@@ -66,7 +66,10 @@ public indirect enum Blockchain: Equatable, Hashable {
     case playa3ullGames
     case pulsechain(testnet: Bool)
     case aurora(testnet: Bool)
-
+    case manta(testnet: Bool)
+    case zkSync(testnet: Bool)
+    case moonbeam(testnet: Bool)
+    case polygonZkEVM(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -93,7 +96,11 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .xdc(let testnet),
                 .areon(let testnet),
                 .pulsechain(let testnet),
-                .aurora(let testnet):
+                .aurora(let testnet),
+                .manta(let testnet),
+                .zkSync(let testnet),
+                .moonbeam(let testnet),
+                .polygonZkEVM(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -187,7 +194,11 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .areon,
                 .playa3ullGames,
                 .pulsechain,
-                .aurora:
+                .aurora,
+                .manta,
+                .zkSync,
+                .moonbeam,
+                .polygonZkEVM:
             return 18
         case .cardano,
                 .xrp,
@@ -224,7 +235,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "LTC"
         case .stellar:
             return "XLM"
-        case .ethereum, .arbitrum, .optimism, .aurora:
+        case .ethereum, .arbitrum, .optimism, .aurora,
+                .manta, .zkSync, .polygonZkEVM:
             return "ETH"
         case .ethereumClassic:
             return "ETC"
@@ -314,6 +326,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "3ULL"
         case .pulsechain:
             return isTestnet ? "tPLS" : "PLS"
+        case .moonbeam:
+            return isTestnet ? "DEV" : "GLMR"
         }
     }
 
@@ -372,6 +386,10 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .pulsechain:
             let testnetSuffix = testnetSuffix + (isTestnet ? " v4" : "")
             return "Pulsechain" + testnetSuffix
+        case .polygonZkEVM:
+            return "Polygon zkEVM" + testnetSuffix
+        case .zkSync:
+            return "zkSync Era" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -433,7 +451,11 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .areon,
                 .playa3ullGames,
                 .pulsechain,
-                .aurora:
+                .aurora,
+                .manta,
+                .zkSync,
+                .moonbeam,
+                .polygonZkEVM:
             return true
         case .fantom,
                 .tron,
@@ -486,6 +508,10 @@ extension Blockchain {
         case .playa3ullGames: return 3011
         case .pulsechain: return isTestnet ? 943 : 369
         case .aurora: return isTestnet ? 1313161555 : 1313161554
+        case .manta: return isTestnet ? 3441005 : 169
+        case .zkSync: return isTestnet ? 300 : 324 
+        case .moonbeam: return isTestnet ? 1287 : 1284
+        case .polygonZkEVM: return isTestnet ? 2442 : 1101
         default: return nil
         }
     }
@@ -542,28 +568,28 @@ extension Blockchain {
             ]
         case .rsk:
             return [
-                URL(string: "https://public-node.rsk.co/")!,
+                URL(string: "https://public-node.rsk.co")!,
                 URL(string: "https://rsk.nownodes.io/\(nowNodesApiKey)")!,
                 makeGetBlockJsonRpcProvider(),
             ]
         case .bsc:
             if isTestnet {
                 return [
-                    URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545/")!,
+                    URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545")!,
                 ]
             } else {
                 // https://docs.fantom.foundation/api/public-api-endpoints
                 return [
-                    URL(string: "https://bsc-dataseed.binance.org/")!,
+                    URL(string: "https://bsc-dataseed.binance.org")!,
                     URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")!,
                     makeGetBlockJsonRpcProvider(),
-                    URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)/")!,
+                    URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)")!,
                 ]
             }
         case .polygon:
             if isTestnet {
                 return [
-                    URL(string: "https://rpc-mumbai.maticvigil.com/")!,
+                    URL(string: "https://rpc-amoy.polygon.technology")!,
                 ]
             } else {
                 // https://wiki.polygon.technology/docs/operate/network-rpc-endpoints
@@ -595,14 +621,14 @@ extension Blockchain {
         case .fantom:
             if isTestnet {
                 return [
-                    URL(string: "https://rpc.testnet.fantom.network/")!,
+                    URL(string: "https://rpc.testnet.fantom.network")!,
                 ]
             } else {
                 return [
                     URL(string: "https://ftm.nownodes.io/\(nowNodesApiKey)")!,
                     makeGetBlockJsonRpcProvider(),
-                    URL(string: "https://rpc.ftm.tools/")!,
-                    URL(string: "https://rpcapi.fantom.network/")!,
+                    URL(string: "https://rpc.ftm.tools")!,
+                    URL(string: "https://rpcapi.fantom.network")!,
                     URL(string: "https://fantom-mainnet.public.blastapi.io")!,
                     URL(string: "https://rpc.ankr.com/fantom")!,
                 ]
@@ -618,6 +644,10 @@ extension Blockchain {
                     URL(string: "https://arb1.arbitrum.io/rpc")!,
                     URL(string: "https://arbitrum.nownodes.io/\(nowNodesApiKey)")!,
                     URL(string: "https://arbitrum-mainnet.infura.io/v3/\(infuraProjectId)")!,
+                    URL(string: "https://1rpc.io/arb")!,
+                    URL(string: "https://arbitrum-one-rpc.publicnode.com")!,
+                    URL(string: "https://rpc.ankr.com/arbitrum")!,
+                    URL(string: "https://arbitrum-one.public.blastapi.io")!,
                 ]
             }
         case .gnosis:
@@ -681,21 +711,21 @@ extension Blockchain {
         case .decimal(let isTestnet):
             if isTestnet {
                 return [
-                    URL(string: "https://testnet-val.decimalchain.com/web3/")!
+                    URL(string: "https://testnet-val.decimalchain.com/web3")!
                 ]
             } else {
                 return [
-                    URL(string: "https://node.decimalchain.com/web3/")!,
-                    URL(string: "https://node1-mainnet.decimalchain.com/web3/")!,
-                    URL(string: "https://node2-mainnet.decimalchain.com/web3/")!,
-                    URL(string: "https://node3-mainnet.decimalchain.com/web3/")!,
-                    URL(string: "https://node4-mainnet.decimalchain.com/web3/")!,
+                    URL(string: "https://node.decimalchain.com/web3")!,
+                    URL(string: "https://node1-mainnet.decimalchain.com/web3")!,
+                    URL(string: "https://node2-mainnet.decimalchain.com/web3")!,
+                    URL(string: "https://node3-mainnet.decimalchain.com/web3")!,
+                    URL(string: "https://node4-mainnet.decimalchain.com/web3")!,
                 ]
             }
         case .xdc(let isTestnet):
             if isTestnet {
                 return [
-                    URL(string: "https://rpc.apothem.network/")!
+                    URL(string: "https://rpc.apothem.network")!
                 ]
             } else {
                 return [
@@ -712,60 +742,128 @@ extension Blockchain {
         case .shibarium(let isTestnet):
             if isTestnet {
                 return [
-                    URL(string: "https://puppynet.shibrpc.com/")!
+                    URL(string: "https://puppynet.shibrpc.com")!
                 ]
             } else {
                 return [
-                    URL(string: "https://www.shibrpc.com/")!,
+                    URL(string: "https://www.shibrpc.com")!,
                     URL(string: "https://shib.nownodes.io/\(nowNodesApiKey)")!
                 ]
             }
         case .areon:
             if isTestnet {
                 return [
-                    URL(string: "https://testnet-rpc.areon.network/")!,
-                    URL(string: "https://testnet-rpc2.areon.network/")!,
-                    URL(string: "https://testnet-rpc3.areon.network/")!,
-                    URL(string: "https://testnet-rpc4.areon.network/")!,
-                    URL(string: "https://testnet-rpc5.areon.network/")!,
+                    URL(string: "https://testnet-rpc.areon.network")!,
+                    URL(string: "https://testnet-rpc2.areon.network")!,
+                    URL(string: "https://testnet-rpc3.areon.network")!,
+                    URL(string: "https://testnet-rpc4.areon.network")!,
+                    URL(string: "https://testnet-rpc5.areon.network")!,
                 ]
             } else {
                 return [
-                    URL(string: "https://mainnet-rpc.areon.network/")!,
-                    URL(string: "https://mainnet-rpc2.areon.network/")!,
-                    URL(string: "https://mainnet-rpc3.areon.network/")!,
-                    URL(string: "https://mainnet-rpc4.areon.network/")!,
-                    URL(string: "https://mainnet-rpc5.areon.network/")!,
+                    URL(string: "https://mainnet-rpc.areon.network")!,
+                    URL(string: "https://mainnet-rpc2.areon.network")!,
+                    URL(string: "https://mainnet-rpc3.areon.network")!,
+                    URL(string: "https://mainnet-rpc4.areon.network")!,
+                    URL(string: "https://mainnet-rpc5.areon.network")!,
                 ]
             }
         case .playa3ullGames:
             return [
-                URL(string: "https://api.mainnet.playa3ull.games/")!,
+                URL(string: "https://api.mainnet.playa3ull.games")!,
             ]
         case .pulsechain:
             if isTestnet {
                 return [
-                    URL(string: "https://rpc.v4.testnet.pulsechain.com/")!,
-                    URL(string: "https://pulsechain-testnet.publicnode.com/")!,
-                    URL(string: "https://rpc-testnet-pulsechain.g4mm4.io/")!,
+                    URL(string: "https://rpc.v4.testnet.pulsechain.com")!,
+                    URL(string: "https://pulsechain-testnet.publicnode.com")!,
+                    URL(string: "https://rpc-testnet-pulsechain.g4mm4.io")!,
                 ]
             } else {
                 return [
-                    URL(string: "https://rpc.pulsechain.com/")!,
-                    URL(string: "https://pulsechain.publicnode.com/")!,
-                    URL(string: "https://rpc-pulsechain.g4mm4.io/")!,
+                    URL(string: "https://rpc.pulsechain.com")!,
+                    URL(string: "https://pulsechain.publicnode.com")!,
+                    URL(string: "https://rpc-pulsechain.g4mm4.io")!,
                 ]
             }
         case .aurora:
             if isTestnet {
                 return [
-                    URL(string: "https://testnet.aurora.dev/")!,
+                    URL(string: "https://testnet.aurora.dev")!,
                 ]
             } else {
                 return [
-                    URL(string: "https://mainnet.aurora.dev/")!,
-                    URL(string: "https://aurora.drpc.org/")!,
-                    URL(string: "https://1rpc.io/aurora")!, // please don't add final slash for consistency, it will break the endpoint
+                    URL(string: "https://mainnet.aurora.dev")!,
+                    URL(string: "https://aurora.drpc.org")!,
+                    URL(string: "https://1rpc.io/aurora")!,
+                ]
+            }
+        case .manta:
+            if isTestnet {
+                return [
+                    URL(string: "https://pacific-rpc.testnet.manta.network/http/")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://manta-pacific.drpc.org/")!,
+                    URL(string: "https://pacific-rpc.manta.network/http/")!,
+                    URL(string: "https://1rpc.io/manta/")!,
+                ]
+            }
+        case .zkSync:
+            if isTestnet {
+                return [
+                    URL(string: "https://sepolia.era.zksync.dev/")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://mainnet.era.zksync.io/")!,
+                    URL(string: "https://zksync.nownodes.io/\(nowNodesApiKey)")!,
+                    makeGetBlockJsonRpcProvider(),
+                    URL(string: "https://zksync-era.blockpi.network/v1/rpc/public/")!,
+                    URL(string: "https://1rpc.io/zksync2-era/")!,
+                    URL(string: "https://zksync.meowrpc.com/")!,
+                    URL(string: "https://zksync.drpc.org/")!,
+                ]
+            }
+        case .moonbeam:
+            if isTestnet {
+                return [
+                    URL(string: "https://moonbase-alpha.public.blastapi.io/")!,
+                    URL(string: "https://moonbase-rpc.dwellir.com/")!,
+                    URL(string: "https://rpc.api.moonbase.moonbeam.network/")!,
+                    URL(string: "https://moonbase.unitedbloc.com/")!,
+                    URL(string: "https://moonbeam-alpha.api.onfinality.io/public/")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://rpc.api.moonbeam.network/")!,
+                    URL(string: "https://moonbeam.nownodes.io/\(nowNodesApiKey)")!,
+                    makeGetBlockJsonRpcProvider(),
+                    URL(string: "https://1rpc.io/glmr/")!,
+                    URL(string: "https://moonbeam.public.blastapi.io/")!,
+                    URL(string: "https://moonbeam-rpc.dwellir.com/")!,
+                    URL(string: "https://moonbeam-mainnet.gateway.pokt.network/v1/lb/629a2b5650ec8c0039bb30f0/")!,
+                    URL(string: "https://moonbeam.unitedbloc.com/")!,
+                    URL(string: "https://moonbeam-rpc.publicnode.com/")!,
+                    URL(string: "https://rpc.ankr.com/moonbeam/")!,
+                ]
+            }
+        case .polygonZkEVM:
+            if isTestnet {
+                return [
+                    URL(string: "https://rpc.cardona.zkevm-rpc.com/")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://zkevm-rpc.com/")!,
+                    makeGetBlockJsonRpcProvider(),
+                    URL(string: "https://1rpc.io/polygon/zkevm/")!,
+                    URL(string: "https://polygon-zkevm.drpc.org/")!,
+                    URL(string: "https://polygon-zkevm-mainnet.public.blastapi.io/")!,
+                    URL(string: "https://polygon-zkevm.blockpi.network/v1/rpc/public/")!,
+                    URL(string: "https://rpc.polygon-zkevm.gateway.fm/")!,
+                    URL(string: "https://api.zan.top/node/v1/polygonzkevm/mainnet/public/")!,
                 ]
             }
         default:
@@ -891,6 +989,10 @@ extension Blockchain: Codable {
         case .playa3ullGames: return "playa3ull-games"
         case .pulsechain: return "pulsechain"
         case .aurora: return "aurora"
+        case .manta: return "manta-network"
+        case .zkSync: return "zksync"
+        case .moonbeam: return "moonbeam"
+        case .polygonZkEVM: return "polygon-zkevm"
         }
     }
 
@@ -965,6 +1067,10 @@ extension Blockchain: Codable {
         case "playa3ull-games": self = .playa3ullGames
         case "pulsechain": self = .pulsechain(testnet: isTestnet)
         case "aurora": self = .aurora(testnet: isTestnet)
+        case "manta-network": self = .manta(testnet: isTestnet)
+        case "zksync": self = .zkSync(testnet: isTestnet)
+        case "moonbeam": self = .moonbeam(testnet: isTestnet)
+        case "polygon-zkevm": self = .polygonZkEVM(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1043,6 +1149,10 @@ extension Blockchain {
         case "playa3ull-games": return .playa3ullGames
         case "pulsechain": return .pulsechain(testnet: isTestnet)
         case "aurora": return .aurora(testnet: isTestnet)
+        case "manta-network": return .manta(testnet: isTestnet)
+        case "zksync": return .zkSync(testnet: isTestnet)
+        case "moonbeam": return .moonbeam(testnet: isTestnet)
+        case "polygon-zkevm": return.polygonZkEVM(testnet: isTestnet)
         default: return nil
         }
     }
@@ -1082,7 +1192,11 @@ extension Blockchain {
                 .areon,
                 .playa3ullGames,
                 .pulsechain,
-                .aurora:
+                .aurora,
+                .manta,
+                .zkSync,
+                .moonbeam,
+                .polygonZkEVM:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
