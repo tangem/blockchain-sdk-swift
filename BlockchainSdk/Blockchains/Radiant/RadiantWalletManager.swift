@@ -109,8 +109,6 @@ private extension RadiantWalletManager {
     }
     
     func calculateFee(for estimatedFeePerKb: Decimal, for estimateSize: Int) -> Fee {
-        let estimateSize = 226
-        
         let decimalValue = wallet.blockchain.decimalValue
         let perKbDecimalValue = (estimatedFeePerKb * decimalValue).rounded(blockchain: wallet.blockchain)
         let decimalFeeValue = Decimal(estimateSize) / Constants.perKbRate * perKbDecimalValue
@@ -137,32 +135,23 @@ extension RadiantWalletManager: WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        let dummyTransactionFee: Fee = Fee(.init(with: wallet.blockchain, value: 0))
-        
-        let dummyTransaction = Transaction(
-            amount: amount,
-            fee: dummyTransactionFee,
-            sourceAddress: wallet.address,
-            destinationAddress: destination,
-            changeAddress: wallet.address
-        )
-        
-        let rawTransaction: Data
-        
-        do {
-            let hashesForSign = try transactionBuilder.buildForSign(transaction: dummyTransaction)
-            let signaturesForSend = hashesForSign.map { _ in Data([Byte](repeating: 0, count: 32)) }
-            
-            rawTransaction = try transactionBuilder.buildForSend(transaction: dummyTransaction, signatures: signaturesForSend)
-        } catch {
-            return .anyFail(error: error)
-        }
-        
         return networkService
             .estimatedFee()
             .withWeakCaptureOf(self)
-            .map { (walletManager, estimatedFeeDecimalValue) -> [Fee] in
-                let estimatedSize = rawTransaction.count
+            .tryMap { (walletManager, estimatedFeeDecimalValue) -> [Fee] in
+                let dummyTransactionFee: Fee = Fee(
+                    .init(with: walletManager.wallet.blockchain, value: estimatedFeeDecimalValue.minimalSatoshiPerByte)
+                )
+                
+                let dummyTransaction = Transaction(
+                    amount: amount,
+                    fee: dummyTransactionFee,
+                    sourceAddress: walletManager.wallet.address,
+                    destinationAddress: destination,
+                    changeAddress: walletManager.wallet.address
+                )
+                
+                let estimatedSize = try walletManager.transactionBuilder.estimateTransactionSize(transaction: dummyTransaction)
                 
                 let minimalFee = walletManager.calculateFee(for: estimatedFeeDecimalValue.minimalSatoshiPerByte, for: estimatedSize)
                 let normalFee = walletManager.calculateFee(for: estimatedFeeDecimalValue.normalSatoshiPerByte, for: estimatedSize)
