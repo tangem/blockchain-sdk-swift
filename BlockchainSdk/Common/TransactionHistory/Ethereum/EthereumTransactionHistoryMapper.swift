@@ -43,6 +43,7 @@ extension EthereumTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
             
             return TransactionRecord(
                 hash: transaction.txid,
+                index: 0,   // TODO: Andrey Fedorov - Add support for indexed transactions (IOS-6340)
                 source: .single(source),
                 destination: .single(destination),
                 fee: fee,
