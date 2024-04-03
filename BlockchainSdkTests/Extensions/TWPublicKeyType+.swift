@@ -50,7 +50,8 @@ extension PublicKeyType {
                 .polygonZkEVM,
                 .moonriver,
                 .mantle,
-                .flare:
+                .flare,
+                .taraxa:
             self = PublicKeyType.secp256k1Extended
         case .stellar,
                 .ton,
