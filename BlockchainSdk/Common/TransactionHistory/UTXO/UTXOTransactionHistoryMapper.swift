@@ -39,6 +39,7 @@ extension UTXOTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
             
             return TransactionRecord(
                 hash: transaction.txid,
+                index: 0,
                 source: sourceType(vin: transaction.compat.vin),
                 destination: destinationType(vout: transaction.compat.vout),
                 fee: Fee(Amount(with: blockchain, value: fee)),
