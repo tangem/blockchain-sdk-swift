@@ -9,13 +9,14 @@
 import Foundation
 import TangemSdk
 
-struct EthereumTransactionHistoryMapper {
+final class EthereumTransactionHistoryMapper {
     private let blockchain: Blockchain
-    
+    private var transactionIndicesCounter: [String: Int] = [:]
+
     private var decimalValue: Decimal {
         blockchain.decimalValue
     }
-    
+
     init(blockchain: Blockchain) {
         self.blockchain = blockchain
     }
@@ -58,6 +59,10 @@ extension EthereumTransactionHistoryMapper: TransactionHistoryMapper {
                 tokenTransfers: tokenTransfers(transaction)
             )
         }
+    }
+
+    func reset() {
+        transactionIndicesCounter.removeAll()
     }
 }
 
