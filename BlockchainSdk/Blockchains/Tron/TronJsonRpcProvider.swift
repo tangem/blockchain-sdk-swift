@@ -12,13 +12,13 @@ import Moya
 
 class TronJsonRpcProvider: HostProvider {
     var host: String {
-        node.url.absoluteString + (node.apiKeyInfo?.headerValue == nil ? "" : " (API KEY)")
+        node.url.absoluteString + (node.keyInfo?.headerValue == nil ? "" : " (API KEY)")
     }
 
-    private let node: TronNode
+    private let node: NodeInfo
     private let provider: NetworkProvider<TronTarget>
     
-    init(node: TronNode, configuration: NetworkProviderConfiguration) {
+    init(node: NodeInfo, configuration: NetworkProviderConfiguration) {
         self.node = node
         provider = NetworkProvider<TronTarget>(configuration: configuration)
     }

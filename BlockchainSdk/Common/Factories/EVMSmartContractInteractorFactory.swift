@@ -27,7 +27,7 @@ public struct EVMSmartContractInteractorFactory {
                 blockchain: blockchain,
                 blockchainSdkConfig: config,
                 networkConfig: config.networkProviderConfiguration(for: blockchain), 
-                apiOrder: .init(items: [blockchain.codingKey: apiInfo])
+                apiOrder: [blockchain.codingKey: apiInfo]
             )),
             blockcypherProvider: nil,
             abiEncoder: WalletCoreABIEncoder()

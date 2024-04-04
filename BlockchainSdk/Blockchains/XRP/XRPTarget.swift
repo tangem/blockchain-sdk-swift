@@ -9,20 +9,15 @@
 import Foundation
 import Moya
 
-struct XRPNode {
-    let url: URL
-    let apiKeyInfo: APIKeyInfo?
-}
-
 struct XRPTarget: TargetType {
-    private let node: XRPNode
+    private let node: NodeInfo
     private let target: XRPTargetType
 
     var baseURL: URL {
         node.url
     }
 
-    init(node: XRPNode, target: XRPTargetType) {
+    init(node: NodeInfo, target: XRPTargetType) {
         self.node = node
         self.target = target
     }
@@ -81,7 +76,7 @@ struct XRPTarget: TargetType {
     public var headers: [String: String]? {
         var headers = ["Content-Type": "application/json"]
 
-        if let apiKeyInfo = node.apiKeyInfo {
+        if let apiKeyInfo = node.keyInfo {
             headers[apiKeyInfo.headerName] = apiKeyInfo.headerValue
         }
 

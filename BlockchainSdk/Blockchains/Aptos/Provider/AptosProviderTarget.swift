@@ -16,18 +16,18 @@ import Moya
 struct AptosProviderTarget: TargetType {
     // MARK: - Properties
     
-    private let node: AptosProviderNode
+    private let node: NodeInfo
     private let targetType: TargetType
     
     // MARK: - Init
     
-    init(node: AptosProviderNode, targetType: TargetType) {
+    init(node: NodeInfo, targetType: TargetType) {
         self.node = node
         self.targetType = targetType
     }
     
     var baseURL: URL {
-        return node.url
+        node.url
     }
     
     var isAccountsResourcesRequest: Bool {
@@ -86,8 +86,8 @@ struct AptosProviderTarget: TargetType {
             "Content-Type": "application/json"
         ]
         
-        if case .nownodes = node.type, let apiKeyHeaderName = node.apiKeyHeaderName {
-            headers[apiKeyHeaderName] = node.apiKeyValue
+        if let keyInfo = node.keyInfo {
+            headers[keyInfo.headerName] = keyInfo.headerValue
         }
         
         return headers

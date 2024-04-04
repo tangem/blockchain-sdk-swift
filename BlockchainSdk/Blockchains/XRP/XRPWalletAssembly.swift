@@ -17,34 +17,12 @@ struct XRPWalletAssembly: WalletManagerAssembly {
 
             let blockchain = input.blockchain
             let config = input.blockchainSdkConfig
-            let linkResolver = APILinkResolver(blockchain: blockchain, config: config)
-            let apiKeyInfoProvider = APIKeysInfoProvider(blockchain: blockchain, config: config)
-            let providers: [XRPNetworkProvider] = input.apiInfo.compactMap {
-                guard
-                    let link = linkResolver.resolve(for: $0),
-                    let url = URL(string: link)
-                else {
-                    return nil
+            let providers: [XRPNetworkProvider] = APIResolver(blockchain: blockchain, config: config)
+                .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
+                    XRPNetworkProvider(node: nodeInfo, configuration: input.networkConfig)
                 }
 
-                let apiKeyInfo = apiKeyInfoProvider.apiKeys(for: $0.api)
-                return XRPNetworkProvider(
-                    node: .init(url: url, apiKeyInfo: apiKeyInfo),
-                    configuration: input.networkConfig
-                )
-            }
             $0.networkService = XRPNetworkService(providers: providers)
-//                providers: [
-//                    XRPNetworkProvider(baseUrl: .xrpLedgerFoundation, configuration: input.networkConfig),
-//                    XRPNetworkProvider(baseUrl: .nowNodes(apiKey: input.blockchainSdkConfig.nowNodesApiKey), configuration: input.networkConfig),
-//                    XRPNetworkProvider(
-//                        baseUrl: .getBlock(
-//                            apiKey: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .jsonRpc)
-//                        ),
-//                        configuration: input.networkConfig
-//                    ),
-//            ]
-//            )
         }
     }
     

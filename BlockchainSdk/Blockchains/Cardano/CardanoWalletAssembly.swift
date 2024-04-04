@@ -18,11 +18,10 @@ struct CardanoWalletAssembly: WalletManagerAssembly {
             let networkConfig = input.networkConfig
 
             var providers = [AnyCardanoNetworkProvider]()
-            let linkResolver = APILinkResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
+            let linkResolver = APINodeInfoResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
             providers = input.apiInfo.compactMap {
                 guard 
-                    let link = linkResolver.resolve(for: $0),
-                    let url = URL(string: link),
+                    let nodeInfo = linkResolver.resolve(for: $0),
                     let api = $0.api
                 else {
                     return nil
@@ -31,14 +30,14 @@ struct CardanoWalletAssembly: WalletManagerAssembly {
                 switch api {
                 case .getblock, .tangemRosetta:
                     return RosettaNetworkProvider(
-                        url: url,
+                        url: nodeInfo.url,
                         configuration: networkConfig,
                         cardanoResponseMapper: cardanoResponseMapper
                     )
                     .eraseToAnyCardanoNetworkProvider()
                 case .adalite:
                     return AdaliteNetworkProvider(
-                        url: url,
+                        url: nodeInfo.url,
                         configuration: networkConfig, 
                         cardanoResponseMapper: cardanoResponseMapper
                     ).eraseToAnyCardanoNetworkProvider()

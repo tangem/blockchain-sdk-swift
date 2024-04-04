@@ -73,7 +73,7 @@ public struct TransactionHistoryProviderFactory {
                 }
                 return AlgorandTransactionHistoryProvider(
                     blockchain: input.blockchain,
-                    node: .init(url: url, apiKeyInfo: nil),
+                    node: .init(url: url),
                     networkConfig: input.networkConfig
                 )
             } else {
@@ -84,7 +84,7 @@ public struct TransactionHistoryProviderFactory {
 
                 return AlgorandTransactionHistoryProvider(
                     blockchain: input.blockchain,
-                    node: .init(url: url, apiKeyInfo: apiKeyInfo),
+                    node: .init(url: url, keyInfo: apiKeyInfo),
                     networkConfig: input.networkConfig
                 )
             }

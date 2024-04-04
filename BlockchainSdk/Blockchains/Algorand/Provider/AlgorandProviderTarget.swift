@@ -12,18 +12,18 @@ import Moya
 struct AlgorandProviderTarget: TargetType {
     // MARK: - Properties
     
-    private let node: AlgorandProviderNode
+    private let node: NodeInfo
     private let targetType: TargetType
     
     // MARK: - Init
     
-    init(node: AlgorandProviderNode, targetType: TargetType) {
+    init(node: NodeInfo, targetType: TargetType) {
         self.node = node
         self.targetType = targetType
     }
     
     var baseURL: URL {
-        return node.url
+        node.url
     }
 
     var path: String {
@@ -75,7 +75,7 @@ struct AlgorandProviderTarget: TargetType {
             headers["Content-Type"] = "application/json"
         }
         
-        if let apiKeyInfo = node.apiKeyInfo {
+        if let apiKeyInfo = node.keyInfo {
             headers[apiKeyInfo.headerName] = apiKeyInfo.headerValue
         }
         

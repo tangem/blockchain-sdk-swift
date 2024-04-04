@@ -28,7 +28,7 @@ extension WalletManagerAssemblyInput: NetworkProviderAssemblyInput {
     }
 
     var apiInfo: [APIInfo] {
-        apiOrder.items[blockchain.codingKey] ?? []
+        apiOrder[blockchain.codingKey] ?? []
     }
 }
 

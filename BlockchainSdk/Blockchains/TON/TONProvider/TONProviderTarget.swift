@@ -13,12 +13,12 @@ struct TONProviderTarget: TargetType {
     
     // MARK: - Properties
     
-    private let node: TONNetworkNode
+    private let node: NodeInfo
     private let targetType: TargetType
     
     // MARK: - Init
     
-    init(node: TONNetworkNode, targetType: TargetType) {
+    init(node: NodeInfo, targetType: TargetType) {
         self.node = node
         self.targetType = targetType
     }
@@ -82,7 +82,7 @@ struct TONProviderTarget: TargetType {
             "Content-Type": "application/json"
         ]
         
-        if let keyInfo = node.apiKeyInfo {
+        if let keyInfo = node.keyInfo {
             headers[keyInfo.headerName] = keyInfo.headerValue
         }
         

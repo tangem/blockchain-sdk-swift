@@ -21,10 +21,10 @@ struct TronTarget: TargetType {
         case getTransactionInfoById(transactionID: String)
     }
     
-    let node: TronNode
+    let node: NodeInfo
     let type: TronTargetType
     
-    init(node: TronNode, _ type: TronTargetType) {
+    init(node: NodeInfo, _ type: TronTargetType) {
         self.node = node
         self.type = type
     }
@@ -100,7 +100,7 @@ struct TronTarget: TargetType {
             "Content-Type": "application/json",
         ]
         
-        if let apiKeyInfo = node.apiKeyInfo {
+        if let apiKeyInfo = node.keyInfo {
             headers[apiKeyInfo.headerName] = apiKeyInfo.headerValue
         }
         

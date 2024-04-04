@@ -12,12 +12,12 @@ import Moya
 struct AlgorandIndexProviderTarget: TargetType {
     // MARK: - Properties
     
-    private let node: AlgorandProviderNode
+    private let node: NodeInfo
     private let targetType: TargetType
     
     // MARK: - Init
     
-    init(node: AlgorandProviderNode, targetType: TargetType) {
+    init(node: NodeInfo, targetType: TargetType) {
         self.node = node
         self.targetType = targetType
     }
@@ -61,7 +61,7 @@ struct AlgorandIndexProviderTarget: TargetType {
             "Accept": "application/json"
         ]
         
-        if let apiKeyInfo = node.apiKeyInfo {
+        if let apiKeyInfo = node.keyInfo {
             headers[apiKeyInfo.headerName] = apiKeyInfo.headerValue
         }
         

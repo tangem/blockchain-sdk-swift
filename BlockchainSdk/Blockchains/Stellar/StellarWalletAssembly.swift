@@ -15,18 +15,10 @@ struct StellarWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return StellarWalletManager(wallet: input.wallet).then {
             let blockchain = input.blockchain
-            let links: [String]
-            if blockchain.isTestnet {
-                links = TestnetAPIURLProvider(blockchain: blockchain).urls()?.map(\.link) ?? []
-            } else {
-                let linkResolver = APILinkResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
-
-                links = input.apiInfo.compactMap(linkResolver.resolve(for:))
-            }
-            let providers: [StellarNetworkProvider] = links.map {
+            let providers: [StellarNetworkProvider] = APIResolver(blockchain: blockchain, config: input.blockchainSdkConfig).resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
                 StellarNetworkProvider(
                     isTestnet: blockchain.isTestnet,
-                    stellarSdk: .init(withHorizonUrl: $0)
+                    stellarSdk: .init(withHorizonUrl: nodeInfo.link)
                 )
             }
 

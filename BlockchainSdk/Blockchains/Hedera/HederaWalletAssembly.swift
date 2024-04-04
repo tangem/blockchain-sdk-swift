@@ -16,16 +16,10 @@ struct HederaWalletAssembly: WalletManagerAssembly {
         let networkConfig = input.networkConfig
         let dependencies = input.blockchainSdkDependencies
 
-        let targetConfigurationFactory = HederaTargetConfigurationFactory(
-            isTestnet: isTestnet,
-            sdkConfig: input.blockchainSdkConfig,
-            mirrorNodeAPIVersion: .v1
-        )
-
-        // ?
-        let restProviders = targetConfigurationFactory
-            .makeTargetConfigurations()
-            .map { HederaRESTNetworkProvider(targetConfiguration: $0, providerConfiguration: networkConfig) }
+        let restProviders = APIResolver(blockchain: blockchain, config: input.blockchainSdkConfig)
+            .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
+                HederaRESTNetworkProvider(targetConfiguration: nodeInfo, providerConfiguration: networkConfig)
+            }
 
         let consensusProvider = HederaConsensusNetworkProvider(isTestnet: isTestnet)
 

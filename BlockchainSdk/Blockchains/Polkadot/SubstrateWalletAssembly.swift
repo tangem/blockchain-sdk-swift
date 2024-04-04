@@ -19,24 +19,11 @@ struct SubstrateWalletAssembly: WalletManagerAssembly {
         return PolkadotWalletManager(network: network, wallet: input.wallet).then {
             let blockchain = input.blockchain
             let networkConfig = input.networkConfig
-            let providers: [PolkadotJsonRpcProvider]
-            if blockchain.isTestnet {
-                providers = TestnetAPIURLProvider(blockchain: blockchain).urls()?.map {
-                    PolkadotJsonRpcProvider(url: $0.url, configuration: networkConfig)
-                } ?? []
-            } else {
-                let linkResolver = APILinkResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
-                 providers = input.apiInfo.compactMap {
-                    guard
-                        let link = linkResolver.resolve(for: $0),
-                        let url = URL(string: link)
-                    else {
-                        return nil
-                    }
-
-                    return PolkadotJsonRpcProvider(url: url, configuration: input.networkConfig)
+            let providers: [PolkadotJsonRpcProvider] = APIResolver(blockchain: blockchain, config: input.blockchainSdkConfig)
+                .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
+                    PolkadotJsonRpcProvider(url: nodeInfo.url, configuration: networkConfig)
                 }
-            }
+            
             $0.networkService = PolkadotNetworkService(providers: providers, network: network)
             $0.txBuilder = PolkadotTransactionBuilder(blockchain: input.blockchain, walletPublicKey: input.wallet.publicKey.blockchainKey, network: network)
         }

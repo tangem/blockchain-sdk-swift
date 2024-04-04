@@ -14,16 +14,13 @@ struct KaspaWalletAssembly: WalletManagerAssembly {
         return KaspaWalletManager(wallet: input.wallet).then {
             $0.txBuilder = KaspaTransactionBuilder(blockchain: input.blockchain)
             
-            let linkResolver = APILinkResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
+            let linkResolver = APINodeInfoResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
             var providers: [KaspaNetworkProvider] = input.apiInfo.compactMap {
-                guard 
-                    let link = linkResolver.resolve(for: $0),
-                    let url = URL(string: link)
-                else {
+                guard  let nodeInfo = linkResolver.resolve(for: $0) else {
                     return nil
                 }
 
-                return KaspaNetworkProvider(url: url, networkConfiguration: input.networkConfig)
+                return KaspaNetworkProvider(url: nodeInfo.url, networkConfiguration: input.networkConfig)
             }
             
             if let kaspaSecondaryApiUrl = URL(string: input.blockchainSdkConfig.kaspaSecondaryApiUrl ?? "") {

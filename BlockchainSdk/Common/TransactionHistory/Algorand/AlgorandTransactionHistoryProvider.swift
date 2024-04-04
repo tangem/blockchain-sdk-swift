@@ -12,8 +12,8 @@ import Combine
 final class AlgorandTransactionHistoryProvider {
     
     /// Configuration connection node for provider
-    private let node: AlgorandProviderNode
-    
+    private let node: NodeInfo
+
     // MARK: - Properties
     
     /// Network provider of blockchain
@@ -26,7 +26,7 @@ final class AlgorandTransactionHistoryProvider {
     
     init(
         blockchain: Blockchain,
-        node: AlgorandProviderNode,
+        node: NodeInfo,
         networkConfig: NetworkProviderConfiguration
     ) {
         self.node = node

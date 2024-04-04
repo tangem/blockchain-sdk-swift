@@ -15,10 +15,10 @@ class XRPNetworkProvider: XRPNetworkServiceType, HostProvider {
         node.url.absoluteString
     }
     
-    private let node: XRPNode
+    private let node: NodeInfo
     private let provider: NetworkProvider<XRPTarget>
     
-    init(node: XRPNode, configuration: NetworkProviderConfiguration) {
+    init(node: NodeInfo, configuration: NetworkProviderConfiguration) {
         self.node = node
         provider = NetworkProvider<XRPTarget>(configuration: configuration)
     }

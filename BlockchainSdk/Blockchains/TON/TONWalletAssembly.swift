@@ -16,22 +16,12 @@ struct TONWalletAssembly: WalletManagerAssembly {
         let blockchain = input.blockchain
         let config = input.blockchainSdkConfig
 
-        let linkResolver = APILinkResolver(blockchain: blockchain, config: config)
+        let linkResolver = APINodeInfoResolver(blockchain: blockchain, config: config)
         let apiKeyInfoProvider = APIKeysInfoProvider(blockchain: blockchain, config: config)
-        let providers: [TONProvider] = input.apiInfo.compactMap {
-            guard
-                let link = linkResolver.resolve(for: $0),
-                let url = URL(string: link)
-            else {
-                return nil
+        let providers: [TONProvider] = APIResolver(blockchain: blockchain, config: config)
+            .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
+                TONProvider(node: nodeInfo, networkConfig: input.networkConfig)
             }
-
-            let apiKeyInfo = apiKeyInfoProvider.apiKeys(for: $0.api)
-            return TONProvider(
-                node: .init(url: url, apiKeyInfo: apiKeyInfo),
-                networkConfig: input.networkConfig
-            )
-        }
         
         return try TONWalletManager(
             wallet: input.wallet,

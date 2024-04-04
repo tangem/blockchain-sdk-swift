@@ -14,34 +14,16 @@ struct AlgorandWalletAssembly: WalletManagerAssembly {
         var providers: [AlgorandNetworkProvider] = []
 
         let blockchain = input.blockchain
+        let config = input.blockchainSdkConfig
         let networkConfig = input.networkConfig
 
-        if blockchain.isTestnet {
-            providers = TestnetAPIURLProvider(blockchain: blockchain).urls()?.compactMap {
-                AlgorandNetworkProvider(
-                    node: .init(url: $0.url, apiKeyInfo: nil),
-                    networkConfig: networkConfig
-                )
-            } ?? []
-        } else {
-            let config = input.blockchainSdkConfig
-            let linkResolver = APILinkResolver(blockchain: blockchain, config: config)
-            let apiKeyInfoProvider = APIKeysInfoProvider(blockchain: blockchain, config: config)
-
-            providers = input.apiInfo.compactMap {
-                guard
-                    let link = linkResolver.resolve(for: $0),
-                    let url = URL(string: link)
-                else {
-                    return nil
-                }
-
-                let apiKeyInfo = apiKeyInfoProvider.apiKeys(for: $0.api)
-                return AlgorandNetworkProvider(
-                    node: .init(url: url, apiKeyInfo: apiKeyInfo),
-                    networkConfig: networkConfig)
-            }
-        }
+        let apiResolver = APIResolver(blockchain: blockchain, config: config)
+        providers = apiResolver.resolveProviders(apiInfos: input.apiInfo, factory: { nodeInfo, apiInfo in
+            AlgorandNetworkProvider(
+                node: nodeInfo,
+                networkConfig: networkConfig
+            )
+        })
 
         let transactionBuilder = AlgorandTransactionBuilder(
             publicKey: input.wallet.publicKey.blockchainKey, 

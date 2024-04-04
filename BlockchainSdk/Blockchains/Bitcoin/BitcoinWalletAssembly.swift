@@ -23,7 +23,7 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
                 guard
                     $0.type == .private,
                     let provider = $0.provider,
-                    let api = API(rawValue: provider)
+                    let api = PrivateAPI(rawValue: provider)
                 else {
                     return
                 }

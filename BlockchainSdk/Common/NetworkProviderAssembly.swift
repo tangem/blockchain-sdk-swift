@@ -15,6 +15,12 @@ protocol NetworkProviderAssemblyInput {
     var apiOrder: APIOrder { get }
 }
 
+extension NetworkProviderAssemblyInput {
+    var apiInfo: [APIInfo] {
+        apiOrder[blockchain.codingKey] ?? []
+    }
+}
+
 struct NetworkProviderAssembly {
     
     func makeBlockBookUtxoProvider(with input: NetworkProviderAssemblyInput, for type: BlockBookProviderType) -> BlockBookUtxoProvider {
@@ -65,73 +71,11 @@ struct NetworkProviderAssembly {
     }
     
     func makeEthereumJsonRpcProviders(with input: NetworkProviderAssemblyInput) -> [EthereumJsonRpcProvider] {
-        let endpoints = input.blockchain.getJsonRpcEndpoints(
-            keys: EthereumApiKeys(
-                infuraProjectId: input.blockchainSdkConfig.infuraProjectId,
-                nowNodesApiKey: input.blockchainSdkConfig.nowNodesApiKey,
-                getBlockApiKeys: input.blockchainSdkConfig.getBlockCredentials.credentials(type: .jsonRpc),
-                quickNodeBscCredentials: input.blockchainSdkConfig.quickNodeBscCredentials
-            )
-        )!
-
-//        let urls: [URL] = input.apiInfo.compactMap { info in
-//            if let provider = info.provider, let api = API(rawValue: provider) {
-//                guard info.type == .private else {
-//                    return nil
-//                }
-//
-//                guard let link = info.url else {
-//                    return nil
-//                }
-//
-//                switch api {
-//                case .nownodes:
-//                    if case .avalanche = input.blockchain {
-//                        var components = URLComponents(string: link)
-//
-//                    }
-//
-//                    return URL(string: link)?
-//                        .appendingPathComponent(input.blockchainSdkConfig.nowNodesApiKey)
-//                case .getBlock:
-//                    if case .avalanche = input.blockchain {
-//                        return nil
-//                    }
-//
-//                    return URL(string: link)?
-//                        .appendingPathComponent(input.blockchainSdkConfig.getBlockCredentials[input.blockchain] ?? "")
-//                case .quicknode:
-//                    var components = URLComponents(string: link)
-//                    components.
-//                case .ton:
-//                    <#code#>
-//                case .tron:
-//                    <#code#>
-//                case .hedera:
-//                    <#code#>
-//                case .infura:
-//                    <#code#>
-//                }
-//            }
-//        }
-
-        return endpoints.map {
-            return EthereumJsonRpcProvider(
-                url: $0,
-                configuration: input.networkConfig
-            )
-        }
+        return APIResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
+            .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
+                EthereumJsonRpcProvider(url: nodeInfo.url, configuration: input.networkConfig)
+            }
     }
-    
-//    private func makeGetBlockJsonRpcProvider() -> URL {
-//        if let jsonRpcKey = getBlockApiKeys[self] {
-//            return URL(string: "https://go.getblock.io/\(jsonRpcKey)")!
-//        } else {
-//            assertionFailure("getJsonRpcEndpoints -> Not found GetBlock jsonRpc key for blockchain \(displayName)")
-//            Log.network("Not found jsonRpc key GetBlock API for blockchaib \(displayName)")
-//            return URL(string: "https://go.getblock.io/")!
-//        }
-//    }
 }
 
 extension NetworkProviderAssembly {

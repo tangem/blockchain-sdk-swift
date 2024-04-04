@@ -25,21 +25,10 @@ struct CosmosWalletAssembly: WalletManagerAssembly {
         }
 
         let config = input.blockchainSdkConfig
-        let linkResolver = APILinkResolver(blockchain: blockchain, config: config)
+        let resolver = APIResolver(blockchain: blockchain, config: config)
 
-        let providers: [CosmosRestProvider]
-        if blockchain.isTestnet {
-            providers = TestnetAPIURLProvider(blockchain: blockchain).urls()?.map {
-                CosmosRestProvider(url: $0.url.absoluteString, configuration: input.networkConfig)
-            } ?? []
-        } else {
-            providers = input.apiInfo.compactMap {
-                guard let link = linkResolver.resolve(for: $0) else {
-                    return nil
-                }
-
-                return CosmosRestProvider(url: link, configuration: input.networkConfig)
-            }
+        let providers: [CosmosRestProvider] = resolver.resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
+            CosmosRestProvider(url: nodeInfo.link, configuration: input.networkConfig)
         }
         let networkService = CosmosNetworkService(cosmosChain: cosmosChain, providers: providers)
         let publicKey = try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress()
