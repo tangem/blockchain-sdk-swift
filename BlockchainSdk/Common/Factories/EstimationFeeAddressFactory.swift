@@ -79,19 +79,10 @@ struct EstimationFeeAddressFactory {
         case .algorand:
             return "TP7ASBKT5ELXLAIX55PQOSQSK5RYLQGBBI2KFPE4FVQONFK5K22J2PBYX4"
         // We have to generate a new dummy address for
-        case .terraV1, .terraV2, .ton:
-            // For old blockchain with the ed25519 curve except `Cardano`
-            // We have to use the new `ed25519_slip0010` curve that the `AnyMasterKeyFactory` works correctly
-            let curve = blockchain.curve == .ed25519 ? .ed25519_slip0010 : blockchain.curve
-
-            let mnemonic = try Mnemonic()
-            let factory = AnyMasterKeyFactory(mnemonic: mnemonic, passphrase: "")
-            let masterKey = try factory.makeMasterKey(for: curve)
-            let extendedPublicKey = try masterKey.makePublicKey(for: curve)
-            let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
-            let publicKey = Wallet.PublicKey(seedKey: extendedPublicKey.publicKey, derivationType: .none)
-            let estimationFeeAddress = try service.makeAddress(for: publicKey, with: .default).value
-            return estimationFeeAddress
+        case .terraV1, .terraV2:
+            return "terra1p6kj9kwqsz2ss8qjddh70gzc36gtv8tnd54v4q"
+        case .ton:
+            return "EQDL_bRHJDj1slSOPjR91MF9V0WvNF8J_esj_2rCstlHV08h"
         }
     }
 }
