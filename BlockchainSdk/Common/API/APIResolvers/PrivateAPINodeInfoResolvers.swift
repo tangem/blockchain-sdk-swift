@@ -43,7 +43,7 @@ struct PrivateAPINodeInfoResolvers {
             link = "https://kraken.fireacademy.io/leaflet"
         case .hedera:
             link = "https://pool.arkhia.io/hedera/mainnet/api/v1"
-        case .blockchair, .blockcypher:
+        case .blockchair, .blockcypher, .solana:
             return nil
         }
 

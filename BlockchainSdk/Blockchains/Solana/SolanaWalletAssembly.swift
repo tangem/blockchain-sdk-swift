@@ -22,14 +22,39 @@ struct SolanaWalletAssembly: WalletManagerAssembly {
                     .devnetGenesysGo,
                 ]
             } else {
-                endpoints = [
-                    .nowNodes(apiKey: input.blockchainSdkConfig.nowNodesApiKey),
-                    .quiknode(
-                        apiKey: input.blockchainSdkConfig.quickNodeSolanaCredentials.apiKey,
-                        subdomain: input.blockchainSdkConfig.quickNodeSolanaCredentials.subdomain
-                    ),
-                    .mainnetBetaSolana,
-                ]
+                let nodeInfoResolver = APINodeInfoResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
+                endpoints = input.apiInfo.compactMap {
+                    guard let api = $0.api else {
+                        return nil
+                    }
+
+                    if api == .solana {
+                        return RPCEndpoint.mainnetBetaSolana
+                    }
+
+                    guard
+                        let nodeInfo = nodeInfoResolver.resolve(for: $0),
+                        var components = URLComponents(url: nodeInfo.url, resolvingAgainstBaseURL: false)
+                    else {
+                        return nil
+                    }
+
+                    components.scheme = SolanaConstants.webSocketScheme
+                    guard let urlWebSocket = components.url else {
+                        return nil
+                    }
+
+                    switch api {
+                    case .nownodes, .quicknode:
+                        return RPCEndpoint(
+                            url: nodeInfo.url,
+                            urlWebSocket: urlWebSocket,
+                            network: .mainnetBeta
+                        )
+                    default:
+                        return nil
+                    }
+                }
             }
             
             let networkRouter = NetworkingRouter(endpoints: endpoints)
@@ -39,5 +64,10 @@ struct SolanaWalletAssembly: WalletManagerAssembly {
             $0.networkService = SolanaNetworkService(solanaSdk: $0.solanaSdk, blockchain: input.blockchain, hostProvider: networkRouter)
         }
     }
-    
+}
+
+extension SolanaWalletAssembly {
+    enum SolanaConstants {
+        static let webSocketScheme = "wss"
+    }
 }

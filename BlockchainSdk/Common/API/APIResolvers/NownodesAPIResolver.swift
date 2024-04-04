@@ -68,6 +68,8 @@ struct NownodesAPIResolver {
             link = "https://zksync.nownodes.io/\(apiKey)"
         case .moonbeam:
             link = "https://moonbeam.nownodes.io/\(apiKey)"
+        case .solana:
+            link = "https://sol.nownodes.io"
         default:
             return nil
         }
@@ -88,7 +90,7 @@ struct NownodesAPIKeysInfoProvider {
     let apiKey: String
     func apiKeys(for blockchain: Blockchain) -> APIKeyInfo? {
         switch blockchain {
-        case .xrp, .tron, .algorand, .aptos:
+        case .xrp, .tron, .algorand, .aptos, .solana:
             return .init(
                 headerName: Constants.nowNodesApiKeyHeaderName,
                 headerValue: apiKey

@@ -46,6 +46,7 @@ public enum PrivateAPI: String {
     case tangemRosetta
     case fireAcademy
     case tangemChia
+    case solana
 }
 
 struct NodeInfo: HostProvider {
