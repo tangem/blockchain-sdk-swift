@@ -246,17 +246,4 @@ class RadiantTransactionBuilder {
                 )
             }
     }
-    
-    private func convertToDER(_ signatures: [Data]) throws -> [Data] {
-        var derSigs = [Data]()
-        
-        let utils = Secp256k1Utils()
-        
-        for signature in signatures {
-            let signDer = try utils.serializeDer(signature)
-            derSigs.append(signDer)
-        }
-    
-        return derSigs
-    }
 }
