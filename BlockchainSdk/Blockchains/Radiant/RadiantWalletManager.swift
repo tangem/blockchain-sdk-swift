@@ -110,9 +110,9 @@ private extension RadiantWalletManager {
     
     func calculateFee(for estimatedFeePerKb: Decimal, for estimateSize: Int) -> Fee {
         let decimalValue = wallet.blockchain.decimalValue
-        let perKbDecimalValue = (estimatedFeePerKb * decimalValue).rounded(blockchain: wallet.blockchain)
+        let perKbDecimalValue = (estimatedFeePerKb * decimalValue).rounded(blockchain: wallet.blockchain, roundingMode: .up)
         let decimalFeeValue = Decimal(estimateSize) / Constants.perKbRate * perKbDecimalValue
-        let feeAmountValue = (decimalFeeValue / decimalValue).rounded(blockchain: wallet.blockchain)
+        let feeAmountValue = (decimalFeeValue / decimalValue).rounded(blockchain: wallet.blockchain, roundingMode: .up)
         let feeAmount = Amount(with: wallet.blockchain, value: feeAmountValue)
         
         return Fee(feeAmount)
@@ -169,6 +169,9 @@ extension RadiantWalletManager: WalletManager {
 
 extension RadiantWalletManager {
     enum Constants {
+        /*
+         - We use 1000, because Electrum node return fee for per 1000 bytes.
+         */
         static let perKbRate: Decimal = 1000
     }
 }

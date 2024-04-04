@@ -21,7 +21,7 @@ struct RadiantAmountUnspentTransaction {
     
     var feeSatoshiDecimalValue: Decimal {
         let decimalValue = fee.amount.value * decimalValue
-        return decimalValue.rounded(roundingMode: .down)
+        return decimalValue.rounded(roundingMode: .up)
     }
     
     var changeSatoshiDecimalValue: Decimal {

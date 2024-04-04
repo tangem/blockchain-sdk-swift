@@ -45,7 +45,7 @@ extension RadiantNetworkService {
         electrumProvider
             .estimateFee()
             .map { sourceFee in
-                let targetFee = sourceFee > Constants.defaultFeePer1000Bytes ? sourceFee : Constants.defaultFeePer1000Bytes
+                let targetFee = sourceFee > Constants.recommendedFeePer1000Bytes ? sourceFee : Constants.recommendedFeePer1000Bytes
                 
                 let minimal = targetFee
                 let normal = targetFee * Constants.normalFeeMultiplier
@@ -75,7 +75,7 @@ extension RadiantNetworkService {
          in https://github.com/RadiantBlockchain/radiantjs/blob/master/lib/transaction/transaction.js#L78
         */
         
-        static let defaultFeePer1000Bytes: Decimal = 0.1
+        static let recommendedFeePer1000Bytes: Decimal = 0.1
         static let normalFeeMultiplier: Decimal = 1.5
         static let priorityFeeMultiplier: Decimal = 2
     }
