@@ -30,7 +30,7 @@ extension EthereumTransactionHistoryMapper: TransactionHistoryMapper {
         walletAddress: String,
         amountType: Amount.AmountType
     ) throws -> [TransactionRecord] {
-        guard let transactions = response.transactions else {
+        guard let transactions = response.transactions?.nilIfEmpty else {
             return []
         }
 
@@ -235,7 +235,7 @@ private extension EthereumTransactionHistoryMapper {
         return .contractMethod(id: methodId)
     }
 
-    private func methodIdFromRawData(_ rawData: String?) -> String? {
+    func methodIdFromRawData(_ rawData: String?) -> String? {
         // EVM method name has a length of 4 bytes
         let methodIdLength = 8
 
@@ -255,7 +255,7 @@ private extension EthereumTransactionHistoryMapper {
         }
 
         return tokenTransfers.map { transfer -> TransactionRecord.TokenTransfer in
-            let amount = Decimal(transfer.value) ?? 0
+            let amount = Decimal(stringValue: transfer.value) ?? 0
             return TransactionRecord.TokenTransfer(
                 source: transfer.from,
                 destination: transfer.to,
