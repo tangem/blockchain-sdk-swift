@@ -79,21 +79,6 @@ extension SolanaWalletManager: TransactionSender {
             .eraseToAnyPublisher()
     }
     
-    func estimatedFee(amount: Amount) -> AnyPublisher<[Fee], Error> {
-        networkService
-            .transactionFee(numberOfSignatures: 1)
-            .tryMap { [weak self] transactionFee in
-                guard let self = self else {
-                    throw WalletError.empty
-                }
-                                
-                let blockchain = self.wallet.blockchain
-                let amount = Amount(with: blockchain, type: .coin, value: transactionFee)
-                return [Fee(amount)]
-            }
-            .eraseToAnyPublisher()
-    }
-    
     public func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
         let decimalValue: Decimal
         switch amount.type {
@@ -144,45 +129,12 @@ extension SolanaWalletManager: TransactionSender {
     }
     
     private func feeParameters(amount: Amount, destination: String, destinationAccountExists: Bool) -> AnyPublisher<SolanaFeeParameters, Error> {
-        let computeUnitPriceAccountsPublisher: AnyPublisher<[String], Error>
-        switch amount.type {
-        case .coin:
-            computeUnitPriceAccountsPublisher = .justWithError(output: [wallet.address, destination])
-        case .token(let token):
-            computeUnitPriceAccountsPublisher = networkService
-                .tokenProgramId(contractAddress: token.contractAddress)
-                .withWeakCaptureOf(self)
-                .tryMap { [wallet] thisSolanaWalletManager, tokenProgramId -> [String] in
-                    guard let associatedDestinationTokenAccountAddress = thisSolanaWalletManager.associatedTokenAddress(
-                        accountAddress: destination,
-                        mintAddress: token.contractAddress,
-                        tokenProgramId: tokenProgramId
-                    ) else {
-                        throw BlockchainSdkError.failedToConvertPublicKey
-                    }
-                    
-                    return [wallet.address, associatedDestinationTokenAccountAddress]
-                }
-                .eraseToAnyPublisher()
-        case .reserve:
-            fatalError()
-        }
-        
-        let computeUnitPricePublisher = computeUnitPriceAccountsPublisher
+        return destinationAccountInfo(destination: destination, amount: amount)
             .withWeakCaptureOf(self)
-            .flatMap { thisSolanaWalletManager, computeUnitPriceAccounts -> AnyPublisher<UInt64, Error> in
-                thisSolanaWalletManager.networkService.computeUnitPrice(
-                    accounts: computeUnitPriceAccounts,
+            .map { thisSolanaWalletManager, destinationAccountInfo -> SolanaFeeParameters in
+                let calculatedComputeUnitPrice = thisSolanaWalletManager.networkService.computeUnitPrice(
                     destinationAccountExists: destinationAccountExists
                 )
-            }
-        
-        let destinationAccountInfoPublisher = destinationAccountInfo(destination: destination, amount: amount)
-        
-        return Publishers.CombineLatest(destinationAccountInfoPublisher, computeUnitPricePublisher)
-            .withWeakCaptureOf(self)
-            .map { parameters -> SolanaFeeParameters in
-                let (thisSolanaWalletManager, (destinationAccountInfo, calculatedComputeUnitPrice)) = parameters
                 
                 let computeUnitLimit: UInt32?
                 let computeUnitPrice: UInt64?
@@ -262,13 +214,8 @@ extension SolanaWalletManager: TransactionSender {
     }
     
     private func accountExists(destination: String, amountType: Amount.AmountType) -> AnyPublisher<Bool, Error> {
-        let tokens: [Token]
-        if case .token(let token) = amountType {
-            tokens = [token]
-        } else {
-            tokens = []
-        }
-        
+        let tokens: [Token] = amountType.token.map { [$0] } ?? []
+
         return networkService
             .getInfo(accountId: destination, tokens: tokens, transactionIDs: [])
             .map { info in
@@ -287,7 +234,6 @@ extension SolanaWalletManager: TransactionSender {
     
     private func destinationAccountInfo(destination: String, amount: Amount) -> AnyPublisher<DestinationAccountInfo, Error> {
         let accountCreationFeePublisher: AnyPublisher<Decimal, Error>
-        let tokens: [Token]
         switch amount.type {
         case .coin:
             // Include the fee if the amount is less than it
@@ -300,30 +246,13 @@ extension SolanaWalletManager: TransactionSender {
                     }
                 }
                 .eraseToAnyPublisher()
-            
-            tokens = []
         case .token(let token):
             accountCreationFeePublisher = .justWithError(output: 0)
-            tokens = [token]
         case .reserve:
             return .anyFail(error: BlockchainSdkError.failedToLoadFee)
         }
         
-        let accountExistsPublisher: AnyPublisher<Bool, Error> = networkService
-            .getInfo(accountId: destination, tokens: tokens, transactionIDs: [])
-            .map { info in
-                switch amount.type {
-                case .coin:
-                    return info.accountExists
-                case .token(let token):
-                    let existingTokenAccount = info.tokensByMint[token.contractAddress]
-                    return existingTokenAccount != nil
-                case .reserve:
-                    return false
-                }
-            }
-            .eraseToAnyPublisher()
-        
+        let accountExistsPublisher = accountExists(destination: destination, amountType: amount.type)
         let rentExemptionBalancePublisher = networkService
             .minimalBalanceForRentExemption()
             .tryMap { [weak self] balance -> Amount in
