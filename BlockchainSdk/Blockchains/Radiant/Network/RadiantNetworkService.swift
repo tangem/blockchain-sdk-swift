@@ -28,7 +28,7 @@ extension RadiantNetworkService {
         let scripthash: String
         
         do {
-            scripthash = try RadiantAddressUtils().prepareWallet(address: address)
+            scripthash = try RadiantAddressUtils().prepareScriptHash(address: address)
         } catch {
             return .anyFail(error: WalletError.empty)
         }
