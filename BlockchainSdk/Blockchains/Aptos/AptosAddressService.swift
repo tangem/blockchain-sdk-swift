@@ -18,16 +18,15 @@ public struct AptosCoreAddressService {
     
     private func insertNonsignificantZero(for address: String) -> String {
         let addressWithoutPrefix = address.removeHexPrefix()
-
-        var resultAddress: String = ""
-        resultAddress += resultAddress.addHexPrefix()
         
-        let zeroBuffer = [String](repeating: Constants.nonSignificationZero, count: Constants.aptosHexAddressLength - addressWithoutPrefix.count)
-        resultAddress += zeroBuffer.joined()
+        let zeroBuffer = [String](
+            repeating: Constants.nonSignificationZero,
+            count: Constants.aptosHexAddressLength - addressWithoutPrefix.count
+        ).joined()
         
-        resultAddress += addressWithoutPrefix
+        let nonsignificantAddress = zeroBuffer.appending(addressWithoutPrefix).addHexPrefix()
         
-        return resultAddress
+        return nonsignificantAddress
     }
 }
 
