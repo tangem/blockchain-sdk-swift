@@ -12,7 +12,7 @@ import Combine
 @available(iOS 13.0, *)
 public protocol TransactionHistoryProvider: CustomStringConvertible {
     var canFetchHistory: Bool { get }
-    
+
     func loadTransactionHistory(request: TransactionHistory.Request) -> AnyPublisher<TransactionHistory.Response, Error>
     func reset()
 }
