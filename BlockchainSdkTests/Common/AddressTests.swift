@@ -1237,6 +1237,11 @@ class AddressesTests: XCTestCase {
         let addr4 = try addressService.makeAddress(from: anyTwoPublicKey)
         
         XCTAssertEqual(addr4.value, "166w5AGDyvMkJqfDAtLbTJeoQh6FqYCfLQ")
+        
+        // For ed25519 wrong make address from public key
+        let edPublicKey = Data(hex: "e7287a82bdcd3a5c2d0ee2150ccbc80d6a00991411fb44cd4d13cef46618aadb")
+        let addrEdv = try? addressService.makeAddress(from: edPublicKey)
+        XCTAssertNil(addrEdv)
     }
     
     // https://github.com/RadiantBlockchain/radiantjs/blob/master/test/address.js
