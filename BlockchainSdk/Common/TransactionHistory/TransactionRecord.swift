@@ -10,6 +10,9 @@ import Foundation
 
 public struct TransactionRecord: Hashable {
     public let hash: String
+    /// Index of an individual transaction within the parent transaction (if applicable).
+    /// For example, a single EVM transaction may consist of multiple token transactions (with indices 0, 1, 2 and so on)
+    public let index: Int
     public let source: SourceType
     public let destination: DestinationType
     public let fee: Fee
@@ -21,6 +24,7 @@ public struct TransactionRecord: Hashable {
     
     public init(
         hash: String,
+        index: Int,
         source: SourceType,
         destination: DestinationType,
         fee: Fee,
@@ -30,6 +34,7 @@ public struct TransactionRecord: Hashable {
         date: Date?,
         tokenTransfers: [TokenTransfer]? = nil
     ) {
+        self.index = index
         self.hash = hash
         self.source = source
         self.destination = destination
