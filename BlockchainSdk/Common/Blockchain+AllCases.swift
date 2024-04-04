@@ -68,6 +68,10 @@ public extension Blockchain {
         case .zkSync: break
         case .moonbeam: break
         case .polygonZkEVM: break
+        case .moonriver: break
+        case .mantle: break
+        case .flare: break
+        case .taraxa: break
         case .radiant: break
 
             // READ BELOW:
@@ -131,6 +135,10 @@ public extension Blockchain {
             .zkSync(testnet: false),
             .moonbeam(testnet: false),
             .polygonZkEVM(testnet: false),
+            .moonriver(testnet: false),
+            .mantle(testnet: false),
+            .flare(testnet: false),
+            .taraxa(testnet: false),
             .radiant(testnet: false),
         ]
     }

@@ -71,6 +71,10 @@ struct AddressTypesConfig {
              .zkSync,
              .moonbeam,
              .polygonZkEVM,
+             .moonriver,
+             .mantle,
+             .flare,
+             .taraxa,
              .radiant:
             return [.default]
         }
