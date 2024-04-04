@@ -159,8 +159,8 @@ extension RadiantWalletManager: WalletManager {
                 
                 return [
                     minimalFee,
-//                    normalFee,
-//                    priorityFee
+                    normalFee,
+                    priorityFee
                 ]
             }
             .eraseToAnyPublisher()
