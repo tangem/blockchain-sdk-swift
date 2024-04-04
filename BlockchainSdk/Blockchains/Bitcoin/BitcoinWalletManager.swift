@@ -150,7 +150,7 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
 }
 
 @available(iOS 13.0, *)
-extension BitcoinWalletManager: UTXOTransactionFeeCalculator {
+extension BitcoinWalletManager: BitcoinTransactionFeeCalculator {
     func calculateFee(satoshiPerByte: Int, amount: Amount, destination: String) -> Fee {
         let fee = txBuilder.bitcoinManager.fee(
             for: amount.value,

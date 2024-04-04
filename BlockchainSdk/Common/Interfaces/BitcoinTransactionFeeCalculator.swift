@@ -1,5 +1,5 @@
 //
-//  UTXOTransactionFeeCalculator.swift
+//  BitcoinTransactionFeeCalculator.swift
 //  BlockchainSdk
 //
 //  Created by Andrey Chukavin on 01.04.2024.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol UTXOTransactionFeeCalculator {
+public protocol BitcoinTransactionFeeCalculator {
     func calculateFee(satoshiPerByte: Int, amount: Amount, destination: String) -> Fee
 }
 
