@@ -52,7 +52,11 @@ public struct AddressServiceFactory {
                 .manta,
                 .zkSync,
                 .moonbeam,
-                .polygonZkEVM:
+                .polygonZkEVM,
+                .moonriver,
+                .mantle,
+                .flare,
+                .taraxa:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
