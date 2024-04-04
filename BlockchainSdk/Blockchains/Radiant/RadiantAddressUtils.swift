@@ -17,7 +17,7 @@ struct RadiantAddressUtils {
      
      More: https://electrumx.readthedocs.io/en/latest/protocol-basics.html#script-hashes
      */
-    func prepareScriptHash(publicKeyHash address: String) throws -> String {
+    func prepareScriptHash(address: String) throws -> String {
         guard let addressKeyHash = WalletCore.BitcoinAddress(string: address)?.keyhash else {
             throw WalletError.empty
         }
