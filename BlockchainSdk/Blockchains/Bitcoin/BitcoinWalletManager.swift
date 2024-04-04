@@ -150,6 +150,21 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
 }
 
 @available(iOS 13.0, *)
+extension BitcoinWalletManager: BitcoinTransactionFeeCalculator {
+    func calculateFee(satoshiPerByte: Int, amount: Amount, destination: String) -> Fee {
+        let fee = txBuilder.bitcoinManager.fee(
+            for: amount.value,
+            address: destination,
+            feeRate: satoshiPerByte,
+            senderPay: false,
+            changeScript: nil,
+            sequence: .max
+        )
+        return Fee(Amount(with: wallet.blockchain, value: fee), parameters: BitcoinFeeParameters(rate: satoshiPerByte))
+    }
+}
+
+@available(iOS 13.0, *)
 extension BitcoinWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         txBuilder.unspentOutputs = loadedUnspents
