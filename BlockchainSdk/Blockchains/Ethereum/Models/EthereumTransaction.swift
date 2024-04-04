@@ -31,58 +31,21 @@ public struct EthereumTransaction {
     func encode(forSignature: Bool, chainID: BigUInt? = nil) -> Data? {
         if (forSignature) {
             if chainID != nil  {
-                let fields = [
-                    self.nonce,
-                    self.gasPrice,
-                    self.gasLimit,
-                    Data(hexString: to),
-                    self.value,
-                    self.data,
-                    chainID!,
-                    BigUInt(0),
-                    BigUInt(0)
-                ] as [AnyObject]
+                let fields = [self.nonce, self.gasPrice, self.gasLimit, Data(hexString: to), self.value, self.data, chainID!, BigUInt(0), BigUInt(0)] as [AnyObject]
                 return RLP.encode(fields)
             }
             else if self.chainID != nil  {
-                let fields = [
-                    self.nonce,
-                    self.gasPrice,
-                    self.gasLimit,
-                    Data(hexString: to),
-                    self.value,
-                    self.data,
-                    self.chainID!,
-                    BigUInt(0),
-                    BigUInt(0)
-                ] as [AnyObject]
+                let fields = [self.nonce, self.gasPrice, self.gasLimit, Data(hexString: to), self.value, self.data, self.chainID!, BigUInt(0), BigUInt(0)] as [AnyObject]
                 return RLP.encode(fields)
             } else {
-                let fields = [
-                    self.nonce,
-                    self.gasPrice,
-                    self.gasLimit,
-                    Data(hexString: to),
-                    self.value,
-                    self.data
-                ] as [AnyObject]
+                let fields = [self.nonce, self.gasPrice, self.gasLimit, Data(hexString: to), self.value, self.data] as [AnyObject]
                 return RLP.encode(fields)
             }
         } else {
             let encodeV = chainID == nil ? self.v :
                 self.v - 27 + chainID! * 2 + 35
 
-            let fields = [
-                self.nonce,
-                self.gasPrice,
-                self.gasLimit,
-                Data(hexString: to),
-                self.value,
-                self.data,
-                encodeV,
-                self.r,
-                self.s
-            ] as [AnyObject]
+            let fields = [self.nonce, self.gasPrice, self.gasLimit, Data(hexString: to), self.value, self.data, encodeV, self.r, self.s] as [AnyObject]
             return RLP.encode(fields)
         }
     }
