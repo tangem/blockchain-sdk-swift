@@ -41,7 +41,7 @@ class StellarTransactionBuilder {
 
             if transaction.amount.type == .coin {
                 if !isAccountCreated && transaction.amount.value < amountToCreateAccount {
-                    throw StellarError.xlmCreateAccount
+                    throw WalletError.noAccount(message: StellarError.xlmCreateAccount.localizedDescription, amountToCreate: amountToCreateAccount)
                 }
                 
                 let operation = isAccountCreated ? try PaymentOperation(sourceAccountId: transaction.sourceAddress,

@@ -38,7 +38,7 @@ DEPENDENCIES:
   - AnyCodable-FlightSchool
   - BigInt
   - BinanceChain (from `https://github.com/tangem/swiftbinancechain.git`, tag `0.0.11`)
-  - BitcoinCore.swift (from `https://github.com/tangem/bitcoincore.git`, tag `0.0.19`)
+  - BitcoinCore.swift (from `https://github.com/tangem/bitcoincore.git`, tag `0.0.20`)
   - Moya
   - ScaleCodec
   - Sodium
@@ -69,7 +69,7 @@ EXTERNAL SOURCES:
     :tag: 0.0.11
   BitcoinCore.swift:
     :git: https://github.com/tangem/bitcoincore.git
-    :tag: 0.0.19
+    :tag: 0.0.20
   Solana.Swift:
     :git: https://github.com/tangem/Solana.Swift
     :tag: 1.2.0-tangem5
@@ -83,7 +83,7 @@ CHECKOUT OPTIONS:
     :tag: 0.0.11
   BitcoinCore.swift:
     :git: https://github.com/tangem/bitcoincore.git
-    :tag: 0.0.19
+    :tag: 0.0.20
   Solana.Swift:
     :git: https://github.com/tangem/Solana.Swift
     :tag: 1.2.0-tangem5
@@ -109,6 +109,6 @@ SPEC CHECKSUMS:
   TangemSdk: f3adf8d0c18bf7a76406462fa31c0efa9f2efa93
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
 
-PODFILE CHECKSUM: 56ea6115adab12d9187bfc3fb784d27c76062c17
+PODFILE CHECKSUM: 4704199c004e48689f01fc87d826b5f9ad22e838
 
 COCOAPODS: 1.15.2
