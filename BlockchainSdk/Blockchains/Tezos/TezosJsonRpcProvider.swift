@@ -85,19 +85,3 @@ class TezosJsonRpcProvider: HostProvider {
             .eraseToAnyPublisher()
     }
 }
-
-
-//enum TezosApi: String, CaseIterable {
-//    case tezosBlockscale = "https://rpc.tzbeta.net"
-//    case tezosSmartpy = "https://mainnet.smartpy.io"
-//    case tezosEcad = "https://api.tez.ie/rpc/mainnet"
-//    case tezosMarigold = "https://mainnet.tezos.marigold.dev"
-//    
-//    func makeProvider(configuration: NetworkProviderConfiguration) -> TezosJsonRpcProvider {
-//
-//    }
-//    
-//    static func makeAllProviders(configuration: NetworkProviderConfiguration) -> [TezosJsonRpcProvider] {
-//        TezosApi.allCases.map { $0.makeProvider(configuration: configuration) }
-//    }
-//}
