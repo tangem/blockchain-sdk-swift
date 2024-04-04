@@ -663,9 +663,7 @@ extension Blockchain {
                 URL(string: "https://rpc.gnosischain.com")!,
 
                 // from chainlist.org
-                URL(string: "https://gnosischain-rpc.gateway.pokt.network")!,
                 URL(string: "https://gnosis-mainnet.public.blastapi.io")!,
-                URL(string: "https://xdai-rpc.gateway.pokt.network")!,
                 URL(string: "https://rpc.ankr.com/gnosis")!,
             ]
         case .optimism(let testnet):
