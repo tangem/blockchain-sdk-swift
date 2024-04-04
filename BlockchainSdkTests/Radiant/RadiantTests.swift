@@ -34,10 +34,10 @@ final class RadiantTests: XCTestCase {
     }
     
     func testUtils() throws {
-        let scripthash = try RadiantAddressUtils().prepareWallet(address: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf")
+        let scripthash = try RadiantAddressUtils().prepareScriptHash(address: "1vr9gJkNzTHv8DEQb4QBxAnQCxgzkFkbf")
         XCTAssertEqual("972C432D04BC6908FA2825860148B8F911AC3D19C161C68E7A6B9BEAE86E05BA", scripthash)
         
-        let scripthash1 = try RadiantAddressUtils().prepareWallet(address: "166w5AGDyvMkJqfDAtLbTJeoQh6FqYCfLQ")
+        let scripthash1 = try RadiantAddressUtils().prepareScriptHash(address: "166w5AGDyvMkJqfDAtLbTJeoQh6FqYCfLQ")
         XCTAssertEqual("67809980FB38F7685D46A8108A39FE38956ADE259BE1C3E6FECBDEAA20FDECA9", scripthash1)
     }
     
