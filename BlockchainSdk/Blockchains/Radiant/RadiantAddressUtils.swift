@@ -10,7 +10,14 @@ import Foundation
 import WalletCore
 
 struct RadiantAddressUtils {
-    func prepareWallet(address: String) throws -> String {
+    /*
+     Specify electrum api network
+     
+     The hash function the server uses for script hashing. The client must use this function to hash pay-to-scripts to produce script hashes to send to the server. The default is “sha256”. “sha256” is currently the only acceptable value.
+     
+     More: https://electrumx.readthedocs.io/en/latest/protocol-basics.html#script-hashes
+     */
+    func prepareScriptHash(publicKeyHash address: String) throws -> String {
         guard let addressKeyHash = WalletCore.BitcoinAddress(string: address)?.keyhash else {
             throw WalletError.empty
         }

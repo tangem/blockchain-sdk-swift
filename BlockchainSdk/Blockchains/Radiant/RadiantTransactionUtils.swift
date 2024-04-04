@@ -1,5 +1,5 @@
 //
-//  RadiantScriptUtils.swift
+//  RadiantTransactionUtils.swift
 //  BlockchainSdk
 //
 //  Created by skibinalexander on 27.03.2024.
@@ -95,7 +95,7 @@ struct RadiantScriptUtils {
         change: Decimal,
         into txToSign: inout Data
     ) throws {
-        let zeroRef = [Byte](repeating: 0, count: 32)
+        let zeroRefHash = [Byte](repeating: 0, count: 32)
         
         //hashOutputs (32-byte hash)
         var outputs = Data()
@@ -108,10 +108,11 @@ struct RadiantScriptUtils {
         let scriptHash = sendScript.getDoubleSha256()
         outputs.append(contentsOf: scriptHash)
         
+        // Total refs
         outputs.append(0.bytes4LE)
         
         // Add zeroRef 32 bytes
-        outputs.append(contentsOf: zeroRef)
+        outputs.append(contentsOf: zeroRefHash)
         
         //output for change (if any)
         if change > 0 {
@@ -123,10 +124,11 @@ struct RadiantScriptUtils {
             let changeScriptHash = changeOutputScriptBytes.getDoubleSha256()
             outputs.append(contentsOf: changeScriptHash)
             
+            // Total refs
             outputs.append(0.bytes4LE)
             
             // Add zeroRef 32 bytes
-            outputs.append(contentsOf: zeroRef)
+            outputs.append(contentsOf: zeroRefHash)
         }
         
         let hashOutputHash = outputs.getDoubleSha256()
