@@ -33,7 +33,7 @@ extension EthereumTransactionHistoryMapper: TransactionHistoryMapper {
         guard let transactions = response.transactions else {
             return []
         }
-        
+
         return transactions.compactMap { transaction -> TransactionRecord? in
             guard
                 let source = source(transaction, walletAddress: response.address, amountType: amountType),
@@ -43,9 +43,9 @@ extension EthereumTransactionHistoryMapper: TransactionHistoryMapper {
                 Log.log("BlockBookAddressResponse.Transaction \(transaction) doesn't contain a required information")
                 return nil
             }
-            
+
             let fee = Fee(Amount(with: blockchain, value: feeWei / decimalValue))
-            
+
             return TransactionRecord(
                 hash: transaction.txid,
                 index: 0,   // TODO: Andrey Fedorov - Add support for indexed transactions (IOS-6340)
@@ -73,7 +73,7 @@ private extension EthereumTransactionHistoryMapper {
         guard let status = transaction.ethereumSpecific?.status else {
             return transaction.confirmations > 0 ? .confirmed : .unconfirmed
         }
-        
+
         switch status {
         case .failure:
             return .failed
@@ -165,7 +165,7 @@ private extension EthereumTransactionHistoryMapper {
             }
             .map { ($0, isOutgoing) }
     }
-    
+
     func source(
         _ transaction: BlockBookAddressResponse.Transaction,
         walletAddress: String,
@@ -175,7 +175,7 @@ private extension EthereumTransactionHistoryMapper {
             Log.log("Source information in transaction \(transaction) not found")
             return nil
         }
-        
+
         switch amountType {
         case .coin, .reserve:
             if let amount = Decimal(string: transaction.value) {
@@ -191,10 +191,10 @@ private extension EthereumTransactionHistoryMapper {
                 )
             }
         }
-        
+
         return nil
     }
-    
+
     func destination(
         _ transaction: BlockBookAddressResponse.Transaction,
         walletAddress: String,
@@ -227,10 +227,10 @@ private extension EthereumTransactionHistoryMapper {
                 )
             }
         }
-        
+
         return nil
     }
-    
+
     func transactionType(_ transaction: BlockBookAddressResponse.Transaction) -> TransactionRecord.TransactionType {
         let ethereumSpecific = transaction.ethereumSpecific
         let methodId = ethereumSpecific?.parsedData?.methodId ?? methodIdFromRawData(ethereumSpecific?.data)
@@ -238,15 +238,15 @@ private extension EthereumTransactionHistoryMapper {
         guard let methodId = methodId else {
             return .transfer
         }
-        
+
         // MethodId is empty for the coin transfers
         if methodId.isEmpty {
             return .transfer
         }
-        
+
         return .contractMethod(id: methodId)
     }
-    
+
     private func methodIdFromRawData(_ rawData: String?) -> String? {
         // EVM method name has a length of 4 bytes
         let methodIdLength = 8
@@ -260,12 +260,12 @@ private extension EthereumTransactionHistoryMapper {
 
         return String(methodId).addHexPrefix()
     }
-    
+
     func tokenTransfers(_ transaction: BlockBookAddressResponse.Transaction) -> [TransactionRecord.TokenTransfer]? {
         guard let tokenTransfers = transaction.tokenTransfers else {
             return nil
         }
-        
+
         return tokenTransfers.map { transfer -> TransactionRecord.TokenTransfer in
             let amount = Decimal(transfer.value) ?? 0
             return TransactionRecord.TokenTransfer(
