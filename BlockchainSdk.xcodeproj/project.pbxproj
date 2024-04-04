@@ -92,7 +92,7 @@
 		2DA4A4452BB5431700E55526 /* RadiantAmountUnspentTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A43D2BB5431500E55526 /* RadiantAmountUnspentTransaction.swift */; };
 		2DA4A4462BB5431700E55526 /* RadiantAddressInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A43F2BB5431500E55526 /* RadiantAddressInfo.swift */; };
 		2DA4A4472BB5431700E55526 /* RadiantUnspentOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A4402BB5431500E55526 /* RadiantUnspentOutput.swift */; };
-		2DA4A4482BB5431700E55526 /* RadiantScriptUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A4412BB5431500E55526 /* RadiantScriptUtils.swift */; };
+		2DA4A4482BB5431700E55526 /* RadiantTransactionUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A4412BB5431500E55526 /* RadiantTransactionUtils.swift */; };
 		2DA8AB0D2A433A1000C75D85 /* ExceptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8AB0C2A433A1000C75D85 /* ExceptionHandler.swift */; };
 		2DB613D02B912D05007CFA9B /* RadiantTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB613CF2B912D05007CFA9B /* RadiantTests.swift */; };
 		2DB6C6D52AFCBEC9000D0C6A /* TelosWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB6C6D42AFCBEC9000D0C6A /* TelosWalletManager.swift */; };
@@ -871,7 +871,7 @@
 		2DA4A43D2BB5431500E55526 /* RadiantAmountUnspentTransaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantAmountUnspentTransaction.swift; sourceTree = "<group>"; };
 		2DA4A43F2BB5431500E55526 /* RadiantAddressInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantAddressInfo.swift; sourceTree = "<group>"; };
 		2DA4A4402BB5431500E55526 /* RadiantUnspentOutput.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantUnspentOutput.swift; sourceTree = "<group>"; };
-		2DA4A4412BB5431500E55526 /* RadiantScriptUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantScriptUtils.swift; sourceTree = "<group>"; };
+		2DA4A4412BB5431500E55526 /* RadiantTransactionUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantTransactionUtils.swift; sourceTree = "<group>"; };
 		2DA8AB0C2A433A1000C75D85 /* ExceptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionHandler.swift; sourceTree = "<group>"; };
 		2DB613CF2B912D05007CFA9B /* RadiantTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadiantTests.swift; sourceTree = "<group>"; };
 		2DB6C6D42AFCBEC9000D0C6A /* TelosWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelosWalletManager.swift; sourceTree = "<group>"; };
@@ -1770,7 +1770,7 @@
 				2DA4A4342BB46D8000E55526 /* RadiantAddressService.swift */,
 				2DA4A43B2BB5431500E55526 /* RadiantAddressUtils.swift */,
 				2DA4A4362BB46FE400E55526 /* RadiantExternalLinkProvider.swift */,
-				2DA4A4412BB5431500E55526 /* RadiantScriptUtils.swift */,
+				2DA4A4412BB5431500E55526 /* RadiantTransactionUtils.swift */,
 				2DA4A43A2BB5431400E55526 /* RadiantTransactionBuilder.swift */,
 				2D6305B32BBA930C005BF839 /* RadiantUtils.swift */,
 				2DA4A4322BB46CF000E55526 /* RadiantWalletAssembly.swift */,
@@ -4170,7 +4170,7 @@
 				B619208C2AE6AC8F001D6DDF /* JSONRPCParams.swift in Sources */,
 				DC5E64F42B1650F400E81AA5 /* OP_MAX.swift in Sources */,
 				B04DC62725AC1C50009AA7B3 /* JSONDecoder+.swift in Sources */,
-				2DA4A4482BB5431700E55526 /* RadiantScriptUtils.swift in Sources */,
+				2DA4A4482BB5431700E55526 /* RadiantTransactionUtils.swift in Sources */,
 				EF3B192A2AA85C810084AA1C /* LitecoinExternalLinkProvider.swift in Sources */,
 				DA63B0A129CB3FC700AC6E49 /* KaspaTransactionBuilder.swift in Sources */,
 				EF2BC63229DC111E003D3F18 /* RavencoinWalletAssembly.swift in Sources */,
