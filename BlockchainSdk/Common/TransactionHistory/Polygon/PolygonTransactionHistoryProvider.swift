@@ -100,9 +100,10 @@ final class PolygonTransactionHistoryProvider<Mapper> where
                     historyProvider.page = TransactionHistoryIndexPage(number: requestedPageNumber)
                 })
                 .tryMap { historyProvider, result in
-                    return try historyProvider
+                    let transactionRecords = try historyProvider
                         .mapper
                         .mapToTransactionRecords(result, walletAddress: request.address, amountType: request.amountType)
+                    return TransactionHistory.Response(records: transactionRecords)
                 }
                 .tryCatch { [weak historyProvider] error in
                     return historyProvider

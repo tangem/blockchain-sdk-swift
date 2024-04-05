@@ -67,19 +67,18 @@ public struct TransactionHistoryProviderFactory {
                 targetConfiguration: .polygonScan(isTestnet: blockchain.isTestnet, apiKey: config.polygonScanApiKey)
             )
         case .algorand(_, let isTestnet):
+            let node: AlgorandProviderNode
             if isTestnet {
-                return AlgorandTransactionHistoryProvider(
-                    blockchain: input.blockchain,
-                    node: .init(type: .idxFullNode(isTestnet: isTestnet)),
-                    networkConfig: input.networkConfig
-                )
+                node = .init(type: .idxFullNode(isTestnet: isTestnet))
             } else {
-                return AlgorandTransactionHistoryProvider(
-                    blockchain: input.blockchain,
-                    node: .init(type: .idxNownodes, apiKeyValue: config.nowNodesApiKey),
-                    networkConfig: input.networkConfig
-                )
+                node = .init(type: .idxNownodes, apiKeyValue: config.nowNodesApiKey)
             }
+
+            return AlgorandTransactionHistoryProvider(
+                node: node,
+                networkConfig: input.networkConfig,
+                mapper: AlgorandTransactionHistoryMapper(blockchain: input.blockchain)
+            )
         default:
             return nil
         }
