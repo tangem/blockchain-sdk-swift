@@ -9,17 +9,20 @@
 import Foundation
 import Combine
 
-class EthereumTransactionHistoryProvider {
+final class EthereumTransactionHistoryProvider<Mapper> where
+    Mapper: TransactionHistoryMapper,
+    Mapper.Response == BlockBookAddressResponse
+{
     private let blockBookProvider: BlockBookUtxoProvider
-    private let mapper: BlockBookTransactionHistoryMapper
-    
+    private let mapper: Mapper
+
     private var page: TransactionHistoryIndexPage?
     private var totalPages: Int = 0
     private var totalRecordsCount: Int = 0
 
     init(
         blockBookProvider: BlockBookUtxoProvider,
-        mapper: BlockBookTransactionHistoryMapper
+        mapper: Mapper
     ) {
         self.blockBookProvider = blockBookProvider
         self.mapper = mapper
@@ -66,8 +69,12 @@ extension EthereumTransactionHistoryProvider: TransactionHistoryProvider {
                     throw WalletError.empty
                 }
                 
-                let records = self.mapper.mapToTransactionRecords(response, amountType: request.amountType)
-                
+                let records = try self.mapper.mapToTransactionRecords(
+                    response,
+                    walletAddress: request.address,
+                    amountType: request.amountType
+                )
+
                 self.page = TransactionHistoryIndexPage(number: response.page ?? 0)
                 self.totalPages = response.totalPages ?? 0
                 self.totalRecordsCount = response.txs
