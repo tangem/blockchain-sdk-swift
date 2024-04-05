@@ -83,15 +83,11 @@ class RadiantTransactionBuilder {
     }
     
     func estimateTransactionSize(transaction: Transaction) throws -> Int {
-        do {
-            let hashesForSign = try buildForSign(transaction: transaction)
-            let signaturesForSend = hashesForSign.map { _ in Data([UInt8](repeating: 0, count: 64)) }
-            let rawTransaction = try buildForSend(transaction: transaction, signatures: signaturesForSend)
-            
-            return rawTransaction.count
-        } catch {
-            throw WalletError.failedToCalculateTxSize
-        }
+        let hashesForSign = try buildForSign(transaction: transaction)
+        let signaturesForSend = hashesForSign.map { _ in Data([UInt8](repeating: 0, count: 64)) }
+        let rawTransaction = try buildForSend(transaction: transaction, signatures: signaturesForSend)
+        
+        return rawTransaction.count
     }
     
     // MARK: - Build Transaction Data
