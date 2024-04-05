@@ -9,22 +9,25 @@
 import Foundation
 import Combine
 
-class UTXOTransactionHistoryProvider: MultiNetworkProvider {
+final class UTXOTransactionHistoryProvider<Mapper>: MultiNetworkProvider where
+    Mapper: TransactionHistoryMapper,
+    Mapper.Response == BlockBookAddressResponse
+{
     var currentProviderIndex: Int = 0
     var providers: [BlockBookUtxoProvider] {
         blockBookProviders
     }
 
     private let blockBookProviders: [BlockBookUtxoProvider]
-    private let mapper: BlockBookTransactionHistoryMapper
-    
+    private let mapper: Mapper
+
     private var page: TransactionHistoryIndexPage?
     private var totalPages: Int = 0
     private var totalRecordsCount: Int = 0
 
     init(
         blockBookProviders: [BlockBookUtxoProvider],
-        mapper: BlockBookTransactionHistoryMapper
+        mapper: Mapper
     ) {
         self.blockBookProviders = blockBookProviders
         self.mapper = mapper
@@ -73,8 +76,12 @@ extension UTXOTransactionHistoryProvider: TransactionHistoryProvider {
                         throw WalletError.empty
                     }
                     
-                    let records = self.mapper.mapToTransactionRecords(response, amountType: .coin)
-                    
+                    let records = try self.mapper.mapToTransactionRecords(
+                        response,
+                        walletAddress: request.address,
+                        amountType: .coin
+                    )
+
                     self.page = TransactionHistoryIndexPage(number: response.page ?? 0)
                     self.totalPages = response.totalPages ?? 0
                     self.totalRecordsCount = response.txs
