@@ -86,9 +86,9 @@ private extension RadiantWalletManager {
                 }
                 
                 // Verify signature by public key
-                guard signatures.enumerated().contains(where: { index, sig in
-                    !walletCorePublicKey.verifyAsDER(signature: sig, message: Data(hashesForSign[index].reversed()))
-                }) else {
+                if signatures.enumerated().contains(where: { index, sig in
+                    !walletCorePublicKey.verify(signature: sig, message: Data(hashesForSign[index]))
+                }) {
                     throw WalletError.failedToBuildTx
                 }
                 
