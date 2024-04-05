@@ -49,7 +49,6 @@ public extension TransactionValidator {
         try validate(amount: amount)
         try validate(fee: fee)
         try validateTotal(amount: amount, fee: fee)
-        // All checks completed
     }
     
     func validate(amount: Amount) throws {
