@@ -117,13 +117,14 @@ extension PolygonTransactionHistoryMapper: TransactionHistoryMapper {
         _ response: PolygonTransactionHistoryResult,
         walletAddress: String,
         amountType: Amount.AmountType
-    ) throws -> TransactionHistory.Response {
+    ) throws -> [TransactionRecord] {
         guard response.status.isBooleanTrue else {
             throw mapToAPIError(response)
         }
 
         let transactions = response.result.transactions ?? []
-        let transactionRecords = transactions.compactMap { transaction -> TransactionRecord? in
+
+        return transactions.compactMap { transaction -> TransactionRecord? in
             let sourceAddress = transaction.from
             let destinationAddress = transaction.to
 
@@ -173,8 +174,6 @@ extension PolygonTransactionHistoryMapper: TransactionHistoryMapper {
                 date: Date(timeIntervalSince1970: timeStamp)
             )
         }
-
-        return TransactionHistory.Response(records: transactionRecords)
     }
 
     func reset() {

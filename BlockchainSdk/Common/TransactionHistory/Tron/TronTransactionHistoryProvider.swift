@@ -10,8 +10,9 @@ import Foundation
 import Combine
 
 final class TronTransactionHistoryProvider<Mapper> where
-    Mapper: BlockBookTransactionHistoryMapper,
-    Mapper: BlockBookTransactionHistoryTotalPageCountExtractor
+    Mapper: TransactionHistoryMapper,
+    Mapper: BlockBookTransactionHistoryTotalPageCountExtractor,
+    Mapper.Response == BlockBookAddressResponse
 {
     private let blockBookProvider: BlockBookUtxoProvider
     private let mapper: Mapper
@@ -103,7 +104,11 @@ extension TronTransactionHistoryProvider: TransactionHistoryProvider {
         })
         .tryMap { historyProvider, input in
             let (response, _) = input
-            let records = historyProvider.mapper.mapToTransactionRecords(response, amountType: request.amountType)
+            let records = try historyProvider.mapper.mapToTransactionRecords(
+                response,
+                walletAddress: request.address,
+                amountType: request.amountType
+            )
 
             return TransactionHistory.Response(records: records)
         }

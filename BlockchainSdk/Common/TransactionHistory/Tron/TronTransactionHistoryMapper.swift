@@ -218,13 +218,14 @@ struct TronTransactionHistoryMapper {
     }
 }
 
-// MARK: - BlockBookTransactionHistoryMapper protocol conformance
+// MARK: - TransactionHistoryMapper protocol conformance
 
-extension TronTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
+extension TronTransactionHistoryMapper: TransactionHistoryMapper {
     func mapToTransactionRecords(
         _ response: BlockBookAddressResponse,
+        walletAddress: String,
         amountType: Amount.AmountType
-    ) -> [TransactionRecord] {
+    ) throws -> [TransactionRecord] {
         let transactions = extractTransactions(from: response, amountType: amountType)
         let walletAddress = response.address
 
