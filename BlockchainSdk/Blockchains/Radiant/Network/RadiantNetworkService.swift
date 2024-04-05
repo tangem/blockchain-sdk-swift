@@ -25,16 +25,19 @@ extension RadiantNetworkService: HostProvider {
 
 extension RadiantNetworkService {
     func getInfo(address: String) -> AnyPublisher<RadiantAddressInfo, Error> {
-        let scripthash: String
-        
-        do {
-            scripthash = try RadiantAddressUtils().prepareScriptHash(address: address)
-        } catch {
-            return .anyFail(error: WalletError.empty)
+        let defferedScriptHash = Deferred {
+            return Future { promise in
+                let result = Result { try RadiantAddressUtils().prepareScriptHash(address: address) }
+                promise(result)
+            }
         }
         
-        return electrumProvider
-            .getAddressInfo(identifier: .scriptHash(scripthash))
+        return defferedScriptHash
+            .withWeakCaptureOf(self)
+            .flatMap { service, value in
+                service.electrumProvider
+                    .getAddressInfo(identifier: .scriptHash(value))
+            }
             .map { info in
                 RadiantAddressInfo(balance: info.balance, outputs: info.outputs)
             }
