@@ -238,16 +238,13 @@ private extension SolanaWalletManager {
     }
 
     func feeParameters(destinationAccountInfo: DestinationAccountInfo) -> SolanaFeeParameters {
-        let calculatedComputeUnitPrice = networkService.computeUnitPrice(
-            destinationAccountExists: destinationAccountInfo.accountExists
-        )
-
         let computeUnitLimit: UInt32?
         let computeUnitPrice: UInt64?
+
         if usePriorityFees {
             // https://www.helius.dev/blog/priority-fees-understanding-solanas-transaction-fee-mechanics
             computeUnitLimit = destinationAccountInfo.accountExists ? 200_000 : 400_000
-            computeUnitPrice = calculatedComputeUnitPrice
+            computeUnitPrice = destinationAccountInfo.accountExists ? 1_000_000 : 500_000
         } else {
             computeUnitLimit = nil
             computeUnitPrice = nil
