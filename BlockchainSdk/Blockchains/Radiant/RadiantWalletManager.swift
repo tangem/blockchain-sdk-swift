@@ -53,13 +53,14 @@ final class RadiantWalletManager: BaseManager {
 private extension RadiantWalletManager {
     func updateWallet(with addressInfo: RadiantAddressInfo) {
         let coinBalanceValue = addressInfo.balance / wallet.blockchain.decimalValue
-        wallet.add(coinValue: coinBalanceValue)
-        transactionBuilder.update(utxo: addressInfo.outputs)
         
-        //
+        // Reset pending transaction
         if coinBalanceValue != wallet.amounts[.coin]?.value {
             wallet.clearPendingTransaction()
         }
+        
+        wallet.add(coinValue: coinBalanceValue)
+        transactionBuilder.update(utxo: addressInfo.outputs)
     }
     
     func sendViaCompileTransaction(
@@ -86,9 +87,9 @@ private extension RadiantWalletManager {
                 }
                 
                 // Verify signature by public key
-                guard signatures.enumerated().contains(where: { index, sig in
-                    !walletCorePublicKey.verifyAsDER(signature: sig, message: Data(hashesForSign[index].reversed()))
-                }) else {
+                if signatures.enumerated().contains(where: { index, sig in
+                    !walletCorePublicKey.verify(signature: sig, message: Data(hashesForSign[index]))
+                }) {
                     throw WalletError.failedToBuildTx
                 }
                 

@@ -31,8 +31,7 @@ class ElectrumNetworkProvider: MultiNetworkProvider {
                             value: unspent.value,
                             height: unspent.height
                         )
-                    },
-                    scripts: []
+                    }
                 )
             }
             .eraseToAnyPublisher()

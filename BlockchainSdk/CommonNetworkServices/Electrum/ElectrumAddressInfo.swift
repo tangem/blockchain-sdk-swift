@@ -11,7 +11,6 @@ import Foundation
 public struct ElectrumAddressInfo {
     let balance: Decimal
     let outputs: [ElectrumUTXO]
-    let scripts: [ElectrumScriptUTXO]
 }
 
 public struct ElectrumUTXO {

@@ -45,7 +45,7 @@ extension RadiantNetworkService {
         electrumProvider
             .estimateFee()
             .map { sourceFee in
-                let targetFee = sourceFee > Constants.recommendedFeePer1000Bytes ? sourceFee : Constants.recommendedFeePer1000Bytes
+                let targetFee = max(sourceFee, Constants.recommendedFeePer1000Bytes)
                 
                 let minimal = targetFee
                 let normal = targetFee * Constants.normalFeeMultiplier
