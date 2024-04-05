@@ -24,7 +24,7 @@ public struct AptosCoreAddressService {
         
         let addressWithZeroBuffer = String(
             repeating: Constants.nonSignificationZero,
-            count: zeroOffset
+            count: zeroCount
         ).appending(addressWithoutPrefix)
         
         let nonsignificantAddress = addressWithZeroBuffer.addHexPrefix()
