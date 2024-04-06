@@ -41,8 +41,7 @@ class ElectrumNetworkProvider: MultiNetworkProvider {
     func estimateFee() -> AnyPublisher<Decimal, Error> {
         providerPublisher { provider in
             Future.async {
-                let fee = try await provider.estimateFee(block: 10)
-                return fee
+                try await provider.estimateFee(block: 10)
             }
             .eraseToAnyPublisher()
         }
@@ -51,8 +50,7 @@ class ElectrumNetworkProvider: MultiNetworkProvider {
     func send(transactionHex: String) -> AnyPublisher<String, Error> {
         providerPublisher { provider in
             Future.async {
-                async let result: String = provider.send(transactionHex: transactionHex)
-                return try await result
+                try await provider.send(transactionHex: transactionHex)
             }
             .eraseToAnyPublisher()
         }

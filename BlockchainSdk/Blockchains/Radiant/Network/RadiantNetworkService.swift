@@ -74,12 +74,11 @@ extension RadiantNetworkService {
         /*
          This minimal rate fee for successful transaction from constant
          -  Relying on answers from blockchain developers and costs from the official application (Electron-Radiant).
-         -  10000 satoshi per byte.
-         in https://github.com/RadiantBlockchain/radiantjs/blob/master/lib/transaction/transaction.js#L78
+         - 10000 satoshi per byte or 0.1 RXD per KB.
         */
         
-        static let recommendedFeePer1000Bytes: Decimal = 0.1
-        static let normalFeeMultiplier: Decimal = 1.5
-        static let priorityFeeMultiplier: Decimal = 2
+        static let recommendedFeePer1000Bytes: Decimal = Decimal(stringValue: "0.1")!
+        static let normalFeeMultiplier: Decimal = Decimal(stringValue: "1.5")!
+        static let priorityFeeMultiplier: Decimal = Decimal(stringValue: "2")!
     }
 }
