@@ -8,13 +8,13 @@
 import Foundation
 
 public struct AnyEncodable: Encodable {
-    private let _encode: (Encoder) throws -> Void
+    private let encodable: Encodable
 
-    public init<T: Encodable>(_ wrapped: T) {
-        _encode = wrapped.encode
+    public init(_ encodable: Encodable) {
+        self.encodable = encodable
     }
 
     public func encode(to encoder: Encoder) throws {
-        try _encode(encoder)
+        try encodable.encode(to: encoder)
     }
 }
