@@ -82,6 +82,14 @@ class RadiantTransactionBuilder {
         return rawTransaction
     }
     
+    func estimateTransactionSize(transaction: Transaction) throws -> Int {
+        let hashesForSign = try buildForSign(transaction: transaction)
+        let signaturesForSend = hashesForSign.map { _ in Data([UInt8](repeating: UInt8(0x01), count: 64)) }
+        let rawTransaction = try buildForSend(transaction: transaction, signatures: signaturesForSend)
+        
+        return rawTransaction.count
+    }
+    
     // MARK: - Build Transaction Data
     
     /// Build preimage hashes for sign transaction with specify Radiant blockchain (etc. HashOutputHashes)

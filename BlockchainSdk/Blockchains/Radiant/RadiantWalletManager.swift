@@ -15,26 +15,36 @@ final class RadiantWalletManager: BaseManager {
     // MARK: - Private Properties
     
     private let transactionBuilder: RadiantTransactionBuilder
-    
-    /*
-     TODO: - Will be implement in feature/IOS-6004-make-network-layer-radiant
-     private let networkService: RadiantNetworkService
-     */
+    private let networkService: RadiantNetworkService
     
     // MARK: - Init
     
-    init(wallet: Wallet, transactionBuilder: RadiantTransactionBuilder) throws {
+    init(wallet: Wallet, transactionBuilder: RadiantTransactionBuilder, networkService: RadiantNetworkService) throws {
         self.transactionBuilder = transactionBuilder
+        self.networkService = networkService
         super.init(wallet: wallet)
     }
     
     // MARK: - Implementation
     
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        /*
-         TODO: - Will be implement in feature/IOS-6004-make-network-layer-radiant
-         */
-    }
+            let accountInfoPublisher = networkService
+                .getInfo(address: wallet.address)
+            
+            cancellable = accountInfoPublisher
+                .withWeakCaptureOf(self)
+                .sink(receiveCompletion: { [weak self] result in
+                    switch result {
+                    case .failure(let error):
+                        self?.wallet.clearAmounts()
+                        completion(.failure(error))
+                    case .finished:
+                        completion(.success(()))
+                    }
+                }, receiveValue: { (manager, response) in
+                    manager.updateWallet(with: response)
+                })
+        }
     
 }
 
@@ -43,6 +53,12 @@ final class RadiantWalletManager: BaseManager {
 private extension RadiantWalletManager {
     func updateWallet(with addressInfo: RadiantAddressInfo) {
         let coinBalanceValue = addressInfo.balance / wallet.blockchain.decimalValue
+        
+        // Reset pending transaction
+        if coinBalanceValue != wallet.amounts[.coin]?.value {
+            wallet.clearPendingTransaction()
+        }
+        
         wallet.add(coinValue: coinBalanceValue)
         transactionBuilder.update(utxo: addressInfo.outputs)
     }
@@ -63,7 +79,7 @@ private extension RadiantWalletManager {
             .sign(hashes: hashesForSign, walletPublicKey: self.wallet.publicKey)
             .withWeakCaptureOf(self)
             .tryMap { walletManager, signatures in
-                guard 
+                guard
                     let walletCorePublicKey = PublicKey(data: walletManager.wallet.publicKey.blockchainKey, type: .secp256k1),
                     signatures.count == hashesForSign.count
                 else {
@@ -71,9 +87,9 @@ private extension RadiantWalletManager {
                 }
                 
                 // Verify signature by public key
-                guard signatures.enumerated().contains(where: { index, sig in
-                    !walletCorePublicKey.verifyAsDER(signature: sig, message: Data(hashesForSign[index].reversed()))
-                }) else {
+                if signatures.enumerated().contains(where: { index, sig in
+                    !walletCorePublicKey.verify(signature: sig, message: Data(hashesForSign[index]))
+                }) {
                     throw WalletError.failedToBuildTx
                 }
                 
@@ -81,12 +97,7 @@ private extension RadiantWalletManager {
             }
             .withWeakCaptureOf(self)
             .flatMap { walletManager, transactionData -> AnyPublisher<String, Error> in
-                /*
-                 TODO: - Will be implement in feature/IOS-6004-make-network-layer-radiant
-                 return walletManager.networkService.sendTransaction(data: transactionData)
-                 */
-                
-                return .anyFail(error: WalletError.failedToSendTx)
+                return walletManager.networkService.sendTransaction(data: transactionData)
             }
             .withWeakCaptureOf(self)
             .map { walletManager, txId -> TransactionSendResult in
@@ -97,18 +108,23 @@ private extension RadiantWalletManager {
             }
             .eraseToAnyPublisher()
     }
+    
+    func calculateFee(for estimatedFeePerKb: Decimal, for estimateSize: Int) -> Fee {
+        let decimalValue = wallet.blockchain.decimalValue
+        let perKbDecimalValue = (estimatedFeePerKb * decimalValue).rounded(blockchain: wallet.blockchain, roundingMode: .up)
+        let decimalFeeValue = Decimal(estimateSize) / Constants.perKbRate * perKbDecimalValue
+        let feeAmountValue = (decimalFeeValue / decimalValue).rounded(blockchain: wallet.blockchain, roundingMode: .up)
+        let feeAmount = Amount(with: wallet.blockchain, value: feeAmountValue)
+        
+        return Fee(feeAmount)
+    }
 }
 
 // MARK: - WalletManager
 
 extension RadiantWalletManager: WalletManager {
     var currentHost: String {
-        /*
-         TODO: - Will be implement in feature/IOS-6004-make-network-layer-radiant
-         networkService.host
-         */
-        
-        return ""
+        networkService.host
     }
     
     var allowsFeeSelection: Bool {
@@ -120,12 +136,43 @@ extension RadiantWalletManager: WalletManager {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
+        return networkService
+            .estimatedFee()
+            .withWeakCaptureOf(self)
+            .tryMap { (walletManager, estimatedFeeDecimalValue) -> [Fee] in
+                let dummyTransactionFee: Fee = Fee(
+                    .init(with: walletManager.wallet.blockchain, value: estimatedFeeDecimalValue.minimalSatoshiPerByte)
+                )
+                
+                let dummyTransaction = Transaction(
+                    amount: amount,
+                    fee: dummyTransactionFee,
+                    sourceAddress: walletManager.wallet.address,
+                    destinationAddress: destination,
+                    changeAddress: walletManager.wallet.address
+                )
+                
+                let estimatedSize = try walletManager.transactionBuilder.estimateTransactionSize(transaction: dummyTransaction)
+                
+                let minimalFee = walletManager.calculateFee(for: estimatedFeeDecimalValue.minimalSatoshiPerByte, for: estimatedSize)
+                let normalFee = walletManager.calculateFee(for: estimatedFeeDecimalValue.normalSatoshiPerByte, for: estimatedSize)
+                let priorityFee = walletManager.calculateFee(for: estimatedFeeDecimalValue.prioritySatoshiPerByte, for: estimatedSize)
+                
+                return [
+                    minimalFee,
+                    normalFee,
+                    priorityFee
+                ]
+            }
+            .eraseToAnyPublisher()
+    }
+}
+
+extension RadiantWalletManager {
+    enum Constants {
         /*
-         TODO: - Will be implement in feature/IOS-6004-make-network-layer-radiant
+         - We use 1000, because Electrum node return fee for per 1000 bytes.
          */
-        
-        return .justWithError(output: [
-            .init(Amount(with: wallet.blockchain, value: 0.1))
-        ])
+        static let perKbRate: Decimal = 1000
     }
 }
