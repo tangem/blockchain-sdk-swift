@@ -182,7 +182,7 @@ final class HederaWalletManager: BaseManager {
                     .eraseToAnyPublisher()
             }
 
-            // Any error returned from the API is treated as a non-existing account, just in case
+            // Any error returned from the API is treated as a non-existent account, just in case
             return walletManager
                 .networkService
                 .getAccountInfo(publicKey: alias.toBytesRaw())  // ECDSA key must be in a compressed form
