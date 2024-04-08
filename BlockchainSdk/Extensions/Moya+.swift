@@ -12,12 +12,13 @@ import struct AnyCodable.AnyEncodable
 
 extension Moya.Task {
     static func requestJSONRPC(
-        id: String,
+        id: Int,
         method: String,
         params: Encodable,
         encoder: JSONEncoder? = nil
     ) -> Self {
-        let jsonRPCParams = JSONRPCParams(
+        let jsonRPCParams = JSONRPC.Request(
+            jsonrpc: .v2,
             id: id,
             method: method,
             params: AnyEncodable(params)

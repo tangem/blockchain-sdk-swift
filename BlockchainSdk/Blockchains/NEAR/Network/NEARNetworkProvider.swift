@@ -67,7 +67,7 @@ struct NEARNetworkProvider {
 
         return provider.requestPublisher(NEARTarget(baseURL: baseURL, target: target))
             .filterSuccessfulStatusCodes()
-            .map(JSONRPCResult<T, NEARNetworkResult.APIError>.self, using: decoder)
+            .map(JSONRPC.Response<T, NEARNetworkResult.APIError>.self, using: decoder)
             .tryMap { try $0.result.get() }
             .eraseToAnyPublisher()
     }

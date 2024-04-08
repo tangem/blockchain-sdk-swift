@@ -10,8 +10,6 @@ import Foundation
 import Moya
 
 struct EthereumTarget: TargetType {
-    static let coinId = 67
-    
     let targetType: EthereumTargetType
     let baseURL: URL
     
@@ -24,42 +22,7 @@ struct EthereumTarget: TargetType {
     }
     
     var task: Task {
-        var parameters: [String: Any] = [
-            "jsonrpc": "2.0",
-            "method": ethMethod,
-            "id": EthereumTarget.coinId
-        ]
-
-        var params: [Any] = []
-        switch targetType {
-        case .balance(let address), .transactions(let address), .pending(let address):
-            params.append(address)
-        case .send(let transaction):
-            params.append(transaction)
-        case .gasLimit(let to, let from, let value, let data):
-            var gasLimitParams = [String: String]()
-            gasLimitParams["from"] = from
-            gasLimitParams["to"] = to
-            if let value = value {
-                gasLimitParams["value"] = value
-            }
-            if let data = data {
-                gasLimitParams["data"] = data
-            }
-            params.append(gasLimitParams)
-        case .gasPrice:
-            break
-        case .call(let contractAddress, let encodedData):
-            let dataValue = ["to": contractAddress, "data": encodedData]
-            params.append(dataValue)
-        }
-        
-        if let blockParams = blockParams {
-            params.append(blockParams)
-        }
-        parameters["params"] = params
-        
-        return .requestParameters(parameters: parameters, encoding: JSONEncoding.default)
+        return .requestJSONEncodable(jsonRpcRequest)
     }
     
     var headers: [String : String]? {
@@ -67,23 +30,38 @@ struct EthereumTarget: TargetType {
             "Content-Type": "application/json",
         ]
     }
-    
-    private var ethMethod: String {
+}
+
+private extension EthereumTarget {
+    static var id: Int = 0
+
+    var jsonRpcRequest: Encodable {
+        EthereumTarget.id += 1
+
         switch targetType {
-        case .balance: return "eth_getBalance"
-        case .transactions, .pending: return "eth_getTransactionCount"
-        case .send: return "eth_sendRawTransaction"
-        case .call: return "eth_call"
-        case .gasLimit: return "eth_estimateGas"
-        case .gasPrice: return "eth_gasPrice"
-        }
-    }
-    
-    private var blockParams: String? {
-        switch targetType {
-        case .balance, .transactions, .call: return "latest"
-        case .pending: return "pending"
-        case .send, .gasLimit, .gasPrice: return nil
+        case .balance(let address):
+            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_getBalance", params: [address, "latest"])
+        case .transactions(let address):
+            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_getTransactionCount", params: [address, "latest"])
+        case .pending(let address):
+            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_getTransactionCount", params: [address, "pending"])
+        case .send(let transaction):
+            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_sendRawTransaction", params: [transaction])
+        case .gasLimit(let params):
+            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_estimateGas", params: params)
+        case .gasPrice:
+            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_gasPrice", params: [String]()) // Empty params
+        case .priorityFee:
+            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_maxPriorityFeePerGas", params: [String]()) // Empty params
+        case .call(let params):
+            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_call", params: params)
+        case .feeHistory:
+            let blocks: Int = 4
+            let block = "latest"
+            let percentile: [Int] = [25, 75]
+            let params: [AnyEncodable] = [AnyEncodable(blocks), AnyEncodable(block), AnyEncodable(percentile)]
+
+            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_feeHistory", params: params)
         }
     }
 }
@@ -94,8 +72,12 @@ extension EthereumTarget {
         case transactions(address: String)
         case pending(address: String)
         case send(transaction: String)
-        case gasLimit(to: String, from: String, value: String?, data: String?)
+        case gasLimit(params: GasLimitParams)
         case gasPrice
-        case call(contractAddress: String, encodedData: String)
+        case call(params: CallParams)
+        case priorityFee
+
+        /// https://www.quicknode.com/docs/ethereum/eth_feeHistory
+        case feeHistory
     }
 }

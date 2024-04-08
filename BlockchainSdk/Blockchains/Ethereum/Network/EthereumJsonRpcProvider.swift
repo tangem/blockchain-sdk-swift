@@ -25,44 +25,49 @@ class EthereumJsonRpcProvider: HostProvider {
         provider = NetworkProvider<EthereumTarget>(configuration: configuration)
     }
     
-    func call(contractAddress: String, encodedData: String) -> AnyPublisher<EthereumResponse, Error> {
-        return requestPublisher(for: .call(contractAddress: contractAddress, encodedData: encodedData))
+    func call(contractAddress: String, encodedData: String) -> AnyPublisher<String, Error> {
+        requestPublisher(for: .call(params: .init(to: contractAddress, data: encodedData)))
     }
     
-    func getBalance(for address: String) -> AnyPublisher<EthereumResponse, Error> {
+    func getBalance(for address: String) -> AnyPublisher<String, Error> {
         requestPublisher(for: .balance(address: address))
     }
     
-    func getTxCount(for address: String) -> AnyPublisher<EthereumResponse, Error> {
+    func getTxCount(for address: String) -> AnyPublisher<String, Error> {
         requestPublisher(for: .transactions(address: address))
     }
     
-    func getPendingTxCount(for address: String) -> AnyPublisher<EthereumResponse, Error> {
+    func getPendingTxCount(for address: String) -> AnyPublisher<String, Error> {
         requestPublisher(for: .pending(address: address))
     }
     
-    func send(transaction: String) -> AnyPublisher<EthereumResponse, Error> {
+    func send(transaction: String) -> AnyPublisher<String, Error> {
         requestPublisher(for: .send(transaction: transaction))
     }
     
-    func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumResponse, Error> {
-        requestPublisher(for: .gasLimit(to: to, from: from, value: value, data: data))
+    func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<String, Error> {
+        requestPublisher(for: .gasLimit(params: .init(to: to, from: from, value: value, data: data)))
     }
     
-    func getGasPrice() -> AnyPublisher<EthereumResponse, Error> {
+    func getGasPrice() -> AnyPublisher<String, Error> {
         requestPublisher(for: .gasPrice)
     }
-    
-    private func requestPublisher(for targetType: EthereumTarget.EthereumTargetType) -> AnyPublisher<EthereumResponse, Error> {
-        provider.requestPublisher(
-            EthereumTarget(
-                targetType: targetType,
-                baseURL: url
-            )
-        )
-        .filterSuccessfulStatusAndRedirectCodes()
-        .map(EthereumResponse.self)
-        .mapError { $0 }
-        .eraseToAnyPublisher()
+
+    func getPriorityFee() -> AnyPublisher<String, Error> {
+        requestPublisher(for: .priorityFee)
+    }
+
+    func getFeeHistory() -> AnyPublisher<EthereumFeeHistoryResponse, Error> {
+        requestPublisher(for: .feeHistory)
+    }
+
+    private func requestPublisher<Result: Decodable>(for targetType: EthereumTarget.EthereumTargetType) -> AnyPublisher<Result, Error> {
+        let target = EthereumTarget(targetType: targetType, baseURL: url)
+
+        return provider.requestPublisher(target)
+            .filterSuccessfulStatusAndRedirectCodes()
+            .map(JSONRPC.Response<Result, JSONRPC.APIError>.self)
+            .tryMap { try $0.result.get() }
+            .eraseToAnyPublisher()
     }
 }

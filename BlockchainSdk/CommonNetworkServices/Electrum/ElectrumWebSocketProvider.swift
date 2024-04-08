@@ -21,7 +21,7 @@ class ElectrumWebSocketProvider: HostProvider {
     public init(url: URL) {
         let ping: WebSocketConnection.Ping = {
             do {
-                let request = JSONRPCWebSocketProvider.JSONRPCRequest(id: -1, method: Method.Server.ping.rawValue, params: [String]())
+                let request = JSONRPC.Request(jsonrpc: .none, id: -1, method: Method.Server.ping.rawValue, params: [String]()) // Empty params
                 let message = try request.string(encoder: .init())
                 return .message(interval: Constants.pingInterval, message: .string(message))
             } catch {
