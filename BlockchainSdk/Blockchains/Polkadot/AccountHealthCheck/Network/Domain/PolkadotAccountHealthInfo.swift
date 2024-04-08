@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct PolkadotAccountHealthInfo {
-    public let extrinsicCount: Int
-    public let nonceCount: Int
+public enum PolkadotAccountHealthInfo {
+    case nonExistentAccount
+    case existingAccount(extrinsicCount: Int, nonceCount: Int)
 }
