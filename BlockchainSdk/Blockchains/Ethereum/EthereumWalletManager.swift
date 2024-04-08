@@ -258,7 +258,3 @@ extension EthereumWalletManager: EthereumTransactionDataBuilder {
         return method.data
     }
 }
-
-enum EthereumWalletError: Error {
-    case bigUIntValueNotFound
-}

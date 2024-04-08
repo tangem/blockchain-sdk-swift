@@ -22,7 +22,9 @@ struct EthereumTarget: TargetType {
     }
     
     var task: Task {
-        return .requestJSONEncodable(jsonRpcRequest)
+        EthereumTarget.id += 1
+        let request = JSONRPC.Request(id: EthereumTarget.id, method: rpcMethod, params: params)
+        return .requestJSONEncodable(request)
     }
     
     var headers: [String : String]? {
@@ -35,33 +37,48 @@ struct EthereumTarget: TargetType {
 private extension EthereumTarget {
     static var id: Int = 0
 
-    var jsonRpcRequest: Encodable {
-        EthereumTarget.id += 1
+    var rpcMethod: String {
+        switch targetType {
+        case .balance:
+            return "eth_getBalance"
+        case .transactions:
+            return "eth_getTransactionCount"
+        case .pending:
+            return "eth_getTransactionCount"
+        case .send:
+            return "eth_sendRawTransaction"
+        case .gasLimit:
+            return "eth_estimateGas"
+        case .gasPrice:
+            return "eth_gasPrice"
+        case .priorityFee:
+            return "eth_maxPriorityFeePerGas"
+        case .call:
+            return "eth_call"
+        case .feeHistory:
+            return "eth_feeHistory"
+        }
+    }
 
+    var params: AnyEncodable {
         switch targetType {
         case .balance(let address):
-            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_getBalance", params: [address, "latest"])
+            return AnyEncodable([address, "latest"])
         case .transactions(let address):
-            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_getTransactionCount", params: [address, "latest"])
+            return AnyEncodable([address, "latest"])
         case .pending(let address):
-            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_getTransactionCount", params: [address, "pending"])
+            return AnyEncodable([address, "pending"])
         case .send(let transaction):
-            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_sendRawTransaction", params: [transaction])
+            return AnyEncodable([transaction])
         case .gasLimit(let params):
-            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_estimateGas", params: params)
-        case .gasPrice:
-            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_gasPrice", params: [String]()) // Empty params
-        case .priorityFee:
-            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_maxPriorityFeePerGas", params: [String]()) // Empty params
+            return AnyEncodable(params)
+        case .gasPrice, .priorityFee:
+            return AnyEncodable([String]())  // Empty params
         case .call(let params):
-            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_call", params: params)
+            return AnyEncodable(params)
         case .feeHistory:
-            let blocks: Int = 4
-            let block = "latest"
-            let percentile: [Int] = [25, 75]
-            let params: [AnyEncodable] = [AnyEncodable(blocks), AnyEncodable(block), AnyEncodable(percentile)]
-
-            return JSONRPC.Request(id: EthereumTarget.id, method: "eth_feeHistory", params: params)
+            let params = [AnyEncodable(4), AnyEncodable("latest"), AnyEncodable([25, 75])]
+            return AnyEncodable(params)
         }
     }
 }
