@@ -45,7 +45,7 @@ struct APIKeysInfoProvider {
         case .nownodes:
             return NownodesAPIKeysInfoProvider(apiKey: config.nowNodesApiKey)
                 .apiKeys(for: blockchain)
-        case .hedera:
+        case .arkhiaHedera:
             return .init(
                 headerName: Constants.xApiKeyHeaderName,
                 headerValue: config.hederaArkhiaApiKey

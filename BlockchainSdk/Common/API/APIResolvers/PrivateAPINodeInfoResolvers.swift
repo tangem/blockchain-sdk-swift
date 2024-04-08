@@ -41,8 +41,14 @@ struct PrivateAPINodeInfoResolvers {
             link = "https://chia.tangem.com"
         case .fireAcademy:
             link = "https://kraken.fireacademy.io/leaflet"
-        case .hedera:
+        case .arkhiaHedera:
             link = "https://pool.arkhia.io/hedera/mainnet/api/v1"
+        case .kaspa:
+            guard let url = config.kaspaSecondaryApiUrl else {
+                return nil
+            }
+
+            link = url
         case .blockchair, .blockcypher, .solana:
             return nil
         }

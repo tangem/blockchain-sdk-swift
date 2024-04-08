@@ -57,7 +57,7 @@ struct TestnetAPINodeInfoProvider {
                 .init(url: URL(string: "https://testnet.mirrornode.hedera.com/api/v1")!),
                 .init(
                     url: URL(string: "https://pool.arkhia.io/hedera/testnet/api/v1")!,
-                    keyInfo: keysInfoProvider.apiKeys(for: .hedera)
+                    keyInfo: keysInfoProvider.apiKeys(for: .arkhiaHedera)
                 )
             ]
         case .ton:

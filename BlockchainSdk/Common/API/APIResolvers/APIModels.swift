@@ -40,13 +40,14 @@ public enum PrivateAPI: String {
     case blockcypher
     case ton
     case tron
-    case hedera
+    case arkhiaHedera
     case infura
     case adalite
     case tangemRosetta
     case fireAcademy
     case tangemChia
     case solana
+    case kaspa
 }
 
 struct NodeInfo: HostProvider {

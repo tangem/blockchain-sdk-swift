@@ -23,15 +23,6 @@ struct KaspaWalletAssembly: WalletManagerAssembly {
                 return KaspaNetworkProvider(url: nodeInfo.url, networkConfiguration: input.networkConfig)
             }
             
-            if let kaspaSecondaryApiUrl = URL(string: input.blockchainSdkConfig.kaspaSecondaryApiUrl ?? "") {
-                providers.append(
-                    KaspaNetworkProvider(
-                        url: kaspaSecondaryApiUrl,
-                        networkConfiguration: input.networkConfig
-                    )
-                )
-            }
-            
             $0.networkService = KaspaNetworkService(providers: providers, blockchain: input.blockchain)
         }
     }
