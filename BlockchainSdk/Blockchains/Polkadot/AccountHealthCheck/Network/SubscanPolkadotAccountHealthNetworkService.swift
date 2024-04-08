@@ -50,7 +50,7 @@ public final class SubscanPolkadotAccountHealthNetworkService {
                 retryAttempt: 0
             ) { error in
                 // Do not retry account info requests for new and non-activated accounts
-                if let error = error as? SubscanAPIResult.Error, error.code == Constants.nonExistingAccountErrorCode {
+                if let error = error as? SubscanAPIResult.Error, error.code == Constants.nonExistentAccountErrorCode {
                     return true
                 }
                 return false
@@ -59,7 +59,7 @@ public final class SubscanPolkadotAccountHealthNetworkService {
             .account
 
             return .existingAccount(extrinsicCount: result.countExtrinsic, nonceCount: result.nonce)
-        } catch let error as SubscanAPIResult.Error where error.code == Constants.nonExistingAccountErrorCode {
+        } catch let error as SubscanAPIResult.Error where error.code == Constants.nonExistentAccountErrorCode {
             return .nonExistentAccount
         } catch {
             throw error
@@ -187,7 +187,7 @@ private extension SubscanPolkadotAccountHealthNetworkService {
         static var retryBaseValue: TimeInterval { 1.0 }
         static var retryJitterMinValue: TimeInterval { -retryJitterMaxValue }
         static var retryJitterMaxValue: TimeInterval { 0.5 }
-        static let nonExistingAccountErrorCode = 10004
+        static let nonExistentAccountErrorCode = 10004
     }
 }
 
