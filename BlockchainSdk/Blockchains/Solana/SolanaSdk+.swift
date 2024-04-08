@@ -151,6 +151,48 @@ extension Api {
         .eraseToAnyPublisher()
     }
     
+    func getAccountInfo<T: BufferLayout>(account: String, decodedTo: T.Type) async throws -> BufferInfo<T> {
+        try await withCheckedThrowingContinuation { [weak self] continuation in
+            guard let self else {
+                continuation.resume(throwing: WalletError.empty)
+                return
+            }
+            getAccountInfo(account: account, decodedTo: T.self) {
+                switch $0 {
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                case .success(let fee):
+                    continuation.resume(returning: fee)
+                }
+            }
+        }
+    }
+    
+    func getTokenAccountsByOwner<T: Decodable>(
+        pubkey: String,
+        mint: String? = nil,
+        programId: String? = nil,
+        configs: RequestConfiguration? = nil
+    ) async throws -> [T] {
+        try await withCheckedThrowingContinuation { [weak self] continuation in
+            guard let self else {
+                continuation.resume(throwing: WalletError.empty)
+                return
+            }
+            
+            getTokenAccountsByOwner(pubkey: pubkey, mint: mint, programId: programId, configs: configs) {
+                (result: Result<[T], Error>) in
+                
+                switch result {
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                case .success(let accounts):
+                    continuation.resume(returning: accounts)
+                }
+            }
+        }
+    }
+    
     func getTokenAccountsByOwner<T: Decodable>(
         pubkey: String,
         mint: String? = nil,
@@ -178,6 +220,24 @@ extension Api {
         }
         .share()
         .eraseToAnyPublisher()
+    }
+    
+    func getSignatureStatuses(pubkeys: [String], configs: RequestConfiguration? = nil) async throws -> [SignatureStatus?] {
+        try await withCheckedThrowingContinuation { [weak self] continuation in
+            guard let self else {
+                continuation.resume(throwing: WalletError.empty)
+                return
+            }
+            
+            getSignatureStatuses(pubkeys: pubkeys, configs: configs) {
+                switch $0 {
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                case .success(let statuses):
+                    continuation.resume(returning: statuses)
+                }
+            }
+        }
     }
     
     func getSignatureStatuses(pubkeys: [String], configs: RequestConfiguration? = nil) -> AnyPublisher<[SignatureStatus?], Error> {

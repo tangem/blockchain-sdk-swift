@@ -26,6 +26,15 @@ class SolanaNetworkService {
         self.hostProvider = hostProvider
     }
     
+    func getInfo(accountId: String, tokens: [Token], transactionIDs: [String]) async throws -> SolanaAccountInfoResponse {
+        async let mainAccount = mainAccountInfo(accountId: accountId)
+        async let splTokenAccounts = tokenAccountsInfo(accountId: accountId, programId: .tokenProgramId)
+        async let token2022Accounts = tokenAccountsInfo(accountId: accountId, programId: .token2022ProgramId)
+        async let confirmedTransactionIDs = confirmedTransactions(among: transactionIDs)
+        
+        return try await self.mapInfo(mainAccountInfo: mainAccount, tokenAccountsInfo: splTokenAccounts + token2022Accounts, tokens: tokens, confirmedTransactionIDs: confirmedTransactionIDs)
+    }
+    
     func getInfo(accountId: String, tokens: [Token], transactionIDs: [String]) -> AnyPublisher<SolanaAccountInfoResponse, Error> {
         Publishers.Zip4(
             mainAccountInfo(accountId: accountId),
@@ -208,12 +217,38 @@ class SolanaNetworkService {
             }.eraseToAnyPublisher()
     }
     
+    private func mainAccountInfo(accountId: String) async throws -> SolanaMainAccountInfoResponse {
+        do {
+            return try await Task.retrying {
+                let info = try await self.solanaSdk.api.getAccountInfo(account: accountId, decodedTo: AccountInfo.self)
+                let lamports = info.lamports
+                return SolanaMainAccountInfoResponse(balance: lamports, accountExists: true)
+            }.value
+        } catch {
+            guard let solanaError = error as? SolanaError, case .nullValue = solanaError else {
+                throw error
+            }
+            return SolanaMainAccountInfoResponse(balance: 0, accountExists: false)
+        }
+    }
+    
     private func tokenAccountsInfo(accountId: String, programId: PublicKey) -> AnyPublisher<[TokenAccount<AccountInfoData>], Error> {
         let configs = RequestConfiguration(commitment: "recent", encoding: "jsonParsed")
         
         return solanaSdk.api.getTokenAccountsByOwner(pubkey: accountId, programId: programId.base58EncodedString, configs: configs)
             .retry(1)
             .eraseToAnyPublisher()
+    }
+    
+    private func tokenAccountsInfo(accountId: String, programId: PublicKey) async throws -> [TokenAccount<AccountInfoData>] {
+        try await Task.retrying {
+            try await self.solanaSdk.api.getTokenAccountsByOwner(
+                pubkey: accountId,
+                programId: programId.base58EncodedString,
+                configs: RequestConfiguration(commitment: "recent", encoding: "jsonParsed")
+            )
+        }
+        .value
     }
     
     private func confirmedTransactions(among transactionIDs: [String]) -> AnyPublisher<[String], Error> {
@@ -234,6 +269,21 @@ class SolanaNetworkService {
                     }
             }
             .eraseToAnyPublisher()
+    }
+    
+    private func confirmedTransactions(among transactionIDs: [String]) async throws -> [String] {
+        try await Task.retrying {
+            let statuses: [SignatureStatus?] = try await self.solanaSdk.api.getSignatureStatuses(pubkeys: transactionIDs)
+            return zip(transactionIDs, statuses)
+                .filter {
+                    guard let status = $0.1 else { return true }
+                    return status.confirmations == nil
+                }
+                .map {
+                    $0.0
+                }
+        }
+        .value
     }
     
     private func mapInfo(
