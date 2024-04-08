@@ -147,10 +147,6 @@ class SolanaNetworkService {
         return Just(rent).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
     
-    func computeUnitPrice(destinationAccountExists: Bool) -> UInt64 {
-        destinationAccountExists ? 1_000_000 : 500_000
-    }
-    
     func minimalBalanceForRentExemption(dataLength: UInt64 = 0) -> AnyPublisher<Decimal, Error> {
         // The accounts metadata size (128) is already factored in
         solanaSdk.api.getMinimumBalanceForRentExemption(dataLength: dataLength)
