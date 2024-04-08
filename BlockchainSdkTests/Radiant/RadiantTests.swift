@@ -109,7 +109,7 @@ final class RadiantTests: XCTestCase {
         let amounValueDecimal = (Decimal(1000)) / blockchain.decimalValue
         
         let amountValue = Amount(with: blockchain, value: amounValueDecimal)
-        let feeValue = Amount(with: blockchain, value: 0.1)
+        let feeValue = Amount(with: blockchain, value: .init(stringValue: "0.1")!)
         
         let transaction = Transaction(
             amount: amountValue,
