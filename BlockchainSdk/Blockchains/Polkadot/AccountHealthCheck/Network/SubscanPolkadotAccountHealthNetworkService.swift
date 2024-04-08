@@ -38,26 +38,32 @@ public final class SubscanPolkadotAccountHealthNetworkService {
     }
 
     public func getAccountHealthInfo(account: String) async throws -> PolkadotAccountHealthInfo {
-        let result = try await perform(
-            request: .init(
-                isTestnet: isTestnet,
-                encoder: encoder,
-                target: .getAccountInfo(address: account)
-            ),
-            output: SubscanAPIResult.AccountInfo.self,
-            failure: SubscanAPIResult.Error.self,
-            retryAttempt: 0
-        ) { error in
-            // Do not retry account info requests for new and non-activated accounts 
-            if let error = error as? SubscanAPIResult.Error, error.code == Constants.nonExistingAccountErrorCode {
-                return true
+        do {
+            let result = try await perform(
+                request: .init(
+                    isTestnet: isTestnet,
+                    encoder: encoder,
+                    target: .getAccountInfo(address: account)
+                ),
+                output: SubscanAPIResult.AccountInfo.self,
+                failure: SubscanAPIResult.Error.self,
+                retryAttempt: 0
+            ) { error in
+                // Do not retry account info requests for new and non-activated accounts
+                if let error = error as? SubscanAPIResult.Error, error.code == Constants.nonExistingAccountErrorCode {
+                    return true
+                }
+                return false
             }
-            return false
-        }
-        .data
-        .account
+            .data
+            .account
 
-        return PolkadotAccountHealthInfo(extrinsicCount: result.countExtrinsic, nonceCount: result.nonce)
+            return .existingAccount(extrinsicCount: result.countExtrinsic, nonceCount: result.nonce)
+        } catch let error as SubscanAPIResult.Error where error.code == Constants.nonExistingAccountErrorCode {
+            return .nonExistentAccount
+        } catch {
+            throw error
+        }
     }
     
     public func getTransactionsList(account: String, afterId: Int) async throws -> [PolkadotTransaction] {
