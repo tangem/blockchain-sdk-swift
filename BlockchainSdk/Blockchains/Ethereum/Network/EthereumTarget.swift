@@ -60,6 +60,7 @@ private extension EthereumTarget {
         }
     }
 
+    // the params have to be nested in an array
     var params: AnyEncodable {
         switch targetType {
         case .balance(let address):
@@ -71,14 +72,13 @@ private extension EthereumTarget {
         case .send(let transaction):
             return AnyEncodable([transaction])
         case .gasLimit(let params):
-            return AnyEncodable(params)
+            return AnyEncodable([params])
         case .gasPrice, .priorityFee:
-            return AnyEncodable([String]())  // Empty params
+            return AnyEncodable([Int]())  // Empty params
         case .call(let params):
-            return AnyEncodable(params)
+            return AnyEncodable([AnyEncodable(params), AnyEncodable("latest")])
         case .feeHistory:
-            let params = [AnyEncodable(4), AnyEncodable("latest"), AnyEncodable([25, 75])]
-            return AnyEncodable(params)
+            return AnyEncodable([AnyEncodable(4), AnyEncodable("latest"), AnyEncodable([25, 75])])
         }
     }
 }
