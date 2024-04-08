@@ -1240,8 +1240,7 @@ class AddressesTests: XCTestCase {
         
         // For ed25519 wrong make address from public key
         let edPublicKey = Data(hex: "e7287a82bdcd3a5c2d0ee2150ccbc80d6a00991411fb44cd4d13cef46618aadb")
-        let addrEdv = try? addressService.makeAddress(from: edPublicKey)
-        XCTAssertNil(addrEdv)
+        XCTAssertThrowsError(try addressService.makeAddress(from: edPublicKey))
     }
     
     // https://github.com/RadiantBlockchain/radiantjs/blob/master/test/address.js
