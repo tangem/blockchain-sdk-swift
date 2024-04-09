@@ -221,7 +221,7 @@ extension Action {
                 
                 self.serializeMessage(
                     to: destination,
-                    amount: amount, 
+                    amount: amount,
                     computeUnitLimit: computeUnitLimit,
                     computeUnitPrice: computeUnitPrice,
                     allowUnfundedRecipient: allowUnfundedRecipient,

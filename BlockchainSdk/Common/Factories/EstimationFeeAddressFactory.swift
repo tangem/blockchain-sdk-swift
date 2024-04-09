@@ -17,7 +17,7 @@ struct EstimationFeeAddressFactory {
         case .chia:
             // Can not generate and doesn't depend on destination
             return ""
-        case .xrp, 
+        case .xrp,
              .stellar,
              .binance,
              .veChain:

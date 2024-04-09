@@ -89,7 +89,7 @@ class SolanaNetworkService {
     ) -> AnyPublisher<Decimal, Error> {
         solanaSdk.action.serializeMessage(
             to: destinationAddress,
-            amount: amount, 
+            amount: amount,
             computeUnitLimit: computeUnitLimit,
             computeUnitPrice: computeUnitPrice,
             allowUnfundedRecipient: true,

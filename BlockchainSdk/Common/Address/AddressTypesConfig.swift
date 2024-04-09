@@ -63,7 +63,7 @@ struct AddressTypesConfig {
              .shibarium,
              .aptos,
              .hedera,
-             .areon, 
+             .areon,
              .playa3ullGames,
              .pulsechain,
              .aurora,

@@ -250,7 +250,7 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "LTC"
         case .stellar:
             return "XLM"
-        case .ethereum, 
+        case .ethereum,
              .arbitrum,
              .optimism,
              .aurora,
