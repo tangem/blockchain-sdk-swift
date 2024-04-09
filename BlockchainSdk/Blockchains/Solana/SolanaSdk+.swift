@@ -151,18 +151,74 @@ extension Api {
         .eraseToAnyPublisher()
     }
     
-    func getAccountInfo<T: BufferLayout>(account: String, decodedTo: T.Type) async throws -> BufferInfo<T> {
+    func getTokenAccountsByOwner<T: Decodable>(
+        pubkey: String,
+        mint: String? = nil,
+        programId: String? = nil,
+        configs: RequestConfiguration? = nil
+    ) -> AnyPublisher<[T], Error> {
+        Deferred {
+            Future { [weak self] promise in
+                guard let self = self else {
+                    promise(.failure(WalletError.empty))
+                    return
+                }
+                
+                self.getTokenAccountsByOwner(pubkey: pubkey, mint: mint, programId: programId, configs: configs) {
+                    (result: Result<[T], Error>) in
+                    
+                    switch result {
+                    case .failure(let error):
+                        promise(.failure(error))
+                    case .success(let accounts):
+                        promise(.success(accounts))
+                    }
+                }
+            }
+        }
+        .share()
+        .eraseToAnyPublisher()
+    }
+    
+    func getSignatureStatuses(pubkeys: [String], configs: RequestConfiguration? = nil) -> AnyPublisher<[SignatureStatus?], Error> {
+        Deferred {
+            Future { [weak self] promise in
+                guard let self = self else {
+                    promise(.failure(WalletError.empty))
+                    return
+                }
+                
+                self.getSignatureStatuses(pubkeys: pubkeys, configs: configs) {
+                    switch $0 {
+                    case .failure(let error):
+                        promise(.failure(error))
+                    case .success(let statuses):
+                        promise(.success(statuses))
+                    }
+                }
+            }
+        }
+        .share()
+        .eraseToAnyPublisher()
+    }
+}
+
+// MARK: swift concurrency versions of several calls
+
+extension Api {
+    func getSignatureStatuses(pubkeys: [String], configs: RequestConfiguration? = nil) async throws -> [SignatureStatus?] {
         try await withCheckedThrowingContinuation { [weak self] continuation in
             guard let self else {
                 continuation.resume(throwing: WalletError.empty)
                 return
             }
-            getAccountInfo(account: account, decodedTo: T.self) {
+            
+            getSignatureStatuses(pubkeys: pubkeys, configs: configs) {
                 switch $0 {
                 case .failure(let error):
                     continuation.resume(throwing: error)
-                case .success(let fee):
-                    continuation.resume(returning: fee)
+                case .success(let statuses):
+                    continuation.resume(returning: statuses)
                 }
             }
         }
@@ -193,73 +249,21 @@ extension Api {
         }
     }
     
-    func getTokenAccountsByOwner<T: Decodable>(
-        pubkey: String,
-        mint: String? = nil,
-        programId: String? = nil,
-        configs: RequestConfiguration? = nil
-    ) -> AnyPublisher<[T], Error> {
-        Deferred {
-            Future { [weak self] promise in
-                guard let self = self else {
-                    promise(.failure(WalletError.empty))
-                    return
-                }
-                
-                self.getTokenAccountsByOwner(pubkey: pubkey, mint: mint, programId: programId, configs: configs) {
-                    (result: Result<[T], Error>) in
-                    
-                    switch result {
-                    case .failure(let error):
-                        promise(.failure(error))
-                    case .success(let accounts):
-                        promise(.success(accounts))
-                    }
-                }
-            }
-        }
-        .share()
-        .eraseToAnyPublisher()
-    }
-    
-    func getSignatureStatuses(pubkeys: [String], configs: RequestConfiguration? = nil) async throws -> [SignatureStatus?] {
+    func getAccountInfo<T: BufferLayout>(account: String, decodedTo: T.Type) async throws -> BufferInfo<T> {
         try await withCheckedThrowingContinuation { [weak self] continuation in
             guard let self else {
                 continuation.resume(throwing: WalletError.empty)
                 return
             }
-            
-            getSignatureStatuses(pubkeys: pubkeys, configs: configs) {
+            getAccountInfo(account: account, decodedTo: T.self) {
                 switch $0 {
                 case .failure(let error):
                     continuation.resume(throwing: error)
-                case .success(let statuses):
-                    continuation.resume(returning: statuses)
+                case .success(let fee):
+                    continuation.resume(returning: fee)
                 }
             }
         }
-    }
-    
-    func getSignatureStatuses(pubkeys: [String], configs: RequestConfiguration? = nil) -> AnyPublisher<[SignatureStatus?], Error> {
-        Deferred {
-            Future { [weak self] promise in
-                guard let self = self else {
-                    promise(.failure(WalletError.empty))
-                    return
-                }
-                
-                self.getSignatureStatuses(pubkeys: pubkeys, configs: configs) {
-                    switch $0 {
-                    case .failure(let error):
-                        promise(.failure(error))
-                    case .success(let statuses):
-                        promise(.success(statuses))
-                    }
-                }
-            }
-        }
-        .share()
-        .eraseToAnyPublisher()
     }
 }
 

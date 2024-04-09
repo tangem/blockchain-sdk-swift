@@ -23,8 +23,13 @@ class SolanaWalletManager: BaseManager, WalletManager {
         let transactionIDs = wallet.pendingTransactions.map { $0.hash }
         Task { @MainActor [weak self] in
             do {
-                let response = try await networkService.getInfo(accountId: wallet.address, tokens: cardTokens, transactionIDs: transactionIDs)
-                self?.updateWallet(info: response)
+                guard let self else { return }
+                let response = try await networkService.getInfo(
+                    accountId: wallet.address,
+                    tokens: cardTokens,
+                    transactionIDs: transactionIDs
+                )
+                updateWallet(info: response)
                 completion(.success(()))
             } catch {
                 completion(.failure(error))
