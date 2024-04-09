@@ -432,6 +432,7 @@ public indirect enum Blockchain: Equatable, Hashable {
         switch self {
         case .ethereum,
              .base:
+            // TODO: Andrey Fedorov - Add other Ethereum L2s here (IOS-6505)
             return "ERC20"
         case .binance: return "BEP2"
         case .bsc: return "BEP20"
