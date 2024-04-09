@@ -31,6 +31,18 @@ extension Moya.Task {
     }
 }
 
+extension Moya.URLEncoding {
+    static var tangem: Self {
+        let queryStringEncoding: URLEncoding = .queryString
+
+        return URLEncoding(
+            destination: queryStringEncoding.destination,
+            arrayEncoding: queryStringEncoding.arrayEncoding,
+            boolEncoding: .literal
+        )
+    }
+}
+
 extension Moya.Response {
     func tryMap<Output, Failure>(
         output: Output.Type,

@@ -56,12 +56,7 @@ extension HederaTarget: TargetType {
                 "balance": false,
                 "account.publickey": publicKey,
             ]
-            let encoding = URLEncoding(
-                destination: URLEncoding.queryString.destination,
-                arrayEncoding: URLEncoding.queryString.arrayEncoding,
-                boolEncoding: .literal
-            )
-            return .requestParameters(parameters: parameters, encoding: encoding)
+            return .requestParameters(parameters: parameters, encoding: URLEncoding.tangem)
         case .getExchangeRate:
             return .requestPlain
         }
