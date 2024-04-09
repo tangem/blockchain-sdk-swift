@@ -19,6 +19,7 @@ struct HederaTarget {
 extension HederaTarget {
     enum Target {
         case getAccounts(publicKey: String)
+        case getTokens(accountId: String)
         case getExchangeRate
     }
 }
@@ -28,7 +29,9 @@ extension HederaTarget {
 extension HederaTarget: TargetType {
     var baseURL: URL {
         switch target {
-        case .getAccounts, .getExchangeRate:
+        case .getAccounts,
+             .getTokens,
+             .getExchangeRate:
             return configuration.baseURL
         }
     }
@@ -37,6 +40,8 @@ extension HederaTarget: TargetType {
         switch target {
         case .getAccounts:
             return "accounts"
+        case .getTokens(let accountId):
+            return "accounts/\(accountId)/tokens"
         case .getExchangeRate:
             return "network/exchangerate"
         }
@@ -44,7 +49,9 @@ extension HederaTarget: TargetType {
 
     var method: Moya.Method {
         switch target {
-        case .getAccounts, .getExchangeRate:
+        case .getAccounts,
+             .getTokens,
+             .getExchangeRate:
             return .get
         }
     }
@@ -55,6 +62,11 @@ extension HederaTarget: TargetType {
             let parameters: [String: Any] = [
                 "balance": false,
                 "account.publickey": publicKey,
+            ]
+            return .requestParameters(parameters: parameters, encoding: URLEncoding.tangem)
+        case .getTokens:
+            let parameters: [String: Any] = [
+                "limit": UInt8.max,     // 255 unique tokens per account should be enough
             ]
             return .requestParameters(parameters: parameters, encoding: URLEncoding.tangem)
         case .getExchangeRate:
@@ -69,7 +81,9 @@ extension HederaTarget: TargetType {
         ]
 
         switch target {
-        case .getAccounts, .getExchangeRate:
+        case .getAccounts,
+             .getTokens,
+             .getExchangeRate:
             if let apiKeyHeaderName = configuration.apiKeyHeaderName {
                 headers[apiKeyHeaderName] = configuration.apiKeyHeaderValue
             }

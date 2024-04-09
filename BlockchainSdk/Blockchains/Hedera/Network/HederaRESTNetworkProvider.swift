@@ -26,6 +26,10 @@ struct HederaRESTNetworkProvider {
         return requestPublisher(for: .getAccounts(publicKey: publicKey))
     }
 
+    func getTokens(accountId: String) -> some Publisher<HederaNetworkResult.TokensInfo, Error> {
+        return requestPublisher(for: .getTokens(accountId: accountId))
+    }
+
     func getExchangeRates() -> some Publisher<HederaNetworkResult.ExchangeRate, Error> {
         return requestPublisher(for: .getExchangeRate)
     }
