@@ -63,7 +63,7 @@ private extension WalletManagerFactory {
             pairPublicKey: pairPublicKey,
             blockchainSdkConfig: config,
             blockchainSdkDependencies: dependencies,
-            apiOrder: apiOrder
+            apiInfo: apiOrder[blockchain.codingKey] ?? []
         )
         return try blockchain.assembly.make(with: input)
     }
@@ -99,7 +99,7 @@ extension WalletManagerFactory {
             pairPublicKey: nil,
             blockchainSdkConfig: config,
             blockchainSdkDependencies: dependencies,
-            apiOrder: apiOrder
+            apiInfo: apiOrder[blockchain.codingKey] ?? []
         )
         return try blockchain.assembly.make(with: input)
     }

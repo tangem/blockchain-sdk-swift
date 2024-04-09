@@ -12,7 +12,7 @@ struct APIResolver {
     let blockchain: Blockchain
     let config: BlockchainSdkConfig
 
-    func resolveProviders<T>(apiInfos: [APIInfo], factory: (NodeInfo, APIInfo?) -> T?) -> [T] {
+    func resolveProviders<T>(apiInfos: [NetworkProviderType], factory: (NodeInfo, NetworkProviderType?) -> T?) -> [T] {
         if blockchain.isTestnet {
             return TestnetAPINodeInfoProvider(blockchain: blockchain, config: config).urls()?.compactMap {
                 factory($0, nil)

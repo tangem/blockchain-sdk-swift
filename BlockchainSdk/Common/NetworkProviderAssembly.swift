@@ -12,13 +12,7 @@ protocol NetworkProviderAssemblyInput {
     var blockchain: Blockchain { get }
     var blockchainSdkConfig: BlockchainSdkConfig { get }
     var networkConfig: NetworkProviderConfiguration { get }
-    var apiOrder: APIOrder { get }
-}
-
-extension NetworkProviderAssemblyInput {
-    var apiInfo: [APIInfo] {
-        apiOrder[blockchain.codingKey] ?? []
-    }
+    var apiInfo: [NetworkProviderType] { get }
 }
 
 struct NetworkProviderAssembly {
@@ -82,7 +76,7 @@ extension NetworkProviderAssembly {
     struct Input: NetworkProviderAssemblyInput {
         let blockchainSdkConfig: BlockchainSdkConfig
         let blockchain: Blockchain
-        let apiOrder: APIOrder
+        let apiInfo: [NetworkProviderType]
 
         var networkConfig: NetworkProviderConfiguration {
             blockchainSdkConfig.networkProviderConfiguration(for: blockchain)

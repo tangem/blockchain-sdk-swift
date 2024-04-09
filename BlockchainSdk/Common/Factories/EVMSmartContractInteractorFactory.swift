@@ -15,7 +15,7 @@ public struct EVMSmartContractInteractorFactory {
         self.config = config
     }
 
-    public func makeInteractor(for blockchain: Blockchain, apiInfo: [APIInfo]) throws -> EVMSmartContractInteractor {
+    public func makeInteractor(for blockchain: Blockchain, apiInfo: [NetworkProviderType]) throws -> EVMSmartContractInteractor {
         guard blockchain.isEvm else {
             throw FactoryError.invalidBlockchain
         }
@@ -27,7 +27,7 @@ public struct EVMSmartContractInteractorFactory {
                 blockchain: blockchain,
                 blockchainSdkConfig: config,
                 networkConfig: config.networkProviderConfiguration(for: blockchain), 
-                apiOrder: [blockchain.codingKey: apiInfo]
+                apiInfo: apiInfo
             )),
             blockcypherProvider: nil,
             abiEncoder: WalletCoreABIEncoder()
@@ -52,6 +52,6 @@ private extension EVMSmartContractInteractorFactory {
         var blockchain: Blockchain
         var blockchainSdkConfig: BlockchainSdkConfig
         var networkConfig: NetworkProviderConfiguration
-        var apiOrder: APIOrder
+        var apiInfo: [NetworkProviderType]
     }
 }

@@ -7,32 +7,10 @@
 
 import Foundation
 
-public typealias APIOrder = [String: [APIInfo]]
+public typealias APIOrder = [String: [NetworkProviderType]]
 
-public struct APIInfo: Decodable {
-    let type: APIType
-    let provider: String?
-    let url: String?
-
-    var api: PrivateAPI? {
-        PrivateAPI(rawValue: provider ?? "")
-    }
-
-    public init(type: APIInfo.APIType, provider: String? = nil, url: String? = nil) {
-        self.type = type
-        self.provider = provider
-        self.url = url
-    }
-}
-
-public extension APIInfo {
-    enum APIType: String, Decodable {
-        case `public` = "public"
-        case `private` = "private"
-    }
-}
-
-public enum PrivateAPI: String {
+public enum NetworkProviderType {
+    case `public`(link: String)
     case nownodes
     case quicknode
     case getblock
@@ -53,9 +31,8 @@ public enum PrivateAPI: String {
 struct NodeInfo: HostProvider {
     let url: URL
     let keyInfo: APIKeyInfo?
-    var link: String {
-        url.absoluteString
-    }
+
+    var link: String { url.absoluteString }
 
     var host: String { link }
 

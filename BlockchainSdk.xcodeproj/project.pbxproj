@@ -244,7 +244,6 @@
 		B00DF9912BBEA9DA004397CB /* APIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DF9902BBEA9DA004397CB /* APIModels.swift */; };
 		B00DF9932BBEAA8B004397CB /* TestnetAPINodeInfoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DF9922BBEAA8B004397CB /* TestnetAPINodeInfoProvider.swift */; };
 		B00DF9962BBEAADA004397CB /* APINodeInfoResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DF9952BBEAADA004397CB /* APINodeInfoResolver.swift */; };
-		B00DF9982BBEAB31004397CB /* PrivateAPINodeInfoResolvers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DF9972BBEAB31004397CB /* PrivateAPINodeInfoResolvers.swift */; };
 		B00DF99A2BBEAB5A004397CB /* NownodesAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DF9992BBEAB5A004397CB /* NownodesAPIResolver.swift */; };
 		B00DF99C2BBEAB7B004397CB /* GetblockAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DF99B2BBEAB7B004397CB /* GetblockAPIResolver.swift */; };
 		B00DF99E2BBEAB91004397CB /* InfuraAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DF99D2BBEAB91004397CB /* InfuraAPIResolver.swift */; };
@@ -1043,7 +1042,6 @@
 		B00DF9902BBEA9DA004397CB /* APIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIModels.swift; sourceTree = "<group>"; };
 		B00DF9922BBEAA8B004397CB /* TestnetAPINodeInfoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestnetAPINodeInfoProvider.swift; sourceTree = "<group>"; };
 		B00DF9952BBEAADA004397CB /* APINodeInfoResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APINodeInfoResolver.swift; sourceTree = "<group>"; };
-		B00DF9972BBEAB31004397CB /* PrivateAPINodeInfoResolvers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivateAPINodeInfoResolvers.swift; sourceTree = "<group>"; };
 		B00DF9992BBEAB5A004397CB /* NownodesAPIResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NownodesAPIResolver.swift; sourceTree = "<group>"; };
 		B00DF99B2BBEAB7B004397CB /* GetblockAPIResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetblockAPIResolver.swift; sourceTree = "<group>"; };
 		B00DF99D2BBEAB91004397CB /* InfuraAPIResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfuraAPIResolver.swift; sourceTree = "<group>"; };
@@ -2462,7 +2460,6 @@
 				B00DF9902BBEA9DA004397CB /* APIModels.swift */,
 				B00DF98E2BBEA9AC004397CB /* APIResolver.swift */,
 				B00DF9952BBEAADA004397CB /* APINodeInfoResolver.swift */,
-				B00DF9972BBEAB31004397CB /* PrivateAPINodeInfoResolvers.swift */,
 				B00DF9992BBEAB5A004397CB /* NownodesAPIResolver.swift */,
 				B00DF99B2BBEAB7B004397CB /* GetblockAPIResolver.swift */,
 				B00DF99D2BBEAB91004397CB /* InfuraAPIResolver.swift */,
@@ -4601,7 +4598,6 @@
 				DC5E65182B1650F400E81AA5 /* OP_FROMALTSTACK.swift in Sources */,
 				2DDEFBE02B59B44700885675 /* AlgorandResponse+Transaction.swift in Sources */,
 				5DED72B8239FE2E3006D79AE /* Decimal+.swift in Sources */,
-				B00DF9982BBEAB31004397CB /* PrivateAPINodeInfoResolvers.swift in Sources */,
 				DC5E64EB2B1650F400E81AA5 /* OP_RESERVED1.swift in Sources */,
 				DAE30DFB279164500056C5A3 /* SolanaDummyAccountStorage.swift in Sources */,
 				B6F2621E2B6D91F800B2E47B /* HederaConsensusNetworkProvider.swift in Sources */,

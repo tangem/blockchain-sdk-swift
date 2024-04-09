@@ -20,14 +20,11 @@ struct CardanoWalletAssembly: WalletManagerAssembly {
             var providers = [AnyCardanoNetworkProvider]()
             let linkResolver = APINodeInfoResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
             providers = input.apiInfo.compactMap {
-                guard 
-                    let nodeInfo = linkResolver.resolve(for: $0),
-                    let api = $0.api
-                else {
+                guard  let nodeInfo = linkResolver.resolve(for: $0) else {
                     return nil
                 }
 
-                switch api {
+                switch $0 {
                 case .getblock, .tangemRosetta:
                     return RosettaNetworkProvider(
                         url: nodeInfo.url,

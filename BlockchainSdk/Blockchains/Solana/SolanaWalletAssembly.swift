@@ -23,11 +23,7 @@ struct SolanaWalletAssembly: WalletManagerAssembly {
             } else {
                 let nodeInfoResolver = APINodeInfoResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
                 endpoints = input.apiInfo.compactMap {
-                    guard let api = $0.api else {
-                        return nil
-                    }
-
-                    if api == .solana {
+                    if case .solana = $0 {
                         return RPCEndpoint.mainnetBetaSolana
                     }
 
@@ -43,7 +39,7 @@ struct SolanaWalletAssembly: WalletManagerAssembly {
                         return nil
                     }
 
-                    switch api {
+                    switch $0 {
                     case .nownodes, .quicknode:
                         return RPCEndpoint(
                             url: nodeInfo.url,

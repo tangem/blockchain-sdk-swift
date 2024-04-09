@@ -20,15 +20,7 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
             let apiInfo = input.apiInfo
             var newProviders = [AnyBitcoinNetworkProvider]()
             apiInfo.forEach {
-                guard
-                    $0.type == .private,
-                    let provider = $0.provider,
-                    let api = PrivateAPI(rawValue: provider)
-                else {
-                    return
-                }
-
-                switch api {
+                switch $0 {
                 case .nownodes:
                     newProviders.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
                 case .getblock:

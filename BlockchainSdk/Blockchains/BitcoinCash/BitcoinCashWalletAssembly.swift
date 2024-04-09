@@ -27,11 +27,7 @@ struct BitcoinCashWalletAssembly: WalletManagerAssembly {
             // Maybe https://developers.cryptoapis.io/technical-documentation/general-information/what-we-support
             var providers = [AnyBitcoinNetworkProvider]()
             input.apiInfo.forEach {
-                guard let api = $0.api else {
-                    return
-                }
-
-                switch api {
+                switch $0 {
                 case .nownodes:
                     if let bitcoinCashAddressService = AddressServiceFactory(blockchain: input.blockchain).makeAddressService() as? BitcoinCashAddressService {
                         providers.append(

@@ -28,14 +28,7 @@ struct DashWalletAssembly: WalletManagerAssembly {
             var providers: [AnyBitcoinNetworkProvider] = []
             
             input.apiInfo.forEach {
-                guard
-                    $0.type == .private,
-                    let api = $0.api
-                else {
-                    return
-                }
-
-                switch api {
+                switch $0 {
                 case .nownodes:
                     providers.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
                 case .getblock:
