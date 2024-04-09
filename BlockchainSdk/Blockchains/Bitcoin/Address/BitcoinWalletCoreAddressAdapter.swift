@@ -16,6 +16,14 @@ struct BitcoinWalletCoreAddressAdapter {
     // MARK: - Init
 
     init(coin: CoinType, publicKeyType: PublicKeyType) {
+        /*
+         This validation is intended to filter only those blockchains that we dare to adapt
+         A similar implementation was made at the WalletCoreAddressService through force unrap
+         */
+        guard Constants.supportedBitcoinCoinType.contains(coin) else {
+            fatalError("This coin \(coin) does not supported bitcoin type for adapter address")
+        }
+        
         self.coin = coin
         self.publicKeyType = publicKeyType
     }
@@ -87,5 +95,11 @@ extension BitcoinWalletCoreAddressAdapter {
     
     enum Error: Swift.Error {
         case makeAddressFailed
+    }
+    
+    enum Constants {
+        static var supportedBitcoinCoinType: [CoinType] {
+            [.bitcoin, .bitcoinCash, .dash, .litecoin, .dogecoin]
+        }
     }
 }
