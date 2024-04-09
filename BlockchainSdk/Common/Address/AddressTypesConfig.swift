@@ -74,7 +74,8 @@ struct AddressTypesConfig {
              .moonriver,
              .mantle,
              .flare,
-             .taraxa:
+             .taraxa,
+             .base:
             return [.default]
         }
     }
