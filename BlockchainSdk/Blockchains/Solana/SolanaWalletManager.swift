@@ -76,78 +76,27 @@ extension SolanaWalletManager: TransactionSender {
     }
     
     public func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        let decimalValue: Decimal
-        switch amount.type {
-        case .coin:
-            decimalValue = wallet.blockchain.decimalValue
-        case .token(let token):
-            decimalValue = token.decimalValue
-        case .reserve:
-            fatalError()
-        }
-        
-        let intAmount = ((amount.value * decimalValue) .rounded() as NSDecimalNumber).uint64Value
-        let publicKey = PublicKey(data: wallet.publicKey.blockchainKey)!
-        
-        return destinationAccountInfo(destination: destination, amount: amount)
+        destinationAccountInfo(destination: destination, amount: amount)
             .withWeakCaptureOf(self)
-            .flatMap { thisSolanaWalletManager, accountExists -> AnyPublisher<SolanaFeeParameters, Error> in
-                thisSolanaWalletManager.feeParameters(
-                    amount: amount,
-                    destination: destination, 
-                    destinationAccountExists: accountExists.accountExists
+            .flatMap { walletManager, destinationAccountInfo in
+                let feeParameters = walletManager.feeParameters(destinationAccountInfo: destinationAccountInfo)
+                let decimalValue: Decimal = pow(10, amount.decimals)
+                let intAmount = (amount.value * decimalValue).rounded().uint64Value
+
+                return walletManager.networkService.getFeeForMessage(
+                    amount: intAmount,
+                    computeUnitLimit: feeParameters.computeUnitLimit,
+                    computeUnitPrice: feeParameters.computeUnitPrice,
+                    destinationAddress: destination,
+                    fromPublicKey: PublicKey(data: walletManager.wallet.publicKey.blockchainKey)!
                 )
-                .eraseToAnyPublisher()
+                .map { (feeForMessage: $0, feeParameters: feeParameters) }
             }
             .withWeakCaptureOf(self)
-            .flatMap { thisSolanaWalletManager, feeParameters  -> AnyPublisher<(Decimal, SolanaFeeParameters), Error> in
-                thisSolanaWalletManager.networkService
-                    .getFeeForMessage(
-                        amount: intAmount,
-                        computeUnitLimit: feeParameters.computeUnitLimit,
-                        computeUnitPrice: feeParameters.computeUnitPrice,
-                        destinationAddress: destination,
-                        fromPublicKey: publicKey
-                    )
-                    .map {
-                        ($0, feeParameters)
-                    }
-                    .eraseToAnyPublisher()
-            }
-            .map { [wallet] (feeForMessage, feeParameters) -> [Fee] in
-                let totalFee = feeForMessage + feeParameters.accountCreationFee
-                
-                let blockchain = wallet.blockchain
-                let amount = Amount(with: blockchain, type: .coin, value: totalFee)
-                return [Fee(amount, parameters: feeParameters)]
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    private func feeParameters(amount: Amount, destination: String, destinationAccountExists: Bool) -> AnyPublisher<SolanaFeeParameters, Error> {
-        return destinationAccountInfo(destination: destination, amount: amount)
-            .withWeakCaptureOf(self)
-            .map { thisSolanaWalletManager, destinationAccountInfo -> SolanaFeeParameters in
-                let calculatedComputeUnitPrice = thisSolanaWalletManager.networkService.computeUnitPrice(
-                    destinationAccountExists: destinationAccountExists
-                )
-                
-                let computeUnitLimit: UInt32?
-                let computeUnitPrice: UInt64?
-                if thisSolanaWalletManager.usePriorityFees {
-                    // https://www.helius.dev/blog/priority-fees-understanding-solanas-transaction-fee-mechanics
-                    computeUnitLimit = (destinationAccountInfo.accountExists ? 200_000 : 400_000)
-                    computeUnitPrice = calculatedComputeUnitPrice
-                } else {
-                    computeUnitLimit = nil
-                    computeUnitPrice = nil
-                }
-                
-                return SolanaFeeParameters(
-                    computeUnitLimit: computeUnitLimit,
-                    computeUnitPrice: computeUnitPrice,
-                    accountCreationFee: destinationAccountInfo.accountCreationFee
-                )
+            .map { walletManger, feeInfo -> [Fee] in
+                let totalFee = feeInfo.feeForMessage + feeInfo.feeParameters.accountCreationFee
+                let amount = Amount(with: walletManger.wallet.blockchain, type: .coin, value: totalFee)
+                return [Fee(amount, parameters: feeInfo.feeParameters)]
             }
             .eraseToAnyPublisher()
     }
@@ -208,8 +157,44 @@ extension SolanaWalletManager: TransactionSender {
             }
             .eraseToAnyPublisher()
     }
-    
-    private func accountExists(destination: String, amountType: Amount.AmountType) -> AnyPublisher<Bool, Error> {
+
+    private func associatedTokenAddress(accountAddress: String, mintAddress: String, tokenProgramId: PublicKey) -> String? {
+        guard
+            let accountPublicKey = PublicKey(string: accountAddress),
+            let tokenMintPublicKey = PublicKey(string: mintAddress),
+            case let .success(associatedSourceTokenAddress) = PublicKey.associatedTokenAddress(walletAddress: accountPublicKey, tokenMintAddress: tokenMintPublicKey, tokenProgramId: tokenProgramId)
+        else {
+            return nil
+        }
+        
+        return associatedSourceTokenAddress.base58EncodedString
+    }
+}
+
+private extension SolanaWalletManager {
+    /// Combine `accountCreationFeePublisher`, `accountExistsPublisher` and `minimalBalanceForRentExemption`
+    func destinationAccountInfo(destination: String, amount: Amount) -> AnyPublisher<DestinationAccountInfo, Error> {
+        let accountCreationFeePublisher = accountCreationFeePublisher(amount: amount)
+        let accountExistsPublisher = accountExists(destination: destination, amountType: amount.type)
+        let rentExemptionBalancePublisher = networkService.minimalBalanceForRentExemption()
+
+        return Publishers.Zip3(accountCreationFeePublisher, accountExistsPublisher, rentExemptionBalancePublisher)
+            .map { accountCreationFee, accountExists, rentExemption in
+                let creationFee: Decimal
+                if accountExists {
+                    creationFee = 0
+                } else if amount.type == .coin && amount.value >= rentExemption {
+                    creationFee = 0
+                } else {
+                    creationFee = accountCreationFee
+                }
+
+                return DestinationAccountInfo(accountExists: accountExists, accountCreationFee: creationFee)
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func accountExists(destination: String, amountType: Amount.AmountType) -> AnyPublisher<Bool, Error> {
         let tokens: [Token] = amountType.token.map { [$0] } ?? []
 
         return networkService
@@ -227,13 +212,12 @@ extension SolanaWalletManager: TransactionSender {
             }
             .eraseToAnyPublisher()
     }
-    
-    private func destinationAccountInfo(destination: String, amount: Amount) -> AnyPublisher<DestinationAccountInfo, Error> {
-        let accountCreationFeePublisher: AnyPublisher<Decimal, Error>
+
+    func accountCreationFeePublisher(amount: Amount) -> AnyPublisher<Decimal, Error> {
         switch amount.type {
         case .coin:
             // Include the fee if the amount is less than it
-            accountCreationFeePublisher = networkService.mainAccountCreationFee()
+            return networkService.mainAccountCreationFee()
                 .map { accountCreationFee in
                     if amount.value < accountCreationFee {
                         return accountCreationFee
@@ -243,49 +227,30 @@ extension SolanaWalletManager: TransactionSender {
                 }
                 .eraseToAnyPublisher()
         case .token(let token):
-            accountCreationFeePublisher = .justWithError(output: 0)
+            return .justWithError(output: 0)
         case .reserve:
             return .anyFail(error: BlockchainSdkError.failedToLoadFee)
         }
-        
-        let accountExistsPublisher = accountExists(destination: destination, amountType: amount.type)
-        let rentExemptionBalancePublisher = networkService
-            .minimalBalanceForRentExemption()
-            .tryMap { [weak self] balance -> Amount in
-                guard let self = self else {
-                    throw WalletError.empty
-                }
-                
-                return Amount(with: self.wallet.blockchain, value: balance)
-            }
-            .eraseToAnyPublisher()
-        
-        return Publishers.Zip3(accountCreationFeePublisher, accountExistsPublisher, rentExemptionBalancePublisher)
-            .tryMap { _accountCreationFee, accountExists, rentExemption in
-                let accountCreationFee: Decimal
-                if accountExists {
-                    accountCreationFee = 0
-                } else if amount.type == .coin && amount >= rentExemption {
-                    accountCreationFee = 0
-                } else {
-                    accountCreationFee = _accountCreationFee
-                }
-                
-                return DestinationAccountInfo(accountExists: accountExists, accountCreationFee: accountCreationFee)
-            }
-            .eraseToAnyPublisher()
     }
-    
-    private func associatedTokenAddress(accountAddress: String, mintAddress: String, tokenProgramId: PublicKey) -> String? {
-        guard
-            let accountPublicKey = PublicKey(string: accountAddress),
-            let tokenMintPublicKey = PublicKey(string: mintAddress),
-            case let .success(associatedSourceTokenAddress) = PublicKey.associatedTokenAddress(walletAddress: accountPublicKey, tokenMintAddress: tokenMintPublicKey, tokenProgramId: tokenProgramId)
-        else {
-            return nil
+
+    func feeParameters(destinationAccountInfo: DestinationAccountInfo) -> SolanaFeeParameters {
+        let computeUnitLimit: UInt32?
+        let computeUnitPrice: UInt64?
+
+        if usePriorityFees {
+            // https://www.helius.dev/blog/priority-fees-understanding-solanas-transaction-fee-mechanics
+            computeUnitLimit = destinationAccountInfo.accountExists ? 200_000 : 400_000
+            computeUnitPrice = destinationAccountInfo.accountExists ? 1_000_000 : 500_000
+        } else {
+            computeUnitLimit = nil
+            computeUnitPrice = nil
         }
-        
-        return associatedSourceTokenAddress.base58EncodedString
+
+        return SolanaFeeParameters(
+            computeUnitLimit: computeUnitLimit,
+            computeUnitPrice: computeUnitPrice,
+            accountCreationFee: destinationAccountInfo.accountCreationFee
+        )
     }
 }
 
