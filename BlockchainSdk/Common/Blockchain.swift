@@ -430,7 +430,9 @@ public indirect enum Blockchain: Equatable, Hashable {
 
     public var tokenTypeName: String? {
         switch self {
-        case .ethereum: return "ERC20"
+        case .ethereum,
+             .base:
+            return "ERC20"
         case .binance: return "BEP2"
         case .bsc: return "BEP20"
         case .tron: return "TRC20"
