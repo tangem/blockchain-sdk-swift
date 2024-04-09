@@ -30,11 +30,7 @@ final class HederaTransactionBuilder {
     /// - parameter nodeAccountIds: A list of consensus network nodes for sending this transaction; 
     /// Pass `nil` to let the Hedera SDK network layer select valid and alive consensus network nodes on its own.
     func buildForSign(transaction: Transaction, validStartDate: UnixTimestamp, nodeAccountIds: [Int]?) throws -> CompiledTransaction {
-        let transactionValue = transaction.amount.value * pow(Decimal(10), transaction.amount.decimals)
-        let transactionRoundedValue = transactionValue.rounded(roundingMode: .down)
-        let transactionAmount = try Hbar(transactionRoundedValue, .tinybar)
-
-        let feeValue = transaction.fee.amount.value * pow(Decimal(10), transaction.fee.amount.decimals)
+        let feeValue = transaction.fee.amount.value * pow(Decimal(10), transaction.fee.amount.decimals) // TODO: Andrey Fedorov - Calculate fee for token transfers (including tokens with custom fees)
         let feeRoundedValue = feeValue.rounded(roundingMode: .up)
         let feeAmount = try Hbar(feeRoundedValue, .tinybar)
 
@@ -61,14 +57,16 @@ final class HederaTransactionBuilder {
             .map(UInt64.init)
             .map(AccountId.init(num:))
 
-        let transferTransaction = try TransferTransaction()
-            .hbarTransfer(sourceAccountId, transactionAmount.negated())
-            .hbarTransfer(destinationAccountId, transactionAmount)
-            .transactionId(transactionId)
-            .maxTransactionFee(feeAmount)
-            .transactionMemo(transactionParams?.memo ?? "")
-            .nodeAccountIdsIfNotEmpty(nodeAccountIds)
-            .freezeWith(client)
+        let transferTransaction = try makeTransferTransaction(
+            amount: transaction.amount,
+            sourceAccountId: sourceAccountId,
+            destinationAccountId: destinationAccountId
+        )
+        .transactionId(transactionId)
+        .maxTransactionFee(feeAmount)
+        .transactionMemo(transactionParams?.memo ?? "")
+        .nodeAccountIdsIfNotEmpty(nodeAccountIds)
+        .freezeWith(client)
 
         logTransferTransaction(transferTransaction)
 
@@ -94,6 +92,31 @@ final class HederaTransactionBuilder {
             return try .fromBytesEcdsa(ecdsaKey)
         default:
             throw HederaError.unsupportedCurve(curveName: curve.rawValue)
+        }
+    }
+
+    private func makeTransferTransaction(
+        amount: Amount,
+        sourceAccountId: AccountId,
+        destinationAccountId: AccountId
+    ) throws -> TransferTransaction {
+        let transactionValue = amount.value * pow(Decimal(10), amount.decimals)
+        let transactionRoundedValue = transactionValue.rounded(roundingMode: .down)
+
+        switch amount.type {
+        case .coin:
+            let transactionAmount = try Hbar(transactionRoundedValue, .tinybar)
+            return try TransferTransaction()
+                .hbarTransfer(sourceAccountId, transactionAmount.negated())
+                .hbarTransfer(destinationAccountId, transactionAmount)
+        case .token(let token):
+            let tokenId = try TokenId.fromString(token.contractAddress)
+            let transactionAmount = transactionRoundedValue.int64Value
+            return try TransferTransaction()
+                .tokenTransfer(tokenId, sourceAccountId, -transactionAmount)
+                .tokenTransfer(tokenId, destinationAccountId, transactionAmount)
+        case .reserve:
+            throw WalletError.failedToBuildTx
         }
     }
 
