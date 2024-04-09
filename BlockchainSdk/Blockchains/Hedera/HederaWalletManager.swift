@@ -55,7 +55,7 @@ final class HederaWalletManager: BaseManager {
             .withWeakCaptureOf(self)
             .flatMap { walletManager, accountId in
                 return Publishers.CombineLatest(
-                    walletManager.makeBalancePublisher(accountId: accountId),
+                    walletManager.networkService.getBalance(accountId: accountId),
                     walletManager.makePendingTransactionsInfoPublisher()
                 )
             }
@@ -77,7 +77,7 @@ final class HederaWalletManager: BaseManager {
     }
 
     private func updateWallet(
-        accountBalance: Amount,
+        accountBalance: HederaAccountBalance,
         transactionsInfo: [HederaTransactionInfo]
     ) {
         let completedTransactionHashes = transactionsInfo
@@ -85,7 +85,20 @@ final class HederaWalletManager: BaseManager {
             .map { $0.transactionHash }
 
         wallet.removePendingTransaction(where: completedTransactionHashes.contains(_:))
-        wallet.add(amount: accountBalance)
+        wallet.add(coinValue: accountBalance.hbarBalance)
+
+        cardTokens
+            .map { token in
+                guard let balance = accountBalance
+                    .tokenBalances
+                    .first(where: { token.contractAddress.caseInsensitiveEquals(to: $0.contractAddress) })
+                else {
+                    return Amount(with: token, value: .zero)
+                }
+
+                return Amount(with: token, value: balance.balance)
+            }
+            .forEach { wallet.add(amount: $0) }
     }
 
     private func updateWalletWithPendingTransaction(_ transaction: Transaction, sendResult: TransactionSendResult) {
@@ -97,15 +110,6 @@ final class HederaWalletManager: BaseManager {
     private func updateWalletAddress(accountId: String) {
         let address = PlainAddress(value: accountId, publicKey: wallet.publicKey, type: .default)
         wallet.set(address: address)
-    }
-
-    private func makeBalancePublisher(accountId: String) -> some Publisher<Amount, Error> {
-        return networkService
-            .getBalance(accountId: accountId)
-            .withWeakCaptureOf(self)
-            .map { walletManager, balance in
-                return Amount(with: walletManager.wallet.blockchain, value: balance)
-            }
     }
 
     private func makePendingTransactionsInfoPublisher() -> some Publisher<[HederaTransactionInfo], Error> {
