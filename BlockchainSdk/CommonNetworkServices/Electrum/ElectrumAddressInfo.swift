@@ -19,3 +19,18 @@ public struct ElectrumUTXO {
     let value: Decimal
     let height: Decimal
 }
+
+public struct ElectrumScriptUTXO {
+    let transactionHash: String
+    let outputs: [Vout]
+    
+    struct Vout {
+        let n: Int
+        let scriptPubKey: ScriptPubKey
+    }
+    
+    struct ScriptPubKey {
+        let addresses: [String]
+        let hex: String
+    }
+}

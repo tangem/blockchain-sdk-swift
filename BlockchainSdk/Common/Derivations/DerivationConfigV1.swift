@@ -108,6 +108,8 @@ public struct DerivationConfigV1: DerivationConfig {
             return "m/44'/1284'/0'/0/0"
         case .moonriver:
             return "m/44'/1285'/0'/0/0"
+        case .radiant:
+            return "m/44'/512'/0'/0/0"
         }
     }
 }
