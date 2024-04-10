@@ -967,6 +967,8 @@ extension Blockchain {
             } else {
                 return [
                     URL(string: "https://mainnet.base.org")!,
+                    URL(string: "https://base.nownodes.io/\(nowNodesApiKey)")!,
+                    makeGetBlockJsonRpcProvider(),
                     URL(string: "https://base.meowrpc.com")!,
                     URL(string: "https://base-rpc.publicnode.com")!,
                     URL(string: "https://base.drpc.org")!,
