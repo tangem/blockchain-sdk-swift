@@ -32,57 +32,63 @@ struct EstimationFeeAddressFactory {
             return ""
         // UTXO-like
         case .bitcoin:
-            return "bc1qqekp00msl3fnran4as60h33zk6fmhsg9tptngs"
+            return "bc1qkrc5kmpq546wr2xk0errg58yw9jjq7thvhdk5k"
         case .litecoin:
             return "ltc1qn7zu6luzkzdej6lnurwzmejd3hq44gz68e42ue"
         case .bitcoinCash:
-            return "bitcoincash:qqnn890smge9v5925du75qqg0h704lfgeg67g43kgx"
+            return "bitcoincash:qrn96yyxa93t6sqmehvls6746qafkcsuku6zmd9460"
         case .dogecoin:
-            return "D96Dokgv74S3t7wR7yxPanQb72fru6kGiu"
+            return "DRVD4B4YD9CBSjqaa3UfF42vSN6k2tJwhz"
         case .dash:
-            return "Xp7sgRiThFmtmfw496pyDhHimCXhrEuKy5"
+            return "Xqfekbgca2HDaXhrNYP2HTnuQ5go2E8dDE"
         case .ravencoin:
-            return "R9zMQh2AxUXNDfXtH3iLDEG7LWTZpVhLfQ"
+            return "RT5qKgXdmh9pqtz71cgfL834VfeXFVH1sG"
         // EVM-like
-        case .ethereum, .ethereumPoW, .ethereumClassic, .rsk, .polygon,
+        case .ethereum, .ethereumPoW, .rsk, .polygon,
                 .avalanche, .bsc, .fantom, .arbitrum, .gnosis, .optimism,
                 .kava, .cronos, .telos, .octa, .shibarium, .disChain,
                 .areon, .playa3ullGames, .pulsechain, .aurora, .manta,
-                .zkSync, .moonbeam, .polygonZkEVM:
-            return "0x55Bf9cD444c4F28F31d027Cdf8849aD27a30Ae78"
+                .zkSync, .moonbeam, .polygonZkEVM, .moonriver, .mantle,
+                .flare, .taraxa:
+            return "0x52bb4012854f808CF9BAbd855e44E506dAf6C077"
+        case .ethereumClassic:
+            return "0xc49722a6f4Fe5A1347710dEAAa1fafF4c275689b"
         case .decimal:
-            return "d012klee4zycneg7vwsylxl3py66farptnc6jnlg0"
+            return "d0122a5qy59f7qge7d6hkz4u389qmd0dsrh6a7qnx"
         // Polkadot-like
         case .polkadot:
-            return "13GJBhfDps1ChmjEusovTYc2hRQGa2Ae4YDtVHZWrKYWRvVS"
+            return "15RRtiC2akPUE9FGqqa66awoAFz6XCnZiFUf34k2CHbLWNfC"
         case .kusama:
-            return "DfzUMCsTdZFFNyYic1MbTDBJE5btqGLkumUUWRY4FFcArPc"
+            return "CsNtwDXUzMR4ZKBQrXCfA6bBXQBFU1DDbtSwLAsaVr13sGs"
         case .azero:
-            return "5DiDnUGN7ze3JX9YhiikXoqrLYqqyRcYJwHLC8fqVcCwYHyP"
+            return "5DaWppqEJPc6BhFKD2NBC1ACXPDMPYfv2AQDB5uH5KT4mpef"
         // Others
         case .cardano:
-            return "addr1vxkgxehrx5c049azfalr9mxhr5u3njvuqu6da95qtyuwj2s0fazfp"
+            return "addr1q95pg4z9tf26r5dwf72vmh62u3pr9sewq2waahyhpjzm3enz43pvhh0us3z0z5xen2skq200e67eu89s5v2s0sdh3fnsm9lknu"
         case .solana:
-            return "A9QYzDX8xwp46CV5AxvSPtpC4wD1xRJL6K5n2CWfYa8e"
+            return "9wuDg6Y4H4j86Kg5aUGrUeaBa3sAUzjMs37KbeGFnRuM"
         case .cosmos:
-            return "cosmos158wfklcdcs2vhjh3rekcnh5dj2yx74rky7d0zf"
+            return "cosmos1lhjvds604fvac32j4eygpr820lyc82dlyq70m5"
         case .tron:
-            return "TWx1TJNZdCvhPkLNKy1Zn9JN6rPqFDD9FB"
+            return "TA4Tkaj2nAJjkVbDHdUQDxYCbLfsZzS8pA"
         case .near:
-            return "957cc38c539423ccc2ec871b2514229be76df3076b34f262889a6598d5be8d49"
+            return "4a9fb267a005b7e923233b59aff1b73e577347a1ab36aa231a1880a91776c416"
         case .xdc:
-            return "xdce0BaA45196cf702D62c5bc21aACf165A63a5b987"
+            return "xdc9606Af4939f6F9fb9731A39a32B00aD966348ED6"
         case .veChain:
-            return "0x9f63AF9203E296c91F4ECE80B1E899a951FF6813"
+            return "0x1C5B4935709583758BE5b9ECeeBaf5cD6AFecF41"
         case .aptos:
-            return "0x8e5cc778f9e44ef1d67b487564bb86fbfe0a4ac734fbf29e091c27cdc5b7dea0"
+            return "0x4626b7ef23fb2800a0e224e8249f47e0db3579070262da2a7efb0bc52c882867"
         case .algorand:
-            return "TP7ASBKT5ELXLAIX55PQOSQSK5RYLQGBBI2KFPE4FVQONFK5K22J2PBYX4"
+            return "CW6XDCKQAZUGAIOTGE2NEPYFFVW6H6IKFOTOF3W5WDUVHH4ZIDCIKYDPXY"
         // We have to generate a new dummy address for
         case .terraV1, .terraV2:
-            return "terra1p6kj9kwqsz2ss8qjddh70gzc36gtv8tnd54v4q"
+            return "terra1pfamr0t2daet92grdvxqex235q58qrx6xclldg"
         case .ton:
-            return "EQDL_bRHJDj1slSOPjR91MF9V0WvNF8J_esj_2rCstlHV08h"
+            return "EQAY92urFDKejoDRdi_EfRKLGB1JkGjD8z1inj_DhgBaD0Xo"
+        case .radiant:
+            // FIXME: provide value if needed
+            return ""
         }
     }
 }
