@@ -794,45 +794,7 @@ extension Blockchain {
         case "xtz": return .tezos(curve: curve)
         case "doge": return .dogecoin
         case "bsc": return .bsc(testnet: isTestnet)
-        case "polygon": return .polygon(testnet: isTestnet)
-        case "avalanche": return .avalanche(testnet: isTestnet)
-        case "solana": return .solana(curve: curve, testnet: isTestnet)
-        case "fantom": return .fantom(testnet: isTestnet)
-        case "polkadot": return .polkadot(curve: curve, testnet: isTestnet)
-        case "kusama": return .kusama(curve: curve)
-        case "aleph-zero": return .azero(curve: curve, testnet: isTestnet)
-        case "tron": return .tron(testnet: isTestnet)
-        case "arbitrum": return .arbitrum(testnet: isTestnet)
-        case "dash": return .dash(testnet: isTestnet)
-        case "xdai": return .gnosis
-        case "ethereum-pow-iou": return .ethereumPoW(testnet: isTestnet)
-        case "ethereumfair", "dischain": return .disChain
-        case "ton": return .ton(curve: curve, testnet: isTestnet)
-        case "terra": return .terraV1
-        case "terra-2": return .terraV2
-        case "cronos": return .cronos
-        case "octaspace": return .octa
-        case "chia": return .chia(testnet: isTestnet)
-        case "near": return .near(curve: curve, testnet: isTestnet)
-        case "decimal": return .decimal(testnet: isTestnet)
-        case "vechain": return .veChain(testnet: isTestnet)
-        case "xdc": return .xdc(testnet: isTestnet)
-        case "algorand": return .algorand(curve: curve, testnet: isTestnet)
-        case "shibarium": return .shibarium(testnet: isTestnet)
-        case "aptos": return .aptos(curve: curve, testnet: isTestnet)
-        case "hedera": return .hedera(curve: curve, testnet: isTestnet)
-        case "areon-network": return .areon(testnet: isTestnet)
-        case "playa3ull-games": return .playa3ullGames
-        case "pulsechain": return .pulsechain(testnet: isTestnet)
-        case "aurora": return .aurora(testnet: isTestnet)
-        case "manta-network": return .manta(testnet: isTestnet)
-        case "zksync": return .zkSync(testnet: isTestnet)
-        case "moonbeam": return .moonbeam(testnet: isTestnet)
-        case "polygon-zkevm": return.polygonZkEVM(testnet: isTestnet)
-        case "moonriver": return .moonriver(testnet: isTestnet)
-        case "mantle": return .mantle(testnet: isTestnet)
-        case "flare": return .flare(testnet: isTestnet)
-        case "taraxa": return .taraxa(testnet: isTestnet)
+        // DO NOT ADD new blockchains here. This is legacy code and used only for Tangem Note and cards release before 4.12 firmware
         default: return nil
         }
     }
