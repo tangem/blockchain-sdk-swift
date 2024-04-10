@@ -261,6 +261,7 @@
 		B00DF99C2BBEAB7B004397CB /* GetblockAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DF99B2BBEAB7B004397CB /* GetblockAPIResolver.swift */; };
 		B00DF99E2BBEAB91004397CB /* InfuraAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DF99D2BBEAB91004397CB /* InfuraAPIResolver.swift */; };
 		B00DF9A02BBEACA2004397CB /* QuickNodeAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DF99F2BBEACA2004397CB /* QuickNodeAPIResolver.swift */; };
+		B04275A32BC68086002C78D6 /* BlockchainNetworkId.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04275A22BC68086002C78D6 /* BlockchainNetworkId.swift */; };
 		B044B3A126047F5500D9864F /* RosettaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B044B3A026047F5500D9864F /* RosettaResponse.swift */; };
 		B04DC62725AC1C50009AA7B3 /* JSONDecoder+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04DC62625AC1C50009AA7B3 /* JSONDecoder+.swift */; };
 		B04DC65E25AC6538009AA7B3 /* EthereumAdditionalInfoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04DC65D25AC6538009AA7B3 /* EthereumAdditionalInfoProvider.swift */; };
@@ -1084,6 +1085,7 @@
 		B00DF99F2BBEACA2004397CB /* QuickNodeAPIResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickNodeAPIResolver.swift; sourceTree = "<group>"; };
 		B022D30D2537292800D934D7 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B022D3102537475B00D934D7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		B04275A22BC68086002C78D6 /* BlockchainNetworkId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainNetworkId.swift; sourceTree = "<group>"; };
 		B044B3A026047F5500D9864F /* RosettaResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosettaResponse.swift; sourceTree = "<group>"; };
 		B04DC62625AC1C50009AA7B3 /* JSONDecoder+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSONDecoder+.swift"; sourceTree = "<group>"; };
 		B04DC65D25AC6538009AA7B3 /* EthereumAdditionalInfoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumAdditionalInfoProvider.swift; sourceTree = "<group>"; };
@@ -2027,11 +2029,11 @@
 		5D14E48B2397B87000C15FC8 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				B04275A12BC68066002C78D6 /* Blockchain */,
 				5DEAFA8D244472CD0032E316 /* Amount.swift */,
 				5D88838A27D3BBDA008744E1 /* BaseManager.swift */,
 				2DDE5B8D29C4F8D200A5B708 /* BlockBookProviderType.swift */,
 				5D14E4902397B87000C15FC8 /* Blockchain.swift */,
-				EF57BEE22A1E682D00C2A493 /* Blockchain+AllCases.swift */,
 				5DEC90C02587A35800826C95 /* BlockchainSdkConfig.swift */,
 				B056729A2570F9DC00A8CB59 /* BlockchainSdkError.swift */,
 				DA4820F92BA1A0250007E0E1 /* ErrorCodeProviding.swift */,
@@ -2557,6 +2559,15 @@
 				B0923EFF2BBEBA7B004028B2 /* TransactionHistoryAPIProvider.swift */,
 			);
 			path = APIResolvers;
+			sourceTree = "<group>";
+		};
+		B04275A12BC68066002C78D6 /* Blockchain */ = {
+			isa = PBXGroup;
+			children = (
+				B04275A22BC68086002C78D6 /* BlockchainNetworkId.swift */,
+				EF57BEE22A1E682D00C2A493 /* Blockchain+AllCases.swift */,
+			);
+			path = Blockchain;
 			sourceTree = "<group>";
 		};
 		B04E8D4E25F8F65E00821CBE /* Rosetta */ = {
@@ -4748,6 +4759,7 @@
 				2DA139F72A8AD82E00E3C374 /* ChiaModels.swift in Sources */,
 				B611B1832B7A9A500072B874 /* BlockchainSdkDependencies.swift in Sources */,
 				B6DC3F3A2AF2CA8700377BB3 /* Sequence+.swift in Sources */,
+				B04275A32BC68086002C78D6 /* BlockchainNetworkId.swift in Sources */,
 				DC5E64F32B1650F400E81AA5 /* OP_LSHIFT.swift in Sources */,
 				DC5E65222B1650F400E81AA5 /* OP_OVER.swift in Sources */,
 				DC5E65182B1650F400E81AA5 /* OP_FROMALTSTACK.swift in Sources */,

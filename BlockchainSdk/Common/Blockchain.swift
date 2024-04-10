@@ -424,6 +424,10 @@ public indirect enum Blockchain: Equatable, Hashable {
         }
     }
 
+    public var networkId: BlockchainNetworkId {
+        BlockchainNetworkId(for: self)
+    }
+
     public var tokenTypeName: String? {
         switch self {
         case .ethereum: return "ERC20"
