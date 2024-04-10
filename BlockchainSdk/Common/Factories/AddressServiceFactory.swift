@@ -116,6 +116,8 @@ public struct AddressServiceFactory {
             return XDCAddressService()
         case .hedera:
             return HederaAddressService(isTestnet: isTestnet)
+        case .radiant:
+            return RadiantAddressService()
         }
     }
 }

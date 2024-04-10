@@ -75,6 +75,7 @@ struct AddressTypesConfig {
              .mantle,
              .flare,
              .taraxa,
+             .radiant,
              .base:
             return [.default]
         }

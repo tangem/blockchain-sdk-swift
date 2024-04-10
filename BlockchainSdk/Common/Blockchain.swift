@@ -74,6 +74,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case mantle(testnet: Bool)
     case flare(testnet: Bool)
     case taraxa(testnet: Bool)
+    case radiant(testnet: Bool)
     case base(testnet: Bool)
 
     public var isTestnet: Bool {
@@ -110,6 +111,7 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .mantle(let testnet),
                 .flare(let testnet),
                 .taraxa(let testnet),
+                .radiant(let testnet),
                 .base(let testnet):
             return testnet
         case .litecoin,
@@ -179,7 +181,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .dash,
                 .kaspa,
                 .ravencoin,
-                .hedera:
+                .hedera,
+                .radiant:
             return 8
         case .ethereum,
                 .ethereumClassic,
@@ -357,6 +360,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return isTestnet ? "C2FLR" : "FLR"
         case .taraxa:
             return "TARA"
+        case .radiant:
+            return "RXD"
         }
     }
 
@@ -1106,6 +1111,7 @@ extension Blockchain: Codable {
         case .mantle: return "mantle"
         case .flare: return "flare"
         case .taraxa: return "taraxa"
+        case .radiant: return "radiant"
         case .base: return "base"
         }
     }
@@ -1189,6 +1195,7 @@ extension Blockchain: Codable {
         case "mantle": self = .mantle(testnet: isTestnet)
         case "flare": self = .flare(testnet: isTestnet)
         case "taraxa": self = .taraxa(testnet: isTestnet)
+        case "radiant": self = .radiant(testnet: isTestnet)
         case "base": self = .base(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
@@ -1372,6 +1379,8 @@ extension Blockchain {
             return AptosWalletAssembly()
         case .hedera:
             return HederaWalletAssembly()
+        case .radiant:
+            return RadiantWalletAssembly()
         }
     }
 }

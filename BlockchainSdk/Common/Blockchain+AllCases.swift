@@ -72,6 +72,7 @@ public extension Blockchain {
         case .mantle: break
         case .flare: break
         case .taraxa: break
+        case .radiant: break
         case .base: break
             // READ BELOW:
             //
@@ -138,6 +139,7 @@ public extension Blockchain {
             .mantle(testnet: false),
             .flare(testnet: false),
             .taraxa(testnet: false),
+            .radiant(testnet: false),
             .base(testnet: false),
         ]
     }
