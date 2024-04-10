@@ -168,7 +168,25 @@ struct TestnetAPINodeInfoProvider {
             return [
                 .init(url: URL(string: "https://rpc.cardona.zkevm-rpc.com/")!)
             ]
-        default:
+        case .moonriver:
+            return [
+                .init(url: URL(string: "https://rpc.api.moonbase.moonbeam.network/")!),
+            ]
+        case .mantle:
+            return [
+                .init(url: URL(string: "https://rpc.testnet.mantle.xyz")!),
+            ]
+        case .flare:
+            return [
+                .init(url: URL(string: "https://coston2-api.flare.network/ext/C/rpc")!),
+            ]
+        case .taraxa:
+            return [
+                .init(url: URL(string: "https://rpc.testnet.taraxa.io")!),
+            ]
+        case .radiant:
+            return nil
+        case .bitcoin, .litecoin, .disChain, .rsk, .bitcoinCash, .binance, .cardano, .xrp, .ducatus, .tezos, .dogecoin, .solana, .polkadot, .kusama, .dash, .gnosis, .kaspa, .terraV1, .terraV2, .cronos, .octa, .veChain, .playa3ullGames:
             return nil
         }
     }
