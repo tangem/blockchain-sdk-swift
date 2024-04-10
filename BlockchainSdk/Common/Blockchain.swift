@@ -70,6 +70,11 @@ public indirect enum Blockchain: Equatable, Hashable {
     case zkSync(testnet: Bool)
     case moonbeam(testnet: Bool)
     case polygonZkEVM(testnet: Bool)
+    case moonriver(testnet: Bool)
+    case mantle(testnet: Bool)
+    case flare(testnet: Bool)
+    case taraxa(testnet: Bool)
+    case radiant(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -100,7 +105,12 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .manta(let testnet),
                 .zkSync(let testnet),
                 .moonbeam(let testnet),
-                .polygonZkEVM(let testnet):
+                .polygonZkEVM(let testnet),
+                .moonriver(let testnet),
+                .mantle(let testnet),
+                .flare(let testnet),
+                .taraxa(let testnet),
+                .radiant(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -169,7 +179,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .dash,
                 .kaspa,
                 .ravencoin,
-                .hedera:
+                .hedera,
+                .radiant:
             return 8
         case .ethereum,
                 .ethereumClassic,
@@ -198,7 +209,11 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .manta,
                 .zkSync,
                 .moonbeam,
-                .polygonZkEVM:
+                .polygonZkEVM,
+                .moonriver,
+                .mantle,
+                .flare,
+                .taraxa:
             return 18
         case .cardano,
                 .xrp,
@@ -328,6 +343,16 @@ public indirect enum Blockchain: Equatable, Hashable {
             return isTestnet ? "tPLS" : "PLS"
         case .moonbeam:
             return isTestnet ? "DEV" : "GLMR"
+        case .moonriver:
+            return isTestnet ? "DEV" : "MOVR"
+        case .mantle:
+            return "MNT"
+        case .flare:
+            return isTestnet ? "C2FLR" : "FLR"
+        case .taraxa:
+            return "TARA"
+        case .radiant:
+            return "RXD"
         }
     }
 
@@ -455,7 +480,11 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .manta,
                 .zkSync,
                 .moonbeam,
-                .polygonZkEVM:
+                .polygonZkEVM,
+                .moonriver,
+                .mantle,
+                .flare,
+                .taraxa:
             return true
         case .fantom,
                 .tron,
@@ -512,6 +541,10 @@ extension Blockchain {
         case .zkSync: return isTestnet ? 300 : 324 
         case .moonbeam: return isTestnet ? 1287 : 1284
         case .polygonZkEVM: return isTestnet ? 2442 : 1101
+        case .moonriver: return isTestnet ? 1287 : 1285
+        case .mantle: return isTestnet ? 5001 : 5000
+        case .flare: return isTestnet ? 114 : 14
+        case .taraxa: return isTestnet ? 842 : 841
         default: return nil
         }
     }
@@ -864,6 +897,58 @@ extension Blockchain {
                     URL(string: "https://api.zan.top/node/v1/polygonzkevm/mainnet/public/")!,
                 ]
             }
+        case .moonriver:
+            if isTestnet {
+                return [
+                    URL(string: "https://rpc.api.moonbase.moonbeam.network")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://moonriver.public.blastapi.io")!,
+                    URL(string: "https://moonriver-rpc.dwellir.com")!,
+                    URL(string: "https://moonriver-mainnet.gateway.pokt.network/v1/lb/62a74fdb123e6f003963642f")!,
+                    URL(string: "https://moonriver.unitedbloc.com")!,
+                    URL(string: "https://moonriver-rpc.publicnode.com")!,
+                ]
+            }
+        case .mantle:
+            if isTestnet {
+                return [
+                    URL(string: "https://rpc.testnet.mantle.xyz")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://rpc.mantle.xyz")!,
+                    URL(string: "https://mantle-rpc.publicnode.com")!,
+                    URL(string: "https://mantle-mainnet.public.blastapi.io")!,
+                    URL(string: "https://rpc.ankr.com/mantle")!,
+                    URL(string: "https://1rpc.io/mantle")!,
+                ]
+            }
+        case .flare:
+            if isTestnet {
+                return [
+                    URL(string: "https://coston2-api.flare.network/ext/C/rpc")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://flare-api.flare.network/ext/bc/C/rpc")!,
+                    URL(string: "https://flare.rpc.thirdweb.com")!,
+                    URL(string: "https://flare-bundler.etherspot.io")!,
+                    URL(string: "https://rpc.ankr.com/flare")!,
+                    URL(string: "https://flare.solidifi.app/ext/C/rpc")!,
+                ]
+            }
+        case .taraxa:
+            if isTestnet {
+                return [
+                    URL(string: "https://rpc.testnet.taraxa.io")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://rpc.mainnet.taraxa.io")!,
+                ]
+            }
         default:
             return nil
         }
@@ -991,6 +1076,11 @@ extension Blockchain: Codable {
         case .zkSync: return "zksync"
         case .moonbeam: return "moonbeam"
         case .polygonZkEVM: return "polygon-zkevm"
+        case .moonriver: return "moonriver"
+        case .mantle: return "mantle"
+        case .flare: return "flare"
+        case .taraxa: return "taraxa"
+        case .radiant: return "radiant"
         }
     }
 
@@ -1069,6 +1159,11 @@ extension Blockchain: Codable {
         case "zksync": self = .zkSync(testnet: isTestnet)
         case "moonbeam": self = .moonbeam(testnet: isTestnet)
         case "polygon-zkevm": self = .polygonZkEVM(testnet: isTestnet)
+        case "moonriver": self = .moonriver(testnet: isTestnet)
+        case "mantle": self = .mantle(testnet: isTestnet)
+        case "flare": self = .flare(testnet: isTestnet)
+        case "taraxa": self = .taraxa(testnet: isTestnet)
+        case "radiant": self = .radiant(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1151,6 +1246,10 @@ extension Blockchain {
         case "zksync": return .zkSync(testnet: isTestnet)
         case "moonbeam": return .moonbeam(testnet: isTestnet)
         case "polygon-zkevm": return.polygonZkEVM(testnet: isTestnet)
+        case "moonriver": return .moonriver(testnet: isTestnet)
+        case "mantle": return .mantle(testnet: isTestnet)
+        case "flare": return .flare(testnet: isTestnet)
+        case "taraxa": return .taraxa(testnet: isTestnet)
         default: return nil
         }
     }
@@ -1194,7 +1293,11 @@ extension Blockchain {
                 .manta,
                 .zkSync,
                 .moonbeam,
-                .polygonZkEVM:
+                .polygonZkEVM,
+                .moonriver,
+                .mantle,
+                .flare,
+                .taraxa:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
@@ -1242,6 +1345,8 @@ extension Blockchain {
             return AptosWalletAssembly()
         case .hedera:
             return HederaWalletAssembly()
+        case .radiant:
+            return RadiantWalletAssembly()
         }
     }
 }

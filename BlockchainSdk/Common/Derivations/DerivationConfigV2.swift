@@ -57,7 +57,11 @@ public struct DerivationConfigV2: DerivationConfig {
                 .manta,
                 .zkSync,
                 .moonbeam,
-                .polygonZkEVM:
+                .polygonZkEVM,
+                .moonriver,
+                .mantle,
+                .flare,
+                .taraxa:
             return "m/44'/60'/0'/0/0"
         case .binance:
             return "m/44'/714'/0'/0/0"
@@ -103,6 +107,8 @@ public struct DerivationConfigV2: DerivationConfig {
             return "m/44'/637'/0'/0'/0'"
         case .hedera:
             return "m/44'/3030'/0'/0'/0'"
+        case .radiant:
+            return "m/44'/512'/0'/0/0"
         }
     }
 }
