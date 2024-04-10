@@ -24,7 +24,8 @@ extension PublicKeyType {
                 .ravencoin,
                 .cosmos,
                 .terraV1,
-                .terraV2:
+                .terraV2,
+                .radiant:
             self = PublicKeyType.secp256k1
         case .ethereum,
                 .bsc,
@@ -47,7 +48,11 @@ extension PublicKeyType {
                 .manta,
                 .zkSync,
                 .moonbeam,
-                .polygonZkEVM:
+                .polygonZkEVM,
+                .moonriver,
+                .mantle,
+                .flare,
+                .taraxa:
             self = PublicKeyType.secp256k1Extended
         case .stellar,
                 .ton,

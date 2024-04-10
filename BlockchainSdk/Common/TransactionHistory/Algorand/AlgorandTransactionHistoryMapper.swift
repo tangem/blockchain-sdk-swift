@@ -17,14 +17,16 @@ struct AlgorandTransactionHistoryMapper {
     }
 }
 
-extension AlgorandTransactionHistoryMapper {
+// MARK: - TransactionHistoryMapper protocol conformance
+
+extension AlgorandTransactionHistoryMapper: TransactionHistoryMapper {
     func mapToTransactionRecords(
         _ items: [AlgorandTransactionHistory.Response.Item],
-        amountType: Amount.AmountType,
-        currentWalletAddress: String
-    ) -> [TransactionRecord] {
+        walletAddress: String,
+        amountType: Amount.AmountType
+    ) throws -> [TransactionRecord] {
         items.compactMap {
-            guard 
+            guard
                 let id = $0.id,
                 let paymentTransaction = $0.paymentTransaction
             else { return nil }
@@ -34,6 +36,7 @@ extension AlgorandTransactionHistoryMapper {
             
             return TransactionRecord(
                 hash: id,
+                index: 0,
                 source: .single(
                     .init(address: $0.sender, amount: decimalAmountValue)
                 ),
@@ -42,7 +45,7 @@ extension AlgorandTransactionHistoryMapper {
                 ),
                 fee: .init(.init(with: blockchain, value: decimalFeeValue)),
                 status: .confirmed,
-                isOutgoing: $0.sender.lowercased() == currentWalletAddress.lowercased() ,
+                isOutgoing: $0.sender.lowercased() == walletAddress.lowercased() ,
                 type: .transfer,
                 date: $0.roundTime
             )

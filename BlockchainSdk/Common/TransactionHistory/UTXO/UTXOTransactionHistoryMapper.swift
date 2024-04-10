@@ -18,10 +18,14 @@ struct UTXOTransactionHistoryMapper {
     }
 }
 
-// MARK: - BlockBookTransactionHistoryMapper
+// MARK: - TransactionHistoryMapper protocol conformance
 
-extension UTXOTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
-    func mapToTransactionRecords(_ response: BlockBookAddressResponse, amountType: Amount.AmountType) -> [TransactionRecord] {
+extension UTXOTransactionHistoryMapper: TransactionHistoryMapper {
+    func mapToTransactionRecords(
+        _ response: BlockBookAddressResponse,
+        walletAddress: String,
+        amountType: Amount.AmountType
+    ) throws -> [TransactionRecord] {
         assert(amountType == .coin, "UTXOTransactionHistoryMapper doesn't support a token amount")
 
         guard let transactions = response.transactions else {
@@ -39,6 +43,7 @@ extension UTXOTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
             
             return TransactionRecord(
                 hash: transaction.txid,
+                index: 0,
                 source: sourceType(vin: transaction.compat.vin),
                 destination: destinationType(vout: transaction.compat.vout),
                 fee: Fee(Amount(with: blockchain, value: fee)),

@@ -52,7 +52,11 @@ public struct AddressServiceFactory {
                 .manta,
                 .zkSync,
                 .moonbeam,
-                .polygonZkEVM:
+                .polygonZkEVM,
+                .moonriver,
+                .mantle,
+                .flare,
+                .taraxa:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -111,6 +115,8 @@ public struct AddressServiceFactory {
             return XDCAddressService()
         case .hedera:
             return HederaAddressService(isTestnet: isTestnet)
+        case .radiant:
+            return RadiantAddressService()
         }
     }
 }

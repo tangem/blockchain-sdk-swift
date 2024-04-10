@@ -21,10 +21,14 @@ struct EthereumTransactionHistoryMapper {
     }
 }
 
-// MARK: - BlockBookTransactionHistoryMapper
+// MARK: - TransactionHistoryMapper protocol conformance
 
-extension EthereumTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
-    func mapToTransactionRecords(_ response: BlockBookAddressResponse, amountType: Amount.AmountType) -> [TransactionRecord] {
+extension EthereumTransactionHistoryMapper: TransactionHistoryMapper {
+    func mapToTransactionRecords(
+        _ response: BlockBookAddressResponse,
+        walletAddress: String,
+        amountType: Amount.AmountType
+    ) throws -> [TransactionRecord] {
         guard let transactions = response.transactions else {
             return []
         }
@@ -43,6 +47,7 @@ extension EthereumTransactionHistoryMapper: BlockBookTransactionHistoryMapper {
             
             return TransactionRecord(
                 hash: transaction.txid,
+                index: 0,   // TODO: Andrey Fedorov - Add support for indexed transactions (IOS-6340)
                 source: .single(source),
                 destination: .single(destination),
                 fee: fee,

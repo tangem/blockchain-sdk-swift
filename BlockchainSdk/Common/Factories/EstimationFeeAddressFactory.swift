@@ -43,6 +43,7 @@ struct EstimationFeeAddressFactory {
                 .dogecoin,
                 .dash,
                 .ravencoin,
+                .radiant,
                 // EVM-like
                 .ethereum,
                 .ethereumPoW,
@@ -71,6 +72,10 @@ struct EstimationFeeAddressFactory {
                 .zkSync,
                 .moonbeam,
                 .polygonZkEVM,
+                .moonriver,
+                .mantle,
+                .flare,
+                .taraxa,
                 // Polkadot-like
                 .polkadot, .kusama, .azero,
                 // Cosmos-like

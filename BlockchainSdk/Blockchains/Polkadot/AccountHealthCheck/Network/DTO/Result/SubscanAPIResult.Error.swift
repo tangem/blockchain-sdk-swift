@@ -13,7 +13,6 @@ extension SubscanAPIResult {
     struct Error: Swift.Error {
         let code: Int
         let message: String?
-
     }
 }
 

@@ -66,28 +66,34 @@ public struct TransactionHistoryProviderFactory {
                 blockBookProvider: networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes),
                 mapper: TronTransactionHistoryMapper(blockchain: blockchain)
             )
+        case .polygon:
+            return PolygonTransactionHistoryProvider(
+                mapper: PolygonTransactionHistoryMapper(blockchain: blockchain),
+                networkConfiguration: input.networkConfig,
+                targetConfiguration: .polygonScan(isTestnet: blockchain.isTestnet, apiKey: config.polygonScanApiKey)
+            )
         case .algorand(_, let isTestnet):
+            let node: NodeInfo
             if isTestnet {
                 guard let url = TransactionHistoryAPILinkProvider(config: config).link(for: blockchain, api: nil) else {
                     return nil
                 }
-                return AlgorandTransactionHistoryProvider(
-                    blockchain: input.blockchain,
-                    node: .init(url: url),
-                    networkConfig: input.networkConfig
-                )
+
+                node = .init(url: url)
             } else {
                 guard let url = TransactionHistoryAPILinkProvider(config: config).link(for: blockchain, api: .nownodes) else {
                     return nil
                 }
                 let apiKeyInfo = NownodesAPIKeysInfoProvider(apiKey: config.nowNodesApiKey).apiKeys(for: blockchain)
 
-                return AlgorandTransactionHistoryProvider(
-                    blockchain: input.blockchain,
-                    node: .init(url: url, keyInfo: apiKeyInfo),
-                    networkConfig: input.networkConfig
-                )
+                node = .init(url: url, keyInfo: apiKeyInfo)
             }
+
+            return AlgorandTransactionHistoryProvider(
+                node: node,
+                networkConfig: input.networkConfig,
+                mapper: AlgorandTransactionHistoryMapper(blockchain: input.blockchain)
+            )
         default:
             return nil
         }
