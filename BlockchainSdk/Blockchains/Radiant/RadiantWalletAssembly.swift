@@ -11,9 +11,10 @@ import TangemSdk
 
 struct RadiantWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        let socketManagers: [ElectrumWebSocketProvider] = RadiantNetworkEndpoint.allCases.map {
-            .init(url: URL(string: $0.urlString)!)
-        }
+        let socketManagers: [ElectrumWebSocketProvider] = APIResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
+            .resolveProviders(apiInfos: input.apiInfo, factory: { nodeInfo, _ in
+                ElectrumWebSocketProvider(url: nodeInfo.url)
+            })
         
         let publicKey = try Secp256k1Key(with: input.wallet.publicKey.blockchainKey).compress()
         
