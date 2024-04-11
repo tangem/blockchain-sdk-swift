@@ -30,7 +30,7 @@ public enum WalletError: Error, LocalizedError {
             return "common_send_tx_error".localized
         case .empty:
             return "Empty"
-        case .failedToCalculateTxSize, 
+        case .failedToCalculateTxSize,
              .failedToParseNetworkResponse,
              .blockchainUnavailable:
             return "generic_error_code".localized(errorCodeDescription)

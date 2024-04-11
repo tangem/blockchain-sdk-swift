@@ -45,9 +45,9 @@ public struct AddressServiceFactory {
                 .telos,
                 .octa,
                 .shibarium,
-                .areon, 
+                .areon,
                 .playa3ullGames,
-                .pulsechain, 
+                .pulsechain,
                 .aurora,
                 .manta,
                 .zkSync,
@@ -56,7 +56,8 @@ public struct AddressServiceFactory {
                 .moonriver,
                 .mantle,
                 .flare,
-                .taraxa:
+                .taraxa,
+                .base:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
