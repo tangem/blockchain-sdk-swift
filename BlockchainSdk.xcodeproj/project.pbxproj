@@ -50,6 +50,8 @@
 		2D535E852A0CC5FA0081EB76 /* PublicKeyDerivationAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E7F2A0CC5FA0081EB76 /* PublicKeyDerivationAddressTests.swift */; };
 		2D535E862A0CC5FA0081EB76 /* BlockchainCodingKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E802A0CC5FA0081EB76 /* BlockchainCodingKeyTests.swift */; };
 		2D535E872A0CC5FA0081EB76 /* AddressesValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D535E812A0CC5FA0081EB76 /* AddressesValidationTests.swift */; };
+		2D6305B42BBA930C005BF839 /* RadiantNetworkEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6305B22BBA930C005BF839 /* RadiantNetworkEndpoint.swift */; };
+		2D6305BB2BBAA40E005BF839 /* RadiantNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6305BA2BBAA40E005BF839 /* RadiantNetworkService.swift */; };
 		2D78F4072A5C319300962CCA /* ChiaWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D78F4062A5C319300962CCA /* ChiaWalletAssembly.swift */; };
 		2D78F40A2A5C3CBE00962CCA /* ChiaAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D78F4092A5C3CBE00962CCA /* ChiaAddressService.swift */; };
 		2D78F40C2A5C3CCF00962CCA /* ChiaWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D78F40B2A5C3CCF00962CCA /* ChiaWalletManager.swift */; };
@@ -68,6 +70,7 @@
 		2D9A91A429BB8C1700476EA6 /* TONProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A919D29BB8C1700476EA6 /* TONProvider.swift */; };
 		2D9A91A529BB8C1700476EA6 /* TONProviderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A919E29BB8C1700476EA6 /* TONProviderRequest.swift */; };
 		2D9A91A729BB8C2E00476EA6 /* WalletCoreAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9A91A629BB8C2E00476EA6 /* WalletCoreAddressService.swift */; };
+		2D9E28042B95E66200DDE63D /* BitcoinWalletCoreAddressAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9E28032B95E66200DDE63D /* BitcoinWalletCoreAddressAdapter.swift */; };
 		2D9E2A562B584E2E0094D811 /* AlgorandTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D9E2A552B584E2E0094D811 /* AlgorandTests.swift */; };
 		2DA139F72A8AD82E00E3C374 /* ChiaModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA139F42A8AD82E00E3C374 /* ChiaModels.swift */; };
 		2DA139F82A8AD82E00E3C374 /* Chia+Int64.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA139F52A8AD82E00E3C374 /* Chia+Int64.swift */; };
@@ -79,7 +82,18 @@
 		2DA13A062A8AD83B00E3C374 /* ChiaNetworkUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA13A002A8AD83B00E3C374 /* ChiaNetworkUrl.swift */; };
 		2DA13A072A8AD83B00E3C374 /* ChiaNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA13A012A8AD83B00E3C374 /* ChiaNetworkService.swift */; };
 		2DA13A092A8AD84F00E3C374 /* ChiaTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA13A082A8AD84F00E3C374 /* ChiaTransactionBuilder.swift */; };
+		2DA4A4332BB46CF000E55526 /* RadiantWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A4322BB46CF000E55526 /* RadiantWalletAssembly.swift */; };
+		2DA4A4352BB46D8000E55526 /* RadiantAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A4342BB46D8000E55526 /* RadiantAddressService.swift */; };
+		2DA4A4372BB46FE400E55526 /* RadiantExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A4362BB46FE400E55526 /* RadiantExternalLinkProvider.swift */; };
+		2DA4A4422BB5431700E55526 /* RadiantTransactionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A43A2BB5431400E55526 /* RadiantTransactionBuilder.swift */; };
+		2DA4A4432BB5431700E55526 /* RadiantAddressUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A43B2BB5431500E55526 /* RadiantAddressUtils.swift */; };
+		2DA4A4442BB5431700E55526 /* RadiantWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A43C2BB5431500E55526 /* RadiantWalletManager.swift */; };
+		2DA4A4452BB5431700E55526 /* RadiantAmountUnspentTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A43D2BB5431500E55526 /* RadiantAmountUnspentTransaction.swift */; };
+		2DA4A4462BB5431700E55526 /* RadiantAddressInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A43F2BB5431500E55526 /* RadiantAddressInfo.swift */; };
+		2DA4A4472BB5431700E55526 /* RadiantUnspentOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A4402BB5431500E55526 /* RadiantUnspentOutput.swift */; };
+		2DA4A4482BB5431700E55526 /* RadiantTransactionUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4A4412BB5431500E55526 /* RadiantTransactionUtils.swift */; };
 		2DA8AB0D2A433A1000C75D85 /* ExceptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA8AB0C2A433A1000C75D85 /* ExceptionHandler.swift */; };
+		2DB613D02B912D05007CFA9B /* RadiantTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB613CF2B912D05007CFA9B /* RadiantTests.swift */; };
 		2DB6C6D52AFCBEC9000D0C6A /* TelosWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB6C6D42AFCBEC9000D0C6A /* TelosWalletManager.swift */; };
 		2DB6C6D72AFCC013000D0C6A /* TelosWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB6C6D62AFCC013000D0C6A /* TelosWalletAssembly.swift */; };
 		2DB84D412B721BDE00C1CDD1 /* AptosChainId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB84D402B721BDE00C1CDD1 /* AptosChainId.swift */; };
@@ -841,6 +855,8 @@
 		2D535E7F2A0CC5FA0081EB76 /* PublicKeyDerivationAddressTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicKeyDerivationAddressTests.swift; sourceTree = "<group>"; };
 		2D535E802A0CC5FA0081EB76 /* BlockchainCodingKeyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockchainCodingKeyTests.swift; sourceTree = "<group>"; };
 		2D535E812A0CC5FA0081EB76 /* AddressesValidationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddressesValidationTests.swift; sourceTree = "<group>"; };
+		2D6305B22BBA930C005BF839 /* RadiantNetworkEndpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantNetworkEndpoint.swift; sourceTree = "<group>"; };
+		2D6305BA2BBAA40E005BF839 /* RadiantNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadiantNetworkService.swift; sourceTree = "<group>"; };
 		2D78F4062A5C319300962CCA /* ChiaWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaWalletAssembly.swift; sourceTree = "<group>"; };
 		2D78F4092A5C3CBE00962CCA /* ChiaAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaAddressService.swift; sourceTree = "<group>"; };
 		2D78F40B2A5C3CCF00962CCA /* ChiaWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChiaWalletManager.swift; sourceTree = "<group>"; };
@@ -859,6 +875,7 @@
 		2D9A919D29BB8C1700476EA6 /* TONProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProvider.swift; sourceTree = "<group>"; };
 		2D9A919E29BB8C1700476EA6 /* TONProviderRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TONProviderRequest.swift; sourceTree = "<group>"; };
 		2D9A91A629BB8C2E00476EA6 /* WalletCoreAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletCoreAddressService.swift; sourceTree = "<group>"; };
+		2D9E28032B95E66200DDE63D /* BitcoinWalletCoreAddressAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinWalletCoreAddressAdapter.swift; sourceTree = "<group>"; };
 		2D9E2A552B584E2E0094D811 /* AlgorandTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandTests.swift; sourceTree = "<group>"; };
 		2DA139F42A8AD82E00E3C374 /* ChiaModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaModels.swift; sourceTree = "<group>"; };
 		2DA139F52A8AD82E00E3C374 /* Chia+Int64.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Chia+Int64.swift"; sourceTree = "<group>"; };
@@ -870,7 +887,18 @@
 		2DA13A002A8AD83B00E3C374 /* ChiaNetworkUrl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaNetworkUrl.swift; sourceTree = "<group>"; };
 		2DA13A012A8AD83B00E3C374 /* ChiaNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaNetworkService.swift; sourceTree = "<group>"; };
 		2DA13A082A8AD84F00E3C374 /* ChiaTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChiaTransactionBuilder.swift; sourceTree = "<group>"; };
+		2DA4A4322BB46CF000E55526 /* RadiantWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadiantWalletAssembly.swift; sourceTree = "<group>"; };
+		2DA4A4342BB46D8000E55526 /* RadiantAddressService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantAddressService.swift; sourceTree = "<group>"; };
+		2DA4A4362BB46FE400E55526 /* RadiantExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadiantExternalLinkProvider.swift; sourceTree = "<group>"; };
+		2DA4A43A2BB5431400E55526 /* RadiantTransactionBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantTransactionBuilder.swift; sourceTree = "<group>"; };
+		2DA4A43B2BB5431500E55526 /* RadiantAddressUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantAddressUtils.swift; sourceTree = "<group>"; };
+		2DA4A43C2BB5431500E55526 /* RadiantWalletManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantWalletManager.swift; sourceTree = "<group>"; };
+		2DA4A43D2BB5431500E55526 /* RadiantAmountUnspentTransaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantAmountUnspentTransaction.swift; sourceTree = "<group>"; };
+		2DA4A43F2BB5431500E55526 /* RadiantAddressInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantAddressInfo.swift; sourceTree = "<group>"; };
+		2DA4A4402BB5431500E55526 /* RadiantUnspentOutput.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantUnspentOutput.swift; sourceTree = "<group>"; };
+		2DA4A4412BB5431500E55526 /* RadiantTransactionUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadiantTransactionUtils.swift; sourceTree = "<group>"; };
 		2DA8AB0C2A433A1000C75D85 /* ExceptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionHandler.swift; sourceTree = "<group>"; };
+		2DB613CF2B912D05007CFA9B /* RadiantTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadiantTests.swift; sourceTree = "<group>"; };
 		2DB6C6D42AFCBEC9000D0C6A /* TelosWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelosWalletManager.swift; sourceTree = "<group>"; };
 		2DB6C6D62AFCC013000D0C6A /* TelosWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelosWalletAssembly.swift; sourceTree = "<group>"; };
 		2DB84D402B721BDE00C1CDD1 /* AptosChainId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosChainId.swift; sourceTree = "<group>"; };
@@ -1707,6 +1735,15 @@
 			path = VectorTests;
 			sourceTree = "<group>";
 		};
+		2D6305B12BBA930C005BF839 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				2D6305B22BBA930C005BF839 /* RadiantNetworkEndpoint.swift */,
+				2D6305BA2BBAA40E005BF839 /* RadiantNetworkService.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		2D78F4082A5C3CA400962CCA /* Chia */ = {
 			isa = PBXGroup;
 			children = (
@@ -1777,6 +1814,40 @@
 				2DA139FF2A8AD83B00E3C374 /* ChiaProviderResponses.swift */,
 			);
 			path = Provider;
+			sourceTree = "<group>";
+		};
+		2DA4A4302BB46CDE00E55526 /* Radiant */ = {
+			isa = PBXGroup;
+			children = (
+				2DA4A4342BB46D8000E55526 /* RadiantAddressService.swift */,
+				2DA4A43B2BB5431500E55526 /* RadiantAddressUtils.swift */,
+				2DA4A4362BB46FE400E55526 /* RadiantExternalLinkProvider.swift */,
+				2DA4A4412BB5431500E55526 /* RadiantTransactionUtils.swift */,
+				2DA4A43A2BB5431400E55526 /* RadiantTransactionBuilder.swift */,
+				2DA4A4322BB46CF000E55526 /* RadiantWalletAssembly.swift */,
+				2DA4A43C2BB5431500E55526 /* RadiantWalletManager.swift */,
+				2DA4A43E2BB5431500E55526 /* Domain */,
+				2D6305B12BBA930C005BF839 /* Network */,
+			);
+			path = Radiant;
+			sourceTree = "<group>";
+		};
+		2DA4A43E2BB5431500E55526 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				2DA4A43F2BB5431500E55526 /* RadiantAddressInfo.swift */,
+				2DA4A4402BB5431500E55526 /* RadiantUnspentOutput.swift */,
+				2DA4A43D2BB5431500E55526 /* RadiantAmountUnspentTransaction.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		2DB613CE2B912CFB007CFA9B /* Radiant */ = {
+			isa = PBXGroup;
+			children = (
+				2DB613CF2B912D05007CFA9B /* RadiantTests.swift */,
+			);
+			path = Radiant;
 			sourceTree = "<group>";
 		};
 		2DB6C6D32AFCBEBA000D0C6A /* Telos */ = {
@@ -1918,6 +1989,7 @@
 				2D9E2A542B584E2E0094D811 /* Algorand */,
 				2DB84D422B721CB000C1CDD1 /* Aptos */,
 				B67C5A262B8288F600A33A68 /* Hedera */,
+				2DB613CE2B912CFB007CFA9B /* Radiant */,
 				5D14E47E2397B80F00C15FC8 /* Info.plist */,
 			);
 			path = BlockchainSdkTests;
@@ -1945,6 +2017,7 @@
 				B63B79302AD854010055BD06 /* NEAR */,
 				E9EECB5128E9F4F700899D6C /* Optimism */,
 				DAED921D27A14F1B00F188D7 /* Polkadot */,
+				2DA4A4302BB46CDE00E55526 /* Radiant */,
 				EF31EA1029DC31E000A59FBE /* Ravencoin */,
 				5D740B7A2625B40800DE9636 /* Rsk */,
 				DAE30DF7279164500056C5A3 /* Solana */,
@@ -2510,11 +2583,12 @@
 			isa = PBXGroup;
 			children = (
 				5D304398239A8C9C0066B8D9 /* BitcoinAddressService.swift */,
-				EF666C2D2A2F3EE90044986F /* BitcoinLegacyAddressService.swift */,
 				EF666C2F2A2F3F200044986F /* BitcoinBech32AddressService.swift */,
+				EF666C2D2A2F3EE90044986F /* BitcoinLegacyAddressService.swift */,
+				B05BF633256F953500B50FD7 /* BitcoinScriptAddress.swift */,
 				EF32FEDD2A38D015002ED43F /* BitcoinScriptAddressesProvider.swift */,
 				EF32FEDA2A38C288002ED43F /* BitcoinScriptAddressProvider.swift */,
-				B05BF633256F953500B50FD7 /* BitcoinScriptAddress.swift */,
+				2D9E28032B95E66200DDE63D /* BitcoinWalletCoreAddressAdapter.swift */,
 			);
 			path = Address;
 			sourceTree = "<group>";
@@ -4048,6 +4122,7 @@
 				B6BA93772AEA0EFC00F84E36 /* NEARNetworkResult.AccessKeyInfo.swift in Sources */,
 				EFBA17FE2988623F00C23955 /* TransactionSendResult.swift in Sources */,
 				EFD717CE2A25ECB500E5430D /* SmartContractMethodParameterType.swift in Sources */,
+				2DA4A4352BB46D8000E55526 /* RadiantAddressService.swift in Sources */,
 				B6181AE92B75945E0046A976 /* HederaTransactionInfo.swift in Sources */,
 				DAFE0D082BB168D8005CBD9C /* MoonriverExternalLinkProvider.swift in Sources */,
 				EF3B19362AA85CFC0084AA1C /* BSCExternalLinkProvider.swift in Sources */,
@@ -4170,6 +4245,7 @@
 				2D01EC042B05281800DEF1CC /* DecimalBlockchainAddressConverter.swift in Sources */,
 				DC5E646D2B16098C00E81AA5 /* RIPEMD160+.swift in Sources */,
 				DC5E65072B1650F400E81AA5 /* OP_2DIV.swift in Sources */,
+				2DA4A4422BB5431700E55526 /* RadiantTransactionBuilder.swift in Sources */,
 				EF3B19342AA85CE90084AA1C /* DogecoinExternalLinkProvider.swift in Sources */,
 				EF2D9DA52BC3F6770055C485 /* EthereumTransactionParams.swift in Sources */,
 				EF0DA78C285246A90081092A /* DashMainNetworkParams.swift in Sources */,
@@ -4283,8 +4359,11 @@
 				DC5E65332B1650F400E81AA5 /* OP_ENDIF.swift in Sources */,
 				5DE3BFA0239FA33800E8815D /* Bech32.swift in Sources */,
 				2DDEFBC32B59B36A00885675 /* AlgorandTransactionBuilder.swift in Sources */,
+				2DA4A4372BB46FE400E55526 /* RadiantExternalLinkProvider.swift in Sources */,
+				B619208C2AE6AC8F001D6DDF /* JSONRPCParams.swift in Sources */,
 				DC5E64F42B1650F400E81AA5 /* OP_MAX.swift in Sources */,
 				B04DC62725AC1C50009AA7B3 /* JSONDecoder+.swift in Sources */,
+				2DA4A4482BB5431700E55526 /* RadiantTransactionUtils.swift in Sources */,
 				EF3B192A2AA85C810084AA1C /* LitecoinExternalLinkProvider.swift in Sources */,
 				DA63B0A129CB3FC700AC6E49 /* KaspaTransactionBuilder.swift in Sources */,
 				EF2BC63229DC111E003D3F18 /* RavencoinWalletAssembly.swift in Sources */,
@@ -4299,6 +4378,7 @@
 				5D977BB623FAEB4500575BE4 /* DucatusNetworkService.swift in Sources */,
 				DC5E65212B1650F400E81AA5 /* OP_2ROT.swift in Sources */,
 				2DDE5BAB29C4F8D200A5B708 /* StellarWalletAssembly.swift in Sources */,
+				2DA4A4442BB5431700E55526 /* RadiantWalletManager.swift in Sources */,
 				5DED72C423A1315F006D79AE /* StellarWalletManager.swift in Sources */,
 				DC5E64E62B1650F400E81AA5 /* OP_EQUAL.swift in Sources */,
 				5D740B802625B42500DE9636 /* RskAddressService.swift in Sources */,
@@ -4359,6 +4439,7 @@
 				B6DC28422B62AFD00070F1D2 /* HederaExternalLinkProvider.swift in Sources */,
 				DC87B9F02B8F4D9700C61C5A /* BitcoreResponse.swift in Sources */,
 				EF74D6422BA38124000550F3 /* Future+.swift in Sources */,
+				2D6305BB2BBAA40E005BF839 /* RadiantNetworkService.swift in Sources */,
 				DC5E64EC2B1650F400E81AA5 /* OP_PUBKEYHASH.swift in Sources */,
 				DC8180802B15159D00D7D53F /* RLP.swift in Sources */,
 				2DA8AB0D2A433A1000C75D85 /* ExceptionHandler.swift in Sources */,
@@ -4391,6 +4472,7 @@
 				DC3550F62B584E2D00A93DBA /* XDCAddressConverter.swift in Sources */,
 				B63068CC2B31163700E79053 /* VeChainNetworkProvider.swift in Sources */,
 				DC5E64D92B1650F400E81AA5 /* OP_SHA1.swift in Sources */,
+				2DA4A4432BB5431700E55526 /* RadiantAddressUtils.swift in Sources */,
 				5D557CB023AA888D009B32AF /* Uint64+.swift in Sources */,
 				B0BAEE9C25FF1E4200F318A6 /* RosettaData.swift in Sources */,
 				2DDE5BA129C4F8D200A5B708 /* DucatusWalletAssembly.swift in Sources */,
@@ -4408,7 +4490,9 @@
 				B633EA1E2B8FC5D900F11BFF /* EthereumTransactionHistoryProvider.swift in Sources */,
 				B6931AD32B32495C00B31319 /* VeChainAccountInfo.swift in Sources */,
 				5D8653FA23A8C481000DE52D /* StellarNetworkService.swift in Sources */,
+				2DA4A4452BB5431700E55526 /* RadiantAmountUnspentTransaction.swift in Sources */,
 				DC5E64DA2B1650F400E81AA5 /* OP_HASH160.swift in Sources */,
+				2DA4A4472BB5431700E55526 /* RadiantUnspentOutput.swift in Sources */,
 				DC63F266293F243200F953EF /* Credentials.swift in Sources */,
 				EF2D9DB32BC4033E0055C485 /* JSONRPC.swift in Sources */,
 				DC87B9EF2B8F4D9700C61C5A /* BitcoreProvider.swift in Sources */,
@@ -4443,6 +4527,7 @@
 				EFB952402A6FEF1700996D16 /* TransactionRecord.swift in Sources */,
 				DC5E653D2B16641300E81AA5 /* BitcoinScriptBuilder.swift in Sources */,
 				DA570CF927A82322007F34EB /* PolkadotBlockchainMeta.swift in Sources */,
+				2D6305B42BBA930C005BF839 /* RadiantNetworkEndpoint.swift in Sources */,
 				5D14E4972397B87000C15FC8 /* WalletManager.swift in Sources */,
 				B6F3AA6D2ADD92230059C99A /* Publisher+.swift in Sources */,
 				DC5E64E12B1650F400E81AA5 /* OP_CHECKSIG.swift in Sources */,
@@ -4451,6 +4536,7 @@
 				5D4B33BC23F6EA0500C93A84 /* BlockchairTarget.swift in Sources */,
 				EF9E384F2B7A740D004B694C /* ReserveAmountRestrictable.swift in Sources */,
 				EFF82D482B9F3212004DF1A0 /* WebSocketConnection.swift in Sources */,
+				2DA4A4332BB46CF000E55526 /* RadiantWalletAssembly.swift in Sources */,
 				2D01EBFD2B04FC6700DEF1CC /* DecimalAddressService.swift in Sources */,
 				5D94E56723A3946C009C7482 /* Data+.swift in Sources */,
 				EF9E381F2B7A43B3004B694C /* MinimumBalanceRestrictable.swift in Sources */,
@@ -4516,6 +4602,7 @@
 				5DF91521253DB89800B927DD /* TezosTarget.swift in Sources */,
 				2DDEFBDD2B59B44700885675 /* AlgorandResponse+Account.swift in Sources */,
 				EFB9523D2A6FDB2A00996D16 /* TransactionHistoryProvider.swift in Sources */,
+				2D9E28042B95E66200DDE63D /* BitcoinWalletCoreAddressAdapter.swift in Sources */,
 				EF3B19162AA5C9530084AA1C /* ExternalLinkProvider.swift in Sources */,
 				0AF90CDD2B87658600772F04 /* AuroraExternalLinkProvider.swift in Sources */,
 				0A0E225D2B9B366400075FF1 /* MoonbeamExternalLinkProvider.swift in Sources */,
@@ -4602,6 +4689,7 @@
 				DC5E65352B16541D00E81AA5 /* BitcoinScript.swift in Sources */,
 				5D4B33CD23F7DC0400C93A84 /* BinanceWalletManager.swift in Sources */,
 				DC5E64FA2B1650F400E81AA5 /* OP_MUL.swift in Sources */,
+				2DA4A4462BB5431700E55526 /* RadiantAddressInfo.swift in Sources */,
 				5D0906C227DBB7A10053B2CD /* BitcoinCashNetworkParams.swift in Sources */,
 				B6E9F3F32AEF5A8E00209FCA /* NEARAddressService.swift in Sources */,
 				B633EA122B8FC58900F11BFF /* AlgorandTransactionHistoryProvider.swift in Sources */,
@@ -4743,6 +4831,7 @@
 				DA3738F229EFDF9600439F6B /* XCTAssert+.swift in Sources */,
 				B00DEAD3290008910077CD19 /* SolanaEd25519Tests.swift in Sources */,
 				EF0DA78228523FAC0081092A /* StellarTests.swift in Sources */,
+				2DB613D02B912D05007CFA9B /* RadiantTests.swift in Sources */,
 				EFAD40B12A98DFBD00364D65 /* SolanaEd25519Slip0010Tests.swift in Sources */,
 				EF0DA78628523FAC0081092A /* XCTestCase+.swift in Sources */,
 				2D535E772A0CC5E50081EB76 /* DecodableVectors.swift in Sources */,

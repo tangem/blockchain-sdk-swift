@@ -63,7 +63,19 @@ class ElectrumWebSocketProvider: HostProvider {
         try await send(method: Method.Blockchain.Transaction.broadcast, parameter: transactionHex)
     }
     
-    func estimateFee(block: Int) async throws -> Int {
+    /*
+     Use for specify Radiant blockchain answer for example
+     {
+         "jsonrpc": "2.0",
+         "result": "8827bae7cc2409b2a49b38ca5482a0a1cb296f458e6e7eb669a30def0c9b63ee",
+         "id": 5
+     }
+     */
+    func send(transactionHex: String) async throws -> String {
+        try await send(method: Method.Blockchain.Transaction.broadcast, parameter: [transactionHex])
+    }
+    
+    func estimateFee(block: Int) async throws -> Decimal {
         try await send(method: Method.Blockchain.estimatefee, parameter: [block])
     }
 }

@@ -133,6 +133,8 @@ public struct ExternalLinkProviderFactory {
             return FlareExternalLinkProvider(isTestnet: isTestnet)
         case .taraxa:
             return TaraxaExternalLinkProvider(isTestnet: isTestnet)
+        case .radiant:
+            return RadiantExternalLinkProvider()
         }
     }
 }
