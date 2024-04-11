@@ -26,15 +26,12 @@ class DecimalTransactionBuilder: EthereumTransactionBuilder {
             return nil
         }
     }
-    
-    override func getData(for amount: Amount, targetAddress: String) -> Data? {
-        do {
-            let convertedTargetAddress = try convertAddressIfNeeded(destinationAddress: targetAddress)
-            return super.getData(for: amount, targetAddress: convertedTargetAddress)
-        } catch {
-            return nil
-        }
+
+    override func buildForTokenTransfer(destination: String, amount: Amount) throws -> Data {
+        let convertedTargetAddress = try convertAddressIfNeeded(destinationAddress: destination)
+        return try super.buildForTokenTransfer(destination: convertedTargetAddress, amount: amount)
     }
+
     
     // MARK: - Private Implementation
     

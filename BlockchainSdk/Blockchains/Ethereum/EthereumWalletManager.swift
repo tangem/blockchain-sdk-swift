@@ -196,8 +196,9 @@ extension EthereumWalletManager: TransactionFeeProvider {
                 return getFee(destination: destination, value: hexAmount, data: nil)
             }
         case .token(let token):
-            let transferData = buildForTokenTransfer(destination: destination, amount: amount)
-            return getFee(destination: token.contractAddress, value: nil, data: transferData)
+            if let transferData = try? buildForTokenTransfer(destination: destination, amount: amount) {
+                return getFee(destination: token.contractAddress, value: nil, data: transferData)
+            }
 
         case .reserve:
             break
@@ -244,17 +245,10 @@ extension EthereumWalletManager: SignatureCountValidator {
 
 extension EthereumWalletManager: EthereumTransactionDataBuilder {
     func buildForApprove(spender: String, amount: Decimal) -> Data {
-        let bigUInt = EthereumUtils.mapToBigUInt(amount)
-        return ApproveERC20TokenMethod(spender: spender, amount: bigUInt).data
+        txBuilder.buildForApprove(spender: spender, amount: amount)
     }
 
-    func buildForTokenTransfer(destination: String, amount: Amount) -> Data {
-        if !amount.type.isToken {
-            return Data()
-        }
-
-        let bigUInt = EthereumUtils.mapToBigUInt(amount.value)
-        let method = TransferERC20TokenMethod(destination: destination, amount: bigUInt)
-        return method.data
+    func buildForTokenTransfer(destination: String, amount: Amount) throws -> Data {
+        try txBuilder.buildForTokenTransfer(destination: destination, amount: amount)
     }
 }

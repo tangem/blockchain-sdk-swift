@@ -4360,7 +4360,6 @@
 				5DE3BFA0239FA33800E8815D /* Bech32.swift in Sources */,
 				2DDEFBC32B59B36A00885675 /* AlgorandTransactionBuilder.swift in Sources */,
 				2DA4A4372BB46FE400E55526 /* RadiantExternalLinkProvider.swift in Sources */,
-				B619208C2AE6AC8F001D6DDF /* JSONRPCParams.swift in Sources */,
 				DC5E64F42B1650F400E81AA5 /* OP_MAX.swift in Sources */,
 				B04DC62725AC1C50009AA7B3 /* JSONDecoder+.swift in Sources */,
 				2DA4A4482BB5431700E55526 /* RadiantTransactionUtils.swift in Sources */,

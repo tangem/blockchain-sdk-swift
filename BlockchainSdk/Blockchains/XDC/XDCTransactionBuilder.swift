@@ -22,8 +22,8 @@ class XDCTransactionBuilder: EthereumTransactionBuilder {
         return super.buildForSign(transaction: copyTransaction, nonce: nonce)
     }
 
-    override func getData(for amount: Amount, targetAddress: String) -> Data? {
-        let convertedTargetAddress = addressConverter.convertToETHAddress(targetAddress)
-        return super.getData(for: amount, targetAddress: convertedTargetAddress)
+    override func buildForTokenTransfer(destination: String, amount: Amount) throws -> Data {
+        let convertedTargetAddress = addressConverter.convertToETHAddress(destination)
+        return try super.buildForTokenTransfer(destination: convertedTargetAddress, amount: amount)
     }
 }
