@@ -63,7 +63,7 @@ struct AddressTypesConfig {
              .shibarium,
              .aptos,
              .hedera,
-             .areon, 
+             .areon,
              .playa3ullGames,
              .pulsechain,
              .aurora,
@@ -74,7 +74,8 @@ struct AddressTypesConfig {
              .moonriver,
              .mantle,
              .flare,
-             .taraxa:
+             .taraxa,
+             .base:
             return [.default]
         }
     }
