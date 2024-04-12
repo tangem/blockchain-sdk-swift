@@ -15,7 +15,7 @@ struct EstimationFeeAddressFactory {
         case .chia:
             // Can not generate and doesn't depend on destination
             return ""
-        case .xrp, 
+        case .xrp,
              .stellar,
              .binance:
             // Doesn't depend on amount and destination
@@ -49,7 +49,7 @@ struct EstimationFeeAddressFactory {
                 .kava, .cronos, .telos, .octa, .shibarium, .disChain,
                 .areon, .playa3ullGames, .pulsechain, .aurora, .manta,
                 .zkSync, .moonbeam, .polygonZkEVM, .moonriver, .mantle,
-                .flare, .taraxa:
+                .flare, .taraxa, .base:
             return "0x52bb4012854f808CF9BAbd855e44E506dAf6C077"
         case .ethereumClassic:
             return "0xc49722a6f4Fe5A1347710dEAAa1fafF4c275689b"

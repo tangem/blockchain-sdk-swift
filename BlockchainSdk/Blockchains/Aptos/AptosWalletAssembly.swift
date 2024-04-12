@@ -38,7 +38,7 @@ struct AptosWalletAssembly: WalletManagerAssembly {
         
         let txBuilder = AptosTransactionBuilder(
             publicKey: input.wallet.publicKey.blockchainKey,
-            decimalValue: input.blockchain.decimalValue, 
+            decimalValue: input.blockchain.decimalValue,
             walletAddress: input.wallet.address,
             chainId: chainId
         )
