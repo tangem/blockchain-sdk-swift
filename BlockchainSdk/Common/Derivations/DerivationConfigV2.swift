@@ -50,7 +50,7 @@ public struct DerivationConfigV2: DerivationConfig {
                 .octa,
                 .decimal,
                 .shibarium,
-                .areon, 
+                .areon,
                 .playa3ullGames,
                 .pulsechain,
                 .aurora,
@@ -61,7 +61,8 @@ public struct DerivationConfigV2: DerivationConfig {
                 .moonriver,
                 .mantle,
                 .flare,
-                .taraxa:
+                .taraxa,
+                .base:
             return "m/44'/60'/0'/0/0"
         case .binance:
             return "m/44'/714'/0'/0/0"
@@ -107,6 +108,8 @@ public struct DerivationConfigV2: DerivationConfig {
             return "m/44'/637'/0'/0'/0'"
         case .hedera:
             return "m/44'/3030'/0'/0'/0'"
+        case .radiant:
+            return "m/44'/512'/0'/0/0"
         }
     }
 }
