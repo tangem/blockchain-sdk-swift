@@ -203,47 +203,6 @@ extension Api {
     }
 }
 
-// MARK: swift concurrency versions of several calls
-
-extension Api {
-    func getSignatureStatuses(pubkeys: [String], configs: RequestConfiguration? = nil) async throws -> [SignatureStatus?] {
-        try await withCheckedThrowingContinuation { [weak self] continuation in
-            guard let self else {
-                continuation.resume(throwing: WalletError.empty)
-                return
-            }
-            
-            getSignatureStatuses(pubkeys: pubkeys, configs: configs, onComplete: continuation.resume(with:))
-        }
-    }
-    
-    func getTokenAccountsByOwner<T: Decodable>(
-        pubkey: String,
-        mint: String? = nil,
-        programId: String? = nil,
-        configs: RequestConfiguration? = nil
-    ) async throws -> [T] {
-        try await withCheckedThrowingContinuation { [weak self] continuation in
-            guard let self else {
-                continuation.resume(throwing: WalletError.empty)
-                return
-            }
-            
-            getTokenAccountsByOwner(pubkey: pubkey, mint: mint, programId: programId, configs: configs, onComplete: continuation.resume(with:))
-        }
-    }
-    
-    func getAccountInfo<T: BufferLayout>(account: String, decodedTo: T.Type) async throws -> BufferInfo<T> {
-        try await withCheckedThrowingContinuation { [weak self] continuation in
-            guard let self else {
-                continuation.resume(throwing: WalletError.empty)
-                return
-            }
-            getAccountInfo(account: account, decodedTo: T.self, onComplete: continuation.resume(with:))
-        }
-    }
-}
-
 extension Action {
     func serializeMessage(
         to destination: String,
