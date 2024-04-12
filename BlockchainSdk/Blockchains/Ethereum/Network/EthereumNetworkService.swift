@@ -96,7 +96,7 @@ class EthereumNetworkService: MultiNetworkProvider {
             $0.getFeeHistory()
                 .withWeakCaptureOf(self)
                 .tryMap { service, response in
-                    service.getBaseFee(response: response)
+                    try service.getBaseFee(response: response)
                 }
                 .eraseToAnyPublisher()
         }
@@ -231,13 +231,18 @@ class EthereumNetworkService: MultiNetworkProvider {
         return count
     }
 
-    private func getBaseFee(response: EthereumFeeHistoryResponse) -> BigUInt {
+    private func getBaseFee(response: EthereumFeeHistoryResponse) throws -> BigUInt {
+        guard !response.baseFeePerGas.isEmpty else {
+            throw ETHError.failedToParseBaseFees
+        }
+
         let baseFeePerGas = response.baseFeePerGas.compactMap {
             EthereumUtils.parseEthereumDecimal($0, decimalsCount: 0)
         }
 
         let average = baseFeePerGas.reduce(0, +) / Decimal(baseFeePerGas.count)
-        return EthereumUtils.mapToBigUInt(average)
+        let bigUInt = EthereumUtils.mapToBigUInt(average)
+        return bigUInt
     }
 
     private func mapToEthereumFeeResponse(baseFee: BigUInt, priorityFee: BigUInt, gasLimit: BigUInt) -> EthereumFeeResponse {

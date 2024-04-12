@@ -12,13 +12,14 @@ public enum ETHError: Error, LocalizedError, DetailedError {
     case failedToParseTxCount
     case failedToParseBalance(value: String, address: String, decimals: Int)
     case failedToParseGasLimit
+    case failedToParseBaseFees
     case failedToParseAllowance
     case gasRequiredExceedsAllowance
     case unsupportedFeature
     
     public var errorDescription: String? {
         switch self {
-        case .failedToParseTxCount, .failedToParseBalance, .failedToParseAllowance:
+        case .failedToParseTxCount, .failedToParseBalance, .failedToParseAllowance, .failedToParseBaseFees:
             return "generic_error_code".localized(errorCodeDescription)
         case .failedToParseGasLimit: // TODO: refactor
             return "generic_error_code".localized(errorCodeDescription)
@@ -56,6 +57,8 @@ public enum ETHError: Error, LocalizedError, DetailedError {
             return 5
         case .unsupportedFeature:
             return 6
+        case .failedToParseBaseFees:
+            return 7
         }
     }
 }
