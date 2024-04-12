@@ -165,21 +165,21 @@ class EthereumTests: XCTestCase {
         XCTAssertEqual(signedTransaction.hexString, expectedSignedTransaction.hexString)
     }
 
-    // https://polygonscan.com/tx/0x9a6ac4bea9ef483d15d32cdb4b51b86854583e1e55bbbaf7ed66bdf636673cf2
+    // https://polygonscan.com/tx/0x2cb6831f4c1cb7b888707489cd60c42ff222b5b3230d74f25434d936c2ba7419
     func test_eip1559_coin_transfer() throws {
         // given
         let walletPublicKey = Data(hex: "043b08e56e38404199eb3320f32fdc7557029d4a4c39adae01cc47afd86cfa9a25fcbfaa2acda3ab33560a1d482a2088f3bb2c7b313fd11f50dd8fe508165d4ecf")
-        let signature = Data(hex: "DA17C0AEBF8BCCC45501BE97EDC73CCCA69A13AC65DE667A4A288C3F24E6DCE77C37E31BF5380746F9A633DA0EB079A56AC7A2D024A80C2F537415F68947EC50")
+        let signature = Data(hex: "56DF71FF2A7FE93D2363056FE5FF32C51E5AC71733AF23A82F3974CB872537E95B60D6A0042CC34724DB84E949EEC8643761FE9027E9E7B1ED3DA23D8AB7C0A4")
 
         let walletAddress = "0x29010F8F91B980858EB298A0843264cfF21Fd9c9"
         let destinationAddress = "0x90e4d59c8583e37426b37d1d7394b6008a987c67"
 
-        let nonce = 195
+        let nonce = 196
         let sendValue = Amount(with: blockchain, type: .coin, value: 1)
         let feeParameters = EthereumEIP1559FeeParameters(
             gasLimit: BigUInt(21000),
-            baseFee: BigUInt(221985475379),
-            priorityFee: BigUInt(30000000000)
+            baseFee: BigUInt(4478253867089),
+            priorityFee: BigUInt(31900000000)
         )
         let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
 
@@ -195,8 +195,8 @@ class EthereumTests: XCTestCase {
         )
 
         // then
-        let expectedHashToSign = Data(hex: "0f7bb229fc3605e5df8f3c29fc3f5cae7c016d5e3505137b7590a59587177307")
-        let expectedSignedTransaction = Data(hex: "0x02f876818981c38506fc23ac008533af5d8b338252089490e4d59c8583e37426b37d1d7394b6008a987c67880de0b6b3a764000080c080a0da17c0aebf8bccc45501be97edc73ccca69a13ac65de667a4a288c3f24e6dce7a07c37e31bf5380746f9a633da0eb079a56ac7a2d024a80c2f537415f68947ec50")
+        let expectedHashToSign = Data(hex: "925f1debbb96941544aefe6a5532508e51f2b8ae1f3a911abfb24b83af610400")
+        let expectedSignedTransaction = Data(hex: "0x02f877818981c485076d635f00860412acbb20518252089490e4d59c8583e37426b37d1d7394b6008a987c67880de0b6b3a764000080c080a056df71ff2a7fe93d2363056fe5ff32c51e5ac71733af23a82f3974cb872537e9a05b60d6a0042cc34724db84e949eec8643761fe9027e9e7b1ed3da23d8ab7c0a4")
 
         let hashToSign = try transactionBuilder.buildForSign(transaction: transaction)
         sizeTester.testTxSize(hashToSign)
