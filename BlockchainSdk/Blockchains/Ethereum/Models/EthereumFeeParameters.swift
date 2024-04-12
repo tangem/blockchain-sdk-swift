@@ -17,3 +17,15 @@ public struct EthereumFeeParameters: FeeParameters {
         self.gasPrice = gasPrice
     }
 }
+
+public struct EthereumEIP1559FeeParameters: FeeParameters {
+    public let gasLimit: BigUInt
+    public let baseFee: BigUInt
+    public let priorityFee: BigUInt
+
+    public init(gasLimit: BigUInt, baseFee: BigUInt, priorityFee: BigUInt) {
+        self.gasLimit = gasLimit
+        self.baseFee = baseFee
+        self.priorityFee = priorityFee
+    }
+}

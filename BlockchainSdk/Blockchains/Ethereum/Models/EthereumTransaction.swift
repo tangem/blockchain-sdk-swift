@@ -42,8 +42,7 @@ public struct EthereumTransaction {
                 return RLP.encode(fields)
             }
         } else {
-            let encodeV = chainID == nil ? self.v :
-                self.v - 27 + chainID! * 2 + 35
+            let encodeV = chainID == nil ? v : v - 27 + chainID! * 2 + 35
 
             let fields = [self.nonce, self.gasPrice, self.gasLimit, Data(hexString: to), self.value, self.data, encodeV, self.r, self.s] as [AnyObject]
             return RLP.encode(fields)

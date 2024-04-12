@@ -49,21 +49,21 @@ class EthereumNetworkService: MultiNetworkProvider {
             }
             .eraseToAnyPublisher()
     }
-    
-    func getFee(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumFeeResponse, Error> {
-        let gasPricePublisher = getGasPrice()
-        let gasLimitPublisher = getGasLimit(to: to, from: from, value: value, data: data)
-        
-        return Publishers.Zip(gasPricePublisher, gasLimitPublisher)
-            .tryMap {[weak self] gasPrice, gasLimit -> EthereumFeeResponse in
-                guard let self = self else {
-                    throw BlockchainSdkError.failedToLoadFee
-                }
 
-                return self.mapToEthereumFeeResponse(
-                    gasPrice: gasPrice,
-                    gasLimit: gasLimit,
-                    decimalCount: self.decimals
+    func getFee(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumFeeResponse, Error> {
+        let gasLimitPublisher = getGasLimit(to: to, from: from, value: value, data: data)
+        let baseFeePublisher = getBaseFee()
+        let priorityFeePublisher = getPriorityFee()
+
+        return Publishers.Zip3(gasLimitPublisher, baseFeePublisher, priorityFeePublisher)
+            .withWeakCaptureOf(self)
+            .tryMap { networkService, args in
+                let (gasLimit, baseFee, priorityFee) = args
+
+                return networkService.mapToEthereumFeeResponse(
+                    baseFee: baseFee,
+                    priorityFee: priorityFee,
+                    gasLimit: gasLimit
                 )
             }
             .mapError { error in
@@ -74,25 +74,24 @@ class EthereumNetworkService: MultiNetworkProvider {
                    errorMessage.contains("gas required exceeds allowance", ignoreCase: true) {
                     return ETHError.gasRequiredExceedsAllowance
                 }
-                
+
                 return error
             }
             .eraseToAnyPublisher()
     }
-    
+
     func getTxCount(_ address: String) -> AnyPublisher<Int, Error> {
        providerPublisher { provider in
            provider.getTxCount(for: address)
-               .tryMap {[weak self] in
-                   guard let self = self else { throw WalletError.empty }
-                   
-                   return try self.getTxCount(from: $0)
+               .withWeakCaptureOf(self)
+               .tryMap { networkService, result in
+                   try networkService.getTxCount(from: result)
                }
                .eraseToAnyPublisher()
        }
    }
 
-    func getBaseFee() -> AnyPublisher<Decimal, Error> {
+    func getBaseFee() -> AnyPublisher<BigUInt, Error> {
         providerPublisher {
             $0.getFeeHistory()
                 .withWeakCaptureOf(self)
@@ -197,10 +196,9 @@ class EthereumNetworkService: MultiNetworkProvider {
     func getPendingTxCount(_ address: String) -> AnyPublisher<Int, Error> {
         providerPublisher {
             $0.getPendingTxCount(for: address)
-                .tryMap {[weak self] in
-                    guard let self = self else { throw WalletError.empty }
-                    
-                    return try self.getTxCount(from: $0)
+                .withWeakCaptureOf(self)
+                .tryMap { networkService, result in
+                    try networkService.getTxCount(from: result)
                 }
                 .eraseToAnyPublisher()
         }
@@ -233,21 +231,31 @@ class EthereumNetworkService: MultiNetworkProvider {
         return count
     }
 
-    private func getBaseFee(response: EthereumFeeHistoryResponse) -> Decimal {
+    private func getBaseFee(response: EthereumFeeHistoryResponse) -> BigUInt {
         let baseFeePerGas = response.baseFeePerGas.compactMap {
-            EthereumUtils.parseEthereumDecimal($0, decimalsCount: decimals)
+            EthereumUtils.parseEthereumDecimal($0, decimalsCount: 0)
         }
 
-        // Get the average value
-        return baseFeePerGas.reduce(0, +) / Decimal(baseFeePerGas.count)
+        let average = baseFeePerGas.reduce(0, +) / Decimal(baseFeePerGas.count)
+        return EthereumUtils.mapToBigUInt(average)
     }
 
-    private func mapToEthereumFeeResponse(gasPrice: BigUInt, gasLimit: BigUInt, decimalCount: Int) -> EthereumFeeResponse {
-        let minGasPrice = gasPrice
-        let normalGasPrice = gasPrice * BigUInt(12) / BigUInt(10)
-        let maxGasPrice = gasPrice * BigUInt(15) / BigUInt(10)
-        
-        return EthereumFeeResponse(gasPrices: [minGasPrice, normalGasPrice, maxGasPrice], gasLimit: gasLimit)
+    private func mapToEthereumFeeResponse(baseFee: BigUInt, priorityFee: BigUInt, gasLimit: BigUInt) -> EthereumFeeResponse {
+        let lowBaseFee = baseFee * BigUInt(85) / BigUInt(100) // - 15%
+        let marketBaseFee = baseFee
+        let fastBaseFee = baseFee * BigUInt(115) / BigUInt(100) // + 15%
+
+        // We can't decrease priorityFee for the lowest fee option
+        let lowPriorityFee = priorityFee
+        let marketPriorityFee = priorityFee
+        // The priorityFee usually is between 1-3 GWEI. We can increase it to accelerate the transaction
+        let fastPriorityFee = priorityFee * BigUInt(2)
+
+        return EthereumFeeResponse(
+            gasLimit: gasLimit,
+            baseFees: (low: lowBaseFee, market: marketBaseFee, fast: fastBaseFee),
+            priorityFees: (low: lowPriorityFee, market: marketPriorityFee, fast: fastPriorityFee)
+        )
     }
 }
 

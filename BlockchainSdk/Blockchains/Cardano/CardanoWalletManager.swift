@@ -64,19 +64,19 @@ extension CardanoWalletManager: TransactionSender {
 
                     return try self.transactionBuilder.buildForSign(transaction: transaction)
                 }
-                .flatMap { [weak self] dataForSign -> AnyPublisher<Data, Error> in
+                .flatMap { [weak self] dataForSign -> AnyPublisher<SignatureInfo, Error> in
                     guard let self else {
                         return .anyFail(error: WalletError.empty)
                     }
 
-                    return signer.sign(hash: dataForSign, walletPublicKey: self.wallet.publicKey)
+                    return signer
+                        .sign(hash: dataForSign, walletPublicKey: self.wallet.publicKey)
                 }
-                .tryMap { [weak self] signature -> Data in
+                .tryMap { [weak self] signatureInfo -> Data in
                     guard let self else {
                         throw WalletError.empty
                     }
 
-                    let signatureInfo = SignatureInfo(signature: signature, publicKey: self.wallet.publicKey.blockchainKey)
                     return try self.transactionBuilder.buildForSend(transaction: transaction, signature: signatureInfo)
                 }
                 .flatMap { [weak self] builtTransaction -> AnyPublisher<String, Error> in

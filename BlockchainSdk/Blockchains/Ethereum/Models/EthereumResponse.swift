@@ -35,13 +35,12 @@ struct EthereumInfoResponse {
 }
 
 struct EthereumFeeResponse {
-    let gasPrices: [BigUInt]
     let gasLimit: BigUInt
+
+    let baseFees: (low: BigUInt, market: BigUInt, fast: BigUInt)
+    let priorityFees: (low: BigUInt, market: BigUInt, fast: BigUInt)
 }
 
 struct EthereumFeeHistoryResponse: Decodable {
-    let reward: [[String]]
     let baseFeePerGas: [String]
-    let gasUsedRatio: [Decimal]
-    let oldestBlock: String
 }

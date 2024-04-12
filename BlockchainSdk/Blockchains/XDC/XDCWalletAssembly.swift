@@ -10,16 +10,18 @@ import Foundation
 
 struct XDCWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        return try EthereumWalletManager(wallet: input.wallet).then {
-            let chainId = input.blockchain.chainId!
+        let txBuilder = try XDCTransactionBuilder(
+            walletPublicKey: input.wallet.publicKey.blockchainKey,
+            chainId: input.blockchain.chainId
+        )
 
-            $0.txBuilder = try XDCTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, chainId: chainId)
-            $0.networkService = XDCNetworkService(
-                decimals: input.blockchain.decimalCount,
-                providers: networkProviderAssembly.makeEthereumJsonRpcProviders(with: input),
-                blockcypherProvider: nil,
-                abiEncoder: WalletCoreABIEncoder()
-            )
-        }
+        let networkService = XDCNetworkService(
+            decimals: input.blockchain.decimalCount,
+            providers: networkProviderAssembly.makeEthereumJsonRpcProviders(with: input),
+            blockcypherProvider: nil,
+            abiEncoder: WalletCoreABIEncoder()
+        )
+
+        return try EthereumWalletManager(wallet: input.wallet, txBuilder: txBuilder, networkService: networkService)
     }
 }
