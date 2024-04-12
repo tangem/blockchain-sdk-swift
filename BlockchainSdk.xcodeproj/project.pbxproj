@@ -318,6 +318,7 @@
 		B63B792F2AD852E80055BD06 /* NEARExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */; };
 		B63BAA602B740C8800DA26C9 /* TangemWalletCoreBinariesWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = B63BAA5F2B740C8800DA26C9 /* TangemWalletCoreBinariesWrapper */; };
 		B63BAA622B740C9200DA26C9 /* TangemWalletCoreBinariesWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = B63BAA612B740C9200DA26C9 /* TangemWalletCoreBinariesWrapper */; };
+		B63E63082BC5CD470086F04F /* BaseExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63E63072BC5CD470086F04F /* BaseExternalLinkProvider.swift */; };
 		B6417DDC2BA2354D00B9B61D /* PolygonTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6417DDB2BA2354D00B9B61D /* PolygonTransactionHistoryProvider.swift */; };
 		B6417DDE2BA2355F00B9B61D /* PolygonTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6417DDD2BA2355F00B9B61D /* PolygonTransactionHistoryMapper.swift */; };
 		B641EC492AEF5CC100B44CF8 /* NEARAddressUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = B641EC482AEF5CC100B44CF8 /* NEARAddressUtil.swift */; };
@@ -1142,6 +1143,7 @@
 		B63B32AC2B8374B40089DF4B /* HederaCreatedAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaCreatedAccount.swift; sourceTree = "<group>"; };
 		B63B792C2AD850DF0055BD06 /* NEARWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARWalletAssembly.swift; sourceTree = "<group>"; };
 		B63B792E2AD852E80055BD06 /* NEARExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARExternalLinkProvider.swift; sourceTree = "<group>"; };
+		B63E63072BC5CD470086F04F /* BaseExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseExternalLinkProvider.swift; sourceTree = "<group>"; };
 		B6417DDB2BA2354D00B9B61D /* PolygonTransactionHistoryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolygonTransactionHistoryProvider.swift; sourceTree = "<group>"; };
 		B6417DDD2BA2355F00B9B61D /* PolygonTransactionHistoryMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolygonTransactionHistoryMapper.swift; sourceTree = "<group>"; };
 		B641EC482AEF5CC100B44CF8 /* NEARAddressUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARAddressUtil.swift; sourceTree = "<group>"; };
@@ -3268,6 +3270,7 @@
 				DAFE0D092BB1840E005CBD9C /* MantleExternalLinkProvider.swift */,
 				DAFE0D0B2BB1841B005CBD9C /* FlareExternalLinkProvider.swift */,
 				DAB9BE712BBD902C00E77545 /* TaraxaExternalLinkProvider.swift */,
+				B63E63072BC5CD470086F04F /* BaseExternalLinkProvider.swift */,
 			);
 			path = OtherChains;
 			sourceTree = "<group>";
@@ -4123,6 +4126,7 @@
 				EFBA17FE2988623F00C23955 /* TransactionSendResult.swift in Sources */,
 				EFD717CE2A25ECB500E5430D /* SmartContractMethodParameterType.swift in Sources */,
 				2DA4A4352BB46D8000E55526 /* RadiantAddressService.swift in Sources */,
+				B63E63082BC5CD470086F04F /* BaseExternalLinkProvider.swift in Sources */,
 				B6181AE92B75945E0046A976 /* HederaTransactionInfo.swift in Sources */,
 				DAFE0D082BB168D8005CBD9C /* MoonriverExternalLinkProvider.swift in Sources */,
 				EF3B19362AA85CFC0084AA1C /* BSCExternalLinkProvider.swift in Sources */,

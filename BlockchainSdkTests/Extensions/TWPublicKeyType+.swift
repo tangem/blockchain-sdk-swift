@@ -52,7 +52,8 @@ extension PublicKeyType {
                 .moonriver,
                 .mantle,
                 .flare,
-                .taraxa:
+                .taraxa,
+                .base:
             self = PublicKeyType.secp256k1Extended
         case .stellar,
                 .ton,
