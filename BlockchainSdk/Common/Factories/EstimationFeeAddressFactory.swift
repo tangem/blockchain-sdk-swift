@@ -34,7 +34,7 @@ struct EstimationFeeAddressFactory {
         case .bitcoin:
             return "bc1qkrc5kmpq546wr2xk0errg58yw9jjq7thvhdk5k"
         case .litecoin:
-            return "ltc1qn7zu6luzkzdej6lnurwzmejd3hq44gz68e42ue"
+            return "LeAXZ4WKNy8zeybFkD6scFpBSmCPmENUEW"
         case .bitcoinCash:
             return "bitcoincash:qrn96yyxa93t6sqmehvls6746qafkcsuku6zmd9460"
         case .dogecoin:
