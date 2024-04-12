@@ -19,9 +19,14 @@ class SolanaWalletManager: BaseManager, WalletManager {
     
     var usePriorityFees = !NFCUtils.isPoorNfcQualityDevice
     
+    private var updateTask: Task<Void, Never>?
+    
     override func update(completion: @escaping (Result<(), Error>) -> Void) {
         let transactionIDs = wallet.pendingTransactions.map { $0.hash }
-        Task { @MainActor [weak self] in
+        
+        updateTask?.cancel()
+        
+        updateTask = Task { @MainActor [weak self] in
             do {
                 guard let self else { return }
                 let response = try await networkService.getInfo(

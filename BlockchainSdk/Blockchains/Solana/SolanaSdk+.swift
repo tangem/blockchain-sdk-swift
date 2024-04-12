@@ -213,14 +213,7 @@ extension Api {
                 return
             }
             
-            getSignatureStatuses(pubkeys: pubkeys, configs: configs) {
-                switch $0 {
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                case .success(let statuses):
-                    continuation.resume(returning: statuses)
-                }
-            }
+            getSignatureStatuses(pubkeys: pubkeys, configs: configs, onComplete: continuation.resume(with:))
         }
     }
     
@@ -236,16 +229,7 @@ extension Api {
                 return
             }
             
-            getTokenAccountsByOwner(pubkey: pubkey, mint: mint, programId: programId, configs: configs) {
-                (result: Result<[T], Error>) in
-                
-                switch result {
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                case .success(let accounts):
-                    continuation.resume(returning: accounts)
-                }
-            }
+            getTokenAccountsByOwner(pubkey: pubkey, mint: mint, programId: programId, configs: configs, onComplete: continuation.resume(with:))
         }
     }
     
@@ -255,14 +239,7 @@ extension Api {
                 continuation.resume(throwing: WalletError.empty)
                 return
             }
-            getAccountInfo(account: account, decodedTo: T.self) {
-                switch $0 {
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                case .success(let fee):
-                    continuation.resume(returning: fee)
-                }
-            }
+            getAccountInfo(account: account, decodedTo: T.self, onComplete: continuation.resume(with:))
         }
     }
 }

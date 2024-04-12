@@ -20,8 +20,7 @@ extension Task where Failure == Error {
                 do {
                     return try await operation()
                 } catch {
-                    let oneSecond = TimeInterval(1_000_000_000)
-                    let delay = UInt64(oneSecond * retryDelay)
+                    let delay = UInt64(Double(NSEC_PER_SEC) * retryDelay)
                     try await Task<Never, Never>.sleep(nanoseconds: delay)
                     
                     continue
