@@ -24,6 +24,27 @@ final class AptosTests: XCTestCase {
     
     // MARK: - Impementation
     
+    func testAddressNonSignificationZero() throws {
+        let privateKey = PrivateKey(data: privateKeyData)!
+        let publicKey = privateKey.getPublicKeyByType(pubkeyType: .ed25519)
+        
+        let defaultAddressService = WalletCoreAddressService(coin: coinType)
+        let aptosCoreAddressService = AptosCoreAddressService()
+        
+        let defaultAddress = try defaultAddressService.makeAddress(
+            for: .init(seedKey: publicKey.data, derivationType: nil),
+            with: .default
+        )
+        
+        let nonsignificantZeroAddress = try aptosCoreAddressService.makeAddress(
+            for: .init(seedKey: publicKey.data, derivationType: nil), 
+            with: .default
+        )
+        
+        XCTAssertEqual(nonsignificantZeroAddress.value.removeHexPrefix().count, 64)
+        XCTAssertTrue(nonsignificantZeroAddress.value.removeHexPrefix().contains(defaultAddress.value.removeHexPrefix()))
+    }
+    
     func testCorrectTransactionEd25519() throws {
         try testTransactionBuilder(curve: .ed25519)
     }
@@ -36,7 +57,7 @@ final class AptosTests: XCTestCase {
      - https://github.com/trustwallet/wallet-core/blob/master/tests/chains/Aptos/CompilerTests.cpp
      */
     func testTransactionBuilder(curve: EllipticCurve) throws {
-        let blockchain = Blockchain.ton(curve: curve, testnet: true)
+        let blockchain = Blockchain.aptos(curve: curve, testnet: true)
         let privateKey = PrivateKey(data: privateKeyData)!
         let publicKey = privateKey.getPublicKeyByType(pubkeyType: .ed25519)
         
