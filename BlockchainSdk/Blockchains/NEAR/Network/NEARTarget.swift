@@ -128,6 +128,6 @@ extension NEARTarget: TargetType {
 
 private extension NEARTarget {
     enum Constants {
-        static let jsonRPCMethodId = "dontcare"
+        static let jsonRPCMethodId: Int = 1
     }
 }
