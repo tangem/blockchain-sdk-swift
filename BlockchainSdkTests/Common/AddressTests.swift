@@ -159,7 +159,7 @@ class AddressesTests: XCTestCase {
     
     func testEth() throws {
         let blockchain = Blockchain.ethereum(testnet: false)
-        let service = EthereumAddressService()
+        let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
 
         let addr_dec = try service.makeAddress(from: secpDecompressedKey)
         let addr_comp = try service.makeAddress(from: secpCompressedKey)
@@ -176,7 +176,8 @@ class AddressesTests: XCTestCase {
     }
     
     func testEthTestnet() throws {
-        let service = EthereumAddressService()
+        let blockchain = Blockchain.ethereum(testnet: false)
+        let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
 
         let addr_dec = try service.makeAddress(from: secpDecompressedKey)
         let addr_comp = try service.makeAddress(from: secpCompressedKey)
@@ -424,7 +425,7 @@ class AddressesTests: XCTestCase {
     
     func testBsc() throws {
         let blockchain = Blockchain.bsc(testnet: false)
-        let service = EthereumAddressService()
+        let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
 
         let addr_dec = try service.makeAddress(from: secpDecompressedKey)
         let addr_comp = try service.makeAddress(from: secpCompressedKey)
@@ -441,7 +442,8 @@ class AddressesTests: XCTestCase {
     }
     
     func testBscTestnet() throws {
-        let service = EthereumAddressService()
+        let blockchain = Blockchain.ethereum(testnet: false)
+        let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
 
         let addr_dec = try service.makeAddress(from: secpDecompressedKey)
         let addr_comp = try service.makeAddress(from: secpCompressedKey)
@@ -457,7 +459,7 @@ class AddressesTests: XCTestCase {
     
     func testPolygon() throws {
         let blockchain = Blockchain.polygon(testnet: false)
-        let service = EthereumAddressService()
+        let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
 
         let addr_dec = try service.makeAddress(from: secpDecompressedKey)
         let addr_comp = try service.makeAddress(from: secpCompressedKey)

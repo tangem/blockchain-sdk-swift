@@ -13,12 +13,12 @@ import TangemSdk
 @testable import BlockchainSdk
 
 class EthereumTests: XCTestCase {
-    private let addressService = WalletCoreAddressService(coin: .ethereum)
     private let blockchain = Blockchain.ethereum(testnet: false)
-    private let gasLimit = BigUInt(21000)
     private let sizeTester = TransactionSizeTesterUtility()
-    
+
     func testAddress() throws {
+        let addressService = AddressServiceFactory(blockchain: blockchain).makeAddressService()
+
         let walletPubKey = Data(hex: "04BAEC8CD3BA50FDFE1E8CF2B04B58E17041245341CD1F1C6B3A496B48956DB4C896A6848BCF8FCFC33B88341507DD25E5F4609386C68086C74CF472B86E5C3820")
         let expectedAddress = "0xc63763572D45171e4C25cA0818b44E5Dd7F5c15B"
         let address = try addressService.makeAddress(from: walletPubKey).value
@@ -26,12 +26,9 @@ class EthereumTests: XCTestCase {
         XCTAssertEqual(address, expectedAddress)
     }
     
-    func testValidateCorrectAddress() {
+    func test_eth_address() {
+        let addressService = AddressServiceFactory(blockchain: blockchain).makeAddressService()
         XCTAssertTrue(addressService.validate("0xc63763572d45171e4c25ca0818b44e5dd7f5c15b"))
-    }
-    
-    func testValidateCorrectAddressWithChecksum() {
-        XCTAssertTrue(addressService.validate("0xc63763572D45171e4C25cA0818b44E5Dd7F5c15B"))
     }
 
     func test() throws {
@@ -67,7 +64,7 @@ class EthereumTests: XCTestCase {
         )
 
         // when
-        let transactionBuilder = try EthereumTransactionBuilder(walletPublicKey: walletPublicKey, chainId: 1)
+        let transactionBuilder = try EthereumTransactionBuilder(chainId: 1)
         transactionBuilder.update(nonce: nonce)
         let hashToSign = try transactionBuilder.buildForSign(transaction: transaction)
         let signatureInfo = SignatureInfo(signature: signature, publicKey: walletPublicKey, hash: hashToSign)
@@ -98,7 +95,7 @@ class EthereumTests: XCTestCase {
         let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
 
         // when
-        let transactionBuilder = try EthereumTransactionBuilder(walletPublicKey: walletPublicKey, chainId: 1)
+        let transactionBuilder = try EthereumTransactionBuilder(chainId: 1)
         transactionBuilder.update(nonce: nonce)
         let transaction = Transaction(
             amount: sendValue,
@@ -142,7 +139,7 @@ class EthereumTests: XCTestCase {
         let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
 
         // when
-        let transactionBuilder = try EthereumTransactionBuilder(walletPublicKey: walletPublicKey, chainId: 137)
+        let transactionBuilder = try EthereumTransactionBuilder(chainId: 137)
         transactionBuilder.update(nonce: nonce)
         let transaction = Transaction(
             amount: sendValue,
@@ -184,7 +181,7 @@ class EthereumTests: XCTestCase {
         let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
 
         // when
-        let transactionBuilder = try EthereumTransactionBuilder(walletPublicKey: walletPublicKey, chainId: 137)
+        let transactionBuilder = try EthereumTransactionBuilder(chainId: 137)
         transactionBuilder.update(nonce: nonce)
         let transaction = Transaction(
             amount: sendValue,
@@ -205,6 +202,34 @@ class EthereumTests: XCTestCase {
         let signatureInfo = SignatureInfo(signature: signature, publicKey: walletPublicKey, hash: hashToSign)
         let signedTransaction = try transactionBuilder.buildForSend(transaction: transaction, signatureInfo: signatureInfo)
         XCTAssertEqual(signedTransaction.hexString, expectedSignedTransaction.hexString)
+    }
+
+    func test_buildForL1() throws {
+        // given
+        let destinationAddress = "0x90e4d59c8583e37426b37d1d7394b6008a987c67"
+
+        let nonce = 196
+        let sendValue = EthereumUtils.mapToBigUInt(1 * blockchain.decimalValue).serialize()
+        let feeParameters = EthereumEIP1559FeeParameters(
+            gasLimit: BigUInt(21000),
+            baseFee: BigUInt(4478253867089),
+            priorityFee: BigUInt(31900000000)
+        )
+        let fee = Fee(.zeroCoin(for: blockchain), parameters: feeParameters)
+
+        let transactionBuilder = try EthereumTransactionBuilder(chainId: 1)
+        transactionBuilder.update(nonce: nonce)
+
+        // when
+        let l1Data = try transactionBuilder.buildForL1(
+            destination: destinationAddress,
+            value: sendValue.hexString,
+            data: nil,
+            fee: fee
+        )
+
+        // then
+        XCTAssertEqual(l1Data.hexString, "02F8760181C485076D635F00860412ACBB20518252089490E4D59C8583E37426B37D1D7394B6008A987C67880DE0B6B3A764000080C080A028EF61340BD939BC2195FE537567866003E1A15D3C71FF63E1590620AA636276A067CBE9D8997F761AECB703304B3800CCF555C9F3DC64214B297FB1966A3B6D83")
     }
 
     func testParseBalance() {
