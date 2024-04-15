@@ -94,7 +94,7 @@ extension WalletManagerFactory {
         let input = WalletManagerAssemblyInput(
             wallet: wallet,
             pairPublicKey: nil,
-            blockchainSdkConfig: config, 
+            blockchainSdkConfig: config,
             blockchainSdkDependencies: dependencies
         )
         return try blockchain.assembly.make(with: input)

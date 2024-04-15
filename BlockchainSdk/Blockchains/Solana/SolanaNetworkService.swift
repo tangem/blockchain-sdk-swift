@@ -89,7 +89,7 @@ class SolanaNetworkService {
     ) -> AnyPublisher<Decimal, Error> {
         solanaSdk.action.serializeMessage(
             to: destinationAddress,
-            amount: amount, 
+            amount: amount,
             computeUnitLimit: computeUnitLimit,
             computeUnitPrice: computeUnitPrice,
             allowUnfundedRecipient: true,
@@ -145,10 +145,6 @@ class SolanaNetworkService {
         let rent = minimumAccountSizeInBytes * numberOfEpochs * rentInLamportPerByteEpoch / lamportsInSol
         
         return Just(rent).setFailureType(to: Error.self).eraseToAnyPublisher()
-    }
-    
-    func computeUnitPrice(destinationAccountExists: Bool) -> UInt64 {
-        destinationAccountExists ? 1_000_000 : 500_000
     }
     
     func minimalBalanceForRentExemption(dataLength: UInt64 = 0) -> AnyPublisher<Decimal, Error> {

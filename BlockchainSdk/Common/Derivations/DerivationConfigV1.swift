@@ -31,10 +31,23 @@ public struct DerivationConfigV1: DerivationConfig {
             return "m/1852'/1815'/0'/0/0"
         case .bitcoinCash:
             return "m/44'/145'/0'/0/0"
-        case .ethereum, .ethereumPoW, .disChain, .octa,
-                .decimal, .shibarium, .areon, .playa3ullGames,
-                .pulsechain, .aurora, .manta, .zkSync,
-                .polygonZkEVM, .mantle, .flare, .taraxa:
+        case .ethereum,
+             .ethereumPoW,
+             .disChain,
+             .octa,
+             .decimal,
+             .shibarium,
+             .areon,
+             .playa3ullGames,
+             .pulsechain,
+             .aurora,
+             .manta,
+             .zkSync,
+             .polygonZkEVM,
+             .mantle,
+             .flare,
+             .taraxa,
+             .base:
             return "m/44'/60'/0'/0/0"
         case .ethereumClassic:
             return "m/44'/61'/0'/0/0"
@@ -108,6 +121,8 @@ public struct DerivationConfigV1: DerivationConfig {
             return "m/44'/1284'/0'/0/0"
         case .moonriver:
             return "m/44'/1285'/0'/0/0"
+        case .radiant:
+            return "m/44'/512'/0'/0/0"
         }
     }
 }

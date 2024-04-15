@@ -74,6 +74,8 @@ public indirect enum Blockchain: Equatable, Hashable {
     case mantle(testnet: Bool)
     case flare(testnet: Bool)
     case taraxa(testnet: Bool)
+    case radiant(testnet: Bool)
+    case base(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -108,7 +110,9 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .moonriver(let testnet),
                 .mantle(let testnet),
                 .flare(let testnet),
-                .taraxa(let testnet):
+                .taraxa(let testnet),
+                .radiant(let testnet),
+                .base(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -177,7 +181,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .dash,
                 .kaspa,
                 .ravencoin,
-                .hedera:
+                .hedera,
+                .radiant:
             return 8
         case .ethereum,
                 .ethereumClassic,
@@ -210,7 +215,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .moonriver,
                 .mantle,
                 .flare,
-                .taraxa:
+                .taraxa,
+                .base:
             return 18
         case .cardano,
                 .xrp,
@@ -247,8 +253,14 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "LTC"
         case .stellar:
             return "XLM"
-        case .ethereum, .arbitrum, .optimism, .aurora,
-                .manta, .zkSync, .polygonZkEVM:
+        case .ethereum,
+             .arbitrum,
+             .optimism,
+             .aurora,
+             .manta,
+             .zkSync,
+             .polygonZkEVM,
+             .base:
             return "ETH"
         case .ethereumClassic:
             return "ETC"
@@ -348,6 +360,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return isTestnet ? "C2FLR" : "FLR"
         case .taraxa:
             return "TARA"
+        case .radiant:
+            return "RXD"
         }
     }
 
@@ -421,7 +435,10 @@ public indirect enum Blockchain: Equatable, Hashable {
 
     public var tokenTypeName: String? {
         switch self {
-        case .ethereum: return "ERC20"
+        case .ethereum,
+             .base:
+            // TODO: Andrey Fedorov - Add other Ethereum L2s here (IOS-6505)
+            return "ERC20"
         case .binance: return "BEP2"
         case .bsc: return "BEP20"
         case .tron: return "TRC20"
@@ -540,6 +557,7 @@ extension Blockchain {
         case .mantle: return isTestnet ? 5001 : 5000
         case .flare: return isTestnet ? 114 : 14
         case .taraxa: return isTestnet ? 842 : 841
+        case .base: return isTestnet ? 84532 : 8453
         default: return nil
         }
     }
@@ -944,6 +962,24 @@ extension Blockchain {
                     URL(string: "https://rpc.mainnet.taraxa.io")!,
                 ]
             }
+        case .base:
+            if isTestnet {
+                return [
+                    URL(string: "https://sepolia.base.org")!,
+                    URL(string: "https://rpc.notadegen.com/base/sepolia")!,
+                    URL(string: "https://base-sepolia-rpc.publicnode.com")!,
+                ]
+            } else {
+                return [
+                    URL(string: "https://mainnet.base.org")!,
+                    URL(string: "https://base.nownodes.io/\(nowNodesApiKey)")!,
+                    makeGetBlockJsonRpcProvider(),
+                    URL(string: "https://base.meowrpc.com")!,
+                    URL(string: "https://base-rpc.publicnode.com")!,
+                    URL(string: "https://base.drpc.org")!,
+                    URL(string: "https://base.llamarpc.com")!,
+                ]
+            }
         default:
             return nil
         }
@@ -954,8 +990,8 @@ extension Blockchain {
             if let jsonRpcKey = getBlockApiKeys[self] {
                 return URL(string: "https://go.getblock.io/\(jsonRpcKey)")!
             } else {
-                assertionFailure("getJsonRpcEndpoints -> Not found GetBlock jsonRpc key for blockchain \(displayName)")
-                Log.network("Not found jsonRpc key GetBlock API for blockchaib \(displayName)")
+                assertionFailure("getJsonRpcEndpoints -> Not found GetBlock API key for blockchain '\(displayName)'")
+                Log.network("Not found GetBlock API key for blockchain '\(displayName)'")
                 return URL(string: "https://go.getblock.io/")!
             }
         }
@@ -1075,6 +1111,8 @@ extension Blockchain: Codable {
         case .mantle: return "mantle"
         case .flare: return "flare"
         case .taraxa: return "taraxa"
+        case .radiant: return "radiant"
+        case .base: return "base"
         }
     }
 
@@ -1157,6 +1195,8 @@ extension Blockchain: Codable {
         case "mantle": self = .mantle(testnet: isTestnet)
         case "flare": self = .flare(testnet: isTestnet)
         case "taraxa": self = .taraxa(testnet: isTestnet)
+        case "radiant": self = .radiant(testnet: isTestnet)
+        case "base": self = .base(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1290,7 +1330,8 @@ extension Blockchain {
                 .moonriver,
                 .mantle,
                 .flare,
-                .taraxa:
+                .taraxa,
+                .base:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()
@@ -1338,6 +1379,8 @@ extension Blockchain {
             return AptosWalletAssembly()
         case .hedera:
             return HederaWalletAssembly()
+        case .radiant:
+            return RadiantWalletAssembly()
         }
     }
 }
