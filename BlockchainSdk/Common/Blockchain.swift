@@ -452,19 +452,21 @@ public indirect enum Blockchain: Equatable, Hashable {
 
     public var canHandleTokens: Bool {
         switch self {
-        case _ where isEvm:
-            return true
+        case .taraxa:
+            return false
         case .binance,
                 .solana,
                 .tron,
                 .terraV1,
                 .veChain:
             return true
+        case _ where isEvm:
+            return true
         default:
             return false
         }
     }
-    
+
     public var feePaidCurrency: FeePaidCurrency {
         switch self {
         case .terraV1:
