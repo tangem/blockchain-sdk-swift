@@ -34,11 +34,19 @@ class EthereumTransactionBuilder {
         guard let amountValue = transaction.amount.bigUIntValue else {
             return nil
         }
-        
-        guard let data = parameters?.data ?? getData(for: transaction.amount, targetAddress: transaction.destinationAddress) else {
+
+        let data: Data? = {
+            if let data = parameters?.data {
+                return data
+            }
+
+            return try? buildForTokenTransfer(destination: transaction.destinationAddress, amount: transaction.amount)
+        }()
+
+        guard let data = data else {
             return nil
         }
-        
+
         guard let targetAddress = transaction.amount.type == .coin ? transaction.destinationAddress: transaction.contractAddress else {
             return nil
         }
@@ -75,17 +83,28 @@ class EthereumTransactionBuilder {
         let encodedBytesToSend = transaction.encode(forSignature: false, chainID: chainId)
         return encodedBytesToSend
     }
-    
-    func getData(for amount: Amount, targetAddress: String) -> Data? {
+
+    // MARK: - Transaction data builder
+
+    func buildForApprove(spender: String, amount: Decimal) -> Data {
+        let bigUInt = EthereumUtils.mapToBigUInt(amount)
+        return ApproveERC20TokenMethod(spender: spender, amount: bigUInt).data
+    }
+
+    func buildForTokenTransfer(destination: String, amount: Amount) throws -> Data {
         if !amount.type.isToken {
             return Data()
         }
-        
-        guard let amount = amount.bigUIntValue else {
-            return nil
+
+        guard let bigUInt = amount.bigUIntValue else {
+            throw EthereumTransactionBuilderError.invalidAmount
         }
-        
-        let method = TransferERC20TokenMethod(destination: targetAddress, amount: amount)
+
+        let method = TransferERC20TokenMethod(destination: destination, amount: bigUInt)
         return method.data
     }
+}
+
+enum EthereumTransactionBuilderError: Error {
+    case invalidAmount
 }

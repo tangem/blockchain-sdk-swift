@@ -9,6 +9,22 @@
 import Foundation
 import BigInt
 
+// MARK: - Params
+
+struct GasLimitParams: Encodable {
+    let to: String
+    let from: String
+    let value: String?
+    let data: String?
+}
+
+struct CallParams: Encodable {
+    let to: String
+    let data: String
+}
+
+// MARK: - Response
+
 /// Final Ethereum response that contain all information about address
 struct EthereumInfoResponse {
     let balance: Decimal
@@ -23,24 +39,9 @@ struct EthereumFeeResponse {
     let gasLimit: BigUInt
 }
 
-/// Json rpc response structure
-struct EthereumResponse: Codable {
-    let jsonRpc: String
-    let id: Int?
-    let result: String?
-    let error: EthereumError?
-    
-    private enum CodingKeys: String, CodingKey {
-        case jsonRpc = "jsonrpc"
-        case id, result, error
-    }
-}
-
-struct EthereumError: Codable {
-    let code: Int?
-    let message: String?
-    
-    var error: Error {
-        NSError(domain: message ?? .unknown, code: code ?? -1, userInfo: nil)
-    }
+struct EthereumFeeHistoryResponse: Decodable {
+    let reward: [[String]]
+    let baseFeePerGas: [String]
+    let gasUsedRatio: [Decimal]
+    let oldestBlock: String
 }
