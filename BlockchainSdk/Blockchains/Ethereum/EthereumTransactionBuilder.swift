@@ -51,14 +51,29 @@ class EthereumTransactionBuilder {
     }
 
     public func buildForL1(destination: String, value: String?, data: Data?, fee: Fee) throws -> Data {
-        let valueData = Data(hex: value ?? "0x0")
-        let input = try buildSigningInput(
-            amountValue: BigUInt(valueData),
-            amountType: fee.amount.type,
-            fee: fee,
-            destination: destination,
-            parameters: EthereumTransactionParams(data: data)
-        )
+        let valueData = BigUInt(Data(hex: value ?? "0x0"))
+        let input: EthereumSigningInput = try {
+            switch fee.amount.type {
+            case .coin:
+                return try buildSigningInput(
+                    destination: .user(user: destination, value: valueData),
+                    fee: fee,
+                    parameters: EthereumTransactionParams(data: data)
+                )
+            case .token(let token):
+                return try buildSigningInput(
+                    destination: .contract(
+                        user: destination,
+                        contract: token.contractAddress,
+                        value: valueData
+                    ),
+                    fee: fee,
+                    parameters: EthereumTransactionParams(data: data)
+                )
+            case .reserve:
+                throw BlockchainSdkError.notImplemented
+            }
+        }()
 
         // Dummy data from the public documentation:
         // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
@@ -100,22 +115,29 @@ private extension EthereumTransactionBuilder {
             throw EthereumTransactionBuilderError.invalidAmount
         }
 
-        return try buildSigningInput(
-            amountValue: amountValue,
-            amountType: transaction.amount.type,
-            fee: transaction.fee,
-            destination: transaction.destinationAddress,
-            parameters: transaction.params as? EthereumTransactionParams
-        )
+        switch transaction.amount.type {
+        case .coin:
+            return try buildSigningInput(
+                destination: .user(user: transaction.destinationAddress, value: amountValue),
+                fee: transaction.fee,
+                parameters: transaction.params as? EthereumTransactionParams
+            )
+        case .token(let token):
+            return try buildSigningInput(
+                destination: .contract(
+                    user: transaction.destinationAddress,
+                    contract: transaction.contractAddress ?? token.contractAddress,
+                    value: amountValue
+                ),
+                fee: transaction.fee,
+                parameters: transaction.params as? EthereumTransactionParams
+            )
+        case .reserve:
+            throw BlockchainSdkError.notImplemented
+        }
     }
 
-    func buildSigningInput(
-        amountValue: BigUInt,
-        amountType: Amount.AmountType,
-        fee: Fee,
-        destination: String,
-        parameters: EthereumTransactionParams?
-    ) throws -> EthereumSigningInput {
+    func buildSigningInput(destination: DestinationType, fee: Fee, parameters: EthereumTransactionParams?) throws -> EthereumSigningInput {
         let nonceValue = BigUInt(parameters?.nonce ?? nonce)
 
         guard nonceValue >= 0 else {
@@ -143,23 +165,21 @@ private extension EthereumTransactionBuilder {
             }
 
             input.transaction = .with {
-                switch amountType {
-                case .coin:
-                    input.toAddress = destination
+                switch destination {
+                case .user(let user, let value):
+                    input.toAddress = user
                     $0.transfer = .with {
-                        $0.amount = amountValue.serialize()
+                        $0.amount = value.serialize()
                         if let data = parameters?.data {
                             $0.data = data
                         }
                     }
-                case .token(let value):
-                    input.toAddress = value.contractAddress
+                case .contract(let user, let contract, let value):
+                    input.toAddress = contract
                     $0.erc20Transfer = .with {
-                        $0.amount = amountValue.serialize()
-                        $0.to = destination
+                        $0.amount = value.serialize()
+                        $0.to = user
                     }
-                case .reserve:
-                    fatalError()
                 }
             }
         }
@@ -171,7 +191,7 @@ private extension EthereumTransactionBuilder {
         guard signatureInfo.signature.count == Constants.signatureCount else {
             throw EthereumTransactionBuilderError.invalidSignatureCount
         }
-
+        
         let unmarshal = try Secp256k1Signature(with: signatureInfo.signature)
             .unmarshal(with: signatureInfo.publicKey, hash: signatureInfo.hash)
         let txInputData = try input.serializedData()
@@ -218,6 +238,11 @@ private extension EthereumTransactionBuilder {
 }
 
 extension EthereumTransactionBuilder {
+    enum DestinationType: Hashable {
+        case user(user: String, value: BigUInt)
+        case contract(user: String, contract: String, value: BigUInt)
+    }
+
     private enum Constants {
         static let signatureCount = 64
     }

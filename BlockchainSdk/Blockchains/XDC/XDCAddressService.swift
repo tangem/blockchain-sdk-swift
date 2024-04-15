@@ -12,7 +12,7 @@ struct XDCAddressService {
 
     // MARK: - Private Properties
 
-    private let ethereumAddressService = WalletCoreAddressService(coin: .ethereum)
+    private let ethereumAddressService = AddressServiceFactory(blockchain: .ethereum(testnet: false)).makeAddressService()
     private let converter = XDCAddressConverter()
 }
 
@@ -20,16 +20,14 @@ struct XDCAddressService {
 
 extension XDCAddressService: AddressProvider {
     func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
-        let ethAddress = try ethereumAddressService.makeAddress(for: publicKey, with: addressType)
+        let ethAddress = try ethereumAddressService.makeAddress(for: publicKey, with: .default).value
 
         switch addressType {
         case .default:
-            return PlainAddress(
-                value: converter.convertToXDCAddress(ethAddress.value),
-                publicKey: ethAddress.publicKey,
-                type: ethAddress.type)
+            let xdcAddress = converter.convertToXDCAddress(ethAddress)
+            return PlainAddress(value: xdcAddress, publicKey: publicKey, type: addressType)
         case .legacy:
-            return ethAddress
+            return PlainAddress(value: ethAddress, publicKey: publicKey, type: addressType)
         }
     }
 }
