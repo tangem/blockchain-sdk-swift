@@ -20,13 +20,8 @@ public struct AptosCoreAddressService {
         let addressWithoutPrefix = address.removeHexPrefix()
         
         let zeroOffset = Constants.aptosHexAddressLength - addressWithoutPrefix.count
-        let zeroCount = zeroOffset > 0 ? zeroOffset : 0
         
-        let addressWithZeroBuffer = String(
-            repeating: Constants.nonSignificationZero,
-            count: zeroCount
-        ).appending(addressWithoutPrefix)
-        
+        let addressWithZeroBuffer = addressWithoutPrefix.leftPadding(toLength: 64, withPad: "0")
         let nonsignificantAddress = addressWithZeroBuffer.addHexPrefix()
         
         return nonsignificantAddress
