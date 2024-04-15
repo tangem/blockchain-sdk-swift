@@ -19,8 +19,6 @@ public struct AptosCoreAddressService {
     private func insertNonsignificantZero(for address: String) -> String {
         let addressWithoutPrefix = address.removeHexPrefix()
         
-        let zeroOffset = Constants.aptosHexAddressLength - addressWithoutPrefix.count
-        
         let addressWithZeroBuffer = addressWithoutPrefix.leftPadding(toLength: Constants.aptosHexAddressLength, withPad: Constants.nonSignificationZero)
         let nonsignificantAddress = addressWithZeroBuffer.addHexPrefix()
         
