@@ -52,8 +52,8 @@ class BlockchainSdkTests: XCTestCase {
     }
     
     func testEthChecksum() {
-        let ethAddressService = EthereumAddressService()
-        let chesksummed = ethAddressService.toChecksumAddress("0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359")
+        let ethAddressService = WalletCoreAddressService(coin: .ethereum)
+        let chesksummed = EthereumAddressUtils().toChecksumAddress("0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359")
         XCTAssertEqual(chesksummed, "0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359")
         
         XCTAssertTrue(ethAddressService.validate("0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359"))
@@ -69,7 +69,7 @@ class BlockchainSdkTests: XCTestCase {
                          "0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b9aDb"]
         
         _ = testCases.map {
-            let checksummed = ethAddressService.toChecksumAddress($0)
+            let checksummed = EthereumAddressUtils().toChecksumAddress($0)
             XCTAssertNotNil(checksummed)
             XCTAssertTrue(ethAddressService.validate($0))
             XCTAssertTrue(ethAddressService.validate(checksummed!))
