@@ -22,22 +22,3 @@ public protocol EthereumNetworkProvider {
     func getTxCount(_ address: String) -> AnyPublisher<Int, Error>
     func getPendingTxCount(_ address: String) -> AnyPublisher<Int, Error>
 }
-
-// Models below will be changed
-
-public struct CompiledEthereumTransaction {
-    public let transaction: EthereumTransaction
-    public let hash: Data
-}
-
-public struct SignedEthereumTransaction {
-    public let transaction: EthereumTransaction
-    public let hash: Data
-    public let signature: Data
-
-    public init(compiledTransaction: CompiledEthereumTransaction, signature: Data) {
-        self.transaction = compiledTransaction.transaction
-        self.hash = compiledTransaction.hash
-        self.signature = signature
-    }
-}

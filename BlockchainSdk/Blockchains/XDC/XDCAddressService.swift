@@ -12,7 +12,7 @@ struct XDCAddressService {
 
     // MARK: - Private Properties
 
-    private let ethereumAddressService = EthereumAddressService()
+    private let ethereumAddressService = WalletCoreAddressService(coin: .ethereum)
     private let converter = XDCAddressConverter()
 }
 

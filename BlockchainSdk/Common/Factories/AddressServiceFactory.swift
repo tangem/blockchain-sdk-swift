@@ -56,9 +56,8 @@ public struct AddressServiceFactory {
                 .moonriver,
                 .mantle,
                 .flare,
-                .taraxa,
-                .base:
-            return EthereumAddressService()
+                .taraxa:
+            return WalletCoreAddressService(coin: .ethereum)
         case .rsk:
             return RskAddressService()
         case .bitcoinCash:
