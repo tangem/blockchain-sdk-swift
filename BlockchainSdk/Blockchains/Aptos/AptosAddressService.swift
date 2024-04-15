@@ -21,7 +21,7 @@ public struct AptosCoreAddressService {
         
         let zeroOffset = Constants.aptosHexAddressLength - addressWithoutPrefix.count
         
-        let addressWithZeroBuffer = addressWithoutPrefix.leftPadding(toLength: 64, withPad: "0")
+        let addressWithZeroBuffer = addressWithoutPrefix.leftPadding(toLength: Constants.aptosHexAddressLength, withPad: Constants.nonSignificationZero)
         let nonsignificantAddress = addressWithZeroBuffer.addHexPrefix()
         
         return nonsignificantAddress
@@ -56,6 +56,6 @@ extension AptosCoreAddressService: AddressValidator {
 extension AptosCoreAddressService {
     enum Constants {
         static let aptosHexAddressLength = 64
-        static let nonSignificationZero = "0"
+        static let nonSignificationZero: Character = "0"
     }
 }
