@@ -17,7 +17,6 @@ class XDCTransactionBuilder: EthereumTransactionBuilder {
             tx.destinationAddress = addressConverter.convertToETHAddress(transaction.destinationAddress)
             tx.changeAddress = addressConverter.convertToETHAddress(transaction.changeAddress)
             tx.contractAddress = transaction.contractAddress.map { addressConverter.convertToETHAddress($0) }
-            // TODO: contractAddress 
         }
 
         return try super.buildForSign(transaction: copyTransaction)

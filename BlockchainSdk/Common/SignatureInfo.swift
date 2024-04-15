@@ -14,6 +14,6 @@ struct SignatureInfo: CustomStringConvertible {
     let hash: Data
 
     var description: String {
-        "signature: \(signature.hexString)\npublicKey: \(publicKey.hexString)"
+        "signature: \(signature.hexString)\npublicKey: \(publicKey.hexString)\nhash: \(hash)"
     }
 }

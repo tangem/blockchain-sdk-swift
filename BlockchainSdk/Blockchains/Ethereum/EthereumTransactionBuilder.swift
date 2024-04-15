@@ -60,7 +60,7 @@ class EthereumTransactionBuilder {
             parameters: EthereumTransactionParams(data: data)
         )
 
-        // Data from the public documentation:
+        // Dummy data from the public documentation:
         // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
         let signature = Data(hex: "28ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa63627667cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83")
         let hash = Data(hex: "daf5a779ae972f972197303d7b574746c7ef83eadac0f2791ad23db92e4c8e53")
