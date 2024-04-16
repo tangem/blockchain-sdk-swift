@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import TangemSdk
 
 struct EstimationFeeAddressFactory {
     func makeAddress(for blockchain: Blockchain) throws -> String {
