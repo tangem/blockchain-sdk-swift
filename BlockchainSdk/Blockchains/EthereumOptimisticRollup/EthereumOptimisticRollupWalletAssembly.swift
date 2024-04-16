@@ -9,14 +9,19 @@
 import Foundation
 
 struct EthereumOptimisticRollupWalletAssembly: WalletManagerAssembly {
-
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         let providers = networkProviderAssembly.makeEthereumJsonRpcProviders(with: input)
-        return try EthereumOptimisticRollupWalletManager(wallet: input.wallet).then {
-            let chainId = input.blockchain.chainId!
 
-            $0.txBuilder = try EthereumTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, chainId: chainId)
-            $0.networkService = EthereumNetworkService(
+        return try EthereumOptimisticRollupWalletManager(wallet: input.wallet).then { walletManager in
+            guard let chainId = input.blockchain.chainId else {
+                throw WalletError.empty
+            }
+
+            walletManager.txBuilder = try EthereumTransactionBuilder(
+                walletPublicKey: input.wallet.publicKey.blockchainKey,
+                chainId: chainId
+            )
+            walletManager.networkService = EthereumNetworkService(
                 decimals: input.blockchain.decimalCount,
                 providers: providers,
                 blockcypherProvider: nil,
@@ -24,5 +29,4 @@ struct EthereumOptimisticRollupWalletAssembly: WalletManagerAssembly {
             )
         }
     }
-
 }

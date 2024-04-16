@@ -27,14 +27,14 @@ final class EthereumOptimisticRollupWalletManager: EthereumWalletManager {
     /// When we're building transaction we have to used `gasLimit` and `gasPrice` ONLY from `L2`
     override func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
         super.getFee(destination: destination, value: value, data: data)
-            .flatMap { [weak self] layer2Fees -> AnyPublisher<([Fee], Decimal), Error> in
-                guard let self,
-                      // We use EthereumFeeParameters without increase
-                      let parameters = layer2Fees.first?.parameters as? EthereumFeeParameters else {
-                    return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, layer2Fees -> AnyPublisher<([Fee], Decimal), Error> in
+                // We use EthereumFeeParameters without increase
+                guard let parameters = layer2Fees.first?.parameters as? EthereumFeeParameters else {
+                    return .anyFail(error: BlockchainSdkError.failedToLoadFee)
                 }
 
-                return self.getLayer1Fee(
+                return walletManager.getLayer1Fee(
                     destination: destination,
                     value: value,
                     data: data,
@@ -76,7 +76,7 @@ private extension EthereumOptimisticRollupWalletManager {
         // Just collect data to get estimated fee from contact address
         // https://github.com/ethereum/wiki/wiki/RLP
         guard let rlpEncodedTransactionData = transaction.encode(forSignature: false) else {
-            return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
+            return .anyFail(error: BlockchainSdkError.failedToLoadFee)
         }
 
         return networkService
