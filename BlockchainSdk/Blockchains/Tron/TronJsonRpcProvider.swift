@@ -12,7 +12,7 @@ import Moya
 
 class TronJsonRpcProvider: HostProvider {
     var host: String {
-        node.url.absoluteString + (node.keyInfo?.headerValue == nil ? "" : " (API KEY)")
+        node.url.absoluteString + (node.headers?.headerValue == nil ? "" : " (API KEY)")
     }
 
     private let node: NodeInfo

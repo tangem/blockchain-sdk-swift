@@ -1,5 +1,5 @@
 //
-//  NownodesAPIResolver.swift
+//  NowNodesAPIResolver.swift
 //  BlockchainSdk
 //
 //  Created by Andrew Son on 04/04/24.
@@ -8,20 +8,14 @@
 
 import Foundation
 
-struct NownodesAPIResolver {
+struct NowNodesAPIResolver {
     let apiKey: String
 
     func resolve(for blockchain: Blockchain) -> NodeInfo? {
-        if blockchain.isTestnet {
-            if case .ethereum = blockchain { } else {
-                return nil
-            }
-        }
-
         let link: String
         switch blockchain {
-        case .ethereum(let isTestnet):
-            link = isTestnet ? "https://eth-goerli.nownodes.io/\(apiKey)" : "https://eth.nownodes.io/\(apiKey)"
+        case .ethereum:
+            link = "https://eth.nownodes.io/\(apiKey)"
         case .cosmos:
             link = "https://atom.nownodes.io/\(apiKey)"
         case .terraV1:
@@ -74,7 +68,7 @@ struct NownodesAPIResolver {
             return nil
         }
 
-        let apiKeyInfoProvider = NownodesAPIKeysInfoProvider(apiKey: apiKey)
+        let apiKeyInfoProvider = NowNodesAPIKeysInfoProvider(apiKey: apiKey)
         guard let url = URL(string: link) else {
             return nil
         }
@@ -83,19 +77,5 @@ struct NownodesAPIResolver {
             url: url,
             keyInfo: apiKeyInfoProvider.apiKeys(for: blockchain)
         )
-    }
-}
-
-struct NownodesAPIKeysInfoProvider {
-    let apiKey: String
-    func apiKeys(for blockchain: Blockchain) -> APIKeyInfo? {
-        switch blockchain {
-        case .xrp, .tron, .algorand, .aptos, .solana:
-            return .init(
-                headerName: Constants.nowNodesApiKeyHeaderName,
-                headerValue: apiKey
-            )
-        default: return nil
-        }
     }
 }

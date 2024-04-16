@@ -11,9 +11,9 @@ import Foundation
 struct TransactionHistoryAPILinkProvider {
     let config: BlockchainSdkConfig
 
-    func link(for blockchain: Blockchain, api: NetworkProviderType?) -> URL? {
-        switch api {
-        case .nownodes:
+    func link(for blockchain: Blockchain, providerType: NetworkProviderType?) -> URL? {
+        switch providerType {
+        case .nowNodes:
             return NownodesTransactionHistoryAPILinkProvider(apiKey: config.nowNodesApiKey)
                 .link(for: blockchain)
         default:

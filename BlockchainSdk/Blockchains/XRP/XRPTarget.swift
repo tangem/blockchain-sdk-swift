@@ -76,8 +76,8 @@ struct XRPTarget: TargetType {
     public var headers: [String: String]? {
         var headers = ["Content-Type": "application/json"]
 
-        if let apiKeyInfo = node.keyInfo {
-            headers[apiKeyInfo.headerName] = apiKeyInfo.headerValue
+        if let headersKeyInfo = node.headers {
+            headers[headersKeyInfo.headerName] = headersKeyInfo.headerValue
         }
 
         return headers

@@ -17,18 +17,18 @@ public class WalletManagerFactory {
 
     private let config: BlockchainSdkConfig
     private let dependencies: BlockchainSdkDependencies
-    private let apiOrder: APIOrder
+    private let apiList: APIList
 
     // MARK: - Init
 
     public init(
         config: BlockchainSdkConfig,
         dependencies: BlockchainSdkDependencies,
-        apiOrder: APIOrder
+        apiList: APIList
     ) {
         self.config = config
         self.dependencies = dependencies
-        self.apiOrder = apiOrder
+        self.apiList = apiList
     }
 
     public func makeWalletManager(blockchain: Blockchain, publicKey: Wallet.PublicKey) throws -> WalletManager {
@@ -63,7 +63,7 @@ private extension WalletManagerFactory {
             pairPublicKey: pairPublicKey,
             blockchainSdkConfig: config,
             blockchainSdkDependencies: dependencies,
-            apiInfo: apiOrder[blockchain.networkId] ?? []
+            apiInfo: apiList[blockchain.networkId] ?? []
         )
         return try blockchain.assembly.make(with: input)
     }
@@ -99,7 +99,7 @@ extension WalletManagerFactory {
             pairPublicKey: nil,
             blockchainSdkConfig: config,
             blockchainSdkDependencies: dependencies,
-            apiInfo: apiOrder[blockchain.networkId] ?? []
+            apiInfo: apiList[blockchain.networkId] ?? []
         )
         return try blockchain.assembly.make(with: input)
     }

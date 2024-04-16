@@ -75,16 +75,16 @@ public struct TransactionHistoryProviderFactory {
         case .algorand(_, let isTestnet):
             let node: NodeInfo
             if isTestnet {
-                guard let url = TransactionHistoryAPILinkProvider(config: config).link(for: blockchain, api: nil) else {
+                guard let url = TransactionHistoryAPILinkProvider(config: config).link(for: blockchain, providerType: nil) else {
                     return nil
                 }
 
                 node = .init(url: url)
             } else {
-                guard let url = TransactionHistoryAPILinkProvider(config: config).link(for: blockchain, api: .nownodes) else {
+                guard let url = TransactionHistoryAPILinkProvider(config: config).link(for: blockchain, providerType: .nowNodes) else {
                     return nil
                 }
-                let apiKeyInfo = NownodesAPIKeysInfoProvider(apiKey: config.nowNodesApiKey).apiKeys(for: blockchain)
+                let apiKeyInfo = NowNodesAPIKeysInfoProvider(apiKey: config.nowNodesApiKey).apiKeys(for: blockchain)
 
                 node = .init(url: url, keyInfo: apiKeyInfo)
             }

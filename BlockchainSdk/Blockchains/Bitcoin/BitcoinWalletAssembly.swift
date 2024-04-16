@@ -16,14 +16,13 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
             )
             
             $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
-            
-            let apiInfo = input.apiInfo
+
             var newProviders = [AnyBitcoinNetworkProvider]()
-            apiInfo.forEach {
+            input.apiInfo.forEach {
                 switch $0 {
-                case .nownodes:
+                case .nowNodes:
                     newProviders.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
-                case .getblock:
+                case .getBlock:
                     if input.blockchain.isTestnet {
                         break
                     }

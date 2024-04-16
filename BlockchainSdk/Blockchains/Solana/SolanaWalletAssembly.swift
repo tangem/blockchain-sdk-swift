@@ -40,7 +40,7 @@ struct SolanaWalletAssembly: WalletManagerAssembly {
                     }
 
                     switch $0 {
-                    case .nownodes, .quicknode:
+                    case .nowNodes, .quickNode:
                         return RPCEndpoint(
                             url: nodeInfo.url,
                             urlWebSocket: urlWebSocket,

@@ -25,11 +25,11 @@ struct LitecoinWalletAssembly: WalletManagerAssembly {
             
             input.apiInfo.forEach {
                 switch $0 {
-                case .nownodes:
+                case .nowNodes:
                     providers.append(
                         networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider()
                     )
-                case .getblock:
+                case .getBlock:
                     providers.append(
                         networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider()
                     )

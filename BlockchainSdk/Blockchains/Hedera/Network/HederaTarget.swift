@@ -75,8 +75,8 @@ extension HederaTarget: TargetType {
 
         switch target {
         case .getAccounts, .getExchangeRate:
-            if let keyInfo = configuration.keyInfo {
-                headers[keyInfo.headerName] = keyInfo.headerValue
+            if let headersKeyInfo = configuration.headers {
+                headers[headersKeyInfo.headerName] = headersKeyInfo.headerValue
             }
         }
 

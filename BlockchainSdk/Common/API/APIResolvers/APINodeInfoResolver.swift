@@ -12,128 +12,45 @@ struct APINodeInfoResolver {
     let blockchain: Blockchain
     let config: BlockchainSdkConfig
 
-    func resolve(for api: NetworkProviderType) -> NodeInfo? {
-        let link: String
-        switch api {
+    func resolve(for providerType: NetworkProviderType) -> NodeInfo? {
+        switch providerType {
         case .public(let link):
             guard let url = URL(string: link) else {
                 return nil
             }
 
             return .init(url: url)
-        case .nownodes:
-            return NownodesAPIResolver(apiKey: config.nowNodesApiKey)
+        case .nowNodes:
+            return NowNodesAPIResolver(apiKey: config.nowNodesApiKey)
                 .resolve(for: blockchain)
-        case .quicknode:
+        case .quickNode:
             return QuickNodeAPIResolver(config: config)
                 .resolve(for: blockchain)
-        case .getblock:
-            return GetblockAPIResolver(credentials: config.getBlockCredentials)
+        case .getBlock:
+            return GetBlockAPIResolver(credentials: config.getBlockCredentials)
                 .resolve(for: blockchain)
         case .infura:
             return InfuraAPIResolver(config: config)
                 .resolve(for: blockchain)
         case .ton:
-            guard case .ton = blockchain else {
-                return nil
-            }
-
-            link = blockchain.isTestnet ?
-            "https://testnet.toncenter.com/api/v2" :
-            "https://toncenter.com/api/v2"
+            return TONAPIResolver(config: config)
+                .resolve(blockchain: blockchain)
         case .tron:
-            guard case .tron = blockchain else {
-                return nil
-            }
-
-            link = "https://api.trongrid.io"
-        case .adalite:
-            guard case .cardano = blockchain else {
-                return nil
-            }
-
-            link = "https://explorer2.adalite.io"
-        case .tangemRosetta:
-            guard case .cardano = blockchain else {
-                return nil
-            }
-
-            link = "https://ada.tangem.com"
-        case .tangemChia:
-            guard case .chia = blockchain else {
-                return nil
-            }
-
-            link = "https://chia.tangem.com"
-        case .fireAcademy:
-            guard case .chia = blockchain else {
-                return nil
-            }
-
-            link = "https://kraken.fireacademy.io/leaflet"
+            return TronAPIResolver(config: config)
+                .resolve(blockchain: blockchain)
+        case .adalite, .tangemRosetta:
+            return CardanoAPIResolver()
+                .resolve(providerType: providerType, blockchain: blockchain)
+        case .tangemChia, .fireAcademy:
+            return ChiaAPIResolver(config: config)
+                .resolve(providerType: providerType, blockchain: blockchain)
         case .arkhiaHedera:
-            guard case .hedera = blockchain else {
-                return nil
-            }
-
-            link = "https://pool.arkhia.io/hedera/mainnet/api/v1"
+            return HederaAPIResolver(config: config)
+                .resolve(providerType: providerType, blockchain: blockchain)
         case .kaspa:
-            guard
-                case .kaspa = blockchain,
-                let url = config.kaspaSecondaryApiUrl
-            else {
-                return nil
-            }
-
-            link = url
+            return KaspaAPIResolver(config: config)
+                .resolve(blockchain: blockchain)
         case .blockchair, .blockcypher, .solana:
-            return nil
-        }
-
-        guard let url = URL(string: link) else {
-            return nil
-        }
-
-        let keyInfoProvider = APIKeysInfoProvider(blockchain: blockchain, config: config)
-        return .init(
-            url: url,
-            keyInfo: keyInfoProvider.apiKeys(for: api)
-        )
-    }
-}
-
-struct APIKeysInfoProvider {
-    let blockchain: Blockchain
-    let config: BlockchainSdkConfig
-
-    func apiKeys(for api: NetworkProviderType?) -> APIKeyInfo? {
-        guard let api else { return nil }
-
-        switch api {
-        case .nownodes:
-            return NownodesAPIKeysInfoProvider(apiKey: config.nowNodesApiKey)
-                .apiKeys(for: blockchain)
-        case .arkhiaHedera:
-            return .init(
-                headerName: Constants.xApiKeyHeaderName,
-                headerValue: config.hederaArkhiaApiKey
-            )
-        case .ton:
-            return .init(
-                headerName: Constants.xApiKeyHeaderName,
-                headerValue: config.tonCenterApiKeys.getApiKey(for: blockchain.isTestnet)
-            )
-        case .tron:
-            return .init(
-                headerName: "TRON-PRO-API-KEY",
-                headerValue: config.tronGridApiKey
-            )
-        case .fireAcademy:
-            return .init(
-                headerName: "X-API-Key",
-                headerValue: config.fireAcademyApiKeys.getApiKey(for: blockchain.isTestnet)
-            )
-        default:
             return nil
         }
     }

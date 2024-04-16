@@ -7,13 +7,13 @@
 
 import Foundation
 
-public typealias APIOrder = [BlockchainNetworkId: [NetworkProviderType]]
+public typealias APIList = [BlockchainNetworkId: [NetworkProviderType]]
 
 public enum NetworkProviderType {
     case `public`(link: String)
-    case nownodes
-    case quicknode
-    case getblock
+    case nowNodes
+    case quickNode
+    case getBlock
     case blockchair
     case blockcypher
     case ton
@@ -30,19 +30,19 @@ public enum NetworkProviderType {
 
 struct NodeInfo: HostProvider {
     let url: URL
-    let keyInfo: APIKeyInfo?
+    let headers: APIHeaderKeyInfo?
 
     var link: String { url.absoluteString }
 
     var host: String { link }
 
-    init(url: URL, keyInfo: APIKeyInfo? = nil) {
+    init(url: URL, keyInfo: APIHeaderKeyInfo? = nil) {
         self.url = url
-        self.keyInfo = keyInfo
+        self.headers = keyInfo
     }
 }
 
-struct APIKeyInfo {
+struct APIHeaderKeyInfo {
     let headerName: String
     let headerValue: String
 }

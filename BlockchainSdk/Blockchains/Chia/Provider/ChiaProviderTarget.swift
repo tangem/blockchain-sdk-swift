@@ -65,8 +65,8 @@ struct ChiaProviderTarget: TargetType {
             "Content-Type": "application/json"
         ]
         
-        if let keyInfo = node.keyInfo {
-            headers[keyInfo.headerName] = keyInfo.headerValue
+        if let headersKeyInfo = node.headers {
+            headers[headersKeyInfo.headerName] = headersKeyInfo.headerValue
         }
         
         return headers
