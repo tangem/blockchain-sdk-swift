@@ -1329,7 +1329,7 @@ extension Blockchain {
                 .base:
             return EthereumWalletAssembly()
         case .optimism:
-            return OptimismWalletAssembly()
+            return EthereumOptimisticRollupWalletAssembly()
         case .bitcoinCash:
             return BitcoinCashWalletAssembly()
         case .binance:
