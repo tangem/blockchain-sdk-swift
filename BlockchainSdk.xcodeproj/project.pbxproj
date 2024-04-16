@@ -1590,7 +1590,6 @@
 		EFF466E72ACD851700ACC3EA /* PendingTransactionRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTransactionRecord.swift; sourceTree = "<group>"; };
 		EFF466EE2ACECF8000ACC3EA /* PendingTransactionRecordMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTransactionRecordMapper.swift; sourceTree = "<group>"; };
 		EFF56B3C29C20CCE002B6952 /* SmartContractTargetType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContractTargetType.swift; sourceTree = "<group>"; };
-		EFF56B4029C30265002B6952 /* EthereumFeeParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumFeeParameters.swift; sourceTree = "<group>"; };
 		EFF82D402B9F0B50004DF1A0 /* ElectrumWebSocketProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ElectrumWebSocketProvider.swift; sourceTree = "<group>"; };
 		EFF82D472B9F3212004DF1A0 /* WebSocketConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketConnection.swift; sourceTree = "<group>"; };
 		EFF82D4B2B9F62A5004DF1A0 /* ElectrumDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElectrumDTO.swift; sourceTree = "<group>"; };
