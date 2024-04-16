@@ -16,6 +16,15 @@ public struct EthereumFeeParameters: FeeParameters {
         self.gasLimit = gasLimit
         self.gasPrice = gasPrice
     }
+
+    public func caclulateFee(decimalValue: Decimal) -> Decimal {
+        let feeWEI = gasLimit * gasPrice
+        // TODO: Fix integer overflow. Think about BigInt
+        // https://tangem.atlassian.net/browse/IOS-4268
+        // https://tangem.atlassian.net/browse/IOS-5119
+        let feeValue = feeWEI.decimal ?? Decimal(UInt64(feeWEI))
+        return feeValue / decimalValue
+    }
 }
 
 public struct EthereumEIP1559FeeParameters: FeeParameters {
@@ -27,5 +36,14 @@ public struct EthereumEIP1559FeeParameters: FeeParameters {
         self.gasLimit = gasLimit
         self.baseFee = baseFee
         self.priorityFee = priorityFee
+    }
+
+    public func caclulateFee(decimalValue: Decimal) -> Decimal {
+        let feeWEI = gasLimit * (baseFee + priorityFee)
+        // TODO: Fix integer overflow. Think about BigInt
+        // https://tangem.atlassian.net/browse/IOS-4268
+        // https://tangem.atlassian.net/browse/IOS-5119
+        let feeValue = feeWEI.decimal ?? Decimal(UInt64(feeWEI))
+        return feeValue / decimalValue
     }
 }
