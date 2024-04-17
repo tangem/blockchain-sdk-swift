@@ -57,7 +57,7 @@ private extension EthereumOptimisticRollupWalletManager {
         data: Data?,
         fee: Fee
     ) throws -> some Publisher<Decimal, Never> {
-        let hexTransactionData = try txBuilder.buildForL1(destination: destination, value: value, data: data, fee: fee)
+        let hexTransactionData = try txBuilder.buildDummyTransactionForL1(destination: destination, value: value, data: data, fee: fee)
         return networkService
             .read(target: OptimismSmartContractTarget.getL1Fee(data: hexTransactionData))
             .withWeakCaptureOf(self)
