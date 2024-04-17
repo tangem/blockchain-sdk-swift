@@ -235,7 +235,7 @@ private extension EthereumTransactionHistoryMapper {
             return .transfer
         }
         
-        return .contractMethod(id: methodId)
+        return .contractMethodIdentifier(id: methodId)
     }
     
     private func methodIdFromRawData(_ rawData: String?) -> String? {

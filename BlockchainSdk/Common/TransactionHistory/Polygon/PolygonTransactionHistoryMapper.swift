@@ -74,10 +74,15 @@ final class PolygonTransactionHistoryMapper {
         amountType: Amount.AmountType
     ) -> TransactionRecord.TransactionType {
         switch amountType {
-        case .coin where transaction.isContractInteraction:
-            return .contractMethod(id: transaction.functionName?.nilIfEmpty ?? .unknown)
-        case .coin, .reserve, .token:
-            // All token transactions are considered simple & plain transfers
+        case .coin, .token where transaction.isContractInteraction:
+            let methodName = transaction.functionName?.components(separatedBy: Constants.methodNameSeparator).first?.nilIfEmpty
+            if let methodName {
+                return .contractMethodName(name: methodName)
+            }
+            // If the method name is absent in API - we fallback to the plain transfer
+            return .transfer
+        case .coin, .token, .reserve:
+            // All other transactions are considered simple & plain transfers
             return .transfer
         }
     }
@@ -187,6 +192,9 @@ extension PolygonTransactionHistoryMapper: TransactionHistoryMapper {
 private extension PolygonTransactionHistoryMapper {
     enum Constants {
         static let maxRateLimitReachedResultPrefix = "max rate limit reached"
+        /// Method names in the API look like `swap(address executor,tuple desc,bytes permit,bytes data)`, 
+        /// so we have to remove all method signatures (parameters, types, etc).
+        static let methodNameSeparator = "("
     }
 }
 
