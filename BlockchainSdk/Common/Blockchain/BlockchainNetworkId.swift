@@ -69,6 +69,7 @@ public enum BlockchainNetworkId: String {
     case flare = "flare-network"
     case taraxa
     case radiant
+    case base
 
     init(for blockchain: Blockchain) {
         switch blockchain {
@@ -132,6 +133,7 @@ public enum BlockchainNetworkId: String {
         case .flare: self = .flare
         case .taraxa: self = .taraxa
         case .radiant: self = .radiant
+        case .base: self = .base
         }
     }
 }

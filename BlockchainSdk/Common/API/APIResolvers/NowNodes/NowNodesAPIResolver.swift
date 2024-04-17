@@ -64,6 +64,8 @@ struct NowNodesAPIResolver {
             link = "https://moonbeam.nownodes.io/\(apiKey)"
         case .solana:
             link = "https://sol.nownodes.io"
+        case .base:
+            link = "https://base.nownodes.io/\(apiKey)"
         default:
             return nil
         }

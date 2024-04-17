@@ -31,8 +31,6 @@ struct DashWalletAssembly: WalletManagerAssembly {
                 switch $0 {
                 case .nowNodes:
                     providers.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
-                case .getBlock:
-                    providers.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider())
                 case .blockchair:
                     providers.append(contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .dash, with: input))
                 case .blockcypher:

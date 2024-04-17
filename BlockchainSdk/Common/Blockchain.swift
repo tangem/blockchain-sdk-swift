@@ -75,6 +75,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case flare(testnet: Bool)
     case taraxa(testnet: Bool)
     case radiant(testnet: Bool)
+    case base(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -110,7 +111,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .mantle(let testnet),
                 .flare(let testnet),
                 .taraxa(let testnet),
-                .radiant(let testnet):
+                .radiant(let testnet),
+                .base(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -213,7 +215,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .moonriver,
                 .mantle,
                 .flare,
-                .taraxa:
+                .taraxa,
+                .base:
             return 18
         case .cardano,
                 .xrp,
@@ -250,8 +253,14 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "LTC"
         case .stellar:
             return "XLM"
-        case .ethereum, .arbitrum, .optimism, .aurora,
-                .manta, .zkSync, .polygonZkEVM:
+        case .ethereum,
+             .arbitrum,
+             .optimism,
+             .aurora,
+             .manta,
+             .zkSync,
+             .polygonZkEVM,
+             .base:
             return "ETH"
         case .ethereumClassic:
             return "ETC"
@@ -430,7 +439,10 @@ public indirect enum Blockchain: Equatable, Hashable {
 
     public var tokenTypeName: String? {
         switch self {
-        case .ethereum: return "ERC20"
+        case .ethereum,
+             .base:
+            // TODO: Andrey Fedorov - Add other Ethereum L2s here (IOS-6505)
+            return "ERC20"
         case .binance: return "BEP2"
         case .bsc: return "BEP20"
         case .tron: return "TRC20"
@@ -444,19 +456,21 @@ public indirect enum Blockchain: Equatable, Hashable {
 
     public var canHandleTokens: Bool {
         switch self {
-        case _ where isEvm:
-            return true
+        case .taraxa:
+            return false
         case .binance,
                 .solana,
                 .tron,
                 .terraV1,
                 .veChain:
             return true
+        case _ where isEvm:
+            return true
         default:
             return false
         }
     }
-    
+
     public var feePaidCurrency: FeePaidCurrency {
         switch self {
         case .terraV1:
@@ -549,6 +563,7 @@ extension Blockchain {
         case .mantle: return isTestnet ? 5001 : 5000
         case .flare: return isTestnet ? 114 : 14
         case .taraxa: return isTestnet ? 842 : 841
+        case .base: return isTestnet ? 84532 : 8453
         default: return nil
         }
     }
@@ -668,6 +683,7 @@ extension Blockchain: Codable {
         case .flare: return "flare"
         case .taraxa: return "taraxa"
         case .radiant: return "radiant"
+        case .base: return "base"
         }
     }
 
@@ -751,6 +767,7 @@ extension Blockchain: Codable {
         case "flare": self = .flare(testnet: isTestnet)
         case "taraxa": self = .taraxa(testnet: isTestnet)
         case "radiant": self = .radiant(testnet: isTestnet)
+        case "base": self = .base(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -846,7 +863,8 @@ extension Blockchain {
                 .moonriver,
                 .mantle,
                 .flare,
-                .taraxa:
+                .taraxa,
+                .base:
             return EthereumWalletAssembly()
         case .optimism:
             return OptimismWalletAssembly()

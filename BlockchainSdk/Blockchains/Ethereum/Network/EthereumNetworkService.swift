@@ -9,7 +9,6 @@
 import Foundation
 import Moya
 import Combine
-import SwiftyJSON
 import BigInt
 
 class EthereumNetworkService: MultiNetworkProvider {
@@ -35,11 +34,6 @@ class EthereumNetworkService: MultiNetworkProvider {
     func send(transaction: String) -> AnyPublisher<String, Error> {
         providerPublisher {
             $0.send(transaction: transaction)
-                .tryMap {[weak self] in
-                    guard let self = self else { throw WalletError.empty }
-                    
-                    return try self.getResult(from: $0) }
-                .eraseToAnyPublisher()
         }
     }
     
@@ -75,8 +69,8 @@ class EthereumNetworkService: MultiNetworkProvider {
             .mapError { error in
                 if let moyaError = error as? MoyaError,
                    let responseData = moyaError.response?.data,
-                   let ethereumResponse = try? JSONDecoder().decode(EthereumResponse.self, from: responseData),
-                   let errorMessage = ethereumResponse.error?.message,
+                   let ethereumResponse = try? JSONDecoder().decode(JSONRPC.Response<String, JSONRPC.APIError>.self, from: responseData),
+                   let errorMessage = ethereumResponse.result.error?.message,
                    errorMessage.contains("gas required exceeds allowance", ignoreCase: true) {
                     return ETHError.gasRequiredExceedsAllowance
                 }
@@ -97,14 +91,35 @@ class EthereumNetworkService: MultiNetworkProvider {
                .eraseToAnyPublisher()
        }
    }
-    
+
+    func getBaseFee() -> AnyPublisher<Decimal, Error> {
+        providerPublisher {
+            $0.getFeeHistory()
+                .withWeakCaptureOf(self)
+                .tryMap { service, response in
+                    service.getBaseFee(response: response)
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+
+    func getPriorityFee() -> AnyPublisher<BigUInt, Error> {
+        providerPublisher {
+            $0.getPriorityFee()
+                .withWeakCaptureOf(self)
+                .tryMap { networkService, result in
+                    try networkService.getGas(from: result)
+                }
+                .eraseToAnyPublisher()
+        }
+    }
+
     func getGasPrice() -> AnyPublisher<BigUInt, Error> {
         providerPublisher {
             $0.getGasPrice()
-                .tryMap {[weak self] in
-                    guard let self = self else { throw WalletError.empty }
-                    
-                    return try self.getGas(from: $0)
+                .withWeakCaptureOf(self)
+                .tryMap { networkService, result in
+                    try networkService.getGas(from: result)
                 }
                 .eraseToAnyPublisher()
         }
@@ -113,10 +128,9 @@ class EthereumNetworkService: MultiNetworkProvider {
     func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
         providerPublisher {
             $0.getGasLimit(to: to, from: from, value: value, data: data)
-                .tryMap {[weak self] in
-                    guard let self = self else { throw WalletError.empty }
-                    
-                    return try self.getGas(from: $0)
+                .withWeakCaptureOf(self)
+                .tryMap { networkService, result in
+                    try networkService.getGas(from: result)
                 }
                 .eraseToAnyPublisher()
         }
@@ -126,15 +140,15 @@ class EthereumNetworkService: MultiNetworkProvider {
         tokens
             .publisher
             .setFailureType(to: Error.self)
-            .flatMap {[weak self] token in
-                self?.providerPublisher { provider -> AnyPublisher<(Token, Decimal), Error> in
+            .withWeakCaptureOf(self)
+            .flatMap { networkService, token in
+                networkService.providerPublisher { provider -> AnyPublisher<(Token, Decimal), Error> in
                     let method = TokenBalanceERC20TokenMethod(owner: address)
-                    
-                    return provider.call(contractAddress: token.contractAddress, encodedData: method.encodedData)
-                        .tryMap {[weak self] resp -> Decimal in
-                            guard let self = self else { throw WalletError.empty }
-                            
-                            let result = try self.getResult(from: resp)
+
+                    return provider
+                        .call(contractAddress: token.contractAddress, encodedData: method.encodedData)
+                        .withWeakCaptureOf(networkService)
+                        .tryMap { networkService, result in
                             guard let value = EthereumUtils.parseEthereumDecimal(result, decimalsCount: token.decimalCount) else {
                                 throw ETHError.failedToParseBalance(value: result, address: token.contractAddress, decimals: token.decimalCount)
                             }
@@ -143,7 +157,7 @@ class EthereumNetworkService: MultiNetworkProvider {
                         }
                         .map { (token, $0) }
                         .eraseToAnyPublisher()
-                } ?? .emptyFail
+                }
             }
             .collect()
             .map { $0.reduce(into: [Token: Decimal]()) { $0[$1.0] = $1.1 }}
@@ -162,24 +176,16 @@ class EthereumNetworkService: MultiNetworkProvider {
         let method = AllowanceERC20TokenMethod(owner: owner, spender: spender)
         return providerPublisher {
             $0.call(contractAddress: contractAddress, encodedData: method.encodedData)
-                .tryMap { [weak self] in
-                    guard let self = self else { throw WalletError.empty }
-
-                    return try self.getResult(from: $0)
-                }
-                .eraseToAnyPublisher()
         }
     }
     
     func getBalance(_ address: String) -> AnyPublisher<Decimal, Error> {
         providerPublisher { provider in
             provider.getBalance(for: address)
-                .tryMap {[weak self] in
-                    guard let self = self else { throw WalletError.empty }
-                    
-                    let result = try self.getResult(from: $0)
-                    guard let value = EthereumUtils.parseEthereumDecimal(result, decimalsCount: self.decimals) else {
-                        throw ETHError.failedToParseBalance(value: result, address: address, decimals: self.decimals)
+                .withWeakCaptureOf(self)
+                .tryMap { networkService, result in
+                    guard let value = EthereumUtils.parseEthereumDecimal(result, decimalsCount: networkService.decimals) else {
+                        throw ETHError.failedToParseBalance(value: result, address: address, decimals: networkService.decimals)
                     }
                     
                     return value
@@ -205,48 +211,37 @@ class EthereumNetworkService: MultiNetworkProvider {
 
         return providerPublisher {
             $0.call(contractAddress: target.contactAddress, encodedData: encodedData)
-                .tryMap { [weak self] in
-                    guard let self = self else { throw WalletError.empty }
-                    
-                    return try self.getResult(from: $0)
-                }
-                .eraseToAnyPublisher()
         }
     }
     
     
     // MARK: - Private functions
     
-    private func getGas(from response: EthereumResponse) throws -> BigUInt {
-        let res = try getResult(from: response)
-        guard let count = BigUInt(res.removeHexPrefix(), radix: 16) else {
+    private func getGas(from response: String) throws -> BigUInt {
+        guard let count = BigUInt(response.removeHexPrefix(), radix: 16) else {
             throw ETHError.failedToParseGasLimit
         }
-        
+
         return count
     }
     
-    private func getTxCount(from response: EthereumResponse) throws -> Int {
-        let countString = try getResult(from: response)
-        guard let count = Int(countString.removeHexPrefix(), radix: 16) else {
+    private func getTxCount(from response: String) throws -> Int {
+        guard let count = Int(response.removeHexPrefix(), radix: 16) else {
             throw ETHError.failedToParseTxCount
         }
         
         return count
     }
-    
-    private func getResult(from response: EthereumResponse) throws -> String {
-        if let error = response.error {
-            throw error.error
+
+    private func getBaseFee(response: EthereumFeeHistoryResponse) -> Decimal {
+        let baseFeePerGas = response.baseFeePerGas.compactMap {
+            EthereumUtils.parseEthereumDecimal($0, decimalsCount: decimals)
         }
-        
-        guard let result = response.result else {
-            throw WalletError.failedToParseNetworkResponse
-        }
-        
-        return result
+
+        // Get the average value
+        return baseFeePerGas.reduce(0, +) / Decimal(baseFeePerGas.count)
     }
-    
+
     private func mapToEthereumFeeResponse(gasPrice: BigUInt, gasLimit: BigUInt, decimalCount: Int) -> EthereumFeeResponse {
         let minGasPrice = gasPrice
         let normalGasPrice = gasPrice * BigUInt(12) / BigUInt(10)
@@ -260,14 +255,6 @@ extension EthereumNetworkService: EVMSmartContractInteractor {
     func ethCall<Request>(request: Request) -> AnyPublisher<String, Error> where Request : SmartContractRequest {
         return providerPublisher {
             $0.call(contractAddress: request.contractAddress, encodedData: request.encodedData)
-                .tryMap { response -> String in
-                    guard let result = response.result else {
-                        throw response.error?.error ?? String.unknown
-                    }
-
-                    return result
-                }
-                .eraseToAnyPublisher()
         }
     }
 }
