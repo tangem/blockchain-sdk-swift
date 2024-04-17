@@ -221,7 +221,7 @@ class EthereumTests: XCTestCase {
         transactionBuilder.update(nonce: nonce)
 
         // when
-        let l1Data = try transactionBuilder.buildForL1(
+        let l1Data = try transactionBuilder.buildDummyTransactionForL1(
             destination: destinationAddress,
             value: sendValue.hexString,
             data: nil,
