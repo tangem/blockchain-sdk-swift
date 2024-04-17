@@ -52,7 +52,10 @@ public struct TransactionRecord: Hashable {
 public extension TransactionRecord {
     enum TransactionType: Hashable {
         case transfer
-        case contractMethod(id: String)
+        /// Contains contract method id (like `0x357a150b`).
+        case contractMethodIdentifier(id: String)
+        /// Contains human-readable contract method name (like `swap`).
+        case contractMethodName(name: String)
     }
 }
 
