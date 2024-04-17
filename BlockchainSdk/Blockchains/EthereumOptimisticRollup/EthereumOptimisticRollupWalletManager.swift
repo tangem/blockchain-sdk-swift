@@ -1,8 +1,9 @@
 //
-//  OptimismWalletManager.swift
-//  Alamofire
+//  EthereumOptimisticRollupWalletManager.swift
+//  BlockchainSdk
 //
-//  Created by Pavel Grechikhin on 01.10.2022.
+//  Created by Andrey Fedorov on 16.04.2024.
+//  Copyright © 2024 Tangem AG. All rights reserved.
 //
 
 import Foundation
@@ -11,7 +12,8 @@ import Combine
 import TangemSdk
 import Moya
 
-class OptimismWalletManager: EthereumWalletManager {
+// Used by Optimism, Base, and other Ethereum L2s with optimistic rollups.
+final class EthereumOptimisticRollupWalletManager: EthereumWalletManager {
     /// We are override this method to combine the two fee's layers in the `Optimistic-Ethereum` network.
     /// Read more:
     /// https://community.optimism.io/docs/developers/build/transaction-fees/#the-l1-data-fee
@@ -31,7 +33,7 @@ class OptimismWalletManager: EthereumWalletManager {
                       let parameters = layer2Fees.first?.parameters as? EthereumFeeParameters else {
                     return Fail(error: BlockchainSdkError.failedToLoadFee).eraseToAnyPublisher()
                 }
-                
+
                 return self.getLayer1Fee(
                     destination: destination,
                     value: value,
@@ -54,7 +56,7 @@ class OptimismWalletManager: EthereumWalletManager {
 
 // MARK: - Private
 
-private extension OptimismWalletManager {
+private extension EthereumOptimisticRollupWalletManager {
     func getLayer1Fee(
         destination: String,
         value: String?,
@@ -70,7 +72,7 @@ private extension OptimismWalletManager {
             value: BigUInt(valueData),
             data: data ?? Data()
         )
-        
+
         // Just collect data to get estimated fee from contact address
         // https://github.com/ethereum/wiki/wiki/RLP
         guard let rlpEncodedTransactionData = transaction.encode(forSignature: false) else {
@@ -78,12 +80,12 @@ private extension OptimismWalletManager {
         }
 
         return networkService
-            .read(target: OptimismSmartContractTarget.getL1Fee(data: rlpEncodedTransactionData))
+            .read(target: EthereumOptimisticRollupSmartContract.getL1Fee(data: rlpEncodedTransactionData))
             .tryMap { [wallet] response in
                 guard let value = EthereumUtils.parseEthereumDecimal(response, decimalsCount: wallet.blockchain.decimalCount) else {
                     throw BlockchainSdkError.failedToLoadFee
                 }
-                
+
                 return value
             }
             // We can ignore errors so as not to block users

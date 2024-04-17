@@ -1325,11 +1325,11 @@ extension Blockchain {
                 .moonriver,
                 .mantle,
                 .flare,
-                .taraxa,
-                .base:
+                .taraxa:
             return EthereumWalletAssembly()
-        case .optimism:
-            return OptimismWalletAssembly()
+        case .optimism,
+             .base:
+            return EthereumOptimisticRollupWalletAssembly()
         case .bitcoinCash:
             return BitcoinCashWalletAssembly()
         case .binance:
