@@ -191,9 +191,10 @@ private extension EthereumTransactionBuilder {
         guard signatureInfo.signature.count == Constants.signatureCount else {
             throw EthereumTransactionBuilderError.invalidSignatureCount
         }
-        
-        let unmarshal = try Secp256k1Signature(with: signatureInfo.signature)
-            .unmarshal(with: signatureInfo.publicKey, hash: signatureInfo.hash)
+
+        let decompressed = try Secp256k1Key(with: signatureInfo.publicKey).decompress()
+        let secp256k1Signature = try Secp256k1Signature(with: signatureInfo.signature)
+        let unmarshal = try secp256k1Signature.unmarshal(with: decompressed, hash: signatureInfo.hash)
         let txInputData = try input.serializedData()
 
         // As we use the chainID in the transaction according to EIP-155
@@ -210,10 +211,8 @@ private extension EthereumTransactionBuilder {
         let signatures = DataVector()
         signatures.add(data: signature)
 
-        // Basically the publicKey will not use inside WalletCore
-        // But anyway we add it for the data consistency
         let publicKeys = DataVector()
-        publicKeys.add(data: signatureInfo.publicKey)
+        publicKeys.add(data: decompressed)
 
         let compileWithSignatures = TransactionCompiler.compileWithSignatures(
             coinType: coinType,
