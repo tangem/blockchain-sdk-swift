@@ -58,7 +58,7 @@ public struct AddressServiceFactory {
                 .flare,
                 .taraxa,
                 .base:
-            return WalletCoreAddressService(coin: .ethereum)
+            return EthereumAddressService()
         case .rsk:
             return RskAddressService()
         case .bitcoinCash:
