@@ -1,20 +1,20 @@
 //
-//  OptimismSmartContract.swift
+//  EthereumOptimisticRollupSmartContract.swift
 //  BlockchainSdk
 //
-//  Created by Sergey Balashov on 08.03.2023.
-//  Copyright © 2023 Tangem AG. All rights reserved.
+//  Created by Andrey Fedorov on 16.04.2024.
+//  Copyright © 2024 Tangem AG. All rights reserved.
 //
 
-import Combine
+import Foundation
 
-enum OptimismSmartContractTarget: SmartContractTargetType {
+enum EthereumOptimisticRollupSmartContract: SmartContractTargetType {
     case getL1Fee(data: Data)
     case getL1GasUsed(data: Data)
     case l1BaseFee
-    
+
     public var contactAddress: String { "0x420000000000000000000000000000000000000F" }
-    
+
     public var methodName: String {
         switch self {
         case .getL1Fee:
@@ -25,7 +25,7 @@ enum OptimismSmartContractTarget: SmartContractTargetType {
             return "l1BaseFee"
         }
     }
-    
+
     public var parameters: [SmartContractMethodParameterType] {
         switch self {
         case .getL1Fee(let data):
