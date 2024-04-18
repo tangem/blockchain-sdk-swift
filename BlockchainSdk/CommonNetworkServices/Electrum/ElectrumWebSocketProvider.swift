@@ -21,7 +21,7 @@ class ElectrumWebSocketProvider: HostProvider {
     public init(url: URL) {
         let ping: WebSocketConnection.Ping = {
             do {
-                let request = JSONRPCWebSocketProvider.JSONRPCRequest(id: -1, method: Method.Server.ping.rawValue, params: [String]())
+                let request = JSONRPC.Request(jsonrpc: .none, id: -1, method: Method.Server.ping.rawValue, params: [String]()) // Empty params
                 let message = try request.string(encoder: .init())
                 return .message(interval: Constants.pingInterval, message: .string(message))
             } catch {
@@ -63,7 +63,19 @@ class ElectrumWebSocketProvider: HostProvider {
         try await send(method: Method.Blockchain.Transaction.broadcast, parameter: transactionHex)
     }
     
-    func estimateFee(block: Int) async throws -> Int {
+    /*
+     Use for specify Radiant blockchain answer for example
+     {
+         "jsonrpc": "2.0",
+         "result": "8827bae7cc2409b2a49b38ca5482a0a1cb296f458e6e7eb669a30def0c9b63ee",
+         "id": 5
+     }
+     */
+    func send(transactionHex: String) async throws -> String {
+        try await send(method: Method.Blockchain.Transaction.broadcast, parameter: [transactionHex])
+    }
+    
+    func estimateFee(block: Int) async throws -> Decimal {
         try await send(method: Method.Blockchain.estimatefee, parameter: [block])
     }
 }
