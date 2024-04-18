@@ -26,10 +26,36 @@ final class HederaTransactionBuilder {
         self.isTestnet = isTestnet
     }
 
+    func buildTokenAssociationForSign(
+        _ tokenAssociation: TokenAssociation,
+        validStartDate: UnixTimestamp,
+        nodeAccountIds: [Int]?
+    ) throws -> CompiledTransaction {
+        let accountId = try AccountId(parsing: tokenAssociation.accountId)
+        let tokenId = try TokenId(parsing: tokenAssociation.contractAddress)
+        let transactionId = try makeTransactionId(accountId: accountId, validStartDate: validStartDate)
+
+        let nodeAccountIds = nodeAccountIds?
+            .map(UInt64.init)
+            .map(AccountId.init(num:))
+
+        // TODO: Andrey Fedorov - Set maxTransactionFee?
+        let tokenAssociateTransaction = try TokenAssociateTransaction(accountId: accountId, tokenIds: [tokenId])
+            .transactionId(transactionId)
+            .nodeAccountIdsIfNotEmpty(nodeAccountIds)
+            .freezeWith(client)
+
+        return CompiledTransaction(curve: curve, client: client, innerTransaction: tokenAssociateTransaction)
+    }
+
     /// Build transaction for signing.
     /// - parameter nodeAccountIds: A list of consensus network nodes for sending this transaction; 
     /// Pass `nil` to let the Hedera SDK network layer select valid and alive consensus network nodes on its own.
-    func buildForSign(transaction: Transaction, validStartDate: UnixTimestamp, nodeAccountIds: [Int]?) throws -> CompiledTransaction {
+    func buildTransferTransactionForSign(
+        transaction: Transaction,
+        validStartDate: UnixTimestamp,
+        nodeAccountIds: [Int]?
+    ) throws -> CompiledTransaction {
         let feeValue = transaction.fee.amount.value * pow(Decimal(10), transaction.fee.amount.decimals) // TODO: Andrey Fedorov - Calculate fee for token transfers (including tokens with custom fees)
         let feeRoundedValue = feeValue.rounded(roundingMode: .up)
         let feeAmount = try Hbar(feeRoundedValue, .tinybar)
@@ -37,20 +63,7 @@ final class HederaTransactionBuilder {
         let sourceAccountId = try AccountId(parsing: transaction.sourceAddress)
         let destinationAccountId = try AccountId(parsing: transaction.destinationAddress)
 
-        let (validStartDateNSec, multiplicationOverflow) = UInt64(validStartDate.seconds).multipliedReportingOverflow(by: NSEC_PER_SEC)
-        if multiplicationOverflow {
-            Log.debug("\(#fileID): Unable to create tx id due to multiplication overflow of '\(validStartDate)'")
-            throw WalletError.failedToBuildTx
-        }
-
-        let (unixTimestampNSec, addingOverflow) = validStartDateNSec.addingReportingOverflow(UInt64(validStartDate.nanoseconds))
-        if addingOverflow {
-            Log.debug("\(#fileID): Unable to create tx id due to adding overflow of '\(validStartDate)'")
-            throw WalletError.failedToBuildTx
-        }
-
-        let validStart = Timestamp(fromUnixTimestampNanos: unixTimestampNSec)
-        let transactionId = TransactionId.withValidStart(sourceAccountId, validStart)
+        let transactionId = try makeTransactionId(accountId: sourceAccountId, validStartDate: validStartDate)
         let transactionParams = transaction.params as? HederaTransactionParams
 
         let nodeAccountIds = nodeAccountIds?
@@ -95,6 +108,24 @@ final class HederaTransactionBuilder {
         }
     }
 
+    private func makeTransactionId(accountId: Hedera.AccountId, validStartDate: UnixTimestamp) throws -> Hedera.TransactionId {
+        let (validStartDateNSec, multiplicationOverflow) = UInt64(validStartDate.seconds).multipliedReportingOverflow(by: NSEC_PER_SEC)
+        if multiplicationOverflow {
+            Log.debug("\(#fileID): Unable to create tx id due to multiplication overflow of '\(validStartDate)'")
+            throw WalletError.failedToBuildTx
+        }
+
+        let (unixTimestampNSec, addingOverflow) = validStartDateNSec.addingReportingOverflow(UInt64(validStartDate.nanoseconds))
+        if addingOverflow {
+            Log.debug("\(#fileID): Unable to create tx id due to adding overflow of '\(validStartDate)'")
+            throw WalletError.failedToBuildTx
+        }
+
+        let validStart = Timestamp(fromUnixTimestampNanos: unixTimestampNSec)
+
+        return TransactionId.withValidStart(accountId, validStart)
+    }
+
     private func makeTransferTransaction(
         amount: Amount,
         sourceAccountId: AccountId,
@@ -131,6 +162,11 @@ final class HederaTransactionBuilder {
 // MARK: - Auxiliary types
 
 extension HederaTransactionBuilder {
+    struct TokenAssociation {
+        let accountId: String
+        let contractAddress: String
+    }
+
     /// Auxiliary type that hides all implementation details (including dependency on `Hedera iOS SDK`).
     struct CompiledTransaction {
         private let curve: EllipticCurve

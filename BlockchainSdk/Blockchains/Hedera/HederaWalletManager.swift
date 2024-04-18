@@ -349,7 +349,7 @@ extension HederaWalletManager: WalletManager {
                 }
 
                 let compiledTransaction = Result {
-                    try self.transactionBuilder.buildForSign(
+                    try self.transactionBuilder.buildTransferTransactionForSign(
                         transaction: transaction,
                         validStartDate: validStartDate,
                         nodeAccountIds: nil
