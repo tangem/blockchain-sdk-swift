@@ -137,13 +137,13 @@ final class HederaTransactionBuilder {
         switch amount.type {
         case .coin:
             let transactionAmount = try Hbar(transactionRoundedValue, .tinybar)
-            return try TransferTransaction()
+            return TransferTransaction()
                 .hbarTransfer(sourceAccountId, transactionAmount.negated())
                 .hbarTransfer(destinationAccountId, transactionAmount)
         case .token(let token):
             let tokenId = try TokenId.fromString(token.contractAddress)
             let transactionAmount = transactionRoundedValue.int64Value
-            return try TransferTransaction()
+            return TransferTransaction()
                 .tokenTransfer(tokenId, sourceAccountId, -transactionAmount)
                 .tokenTransfer(tokenId, destinationAccountId, transactionAmount)
         case .reserve:

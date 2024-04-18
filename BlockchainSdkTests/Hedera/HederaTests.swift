@@ -72,7 +72,7 @@ final class HederaTests: XCTestCase {
             isTestnet: blockchain.isTestnet
         )
 
-        let compiledTransaction = try transactionBuilder.buildForSign(
+        let compiledTransaction = try transactionBuilder.buildTransferTransactionForSign(
             transaction: transaction,
             validStartDate: validStartDate,
             nodeAccountIds: [6]
@@ -158,7 +158,7 @@ final class HederaTests: XCTestCase {
             isTestnet: blockchain.isTestnet
         )
 
-        let compiledTransaction = try transactionBuilder.buildForSign(
+        let compiledTransaction = try transactionBuilder.buildTransferTransactionForSign(
             transaction: transaction,
             validStartDate: validStartDate,
             nodeAccountIds: [6]
