@@ -101,9 +101,10 @@ public struct AddressServiceFactory {
                 .terraV1,
                 .terraV2,
                 .veChain,
-                .algorand,
-                .aptos:
+                .algorand:
             return WalletCoreAddressService(blockchain: blockchain)
+        case .aptos:
+            return AptosCoreAddressService()
         case .ducatus:
             return BitcoinLegacyAddressService(networkParams: DucatusNetworkParams())
         case .chia:
