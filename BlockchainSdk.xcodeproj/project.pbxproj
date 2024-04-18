@@ -98,7 +98,6 @@
 		2DB6C6D72AFCC013000D0C6A /* TelosWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB6C6D62AFCC013000D0C6A /* TelosWalletAssembly.swift */; };
 		2DB84D412B721BDE00C1CDD1 /* AptosChainId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB84D402B721BDE00C1CDD1 /* AptosChainId.swift */; };
 		2DB84D442B721CB000C1CDD1 /* AptosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB84D432B721CB000C1CDD1 /* AptosTests.swift */; };
-		2DBBE94D29C8686000971539 /* OptimismWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBBE94C29C8686000971539 /* OptimismWalletAssembly.swift */; };
 		2DBBE95029C8DBEA00971539 /* TONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DBBE94F29C8DBEA00971539 /* TONTests.swift */; };
 		2DC5796129C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5796029C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift */; };
 		2DC5DAB429B9E6A10039154A /* WalletCoreSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5DAB329B9E6A10039154A /* WalletCoreSigner.swift */; };
@@ -323,6 +322,9 @@
 		B6417DDC2BA2354D00B9B61D /* PolygonTransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6417DDB2BA2354D00B9B61D /* PolygonTransactionHistoryProvider.swift */; };
 		B6417DDE2BA2355F00B9B61D /* PolygonTransactionHistoryMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6417DDD2BA2355F00B9B61D /* PolygonTransactionHistoryMapper.swift */; };
 		B641EC492AEF5CC100B44CF8 /* NEARAddressUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = B641EC482AEF5CC100B44CF8 /* NEARAddressUtil.swift */; };
+		B64A680B2BCE9E78009ED960 /* EthereumOptimisticRollupWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64A680A2BCE9E78009ED960 /* EthereumOptimisticRollupWalletManager.swift */; };
+		B64A680D2BCE9E82009ED960 /* EthereumOptimisticRollupWalletAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64A680C2BCE9E82009ED960 /* EthereumOptimisticRollupWalletAssembly.swift */; };
+		B64A680F2BCE9F40009ED960 /* EthereumOptimisticRollupSmartContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64A680E2BCE9F40009ED960 /* EthereumOptimisticRollupSmartContract.swift */; };
 		B64B728C2AEC9C7B005C8C7C /* Lock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64B728B2AEC9C7B005C8C7C /* Lock.swift */; };
 		B6582CD92B3CA9BA00711283 /* VeChainFeeParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6582CD82B3CA9BA00711283 /* VeChainFeeParams.swift */; };
 		B65835C82B768C49002AE7A8 /* HederaTargetConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65835C72B768C49002AE7A8 /* HederaTargetConfiguration.swift */; };
@@ -729,7 +731,6 @@
 		EF5C753E2BAC4D6B00811198 /* URLSessionTask.State+CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C753D2BAC4D6B00811198 /* URLSessionTask.State+CustomStringConvertible.swift */; };
 		EF5C75402BAC4DB500811198 /* URLSessionWebSocketTask.CloseCode+CustomStringConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5C753F2BAC4DB500811198 /* URLSessionWebSocketTask.CloseCode+CustomStringConvertible.swift */; };
 		EF5F1B9729C9C0500093307B /* Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5F1B9629C9C0500093307B /* Fee.swift */; };
-		EF609FC72A20D4E9004E6D4E /* OptimismWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EECB5228E9F50600899D6C /* OptimismWalletManager.swift */; };
 		EF666C202A288AEF0044986F /* AdaliteTokenDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF666C1F2A288AEF0044986F /* AdaliteTokenDTO.swift */; };
 		EF666C2A2A2DFB120044986F /* WalletManagerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF666C292A2DFB120044986F /* WalletManagerFactory.swift */; };
 		EF666C2E2A2F3EE90044986F /* BitcoinLegacyAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF666C2D2A2F3EE90044986F /* BitcoinLegacyAddressService.swift */; };
@@ -763,7 +764,6 @@
 		EFCD1D192A586BEF009C8624 /* CardanoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32FEE22A3B626E002ED43F /* CardanoTests.swift */; };
 		EFD32AE429E9B7800026353E /* RavencoinTransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD32AE329E9B7800026353E /* RavencoinTransactionHistory.swift */; };
 		EFD39C9F2A6E6C700055D215 /* AddressTypesConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD39C9E2A6E6C700055D215 /* AddressTypesConfig.swift */; };
-		EFD717B82A24B20700E5430D /* OptimismContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF5BA8329B881440070694A /* OptimismContract.swift */; };
 		EFD717CA2A25EA8500E5430D /* WalletCoreABIEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717C92A25EA8500E5430D /* WalletCoreABIEncoder.swift */; };
 		EFD717CC2A25EB0B00E5430D /* ABIEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717CB2A25EB0B00E5430D /* ABIEncoder.swift */; };
 		EFD717CE2A25ECB500E5430D /* SmartContractMethodParameterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD717CD2A25ECB500E5430D /* SmartContractMethodParameterType.swift */; };
@@ -907,7 +907,6 @@
 		2DB6C6D62AFCC013000D0C6A /* TelosWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelosWalletAssembly.swift; sourceTree = "<group>"; };
 		2DB84D402B721BDE00C1CDD1 /* AptosChainId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosChainId.swift; sourceTree = "<group>"; };
 		2DB84D432B721CB000C1CDD1 /* AptosTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AptosTests.swift; sourceTree = "<group>"; };
-		2DBBE94C29C8686000971539 /* OptimismWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismWalletAssembly.swift; sourceTree = "<group>"; };
 		2DBBE94F29C8DBEA00971539 /* TONTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONTests.swift; sourceTree = "<group>"; };
 		2DC5796029C9CBB1004312AE /* WalletCoreSignerTesterUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreSignerTesterUtility.swift; sourceTree = "<group>"; };
 		2DC5DAB329B9E6A10039154A /* WalletCoreSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCoreSigner.swift; sourceTree = "<group>"; };
@@ -1151,6 +1150,9 @@
 		B6417DDB2BA2354D00B9B61D /* PolygonTransactionHistoryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolygonTransactionHistoryProvider.swift; sourceTree = "<group>"; };
 		B6417DDD2BA2355F00B9B61D /* PolygonTransactionHistoryMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolygonTransactionHistoryMapper.swift; sourceTree = "<group>"; };
 		B641EC482AEF5CC100B44CF8 /* NEARAddressUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NEARAddressUtil.swift; sourceTree = "<group>"; };
+		B64A680A2BCE9E78009ED960 /* EthereumOptimisticRollupWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumOptimisticRollupWalletManager.swift; sourceTree = "<group>"; };
+		B64A680C2BCE9E82009ED960 /* EthereumOptimisticRollupWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumOptimisticRollupWalletAssembly.swift; sourceTree = "<group>"; };
+		B64A680E2BCE9F40009ED960 /* EthereumOptimisticRollupSmartContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumOptimisticRollupSmartContract.swift; sourceTree = "<group>"; };
 		B64B728B2AEC9C7B005C8C7C /* Lock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lock.swift; sourceTree = "<group>"; };
 		B6582CD82B3CA9BA00711283 /* VeChainFeeParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VeChainFeeParams.swift; sourceTree = "<group>"; };
 		B65835C72B768C49002AE7A8 /* HederaTargetConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HederaTargetConfiguration.swift; sourceTree = "<group>"; };
@@ -1446,7 +1448,6 @@
 		DCE3379A28F2B7260029A6F5 /* BlockchainSdkExample.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = BlockchainSdkExample.entitlements; sourceTree = "<group>"; };
 		E9941AC82927846B00399DE3 /* BlockBookTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookTarget.swift; sourceTree = "<group>"; };
 		E9941ACA2927B07300399DE3 /* BlockBookUtxoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookUtxoProvider.swift; sourceTree = "<group>"; };
-		E9EECB5228E9F50600899D6C /* OptimismWalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismWalletManager.swift; sourceTree = "<group>"; };
 		EF1339B52AB4B2A600B78BA3 /* TransferERC20TokenMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferERC20TokenMethod.swift; sourceTree = "<group>"; };
 		EF1339B72AB4B2C300B78BA3 /* SmartContractMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContractMethod.swift; sourceTree = "<group>"; };
 		EF1339B92AB4B38000B78BA3 /* ApproveERC20TokenMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApproveERC20TokenMethod.swift; sourceTree = "<group>"; };
@@ -1593,7 +1594,6 @@
 		EFF466E72ACD851700ACC3EA /* PendingTransactionRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTransactionRecord.swift; sourceTree = "<group>"; };
 		EFF466EE2ACECF8000ACC3EA /* PendingTransactionRecordMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTransactionRecordMapper.swift; sourceTree = "<group>"; };
 		EFF56B3C29C20CCE002B6952 /* SmartContractTargetType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContractTargetType.swift; sourceTree = "<group>"; };
-		EFF5BA8329B881440070694A /* OptimismContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptimismContract.swift; sourceTree = "<group>"; };
 		EFF82D402B9F0B50004DF1A0 /* ElectrumWebSocketProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ElectrumWebSocketProvider.swift; sourceTree = "<group>"; };
 		EFF82D472B9F3212004DF1A0 /* WebSocketConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketConnection.swift; sourceTree = "<group>"; };
 		EFF82D4B2B9F62A5004DF1A0 /* ElectrumDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElectrumDTO.swift; sourceTree = "<group>"; };
@@ -2020,11 +2020,11 @@
 				B0EBBEF0265D0E4900D37141 /* Dogecoin */,
 				5D977BB423FAEB3700575BE4 /* Ducatus */,
 				5D94E55F23A37EF7009C7482 /* Ethereum */,
+				B64A68092BCE9E62009ED960 /* EthereumOptimisticRollup */,
 				B6FC9DC62B62A44000448D8A /* Hedera */,
 				DA63B08E29CB3FC700AC6E49 /* Kaspa */,
 				5D54FE1623E41CAE009FAC2F /* Litecoin */,
 				B63B79302AD854010055BD06 /* NEAR */,
-				E9EECB5128E9F4F700899D6C /* Optimism */,
 				DAED921D27A14F1B00F188D7 /* Polkadot */,
 				2DA4A4302BB46CDE00E55526 /* Radiant */,
 				EF31EA1029DC31E000A59FBE /* Ravencoin */,
@@ -2788,6 +2788,16 @@
 			path = Polygon;
 			sourceTree = "<group>";
 		};
+		B64A68092BCE9E62009ED960 /* EthereumOptimisticRollup */ = {
+			isa = PBXGroup;
+			children = (
+				B64A680A2BCE9E78009ED960 /* EthereumOptimisticRollupWalletManager.swift */,
+				B64A680C2BCE9E82009ED960 /* EthereumOptimisticRollupWalletAssembly.swift */,
+				B64A680E2BCE9F40009ED960 /* EthereumOptimisticRollupSmartContract.swift */,
+			);
+			path = EthereumOptimisticRollup;
+			sourceTree = "<group>";
+		};
 		B65D2E772AD9B1ED004DF330 /* Network */ = {
 			isa = PBXGroup;
 			children = (
@@ -3267,6 +3277,7 @@
 				EF3B19292AA85C810084AA1C /* LitecoinExternalLinkProvider.swift */,
 				0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */,
 				0A0E225C2B9B366400075FF1 /* MoonbeamExternalLinkProvider.swift */,
+				EF3B194D2AA85E950084AA1C /* OptimismExternalLinkProvider.swift */,
 				EF3B19612AA85F1C0084AA1C /* OctaExternalLinkProvider.swift */,
 				0AF90CD82B87655A00772F04 /* Playa3ullGamesExternalLinkProvider.swift */,
 				EF3B19372AA85D090084AA1C /* PolygonExternalLinkProvider.swift */,
@@ -3517,17 +3528,6 @@
 				E9941ACA2927B07300399DE3 /* BlockBookUtxoProvider.swift */,
 			);
 			path = BlockBook;
-			sourceTree = "<group>";
-		};
-		E9EECB5128E9F4F700899D6C /* Optimism */ = {
-			isa = PBXGroup;
-			children = (
-				EF3B194D2AA85E950084AA1C /* OptimismExternalLinkProvider.swift */,
-				2DBBE94C29C8686000971539 /* OptimismWalletAssembly.swift */,
-				E9EECB5228E9F50600899D6C /* OptimismWalletManager.swift */,
-				EFF5BA8329B881440070694A /* OptimismContract.swift */,
-			);
-			path = Optimism;
 			sourceTree = "<group>";
 		};
 		EF1339B42AB4B29800B78BA3 /* ERC20TokenMethods */ = {
@@ -4170,7 +4170,6 @@
 				EF9E381D2B7A43A5004B694C /* DustRestrictable.swift in Sources */,
 				EFF82D522BA084CE004DF1A0 /* URLSessionWebSocketTaskWrapper.swift in Sources */,
 				B05145012B57F18D00EDAD1E /* EVMSmartContractInteractorFactory.swift in Sources */,
-				EF609FC72A20D4E9004E6D4E /* OptimismWalletManager.swift in Sources */,
 				DA63B09B29CB3FC700AC6E49 /* KaspaNetworkProvider.swift in Sources */,
 				B06AFAEF261496E600E7AAB0 /* CardanoAddressUtils.swift in Sources */,
 				2DDEFBC72B59B37900885675 /* AlgorandWalletAssembly.swift in Sources */,
@@ -4319,6 +4318,7 @@
 				5D88C80B256BCDBB00020028 /* StellarTransactionParams.swift in Sources */,
 				B69824772B7175EA00E1333D /* HederaTransactionParams.swift in Sources */,
 				5D88838927D3BB8B008744E1 /* WalletError.swift in Sources */,
+				B64A680D2BCE9E82009ED960 /* EthereumOptimisticRollupWalletAssembly.swift in Sources */,
 				EF72577E2A8D42A100EA8CB2 /* TransactionHistory.swift in Sources */,
 				DA4B80252BBA66F900CE50B7 /* BitcoinTransactionFeeCalculator.swift in Sources */,
 				2DA13A092A8AD84F00E3C374 /* ChiaTransactionBuilder.swift in Sources */,
@@ -4566,6 +4566,7 @@
 				B0AD566425AC8DD50084F924 /* PendingTransaction.swift in Sources */,
 				2DDEFBE22B59B44700885675 /* AlgorandResponse+TransactionResult.swift in Sources */,
 				DC5E650B2B1650F400E81AA5 /* OP_BIN2NUM.swift in Sources */,
+				B64A680B2BCE9E78009ED960 /* EthereumOptimisticRollupWalletManager.swift in Sources */,
 				DC3550FC2B58543100A93DBA /* XDCWalletAssembly.swift in Sources */,
 				DC5E64E42B1650F400E81AA5 /* OP_AND.swift in Sources */,
 				0A54FF452BB475B9000D293D /* TangemNetworkLoggerPlugin.swift in Sources */,
@@ -4588,7 +4589,6 @@
 				B6DC28442B62BA000070F1D2 /* HederaWalletManager.swift in Sources */,
 				DC5E650D2B1650F400E81AA5 /* OP_NUM2BIN.swift in Sources */,
 				5DA163D2273D2146007AA991 /* TezosJsonRpcProvider.swift in Sources */,
-				EFD717B82A24B20700E5430D /* OptimismContract.swift in Sources */,
 				B6E7699F2AF2D07900B32745 /* NEARNetworkResult.APIError+.swift in Sources */,
 				5DED72BA239FE2F8006D79AE /* Int+.swift in Sources */,
 				DA63B0A229CB3FC700AC6E49 /* KaspaWalletManager.swift in Sources */,
@@ -4600,6 +4600,7 @@
 				2DDE5BB229C4F8F700A5B708 /* TONWalletAssembly.swift in Sources */,
 				DA656FC62952091A0092CC61 /* BlockBookConfig.swift in Sources */,
 				DC5E64FE2B1650F400E81AA5 /* OP_GREATERTHAN.swift in Sources */,
+				B64A680F2BCE9F40009ED960 /* EthereumOptimisticRollupSmartContract.swift in Sources */,
 				DC5E64E82B1650F400E81AA5 /* OP_EQUALVERIFY.swift in Sources */,
 				DC5E64DF2B1650F400E81AA5 /* OP_RIPEMD160.swift in Sources */,
 				5DEC90C12587A35800826C95 /* BlockchainSdkConfig.swift in Sources */,
@@ -4649,7 +4650,6 @@
 				2D24F5C82B6D2C7100D502A0 /* AptosProviderTarget.swift in Sources */,
 				B64B728C2AEC9C7B005C8C7C /* Lock.swift in Sources */,
 				5DC7DD62244077D7008F83F2 /* XRPNetworkService.swift in Sources */,
-				2DBBE94D29C8686000971539 /* OptimismWalletAssembly.swift in Sources */,
 				EF9E380D2B7A38E3004B694C /* TransactionValidator.swift in Sources */,
 				B69824812B71A8F800E1333D /* HederaNetworkResult.ExchangeRate.swift in Sources */,
 				B6D346002AD9450D0009D1B2 /* NEARTransactionBuilder.swift in Sources */,
