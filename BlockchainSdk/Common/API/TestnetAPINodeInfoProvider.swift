@@ -190,9 +190,7 @@ struct TestnetAPINodeInfoProvider {
                 .init(url: URL(string: "https://rpc.notadegen.com/base/sepolia")!),
                 .init(url: URL(string: "https://base-sepolia-rpc.publicnode.com")!),
             ]
-        case .radiant:
-            return nil
-        case .bitcoin, .litecoin, .disChain, .rsk, .bitcoinCash, .binance, .cardano, .xrp, .ducatus, .tezos, .dogecoin, .solana, .polkadot, .kusama, .dash, .gnosis, .kaspa, .terraV1, .terraV2, .cronos, .octa, .veChain, .playa3ullGames:
+        case .bitcoin, .litecoin, .disChain, .rsk, .bitcoinCash, .binance, .cardano, .xrp, .ducatus, .tezos, .dogecoin, .solana, .polkadot, .kusama, .dash, .gnosis, .kaspa, .terraV1, .terraV2, .cronos, .octa, .veChain, .playa3ullGames, .radiant:
             return nil
         }
     }

@@ -249,7 +249,6 @@
 		5DF9151D253DB85500B927DD /* TezosNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF9151C253DB85500B927DD /* TezosNetworkService.swift */; };
 		5DF91521253DB89800B927DD /* TezosTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF91520253DB89800B927DD /* TezosTarget.swift */; };
 		5DFF005F2521F772005203FB /* DucatusWalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DFF005E2521F771005203FB /* DucatusWalletManager.swift */; };
-		B004DAC026416B8A000863A4 /* EthereumResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B004DABF26416B8A000863A4 /* EthereumResponse.swift */; };
 		B00B58C42BCEB917007475F7 /* APIKeysInfoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00B58C32BCEB917007475F7 /* APIKeysInfoProvider.swift */; };
 		B00B58C62BCEB93A007475F7 /* TONAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00B58C52BCEB93A007475F7 /* TONAPIResolver.swift */; };
 		B00B58C82BCEB9F4007475F7 /* TronAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00B58C72BCEB9F4007475F7 /* TronAPIResolver.swift */; };
@@ -281,7 +280,6 @@
 		B06AFAEF261496E600E7AAB0 /* CardanoAddressUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06AFAEE261496E600E7AAB0 /* CardanoAddressUtils.swift */; };
 		B06C6793264286390037E7AD /* BlockchairAddressBlockMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06C6792264286390037E7AD /* BlockchairAddressBlockMapper.swift */; };
 		B07EE8B225AC1504009DB163 /* DateFormatter+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07EE8B125AC1504009DB163 /* DateFormatter+.swift */; };
-		B0923F002BBEBA7B004028B2 /* TransactionHistoryAPIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0923EFF2BBEBA7B004028B2 /* TransactionHistoryAPIProvider.swift */; };
 		B0A1D39D2625A1150013F0BF /* EthereumUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A1D39C2625A1150013F0BF /* EthereumUtils.swift */; };
 		B0AD566425AC8DD50084F924 /* PendingTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0AD566325AC8DD50084F924 /* PendingTransaction.swift */; };
 		B0BAEE9825FF1E0400F318A6 /* RosettaBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0BAEE9725FF1E0400F318A6 /* RosettaBody.swift */; };
@@ -1085,7 +1083,6 @@
 		7C311A9913C3A9F993C89148 /* Pods-BlockchainSdk.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdk.debug.xcconfig"; path = "Target Support Files/Pods-BlockchainSdk/Pods-BlockchainSdk.debug.xcconfig"; sourceTree = "<group>"; };
 		8B8DF7D3E33EA0FFBCE2CCE6 /* Pods-BlockchainSdkTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkTests.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkTests/Pods-BlockchainSdkTests.release.xcconfig"; sourceTree = "<group>"; };
 		A6F5E34B42B2043635FB1F51 /* Pods-BlockchainSdkTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkTests.debug.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkTests/Pods-BlockchainSdkTests.debug.xcconfig"; sourceTree = "<group>"; };
-		B004DABF26416B8A000863A4 /* EthereumResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumResponse.swift; sourceTree = "<group>"; };
 		B00B58C32BCEB917007475F7 /* APIKeysInfoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeysInfoProvider.swift; sourceTree = "<group>"; };
 		B00B58C52BCEB93A007475F7 /* TONAPIResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TONAPIResolver.swift; sourceTree = "<group>"; };
 		B00B58C72BCEB9F4007475F7 /* TronAPIResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronAPIResolver.swift; sourceTree = "<group>"; };
@@ -1119,7 +1116,6 @@
 		B06AFAEE261496E600E7AAB0 /* CardanoAddressUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoAddressUtils.swift; sourceTree = "<group>"; };
 		B06C6792264286390037E7AD /* BlockchairAddressBlockMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchairAddressBlockMapper.swift; sourceTree = "<group>"; };
 		B07EE8B125AC1504009DB163 /* DateFormatter+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateFormatter+.swift"; sourceTree = "<group>"; };
-		B0923EFF2BBEBA7B004028B2 /* TransactionHistoryAPIProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryAPIProvider.swift; sourceTree = "<group>"; };
 		B0A1D39C2625A1150013F0BF /* EthereumUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumUtils.swift; sourceTree = "<group>"; };
 		B0AD566325AC8DD50084F924 /* PendingTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTransaction.swift; sourceTree = "<group>"; };
 		B0BAEE9725FF1E0400F318A6 /* RosettaBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosettaBody.swift; sourceTree = "<group>"; };
@@ -2582,7 +2578,6 @@
 				B00DF9952BBEAADA004397CB /* APINodeInfoResolver.swift */,
 				B00DF99D2BBEAB91004397CB /* InfuraAPIResolver.swift */,
 				B00DF99F2BBEACA2004397CB /* QuickNodeAPIResolver.swift */,
-				B0923EFF2BBEBA7B004028B2 /* TransactionHistoryAPIProvider.swift */,
 				B00B58C32BCEB917007475F7 /* APIKeysInfoProvider.swift */,
 			);
 			path = APIResolvers;
@@ -4634,7 +4629,6 @@
 				EF54FC292A8A8A0E00968C52 /* CardanoUtil.swift in Sources */,
 				DAE30DFD279164500056C5A3 /* SolanaAddressService.swift in Sources */,
 				B00DF99C2BBEAB7B004397CB /* GetBlockAPIResolver.swift in Sources */,
-				B0923F002BBEBA7B004028B2 /* TransactionHistoryAPIProvider.swift in Sources */,
 				B675E9612B320DBE004AF179 /* VeChainNetworkResult.AccountInfo.swift in Sources */,
 				B05144FD2B57F13900EDAD1E /* EVMSmartContractInteractor.swift in Sources */,
 				DC5E65312B1650F400E81AA5 /* OP_VERNOTIF.swift in Sources */,

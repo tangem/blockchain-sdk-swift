@@ -13,8 +13,6 @@ struct APIKeysInfoProvider {
     let config: BlockchainSdkConfig
 
     func apiKeys(for providerType: NetworkProviderType?) -> APIHeaderKeyInfo? {
-        guard let providerType else { return nil }
-
         switch providerType {
         case .nowNodes:
             return NowNodesAPIKeysInfoProvider(apiKey: config.nowNodesApiKey)
@@ -36,10 +34,10 @@ struct APIKeysInfoProvider {
             )
         case .fireAcademy:
             return .init(
-                headerName: "X-API-Key",
+                headerName: Constants.xApiKeyHeaderName,
                 headerValue: config.fireAcademyApiKeys.getApiKey(for: blockchain.isTestnet)
             )
-        default:
+        case .public, .quickNode, .getBlock, .blockchair, .blockcypher, .infura, .adalite, .tangemRosetta, .tangemChia, .solana, .kaspa, .none:
             return nil
         }
     }
