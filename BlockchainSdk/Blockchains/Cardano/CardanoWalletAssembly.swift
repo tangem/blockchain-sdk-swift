@@ -17,9 +17,8 @@ struct CardanoWalletAssembly: WalletManagerAssembly {
             let cardanoResponseMapper = CardanoResponseMapper()
             let networkConfig = input.networkConfig
 
-            var providers = [AnyCardanoNetworkProvider]()
             let linkResolver = APINodeInfoResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
-            providers = input.apiInfo.compactMap {
+            let providers: [AnyCardanoNetworkProvider] = input.apiInfo.compactMap {
                 guard  let nodeInfo = linkResolver.resolve(for: $0) else {
                     return nil
                 }

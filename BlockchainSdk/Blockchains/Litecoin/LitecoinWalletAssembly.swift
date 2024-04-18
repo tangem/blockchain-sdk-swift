@@ -21,24 +21,22 @@ struct LitecoinWalletAssembly: WalletManagerAssembly {
             
             $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
             
-            var providers = [AnyBitcoinNetworkProvider]()
-            
-            input.apiInfo.forEach {
-                switch $0 {
+            let providers: [AnyBitcoinNetworkProvider] = input.apiInfo.reduce(into: []) { partialResult, providerType in
+                switch providerType {
                 case .nowNodes:
-                    providers.append(
+                    partialResult.append(
                         networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider()
                     )
                 case .getBlock:
-                    providers.append(
+                    partialResult.append(
                         networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider()
                     )
                 case .blockchair:
-                    providers.append(
+                    partialResult.append(
                         contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .litecoin, with: input)
                     )
                 case .blockcypher:
-                    providers.append(
+                    partialResult.append(
                         networkProviderAssembly.makeBlockcypherNetworkProvider(endpoint: .litecoin, with: input).eraseToAnyBitcoinNetworkProvider()
                     )
                 default:

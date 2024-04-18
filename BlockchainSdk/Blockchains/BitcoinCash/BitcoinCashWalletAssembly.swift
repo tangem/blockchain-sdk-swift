@@ -25,12 +25,11 @@ struct BitcoinCashWalletAssembly: WalletManagerAssembly {
             
             // TODO: Add testnet support.
             // Maybe https://developers.cryptoapis.io/technical-documentation/general-information/what-we-support
-            var providers = [AnyBitcoinNetworkProvider]()
-            input.apiInfo.forEach {
-                switch $0 {
+            let providers: [AnyBitcoinNetworkProvider] = input.apiInfo.reduce(into: []) { partialResult, providerType in
+                switch providerType {
                 case .nowNodes:
                     if let bitcoinCashAddressService = AddressServiceFactory(blockchain: input.blockchain).makeAddressService() as? BitcoinCashAddressService {
-                        providers.append(
+                        partialResult.append(
                             networkProviderAssembly.makeBitcoinCashNowNodesNetworkProvider(
                                 input: input,
                                 bitcoinCashAddressService: bitcoinCashAddressService
@@ -38,7 +37,7 @@ struct BitcoinCashWalletAssembly: WalletManagerAssembly {
                         )
                     }
                 case .blockchair:
-                    providers.append(
+                    partialResult.append(
                         contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .bitcoinCash, with: input)
                     )
                 default:

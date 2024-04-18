@@ -21,18 +21,16 @@ struct DogecoinWalletAssembly: WalletManagerAssembly {
             
             $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
             
-            var providers = [AnyBitcoinNetworkProvider]()
-            
-            input.apiInfo.forEach {
-                switch $0 {
+            let providers: [AnyBitcoinNetworkProvider] = input.apiInfo.reduce(into: []) { partialResult, providerType in
+                switch providerType {
                 case .nowNodes:
-                    providers.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
+                    partialResult.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
                 case .getBlock:
-                    providers.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider())
+                    partialResult.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider())
                 case .blockchair:
-                    providers.append(contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .dogecoin, with: input))
+                    partialResult.append(contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .dogecoin, with: input))
                 case .blockcypher:
-                    providers.append(networkProviderAssembly.makeBlockcypherNetworkProvider(endpoint: .dogecoin, with: input).eraseToAnyBitcoinNetworkProvider())
+                    partialResult.append(networkProviderAssembly.makeBlockcypherNetworkProvider(endpoint: .dogecoin, with: input).eraseToAnyBitcoinNetworkProvider())
                 default:
                     return
                 }

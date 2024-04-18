@@ -17,26 +17,25 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
             
             $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
 
-            var newProviders = [AnyBitcoinNetworkProvider]()
-            input.apiInfo.forEach {
-                switch $0 {
+            let providers: [AnyBitcoinNetworkProvider] = input.apiInfo.reduce(into: []) { partialResult, providerType in
+                switch providerType {
                 case .nowNodes:
-                    newProviders.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
+                    partialResult.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
                 case .getBlock:
                     if input.blockchain.isTestnet {
                         break
                     }
 
-                    newProviders.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider())
+                    partialResult.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider())
                 case .blockchair:
-                    newProviders.append(
+                    partialResult.append(
                         contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(
                             endpoint: .bitcoin(testnet: input.blockchain.isTestnet),
                             with: input
                         )
                     )
                 case .blockcypher:
-                    newProviders.append(
+                    partialResult.append(
                         networkProviderAssembly.makeBlockcypherNetworkProvider(
                             endpoint: .bitcoin(testnet: input.blockchain.isTestnet),
                             with: input
@@ -46,8 +45,8 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
                     break
                 }
             }
-            
-            $0.networkService = BitcoinNetworkService(providers: newProviders)
+
+            $0.networkService = BitcoinNetworkService(providers: providers)
         }
     }
     
