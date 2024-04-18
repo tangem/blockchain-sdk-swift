@@ -35,6 +35,12 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
             .filterSuccessfulStatusAndRedirectCodes()
             .mapNotEmptyString()
             .eraseError()
+            .map { hash in
+                // Remove \" from the string
+                // Because in response the hash is equal `"239392bc6c6bd354d5a95b77f799b61ac056c65566a10bb50033a7c9deabfe42"`
+                hash.replacingOccurrences(of: "\"", with: "")
+            }
+            .eraseToAnyPublisher()
     }
     
     func getInfo(addresses: [String], tokens: [Token]) -> AnyPublisher<CardanoAddressResponse, Error> {
@@ -104,18 +110,12 @@ private extension AdaliteNetworkProvider {
     }
     
     func mapToCardanoUnspentOutput(_ output: AdaliteUnspentOutputResponseDTO) -> CardanoUnspentOutput? {
-        guard let amount = Decimal(string: output.cuCoins.getCoin) else {
-            return nil
-        }
-        
-        // We should ignore the output with metadata
-        // Because we don't support a cardano tokens yet
-        guard output.cuCoins.getTokens.isEmpty else {
+        guard let amount = UInt64(output.cuCoins.getCoin) else {
             return nil
         }
         
         let assets: [CardanoUnspentOutput.Asset] = output.cuCoins.getTokens.compactMap { token in
-            guard let amount = Int(token.quantity) else {
+            guard let amount = UInt64(token.quantity) else {
                 return nil
             }
             

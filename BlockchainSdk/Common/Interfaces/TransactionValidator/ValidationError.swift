@@ -21,10 +21,13 @@ public enum ValidationError: Hashable, LocalizedError {
     case minimumBalance(minimumBalance: Amount)
     case maximumUTXO(blockchainName: String, newAmount: Amount, maxUtxo: Int)
     case reserve(amount: Amount)
-    
+
+    case cardanoHasTokens(minimumAmount: Amount)
+    case cardanoInsufficientBalanceToSendToken
+
     public var errorDescription: String? {
         switch self {
-        case .balanceNotFound:
+        case .balanceNotFound, .cardanoInsufficientBalanceToSendToken, .cardanoHasTokens:
             return WalletError.empty.localizedDescription
         case .amountExceedsBalance:
             return "send_validation_amount_exceeds_balance".localized

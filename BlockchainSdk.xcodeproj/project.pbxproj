@@ -765,6 +765,7 @@
 		EFAD40A52A965BA800364D65 /* BlockBookNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFAD40A42A965BA800364D65 /* BlockBookNode.swift */; };
 		EFAD40A72A9756A200364D65 /* CardanoResponseMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFAD40A62A9756A200364D65 /* CardanoResponseMapper.swift */; };
 		EFAD40B12A98DFBD00364D65 /* SolanaEd25519Slip0010Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFAD40B02A98DFBD00364D65 /* SolanaEd25519Slip0010Tests.swift */; };
+		EFB150302BD2952D0023B128 /* CardanoTokenWithdrawalRestrictable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB1502F2BD2952D0023B128 /* CardanoTokenWithdrawalRestrictable.swift */; };
 		EFB7F1952B56DB7E00745A2C /* BitcoinFeeParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB7F1942B56DB7E00745A2C /* BitcoinFeeParameters.swift */; };
 		EFB9523D2A6FDB2A00996D16 /* TransactionHistoryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB9523C2A6FDB2A00996D16 /* TransactionHistoryProvider.swift */; };
 		EFB952402A6FEF1700996D16 /* TransactionRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFB9523F2A6FEF1700996D16 /* TransactionRecord.swift */; };
@@ -1595,6 +1596,7 @@
 		EFAD40A42A965BA800364D65 /* BlockBookNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockBookNode.swift; sourceTree = "<group>"; };
 		EFAD40A62A9756A200364D65 /* CardanoResponseMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoResponseMapper.swift; sourceTree = "<group>"; };
 		EFAD40B02A98DFBD00364D65 /* SolanaEd25519Slip0010Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolanaEd25519Slip0010Tests.swift; sourceTree = "<group>"; };
+		EFB1502F2BD2952D0023B128 /* CardanoTokenWithdrawalRestrictable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoTokenWithdrawalRestrictable.swift; sourceTree = "<group>"; };
 		EFB7F1942B56DB7E00745A2C /* BitcoinFeeParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitcoinFeeParameters.swift; sourceTree = "<group>"; };
 		EFB9523C2A6FDB2A00996D16 /* TransactionHistoryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryProvider.swift; sourceTree = "<group>"; };
 		EFB9523F2A6FEF1700996D16 /* TransactionRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRecord.swift; sourceTree = "<group>"; };
@@ -3767,6 +3769,7 @@
 				EF9E381E2B7A43B3004B694C /* MinimumBalanceRestrictable.swift */,
 				EF9E384E2B7A740D004B694C /* ReserveAmountRestrictable.swift */,
 				EF937BE02B90EF0C009B8374 /* MaximumAmountRestrictable.swift */,
+				EFB1502F2BD2952D0023B128 /* CardanoTokenWithdrawalRestrictable.swift */,
 			);
 			path = TransactionValidator;
 			sourceTree = "<group>";
@@ -4341,6 +4344,7 @@
 				EF74D6402BA3526D000550F3 /* ObjectDescription.swift in Sources */,
 				DAF0866E27A942D60024312E /* PolkadotWalletManager.swift in Sources */,
 				5D7D243225136254001B9A4F /* XRPWallet.swift in Sources */,
+				EFB150302BD2952D0023B128 /* CardanoTokenWithdrawalRestrictable.swift in Sources */,
 				B6F3AA712ADD925D0059C99A /* NEARNetworkParams.swift in Sources */,
 				EF2BC62929DAD93A003D3F18 /* RavencoinWalletUTXO.swift in Sources */,
 				DA60AF1229E8308E0013F5AC /* CosmosWalletAssembly.swift in Sources */,

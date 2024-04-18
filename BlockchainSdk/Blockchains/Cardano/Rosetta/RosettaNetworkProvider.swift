@@ -121,15 +121,9 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
         }
 
         let outputs: [CardanoUnspentOutput] = coins.compactMap { coin -> CardanoUnspentOutput? in
-            // We should ignore the output with metadata
-            // Because we don't support a cardano tokens yet
-            guard coin.metadata == nil else {
-                return nil
-            }
-            
             guard let (index, hash) = parseIdentifier(coin.coinIdentifier?.identifier),
                   let amountValue = coin.amount?.value,
-                  let amount = Decimal(amountValue) else {
+                  let amount = UInt64(amountValue) else {
                 return nil
             }
 
@@ -155,7 +149,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
             return nil
         }
         
-        guard let index = Int(splittedIdentifier[1])else {
+        guard let index = UInt64(splittedIdentifier[1])else {
             return nil
         }
         
@@ -175,7 +169,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
 
                     return result + tokens.compactMap { tokenValue -> CardanoUnspentOutput.Asset? in
                         guard let value = tokenValue.value,
-                              let amount = Int(value),
+                              let amount = UInt64(value),
                               // symbol in ASCII HEX, e.g. 41474958 = AGIX
                               let assetNameHex = tokenValue.currency?.symbol,
                               let policyId = tokenValue.currency?.metadata?.policyId else {

@@ -30,11 +30,13 @@ class CardanoWalletManager: BaseManager, WalletManager {
     }
     
     private func updateWallet(with response: CardanoAddressResponse) {
-        wallet.add(coinValue: response.balance)
+        let balance = Decimal(response.balance) / wallet.blockchain.decimalValue
+        wallet.add(coinValue: balance)
         transactionBuilder.update(outputs: response.unspentOutputs)
         
-        for (key, value) in response.tokenBalances {
-            wallet.add(tokenValue: value, for: key)
+        for (token, value) in response.tokenBalances {
+            let balance = Decimal(value) / token.decimalValue
+            wallet.add(tokenValue: balance, for: token)
         }
        
         wallet.removePendingTransaction { hash in
@@ -92,7 +94,7 @@ extension CardanoWalletManager: TransactionSender {
                     guard let self = self else {
                         throw WalletError.empty
                     }
-
+                    
                     let mapper = PendingTransactionRecordMapper()
                     let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
                     self.wallet.addPendingTransaction(record)
@@ -102,36 +104,157 @@ extension CardanoWalletManager: TransactionSender {
     }
     
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        let dummy = Transaction(
-            amount: amount,
-            fee: Fee(.zeroCoin(for: .cardano(extended: false))),
-            sourceAddress: defaultSourceAddress,
-            destinationAddress: destination,
-            changeAddress: defaultChangeAddress
-        )
-
-        return Just(())
-            .receive(on: DispatchQueue.global())
-            .tryMap { [weak self] _ -> [Fee] in
-                guard let self else {
-                    throw WalletError.empty
-                }
-
-                var feeValue = try self.transactionBuilder.estimatedFee(transaction: dummy)
-                feeValue.round(scale: self.wallet.blockchain.decimalCount, roundingMode: .up)
-                feeValue /= self.wallet.blockchain.decimalValue
-                let feeAmount = Amount(with: self.wallet.blockchain, value: feeValue)
-                let fee = Fee(feeAmount)
-                return [fee]
-            }
-            .eraseToAnyPublisher()
+        do {
+            var feeValue = try transactionBuilder.getFee(amount: amount, destination: destination, source: defaultSourceAddress)
+            feeValue.round(scale: wallet.blockchain.decimalCount, roundingMode: .up)
+            feeValue /= wallet.blockchain.decimalValue
+            let feeAmount = Amount(with: wallet.blockchain, value: feeValue)
+            let fee = Fee(feeAmount)
+            return .justWithError(output: [fee])
+        } catch {
+            return .anyFail(error: error)
+        }
     }
 }
 
 extension CardanoWalletManager: ThenProcessable {}
 
+// MARK: - DustRestrictable
+
 extension CardanoWalletManager: DustRestrictable {
     var dustValue: Amount {
-        return Amount(with: wallet.blockchain, value: 1.0)
+        return Amount(with: wallet.blockchain, value: 1)
+    }
+}
+
+// MARK: - WithdrawalSuggestionProvider
+
+extension CardanoWalletManager: WithdrawalSuggestionProvider {
+    func validateWithdrawalWarning(amount: Amount, fee: Amount) -> WithdrawalWarning? {
+        return nil
+    }
+
+    func withdrawalSuggestion(amount: Amount, fee: Amount) -> WithdrawalSuggestion? {
+        // If token will be sent
+        guard let token = amount.type.token else {
+            return nil
+        }
+
+        do {
+            guard let bigUIntValue = amount.bigUIntValue else {
+                throw WalletError.empty
+            }
+
+            let adaValue = try transactionBuilder.buildCardanoSpendingAdaValue(amount: amount, fee: fee)
+            let minAmountDecimal = Decimal(adaValue) / wallet.blockchain.decimalValue
+            let amount = Amount(with: wallet.blockchain, value: minAmountDecimal)
+
+            return .cardanoWillBeSendAlongToken(amount: amount)
+
+        } catch {
+            print("CardanoWalletManager", #function, "catch error: \(error)")
+            return nil
+        }
+    }
+}
+
+// MARK: - CardanoTokenWithdrawalRestrictable
+
+extension CardanoWalletManager: CardanoTokenWithdrawalRestrictable {
+    func validateCardanoWithdrawal(amount: Amount, fee: Amount) throws {
+        let hasAnotherTokenWithBalance = wallet.amounts
+            .filter { $0.key != amount.type }
+            .contains { amountType, amount in
+                amountType.isToken && amount.value > 0
+            }
+
+        switch amount.type {
+        case .coin:
+            try validateCardanoCoinWithdrawal(amount: amount, fee: fee, hasAnotherTokenWithBalance: hasAnotherTokenWithBalance)
+        case .token(let token):
+            try validateCardanoTokenWithdrawal(amount: amount, fee: fee, hasAnotherTokenWithBalance: hasAnotherTokenWithBalance)
+        case .reserve:
+            throw BlockchainSdkError.notImplemented
+        }
+    }
+
+    private func validateCardanoCoinWithdrawal(amount: Amount, fee: Amount, hasAnotherTokenWithBalance: Bool) throws {
+        assert(!amount.type.isToken, "Only coin validation")
+
+        guard hasAnotherTokenWithBalance else {
+            return
+        }
+
+        guard let adaBalance = wallet.amounts[.coin]?.value else {
+            throw ValidationError.balanceNotFound
+        }
+
+        let minChange = try minChange(exclude: amount.type)
+        var change = adaBalance - amount.value
+
+        if amount.type == fee.type {
+            change -= fee.value
+        }
+
+        if change < minChange.value {
+            throw ValidationError.cardanoHasTokens(minimumAmount: minChange)
+        }
+    }
+
+    private func validateCardanoTokenWithdrawal(amount: Amount, fee: Amount, hasAnotherTokenWithBalance: Bool) throws {
+        assert(amount.type.isToken, "Only token validation")
+
+        guard var adaBalance = wallet.amounts[.coin]?.value else {
+            throw ValidationError.balanceNotFound
+        }
+
+        guard var tokenBalance = wallet.amounts[amount.type]?.value else {
+            throw ValidationError.balanceNotFound
+        }
+
+        // the fee will be spend in any case
+        adaBalance -= fee.value
+
+        let isTokenBalanceLeft = amount.value < tokenBalance
+        let minAdaValue = try transactionBuilder.buildCardanoSpendingAdaValue(amount: amount, fee: fee)
+        let minAdaDecimal = Decimal(minAdaValue) / wallet.blockchain.decimalValue
+
+        // Not enough balance to send token
+        if minAdaDecimal > adaBalance {
+            throw ValidationError.cardanoInsufficientBalanceToSendToken
+        }
+
+        // If there has to be a change for any token in the transaction
+        guard isTokenBalanceLeft || hasAnotherTokenWithBalance else {
+            return
+        }
+
+        let minChange = try minChange(exclude: amount.type)
+        var change = adaBalance - minAdaDecimal
+
+        // If there not enough ada balance to change
+        guard change < minChange.value else {
+            return
+        }
+
+        if hasAnotherTokenWithBalance {
+            throw ValidationError.cardanoHasTokens(minimumAmount: minChange)
+        }
+
+        if isTokenBalanceLeft {
+            throw ValidationError.cardanoInsufficientBalanceToSendToken
+        }
+    }
+
+    private func minChange(exclude: Amount.AmountType) throws -> Amount {
+        // If we have a token then we have to calculate min change value
+        // Otherwise it will be 1 ADA
+        guard wallet.amounts.contains(where: { $0.key.isToken }) else {
+            return dustValue
+        }
+
+        let minChangeValue = try transactionBuilder.minChange(exclude: exclude.token)
+        let minChangeDecimal = Decimal(minChangeValue) / wallet.blockchain.decimalValue
+        return Amount(with: wallet.blockchain, value: minChangeDecimal)
     }
 }

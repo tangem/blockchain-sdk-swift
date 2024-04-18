@@ -25,4 +25,5 @@ public struct WithdrawalWarning: Hashable {
 
 public enum WithdrawalSuggestion: Hashable {
     case feeIsTooHigh(reduceAmountBy: Amount)
+    case cardanoWillBeSendAlongToken(amount: Amount)
 }

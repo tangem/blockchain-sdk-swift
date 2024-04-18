@@ -68,7 +68,11 @@ public struct Amount: CustomStringConvertible, Hashable, Comparable {
     public var description: String {
         return string()
     }
-    
+
+    public var decimalValue: Decimal {
+        pow(10, decimals)
+    }
+
     public init(
         type: AmountType,
         currencySymbol: String,
