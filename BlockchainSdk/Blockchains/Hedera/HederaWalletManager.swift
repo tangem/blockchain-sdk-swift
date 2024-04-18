@@ -17,6 +17,9 @@ final class HederaWalletManager: BaseManager {
     private let dataStorage: BlockchainDataStorage
     private let accountCreator: AccountCreator
 
+    // TODO: Andrey Fedorov - Should be cached on disk using `dataStorage`
+    private var associatedTokensContractAddresses: Set<String> = []
+
     // Public key as a masked string (only the last four characters are revealed), suitable for use in logs
     private lazy var maskedPublicKey: String = {
         let length = 4
@@ -63,6 +66,7 @@ final class HederaWalletManager: BaseManager {
                 receiveCompletion: { [weak self] result in
                     switch result {
                     case .failure(let error):
+                        // We intentionally don't want to clear current token associations on failure
                         self?.wallet.clearAmounts()
                         completion(.failure(error))
                     case .finished:
@@ -86,6 +90,11 @@ final class HederaWalletManager: BaseManager {
 
         wallet.removePendingTransaction(where: completedTransactionHashes.contains(_:))
         wallet.add(coinValue: accountBalance.hbarBalance)
+
+        associatedTokensContractAddresses = accountBalance
+            .tokenBalances
+            .map(\.contractAddress)
+            .toSet()
 
         cardTokens
             .map { token in
@@ -390,6 +399,34 @@ extension HederaWalletManager: WalletManager {
         )
         .map(\.1)
         .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - AssetPrerequisitesManager protocol conformance
+
+extension HederaWalletManager: AssetPrerequisitesManager {
+    func hasPrerequisites(for asset: Asset) -> Bool {
+        // TODO: Andrey Fedorov - reuse the ongoing update if any
+        switch asset {
+        case .coin, .reserve:
+            return false
+        case .token(let token):
+            return !associatedTokensContractAddresses.contains(token.contractAddress)
+        }
+    }
+
+    func fulfillPrerequisites(for asset: Asset, signer: any TransactionSigner) async throws {
+        guard hasPrerequisites(for: asset) else {
+            return
+        }
+
+        switch asset {
+        case .coin, .reserve:
+            return
+        case .token(let token):
+            // TODO: Andrey Fedorov - Add actual implementation
+            fatalError()
+        }
     }
 }
 
