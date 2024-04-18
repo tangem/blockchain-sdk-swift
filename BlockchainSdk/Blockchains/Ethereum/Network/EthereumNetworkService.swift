@@ -44,10 +44,16 @@ class EthereumNetworkService: MultiNetworkProvider {
             getTxCount(address),
             getPendingTxCount(address)
         )
-            .map { (result: (Decimal, [Token: Decimal], Int, Int)) in
-                EthereumInfoResponse(balance: result.0, tokenBalances: result.1, txCount: result.2, pendingTxCount: result.3, pendingTxs: [])
-            }
-            .eraseToAnyPublisher()
+        .map { balance, tokenBalances, txCount, pendingTxCount in
+            EthereumInfoResponse(
+                balance: balance,
+                tokenBalances: tokenBalances,
+                txCount: txCount,
+                pendingTxCount: pendingTxCount,
+                pendingTxs: []
+            )
+        }
+        .eraseToAnyPublisher()
     }
 
     func getFee(to: String, from: String, value: String?, data: String?) -> AnyPublisher<EthereumFeeResponse, Error> {

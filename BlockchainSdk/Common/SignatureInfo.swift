@@ -11,6 +11,7 @@ import Foundation
 struct SignatureInfo: CustomStringConvertible {
     let signature: Data
     let publicKey: Data
+    /// The data which was signed
     let hash: Data
 
     var description: String {

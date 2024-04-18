@@ -26,23 +26,12 @@ class EthereumTests: XCTestCase {
         XCTAssertEqual(address, expectedAddress)
     }
     
-    func test_eth_address() {
+    func testValidationAddress() {
         let addressService = AddressServiceFactory(blockchain: blockchain).makeAddressService()
         XCTAssertTrue(addressService.validate("0xc63763572d45171e4c25ca0818b44e5dd7f5c15b"))
     }
 
-    func test() throws {
-        let unmarshal2 = try Secp256k1Signature(
-            with: Data(hex: "28ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa63627667cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d8300")
-        )
-            .unmarshal(
-                with: Data(hex: "044bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ce28cab79ad7119ee1ad3ebcdb98a16805211530ecc6cfefa1b88e6dff99232a"),
-                hash: Data(hex: "daf5a779ae972f972197303d7b574746c7ef83eadac0f2791ad23db92e4c8e53")
-            )
-        XCTAssertEqual(BigUInt(unmarshal2.v), BigUInt(27))
-    }
-
-    func test_legacy_coin_transfer() throws {
+    func testLegacyCoinTransfer() throws {
         // given
         let walletPublicKey = Data(hex: "04EB30400CE9D1DEED12B84D4161A1FA922EF4185A155EF3EC208078B3807B126FA22C335081AAEBF161095C11C7D8BD550EF8882A3125B0EE9AE96DDDE1AE743F")
         let signature = Data(hex: "B945398FB90158761F6D61789B594D042F0F490F9656FBFFAE8F18B49D5F30054F43EE43CCAB2703F0E2E4E61D99CF3D4A875CD759569787CF0AED02415434C6")
@@ -79,7 +68,7 @@ class EthereumTests: XCTestCase {
         XCTAssertEqual(signedTransaction, expectedSignedTransaction)
     }
     
-    func test_legacy_token_transfer() throws {
+    func testLegacyTokenTransfer() throws {
         // given
         let walletPublicKey = Data(hex: "04EB30400CE9D1DEED12B84D4161A1FA922EF4185A155EF3EC208078B3807B126FA22C335081AAEBF161095C11C7D8BD550EF8882A3125B0EE9AE96DDDE1AE743F")
         let signature = Data(hex: "F408C40F8D8B4A40E35502355C87FBBF218EC9ECB036D42DAA6211EAD4498A6FBC800E82CB2CC0FAB1D68FD3F8E895EC3E0DCB5A05342F5153210142E4224D4C")
@@ -119,7 +108,7 @@ class EthereumTests: XCTestCase {
     }
 
     // https://polygonscan.com/tx/0x8f7c7ffddfc9f45370cc5fbeb49df65bdf8976ba606d20705eea965ba96a1e8d
-    func test_eip1559_token_transfer() throws {
+    func testEIP1559TokenTransfer() throws {
         // given
         let walletPublicKey = Data(hex: "043b08e56e38404199eb3320f32fdc7557029d4a4c39adae01cc47afd86cfa9a25fcbfaa2acda3ab33560a1d482a2088f3bb2c7b313fd11f50dd8fe508165d4ecf")
         let signature = Data(hex: "b8291b199416b39434f3c3b8cfd273afb41fa25f2ae66f8a4c56b08ad1749a122148b8bbbdeb7761031799ffbcbc7c0ee1dd4482f516bd6a33387ea5bce8cb7d")
@@ -163,7 +152,7 @@ class EthereumTests: XCTestCase {
     }
 
     // https://polygonscan.com/tx/0x2cb6831f4c1cb7b888707489cd60c42ff222b5b3230d74f25434d936c2ba7419
-    func test_eip1559_coin_transfer() throws {
+    func testEIP1559CoinTransfer() throws {
         // given
         let walletPublicKey = Data(hex: "043b08e56e38404199eb3320f32fdc7557029d4a4c39adae01cc47afd86cfa9a25fcbfaa2acda3ab33560a1d482a2088f3bb2c7b313fd11f50dd8fe508165d4ecf")
         let signature = Data(hex: "56DF71FF2A7FE93D2363056FE5FF32C51E5AC71733AF23A82F3974CB872537E95B60D6A0042CC34724DB84E949EEC8643761FE9027E9E7B1ED3DA23D8AB7C0A4")
@@ -204,7 +193,7 @@ class EthereumTests: XCTestCase {
         XCTAssertEqual(signedTransaction.hexString, expectedSignedTransaction.hexString)
     }
 
-    func test_buildForL1() throws {
+    func testBuildDummyTransactionForL1() throws {
         // given
         let destinationAddress = "0x90e4d59c8583e37426b37d1d7394b6008a987c67"
 

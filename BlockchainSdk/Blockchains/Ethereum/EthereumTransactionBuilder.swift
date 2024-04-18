@@ -26,11 +26,11 @@ class EthereumTransactionBuilder {
         self.chainId = chainId
     }
 
-    public func update(nonce: Int) {
+    func update(nonce: Int) {
         self.nonce = nonce
     }
 
-    public func buildForSign(transaction: Transaction) throws -> Data {
+    func buildForSign(transaction: Transaction) throws -> Data {
         let input = try buildSigningInput(transaction: transaction)
         let txInputData = try input.serializedData()
         let preImageHashes = TransactionCompiler.preImageHashes(coinType: coinType, txInputData: txInputData)
@@ -44,13 +44,13 @@ class EthereumTransactionBuilder {
         return preSigningOutput.dataHash
     }
 
-    public func buildForSend(transaction: Transaction, signatureInfo: SignatureInfo) throws -> Data {
+    func buildForSend(transaction: Transaction, signatureInfo: SignatureInfo) throws -> Data {
         let input = try buildSigningInput(transaction: transaction)
         let output = try buildSigningOutput(input: input, signatureInfo: signatureInfo)
         return output.encoded
     }
 
-    public func buildDummyTransactionForL1(destination: String, value: String?, data: Data?, fee: Fee) throws -> Data {
+    func buildDummyTransactionForL1(destination: String, value: String?, data: Data?, fee: Fee) throws -> Data {
         let valueData = BigUInt(Data(hex: value ?? "0x0"))
         let input: EthereumSigningInput = try {
             switch fee.amount.type {
@@ -188,7 +188,7 @@ private extension EthereumTransactionBuilder {
     }
 
     func buildSigningOutput(input: EthereumSigningInput, signatureInfo: SignatureInfo) throws -> EthereumSigningOutput {
-        guard signatureInfo.signature.count == Constants.signatureCount else {
+        guard signatureInfo.signature.count == Constants.signatureSize else {
             throw EthereumTransactionBuilderError.invalidSignatureCount
         }
 
@@ -198,7 +198,7 @@ private extension EthereumTransactionBuilder {
         let txInputData = try input.serializedData()
 
         // As we use the chainID in the transaction according to EIP-155
-        //  WalletCore will use formula to calculate `V`.
+        // WalletCore will use formula to calculate `V`.
         // v = CHAIN_ID * 2 + 35
         // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
 
@@ -243,7 +243,7 @@ extension EthereumTransactionBuilder {
     }
 
     private enum Constants {
-        static let signatureCount = 64
+        static let signatureSize = 64
     }
 }
 
