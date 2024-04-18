@@ -104,3 +104,12 @@ public protocol SignatureCountValidator {
 public protocol AddressResolver {
     func resolve(_ address: String) async throws -> String
 }
+
+/// Responsible for the token association creation (Hedera) and trust line setup (XRP, Stellar, Aptos, Algorand and other).
+@available(iOS 13.0, *)
+public protocol AssetPrerequisitesManager {
+    typealias Asset = Amount.AmountType
+
+    func hasPrerequisites(for asset: Asset) -> Bool
+    func fulfillPrerequisites(for asset: Asset, signer: any TransactionSigner) async throws  // TODO: Andrey Fedorov - return current status or something like this?
+}
