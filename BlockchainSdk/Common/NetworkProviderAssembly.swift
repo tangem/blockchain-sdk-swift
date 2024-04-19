@@ -16,7 +16,7 @@ protocol NetworkProviderAssemblyInput {
 }
 
 struct NetworkProviderAssembly {
-    
+    // TODO: Refactor in IOS-6639
     func makeBlockBookUtxoProvider(with input: NetworkProviderAssemblyInput, for type: BlockBookProviderType) -> BlockBookUtxoProvider {
         switch type {
         case .nowNodes:
@@ -37,6 +37,7 @@ struct NetworkProviderAssembly {
         }
     }
     
+    // TODO: Refactor in IOS-6639
     func makeBitcoinCashNowNodesNetworkProvider(
         input: NetworkProviderAssemblyInput,
         bitcoinCashAddressService: BitcoinCashAddressService
@@ -47,6 +48,7 @@ struct NetworkProviderAssembly {
         ).eraseToAnyBitcoinNetworkProvider()
     }
     
+    // TODO: Refactor in IOS-6639
     func makeBlockcypherNetworkProvider(endpoint: BlockcypherEndpoint, with input: NetworkProviderAssemblyInput) -> BlockcypherNetworkProvider {
         return BlockcypherNetworkProvider(
             endpoint: endpoint,
@@ -55,6 +57,7 @@ struct NetworkProviderAssembly {
         )
     }
     
+    // TODO: Refactor in IOS-6639
     func makeBlockchairNetworkProviders(endpoint: BlockchairEndpoint, with input: NetworkProviderAssemblyInput) -> [AnyBitcoinNetworkProvider] {
         let apiKeys: [String?] = [nil] + input.blockchainSdkConfig.blockchairApiKeys
         

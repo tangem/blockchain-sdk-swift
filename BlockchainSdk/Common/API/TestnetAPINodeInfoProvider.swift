@@ -190,6 +190,7 @@ struct TestnetAPINodeInfoProvider {
                 .init(url: URL(string: "https://rpc.notadegen.com/base/sepolia")!),
                 .init(url: URL(string: "https://base-sepolia-rpc.publicnode.com")!),
             ]
+        // TODO: Refactor in IOS-6639
         case .bitcoin, .litecoin, .disChain, .rsk, .bitcoinCash, .binance, .cardano, .xrp, .ducatus, .tezos, .dogecoin, .solana, .polkadot, .kusama, .dash, .gnosis, .kaspa, .terraV1, .terraV2, .cronos, .octa, .veChain, .playa3ullGames, .radiant:
             return nil
         }
