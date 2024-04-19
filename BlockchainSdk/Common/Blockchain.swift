@@ -447,10 +447,7 @@ public indirect enum Blockchain: Equatable, Hashable {
 
     public var tokenTypeName: String? {
         switch self {
-        case .ethereum,
-             .base:
-            // TODO: Andrey Fedorov - Add other Ethereum L2s here (IOS-6505)
-            return "ERC20"
+        case .ethereum: return "ERC20"
         case .binance: return "BEP2"
         case .bsc: return "BEP20"
         case .tron: return "TRC20"
@@ -510,7 +507,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .moonriver,
                 .mantle,
                 .flare,
-                .taraxa:
+                .taraxa,
+                .base:
             return true
         case .fantom,
                 .tron,
@@ -1025,11 +1023,11 @@ extension Blockchain {
                 .moonriver,
                 .mantle,
                 .flare,
-                .taraxa,
-                .base:
+                .taraxa:
             return EthereumWalletAssembly()
-        case .optimism:
-            return OptimismWalletAssembly()
+        case .optimism,
+             .base:
+            return EthereumOptimisticRollupWalletAssembly()
         case .bitcoinCash:
             return BitcoinCashWalletAssembly()
         case .binance:
