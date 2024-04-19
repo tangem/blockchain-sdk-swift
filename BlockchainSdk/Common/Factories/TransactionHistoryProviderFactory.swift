@@ -10,13 +10,13 @@ import Foundation
 
 public struct TransactionHistoryProviderFactory {
     private let config: BlockchainSdkConfig
-    private let apiInfo: [NetworkProviderType]
+    private let apiList: APIList
 
     // MARK: - Init
     
-    public init(config: BlockchainSdkConfig, apiInfo: [NetworkProviderType]) {
+    public init(config: BlockchainSdkConfig, apiList: APIList) {
         self.config = config
-        self.apiInfo = apiInfo
+        self.apiList = apiList
     }
     
     public func makeProvider(for blockchain: Blockchain) -> TransactionHistoryProvider? {
@@ -29,7 +29,7 @@ public struct TransactionHistoryProviderFactory {
         let input = NetworkProviderAssembly.Input(
             blockchainSdkConfig: config,
             blockchain: blockchain,
-            apiInfo: apiInfo
+            apiInfo: apiList[blockchain.networkId] ?? []
         )
 
         switch blockchain {
