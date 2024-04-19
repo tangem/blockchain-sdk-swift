@@ -60,12 +60,6 @@ public struct TransactionHistoryProviderFactory {
                 blockBookProvider: networkAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes),
                 mapper: TronTransactionHistoryMapper(blockchain: blockchain)
             )
-        case .polygon:
-            return PolygonTransactionHistoryProvider(
-                mapper: PolygonTransactionHistoryMapper(blockchain: blockchain),
-                networkConfiguration: input.networkConfig,
-                targetConfiguration: .polygonScan(isTestnet: blockchain.isTestnet, apiKey: config.polygonScanApiKey)
-            )
         case .algorand(_, let isTestnet):
             if isTestnet {
                 return AlgorandTransactionHistoryProvider(
