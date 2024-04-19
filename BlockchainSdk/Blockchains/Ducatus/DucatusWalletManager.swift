@@ -1,6 +1,6 @@
 //
 //  DucatusWalletManager.swift
-//  Alamofire
+//
 //
 //  Created by Alexander Osokin on 28.09.2020.
 //
