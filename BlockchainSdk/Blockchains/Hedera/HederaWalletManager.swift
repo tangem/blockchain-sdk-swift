@@ -121,27 +121,6 @@ final class HederaWalletManager: BaseManager {
         wallet.set(address: address)
     }
 
-    private func makePendingTransactionsInfoPublisher() -> some Publisher<[HederaTransactionInfo], Error> {
-        return wallet
-            .pendingTransactions
-            .publisher
-            .setFailureType(to: Error.self)
-            .withWeakCaptureOf(self)
-            .flatMap { walletManager, pendingTransaction in
-                return walletManager.networkService.getTransactionInfo(transactionHash: pendingTransaction.hash)
-            }
-            .collect()
-    }
-
-    private func makeTransactionValidStartDate() -> UnixTimestamp? {
-        // Subtracting `validStartDateDiff` from the `Date.now` to make sure that the tx valid start date has already passed
-        // The logic is the same as in the `Hedera.TransactionId.generateFrom(_:)` factory method
-        let validStartDateDiff = Int.random(in: 5_000_000_000..<8_000_000_000)
-        let validStartDate = Calendar.current.date(byAdding: .nanosecond, value: -validStartDateDiff, to: Date())
-
-        return validStartDate.flatMap(UnixTimestamp.init(date:))
-    }
-
     private func getFee(amount: Amount, doesAccountExistPublisher: some Publisher<Bool, Error>) -> AnyPublisher<[Fee], Error> {
         return Publishers.CombineLatest(
             networkService.getExchangeRate(),
@@ -168,6 +147,26 @@ final class HederaWalletManager: BaseManager {
         .eraseToAnyPublisher()
     }
 
+    private func makePendingTransactionsInfoPublisher() -> some Publisher<[HederaTransactionInfo], Error> {
+        return wallet
+            .pendingTransactions
+            .publisher
+            .setFailureType(to: Error.self)
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, pendingTransaction in
+                return walletManager.networkService.getTransactionInfo(transactionHash: pendingTransaction.hash)
+            }
+            .collect()
+    }
+
+    private static func makeTransactionValidStartDate() -> UnixTimestamp? {
+        // Subtracting `validStartDateDiff` from the `Date.now` to make sure that the tx valid start date has already passed
+        // The logic is the same as in the `Hedera.TransactionId.generateFrom(_:)` factory method
+        let validStartDateDiff = Int.random(in: 5_000_000_000..<8_000_000_000)
+        let validStartDate = Calendar.current.date(byAdding: .nanosecond, value: -validStartDateDiff, to: Date())
+
+        return validStartDate.flatMap(UnixTimestamp.init(date:))
+    }
 
     // MARK: - Account ID fetching, caching and creation
 
@@ -324,46 +323,18 @@ final class HederaWalletManager: BaseManager {
             )
             .mapError(WalletError.blockchainUnavailable(underlyingError:))
     }
-}
 
-// MARK: - WalletManager protocol conformance
-
-extension HederaWalletManager: WalletManager {
-    var currentHost: String { networkService.host }
-
-    var allowsFeeSelection: Bool { false }
-
-    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
-        let doesAccountExistPublisher = doesAccountExist(destination: destination)
-
-        return getFee(amount: amount, doesAccountExistPublisher: doesAccountExistPublisher)
-    }
-
-    func estimatedFee(amount: Amount) -> AnyPublisher<[Fee], Error> {
-        // For a rough fee estimation (calculated in this method), all destinations are considered non-existent just in case
-        let doesAccountExistPublisher = Just(false).setFailureType(to: Error.self)
-
-        return getFee(amount: amount, doesAccountExistPublisher: doesAccountExistPublisher)
-    }
-
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        return Deferred { [weak self] in
+    private func sendCompiledTransaction(
+        signedUsing signer: TransactionSigner,
+        transactionFactory: @escaping (_ validStartDate: UnixTimestamp) throws -> HederaTransactionBuilder.CompiledTransaction
+    ) -> AnyPublisher<TransactionSendResult, Error> {
+        return Deferred {
             return Future { (promise: Future<HederaTransactionBuilder.CompiledTransaction, Error>.Promise) in
-                guard let self else {
-                    return promise(.failure(WalletError.empty))
-                }
-
-                guard let validStartDate = self.makeTransactionValidStartDate() else {
+                guard let validStartDate = Self.makeTransactionValidStartDate() else {
                     return promise(.failure(WalletError.failedToBuildTx))
                 }
 
-                let compiledTransaction = Result {
-                    try self.transactionBuilder.buildTransferTransactionForSign(
-                        transaction: transaction,
-                        validStartDate: validStartDate,
-                        nodeAccountIds: nil
-                    )
-                }
+                let compiledTransaction = Result { try transactionFactory(validStartDate) }
                 promise(compiledTransaction)
             }
         }
@@ -391,6 +362,42 @@ extension HederaWalletManager: WalletManager {
                 .networkService
                 .send(transaction: compiledTransaction)
         }
+        .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - WalletManager protocol conformance
+
+extension HederaWalletManager: WalletManager {
+    var currentHost: String { networkService.host }
+
+    var allowsFeeSelection: Bool { false }
+
+    func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {
+        let doesAccountExistPublisher = doesAccountExist(destination: destination)
+
+        return getFee(amount: amount, doesAccountExistPublisher: doesAccountExistPublisher)
+    }
+
+    func estimatedFee(amount: Amount) -> AnyPublisher<[Fee], Error> {
+        // For a rough fee estimation (calculated in this method), all destinations are considered non-existent just in case
+        let doesAccountExistPublisher = Just(false).setFailureType(to: Error.self)
+
+        return getFee(amount: amount, doesAccountExistPublisher: doesAccountExistPublisher)
+    }
+
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+        return sendCompiledTransaction(signedUsing: signer) { [weak self] validStartDate in
+            guard let self else {
+                throw WalletError.empty
+            }
+
+            return try self.transactionBuilder.buildTransferTransactionForSign(
+                transaction: transaction,
+                validStartDate: validStartDate,
+                nodeAccountIds: nil
+            )
+        }
         .withWeakCaptureOf(self)
         .handleEvents(
             receiveOutput: { walletManager, sendResult in
@@ -415,17 +422,29 @@ extension HederaWalletManager: AssetPrerequisitesManager {
         }
     }
 
-    func fulfillPrerequisites(for asset: Asset, signer: any TransactionSigner) async throws {
+    func fulfillPrerequisites(for asset: Asset, signer: any TransactionSigner) -> AnyPublisher<Void, Error> {
         guard hasPrerequisites(for: asset) else {
-            return
+            return .justWithError(output: ())
         }
 
         switch asset {
         case .coin, .reserve:
-            return
+            return .justWithError(output: ())
         case .token(let token):
-            // TODO: Andrey Fedorov - Add actual implementation
-            fatalError()
+            return sendCompiledTransaction(signedUsing: signer) { [weak self] validStartDate in
+                guard let self else {
+                    throw WalletError.empty
+                }
+
+                return try self.transactionBuilder.buildTokenAssociationForSign(
+                    tokenAssociation: .init(accountId: self.wallet.address, contractAddress: token.contractAddress),
+                    validStartDate: validStartDate,
+                    nodeAccountIds: nil
+                )
+            }
+            .withWeakCaptureOf(self)
+            .map { _ in () }
+            .eraseToAnyPublisher()
         }
     }
 }

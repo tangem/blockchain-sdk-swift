@@ -27,7 +27,7 @@ final class HederaTransactionBuilder {
     }
 
     func buildTokenAssociationForSign(
-        _ tokenAssociation: TokenAssociation,
+        tokenAssociation: TokenAssociation,
         validStartDate: UnixTimestamp,
         nodeAccountIds: [Int]?
     ) throws -> CompiledTransaction {

@@ -111,5 +111,5 @@ public protocol AssetPrerequisitesManager {
     typealias Asset = Amount.AmountType
 
     func hasPrerequisites(for asset: Asset) -> Bool
-    func fulfillPrerequisites(for asset: Asset, signer: any TransactionSigner) async throws  // TODO: Andrey Fedorov - return current status or something like this?
+    func fulfillPrerequisites(for asset: Asset, signer: any TransactionSigner) -> AnyPublisher<Void, Error> // TODO: Andrey Fedorov - return current status or something like this?
 }
