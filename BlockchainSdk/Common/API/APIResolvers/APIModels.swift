@@ -7,7 +7,7 @@
 
 import Foundation
 
-public typealias APIList = [BlockchainNetworkId: [NetworkProviderType]]
+public typealias APIList = [String: [NetworkProviderType]]
 
 public enum NetworkProviderType {
     case `public`(link: String)

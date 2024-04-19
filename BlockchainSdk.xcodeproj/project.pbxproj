@@ -267,7 +267,6 @@
 		B00DF99E2BBEAB91004397CB /* InfuraAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DF99D2BBEAB91004397CB /* InfuraAPIResolver.swift */; };
 		B00DF9A02BBEACA2004397CB /* QuickNodeAPIResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00DF99F2BBEACA2004397CB /* QuickNodeAPIResolver.swift */; };
 		B0201F462BCE95C000AA0807 /* NowNodesAPIKeysInfoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0201F452BCE95C000AA0807 /* NowNodesAPIKeysInfoProvider.swift */; };
-		B04275A32BC68086002C78D6 /* BlockchainNetworkId.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04275A22BC68086002C78D6 /* BlockchainNetworkId.swift */; };
 		B044B3A126047F5500D9864F /* RosettaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B044B3A026047F5500D9864F /* RosettaResponse.swift */; };
 		B04DC62725AC1C50009AA7B3 /* JSONDecoder+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04DC62625AC1C50009AA7B3 /* JSONDecoder+.swift */; };
 		B04E556B265FB89400679EAF /* URL+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04E556A265FB89400679EAF /* URL+.swift */; };
@@ -1103,7 +1102,6 @@
 		B0201F452BCE95C000AA0807 /* NowNodesAPIKeysInfoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowNodesAPIKeysInfoProvider.swift; sourceTree = "<group>"; };
 		B022D30D2537292800D934D7 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B022D3102537475B00D934D7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		B04275A22BC68086002C78D6 /* BlockchainNetworkId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchainNetworkId.swift; sourceTree = "<group>"; };
 		B044B3A026047F5500D9864F /* RosettaResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosettaResponse.swift; sourceTree = "<group>"; };
 		B04DC62625AC1C50009AA7B3 /* JSONDecoder+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSONDecoder+.swift"; sourceTree = "<group>"; };
 		B04E556A265FB89400679EAF /* URL+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+.swift"; sourceTree = "<group>"; };
@@ -2603,7 +2601,6 @@
 		B04275A12BC68066002C78D6 /* Blockchain */ = {
 			isa = PBXGroup;
 			children = (
-				B04275A22BC68086002C78D6 /* BlockchainNetworkId.swift */,
 				EF57BEE22A1E682D00C2A493 /* Blockchain+AllCases.swift */,
 			);
 			path = Blockchain;
@@ -4848,7 +4845,6 @@
 				2DA139F72A8AD82E00E3C374 /* ChiaModels.swift in Sources */,
 				B611B1832B7A9A500072B874 /* BlockchainSdkDependencies.swift in Sources */,
 				B6DC3F3A2AF2CA8700377BB3 /* Sequence+.swift in Sources */,
-				B04275A32BC68086002C78D6 /* BlockchainNetworkId.swift in Sources */,
 				DC5E64F32B1650F400E81AA5 /* OP_LSHIFT.swift in Sources */,
 				DC5E65222B1650F400E81AA5 /* OP_OVER.swift in Sources */,
 				DC5E65182B1650F400E81AA5 /* OP_FROMALTSTACK.swift in Sources */,
