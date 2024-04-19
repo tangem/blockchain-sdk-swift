@@ -10,7 +10,6 @@ import Foundation
 import Moya
 import Combine
 import TangemSdk
-import Alamofire
 import SwiftyJSON
 import BitcoinCore
 
