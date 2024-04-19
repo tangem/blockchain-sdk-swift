@@ -7,99 +7,85 @@
 //
 
 import Foundation
-import TangemSdk
 
 struct EstimationFeeAddressFactory {
     func makeAddress(for blockchain: Blockchain) throws -> String {
         switch blockchain {
-        case .cardano:
-            return "addr1q9svm389hgtksjvawpt9nfd9twk4kfckhs23wxrdfspynw9g3emv6k6njzwqvdmtff4426vy2pfg0ngu9t6pr9xmd0ass48agt"
         case .chia:
             // Can not generate and doesn't depend on destination
             return ""
         case .xrp,
              .stellar,
-             .binance,
-             .veChain:
+             .binance:
             // Doesn't depend on amount and destination
             return ""
         case .tezos:
             // Tezos has a fixed fee. See: `TezosFee.transaction`
             return ""
         case .kaspa,
-             .hedera:
+             .hedera,
+             .radiant:
             // Doesn't depend on destination
             return ""
         case .ducatus:
             // Unsupported
             return ""
-
+        // UTXO-like
+        case .bitcoin:
+            return "bc1qkrc5kmpq546wr2xk0errg58yw9jjq7thvhdk5k"
+        case .litecoin:
+            return "LeAXZ4WKNy8zeybFkD6scFpBSmCPmENUEW"
+        case .bitcoinCash:
+            return "bitcoincash:qrn96yyxa93t6sqmehvls6746qafkcsuku6zmd9460"
+        case .dogecoin:
+            return "DRVD4B4YD9CBSjqaa3UfF42vSN6k2tJwhz"
+        case .dash:
+            return "Xqfekbgca2HDaXhrNYP2HTnuQ5go2E8dDE"
+        case .ravencoin:
+            return "RT5qKgXdmh9pqtz71cgfL834VfeXFVH1sG"
+        // EVM-like
+        case .ethereum, .ethereumPoW, .rsk, .polygon,
+                .avalanche, .bsc, .fantom, .arbitrum, .gnosis, .optimism,
+                .kava, .cronos, .telos, .octa, .shibarium, .disChain,
+                .areon, .playa3ullGames, .pulsechain, .aurora, .manta,
+                .zkSync, .moonbeam, .polygonZkEVM, .moonriver, .mantle,
+                .flare, .taraxa, .base:
+            return "0x52bb4012854f808CF9BAbd855e44E506dAf6C077"
+        case .ethereumClassic:
+            return "0xc49722a6f4Fe5A1347710dEAAa1fafF4c275689b"
+        case .decimal:
+            return "d0122a5qy59f7qge7d6hkz4u389qmd0dsrh6a7qnx"
+        // Polkadot-like
+        case .polkadot:
+            return "15RRtiC2akPUE9FGqqa66awoAFz6XCnZiFUf34k2CHbLWNfC"
+        case .kusama:
+            return "CsNtwDXUzMR4ZKBQrXCfA6bBXQBFU1DDbtSwLAsaVr13sGs"
+        case .azero:
+            return "5DaWppqEJPc6BhFKD2NBC1ACXPDMPYfv2AQDB5uH5KT4mpef"
+        // Others
+        case .cardano:
+            return "addr1q95pg4z9tf26r5dwf72vmh62u3pr9sewq2waahyhpjzm3enz43pvhh0us3z0z5xen2skq200e67eu89s5v2s0sdh3fnsm9lknu"
+        case .solana:
+            return "9wuDg6Y4H4j86Kg5aUGrUeaBa3sAUzjMs37KbeGFnRuM"
+        case .cosmos:
+            return "cosmos1lhjvds604fvac32j4eygpr820lyc82dlyq70m5"
+        case .tron:
+            return "TA4Tkaj2nAJjkVbDHdUQDxYCbLfsZzS8pA"
+        case .near:
+            return "4a9fb267a005b7e923233b59aff1b73e577347a1ab36aa231a1880a91776c416"
+        case .xdc:
+            return "xdc9606Af4939f6F9fb9731A39a32B00aD966348ED6"
+        case .veChain:
+            return "0x1C5B4935709583758BE5b9ECeeBaf5cD6AFecF41"
+        case .aptos:
+            return "0x4626b7ef23fb2800a0e224e8249f47e0db3579070262da2a7efb0bc52c882867"
+        case .algorand:
+            return "CW6XDCKQAZUGAIOTGE2NEPYFFVW6H6IKFOTOF3W5WDUVHH4ZIDCIKYDPXY"
         // We have to generate a new dummy address for
-        case
-                // UTXO-like
-                .bitcoin,
-                .litecoin,
-                .bitcoinCash,
-                .dogecoin,
-                .dash,
-                .ravencoin,
-                .radiant,
-                // EVM-like
-                .ethereum,
-                .ethereumPoW,
-                .disChain,
-                .ethereumClassic,
-                .rsk,
-                .bsc,
-                .polygon,
-                .avalanche,
-                .fantom,
-                .arbitrum,
-                .gnosis,
-                .optimism,
-                .kava,
-                .cronos,
-                .telos,
-                .octa,
-                .decimal,
-                .xdc,
-                .shibarium,
-                .areon,
-                .playa3ullGames,
-                .pulsechain,
-                .aurora,
-                .manta,
-                .zkSync,
-                .moonbeam,
-                .polygonZkEVM,
-                .moonriver,
-                .mantle,
-                .flare,
-                .taraxa,
-                .base,
-                // Polkadot-like
-                .polkadot, .kusama, .azero,
-                // Cosmos-like
-                .cosmos, .terraV1, .terraV2,
-                // Others
-                .tron,
-                .ton,
-                .near,
-                .algorand,
-                .aptos,
-                .solana:
-            // For old blockchain with the ed25519 curve except `Cardano`
-            // We have to use the new `ed25519_slip0010` curve that the `AnyMasterKeyFactory` works correctly
-            let curve = blockchain.curve == .ed25519 ? .ed25519_slip0010 : blockchain.curve
-
-            let mnemonic = try Mnemonic()
-            let factory = AnyMasterKeyFactory(mnemonic: mnemonic, passphrase: "")
-            let masterKey = try factory.makeMasterKey(for: curve)
-            let extendedPublicKey = try masterKey.makePublicKey(for: curve)
-            let service = AddressServiceFactory(blockchain: blockchain).makeAddressService()
-            let publicKey = Wallet.PublicKey(seedKey: extendedPublicKey.publicKey, derivationType: .none)
-            let estimationFeeAddress = try service.makeAddress(for: publicKey, with: .default).value
-            return estimationFeeAddress
+        case .terraV1, .terraV2:
+            return "terra1pfamr0t2daet92grdvxqex235q58qrx6xclldg"
+        case .ton:
+            return "EQAY92urFDKejoDRdi_EfRKLGB1JkGjD8z1inj_DhgBaD0Xo"
         }
     }
 }

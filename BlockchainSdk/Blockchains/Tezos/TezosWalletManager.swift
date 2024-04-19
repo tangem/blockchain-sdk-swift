@@ -106,7 +106,8 @@ extension TezosWalletManager: TransactionSender {
     }
     
     func estimatedFee(amount: Amount) -> AnyPublisher<[Fee], Error> {
-        let fixedFee = TezosFee.transaction.rawValue
+        // We assume that account is not created therefore we're adding allocation fee
+        let fixedFee = TezosFee.transaction.rawValue + TezosFee.allocation.rawValue
         let amountFee = Amount(with: wallet.blockchain, value: fixedFee)
         
         return .justWithError(output: [Fee(amountFee)])
