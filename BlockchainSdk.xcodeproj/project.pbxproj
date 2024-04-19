@@ -146,6 +146,7 @@
 		2DDEFBE72B59B44700885675 /* AlgorandProviderUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBDB2B59B44700885675 /* AlgorandProviderUrl.swift */; };
 		2DDEFBE82B59B44700885675 /* AlgorandProviderTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBDC2B59B44700885675 /* AlgorandProviderTarget.swift */; };
 		2DDEFBFA2B5E951400885675 /* AlgorandResponse+TransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEFBF92B5E951400885675 /* AlgorandResponse+TransactionHistory.swift */; };
+		2DF5A1BF2BD22D7C00FC7FDE /* Documentation.docc in Sources */ = {isa = PBXBuildFile; fileRef = 2DF5A1BE2BD22D7C00FC7FDE /* Documentation.docc */; };
 		2DF7621D2B7AB92300666B74 /* AptosFeeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF7621C2B7AB92300666B74 /* AptosFeeInfo.swift */; };
 		47420109BD3DE47300C6F23F /* Pods_BlockchainSdkTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1A207847B605E0517D9A55F /* Pods_BlockchainSdkTests.framework */; };
 		592E206C6981F567C2FB1FDC /* Pods_BlockchainSdkExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B236300074DC3321FAA6A10D /* Pods_BlockchainSdkExample.framework */; };
@@ -953,6 +954,7 @@
 		2DDEFBDB2B59B44700885675 /* AlgorandProviderUrl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandProviderUrl.swift; sourceTree = "<group>"; };
 		2DDEFBDC2B59B44700885675 /* AlgorandProviderTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgorandProviderTarget.swift; sourceTree = "<group>"; };
 		2DDEFBF92B5E951400885675 /* AlgorandResponse+TransactionHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AlgorandResponse+TransactionHistory.swift"; sourceTree = "<group>"; };
+		2DF5A1BE2BD22D7C00FC7FDE /* Documentation.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = Documentation.docc; sourceTree = "<group>"; };
 		2DF7621C2B7AB92300666B74 /* AptosFeeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AptosFeeInfo.swift; sourceTree = "<group>"; };
 		3452E77A600B278568F13FA9 /* Pods-BlockchainSdkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.release.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.release.xcconfig"; sourceTree = "<group>"; };
 		556382E16FB9B2894A77374E /* Pods-BlockchainSdkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlockchainSdkExample.debug.xcconfig"; path = "Target Support Files/Pods-BlockchainSdkExample/Pods-BlockchainSdkExample.debug.xcconfig"; sourceTree = "<group>"; };
@@ -1971,31 +1973,32 @@
 		5D14E47B2397B80F00C15FC8 /* BlockchainSdkTests */ = {
 			isa = PBXGroup;
 			children = (
-				EF1339BD2AB8EF6400B78BA3 /* SmartContractMethods */,
-				DC173AEA2A5D42D40088F79E /* XRP */,
-				2D535E7A2A0CC5FA0081EB76 /* Vectors */,
-				2D535E7E2A0CC5FA0081EB76 /* VectorTests */,
+				2DF5A1BE2BD22D7C00FC7FDE /* Documentation.docc */,
+				5D14E47E2397B80F00C15FC8 /* Info.plist */,
+				2D9E2A542B584E2E0094D811 /* Algorand */,
+				2DB84D422B721CB000C1CDD1 /* Aptos */,
 				B00DEAC728FEE5E00077CD19 /* Bitcoin */,
+				EF32FEE12A3B625E002ED43F /* Cardano */,
+				2D78F40D2A5CA54500962CCA /* Chia */,
 				B00DEACC28FEE6070077CD19 /* Common */,
 				DA198B5729E3F6DB00DB6EEA /* Cosmos */,
 				B00DEAC828FEE5E90077CD19 /* Ethereum */,
 				B00DEACD28FEE62F0077CD19 /* Extensions */,
+				B67C5A262B8288F600A33A68 /* Hedera */,
 				DA63B08B29CB3FAF00AC6E49 /* Kaspa */,
 				B00DEACA28FEE5FA0077CD19 /* Litecoin */,
+				B63E7DBA2AE9FD91000324CB /* NEAR */,
 				B00DEAC628FEE5D20077CD19 /* Polkadot */,
+				2DB613CE2B912CFB007CFA9B /* Radiant */,
+				EF1339BD2AB8EF6400B78BA3 /* SmartContractMethods */,
 				B00DEAC528FEE5C60077CD19 /* Solana */,
 				B00DEAC928FEE5F40077CD19 /* Stellar */,
-				B00DEACB28FEE6010077CD19 /* Tron */,
 				2DBBE94E29C8DBD900971539 /* TON */,
-				EF32FEE12A3B625E002ED43F /* Cardano */,
-				2D78F40D2A5CA54500962CCA /* Chia */,
-				B63E7DBA2AE9FD91000324CB /* NEAR */,
+				B00DEACB28FEE6010077CD19 /* Tron */,
 				B62BCBAA2B3D973C007494CF /* VeChain */,
-				2D9E2A542B584E2E0094D811 /* Algorand */,
-				2DB84D422B721CB000C1CDD1 /* Aptos */,
-				B67C5A262B8288F600A33A68 /* Hedera */,
-				2DB613CE2B912CFB007CFA9B /* Radiant */,
-				5D14E47E2397B80F00C15FC8 /* Info.plist */,
+				2D535E7A2A0CC5FA0081EB76 /* Vectors */,
+				2D535E7E2A0CC5FA0081EB76 /* VectorTests */,
+				DC173AEA2A5D42D40088F79E /* XRP */,
 			);
 			path = BlockchainSdkTests;
 			sourceTree = "<group>";
@@ -4843,6 +4846,7 @@
 				EF0DA78628523FAC0081092A /* XCTestCase+.swift in Sources */,
 				2D535E772A0CC5E50081EB76 /* DecodableVectors.swift in Sources */,
 				2D9E2A562B584E2E0094D811 /* AlgorandTests.swift in Sources */,
+				2DF5A1BF2BD22D7C00FC7FDE /* Documentation.docc in Sources */,
 				2DB84D442B721CB000C1CDD1 /* AptosTests.swift in Sources */,
 				2D3829CE29D350D1001D4785 /* AddressServiceManagerUtility.swift in Sources */,
 				DC886FCD2AF5637D0098669C /* CommonTests.swift in Sources */,
