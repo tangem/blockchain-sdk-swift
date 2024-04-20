@@ -13,7 +13,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Common Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generation address from key | ✅ | | |
 | Verify assert for not supported key | ✅ | | |
@@ -21,7 +21,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Vector Tests [Only WalletCore blockchain]
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Add raw trust_wallet_compare_vector.json | ✅ | | |
 | Add raw valid_address_vectors.json | ✅ | | |
@@ -29,7 +29,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Blockchain specify Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generate transaction for network currency ``buildForSend`` method | ✅ | | |
 | Verify correct transaction for ``ed25519 / ed25519_slip0010`` curves | ✅ | | |
@@ -43,7 +43,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Common Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generation address from key | ✅ | | |
 | Verify assert for not supported key | ✅ | | |
@@ -51,7 +51,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Vector Tests [Only WalletCore blockchain]
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Add raw trust_wallet_compare_vector.json | ✅ | | |
 | Add raw valid_address_vectors.json | ✅ | | |
@@ -59,7 +59,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Blockchain specify Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generate transaction for network currency ``buildForSend`` method | ✅ | | |
 | Verify correct transaction for ``ed25519 / ed25519_slip0010`` curves | ✅ | | |
@@ -72,7 +72,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Common Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generation address from key | ✅ | Done for compressed / decompressed keys | |
 | Verify assert for not supported key | ⭕️ | For binance, it is necessary to add assert for not supported keys | |
@@ -80,7 +80,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Vector Tests [Only WalletCore blockchain]
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Add raw trust_wallet_compare_vector.json | ✅ | | |
 | Add raw valid_address_vectors.json | ✅ | | |
@@ -88,7 +88,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Blockchain specify Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generate transaction for network currency ``buildForSend`` method | ⭕️ | For binance, it is necessary to add transaction compiled | |
 | Generate transaction for tokens currency ``buildForSend`` method | ⭕️ | For binance, it is necessary to add transaction compiled | |
@@ -101,7 +101,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Common Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generation address from key | ✅ | Done for compressed / decompressed keys | |
 | Verify assert for not supported key | ⭕️ | For bitcoin, it is necessary to add assert for not supported keys | |
@@ -110,7 +110,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Vector Tests [Only WalletCore blockchain]
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Add raw trust_wallet_compare_vector.json | ✅ | | |
 | Add raw valid_address_vectors.json | ✅ | | |
@@ -118,7 +118,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Blockchain specify Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generate transaction for network currency ``buildForSend`` method | ✅ | | |
 
@@ -130,7 +130,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Common Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generation address from key | ✅ | Done for compressed / decompressed keys | |
 | Verify assert for not supported key | ⭕️ | For bitcoin, it is necessary to add assert for not supported keys | |
@@ -139,7 +139,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Vector Tests [Only WalletCore blockchain]
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Add raw trust_wallet_compare_vector.json | ✅ | | |
 | Add raw valid_address_vectors.json | ✅ | | |
@@ -147,7 +147,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Blockchain specify Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generate transaction for network currency ``buildForSend`` method | ⭕️ | For binance, it is necessary to add transaction compiled | |
 
@@ -159,7 +159,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Common Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generation address from key | ✅ | Done for compressed / decompressed keys | |
 | Verify assert for not supported key | ⭕️ | For Cardano, it is necessary to add assert for not supported keys | |
@@ -168,7 +168,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Vector Tests [Only WalletCore blockchain]
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Add raw trust_wallet_compare_vector.json | ✅ | | |
 | Add raw valid_address_vectors.json | ✅ | | |
@@ -176,7 +176,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Blockchain specify Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generate transaction for network currency ``buildForSend`` method | ⭕️ | For Cardano, it is necessary to add transaction compiled | |
 | Generate transaction for tokens currency ``buildForSend`` method | ⭕️ | For Cardano, it is necessary to add transaction compiled | |
@@ -189,7 +189,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Common Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generation address from key | ✅ | | |
 | Verify assert for not supported key | ⭕️ | For Chia, it is necessary to add assert for not supported keys | |
@@ -198,7 +198,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Blockchain specify Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generate transaction for network currency ``buildForSend`` method | ✅ | | |
 
@@ -210,7 +210,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Common Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generation address from key | ✅ | | |
 | Verify assert for not supported key | ⭕️ | For Cosmos, it is necessary to add assert for not supported keys | |
@@ -219,7 +219,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Vector Tests [Only WalletCore blockchain]
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Add raw trust_wallet_compare_vector.json | ✅ | | |
 | Add raw valid_address_vectors.json | ✅ | | |
@@ -227,7 +227,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Blockchain specify Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generate transaction for network currency ``buildForSend`` method | ✅ | | |
 | Generate transaction for tokens currency ``buildForSend`` method | ✅ | | |
@@ -240,7 +240,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Common Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generation address from key | ✅ | | |
 | Verify assert for not supported key | ⭕️ | For Ethereum, it is necessary to add assert for not supported keys | |
@@ -249,7 +249,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Vector Tests [Only WalletCore blockchain]
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Add raw trust_wallet_compare_vector.json | ✅ | | |
 | Add raw valid_address_vectors.json | ✅ | | |
@@ -257,7 +257,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Blockchain specify Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generate transaction for network currency ``buildForSend`` method | ✅ | | |
 | Generate transaction for token currency ``buildForSend`` method | ✅ | | |
@@ -270,16 +270,16 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Common Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
-| Generation address from key | ✅ | | |
+| Generation address from key | ✅ | ``ed25519 / ed25519_slip0010`` | |
 | Verify assert for not supported key | ⭕️ | For Hedera, it is necessary to add assert for not supported keys | |
 | Any type address validation | ✅ | ``ed25519 / ed25519_slip0010`` | |
 | Common address validation positive & negative | ✅ | | |
 
 ### Vector Tests [Only WalletCore blockchain]
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Add raw trust_wallet_compare_vector.json | ⚠️ | Read comments in file | |
 | Add raw valid_address_vectors.json | ⚠️ | | |
@@ -287,7 +287,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Blockchain specify Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generate transaction for network currency ``buildForSend`` method | ✅ | | |
 
@@ -299,7 +299,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Common Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generation address from key | ✅ | | |
 | Verify assert for not supported key | ⭕️ | For Kaspa, it is necessary to add assert for not supported keys | |
@@ -308,7 +308,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Vector Tests [Only WalletCore blockchain]
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Add raw trust_wallet_compare_vector.json | ✅ | Read comments in file | |
 | Add raw valid_address_vectors.json | ✅ | | |
@@ -316,6 +316,64 @@ This document describes the contents of the tests and the addition of new ones.
 
 ### Blockchain specify Tests
 
-| Describe | Done | Exceptions | Task |
+| Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Generate transaction for network currency ``buildForSend`` method | ✅ | ``P2SH / Schnorr`` | |
+
+
+
+## Litecoin
+
+- ``UTXO, ECDSA, secp256k1, SHA-256, PoW``
+
+### Common Tests
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Generation address from key | ✅ | Done for compressed / decompressed keys | |
+| Verify assert for not supported key | ⭕️ | For litecoin, it is necessary to add assert for not supported keys | |
+| Any type address validation | ✅ | ``Legacy / Default`` | |
+| Common address validation positive & negative | ⭕️ | For litecoin, it is necessary to add more address validation tests | |
+
+### Vector Tests [Only WalletCore blockchain]
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Add raw trust_wallet_compare_vector.json | ✅ | | |
+| Add raw valid_address_vectors.json | ✅ | | |
+| Add raw blockchain_vectors.json | ✅ | | |
+
+### Blockchain specify Tests
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Generate transaction for network currency ``buildForSend`` method | ✅ | | |
+
+
+
+## NEAR
+
+- ``Account, EdDSA, ed25519, none``
+
+### Common Tests
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Generation address from key | ✅ | Done for compressed / decompressed keys | |
+| Verify assert for not supported key | ⭕️ | For litecoin, it is necessary to add assert for not supported keys | |
+| Any type address validation | ✅ | ``Legacy / Default`` | |
+| Common address validation positive & negative | ⭕️ | For litecoin, it is necessary to add more address validation tests | |
+
+### Vector Tests [Only WalletCore blockchain]
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Add raw trust_wallet_compare_vector.json | ✅ | | |
+| Add raw valid_address_vectors.json | ✅ | | |
+| Add raw blockchain_vectors.json | ✅ | | |
+
+### Blockchain specify Tests
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Generate transaction for network currency ``buildForSend`` method | ✅ | | |
