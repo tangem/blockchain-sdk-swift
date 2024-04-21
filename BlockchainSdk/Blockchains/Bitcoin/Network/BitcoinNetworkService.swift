@@ -10,7 +10,6 @@ import Foundation
 import Moya
 import Combine
 import TangemSdk
-import Alamofire
 
 class BitcoinNetworkService: MultiNetworkProvider, BitcoinNetworkProvider {
     let providers: [AnyBitcoinNetworkProvider]
