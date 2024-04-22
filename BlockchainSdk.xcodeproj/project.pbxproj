@@ -1349,6 +1349,7 @@
 		DC3550F72B58529900A93DBA /* XDCTransactionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCTransactionBuilder.swift; sourceTree = "<group>"; };
 		DC3550F92B5852F200A93DBA /* XDCNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCNetworkService.swift; sourceTree = "<group>"; };
 		DC3550FB2B58543100A93DBA /* XDCWalletAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XDCWalletAssembly.swift; sourceTree = "<group>"; };
+		DC45128D2BD18F9300DE6F94 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		DC4E442A29BF4B4C0088617C /* XRPBase58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XRPBase58.swift; sourceTree = "<group>"; };
 		DC5E646C2B16098C00E81AA5 /* RIPEMD160+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RIPEMD160+.swift"; sourceTree = "<group>"; };
 		DC5E646F2B160FCD00E81AA5 /* Opcode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Opcode.swift; sourceTree = "<group>"; };
@@ -1971,6 +1972,7 @@
 			isa = PBXGroup;
 			children = (
 				5D14E4712397B80F00C15FC8 /* BlockchainSdk.h */,
+				DC45128D2BD18F9300DE6F94 /* PrivacyInfo.xcprivacy */,
 				5D14E4892397B87000C15FC8 /* Blockchains */,
 				5D14E48B2397B87000C15FC8 /* Common */,
 				5D4B33B923F6E9BD00C93A84 /* CommonNetworkServices */,
@@ -5105,7 +5107,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.tangem.BlockchainSdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -5138,7 +5142,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.tangem.BlockchainSdk;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

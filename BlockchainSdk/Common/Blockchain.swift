@@ -1016,7 +1016,6 @@ extension Blockchain {
                 .playa3ullGames,
                 .pulsechain,
                 .aurora,
-                .manta,
                 .zkSync,
                 .moonbeam,
                 .polygonZkEVM,
@@ -1026,6 +1025,7 @@ extension Blockchain {
                 .taraxa:
             return EthereumWalletAssembly()
         case .optimism,
+             .manta,
              .base:
             return EthereumOptimisticRollupWalletAssembly()
         case .bitcoinCash:
