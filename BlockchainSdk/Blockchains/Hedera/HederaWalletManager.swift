@@ -409,10 +409,10 @@ extension HederaWalletManager: WalletManager {
     }
 }
 
-// MARK: - AssetPrerequisitesManager protocol conformance
+// MARK: - AssetRequirementsManager protocol conformance
 
-extension HederaWalletManager: AssetPrerequisitesManager {
-    func hasPrerequisites(for asset: Asset) -> Bool {
+extension HederaWalletManager: AssetRequirementsManager {
+    func hasRequirements(for asset: Asset) -> Bool {
         // TODO: Andrey Fedorov - reuse the ongoing update if any
         switch asset {
         case .coin, .reserve:
@@ -422,8 +422,8 @@ extension HederaWalletManager: AssetPrerequisitesManager {
         }
     }
 
-    func fulfillPrerequisites(for asset: Asset, signer: any TransactionSigner) -> AnyPublisher<Void, Error> {
-        guard hasPrerequisites(for: asset) else {
+    func fulfillRequirements(for asset: Asset, signer: any TransactionSigner) -> AnyPublisher<Void, Error> {
+        guard hasRequirements(for: asset) else {
             return .justWithError(output: ())
         }
 

@@ -107,9 +107,9 @@ public protocol AddressResolver {
 
 /// Responsible for the token association creation (Hedera) and trust line setup (XRP, Stellar, Aptos, Algorand and other).
 @available(iOS 13.0, *)
-public protocol AssetPrerequisitesManager {
+public protocol AssetRequirementsManager {
     typealias Asset = Amount.AmountType
 
-    func hasPrerequisites(for asset: Asset) -> Bool
-    func fulfillPrerequisites(for asset: Asset, signer: any TransactionSigner) -> AnyPublisher<Void, Error> // TODO: Andrey Fedorov - return current status or something like this?
+    func hasRequirements(for asset: Asset) -> Bool
+    func fulfillRequirements(for asset: Asset, signer: any TransactionSigner) -> AnyPublisher<Void, Error> // TODO: Andrey Fedorov - return current status or something like this?
 }
