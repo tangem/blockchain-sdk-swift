@@ -74,14 +74,17 @@ final class PolygonTransactionHistoryMapper {
         amountType: Amount.AmountType
     ) -> TransactionRecord.TransactionType {
         switch amountType {
-        case .coin, .token where transaction.isContractInteraction:
+        case .coin where transaction.isContractInteraction,
+             .token where transaction.isContractInteraction:
             let methodName = transaction.functionName?.components(separatedBy: Constants.methodNameSeparator).first?.nilIfEmpty
             if let methodName {
                 return .contractMethodName(name: methodName)
             }
             // If the method name is absent in API - we fallback to the plain transfer
             return .transfer
-        case .coin, .token, .reserve:
+        case .coin, 
+             .token,
+             .reserve:
             // All other transactions are considered simple & plain transfers
             return .transfer
         }
