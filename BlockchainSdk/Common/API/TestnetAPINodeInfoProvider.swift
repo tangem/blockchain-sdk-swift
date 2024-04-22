@@ -190,8 +190,15 @@ struct TestnetAPINodeInfoProvider {
                 .init(url: URL(string: "https://rpc.notadegen.com/base/sepolia")!),
                 .init(url: URL(string: "https://base-sepolia-rpc.publicnode.com")!),
             ]
+        case .veChain:
+            return [
+                .init(url: URL(string: "https://testnet.vecha.in")!),
+                .init(url: URL(string: "https://sync-testnet.vechain.org")!),
+                .init(url: URL(string: "https://testnet.veblocks.net")!),
+                .init(url: URL(string: "https://testnetc1.vechain.network")!),
+            ]
         // TODO: Refactor in IOS-6639
-        case .bitcoin, .litecoin, .disChain, .rsk, .bitcoinCash, .binance, .cardano, .xrp, .ducatus, .tezos, .dogecoin, .solana, .polkadot, .kusama, .dash, .gnosis, .kaspa, .terraV1, .terraV2, .cronos, .octa, .veChain, .playa3ullGames, .radiant:
+        case .bitcoin, .litecoin, .disChain, .rsk, .bitcoinCash, .binance, .cardano, .xrp, .ducatus, .tezos, .dogecoin, .solana, .polkadot, .kusama, .dash, .gnosis, .kaspa, .terraV1, .terraV2, .cronos, .octa, .playa3ullGames, .radiant:
             return nil
         }
     }
