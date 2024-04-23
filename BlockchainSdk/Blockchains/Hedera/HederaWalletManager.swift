@@ -328,17 +328,9 @@ final class HederaWalletManager: BaseManager {
         )
         .withWeakCaptureOf(self)
         .tryMap { walletManager, input in
-            guard
-                let cryptoTransferServiceCostInUSD = Constants.cryptoTransferServiceCostInUSD,
-                let cryptoCreateServiceCostInUSD = Constants.cryptoCreateServiceCostInUSD,
-                let maxFeeMultiplier = Constants.maxFeeMultiplier
-            else {
-                throw WalletError.failedToGetFee
-            }
-
             let (exchangeRate, doesAccountExist) = input
-            let feeBase = doesAccountExist ? cryptoTransferServiceCostInUSD : cryptoCreateServiceCostInUSD
-            let feeValue = exchangeRate.nextHBARPerUSD * feeBase * maxFeeMultiplier
+            let feeBase = doesAccountExist ? Constants.cryptoTransferServiceCostInUSD : Constants.cryptoCreateServiceCostInUSD
+            let feeValue = exchangeRate.nextHBARPerUSD * feeBase * Constants.maxFeeMultiplier
             let feeAmount = Amount(with: walletManager.wallet.blockchain, value: feeValue)
             let fee = Fee(feeAmount)
 
@@ -507,11 +499,11 @@ private extension HederaWalletManager {
     private enum Constants {
         static let storageKeyPrefix = "hedera_wallet_"
         /// https://docs.hedera.com/hedera/networks/mainnet/fees
-        static let cryptoTransferServiceCostInUSD = Decimal(stringValue: "0.0001")
-        static let cryptoCreateServiceCostInUSD = Decimal(stringValue: "0.05")
+        static let cryptoTransferServiceCostInUSD = Decimal(stringValue: "0.0001")!
+        static let cryptoCreateServiceCostInUSD = Decimal(stringValue: "0.05")!
         static let tokenAssociateServiceCostInUSD = Decimal(stringValue: "0.05")!
         /// Hedera fees are low, allow 10% safety margin to allow usage of not precise fee estimate.
-        static let maxFeeMultiplier = Decimal(stringValue: "1.1")
+        static let maxFeeMultiplier = Decimal(stringValue: "1.1")!
     }
 }
 
