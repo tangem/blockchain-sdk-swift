@@ -132,10 +132,8 @@ extension SolanaWalletManager: TransactionSender {
         let decimalAmount = transaction.amount.value * token.decimalValue
         let intAmount = (decimalAmount.rounded() as NSDecimalNumber).uint64Value
         let signer = SolanaTransactionSigner(transactionSigner: signer, walletPublicKey: wallet.publicKey)
-        
         let tokenProgramIdPublisher = networkService.tokenProgramId(contractAddress: token.contractAddress)
-        let accountExistsPublisher = accountExists(destination: transaction.destinationAddress, amountType: transaction.amount.type)
-        
+
         return tokenProgramIdPublisher
             .flatMap { [weak self] tokenProgramId -> AnyPublisher<TransactionID, Error> in
                 guard let self else {
@@ -230,7 +228,7 @@ private extension SolanaWalletManager {
                     }
                 }
                 .eraseToAnyPublisher()
-        case .token(let token):
+        case .token:
             return .justWithError(output: 0)
         case .reserve:
             return .anyFail(error: BlockchainSdkError.failedToLoadFee)
