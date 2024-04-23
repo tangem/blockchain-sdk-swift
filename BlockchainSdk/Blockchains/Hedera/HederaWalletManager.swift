@@ -129,9 +129,8 @@ final class HederaWalletManager: BaseManager {
 
         cardTokens
             .map { token in
-                guard let balance = accountBalance
-                    .tokenBalances
-                    .first(where: { token.contractAddress.caseInsensitiveEquals(to: $0.contractAddress) })
+                guard
+                    let balance = accountBalance.tokenBalances.first(where: { token.contractAddress == $0.contractAddress })
                 else {
                     return Amount(with: token, value: .zero)
                 }
