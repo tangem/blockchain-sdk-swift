@@ -54,25 +54,6 @@ final class HederaWalletManager: BaseManager {
 
     // MARK: - Wallet update
 
-    private func makeTokenAssociationFeeExchangeRatePublisher(
-        alreadyAssociatedTokens: Set<String>
-    ) -> some Publisher<HederaExchangeRate?, Error> {
-        if cardTokens.allSatisfy({ alreadyAssociatedTokens.contains($0.contractAddress) }) {
-            // All added tokens (from `cardTokens`) are already associated with the current account;
-            // therefore there is no point in requesting an exchange rate to calculate the token association fee
-            //
-            // Performing an early exit
-            return Just(nil)
-                .setFailureType(to: Error.self)
-                .eraseToAnyPublisher()
-        }
-
-        return networkService
-            .getExchangeRate()
-            .map { $0 as HederaExchangeRate? }  // Combine can't implicitly bridge `Publisher<T, Error>` to `Publisher<T?, Error`
-            .eraseToAnyPublisher()
-    }
-
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
         cancellable = getAccountId()
             .withWeakCaptureOf(self)
@@ -151,30 +132,23 @@ final class HederaWalletManager: BaseManager {
         wallet.set(address: address)
     }
 
-    private func getFee(amount: Amount, doesAccountExistPublisher: some Publisher<Bool, Error>) -> AnyPublisher<[Fee], Error> {
-        return Publishers.CombineLatest(
-            networkService.getExchangeRate(),
-            doesAccountExistPublisher
-        )
-        .withWeakCaptureOf(self)
-        .tryMap { walletManager, input in
-            guard
-                let cryptoTransferServiceCostInUSD = Constants.cryptoTransferServiceCostInUSD,
-                let cryptoCreateServiceCostInUSD = Constants.cryptoCreateServiceCostInUSD,
-                let maxFeeMultiplier = Constants.maxFeeMultiplier
-            else {
-                throw WalletError.failedToGetFee
-            }
-
-            let (exchangeRate, doesAccountExist) = input
-            let feeBase = doesAccountExist ? cryptoTransferServiceCostInUSD : cryptoCreateServiceCostInUSD
-            let feeValue = exchangeRate.nextHBARPerUSD * feeBase * maxFeeMultiplier
-            let feeAmount = Amount(with: walletManager.wallet.blockchain, value: feeValue)
-            let fee = Fee(feeAmount)
-
-            return [fee]
+    private func makeTokenAssociationFeeExchangeRatePublisher(
+        alreadyAssociatedTokens: Set<String>
+    ) -> some Publisher<HederaExchangeRate?, Error> {
+        if cardTokens.allSatisfy({ alreadyAssociatedTokens.contains($0.contractAddress) }) {
+            // All added tokens (from `cardTokens`) are already associated with the current account;
+            // therefore there is no point in requesting an exchange rate to calculate the token association fee
+            //
+            // Performing an early exit
+            return Just(nil)
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
         }
-        .eraseToAnyPublisher()
+
+        return networkService
+            .getExchangeRate()
+            .map { $0 as HederaExchangeRate? }  // Combine can't implicitly bridge `Publisher<T, Error>` to `Publisher<T?, Error`
+            .eraseToAnyPublisher()
     }
 
     private func makePendingTransactionsInfoPublisher() -> some Publisher<[HederaTransactionInfo], Error> {
@@ -187,15 +161,6 @@ final class HederaWalletManager: BaseManager {
                 return walletManager.networkService.getTransactionInfo(transactionHash: pendingTransaction.hash)
             }
             .collect()
-    }
-
-    private static func makeTransactionValidStartDate() -> UnixTimestamp? {
-        // Subtracting `validStartDateDiff` from the `Date.now` to make sure that the tx valid start date has already passed
-        // The logic is the same as in the `Hedera.TransactionId.generateFrom(_:)` factory method
-        let validStartDateDiff = Int.random(in: 5_000_000_000..<8_000_000_000)
-        let validStartDate = Calendar.current.date(byAdding: .nanosecond, value: -validStartDateDiff, to: Date())
-
-        return validStartDate.flatMap(UnixTimestamp.init(date:))
     }
 
     // MARK: - Account ID fetching, caching and creation
@@ -354,6 +319,43 @@ final class HederaWalletManager: BaseManager {
             .mapError(WalletError.blockchainUnavailable(underlyingError:))
     }
 
+    // MARK: - Transaction dependencies and building
+
+    private func getFee(amount: Amount, doesAccountExistPublisher: some Publisher<Bool, Error>) -> AnyPublisher<[Fee], Error> {
+        return Publishers.CombineLatest(
+            networkService.getExchangeRate(),
+            doesAccountExistPublisher
+        )
+        .withWeakCaptureOf(self)
+        .tryMap { walletManager, input in
+            guard
+                let cryptoTransferServiceCostInUSD = Constants.cryptoTransferServiceCostInUSD,
+                let cryptoCreateServiceCostInUSD = Constants.cryptoCreateServiceCostInUSD,
+                let maxFeeMultiplier = Constants.maxFeeMultiplier
+            else {
+                throw WalletError.failedToGetFee
+            }
+
+            let (exchangeRate, doesAccountExist) = input
+            let feeBase = doesAccountExist ? cryptoTransferServiceCostInUSD : cryptoCreateServiceCostInUSD
+            let feeValue = exchangeRate.nextHBARPerUSD * feeBase * maxFeeMultiplier
+            let feeAmount = Amount(with: walletManager.wallet.blockchain, value: feeValue)
+            let fee = Fee(feeAmount)
+
+            return [fee]
+        }
+        .eraseToAnyPublisher()
+    }
+
+    private static func makeTransactionValidStartDate() -> UnixTimestamp? {
+        // Subtracting `validStartDateDiff` from the `Date.now` to make sure that the tx valid start date has already passed
+        // The logic is the same as in the `Hedera.TransactionId.generateFrom(_:)` factory method
+        let validStartDateDiff = Int.random(in: 5_000_000_000..<8_000_000_000)
+        let validStartDate = Calendar.current.date(byAdding: .nanosecond, value: -validStartDateDiff, to: Date())
+
+        return validStartDate.flatMap(UnixTimestamp.init(date:))
+    }
+
     private func sendCompiledTransaction(
         signedUsing signer: TransactionSigner,
         transactionFactory: @escaping (_ validStartDate: UnixTimestamp) throws -> HederaTransactionBuilder.CompiledTransaction
@@ -479,16 +481,6 @@ extension HederaWalletManager: AssetRequirementsManager {
     }
 }
 
-// MARK: - Convenience extensions
-
-private extension HederaAccountBalance {
-    var associatedTokensContractAddresses: Set<String> {
-        return tokenBalances
-            .map(\.contractAddress)
-            .toSet()
-    }
-}
-
 // MARK: - Constants
 
 private extension HederaWalletManager {
@@ -499,5 +491,15 @@ private extension HederaWalletManager {
         static let cryptoCreateServiceCostInUSD = Decimal(stringValue: "0.05")
         /// Hedera fees are low, allow 10% safety margin to allow usage of not precise fee estimate.
         static let maxFeeMultiplier = Decimal(stringValue: "1.1")
+    }
+}
+
+// MARK: - Convenience extensions
+
+private extension HederaAccountBalance {
+    var associatedTokensContractAddresses: Set<String> {
+        return tokenBalances
+            .map(\.contractAddress)
+            .toSet()
     }
 }
