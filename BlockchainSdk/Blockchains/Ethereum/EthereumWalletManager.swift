@@ -12,23 +12,14 @@ import Combine
 import TangemSdk
 import Moya
 
-class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, TransactionFeeProvider {
+class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable {
     var txBuilder: EthereumTransactionBuilder!
     var networkService: EthereumNetworkService!
-    
+
     var txCount: Int = -1
     var pendingTxCount: Int = -1
-    
-    var currentHost: String { networkService.host }
-    var allowsFeeSelection: Bool { true }
-    
-    private var findTokensSubscription: AnyCancellable? = nil
 
-    /// This method for implemented protocol `EthereumTransactionProcessor`
-    /// It can't be into extension because it will be override in the `OptimismWalletManager`
-    func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
-        getFee(to: destination, from: wallet.address, value: value, data: data)
-    }
+    var currentHost: String { networkService.host }
 
     override func update(completion: @escaping (Result<Void, Error>)-> Void) {
         cancellable = networkService
@@ -43,6 +34,24 @@ class EthereumWalletManager: BaseManager, WalletManager, ThenProcessable, Transa
                 completion(.success(()))
             })
     }
+
+    // It can't be into extension because it will be overridden in the `TelosWalletManager`
+    var allowsFeeSelection: Bool { true }
+
+    // It can't be into extension because it will be overridden in the `OptimismWalletManager`
+    func getFee(destination: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
+        networkService.getFee(
+            to: destination,
+            from: defaultSourceAddress,
+            value: value,
+            data: data?.hexString.addHexPrefix()
+        )
+        .withWeakCaptureOf(self)
+        .map { walletManager, ethereumFeeResponse in
+            walletManager.proceedFee(response: ethereumFeeResponse)
+        }
+        .eraseToAnyPublisher()
+    }
 }
 
 // MARK: - EthereumTransactionSigner
@@ -52,15 +61,15 @@ extension EthereumWalletManager: EthereumTransactionSigner {
         guard let txForSign = txBuilder.buildForSign(transaction: transaction, nonce: txCount) else {
             return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
         }
-        
+
         return signer.sign(hash: txForSign.hash, walletPublicKey: wallet.publicKey)
             .tryMap { [weak self] signature -> String in
                 guard let self = self else { throw WalletError.empty }
-                
+
                 guard let tx = self.txBuilder.buildForSend(transaction: txForSign.transaction, hash: txForSign.hash, signature: signature) else {
                     throw WalletError.failedToBuildTx
                 }
-                
+
                 return tx.hexString.lowercased().addHexPrefix()
             }
             .eraseToAnyPublisher()
@@ -71,17 +80,16 @@ extension EthereumWalletManager: EthereumTransactionSigner {
 
 extension EthereumWalletManager: EthereumNetworkProvider {
     func send(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error> {
-        buildForSend(transaction)
-            .flatMap {[weak self] serializedTransaction -> AnyPublisher<String, Error> in
-                guard let self = self else {
-                    return .anyFail(error: WalletError.empty)
-                }
-                
-                return self.networkService
-                    .send(transaction: serializedTransaction)
-                    .mapError { SendTxError(error: $0, tx: serializedTransaction) }
-                    .eraseToAnyPublisher()
-            }
+        guard let tx = txBuilder.buildForSend(transaction: transaction.transaction,
+                                              hash: transaction.hash,
+                                              signature: transaction.signature) else {
+            return .anyFail(error: WalletError.failedToBuildTx)
+        }
+
+        let serializedTransaction = tx.hexString.lowercased().addHexPrefix()
+        return networkService
+            .send(transaction: serializedTransaction)
+            .mapError { SendTxError(error: $0, tx: serializedTransaction) }
             .eraseToAnyPublisher()
     }
 
@@ -96,66 +104,71 @@ extension EthereumWalletManager: EthereumNetworkProvider {
             }
             .eraseToAnyPublisher()
     }
-    
+
+    // Balance
+
     func getBalance(_ address: String) -> AnyPublisher<Decimal, Error> {
         networkService.getBalance(address)
     }
-    
+
     func getTokensBalance(_ address: String, tokens: [Token]) -> AnyPublisher<[Token: Decimal], Error> {
         networkService.getTokensBalance(address, tokens: tokens)
     }
-    
+
+    // Nonce
+
     func getTxCount(_ address: String) -> AnyPublisher<Int, Error> {
         networkService.getTxCount(address)
     }
-    
+
     func getPendingTxCount(_ address: String) -> AnyPublisher<Int, Error> {
         networkService.getPendingTxCount(address)
+    }
+
+    // Fee
+
+    func getGasPrice() -> AnyPublisher<BigUInt, Error> {
+        networkService.getGasPrice()
+    }
+
+    func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
+        return networkService
+            .getGasLimit(to: to, from: from, value: value, data: data)
+            .eraseToAnyPublisher()
     }
 }
 
 // MARK: - Private
 
 private extension EthereumWalletManager {
-    func getFee(to: String, from: String, value: String?, data: Data?) -> AnyPublisher<[Fee], Error> {
-        networkService.getFee(to: to, from: from, value: value, data: data?.hexString.addHexPrefix())
-            .tryMap { [weak self] ethereumFeeResponse in
-                guard let self = self else {
-                    throw BlockchainSdkError.failedToLoadFee
-                }
-                
-                let decimalValue = self.wallet.blockchain.decimalValue
-                let blockchain = self.wallet.blockchain
+    func proceedFee(response: EthereumFeeResponse) -> [Fee] {
+        let fees = response.gasPrices.map { gasPrice in
+            let gasLimit = response.gasLimit
+            let feeValue = gasLimit * gasPrice
 
-                let fees = ethereumFeeResponse.gasPrices.map { gasPrice in
-                    let gasLimit = ethereumFeeResponse.gasLimit
-                    let feeValue = gasLimit * gasPrice
+            // TODO: Fix integer overflow. Think about BigInt
+            // https://tangem.atlassian.net/browse/IOS-4268
+            // https://tangem.atlassian.net/browse/IOS-5119
+            let fee = (feeValue.decimal ?? Decimal(UInt64(feeValue))) / wallet.blockchain.decimalValue
 
-                    // TODO: Fix integer overflow. Think about BigInt
-                    // https://tangem.atlassian.net/browse/IOS-4268
-                    // https://tangem.atlassian.net/browse/IOS-5119
-                    let fee = (feeValue.decimal ?? Decimal(UInt64(feeValue))) / decimalValue
+            let amount = Amount(with: wallet.blockchain, value: fee)
+            let parameters = EthereumFeeParameters(gasLimit: gasLimit, gasPrice: gasPrice)
 
-                    let amount = Amount(with: blockchain, value: fee)
-                    let parameters = EthereumFeeParameters(gasLimit: gasLimit, gasPrice: gasPrice)
+            return Fee(amount, parameters: parameters)
+        }
 
-                    return Fee(amount, parameters: parameters)
-                }
-
-                return fees
-            }
-            .eraseToAnyPublisher()
+        return fees
     }
-    
-    private func updateWallet(with response: EthereumInfoResponse) {
+
+    func updateWallet(with response: EthereumInfoResponse) {
         wallet.add(coinValue: response.balance)
         for tokenBalance in response.tokenBalances {
             wallet.add(tokenValue: tokenBalance.value, for: tokenBalance.key)
         }
-       
+
         txCount = response.txCount
         pendingTxCount = response.pendingTxCount
-        
+
         if txCount == pendingTxCount {
             wallet.clearPendingTransaction()
         } else if response.pendingTxs.isEmpty {
@@ -175,17 +188,18 @@ private extension EthereumWalletManager {
 
 // MARK: - TransactionFeeProvider
 
-extension EthereumWalletManager {
+extension EthereumWalletManager: TransactionFeeProvider {
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee],Error> {
         switch amount.type {
         case .coin:
             if let hexAmount = amount.encodedForSend {
-                return getFee(destination: destination, value: hexAmount)
+                return getFee(destination: destination, value: hexAmount, data: nil)
             }
         case .token(let token):
-            if let erc20Data = txBuilder.getData(for: amount, targetAddress: destination) {
-                return getFee(destination: token.contractAddress, data: erc20Data)
+            if let transferData = try? buildForTokenTransfer(destination: destination, amount: amount) {
+                return getFee(destination: token.contractAddress, value: nil, data: transferData)
             }
+
         case .reserve:
             break
         }
@@ -199,10 +213,10 @@ extension EthereumWalletManager {
 extension EthereumWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
         sign(transaction, signer: signer)
-            .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
+            .flatMap { [weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
                 self?.networkService.send(transaction: tx).tryMap {[weak self] hash in
                     guard let self = self else { throw WalletError.empty }
-                    
+
                     let mapper = PendingTransactionRecordMapper()
                     let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
                     self.wallet.addPendingTransaction(record)
@@ -211,20 +225,6 @@ extension EthereumWalletManager: TransactionSender {
                 .mapError { SendTxError(error: $0, tx: tx) }
                 .eraseToAnyPublisher() ?? .emptyFail
             }
-            .eraseToAnyPublisher()
-    }
-}
-
-// MARK: - EthereumGasLoader
-
-extension EthereumWalletManager: EthereumGasLoader {
-    func getGasPrice() -> AnyPublisher<BigUInt, Error> {
-        networkService.getGasPrice()
-    }
-    
-    func getGasLimit(to: String, from: String, value: String?, data: String?) -> AnyPublisher<BigUInt, Error> {
-        return networkService
-            .getGasLimit(to: to, from: from, value: value, data: data)
             .eraseToAnyPublisher()
     }
 }
@@ -241,33 +241,14 @@ extension EthereumWalletManager: SignatureCountValidator {
     }
 }
 
-// MARK: - EthereumTransactionProcessor
+// MARK: - EthereumTransactionDataBuilder
 
-extension EthereumWalletManager: EthereumTransactionProcessor {
-    var initialNonce: Int {
-        self.txCount
-    }
-    
-    func buildForSign(_ transaction: Transaction) -> AnyPublisher<CompiledEthereumTransaction, Error> {
-        guard let compiled = txBuilder.buildForSign(transaction: transaction, nonce: txCount) else {
-            return .anyFail(error: WalletError.failedToBuildTx)
-        }
-
-        return .justWithError(output: compiled)
-    }
-    
-    func buildForSend(_ transaction: SignedEthereumTransaction) -> AnyPublisher<String, Error> {
-        guard let tx = txBuilder.buildForSend(transaction: transaction.transaction,
-                                              hash: transaction.hash,
-                                              signature: transaction.signature) else {
-            return .anyFail(error: WalletError.failedToBuildTx)
-        }
-        
-        return .justWithError(output: tx.hexString.lowercased().addHexPrefix())
-    }
-    
+extension EthereumWalletManager: EthereumTransactionDataBuilder {
     func buildForApprove(spender: String, amount: Decimal) -> Data {
-        let bigUInt = EthereumUtils.mapToBigUInt(amount)
-        return ApproveERC20TokenMethod(spender: spender, amount: bigUInt).data
+        txBuilder.buildForApprove(spender: spender, amount: amount)
+    }
+
+    func buildForTokenTransfer(destination: String, amount: Amount) throws -> Data {
+        try txBuilder.buildForTokenTransfer(destination: destination, amount: amount)
     }
 }

@@ -435,10 +435,7 @@ public indirect enum Blockchain: Equatable, Hashable {
 
     public var tokenTypeName: String? {
         switch self {
-        case .ethereum,
-             .base:
-            // TODO: Andrey Fedorov - Add other Ethereum L2s here (IOS-6505)
-            return "ERC20"
+        case .ethereum: return "ERC20"
         case .binance: return "BEP2"
         case .bsc: return "BEP20"
         case .tron: return "TRC20"
@@ -452,19 +449,21 @@ public indirect enum Blockchain: Equatable, Hashable {
 
     public var canHandleTokens: Bool {
         switch self {
-        case _ where isEvm:
-            return true
+        case .taraxa:
+            return false
         case .binance,
                 .solana,
                 .tron,
                 .terraV1,
                 .veChain:
             return true
+        case _ where isEvm:
+            return true
         default:
             return false
         }
     }
-    
+
     public var feePaidCurrency: FeePaidCurrency {
         switch self {
         case .terraV1:
@@ -496,7 +495,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .moonriver,
                 .mantle,
                 .flare,
-                .taraxa:
+                .taraxa,
+                .base:
             return true
         case .fantom,
                 .tron,
@@ -1323,18 +1323,18 @@ extension Blockchain {
                 .playa3ullGames,
                 .pulsechain,
                 .aurora,
-                .manta,
                 .zkSync,
                 .moonbeam,
                 .polygonZkEVM,
                 .moonriver,
                 .mantle,
                 .flare,
-                .taraxa,
-                .base:
+                .taraxa:
             return EthereumWalletAssembly()
-        case .optimism:
-            return OptimismWalletAssembly()
+        case .optimism,
+             .manta,
+             .base:
+            return EthereumOptimisticRollupWalletAssembly()
         case .bitcoinCash:
             return BitcoinCashWalletAssembly()
         case .binance:

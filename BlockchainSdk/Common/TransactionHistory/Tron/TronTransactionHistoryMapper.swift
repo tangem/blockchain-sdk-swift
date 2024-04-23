@@ -195,7 +195,7 @@ final class TronTransactionHistoryMapper {
     ) -> TransactionRecord.TransactionType {
         switch amountType {
         case .coin where transaction.isContractInteraction:
-            return .contractMethod(id: transaction.contractName?.nilIfEmpty ?? .unknown)
+            return .contractMethodName(name: transaction.contractName ?? "")
         case .coin, .reserve, .token:
             // All TRC10 and TRC20 token transactions are considered simple & plain transfers
             return .transfer
@@ -330,8 +330,12 @@ private extension TronTransactionHistoryMapper {
     /// and https://github.com/tronprotocol/protocol/blob/master/English%20version%20of%20TRON%20Protocol%20document.md for reference
     /// - Note: Only a small subset of existing contact types are represented in this enum.
     enum TronContractType: Int {
+        /// Tron transfers.
         case transferContractType = 1
+        /// TRC10 token transfers.
         case transferAssetContractType = 2
+        /// TRC20 token transfers.
+        case triggerSmartContract = 31
     }
 }
 
@@ -357,6 +361,5 @@ private extension BlockBookAddressResponse.Transaction {
     var isContractInteraction: Bool {
         return contractType != nil
         && contractType != TronTransactionHistoryMapper.TronContractType.transferContractType.rawValue
-        && contractType != TronTransactionHistoryMapper.TronContractType.transferAssetContractType.rawValue
     }
 }

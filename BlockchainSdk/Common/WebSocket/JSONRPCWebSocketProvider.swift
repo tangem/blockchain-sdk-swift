@@ -29,7 +29,7 @@ actor JSONRPCWebSocketProvider {
         decoder: JSONDecoder = .init()
     ) async throws -> Result {
         counter += 1
-        let request = JSONRPCRequest(id: counter, method: method, params: parameter)
+        let request = JSONRPC.Request(id: counter, method: method, params: parameter)
         let message = try request.string(encoder: encoder)
         try await connection.send(.string(message))
         
@@ -44,12 +44,12 @@ actor JSONRPCWebSocketProvider {
         
         // Remove the fulfilled `continuation` from cache
         requests.removeValue(forKey: request.id)
-        let response = try decoder.decode(JSONRPCResponse<Result>.self, from: data)
-        
+        let response = try decoder.decode(JSONRPC.Response<Result, JSONRPC.APIError>.self, from: data)
+
         assert(request.id == response.id, "The response contains wrong id")
         log("Return result \(response.result)")
 
-        return response.result
+        return try response.result.get()
     }
     
     func cancel() {
@@ -109,37 +109,5 @@ extension JSONRPCWebSocketProvider: HostProvider {
 extension JSONRPCWebSocketProvider: CustomStringConvertible {
     nonisolated var description: String {
         objectDescription(self)
-    }
-}
-
-// MARK: - Error
-
-enum JSONRPCWebSocketProviderError: Error {
-    case invalidRequest
-}
-
-// MARK: - Models
-
-extension JSONRPCWebSocketProvider {
-    struct JSONRPCRequest<Parameter: Encodable>: Encodable {
-        let id: Int
-        let method: String
-        let params: Parameter
-        
-        func string(encoder: JSONEncoder = .init()) throws -> String {
-            let messageData = try encoder.encode(self)
-
-            guard let string = String(bytes: messageData, encoding: .utf8) else {
-                throw JSONRPCWebSocketProviderError.invalidRequest
-            }
-            
-            return string
-        }
-    }
-    
-    struct JSONRPCResponse<Result: Decodable>: Decodable {
-        let id: Int
-        let jsonrpc: String
-        let result: Result
     }
 }

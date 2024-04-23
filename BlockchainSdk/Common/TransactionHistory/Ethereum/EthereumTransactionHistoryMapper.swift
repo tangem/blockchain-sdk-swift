@@ -231,8 +231,8 @@ private extension EthereumTransactionHistoryMapper {
         if methodId.isEmpty {
             return .transfer
         }
-
-        return .contractMethod(id: methodId)
+        
+        return .contractMethodIdentifier(id: methodId)
     }
 
     func methodIdFromRawData(_ rawData: String?) -> String? {
