@@ -437,7 +437,6 @@ extension HederaWalletManager: WalletManager {
 
 extension HederaWalletManager: AssetRequirementsManager {
     func hasRequirements(for asset: Asset) -> Bool {
-        // TODO: Andrey Fedorov - reuse the ongoing update if any
         switch asset {
         case .coin, .reserve:
             return false
