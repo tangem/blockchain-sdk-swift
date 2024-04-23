@@ -454,6 +454,26 @@ extension HederaWalletManager: AssetRequirementsManager {
         }
     }
 
+    func requirementsCondition(for asset: Asset) -> AssetRequirementsCondition? {
+        guard hasRequirements(for: asset) else {
+            return nil
+        }
+
+        switch asset {
+        case .coin, .reserve:
+            return nil
+        case .token:
+            guard let tokenAssociationFeeExchangeRate else {
+                return .paidTransaction
+            }
+
+            let feeValue = tokenAssociationFeeExchangeRate * Constants.tokenAssociateServiceCostInUSD
+            let feeAmount = Amount.init(with: wallet.blockchain, value: feeValue)
+
+            return .paidTransactionWithFee(feeAmount: feeAmount)
+        }
+    }
+
     func fulfillRequirements(for asset: Asset, signer: any TransactionSigner) -> AnyPublisher<Void, Error> {
         guard hasRequirements(for: asset) else {
             return .justWithError(output: ())
@@ -489,6 +509,7 @@ private extension HederaWalletManager {
         /// https://docs.hedera.com/hedera/networks/mainnet/fees
         static let cryptoTransferServiceCostInUSD = Decimal(stringValue: "0.0001")
         static let cryptoCreateServiceCostInUSD = Decimal(stringValue: "0.05")
+        static let tokenAssociateServiceCostInUSD = Decimal(stringValue: "0.05")!
         /// Hedera fees are low, allow 10% safety margin to allow usage of not precise fee estimate.
         static let maxFeeMultiplier = Decimal(stringValue: "1.1")
     }
