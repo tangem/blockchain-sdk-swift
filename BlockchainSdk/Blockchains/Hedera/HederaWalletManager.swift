@@ -17,8 +17,9 @@ final class HederaWalletManager: BaseManager {
     private let dataStorage: BlockchainDataStorage
     private let accountCreator: AccountCreator
 
-    // TODO: Andrey Fedorov - Should be cached on disk using `dataStorage`
-    private var associatedTokensContractAddresses: Set<String> = []
+    /// HBARs per 1 USD
+    private var tokenAssociationFeeExchangeRate: Decimal?
+    private var associatedTokensContractAddresses: Set<String> = [] // TODO: Andrey Fedorov - Should be cached on disk using `dataStorage`
 
     // Public key as a masked string (only the last four characters are revealed), suitable for use in logs
     private lazy var maskedPublicKey: String = {
@@ -53,6 +54,25 @@ final class HederaWalletManager: BaseManager {
 
     // MARK: - Wallet update
 
+    private func makeTokenAssociationFeeExchangeRatePublisher(
+        alreadyAssociatedTokens: Set<String>
+    ) -> some Publisher<HederaExchangeRate?, Error> {
+        if cardTokens.allSatisfy({ alreadyAssociatedTokens.contains($0.contractAddress) }) {
+            // All added tokens (from `cardTokens`) are already associated with the current account;
+            // therefore there is no point in requesting an exchange rate to calculate the token association fee
+            //
+            // Performing an early exit
+            return Just(nil)
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        }
+
+        return networkService
+            .getExchangeRate()
+            .map { $0 as HederaExchangeRate? }  // Combine can't implicitly bridge `Publisher<T, Error>` to `Publisher<T?, Error`
+            .eraseToAnyPublisher()
+    }
+
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
         cancellable = getAccountId()
             .withWeakCaptureOf(self)
@@ -61,6 +81,17 @@ final class HederaWalletManager: BaseManager {
                     walletManager.networkService.getBalance(accountId: accountId),
                     walletManager.makePendingTransactionsInfoPublisher()
                 )
+            }
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, input in
+                let (accountBalance, transactionsInfo) = input
+                let alreadyAssociatedTokens = accountBalance.associatedTokensContractAddresses
+
+                return walletManager
+                    .makeTokenAssociationFeeExchangeRatePublisher(alreadyAssociatedTokens: alreadyAssociatedTokens)
+                    .map { exchangeRate in
+                        return (accountBalance, transactionsInfo, exchangeRate)
+                    }
             }
             .sink(
                 receiveCompletion: { [weak self] result in
@@ -73,9 +104,9 @@ final class HederaWalletManager: BaseManager {
                         completion(.success(()))
                     }
                 },
-                receiveValue: { [weak self] input in
-                    let (accountBalance, transactionsInfo) = input
+                receiveValue: { [weak self] accountBalance, transactionsInfo, exchangeRate in
                     self?.updateWallet(accountBalance: accountBalance, transactionsInfo: transactionsInfo)
+                    self?.updateWalletTokens(accountBalance: accountBalance, exchangeRate: exchangeRate)
                 }
             )
     }
@@ -90,11 +121,11 @@ final class HederaWalletManager: BaseManager {
 
         wallet.removePendingTransaction(where: completedTransactionHashes.contains(_:))
         wallet.add(coinValue: accountBalance.hbarBalance)
+    }
 
-        associatedTokensContractAddresses = accountBalance
-            .tokenBalances
-            .map(\.contractAddress)
-            .toSet()
+    private func updateWalletTokens(accountBalance: HederaAccountBalance, exchangeRate: HederaExchangeRate?) {
+        tokenAssociationFeeExchangeRate = exchangeRate?.nextHBARPerUSD
+        associatedTokensContractAddresses = accountBalance.associatedTokensContractAddresses
 
         cardTokens
             .map { token in
@@ -446,6 +477,16 @@ extension HederaWalletManager: AssetRequirementsManager {
             .map { _ in () }
             .eraseToAnyPublisher()
         }
+    }
+}
+
+// MARK: - Convenience extensions
+
+private extension HederaAccountBalance {
+    var associatedTokensContractAddresses: Set<String> {
+        return tokenBalances
+            .map(\.contractAddress)
+            .toSet()
     }
 }
 
