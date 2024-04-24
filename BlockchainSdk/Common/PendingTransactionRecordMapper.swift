@@ -18,6 +18,7 @@ struct PendingTransactionRecordMapper {
             fee: Fee(.zeroCoin(for: blockchain)),
             date: Date(),
             isIncoming: false,
+            transactionType: .transfer,
             transactionParams: nil
         )
     }
@@ -36,11 +37,15 @@ struct PendingTransactionRecordMapper {
             fee: transaction.fee,
             date: date,
             isIncoming: isIncoming,
+            transactionType: .transfer,
             transactionParams: transaction.params
         )
     }
     
-    func mapToPendingTransactionRecord(_ pendingTransaction: PendingTransaction, blockchain: Blockchain) -> PendingTransactionRecord {
+    func mapToPendingTransactionRecord(
+        _ pendingTransaction: PendingTransaction,
+        blockchain: Blockchain
+    ) -> PendingTransactionRecord {
         PendingTransactionRecord(
             hash: pendingTransaction.hash,
             source: pendingTransaction.source,
@@ -49,6 +54,7 @@ struct PendingTransactionRecordMapper {
             fee: Fee(Amount(with: blockchain, value: pendingTransaction.fee ?? 0)),
             date: pendingTransaction.date,
             isIncoming: pendingTransaction.isIncoming,
+            transactionType: .transfer,
             transactionParams: pendingTransaction.transactionParams
         )
     }
