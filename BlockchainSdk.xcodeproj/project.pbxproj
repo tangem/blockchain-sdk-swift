@@ -5263,7 +5263,7 @@
 			repositoryURL = "https://github.com/tangem/hedera-sdk-swift.git";
 			requirement = {
 				kind = exactVersion;
-				version = "0.26.0-tangem2";
+				version = "0.26.0-tangem3";
 			};
 		};
 		B66B57712B6C532F00320FF9 /* XCRemoteSwiftPackageReference "CryptoSwift" */ = {
