@@ -56,7 +56,8 @@ final class HederaTransactionBuilder {
         validStartDate: UnixTimestamp,
         nodeAccountIds: [Int]?
     ) throws -> CompiledTransaction {
-        let feeValue = transaction.fee.amount.value * pow(Decimal(10), transaction.fee.amount.decimals) // TODO: Andrey Fedorov - Calculate fee for token transfers (including tokens with custom fees)
+        // At the moment, we intentionally don't support custom fees for HTS tokens (HIP-18 https://hips.hedera.com/HIP/hip-18.html)
+        let feeValue = transaction.fee.amount.value * pow(Decimal(10), transaction.fee.amount.decimals)
         let feeRoundedValue = feeValue.rounded(roundingMode: .up)
         let feeAmount = try Hbar(feeRoundedValue, .tinybar)
 

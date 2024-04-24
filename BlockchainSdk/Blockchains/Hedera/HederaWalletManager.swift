@@ -108,6 +108,7 @@ final class HederaWalletManager: BaseManager {
         tokenAssociationFeeExchangeRate = exchangeRate?.nextHBARPerUSD
         associatedTokensContractAddresses = accountBalance.associatedTokensContractAddresses
 
+        // Using HTS tokens balances from a remote list of tokens for tokens in a local list
         cardTokens
             .map { token in
                 guard

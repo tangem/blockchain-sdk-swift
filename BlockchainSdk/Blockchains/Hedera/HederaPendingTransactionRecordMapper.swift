@@ -11,7 +11,7 @@ import Foundation
 struct HederaPendingTransactionRecordMapper {
     let blockchain: Blockchain
 
-    /// - Note: Just a proxy for `PendingTransactionRecordMapper.mapToPendingTransactionRecord(transaction:hash:date:isIncoming:)`.
+    /// - Note: Just a shim for `PendingTransactionRecordMapper.mapToPendingTransactionRecord(transaction:hash:date:isIncoming:)`.
     func mapToTransferPendingTransactionRecord(
         transaction: Transaction,
         hash: String

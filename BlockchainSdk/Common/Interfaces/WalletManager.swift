@@ -112,5 +112,5 @@ public protocol AssetRequirementsManager {
 
     func hasRequirements(for asset: Asset) -> Bool
     func requirementsCondition(for asset: Asset) -> AssetRequirementsCondition?
-    func fulfillRequirements(for asset: Asset, signer: any TransactionSigner) -> AnyPublisher<Void, Error> // TODO: Andrey Fedorov - return current status or something like this?
+    func fulfillRequirements(for asset: Asset, signer: any TransactionSigner) -> AnyPublisher<Void, Error>
 }
