@@ -121,9 +121,22 @@ final class HederaWalletManager: BaseManager {
             .forEach { wallet.add(amount: $0) }
     }
 
-    private func updateWalletWithPendingTransaction(_ transaction: Transaction, sendResult: TransactionSendResult) {
-        let mapper = PendingTransactionRecordMapper()
-        let pendingTransaction = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: sendResult.hash)
+    private func updateWalletWithPendingTransferTransaction(_ transaction: Transaction, sendResult: TransactionSendResult) {
+        let mapper = HederaPendingTransactionRecordMapper(blockchain: wallet.blockchain)
+        let pendingTransaction = mapper.mapToTransferPendingTransactionRecord(
+            transaction: transaction,
+            hash: sendResult.hash
+        )
+        wallet.addPendingTransaction(pendingTransaction)
+    }
+
+    private func updateWalletWithPendingTokenAssociationTransaction(_ token: Token, sendResult: TransactionSendResult) {
+        let mapper = HederaPendingTransactionRecordMapper(blockchain: wallet.blockchain)
+        let pendingTransaction = mapper.mapToTokenAssociationPendingTransactionRecord(
+            token: token,
+            hash: sendResult.hash,
+            accountId: wallet.address
+        )
         wallet.addPendingTransaction(pendingTransaction)
     }
 
@@ -433,11 +446,9 @@ extension HederaWalletManager: WalletManager {
             )
         }
         .withWeakCaptureOf(self)
-        .handleEvents(
-            receiveOutput: { walletManager, sendResult in
-                walletManager.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)
-            }
-        )
+        .handleEvents(receiveOutput: { walletManager, sendResult in
+            walletManager.updateWalletWithPendingTransferTransaction(transaction, sendResult: sendResult)
+        })
         .map(\.1)
         .eraseToAnyPublisher()
     }
@@ -496,6 +507,9 @@ extension HederaWalletManager: AssetRequirementsManager {
                 )
             }
             .withWeakCaptureOf(self)
+            .handleEvents(receiveOutput: { walletManager, sendResult in
+                walletManager.updateWalletWithPendingTokenAssociationTransaction(token, sendResult: sendResult)
+            })
             .map { _ in () }
             .eraseToAnyPublisher()
         }
