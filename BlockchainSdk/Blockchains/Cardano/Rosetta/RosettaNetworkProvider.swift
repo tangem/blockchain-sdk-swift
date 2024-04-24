@@ -144,7 +144,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     /// `482d88eb2d3b40b8a4e6bb8545cef842a5703e8f9eab9e3caca5c2edd1f31a7f:0`
     /// When the first part is transactionHash
     /// And the second path is outputIndex
-    private func parseIdentifier(_ identifier: String?) -> (index: Int, hash: String)? {
+    private func parseIdentifier(_ identifier: String?) -> (index: UInt64, hash: String)? {
         guard let splittedIdentifier = identifier?.split(separator: ":"), splittedIdentifier.count == 2 else {
             return nil
         }

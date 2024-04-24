@@ -247,12 +247,6 @@ extension CardanoWalletManager: CardanoWithdrawalRestrictable {
     }
 
     private func minChange(exclude: Amount.AmountType) throws -> Amount {
-        // If we have a token then we have to calculate min change value
-        // Otherwise it will be 1 ADA
-        guard wallet.amounts.contains(where: { $0.key.isToken }) else {
-            return dustValue
-        }
-
         let minChangeValue = try transactionBuilder.minChange(exclude: exclude.token)
         let minChangeDecimal = Decimal(minChangeValue) / wallet.blockchain.decimalValue
         return Amount(with: wallet.blockchain, value: minChangeDecimal)
