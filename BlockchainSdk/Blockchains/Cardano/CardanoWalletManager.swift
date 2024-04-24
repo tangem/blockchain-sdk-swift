@@ -158,9 +158,9 @@ extension CardanoWalletManager: WithdrawalSuggestionProvider {
     }
 }
 
-// MARK: - CardanoTokenWithdrawalRestrictable
+// MARK: - CardanoWithdrawalRestrictable
 
-extension CardanoWalletManager: CardanoTokenWithdrawalRestrictable {
+extension CardanoWalletManager: CardanoWithdrawalRestrictable {
     func validateCardanoWithdrawal(amount: Amount, fee: Amount) throws {
         let hasAnotherTokenWithBalance = wallet.amounts
             .filter { $0.key != amount.type }

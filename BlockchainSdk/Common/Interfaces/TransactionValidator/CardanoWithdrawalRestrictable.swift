@@ -1,5 +1,5 @@
 //
-//  CardanoTokenWithdrawalRestrictable.swift
+//  CardanoWithdrawalRestrictable.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 19.04.2024.
@@ -8,6 +8,6 @@
 
 import Foundation
 
-protocol CardanoTokenWithdrawalRestrictable {
+protocol CardanoWithdrawalRestrictable {
     func validateCardanoWithdrawal(amount: Amount, fee: Amount) throws
 }

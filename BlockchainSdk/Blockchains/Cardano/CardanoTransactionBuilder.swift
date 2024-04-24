@@ -85,7 +85,9 @@ extension CardanoTransactionBuilder {
         return Decimal(input.plan.fee)
     }
 
-    /// - If the amount is Cardano  -> just `amount`
+    /// Use this method when calculating the ada value which will be sent in the transaction
+    /// Conditions:
+    /// - If the amount is `Cardano` then will return  just `amount`
     /// - If the amount is a `token` and enough for the change then will return `minAdaValue`
     /// - If the amount is a `token` and not enough for the change then will return `balance - fee`
     func buildCardanoSpendingAdaValue(amount: Amount, fee: Amount) throws -> UInt64 {
@@ -103,6 +105,7 @@ extension CardanoTransactionBuilder {
         }
     }
 
+    /// Use this method for calculate min value for the change output
     func minChange(exclude: Token?) throws -> UInt64 {
         let excludeAsset = try exclude.map { try self.asset(for: $0) }
         let assetsBalances = outputs
@@ -251,11 +254,6 @@ extension CardanoTransactionBuilder {
 
         input.plan = AnySigner.plan(input: input, coin: coinType)
 
-//        let change = input.plan.change
-//        if change > 0, change < Constants.dust {
-//            throw CardanoError.lowAda
-//        }
-
         if input.plan.error != .ok {
             Log.debug("CardanoSigningInput has a error: \(input.plan.error)")
             throw WalletError.failedToBuildTx
@@ -269,11 +267,6 @@ extension CardanoTransactionBuilder {
     enum InputAmountType {
         case ada(UInt64)
         case token(token: Token, amount: UInt64, adaValue: UInt64)
-    }
-
-    private enum Constants {
-        /// Min change is 1 ADA. It's also a dust value.
-        static let dust: UInt64 = 1_000_000
     }
 }
 
