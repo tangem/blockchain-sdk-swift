@@ -12,10 +12,10 @@ struct DisChainExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? { nil }
     
     func url(transaction hash: String) -> URL? {
-        return URL(string: "https://explorer.dischain.xyz/ethf/tx/\(hash)")
+        URL(string: "https://www.oklink.com/dis/tx/\(hash)")
     }
     
     func url(address: String, contractAddress: String?) -> URL? {
-        return URL(string: "https://explorer.dischain.xyz/ethf/address/\(address)")
+        URL(string: "https://www.oklink.com/dis/address/\(address)")
     }
 }
