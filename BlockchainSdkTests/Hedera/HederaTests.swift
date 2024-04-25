@@ -197,6 +197,153 @@ final class HederaTests: XCTestCase {
         XCTAssertEqual(encodedTransaction, expectedEncodedTransaction)
     }
 
+    // MARK: - Token association
+
+    func testSigningTokenAssociationECDSA() throws {
+        setUp(curve: .secp256k1)
+
+        // MARK: - Public & private keys
+
+        // ECDSA private key for the "tiny escape drive pupil flavor endless love walk gadget match filter luxury"
+        // mnemonic generated using Hedera JavaScript SDK
+        let hederaPrivateKeyRaw = Data(hexString: "0x3030020100300706052b8104000a04220420e507077d8d5bab32debcbbc651fc4ca74660523976502beabee15a1662d77ed1")
+
+        // Hedera ECDSA DER prefix:
+        // https://github.com/hashgraph/hedera-sdk-js/blob/f65ab2a4cf5bb026fc47fcf8955e81c2b82a6ff3/packages/cryptography/src/EcdsaPrivateKey.js#L7
+        let hederaDerPrefixPrivate = Data(hexString: "0x3030020100300706052b8104000a04220420")
+
+        // Stripping out Hedera DER prefix from the given private key
+        let privateKeyRaw = Data(hederaPrivateKeyRaw[hederaDerPrefixPrivate.count...])
+        let privateKey = try XCTUnwrap(WalletCore.PrivateKey(data: privateKeyRaw))
+        let publicKeyRaw = try privateKey.getPublicKeyByType(pubkeyType: .init(blockchain)).data
+
+        // MARK: - Building & compiling transaction
+
+        let sourceAddress = "0.0.3573746"
+
+        let validStartDate = UnixTimestamp(seconds: 1714072348, nanoseconds: 71610839)
+
+        let tokenAssociation = HederaTransactionBuilder.TokenAssociation(
+            accountId: sourceAddress,
+            contractAddress: token.contractAddress
+        )
+
+        let transactionBuilder = HederaTransactionBuilder(
+            publicKey: publicKeyRaw,
+            curve: blockchain.curve,
+            isTestnet: blockchain.isTestnet
+        )
+
+        let compiledTransaction = try transactionBuilder.buildTokenAssociationForSign(
+            tokenAssociation: tokenAssociation,
+            validStartDate: validStartDate,
+            nodeAccountIds: [7]
+        )
+
+        // MARK: - Signing transaction
+
+        let curve = try Curve(blockchain: blockchain)
+        let hashesToSign = try compiledTransaction.hashesToSign()
+
+        hashesToSign.forEach { sizeTester.testTxSize($0) }
+
+        let signatures = try hashesToSign.map { digest in
+            let signature = try XCTUnwrap(privateKey.sign(digest: digest, curve: curve))
+            return try Secp256k1Signature(with: signature).normalize()
+        }
+
+        let signedTransaction = try transactionBuilder.buildForSend(transaction: compiledTransaction, signatures: signatures)
+
+        // MARK: - Validating results
+
+        let encodedTransaction = try signedTransaction.toBytes().hexString
+
+        // Hedera SAUCE token association transaction (testnet):
+        // https://hashscan.io/testnet/transaction/1714072348.910968367
+        //
+        // Made using Hedera™ Swift SDK 0.26.0, https://github.com/hashgraph/hedera-sdk-swift
+        let expectedEncodedTransaction = """
+        0AA1012A9E010A330A140A0B089CD6AAB10610D7E39222120518F28FDA0112021807188084AF5F22020878C2020D0A0518F2\
+        8FDA01120418C69E4812670A650A2103E44158C7CFF81F6A0F01E9D27D8FF9A734EF0F83933499A13BB61FCA447AC4E63240\
+        185208905853175B9536953F2D524B1E4E9F50EAF17DABC0569C917F60945C3D26FA5ED71A13057B5DF666FC77138A17E1B5\
+        5861C13453C11D2B3ABA28764C5C
+        """
+
+        XCTAssertEqual(encodedTransaction, expectedEncodedTransaction)
+    }
+
+    func testSigningTokenAssociationEdDSA() throws {
+        setUp(curve: .ed25519_slip0010)
+
+        // MARK: - Public & private keys
+
+        // EdDSA private key for the "tiny escape drive pupil flavor endless love walk gadget match filter luxury"
+        // mnemonic generated using Hedera JavaScript SDK
+        let hederaPrivateKeyRaw = Data(hexString: "0x302e020100300506032b657004220420ed05eaccdb9b54387e986166eae8f7032684943d28b2894db1ee0ff047c52451")
+
+        // Hedera EdDSA DER prefix:
+        // https://github.com/hashgraph/hedera-sdk-js/blob/e0cd39c84ab189d59a6bcedcf16e4102d7bb8beb/packages/cryptography/src/Ed25519PrivateKey.js#L8
+        let hederaDerPrefixPrivate = Data(hexString: "0x302e020100300506032b657004220420")
+
+        // Stripping out Hedera DER prefix from the given private key
+        let privateKeyRaw = Data(hederaPrivateKeyRaw[hederaDerPrefixPrivate.count...])
+        let privateKey = try XCTUnwrap(WalletCore.PrivateKey(data: privateKeyRaw))
+        let publicKeyRaw = try privateKey.getPublicKeyByType(pubkeyType: .init(blockchain)).data
+
+        // MARK: - Building & compiling transaction
+
+        let sourceAddress = "0.0.3551642"
+
+        let validStartDate = UnixTimestamp(seconds: 1714073813, nanoseconds: 938888916)
+
+        let tokenAssociation = HederaTransactionBuilder.TokenAssociation(
+            accountId: sourceAddress,
+            contractAddress: token.contractAddress
+        )
+
+        let transactionBuilder = HederaTransactionBuilder(
+            publicKey: publicKeyRaw,
+            curve: blockchain.curve,
+            isTestnet: blockchain.isTestnet
+        )
+
+        let compiledTransaction = try transactionBuilder.buildTokenAssociationForSign(
+            tokenAssociation: tokenAssociation,
+            validStartDate: validStartDate,
+            nodeAccountIds: [9]
+        )
+
+        // MARK: - Signing transaction
+
+        let curve = try Curve(blockchain: blockchain)
+        let hashesToSign = try compiledTransaction.hashesToSign()
+
+        hashesToSign.forEach { sizeTester.testTxSize($0) }
+
+        let signatures = try hashesToSign.map { digest in
+            return try XCTUnwrap(privateKey.sign(digest: digest, curve: curve))
+        }
+
+        let signedTransaction = try transactionBuilder.buildForSend(transaction: compiledTransaction, signatures: signatures)
+
+        // MARK: - Validating results
+
+        let encodedTransaction = try signedTransaction.toBytes().hexString
+
+        // Hedera SAUCE token association transaction (testnet):
+        // https://hashscan.io/testnet/transaction/1714073814.800989411
+        //
+        // Made using Hedera™ Swift SDK 0.26.0, https://github.com/hashgraph/hedera-sdk-swift
+        let expectedEncodedTransaction = """
+        0AA1012A9E010A340A150A0C08D5E1AAB10610D49DD9BF031205189AE3D80112021809188084AF5F22020878C2020D0A0518\
+        9AE3D801120418C69E4812660A640A20236B71BED98B98EACDEA958B312750E91DCCBE1290CE005F2A245243E3D6182C1A40\
+        56A90F87ECF61F116ABAA39D179403B4DD491EF5CF97695BA0BB723D6D83E9E620E820F295E7C25804AEB32DE44217233B01\
+        C350BB8874E27F60BFD823283A06
+        """
+
+        XCTAssertEqual(encodedTransaction, expectedEncodedTransaction)
+    }
+
     func testSigningTokenTransactionECDSA() throws {
         setUp(curve: .secp256k1)
 
