@@ -149,7 +149,7 @@ This document describes the contents of the tests and the addition of new ones.
 
 | Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
-| Generate transaction for network currency ``buildForSend`` method | ⭕️ | For binance, it is necessary to add transaction compiled | |
+| Generate transaction for network currency ``buildForSend`` method | ⭕️ | For BitcoinCash, it is necessary to add transaction compiled | |
 
 
 
@@ -564,7 +564,13 @@ This document describes the contents of the tests and the addition of new ones.
 
 
 
-## TON
+## Telos [EVM]
+
+- ``No need implement any tests``
+
+
+
+## Tezos
 
 - ``Account, EdDSA, ed25519, none, PoS``
 
@@ -590,3 +596,137 @@ This document describes the contents of the tests and the addition of new ones.
 | Describe | Done | Comments | Task |
 | -------- | ---- | ---------- | ---- |
 | Verify correct transaction for ``ed25519 / ed25519_slip0010`` curves | ✅ | | |
+| Generate transaction for network currency ``buildForSend`` method | ⭕️ | For BitcoinCash, it is necessary to add transaction compiled | |
+
+
+
+## TON
+
+- ``Account, ECDSA/EdDSA, secp256k1/secp256r1/ed25519, BLAKE2, PoS``
+
+### Common Tests
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Generation address from key | ✅ | Success verify any curves ``secp256k1/secp256r1/ed25519`` | |
+| Verify assert for not supported key | ✅ | | |
+| Common address validation positive & negative | ⚠️ | Need more tests for blockchain | |
+
+### Vector Tests [Only WalletCore blockchain]
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Add raw trust_wallet_compare_vector.json | ✅ | | |
+| Add raw valid_address_vectors.json | ✅ | | |
+| Add raw blockchain_vectors.json | ✅ | | |
+
+### Blockchain specify Tests
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Verify correct transaction for ``ed25519 / ed25519_slip0010`` curves | ✅ | | |
+
+
+
+## Tron
+
+- ``UTXO, ECDSA, secp256k1, SHA-256, DPoS``
+
+### Common Tests
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Generation address from key | ✅ | Success verify curves ``secp256k1`` | |
+| Verify assert for not supported key | ⭕️ | | |
+| Common address validation positive & negative | ⚠️ | Need more tests for blockchain | |
+
+### Vector Tests [Only WalletCore blockchain]
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Add raw trust_wallet_compare_vector.json | ✅ | | |
+| Add raw valid_address_vectors.json | ✅ | | |
+| Add raw blockchain_vectors.json | ✅ | | |
+
+### Blockchain specify Tests
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Generate transaction for network currency ``buildForSend`` method | ✅ | | |
+| Generate transaction for token currency ``buildForSend`` method | ✅ | | |
+
+
+
+## VeChain
+
+- ``Account, secp256k1``
+
+### Common Tests
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Generation address from key | ✅ | Full completed address generation from key and convertation | |
+| Verify assert for not supported key | ✅ | | |
+| Common address validation positive & negative | ✅ | | |
+
+### Vector Tests [Only WalletCore blockchain]
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Add raw trust_wallet_compare_vector.json | ✅ | | |
+| Add raw valid_address_vectors.json | ✅ | | |
+| Add raw blockchain_vectors.json | ✅ | | |
+
+### Blockchain specify Tests
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Generate transaction for network currency ``buildForSend`` method | ✅ | | |
+| Generate transaction for token currency ``buildForSend`` method | ✅ | | |
+
+
+
+## XDC
+
+- ``Account, secp256k1``
+
+### Common Tests
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Verify address converter | ✅ | | |
+
+### Blockchain specify Tests
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Generate transaction for network currency ``buildForSend`` method | ✅ | | |
+| Generate transaction for token currency ``buildForSend`` method | ✅ | | |
+
+
+
+## XRP
+
+- ``Account, secp256k1``
+
+### Common Tests
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Generation address from key | ✅ | Success verify any curves ``secp256k1/secp256r1/ed25519`` | |
+| Verify assert for not supported key | ✅ | | |
+| Common address validation positive & negative | ✅ | Need to add any positive / negative | |
+
+### Vector Tests [Only WalletCore blockchain]
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Add raw trust_wallet_compare_vector.json | ✅ | | |
+| Add raw valid_address_vectors.json | ✅ | | |
+| Add raw blockchain_vectors.json | ✅ | | |
+
+### Blockchain specify Tests
+
+| Describe | Done | Comments | Task |
+| -------- | ---- | ---------- | ---- |
+| Generate transaction for network currency ``buildForSend`` method | ⭕️ | | |
