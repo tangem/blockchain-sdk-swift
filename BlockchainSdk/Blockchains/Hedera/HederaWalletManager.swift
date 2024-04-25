@@ -511,7 +511,7 @@ extension HederaWalletManager: AssetRequirementsManager {
             .handleEvents(receiveOutput: { walletManager, sendResult in
                 walletManager.updateWalletWithPendingTokenAssociationTransaction(token, sendResult: sendResult)
             })
-            .map { _ in () }
+            .mapToVoid()
             .eraseToAnyPublisher()
         }
     }

@@ -20,6 +20,10 @@ extension Publisher {
             return (object, output)
         }
     }
+
+    func mapToVoid() -> Publishers.Map<Self, Void> {
+        map { _ in () }
+    }
 }
 
 extension Publisher where Failure == Swift.Error {
