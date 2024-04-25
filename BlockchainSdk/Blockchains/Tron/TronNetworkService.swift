@@ -154,7 +154,9 @@ class TronNetworkService: MultiNetworkProvider {
                         throw WalletError.failedToParseNetworkResponse
                     }
                     
-                    let bigIntValue = BigUInt(Data(hex: hexValue))
+                    // Need use 32 byte for obtain right value
+                    let substringHexSizeValue = String(hexValue.prefix(64))
+                    let bigIntValue = BigUInt(Data(hex: substringHexSizeValue))
                     
                     let formatted = EthereumUtils.formatToPrecision(
                         bigIntValue,
@@ -164,7 +166,7 @@ class TronNetworkService: MultiNetworkProvider {
                         fallbackToScientific: false
                     )
                     
-                    guard let decimalValue = Decimal(formatted) else {
+                    guard let decimalValue = Decimal(stringValue: formatted) else {
                         throw WalletError.failedToParseNetworkResponse
                     }
                     
