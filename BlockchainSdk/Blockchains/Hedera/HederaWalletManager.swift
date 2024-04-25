@@ -12,6 +12,8 @@ import TangemSdk
 import struct Hedera.AccountId
 
 final class HederaWalletManager: BaseManager {
+    fileprivate typealias AssociatedTokens = Set<String>
+
     private let networkService: HederaNetworkService
     private let transactionBuilder: HederaTransactionBuilder
     private let dataStorage: BlockchainDataStorage
@@ -19,7 +21,15 @@ final class HederaWalletManager: BaseManager {
 
     /// HBARs per 1 USD
     private var tokenAssociationFeeExchangeRate: Decimal?
-    private var associatedTokensContractAddresses: Set<String> = [] // TODO: Andrey Fedorov - Should be cached on disk using `dataStorage`
+    private var associatedTokens: AssociatedTokens?
+
+    private var storageKeySuffix: String {
+        return wallet
+            .publicKey
+            .blockchainKey
+            .getSha256()
+            .hexString
+    }
 
     // Public key as a masked string (only the last four characters are revealed), suitable for use in logs
     private lazy var maskedPublicKey: String = {
@@ -55,7 +65,11 @@ final class HederaWalletManager: BaseManager {
     // MARK: - Wallet update
 
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        cancellable = getAccountId()
+        cancellable = loadCachedAssociatedTokensIfNeeded()
+            .withWeakCaptureOf(self)
+            .flatMap { walletManager, _ in
+                return walletManager.getAccountId()
+            }
             .withWeakCaptureOf(self)
             .flatMap { walletManager, accountId in
                 return Publishers.CombineLatest(
@@ -105,8 +119,8 @@ final class HederaWalletManager: BaseManager {
     }
 
     private func updateWalletTokens(accountBalance: HederaAccountBalance, exchangeRate: HederaExchangeRate?) {
+        saveAssociatedTokensIfNeeded(newValue: accountBalance.associatedTokensContractAddresses)
         tokenAssociationFeeExchangeRate = exchangeRate?.nextHBARPerUSD
-        associatedTokensContractAddresses = accountBalance.associatedTokensContractAddresses
 
         // Using HTS tokens balances from a remote list of tokens for tokens in a local list
         cardTokens
@@ -147,7 +161,7 @@ final class HederaWalletManager: BaseManager {
     }
 
     private func makeTokenAssociationFeeExchangeRatePublisher(
-        alreadyAssociatedTokens: Set<String>
+        alreadyAssociatedTokens: AssociatedTokens
     ) -> some Publisher<HederaExchangeRate?, Error> {
         if cardTokens.allSatisfy({ alreadyAssociatedTokens.contains($0.contractAddress) }) {
             // All added tokens (from `cardTokens`) are already associated with the current account;
@@ -237,11 +251,7 @@ final class HederaWalletManager: BaseManager {
     /// - Note: Has a side-effect: updates local cache (`dataStorage`) if needed.
     private func getCachedAccountId() -> AnyPublisher<String, Error> {
         let maskedPublicKey = maskedPublicKey
-        let storageKey = Constants.storageKeyPrefix + wallet
-            .publicKey
-            .blockchainKey
-            .getSha256()
-            .hexString
+        let storageKey = Constants.accountIdStorageKeyPrefix + storageKeySuffix
 
         return .justWithError(output: storageKey)
             .withWeakCaptureOf(self)
@@ -331,6 +341,44 @@ final class HederaWalletManager: BaseManager {
                 }
             )
             .mapError(WalletError.blockchainUnavailable(underlyingError:))
+    }
+
+    // MARK: - Token associations management
+
+    private func loadCachedAssociatedTokensIfNeeded() -> some Publisher<Void, Error> {
+        guard associatedTokens == nil else {
+            // Token associations are already loaded from the cache
+            return Just.justWithError(output: ())
+        }
+
+        let storageKey = Constants.associatedTokensStorageKeyPrefix + storageKeySuffix
+
+        return Just
+            .justWithError(output: storageKey)
+            .withWeakCaptureOf(self)
+            .asyncMap { walletManager, storageKey in
+                return await walletManager.dataStorage.get(key: storageKey) ?? []
+            }
+            .receive(on: DispatchQueue.main)
+            .withWeakCaptureOf(self)
+            .handleEvents(receiveOutput: { walletManager, cachedAssociatedTokens in
+                walletManager.associatedTokens = cachedAssociatedTokens
+            })
+            .mapToVoid()
+            .eraseToAnyPublisher()
+    }
+
+    private func saveAssociatedTokensIfNeeded(newValue: AssociatedTokens) {
+        guard associatedTokens != newValue else {
+            return
+        }
+
+        associatedTokens = newValue
+
+        Task.detached { [storageKeySuffix, dataStorage] in
+            let storageKey = Constants.associatedTokensStorageKeyPrefix + storageKeySuffix
+            await dataStorage.store(key: storageKey, value: newValue)
+        }
     }
 
     // MARK: - Transaction dependencies and building
@@ -463,7 +511,7 @@ extension HederaWalletManager: AssetRequirementsManager {
         case .coin, .reserve:
             return false
         case .token(let token):
-            return !associatedTokensContractAddresses.contains(token.contractAddress)
+            return !(associatedTokens ?? []).contains(token.contractAddress)
         }
     }
 
@@ -521,7 +569,8 @@ extension HederaWalletManager: AssetRequirementsManager {
 
 private extension HederaWalletManager {
     private enum Constants {
-        static let storageKeyPrefix = "hedera_wallet_"
+        static let accountIdStorageKeyPrefix = "hedera_wallet_"
+        static let associatedTokensStorageKeyPrefix = "hedera_associated_tokens_"
         /// https://docs.hedera.com/hedera/networks/mainnet/fees
         static let cryptoTransferServiceCostInUSD = Decimal(stringValue: "0.0001")!
         static let tokenTransferServiceCostInUSD = Decimal(stringValue: "0.001")!
@@ -535,7 +584,7 @@ private extension HederaWalletManager {
 // MARK: - Convenience extensions
 
 private extension HederaAccountBalance {
-    var associatedTokensContractAddresses: Set<String> {
+    var associatedTokensContractAddresses: HederaWalletManager.AssociatedTokens {
         return tokenBalances
             .map(\.contractAddress)
             .toSet()
