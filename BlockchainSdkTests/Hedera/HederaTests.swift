@@ -26,6 +26,8 @@ final class HederaTests: XCTestCase {
         sizeTester = nil
     }
 
+    // MARK: - Coin sending
+
     func testSigningCoinTransactionECDSA() throws {
         setUp(curve: .secp256k1)
 
@@ -343,6 +345,8 @@ final class HederaTests: XCTestCase {
 
         XCTAssertEqual(encodedTransaction, expectedEncodedTransaction)
     }
+
+    // MARK: - Token sending
 
     func testSigningTokenTransactionECDSA() throws {
         setUp(curve: .secp256k1)

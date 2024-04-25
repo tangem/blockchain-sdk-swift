@@ -39,7 +39,7 @@ final class HederaTransactionBuilder {
             .map(UInt64.init)
             .map(AccountId.init(num:))
 
-        // Fees for token association transaction are constant
+        // Fees for token association transactions are constant, therefore we don't adjust `maxTransactionFee` for the transaction
         let tokenAssociateTransaction = try TokenAssociateTransaction(accountId: accountId, tokenIds: [tokenId])
             .transactionId(transactionId)
             .nodeAccountIdsIfNotEmpty(nodeAccountIds)
