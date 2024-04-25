@@ -21,41 +21,6 @@ enum CosmosChain {
 // Keplr registry contains lots of goodies, for example:
 // https://github.com/chainapsis/keplr-chain-registry/blob/main/cosmos/cosmoshub.json
 extension CosmosChain {
-    // https://cosmos.directory/cosmoshub
-    func urls(for config: BlockchainSdkConfig) -> [String] {
-        switch self {
-        case .cosmos(let testnet):
-            if testnet {
-                return [
-                    "https://rest.seed-01.theta-testnet.polypore.xyz",
-                ]
-            } else {
-                return [
-                    "https://atom.nownodes.io/\(config.nowNodesApiKey)",
-                    "https://go.getblock.io/\(config.getBlockCredentials.credential(for: .cosmos(testnet: false), type: .rest))",
-                    
-                    // This is a REST proxy combining the servers below (and others)
-                    "https://rest.cosmos.directory/cosmoshub",
-                    
-                    "https://cosmoshub-api.lavenderfive.com",
-                    "https://rest-cosmoshub.ecostake.com",
-                    "https://lcd.cosmos.dragonstake.io",
-                ]
-            }
-        case .terraV1:
-            return [
-                "https://lunc.nownodes.io/\(config.nowNodesApiKey)",
-                "https://terra-classic-lcd.publicnode.com", // This is a redirect from https://columbus-lcd.terra.dev
-            ]
-        case .terraV2:
-            return [
-                "https://luna.nownodes.io/\(config.nowNodesApiKey)",
-                "https://phoenix-lcd.terra.dev", // Sometimes not responsive
-            ]
-        case .gaia:
-            fatalError()
-        }
-    }
     
     // Either feeCurrencies/coinMinimalDenom from Keplr registry
     // or

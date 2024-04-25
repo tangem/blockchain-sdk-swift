@@ -18,7 +18,7 @@ struct AptosNetworkProvider: HostProvider {
     }
     
     /// Configuration connection node for provider
-    private let node: AptosProviderNode
+    private let node: NodeInfo
     
     // MARK: - Properties
     
@@ -28,7 +28,7 @@ struct AptosNetworkProvider: HostProvider {
     // MARK: - Init
     
     init(
-        node: AptosProviderNode,
+        node: NodeInfo,
         networkConfig: NetworkProviderConfiguration
     ) {
         self.node = node
