@@ -20,13 +20,21 @@ protocol MultiNetworkProvider: AnyObject, HostProvider {
 }
 
 extension MultiNetworkProvider {
-    var provider: Provider {
-        providers[currentProviderIndex]
+    var provider: Provider? {
+        if currentProviderIndex >= providers.count {
+            return nil
+        }
+
+        return providers[currentProviderIndex]
     }
     
-    var host: String { provider.host }
-    
+    var host: String { provider?.host ?? .unknown }
+
     func providerPublisher<T>(for requestPublisher: @escaping (_ provider: Provider) -> AnyPublisher<T, Error>) -> AnyPublisher<T, Error> {
+        guard let provider else {
+            return .anyFail(error: BlockchainSdkError.noAPIInfo)
+        }
+
         let currentHost = provider.host
         return requestPublisher(provider)
             .catch { [weak self] error -> AnyPublisher<T, Error> in

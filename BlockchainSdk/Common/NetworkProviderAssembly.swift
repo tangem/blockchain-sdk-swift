@@ -12,10 +12,11 @@ protocol NetworkProviderAssemblyInput {
     var blockchain: Blockchain { get }
     var blockchainSdkConfig: BlockchainSdkConfig { get }
     var networkConfig: NetworkProviderConfiguration { get }
+    var apiInfo: [NetworkProviderType] { get }
 }
 
 struct NetworkProviderAssembly {
-    
+    // TODO: Refactor in IOS-6639
     func makeBlockBookUtxoProvider(with input: NetworkProviderAssemblyInput, for type: BlockBookProviderType) -> BlockBookUtxoProvider {
         switch type {
         case .nowNodes:
@@ -36,6 +37,7 @@ struct NetworkProviderAssembly {
         }
     }
     
+    // TODO: Refactor in IOS-6639
     func makeBitcoinCashNowNodesNetworkProvider(
         input: NetworkProviderAssemblyInput,
         bitcoinCashAddressService: BitcoinCashAddressService
@@ -46,6 +48,7 @@ struct NetworkProviderAssembly {
         ).eraseToAnyBitcoinNetworkProvider()
     }
     
+    // TODO: Refactor in IOS-6639
     func makeBlockcypherNetworkProvider(endpoint: BlockcypherEndpoint, with input: NetworkProviderAssemblyInput) -> BlockcypherNetworkProvider {
         return BlockcypherNetworkProvider(
             endpoint: endpoint,
@@ -54,6 +57,7 @@ struct NetworkProviderAssembly {
         )
     }
     
+    // TODO: Refactor in IOS-6639
     func makeBlockchairNetworkProviders(endpoint: BlockchairEndpoint, with input: NetworkProviderAssemblyInput) -> [AnyBitcoinNetworkProvider] {
         let apiKeys: [String?] = [nil] + input.blockchainSdkConfig.blockchairApiKeys
         
@@ -64,29 +68,18 @@ struct NetworkProviderAssembly {
     }
     
     func makeEthereumJsonRpcProviders(with input: NetworkProviderAssemblyInput) -> [EthereumJsonRpcProvider] {
-        let endpoints = input.blockchain.getJsonRpcEndpoints(
-            keys: EthereumApiKeys(
-                infuraProjectId: input.blockchainSdkConfig.infuraProjectId,
-                nowNodesApiKey: input.blockchainSdkConfig.nowNodesApiKey,
-                getBlockApiKeys: input.blockchainSdkConfig.getBlockCredentials.credentials(type: .jsonRpc),
-                quickNodeBscCredentials: input.blockchainSdkConfig.quickNodeBscCredentials
-            )
-        )!
-        
-        return endpoints.map {
-            return EthereumJsonRpcProvider(
-                url: $0,
-                configuration: input.networkConfig
-            )
-        }
+        return APIResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
+            .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
+                EthereumJsonRpcProvider(url: nodeInfo.url, configuration: input.networkConfig)
+            }
     }
-    
 }
 
 extension NetworkProviderAssembly {
     struct Input: NetworkProviderAssemblyInput {
         let blockchainSdkConfig: BlockchainSdkConfig
         let blockchain: Blockchain
+        let apiInfo: [NetworkProviderType]
 
         var networkConfig: NetworkProviderConfiguration {
             blockchainSdkConfig.networkProviderConfiguration(for: blockchain)

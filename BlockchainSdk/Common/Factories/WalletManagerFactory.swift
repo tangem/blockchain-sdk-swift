@@ -14,26 +14,29 @@ import Solana_Swift
 
 @available(iOS 13.0, *)
 public class WalletManagerFactory {
-    
+
     private let config: BlockchainSdkConfig
     private let dependencies: BlockchainSdkDependencies
+    private let apiList: APIList
 
     // MARK: - Init
 
     public init(
         config: BlockchainSdkConfig,
-        dependencies: BlockchainSdkDependencies
+        dependencies: BlockchainSdkDependencies,
+        apiList: APIList
     ) {
         self.config = config
         self.dependencies = dependencies
+        self.apiList = apiList
     }
-    
+
     public func makeWalletManager(blockchain: Blockchain, publicKey: Wallet.PublicKey) throws -> WalletManager {
         let walletFactory = WalletFactory(blockchain: blockchain)
         let wallet = try walletFactory.makeWallet(publicKey: publicKey)
         return try makeWalletManager(wallet: wallet)
     }
-    
+
     /// Only for Tangem Twin Cards
     /// - Parameters:
     ///   - walletPublicKey: First public key
@@ -59,7 +62,8 @@ private extension WalletManagerFactory {
             wallet: wallet,
             pairPublicKey: pairPublicKey,
             blockchainSdkConfig: config,
-            blockchainSdkDependencies: dependencies
+            blockchainSdkDependencies: dependencies,
+            apiInfo: apiList[blockchain.networkId] ?? []
         )
         return try blockchain.assembly.make(with: input)
     }
@@ -68,7 +72,7 @@ private extension WalletManagerFactory {
 // MARK: - Stub Implementation
 
 extension WalletManagerFactory {
-    
+
     /// Use this method only Test and Debug [Addresses, Fees, etc.]
     /// - Parameters:
     ///   - blockhain Card native blockchain will be used
@@ -79,8 +83,7 @@ extension WalletManagerFactory {
         blockchain: Blockchain,
         dummyPublicKey: Data,
         dummyAddress: String
-    ) throws -> WalletManager {
-        let publicKey = Wallet.PublicKey(seedKey: dummyPublicKey, derivationType: .none)
+    ) throws -> WalletManager {let publicKey = Wallet.PublicKey(seedKey: dummyPublicKey, derivationType: .none)
         let address: Address
 
         if dummyAddress.isEmpty {
@@ -89,15 +92,16 @@ extension WalletManagerFactory {
         } else {
             address = PlainAddress(value: dummyAddress, publicKey: publicKey, type: .default)
         }
-        
+
         let wallet = Wallet(blockchain: blockchain, addresses: [.default: address])
         let input = WalletManagerAssemblyInput(
             wallet: wallet,
             pairPublicKey: nil,
             blockchainSdkConfig: config,
-            blockchainSdkDependencies: dependencies
+            blockchainSdkDependencies: dependencies,
+            apiInfo: apiList[blockchain.networkId] ?? []
         )
         return try blockchain.assembly.make(with: input)
     }
-    
+
 }

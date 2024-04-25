@@ -15,12 +15,12 @@ struct ChiaNetworkProvider: HostProvider {
     
     /// Blockchain API host
     var host: String {
-        node.endpoint.url.hostOrUnknown
+        node.host
     }
     
     /// Configuration connection node for provider
-    private let node: ChiaNetworkNode
-    
+    private let node: NodeInfo
+
     // MARK: - Properties
     
     /// Network provider of blockchain
@@ -29,7 +29,7 @@ struct ChiaNetworkProvider: HostProvider {
     // MARK: - Init
     
     init(
-        node: ChiaNetworkNode,
+        node: NodeInfo,
         networkConfig: NetworkProviderConfiguration
     ) {
         self.node = node

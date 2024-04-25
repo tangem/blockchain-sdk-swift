@@ -9,30 +9,19 @@
 import Foundation
 import Moya
 
-enum AdaliteUrl: String {
-    case main = "https://explorer2.adalite.io"
-    case reserve = "https://nodes.southeastasia.cloudapp.azure.com"
-}
-
-enum AdaliteTarget: TargetType {
-    case address(address:String, url: AdaliteUrl)
-    case unspents(addresses: [String], url: AdaliteUrl)
-    case send(base64EncodedTx: String, url: AdaliteUrl)
-    
-    var baseURL: URL {
-        switch self {
-        case .address(_, let url):
-            return URL(string: url.rawValue)!
-        case .unspents(_, let url):
-            return URL(string: url.rawValue)!
-        case .send(_, let url):
-            return URL(string: url.rawValue)!
-        }
+struct AdaliteTarget: TargetType {
+    enum AdaliteTargetType {
+        case address(address: String)
+        case unspents(addresses: [String])
+        case send(base64EncodedTx: String)
     }
-    
+
+    let baseURL: URL
+    let target: AdaliteTargetType
+
     var path: String {
-        switch self {
-        case .address(let address, _):
+        switch target {
+        case .address(let address):
             return "/api/addresses/summary/\(address)"
         case .unspents:
             return "/api/bulk/addresses/utxo"
@@ -42,7 +31,7 @@ enum AdaliteTarget: TargetType {
     }
     
     var method: Moya.Method {
-        switch self {
+        switch target {
         case .address:
             return .get
         case .unspents, .send:
@@ -55,14 +44,14 @@ enum AdaliteTarget: TargetType {
     }
     
     var task: Task {
-        switch self {
+        switch target {
         case .address:
             return .requestPlain
-        case .unspents(let addresses, _):
+        case .unspents(let addresses):
             let addrs = "[\(addresses.map{ "\"\($0)\"" }.joined(separator: ","))]"
             let data = addrs.data(using: .utf8) ?? Data()
             return .requestData(data)
-        case .send(let base64EncodedTx, _):
+        case .send(let base64EncodedTx):
             return .requestParameters(parameters: ["signedTx": base64EncodedTx],
                                       encoding: JSONEncoding.default)
         }
@@ -70,7 +59,7 @@ enum AdaliteTarget: TargetType {
     
     var headers: [String : String]? {
         var headers = ["Content-Type": "application/json"]
-        if case .unspents = self {
+        if case .unspents = target {
             headers["charset"] = "utf-8"
         }
         return headers

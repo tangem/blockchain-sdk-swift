@@ -62,12 +62,15 @@ class PolkadotNetworkService: MultiNetworkProvider {
         providerPublisher { provider in
             let latestBlockPublisher: AnyPublisher<(String, UInt64), Error> = provider.blockhash(.latest)
                 .flatMap { [weak self] latestBlockHash -> AnyPublisher<(String, UInt64), Error> in
-                    guard let self = self else {
+                    guard 
+                        let self = self,
+                        let provider = self.provider
+                    else {
                         return .emptyFail
                     }
                     
                     let latestBlockHashPublisher = Just(latestBlockHash).setFailureType(to: Error.self)
-                    let latestBlockNumberPublisher = self.provider
+                    let latestBlockNumberPublisher = provider
                         .header(latestBlockHash)
                         .map(\.number)
                         .tryMap { UInt64($0.removeHexPrefix(), radix: 16) ?? 0 } // TODO: BigInt

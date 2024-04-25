@@ -17,12 +17,15 @@ struct SubstrateWalletAssembly: WalletManagerAssembly {
         }
         
         return PolkadotWalletManager(network: network, wallet: input.wallet).then {
-            let providers = network.urls.map { url in
-                PolkadotJsonRpcProvider(url: url, configuration: input.networkConfig)
-            }
+            let blockchain = input.blockchain
+            let networkConfig = input.networkConfig
+            let providers: [PolkadotJsonRpcProvider] = APIResolver(blockchain: blockchain, config: input.blockchainSdkConfig)
+                .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
+                    PolkadotJsonRpcProvider(url: nodeInfo.url, configuration: networkConfig)
+                }
+            
             $0.networkService = PolkadotNetworkService(providers: providers, network: network)
             $0.txBuilder = PolkadotTransactionBuilder(blockchain: input.blockchain, walletPublicKey: input.wallet.publicKey.blockchainKey, network: network)
         }
     }
-    
 }

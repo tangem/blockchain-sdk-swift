@@ -13,31 +13,16 @@ struct TronWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return TronWalletManager(wallet: input.wallet).then {
-            let networks: [TronNetwork]
+            let config = input.blockchainSdkConfig
+            let blockchain = input.blockchain
+
+            let providers: [TronJsonRpcProvider] = APIResolver(blockchain: blockchain, config: config)
+                .resolveProviders(apiInfos: input.apiInfo, factory: { nodeInfo, _ in
+                    TronJsonRpcProvider(node: nodeInfo, configuration: input.networkConfig)
+                })
             
-            if !input.blockchain.isTestnet {
-                networks = [
-                    .tronGrid(apiKey: nil),
-                    .tronGrid(apiKey: input.blockchainSdkConfig.tronGridApiKey),
-                    .nowNodes(apiKey: input.blockchainSdkConfig.nowNodesApiKey),
-                    .getBlock(
-                        apiKey: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .rest)
-                    ),
-                ]
-            } else {
-                networks = [
-                    .nile,
-                ]
-            }
-            
-            let providers: [TronJsonRpcProvider] = networks.map {
-                TronJsonRpcProvider(
-                    network: $0,
-                    configuration: input.networkConfig
-                )
-            }
-            $0.networkService = TronNetworkService(isTestnet: input.blockchain.isTestnet, providers: providers)
-            $0.txBuilder = TronTransactionBuilder(blockchain: input.blockchain)
+            $0.networkService = TronNetworkService(isTestnet: blockchain.isTestnet, providers: providers)
+            $0.txBuilder = TronTransactionBuilder(blockchain: blockchain)
         }
     }
 }

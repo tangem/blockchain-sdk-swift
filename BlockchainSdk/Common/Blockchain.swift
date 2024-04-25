@@ -433,6 +433,18 @@ public indirect enum Blockchain: Equatable, Hashable {
         }
     }
 
+    /// Should be used as blockchain identifier
+    public var coinId: String {
+        id(type: .coin)
+    }
+
+    /// Should be used to:
+    /// - Get a list of coins as the `networkIds` parameter
+    /// - Synchronization of user coins on the server
+    public var networkId: String {
+        id(type: .network)
+    }
+
     public var tokenTypeName: String? {
         switch self {
         case .ethereum: return "ERC20"
@@ -559,441 +571,6 @@ extension Blockchain {
         case .taraxa: return isTestnet ? 842 : 841
         case .base: return isTestnet ? 84532 : 8453
         default: return nil
-        }
-    }
-
-    //Only for Ethereum compatible blockchains
-    public func getJsonRpcEndpoints(keys: EthereumApiKeys) -> [URL]? {
-        let infuraProjectId = keys.infuraProjectId
-        let nowNodesApiKey = keys.nowNodesApiKey
-        let getBlockApiKeys = keys.getBlockApiKeys
-        let quickNodeBscCredentials = keys.quickNodeBscCredentials
-
-        switch self {
-        case .ethereum:
-            if isTestnet {
-                return [
-                    URL(string: "https://eth-goerli.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://goerli.infura.io/v3/\(infuraProjectId)")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://eth.nownodes.io/\(nowNodesApiKey)")!,
-                    makeGetBlockJsonRpcProvider(),
-                    URL(string: "https://mainnet.infura.io/v3/\(infuraProjectId)")!,
-                ]
-            }
-        case .ethereumClassic:
-            if isTestnet {
-                return [
-                    URL(string: "https://rpc.mordor.etccooperative.org")!,
-                ]
-            } else {
-                return [
-                    makeGetBlockJsonRpcProvider(),
-                    URL(string: "https://etc.etcdesktop.com")!,
-                    URL(string: "https://etc.mytokenpocket.vip")!,
-                    URL(string: "https://besu-de.etc-network.info")!,
-                    URL(string: "https://geth-at.etc-network.info")!,
-                ]
-            }
-        case .ethereumPoW:
-            if isTestnet {
-                return [
-                    URL(string: "https://iceberg.ethereumpow.org")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://ethw.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://mainnet.ethereumpow.org")!,
-                ]
-            }
-        case .disChain:
-            return [
-                URL(string: "https://rpc.dischain.xyz")!,
-            ]
-        case .rsk:
-            return [
-                URL(string: "https://public-node.rsk.co")!,
-                URL(string: "https://rsk.nownodes.io/\(nowNodesApiKey)")!,
-                makeGetBlockJsonRpcProvider(),
-            ]
-        case .bsc:
-            if isTestnet {
-                return [
-                    URL(string: "https://data-seed-prebsc-1-s1.binance.org:8545")!,
-                ]
-            } else {
-                // https://docs.fantom.foundation/api/public-api-endpoints
-                return [
-                    URL(string: "https://bsc-dataseed.binance.org")!,
-                    URL(string: "https://bsc.nownodes.io/\(nowNodesApiKey)")!,
-                    makeGetBlockJsonRpcProvider(),
-                    URL(string: "https://\(quickNodeBscCredentials.subdomain).bsc.discover.quiknode.pro/\(quickNodeBscCredentials.apiKey)")!,
-                ]
-            }
-        case .polygon:
-            if isTestnet {
-                return [
-                    URL(string: "https://rpc-amoy.polygon.technology")!,
-                ]
-            } else {
-                // https://wiki.polygon.technology/docs/operate/network-rpc-endpoints
-                return [
-                    URL(string: "https://polygon-rpc.com")!,
-                    URL(string: "https://matic.nownodes.io/\(nowNodesApiKey)")!,
-                    makeGetBlockJsonRpcProvider(),
-                    URL(string: "https://rpc-mainnet.maticvigil.com")!,
-                    URL(string: "https://rpc-mainnet.matic.quiknode.pro")!,
-                ]
-            }
-        case .avalanche:
-            if isTestnet {
-                return [
-                    URL(string: "https://api.avax-test.network/ext/bc/C/rpc")!,
-                ]
-            } else {
-                var rpcEndpoits: [URL] = [
-                    URL(string: "https://api.avax.network/ext/bc/C/rpc")!,
-                    URL(string: "https://avax.nownodes.io/\(nowNodesApiKey)/ext/bc/C/rpc")!,
-                ]
-
-                if let jsonRpcKey = getBlockApiKeys[self] {
-                    rpcEndpoits.append(URL(string: "https://go.getblock.io/\(jsonRpcKey)/ext/bc/C/rpc")!)
-                }
-
-                return rpcEndpoits
-            }
-        case .fantom:
-            if isTestnet {
-                return [
-                    URL(string: "https://rpc.testnet.fantom.network")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://ftm.nownodes.io/\(nowNodesApiKey)")!,
-                    makeGetBlockJsonRpcProvider(),
-                    URL(string: "https://rpc.ftm.tools")!,
-                    URL(string: "https://rpcapi.fantom.network")!,
-                    URL(string: "https://fantom-mainnet.public.blastapi.io")!,
-                    URL(string: "https://rpc.ankr.com/fantom")!,
-                ]
-            }
-        case .arbitrum(let testnet):
-            if testnet {
-                return [
-                    URL(string: "https://goerli-rollup.arbitrum.io/rpc")!,
-                ]
-            } else {
-                return [
-                    // https://developer.offchainlabs.com/docs/mainnet#connect-your-wallet
-                    URL(string: "https://arb1.arbitrum.io/rpc")!,
-                    URL(string: "https://arbitrum.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://arbitrum-mainnet.infura.io/v3/\(infuraProjectId)")!,
-                    URL(string: "https://1rpc.io/arb")!,
-                    URL(string: "https://arbitrum-one-rpc.publicnode.com")!,
-                    URL(string: "https://rpc.ankr.com/arbitrum")!,
-                    URL(string: "https://arbitrum-one.public.blastapi.io")!,
-                ]
-            }
-        case .gnosis:
-            return [
-                makeGetBlockJsonRpcProvider(),
-
-                // from registry.json
-                URL(string: "https://rpc.gnosischain.com")!,
-
-                // from chainlist.org
-                URL(string: "https://gnosis-mainnet.public.blastapi.io")!,
-                URL(string: "https://rpc.ankr.com/gnosis")!,
-            ]
-        case .optimism(let testnet):
-            if testnet {
-                return [
-                    URL(string: "https://goerli.optimism.io")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://mainnet.optimism.io")!,
-                    URL(string: "https://optimism.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://optimism-mainnet.public.blastapi.io")!,
-                    URL(string: "https://rpc.ankr.com/optimism")!,
-                ]
-            }
-        case .kava:
-            if isTestnet {
-                return [URL(string: "https://evm.testnet.kava.io")!]
-            }
-
-            return [URL(string: "https://evm.kava.io")!,
-                    URL(string: "https://evm2.kava.io")!]
-        case .cronos:
-            return [
-                URL(string: "https://evm.cronos.org")!,
-                URL(string: "https://evm-cronos.crypto.org")!,
-                makeGetBlockJsonRpcProvider(),
-                URL(string: "https://cronos.blockpi.network/v1/rpc/public")!,
-                URL(string: "https://cronos-evm.publicnode.com")!,
-            ]
-        case .telos:
-            if isTestnet {
-                return [
-                    URL(string: "https://telos-evm-testnet.rpc.thirdweb.com")!
-                ]
-            } else {
-                return [
-                    URL(string: "https://mainnet.telos.net/evm")!,
-                    URL(string: "https://api.kainosbp.com/evm")!,
-                    URL(string: "https://telos-evm.rpc.thirdweb.com")!
-                ]
-            }
-        case .octa:
-            return [
-                URL(string: "https://rpc.octa.space")!,
-                URL(string: "https://octaspace.rpc.thirdweb.com")!,
-            ]
-        case .decimal(let isTestnet):
-            if isTestnet {
-                return [
-                    URL(string: "https://testnet-val.decimalchain.com/web3")!
-                ]
-            } else {
-                return [
-                    URL(string: "https://node.decimalchain.com/web3")!,
-                    URL(string: "https://node1-mainnet.decimalchain.com/web3")!,
-                    URL(string: "https://node2-mainnet.decimalchain.com/web3")!,
-                    URL(string: "https://node3-mainnet.decimalchain.com/web3")!,
-                    URL(string: "https://node4-mainnet.decimalchain.com/web3")!,
-                ]
-            }
-        case .xdc(let isTestnet):
-            if isTestnet {
-                return [
-                    URL(string: "https://rpc.apothem.network")!
-                ]
-            } else {
-                return [
-                    URL(string: "https://xdc.nownodes.io/\(nowNodesApiKey)")!,
-                    URL(string: "https://rpc.xdcrpc.com")!,
-                    URL(string: "https://erpc.xdcrpc.com")!,
-                    URL(string: "https://rpc.xinfin.network")!,
-                    URL(string: "https://erpc.xinfin.network")!,
-                    URL(string: "https://rpc.xdc.org")!,
-                    URL(string: "https://rpc.ankr.com/xdc")!,
-                    URL(string: "https://rpc1.xinfin.network")!,
-                ]
-            }
-        case .shibarium(let isTestnet):
-            if isTestnet {
-                return [
-                    URL(string: "https://puppynet.shibrpc.com")!
-                ]
-            } else {
-                return [
-                    URL(string: "https://www.shibrpc.com")!,
-                    URL(string: "https://shib.nownodes.io/\(nowNodesApiKey)")!
-                ]
-            }
-        case .areon:
-            if isTestnet {
-                return [
-                    URL(string: "https://testnet-rpc.areon.network")!,
-                    URL(string: "https://testnet-rpc2.areon.network")!,
-                    URL(string: "https://testnet-rpc3.areon.network")!,
-                    URL(string: "https://testnet-rpc4.areon.network")!,
-                    URL(string: "https://testnet-rpc5.areon.network")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://mainnet-rpc.areon.network")!,
-                    URL(string: "https://mainnet-rpc2.areon.network")!,
-                    URL(string: "https://mainnet-rpc3.areon.network")!,
-                    URL(string: "https://mainnet-rpc4.areon.network")!,
-                    URL(string: "https://mainnet-rpc5.areon.network")!,
-                ]
-            }
-        case .playa3ullGames:
-            return [
-                URL(string: "https://api.mainnet.playa3ull.games")!,
-            ]
-        case .pulsechain:
-            if isTestnet {
-                return [
-                    URL(string: "https://rpc.v4.testnet.pulsechain.com")!,
-                    URL(string: "https://pulsechain-testnet.publicnode.com")!,
-                    URL(string: "https://rpc-testnet-pulsechain.g4mm4.io")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://rpc.pulsechain.com")!,
-                    URL(string: "https://pulsechain.publicnode.com")!,
-                    URL(string: "https://rpc-pulsechain.g4mm4.io")!,
-                ]
-            }
-        case .aurora:
-            if isTestnet {
-                return [
-                    URL(string: "https://testnet.aurora.dev")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://mainnet.aurora.dev")!,
-                    URL(string: "https://aurora.drpc.org")!,
-                    URL(string: "https://1rpc.io/aurora")!,
-                ]
-            }
-        case .manta:
-            if isTestnet {
-                return [
-                    URL(string: "https://pacific-rpc.testnet.manta.network/http/")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://manta-pacific.drpc.org/")!,
-                    URL(string: "https://pacific-rpc.manta.network/http/")!,
-                    URL(string: "https://1rpc.io/manta/")!,
-                ]
-            }
-        case .zkSync:
-            if isTestnet {
-                return [
-                    URL(string: "https://sepolia.era.zksync.dev/")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://mainnet.era.zksync.io/")!,
-                    URL(string: "https://zksync.nownodes.io/\(nowNodesApiKey)")!,
-                    makeGetBlockJsonRpcProvider(),
-                    URL(string: "https://zksync-era.blockpi.network/v1/rpc/public/")!,
-                    URL(string: "https://1rpc.io/zksync2-era/")!,
-                    URL(string: "https://zksync.meowrpc.com/")!,
-                    URL(string: "https://zksync.drpc.org/")!,
-                ]
-            }
-        case .moonbeam:
-            if isTestnet {
-                return [
-                    URL(string: "https://moonbase-alpha.public.blastapi.io/")!,
-                    URL(string: "https://moonbase-rpc.dwellir.com/")!,
-                    URL(string: "https://rpc.api.moonbase.moonbeam.network/")!,
-                    URL(string: "https://moonbase.unitedbloc.com/")!,
-                    URL(string: "https://moonbeam-alpha.api.onfinality.io/public/")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://rpc.api.moonbeam.network/")!,
-                    URL(string: "https://moonbeam.nownodes.io/\(nowNodesApiKey)")!,
-                    makeGetBlockJsonRpcProvider(),
-                    URL(string: "https://1rpc.io/glmr/")!,
-                    URL(string: "https://moonbeam.public.blastapi.io/")!,
-                    URL(string: "https://moonbeam-rpc.dwellir.com/")!,
-                    URL(string: "https://moonbeam-mainnet.gateway.pokt.network/v1/lb/629a2b5650ec8c0039bb30f0/")!,
-                    URL(string: "https://moonbeam.unitedbloc.com/")!,
-                    URL(string: "https://moonbeam-rpc.publicnode.com/")!,
-                    URL(string: "https://rpc.ankr.com/moonbeam/")!,
-                ]
-            }
-        case .polygonZkEVM:
-            if isTestnet {
-                return [
-                    URL(string: "https://rpc.cardona.zkevm-rpc.com/")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://zkevm-rpc.com/")!,
-                    makeGetBlockJsonRpcProvider(),
-                    URL(string: "https://1rpc.io/polygon/zkevm/")!,
-                    URL(string: "https://polygon-zkevm.drpc.org/")!,
-                    URL(string: "https://polygon-zkevm-mainnet.public.blastapi.io/")!,
-                    URL(string: "https://polygon-zkevm.blockpi.network/v1/rpc/public/")!,
-                    URL(string: "https://rpc.polygon-zkevm.gateway.fm/")!,
-                    URL(string: "https://api.zan.top/node/v1/polygonzkevm/mainnet/public/")!,
-                ]
-            }
-        case .moonriver:
-            if isTestnet {
-                return [
-                    URL(string: "https://rpc.api.moonbase.moonbeam.network")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://moonriver.public.blastapi.io")!,
-                    URL(string: "https://moonriver-rpc.dwellir.com")!,
-                    URL(string: "https://moonriver-mainnet.gateway.pokt.network/v1/lb/62a74fdb123e6f003963642f")!,
-                    URL(string: "https://moonriver.unitedbloc.com")!,
-                    URL(string: "https://moonriver-rpc.publicnode.com")!,
-                ]
-            }
-        case .mantle:
-            if isTestnet {
-                return [
-                    URL(string: "https://rpc.testnet.mantle.xyz")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://rpc.mantle.xyz")!,
-                    URL(string: "https://mantle-rpc.publicnode.com")!,
-                    URL(string: "https://mantle-mainnet.public.blastapi.io")!,
-                    URL(string: "https://rpc.ankr.com/mantle")!,
-                    URL(string: "https://1rpc.io/mantle")!,
-                ]
-            }
-        case .flare:
-            if isTestnet {
-                return [
-                    URL(string: "https://coston2-api.flare.network/ext/C/rpc")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://flare-api.flare.network/ext/bc/C/rpc")!,
-                    URL(string: "https://flare.rpc.thirdweb.com")!,
-                    URL(string: "https://flare-bundler.etherspot.io")!,
-                    URL(string: "https://rpc.ankr.com/flare")!,
-                    URL(string: "https://flare.solidifi.app/ext/C/rpc")!,
-                ]
-            }
-        case .taraxa:
-            if isTestnet {
-                return [
-                    URL(string: "https://rpc.testnet.taraxa.io")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://rpc.mainnet.taraxa.io")!,
-                ]
-            }
-        case .base:
-            if isTestnet {
-                return [
-                    URL(string: "https://sepolia.base.org")!,
-                    URL(string: "https://rpc.notadegen.com/base/sepolia")!,
-                    URL(string: "https://base-sepolia-rpc.publicnode.com")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://mainnet.base.org")!,
-                    URL(string: "https://base.nownodes.io/\(nowNodesApiKey)")!,
-                    makeGetBlockJsonRpcProvider(),
-                    URL(string: "https://base.meowrpc.com")!,
-                    URL(string: "https://base-rpc.publicnode.com")!,
-                    URL(string: "https://base.drpc.org")!,
-                    URL(string: "https://base.llamarpc.com")!,
-                ]
-            }
-        default:
-            return nil
-        }
-
-        // MARK: - Private Implementation
-
-        func makeGetBlockJsonRpcProvider() -> URL {
-            if let jsonRpcKey = getBlockApiKeys[self] {
-                return URL(string: "https://go.getblock.io/\(jsonRpcKey)")!
-            } else {
-                assertionFailure("getJsonRpcEndpoints -> Not found GetBlock API key for blockchain '\(displayName)'")
-                Log.network("Not found GetBlock API key for blockchain '\(displayName)'")
-                return URL(string: "https://go.getblock.io/")!
-            }
         }
     }
 }
@@ -1244,47 +821,163 @@ extension Blockchain {
         case "xtz": return .tezos(curve: curve)
         case "doge": return .dogecoin
         case "bsc": return .bsc(testnet: isTestnet)
-        case "polygon": return .polygon(testnet: isTestnet)
-        case "avalanche": return .avalanche(testnet: isTestnet)
-        case "solana": return .solana(curve: curve, testnet: isTestnet)
-        case "fantom": return .fantom(testnet: isTestnet)
-        case "polkadot": return .polkadot(curve: curve, testnet: isTestnet)
-        case "kusama": return .kusama(curve: curve)
-        case "aleph-zero": return .azero(curve: curve, testnet: isTestnet)
-        case "tron": return .tron(testnet: isTestnet)
-        case "arbitrum": return .arbitrum(testnet: isTestnet)
-        case "dash": return .dash(testnet: isTestnet)
-        case "xdai": return .gnosis
-        case "ethereum-pow-iou": return .ethereumPoW(testnet: isTestnet)
-        case "ethereumfair", "dischain": return .disChain
-        case "ton": return .ton(curve: curve, testnet: isTestnet)
-        case "terra": return .terraV1
-        case "terra-2": return .terraV2
-        case "cronos": return .cronos
-        case "octaspace": return .octa
-        case "chia": return .chia(testnet: isTestnet)
-        case "near": return .near(curve: curve, testnet: isTestnet)
-        case "decimal": return .decimal(testnet: isTestnet)
-        case "vechain": return .veChain(testnet: isTestnet)
-        case "xdc": return .xdc(testnet: isTestnet)
-        case "algorand": return .algorand(curve: curve, testnet: isTestnet)
-        case "shibarium": return .shibarium(testnet: isTestnet)
-        case "aptos": return .aptos(curve: curve, testnet: isTestnet)
-        case "hedera": return .hedera(curve: curve, testnet: isTestnet)
-        case "areon-network": return .areon(testnet: isTestnet)
-        case "playa3ull-games": return .playa3ullGames
-        case "pulsechain": return .pulsechain(testnet: isTestnet)
-        case "aurora": return .aurora(testnet: isTestnet)
-        case "manta-network": return .manta(testnet: isTestnet)
-        case "zksync": return .zkSync(testnet: isTestnet)
-        case "moonbeam": return .moonbeam(testnet: isTestnet)
-        case "polygon-zkevm": return.polygonZkEVM(testnet: isTestnet)
-        case "moonriver": return .moonriver(testnet: isTestnet)
-        case "mantle": return .mantle(testnet: isTestnet)
-        case "flare": return .flare(testnet: isTestnet)
-        case "taraxa": return .taraxa(testnet: isTestnet)
+        // DO NOT ADD new blockchains here. This is legacy code and used only for Tangem Note and cards release before 4.12 firmware
         default: return nil
         }
+    }
+}
+
+// MARK: - ID
+
+private extension Blockchain {
+    func id(type: IDType) -> String {
+        switch self {
+        case .bitcoin: return "bitcoin"
+        case .litecoin: return "litecoin"
+        case .stellar: return "stellar"
+        case .ethereum: return "ethereum"
+        case .ethereumPoW: return "ethereum-pow-iou"
+        case .disChain: return "ethereumfair" // keep existing id for compatibility
+        case .ethereumClassic: return "ethereum-classic"
+        case .rsk: return "rootstock"
+        case .bitcoinCash: return "bitcoin-cash"
+        case .binance: return "binancecoin"
+        case .cardano: return "cardano"
+        case .xrp:
+            switch type {
+            case .network: return "xrp"
+            case .coin: return "ripple"
+            }
+        case .ducatus: return "ducatus"
+        case .tezos: return "tezos"
+        case .dogecoin: return "dogecoin"
+        case .bsc:
+            switch type {
+            case .network: return "binance-smart-chain"
+            case .coin: return "binancecoin"
+            }
+        case .polygon:
+            switch type {
+            case .network: return "polygon-pos"
+            case .coin: return "matic-network"
+            }
+        case .avalanche:
+            switch type {
+            case .network: return "avalanche"
+            case .coin: return "avalanche-2"
+            }
+        case .solana: return "solana"
+        case .fantom: return "fantom"
+        case .polkadot: return "polkadot"
+        case .kusama: return "kusama"
+        case .azero: return "aleph-zero"
+        case .tron: return "tron"
+        case .arbitrum: return "arbitrum-one"
+        case .dash: return "dash"
+        case .gnosis: return "xdai"
+        case .optimism: return "optimistic-ethereum"
+        case .ton: return "the-open-network"
+        case .kava: return "kava"
+        case .kaspa: return "kaspa"
+        case .ravencoin: return "ravencoin"
+        case .cosmos: return "cosmos"
+        case .terraV1:
+            switch type {
+            case .network: return "terra"
+            case .coin: return "terra-luna"
+            }
+        case .terraV2:
+            switch type {
+            case .network: return "terra-2"
+            case .coin: return "terra-luna-2"
+            }
+        case .cronos:
+            switch type {
+            case .network: return "cronos"
+            case .coin: return "crypto-com-chain"
+            }
+        case .telos: return "telos"
+        case .octa: return "octaspace"
+        case .chia: return "chia"
+        case .near:
+            switch type {
+            case .network: return "near-protocol"
+            case .coin: return "near"
+            }
+        case .decimal:
+            return "decimal"
+        case .veChain:
+            return "vechain"
+        case .xdc:
+            switch type {
+            case .network: return "xdc-network"
+            case .coin: return "xdce-crowd-sale"
+            }
+        case .algorand: return "algorand"
+        case .shibarium:
+            switch type {
+            case .network: return "shibarium"
+            case .coin: return "bone-shibaswap"
+            }
+        case .aptos:
+            return "aptos"
+        case .hedera:
+            return "hedera-hashgraph"
+        case .areon:
+            return "areon-network"
+        case .playa3ullGames:
+            switch type {
+            case .network: return "playa3ull-games"
+            case .coin: return "playa3ull-games-2"
+            }
+        case .pulsechain:
+            return "pulsechain"
+        case .aurora:
+            switch type {
+            case .network: return "aurora"
+            case .coin: return "aurora-ethereum"
+            }
+        case .manta:
+            switch type {
+            case .network: return "manta-network"
+            case .coin: return "manta-network-ethereum"
+            }
+        case .zkSync:
+            switch type {
+            case .network: return "zksync"
+            case .coin: return "zksync-ethereum"
+            }
+        case .moonbeam:
+            return "moonbeam"
+        case .polygonZkEVM:
+            switch type {
+            case .network: return "polygon-zkevm"
+            case .coin: return "polygon-zkevm-ethereum"
+            }
+        case .moonriver:
+            return "moonriver"
+        case .mantle:
+            return "mantle"
+        case .flare:
+            switch type {
+            case .network: return "flare-network"
+            case .coin: return "flare-networks"
+            }
+        case .taraxa:
+            return "taraxa"
+        case .radiant:
+            return "radiant"
+        case .base:
+            switch type {
+            case .network: return "base"
+            case .coin: return "base-ethereum"
+            }
+        }
+    }
+
+    enum IDType: Hashable {
+        case network
+        case coin
     }
 }
 

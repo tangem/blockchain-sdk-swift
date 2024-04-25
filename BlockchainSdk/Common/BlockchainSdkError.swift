@@ -22,7 +22,8 @@ public enum BlockchainSdkError: Int, LocalizedError {
     case failedToFindTxInputs
     case feeForPushTxNotEnough
     case networkProvidersNotSupportsRbf
-    
+    case noAPIInfo
+
     // WARNING: Make sure to preserve the error codes when removing or inserting errors
     
     public var errorDescription: String? {
