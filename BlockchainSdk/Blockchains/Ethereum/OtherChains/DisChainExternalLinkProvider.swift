@@ -11,11 +11,13 @@ import Foundation
 struct DisChainExternalLinkProvider: ExternalLinkProvider {
     var testnetFaucetURL: URL? { nil }
     
+    private let explorerBaseURL = "https://explorer.dischain.xyz"
+    
     func url(transaction hash: String) -> URL? {
-        return URL(string: "https://explorer.dischain.xyz/ethf/tx/\(hash)")
+        URL(string: "\(explorerBaseURL)/tx/\(hash)")
     }
     
     func url(address: String, contractAddress: String?) -> URL? {
-        return URL(string: "https://explorer.dischain.xyz/ethf/address/\(address)")
+        URL(string: "\(explorerBaseURL)/address/\(address)")
     }
 }
