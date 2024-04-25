@@ -43,6 +43,8 @@ final class HederaWalletManager: BaseManager {
         + publicKey.suffix(length)
     }()
 
+    // MARK: - Initialization/Deinitialization
+
     init(
         wallet: Wallet,
         networkService: HederaNetworkService,
@@ -106,10 +108,7 @@ final class HederaWalletManager: BaseManager {
             )
     }
 
-    private func updateWallet(
-        accountBalance: HederaAccountBalance,
-        transactionsInfo: [HederaTransactionInfo]
-    ) {
+    private func updateWallet(accountBalance: HederaAccountBalance, transactionsInfo: [HederaTransactionInfo]) {
         let completedTransactionHashes = transactionsInfo
             .filter { !$0.isPending }
             .map { $0.transactionHash }
@@ -168,9 +167,7 @@ final class HederaWalletManager: BaseManager {
             // therefore there is no point in requesting an exchange rate to calculate the token association fee
             //
             // Performing an early exit
-            return Just(nil)
-                .setFailureType(to: Error.self)
-                .eraseToAnyPublisher()
+            return Just.justWithError(output: nil)
         }
 
         return networkService
@@ -238,12 +235,10 @@ final class HederaWalletManager: BaseManager {
 
         return getCachedAccountId()
             .withWeakCaptureOf(self)
-            .handleEvents(
-                receiveOutput: { walletManager, accountId in
-                    walletManager.updateWalletAddress(accountId: accountId)
-                    Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) saved to the Wallet")
-                }
-            )
+            .handleEvents(receiveOutput: { walletManager, accountId in
+                walletManager.updateWalletAddress(accountId: accountId)
+                Log.debug("\(#fileID): Hedera account ID for public key \(maskedPublicKey) saved to the Wallet")
+            })
             .map(\.1)
             .eraseToAnyPublisher()
     }
@@ -477,7 +472,7 @@ extension HederaWalletManager: WalletManager {
 
     func estimatedFee(amount: Amount) -> AnyPublisher<[Fee], Error> {
         // For a rough fee estimation (calculated in this method), all destinations are considered non-existent just in case
-        let doesAccountExistPublisher = Just(false).setFailureType(to: Error.self)
+        let doesAccountExistPublisher = Just.justWithError(output: false)
 
         return getFee(amount: amount, doesAccountExistPublisher: doesAccountExistPublisher)
     }
