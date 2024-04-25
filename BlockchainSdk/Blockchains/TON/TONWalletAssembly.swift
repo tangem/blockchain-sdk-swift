@@ -13,38 +13,15 @@ import BitcoinCore
 struct TONWalletAssembly: WalletManagerAssembly {
     
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
-        var providers: [TONProvider] = []
-        
-        providers.append(
-            TONProvider(
-                node: .init(
-                    apiKeyValue: input.blockchainSdkConfig.tonCenterApiKeys.getApiKey(for: input.blockchain.isTestnet),
-                    endpointType: .toncenter(input.blockchain.isTestnet)
-                ),
-                networkConfig: input.networkConfig
-            )
-        )
-        
-        if !input.blockchain.isTestnet {
-            providers.append(
-                contentsOf: [
-                    TONProvider(
-                        node: .init(
-                            apiKeyValue: input.blockchainSdkConfig.nowNodesApiKey,
-                            endpointType: .nownodes
-                        ),
-                        networkConfig: input.networkConfig
-                    ),
-                    TONProvider(
-                        node: .init(
-                            apiKeyValue: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .jsonRpc),
-                            endpointType: .getblock
-                        ),
-                        networkConfig: input.networkConfig
-                    )
-                ]
-            )
-        }
+        let blockchain = input.blockchain
+        let config = input.blockchainSdkConfig
+
+        let linkResolver = APINodeInfoResolver(blockchain: blockchain, config: config)
+        let apiKeyInfoProvider = APIKeysInfoProvider(blockchain: blockchain, config: config)
+        let providers: [TONProvider] = APIResolver(blockchain: blockchain, config: config)
+            .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
+                TONProvider(node: nodeInfo, networkConfig: input.networkConfig)
+            }
         
         return try TONWalletManager(
             wallet: input.wallet,

@@ -10,11 +10,11 @@ import Foundation
 import Moya
 
 struct TezosTarget: TargetType {
-    let api: TezosApi
+    let host: String
     let endpoint: TargetEndpoint
     
     var baseURL: URL {
-        return URL(string: api.rawValue)!
+        return URL(string: host)!
     }
     
     var path: String {

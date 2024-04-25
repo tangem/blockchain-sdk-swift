@@ -12,12 +12,12 @@ import Combine
 struct TONProvider: HostProvider {
     /// Blockchain API host
     var host: String {
-        node.endpoint.url.hostOrUnknown
+        node.url.hostOrUnknown
     }
     
     /// Configuration connection node for provider
-    private let node: TONNetworkNode
-    
+    private let node: NodeInfo
+
     // MARK: - Properties
     
     /// Network provider of blockchain
@@ -26,7 +26,7 @@ struct TONProvider: HostProvider {
     // MARK: - Init
     
     init(
-        node: TONNetworkNode,
+        node: NodeInfo,
         networkConfig: NetworkProviderConfiguration
     ) {
         self.node = node
