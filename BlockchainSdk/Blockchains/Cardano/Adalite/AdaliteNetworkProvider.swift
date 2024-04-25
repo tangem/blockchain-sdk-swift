@@ -11,27 +11,27 @@ import Moya
 import Combine
 
 class AdaliteNetworkProvider: CardanoNetworkProvider {
-    private let adaliteUrl: AdaliteUrl
+    private let url: URL
     private let provider: NetworkProvider<AdaliteTarget>
     private let cardanoResponseMapper: CardanoResponseMapper
     
     var host: String {
-        AdaliteTarget.address(address: "", url: adaliteUrl).baseURL.hostOrUnknown
+        url.hostOrUnknown
     }
 
     init(
-        adaliteUrl: AdaliteUrl,
+        url: URL,
         configuration: NetworkProviderConfiguration,
         cardanoResponseMapper: CardanoResponseMapper
     ) {
-        self.adaliteUrl = adaliteUrl
+        self.url = url
         provider = NetworkProvider<AdaliteTarget>(configuration: configuration)
         self.cardanoResponseMapper = cardanoResponseMapper
     }
     
     func send(transaction: Data) -> AnyPublisher<String, Error> {
         provider
-            .requestPublisher(.send(base64EncodedTx: transaction.base64EncodedString(), url: adaliteUrl))
+            .requestPublisher(request(for: .send(base64EncodedTx: transaction.base64EncodedString())))
             .filterSuccessfulStatusAndRedirectCodes()
             .mapNotEmptyString()
             .eraseError()
@@ -58,7 +58,7 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
     
     private func getUnspents(addresses: [String]) -> AnyPublisher<[CardanoUnspentOutput], Error> {
         provider
-            .requestPublisher(.unspents(addresses: addresses, url: adaliteUrl))
+            .requestPublisher(request(for: .unspents(addresses: addresses)))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(AdaliteBaseResponseDTO<String, [AdaliteUnspentOutputResponseDTO]>.self)
             .tryMap { [weak self] response throws -> [CardanoUnspentOutput] in
@@ -76,7 +76,7 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
             guard let self = self else { return .emptyFail }
             
             return self.provider
-                .requestPublisher(.address(address: $0, url: self.adaliteUrl))
+                .requestPublisher(request(for: .address(address: $0)))
                 .filterSuccessfulStatusAndRedirectCodes()
                 .map(AdaliteBaseResponseDTO<String, AdaliteBalanceResponseDTO>.self)
                 .tryMap { [weak self] response throws -> AdaliteBalanceResponse in
@@ -88,6 +88,10 @@ class AdaliteNetworkProvider: CardanoNetworkProvider {
                 }
                 .eraseToAnyPublisher()
         }
+    }
+
+    private func request(for target: AdaliteTarget.AdaliteTargetType) -> AdaliteTarget {
+        return .init(baseURL: url, target: target)
     }
 }
 

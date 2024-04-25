@@ -11,11 +11,11 @@ import Combine
 
 /// Provider for Hedera Mirror Nodes (REST) https://docs.hedera.com/hedera/sdks-and-apis/rest-api
 struct HederaRESTNetworkProvider {
-    private let targetConfiguration: HederaTargetConfiguration
+    private let targetConfiguration: NodeInfo
     private let provider: NetworkProvider<HederaTarget>
 
     init(
-        targetConfiguration: HederaTargetConfiguration,
+        targetConfiguration: NodeInfo,
         providerConfiguration: NetworkProviderConfiguration
     ) {
         self.targetConfiguration = targetConfiguration
@@ -65,6 +65,6 @@ struct HederaRESTNetworkProvider {
 
 extension HederaRESTNetworkProvider: HostProvider {
     var host: String {
-        return targetConfiguration.baseURL.hostOrUnknown
+        targetConfiguration.host
     }
 }

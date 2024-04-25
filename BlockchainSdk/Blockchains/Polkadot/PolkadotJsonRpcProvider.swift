@@ -22,23 +22,23 @@ class PolkadotJsonRpcProvider: HostProvider {
     }
     
     func storage(key: String) -> AnyPublisher<String, Error> {
-        requestPublisher(for: .storage(key: key, url: url))
+        requestPublisher(for: .storage(key: key))
     }
     
     func blockhash(_ type: PolkadotBlockhashType) -> AnyPublisher<String, Error> {
-        requestPublisher(for: .blockhash(type: type, url: url))
+        requestPublisher(for: .blockhash(type: type))
     }
     
     func header(_ blockhash: String) -> AnyPublisher<PolkadotHeader, Error> {
-        requestPublisher(for: .header(hash: blockhash, url: url))
+        requestPublisher(for: .header(hash: blockhash))
     }
     
     func accountNextIndex(_ address: String) -> AnyPublisher<UInt64, Error> {
-        requestPublisher(for: .accountNextIndex(address: address, url: url))
+        requestPublisher(for: .accountNextIndex(address: address))
     }
     
     func queryInfo(_ extrinsic: String) -> AnyPublisher<PolkadotQueriedInfo, Error> {
-        requestPublisher(for: .queryInfo(extrinsic: extrinsic, url: url))
+        requestPublisher(for: .queryInfo(extrinsic: extrinsic))
     }
     
     func runtimeVersion() -> AnyPublisher<PolkadotRuntimeVersion, Error> {
@@ -46,11 +46,11 @@ class PolkadotJsonRpcProvider: HostProvider {
     }
     
     func submitExtrinsic(_ extrinsic: String) -> AnyPublisher<String, Error> {
-        requestPublisher(for: .submitExtrinsic(extrinsic: extrinsic, url: url))
+        requestPublisher(for: .submitExtrinsic(extrinsic: extrinsic))
     }
     
-    private func requestPublisher<T: Codable>(for target: PolkadotTarget) -> AnyPublisher<T, Error> {
-        return provider.requestPublisher(target)
+    private func requestPublisher<T: Codable>(for target: PolkadotTarget.Target) -> AnyPublisher<T, Error> {
+        return provider.requestPublisher(PolkadotTarget(baseURL: url, target: target))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(PolkadotJsonRpcResponse<T>.self)
             .tryMap {

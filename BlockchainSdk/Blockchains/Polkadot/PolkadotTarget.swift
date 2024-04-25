@@ -14,26 +14,19 @@ enum PolkadotBlockhashType {
     case latest
 }
 
-enum PolkadotTarget: TargetType {
-    case storage(key: String, url: URL)
-    case blockhash(type: PolkadotBlockhashType, url: URL)
-    case header(hash: String, url: URL)
-    case accountNextIndex(address: String, url: URL)
-    case runtimeVersion(url: URL)
-    case queryInfo(extrinsic: String, url: URL)
-    case submitExtrinsic(extrinsic: String, url: URL)
-    
-    var baseURL: URL {
-        switch self {
-        case .storage(_, let url): return url
-        case .blockhash(_, let url): return url
-        case .header(_, let url): return url
-        case .accountNextIndex(_, let url): return url
-        case .runtimeVersion(let url): return url
-        case .queryInfo(_, let url): return url
-        case .submitExtrinsic(_, let url): return url
-        }
+struct PolkadotTarget: TargetType {
+    enum Target {
+        case storage(key: String)
+        case blockhash(type: PolkadotBlockhashType)
+        case header(hash: String)
+        case accountNextIndex(address: String)
+        case runtimeVersion(url: URL)
+        case queryInfo(extrinsic: String)
+        case submitExtrinsic(extrinsic: String)
     }
+
+    let baseURL: URL
+    let target: Target
     
     var path: String {
         return ""
@@ -51,25 +44,25 @@ enum PolkadotTarget: TargetType {
         ]
         
         var params: [Any] = []
-        switch self {
-        case .storage(let key, _):
+        switch target {
+        case .storage(let key):
             params.append(key)
-        case .blockhash(let type, _):
+        case .blockhash(let type):
             switch type {
             case .genesis:
                 params.append(0)
             case .latest:
                 break
             }
-        case .header(let hash, _):
+        case .header(let hash):
             params.append(hash)
-        case .accountNextIndex(let address, _):
+        case .accountNextIndex(let address):
             params.append(address)
         case .runtimeVersion:
             break
-        case .queryInfo(let extrinsic, _):
+        case .queryInfo(let extrinsic):
             params.append(extrinsic)
-        case .submitExtrinsic(let extrinsic, _):
+        case .submitExtrinsic(let extrinsic):
             params.append(extrinsic)
         }
         
@@ -83,7 +76,7 @@ enum PolkadotTarget: TargetType {
     }
     
     var rpcMethod: String {
-        switch self {
+        switch target {
         case .storage:
             return "state_getStorage"
         case .blockhash:

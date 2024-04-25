@@ -15,27 +15,34 @@ struct CardanoWalletAssembly: WalletManagerAssembly {
         return CardanoWalletManager(wallet: input.wallet).then {
             $0.transactionBuilder = CardanoTransactionBuilder()
             let cardanoResponseMapper = CardanoResponseMapper()
-            
-            let service = CardanoNetworkService(providers: [
-                RosettaNetworkProvider(
-                    rosettaUrl: .getBlockRosetta(
-                        apiKey: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .rosetta)
-                    ),
-                    configuration: input.networkConfig,
-                    cardanoResponseMapper: cardanoResponseMapper
-                ).eraseToAnyCardanoNetworkProvider(),
-                AdaliteNetworkProvider(
-                    adaliteUrl: .main,
-                    configuration: input.networkConfig,
-                    cardanoResponseMapper: cardanoResponseMapper
-                ).eraseToAnyCardanoNetworkProvider(),
-                RosettaNetworkProvider(
-                    rosettaUrl: .tangemRosetta,
-                    configuration: input.networkConfig,
-                    cardanoResponseMapper: cardanoResponseMapper
-                ).eraseToAnyCardanoNetworkProvider(),
-            ])
-            $0.networkService = service
+            let networkConfig = input.networkConfig
+
+            let linkResolver = APINodeInfoResolver(blockchain: input.blockchain, config: input.blockchainSdkConfig)
+            let providers: [AnyCardanoNetworkProvider] = input.apiInfo.compactMap {
+                guard  let nodeInfo = linkResolver.resolve(for: $0) else {
+                    return nil
+                }
+
+                switch $0 {
+                case .getBlock, .tangemRosetta:
+                    return RosettaNetworkProvider(
+                        url: nodeInfo.url,
+                        configuration: networkConfig,
+                        cardanoResponseMapper: cardanoResponseMapper
+                    )
+                    .eraseToAnyCardanoNetworkProvider()
+                case .adalite:
+                    return AdaliteNetworkProvider(
+                        url: nodeInfo.url,
+                        configuration: networkConfig, 
+                        cardanoResponseMapper: cardanoResponseMapper
+                    ).eraseToAnyCardanoNetworkProvider()
+                default:
+                    return nil
+                }
+            }
+
+            $0.networkService = CardanoNetworkService(providers: providers)
         }
     }    
 }

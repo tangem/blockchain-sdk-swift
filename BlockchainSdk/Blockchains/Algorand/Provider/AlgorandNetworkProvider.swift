@@ -18,8 +18,8 @@ struct AlgorandNetworkProvider: HostProvider {
     }
     
     /// Configuration connection node for provider
-    private let node: AlgorandProviderNode
-    
+    private let node: NodeInfo
+
     // MARK: - Properties
     
     /// Network provider of blockchain
@@ -28,7 +28,7 @@ struct AlgorandNetworkProvider: HostProvider {
     // MARK: - Init
     
     init(
-        node: AlgorandProviderNode,
+        node: NodeInfo,
         networkConfig: NetworkProviderConfiguration
     ) {
         self.node = node

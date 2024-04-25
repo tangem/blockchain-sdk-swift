@@ -10,7 +10,7 @@ import Foundation
 import Moya
 
 struct HederaTarget {
-    let configuration: HederaTargetConfiguration
+    let configuration: NodeInfo
     let target: Target
 }
 
@@ -32,7 +32,7 @@ extension HederaTarget: TargetType {
         case .getAccounts,
              .getTokens,
              .getExchangeRate:
-            return configuration.baseURL
+            return configuration.url
         }
     }
 
@@ -84,8 +84,8 @@ extension HederaTarget: TargetType {
         case .getAccounts,
              .getTokens,
              .getExchangeRate:
-            if let apiKeyHeaderName = configuration.apiKeyHeaderName {
-                headers[apiKeyHeaderName] = configuration.apiKeyHeaderValue
+            if let headersKeyInfo = configuration.headers {
+                headers[headersKeyInfo.headerName] = headersKeyInfo.headerValue
             }
         }
 

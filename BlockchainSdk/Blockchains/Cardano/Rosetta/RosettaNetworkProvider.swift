@@ -14,11 +14,11 @@ import SwiftCBOR
 /// https://docs.cardano.org/cardano-components/cardano-rosetta/get-started-rosetta
 class RosettaNetworkProvider: CardanoNetworkProvider {
     var host: String {
-        URL(string: rosettaUrl.url)!.hostOrUnknown
+        url.hostOrUnknown
     }
     
     private let provider: NetworkProvider<RosettaTarget>
-    private let rosettaUrl: RosettaUrl
+    private let url: URL
     private let cardanoResponseMapper: CardanoResponseMapper
 
     private var decoder: JSONDecoder {
@@ -28,11 +28,11 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     }
     
     init(
-        rosettaUrl: RosettaUrl,
+        url: URL,
         configuration: NetworkProviderConfiguration,
         cardanoResponseMapper: CardanoResponseMapper
     ) {
-        self.rosettaUrl = rosettaUrl
+        self.url = url
         provider = NetworkProvider<RosettaTarget>(configuration: configuration)
         self.cardanoResponseMapper = cardanoResponseMapper
     }
@@ -74,7 +74,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
         
         let submitBody = RosettaSubmitBody(networkIdentifier: .mainNet, signedTransaction: txHex)
         return provider
-            .requestPublisher(.submitTransaction(baseUrl: rosettaUrl, submitBody: submitBody))
+            .requestPublisher(request(for: .submitTransaction(submitBody: submitBody)))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(RosettaSubmitResponse.self, using: decoder)
             .eraseError()
@@ -84,9 +84,10 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     
     private func balancePublisher(for address: String) -> AnyPublisher<RosettaBalanceResponse, Error> {
         provider
-            .requestPublisher(.address(baseUrl: rosettaUrl,
-                                       addressBody: RosettaAddressBody(networkIdentifier: .mainNet,
-                                                                       accountIdentifier: RosettaAccountIdentifier(address: address))))
+            .requestPublisher(request(for: .address(addressBody: RosettaAddressBody(
+                networkIdentifier: .mainNet,
+                accountIdentifier: RosettaAccountIdentifier(address: address))
+            )))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(RosettaBalanceResponse.self, using: decoder)
             .eraseError()
@@ -95,15 +96,25 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     
     private func coinsPublisher(for address: String) -> AnyPublisher<RosettaCoinsResponse, Error> {
         provider
-            .requestPublisher(.coins(baseUrl: rosettaUrl,
-                                     addressBody: RosettaAddressBody(networkIdentifier: .mainNet,
-                                                                     accountIdentifier: RosettaAccountIdentifier(address: address))))
+            .requestPublisher(request(for: .coins(
+                addressBody: RosettaAddressBody(
+                    networkIdentifier: .mainNet,
+                    accountIdentifier: RosettaAccountIdentifier(address: address)
+                )
+            )))
             .filterSuccessfulStatusAndRedirectCodes()
             .map(RosettaCoinsResponse.self, using: decoder)
             .eraseError()
             .eraseToAnyPublisher()
     }
-    
+
+    private func request(for target: RosettaTarget.RosettaTargetType) -> RosettaTarget {
+        return .init(
+            baseURL: url,
+            target: target
+        )
+    }
+
     private func mapToCardanoUnspentOutput(response: RosettaCoinsResponse, address: String) -> [CardanoUnspentOutput] {
         guard let coins = response.coins else {
             return []
@@ -139,7 +150,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
     /// `482d88eb2d3b40b8a4e6bb8545cef842a5703e8f9eab9e3caca5c2edd1f31a7f:0`
     /// When the first part is transactionHash
     /// And the second path is outputIndex
-    func parseIdentifier(_ identifier: String?) -> (index: Int, hash: String)? {
+    private func parseIdentifier(_ identifier: String?) -> (index: Int, hash: String)? {
         guard let splittedIdentifier = identifier?.split(separator: ":"), splittedIdentifier.count == 2 else {
             return nil
         }
@@ -151,7 +162,7 @@ class RosettaNetworkProvider: CardanoNetworkProvider {
         return (index: index, hash: String(splittedIdentifier[0]))
     }
         
-    func mapToAssets(metadata: [String: [RosettaMetadataValue]]?) -> [CardanoUnspentOutput.Asset] {
+    private func mapToAssets(metadata: [String: [RosettaMetadataValue]]?) -> [CardanoUnspentOutput.Asset] {
         guard let metadata = metadata else {
             return []
         }

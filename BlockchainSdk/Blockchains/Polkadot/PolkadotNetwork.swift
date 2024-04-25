@@ -32,40 +32,6 @@ enum PolkadotNetwork {
         }
     }
     
-    // https://wiki.polkadot.network/docs/maintain-endpoints#test-networks
-    var urls: [URL] {
-        switch self {
-        case .polkadot:
-            return [
-                URL(string: "https://rpc.polkadot.io")!,
-                URL(string: "https://polkadot.api.onfinality.io/public-ws")!,
-                URL(string: "https://polkadot-rpc.dwellir.com")!,
-            ]
-        case .kusama:
-            return [
-                URL(string: "https://kusama-rpc.polkadot.io")!,
-                URL(string: "https://kusama.api.onfinality.io/public-ws")!,
-                URL(string: "https://kusama-rpc.dwellir.com")!,
-            ]
-        case .westend:
-            return [
-                URL(string: "https://westend-rpc.polkadot.io")!,
-            ]
-        case .azero(_, let isTestnet):
-            if isTestnet {
-                return [
-                    URL(string: "https://rpc.test.azero.dev")!,
-                    URL(string: "aleph-zero-testnet-rpc.dwellir.com")!,
-                ]
-            } else {
-                return [
-                    URL(string: "https://rpc.azero.dev")!,
-                    URL(string: "https://aleph-zero-rpc.dwellir.com")!,
-                ]
-            }
-        }
-    }
-    
     // https://wiki.polkadot.network/docs/build-protocol-info#addresses
     var addressPrefix: Data {
         let prefixByte: UInt8

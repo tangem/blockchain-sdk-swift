@@ -14,17 +14,15 @@ struct XRPWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         return try XRPWalletManager(wallet: input.wallet).then {
             $0.txBuilder = try XRPTransactionBuilder(walletPublicKey: input.wallet.publicKey.blockchainKey, curve: input.blockchain.curve)
-            $0.networkService = XRPNetworkService(
-                providers: [
-                    XRPNetworkProvider(baseUrl: .xrpLedgerFoundation, configuration: input.networkConfig),
-                    XRPNetworkProvider(baseUrl: .nowNodes(apiKey: input.blockchainSdkConfig.nowNodesApiKey), configuration: input.networkConfig),
-                    XRPNetworkProvider(
-                        baseUrl: .getBlock(
-                            apiKey: input.blockchainSdkConfig.getBlockCredentials.credential(for: input.blockchain, type: .jsonRpc)
-                        ),
-                        configuration: input.networkConfig
-                    ),
-            ])
+
+            let blockchain = input.blockchain
+            let config = input.blockchainSdkConfig
+            let providers: [XRPNetworkProvider] = APIResolver(blockchain: blockchain, config: config)
+                .resolveProviders(apiInfos: input.apiInfo) { nodeInfo, _ in
+                    XRPNetworkProvider(node: nodeInfo, configuration: input.networkConfig)
+                }
+
+            $0.networkService = XRPNetworkService(providers: providers)
         }
     }
     
