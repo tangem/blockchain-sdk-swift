@@ -84,7 +84,7 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         dependencies: .init(
             accountCreator: SimpleAccountCreator { [weak self] in self?.card },
             dataStorage: InMemoryBlockchainDataStorage { return nil }
-        )
+        ), apiList: APIList()
     )
     @Published private(set) var card: Card?
     @Published private(set) var walletManager: WalletManager?

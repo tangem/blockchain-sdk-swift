@@ -7,13 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A0C37EA2BDBAC7F00C122F7 /* SS58Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0C37E92BDBAC7F00C122F7 /* SS58Tests.swift */; };
 		0A0E22552B9B2E1B00075FF1 /* ZkSyncExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0E22542B9B2E1B00075FF1 /* ZkSyncExternalLinkProvider.swift */; };
 		0A0E225D2B9B366400075FF1 /* MoonbeamExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0E225C2B9B366400075FF1 /* MoonbeamExternalLinkProvider.swift */; };
 		0A0E226B2B9B3D1700075FF1 /* PolygonZkEvmExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0E226A2B9B3D1700075FF1 /* PolygonZkEvmExternalLinkProvider.swift */; };
+		0A0FDD4A2BD0117F00CD37C4 /* JoystreamExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0FDD492BD0117F00CD37C4 /* JoystreamExternalLinkProvider.swift */; };
 		0A1399212B637DB900934D7D /* ShibariumExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1399202B637DB900934D7D /* ShibariumExternalLinkProvider.swift */; };
 		0A158C022B74E44D0004DC23 /* BlockBookResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A158C002B74E44D0004DC23 /* BlockBookResponses.swift */; };
 		0A158C052B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A158C042B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift */; };
 		0A54FF452BB475B9000D293D /* TangemNetworkLoggerPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A54FF442BB475B9000D293D /* TangemNetworkLoggerPlugin.swift */; };
+		0A6272652BD96736003B2F4D /* SS58.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6272642BD96736003B2F4D /* SS58.swift */; };
 		0AA9E3792B9A03450084E8A7 /* MantaExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */; };
 		0AEFB5392B7656EC007519F9 /* NodeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEFB5382B7656EC007519F9 /* NodeRequest.swift */; };
 		0AF90CD72B87624800772F04 /* AreonExternalLinkProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF90CD62B87624800772F04 /* AreonExternalLinkProvider.swift */; };
@@ -820,13 +823,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0A0C37E92BDBAC7F00C122F7 /* SS58Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SS58Tests.swift; sourceTree = "<group>"; };
 		0A0E22542B9B2E1B00075FF1 /* ZkSyncExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkSyncExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0A0E225C2B9B366400075FF1 /* MoonbeamExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0A0E226A2B9B3D1700075FF1 /* PolygonZkEvmExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolygonZkEvmExternalLinkProvider.swift; sourceTree = "<group>"; };
+		0A0FDD492BD0117F00CD37C4 /* JoystreamExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoystreamExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0A1399202B637DB900934D7D /* ShibariumExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShibariumExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0A158C002B74E44D0004DC23 /* BlockBookResponses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockBookResponses.swift; sourceTree = "<group>"; };
 		0A158C042B74E4680004DC23 /* BitcoinCashNowNodesNetworkProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoinCashNowNodesNetworkProvider.swift; sourceTree = "<group>"; };
 		0A54FF442BB475B9000D293D /* TangemNetworkLoggerPlugin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TangemNetworkLoggerPlugin.swift; sourceTree = "<group>"; };
+		0A6272642BD96736003B2F4D /* SS58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SS58.swift; sourceTree = "<group>"; };
 		0AA9E3782B9A03450084E8A7 /* MantaExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MantaExternalLinkProvider.swift; sourceTree = "<group>"; };
 		0AEFB5382B7656EC007519F9 /* NodeRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NodeRequest.swift; sourceTree = "<group>"; };
 		0AF90CD62B87624800772F04 /* AreonExternalLinkProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreonExternalLinkProvider.swift; sourceTree = "<group>"; };
@@ -2076,6 +2082,7 @@
 				EFF466E72ACD851700ACC3EA /* PendingTransactionRecord.swift */,
 				EFF466EE2ACECF8000ACC3EA /* PendingTransactionRecordMapper.swift */,
 				EFEADBDD2A4D737F00744407 /* SignatureInfo.swift */,
+				0A6272642BD96736003B2F4D /* SS58.swift */,
 				0A54FF442BB475B9000D293D /* TangemNetworkLoggerPlugin.swift */,
 				5DEAFA932444C5300032E316 /* Token.swift */,
 				5DEAFA8F244473460032E316 /* Transaction.swift */,
@@ -2548,6 +2555,7 @@
 				2D3829CD29D350D1001D4785 /* AddressServiceManagerUtility.swift */,
 				DC886FCC2AF5637D0098669C /* CommonTests.swift */,
 				DC136B412B1A5B3C008A7D41 /* Bech32Tests.swift */,
+				0A0C37E92BDBAC7F00C122F7 /* SS58Tests.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -3292,6 +3300,7 @@
 			isa = PBXGroup;
 			children = (
 				EF3B19432AA85E510084AA1C /* AzeroExternalLinkProvider.swift */,
+				0A0FDD492BD0117F00CD37C4 /* JoystreamExternalLinkProvider.swift */,
 				EF3B19412AA85E3F0084AA1C /* KusamaExternalLinkProvider.swift */,
 			);
 			path = OtherChains;
@@ -4206,6 +4215,7 @@
 				2D9A91A329BB8C1700476EA6 /* TONProviderTarget.swift in Sources */,
 				B61920892AE6ABD3001D6DDF /* NEARNetworkResult.swift in Sources */,
 				EF3B195A2AA85EE70084AA1C /* TerraV1ExternalLinkProvider.swift in Sources */,
+				0A6272652BD96736003B2F4D /* SS58.swift in Sources */,
 				EF937BDD2B90EED0009B8374 /* WithdrawalSuggestionProvider.swift in Sources */,
 				2D9A919329BB8BFF00476EA6 /* TONTransactionBuilder.swift in Sources */,
 				DC5E64F12B1650F400E81AA5 /* OP_BOOLOR.swift in Sources */,
@@ -4701,6 +4711,7 @@
 				2D24F5C82B6D2C7100D502A0 /* AptosProviderTarget.swift in Sources */,
 				B64B728C2AEC9C7B005C8C7C /* Lock.swift in Sources */,
 				5DC7DD62244077D7008F83F2 /* XRPNetworkService.swift in Sources */,
+				0A0FDD4A2BD0117F00CD37C4 /* JoystreamExternalLinkProvider.swift in Sources */,
 				EF9E380D2B7A38E3004B694C /* TransactionValidator.swift in Sources */,
 				B69824812B71A8F800E1333D /* HederaNetworkResult.ExchangeRate.swift in Sources */,
 				B6D346002AD9450D0009D1B2 /* NEARTransactionBuilder.swift in Sources */,
@@ -4878,6 +4889,7 @@
 				B6AF184D2AF00F8600113BC2 /* TWCurve+.swift in Sources */,
 				EFCD1D192A586BEF009C8624 /* CardanoTests.swift in Sources */,
 				DC173AEC2A5D42EE0088F79E /* XRPTests.swift in Sources */,
+				0A0C37EA2BDBAC7F00C122F7 /* SS58Tests.swift in Sources */,
 				DA1D3B7B2B57B8FB00247393 /* BigUInt+.swift in Sources */,
 				2D535E872A0CC5FA0081EB76 /* AddressesValidationTests.swift in Sources */,
 				B62BCBAC2B3D978F007494CF /* VeChainTests.swift in Sources */,

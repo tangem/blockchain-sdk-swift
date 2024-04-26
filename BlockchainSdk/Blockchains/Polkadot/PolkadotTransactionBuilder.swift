@@ -33,7 +33,7 @@ class PolkadotTransactionBuilder {
             https://github.com/paritytech/polkadot/blob/3b68869e14f84b043aa65bd83f9fe44359e4d626/runtime/westend/src/lib.rs#L982
         */
         switch network {
-        case .polkadot, .azero:
+        case .polkadot, .azero, .joystream:
             return Data(hexString: "0x0500")
         case .kusama:
             return Data(hexString: "0x0400")
@@ -115,6 +115,8 @@ class PolkadotTransactionBuilder {
             return specVersion < 2028
         case .westend, .azero:
             return false
+        case .joystream:
+            return true
         }
     }
 
