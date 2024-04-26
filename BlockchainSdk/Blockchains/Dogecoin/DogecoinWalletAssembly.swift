@@ -21,24 +21,21 @@ struct DogecoinWalletAssembly: WalletManagerAssembly {
             
             $0.txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
             
-            var providers = [AnyBitcoinNetworkProvider]()
-            
-            providers.append(
-                networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider()
-            )
-            
-            providers.append(
-                networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider()
-            )
-            
-            providers.append(
-                contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .dogecoin, with: input)
-            )
-            
-            providers.append(
-                networkProviderAssembly.makeBlockcypherNetworkProvider(endpoint: .dogecoin, with: input).eraseToAnyBitcoinNetworkProvider()
-            )
-            
+            let providers: [AnyBitcoinNetworkProvider] = input.apiInfo.reduce(into: []) { partialResult, providerType in
+                switch providerType {
+                case .nowNodes:
+                    partialResult.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .nowNodes).eraseToAnyBitcoinNetworkProvider())
+                case .getBlock:
+                    partialResult.append(networkProviderAssembly.makeBlockBookUtxoProvider(with: input, for: .getBlock).eraseToAnyBitcoinNetworkProvider())
+                case .blockchair:
+                    partialResult.append(contentsOf: networkProviderAssembly.makeBlockchairNetworkProviders(endpoint: .dogecoin, with: input))
+                case .blockcypher:
+                    partialResult.append(networkProviderAssembly.makeBlockcypherNetworkProvider(endpoint: .dogecoin, with: input).eraseToAnyBitcoinNetworkProvider())
+                default:
+                    return
+                }
+            }
+
             $0.networkService = BitcoinNetworkService(providers: providers)
         }
     }

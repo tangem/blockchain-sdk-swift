@@ -10,26 +10,6 @@ import Foundation
 import Combine
 import Solana_Swift
 
-extension RPCEndpoint {
-    public static func nowNodes(apiKey: String) -> RPCEndpoint {
-        RPCEndpoint(
-            url: URL(string: "https://sol.nownodes.io")!,
-            urlWebSocket: URL(string: "wss://sol.nownodes.io")!,
-            network: .mainnetBeta,
-            apiKeyHeaderName: Constants.nowNodesApiKeyHeaderName,
-            apiKeyHeaderValue: apiKey
-        )
-    }
-    
-    public static func quiknode(apiKey: String, subdomain: String) -> RPCEndpoint {
-        RPCEndpoint(
-            url: URL(string: "https://\(subdomain).solana-mainnet.discover.quiknode.pro/\(apiKey)")!,
-            urlWebSocket: URL(string: "wss://\(subdomain).solana-mainnet.discover.quiknode.pro/\(apiKey)")!,
-            network: .mainnetBeta
-        )
-    }
-}
-
 extension Api {
     func getFees(
         commitment: Commitment? = nil
