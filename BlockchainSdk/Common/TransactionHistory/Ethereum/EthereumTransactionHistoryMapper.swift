@@ -43,38 +43,39 @@ extension EthereumTransactionHistoryMapper: TransactionHistoryMapper {
 
                 switch amountType {
                 case .coin, .reserve:
-                    if let transactionInfo = extractTransactionInfo(
-                        from: transaction,
-                        walletAddress: walletAddress
-                    ) {
-                        partialResult += mapToTransactionRecords(
-                            transaction: transaction,
-                            transactionInfos: [transactionInfo],
-                            amountType: amountType,
-                            feeValue: feeValue
-                        )
+                    guard let info = extractTransactionInfo(from: transaction, walletAddress: walletAddress) else {
+                        return
                     }
+
+                    partialResult += mapToTransactionRecords(
+                        transaction: transaction,
+                        transactionInfos: [info],
+                        amountType: amountType,
+                        feeValue: feeValue
+                    )
                 case .token(let token):
-                    if let transfers = transaction.tokenTransfers?.nilIfEmpty {
-                        let outgoingTransactionInfos = extractTransactionInfos(
-                            from: transfers,
-                            token: token,
-                            walletAddress: walletAddress,
-                            isOutgoing: true
-                        )
-                        let incomingTransactionInfos = extractTransactionInfos(
-                            from: transfers,
-                            token: token,
-                            walletAddress: walletAddress,
-                            isOutgoing: false
-                        )
-                        partialResult += mapToTransactionRecords(
-                            transaction: transaction,
-                            transactionInfos: outgoingTransactionInfos + incomingTransactionInfos,
-                            amountType: amountType,
-                            feeValue: feeValue
-                        )
+                    guard let transfers = transaction.tokenTransfers?.nilIfEmpty else {
+                        return
                     }
+
+                    let outgoingTransactionInfos = extractTransactionInfos(
+                        from: transfers,
+                        token: token,
+                        walletAddress: walletAddress,
+                        isOutgoing: true
+                    )
+                    let incomingTransactionInfos = extractTransactionInfos(
+                        from: transfers,
+                        token: token,
+                        walletAddress: walletAddress,
+                        isOutgoing: false
+                    )
+                    partialResult += mapToTransactionRecords(
+                        transaction: transaction,
+                        transactionInfos: outgoingTransactionInfos + incomingTransactionInfos,
+                        amountType: amountType,
+                        feeValue: feeValue
+                    )
                 }
             }
     }
