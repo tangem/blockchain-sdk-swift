@@ -333,7 +333,7 @@ extension HederaWalletManager: WalletManager {
         return getFee(amount: amount, doesAccountExistPublisher: doesAccountExistPublisher)
     }
 
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         return Deferred { [weak self] in
             return Future { (promise: Future<HederaTransactionBuilder.CompiledTransaction, Error>.Promise) in
                 guard let self else {
@@ -377,14 +377,22 @@ extension HederaWalletManager: WalletManager {
             return walletManager
                 .networkService
                 .send(transaction: compiledTransaction)
+                .mapError { error in
+                    SendTxError(error: error, tx: nil)
+                }
+                .eraseToAnyPublisher()
         }
-        .withWeakCaptureOf(self)
-        .handleEvents(
-            receiveOutput: { walletManager, sendResult in
-                walletManager.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)
-            }
-        )
-        .map(\.1)
+        .mapSendError()
+//        .withWeakCaptureOf(self)
+//        .tryMap { walletManager, sendResult in
+//            walletManager.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)
+//        }
+//        .handleEvents(
+//            receiveOutput: { walletManager, sendResult in
+//                walletManager.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)
+//            }
+//        )
+//        .map(\.1)
         .eraseToAnyPublisher()
     }
 }

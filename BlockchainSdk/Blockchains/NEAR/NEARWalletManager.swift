@@ -215,7 +215,7 @@ extension NEARWalletManager: WalletManager {
     func send(
         _ transaction: Transaction,
         signer: TransactionSigner
-    ) -> AnyPublisher<TransactionSendResult, Swift.Error> {
+    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
         return networkService
             .getAccessKeyInfo(accountId: wallet.address, publicKey: wallet.publicKey)
             .tryMap { accessKeyInfo -> NEARAccessKeyInfo in
@@ -254,9 +254,15 @@ extension NEARWalletManager: WalletManager {
                 return try walletManager.transactionBuilder.buildForSend(transaction: transaction, signature: signature)
             }
             .withWeakCaptureOf(self)
-            .flatMap { walletManager, transaction in
-                return walletManager.networkService.send(transaction: transaction)
+            .flatMap { walletManager, rawTransactionData in
+                return walletManager.networkService
+                    .send(transaction: rawTransactionData)
+                    .mapError { error in
+                        SendTxError(error: error, tx: rawTransactionData.hexString.lowercased())
+                    }
+                    .eraseToAnyPublisher()
             }
+            .mapSendError()
             .handleEvents(
                 receiveOutput: { [weak self] sendResult in
                     self?.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)

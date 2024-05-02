@@ -83,6 +83,11 @@ extension Publisher {
             .collect()
             .eraseToAnyPublisher()
     }
+    
+    static func sendFail(error: Error) -> AnyPublisher<Output, SendTxError> {
+        return Fail(error: SendTxError(error: error))
+            .eraseToAnyPublisher()
+    }
 }
 
 // MARK: - Private implementation

@@ -33,7 +33,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
             }
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         let kaspaTransaction: KaspaTransaction
         let hashes: [Data]
         
@@ -42,7 +42,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
             kaspaTransaction = result.0
             hashes = result.1
         } catch {
-            return .anyFail(error: error)
+            return .sendFail(error: error)
         }
         
         return signer.sign(hashes: hashes, walletPublicKey: wallet.publicKey)
@@ -54,7 +54,13 @@ class KaspaWalletManager: BaseManager, WalletManager {
             .flatMap { [weak self] tx -> AnyPublisher<KaspaTransactionResponse, Error> in
                 guard let self = self else { return .emptyFail }
                 
-                return self.networkService.send(transaction: KaspaTransactionRequest(transaction: tx))
+                return self.networkService
+                    .send(transaction: KaspaTransactionRequest(transaction: tx))
+                    .mapError { error in
+                        let encodedRawTransactionData = try? JSONEncoder().encode(tx)
+                        return SendTxError(error: error, tx: encodedRawTransactionData?.hexString.lowercased())
+                    }
+                    .eraseToAnyPublisher()
             }
             .handleEvents(receiveOutput: { [weak self] in
                 let mapper = PendingTransactionRecordMapper()
@@ -64,6 +70,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
             .map {
                 TransactionSendResult(hash: $0.transactionId)
             }
+            .mapSendError()
             .eraseToAnyPublisher()
     }
     

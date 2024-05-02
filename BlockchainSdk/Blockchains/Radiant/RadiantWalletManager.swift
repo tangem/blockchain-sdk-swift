@@ -66,13 +66,13 @@ private extension RadiantWalletManager {
     func sendViaCompileTransaction(
         _ transaction: Transaction,
         signer: TransactionSigner
-    ) -> AnyPublisher<TransactionSendResult, Error> {
+    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
         let hashesForSign: [Data]
         
         do {
             hashesForSign = try transactionBuilder.buildForSign(transaction: transaction)
         } catch {
-            return .anyFail(error: error)
+            return .sendFail(error: error)
         }
     
         return signer
@@ -96,8 +96,13 @@ private extension RadiantWalletManager {
                 return try walletManager.transactionBuilder.buildForSend(transaction: transaction, signatures: signatures)
             }
             .withWeakCaptureOf(self)
-            .flatMap { walletManager, transactionData -> AnyPublisher<String, Error> in
-                return walletManager.networkService.sendTransaction(data: transactionData)
+            .flatMap { walletManager, rawTransactionData -> AnyPublisher<String, Error> in
+                return walletManager.networkService
+                    .sendTransaction(data: rawTransactionData)
+                    .mapError { error in
+                        SendTxError(error: error, tx: rawTransactionData.hexString.lowercased())
+                    }
+                    .eraseToAnyPublisher()
             }
             .withWeakCaptureOf(self)
             .map { walletManager, txId -> TransactionSendResult in
@@ -106,6 +111,7 @@ private extension RadiantWalletManager {
                 walletManager.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: txId)
             }
+            .mapSendError()
             .eraseToAnyPublisher()
     }
     
@@ -131,7 +137,7 @@ extension RadiantWalletManager: WalletManager {
         true
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         sendViaCompileTransaction(transaction, signer: signer)
     }
     

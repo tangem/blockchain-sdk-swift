@@ -49,7 +49,7 @@ final class ChiaWalletManager: BaseManager, WalletManager {
             )
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         Just(())
             .receive(on: DispatchQueue.global())
             .tryMap { [weak self] Void -> [Data] in
@@ -68,7 +68,13 @@ final class ChiaWalletManager: BaseManager, WalletManager {
                 guard let self = self else {
                     return Fail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
                 }
-                return self.networkService.send(spendBundle: spendBundle)
+                return self.networkService
+                    .send(spendBundle: spendBundle)
+                    .mapError { error in
+                        let encodedTransactionData = try? JSONEncoder().encode(spendBundle)
+                        return SendTxError(error: error, tx: encodedTransactionData?.hexString.lowercased())
+                    }
+                    .eraseToAnyPublisher()
             }
             .map { [weak self] hash in
                 let mapper = PendingTransactionRecordMapper()
@@ -76,6 +82,7 @@ final class ChiaWalletManager: BaseManager, WalletManager {
                 self?.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: hash)
             }
+            .mapSendError()
             .eraseToAnyPublisher()
     }
     

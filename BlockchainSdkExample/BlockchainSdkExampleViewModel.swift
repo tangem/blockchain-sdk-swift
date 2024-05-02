@@ -84,7 +84,8 @@ class BlockchainSdkExampleViewModel: ObservableObject {
         dependencies: .init(
             accountCreator: SimpleAccountCreator { [weak self] in self?.card },
             dataStorage: InMemoryBlockchainDataStorage { return nil }
-        )
+        ), 
+        apiList: .init()
     )
     @Published private(set) var card: Card?
     @Published private(set) var walletManager: WalletManager?
@@ -247,7 +248,13 @@ class BlockchainSdkExampleViewModel: ObservableObject {
                         destinationAddress: self.destination
                     )
                     let signer = CommonSigner(sdk: self.sdk)
-                    return walletManager.send(transaction, signer: signer).eraseToAnyPublisher()
+                    return walletManager
+                        .send(transaction, signer: signer)
+                        .mapError {
+                            Log.error("sendTxError = \($0.localizedDescription)")
+                            return $0.error
+                        }
+                        .eraseToAnyPublisher()
                 } catch {
                     return Fail(error: error)
                         .eraseToAnyPublisher()

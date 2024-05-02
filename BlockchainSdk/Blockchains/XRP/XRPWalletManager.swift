@@ -73,7 +73,7 @@ class XRPWalletManager: BaseManager, WalletManager {
 extension XRPWalletManager: TransactionSender {
     var allowsFeeSelection: Bool { true }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         let addressDecoded = decodeAddress(address: transaction.destinationAddress)
 
         return networkService
@@ -105,10 +105,11 @@ extension XRPWalletManager: TransactionSender {
 
                 return try self.txBuilder.buildForSend(transaction: response.0, signature: response.1)
             }
-            .flatMap{[weak self] hash -> AnyPublisher<TransactionSendResult, Error> in
-                self?.networkService.send(blob: hash)
+            .withWeakCaptureOf(self)
+            .flatMap{ (walletManager, hash) -> AnyPublisher<TransactionSendResult, Error> in
+                walletManager.networkService.send(blob: hash)
                     .tryMap{[weak self] response in
-                        guard let self = self else { throw WalletError.empty }
+                        guard let self else { throw SendTxError(error: WalletError.empty) }
                         
                         let mapper = PendingTransactionRecordMapper()
                         let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
@@ -116,8 +117,9 @@ extension XRPWalletManager: TransactionSender {
                         return TransactionSendResult(hash: hash)
                     }
                     .mapError { SendTxError(error: $0, tx: hash) }
-                    .eraseToAnyPublisher() ?? .emptyFail
+                    .eraseToAnyPublisher()
             }
+            .mapSendError()
             .eraseToAnyPublisher()
     }
     

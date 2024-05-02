@@ -70,16 +70,7 @@ extension BlockchainDataProvider {
 
 @available(iOS 13.0, *)
 public protocol TransactionSender {
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error>
-}
-
-public struct SendTxError: Error, LocalizedError {
-    public let error: Error
-    public let tx: String
-    
-    public var errorDescription: String? {
-        error.localizedDescription
-    }
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError>
 }
 
 @available(iOS 13.0, *)
@@ -92,7 +83,7 @@ public protocol TransactionSigner {
 public protocol TransactionPusher {
     func isPushAvailable(for transactionHash: String) -> Bool
     func getPushFee(for transactionHash: String) -> AnyPublisher<[Fee], Error>
-    func pushTransaction(with transactionHash: String, newTransaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, Error>
+    func pushTransaction(with transactionHash: String, newTransaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, SendTxError>
 }
 
 @available(iOS 13.0, *)

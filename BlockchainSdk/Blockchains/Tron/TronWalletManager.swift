@@ -41,27 +41,39 @@ class TronWalletManager: BaseManager, WalletManager {
             }
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
-        return signedTransactionData(amount: transaction.amount, source: wallet.address, destination: transaction.destinationAddress, signer: signer, publicKey: wallet.publicKey)
-            .flatMap { [weak self] data -> AnyPublisher<TronBroadcastResponse, Error> in
-                guard let self = self else {
-                    return .anyFail(error: WalletError.empty)
-                }
-                
-                return self.networkService.broadcastHex(data)
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
+        return signedTransactionData(
+            amount: transaction.amount,
+            source: wallet.address,
+            destination: transaction.destinationAddress,
+            signer: signer,
+            publicKey: wallet.publicKey
+        )
+        .flatMap { [weak self] data -> AnyPublisher<TronBroadcastResponse, Error> in
+            guard let self = self else {
+                return .anyFail(error: WalletError.empty)
             }
-            .tryMap { [weak self] broadcastResponse -> TransactionSendResult in
-                guard broadcastResponse.result == true else {
-                    throw WalletError.failedToSendTx
+            
+            return self.networkService
+                .broadcastHex(data)
+                .mapError { error in
+                    SendTxError(error: error, tx: data.hexString)
                 }
-                
-                let hash = broadcastResponse.txid
-                let mapper = PendingTransactionRecordMapper()
-                let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
-                self?.wallet.addPendingTransaction(record)
-                return TransactionSendResult(hash: hash)
+                .eraseToAnyPublisher()
+        }
+        .tryMap { [weak self] broadcastResponse -> TransactionSendResult in
+            guard broadcastResponse.result == true else {
+                throw WalletError.failedToSendTx
             }
-            .eraseToAnyPublisher()
+            
+            let hash = broadcastResponse.txid
+            let mapper = PendingTransactionRecordMapper()
+            let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
+            self?.wallet.addPendingTransaction(record)
+            return TransactionSendResult(hash: hash)
+        }
+        .mapSendError()
+        .eraseToAnyPublisher()
     }
 
     func getFee(amount: Amount, destination: String) -> AnyPublisher<[Fee], Error> {

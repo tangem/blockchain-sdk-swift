@@ -115,7 +115,7 @@ extension AlgorandWalletManager: WalletManager {
     func send(
         _ transaction: Transaction,
         signer: TransactionSigner
-    ) -> AnyPublisher<TransactionSendResult, Error> {
+    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
         sendViaCompileTransaction(transaction, signer: signer)
     }
 }
@@ -126,7 +126,7 @@ extension AlgorandWalletManager {
     private func sendViaCompileTransaction(
         _ transaction: Transaction,
         signer: TransactionSigner
-    ) -> AnyPublisher<TransactionSendResult, Error> {
+    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
         networkService
             .getTransactionParams()
             .withWeakCaptureOf(self)
@@ -154,7 +154,10 @@ extension AlgorandWalletManager {
             }
             .withWeakCaptureOf(self)
             .flatMap { walletManager, transactionData -> AnyPublisher<String, Error> in
-                return walletManager.networkService.sendTransaction(data: transactionData)
+                return walletManager.networkService
+                    .sendTransaction(data: transactionData)
+                    .mapError { SendTxError(error: $0, tx: transactionData.hexString.lowercased()) }
+                    .eraseToAnyPublisher()
             }
             .withWeakCaptureOf(self)
             .map { walletManager, txId in
@@ -163,6 +166,7 @@ extension AlgorandWalletManager {
                 walletManager.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: txId)
             }
+            .mapSendError()
             .eraseToAnyPublisher()
     }
     

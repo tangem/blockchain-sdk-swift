@@ -49,7 +49,6 @@ final class AptosWalletManager: BaseManager {
 }
 
 extension AptosWalletManager: WalletManager {
-    
     var currentHost: String {
         networkService.host
     }
@@ -98,7 +97,7 @@ extension AptosWalletManager: WalletManager {
             .eraseToAnyPublisher()
     }
     
-    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, Error> {
+    func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         let dataForSign: Data
         
         // This timestamp value must be synchronized between calls buildForSign / buildForSend
@@ -107,14 +106,14 @@ extension AptosWalletManager: WalletManager {
         do {
             dataForSign = try transactionBuilder.buildForSign(transaction: transaction, expirationTimestamp: expirationTimestamp)
         } catch {
-            return .anyFail(error: WalletError.failedToBuildTx)
+            return .sendFail(error: WalletError.failedToBuildTx)
         }
         
         return signer
             .sign(hash: dataForSign, walletPublicKey: self.wallet.publicKey)
             .withWeakCaptureOf(self)
             .flatMap { (walletManager, signature) -> AnyPublisher<String, Error> in
-                guard let buildForSend = try? self.transactionBuilder.buildForSend(
+                guard let rawTransactionData = try? self.transactionBuilder.buildForSend(
                     transaction: transaction,
                     signature: signature,
                     expirationTimestamp: expirationTimestamp
@@ -122,7 +121,13 @@ extension AptosWalletManager: WalletManager {
                     return .anyFail(error: WalletError.failedToSendTx)
                 }
                 
-                return walletManager.networkService.submitTransaction(data: buildForSend)
+                return walletManager
+                    .networkService
+                    .submitTransaction(data: rawTransactionData)
+                    .mapError { error in
+                        SendTxError(error: error, tx: rawTransactionData.hexString.lowercased())
+                    }
+                    .eraseToAnyPublisher()
             }
             .withWeakCaptureOf(self)
             .map { walletManager, transactionHash in
@@ -131,6 +136,7 @@ extension AptosWalletManager: WalletManager {
                 walletManager.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: transactionHash)
             }
+            .mapSendError()
             .eraseToAnyPublisher()
     }
     

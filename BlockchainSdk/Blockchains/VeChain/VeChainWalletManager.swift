@@ -222,7 +222,7 @@ extension VeChainWalletManager: WalletManager {
     func send(
         _ transaction: Transaction,
         signer: TransactionSigner
-    ) -> AnyPublisher<TransactionSendResult, Error> {
+    ) -> AnyPublisher<TransactionSendResult, SendTxError> {
         return networkService
             .getLatestBlockInfo()
             .withWeakCaptureOf(self)
@@ -259,16 +259,21 @@ extension VeChainWalletManager: WalletManager {
                 )
             }
             .withWeakCaptureOf(self)
-            .flatMap { walletManager, transaction in
-                return walletManager.networkService.send(transaction: transaction)
+            .flatMap { walletManager, rawTransactionData in
+                return walletManager
+                    .networkService
+                    .send(transaction: rawTransactionData)
+                    .mapError { SendTxError(error: $0, tx: rawTransactionData.hexString.lowercased()) }
+                    .eraseToAnyPublisher()
             }
-            .withWeakCaptureOf(self)
-            .handleEvents(
-                receiveOutput: { walletManager, sendResult in
-                    walletManager.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)
-                }
-            )
-            .map(\.1)
+            .mapSendError()
+//            .withWeakCaptureOf(self)
+//            .handleEvents(
+//                receiveOutput: { walletManager, sendResult in
+//                    walletManager.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)
+//                }
+//            )
+//            .map(\.1)
             .eraseToAnyPublisher()
     }
 }
