@@ -72,7 +72,7 @@ private extension RadiantWalletManager {
         do {
             hashesForSign = try transactionBuilder.buildForSign(transaction: transaction)
         } catch {
-            return .sendFail(error: error)
+            return .sendTxFail(error: error)
         }
     
         return signer

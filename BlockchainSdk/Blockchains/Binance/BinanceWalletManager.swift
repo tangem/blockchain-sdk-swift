@@ -55,7 +55,7 @@ class BinanceWalletManager: BaseManager, WalletManager {
 extension BinanceWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         guard let msg = txBuilder.buildForSign(transaction: transaction) else {
-            return .sendFail(error: WalletError.failedToBuildTx)
+            return .sendTxFail(error: WalletError.failedToBuildTx)
         }
         
         let hash = msg.encodeForSignature()

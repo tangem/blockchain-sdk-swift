@@ -50,7 +50,7 @@ extension TezosWalletManager: TransactionSender {
     
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
         guard let contents = txBuilder.buildContents(transaction: transaction) else {
-            return .sendFail(error: WalletError.failedToBuildTx).eraseToAnyPublisher()
+            return .sendTxFail(error: WalletError.failedToBuildTx)
         }
         
         return networkService
@@ -177,14 +177,5 @@ extension TezosWalletManager: WithdrawalSuggestionProvider {
         }
     
         return .feeIsTooHigh(reduceAmountBy: Amount(with: walletAmount, value: withdrawalMinimumAmount))
-    }
-}
-
-
-extension Publisher where Failure == Error {
-    func mapSendError() -> Publishers.MapError<Self, SendTxError> {
-        mapError { error in
-            SendTxError(error: error)
-        }
     }
 }

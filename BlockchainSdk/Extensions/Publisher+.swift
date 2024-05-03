@@ -67,6 +67,11 @@ extension Publisher {
         return Fail(error: error)
             .eraseToAnyPublisher()
     }
+    
+    static func sendTxFail(error: Error) -> AnyPublisher<Output, SendTxError> {
+        return Fail(error: SendTxError(error: error))
+            .eraseToAnyPublisher()
+    }
 
     static func justWithError(output: Output) -> AnyPublisher<Output, Error> {
         return Just(output)
@@ -83,10 +88,13 @@ extension Publisher {
             .collect()
             .eraseToAnyPublisher()
     }
-    
-    static func sendFail(error: Error) -> AnyPublisher<Output, SendTxError> {
-        return Fail(error: SendTxError(error: error))
-            .eraseToAnyPublisher()
+}
+
+extension Publisher where Failure == Error {
+    func mapSendError() -> Publishers.MapError<Self, SendTxError> {
+        mapError { error in
+            SendTxError(error: error)
+        }
     }
 }
 

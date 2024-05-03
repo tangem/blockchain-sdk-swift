@@ -109,7 +109,7 @@ extension XRPWalletManager: TransactionSender {
             .flatMap{ (walletManager, hash) -> AnyPublisher<TransactionSendResult, Error> in
                 walletManager.networkService.send(blob: hash)
                     .tryMap{[weak self] response in
-                        guard let self else { throw SendTxError(error: WalletError.empty) }
+                        guard let self else { throw WalletError.empty }
                         
                         let mapper = PendingTransactionRecordMapper()
                         let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)

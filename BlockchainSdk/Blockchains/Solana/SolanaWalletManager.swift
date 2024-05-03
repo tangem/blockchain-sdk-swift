@@ -62,7 +62,7 @@ extension SolanaWalletManager: TransactionSender {
         case .token(let token):
             sendPublisher = sendSplToken(transaction, token: token, signer: signer)
         case .reserve:
-            return .sendFail(error: WalletError.empty)
+            return .sendTxFail(error: WalletError.empty)
         }
         
         return sendPublisher
@@ -76,9 +76,7 @@ extension SolanaWalletManager: TransactionSender {
                 self.wallet.addPendingTransaction(record)
                 return TransactionSendResult(hash: hash)
             }
-            .mapError {
-                SendTxError(error: $0)
-            }
+            .mapSendError()
             .eraseToAnyPublisher()
     }
     

@@ -73,24 +73,25 @@ extension CardanoWalletManager: TransactionSender {
                 }
                 .tryMap { [weak self] signature -> Data in
                     guard let self else {
-                        throw SendTxError(error: WalletError.empty)
+                        throw WalletError.empty
                     }
 
                     let signatureInfo = SignatureInfo(signature: signature, publicKey: self.wallet.publicKey.blockchainKey)
                     return try self.transactionBuilder.buildForSend(transaction: transaction, signature: signatureInfo)
                 }
-                .flatMap { [weak self] buildTransaction -> AnyPublisher<String, Error> in
+                .flatMap { [weak self] builtTransaction -> AnyPublisher<String, Error> in
                     guard let self else {
-                        return .anyFail(error: SendTxError(error: WalletError.empty))
+                        return .anyFail(error: WalletError.empty)
                     }
 
-                    return self.networkService.send(transaction: buildTransaction)
-                        .mapError { SendTxError(error: $0, tx: buildTransaction.hexString.lowercased()) }
+                    return self.networkService
+                        .send(transaction: builtTransaction)
+                        .mapError { SendTxError(error: $0, tx: builtTransaction.hexString.lowercased()) }
                         .eraseToAnyPublisher()
                 }
                 .tryMap { [weak self] hash in
                     guard let self else {
-                        throw SendTxError(error: WalletError.empty)
+                        throw WalletError.empty
                     }
 
                     let mapper = PendingTransactionRecordMapper()

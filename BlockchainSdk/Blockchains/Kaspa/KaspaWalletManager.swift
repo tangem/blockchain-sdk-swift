@@ -42,7 +42,7 @@ class KaspaWalletManager: BaseManager, WalletManager {
             kaspaTransaction = result.0
             hashes = result.1
         } catch {
-            return .sendFail(error: error)
+            return .sendTxFail(error: error)
         }
         
         return signer.sign(hashes: hashes, walletPublicKey: wallet.publicKey)

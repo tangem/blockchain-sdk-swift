@@ -377,9 +377,6 @@ extension HederaWalletManager: WalletManager {
             return walletManager
                 .networkService
                 .send(transaction: compiledTransaction)
-                .mapError { error in
-                    SendTxError(error: error, tx: nil)
-                }
                 .eraseToAnyPublisher()
         }
         .mapSendError()

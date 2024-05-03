@@ -75,7 +75,7 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
     
     private func send(_ transaction: Transaction, signer: TransactionSigner, sequence: Int, isPushingTx: Bool) -> AnyPublisher<TransactionSendResult, SendTxError> {
         guard let hashes = txBuilder.buildForSign(transaction: transaction, sequence: sequence) else {
-            return .sendFail(error: SendTxError(error: WalletError.failedToBuildTx))
+            return .sendTxFail(error: SendTxError(error: WalletError.failedToBuildTx))
         }
         
         return signer.sign(hashes: hashes,
@@ -92,16 +92,15 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
             .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
                 guard let self else { return .anyFail(error: WalletError.empty) }
                 
-                let txHashPublisher: AnyPublisher<String, SendTxError>
+                let txHashPublisher: AnyPublisher<String, Error>
+                
                 if isPushingTx {
                     txHashPublisher = self.networkService
                         .push(transaction: tx)
-                        .mapError { SendTxError(error: $0, tx: tx) }
                         .eraseToAnyPublisher()
                 } else {
                     txHashPublisher = self.networkService
                         .send(transaction: tx)
-                        .mapError { SendTxError(error: $0, tx: tx) }
                         .eraseToAnyPublisher()
                 }
                 
@@ -230,18 +229,18 @@ extension BitcoinWalletManager: TransactionPusher {
     
     func pushTransaction(with transactionHash: String, newTransaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, SendTxError> {
         guard let oldTx = wallet.pendingTransactions.first(where: { $0.hash == transactionHash }) else {
-            return .sendFail(error: BlockchainSdkError.failedToFindTransaction)
+            return .sendTxFail(error: BlockchainSdkError.failedToFindTransaction)
         }
         
         guard oldTx.fee.amount.value < newTransaction.fee.amount.value else {
-            return .sendFail(error: BlockchainSdkError.feeForPushTxNotEnough)
+            return .sendTxFail(error: BlockchainSdkError.feeForPushTxNotEnough)
         }
         
         guard
             let params = oldTx.transactionParams as? BitcoinTransactionParams,
             let sequence = params.inputs.max(by: { $0.sequence < $1.sequence })?.sequence
         else {
-            return .sendFail(error: BlockchainSdkError.failedToFindTxInputs)
+            return .sendTxFail(error: BlockchainSdkError.failedToFindTxInputs)
         }
         
         //        let outputs = loadedUnspents.filter { unspent in params.inputs.contains(where: { $0.prevHash == unspent.transactionHash })}

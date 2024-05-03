@@ -106,7 +106,7 @@ extension AptosWalletManager: WalletManager {
         do {
             dataForSign = try transactionBuilder.buildForSign(transaction: transaction, expirationTimestamp: expirationTimestamp)
         } catch {
-            return .sendFail(error: WalletError.failedToBuildTx)
+            return .sendTxFail(error: WalletError.failedToBuildTx)
         }
         
         return signer
