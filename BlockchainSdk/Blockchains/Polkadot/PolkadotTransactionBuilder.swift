@@ -116,6 +116,9 @@ class PolkadotTransactionBuilder {
         case .westend, .azero:
             return false
         case .joystream:
+            // specVersion at the moment of initial implementation is '2003'
+            // currently appending '00' before address bytes creates invalid transactions
+            // this may change at some point in the future and new logic may look similar to polkadot and kusama cases
             return true
         }
     }

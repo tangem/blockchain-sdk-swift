@@ -71,10 +71,8 @@ public struct DerivationConfigV1: DerivationConfig {
             return "m/44'/9000'/0'/0/0"
         case .fantom:
             return "m/44'/1007'/0'/0/0"
-        case .polkadot:
+        case .polkadot, .joystream:
             return "m/44'/354'/0'/0/0"
-        case .joystream:
-            return "m/44'/537'/0'/0'/0'"
         case .kusama:
             return "m/44'/434'/0'/0/0"
         case .azero:
