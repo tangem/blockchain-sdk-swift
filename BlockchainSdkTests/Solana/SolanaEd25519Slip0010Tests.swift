@@ -93,7 +93,8 @@ final class SolanaEd25519Slip0010Tests: XCTestCase {
 
         let expected = expectation(description: "Waiting for response")
         
-        processResult(manager.send(transaction, signer: coinSigner), expectationToFill: expected)
+        let sendTxResult = manager.send(transaction, signer: coinSigner)
+        processResult(sendTxResult, expectationToFill: expected)
         waitForExpectations(timeout: 10)
     }
     
@@ -113,11 +114,12 @@ final class SolanaEd25519Slip0010Tests: XCTestCase {
         )
         let expected = expectation(description: "Waiting for response")
         
-        processResult(manager.send(transaction, signer: tokenSigner), expectationToFill: expected)
+        let sendTxResult = manager.send(transaction, signer: tokenSigner)
+        processResult(sendTxResult, expectationToFill: expected)
         waitForExpectations(timeout: 10)
     }
     
-    private func processResult(_ publisher: AnyPublisher<TransactionSendResult, Error>, expectationToFill: XCTestExpectation) {
+    private func processResult(_ publisher: AnyPublisher<TransactionSendResult, SendTxError>, expectationToFill: XCTestExpectation) {
         bag.insert(
             publisher.sink(receiveCompletion: { completion in
                 defer {
@@ -129,7 +131,7 @@ final class SolanaEd25519Slip0010Tests: XCTestCase {
                     return
                 }
                 
-                guard let castedError = error as? SolanaError else {
+                guard let castedError = error.error as? SolanaError else {
                     XCTFail("Wrong error returned from manager")
                     return
                 }
