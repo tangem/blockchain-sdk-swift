@@ -115,14 +115,14 @@ final class SS58Tests: XCTestCase {
     }
     
     
-    func testNonRawBytes() {
+    func testRawBytesFalse() {
         let polkadotAddress = "13upfxwAepTxvfEEkSp567AXypn9ym5NGxsWmhdyxHXw5ocz"
         
         let bytes = SS58.bytes(string: polkadotAddress, raw: false)
         XCTAssertEqual(bytes.hexString, "0080C1B49CA830D61FCC69256C26BB5EF6A3F0E198A7A981365F038BBA42266ED7")
     }
     
-    func testRawBytes() {
+    func testRawBytesTrue() {
         let polkadotAddress = "13upfxwAepTxvfEEkSp567AXypn9ym5NGxsWmhdyxHXw5ocz"
         
         let bytes = SS58.bytes(string: polkadotAddress, raw: true)
