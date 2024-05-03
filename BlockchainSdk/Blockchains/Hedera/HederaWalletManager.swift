@@ -380,16 +380,13 @@ extension HederaWalletManager: WalletManager {
                 .eraseToAnyPublisher()
         }
         .mapSendError()
-//        .withWeakCaptureOf(self)
-//        .tryMap { walletManager, sendResult in
-//            walletManager.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)
-//        }
-//        .handleEvents(
-//            receiveOutput: { walletManager, sendResult in
-//                walletManager.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)
-//            }
-//        )
-//        .map(\.1)
+        .withWeakCaptureOf(self)
+        .handleEvents(
+            receiveOutput: { walletManager, sendResult in
+                walletManager.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)
+            }
+        )
+        .map(\.1)
         .eraseToAnyPublisher()
     }
 }

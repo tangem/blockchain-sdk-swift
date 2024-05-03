@@ -267,13 +267,13 @@ extension VeChainWalletManager: WalletManager {
                     .eraseToAnyPublisher()
             }
             .mapSendError()
-//            .withWeakCaptureOf(self)
-//            .handleEvents(
-//                receiveOutput: { walletManager, sendResult in
-//                    walletManager.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)
-//                }
-//            )
-//            .map(\.1)
+            .withWeakCaptureOf(self)
+            .handleEvents(
+                receiveOutput: { walletManager, sendResult in
+                    walletManager.updateWalletWithPendingTransaction(transaction, sendResult: sendResult)
+                }
+            )
+            .map(\.1)
             .eraseToAnyPublisher()
     }
 }
