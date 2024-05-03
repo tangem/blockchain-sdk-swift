@@ -26,7 +26,7 @@ enum SS58 {
     static func networkType(from address: String) throws -> UInt {
         let decodedData = address.base58DecodedData
         
-        guard decodedData.count >= Constants.prefixSize else {
+        guard decodedData.count >= Constants.maxPrefixSize else {
             throw Error.invalidAddress
         }
         
@@ -69,7 +69,10 @@ enum SS58 {
     /// - Returns: Base58 decoded data without ss58 prefix and checksum
     static func bytes(string: String, raw: Bool = true) -> Data {
         var decoded = string.base58DecodedData
-        decoded.removeFirst(Int(Constants.prefixSize))
+        guard let networkTypeBytes = try? networkType(from: string) else {
+            return decoded
+        }
+        decoded.removeFirst(networkTypeBytes >= Constants.rangeLimit ? 2 : 1)
         decoded.removeLast(Constants.checksumSize)
         if !raw {
             decoded = Data(UInt8(0)) + decoded
@@ -104,11 +107,11 @@ enum SS58 {
     }
 }
 
-extension SS58 {
+fileprivate extension SS58 {
     enum Constants {
         static let publicKeySize: UInt = 32
         static let prefix = "SS58PRE".data(using: .utf8) ?? Data()
-        static let prefixSize: UInt = 2
+        static let maxPrefixSize: UInt = 2
         static let checksumSize: Int = 2
         static let rangeLimit: UInt16 = 64
     }

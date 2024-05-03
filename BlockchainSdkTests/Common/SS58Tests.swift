@@ -113,4 +113,19 @@ final class SS58Tests: XCTestCase {
         let validPolkadotAddress = "13upfxwAepTxvfEEkSp567AXypn9ym5NGxsWmhdyxHXw5ocz"
         XCTAssertFalse(SS58.isValidAddress(validPolkadotAddress, type: 1))
     }
+    
+    
+    func testNonRawBytes() {
+        let polkadotAddress = "13upfxwAepTxvfEEkSp567AXypn9ym5NGxsWmhdyxHXw5ocz"
+        
+        let bytes = SS58.bytes(string: polkadotAddress, raw: false)
+        XCTAssertEqual(bytes.hexString, "0080C1B49CA830D61FCC69256C26BB5EF6A3F0E198A7A981365F038BBA42266ED7")
+    }
+    
+    func testRawBytes() {
+        let polkadotAddress = "13upfxwAepTxvfEEkSp567AXypn9ym5NGxsWmhdyxHXw5ocz"
+        
+        let bytes = SS58.bytes(string: polkadotAddress, raw: true)
+        XCTAssertEqual(bytes.hexString, "80C1B49CA830D61FCC69256C26BB5EF6A3F0E198A7A981365F038BBA42266ED7")
+    }
 }
