@@ -109,6 +109,8 @@ class TronNetworkService: MultiNetworkProvider {
         }
     }
     
+    // MARK: - Private Implementation
+    
     private func getAccount(for address: String) -> AnyPublisher<TronGetAccountResponse, Error> {
         providerPublisher {
             $0.getAccount(for: address)
@@ -150,16 +152,10 @@ class TronNetworkService: MultiNetworkProvider {
         providerPublisher {
             $0.tokenBalance(address: address, contractAddress: token.contractAddress)
                 .tryMap { response in
-                    guard let hexValue = response.constant_result.first else {
-                        throw WalletError.failedToParseNetworkResponse
-                    }
-                    
-                    // Need use 32 byte for obtain right value
-                    let substringHexSizeValue = String(hexValue.prefix(64))
-                    let bigIntValue = BigUInt(Data(hex: substringHexSizeValue))
+                    let bigUIntValue = try TronUtils().combineBigUIntValueAtBalance(response: response.constant_result)
                     
                     let formatted = EthereumUtils.formatToPrecision(
-                        bigIntValue,
+                        bigUIntValue,
                         numberDecimals: token.decimalCount,
                         formattingDecimals: token.decimalCount,
                         decimalSeparator: ".",
