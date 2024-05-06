@@ -278,6 +278,9 @@
 		B06AFAEF261496E600E7AAB0 /* CardanoAddressUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06AFAEE261496E600E7AAB0 /* CardanoAddressUtils.swift */; };
 		B06C6793264286390037E7AD /* BlockchairAddressBlockMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06C6792264286390037E7AD /* BlockchairAddressBlockMapper.swift */; };
 		B07EE8B225AC1504009DB163 /* DateFormatter+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07EE8B125AC1504009DB163 /* DateFormatter+.swift */; };
+		B087CFE12BDD1AA4001E3482 /* APIListUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B087CFE02BDD1AA4001E3482 /* APIListUtils.swift */; };
+		B087CFF52BDD1B02001E3482 /* config_dev.json in Resources */ = {isa = PBXBuildFile; fileRef = B087CFE72BDD1B02001E3482 /* config_dev.json */; };
+		B087CFFE2BDD1B02001E3482 /* providers_order.json in Resources */ = {isa = PBXBuildFile; fileRef = B087CFF12BDD1B02001E3482 /* providers_order.json */; };
 		B0A1D39D2625A1150013F0BF /* EthereumUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A1D39C2625A1150013F0BF /* EthereumUtils.swift */; };
 		B0AD566425AC8DD50084F924 /* PendingTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0AD566325AC8DD50084F924 /* PendingTransaction.swift */; };
 		B0BAEE9825FF1E0400F318A6 /* RosettaBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0BAEE9725FF1E0400F318A6 /* RosettaBody.swift */; };
@@ -1112,6 +1115,9 @@
 		B06AFAEE261496E600E7AAB0 /* CardanoAddressUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoAddressUtils.swift; sourceTree = "<group>"; };
 		B06C6792264286390037E7AD /* BlockchairAddressBlockMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockchairAddressBlockMapper.swift; sourceTree = "<group>"; };
 		B07EE8B125AC1504009DB163 /* DateFormatter+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateFormatter+.swift"; sourceTree = "<group>"; };
+		B087CFE02BDD1AA4001E3482 /* APIListUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIListUtils.swift; sourceTree = "<group>"; };
+		B087CFE72BDD1B02001E3482 /* config_dev.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = config_dev.json; sourceTree = "<group>"; };
+		B087CFF12BDD1B02001E3482 /* providers_order.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = providers_order.json; sourceTree = "<group>"; };
 		B0A1D39C2625A1150013F0BF /* EthereumUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumUtils.swift; sourceTree = "<group>"; };
 		B0AD566325AC8DD50084F924 /* PendingTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTransaction.swift; sourceTree = "<group>"; };
 		B0BAEE9725FF1E0400F318A6 /* RosettaBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosettaBody.swift; sourceTree = "<group>"; };
@@ -2618,6 +2624,15 @@
 			path = Rosetta;
 			sourceTree = "<group>";
 		};
+		B087CFE62BDD1B02001E3482 /* config */ = {
+			isa = PBXGroup;
+			children = (
+				B087CFE72BDD1B02001E3482 /* config_dev.json */,
+				B087CFF12BDD1B02001E3482 /* providers_order.json */,
+			);
+			path = config;
+			sourceTree = "<group>";
+		};
 		B0A1D39B2625A10B0013F0BF /* Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -3157,6 +3172,7 @@
 		DA59750927D744A7009F0A1F /* BlockchainSdkExample */ = {
 			isa = PBXGroup;
 			children = (
+				B087CFE62BDD1B02001E3482 /* config */,
 				DCE3379A28F2B7260029A6F5 /* BlockchainSdkExample.entitlements */,
 				DA59750A27D744A7009F0A1F /* BlockchainSdkExampleApp.swift */,
 				DA59750C27D744A7009F0A1F /* BlockchainSdkExampleView.swift */,
@@ -3166,6 +3182,7 @@
 				DA11507627DB217200CDC879 /* Launch Screen.storyboard */,
 				DA59750E27D744A9009F0A1F /* Assets.xcassets */,
 				DA59751027D744A9009F0A1F /* Preview Content */,
+				B087CFE02BDD1AA4001E3482 /* APIListUtils.swift */,
 			);
 			path = BlockchainSdkExample;
 			sourceTree = "<group>";
@@ -3997,7 +4014,9 @@
 			files = (
 				DA11507727DB217200CDC879 /* Launch Screen.storyboard in Resources */,
 				DA59751227D744A9009F0A1F /* Preview Assets.xcassets in Resources */,
+				B087CFFE2BDD1B02001E3482 /* providers_order.json in Resources */,
 				DA59750F27D744A9009F0A1F /* Assets.xcassets in Resources */,
+				B087CFF52BDD1B02001E3482 /* config_dev.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4918,6 +4937,7 @@
 			files = (
 				DA59752027D768D9009F0A1F /* BlockchainSdkExampleViewModel.swift in Sources */,
 				B6CE41222B7C0308007A27D1 /* SimpleAccountCreator.swift in Sources */,
+				B087CFE12BDD1AA4001E3482 /* APIListUtils.swift in Sources */,
 				DA59750D27D744A7009F0A1F /* BlockchainSdkExampleView.swift in Sources */,
 				DA59750B27D744A7009F0A1F /* BlockchainSdkExampleApp.swift in Sources */,
 				B6CE41202B7C0275007A27D1 /* InMemoryBlockchainDataStorage.swift in Sources */,
