@@ -52,7 +52,7 @@ extension BitcoinLegacyAddressService: AddressProvider {
                                   external: true,
                                   hdPublicKeyData: publicKey.blockchainKey)
 
-        let address = try converter.convert(publicKey: bitcoinCorePublicKey, type: .p2pkh).stringValue
+        let address = try converter.convert(publicKey: bitcoinCorePublicKey, type: .p2sh).stringValue
         return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
 }
