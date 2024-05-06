@@ -1,0 +1,3 @@
+[submodule "BlockchainSdkExample/config"]
+	path = BlockchainSdkExample/config
+	url = git@github.com:tangem/tangem-app-config.git
