@@ -8,7 +8,7 @@
 
 import TangemSdk
 
-// TODO: Implement KoinosWalletAssembly
+// TODO: [KOINOS] Implement KoinosWalletAssembly
 struct KoinosWalletAssembly: WalletManagerAssembly {
     func make(with input: WalletManagerAssemblyInput) throws -> WalletManager {
         throw BlockchainSdkError.notImplemented

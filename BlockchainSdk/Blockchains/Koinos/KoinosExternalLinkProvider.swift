@@ -8,7 +8,7 @@
 
 import Foundation
 
-// TODO: Implement KoinosExternalLinkProvider
+// TODO: [KOINOS] Implement KoinosExternalLinkProvider
 struct KoinosExternalLinkProvider {
     private let isTestnet: Bool
     
