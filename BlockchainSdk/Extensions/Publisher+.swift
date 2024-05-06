@@ -91,18 +91,26 @@ extension Publisher {
 }
 
 extension Publisher where Failure == Error {
+    /*
+     This method is used to override a network error when sending a transaction.
+     Use only pair with send method for {{Blockchain}}NetworkService.
+     */
     func mapSendError(tx: String? = nil) -> Publishers.MapError<Self, Error> {
         mapError { error in
-            if let sendError = error as? SendTxError {
+            switch error {
+            case let sendError as SendTxError:
                 return sendError
-            } else if let providerError = error as? MultiNetworkProviderError {
+            case let providerError as MultiNetworkProviderError:
                 return SendTxError(error: providerError.networkError, tx: tx, lastRetryHost: providerError.lastRetryHost)
-            } else {
+            default:
                 return SendTxError(error: error, tx: tx)
             }
         }
     }
     
+    /*
+     This method is used to override a network error when sending a transaction after all chains publishers.
+     */
     func eraseSendError() -> Publishers.MapError<Self, SendTxError> {
         mapError { error in
             SendTxError(error: error)
