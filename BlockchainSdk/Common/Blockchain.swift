@@ -424,6 +424,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "Polygon zkEVM" + testnetSuffix
         case .zkSync:
             return "zkSync Era" + testnetSuffix
+        case .manta:
+            return "Manta Pacific" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
