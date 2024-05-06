@@ -97,14 +97,7 @@ extension Publisher where Failure == Error {
      */
     func mapSendError(tx: String? = nil) -> Publishers.MapError<Self, Error> {
         mapError { error in
-            switch error {
-            case let sendError as SendTxError:
-                return sendError
-            case let providerError as MultiNetworkProviderError:
-                return SendTxError(error: providerError.networkError, tx: tx, lastRetryHost: providerError.lastRetryHost)
-            default:
-                return SendTxError(error: error, tx: tx)
-            }
+            SendTxErrorFactory().make(error: error, with: tx)
         }
     }
     
@@ -113,7 +106,7 @@ extension Publisher where Failure == Error {
      */
     func eraseSendError() -> Publishers.MapError<Self, SendTxError> {
         mapError { error in
-            SendTxError(error: error)
+            SendTxErrorFactory().make(error: error)
         }
     }
 }
