@@ -513,7 +513,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .mantle,
                 .flare,
                 .taraxa,
-                .base:
+                .base,
+                .koinos:
             return true
         case .fantom,
                 .tron,
