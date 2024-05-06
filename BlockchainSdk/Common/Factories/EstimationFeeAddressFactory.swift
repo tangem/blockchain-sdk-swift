@@ -11,9 +11,6 @@ import Foundation
 struct EstimationFeeAddressFactory {
     func makeAddress(for blockchain: Blockchain) throws -> String {
         switch blockchain {
-        case .koinos:
-            // TODO: [KOINOS] Implement address for Koinos fee estimation
-            return ""
         case .chia:
             // Can not generate and doesn't depend on destination
             return ""
@@ -89,6 +86,9 @@ struct EstimationFeeAddressFactory {
             return "terra1pfamr0t2daet92grdvxqex235q58qrx6xclldg"
         case .ton:
             return "EQAY92urFDKejoDRdi_EfRKLGB1JkGjD8z1inj_DhgBaD0Xo"
+        case .koinos:
+            // TODO: [KOINOS] Implement address for Koinos fee estimation
+            return ""
         }
     }
 }
