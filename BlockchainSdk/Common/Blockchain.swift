@@ -76,6 +76,7 @@ public indirect enum Blockchain: Equatable, Hashable {
     case taraxa(testnet: Bool)
     case radiant(testnet: Bool)
     case base(testnet: Bool)
+    case koinos(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -112,7 +113,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .flare(let testnet),
                 .taraxa(let testnet),
                 .radiant(let testnet),
-                .base(let testnet):
+                .base(let testnet),
+                .koinos(let testnet):
             return testnet
         case .litecoin,
                 .ducatus,
@@ -182,7 +184,8 @@ public indirect enum Blockchain: Equatable, Hashable {
                 .kaspa,
                 .ravencoin,
                 .hedera,
-                .radiant:
+                .radiant,
+                .koinos:
             return 8
         case .ethereum,
                 .ethereumClassic,
@@ -362,6 +365,8 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "TARA"
         case .radiant:
             return "RXD"
+        case .koinos:
+            return "KOIN"
         }
     }
 
@@ -690,6 +695,7 @@ extension Blockchain: Codable {
         case .taraxa: return "taraxa"
         case .radiant: return "radiant"
         case .base: return "base"
+        case .koinos: return "koinos"
         }
     }
 
@@ -774,6 +780,7 @@ extension Blockchain: Codable {
         case "taraxa": self = .taraxa(testnet: isTestnet)
         case "radiant": self = .radiant(testnet: isTestnet)
         case "base": self = .base(testnet: isTestnet)
+        case "koinos": self = .koinos(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -972,6 +979,8 @@ private extension Blockchain {
             case .network: return "base"
             case .coin: return "base-ethereum"
             }
+        case .koinos:
+            return "koinos"
         }
     }
 
@@ -1074,6 +1083,8 @@ extension Blockchain {
             return HederaWalletAssembly()
         case .radiant:
             return RadiantWalletAssembly()
+        case .koinos:
+            return KoinosWalletAssembly()
         }
     }
 }
