@@ -64,7 +64,7 @@ struct EstimationFeeAddressFactory {
         case .azero:
             return "5DaWppqEJPc6BhFKD2NBC1ACXPDMPYfv2AQDB5uH5KT4mpef"
         case .joystream:
-            // FIXME:
+            // TODO: ask Aleksei Beliatko after integration
             return ""
         // Others
         case .cardano:
