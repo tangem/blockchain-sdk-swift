@@ -71,7 +71,7 @@ extension BinanceWalletManager: TransactionSender {
             .flatMap {[weak self] tx -> AnyPublisher<TransactionSendResult, Error> in
                 self?.networkService.send(transaction: tx).tryMap { [weak self] response in
                     guard let self = self else { throw WalletError.empty }
-                    let hash = response.tx.txHash
+                    let hash = response.broadcast.first?.hash ?? response.tx.txHash
                     let mapper = PendingTransactionRecordMapper()
                     let record = mapper.mapToPendingTransactionRecord(transaction: transaction, hash: hash)
                     self.wallet.addPendingTransaction(record)
