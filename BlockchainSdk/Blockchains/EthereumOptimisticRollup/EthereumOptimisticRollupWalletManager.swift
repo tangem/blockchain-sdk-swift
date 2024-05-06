@@ -59,7 +59,7 @@ private extension EthereumOptimisticRollupWalletManager {
     ) throws -> some Publisher<Decimal, Never> {
         let hexTransactionData = try txBuilder.buildDummyTransactionForL1(destination: destination, value: value, data: data, fee: fee)
         return networkService
-            .read(target: OptimismSmartContractTarget.getL1Fee(data: hexTransactionData))
+            .read(target: EthereumOptimisticRollupSmartContract.getL1Fee(data: hexTransactionData))
             .withWeakCaptureOf(self)
             .tryMap { walletManager, response in
                 guard let value = EthereumUtils.parseEthereumDecimal(response, decimalsCount: walletManager.wallet.blockchain.decimalCount) else {
