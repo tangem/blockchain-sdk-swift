@@ -425,7 +425,7 @@ public indirect enum Blockchain: Equatable, Hashable {
         case .zkSync:
             return "zkSync Era" + testnetSuffix
         case .manta:
-            return "Manta Pacific"
+            return "Manta Pacific" + testnetSuffix
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
